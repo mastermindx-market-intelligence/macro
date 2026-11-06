@@ -1,0 +1,58 @@
+{
+  "task": "P12.T2.S14.S2",
+  "public_page_sha256": "6b5e90ddf12c10f214c3a63e78e65b9f94e4aad56fcb8f54215f8b91e4397a99",
+  "retained_owner_chain_state_sha256": "71958544a675137e6484b365a5f7d3eb283ae15c0f2e7030954cbfdffa9ee132",
+  "owner_asof": "2026-11-02",
+  "commodity_asof": "2026-11-03",
+  "assets": 17,
+  "producer_armed_predicate": [
+    "arming",
+    "expressed",
+    "propagating"
+  ],
+  "rows": [
+    {
+      "chain": "oil_inflation_duration_derate",
+      "owner_state": "dormant",
+      "blast_keys": [],
+      "projected_cohorts": 0,
+      "published_cohorts": 0,
+      "source_state": "earlier_context",
+      "applicability": "unavailable"
+    },
+    {
+      "chain": "oil_slide_disinflation_duration_rerate",
+      "owner_state": "dormant",
+      "blast_keys": [],
+      "projected_cohorts": 0,
+      "published_cohorts": 0,
+      "source_state": "earlier_context",
+      "applicability": "unavailable"
+    },
+    {
+      "chain": "real_rate_peak_gold_rerate",
+      "owner_state": "failed",
+      "blast_keys": [],
+      "projected_cohorts": 0,
+      "published_cohorts": 0,
+      "source_state": "earlier_context",
+      "applicability": "unavailable"
+    }
+  ],
+  "other_armed_owner_channel_controls": [
+    {
+      "chain": "dollar_spike_em_multinational",
+      "state": "arming",
+      "blast_count": 4
+    },
+    {
+      "chain": "vol_regime_deleveraging",
+      "state": "arming",
+      "blast_count": 3
+    }
+  ],
+  "causal_composition": "Current owner JSON blast{} -> _project_chain iterates zero channels -> adapter attaches companies only within existing cohorts -> canonical template emits company anchors only for cohort.companies.linked. No alias fallback or guessed mapping is allowed.",
+  "degraded_contract": "Earlier source context is labeled and not same-date evidence; chain applicability unavailable. Existing Transmission source continuation remains. Do not reattach historical membership to current product.",
+  "qualification": "Pure existing display projection against retained source fields; not original producer input/PIT/source-authenticity proof, not a thesis verdict. No collector/financialproducer/nativeGoldrender/datawrite/network/browser/host.",
+  "actual_tested_owner_raw_matches": true
+}

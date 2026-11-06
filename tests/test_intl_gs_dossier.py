@@ -28,6 +28,8 @@ from lib.intl_gs_display import (  # noqa: E402
     CAPABILITY_DISPLAY, CAPABILITY_LABELS, NAMES_ZH, REASON_COPY, REGION_GROUPS,
     horizon_label, reason_copy, rights_view)
 from tests.intl_gs_fixture_site import render_states_page  # noqa: E402
+from tests.intl_gs_scanner_fixture import (  # noqa: E402
+    _decode_markets, expand_deferred_for_assertions)
 from tests.intl_gs_dossier_fixture import (  # noqa: E402
     render_intl_page, render_specimen_page)
 from tests.test_intl_gs_foundation import (  # noqa: E402
@@ -42,6 +44,21 @@ _DOSSIER_PANEL_RE = re.compile(
     r'[^>]*data-horizon="([^"]+)" data-basis="([^"]+)"[^>]*>')
 _ARTICLE_RE = re.compile(r'<article class="intl-gs__mkt"[^>]*>')
 ISO_TEXT_RE = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}")
+
+
+def _inspection_html(html):
+    """Inspect the same validated markup the canonical controller mounts.
+
+    Full pages carry an outer deferred panel; the existing standalone specimen
+    seam already emits a bound panel but retains canonical market carriers.
+    Reuse the same shared validators for both, without rendering or changing
+    observations, visible copy or assertions. Legacy markup remains unchanged.
+    """
+    if "data-im-deferred" in html:
+        html = expand_deferred_for_assertions(html)
+    if "data-im-gs-market-id" in html:
+        html = _decode_markets(html, 1)
+    return html
 
 
 def _signed(value, dp=2, unit=""):
@@ -77,6 +94,7 @@ def _obs_index(observation_set):
 
 def _panels(html):
     """[(horizon, basis, chunk)] one chunk per dossier panel section."""
+    html = _inspection_html(html)
     starts = [(m.start(), m.group(1), m.group(2))
               for m in _DOSSIER_PANEL_RE.finditer(html)]
     panels = []
@@ -88,6 +106,7 @@ def _panels(html):
 
 def _articles(panel_html):
     """{market_id: article html} for one panel."""
+    panel_html = _inspection_html(panel_html)
     starts = [m.start() for m in _ARTICLE_RE.finditer(panel_html)]
     articles = {}
     for position, start in enumerate(starts):
@@ -105,6 +124,7 @@ def _article(panel_html, market_id):
 
 
 def _visible_text(html):
+    html = _inspection_html(html)
     text = re.sub(r"<script.*?</script>|<style.*?</style>", " ", html, flags=re.S)
     text = re.sub(r"<[^>]+>", " ", text)
     return re.sub(r"\s+", " ", text)
@@ -114,6 +134,9 @@ class _AttributeScanner(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.bad = []
+
+    def feed(self, html):
+        return super().feed(_inspection_html(html))
 
     def handle_starttag(self, tag, attrs):
         for name, value in attrs:
@@ -371,12 +394,25 @@ def test_b7_peers_same_region_group_select_links(obs_set, page):
     rows = __import__("lib.intl_gs_display", fromlist=["jurisdiction_rows"]).jurisdiction_rows(UNIVERSE)
     expected = [row["id"] for row in rows
                 if row["region_group"] == "asia" and row["id"] != "AU"][:5]
-    assert [m for m, _href in links] == expected
+    # Every same-region peer remains visible. Only the actual workspace owner
+    # markets offer a selection action; unavailable peers are explicit divs.
+    from engine.intl_workspace_overview import build_workspace_overviews
+    actionable = build_workspace_overviews(None)["config"]["markets"]
+    cards = re.findall(r'<(?:a|div) class="intl-gs__peer"[^>]*>(.*?)</(?:a|div)>',
+                       peers_html, re.S)
+    assert len(cards) == len(expected) == 5
+    for market, card in zip(expected, cards):
+        assert UNIVERSE["jurisdictions"][market]["name"] in _visible_text(card)
+        if market not in actionable:
+            assert "Selection unavailable in this workspace" in card
+            assert "当前工作区不支持选择" in card
+    assert [m for m, _href in links] == [m for m in expected if m in actionable]
+    assert len(re.findall(r'<div class="intl-gs__peer" aria-disabled="true">',
+                          peers_html)) == len([m for m in expected if m not in actionable])
     for market, href in links:
         assert href == f"?view=dossier&amp;market={market}"
     index = _obs_index(obs_set)
-    cards = re.split(r'<a class="intl-gs__peer"', peers_html)[1:]
-    for market, card in zip([m for m, _ in links], cards):
+    for market, card in zip(expected, cards):
         obs = index.get((market, "1m", "usd_unhedged"))
         if obs and obs["state"] == "qualified":
             assert _signed(obs["value"]["pct"], 2, "%") in _visible_text(card)
@@ -448,15 +484,21 @@ def test_b8_no_specimen_true_in_production_sources():
 
 
 def test_b8_specimen_page_board11(specimen_page):
+    specimen_page = _inspection_html(specimen_page)
     assert "Specimen values" in specimen_page and "示例数值" in specimen_page
     assert re.search(r'<span class="intl-gs__hero__num[^"]*"[^>]*>\+3\.40%</span>',
                      specimen_page)
     assert "Chile" in specimen_page and "Peru" in specimen_page
     br = _articles(_panel(specimen_page, "1m", "usd_unhedged"))["BR"]
-    chile = re.search(r'<a class="intl-gs__peer"[^>]*data-gs-select-market="CL".*?(?=<a class="intl-gs__peer"|</div>)',
-                      br, re.S).group(0)
-    peru = re.search(r'<a class="intl-gs__peer"[^>]*data-gs-select-market="PE".*?(?=<a class="intl-gs__peer"|</div>)',
-                     br, re.S).group(0)
+    # The standalone specimen supplies no actionable workspace catalogue. Its
+    # same source-backed peers stay visible and explicitly noninteractive.
+    cards = re.findall(r'<div class="intl-gs__peer" aria-disabled="true">(.*?)</div>', br, re.S)
+    chile = next(card for card in cards if '<span class="l-en">Chile</span>' in card)
+    peru = next(card for card in cards if '<span class="l-en">Peru</span>' in card)
+    assert 'data-gs-select-market=' not in br and '<a class="intl-gs__peer"' not in br
+    for card in (chile, peru):
+        assert "Selection unavailable in this workspace" in card
+        assert "当前工作区不支持选择" in card
     assert "intl-gs__chip--warn-dashed" in chile, "Chile Qualified dashed warn"
     assert "intl-gs__chip--muted-dashed" in peru, "Peru Abstain dashed muted"
 
@@ -818,3 +860,79 @@ def test_b15_horizon_labels_never_raw(page):
         if horizon_label(horizon) != (horizon, horizon):
             # the foundation maps this horizon: no raw id may leak into text
             assert not re.search(rf"\b{re.escape(horizon)}\b", visible), horizon
+
+
+# The input remains the actual canonical rendered fixture. Refusal tests alter
+# only an in-memory transport copy; they never rewrite a model or observation.
+def _dossier_carrier(html):
+    pattern = re.compile(r'<script type="application/json" data-im-deferred-payload>(.*?)</script>', re.S)
+    return next(match for match in pattern.finditer(html)
+                if (lambda p: p["view"] == "dossier" and p["horizon"] == "1m"
+                    and p["basis"] == "usd_unhedged")(json.loads(match.group(1))))
+
+
+def _replace_dossier_payload(html, carrier, payload):
+    raw = json.dumps(payload, ensure_ascii=False).replace("<", "\\u003c")
+    return html[:carrier.start(1)] + raw + html[carrier.end(1):]
+
+
+@pytest.mark.parametrize("fault", ["missing", "malformed", "schema", "context", "basis", "generation", "market", "default"])
+def test_deferred_dossier_inspection_refuses_inconsistent_payload(page, fault):
+    carrier = _dossier_carrier(page)
+    payload = json.loads(carrier.group(1))
+    if fault == "missing":
+        mutated = page[:carrier.start()] + page[carrier.end():]
+    elif fault == "malformed":
+        mutated = page[:carrier.start(1)] + "{" + page[carrier.end(1):]
+    elif fault in ("market", "default"):
+        inner = re.search(r'<script type="application/json" data-im-gs-market-id="JP"[^>]*>(.*?)</script>', payload["markup"], re.S)
+        market = json.loads(inner.group(1))
+        if fault == "market":
+            market["market_id"] = "ZZ"
+        else:
+            market["default"] = not market["default"]
+        raw = json.dumps(market, ensure_ascii=False).replace("<", "\\u003c")
+        payload["markup"] = payload["markup"][:inner.start(1)] + raw + payload["markup"][inner.end(1):]
+        mutated = _replace_dossier_payload(page, carrier, payload)
+    else:
+        field = {"schema": "schema", "context": "context_id", "basis": "basis", "generation": "generation"}[fault]
+        payload[field] = "foreign-dossier-inspection-context"
+        mutated = _replace_dossier_payload(page, carrier, payload)
+    assert mutated != page
+    with pytest.raises(ValueError, match="deferred payload refused"):
+        _panels(mutated)
+
+
+def test_deferred_dossier_inspection_keeps_visible_iso_and_bad_attributes(page):
+    carrier = _dossier_carrier(page)
+    payload = json.loads(carrier.group(1))
+    inner = re.search(r'<script type="application/json" data-im-gs-market-id="JP"[^>]*>(.*?)</script>', payload["markup"], re.S)
+    market = json.loads(inner.group(1))
+    at = market["markup"].index(">") + 1
+    canary = '<p title="&lt;span class=l-en&gt;">2000-01-01T00:00</p>'
+    market["markup"] = market["markup"][:at] + canary + market["markup"][at:]
+    raw = json.dumps(market, ensure_ascii=False).replace("<", "\\u003c")
+    payload["markup"] = payload["markup"][:inner.start(1)] + raw + payload["markup"][inner.end(1):]
+    mutated = _replace_dossier_payload(page, carrier, payload)
+    article = _article(_panel(mutated), "JP")
+    assert ISO_TEXT_RE.search(_visible_text(article))
+    scanner = _AttributeScanner()
+    scanner.feed(mutated)
+    assert any(tag == "p" and name == "title" and "<" in value
+               for tag, name, value in scanner.bad)
+
+
+@pytest.mark.parametrize("fault", ["missing_peer", "unavailable_peer_action"])
+def test_peer_consumer_preserves_membership_and_action_boundaries(obs_set, page, fault):
+    expanded = _inspection_html(page)
+    article = _article(_panel(expanded), "AU")
+    if fault == "missing_peer":
+        altered = article.replace('<span class="l-en">Bangladesh</span>',
+                                  '<span class="l-en">missing peer</span>', 1)
+    else:
+        altered = article.replace('<div class="intl-gs__peer" aria-disabled="true">',
+            '<a class="intl-gs__peer" data-gs-select-market="BD" href="?view=dossier&amp;market=BD">', 1)
+    assert altered != article
+    mutated = expanded.replace(article, altered, 1)
+    with pytest.raises(AssertionError):
+        test_b7_peers_same_region_group_select_links(obs_set, mutated)

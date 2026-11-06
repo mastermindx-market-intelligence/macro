@@ -703,6 +703,16 @@ def research_read(
         "text_layer_state": record["text_layer_state"],
         "segment_count_total": len(segments),
         "segments": segments[segment_start:segment_start + max_segments],
+        # Page map of the WHOLE canonical document, composed from the segments
+        # already built above: page numbers only, no text and no extra read.
+        "outline": [
+            {
+                "segment_index": segment["segment_index"],
+                "page_start": segment["page_start"],
+                "page_end": segment["page_end"],
+            }
+            for segment in segments
+        ],
     })
 
 

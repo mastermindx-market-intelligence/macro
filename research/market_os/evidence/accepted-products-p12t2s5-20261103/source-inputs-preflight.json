@@ -1,0 +1,238 @@
+{
+  "task": "P12.T2.S5",
+  "at": "2026-11-03T21:34:01.167988+00:00",
+  "base": "12c551c2512fc57e12743fac17a2874e001cf6db",
+  "branch": "claude/ssd-accepted-products-p12t2s5-20261103-7de64ea4ac4749d9",
+  "worktree": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9",
+  "sources": {
+    "Bonds": {
+      "head": "93eaa41de98a5e495e8a73043d4def955edcedd9",
+      "preimage": "c6229faaea5f01b654cb59c28e57c02980686b87",
+      "tasks": [
+        "P12.T2",
+        "P12.T2.S1",
+        "P12.T2.S2",
+        "P12.T2.S3"
+      ],
+      "commits": [
+        "343de4814f1fc2aecb1abda15bfe453c53c80da9",
+        "2bd6cb61ee01b7600d3356b32369194072d5391e",
+        "93eaa41de98a5e495e8a73043d4def955edcedd9"
+      ],
+      "runtime": [
+        "engine/intl_bonds.py",
+        "templates/bonds.html.j2",
+        "tests/test_bonds_glance_copy.py"
+      ],
+      "dependencies": [
+        "engine/inputs.py",
+        "engine/yield_momentum.py",
+        "scripts/build_bonds.py",
+        "lib/store.py",
+        "config.yml"
+      ],
+      "tree": "f2fafa808abbebf7c5c79370303c7f33f5f1c53f",
+      "current_base_runtime_drift": [],
+      "current_base_dependency_drift": [],
+      "complete_changed_tree_entries": [
+        "100644 blob e30591b0c2d5837dc2cd62feef09e5b81cd3e54e\tengine/intl_bonds.py",
+        "100644 blob 0a4a9453ded1880d743c7ed90bee06bbcc11ce93\tmockups/evidence/bonds-sovereign-depth-20261103/EVIDENCE.yml",
+        "100644 blob 12391d1533634609492f600ab4423cdb138e2310\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-dark-en-row.png",
+        "100644 blob 8e0b412530781341e39107eca9a7372629d637e5\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-dark-en-sources.png",
+        "100644 blob 1babb72406e94107d1cfa7c518d51b212defe625\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-dark-zh-row.png",
+        "100644 blob ae835d19dd7a75cb2f03e0fb5b49ef09c33b4bc4\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-dark-zh-sources.png",
+        "100644 blob 58f926abd8f6daed44aedef8822af05f048f508c\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-light-en-row.png",
+        "100644 blob 5152b82002fd4bb1c34752deab1b09dbf53c405a\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-light-en-sources.png",
+        "100644 blob c388c01174dddb08bb8337b04cf8f181a3b5fcd5\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-light-zh-row.png",
+        "100644 blob d7145d53ba3917b0a02d541bd2d495ed1e0f3bae\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-light-zh-sources.png",
+        "100644 blob 55c295edfd22e999f44031f13603895d3558267b\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/390-dark-en-row.png",
+        "100644 blob 4bcae6f85e08326e5ffba9c685906c0bfb096aa0\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/390-dark-en-sources.png",
+        "100644 blob 729daf9b53980a223cfff61a4ea9dd14566a0798\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/390-dark-zh-row.png",
+        "100644 blob 3f571f7eb766f3430d816703a83ff8b9d231a671\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/390-dark-zh-sources.png",
+        "100644 blob aa541f0dc36a5ef3d05fcf09d90e922daca18b74\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/390-light-en-row.png",
+        "100644 blob 1e2fba11ecab0b734d3f3a838ee615cd37503947\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/390-light-en-sources.png",
+        "100644 blob 804a4fbcf80aa7cd049c57e42ad21937f1baebef\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/390-light-zh-row.png",
+        "100644 blob 3553f63b4d526c8fff612a5bd8f3340e45d02a6e\tmockups/evidence/bonds-sovereign-depth-20261103/evidence/390-light-zh-sources.png",
+        "100644 blob 6228dab4440d0551781a6574c1a7557d345020a0\tmockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-missing-final-1440-dark-en-row.png",
+        "100644 blob 021098d6a2cc93e0c8f45fac1b5717808474055f\tmockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-missing-final-1440-dark-en-sources.png",
+        "100644 blob cdca6eaa6a54c22e7dabefaa4fd278a1e65c766f\tmockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-missing-final-390-light-zh-row.png",
+        "100644 blob 04e7d76c7c098023440cd723fa71d2b764549e24\tmockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-missing-final-390-light-zh-sources.png",
+        "100644 blob 12391d1533634609492f600ab4423cdb138e2310\tmockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-receipt-final-1440-dark-en-row.png",
+        "100644 blob ec54ea27a2c31a8cea0c1909e86183c66545dcf2\tmockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-receipt-final-1440-dark-en-sources.png",
+        "100644 blob 804a4fbcf80aa7cd049c57e42ad21937f1baebef\tmockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-receipt-final-390-light-zh-row.png",
+        "100644 blob 1849f3922f6a3c4fc06541c56842030541785a89\tmockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-receipt-final-390-light-zh-sources.png",
+        "100644 blob 2e2e54873a676ea514dd7f8dfbe9c0d66e4338c4\tmockups/evidence/bonds-sovereign-depth-20261103/manifest.json",
+        "100644 blob 822856087a5dd49af130ac4086f5ba7e6fdd0644\tmockups/evidence/bonds-sovereign-depth-20261103/observations.json",
+        "100644 blob 1bb44145b0d9887705c9e585b2d6dd76cc0d9f07\tresearch/market_os/evidence/bonds-frame-source-20261103/ADJUDICATION.md",
+        "100644 blob 0f51dc5a4f86bd2ce479bd649582a5cee1eaa866\tresearch/market_os/evidence/bonds-frame-source-20261103/FRAME_SOURCE_RECEIPT_ADDENDUM.md",
+        "100644 blob d5753fc6e1fc9bf9cdcecbe7c13f3c2cff92911f\tresearch/market_os/evidence/bonds-frame-source-20261103/capture_depth.py",
+        "100644 blob 11f5cee202aa1120462c68f25f5323c0907d5530\tresearch/market_os/evidence/bonds-frame-source-20261103/frame-missing-final-observations.json",
+        "100644 blob e676d75cd11b3a8e23ab93595220fe2f38166046\tresearch/market_os/evidence/bonds-frame-source-20261103/frame-owner-green.json",
+        "100644 blob 12697c1f22260eaa129df13931e64035d9702b17\tresearch/market_os/evidence/bonds-frame-source-20261103/frame-owner-red.json",
+        "100644 blob 30aff0670f59d8e147e4f9ec8dc511311a274a4d\tresearch/market_os/evidence/bonds-frame-source-20261103/frame-receipt-final-observations.json",
+        "100644 blob ae48ce306c457f5ec7d9394f7dcc4ce0b76cd28a\tresearch/market_os/evidence/bonds-frame-source-20261103/frame-seven-country-parity.json",
+        "100644 blob cb9fa78c62726207ba5bfec09c936f74ee5a00ae\tresearch/market_os/evidence/bonds-frame-source-20261103/frame-source-tests.log",
+        "100644 blob e7ba9f1c5f487eac85b6c43b15567f321ea4b77d\tresearch/market_os/evidence/bonds-frame-source-20261103/probe_frame_owner.py",
+        "100644 blob 1b1c6543b8f48b548ae02378bf711b516e9a3701\tresearch/market_os/evidence/bonds-frame-source-20261103/probe_source_contract.py",
+        "100644 blob 9a0aa86f06fbe530ce23ea54a6b4deb2eef094a0\tresearch/market_os/evidence/bonds-frame-source-20261103/render_depth.py",
+        "100644 blob a61dfffe1497bfcf7ba40138b44f2cab25e563f1\tresearch/market_os/evidence/bonds-frame-source-20261103/source-qualification.json",
+        "100644 blob 9099339dfb6dae23cdf4240eb9e7505b18b9ed61\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/ADJUDICATION.md",
+        "100644 blob 74018cfc6ab0bf2ac0de03f34bb23bdce72ddbe2\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/FROZEN_SOURCE_DISCLOSURE_PACKET.md",
+        "100644 blob 022aa075fc23db0af5049d432b897aaa30337797\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/FROZEN_SOURCE_DISCLOSURE_PACKET_V2.md",
+        "100644 blob 60203d9be4c811cfb7b0721ceed848966f35fff0\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/SOURCE_LINK_LEGIBILITY_ADDENDUM.md",
+        "100644 blob c9888679fd0b83599bc015ef601a35c21a3beaa3\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/TARGET_SIZE_ADDENDUM.md",
+        "100644 blob 8d00037cdd4e4d540001ddb51457fb45d346f8e6\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/capture_depth.py",
+        "100644 blob 53dc3b0aca4ca0ffa5ae6514803af0ed4a5e07b8\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/compare_native_snapshots.py",
+        "100644 blob 822856087a5dd49af130ac4086f5ba7e6fdd0644\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/final-observations.json",
+        "100644 blob 4359ba17d96e2e5d758dbd19c0e402b4f1934517\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/final-render-identity.json",
+        "100644 blob 698482f6f6b99a99687fd85bd4fbf9b0fe2a9d5b\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/font-source-receipt.json",
+        "100644 blob 88c070ec87ce72a41753927345ccba4ac445ad71\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/measure_targets.py",
+        "100644 blob b763ebdc95441a60cc0ae8fba0889d9dc6d13ac7\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/native-intl-snapshot-after.json",
+        "100644 blob 2d1061d159d2f1044d9b9b5feac20b3d7fce0dd7\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/native-intl-snapshot-before.json",
+        "100644 blob 8ecd9bb63e909697fd0a84d604153e1580b17150\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/native-retained-comparison.json",
+        "100644 blob a041203d7534fa73a63928ec2b3f40b5742bbaba\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/probe_source_contract.py",
+        "100644 blob 17b96061de0f1ef9b8e2dd8bd0bf6d5aebbeeea0\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/render_depth.py",
+        "100644 blob 6fa71a34bbad76a0a9550fc887f14404c0a86e4b\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/retained-owner-source-probe-after.json",
+        "100644 blob 8b58ca66c88e6ad33bec819227a8bd9f8d3f2a7c\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/retained-owner-source-probe.json",
+        "100644 blob 99ad4809f11c468e2388a4fbf59a12aef620bff8\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/source-identity.json",
+        "100644 blob 48eb96a888f5e580d9173aaa1f0e0adaa8f378eb\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/target-content-parity.json",
+        "100644 blob ebeda83d78a9a2296dd00b9dd9e1143b7c0e4e2d\tresearch/market_os/evidence/bonds-sovereign-depth-20261103/target-size-qualification.json",
+        "100644 blob 816f1038305914424278caad76d623b8dab505ea\ttemplates/bonds.html.j2",
+        "100644 blob b07ae0c7e2ad742afcdf9dd72e138ecc6d4acea6\ttests/test_bonds_glance_copy.py"
+      ]
+    },
+    "Forensics": {
+      "head": "cb48c508b2192621ad540f9e7c5e220236d513e6",
+      "preimage": "52e312afdc3192abc945ea3fb4954fe21309e579",
+      "tasks": [
+        "P12.T39"
+      ],
+      "commits": [
+        "2de0e3fb3eb10f91434a42049b34ac657e97ab79",
+        "cb48c508b2192621ad540f9e7c5e220236d513e6"
+      ],
+      "runtime": [
+        "site/fundamental_forensics.js",
+        "templates/fundamental_forensics.js",
+        "tests/fundamental_forensics_drawer_resume.test.mjs",
+        "tests/test_fundamental_forensics_ui.py"
+      ],
+      "dependencies": [
+        "scripts/build_fundamental_forensics.py",
+        "templates/fundamental_forensics.html.j2"
+      ],
+      "tree": "c666cb95b48ef96fa0a841118d0fa70b7ed7cfdf",
+      "current_base_runtime_drift": [],
+      "current_base_dependency_drift": [],
+      "complete_changed_tree_entries": [
+        "100644 blob 44b7e8fdf32746e35657635f8d3353712deb8d4e\tdocs/verification/shared-shell-forensics-source-return-20261103.md",
+        "100644 blob 45ade618ae2ae78d1093bc23df98dd3ffc6f9fca\tsite/fundamental_forensics.js",
+        "100644 blob 45ade618ae2ae78d1093bc23df98dd3ffc6f9fca\ttemplates/fundamental_forensics.js",
+        "100644 blob 703c119c384409f84b3d5437ea1bdc9daea84ea3\ttests/fundamental_forensics_drawer_resume.test.mjs",
+        "100644 blob 1c50d2bd449975ebb21741d2dcabc254654cf235\ttests/test_fundamental_forensics_ui.py"
+      ]
+    },
+    "BusinessActivity": {
+      "head": "01bb5dff41e1b0eef39c5ab639a010663bf74e23",
+      "preimage": "52e312afdc3192abc945ea3fb4954fe21309e579",
+      "tasks": [
+        "P12.T40"
+      ],
+      "commits": [
+        "01bb5dff41e1b0eef39c5ab639a010663bf74e23"
+      ],
+      "runtime": [
+        "templates/_macro_suite_shell.html.j2",
+        "templates/macro_business_activity.html.j2",
+        "tests/test_macro_business_activity_depth.py"
+      ],
+      "dependencies": [
+        "scripts/build_macro_suite_pages.py",
+        "lib/macro_suite_view.py"
+      ],
+      "tree": "23497f811e5ab615674ba8e353bcdc0261e898fb",
+      "current_base_runtime_drift": [],
+      "current_base_dependency_drift": [],
+      "complete_changed_tree_entries": [
+        "100644 blob f6ca73552b27734e17532984a79cb1519cc81d4c\tmockups/evidence/business-activity-depth-20261103/EVIDENCE.yml",
+        "100644 blob bc85c06636754020affdcbe2add36ac78f7da310\tmockups/evidence/business-activity-depth-20261103/FROZEN_PACKET.md",
+        "100644 blob b4a98a4c2cec9c0ba61f76292644c38faeb88a36\tmockups/evidence/business-activity-depth-20261103/README.md",
+        "100644 blob 8a5c41ac1055b09e96cf83544b5545081fb86a63\tmockups/evidence/business-activity-depth-20261103/before-v2-1440-dark-en-metric.png",
+        "100644 blob acf4c6a88d87ff8abf1c737d1885a5cd6925011e\tmockups/evidence/business-activity-depth-20261103/before-v2-390-light-zh-metric.png",
+        "100644 blob 89a881644ebb168575bdb6e441ac916f3225389c\tmockups/evidence/business-activity-depth-20261103/before-v2-result.json",
+        "100644 blob 9a5c5de8038ab42130a5800b36d516c329be511a\tmockups/evidence/business-activity-depth-20261103/candidate-390-light-zh-refusal.png",
+        "100644 blob 93546e8f6890215ac12be4ec6a794c05a5caa18f\tmockups/evidence/business-activity-depth-20261103/candidate-first-1440-dark-en-refusal.png",
+        "100644 blob fdc03c03611170da64b0091f585e147498a850be\tmockups/evidence/business-activity-depth-20261103/candidate-result-harness-locale-negative.json",
+        "100644 blob e64389fc2c3182f72a670d8572de4efd37c45a39\tmockups/evidence/business-activity-depth-20261103/capture-manifest.json",
+        "100644 blob 9077a59e70dcdf5ebc10d12ea9bb5f67cf6da025\tmockups/evidence/business-activity-depth-20261103/capture_settled.py",
+        "100644 blob 2fa67c63aafbaf8469217a1713daa7d4ee03581f\tmockups/evidence/business-activity-depth-20261103/design-check.log",
+        "100644 blob a5d0e6ff49b89deb01a652e1fd75987da5735e14\tmockups/evidence/business-activity-depth-20261103/journey-result.json",
+        "100644 blob 49461e5ea7a664179506aa85bed6d39be868b3c8\tmockups/evidence/business-activity-depth-20261103/prepare.py",
+        "100644 blob de3bdb6337a486f270ee67326b446535797f8124\tmockups/evidence/business-activity-depth-20261103/probe_candidate.py",
+        "100644 blob 35b35be74c4f5f377cf32c6f05f6c46eff2878be\tmockups/evidence/business-activity-depth-20261103/probe_candidate_zh.py",
+        "100644 blob 5b4f97c5b33991aea056c3c7fe12fe654a4e5070\tmockups/evidence/business-activity-depth-20261103/probe_v2.py",
+        "100644 blob e0beab1441247195c3113942f068cac8a16c65c1\tmockups/evidence/business-activity-depth-20261103/qualify.py",
+        "100644 blob 0bf8573a6dcb6cbf432325311bc82cbd4516a44f\tmockups/evidence/business-activity-depth-20261103/regression-green.log",
+        "100644 blob 575f8fd3aeff323ae276e3281a1d8abc56950157\tmockups/evidence/business-activity-depth-20261103/regression-red.log",
+        "100644 blob 075f1e78d5d918823cd8465e82cc6ab5705b8d9a\tmockups/evidence/business-activity-depth-20261103/retained/macrodata/workspaces/business_activity/US/latest.json",
+        "100644 blob 826ed5953b18f98d43749d29fab5db50049d0871\tmockups/evidence/business-activity-depth-20261103/retained/macrodata/workspaces/manifest.json",
+        "100644 blob a18dd4aae5f79e4041fcef8091712c5c31121ed1\tmockups/evidence/business-activity-depth-20261103/runtime-style-check.log",
+        "100644 blob 5d7eef43cf0af2e06bfa7a66671a778eb41b50cb\tmockups/evidence/business-activity-depth-20261103/settled-1440-dark-en-depth.png",
+        "100644 blob 9ead5b5397cb4b5adce7c8d0330ec7d22b16fccb\tmockups/evidence/business-activity-depth-20261103/settled-1440-dark-en-drawer.png",
+        "100644 blob 314dd8e298d89e46a06feb9a4ec6764abb794a3c\tmockups/evidence/business-activity-depth-20261103/settled-1440-dark-en-entry.png",
+        "100644 blob d70c695c2dc697192e66cd795971b0e39e6e6242\tmockups/evidence/business-activity-depth-20261103/settled-1440-dark-zh-depth.png",
+        "100644 blob 59cb9336520599f3c9d10ab96dbb2c22b5174e91\tmockups/evidence/business-activity-depth-20261103/settled-1440-dark-zh-entry.png",
+        "100644 blob f193f90b72f55c4b954c1c6ded16fc23bf8055b0\tmockups/evidence/business-activity-depth-20261103/settled-1440-light-en-depth.png",
+        "100644 blob 65ddc2440b34e65b01276189f4ce303f1c337ace\tmockups/evidence/business-activity-depth-20261103/settled-1440-light-en-entry.png",
+        "100644 blob 44e2dd4cb8fb83b008f3335e75ed4ca4e3213e24\tmockups/evidence/business-activity-depth-20261103/settled-1440-light-zh-depth.png",
+        "100644 blob 7a0b3fbfbc969d8a2d9f8bef18f904b98bc9165d\tmockups/evidence/business-activity-depth-20261103/settled-1440-light-zh-entry.png",
+        "100644 blob d1a6af520b05c56634df2a301425a1f688c2bd04\tmockups/evidence/business-activity-depth-20261103/settled-390-dark-en-depth.png",
+        "100644 blob 9ca876f46b1fb1fbe4751ad1274969bc540e976f\tmockups/evidence/business-activity-depth-20261103/settled-390-dark-en-entry.png",
+        "100644 blob 334312e6941750b1c4ad726f07279f09a7660988\tmockups/evidence/business-activity-depth-20261103/settled-390-dark-zh-depth.png",
+        "100644 blob 9a88fac533288773b330c129a2a66278ca44dae3\tmockups/evidence/business-activity-depth-20261103/settled-390-dark-zh-entry.png",
+        "100644 blob a7f266e1365979228ebe490db8251f2a60c433c0\tmockups/evidence/business-activity-depth-20261103/settled-390-light-en-depth.png",
+        "100644 blob caff2b6719310e7110cb6dd4f77eec480e3c291b\tmockups/evidence/business-activity-depth-20261103/settled-390-light-en-entry.png",
+        "100644 blob 247d770fdc082670e3a1e8fe86c49afd4218e97a\tmockups/evidence/business-activity-depth-20261103/settled-390-light-zh-depth.png",
+        "100644 blob 52e9704b21d817b2e7bd56444a432e3867b5a248\tmockups/evidence/business-activity-depth-20261103/settled-390-light-zh-drawer.png",
+        "100644 blob 99431f156239f53c12848dc4a699ef30d7ee64d3\tmockups/evidence/business-activity-depth-20261103/settled-390-light-zh-entry.png",
+        "100644 blob a1259847429eaf271e828f3ca0587ea7dedecd7f\tmockups/evidence/business-activity-depth-20261103/snapshot-summary.json",
+        "100644 blob cbfbdace3463489d38e82450b700d7c6fffd0ebd\tmockups/evidence/business-activity-depth-20261103/source-qualification.json",
+        "100644 blob ed719dd92e401d45f930e63779453684c4162343\tmockups/evidence/business-activity-depth-20261103/source.diff",
+        "100644 blob 0eaad4aa28910a8447fcd9c28583000c77880165\tmockups/evidence/business-activity-depth-20261103/view.json",
+        "100644 blob 138b6d65b310ccad1a59b97861f1a5d3cb6b61d9\tmockups/evidence/business-activity-depth-20261103/visual-evidence-check.log",
+        "100644 blob c6f4f50623c0d80a772606da32ad8791be8825e7\ttemplates/_macro_suite_shell.html.j2",
+        "100644 blob 35478ddfc09f6665895737297a27bf3caf4e540d\ttemplates/macro_business_activity.html.j2",
+        "100644 blob 1611bcc5dddfec1abfa473b79412a172e20a4206\ttests/test_macro_business_activity_depth.py"
+      ]
+    },
+    "ChinaHub": {
+      "head": "be862c8a16279c4f6560ba72ff7c8e003652fbb5",
+      "preimage": "c6229faaea5f01b654cb59c28e57c02980686b87",
+      "tasks": [
+        "P12.T41"
+      ],
+      "commits": [
+        "be862c8a16279c4f6560ba72ff7c8e003652fbb5"
+      ],
+      "runtime": [
+        "templates/china_intel.html.j2",
+        "tests/test_china_intel_visits_render.py"
+      ],
+      "dependencies": [
+        "scripts/build_china_intel.py",
+        "engine/china_intel_hub.py",
+        "engine/china_intel_bus.py"
+      ],
+      "tree": "4c8cd7a7b4cb4279f915be2c50ec4809c7a594af",
+      "current_base_runtime_drift": [],
+      "current_base_dependency_drift": [],
+      "complete_changed_tree_entries": [
+        "100644 blob 09b21edbe65fa47d81c7d924f18826412a85ec19\tdocs/verification/shared-shell-china-hub-retained-source-20261103.md",
+        "100644 blob 34e3b08bcfc6f7ef6edaad6ad93050185673c707\ttemplates/china_intel.html.j2",
+        "100644 blob ba4151ecfabcd457687013fe15a5e8f6a4692b38\ttests/test_china_intel_visits_render.py"
+      ]
+    }
+  },
+  "holds": "No PR/push/CI/host/provider/browser; frozen10607/eabc/077 and all sourcebranches untouched",
+  "custody": "Accepted sourceworktrees clean and exactheads; bounded sourceprocess census found no writer; exclusive newSSD tree, no prior effect"
+}

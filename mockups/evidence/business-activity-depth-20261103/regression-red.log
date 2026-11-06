@@ -1,0 +1,36 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_business_definition_version_does_not_invent_publication_date _______
+
+    def test_business_definition_version_does_not_invent_publication_date():
+        page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "business_activity")
+        snapshot, artifact = builder.read_workspace(ROOT / "tests/fixtures/macro_suite_t11", page)
+        assert snapshot["metrics"]["items"][0]["reference_period"]
+        assert snapshot["metrics"]["items"][0]["released_at"] is None
+        view = macro_suite_view.build_view(
+            snapshot, page_built_at="2026-11-03T18:00:00Z", artifact=artifact,
+            layout=builder._layout_for(page.workspace_id),
+        )
+        before = json.dumps(view, sort_keys=True)
+        html = builder.render_page(builder._environment(ROOT), page, view)
+        cards = BeautifulSoup(html, "html.parser").select(".mq-metric")
+        assert len(cards) == len(view["metrics"])
+        for metric, card in zip(view["metrics"], cards):
+            definition = next(
+                row.select_one("dd") for row in card.select(".mq-metric-meta > div")
+                if row.select_one("dt .l-en").get_text(strip=True) == "Definition version"
+            )
+            # The owner supplies the version, but supplies no definition-release clock.
+            # Do not promote its economic reference period to publication evidence.
+>           assert definition.get_text(strip=True) == (metric["definition_version"] or "—")
+E           AssertionError: assert 'Definition v...布于2026年10月31日' == '1.0.0'
+E             
+E             - 1.0.0
+E             + Definition v1, published 31 Oct 2026定义第1版，发布于2026年10月31日
+
+tests/test_macro_business_activity_depth.py:36: AssertionError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_macro_business_activity_depth.py::test_business_definition_version_does_not_invent_publication_date
+1 failed in 2.55s

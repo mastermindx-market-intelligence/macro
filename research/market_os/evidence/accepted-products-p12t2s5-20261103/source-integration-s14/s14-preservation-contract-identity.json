@@ -1,0 +1,171 @@
+{
+  "reviewed_base": "7b7dad387945d98de331eb68ca3cb96e8aa98b30",
+  "unchanged_comparator_and_target_functions": [
+    "_assert_same_macro_suite_region",
+    "_t11_collapse_t21_labels",
+    "_t11_collapse_prior_date",
+    "_t11_collapse_main_prior_label",
+    "_t11_registered_collapses",
+    "test_11_thirteen_other_suite_pages_byte_identical"
+  ],
+  "existing_frozen_files_count": 38,
+  "unchanged_frozen_paths": [
+    {
+      "path": "tests/fixtures/macro_suite_t11/README.md",
+      "blob": "b300db52f838d0d9459a83ad8359ebd097c1fbbd"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/collapses/business_definition_version_p12t2s6.json",
+      "blob": "599c6d4c984fd997a10bc7ba47547087bd73c0cb"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/collapses/catch_rate_sample.json",
+      "blob": "505acb28a2f9ca5c6ef79f9876a129a60e5e9030"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/collapses/central_banks_later_period.json",
+      "blob": "e012122a673d5d01f6423d5b3213584265ae972e"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/collapses/late_within_tolerance.json",
+      "blob": "07cce9485ad9141a5ff79708e177e9d232361e1b"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/collapses/tga_reserves_note.json",
+      "blob": "b9a9a570f9abd5cd9683aa8c469e047ec48e1c80"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/collapses/trade_driver_titles.json",
+      "blob": "395fb3f53700d6c0eadcd6c891a1c07aabe10176"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_business_activity.html",
+      "blob": "bf170c9441ddf78d0888312349761563ad6711ba"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_capital_structure.html",
+      "blob": "b40e234a597ef6046225e0d9f22888672be16b73"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_consumer_payments.html",
+      "blob": "171581e309bc3655ae33f52d321973974dc38620"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_financial_conditions.html",
+      "blob": "9a166112710282d3bbb74e98aeeedf8816e204ad"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_growth_real_economy.html",
+      "blob": "a7929f0811a78676b395431ec90a3d1d76cc8b3f"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_housing_real_estate.html",
+      "blob": "00629bb5203f68781f6673a7af00d6c6d44c313c"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_inflation_system.html",
+      "blob": "f1ad213a6e853b9c8fda9223ae27d3ade472d488"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_labor_markets.html",
+      "blob": "13fb5f80a35e88514c9e3758c86a36ac6e68cc80"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_liquidity_central_banks.html",
+      "blob": "1d7227c91b4a11f8a73368d562c0d8e3c8123732"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_liquidity_regime.html",
+      "blob": "5dfb0171ff3816423467e07ca73d2c89458ce7c8"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_monetary.html",
+      "blob": "609a0a04acbd1e593cf1781f601b544c84311242"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_monetary_policy.html",
+      "blob": "7a24fc529cce546858ddf290e1510463d75b4458"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_national_debt_liabilities.html",
+      "blob": "b571252ad1dd5db35fe24179bb89cde50ce434ac"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_rates_curves.html",
+      "blob": "72ddcbfbded7f9eb9acd8200136bf006fd7365bd"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/pages/macro_trade_flows.html",
+      "blob": "633413a28c0275d0d2b0eb97c4233d58f8673b15"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/source-binding.json",
+      "blob": "36ae5d3cb0613e83e6728c4f0f1fb2361c476b13"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/business_activity/US/latest.json",
+      "blob": "5e076aebe07fa04a13d9e93e92768af5ccedbad8"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/capital_structure/US/latest.json",
+      "blob": "af9aabf903185f098d9b512ce3fb3af0eb0d8d05"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/consumer_payments/US/latest.json",
+      "blob": "4cdc10390b4cef13d5b08e5b3c39182da49400c5"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/financial_conditions/US/latest.json",
+      "blob": "ee8c5a32a7bbf2eeeaa5c5754ed8ecef33704d19"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/growth_real_economy/US/latest.json",
+      "blob": "a2c86bc415bf07f1788b14ec21725c8247c0265c"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/housing_real_estate/US/latest.json",
+      "blob": "62797b9a6287d0d3b495007eb2fe8989dea7d55d"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/inflation_system/US/latest.json",
+      "blob": "05b1443f129346062e9dcc1c5f7190f6a7cea322"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/labor_markets/US/latest.json",
+      "blob": "30b3750a9360010196b1567be3be08995e6285a2"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/liquidity_central_banks/US/latest.json",
+      "blob": "6d488d65dccd993b998a12bcc62f528ede5de45f"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/liquidity_regime/US/latest.json",
+      "blob": "0d117048ab04951bebf9df4de87ef9ba8892b786"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/manifest.json",
+      "blob": "4941be4ce9c1039da0566c6b585491322801e91d"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/monetary_policy/US/latest.json",
+      "blob": "7cfcf3e2543b11479960e7f39f667354fd40c1f4"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/national_debt_liabilities/US/latest.json",
+      "blob": "630410d4212e8c2388c9ee458833a79cabaec30a"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/rates_curves/US/latest.json",
+      "blob": "26a932bbb36373fde9d3d3ed1de7a3e8236318f1"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/workspaces/trade_flows/US/latest.json",
+      "blob": "843e2a0033857ceb55cd03b18e46bdab5e3abdfe"
+    }
+  ],
+  "new_exception": "tests/fixtures/macro_suite_t11/collapses/zz_business_period_clocks_p12t2s14.json",
+  "new_fragment_count": 33,
+  "numeric_period_receipt_mutant_check": "actual current native rendering, all3mutants reject",
+  "existing_per_pair_single_character_guards": "87affected test_11checksPASS (includes all33new fragment mutations)",
+  "no_new_job_or_budget_edits": true
+}

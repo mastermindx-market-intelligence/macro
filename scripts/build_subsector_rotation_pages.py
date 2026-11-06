@@ -107,6 +107,10 @@ def build(site: Path | None = None) -> int:
             sub=sub, n_total=n_total, members=members, perf_rows=PERF_ROWS,
             q_cls=qd[2], q_en=qd[0], q_zh=qd[1], qx_en=qx[0], qx_zh=qx[1],
             lede_en=lede_en, lede_zh=lede_zh,
+            # Shared rotation feed-clock metadata row (same row the China builder uses)
+            rotation_feed_clocks=True,
+            rotation_source_asof=data.get("asof"),
+            rotation_feed_generated_utc=data.get("generated_utc"),
         )
         write_page(out_dir / f"{sub['key']}.html", html)
         n += 1

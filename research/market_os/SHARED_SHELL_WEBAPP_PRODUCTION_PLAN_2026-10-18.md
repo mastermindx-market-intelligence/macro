@@ -10,6 +10,245 @@ Attended parent: shared-shell-production-20261018-c1
 
 Existing carriers: Macro #7949, sol/market-os-shared-shell-design-20260924; Terminal #859, claude/investor-shell-native-20261008-c1.
 
+## Current joined source delivery — 2026-11-06
+
+Programme remains **NOT_ACCEPTED**. Original W0–W10, six workspaces, 24 groups,
+19 renderer shapes and 61 cases remain the acceptance boundary. This replaces
+only the current source-delivery checkpoint in the existing task tree. Local
+source, CI, merge, installation, native publication and product acceptance are
+separate facts; task counts do not measure completion.
+
+At this corrective source freeze, the last published Macro #10674 head is
+`4658847bfc1a6c913d025dc172ea6b3c6fd57fbc`, unarmed/merge-blocked. Its natural run
+42143408582 is terminal: **642 PASS, 48 UNKNOWN, 0 inherited; clear=false**,
+tested `e40cee38dbb64835fc41956dd1f54260b4c2db8c`, base
+`8d55f6dc49e85ce577949b090562741da84039e5`, plan `180f5cdf`.
+Original observer51382 is CLOSED/EXIT1; no observer remains live. Formal5794627642
+approves only465. The coherent successor needs its own exact-head formal
+non-author review and natural hosted/current-base proof. Prior421245/0855 remains
+680PASS/7UNKNOWN/2PR_REGRESSION, independently retained and not successor credit.
+
+The new source component is58931537865391fa2e5d4e303e91f9eb21700b7f:
+Dossier test consumers follow the existing strict deferred/market mount contracts,
+retain all five peer identities and values/states, check actual owner-configured
+selection destinations and explicit bilingual unavailable affordances. Thirty-two
+old test functions are exact; the other two change only these inspection/action
+expectations. Actual targeted14PASS, full44PASS/2residualFAIL and corrected four
+residual/negative cases PASS remain distinct, not a fabricated single full green.
+The original scientific fixtures, templates, numeric/state/source clocks are untouched.
+
+The native acquisition classifier preserves explicit HTTP401/403 as PERMISSION,
+so both incumbent completion gates refuse before effect. Its333 affected controls
+pass. The separately qualified two-file evidence descendant retains validated public
+archive identities, hashes/source bindings and fixed returned error categories only
+on the existing outer diagnostic channel (370 affected controls PASS). No URI/private
+output, child protocol, package input, deadline, gate, cleanup or retry permission
+changes. HTTP cause remains UNKNOWN. Neither patch proves a speed or timeout fix.
+
+Accepted S17 Macro a906e2d4 is included: claim original operation before retention,
+record retained only after the synchronous producer's no-more-writes boundary,
+then recheck incumbent current rights. The same-project server-role RPC is closed;
+no public completion input or replay authority is added. Capture remains default OFF;
+SQL/grant/activation/live native persistence are UNAPPLIED/unqualified. Current joined
+source tests46PASS. Eleven existing readsets and two test targets are additive.
+
+Current protected ddaa9bb6 is preserved through a153c71c. Its only four changed code
+paths are the protected7066 manifest additions and three Research screener files.
+The sole Business HTML conflict is resolved through the existing one-page reader,
+renderer and optimizer using the matching verified immutable raw snapshot/manifest.
+All31 values/reference periods/source refs and15 assets are preserved; tamper refusal,
+raw digest immutability and native/publication body/time parity pass. No collector,
+financial engine, handpatched HTML or invented timestamp/VM was used. Bonds changes
+only its accepted CSS href; Intl changes only its two accepted asset URLs. New History
+remains NOT_INSTALLED. Actual canonical closure/three-packing checks2PASS215.47s at
+a153; the metadata descendant preserves exact owner dependency sets and ambiguity
+kinds/roots (only source line positions shift), with unchanged manifest/runner/weights.
+
+Actual current Ontology timing leaves about100.14s for the responsive browser suite:
+406.54s acquisition plus93.33s five earlier proofs under the unchanged600s deadline.
+Execution quiescence is narrowly qualified by actual same-job full hostedVM completion,
+cleanup and documented automatic decommission, with30 unchanged audited source bodies
+and the exact Ontology job definition. Semantic timed_out/UNKNOWN and all T55 history
+remain; no old command is replayed or promoted to PASS. The original IM14 head failures
+were reproduced locally and repaired as test consumers; base attribution stays UNKNOWN.
+Same fresh reviewer preparationb8380a7a covers the initial ten-path delta; final metadata,
+current-base/context and formal remote-head binding remain separately required. Older667/run420989
+683PASS/6UNKNOWN,4462/run420652619PASS/69UNKNOWN/1PR_REGRESSION and historical
+8c/687PASS remain distinct facts, never inherited successor clearance.
+
+The retained head browser command now passes all203 Node cases, including the
+manual-draft roundtrip. The canonical-tab selector repair preserves both authored
+Scenario CTAs and the exact draft/result/route assertions. The original strict
+selector203/202/1 and base timeout remain historical, not silently erased.
+
+Three logical fault families have bounded source repairs. `daab47333dac` declares
+the six actual conditional durable Intl workflow calls in the existing DAG and
+pins the new script's repository root before package imports. The exact hosted
+DAG log matches the local single undeclared addition;49 affected DAG tests and19
+entrypoint/import guards pass, including missing-declaration and hostile-PYTHONPATH
+negatives. No checker, workflow, selector, baseline or execution budget is waived.
+
+`e1b0bca1c5fb` updates only three existing test files to inspect the canonical
+`intl-gs-deferred.v1` carrier and nested market payload before asserting rendered
+Coverage/Dossier content. All original assertion ASTs and fixture/model functions
+are unchanged. Missing, malformed, duplicate or foreign schema/context/basis/
+generation payloads refuse instead of producing an empty-green result; decoded
+visible ISO text and malformed translated attributes still fail. The four reported
+nodes move4RED to4PASS. The full affected run records46PASS/1 tooltip-consumer
+failure; routing that remaining tooltip test through the same decoder passes its
+two cases. Nine additional protocol negatives pass against the actual integrated
+fixture. No single47-green full rerun is claimed. Raw GLM output passed23 own tests
+but failed nine parent negatives and is NOT_ACCEPTED_AS_RETURNED; the assigning
+parent repaired the precise validator differences and owns the integration verdict.
+This is static test inspection, not browser execution, sanitization equivalence,
+visual acceptance, current market proof or a runtime/model change.
+
+The seven terminal UNKNOWNs remain immutable. The original base scanner-browser
+execution is quiescent only by its actual full hosted-VM job completion/cleanup,
+the provider's documented automatic decommission contract and audited local/mock
+side effects. That inference is not a PID/disposal receipt, semantic PASS, base
+clearance, original T55 exclusion removal or permission to replay the old command.
+
+The reviewed product-source boundary is `4f4024c996f663c4786c237df68af4a5cb9f6c5f`.
+The first protected39133 composition preserved all407 prior owned diff entries
+and ten incoming entries by mode/blob. Action-time protected
+`a20e6437cc8a892b769d549876ebf81ca0e2dcd1` is now composed: its28 further
+nonoverlapping paths are exact, all product-source entries unchanged. The actual
+protected CI-authority conservative inventory/admin checks are preserved, not waived.
+Action-time protected `02839f000f3e0623ad65c8bc2fb3b910b7cce6d2` adds21
+nonoverlapping record/documentation/marketing paths, all preserved exactly by
+local merge733c5a9c. Its technical-parity README clarifies charted versus event
+Bollinger definitions without changing any fixture, formula or comparator.
+The later action-time protected20959c5e includes merged10639's owner-scoped
+Terminal refresh and Beta declarations. Local483bd66f semantically composes its
+two overlapping registry files while preserving every prior withdrawal/scanner
+function and every protected refresh/refusal function;102 registry tests pass.
+The interaction negative rejects revival of an existing withheld Macro row.
+All314 Macro and7 Mastermind rows and source pins equal the previous protected
+registry; only Terminal grows27to32 in the already protected input. No canonical
+registry generation/export or held GMI overlay was invoked. The exact old
+three-postimage source release was not transferred by assumption. The current
+holder extended the same #10674/comment6663828912 at22:29:49Z (body913512fa),
+with readback, to exactPLNTa2efaade/scanner801006d5/test2348c5d5 source inclusion
+only. Actual final-head formal approval, CI/freshness and independent arming
+remain required; no other held operation or runtime/export gate is cleared.
+Actual current483 full-manifest closure and all three packing probes pass in
+the two canonical checks (2PASS/324.67s, original59794 EXIT0, qualification
+`ee1fe38d`). No missing read edges, packing breaches or budget/metadata changes;
+the earlier652 result was not transferred. Same distinct-context reviewer
+`27e202cf` independently preserves both registry contracts. These are scoped
+source checks; final natural exact-head proof and formal release remain owed.
+The genuine corrective source also composes protected96633a79 through b31dd12e:
+429 owned and6,970 incoming mode/blob entries are exact, with zero overlap. This
+preserves protected #10770's actual controller admission behavior without a local
+policy override or claiming machine-enforced formal review. The later action-time
+main684904bf differs in12 disjoint paths, with zero authored-path overlap and no CI
+definition change. No ancestry-only merge or old-green transfer is manufactured;
+the new natural tested merge must bind the actual protected base and all incoming
+postimages before release.
+
+Reviewed Company/T55, Bonds/Forensics/Business/China/Radar/Calendar/HK/
+T52 scope, B2 outline projection, current API/MarketMemory/Options contracts and
+protected quote-board cap640 remain. Source clocks and B2 activation are
+**NOT_YET_LIVE** until their actual normal installation/publication and consumer
+proof; source inclusion does not establish an API restart or authenticated use.
+
+Terminal faults have concrete bounded source repairs: three exact packing
+baselines increase by two measured estimator units for the required API test,
+with unchanged selected-job/count/pack/security/execution limits; exact annual
+fixture and declared-decimal independent oracle repairs retain all original
+vectors/assertions; the surveillance guard preserves ordered protected owner
+flow and rejects early-return/observation-overwrite counterexamples. Neutral
+EN/ZH History withholding copy and the exact payload/metadata tests are restored.
+The fixture-only IM14 preparation removes a discarded Foundation rendition while
+preserving normal Foundation output/failure ordering and Dossier's own renders.
+No measured browser-speed improvement or original failed-command replay is claimed.
+
+Accepted f456/792/6667 inputs are source preparation. All seven retained History
+payloads and62,495 points remain unchanged, but the3.10MB bounded History proof is
+not the tracked native page. Actual tracked `site/intl.html` remains the incumbent
+22,834,078-byte body, with seven History slots and no authored Compare/paging
+controls. Full-body source-DOM old/new checks preserve manual Scenario and view
+roundtrip with zero network/errors. The existing one-page optimizer changed only
+two cache URLs; the literal whole body, data, clocks and inline payloads remain
+byte-exact. **New paginated History/Compare is NOT_INSTALLED**. Its actual lawful
+normal producer/rendition, receipts/generation/feeds and served acceptance remain
+owed; no fixture HTML or raw snapshot was substituted.
+
+At this genuinely necessary corrective boundary, local65228b98 composes the exact
+reviewed durable Risk18-path delta4ba7e593 and disjoint advisory diagnosticsc778,
+plus accepted one-file Coverage reuse5b6c. Durable rendering stays default OFF:
+manual exactIntl scope must bind this invocation's native input absence/presence,
+Risk, generation, page and publication receipts. Old identical files, resilient
+zero exits and an absent direct selector cannot supply success. No durable command,
+collector, API restart, host installation or publication has been invoked here.
+The Coverage test reuses one invocation-local immutable HTML for eight identical
+reads, retaining nine fresh payload reads, fresh parsers, all35 original cases and
+four isolation/exception controls; no deadline or speed claim is changed.
+
+The original Ontology timeout remains UNKNOWN. Retained logs prove a cumulative
+600-second logical-job deadline:373.41s acquisition plus63.78s earlier suites
+left162.81s for the browser suite, still advancing at cutoff. Original execution
+quiescence is qualified narrowly through the documented hosted-VM lifecycle and
+mock/local side-effect audit, not semantic PASS or a speed fix. Its initial phase
+request was deferred before launch. The separately qualified advisory sourcec778
+is now included at the authorized safe boundary: unprivileged outer-stderr phase
+clocks preserve the original protocol, calls, result dictionary and deadlines;
+a raised phase cannot claim passed. This is not a speed fix, original UNKNOWN
+clearance, acquisition, new runtime observation or release gate. No budget
+increase, old rerun or unproved setup shortcut is claimed or authorized. Future P9 rollout is not a release prerequisite. Use the currently installed lawful mechanism with actual
+current-head/base/plan proof, genuine formal review and independent arming.
+
+Root's scoped source disposition at #10674/comment6663828912 releases only the
+three accepted withdrawal/scanner postimages under actual source-release gates.
+Original #10696/e5dd/UNKNOWN remains held on its original carrier. Atomic GMI
+registry/overlay/report/current-generation/export and SS05 runtime remain deferred;
+T55 original UNKNOWN tuples, foreign9533, JP/source/runtime/SQL/private/default-OFF,
+Gold/admin and actual browser refusals remain. History287/Comparison164/rename366
+are original held Paper operations; they do not establish a generic source-DOM ban
+or clear the distinct1188/29789 Chromium refusals. No new provider, host, SQL,
+browser, financial recomputation or production activation occurred in this source repair.
+
+The latest validated mmtask export is2026-11-06T03:32:07Z:169 verified entries,
+0 errors/1 warning, **PREPARED ONLY**. Export SHA256:
+`0f824a754121c2cb3e328601bf14a143844c54414468798688210e0902999035`.
+
+| Existing task | Buffered source state | Bounded outcome |
+| --- | --- | --- |
+| P12.T2.S14.S8 | in_progress | Compose qualified CI-closure repair and accepted W9 inputs after settled Company proof |
+| P12.T2.S14.S8.S1 | reviewed | Qualify prospective current merge and selected-job readset drift for CI-owner admission |
+| P12.T2.S14.S8.S2 | reviewed | Prepare read-only Company T55 and native History Risk release composition |
+| P12.T2.S14.S8.S3 | implementation_complete | Compose Company current-base source and six preservation seams locally |
+| P12.T2.S14.S8.S3.S1 | implementation_complete | Restore accepted B2 outline producer in current Company composition |
+| P12.T2.S14.S8.S4 | implementation_complete | Join final native History Risk source and five existing CI jobs on Company carrier |
+| P12.T2.S14.S8.S4.S1 | implementation_complete | Close actual History Risk transitive CI read edges |
+| P12.T2.S14.S8.S5 | implementation_complete | Prepare scoped PLNT withdrawal and registry source split |
+| P12.T2.S14.S8.S6 | implementation_complete | Compose original B5 policy preview API and updater contracts |
+| P12.T2.S14.S8.S6.S1 | implementation_complete | Close policy-preview lazy ECB helper restart selector gap |
+| P12.T2.S14.S8.S7 | reviewed | Diagnose exact current contract-delta failure without replaying CI |
+| P12.T2.S14.S8.S7.S1 | reviewed | Compose exact Intl CI fixture/oracle repairs and qualify declaration closure |
+| P12.T2.S14.S8.S7.S2 | reviewed | Restore canonical Intl template asset pairing exposed by final same-run sync guard |
+| P12.T2.S14.S8.S7.S3 | reviewed | Restamp Intl page through existing asset optimizer after paired runtime repair |
+| P12.T2.S14.S8.S7.S4 | reviewed | Compose accepted History missing-value explanation and bounded-payload assertion repair |
+| P12.T2.S14.S8.S7.S5 | reviewed | Integrate accepted surveillance ordered-owner guard successor |
+| P12.T2.S14.S8.S7.S6 | reviewed | Compose qualified IM14 fixture-only preparation without discarded full render |
+| P12.T2.S14.S8.S8 | reviewed | Correct exact canonical-tab selector ambiguity with actual rendered-DOM negatives |
+| P12.T2.S14.S8.S9 | reviewed | Compose reviewed durable Risk, advisory diagnostics and actual required source contracts |
+| P12.T2.S14.S8.S9.S1 | reviewed | Adopt exact accepted invocation-local Coverage HTML reuse without changing assertions |
+| P12.T2.S14.S8.S9.S2 | reviewed | Preserve current protected Beta refresh and withdrawal/scanner contracts at the source overlap |
+| P12.T2.S14.S8.S9.S3 | reviewed | Declare actual conditional durable workflow calls without DAG waiver |
+| P12.T2.S14.S8.S9.S4 | reviewed | Pin new durable entrypoint and preserve hostile-import refusal |
+| P12.T2.S14.S8.S9.S5 | reviewed | Inspect canonical deferred payloads while preserving all original evidence and visible-copy assertions |
+
+Next: freeze the actual final source/closure/eligible plan, retain this same
+independent reviewer, then one normal same-branch nonforce
+publication and one natural exact-head CI return. Keep unarmed until actual proof,
+formal non-author review, source holds and independent release predicates qualify.
+Continue through trusted protected landing, normal native/API installation and
+Compatibility's eligible beta/served proof. Full real investor journeys, current
+provenance/PIT, authenticated evidence/Investigate/preview return, visual/Paper and
+whole-programme acceptance remain open; no old green or fixture exception transfers.
+
 ## 1. Product intent and scope
 
 Build the shared shell as a persistent web application using the existing Terminal application infrastructure. Put the current Macro HTML/Jinja pages into the shell's content area. Preserve useful page content, intelligence semantics, and existing behavior while individual pages are progressively converted to native application views. Install the reviewed beta at https://beta.mastermind-x.com.

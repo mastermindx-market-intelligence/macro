@@ -29,6 +29,19 @@
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="macro_suite.css">
 <link rel="stylesheet" href="macro_command.css">
+<style>
+/* Keep the existing disclosure affordance and materials; give depth controls
+   the canonical 44px touch geometry on this retained workspace only. */
+body[data-mq-workspace="business_activity"] .mc-details > summary {
+  min-height: 44px;
+  padding-block: 12px;
+}
+body[data-mq-workspace="business_activity"] .mq-drawer-close {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+</style>
 </head>
 <body class="mq-page mc-page mq-suite-page" data-mq-workspace="{{ workspace_id }}" data-mq-region="{{ region_code }}">
 {% set nav_search_placeholder_en = "Search any stock — US, China, HK, Canada & more…" %}

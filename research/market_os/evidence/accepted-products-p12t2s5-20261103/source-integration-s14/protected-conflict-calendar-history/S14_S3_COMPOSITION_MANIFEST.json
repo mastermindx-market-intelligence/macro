@@ -1,0 +1,581 @@
+{
+  "task": "P12.T2.S14.S3",
+  "source_before": "90c0b08fca5b45a261a7093cc46ac21aaa872544",
+  "protected_base": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "calendar_history": "ed2529fc91d580a479ec797d5c31ed62053d6541",
+  "review_scope": "semantic merge conflict and exact reviewed cohort integration only; reuse prior source/copy/model/material reviews",
+  "actual_conflict_paths": [
+    "site/macro_business_activity.html"
+  ],
+  "business": {
+    "native_report_sha256": "8633a50916ec26cfed73e1bb1fd4b8fd1e2d40e39c84826533073ec6cc525565",
+    "raw_inputs_and_assets_exact_prior_qualified_stage": true,
+    "only_delta_vs_reviewed_90": "exactly two actual document render timestamps",
+    "old_rendered_at": "2026-11-04T04:42:19Z",
+    "new_rendered_at": "2026-11-04T08:56:36Z",
+    "values_reference_periods_31_and_clock_qualification_preserved": true,
+    "html_sha256": "fb9fc63772787faf97e592bbef4f07f21d0eec379a346a3157e0f5a2296dd2fe"
+  },
+  "bonds": {
+    "protected_body_and_all_clocks_exact_except_canonical_css_href": true,
+    "protected_href": "assets/css/ebe31e14.css?v=ebe31e14",
+    "candidate_href": "assets/css/de1c4f80.css?v=de1c4f80"
+  },
+  "commodity": {
+    "protected_current_page_exact": true,
+    "sha256": "aeb6828dfeb79ffe9fea5a0d8b5cdd86038d880fa1d1df32cd7260b43323d8e5",
+    "new_input_cut_claim": "preserved current protected emission only; no producer, PIT, current economic or served claim"
+  },
+  "company_bound_paths": 69,
+  "unchanged_90_paths": 66,
+  "frozen_T11_all_modes_blobs_exact_90": true,
+  "calendar_history_all_six_modes_blobs_exact_reviewed_input": true,
+  "postimages": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "mode": "100644",
+      "blob": "3efe968dae6e50a28bcfb17044bb025017c309e2",
+      "sha256": "f09220b5203c6afc3ed290e9369e67181b5a84bc83e1a18866e0bdee68667dcb",
+      "equals_reviewed_90": false
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "mode": "100644",
+      "blob": "a9c409efa499d621c6a91196fcefc313ceee16b7",
+      "sha256": "57d481d67c62ed27e3d5959eb090dd38079cbbbb5ad28c8b027d08c22c82dc2b",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "app/macro_command.py",
+      "mode": "100644",
+      "blob": "a9d27313ce5b997271813bacf961b4ad9dc38337",
+      "sha256": "f721b4aa308d6bf6dcaa3e6ddd71523cdf0213b5586e33cc470b04f344750d60",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "data/transmission/chain_state.json",
+      "mode": "100644",
+      "blob": "fa94d51b198907edcef2911e94ed697146eb4ccd",
+      "sha256": "71958544a675137e6484b365a5f7d3eb283ae15c0f2e7030954cbfdffa9ee132",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "engine/commodity_decision_workspace.py",
+      "mode": "100644",
+      "blob": "a43e6cc7fa2dfb2f6ed289b118b002d6520c6c15",
+      "sha256": "1e42506edfc861ab7d32feced5f79a6cae507c520993ea56755e4fe07e5febcc",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "engine/commodity_workspace_adapter.py",
+      "mode": "100644",
+      "blob": "b1616df3d3d913fe9286b6a4df043b79f746d82d",
+      "sha256": "8dd63ca8332cb3c7613e80534efd633b9ec4b3578f09bc17e620687a2ff1c5be",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "engine/intl_bonds.py",
+      "mode": "100644",
+      "blob": "e30591b0c2d5837dc2cd62feef09e5b81cd3e54e",
+      "sha256": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "engine/market_os/macro_workspaces/business_activity.py",
+      "mode": "100644",
+      "blob": "a0090dd1a4e9fe1c13393126c3954c13764f015a",
+      "sha256": "ade306a972aff62bc40ada2dbbfd83cfa3df259e2577cbebc5109ce551d37416",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "engine/transmission_chains.py",
+      "mode": "100644",
+      "blob": "f1f12b6e594a8198f86907f23c157a96ead1748f",
+      "sha256": "b56b7c112c319c5edc0788a6508171191d3865d0d317188cbb6893098759b8d8",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "engine/transmission_company_continuation.py",
+      "mode": "100644",
+      "blob": "5b29b077c6a60ae371212814476972226ba59c20",
+      "sha256": "e491ce052a1232027567e3f2bfda6ffd245f65dedbfd56df37ab2fdd8bfe1926",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "lib/macro_suite_labels.py",
+      "mode": "100644",
+      "blob": "7e5360e7abda4e44681d74ffa555ea7a83604dfa",
+      "sha256": "d17c225917e652ae3c882df97ffb471b146993ad03279a5221cf30d3d0713784",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "lib/macro_suite_view.py",
+      "mode": "100644",
+      "blob": "3fef545d1df6c3adfc3a5de5ebe9462eabbb3609",
+      "sha256": "4a24afb319d44f2102f01fc582d4f3d09762286bdddf08ba6117fcec71c88e27",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "lib/pages.py",
+      "mode": "100644",
+      "blob": "06a1bf465a5598864b14fddf857da50d4c17ec49",
+      "sha256": "aee8a0278bc0c487415d246ef0ee814c1f13e0591cbd2f8c361e5d056c2e0a68",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "scripts/build_bonds.py",
+      "mode": "100644",
+      "blob": "b076a4c868a7d08dcb74e61a08f4a19dac2ed396",
+      "sha256": "63e02f0f20a5e64ceae8521ca38f96ce70fc069e5888a416a68e37a2ffa8bd62",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "scripts/ci_semantic_proof.py",
+      "mode": "100644",
+      "blob": "df7e5007413584d8593bfeb69dd9b479daa99147",
+      "sha256": "c3a36f7fafa5e2158c5e105d147553f026b9fc7002fab315df00165643e70a60",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "scripts/externalize_css.py",
+      "mode": "100644",
+      "blob": "c2e79acab107f5c95fd988c80511d6d00228d50e",
+      "sha256": "2c625b2498145af6ef39d77290aca2da61ecb818185ba21cd3a9dbc1a38a263c",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "scripts/prophet_journey_reconcile.py",
+      "mode": "100644",
+      "blob": "52a6a0f715258b5bff470ab8fff451f9a6f4f5c6",
+      "sha256": "89876d2011d06945c46bbd79b6142c3d4c81f8c2d55d01b8953987072a3351a3",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "scripts/run_ci_pack.py",
+      "mode": "100644",
+      "blob": "3cbed58986d571e40af59eb03464e9419e8055a5",
+      "sha256": "c418c319391957b790e79bdd9f0bf0c1a52425a4eae73aac5c7575654f3d7e58",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/commodities.html",
+      "mode": "100644",
+      "blob": "d872b4c2606c03ccdbe75405858e45309e03ea61",
+      "sha256": "aeb6828dfeb79ffe9fea5a0d8b5cdd86038d880fa1d1df32cd7260b43323d8e5",
+      "equals_reviewed_90": false
+    },
+    {
+      "path": "site/fundamental_forensics.js",
+      "mode": "100644",
+      "blob": "45ade618ae2ae78d1093bc23df98dd3ffc6f9fca",
+      "sha256": "440fc840ad050a5b05f554db11692e10841c4d939fbca29798fcb92a485b27b3",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/live.js",
+      "mode": "100644",
+      "blob": "7e91599afb20a69c4010d5dc36c85439381d529f",
+      "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/live_config.js",
+      "mode": "100644",
+      "blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d",
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/logo_config.js",
+      "mode": "100644",
+      "blob": "523923f9f424a144f4a0cf3e4814e2ea36392474",
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/macro_business_activity.html",
+      "mode": "100644",
+      "blob": "4ace1176795d3606bde9fe0d4ecaa0c0184b04db",
+      "sha256": "fb9fc63772787faf97e592bbef4f07f21d0eec379a346a3157e0f5a2296dd2fe",
+      "equals_reviewed_90": false
+    },
+    {
+      "path": "site/macro_command.css",
+      "mode": "100644",
+      "blob": "64bf610cd268c5454658cc5cddb6db71ceda9f87",
+      "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/macro_command.js",
+      "mode": "100644",
+      "blob": "3f4869cfa7669c9d463256f6be3ef69cc8719296",
+      "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/macro_suite.css",
+      "mode": "100644",
+      "blob": "3664c91b216eb8ed9cbba72e56e6aafee0338905",
+      "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/macro_suite.js",
+      "mode": "100644",
+      "blob": "7d2c5aac9e32c19da411aca5c2b834073858f738",
+      "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/macro_suite_boot.js",
+      "mode": "100644",
+      "blob": "1807df81b09ba1dba05c65c5e2d890594de239dd",
+      "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/macrodata/workspaces/business_activity/US/latest.json",
+      "mode": "100644",
+      "blob": "24cda88e96b8cdf14c266a6612155d4667434861",
+      "sha256": "26180d18fbda8661acb5a959be65cf200b840f0582a997ba6419badd384255ca",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/macrodata/workspaces/manifest.json",
+      "mode": "100644",
+      "blob": "44d4937e6ff29947e2ade91639ad77bba86c599b",
+      "sha256": "39b93af545ded66bcb30cea9186557f225533011a44cc9f800c3ad9a610e1601",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/navigation-refresh.css",
+      "mode": "100644",
+      "blob": "2c96dbf6f96da1c5c7fab58d9314cc3fb06d15d1",
+      "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/product-nav-icons.css",
+      "mode": "100644",
+      "blob": "58336d2b2521c7c4d126c0ddc11f08a5045d28dc",
+      "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/shared_shell.css",
+      "mode": "100644",
+      "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/shared_shell_bridge.js",
+      "mode": "100644",
+      "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+      "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/stock-logos.js",
+      "mode": "100644",
+      "blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c",
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/theme.css",
+      "mode": "100644",
+      "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+      "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/theme.js",
+      "mode": "100644",
+      "blob": "78536be83653c850685894eba7d0bf60f0b30305",
+      "sha256": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/_commodity_decision_workspace.html.j2",
+      "mode": "100644",
+      "blob": "49f843b43ab79c72a4073a2c81a7491e9986a4cc",
+      "sha256": "b88d2ef62b13b47c8c37c7cef2a471db74c6a77b3d9368577761743d32f17db9",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/_macro_suite_shell.html.j2",
+      "mode": "100644",
+      "blob": "a2a04b330ea678c4d6104064d73bfb7327f95bdf",
+      "sha256": "622b0a70c86d6c913eb5491d162c1ec31aaefd938b06c1877b82a7a2d7f2018a",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/_prophet_setup_detail.html.j2",
+      "mode": "100644",
+      "blob": "4b0b6430d431c3f0dc984a3714b5c6b8699e53a7",
+      "sha256": "5301d512aa339d66395f4b0dd1a253dba6124ef56567ce2655a65b97cdce35c9",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/bonds.html.j2",
+      "mode": "100644",
+      "blob": "816f1038305914424278caad76d623b8dab505ea",
+      "sha256": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/china_intel.html.j2",
+      "mode": "100644",
+      "blob": "34e3b08bcfc6f7ef6edaad6ad93050185673c707",
+      "sha256": "27d5ebdd56dcae2cfbb545181f2ae20bd69cd6b24cfbb6f6052d02d5a6970b5d",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/commodity-workspace.js",
+      "mode": "100644",
+      "blob": "e1e7f6bfb7c19917251c38e144946c8e4cf39cf7",
+      "sha256": "86374e6d1b60a223196c5464e95e35e22f9ba56d61cecab0b0ca67fd3d21fbb2",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/dashboard.html.j2",
+      "mode": "100644",
+      "blob": "1d5e07a962ce3b7068a7a37ea4bb0ffef851357a",
+      "sha256": "1566173af17972f7d7701bd59a8bae1fd3ae7bed8dddc4c912ec05871eb94667",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/fundamental_forensics.js",
+      "mode": "100644",
+      "blob": "45ade618ae2ae78d1093bc23df98dd3ffc6f9fca",
+      "sha256": "440fc840ad050a5b05f554db11692e10841c4d939fbca29798fcb92a485b27b3",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/macro_business_activity.html.j2",
+      "mode": "100644",
+      "blob": "35478ddfc09f6665895737297a27bf3caf4e540d",
+      "sha256": "eda7c4a7723d764206d031ca8805ca07d89a1b8d6790697ab2c1ec0ba5b36fa1",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/macro_command.css",
+      "mode": "100644",
+      "blob": "64bf610cd268c5454658cc5cddb6db71ceda9f87",
+      "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/macro_command.js",
+      "mode": "100644",
+      "blob": "3f4869cfa7669c9d463256f6be3ef69cc8719296",
+      "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/macro_suite.css",
+      "mode": "100644",
+      "blob": "3664c91b216eb8ed9cbba72e56e6aafee0338905",
+      "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/macro_suite.js",
+      "mode": "100644",
+      "blob": "7d2c5aac9e32c19da411aca5c2b834073858f738",
+      "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/macro_suite_boot.js",
+      "mode": "100644",
+      "blob": "1807df81b09ba1dba05c65c5e2d890594de239dd",
+      "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "templates/theme.js",
+      "mode": "100644",
+      "blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+      "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/collapses/zz_business_period_clocks_p12t2s14.json",
+      "mode": "100644",
+      "blob": "a71d651324036a7aa69eba76a28cd9a872697a2b",
+      "sha256": "1711bda390f078c44574c97f62d73e4e939d2b95d78709d64ae74073d5687e24",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/fundamental_forensics_drawer_resume.test.mjs",
+      "mode": "100644",
+      "blob": "703c119c384409f84b3d5437ea1bdc9daea84ea3",
+      "sha256": "47d8c4eb23f929f326da104f60d42327e456da26b4911d2ce3cdb1951cc0b985",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_bonds_glance_copy.py",
+      "mode": "100644",
+      "blob": "2bdf08958feeaa88218f1859c2891aed27af6b03",
+      "sha256": "e3ccde0fae5c187771cf76f2dbcda12ab47a8c46821705b79b43afafed302cee",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_china_intel_visits_render.py",
+      "mode": "100644",
+      "blob": "ba4151ecfabcd457687013fe15a5e8f6a4692b38",
+      "sha256": "45119ee7dcd96bf37fc4af6375b3997d3d24c328aadbf13fe4a84ccfdc7a8c95",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_commodity_workspace_contracts.js",
+      "mode": "100644",
+      "blob": "33d0ac112003fc1face635503899c999774fbeda",
+      "sha256": "5c26eb02bd6936994342c434c38fd32be30927a775242a62f862ada30071a43a",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_commodity_workspace_presentation.js",
+      "mode": "100644",
+      "blob": "2a637e39b1845a9a9ace6040eac956ab6247cb26",
+      "sha256": "259f5a47acab488d5b5d3e5a87d1b9d9baf85f5369fe093d063af6b753953db0",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_commodity_workspace_ui.js",
+      "mode": "100644",
+      "blob": "5a4482fa95e5745059f4ac06eebe05cd0ed8b3d5",
+      "sha256": "ca034153346a67234334f5af0427c71c43d94acd3bd1530280eb42eaa2264f56",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_fundamental_forensics_ui.py",
+      "mode": "100644",
+      "blob": "1c50d2bd449975ebb21741d2dcabc254654cf235",
+      "sha256": "47d0674e3e8ef993735563072ca82bf64abcaa070889a5db44f25d5b7c81a9e6",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_macro_command_api.py",
+      "mode": "100644",
+      "blob": "d7da1afadc0994c15b6a462c7730519583ea63c9",
+      "sha256": "3920aabfc2685888a7d9131b2a3d70cff881c0339471fc55c8d7da1b9ffd740a",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_macro_command_copy_law.py",
+      "mode": "100644",
+      "blob": "cff4f8317879f27a1791149a022d5530c534f954",
+      "sha256": "a31d4bb080a04ca811689cc7150cf022ba3f218ac11ff89709f66400cac5cd2c",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_macro_rates_curves_route.py",
+      "mode": "100644",
+      "blob": "f2023778c5368dacf2c6be0a81300bd4893538fe",
+      "sha256": "5845f75b7d882ce749a8f6c5f3134f42ce4ec025a482b3d670ce7a4618fc36d2",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_macro_suite_pages.py",
+      "mode": "100644",
+      "blob": "e2130552e2906083f1f52e8ba380cb6e8471ad38",
+      "sha256": "8cbfe8a8e0a16b6cc2b55adb804a1b891513db7da83fbb09e8fbc0c4895ce26a",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_macro_workspace_business_activity.py",
+      "mode": "100644",
+      "blob": "2d1a098cb0b6c2deeca91329150dc533638de3a8",
+      "sha256": "e5518032788abb393e40522bfef34e16dd9fd5b9c46363a8ce1a07cdc7491bc6",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_prophet_card_shared.py",
+      "mode": "100644",
+      "blob": "d75d42b2eb234935d9fe1f49d4b3db28a16c08e4",
+      "sha256": "cfba47df65641729005809b8f03e0e10146edabbb25a760c0febf38541917b6c",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_prophet_journey_reconcile.py",
+      "mode": "100644",
+      "blob": "89999147e2157e9bb3cd1dc63e10fadefa8cb056",
+      "sha256": "13ec70dc09d6dd84d1d65c5a5701321b8faaef87de7d8737f56c287ace02b816",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "tests/test_prophet_plan_relation.py",
+      "mode": "100644",
+      "blob": "9ca72304a0739f425544fda0769dd16bcf84693f",
+      "sha256": "e24e0b3dcc2c26a6c2b24a56c70bf537a2c43b7500dc097d3bc08e390e5f536c",
+      "equals_reviewed_90": true
+    },
+    {
+      "path": "site/stock_seasonality.js",
+      "mode": "100644",
+      "blob": "2d6c36eaef8dd2b321c1ef92276657ff5a35a043",
+      "bytes": 45908,
+      "sha256": "75a6e67b5aac6c03eeb0c83cf3efb11ad180e7ff144ce729c08d97112c89ea73"
+    },
+    {
+      "path": "templates/history.html.j2",
+      "mode": "100644",
+      "blob": "98ed3b0d522d7bd238f04050acf63e77fa4725d3",
+      "bytes": 9441,
+      "sha256": "1d3d5dab7f08762dc4ff923020dc348fa36bbefcbb909ee03b763ac5c45aa61f"
+    },
+    {
+      "path": "templates/stock_seasonality.js",
+      "mode": "100644",
+      "blob": "2d6c36eaef8dd2b321c1ef92276657ff5a35a043",
+      "bytes": 45908,
+      "sha256": "75a6e67b5aac6c03eeb0c83cf3efb11ad180e7ff144ce729c08d97112c89ea73"
+    },
+    {
+      "path": "tests/js/test_stock_seasonality_selection.cjs",
+      "mode": "100644",
+      "blob": "35ea096c9a507e307026d73d286ca3372a54f1d1",
+      "bytes": 22588,
+      "sha256": "d5db328b6f9e77e929cb38480167c42f7a3f57a0ff81a79cee65a6c8f953666d"
+    },
+    {
+      "path": "tests/test_history_provenance_copy.py",
+      "mode": "100644",
+      "blob": "73303ae376869d2e7d859f8243976ac469fd5a45",
+      "bytes": 17286,
+      "sha256": "898fa7bacbcd015d3cd599cc9e546fa32af4a9a36fe55a9ba9a195edb37dac13"
+    }
+  ],
+  "holds": [
+    "browser",
+    "provider/acquisition",
+    "full financial producer",
+    "PIT/source authenticity",
+    "host/served"
+  ],
+  "not_inherited": [
+    "old proof against new base",
+    "prior native current-Commodity cut",
+    "changed visual or hosted CI"
+  ],
+  "checks": {
+    "affected_seams": "3 PASS: current Business region/mutation, native numeric copy law, Bonds stylesheet fingerprint",
+    "changed_protected_commodity_current_DOM": "31 PASS; retained positive fixture plus actual current emission negatives; Node26.5/jsdom26.1 distinct from hostedNode20",
+    "routing_packing": "two exact reviewed existing jobs only;137/5912,137/5927,131/5668;10packs each;0breaches; all ceilings unchanged",
+    "diff_check": "git diff --cached --check52abe scoped source/template/test/publication paths PASS"
+  },
+  "adverse_local_instrumentation": [
+    "Initial external binding probe incorrectly assumed named bonds.css?v reference; actual existing content-addressed assets/css/fingerprint.css?v=... interface inspected. Revised exact one differing href binding then proved entire protected body/data/clocks otherwise byte-identical. No product modification or guard waiver."
+  ],
+  "evidence_sha256": {
+    "S14_S3_FROZEN_COMPOSITION_PACKET.json": "c1221a791bcfa60791de335a019425d803fc55dff39478bb058b8d2270f4e51a",
+    "s14-s3-native-business-emission.json": "8633a50916ec26cfed73e1bb1fd4b8fd1e2d40e39c84826533073ec6cc525565",
+    "s14-s3-routing-packing.json": "507f2ab207869c194d69e5dcb43631e1e27202e028434617e7831c995993fe9a",
+    "s14-s3-affected-seams.log": "48667fc19680619a1999b1792efbece878b09dbe049cde17b693d9200bd1051c",
+    "s14-s3-current-commodity-dom.log": "225a6db1a3c32fd2bd0cd2e877ca0faec02e526aafd96fb4c01980a744e2e267"
+  }
+}

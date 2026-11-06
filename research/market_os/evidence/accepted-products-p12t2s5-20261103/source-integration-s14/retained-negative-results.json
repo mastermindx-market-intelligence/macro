@@ -1,0 +1,12 @@
+{
+  "original_T11_RED": {
+    "raw_sha256": "154e2b5c8bbd50af1642f3e0af130afad349ee37738540dd353e63e5dddda836",
+    "external_path": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-t11-boundary.log",
+    "finding": "Frozen Business green Current/period clocks differ from reviewed source-neutral/null-clock presentation; not input or main-side drift."
+  },
+  "first_negative_fixture_harness": {
+    "raw_sha256": "10eefefef9b492ae66859fa14d52d0ae2bb037785e0f51db06f2d4567375d4cc",
+    "external_path": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-new-negative-first-fixture-error.log",
+    "result": "2pass1fail: numeric/provenance control and healthy display pass; synthetic failure render lacked an artifact path. Final2clockcontrols validate synthetic state/diagnostics without claiming a publication receipt and render only the real verified artifact."
+  }
+}

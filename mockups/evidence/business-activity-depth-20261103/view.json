@@ -1,0 +1,6193 @@
+{
+  "ok": true,
+  "layout": "grammar",
+  "decision_first": false,
+  "next_action": {
+    "token": "WATCH_ONLY",
+    "heading": {
+      "en": "Next action",
+      "zh": "下一步"
+    },
+    "tone": "neutral",
+    "text": {
+      "en": "Nothing here asks you to act. Watch — don't chase.",
+      "zh": "此处没有需要采取的操作。观察即可 — 不要追高杀跌。"
+    },
+    "route": {
+      "href": "#mq-metrics-title",
+      "label": {
+        "en": "Open current components",
+        "zh": "查看当前分项"
+      }
+    },
+    "watch": null
+  },
+  "glance": {
+    "change": {
+      "present": true,
+      "lead": {
+        "metric_id": "leading_tier_momentum_6m",
+        "label": {
+          "en": "Leading-activity momentum (6-month)",
+          "zh": "领先活动动能（6个月）"
+        },
+        "prior_raw": 0.9372992907410378,
+        "current_raw": 0.407313842140681,
+        "delta_raw": -0.53,
+        "prior_present": true,
+        "current_present": true,
+        "delta_present": true,
+        "comparable": true,
+        "is_movement": true,
+        "prior": "0.94",
+        "current": "0.41",
+        "delta": "−0.53",
+        "sign": "down",
+        "unit": "index_pt",
+        "absence": null,
+        "note": "same method version; numeric comparison permitted when both values are present"
+      },
+      "comparable_count": 4,
+      "total_count": 4,
+      "absence": null
+    },
+    "meaning": {
+      "present": true,
+      "text": {
+        "en": "No two-sided business-activity state is published today — the source gives blended cycle readings, not the separate orders and production legs a headline would need. Those blended readings are shown as numbers below.",
+        "zh": "今天没有发布双边商业活动状态 — 数据源给出的是混合周期读数，而非头条所需的独立订单与生产分项。这些混合读数以下方数字呈现。"
+      },
+      "text_original": null,
+      "evidence_label": {
+        "en": "Descriptive",
+        "zh": "描述性"
+      },
+      "evidence_claim": {
+        "en": "States what the accepted data shows.",
+        "zh": "陈述已接受数据所显示的事实。"
+      },
+      "remaining": 2,
+      "absence_text": {
+        "en": "This snapshot carries no evidence-grounded implication. Nothing is inferred here.",
+        "zh": "本快照未附带任何有证据支持的推论。此处不作任何推断。"
+      }
+    }
+  },
+  "workspace": {
+    "id": "business_activity",
+    "title": {
+      "en": "Business Activity",
+      "zh": "商业活动"
+    },
+    "subtitle": {
+      "en": "New demand/orders x production/utilization",
+      "zh": "新增需求/订单 × 生产/产能利用"
+    }
+  },
+  "region": {
+    "code": "US",
+    "display_name": "United States",
+    "display": {
+      "en": "United States",
+      "zh": "美国"
+    },
+    "supported": true
+  },
+  "context": {
+    "state": "CURRENT",
+    "state_label": {
+      "en": "Current",
+      "zh": "当前有效"
+    },
+    "state_tone": "ok",
+    "worst_freshness": {
+      "en": "Current",
+      "zh": "当前有效"
+    },
+    "worst_freshness_tone": "ok",
+    "worst_freshness_token": "CURRENT",
+    "coverage": "100.0%",
+    "coverage_ratio": 1.0,
+    "coverage_present": true,
+    "coverage_absence": null,
+    "required": [
+      {
+        "component_id": "leading_tier",
+        "label": {
+          "en": "Leading tier",
+          "zh": "领先层"
+        },
+        "required": true,
+        "freshness": {
+          "en": "Current",
+          "zh": "当前有效"
+        },
+        "freshness_tone": "ok",
+        "freshness_state": "CURRENT",
+        "presence": {
+          "en": "Present",
+          "zh": "已具备"
+        },
+        "presence_tone": "ok",
+        "source_asof": "2026-10-31",
+        "absence": null
+      },
+      {
+        "component_id": "coincident_tier",
+        "label": {
+          "en": "Coincident tier",
+          "zh": "同步层"
+        },
+        "required": true,
+        "freshness": {
+          "en": "Current",
+          "zh": "当前有效"
+        },
+        "freshness_tone": "ok",
+        "freshness_state": "CURRENT",
+        "presence": {
+          "en": "Present",
+          "zh": "已具备"
+        },
+        "presence_tone": "ok",
+        "source_asof": "2026-09-30",
+        "absence": null
+      },
+      {
+        "component_id": "lagging_tier",
+        "label": {
+          "en": "Lagging tier",
+          "zh": "滞后层"
+        },
+        "required": false,
+        "freshness": {
+          "en": "Current",
+          "zh": "当前有效"
+        },
+        "freshness_tone": "ok",
+        "freshness_state": "CURRENT",
+        "presence": {
+          "en": "Present",
+          "zh": "已具备"
+        },
+        "presence_tone": "ok",
+        "source_asof": "2026-09-30",
+        "absence": null
+      }
+    ],
+    "degraded": [],
+    "reasons": [],
+    "contradiction": null,
+    "last_source_cut": "2026-10-31",
+    "calculation_as_of": "2026-10-31",
+    "artifact_built_at": "2026-11-02T07:18:10Z",
+    "page_built_at": "2026-11-03T18:26:44.559881+00:00",
+    "region_supported": true
+  },
+  "implications": {
+    "entries": [
+      {
+        "implication_id": "headline_unavailable",
+        "text": {
+          "en": "No two-sided business-activity state is published today — the source gives blended cycle readings, not the separate orders and production legs a headline would need. Those blended readings are shown as numbers below.",
+          "zh": "今天没有发布双边商业活动状态 — 数据源给出的是混合周期读数，而非头条所需的独立订单与生产分项。这些混合读数以下方数字呈现。"
+        },
+        "text_original": null,
+        "evidence_class": "DESCRIPTIVE",
+        "evidence_label": {
+          "en": "Descriptive",
+          "zh": "描述性"
+        },
+        "evidence_claim": {
+          "en": "States what the accepted data shows.",
+          "zh": "陈述已接受数据所显示的事实。"
+        },
+        "horizon": {
+          "en": "Current reading",
+          "zh": "当前读数"
+        },
+        "channels": [
+          {
+            "en": "Orders",
+            "zh": "订单"
+          },
+          {
+            "en": "Production",
+            "zh": "生产"
+          },
+          {
+            "en": "Inventory",
+            "zh": "库存"
+          }
+        ],
+        "contradictions": [],
+        "confidence": [
+          {
+            "name": {
+              "en": "Data coverage",
+              "zh": "数据覆盖"
+            },
+            "value": {
+              "en": "High",
+              "zh": "高"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Source health",
+              "zh": "数据源健康度"
+            },
+            "value": {
+              "en": "High",
+              "zh": "高"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Revision risk",
+              "zh": "修订风险"
+            },
+            "value": {
+              "en": "Medium",
+              "zh": "中"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Method stability",
+              "zh": "方法稳定性"
+            },
+            "value": {
+              "en": "High",
+              "zh": "高"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Evidence breadth",
+              "zh": "证据广度"
+            },
+            "value": {
+              "en": "Medium",
+              "zh": "中"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Contradiction",
+              "zh": "矛盾状态"
+            },
+            "value": {
+              "en": "Absent",
+              "zh": "缺失"
+            },
+            "absence": null
+          }
+        ],
+        "trace_ref": "data/regime/latest.json#business_cycle"
+      },
+      {
+        "implication_id": "leading_tier_read",
+        "text": {
+          "en": "Leading tier: 6-month momentum 0.41, direction rising, breadth 75.0% (share of legs rising over the diffusion window, 0-100).",
+          "zh": "领先层：6个月动量 0.41，方向 rising，广度 75.0%（扩散窗口内上升分项占比，0-100）。"
+        },
+        "text_original": null,
+        "evidence_class": "DESCRIPTIVE",
+        "evidence_label": {
+          "en": "Descriptive",
+          "zh": "描述性"
+        },
+        "evidence_claim": {
+          "en": "States what the accepted data shows.",
+          "zh": "陈述已接受数据所显示的事实。"
+        },
+        "horizon": {
+          "en": "Current reading",
+          "zh": "当前读数"
+        },
+        "channels": [
+          {
+            "en": "Orders",
+            "zh": "订单"
+          },
+          {
+            "en": "Production",
+            "zh": "生产"
+          },
+          {
+            "en": "Inventory",
+            "zh": "库存"
+          }
+        ],
+        "contradictions": [],
+        "confidence": [
+          {
+            "name": {
+              "en": "Data coverage",
+              "zh": "数据覆盖"
+            },
+            "value": {
+              "en": "High",
+              "zh": "高"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Source health",
+              "zh": "数据源健康度"
+            },
+            "value": {
+              "en": "High",
+              "zh": "高"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Revision risk",
+              "zh": "修订风险"
+            },
+            "value": {
+              "en": "Medium",
+              "zh": "中"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Method stability",
+              "zh": "方法稳定性"
+            },
+            "value": {
+              "en": "High",
+              "zh": "高"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Evidence breadth",
+              "zh": "证据广度"
+            },
+            "value": {
+              "en": "Medium",
+              "zh": "中"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Contradiction",
+              "zh": "矛盾状态"
+            },
+            "value": {
+              "en": "Absent",
+              "zh": "缺失"
+            },
+            "absence": null
+          }
+        ],
+        "trace_ref": "data/regime/latest.json#business_cycle.tiers.leading"
+      },
+      {
+        "implication_id": "coincident_tier_read",
+        "text": {
+          "en": "Coincident tier: 6-month momentum −0.12, direction falling, breadth 100.0% (share of legs rising over the diffusion window, 0-100).",
+          "zh": "同步层：6个月动量 −0.12，方向 falling，广度 100.0%（扩散窗口内上升分项占比，0-100）。"
+        },
+        "text_original": null,
+        "evidence_class": "DESCRIPTIVE",
+        "evidence_label": {
+          "en": "Descriptive",
+          "zh": "描述性"
+        },
+        "evidence_claim": {
+          "en": "States what the accepted data shows.",
+          "zh": "陈述已接受数据所显示的事实。"
+        },
+        "horizon": {
+          "en": "Current reading",
+          "zh": "当前读数"
+        },
+        "channels": [
+          {
+            "en": "Orders",
+            "zh": "订单"
+          },
+          {
+            "en": "Production",
+            "zh": "生产"
+          },
+          {
+            "en": "Inventory",
+            "zh": "库存"
+          }
+        ],
+        "contradictions": [],
+        "confidence": [
+          {
+            "name": {
+              "en": "Data coverage",
+              "zh": "数据覆盖"
+            },
+            "value": {
+              "en": "High",
+              "zh": "高"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Source health",
+              "zh": "数据源健康度"
+            },
+            "value": {
+              "en": "High",
+              "zh": "高"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Revision risk",
+              "zh": "修订风险"
+            },
+            "value": {
+              "en": "Medium",
+              "zh": "中"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Method stability",
+              "zh": "方法稳定性"
+            },
+            "value": {
+              "en": "High",
+              "zh": "高"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Evidence breadth",
+              "zh": "证据广度"
+            },
+            "value": {
+              "en": "Medium",
+              "zh": "中"
+            },
+            "absence": null
+          },
+          {
+            "name": {
+              "en": "Contradiction",
+              "zh": "矛盾状态"
+            },
+            "value": {
+              "en": "Absent",
+              "zh": "缺失"
+            },
+            "absence": null
+          }
+        ],
+        "trace_ref": "data/regime/latest.json#business_cycle.tiers.coincident"
+      }
+    ],
+    "truncated": 4,
+    "absent": false,
+    "absence_text": {
+      "en": "This snapshot carries no evidence-grounded implication. Nothing is inferred here.",
+      "zh": "本快照未附带任何有证据支持的推论。此处不作任何推断。"
+    }
+  },
+  "headline": {
+    "state_id": null,
+    "state_label": null,
+    "subtitle": {
+      "en": "New demand/orders x production/utilization",
+      "zh": "新增需求/订单 × 生产/产能利用"
+    },
+    "status": "ABSENT",
+    "absence": {
+      "token": "COMPUTATION_REFUSED",
+      "label": {
+        "en": "No reading arrived today.",
+        "zh": "今天没有新的读数。"
+      },
+      "display": "—"
+    },
+    "method_version": "business_activity.compose.v1",
+    "method_version_label": {
+      "en": "Business-activity method v1, published 31 Oct 2026",
+      "zh": "商业活动方法第1版，发布于2026年10月31日"
+    },
+    "effective_date": "2026-10-31",
+    "x": null,
+    "y": null,
+    "x_text": null,
+    "y_text": null,
+    "x_absence": {
+      "token": "COMPUTATION_REFUSED",
+      "label": {
+        "en": "No reading arrived today.",
+        "zh": "今天没有新的读数。"
+      },
+      "display": "—"
+    },
+    "y_absence": {
+      "token": "COMPUTATION_REFUSED",
+      "label": {
+        "en": "No reading arrived today.",
+        "zh": "今天没有新的读数。"
+      },
+      "display": "—"
+    },
+    "prior": {
+      "state_id": null,
+      "effective_date": "2026-09-30",
+      "method_version": "business_activity.compose.v1",
+      "absent": true
+    },
+    "transition_distance": null,
+    "nearest_boundary": {
+      "axis_label": null,
+      "distance": null,
+      "distance_raw": null,
+      "distance_present": false,
+      "absence": {
+        "token": "COMPUTATION_REFUSED",
+        "label": {
+          "en": "No reading arrived today.",
+          "zh": "今天没有新的读数。"
+        },
+        "display": "—"
+      }
+    },
+    "vector": {
+      "present": false,
+      "incomplete": false,
+      "dx": null,
+      "dy": null,
+      "dx_raw": null,
+      "dy_raw": null,
+      "dx_ascii": null,
+      "dy_ascii": null,
+      "move": null,
+      "x_axis_id": null,
+      "y_axis_id": null,
+      "absence": {
+        "token": "COMPUTATION_REFUSED",
+        "label": {
+          "en": "No reading arrived today.",
+          "zh": "今天没有新的读数。"
+        },
+        "display": "—"
+      },
+      "status": {
+        "en": "Absent",
+        "zh": "缺失"
+      }
+    },
+    "hysteresis": {
+      "band": "0",
+      "applied": false,
+      "held_prior": false,
+      "note": {
+        "en": "No hold-back band is configured on this reading.",
+        "zh": "本读数未配置滞回带。"
+      }
+    }
+  },
+  "axes": [],
+  "tabs": [
+    {
+      "tab_id": "current",
+      "name": {
+        "en": "Current",
+        "zh": "当前"
+      }
+    },
+    {
+      "tab_id": "drivers",
+      "name": {
+        "en": "Drivers",
+        "zh": "驱动因子"
+      }
+    },
+    {
+      "tab_id": "history",
+      "name": {
+        "en": "History",
+        "zh": "历史"
+      }
+    }
+  ],
+  "withheld_tabs": [
+    {
+      "tab_id": "scenario",
+      "name": {
+        "en": "Scenario",
+        "zh": "情景"
+      },
+      "reason": {
+        "en": "No scenario execution is published for this workspace.",
+        "zh": "本工作区尚未发布情景推演能力。"
+      },
+      "declared": [
+        {
+          "label": {
+            "en": "Leading-tier momentum",
+            "zh": "领先层动量"
+          },
+          "unit": {
+            "en": "bp",
+            "zh": "基点"
+          },
+          "step": "25.00",
+          "min": "−500.00",
+          "max": "500.00"
+        },
+        {
+          "label": {
+            "en": "Coincident-tier momentum",
+            "zh": "同步层动量"
+          },
+          "unit": {
+            "en": "bp",
+            "zh": "基点"
+          },
+          "step": "25.00",
+          "min": "−500.00",
+          "max": "500.00"
+        },
+        {
+          "label": {
+            "en": "Leading-tier breadth",
+            "zh": "领先层广度"
+          },
+          "unit": {
+            "en": "%",
+            "zh": "%"
+          },
+          "step": "5.00",
+          "min": "0",
+          "max": "100.00"
+        },
+        {
+          "label": {
+            "en": "Inventory/sales ratio change",
+            "zh": "库存/销售比变化"
+          },
+          "unit": {
+            "en": "ratio",
+            "zh": "比率"
+          },
+          "step": "0.05",
+          "min": "−1.00",
+          "max": "1.00"
+        },
+        {
+          "label": {
+            "en": "Cap-goods orders growth",
+            "zh": "资本品订单增长"
+          },
+          "unit": {
+            "en": "%",
+            "zh": "%"
+          },
+          "step": "0.50",
+          "min": "−20.00",
+          "max": "20.00"
+        }
+      ],
+      "declared_title": {
+        "en": "Assumption vocabulary declared (not executable)",
+        "zh": "已声明的假设变量词表（尚不可执行）"
+      }
+    },
+    {
+      "tab_id": "alerts",
+      "name": {
+        "en": "Alerts",
+        "zh": "预警"
+      },
+      "reason": {
+        "en": "No alert service can create, evaluate or delete these conditions yet.",
+        "zh": "尚无服务能够创建、评估或删除这些预警条件。"
+      },
+      "declared": [
+        {
+          "label": {
+            "en": "Leading-tier rollover",
+            "zh": "领先层转向"
+          },
+          "unit": {
+            "en": "Named state transition",
+            "zh": "状态切换"
+          },
+          "step": null,
+          "min": null,
+          "max": null
+        },
+        {
+          "label": {
+            "en": "Coincident-tier confirmation",
+            "zh": "同步层确认"
+          },
+          "unit": {
+            "en": "Named state transition",
+            "zh": "状态切换"
+          },
+          "step": null,
+          "min": null,
+          "max": null
+        },
+        {
+          "label": {
+            "en": "Breadth break",
+            "zh": "广度突破"
+          },
+          "unit": {
+            "en": "Boundary approach",
+            "zh": "接近分界"
+          },
+          "step": null,
+          "min": null,
+          "max": null
+        },
+        {
+          "label": {
+            "en": "Recession-signal transition",
+            "zh": "衰退信号转变"
+          },
+          "unit": {
+            "en": "Named state transition",
+            "zh": "状态切换"
+          },
+          "step": null,
+          "min": null,
+          "max": null
+        },
+        {
+          "label": {
+            "en": "Source stale or failed",
+            "zh": "数据源过期或失败"
+          },
+          "unit": {
+            "en": "Source stale or failed",
+            "zh": "数据源过期或失败"
+          },
+          "step": null,
+          "min": null,
+          "max": null
+        }
+      ],
+      "declared_title": {
+        "en": "Eligible conditions declared (not offered)",
+        "zh": "已声明的可用条件（尚未开放）"
+      }
+    }
+  ],
+  "quadrant_map": null,
+  "diagnostics": [
+    {
+      "tone": "neutral",
+      "title": {
+        "en": "Component histories not published",
+        "zh": "未发布分项历史序列"
+      },
+      "body": {
+        "en": "Insufficient history",
+        "zh": "历史数据不足"
+      }
+    },
+    {
+      "tone": "neutral",
+      "title": {
+        "en": "Scenario execution not available",
+        "zh": "情景推演功能不可用"
+      },
+      "body": {
+        "en": "The assumption vocabulary is declared and closed, but no scenario function is published — so no Scenario tab is offered.",
+        "zh": "假设变量词表已声明并封闭，但尚未发布情景函数 — 因此不提供“情景”标签页。"
+      }
+    },
+    {
+      "tone": "neutral",
+      "title": {
+        "en": "Alert service not available",
+        "zh": "预警服务不可用"
+      },
+      "body": {
+        "en": "Eligible conditions are declared, but no service can create, list, evaluate or delete them — so no Alerts tab is offered.",
+        "zh": "可用的预警条件已声明，但尚无服务能够创建、列出、评估或删除它们 — 因此不提供“预警”标签页。"
+      }
+    }
+  ],
+  "changes": {
+    "comparability": "COMPARABLE",
+    "comparability_label": {
+      "en": "Comparable with the last reading",
+      "zh": "与上次读数可比"
+    },
+    "comparable": true,
+    "prior_is_earlier": true,
+    "deltas": [
+      {
+        "metric_id": "leading_tier_momentum_6m",
+        "label": {
+          "en": "Leading-activity momentum (6-month)",
+          "zh": "领先活动动能（6个月）"
+        },
+        "prior_raw": 0.9372992907410378,
+        "current_raw": 0.407313842140681,
+        "delta_raw": -0.53,
+        "prior_present": true,
+        "current_present": true,
+        "delta_present": true,
+        "comparable": true,
+        "is_movement": true,
+        "prior": "0.94",
+        "current": "0.41",
+        "delta": "−0.53",
+        "sign": "down",
+        "unit": "index_pt",
+        "absence": null,
+        "note": "same method version; numeric comparison permitted when both values are present"
+      },
+      {
+        "metric_id": "coincident_tier_momentum_6m",
+        "label": {
+          "en": "Current-activity momentum (6-month)",
+          "zh": "当前活动动能（6个月）"
+        },
+        "prior_raw": -0.007129906816814469,
+        "current_raw": -0.12432237847522742,
+        "delta_raw": -0.1172,
+        "prior_present": true,
+        "current_present": true,
+        "delta_present": true,
+        "comparable": true,
+        "is_movement": true,
+        "prior": "−0.01",
+        "current": "−0.12",
+        "delta": "−0.12",
+        "sign": "down",
+        "unit": "index_pt",
+        "absence": null,
+        "note": "same method version; numeric comparison permitted when both values are present"
+      },
+      {
+        "metric_id": "lagging_tier_momentum_6m",
+        "label": {
+          "en": "Lagging-activity momentum (6-month)",
+          "zh": "滞后活动动能（6个月）"
+        },
+        "prior_raw": 0.38679772082090835,
+        "current_raw": 0.3509669328855409,
+        "delta_raw": -0.0358,
+        "prior_present": true,
+        "current_present": true,
+        "delta_present": true,
+        "comparable": true,
+        "is_movement": true,
+        "prior": "0.39",
+        "current": "0.35",
+        "delta": "−0.04",
+        "sign": "down",
+        "unit": "index_pt",
+        "absence": null,
+        "note": "same method version; numeric comparison permitted when both values are present"
+      },
+      {
+        "metric_id": "coincident_lagging_ratio_momentum_6m",
+        "label": {
+          "en": "Current-to-lagging activity gap (6-month)",
+          "zh": "当前与滞后活动差距（6个月）"
+        },
+        "prior_raw": -0.24319183709936,
+        "current_raw": -0.4033454193975601,
+        "delta_raw": -0.1602,
+        "prior_present": true,
+        "current_present": true,
+        "delta_present": true,
+        "comparable": true,
+        "is_movement": true,
+        "prior": "−0.24",
+        "current": "−0.40",
+        "delta": "−0.16",
+        "sign": "down",
+        "unit": "ratio_pt",
+        "absence": null,
+        "note": "same method version; numeric comparison permitted when both values are present"
+      }
+    ],
+    "prior_generation_id": "business_activity-US-3aa3aac283902e09",
+    "prior_effective_date": "2026-09-30",
+    "prior_method_version": "business_activity.compose.v1",
+    "absence": null,
+    "status": {
+      "en": "Present",
+      "zh": "已具备"
+    }
+  },
+  "metrics": [
+    {
+      "metric_id": "leading_tier_index",
+      "label": {
+        "en": "Leading tier index",
+        "zh": "领先层指数"
+      },
+      "value": {
+        "en": "95.02",
+        "zh": "95.02"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Index pt",
+        "zh": "指数点"
+      },
+      "basis": {
+        "en": "Rebased 100 composite",
+        "zh": "以100为基准的综合指数"
+      },
+      "direction": {
+        "en": "Higher = stronger support",
+        "zh": "数值越高＝支持越强"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#leading_tier_index",
+      "definition_id": "business_cycle.tiers.leading.index",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "leading tier: standardized-leg cumulative composite, rebased to 100 at first valid month (Conference-Board method)",
+      "sample_note": null,
+      "coverage": "50.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": true,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "leading_tier_momentum_6m",
+      "label": {
+        "en": "Leading-activity momentum (6-month)",
+        "zh": "领先活动动能（6个月）"
+      },
+      "value": {
+        "en": "0.41",
+        "zh": "0.41"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Index pt",
+        "zh": "指数点"
+      },
+      "basis": {
+        "en": "6m change",
+        "zh": "6个月变化"
+      },
+      "direction": {
+        "en": "Higher accelerating",
+        "zh": "数值越高＝加速越快"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#leading_tier_momentum_6m",
+      "definition_id": "business_cycle.tiers.leading.mom6",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "tier index level minus its value 6 months prior (CB '6-month change', red line)",
+      "sample_note": null,
+      "coverage": "50.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "leading_tier_trend",
+      "label": {
+        "en": "Leading tier trend",
+        "zh": "领先层趋势"
+      },
+      "value": {
+        "en": "0.72",
+        "zh": "0.72"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Index pt",
+        "zh": "指数点"
+      },
+      "basis": {
+        "en": "Ema of 6m change",
+        "zh": "6个月变化的指数移动平均"
+      },
+      "direction": {
+        "en": "Higher accelerating",
+        "zh": "数值越高＝加速越快"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#leading_tier_trend",
+      "definition_id": "business_cycle.tiers.leading.trend",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "EMA smoothing of the 6-month momentum series (blue line)",
+      "sample_note": null,
+      "coverage": "50.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "leading_tier_diffusion",
+      "label": {
+        "en": "Leading tier diffusion",
+        "zh": "领先层扩散"
+      },
+      "value": {
+        "en": "75.00",
+        "zh": "75.00"
+      },
+      "absence": null,
+      "unit": {
+        "en": "%",
+        "zh": "%"
+      },
+      "basis": {
+        "en": "Share of legs rising 6m",
+        "zh": "6个月内上升分项占比"
+      },
+      "direction": {
+        "en": "Higher broader",
+        "zh": "数值越高＝覆盖越广"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#leading_tier_diffusion",
+      "definition_id": "business_cycle.tiers.leading.diffusion",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "share of the tier's sign-adjusted legs that rose over the diffusion window (CB breadth, 0-100)",
+      "sample_note": null,
+      "coverage": "50.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": true,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "leading_tier_direction",
+      "label": {
+        "en": "Leading tier direction",
+        "zh": "领先层方向"
+      },
+      "value": {
+        "en": "Rising",
+        "zh": "上升"
+      },
+      "absence": null,
+      "unit": null,
+      "basis": {
+        "en": "Sign of 6m momentum",
+        "zh": "6个月动能方向"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#leading_tier_direction",
+      "definition_id": "business_cycle.tiers.leading.direction",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "'rising' if 6-month momentum > 0 else 'falling'",
+      "sample_note": null,
+      "coverage": "50.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "leading_tier_leg_count",
+      "label": {
+        "en": "Leading tier leg count",
+        "zh": "领先层分项数"
+      },
+      "value": {
+        "en": "4.00",
+        "zh": "4.00"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Legs",
+        "zh": "分项"
+      },
+      "basis": {
+        "en": "Count of available legs",
+        "zh": "可用分项数量"
+      },
+      "direction": {
+        "en": "Higher broader input coverage",
+        "zh": "数值越高＝输入覆盖越广"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#leading_tier_leg_count",
+      "definition_id": "business_cycle.tiers.leading.n_legs",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "owner-published live leg count out of 8 configured legs -- never refused by the coverage floor; the count itself is the ragged-edge honesty flag",
+      "sample_note": null,
+      "coverage": "50.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "coincident_tier_index",
+      "label": {
+        "en": "Coincident tier index",
+        "zh": "同步层指数"
+      },
+      "value": {
+        "en": "36.16",
+        "zh": "36.16"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Index pt",
+        "zh": "指数点"
+      },
+      "basis": {
+        "en": "Rebased 100 composite",
+        "zh": "以100为基准的综合指数"
+      },
+      "direction": {
+        "en": "Higher = stronger support",
+        "zh": "数值越高＝支持越强"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#coincident_tier_index",
+      "definition_id": "business_cycle.tiers.coincident.index",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 30 Sep 2026",
+        "zh": "定义第1版，发布于2026年9月30日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "coincident tier: standardized-leg cumulative composite, rebased to 100 at first valid month (Conference-Board method)",
+      "sample_note": null,
+      "coverage": "75.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-09-30",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": true,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "coincident_tier_momentum_6m",
+      "label": {
+        "en": "Current-activity momentum (6-month)",
+        "zh": "当前活动动能（6个月）"
+      },
+      "value": {
+        "en": "−0.12",
+        "zh": "−0.12"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Index pt",
+        "zh": "指数点"
+      },
+      "basis": {
+        "en": "6m change",
+        "zh": "6个月变化"
+      },
+      "direction": {
+        "en": "Higher accelerating",
+        "zh": "数值越高＝加速越快"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#coincident_tier_momentum_6m",
+      "definition_id": "business_cycle.tiers.coincident.mom6",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 30 Sep 2026",
+        "zh": "定义第1版，发布于2026年9月30日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "tier index level minus its value 6 months prior (CB '6-month change', red line)",
+      "sample_note": null,
+      "coverage": "75.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-09-30",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "coincident_tier_trend",
+      "label": {
+        "en": "Coincident tier trend",
+        "zh": "同步层趋势"
+      },
+      "value": {
+        "en": "−0.07",
+        "zh": "−0.07"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Index pt",
+        "zh": "指数点"
+      },
+      "basis": {
+        "en": "Ema of 6m change",
+        "zh": "6个月变化的指数移动平均"
+      },
+      "direction": {
+        "en": "Higher accelerating",
+        "zh": "数值越高＝加速越快"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#coincident_tier_trend",
+      "definition_id": "business_cycle.tiers.coincident.trend",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 30 Sep 2026",
+        "zh": "定义第1版，发布于2026年9月30日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "EMA smoothing of the 6-month momentum series (blue line)",
+      "sample_note": null,
+      "coverage": "75.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-09-30",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "coincident_tier_diffusion",
+      "label": {
+        "en": "Coincident tier diffusion",
+        "zh": "同步层扩散"
+      },
+      "value": {
+        "en": "100.00",
+        "zh": "100.00"
+      },
+      "absence": null,
+      "unit": {
+        "en": "%",
+        "zh": "%"
+      },
+      "basis": {
+        "en": "Share of legs rising 6m",
+        "zh": "6个月内上升分项占比"
+      },
+      "direction": {
+        "en": "Higher broader",
+        "zh": "数值越高＝覆盖越广"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#coincident_tier_diffusion",
+      "definition_id": "business_cycle.tiers.coincident.diffusion",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 30 Sep 2026",
+        "zh": "定义第1版，发布于2026年9月30日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "share of the tier's sign-adjusted legs that rose over the diffusion window (CB breadth, 0-100)",
+      "sample_note": null,
+      "coverage": "75.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-09-30",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": true,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "coincident_tier_direction",
+      "label": {
+        "en": "Coincident tier direction",
+        "zh": "同步层方向"
+      },
+      "value": {
+        "en": "Falling",
+        "zh": "下降"
+      },
+      "absence": null,
+      "unit": null,
+      "basis": {
+        "en": "Sign of 6m momentum",
+        "zh": "6个月动能方向"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#coincident_tier_direction",
+      "definition_id": "business_cycle.tiers.coincident.direction",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 30 Sep 2026",
+        "zh": "定义第1版，发布于2026年9月30日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "'rising' if 6-month momentum > 0 else 'falling'",
+      "sample_note": null,
+      "coverage": "75.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-09-30",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "coincident_tier_leg_count",
+      "label": {
+        "en": "Coincident tier leg count",
+        "zh": "同步层分项数"
+      },
+      "value": {
+        "en": "3.00",
+        "zh": "3.00"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Legs",
+        "zh": "分项"
+      },
+      "basis": {
+        "en": "Count of available legs",
+        "zh": "可用分项数量"
+      },
+      "direction": {
+        "en": "Higher broader input coverage",
+        "zh": "数值越高＝输入覆盖越广"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#coincident_tier_leg_count",
+      "definition_id": "business_cycle.tiers.coincident.n_legs",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 30 Sep 2026",
+        "zh": "定义第1版，发布于2026年9月30日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "owner-published live leg count out of 4 configured legs -- never refused by the coverage floor; the count itself is the ragged-edge honesty flag",
+      "sample_note": null,
+      "coverage": "75.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-09-30",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "lagging_tier_index",
+      "label": {
+        "en": "Lagging tier index",
+        "zh": "滞后层指数"
+      },
+      "value": {
+        "en": "92.73",
+        "zh": "92.73"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Index pt",
+        "zh": "指数点"
+      },
+      "basis": {
+        "en": "Rebased 100 composite",
+        "zh": "以100为基准的综合指数"
+      },
+      "direction": {
+        "en": "Higher = stronger support",
+        "zh": "数值越高＝支持越强"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#lagging_tier_index",
+      "definition_id": "business_cycle.tiers.lagging.index",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 30 Sep 2026",
+        "zh": "定义第1版，发布于2026年9月30日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "lagging tier: standardized-leg cumulative composite, rebased to 100 at first valid month (Conference-Board method)",
+      "sample_note": null,
+      "coverage": "80.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-09-30",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": true,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "lagging_tier_momentum_6m",
+      "label": {
+        "en": "Lagging-activity momentum (6-month)",
+        "zh": "滞后活动动能（6个月）"
+      },
+      "value": {
+        "en": "0.35",
+        "zh": "0.35"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Index pt",
+        "zh": "指数点"
+      },
+      "basis": {
+        "en": "6m change",
+        "zh": "6个月变化"
+      },
+      "direction": {
+        "en": "Higher accelerating",
+        "zh": "数值越高＝加速越快"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#lagging_tier_momentum_6m",
+      "definition_id": "business_cycle.tiers.lagging.mom6",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 30 Sep 2026",
+        "zh": "定义第1版，发布于2026年9月30日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "tier index level minus its value 6 months prior (CB '6-month change', red line)",
+      "sample_note": null,
+      "coverage": "80.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-09-30",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "lagging_tier_trend",
+      "label": {
+        "en": "Lagging tier trend",
+        "zh": "滞后层趋势"
+      },
+      "value": {
+        "en": "0.27",
+        "zh": "0.27"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Index pt",
+        "zh": "指数点"
+      },
+      "basis": {
+        "en": "Ema of 6m change",
+        "zh": "6个月变化的指数移动平均"
+      },
+      "direction": {
+        "en": "Higher accelerating",
+        "zh": "数值越高＝加速越快"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#lagging_tier_trend",
+      "definition_id": "business_cycle.tiers.lagging.trend",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 30 Sep 2026",
+        "zh": "定义第1版，发布于2026年9月30日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "EMA smoothing of the 6-month momentum series (blue line)",
+      "sample_note": null,
+      "coverage": "80.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-09-30",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "lagging_tier_diffusion",
+      "label": {
+        "en": "Lagging tier diffusion",
+        "zh": "滞后层扩散"
+      },
+      "value": {
+        "en": "75.00",
+        "zh": "75.00"
+      },
+      "absence": null,
+      "unit": {
+        "en": "%",
+        "zh": "%"
+      },
+      "basis": {
+        "en": "Share of legs rising 6m",
+        "zh": "6个月内上升分项占比"
+      },
+      "direction": {
+        "en": "Higher broader",
+        "zh": "数值越高＝覆盖越广"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#lagging_tier_diffusion",
+      "definition_id": "business_cycle.tiers.lagging.diffusion",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 30 Sep 2026",
+        "zh": "定义第1版，发布于2026年9月30日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "share of the tier's sign-adjusted legs that rose over the diffusion window (CB breadth, 0-100)",
+      "sample_note": null,
+      "coverage": "80.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-09-30",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": true,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "lagging_tier_direction",
+      "label": {
+        "en": "Lagging tier direction",
+        "zh": "滞后层方向"
+      },
+      "value": {
+        "en": "Rising",
+        "zh": "上升"
+      },
+      "absence": null,
+      "unit": null,
+      "basis": {
+        "en": "Sign of 6m momentum",
+        "zh": "6个月动能方向"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#lagging_tier_direction",
+      "definition_id": "business_cycle.tiers.lagging.direction",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 30 Sep 2026",
+        "zh": "定义第1版，发布于2026年9月30日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "'rising' if 6-month momentum > 0 else 'falling'",
+      "sample_note": null,
+      "coverage": "80.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-09-30",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "lagging_tier_leg_count",
+      "label": {
+        "en": "Lagging tier leg count",
+        "zh": "滞后层分项数"
+      },
+      "value": {
+        "en": "4.00",
+        "zh": "4.00"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Legs",
+        "zh": "分项"
+      },
+      "basis": {
+        "en": "Count of available legs",
+        "zh": "可用分项数量"
+      },
+      "direction": {
+        "en": "Higher broader input coverage",
+        "zh": "数值越高＝输入覆盖越广"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#lagging_tier_leg_count",
+      "definition_id": "business_cycle.tiers.lagging.n_legs",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 30 Sep 2026",
+        "zh": "定义第1版，发布于2026年9月30日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "owner-published live leg count out of 5 configured legs -- never refused by the coverage floor; the count itself is the ragged-edge honesty flag",
+      "sample_note": null,
+      "coverage": "80.0%",
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-09-30",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-09-30",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "coincident_lagging_ratio_momentum_6m",
+      "label": {
+        "en": "Current-to-lagging activity gap (6-month)",
+        "zh": "当前与滞后活动差距（6个月）"
+      },
+      "value": {
+        "en": "−0.40",
+        "zh": "−0.40"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Ratio pt",
+        "zh": "比率点"
+      },
+      "basis": {
+        "en": "6m change of ratio",
+        "zh": "比率的6个月变化"
+      },
+      "direction": {
+        "en": "Higher = stronger support",
+        "zh": "数值越高＝支持越强"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#coincident_lagging_ratio_momentum_6m",
+      "definition_id": "business_cycle.cl_ratio_mom6",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "6-month change in (coincident_index / lagging_index), rebased to 100 at first valid month; itself a classic leading read",
+      "sample_note": null,
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "recession_signal_state",
+      "label": {
+        "en": "Recession signal state",
+        "zh": "衰退信号状态"
+      },
+      "value": {
+        "en": "Off",
+        "zh": "关闭"
+      },
+      "absence": null,
+      "unit": null,
+      "basis": {
+        "en": "Three ds rule",
+        "zh": "三项门槛规则"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#recession_signal_state",
+      "definition_id": "business_cycle.recession_signal.state",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "Conference-Board '3 D's' (Depth+Duration AND Diffusion) rule on the leading tier, held N months",
+      "sample_note": null,
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "recession_signal_depth",
+      "label": {
+        "en": "Recession signal depth",
+        "zh": "衰退信号深度"
+      },
+      "value": {
+        "en": "No",
+        "zh": "否"
+      },
+      "absence": null,
+      "unit": null,
+      "basis": {
+        "en": "Leading mom6 below threshold",
+        "zh": "领先6个月动能低于门槛"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#recession_signal_depth",
+      "definition_id": "business_cycle.recession_signal.conditions.depth",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": null,
+      "sample_note": null,
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "recession_signal_breadth",
+      "label": {
+        "en": "Recession signal breadth",
+        "zh": "衰退信号广度"
+      },
+      "value": {
+        "en": "No",
+        "zh": "否"
+      },
+      "absence": null,
+      "unit": null,
+      "basis": {
+        "en": "Diffusion at or below cutoff",
+        "zh": "扩散处于或低于截止值"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#recession_signal_breadth",
+      "definition_id": "business_cycle.recession_signal.conditions.breadth",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": null,
+      "sample_note": null,
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "recession_signal_months_active",
+      "label": {
+        "en": "Recession signal months active",
+        "zh": "衰退信号持续月数"
+      },
+      "value": {
+        "en": "41.00",
+        "zh": "41.00"
+      },
+      "absence": null,
+      "unit": {
+        "en": "Months",
+        "zh": "月"
+      },
+      "basis": {
+        "en": "Consecutive months in state",
+        "zh": "连续处于该状态的月数"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#recession_signal_months_active",
+      "definition_id": "business_cycle.recession_signal.months_active",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": null,
+      "sample_note": null,
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "business_cycle_phase",
+      "label": {
+        "en": "Business cycle phase",
+        "zh": "商业周期阶段"
+      },
+      "value": {
+        "en": "Recovery",
+        "zh": "复苏"
+      },
+      "absence": null,
+      "unit": null,
+      "basis": {
+        "en": "Leading x coincident momentum sign",
+        "zh": "领先与同步动能方向"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#business_cycle_phase",
+      "definition_id": "business_cycle.phase.label",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "four-phase clock from the sign of leading/coincident 6-month momentum (expansion/slowdown/contraction/recovery)",
+      "sample_note": null,
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "recession_signal_oos_catch_rate",
+      "label": {
+        "en": "Recession signal oos catch rate",
+        "zh": "衰退信号样本外捕捉率"
+      },
+      "value": {
+        "en": "0.67",
+        "zh": "0.67"
+      },
+      "absence": null,
+      "unit": {
+        "en": "ratio",
+        "zh": "比率"
+      },
+      "basis": {
+        "en": "Leave one recession out",
+        "zh": "留出一次衰退"
+      },
+      "direction": {
+        "en": "Higher more reliable",
+        "zh": "数值越高＝越可靠"
+      },
+      "freshness": {
+        "en": "Historical, as known then",
+        "zh": "历史（按当时已知）"
+      },
+      "freshness_tone": "neutral",
+      "presence": {
+        "en": "Present",
+        "zh": "已具备"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#recession_signal_oos_catch_rate",
+      "definition_id": "business_cycle.measured.oos_catch_rate",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle",
+      "owner_name": {
+        "en": "Business-cycle desk",
+        "zh": "商业周期小组"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "out-of-sample (leave-one-recession-out) catch rate on ~3 endogenous modern recessions; tiny sample, see caveat",
+      "sample_note": {
+        "en": "About 3 modern recessions, leave-one-out. The sample is small.",
+        "zh": "约 3 次现代衰退，留一法。样本很小。"
+      },
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": "2026-10-31",
+          "absent": false
+        }
+      ],
+      "reference_period": "2026-10-31",
+      "source_refs": [
+        "engine.business_cycle"
+      ],
+      "normalized": true,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "survey_composite_pmi",
+      "label": {
+        "en": "Survey composite pmi",
+        "zh": "调查综合 PMI"
+      },
+      "value": null,
+      "absence": {
+        "token": "RIGHTS_BLOCKED",
+        "label": {
+          "en": "Rights blocked",
+          "zh": "授权受限"
+        },
+        "display": "—"
+      },
+      "unit": {
+        "en": "Diffusion index 50 line",
+        "zh": "扩散指数50分界"
+      },
+      "basis": {
+        "en": "Diffusion index",
+        "zh": "扩散指数"
+      },
+      "direction": {
+        "en": "Higher expansion below50 contraction",
+        "zh": "高于50为扩张，低于50为收缩"
+      },
+      "freshness": {
+        "en": "Rights blocked",
+        "zh": "授权受限"
+      },
+      "freshness_tone": "bad",
+      "presence": {
+        "en": "Absent",
+        "zh": "缺失"
+      },
+      "rights": {
+        "en": "Rights blocked",
+        "zh": "授权受限"
+      },
+      "reference_id": "mastermind.market_reference/v1#survey_composite_pmi",
+      "definition_id": "NONE",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle (no survey collector)",
+      "owner_name": {
+        "en": "Business-cycle desk (no survey feed)",
+        "zh": "商业周期小组（无调查接入）"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "ISM/regional-Fed manufacturing & services PMIs are 50-line diffusion indexes (>50 expansion, <50 contraction), NOT a zero-line series; no lawful collector for this survey family is wired in this repository -- typed RIGHTS_BLOCKED, never estimated from hard data",
+      "sample_note": null,
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": null,
+          "absent": true
+        }
+      ],
+      "reference_period": null,
+      "source_refs": [
+        "engine.business_cycle (no survey collector)"
+      ],
+      "normalized": true,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "new_orders_demand",
+      "label": {
+        "en": "New orders demand",
+        "zh": "新订单需求"
+      },
+      "value": null,
+      "absence": {
+        "token": "COMPUTATION_REFUSED",
+        "label": {
+          "en": "No reading arrived today.",
+          "zh": "今天没有新的读数。"
+        },
+        "display": "—"
+      },
+      "unit": null,
+      "basis": {
+        "en": "Leg level not separable",
+        "zh": "分项水平无法拆分"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Absent",
+        "zh": "缺失"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#new_orders_demand",
+      "definition_id": "new_orders_demand",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle (blended; not separately published)",
+      "owner_name": {
+        "en": "Business-cycle desk (blended read)",
+        "zh": "商业周期小组（混合读数）"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "New demand / orders is blended inside the published leading/coincident/lagging tier composites (engine.business_cycle mixes multiple legs per tier and publishes only the tier-level aggregate); the individual leg is not separately published -- refused rather than estimated. See the *_tier_index / *_tier_momentum_6m / *_tier_diffusion metrics for the real available reads.",
+      "sample_note": null,
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": null,
+          "absent": true
+        }
+      ],
+      "reference_period": null,
+      "source_refs": [
+        "engine.business_cycle (blended; not separately published)"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "production_utilization",
+      "label": {
+        "en": "Production utilization",
+        "zh": "产能利用率"
+      },
+      "value": null,
+      "absence": {
+        "token": "COMPUTATION_REFUSED",
+        "label": {
+          "en": "No reading arrived today.",
+          "zh": "今天没有新的读数。"
+        },
+        "display": "—"
+      },
+      "unit": null,
+      "basis": {
+        "en": "Leg level not separable",
+        "zh": "分项水平无法拆分"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Absent",
+        "zh": "缺失"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#production_utilization",
+      "definition_id": "production_utilization",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle (blended; not separately published)",
+      "owner_name": {
+        "en": "Business-cycle desk (blended read)",
+        "zh": "商业周期小组（混合读数）"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "Production / capacity utilization is blended inside the published leading/coincident/lagging tier composites (engine.business_cycle mixes multiple legs per tier and publishes only the tier-level aggregate); the individual leg is not separately published -- refused rather than estimated. See the *_tier_index / *_tier_momentum_6m / *_tier_diffusion metrics for the real available reads.",
+      "sample_note": null,
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": null,
+          "absent": true
+        }
+      ],
+      "reference_period": null,
+      "source_refs": [
+        "engine.business_cycle (blended; not separately published)"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "inventory_cycle_phase",
+      "label": {
+        "en": "Inventory cycle phase",
+        "zh": "库存周期阶段"
+      },
+      "value": null,
+      "absence": {
+        "token": "COMPUTATION_REFUSED",
+        "label": {
+          "en": "No reading arrived today.",
+          "zh": "今天没有新的读数。"
+        },
+        "display": "—"
+      },
+      "unit": null,
+      "basis": {
+        "en": "Leg level not separable",
+        "zh": "分项水平无法拆分"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Absent",
+        "zh": "缺失"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#inventory_cycle_phase",
+      "definition_id": "inventory_cycle_phase",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle (blended; not separately published)",
+      "owner_name": {
+        "en": "Business-cycle desk (blended read)",
+        "zh": "商业周期小组（混合读数）"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "Inventory cycle (destocking/restocking) is blended inside the published leading/coincident/lagging tier composites (engine.business_cycle mixes multiple legs per tier and publishes only the tier-level aggregate); the individual leg is not separately published -- refused rather than estimated. See the *_tier_index / *_tier_momentum_6m / *_tier_diffusion metrics for the real available reads.",
+      "sample_note": null,
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": null,
+          "absent": true
+        }
+      ],
+      "reference_period": null,
+      "source_refs": [
+        "engine.business_cycle (blended; not separately published)"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "capex_orders_growth",
+      "label": {
+        "en": "Capex orders growth",
+        "zh": "资本开支订单增长"
+      },
+      "value": null,
+      "absence": {
+        "token": "COMPUTATION_REFUSED",
+        "label": {
+          "en": "No reading arrived today.",
+          "zh": "今天没有新的读数。"
+        },
+        "display": "—"
+      },
+      "unit": null,
+      "basis": {
+        "en": "Leg level not separable",
+        "zh": "分项水平无法拆分"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Absent",
+        "zh": "缺失"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#capex_orders_growth",
+      "definition_id": "capex_orders_growth",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle (blended; not separately published)",
+      "owner_name": {
+        "en": "Business-cycle desk (blended read)",
+        "zh": "商业周期小组（混合读数）"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "Capex / cap-goods orders growth is blended inside the published leading/coincident/lagging tier composites (engine.business_cycle mixes multiple legs per tier and publishes only the tier-level aggregate); the individual leg is not separately published -- refused rather than estimated. See the *_tier_index / *_tier_momentum_6m / *_tier_diffusion metrics for the real available reads.",
+      "sample_note": null,
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": null,
+          "absent": true
+        }
+      ],
+      "reference_period": null,
+      "source_refs": [
+        "engine.business_cycle (blended; not separately published)"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    },
+    {
+      "metric_id": "shipments_sales_growth",
+      "label": {
+        "en": "Shipments sales growth",
+        "zh": "出货与销售增长"
+      },
+      "value": null,
+      "absence": {
+        "token": "COMPUTATION_REFUSED",
+        "label": {
+          "en": "No reading arrived today.",
+          "zh": "今天没有新的读数。"
+        },
+        "display": "—"
+      },
+      "unit": null,
+      "basis": {
+        "en": "Leg level not separable",
+        "zh": "分项水平无法拆分"
+      },
+      "direction": {
+        "en": "N/a",
+        "zh": "不适用"
+      },
+      "freshness": {
+        "en": "Current",
+        "zh": "当前有效"
+      },
+      "freshness_tone": "ok",
+      "presence": {
+        "en": "Absent",
+        "zh": "缺失"
+      },
+      "rights": {
+        "en": "Open",
+        "zh": "公开"
+      },
+      "reference_id": "mastermind.market_reference/v1#shipments_sales_growth",
+      "definition_id": "shipments_sales_growth",
+      "definition_version": "1.0.0",
+      "definition_label": {
+        "en": "Definition v1, published 31 Oct 2026",
+        "zh": "定义第1版，发布于2026年10月31日"
+      },
+      "owner_ref": "engine.business_cycle (blended; not separately published)",
+      "owner_name": {
+        "en": "Business-cycle desk (blended read)",
+        "zh": "商业周期小组（混合读数）"
+      },
+      "model_version": "business_activity.compose.v1",
+      "transformation": "Manufacturing & trade shipments/sales growth is blended inside the published leading/coincident/lagging tier composites (engine.business_cycle mixes multiple legs per tier and publishes only the tier-level aggregate); the individual leg is not separately published -- refused rather than estimated. See the *_tier_index / *_tier_momentum_6m / *_tier_diffusion metrics for the real available reads.",
+      "sample_note": null,
+      "coverage": null,
+      "authority_ceiling": {
+        "en": "Descriptive reading — this page cannot rank, size or trigger a trade",
+        "zh": "描述性读数 — 本页不能排名、定仓或触发交易"
+      },
+      "clocks": [
+        {
+          "key": "reference_period",
+          "name": {
+            "en": "Reference period",
+            "zh": "参考期"
+          },
+          "meaning": {
+            "en": "The period the economic value describes.",
+            "zh": "该经济数值所描述的期间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "observed_at",
+          "name": {
+            "en": "Observed",
+            "zh": "观察时间"
+          },
+          "meaning": {
+            "en": "Native economic or market observation time.",
+            "zh": "原生经济或市场观察时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "released_at",
+          "name": {
+            "en": "Released",
+            "zh": "发布时间"
+          },
+          "meaning": {
+            "en": "Provider publication time.",
+            "zh": "数据提供方的发布时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "available_at",
+          "name": {
+            "en": "First knowable",
+            "zh": "首次可知"
+          },
+          "meaning": {
+            "en": "Earliest time this value was lawfully knowable to us.",
+            "zh": "本系统可合法获知该数值的最早时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "collected_at",
+          "name": {
+            "en": "Collected",
+            "zh": "采集时间"
+          },
+          "meaning": {
+            "en": "When Mastermind received it.",
+            "zh": "Mastermind 接收到该数据的时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "revised_at",
+          "name": {
+            "en": "Revised",
+            "zh": "修订时间"
+          },
+          "meaning": {
+            "en": "Provider correction or revision time.",
+            "zh": "数据提供方的更正或修订时间。"
+          },
+          "value": null,
+          "absent": true
+        },
+        {
+          "key": "calculation_as_of",
+          "name": {
+            "en": "Worked out on",
+            "zh": "计算日期"
+          },
+          "meaning": {
+            "en": "Cut-off used for the derived result.",
+            "zh": "推导结果所使用的数据截止点。"
+          },
+          "value": null,
+          "absent": true
+        }
+      ],
+      "reference_period": null,
+      "source_refs": [
+        "engine.business_cycle (blended; not separately published)"
+      ],
+      "normalized": false,
+      "fx_translation": null
+    }
+  ],
+  "series": {
+    "entries": [],
+    "absent": true,
+    "absence": {
+      "token": "INSUFFICIENT_HISTORY",
+      "label": {
+        "en": "Insufficient history",
+        "zh": "历史数据不足"
+      },
+      "display": "—"
+    },
+    "status": {
+      "en": "Absent",
+      "zh": "缺失"
+    }
+  },
+  "drivers": [
+    {
+      "group_id": "rate_side",
+      "title": {
+        "en": "Rate-side drivers",
+        "zh": "利率侧驱动"
+      },
+      "fallback_title": {
+        "en": "Rate-side drivers",
+        "zh": "利率侧驱动"
+      },
+      "rows": [],
+      "absent": true,
+      "absence": {
+        "token": "UNKNOWN",
+        "label": {
+          "en": "Unknown",
+          "zh": "未知"
+        },
+        "display": "—"
+      }
+    },
+    {
+      "group_id": "balance_sheet",
+      "title": {
+        "en": "Balance-sheet drivers",
+        "zh": "资产负债表驱动"
+      },
+      "fallback_title": {
+        "en": "Balance-sheet drivers",
+        "zh": "资产负债表驱动"
+      },
+      "rows": [],
+      "absent": true,
+      "absence": {
+        "token": "UNKNOWN",
+        "label": {
+          "en": "Unknown",
+          "zh": "未知"
+        },
+        "display": "—"
+      }
+    }
+  ],
+  "evidence": {
+    "sources": [
+      {
+        "source_id": "business_cycle",
+        "label": {
+          "en": "Business-cycle Leading/Coincident/Lagging composite",
+          "zh": "商业周期领先/同步/滞后综合指数"
+        },
+        "provider": "FRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)",
+        "owner_ref": "engine.business_cycle",
+        "artifact_ref": "data/regime/latest.json#business_cycle",
+        "transform": "tier-level standardized-leg cumulative composite; individual legs are not separately published",
+        "definition_id": null,
+        "definition_version": null,
+        "rights": {
+          "en": "Open",
+          "zh": "公开"
+        },
+        "freshness": {
+          "en": "Current",
+          "zh": "当前有效"
+        },
+        "freshness_tone": "ok",
+        "correction": {
+          "en": "Correction state unknown",
+          "zh": "更正状态未知"
+        },
+        "clocks": [
+          {
+            "key": "reference_period",
+            "name": {
+              "en": "Reference period",
+              "zh": "参考期"
+            },
+            "meaning": {
+              "en": "The period the economic value describes.",
+              "zh": "该经济数值所描述的期间。"
+            },
+            "value": "2026-10-31",
+            "absent": false
+          },
+          {
+            "key": "observed_at",
+            "name": {
+              "en": "Observed",
+              "zh": "观察时间"
+            },
+            "meaning": {
+              "en": "Native economic or market observation time.",
+              "zh": "原生经济或市场观察时间。"
+            },
+            "value": "2026-10-31",
+            "absent": false
+          },
+          {
+            "key": "released_at",
+            "name": {
+              "en": "Released",
+              "zh": "发布时间"
+            },
+            "meaning": {
+              "en": "Provider publication time.",
+              "zh": "数据提供方的发布时间。"
+            },
+            "value": null,
+            "absent": true
+          },
+          {
+            "key": "available_at",
+            "name": {
+              "en": "First knowable",
+              "zh": "首次可知"
+            },
+            "meaning": {
+              "en": "Earliest time this value was lawfully knowable to us.",
+              "zh": "本系统可合法获知该数值的最早时间。"
+            },
+            "value": null,
+            "absent": true
+          },
+          {
+            "key": "collected_at",
+            "name": {
+              "en": "Collected",
+              "zh": "采集时间"
+            },
+            "meaning": {
+              "en": "When Mastermind received it.",
+              "zh": "Mastermind 接收到该数据的时间。"
+            },
+            "value": null,
+            "absent": true
+          },
+          {
+            "key": "revised_at",
+            "name": {
+              "en": "Revised",
+              "zh": "修订时间"
+            },
+            "meaning": {
+              "en": "Provider correction or revision time.",
+              "zh": "数据提供方的更正或修订时间。"
+            },
+            "value": null,
+            "absent": true
+          },
+          {
+            "key": "calculation_as_of",
+            "name": {
+              "en": "Worked out on",
+              "zh": "计算日期"
+            },
+            "meaning": {
+              "en": "Cut-off used for the derived result.",
+              "zh": "推导结果所使用的数据截止点。"
+            },
+            "value": null,
+            "absent": true
+          }
+        ]
+      },
+      {
+        "source_id": "survey_pmi",
+        "label": {
+          "en": "ISM / regional-Fed manufacturing & services surveys",
+          "zh": "ISM/地区联储制造业与服务业调查"
+        },
+        "provider": null,
+        "owner_ref": "NONE -- no lawful ISM/PMI or regional-Fed survey collector is wired in this repository",
+        "artifact_ref": null,
+        "transform": null,
+        "definition_id": null,
+        "definition_version": null,
+        "rights": {
+          "en": "Rights blocked",
+          "zh": "授权受限"
+        },
+        "freshness": {
+          "en": "Rights blocked",
+          "zh": "授权受限"
+        },
+        "freshness_tone": "bad",
+        "correction": {
+          "en": "Correction state unknown",
+          "zh": "更正状态未知"
+        },
+        "clocks": [
+          {
+            "key": "reference_period",
+            "name": {
+              "en": "Reference period",
+              "zh": "参考期"
+            },
+            "meaning": {
+              "en": "The period the economic value describes.",
+              "zh": "该经济数值所描述的期间。"
+            },
+            "value": null,
+            "absent": true
+          },
+          {
+            "key": "observed_at",
+            "name": {
+              "en": "Observed",
+              "zh": "观察时间"
+            },
+            "meaning": {
+              "en": "Native economic or market observation time.",
+              "zh": "原生经济或市场观察时间。"
+            },
+            "value": null,
+            "absent": true
+          },
+          {
+            "key": "released_at",
+            "name": {
+              "en": "Released",
+              "zh": "发布时间"
+            },
+            "meaning": {
+              "en": "Provider publication time.",
+              "zh": "数据提供方的发布时间。"
+            },
+            "value": null,
+            "absent": true
+          },
+          {
+            "key": "available_at",
+            "name": {
+              "en": "First knowable",
+              "zh": "首次可知"
+            },
+            "meaning": {
+              "en": "Earliest time this value was lawfully knowable to us.",
+              "zh": "本系统可合法获知该数值的最早时间。"
+            },
+            "value": null,
+            "absent": true
+          },
+          {
+            "key": "collected_at",
+            "name": {
+              "en": "Collected",
+              "zh": "采集时间"
+            },
+            "meaning": {
+              "en": "When Mastermind received it.",
+              "zh": "Mastermind 接收到该数据的时间。"
+            },
+            "value": null,
+            "absent": true
+          },
+          {
+            "key": "revised_at",
+            "name": {
+              "en": "Revised",
+              "zh": "修订时间"
+            },
+            "meaning": {
+              "en": "Provider correction or revision time.",
+              "zh": "数据提供方的更正或修订时间。"
+            },
+            "value": null,
+            "absent": true
+          },
+          {
+            "key": "calculation_as_of",
+            "name": {
+              "en": "Worked out on",
+              "zh": "计算日期"
+            },
+            "meaning": {
+              "en": "Cut-off used for the derived result.",
+              "zh": "推导结果所使用的数据截止点。"
+            },
+            "value": null,
+            "absent": true
+          }
+        ]
+      }
+    ],
+    "non_economic_clocks": [
+      {
+        "name": {
+          "en": "Build stamp",
+          "zh": "生成时间"
+        },
+        "meaning": {
+          "en": "Producer generation time. Not an economic clock.",
+          "zh": "生产端生成时间，并非经济时钟。"
+        },
+        "value": "2026-11-02T07:18:10Z"
+      },
+      {
+        "name": {
+          "en": "Page refreshed",
+          "zh": "页面更新于"
+        },
+        "meaning": {
+          "en": "Static page render time. Not an economic clock.",
+          "zh": "静态页面渲染时间，并非经济时钟。"
+        },
+        "value": "2026-11-03T18:26:44.559881+00:00"
+      }
+    ],
+    "generation": {
+      "generation_id": "business_activity-US-6915645e5c32d4ea",
+      "producer": "engine.market_os.macro_workspaces.business_activity",
+      "code_version": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
+      "content_sha256": "6915645e5c32d4ea689ebe809da7802b460dd4a6bb4f9112b1d26696d328c958",
+      "calculation_as_of": "2026-10-31"
+    },
+    "artifact": {
+      "path": "macrodata/workspaces/business_activity/US/latest.json",
+      "manifest_path": "macrodata/workspaces/manifest.json",
+      "sha256": "6915645e5c32d4ea689ebe809da7802b460dd4a6bb4f9112b1d26696d328c958",
+      "bytes": 107703,
+      "min_client_contract": "mastermind.macro_workspace_snapshot.v1@1.0.0"
+    },
+    "authority": {
+      "class": "context_only",
+      "ceiling": "DESCRIPTIVE",
+      "flags": [
+        {
+          "name": {
+            "en": "Can rank",
+            "zh": "可排名"
+          },
+          "value": false
+        },
+        {
+          "name": {
+            "en": "Can gate",
+            "zh": "可作为闸门"
+          },
+          "value": false
+        },
+        {
+          "name": {
+            "en": "Can size",
+            "zh": "可决定仓位"
+          },
+          "value": false
+        },
+        {
+          "name": {
+            "en": "Can originate a signal",
+            "zh": "可产生信号"
+          },
+          "value": false
+        },
+        {
+          "name": {
+            "en": "Can execute",
+            "zh": "可执行交易"
+          },
+          "value": false
+        }
+      ],
+      "statement": {
+        "en": "Display-only context. This page cannot rank, gate, size, originate a signal, or execute anything.",
+        "zh": "仅供展示的背景信息。本页不能排名、设闸、定仓位、产生信号或执行任何交易。"
+      }
+    },
+    "corrections": {
+      "state": {
+        "en": "Superseded",
+        "zh": "已被取代"
+      },
+      "predecessor": "business_activity-US-68e6bc8e2e93d938",
+      "changed_fingerprints": [
+        "business_cycle:coincident_tier_index:550511ae0501635b",
+        "business_cycle:coincident_tier_momentum_6m:76a1a580ceb46d0e",
+        "business_cycle:lagging_tier_index:fffa775e9a7f860b",
+        "business_cycle:lagging_tier_momentum_6m:27019ba6a8bb408b",
+        "business_cycle:leading_tier_index:ea72a5625c5e0692",
+        "business_cycle:leading_tier_momentum_6m:e1c0c609887d2a35"
+      ],
+      "changed_sources": {
+        "en": "Source owner not yet named, Source owner not yet named, Source owner not yet named, Source owner not yet named, Source owner not yet named, Source owner not yet named",
+        "zh": "数据来源负责人待定、数据来源负责人待定、数据来源负责人待定、数据来源负责人待定、数据来源负责人待定、数据来源负责人待定"
+      },
+      "note": {
+        "en": "Same reference period as the predecessor print; a source value changed, so this print replaces the prior one. This print is as of 31 Oct 2026; the predecessor is as of 30 Sep 2026.",
+        "zh": "与上一期读数同一参考期；源值已变，本期取代上一期。本期截至2026年10月31日；上一期截至2026年9月30日。"
+      },
+      "predecessor_label": {
+        "en": "A prior published generation is on file.",
+        "zh": "已有上一已发布代次存档。"
+      }
+    }
+  },
+  "learning_events": [
+    "macro_workspace_opened",
+    "macro_state_changed_seen",
+    "macro_driver_expanded",
+    "macro_source_opened",
+    "macro_degraded_state_seen",
+    "macro_unknown_or_refusal_seen"
+  ],
+  "page_built_at": "2026-11-03T18:26:44.559881+00:00"
+}

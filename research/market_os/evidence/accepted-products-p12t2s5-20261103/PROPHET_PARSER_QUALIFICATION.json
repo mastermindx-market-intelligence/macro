@@ -1,0 +1,154 @@
+{
+  "task": "P12.T2.S9",
+  "at": "2026-11-03T23:43:18.550619+00:00",
+  "probe": "Actual two discriminants; all tests OSsandbox deny network*. No hosted proof or rawlog alternate.",
+  "environment": {
+    "task": "P12.T2.S9",
+    "started_at": "2026-11-03T23:21:41.189381+00:00",
+    "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "venv": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/prophet-parser-venv",
+    "scope": "ONE ordinary isolated project setup using exact washout job declared packages; no globalinstall/security/source/provider/browser/CI effect",
+    "packages": [
+      "pytest",
+      "pandas",
+      "numpy",
+      "pyarrow",
+      "pyyaml",
+      "jinja2",
+      "plotly",
+      "requests",
+      "beautifulsoup4",
+      "html5lib",
+      "openpyxl",
+      "scikit-learn",
+      "jsonschema==4.26.0",
+      "rjsmin==1.2.5"
+    ],
+    "ended_at": "2026-11-03T23:22:01.501599+00:00",
+    "exit_code": 0,
+    "versions": [
+      "attrs==26.1.0",
+      "beautifulsoup4==4.15.0",
+      "certifi==2026.10.23",
+      "charset-normalizer==3.5.2",
+      "cloudpickle==3.1.2",
+      "et_xmlfile==2.0.0",
+      "html5lib==1.1",
+      "idna==3.20",
+      "iniconfig==2.3.1",
+      "Jinja2==3.1.6",
+      "joblib==1.6.0",
+      "jsonschema==4.26.0",
+      "jsonschema-specifications==2025.9.1",
+      "MarkupSafe==3.0.4",
+      "narwhals==2.28.0",
+      "numpy==2.5.4",
+      "openpyxl==3.1.5",
+      "packaging==26.3",
+      "pandas==3.1.0",
+      "plotly==7.1.0",
+      "pluggy==1.7.0",
+      "pyarrow==26.0.1",
+      "Pygments==2.21.0",
+      "pytest==9.2.0",
+      "python-dateutil==4.0.0",
+      "PyYAML==6.0.3",
+      "referencing==0.37.0",
+      "requests==2.34.2",
+      "rjsmin==1.2.5",
+      "rpds-py==2026.9.1",
+      "scikit-learn==1.9.1",
+      "scipy==1.18.1",
+      "six==1.17.0",
+      "soupsieve==4.0",
+      "threadpoolctl==3.7.0",
+      "typing_extensions==4.16.0",
+      "tzdata==2026.6",
+      "urllib3==2.8.0",
+      "webencodings==0.6.1"
+    ]
+  },
+  "control_package": {
+    "version": "2.9.2",
+    "source": "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/soupsieve",
+    "isolated_target": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/soupsieve2-control",
+    "files": {
+      "__meta__.py": "1963634ae3a8537af6defe83d4fdfcb44b3ea5abe73a3895a6a13239f0ec3019",
+      "util.py": "4343151fbedc5015ccb4a5740f67fc4b27fdd2b7a63ded047cba9eebe9ac01e2",
+      "css_types.py": "3b14ecd69d9b64ae27bcf8c9bbe4d580f615acc5e743043b446ab471fcd9c02d",
+      "__init__.py": "155e0e97615195dcbbac6f789d01cd1e82536487506d425d6641a15e4237b621",
+      "pretty.py": "89233e34a0b3aee2500b012b8904fbd8bac5e2c971b226fb4c1e79d87d9bb2a0",
+      "css_parser.py": "92ac01283cc5831c479ffa6b77ddc3f284dac34d12911b717547fb8c8b5345ab",
+      "css_match.py": "526087fe5b5a9165480f2c9f281b3ad7db6da72c3d9c035b35576497767ae533"
+    },
+    "scope": "One parser package control only, copied read-only from installed software; all other packages remain job-venv versions; no global install or product vendoring."
+  },
+  "causal_result": "Same Python3.12.13/bs44.15/html5lib1.1/no lxml: activeSoup2.9.2 returns2PASS, activeSoup4.0 returns2FAIL. Both parsers html.parser/html5lib on4 omit inert documentselector nodes but preserve find_all/explicittemplate selection.",
+  "repair": "Only3exact published10656 compatibility hunks, runtimepost e699/testposts ed464+3874; plus1test-only affectednegative hunk preserving>=2copies andowner-integrity rejection. No wholeCI-owner import, packagepinback/lxml addition, testskip/waiver or data/template/model/clock change.",
+  "after_three_hunks": "8PASS1RED of9targeted; remainingnegative itself used documentselector and onlymutated1copy.",
+  "final_checks": "4.0 final2parameter negativesPASS; reuse unchanged8PASS. 2.9.2 legacy4PASS. No fullsuite duplication.",
+  "hosted_parser_version_and_cause": "UNVERIFIED pending original41729104897 rawlogs; no inheritedcredit or CIclear inferred.",
+  "review_manifest": {
+    "task": "P12.T2.S9",
+    "at": "2026-11-03T23:42:30.766738+00:00",
+    "worktree": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9",
+    "parent_head": "6d3febba446feef75a81c86100b1cf832ad53c68",
+    "scope": "Exact3published compatibility hunks plus1test-only context hunk required by actual hostile-negativeRED. Do not replace whole tests with upstream9872 blobs; other legitimate test additions remain intact. No CI-control import.",
+    "paths": [
+      {
+        "path": "scripts/prophet_journey_reconcile.py",
+        "post_sha256": "f4c53c484731fbd6cb3cb6719f9408c5455196c3567b42919673185ac1796657",
+        "post_git_blob": "e69986e3e2d020892917baa9a2f1cb926f2a42da",
+        "pre_git_blob": "c2f0c746a9435f3d3d0064798b7624bac1ffca69",
+        "frozen_copy": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/parser-review-inputs/scripts/prophet_journey_reconcile.py"
+      },
+      {
+        "path": "tests/test_prophet_card_shared.py",
+        "post_sha256": "37515ac2a64dfb12e4050275db6b2f9136506d028bdba9e32002d9cb50ce45a5",
+        "post_git_blob": "ed464911ab7f09f0d939f13990c66a664ff53f54",
+        "pre_git_blob": "61df015ce3ad56a58cae6f3e17be7774db2fd5e7",
+        "frozen_copy": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/parser-review-inputs/tests/test_prophet_card_shared.py"
+      },
+      {
+        "path": "tests/test_prophet_plan_relation.py",
+        "post_sha256": "b92da6ac0d707a0751bdb2f617fb33e2211ba9c416be820c3bb26e48a94aa1cc",
+        "post_git_blob": "3874b03c10700c82d6932ef482e30af00d1af3b5",
+        "pre_git_blob": "1832cf0113b6056c222f6184f99b8bc85866e60b",
+        "frozen_copy": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/parser-review-inputs/tests/test_prophet_plan_relation.py"
+      },
+      {
+        "path": "tests/test_prophet_journey_reconcile.py",
+        "post_sha256": "0298a09471b65ae4a31ab2cbb6b10d9753d847073a16b834914fb4e9da74c752",
+        "post_git_blob": "da0c4dc347961f372a4c299f978b42aab5614ee0",
+        "pre_git_blob": "9a846686480c9d32f573f3d1a8e2c4d37225674a",
+        "frozen_copy": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/parser-review-inputs/tests/test_prophet_journey_reconcile.py"
+      }
+    ],
+    "evidence_root": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103",
+    "verification": "Same isolatedPython3.12.13/bs44.15/html5lib1.1/no lxml; Soup2→2PASS; Soup4→2FAIL original. Threehunks→8PASS1RED (negative fixture documentselect only1copy);4th testhunk keeps>=2copies andintegrityFAIL; final negative2PASS; legacy control4PASS. All source tests OSdeny network*.",
+    "hosted_version_cause": "UNVERIFIED until original41729104897 logs, no inheritedcredit or CIclear",
+    "other_uncommitted_paths": "Bonds asset-only adapter under separateS8; exclude from this parser-only review/commit."
+  },
+  "raw_logs": {
+    "parser-soupsieve4-red.log": {
+      "sha256": "4882f74982b2d095771e896813e12642c53e9933244f7a40ab685379d379ef80",
+      "raw_utf8": "{\"python\": \"3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]\", \"bs4\": \"4.15.0\", \"soupsieve\": \"4.0\", \"soupsieve_path\": \"/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/prophet-parser-venv/lib/python3.12/site-packages/soupsieve/__init__.py\", \"lxml_importable\": false, \"network\": \"OS sandbox deny network*\", \"literal\": [{\"parser\": \"html.parser\", \"document_select\": [\"live\"], \"find_all\": [\"live\", \"inert\"], \"explicit_template_select\": [\"inert\"]}, {\"parser\": \"html5lib\", \"document_select\": [\"live\"], \"find_all\": [\"live\", \"inert\"], \"explicit_template_select\": [\"inert\"]}]}\nFF                                                                       [100%]\n=================================== FAILURES ===================================\n_ test_setup_table_fallback_missing_values_never_enrich_from_other_population __\n\n    def test_setup_table_fallback_missing_values_never_enrich_from_other_population():\n        from bs4 import BeautifulSoup\n        m = _r18_env().get_template('_prophet_setup_detail.html.j2').module\n        row = {'ticker': 'NO_FIELDS', 'strategy_sleeve': 'UNBOUND', 'horizon_days': 12,\n               'targets': [200.], 'plan_id': 'UNRELATED', 'price': None}\n        s = BeautifulSoup(str(m.table_action(row, None)), 'html5lib')\n        assert 'UNBOUND' not in s.text and 'UNRELATED' not in s.text\n>       assert 'Not supplied' in s.select_one('[data-source-field=\"price\"] dd').text\n                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AttributeError: 'NoneType' object has no attribute 'text'\n\ntests/test_prophet_card_shared.py:695: AttributeError\n______________________ test_j6_pass_all_fields_preserved _______________________\n\n    def test_j6_pass_all_fields_preserved():\n        soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)\n        su = _standouts_payload(ticker=\"TEST1\")\n        chk = _pjr._check_j6(soup, su, \"TEST1\")\n>       assert chk[\"status\"] == \"PASS\", chk\nE       AssertionError: {'id': '', 'status': 'FAIL', 'expected': 'template source body present', 'observed': 'no template .pvs-body-source for ticker', ...}\nE       assert 'FAIL' == 'PASS'\nE         \nE         - PASS\nE         + FAIL\n\ntests/test_prophet_journey_reconcile.py:623: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_prophet_card_shared.py::test_setup_table_fallback_missing_values_never_enrich_from_other_population\nFAILED tests/test_prophet_journey_reconcile.py::test_j6_pass_all_fields_preserved\n2 failed in 16.46s\n"
+    },
+    "parser-soupsieve2-control.log": {
+      "sha256": "16b5ef93f5f547821fd874f563a393f5c24ed0ecab9a0e9f5df1d4300ccc3b5b",
+      "raw_utf8": "{\"python\": \"3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]\", \"bs4\": \"4.15.0\", \"soupsieve\": \"2.9.2\", \"soupsieve_path\": \"/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/soupsieve2-control/soupsieve/__init__.py\", \"lxml_importable\": false, \"network\": \"OS sandbox deny network*\", \"literal\": [{\"parser\": \"html.parser\", \"document_select\": [\"live\", \"inert\"], \"find_all\": [\"live\", \"inert\"], \"explicit_template_select\": [\"inert\"]}, {\"parser\": \"html5lib\", \"document_select\": [\"live\", \"inert\"], \"find_all\": [\"live\", \"inert\"], \"explicit_template_select\": [\"inert\"]}]}\n..                                                                       [100%]\n2 passed in 3.42s\n"
+    },
+    "parser-compatible-soupsieve4-green.log": {
+      "sha256": "951fc4870549d5296c521a5958d2d0a98987a2e2c86f516936369d4c0ca91951",
+      "raw_utf8": "{\"python\": \"3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]\", \"bs4\": \"4.15.0\", \"soupsieve\": \"4.0\", \"lxml_importable\": false, \"network\": \"OS deny network*\"}\n........F                                                                [100%]\n=================================== FAILURES ===================================\n_ test_input_integrity_j6_rejects_matching_invented_template_and_display[price-$123.45] _\n\npath = 'price', shown = '$123.45'\n\n    @pytest.mark.parametrize(\"path,shown\", [(\"price\", \"$123.45\"),\n                                            (\"signal.above200\", \"Yes 是\")])\n    def test_input_integrity_j6_rejects_matching_invented_template_and_display(path, shown):\n        soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)\n        standouts = _standouts_payload(pool_digest=\"pool-source-digest\")\n        row = _pjr._standouts_payload_row(standouts, \"TEST1\")\n        target = row\n        pieces = path.split(\".\")\n        for piece in pieces[:-1]:\n            target = target[piece]\n        target[pieces[-1]] = None\n        fields = soup.select('[data-source-field=\"' + path + '\"] dd')\n>       assert len(fields) >= 2, \"test needs both displayed and template copies\"\nE       AssertionError: test needs both displayed and template copies\nE       assert 1 >= 2\nE        +  where 1 = len([<dd>$178.42 <span class=\"l-en\">as of 2026-09-26</span><span class=\"l-zh\">截至 2026-09-26</span></dd>])\n\ntests/test_prophet_journey_reconcile.py:2064: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_prophet_journey_reconcile.py::test_input_integrity_j6_rejects_matching_invented_template_and_display[price-$123.45]\n1 failed, 8 passed in 5.41s\n"
+    },
+    "parser-compatible-soupsieve4-negatives.log": {
+      "sha256": "66d8eb3fdc0810f6d60c8faab3505c23ec63f8750c26927a3cd90847e73d26ea",
+      "raw_utf8": "{\"python\": \"3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]\", \"bs4\": \"4.15.0\", \"soupsieve\": \"4.0\", \"lxml_importable\": false, \"network\": \"OS deny network*\"}\n..                                                                       [100%]\n2 passed in 3.47s\n"
+    },
+    "parser-compatible-soupsieve2-green.log": {
+      "sha256": "50e1a20e9b52d2fd3673d23bf127ae4e187ce7bb26815a92585f0541dda05b9a",
+      "raw_utf8": "{\"python\": \"3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]\", \"bs4\": \"4.15.0\", \"soupsieve\": \"2.9.2\", \"lxml_importable\": false, \"network\": \"OS deny network*\"}\n....                                                                     [100%]\n4 passed in 7.46s\n"
+    }
+  }
+}

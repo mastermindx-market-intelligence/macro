@@ -301,6 +301,7 @@ def detect_stale_series(
     multiplier: float = 3.0,
     session_calendars: dict[str, str | None] | None = None,
     now: datetime | None = None,
+    cadence_days_by_series: dict[str, int] | None = None,
 ) -> list[dict]:
     """Frozen-tail detector: after a SUCCESSFUL 200-OK fetch, compare each series'
     stored last-observation date against the expected cadence.
@@ -321,10 +322,15 @@ def detect_stale_series(
     """
     instant = now or datetime.now(timezone.utc)
     today = instant.date()
-    threshold = int(cadence_days * multiplier)
+    overrides = {} if cadence_days_by_series is None else cadence_days_by_series
+    if (type(overrides) is not dict or any(type(name) is not str or type(days) is not int or days <= 0
+                                          for name, days in overrides.items())):
+        raise ValueError("invalid per-series cadence")
     stale: list[dict] = []
     for name, df in frames.items():
         try:
+            series_cadence = overrides.get(name, cadence_days)
+            threshold = int(series_cadence * multiplier)
             df_clean = df.dropna(how="all")
             if df_clean.empty:
                 continue
@@ -344,13 +350,13 @@ def detect_stale_series(
                 log.warning(
                     "stale_series detected: %s/%s last_obs=%s age=%dd (threshold=%dd, "
                     "cadence=%dd×%.1f)",
-                    group, name, last_obs, age, threshold, cadence_days, multiplier,
+                    group, name, last_obs, age, threshold, series_cadence, multiplier,
                 )
                 stale.append({
                     "group": group,
                     "series": name,
                     "last_obs": str(last_obs),
-                    "cadence_days": cadence_days,
+                    "cadence_days": series_cadence,
                     "age_days": age,
                     **({"lag_sessions": lag_sessions, "session_calendar": market} if market else {}),
                 })
@@ -665,6 +671,16 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
                                       normalize_index=getattr(adapter, "normalize_index", True),
                                       overwrite_overlap=getattr(adapter, "overwrite_overlap", False))
                 rows += len(df)
+                # Opt-in producer evidence follows a successful canonical write.
+                # Evidence failure never rolls back/replays the acquisition.
+                after_commit = getattr(adapter, "after_store_commit", None)
+                if callable(after_commit):
+                    try:
+                        after_commit(series_name, df, merged,
+                                     committed_at=datetime.now(timezone.utc).isoformat())
+                    except Exception:
+                        observation_notes.append(
+                            f"{series_name}: post-store evidence unavailable; publication unqualified")
                 if capture_yahoo_receipts and series_name in store.YAHOO_CAPTURE_COHORT:
                     capture_attempted.add(series_name)
                     try:
@@ -736,7 +752,8 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
         # named stale_series entries to run_status.json for the health surface.
         stale_found = detect_stale_series(
             adapter.group, health_frames, cadence_days=stale_after_days,
-            session_calendars=session_calendars, now=instant)
+            session_calendars=session_calendars, now=instant,
+            cadence_days_by_series=getattr(adapter, "cadence_days_by_series", None))
         if stale_found:
             _write_stale_series(stale_found)
             notes = [f"frozen tail: {e['series']} last={e['last_obs']} age={e['age_days']}d"

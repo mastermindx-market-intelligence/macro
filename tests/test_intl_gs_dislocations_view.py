@@ -10,6 +10,7 @@ reads. Mutants 1–5 and 7 of the seat commission are named tests below.
 from __future__ import annotations
 
 import importlib.util
+import ast
 import json
 import re
 import subprocess
@@ -791,16 +792,174 @@ def test_v21_no_network_and_no_writes(builder, fixture, monkeypatch):
 
 # ---------------------------------------------------------------- V22 seam frozen
 
+def _v22_surveillance_contract(source):
+    """Freeze actual surveillance inputs/failure isolation, not other panels.
+
+    History, official Macro and native Risk are separately reviewed owners of
+    this shared builder. The surveillance mount file remains byte-frozen.
+    """
+    tree = ast.parse(source)
+    owners = [node for node in tree.body if isinstance(node, ast.FunctionDef)
+              and node.name == '_publication_workspace']
+    mains = [node for node in tree.body if isinstance(node, ast.FunctionDef)
+             and node.name == 'main']
+    assert len(owners) == len(mains) == 1
+    owner, main = owners[0], mains[0]
+
+    def local_nodes(node):
+        yield node
+        for child in ast.iter_child_nodes(node):
+            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+                yield child  # Its binding can shadow this owner; its body is another scope.
+            else:
+                yield from local_nodes(child)
+    calls_required = {'build_eod_inputs', 'build_observation_set', 'attach_surveillance'}
+    providers = calls_required | {'_workspace_overviews', 'uuid4', 'config', 'Path', 'datetime', 'timezone'}
+    entries = {'_publication_workspace', 'main'}
+    # Bind both module providers and caller/consumer-local aliases. Helpers for
+    # other panels can have their own imports without shadowing this seam.
+    alias_scope = [*tree.body, *local_nodes(owner), *local_nodes(main)]
+    aliases = [node for node in alias_scope if
+               (isinstance(node, (ast.ImportFrom, ast.Import)) and any(
+                   (alias.asname or alias.name) in providers | entries for alias in node.names))
+               or (isinstance(node, ast.FunctionDef) and (node.name in providers
+                   or node.name in entries and node is not owner and node is not main))
+               or (isinstance(node, (ast.ClassDef, ast.AsyncFunctionDef)) and node.name in providers | entries)
+               or (isinstance(node, ast.arg) and node.arg in providers | entries)
+               or (isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)) and any(
+                   isinstance(target, ast.Name) and target.id in providers | entries
+                   for binding in getattr(node, 'targets', [getattr(node, 'target', None)])
+                   if binding is not None for target in ast.walk(binding)))]
+    calls = [node for node in local_nodes(owner) if isinstance(node, ast.Call)
+             and isinstance(node.func, ast.Name) and node.func.id in calls_required]
+    assert sorted(node.func.id for node in calls) == sorted(calls_required)
+    blocks = [node for node in owner.body if isinstance(node, ast.Try) and any(
+        isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+        and call.func.id in calls_required for call in ast.walk(node))]
+    assert len(blocks) == 3
+    protected = {'closes', 'publication_inputs', 'eod_rights', 'observation_set',
+                 'data_root', 'evaluated_at', 'generation'}
+    writes = [node for node in local_nodes(owner)
+              if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)) and any(
+                  isinstance(target, ast.Name) and target.id in protected
+                  for binding in getattr(node, 'targets', [getattr(node, 'target', None)])
+                  if binding is not None for target in ast.walk(binding))]
+    # Keep every use of the admitted frame/grant, including indirect owner
+    # calls and direct mutation expressions, not just the final call names.
+    uses = [node for node in local_nodes(owner) if isinstance(node, ast.Call) and any(
+        isinstance(name, ast.Name) and name.id in {'closes', 'eod_rights'}
+        for name in ast.walk(node))]
+    workspace_origin = [node for node in owner.body if
+        (isinstance(node, ast.Assign) and isinstance(node.value, ast.Call)
+         and isinstance(node.value.func, ast.Name) and node.value.func.id == '_workspace_overviews')
+        or (isinstance(node, ast.If) and ast.dump(node.test) == ast.dump(ast.parse('workspace is None', mode='eval').body))]
+    assert len(workspace_origin) == 2
+    parameters = [arg for arg in [*owner.args.posonlyargs, *owner.args.args, *owner.args.kwonlyargs]
+                  if arg.arg in {'closes', 'data_root', 'evaluated_at'}]
+    assert len(parameters) == 3
+    callers = [node for node in local_nodes(main) if isinstance(node, ast.Call)
+               and isinstance(node.func, ast.Name) and node.func.id == '_publication_workspace']
+    assert len(callers) == 1
+    caller = callers[0]
+    caller_inputs = ast.Call(func=caller.func, args=caller.args,
+        keywords=[keyword for keyword in caller.keywords if keyword.arg in {'data_root', 'evaluated_at'}])
+    assert {keyword.arg for keyword in caller_inputs.keywords} == {'data_root', 'evaluated_at'}
+    # Freeze the actual frame producer's enclosing control/error path as well
+    # as the caller. Unrelated new sidecars remain outside this footprint.
+    producers = [node for node in main.body if any(
+        isinstance(name, ast.Name) and isinstance(name.ctx, ast.Store) and name.id == '_wr_intl_raw'
+        for name in ast.walk(node))]
+    assert producers
+    frame_aliases_and_writes = [node for node in local_nodes(main)
+        if (isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)) and any(
+            isinstance(name, ast.Name) and name.id == '_wr_intl_raw' for name in ast.walk(node))
+            and not (isinstance(getattr(node, 'value', None), ast.Call)
+                     and isinstance(node.value.func, ast.Name)
+                     and node.value.func.id == '_publication_workspace'))
+        or (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and any(
+            isinstance(name, ast.Name) and name.id == '_wr_intl_raw' for name in ast.walk(node.func)))]
+    # The two new sidecar argument validators are exact already-reviewed
+    # additions, absent from the old d3ab owner. Normalize only these exact
+    # predicates/errors; do not ignore arbitrary new preconditions or exits.
+    approved_validation = ast.parse("""
+if generation_sink is not None and (type(generation_sink) is not dict or generation_sink):
+    raise ValueError("invalid_international_generation_sink")
+if ((investigation_request is None) != (investigation_sink is None)
+        or (investigation_sink is not None
+            and (type(investigation_sink) is not dict or investigation_sink))):
+    raise ValueError("invalid_international_investigation_sink")
+""").body
+    approved_validation = {ast.dump(node, include_attributes=False): node
+                           for node in approved_validation}
+    core_start = next(index for index, node in enumerate(owner.body)
+                      if isinstance(node, ast.Assign) and any(
+                          isinstance(target, ast.Name) and target.id == 'generation'
+                          for target in node.targets))
+    argument_names = {arg.arg for arg in owner.args.kwonlyargs}
+    for encoded, validator in approved_validation.items():
+        extra = {'generation_sink'} if 'generation_sink' in {
+            node.id for node in ast.walk(validator) if isinstance(node, ast.Name)} else {
+                'investigation_request', 'investigation_sink'}
+        positions = [index for index, node in enumerate(owner.body)
+                     if ast.dump(node, include_attributes=False) == encoded]
+        assert len(positions) == (1 if extra <= argument_names else 0)
+        assert not positions or positions[0] < core_start
+    anchor_ids = {id(node) for node in [*writes, *uses, *workspace_origin, *blocks]}
+    transfers = (ast.Return, ast.Raise, ast.Break, ast.Continue, ast.Yield, ast.YieldFrom)
+    ordered = []
+    for statement in owner.body:
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            continue
+        encoded = ast.dump(statement, include_attributes=False)
+        if encoded in approved_validation:
+            continue
+        nodes = list(local_nodes(statement))
+        if any(id(node) in anchor_ids or isinstance(node, transfers) for node in nodes):
+            # Whole enclosing control structure: moving a protected write or
+            # putting it behind another condition/return changes this sequence.
+            ordered.append(encoded)
+    ordered_owner = ast.Expr(value=ast.Constant(value=tuple(ordered)))
+    return ast.dump(ast.Module(body=[*aliases, *parameters, *writes, *uses,
+        *workspace_origin, *blocks, caller_inputs, *producers, *frame_aliases_and_writes, ordered_owner, owner.body[-1]],
+        type_ignores=[]), include_attributes=False)
+
+
 def test_v22_seam_files_unchanged_and_builder_registered():
     sha = _merge_base()
-    for path in (MOUNT_PATH, BUILD_INTL_PATH):
-        result = subprocess.run(["git", "diff", "--quiet", sha, "--", str(path)],
-                                cwd=REPO, capture_output=True, text=True)
-        assert result.returncode == 0, f"{path} changed vs merge base"
-    mount = _load(MOUNT_PATH, "lib.intl_surveillance_mount_check")
-    assert mount.BUILDERS["dislocations"] == "lib.intl_gs_dislocations_view"
-    module = _load(BUILDER_PATH, "lib.intl_gs_dislocations_view_check")
+    result = subprocess.run(['git', 'diff', '--quiet', sha, '--', str(MOUNT_PATH)],
+                            cwd=REPO, capture_output=True, text=True)
+    assert result.returncode == 0, f'{MOUNT_PATH} changed vs merge base'
+    previous = subprocess.run(['git', 'show', sha + ':scripts/build_intl.py'],
+                              cwd=REPO, capture_output=True, text=True)
+    assert previous.returncode == 0, 'FAIL CLOSED: compared builder source missing'
+    assert _v22_surveillance_contract(BUILD_INTL_PATH.read_text()) == _v22_surveillance_contract(previous.stdout)
+    mount = _load(MOUNT_PATH, 'lib.intl_surveillance_mount_check')
+    assert mount.BUILDERS['dislocations'] == 'lib.intl_gs_dislocations_view'
+    module = _load(BUILDER_PATH, 'lib.intl_gs_dislocations_view_check')
     assert callable(module.build_view)
+
+
+@pytest.mark.parametrize('before, after', [
+    ('rights=eod_rights)', 'rights={})'),
+    ('data_root=Path(data_root), rights=eod_rights)', 'data_root=Path("foreign"), rights=eod_rights)'),
+    ('evaluated_at=evaluated_at,\n            data_root=Path(data_root)', 'evaluated_at=None,\n            data_root=Path(data_root)'),
+    ('workspace, observations=observation_set)', 'workspace, observations={})'),
+    ('observation_set = None', 'observation_set = {}'),
+    ('        observation_set = None\n    try:\n        # W2F seam:',
+     '        raise\n    try:\n        # W2F seam:'),
+    ('    try:\n        # W2F seam:', '    observation_set = {}\n    try:\n        # W2F seam:'),
+])
+def test_v22_guard_rejects_changed_inputs_disclosure_and_failure_isolation(before, after):
+    original = BUILD_INTL_PATH.read_text()
+    assert before in original
+    changed = original.replace(before, after, 1)
+    assert _v22_surveillance_contract(changed) != _v22_surveillance_contract(original)
+
+
+def test_v22_guard_allows_unrelated_panel_source_without_unfreezing_surveillance():
+    original = BUILD_INTL_PATH.read_text()
+    unrelated = original + '\ndef _independent_history_owner_note():\n    return "current reconstruction"\n'
+    assert _v22_surveillance_contract(unrelated) == _v22_surveillance_contract(original)
 
 
 # ---------------------------------------------------------------- V23 horizon
@@ -1023,3 +1182,97 @@ class TestIntlTooltipLocale:
         assert '[tabindex]' in css and ':focus-visible{outline:2px solid var(--link)' in css
         assert '<script src="theme.js"></script>' in (ROOT / "templates/intl.html.j2").read_text()
         assert '"theme.js"' in (ROOT / "scripts/build_intl.py").read_text()
+
+@pytest.mark.parametrize('shadow', [
+    '\ndef build_observation_set(*args, **kwargs):\n    return {}\n',
+    '\nfrom foreign_provider import foreign as attach_surveillance\n',
+    '\n_publication_workspace = lambda *args, **kwargs: {}\n',
+    '\nfrom foreign_provider import foreign as main\n',
+])
+def test_v22_guard_rejects_shadowed_provider_bindings(shadow):
+    original = BUILD_INTL_PATH.read_text()
+    assert _v22_surveillance_contract(original + shadow) != _v22_surveillance_contract(original)
+
+
+@pytest.mark.parametrize('before, after', [
+    ('_wr_intl_raw, data_root=config.data_dir(),',
+     'None, data_root=config.data_dir(),'),
+    ('_wr_intl_raw = _wr_inputs._intl_closes()', '_wr_intl_raw = None'),
+    ('_wr_intl_raw = _wr_inputs._intl_closes()',
+     '_wr_intl_raw = _wr_inputs._intl_closes()\n        _wr_intl_raw.iloc[0] = 0'),
+    ('_wr_intl_raw = _wr_inputs._intl_closes()',
+     '_wr_intl_raw = _wr_inputs._intl_closes()\n        unreviewed_alias = _wr_intl_raw'),
+    ('production_inputs=publication_inputs,', 'production_inputs=None,'),
+    ('workspace_generation=generation,', 'workspace_generation=None,'),
+    ('from uuid import uuid4', 'from foreign_provider import foreign as uuid4'),
+])
+def test_v22_guard_rejects_changed_upstream_frame_clock_generation_or_alias(before, after):
+    original = BUILD_INTL_PATH.read_text()
+    assert before in original
+    assert _v22_surveillance_contract(original.replace(before, after, 1)) != _v22_surveillance_contract(original)
+
+
+@pytest.mark.parametrize('name', ['_publication_workspace', 'main'])
+def test_v22_guard_refuses_duplicate_entry_definitions(name):
+    original = BUILD_INTL_PATH.read_text()
+    duplicate = '\ndef ' + name + '(*args, **kwargs):\n    return {}\n'
+    with pytest.raises(AssertionError):
+        _v22_surveillance_contract(original + duplicate)
+
+
+def test_v22_ordered_owner_rejects_early_return_before_surveillance():
+    original = BUILD_INTL_PATH.read_text()
+    marker = '    observation_set = None\n    try:\n        # W2F-X'
+    assert marker in original
+    changed = original.replace(marker, '    return workspace\n' + marker, 1)
+    assert _v22_surveillance_contract(changed) != _v22_surveillance_contract(original)
+
+
+def test_v22_ordered_owner_rejects_overwriting_successful_observations_after_production():
+    original = BUILD_INTL_PATH.read_text()
+    tree = ast.parse(original)
+    owner = next(node for node in tree.body if isinstance(node, ast.FunctionDef)
+                 and node.name == '_publication_workspace')
+    initial = next(node for node in owner.body if isinstance(node, ast.Assign)
+                   and any(isinstance(target, ast.Name) and target.id == 'observation_set'
+                           for target in node.targets))
+    production = next(node for node in owner.body if isinstance(node, ast.Try)
+                      and any(isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+                              and call.func.id == 'build_observation_set' for call in ast.walk(node)))
+    owner.body.remove(initial)
+    owner.body.insert(owner.body.index(production) + 1, initial)
+    changed = ast.unparse(tree)
+    assert _v22_surveillance_contract(changed) != _v22_surveillance_contract(original)
+
+
+def test_v22_ordered_owner_allows_unrelated_nested_helper_control_transfers():
+    original = BUILD_INTL_PATH.read_text()
+    marker = '    observation_set = None\n    try:\n        # W2F-X'
+    helper = ('    def independent_field_formatter(closes):\n'
+              '        if closes is None:\n            return None\n'
+              '        raise ValueError("independent field")\n')
+    assert marker in original
+    changed = original.replace(marker, helper + marker, 1)
+    assert _v22_surveillance_contract(changed) == _v22_surveillance_contract(original)
+
+
+@pytest.mark.parametrize('fault', ['duplicate', 'after_core'])
+def test_v22_ordered_owner_rejects_relocated_or_repeated_sidecar_validation(fault):
+    import copy
+    original = BUILD_INTL_PATH.read_text()
+    tree = ast.parse(original)
+    owner = next(node for node in tree.body if isinstance(node, ast.FunctionDef)
+                 and node.name == '_publication_workspace')
+    validator = next(node for node in owner.body if isinstance(node, ast.If)
+                     and any(isinstance(name, ast.Name) and name.id == 'generation_sink'
+                             for name in ast.walk(node)))
+    if fault == 'duplicate':
+        owner.body.insert(owner.body.index(validator) + 1, copy.deepcopy(validator))
+    else:
+        owner.body.remove(validator)
+        position = next(i for i, node in enumerate(owner.body) if isinstance(node, ast.Assign)
+                        and any(isinstance(target, ast.Name) and target.id == 'generation'
+                                for target in node.targets))
+        owner.body.insert(position + 1, validator)
+    with pytest.raises(AssertionError):
+        _v22_surveillance_contract(ast.unparse(tree))

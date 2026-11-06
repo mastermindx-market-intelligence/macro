@@ -1,6 +1,7 @@
 """Independent C2 numerical oracle and boundary tests for compare_policy_points.
 
 Oracle arithmetic follows SHARED_CONTRACT Policy preview and the parent API freeze:
+interpret declared decimal float text independently with Decimal,
 normalize each observation to bp with Fraction, then
 gap = A - B, signed_change = end - start, absolute_change = abs(end) - abs(start).
 Does not import parent tests or replace engine arithmetic with stubs.
@@ -13,6 +14,7 @@ import math
 import os
 import time
 from copy import deepcopy
+from decimal import Decimal
 from fractions import Fraction
 from pathlib import Path
 
@@ -95,7 +97,7 @@ def fixture(values=(0.5, 0.5, 3.5, 3.0), *, units=None, period=None, economies=(
 
 
 def to_bp(value, unit):
-    quantity = Fraction(value)
+    quantity = Fraction(value) if type(value) is int else Fraction(Decimal(str(value)))
     if unit == "percent":
         return quantity * 100
     if unit == "bp":
@@ -103,7 +105,15 @@ def to_bp(value, unit):
     raise AssertionError("oracle received a unit outside percent/bp")
 
 
-def emit(quantity):
+def emit(quantity, *, float_input=False):
+    # Float-derived answers retain the accepted finite float-range bound even
+    # when decimal normalization makes an answer mathematically integral.
+    if float_input:
+        try:
+            if not math.isfinite(float(quantity)):
+                return UNREP
+        except OverflowError:
+            return UNREP
     if quantity.denominator == 1:
         return quantity.numerator
     try:
@@ -121,7 +131,8 @@ def oracle(values, units=("percent",) * 4):
     end = bp[1] - bp[3]
     signed_change = end - start
     absolute_change = abs(end) - abs(start)
-    emitted = [emit(item) for item in (start, end, signed_change, absolute_change)]
+    emitted = [emit(item, float_input=any(type(value) is float for value in values))
+               for item in (start, end, signed_change, absolute_change)]
     if any(item is UNREP for item in emitted):
         return dict(state="unavailable", reasons=["arithmetic_unrepresentable"])
     if absolute_change < 0:
@@ -566,3 +577,31 @@ def test_real_owner_is_not_a_stub():
     assert "from fractions import Fraction" in src
     assert "store.read" not in src[src.index("def compare_policy_points"):]
     assert owner.compare_policy_points.__code__.co_argcount == 3
+
+
+def test_declared_decimal_numbers_do_not_inherit_binary_image_or_round_tiny_changes():
+    values = (0.1, 0.3, 0.0, 0.0)
+    result = compare(*fixture(values))
+    assert result["state"] == "qualified"
+    assert result["signed_start_bp"] == 10
+    assert result["signed_end_bp"] == 30
+    assert result["signed_change_bp"] == 20
+    assert Fraction(0.3) - Fraction(0.1) != Fraction(Decimal("0.3")) - Fraction(Decimal("0.1"))
+    tiny = (1.0, math.nextafter(1.0, 2.0), 1.0, 1.0)
+    result = compare(*fixture(tiny))
+    assert result["state"] == "qualified"
+    assert result["signed_change_bp"] == 2e-14
+    assert result["direction"] == "widened"
+    assert result["signed_change_bp"] != float(100 * (Fraction(tiny[1]) - 1))
+
+
+def test_decimal_normalization_preserves_subnormal_unit_scaling_and_float_range_refusal():
+    values = (5e-324, 5e-324, 0.0, 0.0)
+    for unit, expected in (("bp", 5e-324), ("percent", 5e-322)):
+        result = compare(*fixture(values, units={slot: unit for slot in SLOTS}))
+        assert result["state"] == "qualified"
+        assert result["signed_start_bp"] == result["signed_end_bp"] == expected > 0
+        assert result["signed_change_bp"] == 0
+    huge = compare(*fixture((1e308, 1e308, 0.0, 0.0)))
+    assert huge["state"] == "unavailable"
+    assert huge["reasons"] == ["arithmetic_unrepresentable"]

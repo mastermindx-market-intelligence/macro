@@ -1,0 +1,74 @@
+{
+  "task": "P12.T2.S14.S2",
+  "base": "ca66226c42222458a8c9d5f7cbbaa53ea89400f9",
+  "subject": "tests/test_commodity_workspace_ui.js",
+  "postimage_sha256": "ca034153346a67234334f5af0427c71c43d94acd3bd1530280eb42eaa2264f56",
+  "old27_named_assertions_all_executed_once": [
+    "default overview and dated evidence",
+    "commodity selection hides overview hero and keeps URL context",
+    "company continuation preserves owner fields and the current investigation",
+    "relationships carries a selected explanation without treating it as evidence",
+    "changing explanation changes the mechanism and its evidence questions together",
+    "company return transport is bounded, single-encoded and idempotent",
+    "research exposes explanation and requires a session window",
+    "per-commodity draft preserves its explanation and exact numeric condition",
+    "export includes a recoverable evidence appendix and stays inactive",
+    "Gold export retains its regional proxy and excludes petroleum context",
+    "incompatible or incomplete imports do not silently change their semantics",
+    "import restores the same explanation into relationships and research",
+    "a stale import preserves the active investigation",
+    "malformed assets and deeply nested imports reject without changing the investigation",
+    "a delayed earlier import cannot overwrite the most recent file selection",
+    "a rejected outdated file read cannot clear the newer import status",
+    "comparison selection is bounded to four without losing the chosen assets",
+    "comparison uses the selected exact publisher window",
+    "gold physical handoff opens its real owner panel",
+    "return restores the selected commodity and closes advanced analytics",
+    "company return follows Gold and the selected comparison window",
+    "partial coverage has a real selected-commodity fallback",
+    "Chinese native controls show Chinese labels",
+    "keyboard tabs move selection and focus together",
+    "browser history restores the previous view",
+    "direct hash and repeated language renders keep the exact company return",
+    "rendered DOM has no duplicate IDs or event errors"
+  ],
+  "new_cases": 4,
+  "original_checkCompanyReturn_and_check_function_exact": true,
+  "every_original_source_line_retained_in_order": true,
+  "source_only_fixture_cause": "Current eligible cohort absence is legitimate by retained producer predicate; original positive harness assumed a link exists. Qualified positive fixture is retained owner cohort, always canonical-rendered, no conditional skip.",
+  "local_environment": {
+    "node": "26.5.0",
+    "python": "3.12",
+    "jsdom": "26.1.0",
+    "setup": "offline cache39packages, scripts ignored, external only",
+    "test_network": "OSdeny-network",
+    "hosted_declared_node": "20",
+    "hosted_equivalence_claimed": false
+  },
+  "tests": {
+    "original_current_ui": "REDafter2PASS missingdata-cw-company-href",
+    "repaired_ui": "31PASS includingall27original cases",
+    "siblingpresentation": "1PASS sourceunchanged",
+    "missing_qualified_target": "expectedRED0!==6; no bypass/conditional skip"
+  },
+  "production_raw_templates_JS_model_CI_unchanged": true,
+  "qualification": "Test/source fidelity only. No new runtime/publication/browser/visual/data-auth/PIT/host/provider claim; current417752 still pending finalsemantics.",
+  "raw_logs": {
+    "s14-fault-commodity-ui-local.log": {
+      "sha256": "ae7b4ccca37f4498d5388a776660c7a5f9d7b6b54c64223e2efe5ca3e0f970e1",
+      "raw": "PASS default overview and dated evidence\nPASS commodity selection hides overview hero and keeps URL context\nAssertionError [ERR_ASSERTION]: [data-cw-company-href]\n    at q (/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/tests/test_commodity_workspace_ui.js:29:48)\n    at checkCompanyReturn (/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/tests/test_commodity_workspace_ui.js:37:14)\n    at /Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/tests/test_commodity_workspace_ui.js:67:90\n    at check (/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/tests/test_commodity_workspace_ui.js:35:25)\n    at /Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/tests/test_commodity_workspace_ui.js:67:3\n    at Object.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/tests/test_commodity_workspace_ui.js:256:3)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: null,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n"
+    },
+    "s14-fault-commodity-ui-final.log": {
+      "sha256": "225a6db1a3c32fd2bd0cd2e877ca0faec02e526aafd96fb4c01980a744e2e267",
+      "raw": "PASS current publication renders only its actual owner-qualified links, including none\nPASS actual current publication initializes and preserves its source-only relationship fallback\nPASS canonical empty-cohort view invents no company and retains each owner continuation\nPASS retained qualified owner is rendered by the canonical template under its own fixture fingerprint\nPASS default overview and dated evidence\nPASS commodity selection hides overview hero and keeps URL context\nPASS company continuation preserves owner fields and the current investigation\nPASS relationships carries a selected explanation without treating it as evidence\nPASS changing explanation changes the mechanism and its evidence questions together\nPASS company return transport is bounded, single-encoded and idempotent\nPASS research exposes explanation and requires a session window\nPASS per-commodity draft preserves its explanation and exact numeric condition\nPASS export includes a recoverable evidence appendix and stays inactive\nPASS Gold export retains its regional proxy and excludes petroleum context\nPASS incompatible or incomplete imports do not silently change their semantics\nPASS import restores the same explanation into relationships and research\nPASS a stale import preserves the active investigation\nPASS malformed assets and deeply nested imports reject without changing the investigation\nPASS a delayed earlier import cannot overwrite the most recent file selection\nPASS a rejected outdated file read cannot clear the newer import status\nPASS comparison selection is bounded to four without losing the chosen assets\nPASS comparison uses the selected exact publisher window\nPASS gold physical handoff opens its real owner panel\nPASS return restores the selected commodity and closes advanced analytics\nPASS company return follows Gold and the selected comparison window\nPASS partial coverage has a real selected-commodity fallback\nPASS Chinese native controls show Chinese labels\nPASS keyboard tabs move selection and focus together\nPASS browser history restores the previous view\nPASS direct hash and repeated language renders keep the exact company return\nPASS rendered DOM has no duplicate IDs or event errors\nRESULT 31 rendered-DOM journeys passed; this is not a visual-layout proof.\n"
+    },
+    "s14-fault-commodity-presentation-local.log": {
+      "sha256": "e4566c414d30d4a15b79bf613f28ca473dbfc3fdc68fed54314bcb8b9829eeb7",
+      "raw": "PASS signed shared scale, null/zero distinction, empty selection, draft context and language\n"
+    },
+    "s14-commodity-final-target-falsifier.log": {
+      "sha256": "52f8e0fead853e6dd84b7fd6ef248166b65bbbb32552095bb9526b63a08864e7",
+      "raw": "PASS current publication renders only its actual owner-qualified links, including none\nPASS actual current publication initializes and preserves its source-only relationship fallback\nPASS canonical empty-cohort view invents no company and retains each owner continuation\nnode:internal/assert/utils:146\n  throw error;\n  ^\n\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n0 !== 6\n\n    at /Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/tests/test_commodity_workspace_ui.js:210:10\n    at check (/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/tests/test_commodity_workspace_ui.js:167:25)\n    at Object.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/tests/test_commodity_workspace_ui.js:205:1)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object.<anonymous> (/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14_commodity_target_falsifier.js:6:127)\n    at Module._compile (node:internal/modules/cjs/loader:1934:14)\n    at Object..js (node:internal/modules/cjs/loader:2074:10)\n    at Module.load (node:internal/modules/cjs/loader:1656:32)\n    at Module._load (node:internal/modules/cjs/loader:1448:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 0,\n  expected: 6,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\nNode.js v26.5.0\n"
+    }
+  }
+}

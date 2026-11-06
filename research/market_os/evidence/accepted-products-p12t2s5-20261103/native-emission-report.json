@@ -1,0 +1,94 @@
+{
+  "scope": "Actual incumbent native emissions in the isolated owned repository; exact retained real public inputs; no data/producer recompute or private entitlement claim",
+  "forensics": {
+    "interface": "scripts.build_fundamental_forensics.render_shell(root), including normal write_page and _atomic_copy",
+    "input": "data/fundamental_forensics/public_summary.json",
+    "input_sha256": "3a2806a1ff1844dabd7b9c3c1f7bcee85af11041d0ed34ec5dc97682e27d34c5",
+    "summary_as_of": "2026-11-03",
+    "public_counts": {
+      "companies": 1493,
+      "findings": 1058
+    },
+    "private_rows_loaded": false,
+    "output": "site/fundamental_forensics.html",
+    "output_sha256": "af757f0321b69e2e29e5e5b1efd3a726798cd4995512dd1296223a1e5f1c9968",
+    "paired_js_exact_template": true,
+    "limits": "Public shell and assets only; compose_state/publish_private were not called. Current-entitled source click and native new unavailable-state presentation remain unqualified."
+  },
+  "business_activity": {
+    "interface": "native read_workspace/build_view/build_page/render_page/write_page; actual analyst mountability, no shim",
+    "base": "12c551c2512fc57e12743fac17a2874e001cf6db",
+    "inputs": {
+      "site/macrodata/workspaces/manifest.json": {
+        "git_blob": "44d4937e6ff29947e2ade91639ad77bba86c599b",
+        "sha256": "39b93af545ded66bcb30cea9186557f225533011a44cc9f800c3ad9a610e1601",
+        "bytes": 6957
+      },
+      "site/macrodata/workspaces/business_activity/US/latest.json": {
+        "git_blob": "24cda88e96b8cdf14c266a6612155d4667434861",
+        "sha256": "26180d18fbda8661acb5a959be65cf200b840f0582a997ba6419badd384255ca",
+        "bytes": 109502
+      }
+    },
+    "input_artifact": {
+      "path": "macrodata/workspaces/business_activity/US/latest.json",
+      "manifest_path": "macrodata/workspaces/manifest.json",
+      "sha256": "d1c1cbde31c074c74d88546da34a1531b49cdf0cd50b9d88f5ea4153aeec5393",
+      "bytes": 109502,
+      "min_client_contract": "mastermind.macro_workspace_snapshot.v1@1.0.0"
+    },
+    "all_input_bytes_unchanged": true,
+    "metric_count": 31,
+    "view_metric_sha256": "cf82364c9bc930dadd36fd15675ff56fb4a04edb984d7a2983872eeedea5e129",
+    "definition_versions": [
+      "1.0.0"
+    ],
+    "owner_metrics_and_clocks_unchanged_by_renderer": true,
+    "page_built_at": "2026-11-03T21:52:38Z",
+    "page_built_is_not_observation": true,
+    "output": "site/macro_business_activity.html",
+    "output_sha256": "b6f1230f217d42f5b3fec9df8aa2ba52a1329e915940c406c23b793cafbf8f42",
+    "actual_analyst_mountability": {
+      "mountable": true
+    },
+    "input_join_invalidated_original_retained_emission": {
+      "accepted_owner_artifact": {
+        "path": "macrodata/workspaces/business_activity/US/latest.json",
+        "manifest_path": "macrodata/workspaces/manifest.json",
+        "sha256": "6915645e5c32d4ea689ebe809da7802b460dd4a6bb4f9112b1d26696d328c958",
+        "bytes": 107703,
+        "min_client_contract": "mastermind.macro_workspace_snapshot.v1@1.0.0"
+      },
+      "current_owner_artifact": {
+        "path": "macrodata/workspaces/business_activity/US/latest.json",
+        "manifest_path": "macrodata/workspaces/manifest.json",
+        "sha256": "d1c1cbde31c074c74d88546da34a1531b49cdf0cd50b9d88f5ea4153aeec5393",
+        "bytes": 109502,
+        "min_client_contract": "mastermind.macro_workspace_snapshot.v1@1.0.0"
+      },
+      "same_output_path_different_current_artifact": true,
+      "old_receipt_preserved": "native-emission-initial-retained.json",
+      "cause": "Source-base and retained accepted snapshot are different generations; current protected canonical snapshot and manifest are used together. No current data is overwritten."
+    },
+    "network_attempts": [],
+    "limits": "Actual current-protected finite published composite input, not independently current economic truth/raw source legs/new model or native/served proof."
+  },
+  "Bonds": {
+    "state": "SOURCE_ONLY_NORMAL_FULL_BUILD_NOT_RUN",
+    "reason": "Accepted seven-country owner observations and component snapshots are not a complete full-page inputs/fr/credit/compass/chart/alert bundle. main also rewrites data/bonds output. No missing input was substituted or broader producer/data write run."
+  },
+  "ChinaHub": {
+    "state": "NATIVE_RENDERER_REPLAY_ONLY_NOT_BUS_BUILD",
+    "interface": "scripts.build_china_intel._env().get_template(...).render(b,cmd_full)",
+    "input_briefing_sha256": "c5dbf73a9546226efd1f5bf8d071aefdd8bb3ddff5875ff8da8ea713540c67fa",
+    "input_command_sha256": "13fe83880fc517fa67568fb3ae626cb2f98a62bb5ded0c0e8feaee536f9ad6ab",
+    "output": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/china-native-renderer-replay.html",
+    "output_sha256": "b2bd494bf16584be5bdb2c3edd4839c06ae14a25a58263cc2d832020b5b03840",
+    "all_owner_payloads_unchanged": true,
+    "bus_or_collection_called": false,
+    "limitation": "Private unshimmed source/semantic replay only; no tracked generated China page, full upstream producer emission, source download, browser or serving claim."
+  },
+  "network_attempts": [],
+  "browser": "HELD; no launch or alternate after explicit child-sandbox refusal",
+  "effects": "No PR/push/hostedCI/host/provider/serving; owned site outputs only; no input bytes altered"
+}

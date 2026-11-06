@@ -7119,6 +7119,65 @@ canada:
 # with per-country flags. Taiwan macro is thin on keyless sources -> degrades.
 # ===========================================================================
 intl:
+  policy_comparison_publication:
+    status: confirmed
+    policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-ecb-boe-policy-comparison
+    metadata: allowed
+    value_permission: allowed
+  # -- Plane A: prices (group=intl) — yfinance indices + vol + FX -------------
+  field_publication:
+    GB.policy_rate:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-boe-bank-rate-admission
+      metadata: allowed
+      value_permission: allowed
+    EZ.gdp_yoy:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-gdp-and-hicp
+      metadata: allowed
+      value_permission: allowed
+    EZ.cpi_yoy:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-gdp-and-hicp
+      metadata: allowed
+      value_permission: allowed
+    EZ.annual_current_account:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-annual-current-account
+      metadata: allowed
+      value_permission: allowed
+
+  # Narrow named nominal-point mapping; the incumbent service owns previews.
+  # Saved identity/question and controlled preview remain native owner inputs.
+  risk_summary_publication:
+    status: confirmed
+    scope: intl-us-transmission-derived-summary-v1
+    policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#incumbent-us-transmission-derived-summary
+    metadata: allowed
+    value_permission: allowed
+    audience: anonymous-and-registered-intl-html
+    fields:
+    - state
+    - evidence_refs
+    - diagnostic.reported_state
+    - calculation_at
+    - observation_dates
+    - origin_coverage
+  # Root adopted the finite derived-output scope on 2026-11-05; source release
+  # and actual native materialization qualification remain separate.
+  # History is public inline output on intl.html, not an entitled-only payload.
+  history_publication:
+    status: confirmed
+    scope: intl-current-reconstruction-score-history-v1
+    decision_ref: https://github.com/mastermindx-market-intelligence/macro/pull/7949#issuecomment-6589273748
+    audience: anonymous-and-registered-intl-html
+    fields: [observation_at, growth_score, inflation_score]
+    metadata: [artifact_ref, read_at, method_ref, universe_ref]
+    markets: [JP, KR, TW, IN, AU, GB, EZ]
+    input_classes: [configured-native-intl-yahoo, configured-native-intl-macro, configured-native-shared-yahoo]
+    history_kind: current_reconstruction
+    input_configuration_sha256: 4c4086708c9823025c9e61d38fd19874ca7444fec792eb801443aa4db4a59d24
+
   # Chairman confirmed permitted user-facing EOD redistribution on 2026-10-09.
   # This is a source-scoped publication decision, NOT a provider session-clock
   # attestation, trading authorization, or blanket rights grant to other feeds.
@@ -7163,6 +7222,62 @@ intl:
         timeout_s: 20
         params: {geo: EA21, s_adj: SA, age: TOTAL, unit: PC_ACT, sex: T}
         release_period_semantics: Monthly seasonally adjusted unemployment rate, current euro-area composition
+      GB_bank_rate_official:
+        provider: boe
+        series_key: IUDBEDR
+        unit: percent
+        retries: 1
+        timeout_s: 20
+        release_period_semantics: Daily official Bank Rate; original LAST_UPDATED has unknown
+          timezone
+      EZ_gdp_yoy_official:
+        provider: eurostat
+        dataset: NAMQ_10_GDP
+        since: 2024-Q1
+        unit: CLV_PCH_SM
+        retries: 1
+        timeout_s: 20
+        params:
+          freq: Q
+          unit: CLV_PCH_SM
+          s_adj: SCA
+          na_item: B1GQ
+          geo: EA21
+        release_period_semantics: Native same-quarter previous-year rate; economic quarter
+          end, not publication time
+      EZ_hicp_yoy_official:
+        provider: eurostat
+        dataset: PRC_HICP_MINR
+        since: 2026-01
+        unit: RCH_A
+        retries: 1
+        timeout_s: 20
+        params:
+          freq: M
+          unit: RCH_A
+          coicop18: TOTAL
+          geo: EA21
+        release_period_semantics: Native harmonized CPI annual rate; economic month end,
+          not publication time
+      EZ_current_account_gdp_official:
+        provider: eurostat
+        dataset: TIPSBP20
+        since: '2023'
+        unit: PC_GDP
+        retries: 1
+        timeout_s: 20
+        params:
+          freq: A
+          unit: PC_GDP
+          bop_item: CA
+          sector10: S1
+          sectpart: S1
+          stk_flow: BAL
+          partner: EXT_EA21
+          s_adj: NSA
+          geo: EA21
+        release_period_semantics: Native EA21 extra-area annual statistic; economic year
+          end, unknown revision vintage
     extra_series:                  # stored_col: FRED id (Eurozone policy/liquidity, periphery, US anchor)
       ez_depo_rate: ECBDFR         # ECB deposit facility rate (policy)
       ez_refi_rate: ECBMRRFR       # ECB main refinancing rate

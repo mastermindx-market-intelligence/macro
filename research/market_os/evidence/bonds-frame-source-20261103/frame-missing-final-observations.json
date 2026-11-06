@@ -1,0 +1,91 @@
+{
+  "scope": "Controlled offline native owner + actual authored Bonds fragments, incumbent page/shared CSS and retained Inter fonts; normal keyboard hash drill, native source disclosure, in-document history return only. No hosted Shell/bridge, auth, chart, remote source response or served proof.",
+  "phase": "frame-missing-final",
+  "external_transport_requests": 0,
+  "cells": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "japan_row_text": "Japan JPYstale\t3.06%\t—\t+1.10pp 10y−2y\t+26bp\t+1.4\t-188\tsteep",
+      "stale_tags": 1,
+      "source_detail_count": 1,
+      "row_screenshot": "1440-dark-en-row.png",
+      "fulfilled_local_documents": [
+        "https://bonds-fixture.invalid/bonds.html",
+        "https://bonds-fixture.invalid/fonts/Inter-700.woff2",
+        "https://bonds-fixture.invalid/fonts/Inter-600.woff2",
+        "https://bonds-fixture.invalid/fonts/Inter-400.woff2"
+      ],
+      "blocked_external_intents": [],
+      "page_errors": [],
+      "source_text": "Sources and observation dates — inspect the readings\n\nThese are source observations, not the analysis or page build date. Carried values keep their original observation date.\n\nUnited States · USD · Daily\n10y yield · Source link unavailable · Observation date unavailable\n2y yield · Source link unavailable · Observation date unavailable\n10y real yield · Source link unavailable · Observation date unavailable\nEuro area (Bund) · EUR · Daily\n10y yield · \nECB\n · Observed 2026-10-30\n2y yield · \nECB\n · Observed 2026-10-30\nJapan · JPY · Daily\n10y yield · \nJapan MoF\n · Observed 2026-09-30\n2y yield · \nJapan MoF\n · Observed 2026-09-30\nUnited Kingdom · GBP · Monthly\n10y yield · \nFRED\n · Observed 2026-09-01\n3m rate · \nFRED\n · Observed 2026-01-01\nCanada · CAD · Monthly\n10y yield · \nFRED\n · Observed 2026-09-01\n3m rate · \nFRED\n · Observed 2026-09-01\nAustralia · AUD · Monthly\n10y yield · \nFRED\n · Observed 2026-09-01\n3m rate · \nFRED\n · Observed 2026-08-01\nSwitzerland · CHF · Monthly\n10y yield · \nFRED\n · Observed 2026-09-01",
+      "source_hrefs": [
+        "https://data-api.ecb.europa.eu/service/data/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y?format=csvdata",
+        "https://data-api.ecb.europa.eu/service/data/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_2Y?format=csvdata",
+        "https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm_all.csv",
+        "https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm_all.csv",
+        "https://fred.stlouisfed.org/series/IRLTLT01GBM156N",
+        "https://fred.stlouisfed.org/series/IR3TIB01GBM156N",
+        "https://fred.stlouisfed.org/series/IRLTLT01CAM156N",
+        "https://fred.stlouisfed.org/series/IR3TIB01CAM156N",
+        "https://fred.stlouisfed.org/series/IRLTLT01AUM156N",
+        "https://fred.stlouisfed.org/series/IR3TIB01AUM156N",
+        "https://fred.stlouisfed.org/series/IRLTLT01CHM156N"
+      ],
+      "source_screenshot": "1440-dark-en-sources.png",
+      "keyboard_disclosure": true,
+      "source_link_color": "rgb(234, 239, 246)",
+      "source_link_decoration": "underline",
+      "source_card_background": "rgb(20, 24, 33)",
+      "return_url": "https://bonds-fixture.invalid/bonds.html#deeper",
+      "returned_to_same_document_and_entry": true,
+      "document_overflow": false,
+      "row_screenshot_sha256": "c18388ae77c98051878ec693c0eb923bef30f5da2b1d05454a91ed65238d1c08"
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "japan_row_text": "日本 JPY过期\t3.06%\t—\t+1.10pp 10年−2年\t+26bp\t+1.4\t-188\t陡峭",
+      "stale_tags": 1,
+      "source_detail_count": 1,
+      "row_screenshot": "390-light-zh-row.png",
+      "fulfilled_local_documents": [
+        "https://bonds-fixture.invalid/bonds.html"
+      ],
+      "blocked_external_intents": [],
+      "page_errors": [],
+      "source_text": "来源与观测日期 — 核对读数\n\n以下为来源的观测日期，并非分析或页面构建日期。延用读数保留其原始观测日期。\n\n美国 · USD · 日度\n10年期收益率 · 来源链接不可用 · 观测日期未知\n2年期收益率 · 来源链接不可用 · 观测日期未知\n10年期实际收益率 · 来源链接不可用 · 观测日期未知\n欧元区（德债） · EUR · 日度\n10年期收益率 · \n欧洲央行\n · 观测日期 2026-10-30\n2年期收益率 · \n欧洲央行\n · 观测日期 2026-10-30\n日本 · JPY · 日度\n10年期收益率 · \n日本财务省\n · 观测日期 2026-09-30\n2年期收益率 · \n日本财务省\n · 观测日期 2026-09-30\n英国 · GBP · 月度\n10年期收益率 · \nFRED\n · 观测日期 2026-09-01\n3个月利率 · \nFRED\n · 观测日期 2026-01-01\n加拿大 · CAD · 月度\n10年期收益率 · \nFRED\n · 观测日期 2026-09-01\n3个月利率 · \nFRED\n · 观测日期 2026-09-01\n澳大利亚 · AUD · 月度\n10年期收益率 · \nFRED\n · 观测日期 2026-09-01\n3个月利率 · \nFRED\n · 观测日期 2026-08-01\n瑞士 · CHF · 月度\n10年期收益率 · \nFRED\n · 观测日期 2026-09-01",
+      "source_hrefs": [
+        "https://data-api.ecb.europa.eu/service/data/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y?format=csvdata",
+        "https://data-api.ecb.europa.eu/service/data/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_2Y?format=csvdata",
+        "https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm_all.csv",
+        "https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm_all.csv",
+        "https://fred.stlouisfed.org/series/IRLTLT01GBM156N",
+        "https://fred.stlouisfed.org/series/IR3TIB01GBM156N",
+        "https://fred.stlouisfed.org/series/IRLTLT01CAM156N",
+        "https://fred.stlouisfed.org/series/IR3TIB01CAM156N",
+        "https://fred.stlouisfed.org/series/IRLTLT01AUM156N",
+        "https://fred.stlouisfed.org/series/IR3TIB01AUM156N",
+        "https://fred.stlouisfed.org/series/IRLTLT01CHM156N"
+      ],
+      "source_screenshot": "390-light-zh-sources.png",
+      "keyboard_disclosure": true,
+      "source_link_color": "rgb(11, 23, 51)",
+      "source_link_decoration": "underline",
+      "source_card_background": "rgb(255, 255, 255)",
+      "touch_disclosure": true,
+      "return_url": "https://bonds-fixture.invalid/bonds.html#deeper",
+      "returned_to_same_document_and_entry": true,
+      "document_overflow": false,
+      "row_screenshot_sha256": "c5f3ae4eb91661463cc61041ecd008aab5c467fed03a7dbdafbfe2c70722585a"
+    }
+  ]
+}

@@ -3018,7 +3018,7 @@ lanes:
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, HEAD]
 
   # ── render.yml / render ─────────────────────────────────────────────────
-  # NOTE: scope=all path.
+  # NOTE: scope=all plus the explicitly noted manual Intl transaction slots.
   - workflow: .github/workflows/render.yml
     job: render
     steps:
@@ -3174,6 +3174,14 @@ lanes:
           Crypto Intelligence Cockpit W2 — first-class render lane. Runs after
           hub() so the H6 BTC lane reads the same-render E0 authority contract;
           the dedicated crypto() scope also supports narrow crypto rebuilds.
+      - id: durable_intl_build
+        module: scripts.render_intl_durable
+        args: [build]
+        note: >
+          Manual workflow_dispatch with durable_intl=true and exact scope=intl
+          only; default/automatic rendering still uses build_intl below. Runs the
+          existing native builder and binds this invocation's inputs and receipts,
+          without collecting data. The static inventory includes both branches.
       - id: build_intl
         module: scripts.build_intl
         note: >
@@ -3346,13 +3354,34 @@ lanes:
           run's checkout-time template copies over a reword merged mid-render
           (2026-07-07 incident: 2ae709f9f0 vs #1793).
       # Explicit publication re-invocations preserve order and multiplicity.
+      - id: durable_intl_finalize
+        module: scripts.render_intl_durable
+        args: [finalize]
+        note: >
+          Same manual opt-in only. Seal after the normal asset transforms and
+          template sync; this does not grant collection or automatic persistence.
+      - id: durable_intl_stage
+        module: scripts.render_intl_durable
+        args: [stage]
       - id: precommit_government_revenue_projection
         module: scripts.check_government_revenue_projection
+      - id: durable_intl_precommit_verify
+        module: scripts.render_intl_durable
+        args: [verify]
+      - id: durable_intl_target_verify
+        module: scripts.render_intl_durable
+        args: [verify, --target-ref, origin/main]
       - id: commodity_metadata_candidate
         module: scripts.check_commodity_publication
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$PUBLISH_COMMIT"]
       - id: metadata_government_revenue_projection
         module: scripts.check_government_revenue_projection
+      - id: durable_intl_metadata_candidate_verify
+        module: scripts.render_intl_durable
+        args: [verify, --target-ref, origin/main, --candidate-ref, "$PUBLISH_COMMIT"]
+        note: >
+          Same manual opt-in only. Validate the exact metadata-joined candidate
+          before its ordinary push; overlapping outputs refuse and recompute.
       - id: commodity_postrebase_recovery
         module: scripts.check_commodity_publication
         args: [--heal-from, "$COMMODITY_ACCEPTED"]

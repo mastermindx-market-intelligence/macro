@@ -557,8 +557,9 @@ def test_source_has_no_engine_io_or_non_stdlib_imports():
             names = [alias.name for alias in node.names]
             module = getattr(node, "module", None)
             imported_names = names if module is None else [module]
-            assert imported_names == ["datetime"]
-            assert node.level == 0
+            assert all(name in {"datetime", "json", "hashlib"} for name in imported_names)
+            if isinstance(node, ast.ImportFrom):
+                assert node.level == 0
         if isinstance(node, ast.Name) and node.id in {"open", "exec", "eval", "__import__"}:
             assert False, "implementation must not perform I/O or dynamic execution"
     assert "engine." not in source

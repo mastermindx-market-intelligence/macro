@@ -1,0 +1,13 @@
+{
+  "phase": "target-final",
+  "source": "isolated candidate working source",
+  "template_sha256": "36436021eb5e630e791e1b5edde37d23c3a3144410ba61caba4f9875375d06e7",
+  "snapshot_sha256": "61976a0ec1c3acc39d226f89b9ec74e1a36cb0bd136bff5686eca0b0455d8176",
+  "included_shared_styles": {
+    "_interfonts.html.j2": "40ba62a3d1efa51de70993bedd5fb7ec96fcc1190f58515d765b267b2afd32cd",
+    "_state_inks.html.j2": "58e8e0700a66e90fa1b8408bf8eaa0a43b69206af7f30f334ad3706567fc204b",
+    "_vector_polish.html.j2": "356f7ebc8f3da8a6957d7fc4affe416d051d3fd4669e93aa175a6b4d941fbb5e",
+    "illus.css": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07"
+  },
+  "scope": "Actual native intl_bonds snapshot, authored #deeper/#global-detail fragments plus page/shared CSS and retained Inter fonts; no full shell, chart, auth, public source response or served publication proof"
+}

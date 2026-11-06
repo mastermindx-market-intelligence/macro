@@ -1544,6 +1544,20 @@ def test_radar_research_request_import_closure_is_covered_by_restart_regex():
     assert not uncovered, sorted(uncovered)
 
 
+@pytest.mark.parametrize(("owner", "module"), [
+    ("lib/intl_policy_publication.py", "lib.intl_ecb_policy_publication"),
+    ("lib/intl_ecb_policy_publication.py", "lib.intl_ecb_policy_source"),
+])
+def test_policy_preview_lazy_ecb_imports_trigger_api_restart(owner, module):
+    """A warmed policy request caches the original ECB receipt/parser helpers."""
+    assert module in _all_imports(ROOT / owner)
+    assert _triggers_restart(module.replace(".", "/") + ".py")
+
+
+def test_policy_preview_restart_selector_excludes_unrelated_ecb_research():
+    assert not _triggers_restart("lib/intl_ecb_policy_research.py")
+
+
 def test_gmi_bea_imports_restart_api_without_restart_on_unrelated_ontology():
     """Only the GMI API's actual import-cached modules need the API restart."""
     for path in (

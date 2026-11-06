@@ -106,7 +106,7 @@ def macro_command(_user: dict = Depends(require_user)) -> JSONResponse:
                 "failure": None,
             }
             try:
-                entry["snapshot"], _ = builder.read_workspace(data_root, page, read_json=read_json)
+                entry["snapshot"], entry["artifact"] = builder.read_workspace(data_root, page, read_json=read_json)
             except builder.SnapshotRefused as exc:
                 entry["failure"] = {"kind": exc.kind, "detail": "Published workspace could not be verified."}
             entries.append(entry)
@@ -121,17 +121,26 @@ def macro_command(_user: dict = Depends(require_user)) -> JSONResponse:
         workspaces = []
         for entry in entries:
             snapshot = entry["snapshot"] or {}
-            workspaces.append({
+            qualified = macro_suite_view.qualify_business_clock_view(snapshot)
+            qualification = macro_suite_view.business_clock_qualification(snapshot)
+            row = {
                 "workspace_id": entry["workspace_id"], "region": entry["region"],
                 "href": "/" + entry["output"], "title": entry["title"],
                 "state": (snapshot.get("availability") or {}).get("state"),
-                "availability": snapshot.get("availability"),
-                "effective_date": (snapshot.get("headline") or {}).get("effective_date"),
-                "calculation_as_of": (snapshot.get("generation") or {}).get("calculation_as_of"),
+                "availability": qualified.get("availability"),
+                "effective_date": None if qualification else (snapshot.get("headline") or {}).get("effective_date"),
+                "calculation_as_of": (qualified.get("generation") or {}).get("calculation_as_of"),
                 "content_sha256": (snapshot.get("generation") or {}).get("content_sha256"),
                 "generation_id": (snapshot.get("generation") or {}).get("generation_id"),
                 "failure": entry["failure"],
-            })
+            }
+            if qualification:
+                # The summary is a derived compatibility view, not a replacement
+                # snapshot sealed under the original content hash. This receipt
+                # names the raw artifact verified by read_workspace above.
+                qualification["source_artifact"] = dict(entry["artifact"])
+                row["clock_qualification"] = qualification
+            workspaces.append(row)
         healthy = sum(entry["snapshot"] is not None for entry in entries)
         body = {
             "schema": "mastermind.macro_command_read.v1",

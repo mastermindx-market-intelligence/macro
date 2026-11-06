@@ -1,0 +1,334 @@
+{
+  "schema": "shared-shell.source-composition.v1",
+  "task": "P12.T2.S14.S8.S9",
+  "state": "SOURCE_COMPONENT_QUALIFIED_NOT_HOSTED_OR_RELEASED",
+  "runtime_component_head": "58931537865391fa2e5d4e303e91f9eb21700b7f",
+  "runtime_component_tree": "e7b186ebf9ec242163e99047475e26279dac44f0",
+  "protected_base": "ddaa9bb6ec3f1ac482487513f3fab13ff547d1f0",
+  "prior_published_head": "4658847bfc1a6c913d025dc172ea6b3c6fd57fbc",
+  "prior_CI": {
+    "run": 42143408582,
+    "passed": 642,
+    "unknown": 48,
+    "inherited": 0,
+    "clear": false,
+    "observer": "51382 CLOSED/EXIT1",
+    "tested": "e40cee38dbb64835fc41956dd1f54260b4c2db8c",
+    "base": "8d55f6dc49e85ce577949b090562741da84039e5"
+  },
+  "selector_repair": {
+    "path": "tests/intl_workspace_history_controller.test.cjs",
+    "postimage": "100644 blob e48488d093d7731d25bc5576945768964eb079b9",
+    "post_sha256": "a863d796dd06bcbe84974ba4e63f9977f8e548ea90707fafa1ce2268250a922a",
+    "actual_failure": "203Nodecases202PASS1FAIL; strictScenario selector resolvescanonicaltab+twoCTAs",
+    "actual_source_DOM": {
+      "head": "667e93fa9ab4c136060ad9e5e8caa5b69d202e5f",
+      "file": "tests/intl_workspace_history_controller.test.cjs",
+      "before_sha256": "8c903fdc827816d0e8e0ede3aff30058018fd61158036712d966a0bdf0d9aeca",
+      "after_sha256": "a863d796dd06bcbe84974ba4e63f9977f8e548ea90707fafa1ce2268250a922a",
+      "actual_fixture_sha256": "f56a90690cfb40f7729414e60494c7acd4ff87b8dfafd37f9fd1302152c326c1",
+      "actual_before_global_count": 3,
+      "canonical_owned_count": 1,
+      "both_authored_CTAs_present": 2,
+      "canonical_container_removed": {
+        "CTA_remaining": 2,
+        "owned": 0,
+        "reject": true
+      },
+      "missing_owner": {
+        "global": 3,
+        "owned": 0,
+        "reject": true
+      },
+      "one_character_owner_typo": {
+        "owned": 0,
+        "reject": true
+      },
+      "duplicate_owner": {
+        "owned": 2,
+        "reject": true
+      },
+      "unrelated_CTA": {
+        "global": 4,
+        "owned": 1
+      },
+      "all_other_test_source_exact": true,
+      "retained_roundtrip_assertions": [
+        "rawmanual5",
+        "resultvisible",
+        "overview/historydispatch"
+      ],
+      "runtime": {
+        "node": "v26.5.0",
+        "jsdom": "26.1.0"
+      },
+      "scope": "Actual incumbent fixture/sourceDOM only under OSdenyallnetwork. No browser/capture/click/layout/nativeCI/base-replay/provider effect."
+    },
+    "all_other_test_source_and_assertions_exact": true,
+    "browser_command_replayed": false
+  },
+  "accepted_components": {
+    "durable18": "4ba7e59347d5584eb7c5527a7db49d95676454f6/tree7a1ed231",
+    "advisory2": "c778eef4a16952a2f5db04ce7973a1f2b27b5e54/tree83acc012",
+    "coverage1": "5b6c3956b2b57629162c73fa301447e709ef04a9/blob4fc499934ccc8ea37d66e9bbb626261c9888d07c"
+  },
+  "durable_advisory20_postimages": {
+    ".github/ci/legacy-jobs.yml": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "59ed842e1b46e6932cd6e4857e0e30e01c96b35b"
+    },
+    ".github/workflows/render.yml": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "e30c214f182052e2d6d0df56a8944ecda067b8ab"
+    },
+    "lib/intl_annual_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "232d45f46fcb3042cf982fdda3354c0b523f9f57"
+    },
+    "lib/intl_boe_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "a52e1c29dd0013d48d0981a8c68beac2ecd0b2d2"
+    },
+    "lib/intl_durable_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "b273d234d1eae1436ee3e87e2755b815e9aa7a8b"
+    },
+    "lib/intl_ecb_policy_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "302ea5c8954ccdb09a2c725799ea0a3b5526663b"
+    },
+    "lib/intl_eod_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "e98c3264e637dffd17c0422524a8fccdda7557f5"
+    },
+    "lib/intl_eurostat_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "79302a8666ea72acfb669cea98ae19633001f222"
+    },
+    "lib/intl_macro_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "0f1f3929ba52d0d06855db197751ec54918e9107"
+    },
+    "lib/intl_yield_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "2af9c8e77f659771288144a3a78599a833132d75"
+    },
+    "scripts/build_feeds.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "206f63a693bc3b9d11185adb7532091fd607fb8e"
+    },
+    "scripts/build_intl.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "c21c45874119a89853781c720422ecfb51bf5f93"
+    },
+    "scripts/ci_browser_native_setup.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "49062eae8a8ddc8e43224619ed823815df440bc9"
+    },
+    "scripts/render_intl_durable.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "015def259d194a432b2ad28182bfa3c56266a95c"
+    },
+    "tests/test_ci_browser_native_setup.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "0c90285ae19c01bf5758612cad0070011442353b"
+    },
+    "tests/test_intl_durable_native_inputs.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "5a3ab3e5e6d1842433182bdd5fe656e7e33cfb60"
+    },
+    "tests/test_intl_durable_publication.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "c3c5c2fdd0dbbea7c9473ce66f147e30cddc3f2a"
+    },
+    "tests/test_intl_native_read_observer.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "53898ecb41fdc0cf7cf85bfd12c6e6b1cf91d683"
+    },
+    "tests/test_render_intl_durable.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "4ed24045266596697052b918fad29d91f5330726"
+    },
+    "tests/test_render_intl_scope.py": {
+      "mode": "100644",
+      "type": "blob",
+      "blob": "c1e32a59f8ef32975a834b1be27f73b656b45d10"
+    }
+  },
+  "coverage_postimage": "100644 blob 4fc499934ccc8ea37d66e9bbb626261c9888d07c",
+  "source_preservation": {
+    "all20exact": true,
+    "all21newprotected_paths_exact": true,
+    "prior_bound_entries_unchanged_outside_declared_components": 491,
+    "current_Business_API_B2_T55_source_preserved": true,
+    "no_generated_site_or_data_in_component": true
+  },
+  "actual_composition_checks": {
+    "Coverage_qualification_path": "/Volumes/Mastermind/evidence/shared-shell-iw2-10708-integration-20261105-carson/durable-source/company-652-integration-qualification.json",
+    "Coverage_qualification_sha256": "0d7861d4a5e77700ef1dd2d88fcbdeaab41fabd0578d02bedd68862a3c0d13d5",
+    "canonical_fullmanifest_closure_and_three_packing_probes": "2PASS200.33s, pinnedPython3.12.13 andOSdenyallnetwork",
+    "missing_edges": 0,
+    "packing_breaches": 0,
+    "observed_workflow_yaml_weight": 90,
+    "calibration_or_budget_change": false,
+    "actual_V22_builder_seam": "1PASS4.37s; unchangedguardprojection on composedbuilder"
+  },
+  "review": "SAME distinct-context reviewer652preparation40b57483 sourcePASS; finalremote exacthead formal/CI/freshness/non-authorrelease remainrequired",
+  "artifacts": {
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/S14_S8_S8_SELECTOR_REPAIR_INPUT.json": "15848dd4d8af256b7d34a324c89d0477b385baf29284068d3f71c048fea4bdd4",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s8-history-tab-source-dom-result.json": "a4dc3f370ec9276f0e90bffe244f8e5d3cce64ae93ddc8696fcc998b6a8f1987",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s8-history-tab-source-dom.cjs": "bfa6204f5081f42ef804755e7fa487f112797b2c0cb4dbb29dae386e35eef6c4",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s7-terminal-final-semantic-consumption.json": "c7c2cd411604c725a10f7757660f050ba8910456eb044f1a7bfe8c713a41346b",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/native-formal-review/652-durable-diagnostics-source-preparation.json": "40b5748339c8a186ed462f9f0ad8333cbe8cc08c9adbe94c0102a53dd9aca558",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-actual-v22-composition.log": "9e473887857eb0b504d1212f37313f47f0c4393eca92d0e5c566ece1f2781e83",
+    "/Volumes/Mastermind/evidence/shared-shell-iw2-10708-integration-20261105-carson/durable-source/company-652-integration-qualification.json": "0d7861d4a5e77700ef1dd2d88fcbdeaab41fabd0578d02bedd68862a3c0d13d5",
+    "/Volumes/Mastermind/evidence/shared-shell-iw2-10708-integration-20261105-carson/durable-source/dependent-release-input.json": "b8962ca21143e327ae3b041228d9ff378e8d03a0e2a5b2516f192efefc4b533b",
+    "/Volumes/Mastermind/evidence/shared-shell-iw2-10708-integration-20261105-carson/durable-source/dependent-optional-diagnostics-input.json": "e58ddaab40d5da652b13142ef5a17c6900d4b952fc31c8eaa3ae3571311e6599",
+    "/Volumes/Mastermind/evidence/shared-shell-w9-export-sources-20261102-01a19e33/intl-coverage-reuse/qualified-source-input.json": "45cb1fd120932af3dcd0871bd4cbf3aa5939394c112d991b4f2e685f6c55d5a9"
+  },
+  "runtime_limits": [
+    "DurabledefaultOFF/manualexactIntl only; no invocation/collector/sourceinstallation or publisher effect",
+    "No speed/PIT/currentmarket/served/fullHistory/Compare acceptance",
+    "Old base timed_out andPaper/Chromium/10696/T55/9533/SQL/private/defaultOFF holds preserved",
+    "No oldCI/formal review transferred to successor; normal full required proof and controller release owed"
+  ],
+  "current209_source_join": {
+    "runtime_component_head": "483bd66f93238ba7ee860f77d530d9b97abe20e5",
+    "runtime_component_tree": "b32ab93151b7a976512994e1e0e2a0161a574bbe",
+    "actual_composition_base": "20959c5e8183f44678df4dbfc26ac246665ba2bf",
+    "source_join": {
+      "path": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/S14_S8_S9_CURRENT209_SOURCE_JOIN.json",
+      "sha256": "0ad80586168679dac4459b6a27c9f09b99669fc75c5912a43b9c608cf63edc4c"
+    },
+    "canonical_qualification": {
+      "path": "/Volumes/Mastermind/evidence/shared-shell-iw2-10708-integration-20261105-carson/durable-source/company-483-integration-qualification.json",
+      "sha256": "ee1fe38d15a5128260696352565644349571adf228fb9db0e11a003ebea4cd92",
+      "original_handle": 59794,
+      "exit_code": 0,
+      "result": "2PASS324.67s; fullmanifest curated closure +three packing probes; no missingedges/breaches/budgetchanges"
+    },
+    "source_review": {
+      "path": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/native-formal-review/483-registry-critical-source-addendum.json",
+      "sha256": "27e202cf8248dcae9e8d7f3ef0dc9305cfc2ff6ec5a3f628c64c912ce1f0dab8"
+    },
+    "root_source_hold_disposition": {
+      "comment": "https://github.com/mastermindx-market-intelligence/macro/pull/10674#issuecomment-6663828912",
+      "updated_at": "2026-11-05T22:29:49Z",
+      "body_sha256": "913512fa9cfb1a7ffa245d0ae5293ef38b52fc11975f89fb12ef6751e47ff7d4",
+      "head": "483bd66f93238ba7ee860f77d530d9b97abe20e5",
+      "source_input_sha256": "0ad80586168679dac4459b6a27c9f09b99669fc75c5912a43b9c608cf63edc4c",
+      "exact_three_postimages_verified": true,
+      "all_six_artifacts_verified": true,
+      "scope": "three-path source inclusion only; current formal/CI/freshness/non-author release and all other holds remain"
+    },
+    "postimages": {
+      "scripts/build_consumer_cyclical_plnt_page.py": "100644 blob a2efaadea469f5c207e665e5111d3f65361a1b44",
+      "scripts/build_product_page_registry.py": "100644 blob 801006d5301d2d38279f4866c232d9d70beba659",
+      "tests/test_build_product_page_registry.py": "100644 blob 2348c5d5fb9d24ef51f8e31a8d41262e8b44a332"
+    },
+    "scope": "Metadata successor only beyond483; all previous source components retained. Original10696/washout/9533/GMIatomic/export/SS05/runtime holds remain. No finalhead formal/hostedCI/protected/native/served credit."
+  },
+  "corrective421245_source_join": {
+    "runtime_component_head": "e1b0bca1c5fb63d0858e00da44065ad429c26171",
+    "runtime_component_tree": "a92407afe344773e4a4fff1a77ca870590c85cb5",
+    "composition_base": "96633a798efda34d899e1b135487c89b596215fc",
+    "actiontime_later_main": "684904bf2524b2ef08a36954cf12dd35df840e51",
+    "later_main_disposition": "12disjointpaths/noauthoredoverlap/noCIdefinitiondelta; no ancestry-onlymerge; naturaltestedmerge mustbindactualcurrentbase",
+    "prior_CI": "42124592659/0855/tested1730928/base0d1b/plan4d7375d5:680PASS/7UNKNOWN/2PR_REGRESSION/0inherited/clearfalse. Observer26992 CLOSED. Current0855formal5793278764 notsuccessorreview.",
+    "scope": "Two actual newscript/entrypoint-contract failures repaired via exact6DAGslots+canonicalrootpin; actual4IM13 failures repaired bytest-onlycanonicaldeferredmountinspection. Runtime/model/data/rights/clock/CIcommands/budgets unchanged except newscriptrootpin. Alloldassertion/fixturefunctionASTsexact; rawGLMNOT_ACCEPTED_AS_RETURNED,parentcorrected9/9.",
+    "postimages": {
+      "config/dag.yml": {
+        "mode_blob": "100644 blob e2d039fd0ceced3b40e9a405d9d7b3b3d59c9ab5",
+        "sha256": "15b3ad2c4ec6d2a5bd4b53035df7b41cf23c0909faa7100da03cf3d1daf205c1"
+      },
+      "scripts/render_intl_durable.py": {
+        "mode_blob": "100644 blob 2ee3ffb04ce2ade7fce0850c9f45b12c527ebd71",
+        "sha256": "25dc7c19da832fdc785d2c5e6b5002d37f5483c3b08358bacbf61ce458ce40ec"
+      },
+      "tests/test_dag_conformance.py": {
+        "mode_blob": "100644 blob 32143c81d0559148575f8bee8cb23ae1dc7b1141",
+        "sha256": "210efac0f7c4d6f6d026d72030c98ad5fc0beaddddf674b1cc4d7f3eb057d7ef"
+      },
+      "tests/test_render_intl_durable.py": {
+        "mode_blob": "100644 blob d456823e1a04ea02e68637c259d61ae948ed9436",
+        "sha256": "5120cc5c90e88c07300131527f5ecacec04a0a12e2559f2508eed08f66027c74"
+      },
+      "tests/intl_gs_scanner_fixture.py": {
+        "mode_blob": "100644 blob 3c510a6b6101c5cc1f5eae45df97843675060255",
+        "sha256": "0a499f3f2578ffde348b3c36b694b2a459db6ba431c7eb47ddd1dd8c55de11b2"
+      },
+      "tests/test_intl_gs_scanner.py": {
+        "mode_blob": "100644 blob 8ec6695e470b799aa89047af5d18d01f11fcbdcd",
+        "sha256": "aa1c7029ad3003999137ad24b58062fcb0c6f359904094fa6a4bb47b4d8b91e4"
+      },
+      "tests/test_intl_gs_coverage.py": {
+        "mode_blob": "100644 blob 665ae1f821b5c8f7b3bd3dc797f30dcb714acfaf",
+        "sha256": "b3cef895cec2ee26bf8915457827414cadf56f49baec24f3d3537a39670eaf49"
+      }
+    },
+    "artifacts": {
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/S14_S8_S9_ENTRYPOINT_REPAIR_SOURCE_INPUT.json": "06f40d95f562513e46ce31c5f2267b4c09558c034af371019902d5c9e6aeac58",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/S14_S8_S9_S5_FROZEN_SOURCE_INPUT.json": "5ea6ae25a68b2004441c0a18b34f969c470fc30a339cf05ec01b01155002a0b6",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/native-formal-review/daab-entrypoint-dag-preparation.json": "9d4be52442d59ea1b0f53e3fefccacf510e8f3bf2b03c85fb14075bed2fa5c20",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/native-formal-review/e1b0-s5-deferred-consumer-preparation.json": "e7b96338b40998c0cf6b68063a69a60d78c355e8dba09a5f354f2b2fd337346b",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-current966-merge-preservation.json": "82a9dd05bef0c77a609fb041964bb03c5afe705832ebb820dc31912a3e33d00b",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-corrective-latermain-applicability.json": "28b9e53240d177be0c89258a06d49b00e1b9e120e321ef3ea8352f274177d5e0",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-terminal-final-semantic-consumption.json": "c93e5aa82ee8edfae830df66297011b60ef6daf78e1cec2134101babeec66174",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-hosted-plan-source-binding.json": "87cde3c11ec7081b70835fd00f40e43b5b463c2bd3ca0b2fc37e2ef198a6fd86",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-pack11-execution-settlement-adjudication.json": "0194b186b3bf816ce6df52c3dd83ced6437b37406abc7500cfec82aafb016ef0",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-corrective-export-binding.json": "5e94c81c8d2279842c4f33bbeea9447a88674bc4a0e95eb1dad909a3e7671edc"
+    },
+    "checks": "DAG49+importentrypoint19PASS. OriginalIM134RED→4PASS; fullaffected46PASS/1tooltipFAIL→targeted2PASS32.34s, integrated9protocolnegativesPASS. No single47greenrerun claim. Existing current483closure/packing remainsapplicable: no legacyjob/readedge/dependency/budgetchange.",
+    "hold_scope": "Exactheld3registry/PLNTpostimagesunchangeda2/801/234; rootscopedinclusion913512fa, original10696/e5dd/UNKNOWN9533/GMIatomic/export/SS05runtime/SQL/browser/Paper/defaultOFFholds preserved.",
+    "release": "LOCAL_SOURCE_ONLY_NOT_HOSTED; newheadnaturalfullrequiredCI/exactformal/currentfreshness/non-authorcontroller release/native/served owed."
+  },
+  "historical_runtime_component": {
+    "runtime_component_head": "65228b988921a6594e598fe94f7f24682f89dfdc",
+    "runtime_component_tree": "6872ba7f4b27fa550839f3d1ba5d020162d45128",
+    "protected_base": "02839f000f3e0623ad65c8bc2fb3b910b7cce6d2",
+    "prior_published_head": "667e93fa9ab4c136060ad9e5e8caa5b69d202e5f",
+    "prior_CI": {
+      "run": 42098955595,
+      "tested": "fb69a896323b5495271913c6b0f7cde5c9072e84",
+      "base": "a20e6437cc8a892b769d549876ebf81ca0e2dcd1",
+      "passed": 683,
+      "unknown": 6,
+      "inherited": 0,
+      "clear": false,
+      "all_original_unknowns_preserved": true
+    }
+  },
+  "corrective421434_source_join": {
+    "component": "58931537865391fa2e5d4e303e91f9eb21700b7f",
+    "task": "P12.T2.S14.S8.S9.S6+S7+S8+S9",
+    "Dossier_commit": "c9577f65b43489b0d0a5d36265c36b2d2251b5a2",
+    "denial_commit": "bf08cbeed47a1",
+    "participant_commit": "7015901f40b7cb7853e6cc7b5935c52e80f6ca73",
+    "current_base_merge": "a153c71c1f90ce288b697c3daa217511f4f5ac01",
+    "metadata_input_sha256": "6480198fe791076db114eb402f6d59bd634df109742e81ccf2b94141fd0ca0cc",
+    "initial_changed_risk_review_sha256": "b8380a7a3f0e18c75e4d8c0fc2d90dd90c915546fadf9be40a7221edf7d548b6",
+    "source_controls": "32oldDossiertestsexact/twoowner-contractcorrections/negativecanaries;46nativecapturePASS;333denial+370metadata retainedPASS; canonical2PASS215.47s+metadataexactdependency-kinds",
+    "runtime_limits": "No timeout/speed/UNKNOWN clearance, no SQL/activation/private/host/provider/browser effects. NewHistoryNOT_INSTALLED/S13NOT_YET_LIVE. Original10696/9533/generation/export/SS05 holds unchanged.",
+    "source_head_formal_and_CI": "NOT_YET_QUALIFIED; one same-carrier natural proof after publication; same genuine independent final-head formal/non-author release still owed",
+    "task_registration_note": "S17 initial mmtask command lacked harness binding; corrected registration/start before further source changes; no new effect authority inferred."
+  }
+}

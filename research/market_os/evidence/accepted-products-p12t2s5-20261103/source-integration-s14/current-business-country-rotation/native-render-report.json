@@ -1,0 +1,75 @@
+{
+  "scope": "Existing one-page reader/renderer + incumbent externalize/optimizer; exact retained current owner; no financial producer",
+  "source_head": "c0c035ca3de676cc35dea698faa917a5a99cb56f",
+  "input_revision": "079ba10fe079ddf947cb446afeae65ff2908046e",
+  "raw_artifact": {
+    "path": "macrodata/workspaces/business_activity/US/latest.json",
+    "manifest_path": "macrodata/workspaces/manifest.json",
+    "sha256": "2b92e16762d90ed01a3890f4eace123afe32aa63aa520a538d30a4b642021403",
+    "bytes": 109515,
+    "min_client_contract": "mastermind.macro_workspace_snapshot.v1@1.0.0"
+  },
+  "input_sha256": {
+    "site/macrodata/workspaces/manifest.json": "c394e7e789ac88a09eab1b6c79750886bb19e3384a6a39d3107d4583ac18f30d",
+    "site/macrodata/workspaces/business_activity/US/latest.json": "0efeda2398b53eaaa6611973504ef344d537ce15dc738007bafdede0fe4a7146"
+  },
+  "snapshot_immutable_and_digest_verified": true,
+  "all31_values_reference_periods_and_source_refs_preserved": true,
+  "derived_unknown_clocks": true,
+  "tamper_negative": {
+    "kind": "COMPUTATION_REFUSED",
+    "detail": "content_sha256 mismatch: declared 2b92e16762d90ed01a3890f4eace123afe32aa63aa520a538d30a4b642021403 != recomputed 53f467892a8da361a27be3a5d57dbea253005a9e1b46b980258d86eedb1657a2"
+  },
+  "actual_document_rendered_at": "2026-11-04T13:14:16Z",
+  "asset_hashes": {
+    "shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "shared_shell_bridge.js": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+    "macro_suite_boot.js": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69",
+    "theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "product-nav-icons.css": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+    "macro_suite.css": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3",
+    "macro_command.css": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65",
+    "navigation-refresh.css": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+    "logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "live_config.js": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+    "live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+    "theme.js": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+    "macro_suite.js": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b",
+    "macro_command.js": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+  },
+  "inline_style_bytes": [
+    379
+  ],
+  "native_sha256": "7efadc481c46d9768085d78234689dd1b1241f29a14addb4bf4de5f47d3754e5",
+  "final_html_sha256": "5c6ba95eedf3aca5e07a7cef1410bb986dd9a4e2d9f5abd8ba55ea3ac648ee1d",
+  "publication_body_text_and_time_nodes_equal": true,
+  "asset_stage_fixed_point": true,
+  "writes_within_external_output_only": [
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/.macro_business_activity.html.24692.tmp",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/native-prepublication.html",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/shared_shell.css",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/shared_shell_bridge.js",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/macro_suite_boot.js",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/theme.css",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/product-nav-icons.css",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/macro_suite.css",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/macro_command.css",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/navigation-refresh.css",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/logo_config.js",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/stock-logos.js",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/live_config.js",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/live.js",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/theme.js",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/macro_suite.js",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/macro_command.js",
+    "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/site/macro_business_activity.html"
+  ],
+  "network": "OS deny network*",
+  "not_claimed": [
+    "full financial producer",
+    "input authenticity/PIT",
+    "browser/visual",
+    "host/served"
+  ]
+}

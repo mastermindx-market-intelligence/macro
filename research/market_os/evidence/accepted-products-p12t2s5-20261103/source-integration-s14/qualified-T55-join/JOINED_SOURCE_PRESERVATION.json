@@ -1,0 +1,38 @@
+{
+  "task": "P12.T2.S14.S8",
+  "at": "2026-11-05T06:17:47.538806+00:00",
+  "app_input": "753f0ddfee77e101edccf1202870cf2ab99b69b7",
+  "app_manifest_sha256": "31fb3745c79df6fe17bcb000cdc9ba22558f71122ab98f3e2f80591b2b903edf",
+  "guard_input": "8376d700291198ed6c22cc3e8b6084bafc309209",
+  "guard_qualification_sha256": "0332f47dde72755346d02c7b2fb210e58b00ecec9d9bada6a2efa3c633141dcb",
+  "independent_result_sha256": "e56d801efcd53cad8b71a0d2aa1b8f05b918536814d90f6ef0763e5a3a988c6c",
+  "guard_postimages": {
+    "scripts/run_ci_pack.py": {
+      "mode_blob": "100644 blob cb2cae3109eb993ecce508973e979bf63fa5e6f0\tscripts/run_ci_pack.py",
+      "sha256": "2da809e6c1cc20ca0b1ed82e35b3df6fb0c8946aae219989f49b29ba60c940fb"
+    },
+    "tests/test_ci_pack_semantic.py": {
+      "mode_blob": "100644 blob e6998a6eea8704bff9a5c9d2c3cc215dd29ab5bc\ttests/test_ci_pack_semantic.py",
+      "sha256": "f88b78cd5885633a96d5603737c5eee69fc1a83acd39807dc79cbccf401219b5"
+    }
+  },
+  "all292_app_inputs_exact": true,
+  "app_evidence_subtree_exact": true,
+  "actual_guard_only_delta_sha256": "7f0a7786c80fe377925192d2241fb4eca800da1b74ccd8c00fe1c4b8628ce09b",
+  "guard_scope": "Only two original baseSHA/job diagnostics withheld precheckout/spawn; all headproofs/otherreplaytuples/classifier/commands/exits unchanged; original UNKNOWN/provenance notsettled",
+  "original_unknown_tuples": [
+    [
+      "2fbee06234fec4e792918c1cb0d9f8ea2ed833c4",
+      "ci-control-plane-contracts",
+      "41966589230"
+    ],
+    [
+      "75f1ed49f9ad991dfc04dcba3a787166751fe91c",
+      "washout-turn-organ",
+      "41887071408"
+    ]
+  ],
+  "no_guard_retest_or_extra_technical_review": true,
+  "next": "Derive exact local FULL ELIGIBLE CODE plan (run_ci_pack GLOBAL_INVALIDATOR); rootconsumesjoinedsource/replayboundary before normaloriginal10674publication/onefreshnaturalCI; no formalGHapproval/CIgreen/protected/native/servedclaim",
+  "source_only_no_push_CI": true
+}

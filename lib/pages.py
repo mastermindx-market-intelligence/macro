@@ -22,8 +22,13 @@ that slips past this path.
 """
 from __future__ import annotations
 
+import hashlib
 import logging
+import os
 import re
+import tempfile
+from html import escape
+from html.parser import HTMLParser
 import shutil
 import subprocess
 from pathlib import Path, PurePosixPath
@@ -508,6 +513,153 @@ def externalize_css_text(
         return f'<link rel="stylesheet"{media_attr} href="{href}">'
 
     return _STYLE_BLOCK_RE.sub(_repl, text)
+
+
+def write_css_asset(site_dir: Path, css: str, *, prefix: str = "") -> Optional[str]:
+    """The existing externalization fingerprint format, shared by asset stages."""
+    digest = hashlib.sha256(css.encode("utf-8")).hexdigest()[:8]
+    destination = Path(site_dir) / "assets" / "css" / f"{digest}.css"
+    try:
+        if not destination.exists():
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_text(css, encoding="utf-8")
+    except OSError as exc:
+        log.warning("write css %s failed: %s", destination.name, exc)
+        return None
+    return f"{prefix}assets/css/{digest}.css?v={digest}"
+
+
+class _HeadStylesheetSlots(HTMLParser):
+    """Locate real head link tokens without reserializing the financial DOM."""
+    def __init__(self, text: str):
+        super().__init__(convert_charrefs=True)
+        self.offsets = [0] + [m.end() for m in re.finditer("\n", text)]
+        self.links: list[tuple[int, int, list[tuple[str, str | None]]]] = []
+        self.bodies: list[int] = []
+        self.heads = 0
+        self.in_head = False
+        self.inert = 0
+        self.feed(text)
+        self.close()
+
+    def handle_starttag(self, tag, attrs):
+        line, column = self.getpos()
+        start = self.offsets[line - 1] + column
+        if tag == "head":
+            self.heads += 1
+            self.in_head = True
+        elif tag == "body":
+            self.bodies.append(start)
+            self.in_head = False
+        elif tag == "template" and self.in_head:
+            self.inert += 1
+        elif tag == "link" and self.in_head and not self.inert:
+            if "stylesheet" in (dict(attrs).get("rel") or "").lower().split():
+                self.links.append((start, start + len(self.get_starttag_text()), attrs))
+
+    def handle_endtag(self, tag):
+        if tag == "head":
+            self.in_head = False
+        elif tag == "template":
+            self.inert = max(0, self.inert - 1)
+
+
+def refresh_externalized_stylesheet(page: Path, css: str, *, marker: str) -> dict:
+    """Refresh one qualified linked stylesheet through the native asset writer.
+
+    This is an asset-only stage: no VM or financial recomputation. The existing
+    hashed asset proves the owned slot; missing/ambiguous/hash-invalid inputs
+    refuse before writes. Only parsed head link tokens are recomposed, using
+    externalize_css_text's link formatter. Every other document byte stays put.
+    Native write_page is staged and validated before atomic promotion. No prune.
+    """
+    from lib.shared_shell import (
+        asset_version, inject_shared_shell_text, stylesheet_version,
+    )
+
+    page = Path(page)
+    site = _site_root()
+    asset_root = page.parent / "assets" / "css"
+    if (page.parent.resolve() != site.resolve() or page.is_symlink()
+            or page.name == "coming-soon.html"
+            or (page.parent / "assets").is_symlink() or asset_root.is_symlink()):
+        raise ValueError("Asset-only refresh requires a canonical root content page")
+    if not marker or marker not in css or "</style" in css.lower():
+        raise ValueError("Missing or invalid canonical stylesheet marker")
+    for name in ("shared_shell_bridge.js", "shared_shell.css", "data_base.js"):
+        if not (site / name).is_file() or (site / name).is_symlink():
+            raise ValueError("Canonical page assets must already be present")
+    before = page.read_bytes().decode("utf-8")
+    original_mode = page.stat().st_mode & 0o7777
+    parsed = _HeadStylesheetSlots(before)
+    if parsed.heads != 1 or len(parsed.bodies) != 1:
+        raise ValueError("Ambiguous content document")
+    selected = []
+    for start, end, attrs in parsed.links:
+        values = dict(attrs)
+        href = values.get("href") or ""
+        match = re.fullmatch(r"assets/css/([0-9a-f]{8})\.css\?v=\1", href)
+        if not match:
+            continue
+        existing = asset_root / f"{match.group(1)}.css"
+        if existing.is_symlink():
+            raise ValueError("Linked stylesheet cannot be a symlink")
+        if not existing.is_file():
+            continue
+        raw = existing.read_bytes()
+        if marker not in raw.decode("utf-8"):
+            continue
+        if hashlib.sha256(raw).hexdigest()[:8] != match.group(1):
+            raise ValueError("Linked stylesheet fingerprint does not match its bytes")
+        if (len([k for k, _ in attrs if k == "href"]) != 1
+                or set(values) - {"href", "rel", "media"}
+                or (values.get("rel") or "").lower().split() != ["stylesheet"]):
+            raise ValueError("Unsupported attributes on the owned stylesheet slot")
+        selected.append((start, end, href, values.get("media")))
+    if not selected or len({row[2] for row in selected}) != 1:
+        raise ValueError("Missing or ambiguous owned stylesheet slot")
+    digest = hashlib.sha256(css.encode("utf-8")).hexdigest()[:8]
+    href = f"assets/css/{digest}.css?v={digest}"
+    destination = asset_root / f"{digest}.css"
+    if destination.is_symlink() or (destination.exists() and destination.read_bytes() != css.encode("utf-8")):
+        raise ValueError("Destination stylesheet bytes conflict with the fingerprint")
+    updated = before
+    for start, end, _old_href, media in reversed(selected):
+        media_attr = f' media="{escape(media, quote=True)}"' if media else ""
+        replacement = externalize_css_text(
+            f"<style{media_attr}>{css}</style>", lambda _css, _index, _media: href,
+        )
+        updated = updated[:start] + replacement + updated[end:]
+    result_parser = _HeadStylesheetSlots(updated)
+    body = before[parsed.bodies[0]:]
+    if updated[result_parser.bodies[0]:] != body:
+        raise ValueError("Asset stage changed the financial body")
+    prefix = dbase_prefix(page)
+    prepared = inject_shared_shell_text(
+        inject_text(updated, prefix), prefix, site_dir=site,
+        version=asset_version(site), css_version=stylesheet_version(site),
+    )
+    if prepared != updated:
+        raise ValueError("Page requires normal document emission before asset-only refresh")
+    changed = updated != before
+    if changed:
+        if write_css_asset(site, css) != href:
+            raise OSError("Native stylesheet write failed")
+        descriptor, stage_name = tempfile.mkstemp(dir=page.parent, prefix=".css-stage-", suffix=".tmp")
+        os.close(descriptor)
+        staged = Path(stage_name)
+        try:
+            write_page(staged, updated, encoding="utf-8")
+            if staged.read_bytes() != updated.encode("utf-8"):
+                raise ValueError("Native writer changed non-asset document bytes")
+            staged.chmod(original_mode)
+            staged.replace(page)
+        finally:
+            staged.unlink(missing_ok=True)
+    return {"changed": changed, "old_href": selected[0][2], "new_href": href,
+            "slots": len(selected), "body_sha256": hashlib.sha256(body.encode("utf-8")).hexdigest(),
+            "css_sha256": hashlib.sha256(css.encode("utf-8")).hexdigest(),
+            "scope": "asset-only; no full Bonds emission, VM, data or clock change"}
 
 
 # --- inline-JS externalization (OPT-IN, unlike CSS) --------------------------

@@ -508,6 +508,39 @@ class TestSelftest:
 # ---------------------------------------------------------------------------
 
 class TestLiveConformance:
+    def test_durable_intl_inventory_retains_every_conditional_call_and_drift_guard(self):
+        lanes, divergences = _parse_dag_yml(REPO_ROOT / "config" / "dag.yml")
+        lane = next(
+            lane for lane in lanes
+            if lane.workflow == ".github/workflows/render.yml" and lane.job == "render"
+        )
+        actual = _parse_workflow(REPO_ROOT / lane.workflow, REPO_ROOT)[lane.job]
+        module = "scripts.render_intl_durable"
+        assert [step.id for step in lane.steps if step.module == module] == [
+            "durable_intl_build", "durable_intl_finalize", "durable_intl_stage",
+            "durable_intl_precommit_verify", "durable_intl_target_verify",
+            "durable_intl_metadata_candidate_verify",
+        ]
+        assert sum(step.module == module for step in actual) == 6
+        key = f"{lane.workflow} / {lane.job}"
+        assert _diff_lane(lane.steps, actual, key, divergences) == []
+
+        # Reproduce the original real omission without changing a workflow or
+        # weakening the checker. Existing drift and reinvocation laws still bind.
+        undeclared = [step for step in lane.steps if step.module != module]
+        assert any(
+            "UNDECLARED ADDITION" in error and module in error
+            for error in _diff_lane(undeclared, actual, key, divergences)
+        )
+        last_call = max(i for i, step in enumerate(actual) if step.module == module)
+        missing_call = actual[:last_call] + actual[last_call + 1:]
+        assert _diff_lane(lane.steps, missing_call, key, divergences)
+        unknown_call = actual + [Step(id="", module=module + "_unregistered")]
+        assert any(
+            "UNDECLARED ADDITION" in error and module + "_unregistered" in error
+            for error in _diff_lane(lane.steps, unknown_call, key, divergences)
+        )
+
     def test_dag_yml_matches_live_workflows(self):
         """config/dag.yml must match the live .github/workflows/ files.
 

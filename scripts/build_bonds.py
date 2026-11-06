@@ -25,7 +25,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -1827,6 +1827,23 @@ def _key_levels(f: pd.DataFrame, vm: dict) -> list[dict]:
 # --------------------------------------------------------------------------- #
 # main
 # --------------------------------------------------------------------------- #
+def refresh_stylesheet_only() -> dict:
+    """Bake only canonical template/C CSS; never invoke the financial producer."""
+    import re
+    from lib.pages import refresh_externalized_stylesheet
+
+    source = (config.ROOT / "templates" / "bonds.html.j2").read_text(encoding="utf-8")
+    marker = ".dtp-chip--snapshot"
+    blocks = [block for block in re.findall(r"<style\b[^>]*>(.*?)</style>", source, re.I | re.S)
+              if marker in block]
+    if len(blocks) != 1:
+        raise ValueError("Expected one canonical Bonds stylesheet")
+    css = Environment(autoescape=True, keep_trailing_newline=True,
+                      undefined=StrictUndefined).from_string(blocks[0]).render(C=C)
+    site = config.ROOT / config.load()["storage"]["site_dir"]
+    return refresh_externalized_stylesheet(site / "bonds.html", css, marker=marker)
+
+
 def main() -> int:
     from engine import inputs, bonds, bonds_alerts
     try:
@@ -2096,5 +2113,17 @@ def main() -> int:
     return 0
 
 
+def entrypoint(argv=None) -> int:
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--stylesheet-only", action="store_true",
+                        help="Refresh canonical CSS assets only; no financial computation or data writes")
+    args = parser.parse_args(argv)
+    if args.stylesheet_only:
+        print(json.dumps(refresh_stylesheet_only(), sort_keys=True))
+        return 0
+    return main()
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(entrypoint())

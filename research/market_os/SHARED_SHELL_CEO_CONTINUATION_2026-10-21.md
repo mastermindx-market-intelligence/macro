@@ -1,10 +1,63 @@
 # Shared Shell implementation continuation
 
-This is the current source checkpoint for the October 21 implementation commission.
+This continues the original October 21 implementation commission; the November 4 contract below is current.
 It records evidence and next actions, not a new runtime, admission, or route registry.
 The product is **NOT_ACCEPTED** and the mission remains incomplete.
 
-## Current frontier — October 21 continuation
+## Current delivery contract — 2026-11-04
+
+This section is the current Shared Shell scope and task-tree checkpoint for native root
+`01a15e6c-42f8-7941-ac2b-296021932fbb`. Procedure pin:
+Mastermind `c23f9b4e8fe8ee4a90bf692d84b2d32eaf852dea`.
+The original production plan, W0–W10, six workspaces, 24 groups, 19 renderer shapes
+and 61 acceptance cases remain the product boundary. **Programme: NOT_ACCEPTED.**
+The existing Agent OS workstream and dated handoff own organizational state; this
+table is the existing programme's editorial task tree, not a second runtime registry.
+
+**DONE_WHEN:** the complete selected Macro estate has an accepted native or retained
+compatibility disposition; the six investor jobs work through their joined producers,
+consumers, persistence and return navigation; applicable Paper references pass dark/light,
+EN/ZH, desktop/mobile, accessibility and degraded-state review; and the exact qualified
+beta and production releases demonstrate authenticated behavior, recovery and rollback.
+Accepted source, CI, publication, installed files and configured routing prove only
+their named boundaries. No task count or empty buffer establishes product completion.
+
+| Existing node / parent | Current qualified evidence | Dependency and next acceptance boundary |
+| --- | --- | --- |
+| P12.T2 / W5,W9 Company | #10674 e75d6248 natural CI41840539565: 518 semantic passes, no infrastructure failures. Prepared a43ff902 preserves current protected Bonds output and reviewed family work. | #10656 is still Draft/unmerged at 89ba0895. Do not remove the authored Business body or promote S13 clocks until actual protected/native P9 output satisfies the three unchanged committed-page assertions. Independently ready T52 composition may proceed normally. |
+| P12.T9 / W4,W9 Projection | All six reviewed source files, exporter and 355 registry rows remain exact at e5dd3a73. Historical41870765128 is clear; current41887071408 fails the live-quotes headroom check. | Preserve unknown exact-base descendants. Consume the existing Ontology10704 repair, then qualify current source/CI and actual independent formal approval. #10696 is visibly held and unarmed; protected inclusion precedes immutable canonical export and SS05 consumption. |
+| P12.T11.S4 / W0–W3,W10 installer | Reviewed1cfb34b2 two-file repair, 227 affected checks and scoped PATH finding closure. Published in IW2 Draft1291/6b6eac50 with both exact postimages verified. | Publication is not protected absorption or installation. Existing installer owner must qualify actual protected source and current admission before CLOSED installation. Original47016, SQL, private/default-OFF and unknown effects remain separate. |
+| P12.T32.S4 / W9 Regional Canada | Normal41839419595 published404c74bc: 16 basket details and hub. Six selected page/payload bodies plus40 static assets match installed85eb7747; configured filesystem route selects site.served for the12 tested path cases. | Actual HTTP/TLS, authenticated consumer behavior, retained navigation and Paper acceptance remain open. October14 historical endpoint and zero-percent freeze-price coverage remain explicit. Do not rerun accepted publication, title or file checks. |
+| P12.T41.S3.S2 / W9 Locale | Scoped source/native/Git publication and exact14,404-file title guard accepted at404c74bc. | Preserve accepted scope. Final International selected target is1b07905f, with50 real action inputs qualified through the strict reader using explicit local doubles. Qualify full inventory, dependency-first/current-last installation and actual API/router/authenticated adoption. |
+| P12.T47 / W5,W9 Crypto search | Source0b7a7aa0,33 checks, eight Paper draft cells and24 prepared assets. | Eight genuine baseline captures remain required. Original capture/Chrome refusals are not cleared; no substitute images, weaker sandbox, alternate browser or visual-acceptance claim. |
+| P12.T52 / W9 Nasdaq evidence | Reviewed d07cbdb0 carries QQQ benchmark into the existing EN/ZH evidence cell, with honest missingness, escaping and11 controls plus retained-renderer qualification. | Integrate into the next necessary Company composition; preserve other families and existing data clocks. Source proof is not served or Paper proof. |
+| P12.T53 / W7 Research | Blog source contract accepted:14 checks against the actual producer/templates/article; dated provenance, TOC and CAGR/Compounding destinations qualified. | Real entitled article → calculator → Back, session continuity and responsive Paper acceptance remain open. No source defect or duplicate release is indicated. |
+| W6,W8,W10 / product acceptance | Existing AAPL Save/Monitor readback, scoped Portfolio/chart-return, Today CLOSED beta installation and production-OFF baselines remain accepted at their recorded revisions. Government Revenue10714 source/native installation and corrected evidence retention are qualified. | Complete only remaining changed authenticated/persistence/return and design cases after actual applicable controls permit them. Government Revenue public TLS failed before HTTP; no repeated probe without new relevant evidence. Production activation is not granted by component acceptance. |
+
+**Current sequencing decision:** the additional Terminal1275-NEXT reservation ended
+when its exact CI run failed; the finite Macro P9 publication window ended on
+November4 at19:50:24UTC. Neither creates a present publication freeze. Real source,
+review, CI, release, runtime and custody controls remain. Usage-limited Website,
+IW2 and CI/P9 generations are not restarted or replaced through another model,
+provider or account.
+
+**Next useful joined delivery:** advance the independently ready Company family
+composition and final International install prerequisites through the existing
+owners while the original Ontology repair settles. Keep Projection unarmed until
+its actual release conditions are met. Existing Sol coordinators consume admitted
+Fabric leaves through their verified original root and actual parent; failed or
+unknown leaves retain their identities. Preserve Person1/capture refusals, T004/T006,
+SQL/private/default-OFF/drain, T03k, Gold/admin refusals, original runtime unknowns,
+the original C1 port3100 process and the frozen38751445578 artifact operation.
+
+Current source-linked return:
+https://github.com/mastermindx-market-intelligence/macro/pull/7949#issuecomment-6589273748 .
+Projection's exact release fence:
+https://github.com/mastermindx-market-intelligence/macro/pull/10696#issuecomment-6649247998 .
+This checkpoint neither clears those controls nor installs a runtime.
+
+
+## Historical frontier — October 21 continuation
 
 This section supersedes older in-progress descriptions below. Existing native
 owners resumed through supported collaboration after interruption; no replacement
@@ -390,7 +443,7 @@ accepted historical production matrices or authorize unrelated schema changes.
 - No public deployment, TLS, authenticated journey, visual acceptance, or completed
   publication is established by this checkpoint.
 
-## Exact next actions
+## Historical next actions — October 21
 
 1. Product consumes the original12795 CI result, joins actual reviewed visual
    recaptures and final keyboard/semantic checks to the qualified local42d78 source,

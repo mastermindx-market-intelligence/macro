@@ -1,0 +1,37 @@
+{
+  "at": "2026-11-05T05:13:27.850713+00:00",
+  "head": "d7c4789efd24d11c75dd8d4d9f2b876f859da36c",
+  "actual_failed_consumer": "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+  "shared_function": "scripts.run_ci_pack.curated_exclusive_closure_findings",
+  "original_sha256": "608d0e83d6f6dd9fb3746b688f89fab7921fa9f36f29e09ca87761173eac52d6",
+  "prepared_sha256": "7db2b8da4f3b22aa3feb94f1fd6565d66a3235a52d85e882a7e44f9fd2b57f60",
+  "before": {
+    "unrun-subsector-themes": [
+      "collectors/fred.py",
+      "engine/axes.py",
+      "engine/base_effect.py",
+      "engine/cn_ai_semis_confirmer.py",
+      "engine/election_cycle.py",
+      "engine/i18n.py",
+      "engine/inputs.py",
+      "engine/marker_integrity.py",
+      "engine/oracle/__init__.py",
+      "engine/oracle/washout_counterread.py",
+      "engine/pit.py",
+      "engine/pit_lag_recorder.py",
+      "engine/rates_command_basis.py",
+      "engine/regime.py",
+      "engine/regime_one.py",
+      "engine/risk_radar.py",
+      "engine/risk_radar_backtest.py",
+      "engine/risk_radar_intl.py",
+      "engine/yield_momentum.py",
+      "scripts/validate_regime_fwd.py"
+    ]
+  },
+  "after": {},
+  "other_job_findings_unchanged": true,
+  "whole_manifest_shared_consumer_passes": true,
+  "source_tree_unchanged": true,
+  "scope": "One exact failing shared-function consumer over full manifest; no broad test/full differential replay/base-descendant timing replay/provider/sourcewrite/CIeffect"
+}

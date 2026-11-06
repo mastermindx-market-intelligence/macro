@@ -1,0 +1,69 @@
+{
+  "source_commit": "719d80a277a4e297e72d1dcb11a5b2e0dd545bf4",
+  "source_path": "site/commodities.html",
+  "page_sha256": "25e9d4b670413151cb7b5192d274f5691c397d60d90ef92ab9b2fbee9d634111",
+  "chain_id": "real_rate_peak_gold_rerate",
+  "cohort": {
+    "companies": {
+      "channel_label": "Real-rate beneficiary",
+      "channel_label_zh": "实际利率受益",
+      "identity_unavailable": false,
+      "linked": [
+        {
+          "href": "https://app.mastermind-x.com/analysis?symbol=A&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-30&mo_security=SEC%3AUS-XNYS-A",
+          "security_id": "SEC:US-XNYS-A",
+          "symbol": "A"
+        },
+        {
+          "href": "https://app.mastermind-x.com/analysis?symbol=AA&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-30&mo_security=SEC%3AUS-XNYS-AA",
+          "security_id": "SEC:US-XNYS-AA",
+          "symbol": "AA"
+        },
+        {
+          "href": "https://app.mastermind-x.com/analysis?symbol=AAL&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-30&mo_security=SEC%3AUS-XNAS-AAL",
+          "security_id": "SEC:US-XNAS-AAL",
+          "symbol": "AAL"
+        },
+        {
+          "href": "https://app.mastermind-x.com/analysis?symbol=AAP&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-30&mo_security=SEC%3AUS-XNYS-AAP",
+          "security_id": "SEC:US-XNYS-AAP",
+          "symbol": "AAP"
+        },
+        {
+          "href": "https://app.mastermind-x.com/analysis?symbol=AAT&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-30&mo_security=SEC%3AUS-XNYS-AAT",
+          "security_id": "SEC:US-XNYS-AAT",
+          "symbol": "AAT"
+        },
+        {
+          "href": "https://app.mastermind-x.com/analysis?symbol=ABBV&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-30&mo_security=SEC%3AUS-XNYS-ABBV",
+          "security_id": "SEC:US-XNYS-ABBV",
+          "symbol": "ABBV"
+        }
+      ],
+      "linked_count": 687,
+      "n_linked": 687,
+      "n_unlinked": 2,
+      "preview_only": true,
+      "ranked": false,
+      "selection": "first_six_alphabetically_from_owner",
+      "unevaluable": 276,
+      "unlinked": [
+        "BLFS",
+        "CWEN-A"
+      ],
+      "unlinked_count": 2
+    },
+    "count": 689,
+    "id": "real_rate_beneficiary",
+    "label": {
+      "en": "Real-rate beneficiary",
+      "zh": "实际利率受益"
+    },
+    "note": {
+      "en": "long-duration names whose discount-rate headwind releases as real yields roll down",
+      "zh": "贴现率逆风随实际收益率回落而释放的长久期名字"
+    },
+    "ranked": false,
+    "unevaluable": 276
+  }
+}

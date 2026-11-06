@@ -1,0 +1,159 @@
+{
+  "task": "P12.T55",
+  "at_utc": "2026-11-05T06:06:35.749410+00:00",
+  "verdict": "PASS_SCOPED_LOCAL_SOURCE_AND_INDEPENDENT_NO_REPLAY_REVIEW",
+  "head": "8376d700291198ed6c22cc3e8b6084bafc309209",
+  "tree": "42533c30e7bf194e7e0639c4026fc8f7bda28688",
+  "base": "008d4015fef2655a98d33dfd5c30d3cb600e2271",
+  "worktree": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ci-exact-base-unknown-safety-20261105-93782fd5e8c55e87",
+  "branch": "claude/ssd-ci-exact-base-unknown-safety-20261105-93782fd5e8c55e87",
+  "clean": true,
+  "two_paths": [
+    "scripts/run_ci_pack.py",
+    "tests/test_ci_pack_semantic.py"
+  ],
+  "runtime_delta": "32additions;exacttwoimmutable fullbaseSHA/logicaljob/originalrun facts + precheckout eligiblepartition; no override/expiry/global disable/new registry",
+  "held_tuples": [
+    {
+      "base": "2fbee06234fec4e792918c1cb0d9f8ea2ed833c4",
+      "logical_job": "ci-control-plane-contracts",
+      "original_run": "41966589230"
+    },
+    {
+      "base": "75f1ed49f9ad991dfc04dcba3a787166751fe91c",
+      "logical_job": "washout-turn-organ",
+      "original_run": "41887071408"
+    }
+  ],
+  "original_UNKNOWNs": "Retained immutable, notsettled/replayed/cleaned. Only overlapping diagnostic child suppressed; no headproof exempted. Doesnot cover unknown tuples notsupplied by actualevidence.",
+  "source_invariants": [
+    "All118incumbent runtimecallables except _run_exact_base_replays ASTexact;140existingtestcallables ASTexact",
+    "Headexecution/selection/plan/attestation/commands/rawoutcomes/proofinventory/signatures/exit/classifier unchanged",
+    "Existing unavailable shape for heldfailed/timedout headsteps; setdefault preservesoriginalreplayobject; onlyeligible diagnosticrecordscontinue",
+    "If all held, return beforecheckout; mixedonlyunrelatedchildrenrun; exactwrongbase/job and rolemain/allpassed behavior unchanged",
+    "No workflow/manifest/budget/packing/legacy-jobs/test_ci_pack.py changes; preserve actual10727 overlaps duringfuture integration"
+  ],
+  "actual_checks": {
+    "causal": "Originalruntime6FAIL4PASS→candidate10PASS (174deselected), actual checkout/child mocks. Earlier two fixture setupfailures separatelyretained, notcausal.",
+    "affected": "22PASS219deselected in24.45s, including existingserial/capability stripping/CasesA-I/signature/tree-negatives",
+    "static": "diffcheck andpycompilePASS; cleancommittedtwo-pathscope",
+    "network": "localnativeaffectedtests under OS (version1)(allowdefault)(deny network*); no old actual replay executed"
+  },
+  "independent_review": {
+    "run": "ss-ci-exact-base-unknown-risk-review-p12t55-20261105-01",
+    "root": "01a15e6c-42f8-7941-ac2b-296021932fbb",
+    "parent": "01a19e32-d303-7fe0-b9b2-d99441352687",
+    "foreground": 97392,
+    "provider": "Grok4.7/ubuntu0 normalrouterC2 review",
+    "subject_author": "nativeOpenAI principal; failedM3 produced no code",
+    "terminal_rc": 0,
+    "result_bytes": 6863,
+    "result_sha256": "e56d801efcd53cad8b71a0d2aa1b8f05b918536814d90f6ef0763e5a3a988c6c",
+    "verdict": "PASS_SCOPED; no headskip/inheritedgreen mint/heldchildspawn/broadtuplematch/metadataerase found",
+    "parent_adjudication": "PASS accepted for changed no-replay/failclosed source risk; reviewed exact actualpatch/invariants and all reviewerlimits. No formalGH/currentCI/release attestation.",
+    "adapter_readback": "ACCEPTED/true/reviewer/VALIDATED_OUTCOME exactrootparent/sameID",
+    "usage": "incumbentvalidated56409 total_tokens; no monetary claim",
+    "context_limits_closed_by_parent_source_reads": {
+      "SHAcase_abbreviation": "Authoritativeplanloader run_ci_pack.py2638 requires exact lowercase40hex; directunsupporteduppercase/abbreviation cannot reach normal authoritativepack invocation. This doesnot normalizeholds broadly.",
+      "childfanout": "run_ci_pack.py5935+ exact selector finds one job;execute_pack([target],enable_base_replay=False), no packfanout",
+      "unavailablevalidation": "ci_semantic_proof.py438+ accepts only exactbase/outcomeunavailable-or-timedout/bounded detail whenjob_presentabsent; classify_head_failure returnsunknown and aggregate1281 blocks",
+      "preserved_existing_observation": "Existing trustedbase_replay unchanged; thisguarddoesnotmintqualifying replay. Malformedorforeignfragments remain rejected byunchangedvalidator."
+    }
+  },
+  "failed_implementation_worker": {
+    "run": "ss-ci-exact-base-unknown-safety-p12t55-20261105-01",
+    "foreground": 81167,
+    "terminal_rc": 1,
+    "reason": "provider_output_limit",
+    "result_bytes": 312,
+    "result_sha256": "413315b9c80aab6a7d5bf9e9f12db6433cd0a4cc297ee8095ec768a0ca0c9104",
+    "quality": "NO_CODE_NO_QUALITY_CREDIT",
+    "recovery": "No workerretry/config/provider change; originaloperation consumed andterminal beforeprincipal sourceediting",
+    "observation": "Metadata-only observationrefusal original_run_observation_unconfirmed retained separately; terminalresult thenarrivedthroughoriginalnormalcarrier, notworkaround"
+  },
+  "artifacts": {
+    "candidate.patch": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/candidate.patch",
+      "bytes": 9583,
+      "sha256": "7f0a7786c80fe377925192d2241fb4eca800da1b74ccd8c00fe1c4b8628ce09b"
+    },
+    "runtime.patch": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/runtime.patch",
+      "bytes": 1955,
+      "sha256": "b85ffb5c8ffecae6e93d3fdd96c857cfe730475e87343c731267b98e731b4228"
+    },
+    "candidate-source-input.json": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/candidate-source-input.json",
+      "bytes": 1713,
+      "sha256": "0c05a04a54ef6ea5f9cfc60e02b3589c2eaef4379a177c2c0d671e4c9ab5c0e3"
+    },
+    "preservation-proof.json": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/preservation-proof.json",
+      "bytes": 718,
+      "sha256": "d895f56d426f9c84a5753434e86209bcec8b22b5e00334f23371f150430cbdfe"
+    },
+    "causal-red.log": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/causal-red.log",
+      "bytes": 13518,
+      "sha256": "cae34b4514443a2f91d6148a61a626135cdded555433b5fd3d9b41bff716a51a"
+    },
+    "causal-green.log": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/causal-green.log",
+      "bytes": 115,
+      "sha256": "cb90c6f483f596076686a9585ee9f527f9d1d67be0dc515ba1ad7577a351480b"
+    },
+    "affected-replay-classifier.log": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/affected-replay-classifier.log",
+      "bytes": 116,
+      "sha256": "76e8b171f3b1a98b20dd8b12df2909c88ca48a4a22fe1a36175c3bf72b4a702e"
+    },
+    "harness-precondition-failure.log": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/harness-precondition-failure.log",
+      "bytes": 71840,
+      "sha256": "3a274b4ad5d09590163194a7f601f0a3870e6d265592ddb51218d99e9cf771f7"
+    },
+    "harness-semantic-identity-failure.log": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/harness-semantic-identity-failure.log",
+      "bytes": 52535,
+      "sha256": "54bbb4ecdf4c5226cdbc01e467972f35d7b533b86ff95640a4055ee0b3414e81"
+    },
+    "worker-result.txt": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/worker-result.txt",
+      "bytes": 312,
+      "sha256": "413315b9c80aab6a7d5bf9e9f12db6433cd0a4cc297ee8095ec768a0ca0c9104"
+    },
+    "worker-adjudication.json": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/worker-adjudication.json",
+      "bytes": 975,
+      "sha256": "f8a71f1bc112a67e00e1b78b401561fbc424ac8ce810216507c9f97844db5037"
+    },
+    "independent-review-packet.txt": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/independent-review-packet.txt",
+      "bytes": 32884,
+      "sha256": "f5f602322a9c5e397b8216cfaf15a537227646cf50faf01e7becf141d8026fe3"
+    },
+    "independent-review-result.txt": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/independent-review-result.txt",
+      "bytes": 6863,
+      "sha256": "e56d801efcd53cad8b71a0d2aa1b8f05b918536814d90f6ef0763e5a3a988c6c"
+    },
+    "original-observation-boundary.json": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/original-observation-boundary.json",
+      "bytes": 1250,
+      "sha256": "c6e10f4c9cdb74f9515fc774dd3a41fe2562de3b52fc2157d3a126096871658a"
+    },
+    "same-carrier-admission-evidence.json": {
+      "path": "/Volumes/Mastermind/evidence/ci-exact-base-unknown-p12t55-20261105/same-carrier-admission-evidence.json",
+      "bytes": 2965,
+      "sha256": "452c7935f2115c13760859d2a57161891ef9ff1e7daa1520e2eef62299b3e06a"
+    }
+  },
+  "release_boundary": {
+    "published": false,
+    "PR_created": false,
+    "CI_started": false,
+    "armed": false,
+    "root_candidate_consumption": "owed before any sourcepush/newCI/arm",
+    "next": "Root/admit_routes may inspect exact8376/7f0a patch and compose ONLY qualified source with actual10708/10727currentbase, preserving their manifest/probe edits. Bind actualplan/base/effectscope beforeauthorizingnewCI. No originalUNKNOWN settlement or oldgreen transfer."
+  }
+}

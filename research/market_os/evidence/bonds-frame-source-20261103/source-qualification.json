@@ -1,0 +1,28 @@
+{
+  "base": "486afc845321a23c3508f3252bd2e52ae9de3c8c",
+  "source_sha256": {
+    "engine/intl_bonds.py": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119",
+    "templates/bonds.html.j2": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+    "tests/test_bonds_glance_copy.py": "3872baf53f92487ad9ca302ebd35e7c8f227c013c770cd2d9cbc655e2eaccf72"
+  },
+  "owner_dependencies_read_only": [
+    "engine/inputs.py",
+    "engine/yield_momentum.py"
+  ],
+  "receiver_helpers": [
+    "engine.yield_momentum.ORIGIN_ATTR",
+    "engine.yield_momentum.TURN_LOOKBACK",
+    "engine.yield_momentum._finite",
+    "engine.yield_momentum._origin"
+  ],
+  "no_new_store_acquisition": true,
+  "causal_red_green": "actual inputs.build_features/put/capture_rate_observations, Oct16raw\u2192Oct23finitefeature\u2192Oct30analysis; old disclosureOct23/nonstale, newOct16/stale under12days",
+  "input_and_receipts_unchanged": true,
+  "nonclock_fields_unchanged": true,
+  "focused_affected_tests_passed": 6,
+  "scope": "frame-source provenance only; missing/incompatible/caller/future receipt unknown with explicit row/source copy; unsupported secondary not guessed",
+  "reused": "JP raw-store date, 9 unchanged prior source controls, 40px/marker/focus/material/font/gauge/JS proof",
+  "css_changed": false,
+  "no_push": true,
+  "publication_state": "prepared local input only; frame claim reopened, limited root review pending"
+}

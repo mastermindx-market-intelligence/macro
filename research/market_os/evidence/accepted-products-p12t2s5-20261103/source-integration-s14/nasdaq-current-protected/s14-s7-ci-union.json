@@ -1,0 +1,18 @@
+{
+  "protected": "2fbee06234fec4e792918c1cb0d9f8ea2ed833c4",
+  "jobs_changed_from_protected": [
+    "research-record-claims",
+    "unrun-subsector-themes",
+    "site20-s4-chart-brief-js"
+  ],
+  "all_other_jobs_and_top_level_exact_protected": true,
+  "T52_paths_additive": true,
+  "T50_T51_paths_retained": true,
+  "data_gate_not_hosted_code_coverage": true,
+  "prior_index_postimage_delta": [
+    ".github/ci/legacy-jobs.yml",
+    "site/bonds.html",
+    "site/fundamental_forensics.html",
+    "site/macro_business_activity.html"
+  ]
+}

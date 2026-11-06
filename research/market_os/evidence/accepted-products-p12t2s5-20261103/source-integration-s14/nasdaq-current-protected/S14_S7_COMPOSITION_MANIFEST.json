@@ -1,0 +1,1428 @@
+{
+  "task": "P12.T2.S14.S7",
+  "at": "2026-11-05T04:09:10.576381+00:00",
+  "root": "01a15e6c-42f8-7941-ac2b-296021932fbb",
+  "parent": "01a15e76-ed5a-72f1-8092-813b4e735bdc",
+  "procedure": "Mastermind protected c23f9b4e",
+  "old_published_source": "e75d62486cb944c4fe4995d0cf609fc8178628e4",
+  "old_local_source": "a43ff9020814fd25f53bcac4f4e476086df520c5",
+  "incoming_protected": "2fbee06234fec4e792918c1cb0d9f8ea2ed833c4",
+  "source_entries": {
+    ".github/ci/legacy-jobs.yml": {
+      "mode": "100644",
+      "blob": "bdee9c2a4fe880b6733634bd99275c2e8536dc83",
+      "sha256": "608d0e83d6f6dd9fb3746b688f89fab7921fa9f36f29e09ca87761173eac52d6"
+    },
+    "agentos/handoffs/MARKET-OS-SHARED-SHELL-2026-09-24.md": {
+      "mode": "100644",
+      "blob": "7b849a8d4d712102c74fa8bcf4f4849f87a44396",
+      "sha256": "fb9977bfec9a24aafaa0b8420ca98532ee3db6eade34040b6f2950594a60c4ae"
+    },
+    "app/macro_command.py": {
+      "mode": "100644",
+      "blob": "a9d27313ce5b997271813bacf961b4ad9dc38337",
+      "sha256": "f721b4aa308d6bf6dcaa3e6ddd71523cdf0213b5586e33cc470b04f344750d60"
+    },
+    "docs/verification/shared-shell-china-hub-retained-source-20261103.md": {
+      "mode": "100644",
+      "blob": "09b21edbe65fa47d81c7d924f18826412a85ec19",
+      "sha256": "01b961cbe897295681bb32632d9de9cd2eac208eb66d1297592d5ff040f3a11c"
+    },
+    "docs/verification/shared-shell-forensics-source-return-20261103.md": {
+      "mode": "100644",
+      "blob": "44b7e8fdf32746e35657635f8d3353712deb8d4e",
+      "sha256": "f9d4e440546525368cb7ebc49259284a12a0809d458bf750adc60da39e1cc8d8"
+    },
+    "engine/intl_bonds.py": {
+      "mode": "100644",
+      "blob": "e30591b0c2d5837dc2cd62feef09e5b81cd3e54e",
+      "sha256": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119"
+    },
+    "engine/market_os/macro_workspaces/business_activity.py": {
+      "mode": "100644",
+      "blob": "a0090dd1a4e9fe1c13393126c3954c13764f015a",
+      "sha256": "ade306a972aff62bc40ada2dbbfd83cfa3df259e2577cbebc5109ce551d37416"
+    },
+    "lib/macro_suite_labels.py": {
+      "mode": "100644",
+      "blob": "7e5360e7abda4e44681d74ffa555ea7a83604dfa",
+      "sha256": "d17c225917e652ae3c882df97ffb471b146993ad03279a5221cf30d3d0713784"
+    },
+    "lib/macro_suite_view.py": {
+      "mode": "100644",
+      "blob": "3fef545d1df6c3adfc3a5de5ebe9462eabbb3609",
+      "sha256": "4a24afb319d44f2102f01fc582d4f3d09762286bdddf08ba6117fcec71c88e27"
+    },
+    "lib/pages.py": {
+      "mode": "100644",
+      "blob": "06a1bf465a5598864b14fddf857da50d4c17ec49",
+      "sha256": "aee8a0278bc0c487415d246ef0ee814c1f13e0591cbd2f8c361e5d056c2e0a68"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/EVIDENCE.yml": {
+      "mode": "100644",
+      "blob": "0a4a9453ded1880d743c7ed90bee06bbcc11ce93",
+      "sha256": "059dc6f9ab7066a3a79d239fc3f77cfa29f669bf6fb8e83fa39df0b0daca665b"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-dark-en-row.png": {
+      "mode": "100644",
+      "blob": "12391d1533634609492f600ab4423cdb138e2310",
+      "sha256": "c1b95f5347e710cb17724af1fe8369520ea9ee8493c0d0ed50174df2f3039b7b"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-dark-en-sources.png": {
+      "mode": "100644",
+      "blob": "8e0b412530781341e39107eca9a7372629d637e5",
+      "sha256": "d9d8f01b0361d17838905cfdacdc7c948d76f25f45d566b80b8bc75df61dff46"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-dark-zh-row.png": {
+      "mode": "100644",
+      "blob": "1babb72406e94107d1cfa7c518d51b212defe625",
+      "sha256": "7eb983b0f795417dda9dda1f5a36dfb602479002f84dac15c9b7c5775c5ce991"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-dark-zh-sources.png": {
+      "mode": "100644",
+      "blob": "ae835d19dd7a75cb2f03e0fb5b49ef09c33b4bc4",
+      "sha256": "d93cdbfe185be3d750843d281c6cf59e71b75c1f1035cc31c134e086fbc2509a"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-light-en-row.png": {
+      "mode": "100644",
+      "blob": "58f926abd8f6daed44aedef8822af05f048f508c",
+      "sha256": "3d4e011e520e3f9b558fc65ad5f4ed61a4472691a0eac3643aaec4f814b3b129"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-light-en-sources.png": {
+      "mode": "100644",
+      "blob": "5152b82002fd4bb1c34752deab1b09dbf53c405a",
+      "sha256": "7fb6ca3d136ee9e66eca6131f7fc039c8fcd24bb26304c05aaab1422b983d9ed"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-light-zh-row.png": {
+      "mode": "100644",
+      "blob": "c388c01174dddb08bb8337b04cf8f181a3b5fcd5",
+      "sha256": "3015627d0f8bd37885895849923b8427d22f281ff6d7f206187fcb72ed0f075d"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-light-zh-sources.png": {
+      "mode": "100644",
+      "blob": "d7145d53ba3917b0a02d541bd2d495ed1e0f3bae",
+      "sha256": "86ce5bbe2c27e040b33cd7c0e8ae010648117275b5e363c2c8124743cd6b84ec"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-dark-en-row.png": {
+      "mode": "100644",
+      "blob": "55c295edfd22e999f44031f13603895d3558267b",
+      "sha256": "98628eddc4b1349938098c4f8b1a2394bbb1c0ad4a9d4ddddd31aa6df05eb640"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-dark-en-sources.png": {
+      "mode": "100644",
+      "blob": "4bcae6f85e08326e5ffba9c685906c0bfb096aa0",
+      "sha256": "1d2b3923687b52b850967e1523acf272508925db2679d697dfa159449cd9a587"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-dark-zh-row.png": {
+      "mode": "100644",
+      "blob": "729daf9b53980a223cfff61a4ea9dd14566a0798",
+      "sha256": "9c04ea170262c961996880e56d64bd4a2cc0f4358d3d82ce1d60c43ad499ecfe"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-dark-zh-sources.png": {
+      "mode": "100644",
+      "blob": "3f571f7eb766f3430d816703a83ff8b9d231a671",
+      "sha256": "7dd48aa40376d5712d99684fe3e7629621091925f951be86186012aad2e2b62f"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-light-en-row.png": {
+      "mode": "100644",
+      "blob": "aa541f0dc36a5ef3d05fcf09d90e922daca18b74",
+      "sha256": "3416042e6aa5be341d02aa976dc09dd6c4b5856a5e341f581121324ed8ace691"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-light-en-sources.png": {
+      "mode": "100644",
+      "blob": "1e2fba11ecab0b734d3f3a838ee615cd37503947",
+      "sha256": "ff16922563a19bdb7bc6d338f91feb537ac2d918dfc2909fc391d870fdf6d9e1"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-light-zh-row.png": {
+      "mode": "100644",
+      "blob": "804a4fbcf80aa7cd049c57e42ad21937f1baebef",
+      "sha256": "a33a33556278ceb57d1e7fd85344d27a8757a06d87fed8264758589e2783270e"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-light-zh-sources.png": {
+      "mode": "100644",
+      "blob": "3553f63b4d526c8fff612a5bd8f3340e45d02a6e",
+      "sha256": "f34095eda67736d289c33b27ef73e08ee6263e3a2ac095bf3f05a0db9af14a75"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-missing-final-1440-dark-en-row.png": {
+      "mode": "100644",
+      "blob": "6228dab4440d0551781a6574c1a7557d345020a0",
+      "sha256": "c18388ae77c98051878ec693c0eb923bef30f5da2b1d05454a91ed65238d1c08"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-missing-final-1440-dark-en-sources.png": {
+      "mode": "100644",
+      "blob": "021098d6a2cc93e0c8f45fac1b5717808474055f",
+      "sha256": "e8a813c1437f689c19cd68cb4b6956295563c83735e7c9d1c21c10674ea46df1"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-missing-final-390-light-zh-row.png": {
+      "mode": "100644",
+      "blob": "cdca6eaa6a54c22e7dabefaa4fd278a1e65c766f",
+      "sha256": "c5f3ae4eb91661463cc61041ecd008aab5c467fed03a7dbdafbfe2c70722585a"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-missing-final-390-light-zh-sources.png": {
+      "mode": "100644",
+      "blob": "04e7d76c7c098023440cd723fa71d2b764549e24",
+      "sha256": "2d44434d21b6b9d3306dc403e9f222f6048f3c8854309eb043dbbbf3e2be994a"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-receipt-final-1440-dark-en-row.png": {
+      "mode": "100644",
+      "blob": "12391d1533634609492f600ab4423cdb138e2310",
+      "sha256": "c1b95f5347e710cb17724af1fe8369520ea9ee8493c0d0ed50174df2f3039b7b"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-receipt-final-1440-dark-en-sources.png": {
+      "mode": "100644",
+      "blob": "ec54ea27a2c31a8cea0c1909e86183c66545dcf2",
+      "sha256": "25c254648389357243344255307f0044bebed7c2a205fc35e61121c5dd0df0b3"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-receipt-final-390-light-zh-row.png": {
+      "mode": "100644",
+      "blob": "804a4fbcf80aa7cd049c57e42ad21937f1baebef",
+      "sha256": "a33a33556278ceb57d1e7fd85344d27a8757a06d87fed8264758589e2783270e"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-receipt-final-390-light-zh-sources.png": {
+      "mode": "100644",
+      "blob": "1849f3922f6a3c4fc06541c56842030541785a89",
+      "sha256": "b53ea39f7dd9b909aa6752d80443159b77b19245a7883278dca22dfa2b907236"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/manifest.json": {
+      "mode": "100644",
+      "blob": "2e2e54873a676ea514dd7f8dfbe9c0d66e4338c4",
+      "sha256": "ee0d73ad84ee6b9f3fd7a543112bcd79fcccb94266dfd4534ef43bc5d6a47712"
+    },
+    "mockups/evidence/bonds-sovereign-depth-20261103/observations.json": {
+      "mode": "100644",
+      "blob": "822856087a5dd49af130ac4086f5ba7e6fdd0644",
+      "sha256": "2b22dae56c7c7aa68639711fa3d8373850263e2aa4e985e6a26652b5d00c7c02"
+    },
+    "mockups/evidence/business-activity-depth-20261103/EVIDENCE.yml": {
+      "mode": "100644",
+      "blob": "f6ca73552b27734e17532984a79cb1519cc81d4c",
+      "sha256": "6515f69206ff60e33a54f1d60e7c1ab525813b6b8a396f80e823bd9a3dfc684f"
+    },
+    "mockups/evidence/business-activity-depth-20261103/FROZEN_PACKET.md": {
+      "mode": "100644",
+      "blob": "bc85c06636754020affdcbe2add36ac78f7da310",
+      "sha256": "9ad38331bcc4ac87ee20455d747d3be7c217c2960336234716b7c8023fbf98cd"
+    },
+    "mockups/evidence/business-activity-depth-20261103/README.md": {
+      "mode": "100644",
+      "blob": "b4a98a4c2cec9c0ba61f76292644c38faeb88a36",
+      "sha256": "034978e04f97cd0e21d3f0f2e24284ed9ffb63a4f84a1a2702f56caa294d06fe"
+    },
+    "mockups/evidence/business-activity-depth-20261103/before-v2-1440-dark-en-metric.png": {
+      "mode": "100644",
+      "blob": "8a5c41ac1055b09e96cf83544b5545081fb86a63",
+      "sha256": "27c8f5bf1d80f7e0c507309f3670c70d5a84e30845a59d478f2c8ff1f4b61485"
+    },
+    "mockups/evidence/business-activity-depth-20261103/before-v2-390-light-zh-metric.png": {
+      "mode": "100644",
+      "blob": "acf4c6a88d87ff8abf1c737d1885a5cd6925011e",
+      "sha256": "fb7ed24afb55199ddcf5608f7234d3cb5ce1c00e73564f091a9a134ff618e08c"
+    },
+    "mockups/evidence/business-activity-depth-20261103/before-v2-result.json": {
+      "mode": "100644",
+      "blob": "89a881644ebb168575bdb6e441ac916f3225389c",
+      "sha256": "b4bb502baef1666d57a44113991e00bb9d9b211248bf3d78444d9ff497ae1c44"
+    },
+    "mockups/evidence/business-activity-depth-20261103/candidate-390-light-zh-refusal.png": {
+      "mode": "100644",
+      "blob": "9a5c5de8038ab42130a5800b36d516c329be511a",
+      "sha256": "4d0efe1d4e883af7dcb8fd17cb20f3bf5470590ec30fce56b744f2f49136c022"
+    },
+    "mockups/evidence/business-activity-depth-20261103/candidate-first-1440-dark-en-refusal.png": {
+      "mode": "100644",
+      "blob": "93546e8f6890215ac12be4ec6a794c05a5caa18f",
+      "sha256": "9e010f88ef10a602743c64ae428a21c485e8739761abc4a3bff207209ae3816f"
+    },
+    "mockups/evidence/business-activity-depth-20261103/candidate-result-harness-locale-negative.json": {
+      "mode": "100644",
+      "blob": "fdc03c03611170da64b0091f585e147498a850be",
+      "sha256": "751be7d56e00335704a881d56a5085a3f088f9ddaefdfbf4c48c22ad90183d91"
+    },
+    "mockups/evidence/business-activity-depth-20261103/capture-manifest.json": {
+      "mode": "100644",
+      "blob": "e64389fc2c3182f72a670d8572de4efd37c45a39",
+      "sha256": "1723ee84d87dfd78ff5d40575d6839527cf392b098917048b33050845531f74f"
+    },
+    "mockups/evidence/business-activity-depth-20261103/capture_settled.py": {
+      "mode": "100644",
+      "blob": "9077a59e70dcdf5ebc10d12ea9bb5f67cf6da025",
+      "sha256": "dea8c6b85eb4e793b4d15ce59a79853a3d2a86c5de029989a320c67c0530c79f"
+    },
+    "mockups/evidence/business-activity-depth-20261103/design-check.log": {
+      "mode": "100644",
+      "blob": "2fa67c63aafbaf8469217a1713daa7d4ee03581f",
+      "sha256": "18f31be6953a4103d31a6339d9b08d53eced7fcd0dc9eafa361dd0209bda1737"
+    },
+    "mockups/evidence/business-activity-depth-20261103/journey-result.json": {
+      "mode": "100644",
+      "blob": "a5d0e6ff49b89deb01a652e1fd75987da5735e14",
+      "sha256": "40d4176c58b1c2b4b031b3ffd30f4f1b111afe5234569f45271a9b27d2103e04"
+    },
+    "mockups/evidence/business-activity-depth-20261103/prepare.py": {
+      "mode": "100644",
+      "blob": "49461e5ea7a664179506aa85bed6d39be868b3c8",
+      "sha256": "3100f093032a706e8c0762a84f3027f73b71a8e4aaf7121e63c762b54716c76c"
+    },
+    "mockups/evidence/business-activity-depth-20261103/probe_candidate.py": {
+      "mode": "100644",
+      "blob": "de3bdb6337a486f270ee67326b446535797f8124",
+      "sha256": "ad06ccf8ace92c80cf250a0677763cf6ce80a1b7e695b0e319c7044e3220da55"
+    },
+    "mockups/evidence/business-activity-depth-20261103/probe_candidate_zh.py": {
+      "mode": "100644",
+      "blob": "35b35be74c4f5f377cf32c6f05f6c46eff2878be",
+      "sha256": "bfd43f5fab9f39066d1a01457d3ab9f04bd60678174fc00c92f320f0cd827ce8"
+    },
+    "mockups/evidence/business-activity-depth-20261103/probe_v2.py": {
+      "mode": "100644",
+      "blob": "5b4f97c5b33991aea056c3c7fe12fe654a4e5070",
+      "sha256": "bd8f1c31402f06c8a2accb6fce872f33f7cdf1e28fad2702ecf23abd8750e116"
+    },
+    "mockups/evidence/business-activity-depth-20261103/qualify.py": {
+      "mode": "100644",
+      "blob": "e0beab1441247195c3113942f068cac8a16c65c1",
+      "sha256": "fcf86d11295c413eb95130ac120c3f1883908f7b9113db853c69900259944127"
+    },
+    "mockups/evidence/business-activity-depth-20261103/regression-green.log": {
+      "mode": "100644",
+      "blob": "0bf8573a6dcb6cbf432325311bc82cbd4516a44f",
+      "sha256": "a4455b4cfc5c6a71fc62642d8143250da30d75f91f92481676440e9c62029e4f"
+    },
+    "mockups/evidence/business-activity-depth-20261103/regression-red.log": {
+      "mode": "100644",
+      "blob": "575f8fd3aeff323ae276e3281a1d8abc56950157",
+      "sha256": "734a2d7a6d7011f7ff8426cc87b4b1d51ba659c94d8ec954256653830b94c2d0"
+    },
+    "mockups/evidence/business-activity-depth-20261103/retained/macrodata/workspaces/business_activity/US/latest.json": {
+      "mode": "100644",
+      "blob": "075f1e78d5d918823cd8465e82cc6ab5705b8d9a",
+      "sha256": "90306290684a1f746d386f862c154167ab73e23b259c086fbd63eeb9a7be5af5"
+    },
+    "mockups/evidence/business-activity-depth-20261103/retained/macrodata/workspaces/manifest.json": {
+      "mode": "100644",
+      "blob": "826ed5953b18f98d43749d29fab5db50049d0871",
+      "sha256": "52f33387da95501f6d70e8f1a144cdccae2d65e1ea431bf03c0f32495b4778fd"
+    },
+    "mockups/evidence/business-activity-depth-20261103/runtime-style-check.log": {
+      "mode": "100644",
+      "blob": "a18dd4aae5f79e4041fcef8091712c5c31121ed1",
+      "sha256": "afd7af3c8ce70715a4ec0ce64baa7b146dcacf4a0b4418524cf9c8c1a58e7199"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-1440-dark-en-depth.png": {
+      "mode": "100644",
+      "blob": "5d7eef43cf0af2e06bfa7a66671a778eb41b50cb",
+      "sha256": "40b8db0aad448f503d11f71d1ade3cbfd2bb126a695e3653d82aa60b50ff537b"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-1440-dark-en-drawer.png": {
+      "mode": "100644",
+      "blob": "9ead5b5397cb4b5adce7c8d0330ec7d22b16fccb",
+      "sha256": "4713c944afb927599c19e80ef881b7953b882d2da164c2a25decdf4b7896e5ba"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-1440-dark-en-entry.png": {
+      "mode": "100644",
+      "blob": "314dd8e298d89e46a06feb9a4ec6764abb794a3c",
+      "sha256": "6c85a2b50fde3e4ec864a5abb1c34ab63f78974a132c71f7d0e9a7311599ca0e"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-1440-dark-zh-depth.png": {
+      "mode": "100644",
+      "blob": "d70c695c2dc697192e66cd795971b0e39e6e6242",
+      "sha256": "61894ea68a796951080cb5b0ed7d9345d6d4a9dd5452a0d6ee2688684b9426bb"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-1440-dark-zh-entry.png": {
+      "mode": "100644",
+      "blob": "59cb9336520599f3c9d10ab96dbb2c22b5174e91",
+      "sha256": "5e2ec43d267a0dedd4d87cb8cb285a35657eaae53f2eccae270f91c40b5a88ea"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-1440-light-en-depth.png": {
+      "mode": "100644",
+      "blob": "f193f90b72f55c4b954c1c6ded16fc23bf8055b0",
+      "sha256": "f530fa02979c68b6d2decd42f7508dec44e83ae778b5a90059dafd63fca8b787"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-1440-light-en-entry.png": {
+      "mode": "100644",
+      "blob": "65ddc2440b34e65b01276189f4ce303f1c337ace",
+      "sha256": "382562b1add4cff04b3f1774b14326289834e6f12ef2de0823374fdaedd71e4e"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-1440-light-zh-depth.png": {
+      "mode": "100644",
+      "blob": "44e2dd4cb8fb83b008f3335e75ed4ca4e3213e24",
+      "sha256": "921a8af2d9ab9b86e4433ed8c497df36caaca7e6107eba2ac0f59be7ae9a6262"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-1440-light-zh-entry.png": {
+      "mode": "100644",
+      "blob": "7a0b3fbfbc969d8a2d9f8bef18f904b98bc9165d",
+      "sha256": "c3c6bd3527814540b3565d37eefa0a54751be8a6dfcf57fb4f07f4a147de18b5"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-390-dark-en-depth.png": {
+      "mode": "100644",
+      "blob": "d1a6af520b05c56634df2a301425a1f688c2bd04",
+      "sha256": "b0a38d0c39a498ad79f1d0f348a3e3f8fbc8c72e47a04972993e9b5a7a9df508"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-390-dark-en-entry.png": {
+      "mode": "100644",
+      "blob": "9ca876f46b1fb1fbe4751ad1274969bc540e976f",
+      "sha256": "ea43159cf77dec365cbec5776db4e4f3fcc8951709d339920e25eb46383e82bc"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-390-dark-zh-depth.png": {
+      "mode": "100644",
+      "blob": "334312e6941750b1c4ad726f07279f09a7660988",
+      "sha256": "03dae410970e333cf382e504dbd86a677144f955f6db1591ace6f4aa9933b2bd"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-390-dark-zh-entry.png": {
+      "mode": "100644",
+      "blob": "9a88fac533288773b330c129a2a66278ca44dae3",
+      "sha256": "e3d54ded7b911883a83c04164aeb6104a607da44b6edadb114f3b9828285585b"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-390-light-en-depth.png": {
+      "mode": "100644",
+      "blob": "a7f266e1365979228ebe490db8251f2a60c433c0",
+      "sha256": "185b5509f8816a79a396f6b1d732034ca61a64770ee9e1085b8ca276a024909d"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-390-light-en-entry.png": {
+      "mode": "100644",
+      "blob": "caff2b6719310e7110cb6dd4f77eec480e3c291b",
+      "sha256": "62858227c0d27e9ad85316e3c0f10c593b42200988a376e099598f1abc0638bd"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-390-light-zh-depth.png": {
+      "mode": "100644",
+      "blob": "247d770fdc082670e3a1e8fe86c49afd4218e97a",
+      "sha256": "b494c07ed3f58db89a1ff9145f40686aa78c4702c866c84b48cead45e241a0b3"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-390-light-zh-drawer.png": {
+      "mode": "100644",
+      "blob": "52e9704b21d817b2e7bd56444a432e3867b5a248",
+      "sha256": "3fc455fe702f550840fec87098a09d171cd48ddc5dd70c8f855ca0b9330c9767"
+    },
+    "mockups/evidence/business-activity-depth-20261103/settled-390-light-zh-entry.png": {
+      "mode": "100644",
+      "blob": "99431f156239f53c12848dc4a699ef30d7ee64d3",
+      "sha256": "9479609f7555b598266c9e1f933b310d15d22a688f26c57fb7d1e3a0a66c8b5b"
+    },
+    "mockups/evidence/business-activity-depth-20261103/snapshot-summary.json": {
+      "mode": "100644",
+      "blob": "a1259847429eaf271e828f3ca0587ea7dedecd7f",
+      "sha256": "ca169b27543906bb4b3ab7aa414397040dd7570f7c41339f66b574e9c88ec7e0"
+    },
+    "mockups/evidence/business-activity-depth-20261103/source-qualification.json": {
+      "mode": "100644",
+      "blob": "cbfbdace3463489d38e82450b700d7c6fffd0ebd",
+      "sha256": "515f3accfe3cf1948860c0025819288b48f060ae4e1bb40891e9bbdeafdc2e8b"
+    },
+    "mockups/evidence/business-activity-depth-20261103/source.diff": {
+      "mode": "100644",
+      "blob": "ed719dd92e401d45f930e63779453684c4162343",
+      "sha256": "7637bff76d0850238ee616a4ca9e485246acc4ea2fc2afd07a6b413c79048dca"
+    },
+    "mockups/evidence/business-activity-depth-20261103/view.json": {
+      "mode": "100644",
+      "blob": "0eaad4aa28910a8447fcd9c28583000c77880165",
+      "sha256": "c8f86cf9eca1fb9f3a68af8530cbff1eacbd5b4ce930b78fe09d596efd11a1d2"
+    },
+    "mockups/evidence/business-activity-depth-20261103/visual-evidence-check.log": {
+      "mode": "100644",
+      "blob": "138b6d65b310ccad1a59b97861f1a5d3cb6b61d9",
+      "sha256": "1ff14c42bdeba2c1b81f87355c8ff482f50ee88fe1198d5e205d3888a11760fb"
+    },
+    "research/market_os/SHARED_SHELL_CEO_CONTINUATION_2026-10-21.md": {
+      "mode": "100644",
+      "blob": "2303c8ace0a673ae7a6c687d4031d18a4ce2078c",
+      "sha256": "341ccc87107c35dbe5b58c81de94a6b1cf1598a93b41b69a298f8f3088c114d7"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/BONDS_ASSET_ONLY_PACKET.md": {
+      "mode": "100644",
+      "blob": "d8d2bfeaa92469fc6cbd0193c8fb36eca9bbd861",
+      "sha256": "b0dcd2a0c048268cbbdbb75abbac1e8c6936eef5436f7585cc4f8ec730747191"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/BONDS_ASSET_ONLY_QUALIFICATION.json": {
+      "mode": "100644",
+      "blob": "d677647e8876e0756b1446b877496202974479a9",
+      "sha256": "4431a70c48b27f8068f4c76b0ce5f685f06b4617dc9defb8012e82773ef6addc"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/BUSINESS_COPY_REPAIR_MANIFEST.json": {
+      "mode": "100644",
+      "blob": "b4d1ee15cc12b6ea9c66abe65aec47182a591701",
+      "sha256": "9fe578b9c2dff8e90b476db0ff981bf076cbb6a798d1d61b66aac012937eb2df"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/BUSINESS_COPY_REPAIR_PACKET.md": {
+      "mode": "100644",
+      "blob": "13308bfe8d583b6553cb3c53cfe499cf6f575aed",
+      "sha256": "172f7004246e8ebddc9154346b1599e76be7e490ddbd1601a84c7f35335bf59a"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/COMPOSITION_RESULT.json": {
+      "mode": "100644",
+      "blob": "1ba07cff61a3ae69204a622309441a3bbcc0719f",
+      "sha256": "52a216b4187f4c2f97baa6838075f07ccbeebb19ee2b6985fd6a95d112d9d6b5"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/CURRENT_BASE_PARSER_SEAM_PACKET.md": {
+      "mode": "100644",
+      "blob": "5716a2ac80a763d44e0e5bac2967c4dba664f542",
+      "sha256": "ed61817588cf89f9be35b019ef399aaf4adc303c229bafc90540b3e15d13b4ed"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/FROZEN_COMPOSITION_PACKET.md": {
+      "mode": "100644",
+      "blob": "e8b30de0683b2981d764cbdb7d1a507406867980",
+      "sha256": "931017de5c08714dfa7237a491f69a240bbc2c9b959616366c95425cef8c8924"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/PROPHET_PARSER_COMPATIBILITY_PACKET.md": {
+      "mode": "100644",
+      "blob": "6b72687c02435bca279eea07d7f1589756db7233",
+      "sha256": "1df3af1ce93d6215dc4a9b7989274ddf33fda4b6be6ffd9094c4a2d533cafade"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/PROPHET_PARSER_QUALIFICATION.json": {
+      "mode": "100644",
+      "blob": "86be44119d6a52caf3fc7d219c4d3b1831893923",
+      "sha256": "af12dc695ba2c8c704b357116c3f1474b92b0e2ffbd99a37f473c0164b371f78"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/RELEASE_QUALIFICATION.md": {
+      "mode": "100644",
+      "blob": "19bad2c6c2ae544dd746eecb1a36a0d9cfc32bb5",
+      "sha256": "6cc1ccf2ed24bea835e434374be94fea530c3c991272ad20401315a07cb823e4"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/SUCCESSOR_COMPOSITION_MANIFEST.json": {
+      "mode": "100644",
+      "blob": "259d4d8212231ce26b45628c4a6602f86ba42a12",
+      "sha256": "0a371f2e625959e2303792724649c8fca4cf10b885ce449efe3913b8c621e58b"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/T11_BUSINESS_COMPOSITION_ADDENDUM.md": {
+      "mode": "100644",
+      "blob": "876b6f6bc9536ac702946c19ff2c2ff84a87967e",
+      "sha256": "837041d41bef6824f13451bfbd2aeb5a6d00e179978cfbae480ade995f114201"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/affected-composition-tests.log": {
+      "mode": "100644",
+      "blob": "ef6defbe4c727e94f4012685d2bb9712607214b8",
+      "sha256": "196e93d5852b530cee0307bb8c81c4d7d0d2c3892383c0b06c9620803f6eba75"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-complete.log": {
+      "mode": "100644",
+      "blob": "dbab0614339713731db6194f4feb5bfcd596b1fe",
+      "sha256": "092b80e1eb9d49cad5b7825762bb6412bbb1ad2ccea1699a89568a925ce1f37c"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-green.log": {
+      "mode": "100644",
+      "blob": "f933909e70058d3a1e8206e682178b6789053bff",
+      "sha256": "c6e53dbca4585c0005e381647199d87e73e03cc94d5fad4c93d8970599fd5fcf"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/bonds-asset-only-emission.json": {
+      "mode": "100644",
+      "blob": "33e33d5dedad52b678a060fc5dbf04d00f5c71b1",
+      "sha256": "1fa72f5126749ebfef15859d769eb9150fd19a465ea57b36b30332e8bdafb973"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/bonds-asset-only-emission.log": {
+      "mode": "100644",
+      "blob": "0577417a26fc00773da2e600835635f60bca89e5",
+      "sha256": "aafc8b757eeda14c83585d5f65d63e1e0b761c1253f3d581d52e3995c3ed7013"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/bonds-assets-final-green.log": {
+      "mode": "100644",
+      "blob": "b309184ad8c164cdd84b7457ba9f84d6f4c2c1f8",
+      "sha256": "77ea0c892c22455e52d55ae79ac8ee5eaaddf1b0099dac9db5c1ff30a9bd7ced"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/bonds-css-pair-final-green.log": {
+      "mode": "100644",
+      "blob": "868ac7f6d8b4e81ea9531b47d68b6631b4d0f938",
+      "sha256": "a16d016d20d197755a074760391345f00633e97648bbbe066ed0767876a94de4"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-ci-relocation.json": {
+      "mode": "100644",
+      "blob": "30c4febbbc6618d5e53fefff918f6431075ae164",
+      "sha256": "d4cfacfc42ba1d71e1eed5a60d2f70a29f0a8642747d6591df85ad070259063c"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/BUSINESS_CLOCK_S13_FROZEN_PACKET.md": {
+      "mode": "100644",
+      "blob": "8253dfc07dd9f9b823278ecf76b7cc44ce628448",
+      "sha256": "4841fc3426bd6bd4104bcebfe068b19c14b009caf43a3cd82aafd6ada8015223"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/BUSINESS_CLOCK_S13_MANIFEST.json": {
+      "mode": "100644",
+      "blob": "c1f8194613b5fa9c2330fd41c4f5c1d2893c654b",
+      "sha256": "64560848be0232da4387fcef2b8a4fde2ca9155e908a4f28271d16d6ed8aac8c"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-design.log": {
+      "mode": "100644",
+      "blob": "be31ab45393c98cdc5388cdb90ce45fe433d8b7a",
+      "sha256": "311d37519babf246c71a18de14868bfbac0b924a5699eb1219e13169ac92b12b"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-final-focused.json": {
+      "mode": "100644",
+      "blob": "966069e6ba1b40488a73c28fec35b0edd6617d07",
+      "sha256": "b6b454832aa36d81c050ab8291ffbc0962f60cfd92637a69b9921966db2e595c"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-final-native-report.json": {
+      "mode": "100644",
+      "blob": "cb428caf8652d1c1c790ee667d01b15b2760cc47",
+      "sha256": "4d5e5ff76d519b829dd1caf2acf8c7b3f717bbaea687d69ee9babd70008004f6"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-review-finding-green.log": {
+      "mode": "100644",
+      "blob": "a59d5e759734ca1c90af628d6e49a00d5d11f659",
+      "sha256": "9438228ea311ca412af1c60fd2f45368e3b35c32dfcd11fa4f685397e9027b54"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-review-finding-native-report.json": {
+      "mode": "100644",
+      "blob": "06359fba04d4750d5c73b12d74f0683a42a0aa32",
+      "sha256": "4b349b823111ad4bd54ebbea77469bf18c8660eec26d2c48778e1ce1b7238f79"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-review-finding-red.json": {
+      "mode": "100644",
+      "blob": "fa1e93d9a2122e993fa0fe2563d198873c281da3",
+      "sha256": "d9d65fd7fcae8b6f83ced9670f2051a4f2835638e4bee9d3205946adca618a4e"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-ui-evidence.log": {
+      "mode": "100644",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business_clock_s13_native.py": {
+      "mode": "100644",
+      "blob": "80f0faa46d896a57b442e73658221ea945fa5b42",
+      "sha256": "5b1c77cab467073b27e0f6911b09aed736caad2e07212d331f2cb9f30bb2b733"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business_clock_s13_review_finding_native.py": {
+      "mode": "100644",
+      "blob": "c8c2182eb62a5e747bec3f4b3c2fb1e75cb9a2ed",
+      "sha256": "6f36ee736046572ce1d7de28fca09be0d97173a2356bfe39200267eb53464ba6"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-copy-current-preimages.json": {
+      "mode": "100644",
+      "blob": "f68259d7daeb19e119283fd14cd02bf961f48e67",
+      "sha256": "bd53b0d92acac8937d55e2daeb4424f86d25135101c843a8d4f4ec361dc9153a"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-copy-native-report.json": {
+      "mode": "100644",
+      "blob": "5b499bd5ac74a430a820ef8ac6590c8ac77c3054",
+      "sha256": "6aef345c0ec9f5f9d3a9e54ed66fb480dd59e3d47d8106a419921de0fe5d9bb7"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-copy-original-guards-green.log": {
+      "mode": "100644",
+      "blob": "d325803f2e4e362022d2e890360872668f29f27c",
+      "sha256": "3ff24320664eb1c732bccba176a2787fb04795cd2e7f3d553d589ec17a792469"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-copy-source-red.log.json": {
+      "mode": "100644",
+      "blob": "135e6f8bc61278ca0576ac807d8a978508fc491b",
+      "sha256": "a7c07801d9c5aef03f73b071b07c488a7498f9780500c08e5e565c566e901555"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-copy-unit-green.log": {
+      "mode": "100644",
+      "blob": "fed4d963bfe8d344645b0a189d82058f43688c00",
+      "sha256": "80e79020843280e1dfdcc8206b6e9ca4015304a7a0acedfa88cae2e0da7b06ec"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-current-parser-and-input-join.json": {
+      "mode": "100644",
+      "blob": "fd0c3181d98e0a7994f60504c3d73a7b33966062",
+      "sha256": "7feb2d780c40cda250d11bd4a2cdc069e29387f000f4bd0fb415ecb9fbf5dd0c"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/ci-original-semantic-binding.json": {
+      "mode": "100644",
+      "blob": "d82aed5e12236678541a4f9169e91770563a89ad",
+      "sha256": "546e3968d85facd27b2b50ebe968eea9c32236e389f3b37e00f4d3a5f776fa08"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/ci-original-terminal-intake.json": {
+      "mode": "100644",
+      "blob": "8813c4d0e2f1a3b4cb84a207a1d9d357edaaf432",
+      "sha256": "248b62e04ead8d417fee1fd8b1be09e3c3c2f1ade21581f1e823e49b06f3c123"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/ci-ownership-closure.json": {
+      "mode": "100644",
+      "blob": "9baa9fd105587c8a56377dc513be2218bbd5d5e2",
+      "sha256": "023eaf6946f218660e6350dad998009c2cc8c1f90daab1367590284e7f0d02c4"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/ci-pack6-semantic-fragment.json": {
+      "mode": "100644",
+      "blob": "691a6080d85b065964531bc7dd3ddb9b67549b61",
+      "sha256": "3978c8965dbd5ca1168a581f1546365751e3c216c3c61f98ab59566641277b11"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/composition-qualification.json": {
+      "mode": "100644",
+      "blob": "ebbc7a42e9df70589e321bd7085a587854be0c4f",
+      "sha256": "10dc38e799e5b2978c017dd6280e0e490f9e64843275e6e7ed8c60667c362e00"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/current-base-j9-final-green.log": {
+      "mode": "100644",
+      "blob": "94e9c1eb2781e3f22b72e67d1ecfad629086068c",
+      "sha256": "712702a02d8d2b1c9f492aec18a0ee299984b107b021c057ce434f07b5ca9292"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/current-base-parser-seam-green.log.json": {
+      "mode": "100644",
+      "blob": "9a8308716390a3f9d1597bb98eb778dd686a3238",
+      "sha256": "485d95b574397138e617b0b565dc66f4c0e691e449362265f82e12456fb432df"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/emit_business_current.py": {
+      "mode": "100644",
+      "blob": "441d4689ad7ac3d644c467d817936fc8138600fb",
+      "sha256": "91f0bdd596bbdbb92a643ad751ed41b71be587dca8293c7956f021d24b1cdd29"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/emit_qualified.py": {
+      "mode": "100644",
+      "blob": "8d2e7925e9758e9bcd1f7db181a0361d2f662f0f",
+      "sha256": "7512de4a226556a05154f439214241966f2ade9e688df967fdf1e3ab9cea2763"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/full-materialization.log": {
+      "mode": "100644",
+      "blob": "378a14287021d29540c3b38182fbe32898363e46",
+      "sha256": "feebc660879b89a63127bacf9f3029459a9fa1547236e7597d6de74c4190bb65"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/full-qualification-guards.json": {
+      "mode": "100644",
+      "blob": "1e5053375700c4e0354b7a05b4b570a2df55293b",
+      "sha256": "696667e4d7d0703e1f4994a08f6c6c627500b113e5088bcbbd82d08e5934c671"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/hosted-parser-binding.json": {
+      "mode": "100644",
+      "blob": "c71119edf1231f13dfe8f162cd6d58b9200684b6",
+      "sha256": "2254c54c6890e9cddf3f50f179da0e36d60ffc086919fc3201de64dd8cf2237e"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/j9-tmp-causal-green.log": {
+      "mode": "100644",
+      "blob": "6f7ef46bb0442f73461389898b0cfec9c3d7a899",
+      "sha256": "a91af269c7077f021b89524c84aa0acf1b4103b7fbdc2aa91f1196c41454795c"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/j9-tmp-causal-red.log": {
+      "mode": "100644",
+      "blob": "a44ab69c34c19bf793985ca828b3e27d700446d7",
+      "sha256": "9fb48db096a1d672d0e187865c74f8e4a0025205bd3792cc1fa9d19ad0b88013"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/native-emission-report.json": {
+      "mode": "100644",
+      "blob": "8f33e06ab9603f4d1e08655cb373c8e833504ab0",
+      "sha256": "c89f52ab9b3cf974bad783341563f4d6d5e5e16956e0e4e7269ca0fef822fee5"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/ordinary-guards.json": {
+      "mode": "100644",
+      "blob": "1ea0eb5236f405f7325f78b6057cae93e91389f2",
+      "sha256": "9381f2ff91307b978452e9467c46254fd0e7a1354eb774e9ebfdca3d96712c45"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/parser-remaining-hosted-nodes.log.json": {
+      "mode": "100644",
+      "blob": "f8ac629c969c56d46c8ad932420a8a946cb63a22",
+      "sha256": "7d497906f8e0d37be11c5377b58c4067017dfe1cbec7ffbf48ebee6408c2bab3"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/qualify_composition.py": {
+      "mode": "100644",
+      "blob": "abdbd836490a7cb88a9fda76690dd3158325d460",
+      "sha256": "cd332619667b944ad94e04680ea9d11fe92457bf4cf5b6618533451f849b9ad1"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/release-current-base-drift.json": {
+      "mode": "100644",
+      "blob": "0df7dd7e734f89499423bb9e9e771d87eb154a8f",
+      "sha256": "901b82f463546f8603826bf966935a0b1b541adad6858a887216a57cc31def19"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/runtime_styles-full-guard.log": {
+      "mode": "100644",
+      "blob": "19f9c292394f839a7c8c40585f4038f72f6232b7",
+      "sha256": "ce27a25bb99e4fa6d754f33dc0c983b043865309daf5cd69a2de5df7192b0e3f"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-inputs-preflight.json": {
+      "mode": "100644",
+      "blob": "64f39981ad72958429e3a580f8a0fd76c42f396d",
+      "sha256": "300d941f27decc9ad6b3323462436e7052188a2ab323a862e58b1ef49819241c"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/S14_INTEGRATION_PACKET.md": {
+      "mode": "100644",
+      "blob": "07f76c532a366725b0f85e68d6732dbd5762c744",
+      "sha256": "0201c7578997f8b39ca959e5dcacd8ed8711216d4dd7991c6ccf7990591638db"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/S14_SOURCE_COMPOSITION_MANIFEST.json": {
+      "mode": "100644",
+      "blob": "232977f4ce3c067fb76eb1d48b101ba103534874",
+      "sha256": "dfe202dfa0887717613363e3ccf08ef340a7d3bcb26b1ae2f63f40440a5abc4b"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/CAUSAL_CHECKS.json": {
+      "mode": "100644",
+      "blob": "9f29dbf6d3a92f917394598f14a126ead916d12e",
+      "sha256": "66985351904fb56718612e0cb2d342feeb7ff25fb16e3005fd1bb202154dc81a"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/REPAIR_MANIFEST.json": {
+      "mode": "100644",
+      "blob": "2a581b4e1883bdd12cb63eef0f6b205e4c345f25",
+      "sha256": "d02594a322ef155cc6e2c1cc6c5fa18cade0088c1623e6e56c2bb14a82577552"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/S14_COMMODITY_DOM_REPAIR_PACKET.md": {
+      "mode": "100644",
+      "blob": "9c925d906b95444dbb907c02db6283ac892a40a0",
+      "sha256": "bf0cf2d586cdfb3d3d8a79145184c8f079023a650e34de1fd14ac3f11fd1a951"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/s14-commodity-empty-cohort-causal.json": {
+      "mode": "100644",
+      "blob": "3f3d2b181198ab8d4bbcb451e1428e94ac358751",
+      "sha256": "48075bd6cbde937ded52c6028f6b0850e6fa49aa9ee8ae5d740dde5656fb2cb7"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/s14-retained-qualified-gold-cohort.json": {
+      "mode": "100644",
+      "blob": "68a384fb5ba27c80af30fd2db8c6c9637b8ef4b3",
+      "sha256": "6cff79e3794c1c029feb7382142ab4fbeb1cf237ae43664835b4e3143c9d0ce6"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/DELIVERY_CONTRACT.md": {
+      "mode": "100644",
+      "blob": "32b0225a72766cda7f82d8f4873fe9f53c546c76",
+      "sha256": "061d1f225da8eb0c9824c56e1c76b86a191e7a7661ab1e21b34434ec08579708"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/PACKET.json": {
+      "mode": "100644",
+      "blob": "397a67ad1a67802c51cf81892c3269f048a5671f",
+      "sha256": "14fe21b9d1fc98b7f0c48ffb31dd0949b37840550c13a18507b754ea25b268c0"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/S14_S5_COMPOSITION_MANIFEST.json": {
+      "mode": "100644",
+      "blob": "aed6efb99ab442ddb893b19b932d6c01a8df2a07",
+      "sha256": "27e2719e75a0748a8f0a8305bc10170fb274dda14afee6799192826e5b38823d"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/native-current-owner-projection.json": {
+      "mode": "100644",
+      "blob": "9d7adc6c71e074760e3b592831a33d98f0012946",
+      "sha256": "7aebde979997ae0725bcd8d10ea15452d7eb9319be456b775401883de01c61a6"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/native-render-report.json": {
+      "mode": "100644",
+      "blob": "ec515c6f05ba2b1d2a38346d53f2e385ddbd1c95",
+      "sha256": "3e8abe459f5177a0735f7d15393e75d4ca84129d77fe23a7fe074d7eb7d0ba22"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/static-guards-GREEN.log": {
+      "mode": "100644",
+      "blob": "46210a450e986517aff5a46a74cb2b15afbcad7e",
+      "sha256": "9bbb2725903dd4de46a5c7f82143b5332fa3ff1824bb6f921afe54c3fc53da2e"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/static-guards-RED.json": {
+      "mode": "100644",
+      "blob": "adcb2d9aac337d523515eec8aa7cf2ac66c7fbeb",
+      "sha256": "fbe6e8233ab1e88080555eb27c1dc97a299ca7498653d040c8c3d1b2dd1aecf4"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-protected-publisher-seam/PUBLISHER_SEAM.md": {
+      "mode": "100644",
+      "blob": "89fc118b2049193c7b07bfdfa7b6a38bce72e44f",
+      "sha256": "60295f2e4cc4a8a2cfb07d4d2ec20defbf8a54f8c67f1b592e9090de9d56fdf9"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-protected-publisher-seam/S14_S6_LOCAL_COMPOSITION_MANIFEST.json": {
+      "mode": "100644",
+      "blob": "c3623733a3f1e08918c0d2d7da60eedfbfc9826e",
+      "sha256": "3061055ee9c11fdc57168bd18e3926a86291bc42272f8771d06a57d798e699c3"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/CAUSAL_CHECKS.json": {
+      "mode": "100644",
+      "blob": "becf09b3f16bc6f384838867c39521e0b321b886",
+      "sha256": "6e6579fed576662df7ad703e2f3baf30f5bf66965b9808800570e9639be846d9"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/CURRENT_BASE_COMPOSITION.json": {
+      "mode": "100644",
+      "blob": "c0efca4ad49093319323598dc433f966fdf22a56",
+      "sha256": "95326b6e6ed774865201dbb96ad32e77d894e48c965e77a6e67598feea8a9fff"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/PACKET.md": {
+      "mode": "100644",
+      "blob": "1a0754f710c5856219722a46f2af17bb03688ec9",
+      "sha256": "857b360cf48d2567967e3f34763080870aac76a2d7143b0d8f452c69c21c436e"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/REPAIR_MANIFEST.json": {
+      "mode": "100644",
+      "blob": "4f2aeea49711f97834ff3cce508d90e3355de4f1",
+      "sha256": "160afeacabf57ee7972675f4922124b98ee3e8ec40f36b994597b553d50dcfae"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/s14-fault-composed-native-business-emission.json": {
+      "mode": "100644",
+      "blob": "36182ccbf3a8533e51551c2c87ebb264386eac02",
+      "sha256": "db5ce6a4547bd816ead504a2705e9299bfd7308974b959a883f7ddf9d79227da"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/s14-fault-native-business-emission.json": {
+      "mode": "100644",
+      "blob": "6b46debb9dc59d8f78e9ca04964c01cf07e318bc",
+      "sha256": "2311f89b253db4fc4ebbe978ddff2b754cc94fb2360a9d2f4fdbd43af5d21c1b"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/s14-fault-t11-measure-report.json": {
+      "mode": "100644",
+      "blob": "c2e1367e2510cab3a36f4c812eed04e8e76f7bb1",
+      "sha256": "924e74687bd55cffccb675e4d6d4bea4a2135b9cf070fd2cfaae4425a4cd996d"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/S14_S3_COMPOSITION_MANIFEST.json": {
+      "mode": "100644",
+      "blob": "94efe9c690f7940102e24ff2c50f88b69951028d",
+      "sha256": "a84e1f6abf0c5cc3fddfedfdd5cd92c87747dc0f0f251b466479eb3101f66b4c"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/S14_S3_FROZEN_COMPOSITION_PACKET.json": {
+      "mode": "100644",
+      "blob": "6a1c37ff1f517ee2d2c88e23aa457a3cc134be65",
+      "sha256": "c1221a791bcfa60791de335a019425d803fc55dff39478bb058b8d2270f4e51a"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/s14-s3-affected-seams.log": {
+      "mode": "100644",
+      "blob": "fdf90f4ed15f9f80213d1c24d55b300f4d52b0a9",
+      "sha256": "48667fc19680619a1999b1792efbece878b09dbe049cde17b693d9200bd1051c"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/s14-s3-current-commodity-dom.log": {
+      "mode": "100644",
+      "blob": "f76d6aae792007a00dc4b7cef8c0dd5908389aba",
+      "sha256": "225a6db1a3c32fd2bd0cd2e877ca0faec02e526aafd96fb4c01980a744e2e267"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/s14-s3-native-business-emission.json": {
+      "mode": "100644",
+      "blob": "220940aa24262de3c0bf5704d45e473345dd4f88",
+      "sha256": "8633a50916ec26cfed73e1bb1fd4b8fd1e2d40e39c84826533073ec6cc525565"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/s14-s3-routing-packing.json": {
+      "mode": "100644",
+      "blob": "1d95c8fa54426e09a0b7b40bae1a89a1803bb27c",
+      "sha256": "507f2ab207869c194d69e5dcb43631e1e27202e028434617e7831c995993fe9a"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/s14_s3_bind_composition.py": {
+      "mode": "100644",
+      "blob": "a49fa8f815eb7287e2c4f32eefa915363ac56b7d",
+      "sha256": "6035467df1f1423e93b6fe2dd8f30b365bc85b7328ae4691eeeadd483863a81a"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/s14_s3_routing_packing.py": {
+      "mode": "100644",
+      "blob": "4dbc8ab00278630a64a640f4ffc7656c726093dd",
+      "sha256": "011ea2f6dbc914f516174fe8e963f6d70c4f41c933b61dd4ebb87f87a4be4afe"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/S14_S4_FROZEN_LOCAL_COMPOSITION_PACKET.json": {
+      "mode": "100644",
+      "blob": "6933ed4ddbfd31a68ac9534b62ccc684ca6c845c",
+      "sha256": "9742cab896d2b2f2b28b3b523418d8aedf7383a054e47d98ad15d644ccd2a2e7"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/S14_S4_GLT_EWP4_APPLICABILITY.json": {
+      "mode": "100644",
+      "blob": "c93160cd562b5ebc636970e52bc91ba498c099fd",
+      "sha256": "ec8c1c6e7ad9840ffa0c62cdc7fd14c085f582fc36e759eb60e8fd65565a9213"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/S14_S4_LOCAL_COMPOSITION_MANIFEST.json": {
+      "mode": "100644",
+      "blob": "424a19a2f02b5242e71600692e60e7696f4519d5",
+      "sha256": "6377a6b5e45978bff4858fab7d6cea364ea422654eab786f85d669ea3a99774f"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/s14-s4-current-commodity-dom.log": {
+      "mode": "100644",
+      "blob": "f76d6aae792007a00dc4b7cef8c0dd5908389aba",
+      "sha256": "225a6db1a3c32fd2bd0cd2e877ca0faec02e526aafd96fb4c01980a744e2e267"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/s14-s4-protected-radar-preservation.json": {
+      "mode": "100644",
+      "blob": "8892e1c0040ff71b288ce78ef2c66ba0c18d1df8",
+      "sha256": "fcb06432b083a0fe579cb6d4fd8bc7314cba66b2f0774998b12ec4c96e019d61"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/s14-s4-radar-native-seam.log": {
+      "mode": "100644",
+      "blob": "37f16f6edf9c9764400ff23f7675fb46169782fd",
+      "sha256": "301726226808a7f1ac42e1954c02d76b997669504cb7109194b64a05e1f31b1f"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/s14-s4-scoped-postimage-delta.json": {
+      "mode": "100644",
+      "blob": "26177ea980d57c67c4f48b457279b8ca61c9a2ca",
+      "sha256": "a3686041c07382497d8a0dede9b7b3dd0112bcacb6d9aea02603ff704dac1d9c"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/s14_s4_bind_local.py": {
+      "mode": "100644",
+      "blob": "1ff7e66347e003873a0560e675ac972763d8b10b",
+      "sha256": "d2c32f1a5ec410b8566ac2e41bb4e7e77ee7d8a221e10e7930acc9e7238fb07e"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/retained-negative-results.json": {
+      "mode": "100644",
+      "blob": "cd0c5b654e2a12aea8605d492923193f3ceaf8b3",
+      "sha256": "4539d7d65252030da8f102b8fa5010fd86b8e45d9dd759f1313f4e2eb7cbb232"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-added-design.log": {
+      "mode": "100644",
+      "blob": "be31ab45393c98cdc5388cdb90ce45fe433d8b7a",
+      "sha256": "311d37519babf246c71a18de14868bfbac0b924a5699eb1219e13169ac92b12b"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-clock-followup-final.log": {
+      "mode": "100644",
+      "blob": "bcf49618ad1f43153086794469f22aa908a21681",
+      "sha256": "967c6a297cc1303afe04a744898e1501edf598a0719829a59ac3be3602025843"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-composition-source-parity.json": {
+      "mode": "100644",
+      "blob": "02e225c92539d368a45ba7a03f11403289c7eed5",
+      "sha256": "8dffc997c4d855b22916a4ff77bef42603877d71731a2398e41ca71e0898067a"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-native-business-emission.json": {
+      "mode": "100644",
+      "blob": "ea53008061a439a32df67bc1ca3069085ff87c85",
+      "sha256": "287d714448c14adb7acc11b5970e6e191409014f05661fe9c2ca2f5774370e95"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-preservation-contract-identity.json": {
+      "mode": "100644",
+      "blob": "404d8021bea5310113bd6a9b91e5bb0d9bc981cb",
+      "sha256": "b8edc8e06b46fd6bdc5faa8457459f4f5f19b6d17998aa0d7a54ab66ed21c03f"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-t11-and-clock-followup.log": {
+      "mode": "100644",
+      "blob": "8fd3c08e4e9357ea9b914dc3cf0af86cd3511a04",
+      "sha256": "280afa140f1a4ae0c24897e78f5fdc48def30d70a9411b2ab51adaef5035b07f"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-t11-measure-report.json": {
+      "mode": "100644",
+      "blob": "d7c4effbfe4d21b562da4fe4ab1482d930f003bb",
+      "sha256": "27baad235b03f7c647905ea77b2418684e34cf977317f59bd48a5c9c2d0a0c17"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-ui-evidence.log": {
+      "mode": "100644",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14_native_business_emit.py": {
+      "mode": "100644",
+      "blob": "4f54a5709974a51449f6a7b2506fef5ec988d325",
+      "sha256": "afecea7a539ebf2418ed891cee7c44480438ea51dc344085f734a1bb11231b1f"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14_t11_measure.py": {
+      "mode": "100644",
+      "blob": "fe26f123a859b73164880e96c859b7fd5abc2895",
+      "sha256": "d9d3a543fc1eaf869fc2986e95e41b1fc77593f5f6482faeb809a9d8ae5d8090"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/successor-design-guard.log": {
+      "mode": "100644",
+      "blob": "be31ab45393c98cdc5388cdb90ce45fe433d8b7a",
+      "sha256": "311d37519babf246c71a18de14868bfbac0b924a5699eb1219e13169ac92b12b"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/successor-visual-evidence-guard.log": {
+      "mode": "100644",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/t11-business-green.log": {
+      "mode": "100644",
+      "blob": "e96335d00fdc4e72d5b50ce4fc9170d1c68bd14d",
+      "sha256": "fe44fae2dd236e6ecb67c623d53d490e8bca8eaae68bdff6cbfe60905c6eb7d2"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/t11-business-measurement.json": {
+      "mode": "100644",
+      "blob": "c93204d5fffa152d859123945c63752716a6b744",
+      "sha256": "640d98127422bf92b5a11f3433d523a447924772962d4011c95cd3a71c5b9851"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/t11-business-red.json": {
+      "mode": "100644",
+      "blob": "fc61e2d690d380d478574fda02ab7e062d00f025",
+      "sha256": "47261990214f40d00f5095697c3e6df4b25824f33d611282b900864409282b41"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/t11-business-repair-qualification.json": {
+      "mode": "100644",
+      "blob": "1f8b74dfc91e2ad41d5c520ca479960616e444dc",
+      "sha256": "7b93399dce831df1a4fb13c75bbb24345eea3820fd5e305980ddb6f5a7b8b93f"
+    },
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/visual_evidence-full-guard.log": {
+      "mode": "100644",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/ADJUDICATION.md": {
+      "mode": "100644",
+      "blob": "1bb44145b0d9887705c9e585b2d6dd76cc0d9f07",
+      "sha256": "da3e6ecc98eaf6f5bbae6bb810fd2e2410b98e5fa62d43fb27663c82c1a746d8"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/FRAME_SOURCE_RECEIPT_ADDENDUM.md": {
+      "mode": "100644",
+      "blob": "0f51dc5a4f86bd2ce479bd649582a5cee1eaa866",
+      "sha256": "e015d50bc8ba1ec55d3c07da9c64e9f05de50be230dc54cf5826794c09164c88"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/capture_depth.py": {
+      "mode": "100644",
+      "blob": "d5753fc6e1fc9bf9cdcecbe7c13f3c2cff92911f",
+      "sha256": "dc5931fa69862e03672eae4588667e09c5afbb17e5f8c9650068d40032e795bc"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/frame-missing-final-observations.json": {
+      "mode": "100644",
+      "blob": "11f5cee202aa1120462c68f25f5323c0907d5530",
+      "sha256": "71b9b1f54ab0559f21b0e73984296528d464dab788140c3806947b2b3c7ab2ce"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/frame-owner-green.json": {
+      "mode": "100644",
+      "blob": "e676d75cd11b3a8e23ab93595220fe2f38166046",
+      "sha256": "d0a8b8aa9563bc738acfa02eecb61115b8f0777186f7f6e63812a67f119f0f8e"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/frame-owner-red.json": {
+      "mode": "100644",
+      "blob": "12697c1f22260eaa129df13931e64035d9702b17",
+      "sha256": "8c30063ad67501026f5627516420dc18dd163513d5c2ed84bfed1fe30f75bd42"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/frame-receipt-final-observations.json": {
+      "mode": "100644",
+      "blob": "30aff0670f59d8e147e4f9ec8dc511311a274a4d",
+      "sha256": "69114d555fb33a17ca7e34376eaa762fbae0f9ca62b08e2e11fe57f21d563c1c"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/frame-seven-country-parity.json": {
+      "mode": "100644",
+      "blob": "ae48ce306c457f5ec7d9394f7dcc4ce0b76cd28a",
+      "sha256": "ed66787da423bcc0300652d9ddf01ff52eac16fb6944bd0a04ad5429027fae44"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/frame-source-tests.log": {
+      "mode": "100644",
+      "blob": "cb9fa78c62726207ba5bfec09c936f74ee5a00ae",
+      "sha256": "7b8d755f6228f96b47c16e3bd7343f74b78ec6534fd4f01d9a5aa8a5778283dc"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/probe_frame_owner.py": {
+      "mode": "100644",
+      "blob": "e7ba9f1c5f487eac85b6c43b15567f321ea4b77d",
+      "sha256": "cca4421e70759db017e87e5ab5685aafd515ee13425da225df4a920de79665c7"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/probe_source_contract.py": {
+      "mode": "100644",
+      "blob": "1b1c6543b8f48b548ae02378bf711b516e9a3701",
+      "sha256": "9ebf245f7275ba67398dfc43177f5eb0f9ab56f61bb543c6c540a8b702f04ede"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/render_depth.py": {
+      "mode": "100644",
+      "blob": "9a0aa86f06fbe530ce23ea54a6b4deb2eef094a0",
+      "sha256": "a4ad96964852ab8497347bcd471bbd047542eb61f9c231d17d387c0eb453d6e8"
+    },
+    "research/market_os/evidence/bonds-frame-source-20261103/source-qualification.json": {
+      "mode": "100644",
+      "blob": "a61dfffe1497bfcf7ba40138b44f2cab25e563f1",
+      "sha256": "475566a6829e295495e6dd599a3f86b8e5c3c7d205fad81e302cbe43e80fe332"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/ADJUDICATION.md": {
+      "mode": "100644",
+      "blob": "9099339dfb6dae23cdf4240eb9e7505b18b9ed61",
+      "sha256": "2412b6f25292fed67f74a0cf0430d99f3ac38b664b4db3459c76f2649605f939"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/FROZEN_SOURCE_DISCLOSURE_PACKET.md": {
+      "mode": "100644",
+      "blob": "74018cfc6ab0bf2ac0de03f34bb23bdce72ddbe2",
+      "sha256": "fc1d1d5d0f55a153a7b2cc681464ba35b24d8459546d2f68919c0179ac5f41ae"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/FROZEN_SOURCE_DISCLOSURE_PACKET_V2.md": {
+      "mode": "100644",
+      "blob": "022aa075fc23db0af5049d432b897aaa30337797",
+      "sha256": "0b8a48a4a18269715a9e2c45912d982fd363c551f7edcca1a4e137b1a6a7452c"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/SOURCE_LINK_LEGIBILITY_ADDENDUM.md": {
+      "mode": "100644",
+      "blob": "60203d9be4c811cfb7b0721ceed848966f35fff0",
+      "sha256": "586c831e17d0ef8a63fb4bca3e708068658e8d1bc30bcbfbd7aebe237df5953a"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/TARGET_SIZE_ADDENDUM.md": {
+      "mode": "100644",
+      "blob": "c9888679fd0b83599bc015ef601a35c21a3beaa3",
+      "sha256": "ba8c918b430656d5aa7c6e1fff2ad8e16bc8f916744d66646ca4f40eb2040c3a"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/capture_depth.py": {
+      "mode": "100644",
+      "blob": "8d00037cdd4e4d540001ddb51457fb45d346f8e6",
+      "sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/compare_native_snapshots.py": {
+      "mode": "100644",
+      "blob": "53dc3b0aca4ca0ffa5ae6514803af0ed4a5e07b8",
+      "sha256": "3b609cf4564a0afa5fd5b940e968b6b2b97e20cf614b45db77ed4e66e9394848"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/final-observations.json": {
+      "mode": "100644",
+      "blob": "822856087a5dd49af130ac4086f5ba7e6fdd0644",
+      "sha256": "2b22dae56c7c7aa68639711fa3d8373850263e2aa4e985e6a26652b5d00c7c02"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/final-render-identity.json": {
+      "mode": "100644",
+      "blob": "4359ba17d96e2e5d758dbd19c0e402b4f1934517",
+      "sha256": "42393e180bf2357e4f512ace25f65da65231e812f5339b18595efc51152bcf4c"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/font-source-receipt.json": {
+      "mode": "100644",
+      "blob": "698482f6f6b99a99687fd85bd4fbf9b0fe2a9d5b",
+      "sha256": "5a9631d368689e71db22967e8b5bbc4bc9ed94b0d55aa48486cc6c3579ab5a9c"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/measure_targets.py": {
+      "mode": "100644",
+      "blob": "88c070ec87ce72a41753927345ccba4ac445ad71",
+      "sha256": "c896dcf7ea53c37b901fd61c329c1fe177458d66a73d0900902ec68671c6fd99"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/native-intl-snapshot-after.json": {
+      "mode": "100644",
+      "blob": "b763ebdc95441a60cc0ae8fba0889d9dc6d13ac7",
+      "sha256": "e0a9c473c0d147e736bee4c4c6129afa29d03a1e391cd3559617173e1e87adfb"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/native-intl-snapshot-before.json": {
+      "mode": "100644",
+      "blob": "2d1061d159d2f1044d9b9b5feac20b3d7fce0dd7",
+      "sha256": "8117b8f430486b1fea47487998ea0fddc52994d87694c9155c322c6a3b5b1167"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/native-retained-comparison.json": {
+      "mode": "100644",
+      "blob": "8ecd9bb63e909697fd0a84d604153e1580b17150",
+      "sha256": "d49fdda662042afc686997ae8e6cf67b3acba53fe983ec23c126032acf9e516e"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/probe_source_contract.py": {
+      "mode": "100644",
+      "blob": "a041203d7534fa73a63928ec2b3f40b5742bbaba",
+      "sha256": "bac9048f0d9a6c529ccfbad970a11acc5a986126422812c62c555cc237e58f1f"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/render_depth.py": {
+      "mode": "100644",
+      "blob": "17b96061de0f1ef9b8e2dd8bd0bf6d5aebbeeea0",
+      "sha256": "e3507d3e92f23e7aeebf0fa7a84f348962176345acf475eabdbbda95821c34f1"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/retained-owner-source-probe-after.json": {
+      "mode": "100644",
+      "blob": "6fa71a34bbad76a0a9550fc887f14404c0a86e4b",
+      "sha256": "c60463f53aae692e43eca5f6e907c86bc7bfa841e8054e6e9887d56e5ad0591e"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/retained-owner-source-probe.json": {
+      "mode": "100644",
+      "blob": "8b58ca66c88e6ad33bec819227a8bd9f8d3f2a7c",
+      "sha256": "d7dcd4a5b984f84d7e08192cf93ac51bb2ed65fec3f89aae00a2ba22dfd21f9b"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/source-identity.json": {
+      "mode": "100644",
+      "blob": "99ad4809f11c468e2388a4fbf59a12aef620bff8",
+      "sha256": "ac80d5ae84461629ec400938abcf43da578261621b18d3142a19e6f67bdf8736"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/target-content-parity.json": {
+      "mode": "100644",
+      "blob": "48eb96a888f5e580d9173aaa1f0e0adaa8f378eb",
+      "sha256": "25c0c7674acb12ce7de19826dc48ead6970ea39fd9aee186fd357e258f622836"
+    },
+    "research/market_os/evidence/bonds-sovereign-depth-20261103/target-size-qualification.json": {
+      "mode": "100644",
+      "blob": "ebeda83d78a9a2296dd00b9dd9e1143b7c0e4e2d",
+      "sha256": "544eb6ed04f294aaa96b152f9a9457dc9d9d708c78e46ab7fde4767f186ebbbe"
+    },
+    "research/market_os/evidence/country-cycles-p12t48-20261104/COUNTRY_CYCLES_JOURNEY.md": {
+      "mode": "100644",
+      "blob": "7e81432793c74d4606cbad249790a36af92455c3",
+      "sha256": "412eb0bb89d77e28fcbc3baf0c24d9d8a32e0e722e227f45246c41c9ef7367bf"
+    },
+    "scripts/build_bonds.py": {
+      "mode": "100644",
+      "blob": "b076a4c868a7d08dcb74e61a08f4a19dac2ed396",
+      "sha256": "63e02f0f20a5e64ceae8521ca38f96ce70fc069e5888a416a68e37a2ffa8bd62"
+    },
+    "scripts/build_subsector_confluence.py": {
+      "mode": "100644",
+      "blob": "75dfa50794355a7e1cf26f652e2f187bac488e26",
+      "sha256": "963dfadb5787f3b9fb6ec2e13208a41354d578d35f26d804bd7f081087b81a75"
+    },
+    "scripts/build_subsector_rotation_china_pages.py": {
+      "mode": "100644",
+      "blob": "d30196d700c88edb55d36490d8d5d5d7124bbee1",
+      "sha256": "5e296e0507c834ce316672a21bc4c866765c920deb2f9c9dafc998aa08b2a86a"
+    },
+    "scripts/build_subsector_rotation_pages.py": {
+      "mode": "100644",
+      "blob": "ee09de7c18f446a3df2535db020be9c9cb394235",
+      "sha256": "925cf4f0b0653154532551f2c6b748cdf33bf49a37f8c38da25bb0b9094a6c4d"
+    },
+    "scripts/externalize_css.py": {
+      "mode": "100644",
+      "blob": "c2e79acab107f5c95fd988c80511d6d00228d50e",
+      "sha256": "2c625b2498145af6ef39d77290aca2da61ecb818185ba21cd3a9dbc1a38a263c"
+    },
+    "site/assets/css/de1c4f80.css": {
+      "mode": "100644",
+      "blob": "d86915f1cb8764790cd939e712ec60e027d9461f",
+      "sha256": "de1c4f805688a2f2c0229eafc2f797095684d56562b178f360c9f57d1eb6a17a"
+    },
+    "site/bonds.html": {
+      "mode": "100644",
+      "blob": "4ccc24d4450dd25f2fbc5564ad7c2b42f8e6c805",
+      "sha256": "f1babfa3c39da4b1f10b866043954fd0e6f28400a6ee8027c41a2b8cbd6e5b3b"
+    },
+    "site/fundamental_forensics.html": {
+      "mode": "100644",
+      "blob": "e741ef8a8ee00d7540dfdf5d3af3f10f276f81ba",
+      "sha256": "506c750fe4d47a61ff823682bd84f229aa314a66bf595613d67661061b1da257"
+    },
+    "site/fundamental_forensics.js": {
+      "mode": "100644",
+      "blob": "45ade618ae2ae78d1093bc23df98dd3ffc6f9fca",
+      "sha256": "440fc840ad050a5b05f554db11692e10841c4d939fbca29798fcb92a485b27b3"
+    },
+    "site/macro_business_activity.html": {
+      "mode": "100644",
+      "blob": "025abf3c96e45f33682f7d88c33a44d1d346363f",
+      "sha256": "4773e2db5e93951eabf8eefa2a99c1c3558668444b6cef449e8f8be1874e7a5e"
+    },
+    "site/stock_seasonality.js": {
+      "mode": "100644",
+      "blob": "2d6c36eaef8dd2b321c1ef92276657ff5a35a043",
+      "sha256": "75a6e67b5aac6c03eeb0c83cf3efb11ad180e7ff144ce729c08d97112c89ea73"
+    },
+    "templates/_macro_suite_shell.html.j2": {
+      "mode": "100644",
+      "blob": "a2a04b330ea678c4d6104064d73bfb7327f95bdf",
+      "sha256": "622b0a70c86d6c913eb5491d162c1ec31aaefd938b06c1877b82a7a2d7f2018a"
+    },
+    "templates/bonds.html.j2": {
+      "mode": "100644",
+      "blob": "816f1038305914424278caad76d623b8dab505ea",
+      "sha256": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335"
+    },
+    "templates/china_intel.html.j2": {
+      "mode": "100644",
+      "blob": "34e3b08bcfc6f7ef6edaad6ad93050185673c707",
+      "sha256": "27d5ebdd56dcae2cfbb545181f2ae20bd69cd6b24cfbb6f6052d02d5a6970b5d"
+    },
+    "templates/country_cycles.html.j2": {
+      "mode": "100644",
+      "blob": "f2118f7d10c572c70b0261bae7d8be6610c3ce1d",
+      "sha256": "8ee51370943bae123bd7770e2f11d04dc856c8d8e52ee63f01924dca6d47542f"
+    },
+    "templates/fundamental_forensics.js": {
+      "mode": "100644",
+      "blob": "45ade618ae2ae78d1093bc23df98dd3ffc6f9fca",
+      "sha256": "440fc840ad050a5b05f554db11692e10841c4d939fbca29798fcb92a485b27b3"
+    },
+    "templates/history.html.j2": {
+      "mode": "100644",
+      "blob": "98ed3b0d522d7bd238f04050acf63e77fa4725d3",
+      "sha256": "1d3d5dab7f08762dc4ff923020dc348fa36bbefcbb909ee03b763ac5c45aa61f"
+    },
+    "templates/macro_business_activity.html.j2": {
+      "mode": "100644",
+      "blob": "35478ddfc09f6665895737297a27bf3caf4e540d",
+      "sha256": "eda7c4a7723d764206d031ca8805ca07d89a1b8d6790697ab2c1ec0ba5b36fa1"
+    },
+    "templates/stock_seasonality.js": {
+      "mode": "100644",
+      "blob": "2d6c36eaef8dd2b321c1ef92276657ff5a35a043",
+      "sha256": "75a6e67b5aac6c03eeb0c83cf3efb11ad180e7ff144ce729c08d97112c89ea73"
+    },
+    "templates/subsector_detail.html.j2": {
+      "mode": "100644",
+      "blob": "989dea2826679323467341481f7176714d2c148a",
+      "sha256": "25c7e7833e43b1f336f5f714bab1dceb727035843121c1709b98fa9b7a583df2"
+    },
+    "templates/subsector_rotation_detail.html.j2": {
+      "mode": "100644",
+      "blob": "9916eb27e6025ff6360e68dcfcf307018fac81e0",
+      "sha256": "16d3f3c43a9c3e625e89575c83ae97cda9b0b3df44cd62671a8ccf031b47d4e4"
+    },
+    "tests/fixtures/macro_suite_t11/collapses/business_definition_version_p12t2s6.json": {
+      "mode": "100644",
+      "blob": "599c6d4c984fd997a10bc7ba47547087bd73c0cb",
+      "sha256": "c1831c5f9c053c4f8de408cc935bae9867e3d20a1246d055210b700f738a5268"
+    },
+    "tests/fixtures/macro_suite_t11/collapses/zz_business_period_clocks_p12t2s14.json": {
+      "mode": "100644",
+      "blob": "a71d651324036a7aa69eba76a28cd9a872697a2b",
+      "sha256": "1711bda390f078c44574c97f62d73e4e939d2b95d78709d64ae74073d5687e24"
+    },
+    "tests/fundamental_forensics_drawer_resume.test.mjs": {
+      "mode": "100644",
+      "blob": "703c119c384409f84b3d5437ea1bdc9daea84ea3",
+      "sha256": "47d8c4eb23f929f326da104f60d42327e456da26b4911d2ce3cdb1951cc0b985"
+    },
+    "tests/js/test_stock_seasonality_selection.cjs": {
+      "mode": "100644",
+      "blob": "35ea096c9a507e307026d73d286ca3372a54f1d1",
+      "sha256": "d5db328b6f9e77e929cb38480167c42f7a3f57a0ff81a79cee65a6c8f953666d"
+    },
+    "tests/test_bonds_glance_copy.py": {
+      "mode": "100644",
+      "blob": "2bdf08958feeaa88218f1859c2891aed27af6b03",
+      "sha256": "e3ccde0fae5c187771cf76f2dbcda12ab47a8c46821705b79b43afafed302cee"
+    },
+    "tests/test_china_intel_visits_render.py": {
+      "mode": "100644",
+      "blob": "ba4151ecfabcd457687013fe15a5e8f6a4692b38",
+      "sha256": "45119ee7dcd96bf37fc4af6375b3997d3d24c328aadbf13fe4a84ccfdc7a8c95"
+    },
+    "tests/test_commodity_workspace_ui.js": {
+      "mode": "100644",
+      "blob": "5a4482fa95e5745059f4ac06eebe05cd0ed8b3d5",
+      "sha256": "ca034153346a67234334f5af0427c71c43d94acd3bd1530280eb42eaa2264f56"
+    },
+    "tests/test_externalize_css.py": {
+      "mode": "100644",
+      "blob": "6a9708a1f39822f26c247a4a73ed55d519fc6513",
+      "sha256": "211465a46fd643d7f247f97e65fd11614b97b190ac52249bd9d9ab70de9156e3"
+    },
+    "tests/test_fundamental_forensics_ui.py": {
+      "mode": "100644",
+      "blob": "1c50d2bd449975ebb21741d2dcabc254654cf235",
+      "sha256": "47d0674e3e8ef993735563072ca82bf64abcaa070889a5db44f25d5b7c81a9e6"
+    },
+    "tests/test_history_provenance_copy.py": {
+      "mode": "100644",
+      "blob": "73303ae376869d2e7d859f8243976ac469fd5a45",
+      "sha256": "898fa7bacbcd015d3cd599cc9e546fa32af4a9a36fe55a9ba9a195edb37dac13"
+    },
+    "tests/test_macro_command_api.py": {
+      "mode": "100644",
+      "blob": "d7da1afadc0994c15b6a462c7730519583ea63c9",
+      "sha256": "3920aabfc2685888a7d9131b2a3d70cff881c0339471fc55c8d7da1b9ffd740a"
+    },
+    "tests/test_macro_command_copy_law.py": {
+      "mode": "100644",
+      "blob": "cff4f8317879f27a1791149a022d5530c534f954",
+      "sha256": "a31d4bb080a04ca811689cc7150cf022ba3f218ac11ff89709f66400cac5cd2c"
+    },
+    "tests/test_macro_rates_curves_route.py": {
+      "mode": "100644",
+      "blob": "f2023778c5368dacf2c6be0a81300bd4893538fe",
+      "sha256": "5845f75b7d882ce749a8f6c5f3134f42ce4ec025a482b3d670ce7a4618fc36d2"
+    },
+    "tests/test_macro_suite_pages.py": {
+      "mode": "100644",
+      "blob": "e2130552e2906083f1f52e8ba380cb6e8471ad38",
+      "sha256": "8cbfe8a8e0a16b6cc2b55adb804a1b891513db7da83fbb09e8fbc0c4895ce26a"
+    },
+    "tests/test_macro_workspace_business_activity.py": {
+      "mode": "100644",
+      "blob": "2d1a098cb0b6c2deeca91329150dc533638de3a8",
+      "sha256": "e5518032788abb393e40522bfef34e16dd9fd5b9c46363a8ce1a07cdc7491bc6"
+    },
+    "tests/test_prophet_card_shared.py": {
+      "mode": "100644",
+      "blob": "d75d42b2eb234935d9fe1f49d4b3db28a16c08e4",
+      "sha256": "cfba47df65641729005809b8f03e0e10146edabbb25a760c0febf38541917b6c"
+    },
+    "tests/test_prophet_journey_reconcile.py": {
+      "mode": "100644",
+      "blob": "89999147e2157e9bb3cd1dc63e10fadefa8cb056",
+      "sha256": "13ec70dc09d6dd84d1d65c5a5701321b8faaef87de7d8737f56c287ace02b816"
+    },
+    "tests/test_sector_cycles.py": {
+      "mode": "100644",
+      "blob": "a19a938f608f97859fe7b9108324d7e8e48665b8",
+      "sha256": "9032973bc7ff22c36d5eb9b2801b62cc958f380b091af305b8c83b8add938cf1"
+    },
+    "tests/test_subsector_confluence.py": {
+      "mode": "100644",
+      "blob": "e64991c1b5e394fbeb5e4287969ae77251604768",
+      "sha256": "a758f51151407934f07bc00ad992e6de1da4e8ed341a5cf45582fa6fa7ee6a92"
+    },
+    "tests/test_subsector_rotation.py": {
+      "mode": "100644",
+      "blob": "1b88be6461a47e93bb8d0593841d1855810634e5",
+      "sha256": "3206627a48cfac154dde461fbfe7abcf76a28bf2fbceaae88970ab643128a122"
+    }
+  },
+  "T52_exact_source": "d07cbdb0daaf766a74a3fdc98242ed42e123f266",
+  "T52_source_review_reused": true,
+  "P9": "OPEN/Draft at89ba0895; not protected/native adopted; body-removal gate unqualified",
+  "Business": "Authored body retained; canonical existing onepage +asset rendition against current verified2b92 receipt, all31values/referenceperiod/source refs preserved; no full producer/PIT/browser/served",
+  "clock_fix": "NOT_YET_LIVE",
+  "Bonds": "Whole current protected document preserved except reviewed de1c4f80 CSS href",
+  "Forensics": "Protected counted-date Nov4 retained; values1493/1058 and other old authored bytes unchanged",
+  "checks": {
+    "T52_composed": "11PASS/16deselected",
+    "three_unchanged_page_assertions": "3PASS",
+    "native": "raw immutable/digest verified/tamper refuses/current31fields/body+clocks optimizer parity",
+    "CI": "314codejobs/12partitions validated; gate:data retainsT50/T51/T52; no gatepromotion/hostedcoverageclaim",
+    "records": "actual two-path rootpatch exactpostimages/YAML/schema validation",
+    "whitespace": "old immutable REDlog trailing whitespace retained byteexact; allother owned delta clean"
+  },
+  "continuity_patch": {
+    "sha256": "a0a7a524e6e0c065ac0227a772e86e8214de4aac66b292e9d988d8aeed08bb27",
+    "paths": [
+      "research/market_os/SHARED_SHELL_CEO_CONTINUATION_2026-10-21.md",
+      "agentos/handoffs/MARKET-OS-SHARED-SHELL-2026-09-24.md"
+    ]
+  },
+  "proof_sha256": {
+    "s14-s7-ci-union.json": "08ad6af19506700e39774b94eb935a2e8613e6612eae0347ae8aff3faaa2edc6",
+    "s14-s7-preservation-seams.json": "389cc2d85aa1558f16668004464bb56c4a04a05c97798669cf8b5ed8f12a07c1",
+    "s14-s7-t52-integration.log": "a34754c3804f043054216b7056b63348f63fd21d66fcb8eae515728577062107",
+    "s14-s7-body-assertions.log": "6422addcfffc817bb041c91efbb31d466492cdea17b0ed347c18f474303e4feb",
+    "s14-s7-record-validation.log": "57db8a0f3f5c35eaa601331d8ead865ba5e900e54adcd99399536830807d638a",
+    "s14-s7-code-manifest-validation.log": "16de916e0cf54e8b8942812f3cae4bc04fb5c0642388755f796c510c1b8e4008",
+    "s14-s7-ui-guard.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "s14-s6-recovery-current-pr-10656.json": "845a63f2d1882df44ef2ebc179adf828d056e6f0808c0dbc5f46a230038c24c8",
+    "s14-s6-recovery-current-pr-10674.json": "7e1e6095ce44d77cb2be45b89778b0ce20a0c705d3cb8587dfe4d6ed052b97ab",
+    "native-render-report.json": "e3f680a20c14b215bdc740dbcc84664555bd929399f5e75e6ce98bd5fb260070"
+  },
+  "integration_execution": "PRINCIPAL_JUDGMENT/UNIQUE_APPROVED_ACCESS: semantic current-base composition in existing exclusive Mac writer; no separable useful labor beyond already accepted T52 leaf; no new Fabric request or native child",
+  "remaining": [
+    "source publication and one natural exacthead proof",
+    "current formal independent GH approval and trusted protected controller release",
+    "normal covering native emission and permitted served readback",
+    "all existing browser/data/provider/runtime/PIT holds preserved"
+  ]
+}
