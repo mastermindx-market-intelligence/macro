@@ -5,8 +5,8 @@
 Parent: macro#7646 / `sector-central-redesign-20260921-sol-001`.
 Decision: `DEC:HUMAN-FIRST-DESIGN-ACCEPTANCE`.
 This is the implementation/design contract for the existing product, not a new revamp
-programme or a new data owner. Status: **candidate framework; native consolidation and
-independent human acceptance outstanding**.
+programme or a new data owner. Status: **candidate source contract; dated native
+consolidation reported below; independent human and production acceptance outstanding**.
 
 Not done unless the first viewport communicates the subject, dominant assessment and
 next useful step within 3–4 seconds; the material limitation is visible; the user can
@@ -280,20 +280,22 @@ making the user search for the object again.
 
 ### Dated answer-first targets for the current native design pass
 
-These are **Sep-25 design examples from exact current owner bytes**, not timeless copy, a
+These are **Sep-25 design examples from frozen owner bytes**, not current market facts, a
 recommendation, or a substitute for binding the live owner in production. They demonstrate the
 reading hierarchy the native boards should achieve before exposing their controls.
 
-**Rotation — `subsector_rotation.json` / blob `6e0d03c6…`:**
+**Outer Rotation — `sector_central.json` / blob `839cce9f67598c7cafcda545e3b3fc353ec13f4f`:**
 
-> **Technology and Communication Services are the only leading sectors. Technology is
-> strongest; Energy still has high relative strength but is weakening.**
+> **Technology is the only sector positive over both 21D and 63D. Energy has the
+> strongest 63D relative strength but is negative over 21D.**
 
-Supporting evidence: 2/11 sectors are in the leading quadrant, Technology has `rs_ratio 1.711`,
-`rs_mom +0.262`, `accel +2.987`, while Energy has `rs_ratio 1.317` but `rs_mom -1.075`,
-`accel -4.177` and the incumbent turn owner marks it topping. The board should make **level vs
-direction** visible immediately rather than asking the user to infer that distinction from dot
-positions.
+This frozen `2026-09-25` owner contains all 11 sectors. Technology has `momentum.rs_21d`
++6.5% and `momentum.rs_63d` +2.3%; Energy has −1.0% and +9.3%, respectively.
+The axes are 21- and 63-session percentage changes in the sector/SPY relative-strength
+ratio, not normalized subsector coordinates. Show horizontal 63D versus vertical 21D on
+one complete-population scale with Map/List parity. A source `lead` label or deeper turn
+state cannot substitute for these two observed coordinates. This makes **level vs direction**
+visible without mixing the outer sector and deeper theme/subsector rotation models.
 
 **Market breadth — `sector_central.json` / blob `9efa888b…`:**
 
@@ -486,14 +488,20 @@ production-shaped entry already exists:
 - Preserve the current wire value `sectorView=intelligence` for Overview compatibility unless
   a separately proven migration requires a rename. Display copy can remain `Overview`.
 
-Add the outer Sector-Central job state **inside** the existing `tab=sectors` URL namespace,
-not through another Discover top-level tab. A bounded state grammar is:
+Reuse the implemented outer Sector-Central state **inside** the existing `tab=sectors`
+URL namespace. Terminal R8 at `b0705183b2452177a73848bc8c3e9741f541e26d` already uses:
 
-- `sectorJob=rotation|discover|breadth`;
-- `sectorRep=heatmap|bubbles|matrix|table` when `sectorJob=discover`;
+- `sectorWorkspace=rotation|discover|breadth|detail`;
+- `sectorDiscoveryQuery` / `sectorDiscoverySort` for Discover;
+- `sectorRotationMode` / `sectorRotationQuery` for Rotation Map/List and filtering;
 - the existing `sectorView`, `sector`, `group`, `sectorCompany`, `sectorQuery`, `sectorSort`,
-  `sectorExpanded`, `sectorTheme` and contextual `sectorSources=1` remain selected-object
-  depth/context state.
+  `sectorExpanded`, `sectorTheme` and contextual `sectorSources=1` for selected-object
+  depth/context.
+
+Discover's Heatmap / Bubbles / Matrix / Table remain the product representation grammar.
+Extend the incumbent state owner only for a concrete missing representation capability;
+do not rename the working keys to `sectorJob`, `sectorRep` or `sectorDetail`, or introduce
+another URL migration/compatibility layer merely to match this document.
 
 Back/Forward must restore both levels. Opening selected-object depth from a Rotation/Discover/
 Breadth mark must retain the originating job, representation, filters and selected object so
@@ -510,23 +518,28 @@ tab rows. They are different depths:
   composition for the selected object. Replace the outer job tabs with a concise return control
   such as `← Discover · Bubbles` or `← Rotation`; Browser Back has the same result.
 
-Add one explicit URL bit such as `sectorDetail=1` rather than inferring depth from visual
-layout state. `sectorJob` and `sectorRep` stay in the URL while detail is open so the return
-context is durable.
+Use the existing `sectorWorkspace=detail` state for selected-object depth. Preserve the
+originating workspace, representation, filters and selected object through the incumbent
+URL/history and return behavior. A redundant detail bit or a second state owner is not
+needed to make the detail presentation visually subordinate.
 
-Compatibility rules:
+Compatibility rules, checked against R8's actual parser/serializer:
 
-- `/discover?tab=sectors` with no explicit legacy detail parameter opens the **Rotation
-  workspace** by default.
-- An existing bookmark with an explicit `sectorView=companies|signals|drivers|history` or a
-  selected `sectorCompany` is treated as **detail** even if `sectorDetail=1` is absent.
-- An explicit legacy `sectorView=intelligence` remains detail for that bookmark; absence of
-  the `sectorView` parameter is what distinguishes the new workspace default.
+- An explicit `sectorWorkspace` takes precedence over legacy detail hints. Its accepted
+  values are rotation, discover, breadth and detail.
+- Without that explicit workspace, the existing presence of `sectorView`, `sector`, `group`,
+  `sectorCompany` or `sectorQuery` selects detail. Preserve these legacy bookmarks, including
+  `sectorView=intelligence`.
 - Legacy `sectorView=sources` continues to map to contextual Sources over detail, never a sixth
   destination.
-- While workspace depth is active, URL serialization must **not** write a default
-  `sectorView=intelligence`, because doing so would turn reload/back into detail. Write the
-  local `sectorView` only when detail is active.
+- The serializer writes explicit workspace state alongside `sectorView=intelligence` where
+  appropriate; the explicit workspace prevents an accidental reload/back transition to detail.
+  Do not remove that working serialization merely because an earlier draft inferred depth
+  from the presence of `sectorView` alone.
+- R8's fresh URL without legacy context opens Discover. The product target opens the **Rotation
+  workspace** by default after a separately qualified change in the incumbent state owner;
+  this source contract does not claim that default has already changed. Outer Rotation's
+  existing sector feed requires no new Finviz rights gate.
 
 State transitions that change the semantic research location (job, representation, selected
 object opening/closing detail) should create navigable history. High-frequency display-only
@@ -534,7 +547,7 @@ filter edits may replace the current URL entry, but their values remain encoded 
 detail and returning restores the exact filtered view. No context lives only in component
 memory if it matters to Back/Forward or a saved view.
 
-### Current Terminal implementation frontier — preserve R6
+### Recorded Terminal implementation frontier — preserve R6 and R8
 
 Terminal PR #754 advanced to R6 at `4afebc251c1e91963c4392c63aed3822b51b0847`.
 Treat this as **implemented intermediate capability / DO_NOT_REDO**, not final product
@@ -550,7 +563,8 @@ acceptance:
 - contextual Sources, EN/ZH, theme parity and responsive 1440/820/390 behavior have a dedicated
   91/91 local qualification; the prior R5 detail qualification remains 86/86.
 
-Do not recreate that journey. The R6 gap to this contract is bounded:
+Do not recreate that journey. These were R6 integration findings, not a fresh claim about
+current production:
 
 1. its breadth hero currently summarizes positive 1M returns (`3/11`) rather than breadth;
    correct it to a breadth-derived answer/denominator;
@@ -558,14 +572,22 @@ Do not recreate that journey. The R6 gap to this contract is bounded:
 3. `Sector research` is temporarily shown as a peer workspace tab; final architecture moves
    research into selected-object detail and reserves the workspace job set for Rotation /
    Discover / Market breadth;
-4. fresh-visit Discover is acceptable **only as an interim default while Rotation display is
-   rights/use blocked**. Once Rotation is admitted and actually implemented, fresh visits move
-   to Rotation; do not add an empty placeholder;
+4. fresh-visit Discover was the intermediate default. R8 subsequently implemented outer
+   Rotation from the existing sector owner; do not retain the mistaken Finviz rights dependency
+   for that job. Changing the default remains a separately qualified state-owner change;
 5. the older persistent responsive shard remains a release gate until the stale pre-owner
    fixtures/expectations are migrated. R6's dedicated qualification does not waive it.
 
-Meta-CEO exact-head integration review: Terminal #754 review `5328079963`. It preserves R6
-and returns these corrections without transferring branch custody.
+Meta-CEO R6 integration review: Terminal #754 review `5328079963`. It preserves that work
+without transferring branch custody.
+
+R8 at `b0705183b2452177a73848bc8c3e9741f541e26d` adds the actual outer Rotation presenter:
+`SectorRotationMap` reads `momentum.rs_21d` / `momentum.rs_63d`, computes a shared display
+domain over the complete sector population before filtering, and retains Map/List identity.
+The incumbent BFF already binds `sector` to `/sectordata/sector_central.json`; it does not
+need a `rotation` feed. Its parser/serializer uses the state keys above. These immutable
+source facts were re-read for this correction; no fresh browser, deployment or human
+acceptance is inferred. Preserve [exact-head review5329674393](https://github.com/mastermindx-market-intelligence/macro/pull/8041#pullrequestreview-5329674393).
 
 ### Component-level vertical slices
 
@@ -573,12 +595,13 @@ Keep `SectorIntelligenceWorkspace` as the single mounted root under Discover's e
 `sectors` tab. A safe refactor may split its render internals into pure child presenters, but
 must not create another mounted page/workspace:
 
-1. **State + shell slice:** extend `sectorIntelligence.ts` parsing/serialization with job,
-   representation and detail depth; add outer workspace nav + exact return control. Preserve
-   current legacy URL mappings and the contextual Sources controller.
-2. **Rotation slice:** a pure Rotation presenter over the accepted rotation owner DTO; Map/List
-   parity, explicit overlap chooser, selected-object inspector. No client-side reimplementation
-   of `rs_ratio`, `rs_mom`, `accel`, `quadrant` or turn logic.
+1. **State + shell slice:** preserve `sectorIntelligence.ts` parsing/serialization and the
+   existing workspace/detail state, URL history and contextual Sources controller. Refine
+   visual hierarchy/return controls without inventing replacement key names.
+2. **Rotation slice:** preserve R8's pure presenter over the existing sector DTO, horizontal
+   `momentum.rs_63d` / vertical `momentum.rs_21d`, complete-population scale, Map/List parity,
+   overlap chooser and selected-object inspector. Do not recompute sector/SPY momentum or
+   import the deeper owner's `rs_ratio`, `rs_mom`, `accel` or turn logic.
 3. **Market-breadth slice:** render existing sector heat/breadth facts first; list/table
    fallback is the source of truth when a visual fails. Any ETF-flow addition waits for an
    existing owner binding.
@@ -592,7 +615,7 @@ must not create another mounted page/workspace:
    detail experience.
 
 Fetch only the owner feeds required by the active job/detail surface. Extending the current
-component to future `rotation` / `themeMap` feeds must not make every visit eagerly load every
+component to any later admitted deeper-rotation / `themeMap` source must not make every visit eagerly load every
 source. Keep any in-component successful read account-bound as today; do not add a new cache
 service or persistent browser data store.
 
@@ -602,7 +625,8 @@ service or persistent browser data store.
 |---|---|---|
 | Overview / Companies / current Signals | `sector_central.json` + `subsector_confluence.json` through the current `sector-intelligence` BFF | Keep the current exact-envelope guard, auth/no-store policy and owner clocks. Fix population completeness; do not loosen envelopes for old fixtures. |
 | Market breadth — first version | `sector_central.json` already carries market context and per-sector `heat_1D`, `heat_1M`, `heat_YTD`, `adv`, `dec`, `breadth_pct`; selected-sector concentration can use current `sp500_heatmap.json` BFF feed | Render existing owner facts. Do not derive a new breadth score or invent ETF-flow rows not bound to an owner. |
-| Rotation | Existing Macro `site/marketdata/subsector_rotation.json` owns `rs_ratio`, `rs_mom`, `accel`, `quadrant`, paths, turn states and the context-only track record | Do not rebuild rotation coordinates in Terminal. Add a read-only BFF projection only after the existing rights/use owner accepts the intended Terminal display. |
+| Outer Rotation | Existing `sector` BFF → Macro `site/sectordata/sector_central.json`, with `momentum.rs_21d` / `momentum.rs_63d` for the 11-sector population | Reuse the incumbent 21D/63D sector/SPY presenter, shared scale and Map/List identity. No new feed key or Finviz rights gate for this existing job. |
+| Deeper theme/subsector rotation | Existing Macro `site/marketdata/subsector_rotation.json` owns normalized `rs_ratio`, `rs_mom`, `accel`, `quadrant`, paths, turn states and its context-only track record | Future selected-theme/subsector research only, with its own source-local identity, rights and history boundaries; do not substitute it for outer sector Rotation. |
 | Discover — selected-sector Industry × Cap | Existing `sp500_heatmap.json` BFF feed supplies ticker, exact sector label, industry, market cap and performance together | Build a pure presentation projection over the exact owner population. `Technology` stays 79 names; never alias the separate `Information Technology` row. |
 | Discover — source-local Themes / Bubbles | Existing Macro `site/marketdata/themes_heatmap.json` contains the 40-family / 268-subtheme source-local plane | Paper/internal research may use it now. New Terminal display waits for the existing Finviz-theme rights/use gate; do not direct-fetch around the BFF. |
 | Discover — broad Sector × Size | Existing S&P500/400/600 breadth membership + close-matrix owners provide the internal source plane | No public/customer projection exists yet for the combined per-name mid/small data. Extend an existing publisher/consumer boundary first; do not add a browser route to internal files. |
@@ -624,7 +648,10 @@ primitives is fine only when the Sector owner population and semantics remain un
 New Sector visual components should therefore be pure presenters over typed owner DTOs/read-
 only projections in the existing Sector module. If an owner field is unavailable, the
 presenter renders the shared unavailable/list fallback rather than computing a substitute.
-### BFF extension law for future Rotation / source-local Theme modes
+### Existing outer Rotation and future source-local BFF extensions
+
+Outer Rotation already uses `sector` → `/sectordata/sector_central.json`. Preserve that
+incumbent binding; no additional `rotation` key is needed for the outer workspace.
 
 The current `sector-intelligence` route already has the correct security/transport shape:
 fixed source allow-list, authenticated same-origin Macro upstream, manual-redirect refusal,
@@ -637,11 +664,11 @@ Do not raise the limit merely to add these jobs. If a future owner payload excee
 ceiling, create/extend a bounded existing-owner projection rather than accepting arbitrary
 large JSON through this route.
 
-Two additive feed keys are technically sufficient **after** their existing rights/use gate
-permits the intended Terminal display:
-
-- `rotation` → `/marketdata/subsector_rotation.json`;
-- `themeMap` → `/marketdata/themes_heatmap.json`.
+Only future source-local depth needs a separately admitted extension. The candidate
+`themeMap` → `/marketdata/themes_heatmap.json` remains gated by the existing rights/use
+owner. If a later selected-theme/subsector journey needs `subsector_rotation.json`, bind
+that deeper source explicitly under the same incumbent BFF and its own identity/rights/
+history semantics. This document neither creates that route nor assigns its key.
 
 Do not overload the existing `themes` key: it currently means canonical
 `neuralweb.theme_state.v1` (18 current themes), while `themeMap` is the source-local Finviz
@@ -654,7 +681,8 @@ or disabled UI state is safer than a reachable route that the product is not per
 
 When admitted, use narrow envelope guards instead of a generic object check. At minimum:
 
-- `rotation`: source is the expected owner family; `subsectors`, `themes`, `sectors` are
+- Deeper subsector-rotation projection, if separately admitted: source is the expected owner
+  family; `subsectors`, `themes`, `sectors` are
   bounded arrays; `n_subsectors`, `n_themes`, `n_sectors` equal their array lengths; the
   declared turn schema is the incumbent `subsector_rotation.turn.v1`. Row parsers require
   source keys/names and finite owner coordinates before a mark becomes selectable.
@@ -678,7 +706,7 @@ own PIT/correction lineage, not from repeated BFF fetch timestamps.
 Do not expand today's `SECTOR_FEEDS` eager loop into an eager fetch of every future feed.
 Resolve required sources from the active surface:
 
-- workspace Rotation: current selection/context feeds + `rotation` after admission;
+- workspace Rotation: the existing `sector` feed plus only required selection/context;
 - workspace Discover Industry×Cap: current `heatmap` plus the minimal selection/context feed;
 - workspace Discover Themes/Bubbles: `themeMap` after admission plus minimal selection/context;
 - Market breadth: current `sector`; add `heatmap` only for the visible concentration/detail
@@ -703,26 +731,41 @@ unavailable to this session; do not claim to have independently reviewed its act
 or screenshots. The present contract changes the acceptance/hierarchy target, and must
 be compared against that candidate rather than blindly applied over it.
 
-The first consolidation slice now has known native effects on the existing page:
-`19GV-1` is the consolidated Overview and has received the population/signal/navigation
-and relative-scale corrections; `1GL2-1` is the first Discover/Bubbles artboard with the
-correct outer Rotation / Discover / Market breadth hierarchy and subordinate representation
-modes. Preserve those effects; do not recreate either board.
+Dated source returns on this original PR report the following native effects on existing
+`p-E-1`; preserve their IDs and roles instead of commissioning duplicate boards:
 
-Further native mutations are currently held because another same-file Paper operation
-(Policy Watch R2) completed its screens but its scoped working-indicator release was blocked
-before dispatch and its own checkpoint explicitly does not claim file-window/custody
-release. The Paper adapter exposes no read-only working-indicator census. Process silence
-is therefore insufficient proof of release. Continue source/design research and payload
-preparation, but do not clear another owner's nodes or switch carrier/mode/host to obtain
-that refused effect.
+| Reported native surface | Existing node IDs |
+|---|---|
+| Consolidated Overview / first Bubbles | `19GV-1` / `1GL2-1` |
+| Matrix / Themes heatmap / full 40-family picker | `1TXI-1` / `1UE2-1` / `1UWM-1` |
+| Overlap compare / membership History | `1V9B-1` / `1VG2-1` |
+| Outer Rotation desktop variants | `1W1Z-1` / `1X0S-1` |
+| Outer Rotation mobile variants | `1WSJ-1` / `1X6B-1` |
 
-After lawful file-window reconciliation, repair/refine the same Overview/Bubbles boards,
-then add Matrix/Themes/Evidence/Compare/Sources under this one information architecture.
-Fix visible/product-truth defects before theme/device multiplication. Preserve original
-artboard IDs in the mapping and carry the same interaction/data contract into Terminal's
-existing components.
+[Return5854673994](https://github.com/mastermindx-market-intelligence/macro/pull/8041#issuecomment-5854673994)
+records the Matrix/Themes/Overlap/History batch. [Return5855032669](https://github.com/mastermindx-market-intelligence/macro/pull/8041#issuecomment-5855032669)
+reports the later Rotation, Breadth, Compare, dated-evidence, source-version and contextual
+Sources work, at that point 8,077 nodes / 38 artboards. These are dated author/source reports,
+not a fresh native census, screenshot review or measured human-comprehension result.
 
+The reports distinguish historical reference-only families (`p-6` Unified Detail's 15 boards
+and `p-E` old vNext 01–09) from the consolidated product beginning at `p-E` board10.
+Keep their provenance. The reported Breadth design uses existing basket breadth, the dated
+503-stock heatmap and sector-ETF flow owners; mobile uses an 11-sector participation/flow
+summary. Those design observations do not create a new data publisher or establish current
+production adoption. Source-local Finviz taxonomy remains unadmitted for production display
+until its existing rights owner accepts that use.
+
+The historical Policy Watch/file-window custody and indicator-release refusals are not
+cleared by this source revision or by another operation's later design return. No new Paper
+read/write/capture, indicator release, host switch or replay is authorized here. Reconcile
+only through the original permitted custody/effect owner before a separately authorized
+native action; a denied action is not resumed through this document.
+
+Continue source/design integration against the existing reported boards and original
+journeys. Do not describe Matrix/Themes/Overlap/History/Rotation as unstarted simply because
+an older receipt listed only Overview/Bubbles. Any further native scope must preserve
+existing IDs and actual custody. Human, visual and served-product acceptance remain separate.
 No source-law PR, Paper response, mock browser test or CI result is production proof.
 The commissioning owner's structural review and independent human-comprehension evidence
 remain outstanding until actually obtained. Meta-CEO Sol retains the integration action;

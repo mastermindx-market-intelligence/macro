@@ -1,0 +1,7 @@
+PASS — independent judgment review of the one-path CI scope repair.
+Reviewer: existing tiingo_integrity_review reasoning role; completed 2026-10-11 in this active principal task.
+Base: 8ad47787d83be8625fb387e279220b5a40efc7b2. Fresh main: 308cc1578147d85a64e4aa7d9328355917e9f4c4.
+The parsed dataos-prospective-reference job adds only lib/nyse_calendar.py. Its test command, runner, dependencies, timeout, gate and all other controls remain unchanged; every other job is unchanged. No path, test or assertion is removed. The publisher imports is_session and ET from this module, so the declaration repairs the actual dependency.
+Five runtime/archive/reader/materializer blobs match the original source head byte-for-byte. The retained hosted red explicitly reports 1 introduced / 0 inherited and its normalized committed digest matches the format receipt. The early merge correction explicitly distinguishes landing from CI acceptance.
+Retained local evidence: full contract-delta 0 introduced / 0 inherited in 440.3 seconds; the exact main-baseline failing import-closure test 1 passed in 185.84 seconds. The reviewer inspected those results without rerunning them.
+Hosted acceptance remains pending: exact-final-commit contract-delta, affected Data OS pack and all applicable checks must conclude green. After landing, verify main contains the repair and its applicable hosted checks settle green under the merged authority. This PASS does not clear installation, runtime publication or consumer acceptance.

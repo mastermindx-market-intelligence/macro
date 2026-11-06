@@ -1,0 +1,31 @@
+{
+  "state": "ROOT_ACCEPTED_LOCAL_CORRECTION_NOT_PUBLICATION",
+  "root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "source_head_before_correction": "02709fac3ad48c34db04417d40bc9ce0d3411e33",
+  "accepted_at": "2026-10-14T02:45:48.251549+00:00",
+  "original_observation_bytes_preserved": 169753,
+  "new_observation_rows": 1,
+  "source_acquisitions": 0,
+  "changed_cases": [
+    "fms:transmittal:25-104"
+  ],
+  "changed_review_tokens": [
+    "nato_fms_demand/exposure/0",
+    "nato_fms_demand/funding_stage/0",
+    "nato_fms_demand/next_event/0",
+    "fleet_sustainment_upgrades/exposure/0",
+    "fleet_sustainment_upgrades/funding_stage/0",
+    "fleet_sustainment_upgrades/next_event/0"
+  ],
+  "unrelated_fingerprints_preserved": 37,
+  "prior_reviewer_history_preserved": true,
+  "parser_regression": "9 passed,101 deselected; earlier1missingfixture failure retained and repaired by exact original staged byte copy",
+  "installed_files": {
+    "collectors/fms_notifications.py": "0a41031901a0e63177fd98de5b76bea039341e97858fb483cf5adcf0ca3591f6",
+    "data/government_revenue/fms_observations.jsonl": "b19633e56ce95c1178db38699fdcfeb50602e9b6962f790b312fab216d822dae",
+    "data/government_revenue/fms_case_graph.json": "aaa65845056df2bd87ed3760288ec69720b647b2294b0f3c1af4e2b8c942e7df",
+    "data/government_revenue/fms_projection_state.json": "c9e799c179d12d9d4e63c8ea37d5d02815e73205d2f6d8752ff61b13ff5ca734",
+    "config/government_revenue/program_theme_assignments.v1.json": "87b6c402074eb28765fb6e75dadcbca9e4d311f5178e0be1593bf98a20ce2758",
+    "tests/fixtures/fms/dsca/dsca-4393093.html": "6be5c6c6407aaf54457d4d660d25218caeba031d9a33b0abddde786eae3d24f2"
+  }
+}

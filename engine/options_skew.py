@@ -111,26 +111,98 @@ def _nearest_expiry(rows, target_days: float = _TARGET_DAYS, min_days: float = _
         return None
 
 
-def _iv_at_delta(leg, target_delta: float, want_call: bool):
-    """IV of the option whose delta is closest to target (delta-first), falling back to
-    moneyness if delta is unusable. Returns (iv, used_delta, K) or None."""
+def _iv_selection_at_delta(leg, target_delta: float, want_call: bool):
+    """Return the owner's exact selected leg plus HOW it was selected.
+
+    This is the single selection implementation for both the legacy skew output
+    and the A8 projection.  It intentionally keeps the historical delta-first /
+    moneyness-fallback behavior unchanged.
+    """
+    import math
+    import numpy as np
     import pandas as pd
-    sub = leg[(leg["is_call"] == want_call) & (leg["iv"] > 0.0)]
+
+    def is_boolish(value) -> bool:
+        return isinstance(value, (bool, np.bool_))
+
+    side = leg["is_call"] == want_call
+    iv_numeric = pd.to_numeric(leg["iv"], errors="coerce")
+    strike_numeric = pd.to_numeric(leg["K"], errors="coerce")
+    iv_bool = leg["iv"].map(is_boolish)
+    strike_bool = leg["K"].map(is_boolish)
+    eligible = (
+        side
+        & (iv_numeric > 0.0)
+        & iv_numeric.notna()
+        & strike_numeric.notna()
+        & np.isfinite(iv_numeric)
+        & np.isfinite(strike_numeric)
+        & ~iv_bool
+        & ~strike_bool
+    )
+    sub = leg.loc[eligible].copy()
     if sub.empty:
         return None
+    sub["_iv_numeric"] = iv_numeric.loc[sub.index]
+    sub["_strike_numeric"] = strike_numeric.loc[sub.index]
+
     d = pd.to_numeric(sub["delta"], errors="coerce")
-    if d.notna().sum() >= 1 and d.abs().between(0.02, 0.98).any():
-        sub = sub.assign(_dd=(d - target_delta).abs())
+    delta_bool = sub["delta"].map(is_boolish)
+    usable_delta = d.notna() & ~delta_bool & d.abs().between(0.02, 0.98)
+    if usable_delta.any():
+        sub = sub.assign(_dd=(d - target_delta).abs().where(usable_delta))
         r = sub.loc[sub["_dd"].idxmin()]
-        return float(r["iv"]), float(r["delta"]), float(r["K"])
-    # moneyness fallback: 25-delta put ≈ K/S 0.95, ATM call ≈ K/S 1.0
-    spot = float(sub["spot"].iloc[0])
-    if spot <= 0:
+        iv = float(r["_iv_numeric"])
+        selected_delta = float(d.loc[r.name])
+        strike = float(r["_strike_numeric"])
+        if not all(math.isfinite(v) for v in (iv, selected_delta, strike)):
+            return None
+        return {
+            "iv": iv,
+            "selected_delta": selected_delta,
+            "strike": strike,
+            "selection_method": "nearest_delta",
+            "delta_distance": abs(selected_delta - target_delta),
+        }
+
+    # moneyness fallback: 25-delta put ≈ K/S 0.95, ATM call ≈ K/S 1.0.
+    # The selected delta is intentionally NULL here: choosing by moneyness is
+    # not evidence that the selected contract actually observed the target delta.
+    raw_spot = sub["spot"].iloc[0]
+    if is_boolish(raw_spot):
+        return None
+    spot = float(raw_spot)
+    if not math.isfinite(spot) or spot <= 0:
         return None
     target_mny = 1.0 if want_call else 0.95
-    sub = sub.assign(_mm=(sub["K"].astype(float) / spot - target_mny).abs())
+    sub = sub.assign(
+        _mm=(sub["_strike_numeric"] / spot - target_mny).abs()
+    )
     r = sub.loc[sub["_mm"].idxmin()]
-    return float(r["iv"]), float("nan"), float(r["K"])
+    iv = float(r["_iv_numeric"])
+    strike = float(r["_strike_numeric"])
+    if not all(math.isfinite(v) for v in (iv, strike)):
+        return None
+    return {
+        "iv": iv,
+        "selected_delta": None,
+        "strike": strike,
+        "selection_method": "moneyness_fallback",
+        "delta_distance": None,
+    }
+
+
+def _iv_at_delta(leg, target_delta: float, want_call: bool):
+    """Legacy tuple API, now backed by the one owner selection implementation."""
+    selected = _iv_selection_at_delta(leg, target_delta, want_call)
+    if selected is None:
+        return None
+    used_delta = (
+        selected["selected_delta"]
+        if selected["selected_delta"] is not None
+        else float("nan")
+    )
+    return selected["iv"], used_delta, selected["strike"]
 
 
 def compute_skew(rows, drops: dict | None = None) -> dict | None:
@@ -181,6 +253,258 @@ def compute_skew(rows, drops: dict | None = None) -> dict | None:
     except Exception as e:  # noqa: BLE001
         log.debug("compute_skew failed (%s)", e)
         return None
+
+
+def compute_skew_projection(rows) -> dict:
+    """Expose the exact selected-expiry IV/skew observation without self-qualification.
+
+    This is an additive read model over the incumbent skew owner.  It preserves the
+    existing expiry and leg-selection rules and reports which selection path fired.
+    It does NOT certify source rights, canonical identity, exact quote clocks,
+    exercise/settlement, liquidity, no-arbitrage support, or pricing-model inputs.
+    Those remain owner dependencies and keep K3E admission false.
+    """
+    import math
+    from datetime import date, datetime
+    import numpy as np
+    import pandas as pd
+
+    base_missing = [
+        "canonical_underlying_identity_receipt",
+        "contract_identity_receipt",
+        "genuine_underlying_reference_receipt",
+        "delta_convention_receipt",
+        "immutable_source_projection_receipt",
+        "source_use_receipt",
+        "quote_clock_receipt",
+        "underlying_clock_receipt",
+        "availability_clock_receipt",
+        "exercise_settlement_receipt",
+        "currency_price_basis_receipt",
+        "multiplier_adjustment_receipt",
+        "rates_dividend_model_receipt",
+        "liquidity_nbbo_receipt",
+        "no_arbitrage_receipt",
+    ]
+    out = {
+        "schema": "options_skew.selection_projection.v1",
+        "owner": "engine.options_skew",
+        "owner_schema": SCHEMA,
+        "authority": "context_only",
+        "financial_influence": False,
+        "state": "UNAVAILABLE",
+        "refusals": [],
+        "underlying": None,
+        "requested_tenor_days": _TARGET_DAYS,
+        "actual_expiry": None,
+        "actual_tenor_days": None,
+        "tenor_basis": {
+            "owner_year_fraction": None,
+            "day_count_convention": "owner_T_times_365_calendar_days",
+            "settlement_certified": False,
+        },
+        "source_session": None,
+        "underlying_reference": {
+            "value": None,
+            "source_field": "spot",
+            "clock_qualified": False,
+            "basis_qualified": False,
+        },
+        "selected_put": None,
+        "selected_call": None,
+        "skew": {
+            "value": None,
+            "unit": "iv_decimal_difference",
+            "definition": "selected_put_iv_minus_selected_call_iv",
+        },
+        "support": {
+            "row_count": None,
+            "distinct_strikes": None,
+            "liquidity_certified": False,
+        },
+        "qualification": {
+            "state": "NOT_QUALIFIED",
+            "k3e_admissible": False,
+            "missing": list(base_missing),
+        },
+        "implied_move": {"state": "UNAVAILABLE", "value": None},
+        "event_variance": {"state": "UNAVAILABLE", "value": None},
+        "q_density": {"state": "UNAVAILABLE", "value": None},
+    }
+
+    if rows is None or getattr(rows, "empty", True):
+        out["refusals"].append("CHAIN_UNAVAILABLE")
+        return out
+    required = {"underlying", "expiry", "K", "T", "iv", "delta", "is_call", "spot", "asof"}
+    if not required.issubset(set(getattr(rows, "columns", ()))):
+        out["refusals"].append("INVALID_CHAIN_SHAPE")
+        return out
+
+    underlyings = {
+        str(value).strip().upper()
+        for value in rows["underlying"].tolist()
+        if value is not None and str(value).strip()
+    }
+    if len(underlyings) != 1:
+        out["refusals"].append(
+            "MIXED_UNDERLYING" if len(underlyings) > 1 else "UNDERLYING_UNAVAILABLE"
+        )
+        return out
+    out["underlying"] = next(iter(underlyings))
+
+    def canonical_date_token(value):
+        try:
+            if pd.isna(value):
+                return None
+        except (TypeError, ValueError):
+            return None
+        if isinstance(value, datetime):
+            return value.date().isoformat()
+        if isinstance(value, date):
+            return value.isoformat()
+        if hasattr(value, "to_pydatetime"):
+            try:
+                return value.to_pydatetime().date().isoformat()
+            except Exception:  # noqa: BLE001
+                return None
+        text = str(value).strip()
+        if not text:
+            return None
+        try:
+            if len(text) == 10:
+                return date.fromisoformat(text).isoformat()
+            return datetime.fromisoformat(text.replace("Z", "+00:00")).date().isoformat()
+        except ValueError:
+            return None
+
+    sessions = []
+    for value in rows["asof"].tolist():
+        token = canonical_date_token(value)
+        if token is None:
+            out["refusals"].append("SOURCE_SESSION_INVALID")
+            return out
+        sessions.append(token)
+    unique_sessions = set(sessions)
+    if len(unique_sessions) != 1:
+        out["refusals"].append("MIXED_SOURCE_SESSION")
+        return out
+    out["source_session"] = next(iter(unique_sessions))
+
+    def boolish(value):
+        return isinstance(value, (bool, np.bool_))
+
+    if rows["T"].map(boolish).any():
+        out["refusals"].append("TENOR_INPUT_INVALID")
+        return out
+    all_t = pd.to_numeric(rows["T"], errors="coerce")
+    if all_t.isna().any() or (~np.isfinite(all_t)).any() or (all_t <= 0).any():
+        out["refusals"].append("TENOR_INPUT_INVALID")
+        return out
+
+    leg = _nearest_expiry(rows)
+    if leg is None or getattr(leg, "empty", True):
+        out["refusals"].append("EXPIRY_UNAVAILABLE")
+        return out
+
+    expiry_tokens = []
+    for value in leg["expiry"].tolist():
+        token = canonical_date_token(value)
+        if token is None:
+            out["refusals"].append("EXPIRY_DATE_INVALID")
+            return out
+        expiry_tokens.append(token)
+    expiries = set(expiry_tokens)
+    if len(expiries) != 1:
+        out["refusals"].append("MIXED_SELECTED_EXPIRY")
+        return out
+    out["actual_expiry"] = next(iter(expiries))
+
+    leg_t = pd.to_numeric(leg["T"], errors="coerce")
+    if (
+        leg["T"].map(boolish).any()
+        or leg_t.isna().any()
+        or (~np.isfinite(leg_t)).any()
+        or (leg_t <= 0).any()
+    ):
+        out["refusals"].append("TENOR_UNAVAILABLE")
+        return out
+    t_values = [float(value) for value in leg_t.tolist()]
+    if min(t_values) != max(t_values):
+        out["refusals"].append("SELECTED_EXPIRY_T_MISMATCH")
+        return out
+    owner_year_fraction = t_values[0]
+    tenor = owner_year_fraction * 365.0
+    if not math.isfinite(tenor) or tenor <= 0:
+        out["refusals"].append("TENOR_UNAVAILABLE")
+        return out
+    out["actual_tenor_days"] = tenor
+    out["tenor_basis"]["owner_year_fraction"] = owner_year_fraction
+
+    if leg["spot"].map(boolish).any():
+        out["refusals"].append("UNDERLYING_REFERENCE_INVALID")
+        return out
+    spot_numeric = pd.to_numeric(leg["spot"], errors="coerce")
+    if (
+        spot_numeric.isna().any()
+        or (~np.isfinite(spot_numeric)).any()
+        or (spot_numeric <= 0).any()
+    ):
+        out["refusals"].append("UNDERLYING_REFERENCE_INVALID")
+        return out
+    spot_values = [float(value) for value in spot_numeric.tolist()]
+    if min(spot_values) != max(spot_values):
+        out["refusals"].append("UNDERLYING_REFERENCE_MISMATCH")
+        return out
+    out["underlying_reference"]["value"] = spot_values[0]
+
+    put = _iv_selection_at_delta(leg, _PUT_DELTA, want_call=False)
+    call = _iv_selection_at_delta(leg, _CALL_DELTA, want_call=True)
+
+    def public_leg(selected, *, right: str, target_delta: float):
+        if selected is None:
+            return None
+        return {
+            "right": right,
+            "expiry": out["actual_expiry"],
+            "target_delta": target_delta,
+            "selected_delta": selected["selected_delta"],
+            "delta_distance": selected["delta_distance"],
+            "strike": selected["strike"],
+            "iv": selected["iv"],
+            "iv_unit": "decimal",
+            "selection_method": selected["selection_method"],
+        }
+
+    out["selected_put"] = public_leg(put, right="put", target_delta=_PUT_DELTA)
+    out["selected_call"] = public_leg(call, right="call", target_delta=_CALL_DELTA)
+    if put is None:
+        out["refusals"].append("PUT_LEG_UNAVAILABLE")
+    if call is None:
+        out["refusals"].append("CALL_LEG_UNAVAILABLE")
+
+    try:
+        out["support"]["row_count"] = int(len(leg))
+        strikes = pd.to_numeric(leg["K"], errors="coerce").dropna()
+        out["support"]["distinct_strikes"] = int(strikes.nunique())
+    except Exception:  # noqa: BLE001
+        pass
+
+    if put is None or call is None:
+        return out
+
+    if (
+        put["selection_method"] == "moneyness_fallback"
+        or call["selection_method"] == "moneyness_fallback"
+    ):
+        out["qualification"]["missing"].append("delta_observation_receipt")
+
+    skew = put["iv"] - call["iv"]
+    if not math.isfinite(skew):
+        out["refusals"].append("SKEW_NUMERIC_INVALID")
+        return out
+    out["skew"]["value"] = skew
+    out["state"] = "AVAILABLE_UNQUALIFIED"
+    return out
 
 
 def skew_map(chain, drops: dict | None = None) -> dict[str, dict]:

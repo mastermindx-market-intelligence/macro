@@ -45,7 +45,19 @@ class HumanFirstDesignGuidanceTests(unittest.TestCase):
         manifest = yaml.safe_load(self.read(".github/ci/legacy-jobs.yml"))
         job = manifest["jobs"]["design-governance"]
         self.assertEqual(job["gate"], "code")
-        self.assertNotIn("paths", job)  # Existing unscoped governance owner.
+        self.assertNotEqual(job.get("scope"), "exclusive")  # Preserve inference plus the additive floor.
+        required_inputs = {
+            "AGENTS.md",
+            "CLAUDE.md",
+            ".claude/agents/builder.md",
+            ".claude/agents/designer.md",
+            ".claude/agents/reviewer.md",
+            "docs/DESIGN_DOCTRINE.md",
+            "research/SECTOR_INTELLIGENCE_CONSOLIDATED_EXPERIENCE_2026-09-26.md",
+            "tests/test_human_first_design_guidance.py",
+        }
+        self.assertTrue(required_inputs.issubset(set(job.get("paths", []))),
+                        "The additive floor must cover the guidance suite and its source inputs.")
         commands = [shlex.split(step["run"]) for step in job["steps"]
                     if "run" in step and "if" not in step]
         self.assertTrue(any(tokens[:3] == ["python3", "-m", "pytest"]
@@ -73,15 +85,15 @@ class HumanFirstDesignGuidanceTests(unittest.TestCase):
         self.assertIn("separate 44px touch controls", text)
         self.assertIn("Motion communicates selection/context, not fake market motion.", text)
         self.assertIn("/discover?tab=sectors", text)
-        self.assertIn("sectorJob=rotation|discover|breadth", text)
+        self.assertIn("sectorWorkspace=rotation|discover|breadth|detail", text)
         self.assertIn("subsector_rotation.json", text)
         self.assertIn("Do **not** embed the existing global `HeatmapView`", text)
-        self.assertIn("sectorDetail=1", text)
+        self.assertIn("sectorWorkspace=detail", text)
         self.assertIn("opens the **Rotation", text)
-        self.assertIn("must **not** write a default", text)
+        self.assertIn("An explicit `sectorWorkspace` takes precedence", text)
         self.assertIn("Keep `SectorIntelligenceWorkspace` as the single mounted root", text)
         self.assertIn("Fetch only the owner feeds required by the active job/detail surface", text)
-        self.assertIn("`rotation` → `/marketdata/subsector_rotation.json`", text)
+        self.assertIn("`sector` → `/sectordata/sector_central.json`", text)
         self.assertIn("`themeMap` → `/marketdata/themes_heatmap.json`", text)
         self.assertIn("production code should **not add the feed keys at all**", text)
         self.assertIn("Terminal fetch time", text)
