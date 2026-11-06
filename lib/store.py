@@ -559,6 +559,126 @@ def upsert(group: str, name: str, new: pd.DataFrame, outlier_col: str | None = N
     return merged
 
 
+#: Adjustment-basis comparison outcomes. BASIS_UNKNOWN is the outcome that must
+#: never be read as "stable": the comparison could not be MADE at all (the stored
+#: archive was unreadable, the comparison column was missing or empty, or the
+#: compared values were unusable). "Not proven different" is not "proven the
+#: same", so a caller that may not splice across an unverified basis has to treat
+#: BASIS_UNKNOWN like a shift.
+BASIS_STABLE = "stable"
+BASIS_SHIFTED = "shifted"
+BASIS_UNKNOWN = "unknown"
+
+
+def basis_comparison(group: str, name: str, new: pd.DataFrame, col: str = "close",
+                      tol: float = 1e-3, *, strict: bool = True) -> str:
+    """Compare ``col`` on the overlap dates and report the OUTCOME of that
+    comparison: BASIS_STABLE, BASIS_SHIFTED or BASIS_UNKNOWN.
+
+    One comparator, one tolerance source, no second copy of the rule. The legacy
+    boolean :func:`basis_shifted` is a thin wrapper over this, so every existing
+    caller keeps its documented behaviour.
+
+    BASIS_UNKNOWN covers every case where the comparison could not be MADE:
+    the stored archive could not be read, the comparison column is missing on
+    either side, the compared values are empty, or the compared values are not
+    usable numbers. It is deliberately a different answer from BASIS_STABLE — an
+    unverifiable basis must never be reported as a verified one, because a caller
+    that reads "not shifted" as "safe to splice" turns a transient read failure
+    into a mixed-basis archive.
+
+    ``strict`` is the opt-in boundary for a caller that may splice a short probe
+    onto the stored archive. In strict mode the overlap must be FULLY usable:
+    the ORIGINAL common-date evidence is kept until the missing and non-finite
+    values on both sides — and the comparison values they produce — have been
+    classified. A row that cannot be compared makes the whole overlap
+    unverifiable, and the answer is BASIS_UNKNOWN, never BASIS_STABLE. Dropping
+    such a row before the comparison would certify a stable basis from the
+    usable remainder — evidence for a comparison that was never made on that
+    date.
+
+    Two counterexamples pin that boundary. Old close [100, NaN] against new close
+    [100, 200] on the same two dates used to answer stable: the missing stored
+    row was dropped before the dates were intersected, so only the comparable
+    remainder survived. Old close [100, +inf] against new close [100, 100] used
+    to answer shifted, because an infinite relative difference is decisive
+    evidence — but it is a statement about a value that cannot be compared at
+    all, so strict mode calls it unknown. Both are BASIS_UNKNOWN here.
+
+    Without ``strict`` the missing values are dropped first and the maximum is
+    taken over the usable rows only. That is the legacy rule :func:`basis_shifted`
+    keeps for every existing caller: it still answers True for an infinite
+    stored value against a finite new one, and it does not move.
+    """
+    try:
+        old = read(group, name)
+        if old is None or old.empty or new is None or new.empty:
+            return BASIS_UNKNOWN
+        if col not in old.columns or col not in new.columns:
+            return BASIS_UNKNOWN
+        oc = old[col].dropna()
+        nc = new[col].dropna()
+        if oc.empty or nc.empty:
+            return BASIS_UNKNOWN
+        if strict:
+            # Strict mode keeps the ORIGINAL common-date evidence. The dropna()
+            # above only answers "is there any usable value on each side"; the
+            # overlap itself is taken over the untouched columns, so a stored or
+            # incoming row that cannot be compared is classified below instead
+            # of being dropped before the comparison and certifying a stable
+            # basis from the usable remainder.
+            oc = old[col]
+            nc = new[col]
+        idx = pd.to_datetime(nc.index)
+        if getattr(idx, "tz", None) is not None:
+            idx = idx.tz_localize(None)
+        nc = pd.Series(nc.to_numpy(), index=idx.normalize())
+        nc = nc[~nc.index.duplicated(keep="last")]
+        overlap = oc.index.intersection(nc.index)
+        if len(overlap) == 0:
+            log.info("basis guard %s/%s: no overlap between the refresh window and "
+                     "stored history — full refetch required", group, name)
+            return BASIS_SHIFTED
+        oc = oc.loc[overlap].astype(float)
+        nv = nc.loc[overlap].astype(float)
+        if strict:
+            # Every common date must carry a usable number on BOTH sides.
+            usable = oc.map(math.isfinite) & nv.map(math.isfinite)
+            if not bool(usable.all()):
+                log.warning("basis guard %s/%s: %d of %d common-date value(s) are "
+                            "missing or non-finite — basis UNKNOWN (not proven "
+                            "stable)", group, name, int((~usable).sum()), len(usable))
+                return BASIS_UNKNOWN
+        rel = (oc - nv).abs() / nv.abs().clip(lower=1e-9)
+        if strict:
+            # And the comparison they produce must be finite as well: an
+            # infinite relative difference is a statement about a value that
+            # cannot be compared, not a proven shift.
+            comparable = rel.map(math.isfinite)
+            if not bool(comparable.all()):
+                log.warning("basis guard %s/%s: %d of %d comparison value(s) are "
+                            "not finite — basis UNKNOWN (not proven stable)",
+                            group, name, int((~comparable).sum()), len(comparable))
+                return BASIS_UNKNOWN
+        worst = rel.max()
+    except Exception as e:  # noqa: BLE001 — a guard must never kill the collect
+        log.warning("basis guard %s/%s: comparison failed (%s) — basis UNKNOWN "
+                    "(not proven stable)", group, name, e)
+        return BASIS_UNKNOWN
+    if pd.isna(worst):
+        # Every compared value was unusable (inf-inf, 0/0): the basis could not
+        # be compared, so it is UNKNOWN — never "stable".
+        log.warning("basis guard %s/%s: comparison produced no usable value — "
+                    "basis UNKNOWN (not proven stable)", group, name)
+        return BASIS_UNKNOWN
+    worst = float(worst)
+    if worst > tol:
+        log.info("basis guard %s/%s: adjustment basis shifted (max overlap diff "
+                 "%.4f%% over %d dates)", group, name, worst * 100.0, len(overlap))
+        return BASIS_SHIFTED
+    return BASIS_STABLE
+
+
 def basis_shifted(group: str, name: str, new: pd.DataFrame, col: str = "close",
                   tol: float = 1e-3) -> bool:
     """True when a freshly fetched refresh window sits on a DIFFERENT adjustment
@@ -579,38 +699,18 @@ def basis_shifted(group: str, name: str, new: pd.DataFrame, col: str = "close",
     raises: on a comparison error it logs and returns False (old splice
     behavior). Callers respond by discarding the window and refetching
     period='max' for the flagged name — ported from the odds-store guard in
-    scripts/build_odds.ensure_store."""
-    try:
-        old = read(group, name)
-        if old is None or old.empty or col not in old.columns or col not in new.columns:
-            return False
-        oc = old[col].dropna()
-        nc = new[col].dropna()
-        if oc.empty or nc.empty:
-            return False
-        idx = pd.to_datetime(nc.index)
-        if getattr(idx, "tz", None) is not None:
-            idx = idx.tz_localize(None)
-        nc = pd.Series(nc.to_numpy(), index=idx.normalize())
-        nc = nc[~nc.index.duplicated(keep="last")]
-        overlap = oc.index.intersection(nc.index)
-        if len(overlap) == 0:
-            log.info("basis guard %s/%s: no overlap between the refresh window and "
-                     "stored history — full refetch required", group, name)
-            return True
-        oc = oc.loc[overlap].astype(float)
-        nv = nc.loc[overlap].astype(float)
-        rel = (oc - nv).abs() / nv.abs().clip(lower=1e-9)
-        worst = float(rel.max())
-        if worst > tol:
-            log.info("basis guard %s/%s: adjustment basis shifted (max overlap diff "
-                     "%.4f%% over %d dates)", group, name, worst * 100.0, len(overlap))
-            return True
-        return False
-    except Exception as e:  # noqa: BLE001 — a guard must never kill the collect
-        log.warning("basis guard %s/%s: comparison failed (%s) — treating as unshifted",
-                    group, name, e)
-        return False
+    scripts/build_odds.ensure_store.
+
+    This is the legacy boolean view of :func:`basis_comparison` and keeps that
+    documented behaviour exactly: a comparison that could not be MADE is NOT a
+    shift, so every existing caller is unaffected. It reads the comparator in
+    its LEGACY (non-strict) mode, where the maximum is taken over the usable
+    rows only — that is the rule this boolean has always applied, and it does
+    not move. A caller that may not splice across an UNVERIFIED basis must use
+    :func:`basis_comparison` and treat BASIS_UNKNOWN like a shift.
+    """
+    return basis_comparison(group, name, new, col=col, tol=tol,
+                             strict=False) == BASIS_SHIFTED
 
 
 def _guard_outliers(group: str, name: str, old: pd.DataFrame, new: pd.DataFrame, col: str) -> pd.DataFrame:
