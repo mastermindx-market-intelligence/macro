@@ -1,20 +1,20 @@
 {
   "schema": "rates_command.v1",
-  "asof": "2026-11-03",
-  "built": "2026-11-05T11:18:46.948139+00:00",
+  "asof": "2026-11-05",
+  "built": "2026-11-06T10:40:00.779459+00:00",
   "display_only": true,
   "authority": false,
   "board": {
     "rate_path_row": {
-      "asof": "2026-11-03",
+      "asof": "2026-11-05",
       "policy_rate": 3.88,
       "implied_path": {
         "m1": 3.94,
-        "m3": 4.09,
-        "m6": 4.28,
-        "m12": 4.41
+        "m3": 4.07,
+        "m6": 4.19,
+        "m12": 4.3
       },
-      "implied_bp_12m": 53,
+      "implied_bp_12m": 42,
       "implied_cuts_12m": -2,
       "path_plain": {
         "en": "about two hikes",
@@ -43,20 +43,20 @@
         "horizon_months": 1,
         "fed_dot": 4.1,
         "market": 3.94,
-        "gap_bp": -15,
+        "gap_bp": -16,
         "lean_en": "market more dovish than the Fed",
         "lean_zh": "市场比美联储更鸽派"
       },
-      "headline_en": "Market prices ~2 hikes over the next 12m (funds 3.88% → 4.41%)",
-      "headline_zh": "市场为未来12个月定价约加息2次（基金利率 3.88% → 4.41%）",
-      "read_en": "At end-2026 the market implies 3.94% vs the Fed's 4.10% median dot (-15bp — market more dovish than the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.64pp).",
-      "read_zh": "在end-2026，市场隐含 3.94% 对比美联储 4.10% 的中位点（-15基点 — 市场比美联储更鸽派）。近端远期利差为正——近端未为降息定价（+0.64个百分点）。",
+      "headline_en": "Market prices ~2 hikes over the next 12m (funds 3.88% → 4.30%)",
+      "headline_zh": "市场为未来12个月定价约加息2次（基金利率 3.88% → 4.30%）",
+      "read_en": "At end-2026 the market implies 3.94% vs the Fed's 4.10% median dot (-16bp — market more dovish than the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.61pp).",
+      "read_zh": "在end-2026，市场隐含 3.94% 对比美联储 4.10% 的中位点（-16基点 — 市场比美联储更鸽派）。近端远期利差为正——近端未为降息定价（+0.61个百分点）。",
       "source_en": "ZQ fed-funds futures",
       "source_zh": "ZQ 联邦基金期货",
       "basis": {
         "subject": "fed_path.implied_path.m12",
         "evidence_class": "market_implied_expectation",
-        "value": 4.41,
+        "value": 4.3,
         "value_state": "present",
         "unit": "pct_ann_rate",
         "target": "effr_monthly_average",
@@ -64,7 +64,7 @@
         "reference_start": null,
         "reference_end": null,
         "tenor": "n/a",
-        "observation_time": "2026-11-03",
+        "observation_time": "2026-11-05",
         "observation_precision": "day",
         "seasonal_treatment": "n/a",
         "rate_index": "EFFR",
@@ -73,10 +73,10 @@
         "source": "rate_futures:ZQ",
         "source_version": null,
         "content_ref": null,
-        "first_public_evidence": "2026-11-03",
+        "first_public_evidence": "2026-11-05",
         "first_public_precision": "day",
         "admitted_at": null,
-        "cutoff": "2026-11-05",
+        "cutoff": "2026-11-06",
         "model_id": "n/a",
         "target_epoch": "n/a",
         "vintage": null,
@@ -87,7 +87,7 @@
           "risk_premium_not_stripped",
           "implied_bp_12m_is_month12_path_minus_policy_level"
         ],
-        "obs_id": "c1dda0610c9ed125"
+        "obs_id": "9401c2fa2499a9a3"
       }
     },
     "inflation_row": {
@@ -97,8 +97,8 @@
       "vs_target_pp": 1.12,
       "regime": "above target",
       "direction": "cooling",
-      "breakeven_10y": 2.3,
-      "breakeven_5y5y": 2.21,
+      "breakeven_10y": 2.24,
+      "breakeven_5y5y": 2.22,
       "anchoring": "drifting down",
       "nearest_cpi": {
         "release_type": "cpi_headline",
@@ -127,8 +127,8 @@
         "countdown": {
           "source_cutoff": "2026-10-16T18:18:59Z",
           "source_days_to": 25,
-          "display_cutoff": "2026-11-05",
-          "days_to": 5,
+          "display_cutoff": "2026-11-06",
+          "days_to": 4,
           "state": "current",
           "method": "release_forecast_release_date"
         },
@@ -155,7 +155,7 @@
           "first_public_evidence": "2026-10-16T18:18:59Z",
           "first_public_precision": "unknown",
           "admitted_at": null,
-          "cutoff": "2026-11-05",
+          "cutoff": "2026-11-06",
           "model_id": "champion_legacy_target_v1",
           "target_epoch": "legacy_cross_vintage_initial_levels_v0",
           "vintage": null,
@@ -168,49 +168,49 @@
           "limitations": [
             "first_print_basis_undeclared"
           ],
-          "obs_id": "f0f97af6ec0e5a43"
+          "obs_id": "66cb61270d5bda5f"
         }
       }
     },
     "risk_row": {
-      "real_speed_pctile": 0.35,
+      "real_speed_pctile": 0.38,
       "real_speed_note_en": "Flags risk, not return — high percentile = fast real-rate moves, not directional signal.",
       "real_speed_note_zh": "标记风险而非收益——高百分位表示实际利率快速波动，并非方向性信号。",
       "curve_regime_key": "bull_flattener",
       "curve_regime_label_en": "Bull flattener",
       "curve_regime_label_zh": "牛市变平",
       "term_premium_dir": "rising",
-      "term_premium_chg_bp": 7.0,
+      "term_premium_chg_bp": 6.0,
       "term_premium_note_en": "Kim-Wright model (FRED THREEFYTP10); ACM pending",
       "term_premium_note_zh": "Kim-Wright模型（FRED THREEFYTP10）；ACM待接入",
-      "front2y_speed_bp": 34.0,
-      "real10y_speed_bp": 19.0,
-      "recession_ntfs": 0.64,
-      "nyfed_prob": 15.0
+      "front2y_speed_bp": 33.0,
+      "real10y_speed_bp": 21.0,
+      "recession_ntfs": 0.61,
+      "nyfed_prob": 16.0
     },
     "policy_row": {
       "state": "ELEVATED",
       "jawboning": {
-        "n_7d": 5,
+        "n_7d": 4,
         "n_30d": 13,
-        "last_alert_ts": "2026-11-03T21:50:59+00:00",
-        "last_alert_summary": "Trump declares space open for US development — commercial space, lunar infra in focus",
-        "last_alert_summary_zh": "特朗普宣布太空对美国开放开发——商业航天与月球基建受关注"
+        "last_alert_ts": "2026-11-05T16:31:07+00:00",
+        "last_alert_summary": "Russia-Ukraine ceasefire breakthrough at White House — defense headwind, Europe relief",
+        "last_alert_summary_zh": "俄乌停火在白宫取得突破 — 国防承压，欧洲释然"
       },
-      "lever_asof": "2026-11-04",
+      "lever_asof": "2026-11-05",
       "chair": "Kevin Warsh",
       "chair_profile_en": "Warsh's revealed agenda (CFR confirmation-hearing analysis + his June 17 debut): narrow the Fed's mandate, revert to a strict 2% target (abandoning 2020 flexible-average-inflation-targeting), cut reliance on unconventional tools (QE/balance sheet), and abandon forward guidance — potentially making the dot plot obsolete. He withheld his own dot, dropped guidance, issued a ~114-word statement, and c…",
       "chair_profile_zh": "",
       "optionality_read_en": "Decode the Warsh redesign as PIVOT INFRASTRUCTURE, not just hawkishness. (1) Deleting the dot plot / forward guidance removes the time-stamped record against which a future political-looking cut could be judged — a sudden post-midterm cut violates no prior, it is just 'the new data' (accountability-deletion as optionality). (2) The inflation-frameworks task force is the machinery to re-specify what '2%' operationally means (index, horizon, tariff look-through) — watch for language splitting 'tariff level-shifts' from 'underlying inflation', the cut permission slip that prices first in breakevens and the belly. (3) The productivity/AI task force furnishes a higher-trend-growth / lower-required-real-rate alibi so ~3.3% core PCE becomes compatible with easing without formally moving the target. One week on, the design has already done the Fed's tightening FOR it: dollar 13-mo high, real 10y +57bp, the AI froth and the debasement trade both flushed — with the policy rate UNCHANGED. ADVERSARY CAVEATS: Warsh's anti-guidance ideology predates any 2026-27 cut calculus and cuts both ways; tariff look-through is orthodox decades-old doctrine; any chair would study AI — only TIMING relative to the pivot window discriminates intent from coincidence.",
       "intel_as_of": "2026-07-13",
-      "intel_staleness_days": 115,
+      "intel_staleness_days": 116,
       "iran_context": {
         "title_en": "Iran / Middle East -- ceasefire COLLAPSED (as of 7/8)",
         "title_zh": "伊朗/中东 —— 停火已崩溃（截至7/8）",
         "facts_en": "A ~6-week 2026 Iran war pushed oil above $120/bbl (Brent peak at Hormuz closure) as shipping lanes went offline; Apr 8 2026 a Pakistan-mediated conditional ceasefire. Jun 17 2026: US-Iran signed 14-point MOU opening ~60-day talks window on Hormuz navigation, nuclear/missile limits, and sanctions. Jun 20: Iran briefly re-declared Strait closed. Jun 27: JMIC widened transit route near Oman -- coinciding with the tanker Kiku struck by Iranian projectile and CENTCOM retaliatory airstrikes. Jul 6-7: additional tanker attacks (Al Rekayyat, Wedyan). OVERTAKEN (7/8): Trump declared the ceasefire 'OVER' at the NATO Ankara summit; CENTCOM launched sustained strikes on Iranian sites 7/8-7/11; Brent spiked ~$80 intraday (+8.7%), JMIC raised Hormuz threat to 'severe'; Hormuz tanker traffic near-standstill by 7/9. Doha talks (7/1) said 'going well' (Vance); no comprehensive deal. NUCLEAR GAP: as of Jun 14 the US had shifted to accepting a 15-20 year enrichment SUSPENSION (not permanent zero-enrichment); live gap = suspension duration + HEU down-blended material location; US messaging inconsistent (Vance 6/18: 'Ours will not [allow enrichment]').",
         "facts_zh": "约6周的2026年伊朗战争在霍尔木兹封锁高峰期将布伦特推升至120美元以上，航道一度中断；2026年4月8日达成巴基斯坦斡旋的有条件停火。2026年6月17日：美伊签署14点谅解备忘录，开启约60天谈判窗口，议题涵盖霍尔木兹通航、核/导弹限制、制裁。6月20日：伊朗短暂宣布海峡再次关闭。6月27日：JMIC在阿曼附近拓宽通行航路——同日油轮Kiku遇伊朗投射物打击，CENTCOM展开报复性空袭。7月6-7日：更多油轮遇袭（Al Rekayyat、Wedyan）。已被推翻（7/8）：特朗普在北约安卡拉峰会宣告停火“已终结”；CENTCOM于7/8-7/11对伊朗境内目标发动持续打击；布伦特盘中飙至约80美元（+8.7%），JMIC将霍尔木兹威胁评级升至“严峻”；7/9起霍尔木兹油轮交通濒临停滞。多哈谈判（7/1）万斯称“进展顺利”；无全面协议。核谈分歧：截至6月14日，美方已转为接受15-20年的浓缩暂停（而非永久零浓缩）；现实分歧在于暂停期限及高浓铀下混后材料的存放地点，且美方表态不一致（万斯6/18：“我们不允许浓缩”）。",
-        "as_of_note_en": "Intel as of 2026-07-13 (115d old)",
-        "as_of_note_zh": "情报截至2026-07-13（115天前）",
+        "as_of_note_en": "Intel as of 2026-07-13 (116d old)",
+        "as_of_note_zh": "情报截至2026-07-13（116天前）",
         "unsigned_display": true
       }
     }
@@ -221,27 +221,27 @@
         "key": "H1_path_repricing",
         "active": false,
         "weight": 2,
-        "value": -25.8,
-        "detail_en": "12-month rate futures moved -25.8bp over 20 trading days (threshold: +15bp).",
-        "detail_zh": "20个交易日内12个月利率期货变动-25.8个基点（阈值：+15bp）。",
+        "value": -41.0,
+        "detail_en": "12-month rate futures moved -41.0bp over 20 trading days (threshold: +15bp).",
+        "detail_zh": "20个交易日内12个月利率期货变动-41.0个基点（阈值：+15bp）。",
         "null_reason": null
       },
       {
         "key": "H2_breakeven_momentum",
         "active": false,
         "weight": 1,
-        "value": -6.0,
-        "detail_en": "10y breakeven moved -6.0bp over 20 days (threshold: +8bp).",
-        "detail_zh": "10年期盈亏平衡点20天变动-6.0个基点（阈值：+8bp）。",
+        "value": -11.0,
+        "detail_en": "10y breakeven moved -11.0bp over 20 days (threshold: +8bp).",
+        "detail_zh": "10年期盈亏平衡点20天变动-11.0个基点（阈值：+8bp）。",
         "null_reason": null
       },
       {
         "key": "H3_oil_impulse",
-        "active": false,
+        "active": true,
         "weight": 1,
         "value": "up",
-        "detail_en": "Oil trend: up; shock or oil-driver condition not met.",
-        "detail_zh": "原油趋势：up；冲击或油价驱动条件未满足。",
+        "detail_en": "Oil trending up (+3.6% 20d) with shock/oil-driven breakeven pressure.",
+        "detail_zh": "原油趋势up（20天涨跌+3.6%），叠加冲击/油价驱动的盈亏平衡压力。",
         "null_reason": null
       },
       {
@@ -302,9 +302,9 @@
         "key": "E4_credit_stress",
         "active": true,
         "weight": 1,
-        "value": 1.47,
-        "detail_en": "HY OAS z-score elevated at 1.47 — credit stress may cool inflation pressure.",
-        "detail_zh": "高收益利差z分数偏高1.47——信用压力可能抑制通胀。",
+        "value": 1.12,
+        "detail_en": "HY OAS z-score elevated at 1.12 — credit stress may cool inflation pressure.",
+        "detail_zh": "高收益利差z分数偏高1.12——信用压力可能抑制通胀。",
         "null_reason": null
       },
       {
@@ -317,7 +317,7 @@
         "null_reason": null
       }
     ],
-    "hawk_score": 0,
+    "hawk_score": 1,
     "ease_score": 5,
     "net_state": "repricing_dovish",
     "state_label": {
@@ -329,24 +329,32 @@
     {
       "key": "D1_dots_vs_market",
       "active": false,
-      "value_bp": -15.0,
-      "detail_en": "Market vs dot gap: -15bp — within normal range (threshold: ±50bp).",
-      "detail_zh": "市场与点阵图利差：-15个基点——在正常范围内。"
+      "value_bp": -16.0,
+      "detail_en": "Market vs dot gap: -16bp — within normal range (threshold: ±50bp).",
+      "detail_zh": "市场与点阵图利差：-16个基点——在正常范围内。"
     },
     {
       "key": "D2_projection_vs_breakeven",
       "active": false,
-      "detail_en": "No projection-breakeven wedge: CPI tag=cooler, 20d breakeven=-6bp.",
-      "detail_zh": "无预测-盈亏平衡楔形：CPI标签=cooler，20天盈亏平衡点=-6bp。"
+      "detail_en": "No projection-breakeven wedge: CPI tag=cooler, 20d breakeven=-11bp.",
+      "detail_zh": "无预测-盈亏平衡楔形：CPI标签=cooler，20天盈亏平衡点=-11bp。"
     },
     {
       "key": "D3_pressure_vs_market",
       "active": false,
-      "detail_en": "Pressure-vs-market gap not active (net_state=repricing_dovish, implied=+53bp).",
-      "detail_zh": "压力与市场背离未激活（net_state=repricing_dovish，隐含=+53bp）。"
+      "detail_en": "Pressure-vs-market gap not active (net_state=repricing_dovish, implied=+42bp).",
+      "detail_zh": "压力与市场背离未激活（net_state=repricing_dovish，隐含=+42bp）。"
     }
   ],
   "conditions": [
+    {
+      "key": "H3_oil_impulse",
+      "direction": "hawkish",
+      "en": "Oil trending up (+3.6% 20d) with shock/oil-driven breakeven pressure.",
+      "zh": "原油趋势up（20天涨跌+3.6%），叠加冲击/油价驱动的盈亏平衡压力。",
+      "watch_en": "If this pressure persists, upward rate repricing stays at risk; a deepening equity correction historically pulls the other way.",
+      "watch_zh": "若该压力持续，利率上调风险上升；股市进一步下跌历史上会起到反向对冲作用。"
+    },
     {
       "key": "E1_equity_deleveraging",
       "direction": "easing",
@@ -359,15 +367,15 @@
   "market_check": {
     "futures": {
       "m1": 3.94,
-      "m3": 4.09,
-      "m6": 4.28,
-      "m12": 4.41,
-      "implied_bp_12m": 53,
-      "plain_read_en": "Market prices ~2 hikes over the next 12m (funds 3.88% → 4.41%)",
-      "plain_read_zh": "市场为未来12个月定价约加息2次（基金利率 3.88% → 4.41%）"
+      "m3": 4.07,
+      "m6": 4.19,
+      "m12": 4.3,
+      "implied_bp_12m": 42,
+      "plain_read_en": "Market prices ~2 hikes over the next 12m (funds 3.88% → 4.30%)",
+      "plain_read_zh": "市场为未来12个月定价约加息2次（基金利率 3.88% → 4.30%）"
     },
     "prediction_markets": {
-      "as_of": "2026-11-04",
+      "as_of": "2026-11-05",
       "source": "Polymarket",
       "events": [
         {
@@ -375,8 +383,8 @@
           "label_en": "Next Fed decision",
           "label_zh": "下次美联储决议",
           "top_outcome": "Hike–Pause–Hike",
-          "top_prob": 78.0,
-          "chg_pp": 4.0,
+          "top_prob": 67.5,
+          "chg_pp": -10.5,
           "source": "Polymarket",
           "type": "market_implied_benchmark"
         },
@@ -385,18 +393,8 @@
           "label_en": "Fed cuts this year",
           "label_zh": "今年降息次数",
           "top_outcome": "0 (0 bps)",
-          "top_prob": 97.8,
-          "chg_pp": 1.1,
-          "source": "Polymarket",
-          "type": "market_implied_benchmark"
-        },
-        {
-          "key": "recession",
-          "label_en": "US recession",
-          "label_zh": "美国衰退",
-          "top_outcome": "US recession by end of 2026?",
-          "top_prob": 4.5,
-          "chg_pp": null,
+          "top_prob": 97.2,
+          "chg_pp": -0.6,
           "source": "Polymarket",
           "type": "market_implied_benchmark"
         }
@@ -408,7 +406,7 @@
   "yield_momentum": {
     "schema": "yield_momentum.v1",
     "calculation_version": "fixed_grid_origin.v4",
-    "asof": "2026-11-03",
+    "asof": "2026-11-05",
     "display_only": true,
     "authority": false,
     "can_score": false,
@@ -426,8 +424,8 @@
         "source_column": "us2y",
         "source_id": "DGS2",
         "status": "available",
-        "as_of": "2026-11-02",
-        "frame_as_of": "2026-11-03",
+        "as_of": "2026-11-04",
+        "frame_as_of": "2026-11-05",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
         "historical_availability_qualified": false,
@@ -444,16 +442,16 @@
         "lag_basis": "fred_next_business_day_publication_v1",
         "measurement_origin": "last_captured_source_row",
         "horizon_basis": "fixed_weekday_grid_intervals",
-        "level": 4.59,
-        "carried_level": 4.59,
+        "level": 4.58,
+        "carried_level": 4.58,
         "last_observed": {
           "basis": "latest_two_captured_source_rows_on_retained_grid",
-          "as_of": "2026-11-02",
-          "level": 4.59,
-          "previous_as_of": "2026-10-30",
-          "previous_level": 4.56,
-          "change_bp": 3.0,
-          "elapsed_calendar_days": 3,
+          "as_of": "2026-11-04",
+          "level": 4.58,
+          "previous_as_of": "2026-11-03",
+          "previous_level": 4.61,
+          "change_bp": -3.0,
+          "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
           "age_calendar_days": 1,
           "age_grid_intervals": 1,
@@ -462,36 +460,36 @@
         },
         "velocity_bp": {
           "5d": -9.0,
-          "22d": -19.0,
-          "63d": 41.0
+          "22d": -26.0,
+          "63d": 39.0
         },
         "endpoint_dates": {
           "5d": [
-            "2026-10-26",
-            "2026-11-02"
+            "2026-10-28",
+            "2026-11-04"
           ],
           "22d": [
-            "2026-10-01",
-            "2026-11-02"
+            "2026-10-05",
+            "2026-11-04"
           ],
           "63d": [
-            "2026-08-05",
-            "2026-11-02"
+            "2026-08-07",
+            "2026-11-04"
           ]
         },
-        "acceleration_bp": -58.0,
+        "acceleration_bp": -76.0,
         "turn_watch": null,
         "null_reason": null,
         "source_basis": "captured_source_rows",
-        "source_digest": "867a590c37ca441d1c5dc75f4eab36d91cfad8843ce3efe2c9aaccda85a96331",
+        "source_digest": "e34c2a8fec9232286cd47ac9199732ebf7c7633afcde861383ea179c2389976a",
         "curve_convention": "par",
         "level_unit": "pct_ann_rate",
         "change_unit": "bp",
         "endpoints": {
           "5d": {
             "start": {
-              "date": "2026-10-26",
-              "level": 4.68,
+              "date": "2026-10-28",
+              "level": 4.67,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -501,8 +499,8 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
-              "level": 4.59,
+              "date": "2026-11-04",
+              "level": 4.58,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -517,8 +515,8 @@
           },
           "22d": {
             "start": {
-              "date": "2026-10-01",
-              "level": 4.78,
+              "date": "2026-10-05",
+              "level": 4.84,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -528,8 +526,8 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
-              "level": 4.59,
+              "date": "2026-11-04",
+              "level": 4.58,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -544,8 +542,8 @@
           },
           "63d": {
             "start": {
-              "date": "2026-08-05",
-              "level": 4.18,
+              "date": "2026-08-07",
+              "level": 4.19,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -555,8 +553,8 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
-              "level": 4.59,
+              "date": "2026-11-04",
+              "level": 4.58,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -576,8 +574,8 @@
         "source_column": "us5y",
         "source_id": "DGS5",
         "status": "available",
-        "as_of": "2026-11-02",
-        "frame_as_of": "2026-11-03",
+        "as_of": "2026-11-04",
+        "frame_as_of": "2026-11-05",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
         "historical_availability_qualified": false,
@@ -594,16 +592,16 @@
         "lag_basis": "fred_next_business_day_publication_v1",
         "measurement_origin": "last_captured_source_row",
         "horizon_basis": "fixed_weekday_grid_intervals",
-        "level": 4.7,
-        "carried_level": 4.7,
+        "level": 4.69,
+        "carried_level": 4.69,
         "last_observed": {
           "basis": "latest_two_captured_source_rows_on_retained_grid",
-          "as_of": "2026-11-02",
-          "level": 4.7,
-          "previous_as_of": "2026-10-30",
-          "previous_level": 4.71,
-          "change_bp": -1.0,
-          "elapsed_calendar_days": 3,
+          "as_of": "2026-11-04",
+          "level": 4.69,
+          "previous_as_of": "2026-11-03",
+          "previous_level": 4.74,
+          "change_bp": -5.0,
+          "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
           "age_calendar_days": 1,
           "age_grid_intervals": 1,
@@ -611,37 +609,37 @@
           "historical_availability_qualified": false
         },
         "velocity_bp": {
-          "5d": -14.0,
-          "22d": -31.0,
-          "63d": 37.0
+          "5d": -16.0,
+          "22d": -37.0,
+          "63d": 34.0
         },
         "endpoint_dates": {
           "5d": [
-            "2026-10-26",
-            "2026-11-02"
+            "2026-10-28",
+            "2026-11-04"
           ],
           "22d": [
-            "2026-10-01",
-            "2026-11-02"
+            "2026-10-05",
+            "2026-11-04"
           ],
           "63d": [
-            "2026-08-05",
-            "2026-11-02"
+            "2026-08-07",
+            "2026-11-04"
           ]
         },
-        "acceleration_bp": -77.0,
+        "acceleration_bp": -91.0,
         "turn_watch": "rolldown_forming",
         "null_reason": null,
         "source_basis": "captured_source_rows",
-        "source_digest": "c78a4b1dcabaa411054d3a50b5608b409574d534f5c97598bd1840dd52b75415",
+        "source_digest": "f643090298e77ebb8cf243e1c3108127a1de00d8f5f045569c55385aa154a5f6",
         "curve_convention": "par",
         "level_unit": "pct_ann_rate",
         "change_unit": "bp",
         "endpoints": {
           "5d": {
             "start": {
-              "date": "2026-10-26",
-              "level": 4.84,
+              "date": "2026-10-28",
+              "level": 4.85,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -651,8 +649,8 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
-              "level": 4.7,
+              "date": "2026-11-04",
+              "level": 4.69,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -667,8 +665,8 @@
           },
           "22d": {
             "start": {
-              "date": "2026-10-01",
-              "level": 5.01,
+              "date": "2026-10-05",
+              "level": 5.06,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -678,8 +676,8 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
-              "level": 4.7,
+              "date": "2026-11-04",
+              "level": 4.69,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -694,8 +692,8 @@
           },
           "63d": {
             "start": {
-              "date": "2026-08-05",
-              "level": 4.33,
+              "date": "2026-08-07",
+              "level": 4.35,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -705,8 +703,8 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
-              "level": 4.7,
+              "date": "2026-11-04",
+              "level": 4.69,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -726,8 +724,8 @@
         "source_column": "us10y",
         "source_id": "DGS10",
         "status": "available",
-        "as_of": "2026-11-02",
-        "frame_as_of": "2026-11-03",
+        "as_of": "2026-11-04",
+        "frame_as_of": "2026-11-05",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
         "historical_availability_qualified": false,
@@ -744,16 +742,16 @@
         "lag_basis": "fred_next_business_day_publication_v1",
         "measurement_origin": "last_captured_source_row",
         "horizon_basis": "fixed_weekday_grid_intervals",
-        "level": 4.91,
-        "carried_level": 4.91,
+        "level": 4.9,
+        "carried_level": 4.9,
         "last_observed": {
           "basis": "latest_two_captured_source_rows_on_retained_grid",
-          "as_of": "2026-11-02",
-          "level": 4.91,
-          "previous_as_of": "2026-10-30",
-          "previous_level": 4.94,
-          "change_bp": -3.0,
-          "elapsed_calendar_days": 3,
+          "as_of": "2026-11-04",
+          "level": 4.9,
+          "previous_as_of": "2026-11-03",
+          "previous_level": 4.95,
+          "change_bp": -5.0,
+          "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
           "age_calendar_days": 1,
           "age_grid_intervals": 1,
@@ -761,37 +759,37 @@
           "historical_availability_qualified": false
         },
         "velocity_bp": {
-          "5d": -9.0,
-          "22d": -33.0,
-          "63d": 28.0
+          "5d": -15.0,
+          "22d": -41.0,
+          "63d": 25.0
         },
         "endpoint_dates": {
           "5d": [
-            "2026-10-26",
-            "2026-11-02"
+            "2026-10-28",
+            "2026-11-04"
           ],
           "22d": [
-            "2026-10-01",
-            "2026-11-02"
+            "2026-10-05",
+            "2026-11-04"
           ],
           "63d": [
-            "2026-08-05",
-            "2026-11-02"
+            "2026-08-07",
+            "2026-11-04"
           ]
         },
-        "acceleration_bp": -78.0,
+        "acceleration_bp": -95.0,
         "turn_watch": "rolldown_forming",
         "null_reason": null,
         "source_basis": "captured_source_rows",
-        "source_digest": "7f18351004eba464d6aae11d5538e4dc01325a08c66870d832ac1c4e6cfd3e7f",
+        "source_digest": "35ebdea85d464b4f68959424748fbcdc5c056731aede95f021a522772b0adf9d",
         "curve_convention": "par",
         "level_unit": "pct_ann_rate",
         "change_unit": "bp",
         "endpoints": {
           "5d": {
             "start": {
-              "date": "2026-10-26",
-              "level": 5.0,
+              "date": "2026-10-28",
+              "level": 5.05,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -801,8 +799,8 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
-              "level": 4.91,
+              "date": "2026-11-04",
+              "level": 4.9,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -817,8 +815,8 @@
           },
           "22d": {
             "start": {
-              "date": "2026-10-01",
-              "level": 5.24,
+              "date": "2026-10-05",
+              "level": 5.31,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -828,8 +826,8 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
-              "level": 4.91,
+              "date": "2026-11-04",
+              "level": 4.9,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -844,8 +842,8 @@
           },
           "63d": {
             "start": {
-              "date": "2026-08-05",
-              "level": 4.63,
+              "date": "2026-08-07",
+              "level": 4.65,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -855,8 +853,8 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
-              "level": 4.91,
+              "date": "2026-11-04",
+              "level": 4.9,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -876,8 +874,8 @@
         "source_column": "us20y",
         "source_id": "DGS20",
         "status": "available",
-        "as_of": "2026-11-02",
-        "frame_as_of": "2026-11-03",
+        "as_of": "2026-11-04",
+        "frame_as_of": "2026-11-05",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
         "historical_availability_qualified": false,
@@ -894,16 +892,16 @@
         "lag_basis": "fred_next_business_day_publication_v1",
         "measurement_origin": "last_captured_source_row",
         "horizon_basis": "fixed_weekday_grid_intervals",
-        "level": 5.31,
-        "carried_level": 5.31,
+        "level": 5.3,
+        "carried_level": 5.3,
         "last_observed": {
           "basis": "latest_two_captured_source_rows_on_retained_grid",
-          "as_of": "2026-11-02",
-          "level": 5.31,
-          "previous_as_of": "2026-10-30",
-          "previous_level": 5.34,
-          "change_bp": -3.0,
-          "elapsed_calendar_days": 3,
+          "as_of": "2026-11-04",
+          "level": 5.3,
+          "previous_as_of": "2026-11-03",
+          "previous_level": 5.35,
+          "change_bp": -5.0,
+          "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
           "age_calendar_days": 1,
           "age_grid_intervals": 1,
@@ -911,37 +909,37 @@
           "historical_availability_qualified": false
         },
         "velocity_bp": {
-          "5d": -4.0,
-          "22d": -33.0,
-          "63d": 13.0
+          "5d": -11.0,
+          "22d": -40.0,
+          "63d": 10.0
         },
         "endpoint_dates": {
           "5d": [
-            "2026-10-26",
-            "2026-11-02"
+            "2026-10-28",
+            "2026-11-04"
           ],
           "22d": [
-            "2026-10-01",
-            "2026-11-02"
+            "2026-10-05",
+            "2026-11-04"
           ],
           "63d": [
-            "2026-08-05",
-            "2026-11-02"
+            "2026-08-07",
+            "2026-11-04"
           ]
         },
-        "acceleration_bp": -70.0,
+        "acceleration_bp": -85.0,
         "turn_watch": "rolldown_forming",
         "null_reason": null,
         "source_basis": "captured_source_rows",
-        "source_digest": "935bb9f8735b218ad9bf429d4f09fb5b5864f9e06c0388b61d5b951ce4f19dbc",
+        "source_digest": "10396f0c03dbb58bc5c3a392c8f95a08e20f7d505d96af2e848460ec2a1d43d7",
         "curve_convention": "par",
         "level_unit": "pct_ann_rate",
         "change_unit": "bp",
         "endpoints": {
           "5d": {
             "start": {
-              "date": "2026-10-26",
-              "level": 5.35,
+              "date": "2026-10-28",
+              "level": 5.41,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -951,8 +949,8 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
-              "level": 5.31,
+              "date": "2026-11-04",
+              "level": 5.3,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -967,8 +965,8 @@
           },
           "22d": {
             "start": {
-              "date": "2026-10-01",
-              "level": 5.64,
+              "date": "2026-10-05",
+              "level": 5.7,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -978,8 +976,8 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
-              "level": 5.31,
+              "date": "2026-11-04",
+              "level": 5.3,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -994,8 +992,8 @@
           },
           "63d": {
             "start": {
-              "date": "2026-08-05",
-              "level": 5.18,
+              "date": "2026-08-07",
+              "level": 5.2,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -1005,8 +1003,8 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
-              "level": 5.31,
+              "date": "2026-11-04",
+              "level": 5.3,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -1026,8 +1024,8 @@
         "source_column": "us30y",
         "source_id": "DGS30",
         "status": "available",
-        "as_of": "2026-11-02",
-        "frame_as_of": "2026-11-03",
+        "as_of": "2026-11-04",
+        "frame_as_of": "2026-11-05",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
         "historical_availability_qualified": false,
@@ -1048,12 +1046,12 @@
         "carried_level": 5.28,
         "last_observed": {
           "basis": "latest_two_captured_source_rows_on_retained_grid",
-          "as_of": "2026-11-02",
+          "as_of": "2026-11-04",
           "level": 5.28,
-          "previous_as_of": "2026-10-30",
-          "previous_level": 5.31,
-          "change_bp": -3.0,
-          "elapsed_calendar_days": 3,
+          "previous_as_of": "2026-11-03",
+          "previous_level": 5.32,
+          "change_bp": -4.0,
+          "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
           "age_calendar_days": 1,
           "age_grid_intervals": 1,
@@ -1061,37 +1059,37 @@
           "historical_availability_qualified": false
         },
         "velocity_bp": {
-          "5d": -3.0,
-          "22d": -33.0,
-          "63d": 11.0
+          "5d": -9.0,
+          "22d": -38.0,
+          "63d": 9.0
         },
         "endpoint_dates": {
           "5d": [
-            "2026-10-26",
-            "2026-11-02"
+            "2026-10-28",
+            "2026-11-04"
           ],
           "22d": [
-            "2026-10-01",
-            "2026-11-02"
+            "2026-10-05",
+            "2026-11-04"
           ],
           "63d": [
-            "2026-08-05",
-            "2026-11-02"
+            "2026-08-07",
+            "2026-11-04"
           ]
         },
-        "acceleration_bp": -67.0,
+        "acceleration_bp": -79.0,
         "turn_watch": "rolldown_forming",
         "null_reason": null,
         "source_basis": "captured_source_rows",
-        "source_digest": "6be0544e7eb383a6a3f5983f661a665254ddb72f684edfb01695fa8d20bca648",
+        "source_digest": "55e6dcddbc17223784f944cfb0926f10db793af967361f6745542c32efcee200",
         "curve_convention": "par",
         "level_unit": "pct_ann_rate",
         "change_unit": "bp",
         "endpoints": {
           "5d": {
             "start": {
-              "date": "2026-10-26",
-              "level": 5.31,
+              "date": "2026-10-28",
+              "level": 5.37,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -1101,7 +1099,7 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
+              "date": "2026-11-04",
               "level": 5.28,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
@@ -1117,8 +1115,8 @@
           },
           "22d": {
             "start": {
-              "date": "2026-10-01",
-              "level": 5.61,
+              "date": "2026-10-05",
+              "level": 5.66,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -1128,7 +1126,7 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
+              "date": "2026-11-04",
               "level": 5.28,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
@@ -1144,8 +1142,8 @@
           },
           "63d": {
             "start": {
-              "date": "2026-08-05",
-              "level": 5.17,
+              "date": "2026-08-07",
+              "level": 5.19,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
               "origin": "captured_source_row",
@@ -1155,7 +1153,7 @@
               "carried_from": null
             },
             "end": {
-              "date": "2026-11-02",
+              "date": "2026-11-04",
               "level": 5.28,
               "unit": "pct_ann_rate",
               "curve_convention": "par",
@@ -1178,19 +1176,27 @@
   "caveats": [
     "futures-implied path reflects risk premium not stripped — not a forecast",
     "All legs are display-tier context only; no scoring or authority.",
-    "policy/intel.json is 115d old — policy row quotes as-of 2026-07-13",
-    "policy/intel.json th_iran theater is 115d old (>7d threshold) — suppressed from conditions; quote intel.as_of='2026-07-13'"
+    "policy/intel.json is 116d old — policy row quotes as-of 2026-07-13",
+    "policy/intel.json th_iran theater is 116d old (>7d threshold) — suppressed from conditions; quote intel.as_of='2026-07-13'"
   ],
   "stance": {
     "en": "The futures rate path isn't shown until it can be matched to the policy rate.",
     "zh": "期货隐含的利率路径须与政策利率口径一致后才会显示。"
   },
   "changes": {
-    "vs_asof": "2026-11-02",
-    "items": []
+    "vs_asof": "2026-11-03",
+    "items": [
+      {
+        "key": "hawk_score",
+        "from": 0,
+        "to": 1,
+        "en": "hawk_score changed: 0 → 1",
+        "zh": "hawk_score变化：0 → 1"
+      }
+    ]
   },
   "prev_state": {
-    "as_of": "2026-11-02",
+    "as_of": "2026-11-03",
     "state": {
       "net_state": "repricing_dovish",
       "hawk_score": 0,
@@ -1199,7 +1205,7 @@
       "anchoring": "drifting down",
       "infl_dir": "cooling",
       "usd_dir": "strengthening",
-      "implied_bp_12m": 60
+      "implied_bp_12m": 53
     }
   },
   "basis_contract_version": "rates_command_basis.v1",
@@ -1269,8 +1275,8 @@
     "schema": "curve_accounting.v1",
     "calculation_version": "ric_y1_curve_accounting.v1",
     "basis_schema": "rates_command_basis.v1",
-    "cutoff": "2026-11-03",
-    "asof": "2026-11-03",
+    "cutoff": "2026-11-05",
+    "asof": "2026-11-05",
     "status": "available",
     "reason": null,
     "display_only": true,
@@ -1287,15 +1293,15 @@
       "nominal_10y": {
         "subject": "UST_10Y_PAR",
         "evidence_class": "official_measurement",
-        "value": 4.91,
+        "value": 4.9,
         "value_state": "present",
         "unit": "pct_ann_rate",
         "target": "ust_par_yield",
         "basket_or_index": "UST",
-        "reference_start": "2026-11-03",
-        "reference_end": "2036-11-03",
+        "reference_start": "2026-11-05",
+        "reference_end": "2036-11-05",
         "tenor": "10y",
-        "observation_time": "2026-11-03",
+        "observation_time": "2026-11-05",
         "observation_precision": "day",
         "seasonal_treatment": "n/a",
         "rate_index": "n/a",
@@ -1307,7 +1313,7 @@
         "first_public_evidence": null,
         "first_public_precision": "unknown",
         "admitted_at": null,
-        "cutoff": "2026-11-03",
+        "cutoff": "2026-11-05",
         "model_id": null,
         "target_epoch": null,
         "vintage": null,
@@ -1318,20 +1324,20 @@
           "observation_origin_unverified",
           "first_public_evidence_unknown"
         ],
-        "obs_id": "bcf3a386e40ec3a8"
+        "obs_id": "18e11484af192d83"
       },
       "real_10y": {
         "subject": "TIPS_10Y_REAL_PAR",
         "evidence_class": "official_measurement",
-        "value": 2.62,
+        "value": 2.64,
         "value_state": "present",
         "unit": "pct_ann_rate",
         "target": "ust_real_par_yield",
         "basket_or_index": "TIPS",
-        "reference_start": "2026-11-03",
-        "reference_end": "2036-11-03",
+        "reference_start": "2026-11-05",
+        "reference_end": "2036-11-05",
         "tenor": "10y",
-        "observation_time": "2026-11-03",
+        "observation_time": "2026-11-05",
         "observation_precision": "day",
         "seasonal_treatment": "n/a",
         "rate_index": "n/a",
@@ -1343,7 +1349,7 @@
         "first_public_evidence": null,
         "first_public_precision": "unknown",
         "admitted_at": null,
-        "cutoff": "2026-11-03",
+        "cutoff": "2026-11-05",
         "model_id": null,
         "target_epoch": null,
         "vintage": null,
@@ -1354,7 +1360,7 @@
           "observation_origin_unverified",
           "first_public_evidence_unknown"
         ],
-        "obs_id": "1bc78da44a754318"
+        "obs_id": "8e772e77f81d203a"
       },
       "term_premium_kw_10y": {
         "subject": "KW_TP_10Y",
@@ -1364,10 +1370,10 @@
         "unit": "pct_ann_rate",
         "target": "term_premium_kw",
         "basket_or_index": null,
-        "reference_start": "2026-11-03",
-        "reference_end": "2036-11-03",
+        "reference_start": "2026-11-05",
+        "reference_end": "2036-11-05",
         "tenor": "10y",
-        "observation_time": "2026-11-03",
+        "observation_time": "2026-11-05",
         "observation_precision": "day",
         "seasonal_treatment": "n/a",
         "rate_index": "n/a",
@@ -1379,7 +1385,7 @@
         "first_public_evidence": null,
         "first_public_precision": "unknown",
         "admitted_at": null,
-        "cutoff": "2026-11-03",
+        "cutoff": "2026-11-05",
         "model_id": "kw_fred_threefytp10",
         "target_epoch": null,
         "vintage": null,
@@ -1393,7 +1399,7 @@
           "observation_origin_unverified",
           "first_public_evidence_unknown"
         ],
-        "obs_id": "65a4a5402d5d3805"
+        "obs_id": "84b9bcd7d61cf5e8"
       },
       "term_premium_acm_10y": {
         "subject": "ACM_TP_10Y",
@@ -1418,7 +1424,7 @@
         "first_public_evidence": null,
         "first_public_precision": "unknown",
         "admitted_at": null,
-        "cutoff": "2026-11-03",
+        "cutoff": "2026-11-05",
         "model_id": "acm_not_admitted",
         "target_epoch": null,
         "vintage": null,
@@ -1429,20 +1435,20 @@
           "acm_input_not_admitted",
           "evidence_time_unknown"
         ],
-        "obs_id": "9e45c386dfdfdc4b"
+        "obs_id": "bf984e90a3ae9d29"
       },
       "nominal_10y_move_22d": {
         "subject": "UST_10Y_PAR_MOVE_22D",
         "evidence_class": "official_measurement",
-        "value": -33.0,
+        "value": -41.0,
         "value_state": "present",
         "unit": "bp",
         "target": "ust_par_yield_move",
         "basket_or_index": "UST",
-        "reference_start": "2026-10-01",
-        "reference_end": "2026-11-02",
+        "reference_start": "2026-10-05",
+        "reference_end": "2026-11-04",
         "tenor": "10y",
-        "observation_time": "2026-11-02",
+        "observation_time": "2026-11-04",
         "observation_precision": "day",
         "seasonal_treatment": "n/a",
         "rate_index": "n/a",
@@ -1454,7 +1460,7 @@
         "first_public_evidence": null,
         "first_public_precision": "unknown",
         "admitted_at": null,
-        "cutoff": "2026-11-03",
+        "cutoff": "2026-11-05",
         "model_id": null,
         "target_epoch": null,
         "vintage": null,
@@ -1465,20 +1471,20 @@
           "observation_origin_unverified",
           "first_public_evidence_unknown"
         ],
-        "obs_id": "e878a3672345c935"
+        "obs_id": "e0e1f34d37c653a0"
       },
       "real_10y_move_22d": {
         "subject": "TIPS_10Y_REAL_PAR_MOVE_22D",
         "evidence_class": "official_measurement",
-        "value": -26.0,
+        "value": -31.0,
         "value_state": "present",
         "unit": "bp",
         "target": "ust_real_par_yield_move",
         "basket_or_index": "TIPS",
-        "reference_start": "2026-10-01",
-        "reference_end": "2026-11-02",
+        "reference_start": "2026-10-05",
+        "reference_end": "2026-11-04",
         "tenor": "10y",
-        "observation_time": "2026-11-02",
+        "observation_time": "2026-11-04",
         "observation_precision": "day",
         "seasonal_treatment": "n/a",
         "rate_index": "n/a",
@@ -1490,7 +1496,7 @@
         "first_public_evidence": null,
         "first_public_precision": "unknown",
         "admitted_at": null,
-        "cutoff": "2026-11-03",
+        "cutoff": "2026-11-05",
         "model_id": null,
         "target_epoch": null,
         "vintage": null,
@@ -1501,13 +1507,13 @@
           "observation_origin_unverified",
           "first_public_evidence_unknown"
         ],
-        "obs_id": "18a4ce032e9f2b27"
+        "obs_id": "8f38c8b893e98b1c"
       }
     },
     "comparisons": {
       "inflation_compensation": {
         "status": "comparable_after_transformation",
-        "difference": 229.0,
+        "difference": 226.00000000000003,
         "range": null,
         "unit": "bp",
         "rule_id": "inflation_compensation.v1",
@@ -1520,10 +1526,10 @@
           "instrument basis"
         ],
         "reason": "transform:nominal_minus_real",
-        "left_ref": "bcf3a386e40ec3a8",
-        "right_ref": "1bc78da44a754318",
-        "left_cutoff": "2026-11-03",
-        "right_cutoff": "2026-11-03"
+        "left_ref": "18e11484af192d83",
+        "right_ref": "8e772e77f81d203a",
+        "left_cutoff": "2026-11-05",
+        "right_cutoff": "2026-11-05"
       },
       "term_premium_kw_vs_acm": {
         "status": "unavailable",
@@ -1536,10 +1542,10 @@
         "assumptions": [],
         "limitations": [],
         "reason": "operand_missing:right",
-        "left_ref": "65a4a5402d5d3805",
-        "right_ref": "9e45c386dfdfdc4b",
-        "left_cutoff": "2026-11-03",
-        "right_cutoff": "2026-11-03"
+        "left_ref": "84b9bcd7d61cf5e8",
+        "right_ref": "bf984e90a3ae9d29",
+        "left_cutoff": "2026-11-05",
+        "right_cutoff": "2026-11-05"
       },
       "nominal_par_vs_kw_zero": {
         "status": "not_comparable",
@@ -1552,10 +1558,10 @@
         "assumptions": [],
         "limitations": [],
         "reason": "basis_mismatch:curve_convention",
-        "left_ref": "bcf3a386e40ec3a8",
-        "right_ref": "65a4a5402d5d3805",
-        "left_cutoff": "2026-11-03",
-        "right_cutoff": "2026-11-03"
+        "left_ref": "18e11484af192d83",
+        "right_ref": "84b9bcd7d61cf5e8",
+        "left_cutoff": "2026-11-05",
+        "right_cutoff": "2026-11-05"
       },
       "yield_move_attribution": {
         "status": "not_identified",
@@ -1567,15 +1573,15 @@
         "transform": null,
         "assumptions": [],
         "limitations": [
-          "expected_short=-11bp + term_premium=-22bp",
-          "expected_short=+11bp + term_premium=-44bp",
+          "expected_short=-13.67bp + term_premium=-27.33bp",
+          "expected_short=+13.67bp + term_premium=-54.67bp",
           "real + inflation_compensation accounting view fits the same total; the two views are never summed"
         ],
         "reason": "underidentified:decomposition",
-        "left_ref": "e878a3672345c935",
-        "right_ref": "18a4ce032e9f2b27",
-        "left_cutoff": "2026-11-03",
-        "right_cutoff": "2026-11-03"
+        "left_ref": "e0e1f34d37c653a0",
+        "right_ref": "8f38c8b893e98b1c",
+        "left_cutoff": "2026-11-05",
+        "right_cutoff": "2026-11-05"
       }
     },
     "accounting_views": [
@@ -1616,7 +1622,7 @@
     "components": {
       "d1": {
         "input_id": "data/bonds/bond_health.json#/fed_path/effr_meeting_path",
-        "content_ref": "25ffa80da3e3f2165890ad21d267f66221505bd68f04dcd158f37ce74e082bd7",
+        "content_ref": "bb1f938558c340f40c4fc814b2582e7e6baad447ea96b67eed6ab8be3d8bd31a",
         "cutoff": null,
         "state": "missing"
       },
@@ -1628,8 +1634,8 @@
       },
       "t0_rate_path": {
         "input_id": "data/bonds/bond_health.json#/fed_path/effr_meeting_path",
-        "content_ref": "25ffa80da3e3f2165890ad21d267f66221505bd68f04dcd158f37ce74e082bd7",
-        "cutoff": "2026-11-05",
+        "content_ref": "bb1f938558c340f40c4fc814b2582e7e6baad447ea96b67eed6ab8be3d8bd31a",
+        "cutoff": "2026-11-06",
         "state": "present"
       }
     },
@@ -1645,50 +1651,50 @@
   "regime_outlook": {
     "schema_version": "regime_outlook.v1",
     "scope": "US",
-    "analysis_cutoff": "2026-11-05T11:18:46.910561+00:00",
-    "built_at": "2026-11-05T11:18:46.917694+00:00",
+    "analysis_cutoff": "2026-11-06T10:40:00.769711+00:00",
+    "built_at": "2026-11-06T10:40:00.771207+00:00",
     "mapping_version": "VERDICT_MAPPING_V2",
     "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
     "inputs": {
       "T": {
         "path": "data/transmission/latest.json",
-        "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+        "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
         "read_status": "available"
       },
       "R": {
         "path": "data/regime/latest.json",
-        "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+        "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
         "read_status": "available"
       },
       "M": {
         "path": "data/market_state/latest.json",
-        "sha256": "839b21f86953b40916b4222f04f240e6b093c610d0a628ef736ce3dfa5460eb0",
+        "sha256": "f594629df2308baf9ea05b5d50afa6ee51dcc22681d84b6fb4d8c3b449f18eec",
         "read_status": "available"
       },
       "D": {
         "path": "data/dispersion/regime.json",
-        "sha256": "6e7d03dc96f2672119d4ddb450e4b3a2f2ec3d3c9c3b49582986e26be36a32fc",
+        "sha256": "d980b250a08389e94c4c6b524c1f004b10955990b1c8f5d936940cbce62de67c",
         "read_status": "available"
       },
       "L": {
         "path": "data/leadership_crack/latest.json",
-        "sha256": "6854e30e598322fedf3390fff522210c76248ff9a26a5336bafb17826cda9ad8",
+        "sha256": "bf85a496f5c6b3b83e282491e02c6543cfee66372ac77281dad677ada70b6b65",
         "read_status": "available"
       },
       "B": {
         "path": "data/bonds/bond_health.json",
-        "sha256": "25ffa80da3e3f2165890ad21d267f66221505bd68f04dcd158f37ce74e082bd7",
+        "sha256": "bb1f938558c340f40c4fc814b2582e7e6baad447ea96b67eed6ab8be3d8bd31a",
         "read_status": "available"
       },
       "C": {
         "path": "data/commodity/latest.json",
-        "sha256": "1407c69be39d723e51e237026e6be2e74507775d80ffd12d6fd1040da2c864c7",
+        "sha256": "4161e5f4ba2bbce21f5f6f57eac17b360450eebf37086fd28d1348c45118cedc",
         "read_status": "available"
       }
     },
     "evidence_clock_range": {
       "oldest": "2026-10-30",
-      "newest": "2026-11-04",
+      "newest": "2026-11-05",
       "by_clock_semantics": {
         "owner_snapshot_date": 20,
         "source_observation_date": 9,
@@ -1819,16 +1825,16 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/inflation/direction",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-05",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "expected_us_session": "2026-11-05",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -1856,16 +1862,16 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/inflation/regime",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-05",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "expected_us_session": "2026-11-05",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -1893,16 +1899,16 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/expectations/anchoring",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-05",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "expected_us_session": "2026-11-05",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -1930,16 +1936,16 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/rates/direction",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-05",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "expected_us_session": "2026-11-05",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -1967,16 +1973,16 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/rates/regime",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-05",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "expected_us_session": "2026-11-05",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -1986,13 +1992,13 @@
         "evidence_family_id": "treasury_curve",
         "kind": "categorical",
         "values": {
-          "direction": "flat"
+          "direction": "falling"
         },
         "unit": null,
         "window": null,
         "scope": "US",
         "owner_verdict": {
-          "token": "flat",
+          "token": "falling",
           "verdict_class": "banded"
         },
         "status": "available",
@@ -2004,16 +2010,16 @@
         "source": {
           "artifact": "T",
           "pointer": "/breakeven_decomp/direction",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-05",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "expected_us_session": "2026-11-05",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -2023,13 +2029,13 @@
         "evidence_family_id": "treasury_curve",
         "kind": "categorical",
         "values": {
-          "trend": "choppy"
+          "trend": "downtrend"
         },
         "unit": null,
         "window": null,
         "scope": "US",
         "owner_verdict": {
-          "token": "choppy",
+          "token": "downtrend",
           "verdict_class": "composite"
         },
         "status": "available",
@@ -2041,16 +2047,16 @@
         "source": {
           "artifact": "T",
           "pointer": "/breakeven_decomp/trend",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-05",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "expected_us_session": "2026-11-05",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -2078,16 +2084,16 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_curve/regime/term_premium_dir",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-05",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "expected_us_session": "2026-11-05",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -2115,15 +2121,15 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/2y/turn_watch",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "source_observation_date",
-          "as_of": "2026-11-02",
+          "as_of": "2026-11-04",
           "precision": "date",
-          "age_calendar_days": 3,
+          "age_calendar_days": 2,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "older_than_completed_session",
           "reference_period": null
         }
@@ -2152,15 +2158,15 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/5y/turn_watch",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "source_observation_date",
-          "as_of": "2026-11-02",
+          "as_of": "2026-11-04",
           "precision": "date",
-          "age_calendar_days": 3,
+          "age_calendar_days": 2,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "older_than_completed_session",
           "reference_period": null
         }
@@ -2189,15 +2195,15 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/10y/turn_watch",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "source_observation_date",
-          "as_of": "2026-11-02",
+          "as_of": "2026-11-04",
           "precision": "date",
-          "age_calendar_days": 3,
+          "age_calendar_days": 2,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "older_than_completed_session",
           "reference_period": null
         }
@@ -2226,15 +2232,15 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/20y/turn_watch",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "source_observation_date",
-          "as_of": "2026-11-02",
+          "as_of": "2026-11-04",
           "precision": "date",
-          "age_calendar_days": 3,
+          "age_calendar_days": 2,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "older_than_completed_session",
           "reference_period": null
         }
@@ -2263,15 +2269,15 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/30y/turn_watch",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "source_observation_date",
-          "as_of": "2026-11-02",
+          "as_of": "2026-11-04",
           "precision": "date",
-          "age_calendar_days": 3,
+          "age_calendar_days": 2,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "older_than_completed_session",
           "reference_period": null
         }
@@ -2300,15 +2306,15 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/labor_nowcast/read",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-04",
+          "as_of": "2026-11-05",
           "precision": "date",
           "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "same_completed_session",
           "reference_period": null
         }
@@ -2337,15 +2343,15 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/state",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-30",
           "precision": "date",
-          "age_calendar_days": 6,
+          "age_calendar_days": 7,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "older_than_completed_session",
           "reference_period": null
         }
@@ -2374,15 +2380,15 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/complacency/breadth_div",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
           "clock_semantics": "source_observation_date",
-          "as_of": "2026-11-04",
+          "as_of": "2026-11-05",
           "precision": "date",
           "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "same_completed_session",
           "reference_period": null
         }
@@ -2411,15 +2417,15 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/label",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-04",
+          "as_of": "2026-11-05",
           "precision": "date",
           "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "same_completed_session",
           "reference_period": null
         }
@@ -2430,13 +2436,13 @@
         "evidence_family_id": "credit_and_funding",
         "kind": "categorical",
         "values": {
-          "confirming_stress": true
+          "confirming_stress": false
         },
         "unit": null,
         "window": null,
         "scope": "US",
         "owner_verdict": {
-          "token": true,
+          "token": false,
           "verdict_class": "composite"
         },
         "status": "available",
@@ -2448,15 +2454,15 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-04",
+          "as_of": "2026-11-05",
           "precision": "date",
           "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "same_completed_session",
           "reference_period": null
         }
@@ -2467,13 +2473,13 @@
         "evidence_family_id": "participation",
         "kind": "categorical",
         "values": {
-          "tone": "good"
+          "tone": "warn"
         },
         "unit": null,
         "window": null,
         "scope": "US",
         "owner_verdict": {
-          "token": "good",
+          "token": "warn",
           "verdict_class": "composite"
         },
         "status": "available",
@@ -2485,15 +2491,15 @@
         "source": {
           "artifact": "M",
           "pointer": "/components/[key=breadth]/tone",
-          "sha256": "839b21f86953b40916b4222f04f240e6b093c610d0a628ef736ce3dfa5460eb0",
+          "sha256": "f594629df2308baf9ea05b5d50afa6ee51dcc22681d84b6fb4d8c3b449f18eec",
           "clock_semantics": "source_observation_date",
-          "as_of": "2026-11-04",
+          "as_of": "2026-11-05",
           "precision": "date",
           "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "same_completed_session",
           "reference_period": null
         }
@@ -2522,15 +2528,15 @@
         "source": {
           "artifact": "L",
           "pointer": "/state",
-          "sha256": "6854e30e598322fedf3390fff522210c76248ff9a26a5336bafb17826cda9ad8",
+          "sha256": "bf85a496f5c6b3b83e282491e02c6543cfee66372ac77281dad677ada70b6b65",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-04",
+          "as_of": "2026-11-05",
           "precision": "date",
           "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "same_completed_session",
           "reference_period": null
         }
@@ -2559,16 +2565,16 @@
         "source": {
           "artifact": "B",
           "pointer": "/fed_path/implied_cuts_12m",
-          "sha256": "25ffa80da3e3f2165890ad21d267f66221505bd68f04dcd158f37ce74e082bd7",
+          "sha256": "bb1f938558c340f40c4fc814b2582e7e6baad447ea96b67eed6ab8be3d8bd31a",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-05",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "expected_us_session": "2026-11-05",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -2591,7 +2597,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/dollar_channel/usd_dir",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "unknown",
           "as_of": null,
           "precision": null,
@@ -2599,7 +2605,7 @@
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": null,
           "reference_period": null
         }
@@ -2610,7 +2616,7 @@
         "evidence_family_id": "credit_and_funding",
         "kind": "level",
         "values": {
-          "hy_oas_pct": 3.4
+          "hy_oas_pct": 3.32
         },
         "unit": null,
         "window": null,
@@ -2628,15 +2634,15 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-04",
+          "as_of": "2026-11-05",
           "precision": "date",
           "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "same_completed_session",
           "reference_period": null
         }
@@ -2665,16 +2671,16 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/inflation/eci_comp_yoy",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-05",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "expected_us_session": "2026-11-05",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -2702,16 +2708,16 @@
         "source": {
           "artifact": "C",
           "pointer": "/assets/oil/trend",
-          "sha256": "1407c69be39d723e51e237026e6be2e74507775d80ffd12d6fd1040da2c864c7",
+          "sha256": "4161e5f4ba2bbce21f5f6f57eac17b360450eebf37086fd28d1348c45118cedc",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-05",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "expected_us_session": "2026-11-05",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -2739,16 +2745,16 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_curve/regime/key",
-          "sha256": "7e66214d78b2134b97388606fe83389e95a753f3d6b627a638e5ebd2fd04ebb2",
+          "sha256": "120e70daa2a81588ab2c698420819358f2a7175f0958913d28bca1f0513fb11d",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-05",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "expected_us_session": "2026-11-05",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -2776,15 +2782,15 @@
         "source": {
           "artifact": "D",
           "pointer": "/state",
-          "sha256": "6e7d03dc96f2672119d4ddb450e4b3a2f2ec3d3c9c3b49582986e26be36a32fc",
+          "sha256": "d980b250a08389e94c4c6b524c1f004b10955990b1c8f5d936940cbce62de67c",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-05",
+          "as_of": "2026-11-06",
           "precision": "date",
           "age_calendar_days": 0,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "after_completed_session",
           "reference_period": null
         }
@@ -2795,7 +2801,7 @@
         "evidence_family_id": "correlation",
         "kind": "level",
         "values": {
-          "avg_corr": 0.07
+          "avg_corr": 0.09
         },
         "unit": null,
         "window": null,
@@ -2813,15 +2819,15 @@
         "source": {
           "artifact": "D",
           "pointer": "/avg_corr",
-          "sha256": "6e7d03dc96f2672119d4ddb450e4b3a2f2ec3d3c9c3b49582986e26be36a32fc",
+          "sha256": "d980b250a08389e94c4c6b524c1f004b10955990b1c8f5d936940cbce62de67c",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-05",
+          "as_of": "2026-11-06",
           "precision": "date",
           "age_calendar_days": 0,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "after_completed_session",
           "reference_period": null
         }
@@ -2850,15 +2856,15 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/trend",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-30",
           "precision": "date",
-          "age_calendar_days": 6,
+          "age_calendar_days": 7,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "older_than_completed_session",
           "reference_period": null
         }
@@ -2887,15 +2893,15 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-04",
+          "as_of": "2026-11-05",
           "precision": "date",
           "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
-          "expected_us_session": "2026-11-04",
+          "expected_us_session": "2026-11-05",
           "session_relation": "same_completed_session",
           "reference_period": null
         }
@@ -2939,7 +2945,7 @@
             "evidence_ids": [
               "R.liquidity_quality.stress_overlay.confirming_stress"
             ],
-            "reading": "does_not_fit",
+            "reading": "fits",
             "reason": null
           },
           {
@@ -2983,7 +2989,7 @@
           },
           {
             "evidence_family_id": "credit_and_funding",
-            "reading": "mixed"
+            "reading": "fits"
           },
           {
             "evidence_family_id": "inflation_breadth",
@@ -3026,7 +3032,7 @@
             "evidence_ids": [
               "R.liquidity_quality.stress_overlay.confirming_stress"
             ],
-            "reading": "fits",
+            "reading": "does_not_fit",
             "reason": null
           },
           {
@@ -3082,7 +3088,7 @@
           },
           {
             "evidence_family_id": "credit_and_funding",
-            "reading": "mixed"
+            "reading": "does_not_fit"
           },
           {
             "evidence_family_id": "real_activity",
@@ -3157,7 +3163,7 @@
             "evidence_ids": [
               "T.breakeven_decomp.direction"
             ],
-            "reading": "not_discriminating",
+            "reading": "does_not_fit",
             "reason": null
           },
           {
@@ -3421,7 +3427,7 @@
             "evidence_ids": [
               "R.liquidity_quality.stress_overlay.confirming_stress"
             ],
-            "reading": "does_not_fit",
+            "reading": "fits",
             "reason": null
           },
           {
@@ -3455,7 +3461,7 @@
           },
           {
             "evidence_family_id": "credit_and_funding",
-            "reading": "mixed"
+            "reading": "fits"
           },
           {
             "evidence_family_id": "concentration",
@@ -3489,7 +3495,7 @@
             "evidence_ids": [
               "M.components.breadth.tone"
             ],
-            "reading": "fits",
+            "reading": "not_discriminating",
             "reason": null
           },
           {
@@ -3520,7 +3526,7 @@
         "family_readings": [
           {
             "evidence_family_id": "participation",
-            "reading": "fits"
+            "reading": "not_discriminating"
           },
           {
             "evidence_family_id": "dispersion",
@@ -3623,7 +3629,7 @@
             "evidence_ids": [
               "R.liquidity_quality.stress_overlay.confirming_stress"
             ],
-            "reading": "fits",
+            "reading": "does_not_fit",
             "reason": null
           },
           {
@@ -3660,7 +3666,7 @@
           },
           {
             "evidence_family_id": "credit_and_funding",
-            "reading": "mixed"
+            "reading": "does_not_fit"
           },
           {
             "evidence_family_id": "correlation",
@@ -3682,8 +3688,8 @@
       }
     ],
     "baseline": {
-      "analysis_cutoff": "2026-11-04T15:28:47.078893+00:00",
-      "us_session": "2026-11-03",
+      "analysis_cutoff": "2026-11-05T13:32:07.413110+00:00",
+      "us_session": "2026-11-04",
       "evidence": {
         "T.state.inflation.direction": {
           "values": {
@@ -3837,7 +3843,7 @@
             "verdict_class": "composite"
           },
           "status": "available",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "R.conditions.financial_conditions.state": {
           "values": {
@@ -3848,7 +3854,7 @@
             "verdict_class": "banded"
           },
           "status": "available",
-          "as_of": "2026-10-23"
+          "as_of": "2026-10-30"
         },
         "R.conditions.complacency.breadth_div": {
           "values": {
@@ -3859,7 +3865,7 @@
             "verdict_class": "banded"
           },
           "status": "available",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "R.liquidity_quality.label": {
           "values": {
@@ -3870,7 +3876,7 @@
             "verdict_class": "composite"
           },
           "status": "available",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "R.liquidity_quality.stress_overlay.confirming_stress": {
           "values": {
@@ -3881,7 +3887,7 @@
             "verdict_class": "composite"
           },
           "status": "available",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "M.components.breadth.tone": {
           "values": {
@@ -3892,7 +3898,7 @@
             "verdict_class": "composite"
           },
           "status": "available",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "L.state": {
           "values": {
@@ -3903,7 +3909,7 @@
             "verdict_class": "banded"
           },
           "status": "available",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "B.fed_path.implied_cuts_12m": {
           "values": {
@@ -3924,11 +3930,11 @@
         },
         "R.liquidity_quality.stress_overlay.hy_oas_pct": {
           "values": {
-            "hy_oas_pct": 3.43
+            "hy_oas_pct": 3.4
           },
           "owner_verdict": null,
           "status": "partial",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "T.state.inflation.eci_comp_yoy": {
           "values": {
@@ -3944,7 +3950,7 @@
           },
           "owner_verdict": null,
           "status": "partial",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "T.yield_curve.regime.key": {
           "values": {
@@ -3956,11 +3962,11 @@
         },
         "D.state": {
           "values": {
-            "state": "neutral"
+            "state": "lean_in"
           },
           "owner_verdict": null,
           "status": "partial",
-          "as_of": "2026-11-04"
+          "as_of": "2026-11-05"
         },
         "D.avg_corr": {
           "values": {
@@ -3968,7 +3974,7 @@
           },
           "owner_verdict": null,
           "status": "partial",
-          "as_of": "2026-11-04"
+          "as_of": "2026-11-05"
         },
         "R.conditions.financial_conditions.trend": {
           "values": {
@@ -3976,7 +3982,7 @@
           },
           "owner_verdict": null,
           "status": "partial",
-          "as_of": "2026-10-23"
+          "as_of": "2026-10-30"
         },
         "R.liquidity_quality.stress_overlay.nfci_trend": {
           "values": {
@@ -3984,11 +3990,349 @@
           },
           "owner_verdict": null,
           "status": "partial",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         }
       }
     },
     "changes": [
+      {
+        "evidence_id": "T.state.inflation.direction",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "direction": "cooling"
+          },
+          "owner_verdict": {
+            "token": "cooling",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-03"
+        },
+        "to": {
+          "values": {
+            "direction": "cooling"
+          },
+          "owner_verdict": {
+            "token": "cooling",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-05"
+        }
+      },
+      {
+        "evidence_id": "T.state.inflation.regime",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "regime": "above target"
+          },
+          "owner_verdict": {
+            "token": "above target",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-03"
+        },
+        "to": {
+          "values": {
+            "regime": "above target"
+          },
+          "owner_verdict": {
+            "token": "above target",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-05"
+        }
+      },
+      {
+        "evidence_id": "T.state.expectations.anchoring",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "anchoring": "drifting down"
+          },
+          "owner_verdict": {
+            "token": "drifting down",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-03"
+        },
+        "to": {
+          "values": {
+            "anchoring": "drifting down"
+          },
+          "owner_verdict": {
+            "token": "drifting down",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-05"
+        }
+      },
+      {
+        "evidence_id": "T.state.rates.direction",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "direction": "rising"
+          },
+          "owner_verdict": {
+            "token": "rising",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-03"
+        },
+        "to": {
+          "values": {
+            "direction": "rising"
+          },
+          "owner_verdict": {
+            "token": "rising",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-05"
+        }
+      },
+      {
+        "evidence_id": "T.state.rates.regime",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "regime": "restrictive"
+          },
+          "owner_verdict": {
+            "token": "restrictive",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-03"
+        },
+        "to": {
+          "values": {
+            "regime": "restrictive"
+          },
+          "owner_verdict": {
+            "token": "restrictive",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-05"
+        }
+      },
+      {
+        "evidence_id": "T.breakeven_decomp.direction",
+        "change_kind": "unattributed",
+        "from": {
+          "values": {
+            "direction": "flat"
+          },
+          "owner_verdict": {
+            "token": "flat",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-03"
+        },
+        "to": {
+          "values": {
+            "direction": "falling"
+          },
+          "owner_verdict": {
+            "token": "falling",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-05"
+        }
+      },
+      {
+        "evidence_id": "T.breakeven_decomp.trend",
+        "change_kind": "unattributed",
+        "from": {
+          "values": {
+            "trend": "choppy"
+          },
+          "owner_verdict": {
+            "token": "choppy",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "as_of": "2026-11-03"
+        },
+        "to": {
+          "values": {
+            "trend": "downtrend"
+          },
+          "owner_verdict": {
+            "token": "downtrend",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "as_of": "2026-11-05"
+        }
+      },
+      {
+        "evidence_id": "T.yield_curve.regime.term_premium_dir",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "term_premium_dir": "rising"
+          },
+          "owner_verdict": {
+            "token": "rising",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-03"
+        },
+        "to": {
+          "values": {
+            "term_premium_dir": "rising"
+          },
+          "owner_verdict": {
+            "token": "rising",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-05"
+        }
+      },
+      {
+        "evidence_id": "T.yield_momentum.series.2y.turn_watch",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "turn_watch": null
+          },
+          "owner_verdict": {
+            "token": null,
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "as_of": "2026-11-02"
+        },
+        "to": {
+          "values": {
+            "turn_watch": null
+          },
+          "owner_verdict": {
+            "token": null,
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "as_of": "2026-11-04"
+        }
+      },
+      {
+        "evidence_id": "T.yield_momentum.series.5y.turn_watch",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "turn_watch": "rolldown_forming"
+          },
+          "owner_verdict": {
+            "token": "rolldown_forming",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "as_of": "2026-11-02"
+        },
+        "to": {
+          "values": {
+            "turn_watch": "rolldown_forming"
+          },
+          "owner_verdict": {
+            "token": "rolldown_forming",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "as_of": "2026-11-04"
+        }
+      },
+      {
+        "evidence_id": "T.yield_momentum.series.10y.turn_watch",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "turn_watch": "rolldown_forming"
+          },
+          "owner_verdict": {
+            "token": "rolldown_forming",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "as_of": "2026-11-02"
+        },
+        "to": {
+          "values": {
+            "turn_watch": "rolldown_forming"
+          },
+          "owner_verdict": {
+            "token": "rolldown_forming",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "as_of": "2026-11-04"
+        }
+      },
+      {
+        "evidence_id": "T.yield_momentum.series.20y.turn_watch",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "turn_watch": "rolldown_forming"
+          },
+          "owner_verdict": {
+            "token": "rolldown_forming",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "as_of": "2026-11-02"
+        },
+        "to": {
+          "values": {
+            "turn_watch": "rolldown_forming"
+          },
+          "owner_verdict": {
+            "token": "rolldown_forming",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "as_of": "2026-11-04"
+        }
+      },
+      {
+        "evidence_id": "T.yield_momentum.series.30y.turn_watch",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "turn_watch": "rolldown_forming"
+          },
+          "owner_verdict": {
+            "token": "rolldown_forming",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "as_of": "2026-11-02"
+        },
+        "to": {
+          "values": {
+            "turn_watch": "rolldown_forming"
+          },
+          "owner_verdict": {
+            "token": "rolldown_forming",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "as_of": "2026-11-04"
+        }
+      },
       {
         "evidence_id": "R.conditions.labor_nowcast.read",
         "change_kind": "clock_only",
@@ -4001,7 +4345,7 @@
             "verdict_class": "composite"
           },
           "status": "available",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "to": {
           "values": {
@@ -4012,33 +4356,7 @@
             "verdict_class": "composite"
           },
           "status": "available",
-          "as_of": "2026-11-04"
-        }
-      },
-      {
-        "evidence_id": "R.conditions.financial_conditions.state",
-        "change_kind": "clock_only",
-        "from": {
-          "values": {
-            "state": "loose"
-          },
-          "owner_verdict": {
-            "token": "loose",
-            "verdict_class": "banded"
-          },
-          "status": "available",
-          "as_of": "2026-10-23"
-        },
-        "to": {
-          "values": {
-            "state": "loose"
-          },
-          "owner_verdict": {
-            "token": "loose",
-            "verdict_class": "banded"
-          },
-          "status": "available",
-          "as_of": "2026-10-30"
+          "as_of": "2026-11-05"
         }
       },
       {
@@ -4053,7 +4371,7 @@
             "verdict_class": "banded"
           },
           "status": "available",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "to": {
           "values": {
@@ -4064,7 +4382,7 @@
             "verdict_class": "banded"
           },
           "status": "available",
-          "as_of": "2026-11-04"
+          "as_of": "2026-11-05"
         }
       },
       {
@@ -4079,7 +4397,7 @@
             "verdict_class": "composite"
           },
           "status": "available",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "to": {
           "values": {
@@ -4090,12 +4408,12 @@
             "verdict_class": "composite"
           },
           "status": "available",
-          "as_of": "2026-11-04"
+          "as_of": "2026-11-05"
         }
       },
       {
         "evidence_id": "R.liquidity_quality.stress_overlay.confirming_stress",
-        "change_kind": "clock_only",
+        "change_kind": "unattributed",
         "from": {
           "values": {
             "confirming_stress": true
@@ -4105,23 +4423,23 @@
             "verdict_class": "composite"
           },
           "status": "available",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "to": {
           "values": {
-            "confirming_stress": true
+            "confirming_stress": false
           },
           "owner_verdict": {
-            "token": true,
+            "token": false,
             "verdict_class": "composite"
           },
           "status": "available",
-          "as_of": "2026-11-04"
+          "as_of": "2026-11-05"
         }
       },
       {
         "evidence_id": "M.components.breadth.tone",
-        "change_kind": "clock_only",
+        "change_kind": "owner_verdict_changed",
         "from": {
           "values": {
             "tone": "good"
@@ -4131,18 +4449,18 @@
             "verdict_class": "composite"
           },
           "status": "available",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "to": {
           "values": {
-            "tone": "good"
+            "tone": "warn"
           },
           "owner_verdict": {
-            "token": "good",
+            "token": "warn",
             "verdict_class": "composite"
           },
           "status": "available",
-          "as_of": "2026-11-04"
+          "as_of": "2026-11-05"
         }
       },
       {
@@ -4157,7 +4475,7 @@
             "verdict_class": "banded"
           },
           "status": "available",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "to": {
           "values": {
@@ -4168,7 +4486,33 @@
             "verdict_class": "banded"
           },
           "status": "available",
-          "as_of": "2026-11-04"
+          "as_of": "2026-11-05"
+        }
+      },
+      {
+        "evidence_id": "B.fed_path.implied_cuts_12m",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "implied_cuts_12m": -2
+          },
+          "owner_verdict": {
+            "token": -2,
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-03"
+        },
+        "to": {
+          "values": {
+            "implied_cuts_12m": -2
+          },
+          "owner_verdict": {
+            "token": -2,
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "as_of": "2026-11-05"
         }
       },
       {
@@ -4176,7 +4520,27 @@
         "change_kind": "unattributed",
         "from": {
           "values": {
-            "hy_oas_pct": 3.43
+            "hy_oas_pct": 3.4
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-11-04"
+        },
+        "to": {
+          "values": {
+            "hy_oas_pct": 3.32
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-11-05"
+        }
+      },
+      {
+        "evidence_id": "T.state.inflation.eci_comp_yoy",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "eci_comp_yoy": 3.37
           },
           "owner_verdict": null,
           "status": "partial",
@@ -4184,23 +4548,63 @@
         },
         "to": {
           "values": {
-            "hy_oas_pct": 3.4
+            "eci_comp_yoy": 3.37
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-11-05"
+        }
+      },
+      {
+        "evidence_id": "C.assets.oil.trend",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "trend": "up"
           },
           "owner_verdict": null,
           "status": "partial",
           "as_of": "2026-11-04"
+        },
+        "to": {
+          "values": {
+            "trend": "up"
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-11-05"
+        }
+      },
+      {
+        "evidence_id": "T.yield_curve.regime.key",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "key": "bull_flattener"
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-11-03"
+        },
+        "to": {
+          "values": {
+            "key": "bull_flattener"
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-11-05"
         }
       },
       {
         "evidence_id": "D.state",
-        "change_kind": "unattributed",
+        "change_kind": "clock_only",
         "from": {
           "values": {
-            "state": "neutral"
+            "state": "lean_in"
           },
           "owner_verdict": null,
           "status": "partial",
-          "as_of": "2026-11-04"
+          "as_of": "2026-11-05"
         },
         "to": {
           "values": {
@@ -4208,47 +4612,27 @@
           },
           "owner_verdict": null,
           "status": "partial",
-          "as_of": "2026-11-05"
+          "as_of": "2026-11-06"
         }
       },
       {
         "evidence_id": "D.avg_corr",
-        "change_kind": "clock_only",
+        "change_kind": "unattributed",
         "from": {
-          "values": {
-            "avg_corr": 0.07
-          },
-          "owner_verdict": null,
-          "status": "partial",
-          "as_of": "2026-11-04"
-        },
-        "to": {
           "values": {
             "avg_corr": 0.07
           },
           "owner_verdict": null,
           "status": "partial",
           "as_of": "2026-11-05"
-        }
-      },
-      {
-        "evidence_id": "R.conditions.financial_conditions.trend",
-        "change_kind": "clock_only",
-        "from": {
-          "values": {
-            "trend": "tightening"
-          },
-          "owner_verdict": null,
-          "status": "partial",
-          "as_of": "2026-10-23"
         },
         "to": {
           "values": {
-            "trend": "tightening"
+            "avg_corr": 0.09
           },
           "owner_verdict": null,
           "status": "partial",
-          "as_of": "2026-10-30"
+          "as_of": "2026-11-06"
         }
       },
       {
@@ -4260,7 +4644,7 @@
           },
           "owner_verdict": null,
           "status": "partial",
-          "as_of": "2026-11-03"
+          "as_of": "2026-11-04"
         },
         "to": {
           "values": {
@@ -4268,7 +4652,7 @@
           },
           "owner_verdict": null,
           "status": "partial",
-          "as_of": "2026-11-04"
+          "as_of": "2026-11-05"
         }
       }
     ],
