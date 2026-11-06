@@ -25,6 +25,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import fnmatch
 import json
 import logging
@@ -223,10 +224,29 @@ def render_markdown(payload: dict) -> str:
     lines.append("## File Collisions")
     lines.append("")
     if collisions:
+        # Raw active_builds.v1 retains every pair; cap only the human-facing
+        # Markdown table and prioritize protected files over volume-only pairs.
+        prioritized = sorted(
+            collisions,
+            key=lambda col: (
+                not col.get("any_protected", False),
+                -col["shared_count"],
+                col["pr_a"],
+                col["pr_b"],
+            ),
+        )
+        displayed = prioritized[:_MAX_MARKDOWN_COLLISION_ROWS]
+        if len(collisions) > len(displayed):
+            lines.append(
+                f"> Showing {len(displayed)} highest-risk collision pairs "
+                f"of {len(collisions)} total; the complete inventory remains in "
+                "`data/governance/active_builds.json`."
+            )
+            lines.append("")
         lines.append("| PR A | PR B | Shared files | Files |")
         lines.append("|------|------|-------------|-------|")
         _MAX_SHOWN = 8
-        for col in collisions:
+        for col in displayed:
             pr_a = col["pr_a"]
             pr_b = col["pr_b"]
             count = col["shared_count"]
@@ -309,44 +329,65 @@ def _run_gh(args: list[str], timeout: int = 30) -> Any | None:
         return None
 
 
-_OPEN_PR_FETCH_LIMIT = 100
+_OPEN_PR_PAGE_SIZE = 100
+_OPEN_PR_ENRICH_CONCURRENCY = 4
+_MAX_MARKDOWN_COLLISION_ROWS = 250
 
 
 def _collect_open_prs() -> tuple[list[dict] | None, bool]:
-    """Fetch open PRs via gh CLI.
+    """Fetch the complete open-PR set through paginated REST pages.
 
-    Returns ``(prs, truncated)``; ``(None, False)`` on failure.  ``truncated`` matters:
-    the fetch is capped, main takes roughly 35 merges a day, and an unflagged cap makes
-    a missing PR indistinguishable from a PR that does not exist — so every consumer of
-    ``active_builds.v1`` silently under-reports open work with no way to detect it.  The
-    merged-window fetch has carried this flag since it shipped; the open-PR fetch did not.
+    ``gh pr list`` uses one GraphQL query whose requested node count can hit GitHub
+    resource limits well before a busy repository's open-PR population.  The Agent OS
+    join must distinguish "no matching PR" from "PR omitted by collection", so fetch
+    all REST pages instead of imposing a silent list ceiling.  The schema retains the
+    historical ``open_prs_truncated`` field; a successful paginated fetch is complete
+    and therefore returns ``False`` for that flag.
     """
-    data = _run_gh([
-        "pr", "list",
-        "--state", "open",
-        "--limit", str(_OPEN_PR_FETCH_LIMIT),
-        "--json", "number,title,headRefName,updatedAt,isDraft,mergeStateStatus",
-    ])
-    if data is None:
+    # Plain --paginate works on the retained gh CLI versions without depending
+    # on --slurp (unavailable in older installations). Modern gh flattens REST
+    # pages to one list; injected/older clients may return one list per page.
+    result = _run_gh([
+        "api",
+        "--method", "GET",
+        "--paginate",
+        "-f", "state=open",
+        "-f", f"per_page={_OPEN_PR_PAGE_SIZE}",
+        "repos/{owner}/{repo}/pulls",
+    ], timeout=60)
+    if result is None:
         return None, False
-    truncated = len(data) >= _OPEN_PR_FETCH_LIMIT
-    if truncated:
-        print(
-            f"::warning title=active-build-map::open PR list hit the "
-            f"{_OPEN_PR_FETCH_LIMIT} fetch cap — active_builds.v1 under-reports open work",
-            flush=True,
-        )
+    if not isinstance(result, list):
+        log.warning("paginated open-PR response is not a list")
+        return None, False
+    if not result or all(isinstance(item, dict) for item in result):
+        rows = result
+    elif all(isinstance(page, list) for page in result):
+        rows = [item for page in result for item in page]
+    else:
+        log.warning("paginated open-PR response mixes page and row shapes")
+        return None, False
+
     prs: list[dict] = []
-    for item in data:
+    for item in rows:
+        if (not isinstance(item, dict)
+                or type(item.get("number")) is not int
+                or item["number"] <= 0):
+            log.warning("paginated open-PR response contains an invalid PR row")
+            return None, False
+        head = item.get("head")
+        head_ref = head.get("ref", "") if isinstance(head, dict) else ""
         prs.append({
             "number": item.get("number"),
             "title": item.get("title", ""),
-            "head_ref": item.get("headRefName", ""),
-            "updated_at": item.get("updatedAt", ""),
-            "is_draft": bool(item.get("isDraft", False)),
-            "merge_state": item.get("mergeStateStatus", ""),
+            "head_ref": head_ref,
+            "updated_at": item.get("updated_at", ""),
+            "is_draft": bool(item.get("draft", False)),
+            # REST list metadata does not carry GraphQL merge-state status.
+            # The existing per-PR view below remains its sole authority.
+            "merge_state": "",
         })
-    return prs, truncated
+    return prs, False
 
 
 def _collect_pr_files(pr_number: int) -> tuple[list[str], bool, bool, str | None]:
@@ -455,20 +496,18 @@ def build_map(merged_days: int = 14) -> dict | None:
         return None
     recent_merged, merged_truncated = recent_merged_result
 
-    # Enrich each open PR with file data and resolved mergeability
-    enriched_prs: list[dict] = []
-    for pr in open_prs_raw:
+    # Per-PR GitHub reads are independent. Bound concurrency without inventing a
+    # queue or changing row order, failure semantics or the sole nightly writer.
+    def _enrich_pr(pr: dict[str, Any]) -> dict[str, Any]:
         num = pr["number"]
         files, files_truncated, files_error, resolved_merge_state = _collect_pr_files(num)
-        # Override list-level merge_state when the per-PR call resolves to
-        # something more specific than UNKNOWN
         list_merge_state = pr.get("merge_state", "")
         if resolved_merge_state and resolved_merge_state != "UNKNOWN":
             effective_merge_state = resolved_merge_state
         else:
             effective_merge_state = list_merge_state
         protected = [f for f in files if is_protected_path(f)]
-        enriched_prs.append({
+        return {
             **pr,
             "merge_state": effective_merge_state,
             "merge_state_raw": resolved_merge_state,
@@ -477,7 +516,10 @@ def build_map(merged_days: int = 14) -> dict | None:
             "files_error": files_error,
             "files": files,
             "protected_paths_touched": protected,
-        })
+        }
+
+    with ThreadPoolExecutor(max_workers=_OPEN_PR_ENRICH_CONCURRENCY) as pool:
+        enriched_prs = list(pool.map(_enrich_pr, open_prs_raw))
 
     collisions = compute_collisions(enriched_prs)
     base_sha = _resolve_main_sha()
