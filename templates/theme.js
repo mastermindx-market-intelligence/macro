@@ -1715,7 +1715,11 @@
       menuTotop.classList.toggle('is-live', y > 240);
     }
     window.addEventListener('scroll', paintTotop, { passive: true });
-    paintTotop();
+    // The just-inserted hamburger/CSS invalidates layout. Reading scrollY here
+    // forced a synchronous layout (~53ms at 4x CPU) before the first usable frame.
+    // pageshow runs after the initial page load and on bfcache restoration;
+    // intervening user scrolls still update the chip through the existing listener.
+    window.addEventListener('pageshow', paintTotop);
     // close after a destination link is picked, on Escape, on outside tap, on widen
     links.addEventListener('click', function (e) {
       var a = e.target.closest('a');
