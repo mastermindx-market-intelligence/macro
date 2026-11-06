@@ -25,6 +25,7 @@ import tempfile
 from datetime import date
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import NamedTuple
 
 import pandas as pd
 
@@ -497,6 +498,27 @@ def _quarantine(group: str, name: str, rows: pd.DataFrame, reason: str) -> None:
     log.warning("quarantined %d rows of %s/%s: %s", len(rows), group, name, reason)
 
 
+def stale_refresh_reason(old_tip, new_tip) -> str | None:
+    """PURE: the overwrite_overlap stale-span rule, with no I/O.
+
+    A fresh pull whose latest timestamp PRECEDES the stored one cannot be spliced:
+    keeping its changed adjustment window beside newer stored bars mixes bases,
+    and deleting the newer bars regresses the cache. ``upsert`` refuses that
+    write; this is the same rule as a pure question, so a caller holding the
+    stored frame in memory can ask it WITHOUT reading the store.
+
+    Returns the reason, or None when the refresh may proceed. A missing tip on
+    either side is not a stale refresh (nothing to compare against). An
+    INCOMPARABLE pair of tips raises, exactly as the comparison it replaces
+    raised — a tz-aware stored tip against a tz-naive fresh tip is a caller
+    error, and silently treating it as "not stale" would splice the two."""
+    if old_tip is None or new_tip is None:
+        return None
+    if new_tip < old_tip:
+        return f"latest returned {new_tip} precedes stored {old_tip}"
+    return None
+
+
 def upsert(group: str, name: str, new: pd.DataFrame, outlier_col: str | None = None,
            normalize_index: bool = True, overwrite_overlap: bool = False) -> pd.DataFrame:
     """Merge new rows into the stored series. New values win on date collision;
@@ -540,10 +562,12 @@ def upsert(group: str, name: str, new: pd.DataFrame, outlier_col: str | None = N
             raise ValueError(
                 f"empty overwrite_overlap frame after filtering for {group}/{name}; "
                 "retained complete stored history")
-        if new.index.max() < old.index.max():
+        # The shared PURE stale-span rule (stale_refresh_reason): the writer and any
+        # in-memory caller must refuse the same stale span, for the same reason.
+        stale = stale_refresh_reason(old.index.max(), new.index.max())
+        if stale is not None:
             raise ValueError(
-                f"stale overwrite_overlap frame for {group}/{name}: latest returned "
-                f"{new.index.max()} precedes stored {old.index.max()}; "
+                f"stale overwrite_overlap frame for {group}/{name}: {stale}; "
                 "retained complete stored history to avoid mixing adjustment bases")
         # Keep only stored rows strictly OLDER than the fresh pull's window; the fresh
         # pull owns its whole overlapping span (no combine_first seam).
@@ -557,6 +581,80 @@ def upsert(group: str, name: str, new: pd.DataFrame, outlier_col: str | None = N
 
     merged.to_parquet(_path(group, name))
     return merged
+
+
+#: Typed outcomes of a PURE adjustment-basis comparison (see ``compare_basis``).
+#: A status is a FACT about what could be established, never a licence to splice.
+BASIS_ALIGNED = "aligned"                 # overlap compared; within tolerance
+BASIS_SHIFTED = "shifted"                 # overlap compared; a relative diff > tol
+BASIS_NO_OVERLAP = "no_overlap"           # comparable prior, but no common dates
+BASIS_NO_PRIOR = "no_prior"               # no comparable prior frame at all
+BASIS_INCOMPARABLE = "incomparable"       # the fresh frame lacks the compared column
+BASIS_COMPARISON_FAILED = "comparison_failed"  # the comparison itself raised
+
+
+class BasisComparison(NamedTuple):
+    """What a PURE basis comparison established (never a verdict on the data)."""
+    status: str
+    worst_relative_diff: float | None = None
+    overlap_dates: int = 0
+    detail: str | None = None
+
+
+def compare_basis(old: pd.DataFrame | None, new: pd.DataFrame | None, *,
+                  col: str = "close", tol: float = 1e-3) -> BasisComparison:
+    """PURE adjustment-basis comparison between a PRIOR frame and a FRESH frame.
+
+    No I/O, no configuration, no store access: BOTH frames are inputs, so a
+    caller holding the stored series in memory can ask the same question the
+    store-backed guard asks without reading the repository. The comparison is
+    the one ``basis_shifted`` has always made — the prior frame's dates against
+    the fresh frame's normalised dates, on ``col``, with a relative difference
+    over ``tol`` meaning a re-basing — so the two never disagree.
+
+    A missing prior (``None``, empty, or without ``col``) is
+    ``BASIS_NO_PRIOR``: nothing to corrupt, nothing established. A prior with
+    no date in common with the fresh frame is ``BASIS_NO_OVERLAP``: the basis is
+    UNVERIFIABLE, which the guard has always treated as a shift. Never raises:
+    a failed comparison reports ``BASIS_COMPARISON_FAILED`` rather than killing
+    the caller.
+
+    The PRIOR frame keeps its own index semantics (the caller owns it); the
+    fresh frame's index is normalised to midnight exactly as the store's write
+    path does, so a caller whose prior is not normalised must normalise it
+    first — ``upsert`` does, and so does every seam that owns its prior."""
+    if old is None or new is None:
+        return BasisComparison(BASIS_NO_PRIOR)
+    try:
+        if old.empty or new.empty:
+            return BasisComparison(BASIS_NO_PRIOR)
+        if col not in old.columns:
+            return BasisComparison(BASIS_NO_PRIOR)
+        if col not in new.columns:
+            return BasisComparison(BASIS_INCOMPARABLE)
+        oc = old[col].dropna()
+        nc = new[col].dropna()
+        if oc.empty or nc.empty:
+            return BasisComparison(BASIS_NO_PRIOR)
+        idx = pd.to_datetime(nc.index)
+        if getattr(idx, "tz", None) is not None:
+            idx = idx.tz_localize(None)
+        nc = pd.Series(nc.to_numpy(), index=idx.normalize())
+        nc = nc[~nc.index.duplicated(keep="last")]
+        overlap = oc.index.intersection(nc.index)
+        if len(overlap) == 0:
+            return BasisComparison(BASIS_NO_OVERLAP)
+        oc = oc.loc[overlap].astype(float)
+        nv = nc.loc[overlap].astype(float)
+        rel = (oc - nv).abs() / nv.abs().clip(lower=1e-9)
+        worst = float(rel.max())
+        if worst > tol:
+            return BasisComparison(BASIS_SHIFTED, worst, len(overlap))
+        return BasisComparison(BASIS_ALIGNED, worst, len(overlap))
+    except Exception as e:  # noqa: BLE001 — a guard must never kill the collect
+        # ``detail`` carries the RAW exception text, so the store-backed wrapper
+        # logs byte-for-byte what it logged before this helper existed.
+        return BasisComparison(BASIS_COMPARISON_FAILED, detail=str(e))
 
 
 def basis_shifted(group: str, name: str, new: pd.DataFrame, col: str = "close",
@@ -579,38 +677,31 @@ def basis_shifted(group: str, name: str, new: pd.DataFrame, col: str = "close",
     raises: on a comparison error it logs and returns False (old splice
     behavior). Callers respond by discarding the window and refetching
     period='max' for the flagged name — ported from the odds-store guard in
-    scripts/build_odds.ensure_store."""
+    scripts/build_odds.ensure_store.
+
+    The comparison itself is the PURE ``compare_basis``; this wrapper adds the
+    store read, the log lines and the boolean this contract has always returned."""
     try:
         old = read(group, name)
-        if old is None or old.empty or col not in old.columns or col not in new.columns:
-            return False
-        oc = old[col].dropna()
-        nc = new[col].dropna()
-        if oc.empty or nc.empty:
-            return False
-        idx = pd.to_datetime(nc.index)
-        if getattr(idx, "tz", None) is not None:
-            idx = idx.tz_localize(None)
-        nc = pd.Series(nc.to_numpy(), index=idx.normalize())
-        nc = nc[~nc.index.duplicated(keep="last")]
-        overlap = oc.index.intersection(nc.index)
-        if len(overlap) == 0:
-            log.info("basis guard %s/%s: no overlap between the refresh window and "
-                     "stored history — full refetch required", group, name)
-            return True
-        oc = oc.loc[overlap].astype(float)
-        nv = nc.loc[overlap].astype(float)
-        rel = (oc - nv).abs() / nv.abs().clip(lower=1e-9)
-        worst = float(rel.max())
-        if worst > tol:
-            log.info("basis guard %s/%s: adjustment basis shifted (max overlap diff "
-                     "%.4f%% over %d dates)", group, name, worst * 100.0, len(overlap))
-            return True
-        return False
+        comparison = compare_basis(old, new, col=col, tol=tol)
     except Exception as e:  # noqa: BLE001 — a guard must never kill the collect
         log.warning("basis guard %s/%s: comparison failed (%s) — treating as unshifted",
                     group, name, e)
         return False
+    if comparison.status == BASIS_NO_OVERLAP:
+        log.info("basis guard %s/%s: no overlap between the refresh window and "
+                 "stored history — full refetch required", group, name)
+        return True
+    if comparison.status == BASIS_SHIFTED:
+        log.info("basis guard %s/%s: adjustment basis shifted (max overlap diff "
+                 "%.4f%% over %d dates)", group, name,
+                 (comparison.worst_relative_diff or 0.0) * 100.0, comparison.overlap_dates)
+        return True
+    if comparison.status == BASIS_COMPARISON_FAILED:
+        log.warning("basis guard %s/%s: comparison failed (%s) — treating as unshifted",
+                    group, name, comparison.detail or "unknown error")
+        return False
+    return False
 
 
 def _guard_outliers(group: str, name: str, old: pd.DataFrame, new: pd.DataFrame, col: str) -> pd.DataFrame:

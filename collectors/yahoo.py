@@ -16,6 +16,14 @@ Adjustment-basis guard: both stored bases are re-adjusted by Yahoo at every fetc
 so a 1mo window pulled after an ex-div/split disagrees with stored history on every
 overlap date. ``store.basis_shifted`` detects that and the name is re-pulled
 period='max' instead of spliced (see ``_rebase_shifted``).
+
+Acquisition seam: ``YahooAdapter.acquire_cycle_benchmarks`` is a bounded,
+EXPLICIT-INPUT boundary on this same adapter for the closed US Sector cycle
+benchmark set. It takes explicit symbols, explicit prior frames, an explicit
+evaluation instant and an explicit session policy, reads and writes NOTHING in
+the repository, and returns current-call validated frames plus truthful
+lineage/unknown clocks — all or nothing, never a partial result. See
+``CYCLE_BENCHMARK_SYMBOLS`` and the method docstring for the full contract.
 """
 from __future__ import annotations
 
@@ -23,7 +31,11 @@ import logging
 import hashlib
 import json
 import re
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
+from types import MappingProxyType
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import time
 
@@ -118,6 +130,118 @@ def _wti_temporal_context(index: pd.Index, request: dict | None) -> dict | None:
         "vendor_daily_label_convention": None, "provider_available_at": None,
         "futures_session_completion": None,
     }
+
+
+# ---------------------------------------------------------------------------
+# The US Sector cycle benchmark acquisition seam.
+#
+# WHAT THIS IS: a bounded, EXPLICIT-INPUT boundary on the incumbent Yahoo
+# adapter, so a runtime owner can stage the fourteen US Sector cycle
+# benchmarks without a second collector, without touching the repository's
+# data/ tree, and without the nightly collect's config/all_tickers/report/
+# store side effects. It REUSES this collector's own _download and _extract, so
+# there is exactly one dual-basis rename and one vendor request shape.
+#
+# WHAT IT IS NOT: it is not a collector, not a schedule, and not a store
+# writer. It never calls all_tickers(), _fill_missing_extras(), store.read(),
+# store.upsert(), config.data_dir() or any report/ledger/grader/notification
+# writer. It never mutates process-global config. A caller that wants a
+# publication writes it itself, from an ACCEPTED result only.
+#
+# THE CLOSED SET: the eleven SPDR sector ETFs plus the three broad benchmarks
+# (SPY, QQQ, IWM). It is closed on purpose — a seam that accepted an open
+# symbol set would be a second, unauthorised universe.
+# ---------------------------------------------------------------------------
+
+CYCLE_BENCHMARK_SYMBOLS: tuple[str, ...] = (
+    "XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE", "XLU", "XLV", "XLY",
+    "SPY", "QQQ", "IWM",
+)
+
+#: Typed acquisition outcomes. An accepted result carries ``accepted``; every
+#: refusal names the exact reason and returns NO frames, so a partial result can
+#: never be mistaken for a publishable one.
+ACCEPTED = "accepted"
+REFUSED_DOWNLOAD_FAILED = "download_failed"
+REFUSED_MISSING_ADJ_CLOSE = "missing_adj_close"
+REFUSED_BASIS_INCOMPARABLE = "basis_incomparable"
+REFUSED_BASIS_COMPARISON_FAILED = "basis_comparison_failed"
+REFUSED_BASIS_REBASE_FAILED = "basis_rebase_failed"
+REFUSED_STALE_REFRESH = "stale_refresh"
+REFUSED_NO_ACCEPTED_OBSERVATION = "no_accepted_observation"
+REFUSED_MISSING_SYMBOL = "missing_symbol"
+
+#: Refusal precedence, most structural first: the reason reported is the one
+#: that explains the most, so a caller never has to guess which failure to fix.
+_REFUSAL_PRECEDENCE: tuple[str, ...] = (
+    REFUSED_DOWNLOAD_FAILED,
+    REFUSED_MISSING_ADJ_CLOSE,
+    REFUSED_BASIS_INCOMPARABLE,
+    REFUSED_BASIS_COMPARISON_FAILED,
+    REFUSED_BASIS_REBASE_FAILED,
+    REFUSED_STALE_REFRESH,
+    REFUSED_NO_ACCEPTED_OBSERVATION,
+    REFUSED_MISSING_SYMBOL,
+)
+
+
+@dataclass(frozen=True)
+class CycleBenchmarkAcquisition:
+    """The typed result of one explicit-input cycle-benchmark acquisition.
+
+    ``frames`` holds ONLY current-call validated frames, and is EMPTY unless
+    ``accepted`` is True: a partial fourteen-name result is not a result, it is
+    a refusal with a reason. ``failed`` names EVERY name that did not come back
+    (so a caller retrying the failed set retries all of them);
+    ``primary_failed`` names the ones that failed for ``reason`` specifically,
+    and ``failure_reasons`` gives the per-name reason. ``lineage`` says what was
+    actually done per name (vendor symbol, alias, basis, period, rebase), and
+    ``clocks`` separates what is known from what the vendor never tells us."""
+
+    accepted: bool
+    reason: str
+    requested: tuple[str, ...]
+    returned: tuple[str, ...]
+    failed: tuple[str, ...]
+    primary_failed: tuple[str, ...]
+    failure_reasons: Mapping[str, str]
+    frames: Mapping[str, pd.DataFrame]
+    lineage: Mapping[str, dict]
+    clocks: Mapping[str, object]
+    notes: tuple[str, ...]
+
+
+def _normalised_prior(prior: pd.DataFrame | None) -> pd.DataFrame | None:
+    """A defensive, normalised COPY of one caller's prior frame.
+
+    The caller's frame is never mutated: the seam reads it, compares against
+    it, and leaves it exactly as it was handed over. The index is normalised to
+    tz-naive midnight because that is what the store's own write path produces
+    (``upsert`` normalizes), and a comparison against a differently-shaped
+    index would silently find no overlap. An empty frame is EXPLICIT ABSENCE —
+    it is not a reason to go looking in the repository."""
+    if prior is None:
+        return None
+    if not isinstance(prior, pd.DataFrame):
+        raise ValueError("a prior frame must be a pandas DataFrame or None")
+    if prior.empty:
+        return None
+    if "close" not in prior.columns:
+        raise ValueError("a prior frame must carry the 'close' basis column")
+    if pd.api.types.is_integer_dtype(prior.index):
+        # An integer index is a POSITION, not a date: coercing it would place
+        # every bar in 1970 and silently turn the basis comparison into a
+        # no-overlap, which would buy a full-history re-pull of nothing.
+        raise ValueError("a prior frame must be indexed by date, not by position")
+    out = prior.copy()
+    try:
+        out.index = pd.to_datetime(out.index)
+    except (TypeError, ValueError) as e:
+        raise ValueError("a prior frame must be indexed by date") from e
+    if getattr(out.index, "tz", None) is not None:
+        out.index = out.index.tz_localize(None)
+    out.index = out.index.normalize()
+    return out[~out.index.duplicated(keep="last")].sort_index()
 
 
 class YahooAdapter(Adapter):
@@ -234,6 +358,315 @@ class YahooAdapter(Adapter):
             raise RuntimeError(f"yahoo returned only {len(frames)}/{len(tickers)} tickers")
         return frames
 
+    # -- explicit-input acquisition seam -------------------------------------
+    #
+    # The contract, in one place: EXPLICIT inputs only (selected symbols,
+    # prior frames, evaluation instant, session policy); the UNCHANGED config
+    # values this collector already uses for a fetch; NO repository reads or
+    # writes, NO report/ledger/grader/notification, NO process-global config
+    # mutation; and an ALL-OR-NOTH result — a partial fourteen-name result is
+    # a refusal with a typed reason and no frames at all.
+
+    @staticmethod
+    def _validated_cycle_symbols(symbols) -> tuple[str, ...]:
+        """Validate the requested selection against the CLOSED benchmark set."""
+        if isinstance(symbols, (str, bytes)) or not isinstance(symbols, Sequence):
+            raise ValueError("symbols must be an ordered sequence of ticker strings")
+        out: list[str] = []
+        seen: set[str] = set()
+        for raw in symbols:
+            if not isinstance(raw, str) or not raw.strip():
+                raise ValueError("every symbol must be a non-empty ticker string")
+            name = raw.strip().upper()
+            if name not in CYCLE_BENCHMARK_SYMBOLS:
+                raise ValueError(
+                    f"{name!r} is not a US Sector cycle benchmark; the set is closed: "
+                    + ", ".join(CYCLE_BENCHMARK_SYMBOLS))
+            if name in seen:
+                raise ValueError(f"duplicate cycle benchmark symbol {name!r}")
+            seen.add(name)
+            out.append(name)
+        if not out:
+            raise ValueError("at least one cycle benchmark symbol is required")
+        return tuple(out)
+
+    @staticmethod
+    def _validated_evaluation_instant(instant) -> datetime:
+        """The evaluation instant is an EXPLICIT clock: no wall-clock default."""
+        if not isinstance(instant, datetime):
+            raise ValueError("evaluation_instant must be a datetime")
+        if instant.tzinfo is None or instant.tzinfo.utcoffset(instant) is None:
+            raise ValueError("evaluation_instant must be timezone-aware")
+        return instant.astimezone(timezone.utc)
+
+    def acquire_cycle_benchmarks(
+            self, symbols, *,
+            prior_frames: Mapping[str, pd.DataFrame | None],
+            evaluation_instant: datetime,
+            completed_sessions_only: bool = True,
+            period: str = "1mo") -> CycleBenchmarkAcquisition:
+        """Acquire cycle benchmarks for the closed US Sector set from EXPLICIT inputs.
+
+        ``symbols`` — a non-empty subset of ``CYCLE_BENCHMARK_SYMBOLS``. The
+        closed set is the contract: an open symbol list would be a second,
+        unauthorised universe.
+
+        ``prior_frames`` — the caller's own copy of each name's stored series,
+        ``{symbol: frame}``. A key that is absent, or a frame that is empty or
+        None, is EXPLICIT ABSENCE: the seam does not go looking in the
+        repository for a substitute. The frames are read, never written and
+        never mutated.
+
+        ``evaluation_instant`` — the timezone-aware clock the session rules are
+        evaluated against. There is no wall-clock default: an implicit "now"
+        would make a result unreproducible.
+
+        ``completed_sessions_only`` — the session policy. True (the default)
+        accepts only COMPLETED US cash sessions, so a bar dated on the running
+        session is not an observation yet; False accepts any observed session
+        date, the way the nightly collect path does.
+
+        ``period`` — "1mo" (the cheap refresh window, default) or "max" (the
+        whole history). A "max" pull already rebases, so the adjustment guard
+        is skipped for it exactly as the legacy full-history path skips it.
+
+        WHAT IT NEVER DOES: it does not read or write the repository's data
+        tree, does not call the store, does not call all_tickers() or the
+        Stooq refill for unrelated names, does not write a report, a ledger, a
+        grade or a notification, and does not mutate process-global config. The
+        fetch tunables are this collector's own unchanged config values.
+
+        THE RESULT IS ALL-OR-NOTH: every requested name must come back
+        validated, on both bases, within a completed session, and not older
+        than the prior frame it was compared against. Anything else is a typed
+        refusal with NO frames, so a partial result can never be published by
+        accident. The ONE exception is a "max" pull, which already rebases the
+        whole history and so needs no comparison against the prior — exactly
+        as the legacy full-history path skips the guard; its lineage records
+        ``basis_comparison="not_compared"`` rather than claiming a comparison
+        that never happened.
+        """
+        from collectors.base import _cash_observation_rows
+
+        requested = self._validated_cycle_symbols(symbols)
+        instant = self._validated_evaluation_instant(evaluation_instant)
+        if period not in ("1mo", "max"):
+            raise ValueError("period must be '1mo' or 'max'")
+        if type(completed_sessions_only) is not bool:
+            raise ValueError("completed_sessions_only must be boolean")
+        if not isinstance(prior_frames, Mapping):
+            raise ValueError("prior_frames must be a mapping of symbol -> prior frame")
+        # Keys are normalised the same way the symbols are, so a caller that
+        # writes "spy" in both places does not silently lose its prior frame.
+        supplied = {str(k).strip().upper(): v for k, v in prior_frames.items()}
+        priors = {t: _normalised_prior(supplied.get(t)) for t in requested}
+
+        # Unchanged config values — the same ones this collector's own fetch uses.
+        tol = float(self.cfg.get("upsert_basis_tol", 1e-3))
+        batch_size = max(1, int(self.cfg["batch_size"]))
+        ohlc = set(self.cfg["tickers"].get("vol", [])) & set(requested)
+        vendor = {t: fetch_symbol(t) for t in requested}
+
+        frames: dict[str, pd.DataFrame] = {}
+        failures: dict[str, str] = {}
+        notes: list[str] = []
+        no_adj_close: list[str] = []
+
+        # 1. The window pull — exactly the requested names, nothing else.
+        for start in range(0, len(requested), batch_size):
+            batch = requested[start:start + batch_size]
+            try:
+                df = self._download([vendor[t] for t in batch], period)
+            except Exception as e:  # noqa: BLE001 — degrade to a typed refusal
+                for t in requested[start:]:
+                    failures[t] = REFUSED_DOWNLOAD_FAILED
+                notes.append(f"yahoo download failed for {len(batch)} name(s): "
+                             f"{type(e).__name__}")
+                break
+            for t in batch:
+                sub = self._extract(df, t, ohlc, no_adj_close, require_adj_close=True)
+                if sub is not None:
+                    frames[t] = sub
+        for t in requested:
+            if t in no_adj_close and t not in failures:
+                failures[t] = REFUSED_MISSING_ADJ_CLOSE
+                notes.append(f"{t}: vendor served no Adj Close; the total-return "
+                             "basis is refused, never synthesised")
+
+        # 2. The adjustment-basis guard, against the EXPLICIT prior frames.
+        comparison_status: dict[str, str] = {}
+        needs_rebase: list[str] = []
+        if period != "max":
+            for t in requested:
+                prior = priors.get(t)
+                if prior is None or t not in frames:
+                    continue
+                comparison = store.compare_basis(prior, frames[t], col="close", tol=tol)
+                comparison_status[t] = comparison.status
+                if comparison.status in (store.BASIS_SHIFTED, store.BASIS_NO_OVERLAP):
+                    needs_rebase.append(t)
+                elif comparison.status == store.BASIS_INCOMPARABLE:
+                    failures[t] = REFUSED_BASIS_INCOMPARABLE
+                elif comparison.status == store.BASIS_COMPARISON_FAILED:
+                    failures[t] = REFUSED_BASIS_COMPARISON_FAILED
+
+        # 3. A drifted name is re-pulled period='max' (the whole history rebases
+        #    in one shot). A FAILED re-pull keeps the prior input and refuses
+        #    the name — a shifted window is never spliced onto anything.
+        rebased: set[str] = set()
+        for t in needs_rebase:
+            frames.pop(t, None)
+            notes.append(f"{t}: adjustment basis drifted; a period='max' re-pull is due")
+        for start in range(0, len(needs_rebase), batch_size):
+            batch = needs_rebase[start:start + batch_size]
+            try:
+                df = self._download([vendor[t] for t in batch], "max")
+            except Exception as e:  # noqa: BLE001 — degrade: refuse, keep the prior
+                # EVERY name from this batch on is refused: the later batches were
+                # never attempted, so calling them "returned no data" would be a
+                # false account of what happened.
+                for t in needs_rebase[start:]:
+                    failures[t] = REFUSED_BASIS_REBASE_FAILED
+                notes.append(f"basis re-pull failed for {len(needs_rebase) - start} "
+                             f"name(s) ({type(e).__name__}); the prior input is kept, "
+                             "not spliced")
+                break
+            for t in batch:
+                sub = self._extract(df, t, ohlc, no_adj_close, require_adj_close=True)
+                if sub is None:
+                    failures[t] = (REFUSED_MISSING_ADJ_CLOSE if t in no_adj_close
+                                   else REFUSED_BASIS_REBASE_FAILED)
+                else:
+                    frames[t] = sub
+                    rebased.add(t)
+                    notes.append(f"{t}: re-pulled period='max' on the new basis")
+
+        # 4. Validation, the session rule, and the stale-span refusal.
+        accepted: dict[str, pd.DataFrame] = {}
+        for t in requested:
+            if t in failures:
+                continue
+            sub = frames.get(t)
+            if sub is None:
+                failures[t] = (REFUSED_MISSING_ADJ_CLOSE if t in no_adj_close
+                               else REFUSED_MISSING_SYMBOL)
+                continue
+            try:
+                sub = self.validate(t, sub)
+            except Exception:  # noqa: BLE001 — a malformed frame is a typed refusal
+                failures[t] = REFUSED_NO_ACCEPTED_OBSERVATION
+                continue
+            # The store's own write path normalises to tz-naive midnight, so the
+            # session rule and the stale-span comparison must see that shape.
+            if getattr(sub.index, "tz", None) is not None:
+                sub.index = sub.index.tz_localize(None)
+            market = self.session_calendar_for_series(t)
+            if market:
+                sub = _cash_observation_rows(sub, market, instant,
+                                             completed_only=completed_sessions_only)
+            if sub.empty:
+                failures[t] = REFUSED_NO_ACCEPTED_OBSERVATION
+                continue
+            prior = priors.get(t)
+            if prior is not None:
+                stale = store.stale_refresh_reason(prior.index.max(), sub.index.max())
+                if stale is not None:
+                    failures[t] = REFUSED_STALE_REFRESH
+                    notes.append(f"{t}: {stale}")
+                    continue
+            accepted[t] = sub
+
+        # 5. Lineage and clocks — what was done, and what the vendor never says.
+        lineage: dict[str, dict] = {}
+        for t in requested:
+            sub = accepted.get(t)
+            prior = priors.get(t)
+            comparison = comparison_status.get(t)
+            if comparison is None:
+                comparison = store.BASIS_NO_PRIOR if prior is None else "not_compared"
+            lineage[t] = {
+                "provider": "yahoo",
+                "ticker": t,
+                "vendor_symbol": vendor[t],
+                "alias_applied": vendor[t] != t,
+                "field": "Adj Close",
+                "basis": "total_return",
+                "close_price_basis": "split_adjusted_dividend_unadjusted",
+                "adj_close_present": t not in no_adj_close,
+                "acquisition": ("max_rebase" if t in rebased
+                                else ("max" if period == "max" else "window")),
+                "period": "max" if (t in rebased or period == "max") else period,
+                "prior": "absent" if prior is None else "present",
+                "basis_comparison": comparison,
+                "session_calendar": self.session_calendar_for_series(t),
+                "completed_sessions_only": completed_sessions_only,
+                "rows": 0 if sub is None else int(len(sub)),
+                "first_session": None if sub is None or sub.empty else str(sub.index.min().date()),
+                "last_session": None if sub is None or sub.empty else str(sub.index.max().date()),
+                "status": "accepted" if t in accepted else failures.get(t),
+            }
+
+        from lib import market_session
+        calendars = sorted({m for m in (self.session_calendar_for_series(t) for t in requested)
+                            if m})
+        # The years the session rule ACTUALLY consulted: every year of every bar
+        # the seam pulled, not only the accepted ones — a refusal is exactly when
+        # the caller needs to know whether the calendar was verified.
+        years = sorted({ts.year for frame in frames.values() for ts in frame.index})
+        calendar_verified = {}
+        for market in calendars:
+            calendar_verified[market] = {
+                str(y): bool(market_session.calendar_verified(market, y)) for y in years}
+        clocks = {
+            "known": {
+                "evaluation_instant": instant.isoformat(),
+                "session_calendars": calendars,
+                "calendar_verified": calendar_verified,
+                "completed_sessions_only": completed_sessions_only,
+                "basis_tolerance": tol,
+                "fetch_period": period,
+                "batch_size": batch_size,
+                "retries": int(self.cfg["retries"]),
+                "backoff_base_s": float(self.cfg["backoff_base_s"]),
+            },
+            "unknown": {
+                "vendor_publication_clock":
+                    "yfinance serves no per-bar publication timestamp",
+                "provider_available_at":
+                    "the moment a bar first became retrievable is not observable "
+                    "from the response",
+                "vendor_session_metadata":
+                    "no vendor session-completion metadata is returned for these bars",
+                "upstream_correction_clock":
+                    "a later vendor correction stays invisible until the next "
+                    "basis comparison",
+            },
+        }
+
+        if failures:
+            # ``reason`` is the headline (the most structural failure); ``failed``
+            # is EVERY name that did not come back, so a caller retrying the
+            # failed set retries all of them — a name that failed for a DIFFERENT
+            # reason must not be silently dropped from the account.
+            reason = next((r for r in _REFUSAL_PRECEDENCE if r in failures.values()),
+                          "unknown_failure")
+            primary_failed = tuple(sorted(t for t, r in failures.items() if r == reason))
+            return CycleBenchmarkAcquisition(
+                accepted=False, reason=reason, requested=requested,
+                returned=(), failed=tuple(sorted(failures)),
+                primary_failed=primary_failed,
+                failure_reasons=MappingProxyType(dict(failures)),
+                frames=MappingProxyType({}),
+                lineage=MappingProxyType(lineage),
+                clocks=MappingProxyType(clocks), notes=tuple(notes))
+        return CycleBenchmarkAcquisition(
+            accepted=True, reason=ACCEPTED, requested=requested,
+            returned=tuple(requested), failed=(), primary_failed=(),
+            failure_reasons=MappingProxyType({}),
+            frames=MappingProxyType(dict(accepted)),
+            lineage=MappingProxyType(lineage),
+            clocks=MappingProxyType(clocks), notes=tuple(notes))
+
     def availability_source_metadata(self, ticker: str) -> dict | None:
         """Declared current-call lineage, not authentication or upstream timing."""
         value = getattr(self, "_availability_sources", {}).get(ticker)
@@ -251,12 +684,22 @@ class YahooAdapter(Adapter):
 
     def _extract(self, df: pd.DataFrame, t: str, ohlc: set[str],
                  no_adj_close: list[str], *,
-                 capture_source_metadata: bool = False) -> pd.DataFrame | None:
+                 capture_source_metadata: bool = False,
+                 require_adj_close: bool = False) -> pd.DataFrame | None:
         """Slice one ticker out of a (possibly MultiIndex) yf.download response and
         rename to the store schema; None when yfinance returned nothing for it.
 
         `t` is the CONFIG ticker throughout (store key, ohlc-group membership, log lines);
-        the response is keyed by the vendor symbol, which differs for renamed names."""
+        the response is keyed by the vendor symbol, which differs for renamed names.
+
+        ``require_adj_close=True`` refuses a name the vendor served WITHOUT an
+        Adj Close, instead of taking the FX/index fallback (close_price := close).
+        That fallback is correct for a security with no dividends, and WRONG for
+        a dividend-paying ETF: synthesising the equivalence there would make a
+        split-adjusted bar look total-return and silently poison the basis a
+        cycle reads. The refusal records the name in ``no_adj_close`` exactly as
+        the fallback path does, so the caller can name the reason. Default False
+        keeps the legacy fallback byte-identical."""
         if capture_source_metadata:
             self._availability_sources.pop(t, None)
             if t == "CL=F":
@@ -275,6 +718,13 @@ class YahooAdapter(Adapter):
                 want = ["Close", "Adj Close", "Volume"]
             available = sub[[c for c in want if c in sub.columns]]
             if "Adj Close" in available.columns:
+                if require_adj_close and available["Adj Close"].isna().all():
+                    # The column is PRESENT but carries no value: there is still no
+                    # total-return basis to report. The legacy path would drop every
+                    # row on the NaN and call the name "returned no data"; a caller
+                    # that demands the basis must be told WHICH basis is missing.
+                    no_adj_close.append(t)
+                    return None
                 renamed = available.rename(columns={
                     "Adj Close": "close",
                     "Close":     "close_price",
@@ -286,6 +736,10 @@ class YahooAdapter(Adapter):
                 # FX / indices that yfinance provides no Adj Close for:
                 # Close ≡ Adj Close (no dividends) → set close_price = close.
                 no_adj_close.append(t)
+                if require_adj_close:
+                    # No total-return basis to report. Refuse the name rather
+                    # than synthesise the equivalence (see the docstring).
+                    return None
                 renamed = available.rename(columns={
                     "Close":  "close",
                     "Volume": "volume",
