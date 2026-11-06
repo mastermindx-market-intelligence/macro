@@ -409,6 +409,7 @@ jobs:
       - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/investigation_native_capture.py"
       - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
@@ -2680,6 +2681,7 @@ jobs:
       - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/investigation_native_capture.py"
       - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
@@ -3859,6 +3861,7 @@ jobs:
       - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/investigation_native_capture.py"
       - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
@@ -8654,6 +8657,7 @@ jobs:
       - "app/options_issue_desk.py"
       - "app/options_scenario_bindings.py"
       - "app/options_scenarios.py"
+      - "app/investigation_native_capture.py"
       - "app/paywall.py"
       - "app/prophet_daily_brief.py"
       - "app/prophet_lab.py"
@@ -9418,6 +9422,8 @@ jobs:
       - "tests/test_options_auth.py"
       - "tests/test_options_scenarios.py"
       - "tests/test_scenario_initial_capture.py"
+      - "tests/test_investigation_native_capture.py"
+      - "tests/test_native_capture_participant.py"
       - "collectors/base.py"
       - "collectors/sponsors.py"
       - "collectors/yahoo.py"
@@ -9656,7 +9662,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_investigation_native_capture.py tests/test_native_capture_participant.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -13079,6 +13085,7 @@ jobs:
       - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/investigation_native_capture.py"
       - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
@@ -17449,6 +17456,7 @@ jobs:
       - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/investigation_native_capture.py"
       - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
@@ -31823,6 +31831,7 @@ jobs:
       - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/investigation_native_capture.py"
       - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
@@ -41856,6 +41865,7 @@ jobs:
       - "engine/options_statistics_state.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/investigation_native_capture.py"
       - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
@@ -45275,6 +45285,7 @@ jobs:
       - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/investigation_native_capture.py"
       - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
@@ -47448,6 +47459,7 @@ jobs:
       - "app/options_plan_source.py"
       - "app/options_scenario_bindings.py"
       - "app/options_scenarios.py"
+      - "app/investigation_native_capture.py"
       - "app/prophet_daily_brief.py"
       - "app/prophet_observations.py"
       - "app/ticker_news_stream.py"
@@ -51866,6 +51878,7 @@ jobs:
       - "app/options_auth.py"
       - "app/options_scenario_bindings.py"
       - "app/options_scenarios.py"
+      - "app/investigation_native_capture.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
       - "engine/intelligence_workspace/scenario_source_resolution.py"

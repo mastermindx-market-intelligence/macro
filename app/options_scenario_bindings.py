@@ -22,6 +22,7 @@ class ScenarioSourceRuntime:
     store: r2_store.R2Store
     producer_out_dir: Path | None
     capture_enabled: bool
+    native_capture_authority: object = None
 
     def for_request(self, *, token, principal, investigation_id, revision,
                     grant_id, capture, mode, expected_revision=None, operation_id=None):
@@ -121,7 +122,8 @@ class ScenarioSourceRuntime:
             destination=destination, resource_access=resource_access, source_use_decision=source_use,
             current_viewer=route._current_viewer_seam(token),
             producer_out_dir=self.producer_out_dir if self.capture_enabled else None,
-            source_save_decision=save, retention_decision=retain)
+            source_save_decision=save, retention_decision=retain,
+            native_capture_authority=self.native_capture_authority)
 
 
 def install_scenario_sources(app):
@@ -147,4 +149,13 @@ def install_scenario_sources(app):
     if not isinstance(store, r2_store.R2Store) or not store.available or store.bucket != bucket:
         return
     store.validate_strict_conditional_write_capability()
-    app.state.options_scenario_source_bindings = ScenarioSourceRuntime(store, path, capture)
+    authority = None
+    if capture:
+        from app.investigation_native_capture import from_server_runtime
+        try:
+            authority = from_server_runtime()
+        except Exception:
+            # Read/qualify remain available under their incumbent permissions;
+            # missing server-role/schema bindings cannot permit an initial PUT.
+            pass
+    app.state.options_scenario_source_bindings = ScenarioSourceRuntime(store, path, capture, authority)
