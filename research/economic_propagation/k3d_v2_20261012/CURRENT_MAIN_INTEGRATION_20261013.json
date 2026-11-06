@@ -1,0 +1,190 @@
+{
+  "main": "0f8ecf0bd6bed323113283f9f5a454888865bf81",
+  "semantic_head": "fc19d16cae6397e2c5651f16a3283ae0a03bccc7",
+  "inherited_jobs": 299,
+  "inherited_jobs_and_steps_preserved": true,
+  "one_k3d_step": true,
+  "suite_count": 4,
+  "semantic_files_preserved": [
+    {
+      "path": "agentos/decisions/DEC-K3D-PROPAGATION-HYPOTHESIS-CONTRACT.md",
+      "sha256": "f7ea432c83f0b2a91cec62869aecb068265c6f67ad434146e749287708bffe60"
+    },
+    {
+      "path": "agentos/decisions/DEC-K3D-TYPED-QUALITATIVE-NARRATIVE-V2.md",
+      "sha256": "cd687e2742bef32c375326b71bc7586461f045842c237d1d9a51b0c9151d395c"
+    },
+    {
+      "path": "agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-08-27-k3d.md",
+      "sha256": "fca7f4fef84083895061bdab1f6eb98109cf8881b2478dc46faa6d588e65d521"
+    },
+    {
+      "path": "contracts/economic_propagation/generator_registry.v1.json",
+      "sha256": "4d3246034db9fb33b04f6423cc68a326bef8e3249ed56ba51783cb340ff73da7"
+    },
+    {
+      "path": "contracts/economic_propagation/propagation_hypothesis.v1.schema.json",
+      "sha256": "2fb402368b71693d457a173efe03d5b3e7144bae7bba1573eb90730e01a375d6"
+    },
+    {
+      "path": "contracts/economic_propagation/propagation_hypothesis.v2.schema.json",
+      "sha256": "1d53c811a97621737f1e77afdebc060ab251a0e5573c34fa6d772779151171c0"
+    },
+    {
+      "path": "lib/economic_propagation.py",
+      "sha256": "9ba7037302ad6e63624eec841a1eee620918b3a1575e558aec2ff0d990f958bb"
+    },
+    {
+      "path": "lib/economic_propagation_v2.py",
+      "sha256": "dfc4473b0aa69465fe41076bef223b4dbbb9c1b81efa2f8b967fc634c362a97d"
+    },
+    {
+      "path": "research/economic_propagation/K3D_PROPAGATION_HYPOTHESIS_CONTRACT_FREEZE_2026-08-27.md",
+      "sha256": "4e93e04e80baa71caed3aa32d7e92fa0bff552c1de00ec1b108e4e8cc0470080"
+    },
+    {
+      "path": "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json",
+      "sha256": "1978b6e2240dfbc9dd1cc60924625ccf55613d5da10aa9a8899d9a33e17ed385"
+    },
+    {
+      "path": "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_counterparty_unresolved.json",
+      "sha256": "4c4bc933c6a35dee75d5210aeef2b43cdca4ef3b322fa4da4fe0edf72f1cd291"
+    },
+    {
+      "path": "research/economic_propagation/k3d_v2_20261012/REVIEW_REPAIR_20261013.md",
+      "sha256": "08a4afdcf05a880f529159f1386ae571261ba9eaa5b9302140898b11e81bb1a5"
+    },
+    {
+      "path": "research/economic_propagation/k3d_v2_20261012/VALIDATION.md",
+      "sha256": "70a6f33bf4c9a6fde1a244cd32064b5cd35262e5a4fa9ca56e2d2566b85fb785"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/golden_supported_hypothesis.json",
+      "sha256": "510cd4a1db3244c11dd9e1b1c565e74b9619c9fdb61c49c553bac7bc678d57df"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/golden_typed_abstention_rights_blocked.json",
+      "sha256": "c319451ee061c0ddb297699e80315985eeb4b0c758fc43009342f19c4ae6470a"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/golden_typed_abstention_unresolved.json",
+      "sha256": "b9128fb75f88e1710a765f26489bc71986793147f49ff864392dd0e5a1ec59c5"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_admission_owner_not_generator_native.json",
+      "sha256": "ee2c225f89f6eca3b945943fe05f1a9c20aff41b8104262c9619d702cf85f403"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_authority_trading_true.json",
+      "sha256": "2cb61cac55d13a27bdbd962e3fe2f2e49a4ac3f04c2398141bee2643472c454a"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_binding_kills_drop.json",
+      "sha256": "09c1a0741a4b3ba19b6178c9bcff62601e3d509515ca20e543933c913aa75fd4"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_clock_violations.json",
+      "sha256": "148445f513d19f546caf7e9178c7aebc8c99ab7a740ab056e000be2c01faecd5"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_disagreeing_derived_summary.json",
+      "sha256": "14647e90af907380eba8bac2a2327719c3eff5a80a7dfed59eea6a125de41f80"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_economic_share_nonnull.json",
+      "sha256": "4c753e21b7101021e10e2b9001501b71ba1e299e7af5a8260380cb580281791a"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_forbidden_key_injection.json",
+      "sha256": "8947392ae3f9912e25d449a88eb64ea7903d56fc855a655f4ed87e8f5f8c4388"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_generator_refusal_admission.json",
+      "sha256": "e7d8e0756668d5251e8654f21acac26dbee02e5fdf15d907e9a843875912aa0f"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_mechanism_trade_language.json",
+      "sha256": "dabd1e6ac534a42a6479b42959bc899c8ad709a3ce0b8ba15ebd3fe7e50c335a"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_mechanism_without_relationship.json",
+      "sha256": "2c152d10dbc61db8feec16651d92c8f995d6f5729244d1f935a3496c0f9f045c"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_relationship_construct_laundering.json",
+      "sha256": "76c31dfe9b4690bd43cea894751251b990e037532a7bba60975a7f8f5eff951f"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_resolved_target_missing_security_id.json",
+      "sha256": "bb88d0354ac582248a53ae8fce0cc409888ccf8cb1848c018bec7bc348c8419e"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_rights_blocked_claimed_supported.json",
+      "sha256": "b3692c56adcadb7318e06c4dc64b51d9d4447e3310441d15366585d3b4f0f77a"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_role_laundering.json",
+      "sha256": "c11d9b6eeea8694031ada036ccdcd1ec009bc48dec707c5309724db03c31cc6a"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_sha_mismatch.json",
+      "sha256": "c8000d7db81af7666ff7e7d80c08b2a01845de57f6af9578681076ce6997ea9b"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_unresolved_identity_laundered.json",
+      "sha256": "bd85e32a12b812022abf5448507c48cea9f4c4a70dc553167da50c2a81c5c9f8"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/hostile_unresolved_source_identity_supported.json",
+      "sha256": "e928d2bb632ecb640241394b3e781b18a4aa9fcdb6e66b58138ed91fcc9bc5f2"
+    },
+    {
+      "path": "tests/fixtures/economic_propagation/manifest.json",
+      "sha256": "3e4a07dae5a74f43ad801592fcc566164f747d08251fd68397879990d79d5319"
+    },
+    {
+      "path": "tests/test_economic_propagation_hypothesis_contract.py",
+      "sha256": "a710e1d9cd37a986570f4a98eeef7271a75ecddacafb44fb493f015aaceab812"
+    },
+    {
+      "path": "tests/test_economic_propagation_source_grain.py",
+      "sha256": "50bd2ca9094ca308e5013085f587c526eb5c02ddfd1207dba60bfb8842e24013"
+    },
+    {
+      "path": "tests/test_economic_propagation_v2.py",
+      "sha256": "86bb189ce27765f3797aa1d5488bbd665745fcd6e15a32bc27d8cddc5f8867eb"
+    },
+    {
+      "path": "tests/test_economic_propagation_v2_semantics.py",
+      "sha256": "300215476630035e058aa3cd28e3932982b9416996355677e78a70dbe37f7c28"
+    }
+  ],
+  "ci_before_sha256": "87485c1989df711a5655cc1df3b29c56ced028e9a1ac9bf178fdcf108b98c01e",
+  "ci_after_sha256": "3ba7e004abf0bd0be830b0d3c3ef625f9f530412958ebcc3df49d35ea837ca6e",
+  "workstream_main_preserved_additively": true,
+  "tests": {
+    "native": {
+      "tests": 541,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ci_integration": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "runtime": "native M2 Python 3.14.7",
+  "review": "https://github.com/mastermindx-market-intelligence/macro/pull/6514#issuecomment-6144221753",
+  "hosted_ci": "NOT_YET_RUN_FOR_THIS_INTEGRATION",
+  "production_acceptance": false,
+  "evidence_sha256": {
+    "native-tests.xml": "b2283aac03484d42aeefc5f57fabfdeacf1a14e331384e9a49a9f333317f7431",
+    "native-tests.log": "6627c37a76502666ee8d32bd537707ffd9fea965d87cc1cee197ca2722e0a1cf",
+    "ci-integration-tests.xml": "c80c60e6af480e7b38791b428e8f09f772e72ad13c9e91a3cc0cee5d67e22c89",
+    "ci-integration-tests.log": "16a192408b2847cc4a87b43a8b4b73a08a05764bc513eb555424a398ec098644",
+    "manifest-validation.log": "891570b69c9b134de8cbec8e05d0fac6e386dc6dca9d6649a9af2a823eb20cf5"
+  }
+}

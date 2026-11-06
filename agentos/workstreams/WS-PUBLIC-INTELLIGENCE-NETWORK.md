@@ -12,17 +12,25 @@ ambiguity: scoped
 waves:
   - id: press-staging
     title: Stage and validate the existing Press pipeline
-    status: in_progress
+    status: done
   - id: qualified-story
     title: Admit one rights-qualified event story and canonical dossier link
-    status: in_progress
+    status: done
     depends_on: [press-staging]
   - id: live-journey
-    title: Verify publication, signup and explicit follow continuation
-    status: in_progress
+    title: Verify publication, dossier and Terminal return, and existing acquisition boundary
+    status: done
     depends_on: [qualified-story]
-next_action: 9209 protected663dbf1f installed bffaa414 fully accepted. SAME follow-on pushed2a807b258328;922checks,45groups,26sources,contract0/0,282release files with235historical snapshots retained by tag/on disk.14:33capacity9+0/cap8 so noPR. Next eligible admission create one follow-onPR then protected install.9455/9464 green but controller-stale. Preserve44refs/five drafts/Chrome/Fabric001/publication0of10.
+  - id: mixed-desk-acceptance
+    title: Complete ten consecutive unedited mixed-desk passes with qualified native sources
+    status: in_progress
+    depends_on: [live-journey]
+next_action: Finish the prospective native-plan Brief evidence/scope repair through protected release and installed verification; the original quarantined KLAC draft is immutable. CropOct19 intake is complete but shared Research ingestion remains EFFECT_UNKNOWN under its incumbent. Ten mixed-desk passes remain incomplete.
 artifacts:
+  - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1075
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9696
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9648
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9650
   - https://github.com/mastermindx-market-intelligence/macro/pull/9464
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
@@ -52,6 +60,14 @@ landmines:
   - A successful signup page response is not proof of account creation or persisted ticker follow.
   - The D14 mixed-desk acceptance requires ten consecutive generated articles without manual edits.
 ---
+
+## October 22 accepted consumer milestone and current repair
+
+Protected #9650/9e0ba50e and normal updaterae93436a passed installed source/site/served/HTTP, selected-theme and read-only native-row replay. SAME Chrome healthy CNDT overlay, standalone and exact return passed. The slow-load-only recovery click was not observed because healthy loading hides it; no induced failure or broad fallback claim. Evidence diagnostics/pr9650-installed-render-acceptance-9e0ba.json, pr9650-browser-acceptance-9e0ba.json and pr9650-installed-native-replay-9e0ba.json. Together with #9696 and Terminal1075, this completes the assigned public story/dossier/existing acquisition journey; no new signup/follow write is required. These effects are DO_NOT_REDO.
+
+Ten consecutive unedited mixed-desk passes remain incomplete. ONE subsequent KLAC attempt42090a9fca07 is quarantined and immutable: preserve original12drafts plus13th,205holds and three histories. Root accepted the prospective source-level scope/receipt/dossier repair from SAME Sol01a16106; sourceadb87afc integrated27434b25, no PR/install yet. Required contract passed0introduced/0inherited after redundant data-lane registration was removed; subsequent protected-main composition passed focused checks with all engineering bytes unchanged. Necessary code coverage adds four planning-weight units, no additional selected jobs or packs. Exact changing release state lives in CURRENT CHECKPOINT/runtime, not this history.
+
+CropOct19 canonical PDF/sidecar pair is KNOWN_COMPLETE. Researchowner01a13301 retains original shared ingest38517760919/attempt1/job115700308577 EFFECT_UNKNOWN; no reupload, enable, dispatch, auth retry or unchanged polling. Supported incumbent closure/fencing and qualified reopening are required. No blanket authoring approval is missing; qualified source selection and semantic quality remain actual gates.
 
 Direct Chairman operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`.
 This record extends D14 delivery under the existing marketing program. It is a

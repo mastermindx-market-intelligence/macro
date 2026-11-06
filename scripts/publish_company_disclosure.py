@@ -1,4 +1,4 @@
-"""Publish one protected, owner-admitted generation from the retained C01 input.
+"""Publish a protected disclosure generation, or explicitly append one SEC supplier.
 
 Invoke as python -m scripts.publish_company_disclosure. A stable operation ID is
 mandatory and reserved with O_EXCL before effects. Existing receipts prohibit a
@@ -25,6 +25,31 @@ from engine.company_intelligence.issuer_disclosure_publication import (
     RetainedFileSource, prepare_publication, publish_generation,
 )
 from engine.research_vault.r2_store import LocalStore
+
+
+
+def _append_sources(repo):
+    from engine.company_intelligence.sec_supplier_adoption import SOURCE_PATHS
+    return (owner.CommittedDisclosureSource(repo, sec_supplier_paths=SOURCE_PATHS),
+            {native.FACT_SCHEMA: owner.CommittedDisclosureSource(repo)})
+
+
+def _pinned_supplier_source(admitted):
+    # This factory is called only after the exclusive operation reservation and
+    # owner admission. Reuse the incumbent private Research store and native
+    # pinned-source reader; never copy raw sources into a second local store.
+    from engine.company_intelligence.sec_supplier_adoption import PinnedSupplierSource
+    from engine.fundamental_forensics.filing_attestation import PinnedSourceAuthority
+    from engine.research_vault import r2_store
+    native._require(not os.environ.get('RESEARCH_LOCAL_STORE'), 'SEC_LOCAL_SOURCE_OVERRIDE_REFUSED')
+    store = r2_store.build_store()
+    native._require(type(store) is r2_store.R2Store and store.available,
+                    'SEC_NATIVE_SOURCE_STORE_UNAVAILABLE')
+    native._require(admitted.spec['edition']['schema'] == native.SEC_EDITION_SCHEMA,
+                    'SEC_SOURCE_BINDING_MISMATCH')
+    authority = PinnedSourceAuthority(store=store,
+        snapshot_id=admitted.spec['edition']['sec_source']['snapshot_id'])
+    return PinnedSupplierSource(admitted, authority)
 
 
 def _directory(path):
@@ -72,6 +97,8 @@ def main():
     parser.add_argument('--repo', type=Path, required=True)
     parser.add_argument('--root', type=Path, default=Path('/var/lib/macro-company-intelligence'))
     parser.add_argument('--operation-id', required=True)
+    parser.add_argument('--append-sec-supplier', action='store_true',
+        help='Append the protected SEC supplier member while preserving current component generations')
     parser.add_argument('--expected-deployment-json', type=Path, required=True)
     expected_group = parser.add_mutually_exclusive_group(required=True)
     expected_group.add_argument('--expect-empty', action='store_true')
@@ -95,20 +122,40 @@ def main():
         mounts = preflight.read_mountinfo()
         roots = preflight.qualify_roots(args.root, expected['producer']['uid'], mounts)
         preflight.operation_names_absent(args.root, args.operation_id)
-        source = owner.CommittedDisclosureSource(args.repo)
+        if args.append_sec_supplier:
+            native._require(not args.expect_empty and expected['mode'] == 'APPEND_CURRENT_MEMBER',
+                            'PREFLIGHT_APPEND_MODE_REQUIRED')
+            native._require(not os.environ.get('RESEARCH_LOCAL_STORE'), 'SEC_LOCAL_SOURCE_OVERRIDE_REFUSED')
+            # Load append-only dependencies for same-process provenance. Import
+            # does not construct a store, read a source or publish anything.
+            from engine.fundamental_forensics import filing_attestation, source_sync  # noqa: F401
+            source, preserved_sources = _append_sources(args.repo)
+        else:
+            native._require(expected['mode'] != 'APPEND_CURRENT_MEMBER', 'PREFLIGHT_APPEND_MODE_REQUIRED')
+            source, preserved_sources = owner.CommittedDisclosureSource(args.repo), None
         native._require(os.path.abspath(source.git.repo) == os.path.abspath(args.repo),
                         'PREFLIGHT_PRODUCER_REPO')
-        provenance = preflight.collect_on_disk_provenance(source.git, sys.modules)
+        mode_kwargs = {'mode': 'APPEND_CURRENT_MEMBER'} if args.append_sec_supplier else {}
+        provenance = preflight.collect_on_disk_provenance(source.git, sys.modules, **mode_kwargs)
         native._require(provenance['head'] == expected['code_version'], 'PREFLIGHT_PRODUCER_HEAD')
         capture = {'process': process, 'captured_at': invoked.isoformat(),
                    'provenance': provenance, 'roots': roots}
+        publication_kwargs = ({'mode': 'APPEND_CURRENT_MEMBER', 'preserved_sources': preserved_sources}
+                              if args.append_sec_supplier else {})
         intent = prepare_publication(
             source, owner.ReadOnlyLocalObjects(args.root / 'state'),
-            expected_current_version=None if args.expect_empty else args.expected_current_version)
+            expected_current_version=None if args.expect_empty else args.expected_current_version,
+            **publication_kwargs)
+        def same_manifest(snapshot, prepared):
+            if not args.append_sec_supplier:
+                return prepared['manifest'] == owner.make_manifest(snapshot, prepared['manifest']['computed_at'])
+            from engine.company_intelligence.issuer_disclosure_publication import validate_publication_intent
+            validated, _ = validate_publication_intent(source, owner.ReadOnlyLocalObjects(args.root / 'state'),
+                prepared, preserved_sources=preserved_sources)
+            return validated == snapshot
         evidence = preflight.finalize_gate(
             expected, capture, source, intent, mounts, modules=sys.modules,
-            same_manifest=lambda snapshot, prepared: prepared['manifest'] == owner.make_manifest(
-                snapshot, prepared['manifest']['computed_at']))
+            same_manifest=same_manifest)
         digest = preflight.evidence_digest(evidence)
         envelope = {'schema': 'company_intelligence.publication_operation/v1',
             'operation_id': args.operation_id, 'started_at': datetime.now(timezone.utc).isoformat(),
@@ -151,10 +198,12 @@ def main():
             # O_EXCL failed before it returned a new file descriptor.
             return _emit(preflight.refuse_payload('RESERVATION_CREATE_FAILED'), 1)
         try:
-            result = publish_generation(source, LocalStore(args.root / 'state'),
-                LocalStore(args.root / 'artifacts'),
+            source_factory = (_pinned_supplier_source if args.append_sec_supplier else
                 lambda admitted: RetainedFileSource(admitted, args.root / 'publisher/source',
-                    admitted.spec['edition']['source_sha256'] + '.html'), intent=intent)
+                    admitted.spec['edition']['source_sha256'] + '.html'))
+            result = publish_generation(source, LocalStore(args.root / 'state'),
+                LocalStore(args.root / 'artifacts'), source_factory, intent=intent,
+                **({'preserved_sources': preserved_sources} if args.append_sec_supplier else {}))
             outcome = {'state': result['status'], 'result': result, 'automatic_retry_permitted': False}
             rc = 0
         except Exception as exc:
