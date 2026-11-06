@@ -1,0 +1,10 @@
+{
+  "head": "af1d6032535b9c397dd3fcdefce0afeaaf423dd4",
+  "tree": "eb2804576b01e4d26e20d48f86d226ccf6d4ed4b",
+  "frozen_inputs": 1915,
+  "new_inputs_requiring_native_requalification": 861,
+  "runner_sha256": "e60595a3024d1fd0f1da436149fbd698b6eea5fc1950c0a92d38718198677c04",
+  "incoming_main": "574ce2822b4a003eacdb15188ce1726ec7cb0804",
+  "original_root": "01a11e89-b35d-7a81-9404-5fce2c6170cb",
+  "scope": "new composed source and newer frozen inputs; no stock refresh/acquisition; source/artifact qualification only"
+}

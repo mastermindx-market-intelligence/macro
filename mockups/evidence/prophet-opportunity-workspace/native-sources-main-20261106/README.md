@@ -1,0 +1,11 @@
+# Native rich-card Sources on the composed current-main candidate
+
+Source `af1d6032535b9c397dd3fcdefce0afeaaf423dd4` combines the rich-card Sources shortcut with main `574ce2822b4a003eacdb15188ce1726ec7cb0804`. The prior 177 navigation/return checks and 13 asset checks remain at their actual source; they are not restamped here.
+
+All four incumbent publication stages passed using the exact existing Nov5 board/gate, no stock refresh, RENDER_NO_DRIP and network audit. All 1,915 frozen inputs remained unchanged; 22 DNS attempts were blocked. No producer, ranking, policy or validity renewal occurred. The source change from the previous qualified native build changed 861 frozen inputs, so this pair was regenerated.
+
+The final native public/protected pair passes 12 membership/order/target checks and 22 Today-binding/Plan/lifecycle checks. It retains all 878 Plan records (3 public, 875 protected); 68 protected Plan targets resolve. Screener has 70 rows (3 public, 67 protected), the eligible pool 145, and Today exposes 2 public cards from the original 12 Featured. Selection order and identities remain native.
+
+Eight actual offline anonymous browser cells cover 1440/390, light/dark and EN/ZH. Each opens the supplied public card's Sources, verifies the native Sources section, closes, and returns focus to the same card's initiating button. No horizontal overflow or page exception occurred. The source receipt and original PNG bytes are retained under browser/. Parent inspected desktop-light EN and mobile-dark ZH originals. All 51 referenced local assets are already unchanged in the composed source; only the two page outputs need adoption.
+
+The browser intentionally serves no premium payload or live feeds. Its 64 HTTP404 responses across eight cells are omitted feed/premium routes, and the page visibly reports unavailable full-board data while keeping the dated preview. This is degraded-state/public interaction evidence, not authenticated hydration, Save persistence, protected Plan navigation, Paper taste approval or production acceptance. FLS is absent from the frozen board; it is not replaced by LFUS or another ticker. Prior failures, Chrome/Paper/Plan access holds and qualified release controls remain unchanged. Emission/action authority stays disabled.
