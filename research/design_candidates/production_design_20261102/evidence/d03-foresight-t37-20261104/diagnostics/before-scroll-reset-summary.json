@@ -1,0 +1,14 @@
+{
+  "fixture_only": true,
+  "browser": "Chromium 151.0.7922.34",
+  "case_count": 60,
+  "source_hashes": {
+    "templates/foresight.html.j2": "98a28a58b242675e6d0bb39cae724a4f9c52fa34d2ce4b6775a49c23447f3817",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "tests/test_foresight_page_flag_ledger.py": "471b320a5c4412ab59b5cbdf11cdf8f39e2ada05b5f87d0cb42d398247eb1471"
+  },
+  "page_errors": [],
+  "disposition": "Superseded capture order: default screenshots now precede the keyboard scrolling journey.",
+  "minimum_record_chip_contrast": 5.329661159549015
+}

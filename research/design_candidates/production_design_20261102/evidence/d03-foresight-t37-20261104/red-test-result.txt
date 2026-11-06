@@ -1,0 +1,90 @@
+RED on unmodified fresh-main template 201e94dd75f385d118cc0f692768c26e0f02b355
+COMMAND: /opt/homebrew/opt/python@3.14/bin/python3.14 -m pytest tests/test_foresight_page_flag_ledger.py -q --tb=short
+....FFFFF....F.F...F.F.....FF..                                          [100%]
+=================================== FAILURES ===================================
+_________ test_t37_mixed_summary_shows_declared_pending_count_once[0] __________
+tests/test_foresight_page_flag_ledger.py:183: in test_t37_mixed_summary_shows_declared_pending_count_once
+    assert len(chips) == 1, "pending outcomes disappeared after grading began"
+E   AssertionError: pending outcomes disappeared after grading began
+E   assert 0 == 1
+E    +  where 0 = len([])
+_________ test_t37_mixed_summary_shows_declared_pending_count_once[7] __________
+tests/test_foresight_page_flag_ledger.py:183: in test_t37_mixed_summary_shows_declared_pending_count_once
+    assert len(chips) == 1, "pending outcomes disappeared after grading began"
+E   AssertionError: pending outcomes disappeared after grading began
+E   assert 0 == 1
+E    +  where 0 = len([])
+________ test_t37_mixed_summary_shows_declared_pending_count_once[229] _________
+tests/test_foresight_page_flag_ledger.py:183: in test_t37_mixed_summary_shows_declared_pending_count_once
+    assert len(chips) == 1, "pending outcomes disappeared after grading began"
+E   AssertionError: pending outcomes disappeared after grading began
+E   assert 0 == 1
+E    +  where 0 = len([])
+______ test_t37_all_pending_and_empty_ledger_keep_declared_count[229-229] ______
+tests/test_foresight_page_flag_ledger.py:197: in test_t37_all_pending_and_empty_ledger_keep_declared_count
+    assert _t37_pending(panel)[0].startswith(str(pending) + " ")
+E   AssertionError: assert False
+E    +  where False = <built-in method startswith of str object at 0x1077349f0>(('229' + ' '))
+E    +    where <built-in method startswith of str object at 0x1077349f0> = '⏳ accruing 累计中 — 229 flags logged 个标记已记录 · 229 pending 90d 待90天'.startswith
+E    +    and   '229' = str(229)
+________ test_t37_all_pending_and_empty_ledger_keep_declared_count[0-0] ________
+tests/test_foresight_page_flag_ledger.py:196: in test_t37_all_pending_and_empty_ledger_keep_declared_count
+    assert len(_t37_pending(panel)) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+E    +    where [] = _t37_pending('graded forward vs SPY</span><span class="l-zh">记录——对标普前瞻评分</span><span class="sh-hint"><span class="l-en">survivorshi...an><span class="l-zh">尚无标记——下次构建开始累计</span></span>\n          \n        </div>\n        \n        \n      </div>\n    ')
+______ test_t37_unavailable_pending_never_fabricates_a_count[negative-0] _______
+tests/test_foresight_page_flag_ledger.py:217: in test_t37_unavailable_pending_never_fabricates_a_count
+    assert _t37_pending(panel) == []
+E   AssertionError: assert ['⏳ accruing ...ing 90d 待90天'] == []
+E
+E     Left contains one more item: '⏳ accruing 累计中 — 351 flags logged 个标记已记录 · -1 pending 90d 待90天'
+E     Use -v to get more diff
+________ test_t37_unavailable_pending_never_fabricates_a_count[true-0] _________
+tests/test_foresight_page_flag_ledger.py:217: in test_t37_unavailable_pending_never_fabricates_a_count
+    assert _t37_pending(panel) == []
+E   AssertionError: assert ['⏳ accruing ...ing 90d 待90天'] == []
+E
+E     Left contains one more item: '⏳ accruing 累计中 — 351 flags logged 个标记已记录 · True pending 90d 待90天'
+E     Use -v to get more diff
+______ test_t37_unavailable_pending_never_fabricates_a_count[fraction-0] _______
+tests/test_foresight_page_flag_ledger.py:217: in test_t37_unavailable_pending_never_fabricates_a_count
+    assert _t37_pending(panel) == []
+E   AssertionError: assert ['⏳ accruing ...ing 90d 待90天'] == []
+E
+E     Left contains one more item: '⏳ accruing 累计中 — 351 flags logged 个标记已记录 · 1.5 pending 90d 待90天'
+E     Use -v to get more diff
+_______ test_t37_unavailable_pending_never_fabricates_a_count[string-0] ________
+tests/test_foresight_page_flag_ledger.py:217: in test_t37_unavailable_pending_never_fabricates_a_count
+    assert _t37_pending(panel) == []
+E   AssertionError: assert ['⏳ accruing ...ing 90d 待90天'] == []
+E
+E     Left contains one more item: '⏳ accruing 累计中 — 351 flags logged 个标记已记录 · 229 pending 90d 待90天'
+E     Use -v to get more diff
+____ test_t37_pending_preserves_directional_control_and_flag_time_receipts _____
+tests/test_foresight_page_flag_ledger.py:234: in test_t37_pending_preserves_directional_control_and_flag_time_receipts
+    assert len(_t37_pending(panel)) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+E    +    where [] = _t37_pending('graded forward vs SPY</span><span class="l-zh">记录——对标普前瞻评分</span><span class="sh-hint"><span class="l-en">survivorshi...-tk">AGCO</span></td>\n          </tr>\n          \n          </tbody>\n        </table>\n        \n      </div>\n    ')
+___________ test_t37_control_only_graded_results_still_show_pending ____________
+tests/test_foresight_page_flag_ledger.py:245: in test_t37_control_only_graded_results_still_show_pending
+    assert len(_t37_pending(panel)) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+E    +    where [] = _t37_pending('graded forward vs SPY</span><span class="l-zh">记录——对标普前瞻评分</span><span class="sh-hint"><span class="l-en">survivorshi...-tk">AGCO</span></td>\n          </tr>\n          \n          </tbody>\n        </table>\n        \n      </div>\n    ')
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_foresight_page_flag_ledger.py::test_t37_mixed_summary_shows_declared_pending_count_once[0]
+FAILED tests/test_foresight_page_flag_ledger.py::test_t37_mixed_summary_shows_declared_pending_count_once[7]
+FAILED tests/test_foresight_page_flag_ledger.py::test_t37_mixed_summary_shows_declared_pending_count_once[229]
+FAILED tests/test_foresight_page_flag_ledger.py::test_t37_all_pending_and_empty_ledger_keep_declared_count[229-229]
+FAILED tests/test_foresight_page_flag_ledger.py::test_t37_all_pending_and_empty_ledger_keep_declared_count[0-0]
+FAILED tests/test_foresight_page_flag_ledger.py::test_t37_unavailable_pending_never_fabricates_a_count[negative-0]
+FAILED tests/test_foresight_page_flag_ledger.py::test_t37_unavailable_pending_never_fabricates_a_count[true-0]
+FAILED tests/test_foresight_page_flag_ledger.py::test_t37_unavailable_pending_never_fabricates_a_count[fraction-0]
+FAILED tests/test_foresight_page_flag_ledger.py::test_t37_unavailable_pending_never_fabricates_a_count[string-0]
+FAILED tests/test_foresight_page_flag_ledger.py::test_t37_pending_preserves_directional_control_and_flag_time_receipts
+FAILED tests/test_foresight_page_flag_ledger.py::test_t37_control_only_graded_results_still_show_pending
+11 failed, 20 passed in 15.55s

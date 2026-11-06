@@ -1,0 +1,5 @@
+{"case": "radius-320-light-en", "status": "PASS", "chip_radius": "8px", "font_size": "12px"}
+{"case": "radius-320-dark-zh", "status": "PASS", "chip_radius": "8px", "font_size": "12px"}
+{"case": "radius-390-light-zh", "status": "PASS", "chip_radius": "8px", "font_size": "12px"}
+{"case": "radius-1440-dark-en", "status": "PASS", "chip_radius": "8px", "font_size": "12px"}
+{"complete": true, "passed": 4, "template_sha256": "96c024b2122afd75c444d1945fd840bea9180cbef77662fb6d447dc9fdc957dc"}

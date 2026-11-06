@@ -1,0 +1,17 @@
+{
+  "initial_commit_attempt": "did not execute git commit; git diff --cached --check stopped on verbatim diff/HTML evidence whitespace",
+  "initial_input": "tip52abe2 to working tree included reverse upstream site changes; superseded, not acceptance",
+  "initial_input_bytes": 244426779,
+  "initial_input_sha256": "0da01f308791ec20a88d50a8828d66a781d8d615e0bbab50cf8cfdd76adc29e8",
+  "canonical_merge_base": "201e94dd75f385d118cc0f692768c26e0f02b355",
+  "correct_input_bytes": 1348,
+  "correct_input_sha256": "945b8c3a5a6979bf6d17f3ca3ecfc3229cb9a9664ebe3663b972b99cbcdc6e63",
+  "raw_html_sha256": "50a10eb0a1f97d2101c35935e1921f426dfeeb4f88cf6783630b40359cd3964a",
+  "serialization": "raw diff and rendered HTML gzip archives preserve exact bytes without text whitespace normalization",
+  "unaccepted_large_input_retention": {
+    "temporary_path": "/tmp/d03-t37-unaccepted-input-b32q9q_e/noncanonical-tip-comparison.diff.gz",
+    "bytes": 30280161,
+    "sha256": "db599e0f3c511ad2d0f2a6f248128461cfef42729eda283bd673fe3b65a53c75",
+    "canonical_evidence": "bounded diagnostic plus exact raw digest and refs; full unrelated input is reproducible and not part of proposed source change"
+  }
+}

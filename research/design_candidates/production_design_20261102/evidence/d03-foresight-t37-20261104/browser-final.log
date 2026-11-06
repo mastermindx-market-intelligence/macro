@@ -1,0 +1,14 @@
+{"phase": "start", "out": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-pending-t37-20261104-c2-b181e904c380228d/research/design_candidates/production_design_20261102/evidence/d03-foresight-t37-20261104/browser-final"}
+{"phase": "context-complete", "width": 320, "theme": "light", "lang": "en", "cases": 5}
+{"phase": "context-complete", "width": 320, "theme": "light", "lang": "zh", "cases": 10}
+{"phase": "context-complete", "width": 320, "theme": "dark", "lang": "en", "cases": 15}
+{"phase": "context-complete", "width": 320, "theme": "dark", "lang": "zh", "cases": 20}
+{"phase": "context-complete", "width": 390, "theme": "light", "lang": "en", "cases": 25}
+{"phase": "context-complete", "width": 390, "theme": "light", "lang": "zh", "cases": 30}
+{"phase": "context-complete", "width": 390, "theme": "dark", "lang": "en", "cases": 35}
+{"phase": "context-complete", "width": 390, "theme": "dark", "lang": "zh", "cases": 40}
+{"phase": "context-complete", "width": 1440, "theme": "light", "lang": "en", "cases": 45}
+{"phase": "context-complete", "width": 1440, "theme": "light", "lang": "zh", "cases": 50}
+{"phase": "context-complete", "width": 1440, "theme": "dark", "lang": "en", "cases": 55}
+{"phase": "context-complete", "width": 1440, "theme": "dark", "lang": "zh", "cases": 60}
+{"phase": "complete", "case_count": 60, "min_contrast": 5.329661159549015, "min_font_size": 12, "page_overflow_cases": 0, "page_errors": []}

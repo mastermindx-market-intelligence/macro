@@ -1,0 +1,37 @@
+{
+  "repository": "mastermindx-market-intelligence/macro",
+  "pr": 10723,
+  "subject_head": "e488b0a00951747e2cab89ecc1d867f470746dc3",
+  "run_id": 41803534055,
+  "attempt": 1,
+  "job_id": 126491204210,
+  "job": "ci-pack-9",
+  "logical_job": "design-governance",
+  "tested_tree": "b3352aa11f24cb7e2b7255d014adcd1d96cba679",
+  "base": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "failed_step": "forward-only design ratchet (new forbidden decisions on changed lines)",
+  "annotation": "templates/foresight.html.j2:369 [radius-literal] border-radius: 8px",
+  "failure_time_utc": "2026-11-04T09:41:29.3583274Z",
+  "runner": "ubuntu-24.04 / 20261101.360",
+  "classification": "introduced design-ratchet violation on a touched CSS line; exact-base replay reports zero blocking findings",
+  "causal_change": "font-size 11px to12px touched the same line as an existing 8px literal radius",
+  "repair": "Use established var(--r-ctl,8px) control-radius token idiom; retain 12px text and 8px rendered geometry.",
+  "scope": [
+    "templates/foresight.html.j2 .fx-rchip",
+    "T37 evidence receipts"
+  ],
+  "do_not_redo": [
+    "pending-count semantics and existing accepted 48 focused /60 browser cases",
+    "native Paper11JL-0 geometry"
+  ],
+  "required_checks": [
+    "actual enforce-added design ratchet",
+    "previously blocked visual-evidence gate",
+    "focused actual-template computed-radius and visual QA"
+  ],
+  "source_pin": "cb8fa9132770b1967d585e323dd72b145c580601",
+  "carrier": "original Studio Direct C2 Personal / m2studio",
+  "limits": "This local repair does not claim later-head hosted CI or release acceptance.",
+  "before_template_sha256": "98a28a58b242675e6d0bb39cae724a4f9c52fa34d2ce4b6775a49c23447f3817",
+  "after_template_sha256": "96c024b2122afd75c444d1945fd840bea9180cbef77662fb6d447dc9fdc957dc"
+}
