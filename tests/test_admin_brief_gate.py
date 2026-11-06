@@ -4,6 +4,7 @@ import sys
 import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from unittest.mock import Mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -35,44 +36,67 @@ def _seed(root, rel, payload):
 # ---- master_brain skip when fresh -------------------------------------------
 def test_master_brain_skips_when_within_interval(monkeypatch):
     root = Path(tempfile.mkdtemp(prefix="mb_"))
-    _seed(root, "data/regime/master_brief.json",
-          {"generated_at": _iso(1), "lens": "macro", "sentinel": "PREV"})
+    prior = {"generated_at": _iso(1), "lens": "macro",
+             "summary": "Last usable macro assessment.", "sentinel": "PREV"}
+    stored = _seed(root, "data/regime/master_brief.json", prior)
+    before = stored.read_bytes()
     monkeypatch.setattr(master_brain, "_cfg",
                         lambda: {"enabled": True, "interval_days": 7, "lenses": ["macro"]})
-    # synthesize must NOT be reached when we skip
-    def _boom(*a, **k):
-        raise AssertionError("synthesize must not run when the gate skips")
-    monkeypatch.setattr(master_brain, "synthesize", _boom)
+    # run() catches provider errors, so raising alone cannot prove the gate skipped.
+    gather = Mock(side_effect=AssertionError("gather must not run when the gate skips"))
+    synthesize = Mock(side_effect=AssertionError("synthesize must not run when the gate skips"))
+    monkeypatch.setitem(master_brain.LENSES["macro"], "state_fn", gather)
+    monkeypatch.setattr(master_brain, "synthesize", synthesize)
 
     out = master_brain.run(persist=False, root=root, force=False, lens="macro")
-    assert out and out.get("sentinel") == "PREV"
+    assert out == prior
+    gather.assert_not_called()
+    synthesize.assert_not_called()
+    assert stored.read_bytes() == before
 
 
 def test_master_brain_force_bypasses_gate(monkeypatch):
     root = Path(tempfile.mkdtemp(prefix="mbf_"))
-    _seed(root, "data/regime/master_brief.json", {"generated_at": _iso(0), "sentinel": "PREV"})
+    stored = _seed(root, "data/regime/master_brief.json",
+                   {"generated_at": _iso(0), "lens": "macro",
+                    "summary": "Last usable macro assessment.", "sentinel": "PREV"})
+    before = stored.read_bytes()
     monkeypatch.setattr(master_brain, "_cfg",
                         lambda: {"enabled": True, "interval_days": 7, "lenses": ["macro"]})
-    master_brain.LENSES["macro"]["state_fn"]  # touch to ensure key exists
-    monkeypatch.setitem(master_brain.LENSES["macro"], "state_fn", lambda r: {"macro": {"date": "x"}})
-    monkeypatch.setattr(master_brain, "synthesize", lambda *a, **k: {"sentinel": "NEW"})
+    gather = Mock(return_value={"macro": {"date": "x"}})
+    synthesize = Mock(return_value={"lens": "macro", "summary": "Fresh macro assessment.",
+                                   "sentinel": "NEW"})
+    monkeypatch.setitem(master_brain.LENSES["macro"], "state_fn", gather)
+    monkeypatch.setattr(master_brain, "synthesize", synthesize)
     monkeypatch.setattr(master_brain, "_translate_brief", lambda *a, **k: None)
 
     out = master_brain.run(persist=False, root=root, force=True, lens="macro")
     assert out and out.get("sentinel") == "NEW"   # forced → regenerated, not the prev
+    gather.assert_called_once_with(root)
+    synthesize.assert_called_once()
+    assert stored.read_bytes() == before
 
 
 def test_master_brain_interval_one_does_not_skip(monkeypatch):
     root = Path(tempfile.mkdtemp(prefix="mb1_"))
-    _seed(root, "data/regime/master_brief.json", {"generated_at": _iso(0), "sentinel": "PREV"})
+    stored = _seed(root, "data/regime/master_brief.json",
+                   {"generated_at": _iso(0), "lens": "macro",
+                    "summary": "Last usable macro assessment.", "sentinel": "PREV"})
+    before = stored.read_bytes()
     monkeypatch.setattr(master_brain, "_cfg",
                         lambda: {"enabled": True, "interval_days": 1, "lenses": ["macro"]})
-    monkeypatch.setitem(master_brain.LENSES["macro"], "state_fn", lambda r: {"macro": {"date": "x"}})
-    monkeypatch.setattr(master_brain, "synthesize", lambda *a, **k: {"sentinel": "NEW"})
+    gather = Mock(return_value={"macro": {"date": "x"}})
+    synthesize = Mock(return_value={"lens": "macro", "summary": "Fresh macro assessment.",
+                                   "sentinel": "NEW"})
+    monkeypatch.setitem(master_brain.LENSES["macro"], "state_fn", gather)
+    monkeypatch.setattr(master_brain, "synthesize", synthesize)
     monkeypatch.setattr(master_brain, "_translate_brief", lambda *a, **k: None)
 
     out = master_brain.run(persist=False, root=root, force=False, lens="macro")
     assert out and out.get("sentinel") == "NEW"   # interval 1 → never skips
+    gather.assert_called_once_with(root)
+    synthesize.assert_called_once()
+    assert stored.read_bytes() == before
 
 
 # ---- ai_desk skip when fresh -------------------------------------------------
