@@ -47,11 +47,11 @@ def empty_panel() -> pd.DataFrame:
     return pd.DataFrame(index=pd.DatetimeIndex([], name="Date"))
 
 
-def capture_panels(panels: Mapping[str, Any], *, source_session: str,
-                   allow_absent: bool = False) -> dict[str, pd.DataFrame]:
+def _capture_panels(panels: Mapping[str, Any], *, fields: tuple[str, ...], source_session: str,
+                    allow_absent: bool = False) -> dict[str, pd.DataFrame]:
     """Validate/detach supplied matrices without sorting or repairing them."""
     from lib import market_session
-    if not isinstance(panels, Mapping) or set(panels) != set(FIELDS):
+    if not isinstance(panels, Mapping) or set(panels) != set(fields):
         raise AdjustedCaptureError("exact_adjusted_fields_required")
     try:
         if not isinstance(source_session, str) or date.fromisoformat(source_session).isoformat() != source_session:
@@ -61,7 +61,7 @@ def capture_panels(panels: Mapping[str, Any], *, source_session: str,
         raise AdjustedCaptureError("invalid_source_session") from None
     output = {}
     checked_indices = set()
-    for field in FIELDS:
+    for field in fields:
         frame = panels[field]
         if frame is None and allow_absent:
             frame = empty_panel()
@@ -96,6 +96,17 @@ def capture_panels(panels: Mapping[str, Any], *, source_session: str,
         copied.index = copied.index.as_unit("ns")
         output[field] = copied
     return output
+
+
+def capture_panels(panels: Mapping[str, Any], *, source_session: str,
+                   allow_absent: bool = False) -> dict[str, pd.DataFrame]:
+    return _capture_panels(panels, fields=FIELDS, source_session=source_session, allow_absent=allow_absent)
+
+
+def capture_close_panel(panel: Any, *, source_session: str, allow_absent: bool = False) -> pd.DataFrame:
+    """Apply the same scalar/date/bounds contract to an actual close-only owner."""
+    return _capture_panels({"close": panel}, fields=("close",), source_session=source_session,
+                           allow_absent=allow_absent)["close"]
 
 
 def capture_adjusted_response(frame: Any, *, requested: tuple[str, ...],

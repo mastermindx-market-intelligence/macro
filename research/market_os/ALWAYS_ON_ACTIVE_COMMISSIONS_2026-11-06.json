@@ -991,6 +991,35 @@
         "Updater recovery/bootstrap, legacy drain/anti-downgrade",
         "CI capability-owner resolution, protected release and authenticated beta proof; wider migration waves"
       ]
+    },
+    "basket_extras_acquisition": {
+      "base_sha": "765cd41712a0a838f7ec68c659dd6dd3e8c092a9",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/BASKET_EXTRAS_ACQUISITION_2026-11-06.md",
+      "proof": {
+        "passed": 103,
+        "warnings": 6,
+        "exit_code": 0,
+        "diff_check": 0,
+        "log": "/tmp/mmx-extras-capture-expanded-20261106.log",
+        "log_sha256": "282887b42eff8462356ae1d14f0823bb018f939ff1a44c60b142c44ca0586d20",
+        "counts_overlap_prior": true,
+        "legacy_fixture": "tests/fixtures/base_extras_download_765cd.py",
+        "legacy_function_sha256": "98a534528ad9254869405f4aea331f9fbbaf423e932841b42320c5f856819a95"
+      },
+      "behavior": [
+        "Existing extras downloader accepts captured policy/start/target; no legacy store/proxy effects.",
+        "Actual resolver selection controls skip/tie correction; short IPO history remains legitimate.",
+        "Full dated historical membership separated from current population; required historical observations qualify final selection.",
+        "Observed primary tail and bounded resolver view; union archive retained; target observation distinct from successful acquisition."
+      ],
+      "remaining": [
+        "Private coherent broad/member storage and source identity",
+        "Source evidence propagation through explicit basket/theme inputs",
+        "Pure basket handoff and canonical board then complete Sector composition",
+        "Updater recovery/bootstrap, legacy drain/anti-downgrade",
+        "CI capability-owner resolution, protected release, existing API/Terminal and authenticated beta proof; remaining migration waves"
+      ]
     }
   }
 }
