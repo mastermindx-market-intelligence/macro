@@ -38,7 +38,8 @@ test('pending verification uses existing unbound shape and real auth restoration
  const x=setup();x.setUser(null);await actualOnboard(x,true)();
  assert.equal(Array.isArray(JSON.parse(x.store.get(KEY))),false);assert.equal(x.writes.length,0);
  const onAuth=theme.slice(theme.indexOf('  function _onAuth('),theme.indexOf('  window.MDXAuth ='));
- Object.assign(x.ctx,{_sdPlan:null,_sdPlanFor:null,_sdUsage:null,_sdUsageFor:null,_sdUsageErr:false,_authReady:false,_emitAuth(){},_renderAcct(){}});
+ // Production auth bootstrap declares this state outside the extracted callback.
+ Object.assign(x.ctx,{_explicitSignOut:false,_sdPlan:null,_sdPlanFor:null,_sdUsage:null,_sdUsageFor:null,_sdUsageErr:false,_authReady:false,_emitAuth(){},_renderAcct(){}});
  vm.runInContext(onAuth,x.ctx);x.state.subject='account-a';x.ctx._onAuth('SIGNED_IN',{user:{id:'account-a',email:'account-a@example.com'}});
  await tick();assert.equal(x.writes.length,1);assert.equal(x.store.has(KEY),false);
 });
