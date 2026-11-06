@@ -302,3 +302,116 @@ def test_cli_post_checkpoint_valueerror_preserves_unknown_original_identity(inpu
     assert calls==[identity]
     assert S.main(_cli_args(inputs))==1
     assert calls==[identity]  # Duplicate/source guard retains the same operation.
+
+# Synthetic retained-input boundary regression: no real SEC retrieval or emission.
+@pytest.mark.parametrize('field', ['claim', 'source qualifier'])
+@pytest.mark.parametrize('quantity_literals', [[], ['1']])
+def test_grouped_amount_does_not_anchor_truncated_reviewed_span(inputs, field, quantity_literals):
+    from engine.press.issuer_release_candidate import normalized_issuer_body
+    original = inputs['document_path'].read_text()
+    altered = original.replace('Backlog was 36.7 GW', 'Revenue was $1,000. Backlog was 36.7 GW')
+    inputs['document_path'].write_text(altered)
+    inputs['document_sha256'] = digest(inputs['document_path'])
+    body, body_hash = normalized_issuer_body(altered)
+    def change(q):
+        q.update(document_sha256=inputs['document_sha256'], body_sha256=body_hash)
+        if field == 'claim':
+            q['reviewed_claims'][1] = {'id': 'revenue', 'literal': 'Revenue was $1', 'quantity_literals': quantity_literals}
+        else:
+            q['source_qualifiers'][1] = 'Revenue was $1'
+    mutate(inputs, change)
+    mutate(inputs, lambda r: r.update(raw_sha256=inputs['document_sha256'],
+                                      bytes=inputs['document_path'].stat().st_size), 'retrieval')
+    assert not any(json.loads(inputs['qualification_path'].read_text())[k]
+                   for k in ('allow_stage', 'allow_emit', 'publication_approved'))
+    with pytest.raises(ValueError, match='literal source span|whole source atom'):
+        invoke(inputs)
+
+
+@pytest.mark.parametrize('source,literal,allowed', [
+    ('Revenue was $1,000', 'Revenue was $1', False),
+    ('Revenue was $1,000', 'Revenue was $1,000', True),
+    ('Revenue was 1.25', 'Revenue was 1.2', False),
+    ('Revenue was $1.25', 'Revenue was $1.25', True),
+    ('Revenue was 1.25%', 'Revenue was 1.25', False),
+    ('Revenue was 1.25%', 'Revenue was 1.25%', True),
+    ('Revenue was $1.00', 'Revenue was $1', False),
+    ('Items 1, 2, and 3', 'Items 1, 2', True),
+    ('Revenue was $1,000. Revenue was $1', 'Revenue was $1', True),
+    ('Revenue was -1,000', 'Revenue was -1', False),
+    ('Revenue was -1,000', 'Revenue was -1,000', True),
+])
+def test_reviewed_span_numeric_boundaries(source, literal, allowed):
+    from engine.press.issuer_release_candidate import _whole_numeric_occurrence
+    assert _whole_numeric_occurrence(literal, source) is allowed
+
+
+@pytest.mark.parametrize('source,atom,allowed', [
+    ('Revenue was 1,000', '1', False),
+    ('Revenue was 1,000 and 1', '1', True),
+    ('Revenue was 1.25', '1', False),
+    ('Revenue was 1.25', '1.25', True),
+    ('Revenue was 1.25%', '1.25', False),
+    ('Revenue was 1,000', '1000', False),
+])
+def test_explicit_numeric_atom_boundaries(source, atom, allowed):
+    from engine.press.issuer_release_candidate import _whole_numeric_occurrence
+    assert _whole_numeric_occurrence(atom, source) is allowed
+
+def test_complete_grouped_amount_reaches_real_fact_anchor_offline(inputs):
+    from engine.press.issuer_release_candidate import normalized_issuer_body
+    original = inputs['document_path'].read_text()
+    altered = original.replace('Backlog was 36.7 GW', 'Revenue was $1,000. Backlog was 36.7 GW')
+    inputs['document_path'].write_text(altered)
+    inputs['document_sha256'] = digest(inputs['document_path'])
+    _, body_hash = normalized_issuer_body(altered)
+    def change(q):
+        q.update(document_sha256=inputs['document_sha256'], body_sha256=body_hash)
+        q['reviewed_claims'][1] = {'id': 'revenue', 'literal': 'Revenue was $1,000', 'quantity_literals': []}
+    mutate(inputs, change)
+    mutate(inputs, lambda r: r.update(raw_sha256=inputs['document_sha256'],
+                                      bytes=inputs['document_path'].stat().st_size), 'retrieval')
+    plan = invoke(inputs)
+    assert plan['allow_emit'] is False and plan['publication_approved'] is False
+    assert V.check_fact_anchor({'body_html': '<p>Revenue was $1,000.</p>'},
+                               plan['validation_context'], P.load_config(inputs['root']))['ok']
+
+@pytest.mark.parametrize('field', ['claim', 'source qualifier'])
+@pytest.mark.parametrize('source, reviewed', [
+    ('Revenue was $1M', 'Revenue was $1'),
+    ('Revenue was $1million', 'Revenue was $1'),
+    ('Revenue was $1,000USD', 'Revenue was $1,000'),
+    ('Revenue was $1.25B', 'Revenue was $1.25'),
+])
+def test_attached_numeric_suffix_cannot_validate_truncated_issuer_span(inputs, field, source, reviewed):
+    from engine.press.issuer_release_candidate import normalized_issuer_body
+    original = inputs['document_path'].read_text()
+    altered = original.replace('Backlog was 36.7 GW', source + '. Backlog was 36.7 GW')
+    inputs['document_path'].write_text(altered)
+    inputs['document_sha256'] = digest(inputs['document_path'])
+    _, body_hash = normalized_issuer_body(altered)
+    def change(q):
+        q.update(document_sha256=inputs['document_sha256'], body_sha256=body_hash)
+        if field == 'claim':
+            q['reviewed_claims'][1] = {'id': 'revenue', 'literal': reviewed, 'quantity_literals': []}
+        else:
+            q['source_qualifiers'][1] = reviewed
+    mutate(inputs, change)
+    mutate(inputs, lambda r: r.update(raw_sha256=inputs['document_sha256'],
+                                      bytes=inputs['document_path'].stat().st_size), 'retrieval')
+    with pytest.raises(ValueError, match='literal source span'):
+        invoke(inputs)
+
+
+@pytest.mark.parametrize('source, reviewed, expected', [
+    ('Revenue was $1M', 'Revenue was $1', False),
+    ('Revenue was $1M', 'Revenue was $1M', True),
+    ('Revenue was $1million', 'Revenue was $1', False),
+    ('Revenue was $1,000USD', 'Revenue was $1,000', False),
+    ('Revenue was $1.25B', 'Revenue was $1.25', False),
+    ('FY1 earnings were up', '1', False),
+    ('FY1 earnings were up', 'FY1 earnings', True),
+])
+def test_numeric_word_edge_occurrence_boundaries(source, reviewed, expected):
+    from engine.press.issuer_release_candidate import _whole_numeric_occurrence
+    assert _whole_numeric_occurrence(reviewed, source) is expected
