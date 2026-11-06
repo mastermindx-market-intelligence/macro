@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - admin/static/index.html
+  - admin/static/preferences.js
+  - admin/static/styles.css
+  - admin/static/app.js
+manifest: mockups/evidence/intelligence-os-a1-20261012/browser/manifest-final.json
