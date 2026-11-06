@@ -197,7 +197,12 @@ _push_hold_scan() {
 push_hold_staged_over() {
   _push_hold_work_reset || return 0
   _push_hold_scan "${1:-}" || return 0
-  awk -F'\t' '$5 == "1" { f = 1 } END { exit f ? 0 : 1 }' "$PUSH_HOLD_WORK/meta"
+  # Only a successful empty-over-limit result proves this predicate false.
+  # Read/execution errors must enter the existing hold/recheck path.
+  if awk -F'\t' '$5 == "1" { f = 1 } END { exit f ? 1 : 0 }' "$PUSH_HOLD_WORK/meta"; then
+    return 1
+  fi
+  return 0
 }
 
 # 0 when this run has held a path.
@@ -511,7 +516,7 @@ _push_hold_apply_ref() {
         all_landed=0
         break
       fi
-    done 3< "$W/maybe"
+    done 3< "$W/maybe" || return 1
     if [ "$all_landed" -eq 1 ]; then
       if _push_hold_delete_remote "$ref"; then
         echo "hold ${ref} already landed on HEAD; deleted ${ref}"

@@ -351,10 +351,10 @@ while push_attempt; do
     # losing it to GH001: HEAD goes back to that main, so every change of this
     # run is staged and held against main's bytes.
     if push_hold_staged_over "$COMMODITY_ACCEPTED"; then
-      git reset -q --soft "$COMMODITY_ACCEPTED" || exit 1
+      git reset -q --soft "$COMMODITY_ACCEPTED" || exit 2
       engine_hold
       echo "::error title=hold custody failed::a blob over the limit was found after the rebase and the hold did not take it"
-      exit 1
+      exit 2
     fi
     # This is the actual final candidate, including any render-sync commit.
     qledger_push_candidate=$(git rev-parse 'refs/heads/main^{commit}') || exit 1

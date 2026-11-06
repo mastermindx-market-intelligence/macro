@@ -350,7 +350,7 @@ def test_engine_commit_holds_after_the_heal_and_reds_every_clean_exit():
     post = text.index('if push_hold_staged_over "$COMMODITY_ACCEPTED"; then')
     candidate = text.index("qledger_push_candidate=$(")
     assert accepted < post < candidate
-    assert 'git reset -q --soft "$COMMODITY_ACCEPTED" || exit 1\n      engine_hold\n' in text[post:candidate]
+    assert 'git reset -q --soft "$COMMODITY_ACCEPTED" || exit 2\n      engine_hold\n' in text[post:candidate]
     red = "if push_hold_red; then exit 1; fi; exit 0"
     clean_exits = 0
     for line in text.splitlines():
@@ -586,8 +586,12 @@ def test_engine_second_checkpoint_holds_the_group_again_even_after_the_big_file_
     assert froms == [ref1]
 
 
-@pytest.mark.parametrize("over", [True, False])
-def test_engine_post_rebase_check_holds_the_whole_candidate_against_accepted_main(tmp_path, over):
+@pytest.mark.parametrize(
+    "over,fault",
+    [(True, "none"), (False, "none"), (True, "lookup"), (False, "lookup"),
+     (True, "reset"), (True, "hold_missing")],
+)
+def test_engine_post_rebase_check_holds_the_whole_candidate_against_accepted_main(tmp_path, over, fault):
     """After the rebase the candidate is committed. A blob over the limit in it
     moves HEAD back to the accepted main and holds every change of the run, the
     render-sync commit included. Under the limit, the candidate goes on."""
@@ -607,8 +611,35 @@ def test_engine_post_rebase_check_holds_the_whole_candidate_against_accepted_mai
     _git(repo, "commit", "-q", "-m", "render-sync", env=env)
     candidate = _git(repo, "rev-parse", "HEAD", env=env)
 
-    done = _bash(repo, _hold_script(f'COMMODITY_ACCEPTED={accepted}\n{block}\necho "candidate goes on"'), env)
+    if fault in {"lookup", "reset"}:
+        tool = "awk" if fault == "lookup" else "git"
+        real_tool = subprocess.run(["which", tool], capture_output=True, text=True, check=True).stdout.strip()
+        fake_bin = tmp_path / "bin"
+        fake_bin.mkdir()
+        wrapper = fake_bin / tool
+        refusal = (
+            'for arg in "$@"; do case "$arg" in */work/meta) exit 61 ;; esac; done\n'
+            if fault == "lookup" else
+            'if [ "${1:-}" = "reset" ] && [ "${2:-}" = "-q" ] && [ "${3:-}" = "--soft" ]; then exit 61; fi\n'
+        )
+        wrapper.write_text("#!/bin/bash\n" + refusal + 'exec "$REAL_TOOL" "$@"\n')
+        wrapper.chmod(0o755)
+        env.update({"PATH": f"{fake_bin}:{env['PATH']}", "REAL_TOOL": real_tool})
+    hold_fault = "engine_hold() { return 0; }\n" if fault == "hold_missing" else ""
 
+    done = _bash(repo, _hold_script(hold_fault + f'COMMODITY_ACCEPTED={accepted}\n{block}\necho "candidate goes on"'), env)
+
+    if fault != "none":
+        assert done.returncode == 2, done.stdout + done.stderr
+        assert "candidate goes on" not in done.stdout
+        expected_head = candidate if fault == "reset" else accepted
+        assert _git(repo, "rev-parse", "HEAD", env=env) == expected_head
+        assert _git(repo, "write-tree", env=env) == _git(repo, "rev-parse", f"{candidate}^{{tree}}", env=env)
+        assert _git(bare, "rev-parse", "main", env=env) == accepted
+        assert _custody_refs(bare, env) == []
+        assert (repo / "data/x.jsonl").read_bytes() == source
+        assert (repo / "site/index.html").read_bytes() == b"<html>v2</html>"
+        return
     if not over:
         assert done.returncode == 0, done.stdout + done.stderr
         assert "candidate goes on" in done.stdout
@@ -1341,3 +1372,52 @@ def test_engine_unknown_first_custody_cannot_mint_a_second_checkpoint_ref(tmp_pa
     assert held == {"data/x.jsonl": SOURCE_BYTES, "site/x.json": DERIVED_BYTES}
     assert (repo / "data/x.jsonl").read_bytes() == b"short\n"
     assert (repo / "site/late.json").read_bytes() == b"{}\n"
+
+
+def test_engine_recovery_missing_prefix_proof_cannot_retire_custody(tmp_path):
+    env = _hold_env(tmp_path)
+    repo, bare = _pair_seed(tmp_path, env)
+    _stage_pair(repo, env)
+    first = _bash(repo, _hold_script("engine_hold"), env)
+    assert first.returncode == 1, first.stdout + first.stderr
+    [ref] = _custody_refs(bare, env)
+    extended_wrong_prefix = b"wrong-prefix\n" + SOURCE_BYTES
+    (repo / "data/x.jsonl").write_bytes(extended_wrong_prefix)
+    _git(repo, "add", "data", "site", env=env)
+    _git(repo, "commit", "-q", "-m", "different accepted extension", env=env)
+    _git(repo, "push", "-q", "origin", "main", env=env)
+    accepted = _git(bare, "rev-parse", "main", env=env)
+    before_index = _git(repo, "write-tree", env=env)
+    env = _hold_env(tmp_path, "502")
+    state = Path(env["RUNNER_TEMP"]) / "push_hold.502.engine"
+    real_awk = subprocess.run(["which", "awk"], capture_output=True, text=True, check=True).stdout.strip()
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    wrapper = fake_bin / "awk"
+    wrapper.write_text(
+        "#!/bin/bash\n"
+        'for arg in "$@"; do\n'
+        "  case \"$arg\" in *'$5 == \"maybe\"'*)\n"
+        '    "$REAL_AWK" "$@" || exit "$?"\n'
+        '    chmod 000 "$FAULT_STATE/work/rb.1/maybe"\n'
+        '    exit 0 ;;\n'
+        '  esac\n'
+        'done\n'
+        'exec "$REAL_AWK" "$@"\n'
+    )
+    wrapper.chmod(0o755)
+    env.update({"PATH": f"{fake_bin}:{env['PATH']}", "REAL_AWK": real_awk, "FAULT_STATE": str(state)})
+    try:
+        done = _bash(repo, _hold_script('push_hold_recover "$ENGINE_GROUP"'), env)
+        assert done.returncode == 1, done.stdout + done.stderr
+        assert _custody_refs(bare, env) == [ref]
+        assert _git(bare, "rev-parse", "main", env=env) == accepted
+        assert _git(repo, "write-tree", env=env) == before_index
+        assert (repo / "data/x.jsonl").read_bytes() == extended_wrong_prefix
+        assert (state / "unreconciled").read_text().strip()
+        rows, _ = _custody(bare, ref, env)
+        assert rows == {"data/x.jsonl": SOURCE_BYTES, "site/x.json": DERIVED_BYTES}
+    finally:
+        maybe = state / "work/rb.1/maybe"
+        if maybe.exists():
+            maybe.chmod(0o600)
