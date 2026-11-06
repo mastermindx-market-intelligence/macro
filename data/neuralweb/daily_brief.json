@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-11-05T15:09:23.742624+00:00",
+  "produced_at": "2026-11-06T00:33:37.531686+00:00",
   "as_of": "2026-11-04",
   "status": "degraded",
   "phase": "final",
@@ -8,95 +8,10 @@
     "cortex_status": "degraded",
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
-    "context_stale": false,
+    "context_stale": true,
     "summary": "cortex degraded — model_unavailable"
   },
-  "what_changed": [
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "spine-index",
-      "summary": "lobe spine-index row count changed: 530228 → 530189 (0%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "confluence-tape",
-      "summary": "lobe confluence-tape status: stale → fresh",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "confluence-candidates",
-      "summary": "lobe confluence-candidates status: stale → fresh",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "reflex-firings-commodity-shock",
-      "summary": "lobe reflex-firings-commodity-shock row count changed: 20 → 21 (5%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "cortex-attention-firings",
-      "summary": "lobe cortex-attention-firings status: stale → fresh",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "cortex-attention-grades",
-      "summary": "lobe cortex-attention-grades status: stale → fresh",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "attention-deterministic",
-      "summary": "lobe attention-deterministic status: stale → fresh",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "site-attention-deterministic",
-      "summary": "lobe site-attention-deterministic status: stale → fresh",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "evidence-clock",
-      "summary": "lobe evidence-clock status: stale → fresh",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "stage-analysis-context-latest",
-      "summary": "lobe stage-analysis-context-latest status: fresh → stale",
-      "severity": "warn",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "top-maturation-latest",
-      "summary": "lobe top-maturation-latest status: fresh → stale",
-      "severity": "warn",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "special-sits-context-latest",
-      "summary": "lobe special-sits-context-latest status: fresh → stale",
-      "severity": "warn",
-      "evidence_path": "data/neuralweb/health.json"
-    }
-  ],
+  "what_changed": [],
   "what_contradicted": [
     {
       "id": "",
@@ -481,6 +396,12 @@
       "area": "cortex",
       "summary": "cortex degraded — inspect data/neuralweb/cortex/memo.json and run_status",
       "action_type": "ops_fix"
+    },
+    {
+      "priority": 1,
+      "area": "cortex",
+      "summary": "cortex context was stale at run time — check world_state freshness",
+      "action_type": "inspect"
     },
     {
       "priority": 2,
@@ -900,7 +821,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-11-05T13:47:07Z",
+    "asof": "2026-11-05T15:28:10Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,
