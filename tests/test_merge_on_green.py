@@ -8958,6 +8958,118 @@ def test_a_stale_proof_refresh_also_draws_on_the_capped_slots(monkeypatch, capsy
     )
 
 
+# ── S8 (2026-11-06): the breaker must not deadlock its own repair through the cap ──
+#
+# Observed live 2026-11-06 01:44Z (sweeps 42145276056 / 42145126686): main was red
+# on one copy-law atom; its labelled repair #10759 was green and approved but its
+# proof had gone stale because an unrelated manifest edit landed on main. The
+# repo-wide census found 17 in-flight pull-request ci.yml runs against the flat cap
+# of 8, so the sweep had "0/0 effective CI workload slot(s)" and deferred the repair
+# — while the runs holding those slots were refreshes of older armed pulls that
+# could not merge until the repair did. Nothing could move. The reserve below is
+# the bounded escape: one update-branch per sweep for the labelled repair, only
+# while the baseline is red, still inside serialized authority and the attempt cap.
+
+# One clean proof run whose pull-request associations name every pull these tests
+# sweep, so `exact_proof_base` resolves each one (the fixture default names 4242 only).
+_S8_CLEAN_RUN = _run("ci-pack-1", conclusion="success", pr_numbers=(7195, 10759, 10760))
+_STALE_MAIN = (("2026-08-05T13:00:00Z", ["engine/signal_quality.py"]),)  # ci-trigger-closure: data — fixture changed-file name, never opened
+
+
+def _red_main_budget(max_refreshes=0):
+    budget = MOG.SweepBudget("read", max_refreshes=max_refreshes)
+    budget.refresh_authorized = True
+    budget.repair_reserve_authorized = True
+    return budget
+
+
+def _repair_pull(number=10759):
+    return _pull(number, labels=("merge-on-green", MOG.MAIN_RED_REPAIR_LABEL))
+
+
+def _sweep_stale(pull, budget):
+    return MOG.sweep_pull(
+        "acme/widgets",
+        pull,
+        "read",
+        "write",
+        _freshness(commits=_STALE_MAIN),
+        _proof(),
+        budget,
+    )
+
+
+def test_the_main_red_repair_takes_the_reserved_refresh_when_workload_slots_are_spent(
+    monkeypatch, capsys
+):
+    """At 0/0 ordinary slots under a red baseline, the labelled repair gets exactly
+    one update-branch; an ordinary stale pull before it and a second labelled repair
+    after it are both deferred exactly as before."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202, main_commits=_STALE_MAIN
+    )
+    budget = _red_main_budget()
+    verdicts = [
+        _sweep_stale(pull, budget)
+        for pull in (_pull(7195), _repair_pull(10759), _repair_pull(10760))
+    ]
+    assert verdicts == ["refresh-deferred", "re-proving", "refresh-deferred"]
+    updated = [c for c in calls if c[1].endswith("/update-branch")]
+    assert len(updated) == 1 and "/pulls/10759/" in updated[0][1]
+    assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 1, 1)
+    out = capsys.readouterr().out
+    assert "using the reserved repair refresh (1/1 this sweep)" in out
+    assert "PR #7195: " in out and "0/0 effective CI workload slot(s)" in out
+
+
+def test_the_reserved_repair_refresh_exists_only_while_the_baseline_is_red(monkeypatch):
+    """Under a green or pending baseline the repair label buys no extra workload:
+    the sweep leaves ``repair_reserve_authorized`` False and the old cap holds."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202, main_commits=_STALE_MAIN
+    )
+    budget = _red_main_budget()
+    budget.repair_reserve_authorized = False
+    assert _sweep_stale(_repair_pull(), budget) == "refresh-deferred"
+    assert not [c for c in calls if c[1].endswith("/update-branch")]
+    assert budget.repair_reserve_used == 0
+
+
+def test_the_reserved_repair_refresh_still_needs_serialized_authority_and_attempts(
+    monkeypatch,
+):
+    """The reserve widens the workload cap by one; it never bypasses the serialized
+    refresh authority or the never-refunded attempt counter."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202, main_commits=_STALE_MAIN
+    )
+    unauthorized = _red_main_budget()
+    unauthorized.refresh_authorized = False
+    assert _sweep_stale(_repair_pull(), unauthorized) == "refresh-deferred"
+    exhausted = _red_main_budget()
+    exhausted.refresh_attempts_used = exhausted.max_refresh_attempts
+    assert _sweep_stale(_repair_pull(), exhausted) == "refresh-deferred"
+    assert not [c for c in calls if c[1].endswith("/update-branch")]
+    assert unauthorized.repair_reserve_used == exhausted.repair_reserve_used == 0
+
+
+def test_a_definitive_conflict_on_the_repair_refunds_the_reserve_not_an_ordinary_slot(
+    monkeypatch,
+):
+    """A refund after GitHub proves the write created no run must return the slot
+    that was taken — the reserve — and never manufacture an ordinary one."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    _fake_api(monkeypatch, check_pages=pages, update_status=422, main_commits=_STALE_MAIN)
+    budget = _red_main_budget()
+    _sweep_stale(_repair_pull(), budget)
+    assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 0, 1)
+    # The reserve is whole again: a second labelled repair in the same sweep may use it.
+    assert budget.repair_reserve_available(True)
+
+
 def test_update_branch_is_fail_closed_when_no_serialized_budget_is_passed(
     monkeypatch, capsys
 ):
