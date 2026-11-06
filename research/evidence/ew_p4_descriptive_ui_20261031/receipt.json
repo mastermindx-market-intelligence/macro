@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a",
+  "source_revision": "3ab53cca42703bcc7fa2990752be671ba42575a2",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Actual full 68-case isolated Chromium recapture from integrated source commit 92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a; all 31 render inputs verified byte-for-byte against the Git tree before evidence publication; 2 screenshot PNGs and 1 contact-sheet artifacts genuinely changed. This is source evidence only, not signed-in production acceptance.",
-    "pr_branch": "claude/ssd-sector-intelligence-macro-7646-82cb8b-35c697a089b670b0",
-    "pr_parent_of_evidence_commit": "92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a",
+    "note": "Actual full 68-case isolated Chromium recapture from exact PR #10389 source commit 3ab53cca42703bcc7fa2990752be671ba42575a2; all 31 render input Git blobs verified against that immutable tree and all present working files verified byte-for-byte. 0 screenshot PNGs and 0 contact-sheet artifacts changed against the committed previous capture. The harness blocks the mounted risk_radar_workspace.js and is source evidence only, not full mounted focus-trap acceptance or signed-in production acceptance.",
+    "pr_branch": "claude/ssd-mx5-focus-trap-63011290157c7608",
+    "pr_parent_of_evidence_commit": "3ab53cca42703bcc7fa2990752be671ba42575a2",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2148,8 +2148,8 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "4a890c3224898639f680d6b0cefe836a0238d269",
-        "blob_on_pr_branch": "4a890c3224898639f680d6b0cefe836a0238d269",
+        "blob_at_source_revision": "3dab75c837e231d0c5559493dbb7241d65de476e",
+        "blob_on_pr_branch": "3dab75c837e231d0c5559493dbb7241d65de476e",
         "equal": true
       },
       {
