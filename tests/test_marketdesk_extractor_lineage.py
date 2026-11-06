@@ -16,9 +16,10 @@ INSTALLER_PATH = CANONICAL_ROOT / "tools" / "install_runtime.py"
 EXPECTED_PACKET_SHA256 = (
     "2019c38650493e4cfa40f7ed87c175a91ea939ca57d1f404ec73c5572c340e7a"
 )
-EXPECTED_MANIFEST_SHA256 = (
+EXPECTED_RECOVERY_MANIFEST_SHA256 = (
     "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602"
 )
+EXPECTED_IMPORT_COMMIT = "31981dc426f2e7fbb2b333f0fd73789f21deb8cd"
 EXPECTED_PAYLOAD_COUNT = 58
 HISTORICAL_TEMPLATE_NON_GOAL = (
     "Recovered extractor/deploy/ai.marketdesk.* plists and "
@@ -47,11 +48,15 @@ def test_canonical_packet_manifest_is_exact_and_complete() -> None:
     installer = _load_installer()
     result = installer.verify_source(CANONICAL_ROOT)
 
-    assert installer.EXPECTED_MANIFEST_SHA256 == EXPECTED_MANIFEST_SHA256
+    assert (
+        installer.EXPECTED_RECOVERY_MANIFEST_SHA256
+        == EXPECTED_RECOVERY_MANIFEST_SHA256
+    )
     assert result["ok"] is True
     assert result["payload_count"] == EXPECTED_PAYLOAD_COUNT
-    assert result["manifest_sha256"] == EXPECTED_MANIFEST_SHA256
-    assert result["receipt_manifest_sha256"] == EXPECTED_MANIFEST_SHA256
+    # #8452 split immutable recovery lineage from the evolvable current release plane.
+    assert result["recovery_manifest_sha256"] == EXPECTED_RECOVERY_MANIFEST_SHA256
+    assert result["manifest_sha256"] == result["receipt_manifest_sha256"]
     assert result["missing"] == []
     assert result["mismatched"] == []
     assert result["unexpected"] == []
@@ -79,14 +84,14 @@ def test_source_verifier_rejects_rewritten_manifest_even_when_payload_matches(
     assert result["ok"] is False
 
 
-def test_source_verifier_rejects_coordinated_manifest_and_receipt_rewrite(
+def test_source_verifier_accepts_reviewed_current_release_evolution(
     tmp_path: Path,
 ) -> None:
     installer = _load_installer()
     copied_root = tmp_path / "canonical-copy"
     shutil.copytree(CANONICAL_ROOT, copied_root, symlinks=True)
     payload = copied_root / "extractor" / "README.md"
-    payload.write_bytes(payload.read_bytes() + b"\ncoordinated-drift\n")
+    payload.write_bytes(payload.read_bytes() + b"\nreviewed-release-change\n")
     payload_digest = hashlib.sha256(payload.read_bytes()).hexdigest()
     manifest = copied_root / "SHA256SUMS"
     lines = manifest.read_text().splitlines()
@@ -96,17 +101,49 @@ def test_source_verifier_rejects_coordinated_manifest_and_receipt_rewrite(
     lines[matches[0]] = f"{payload_digest}  {relative}"
     manifest.write_text("\n".join(lines) + "\n")
 
+    release_path = copied_root / "RELEASE_RECEIPT.json"
+    release = json.loads(release_path.read_text())
+    release["release_id"] = "synthetic-reviewed-next-release"
+    release["manifest_sha256"] = hashlib.sha256(manifest.read_bytes()).hexdigest()
+    release_path.write_text(json.dumps(release, indent=2) + "\n")
+
+    result = installer.verify_source(copied_root)
+
+    assert result["ok"] is True
+    assert result["manifest_sha256"] == release["manifest_sha256"]
+    assert result["recovery_manifest_sha256"] == EXPECTED_RECOVERY_MANIFEST_SHA256
+
+
+def test_source_verifier_rejects_historical_import_receipt_rewrite(
+    tmp_path: Path,
+) -> None:
+    installer = _load_installer()
+    copied_root = tmp_path / "canonical-copy"
+    shutil.copytree(CANONICAL_ROOT, copied_root, symlinks=True)
     receipt_path = copied_root / "IMPORT_RECEIPT.json"
     receipt = json.loads(receipt_path.read_text())
-    receipt["source_packet"]["manifest_sha256"] = hashlib.sha256(
-        manifest.read_bytes()
-    ).hexdigest()
+    receipt["source_packet"]["manifest_sha256"] = "0" * 64
     receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
 
     result = installer.verify_source(copied_root)
 
     assert result["ok"] is False
-    assert "frozen manifest hash" in result["receipt_error"]
+    assert "import receipt recovery manifest hash changed" in result["receipt_error"]
+
+
+def test_source_verifier_rejects_recovery_manifest_rewrite(
+    tmp_path: Path,
+) -> None:
+    installer = _load_installer()
+    copied_root = tmp_path / "canonical-copy"
+    shutil.copytree(CANONICAL_ROOT, copied_root, symlinks=True)
+    recovery = copied_root / "RECOVERY_SHA256SUMS"
+    recovery.write_bytes(recovery.read_bytes() + b"# drift\n")
+
+    result = installer.verify_source(copied_root)
+
+    assert result["ok"] is False
+    assert "immutable recovery manifest hash changed" in result["receipt_error"]
 
 
 def test_destination_mapping_refuses_unapproved_runtime_plist(tmp_path: Path) -> None:
@@ -134,7 +171,7 @@ def test_import_receipt_pins_provenance_and_non_goals() -> None:
     assert receipt["schema"] == "mastermind.marketdesk_extractor.import.v1"
     assert receipt["operation_key"] == "research-vault-source-lineage-r1-20260914-sol-001"
     assert receipt["source_packet"]["sha256"] == EXPECTED_PACKET_SHA256
-    assert receipt["source_packet"]["manifest_sha256"] == EXPECTED_MANIFEST_SHA256
+    assert receipt["source_packet"]["manifest_sha256"] == EXPECTED_RECOVERY_MANIFEST_SHA256
     assert receipt["source_packet"]["payload_count"] == EXPECTED_PAYLOAD_COUNT
     assert receipt["canonical_root"] == "collectors/marketdesk_extractor"
     assert receipt["runtime_cutover_in_import_pr"] is False
@@ -143,6 +180,33 @@ def test_import_receipt_pins_provenance_and_non_goals() -> None:
     assert receipt["review_state"] == "DRAFT_HOLD_FOR_SOL"
     assert receipt["independent_review_required"] is True
     assert set(receipt["non_goals"]) == EXPECTED_NON_GOALS
+
+
+def test_release_receipt_separates_current_release_from_recovery_provenance() -> None:
+    release = json.loads((CANONICAL_ROOT / "RELEASE_RECEIPT.json").read_text())
+    current_manifest = CANONICAL_ROOT / "SHA256SUMS"
+    recovery_manifest = CANONICAL_ROOT / "RECOVERY_SHA256SUMS"
+
+    assert release["schema"] == "mastermind.marketdesk_extractor.release.v1"
+    assert release["base_import_commit"] == EXPECTED_IMPORT_COMMIT
+    assert release["manifest"] == "SHA256SUMS"
+    assert release["manifest_sha256"] == hashlib.sha256(
+        current_manifest.read_bytes()
+    ).hexdigest()
+    assert release["recovery_manifest"] == "RECOVERY_SHA256SUMS"
+    assert release["recovery_manifest_sha256"] == EXPECTED_RECOVERY_MANIFEST_SHA256
+    assert hashlib.sha256(recovery_manifest.read_bytes()).hexdigest() == (
+        EXPECTED_RECOVERY_MANIFEST_SHA256
+    )
+    assert release["payload_count"] == EXPECTED_PAYLOAD_COUNT
+    assert release["creates_new_execution_plane"] is False
+    # Baseline does not change runtime architecture.
+    assert release["runtime_authority"]["collector_label"] == (
+        "com.mastermindx.research-trickle"
+    )
+    assert release["runtime_authority"]["immediate_ingest_trigger"] == (
+        "com.mastermindx.research-feed"
+    )
 
 
 def test_canonical_readme_preserves_hold_and_activation_boundaries() -> None:

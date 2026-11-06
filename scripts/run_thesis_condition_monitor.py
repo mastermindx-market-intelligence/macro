@@ -88,6 +88,11 @@ def main(argv: list[str] | None = None) -> int:
         ),
         flush=True,
     )
+    if result.govrev is not None:
+        summary=result.govrev
+        # Counts only: private declaration names, subjects and filters never enter scheduler logs.
+        print("govrev-monitor: evaluated=%d new=%d correction=%d no_change=%d outage=%d invalid=%d planned=%d enqueued=0 notification_delivery=privacy_review_pending" % (
+            summary["evaluated_n"],summary["new_event"],summary["correction"],summary["no_change"],summary["outage"],summary["invalid_declaration"],summary["planned_n"]),flush=True)
     return 0
 
 

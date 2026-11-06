@@ -1,0 +1,38 @@
+{
+  "started_at": "2026-10-20T14:34:30.230023+00:00",
+  "head_before": "140bd1ee79a44859915595fdf12c958c07a60e2b",
+  "incoming": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "base": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "preview_tree": "837cb25e0b3cc32aa5b0dee9bd280655eeeb50ac",
+  "expected_conflicts": [
+    "site/etfs.html",
+    "site/us_stocks.html"
+  ],
+  "remote_pr": {
+    "autoMergeRequest": null,
+    "headRefOid": "e2d10f933587f58be8716505529a37f8839901f7",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokucA",
+        "name": "merge-blocked",
+        "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+        "color": "d93f0b"
+      }
+    ],
+    "state": "OPEN"
+  },
+  "merge_attempted": true,
+  "finished_at": "2026-10-20T14:34:47.128948+00:00",
+  "merge_exit": 1,
+  "head_after": "140bd1ee79a44859915595fdf12c958c07a60e2b",
+  "merge_head": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "unmerged": [
+    "site/etfs.html",
+    "site/us_stocks.html"
+  ],
+  "log": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-actual-merge.log",
+    "bytes": 1043,
+    "sha256": "f2aefbde9929a823848ecfd2254fbdb1b9831988e7da7bbd9d476d34a64d31d1"
+  }
+}

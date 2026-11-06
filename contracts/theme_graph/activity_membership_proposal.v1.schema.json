@@ -1,0 +1,944 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/activity_membership_proposal.v1.schema.json",
+  "title": "Native activity membership proposal v1",
+  "$comment": "2026-10-21 additive amendment: second admitted activity species principal_business_activity (role operator, lifecycle current, segment-only scope, activity: fact ids); C01 shape unchanged via species-conditional allOf. Base source_evidence.fact_id uses the single regex alternation ^(integration|activity):[0-9a-f]{64}$; each species-conditional allOf branch pins its own prefix.",
+  "description": "One owner-read company activity bound to one micro-theme definition. A row is PROPOSED until a named curator decision is supplied as input; no code path ratifies, materializes or publishes it. Graph-membership use is not granted by any current source-purpose ruling, so v1 cannot represent a granted use. Magnitudes and clocks carry explicit states: a value is non-null only for KNOWN (and KNOWN_ZERO, which requires zero).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "proposal_id",
+    "status",
+    "evidence",
+    "curation",
+    "created",
+    "authority_caps"
+  ],
+  "properties": {
+    "schema": {
+      "const": "gmi.activity_membership_proposal/v1"
+    },
+    "proposal_id": {
+      "type": "string",
+      "pattern": "^actprop:[0-9a-f]{24}$"
+    },
+    "status": {
+      "enum": [
+        "PROPOSED",
+        "RATIFIED",
+        "REJECTED"
+      ]
+    },
+    "evidence": {
+      "$ref": "#/$defs/evidence"
+    },
+    "curation": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/curation"
+        }
+      ]
+    },
+    "created": {
+      "$ref": "#/$defs/zoned_instant"
+    },
+    "authority_caps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_ratify",
+        "may_materialize",
+        "may_publish"
+      ],
+      "properties": {
+        "may_ratify": {
+          "const": false
+        },
+        "may_materialize": {
+          "const": false
+        },
+        "may_publish": {
+          "const": false
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PROPOSED"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "curation": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "RATIFIED",
+              "REJECTED"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "curation": {
+            "$ref": "#/$defs/curation"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "iso_date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "zoned_instant": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "company_node": {
+      "type": "string",
+      "pattern": "^co:[a-z]{2}:[A-Za-z0-9._-]+$"
+    },
+    "micro_theme_node": {
+      "type": "string",
+      "pattern": "^theme:[a-z0-9_]+$"
+    },
+    "issuer_ref": {
+      "type": "string",
+      "pattern": "^ISS:[A-Z0-9:._-]+$"
+    },
+    "unknown_state": {
+      "enum": [
+        "NOT_APPLICABLE",
+        "UNDISCLOSED",
+        "UNAVAILABLE",
+        "STALE"
+      ]
+    },
+    "magnitude": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "state"
+      ],
+      "properties": {
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "state": {
+          "enum": [
+            "KNOWN",
+            "KNOWN_ZERO",
+            "NOT_APPLICABLE",
+            "UNDISCLOSED",
+            "UNAVAILABLE",
+            "STALE"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "KNOWN"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "number",
+                "not": {
+                  "const": 0
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "KNOWN_ZERO"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "number",
+                "const": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "$ref": "#/$defs/unknown_state"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "clock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "precision",
+        "state"
+      ],
+      "properties": {
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "precision": {
+          "enum": [
+            "date",
+            "instant",
+            null
+          ]
+        },
+        "state": {
+          "enum": [
+            "KNOWN",
+            "NOT_APPLICABLE",
+            "UNDISCLOSED",
+            "UNAVAILABLE",
+            "STALE"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "KNOWN"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "string"
+              },
+              "precision": {
+                "enum": [
+                  "date",
+                  "instant"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "$ref": "#/$defs/unknown_state"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "null"
+              },
+              "precision": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "precision": {
+                "const": "date"
+              }
+            },
+            "required": [
+              "precision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "$ref": "#/$defs/iso_date"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "precision": {
+                "const": "instant"
+              }
+            },
+            "required": [
+              "precision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "$ref": "#/$defs/zoned_instant"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "segment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "state"
+      ],
+      "properties": {
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state": {
+          "enum": [
+            "KNOWN",
+            "NOT_APPLICABLE",
+            "UNDISCLOSED",
+            "UNAVAILABLE",
+            "STALE"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "KNOWN"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "$ref": "#/$defs/unknown_state"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "rights_read": {
+      "description": "A read of engine.theme_graph.rights for one source family: rights_class is rights.rights_class(family) and public_emission is rights.emission_allowed(family). It is a recorded read, never a grant; graph-membership use is decided separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "family",
+        "rights_class",
+        "public_emission"
+      ],
+      "properties": {
+        "family": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rights_class": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "public_emission": {
+          "enum": [
+            "GRANTED",
+            "NOT_GRANTED",
+            "RIGHTS_FAMILY_UNRESOLVED"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "public_emission": {
+                "const": "RIGHTS_FAMILY_UNRESOLVED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "rights_class": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "public_emission": {
+                "enum": [
+                  "GRANTED",
+                  "NOT_GRANTED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "family": {
+                "type": "string",
+                "minLength": 1
+              },
+              "rights_class": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "curation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "curator",
+        "decision",
+        "decided_at",
+        "receipt_sha256"
+      ],
+      "properties": {
+        "curator": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "decision": {
+          "enum": [
+            "ACCEPT",
+            "REJECT"
+          ]
+        },
+        "decided_at": {
+          "$ref": "#/$defs/zoned_instant"
+        },
+        "receipt_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "issuer",
+        "species",
+        "scope",
+        "role",
+        "lifecycle",
+        "endpoints",
+        "target_definition",
+        "source_evidence",
+        "use_qualification",
+        "magnitudes",
+        "clocks"
+      ],
+      "properties": {
+        "schema": {
+          "const": "gmi.activity_membership_evidence/v1"
+        },
+        "issuer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "node_id",
+            "issuer_id",
+            "security_id",
+            "resolution_state",
+            "join_method",
+            "resolution_asof",
+            "identity_read_sha256"
+          ],
+          "properties": {
+            "node_id": {
+              "$ref": "#/$defs/company_node"
+            },
+            "issuer_id": {
+              "$ref": "#/$defs/issuer_ref"
+            },
+            "security_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "resolution_state": {
+              "const": "RESOLVED"
+            },
+            "join_method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "resolution_asof": {
+              "type": "string",
+              "minLength": 1
+            },
+            "identity_read_sha256": {
+              "$ref": "#/$defs/sha256"
+            }
+          }
+        },
+        "species": {
+          "enum": [
+            "planned_product_integration",
+            "principal_business_activity"
+          ]
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "segment"
+          ],
+          "properties": {
+            "product": {
+              "type": "string",
+              "minLength": 1
+            },
+            "platform": {
+              "type": "string",
+              "minLength": 1
+            },
+            "counterparty_issuer_id": {
+              "$ref": "#/$defs/issuer_ref"
+            },
+            "segment": {
+              "$ref": "#/$defs/segment"
+            }
+          }
+        },
+        "role": {
+          "enum": [
+            "component_supplier",
+            "platform_owner",
+            "operator"
+          ]
+        },
+        "lifecycle": {
+          "enum": [
+            "planned",
+            "current"
+          ]
+        },
+        "endpoints": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_node_id",
+            "target_node_id",
+            "direction"
+          ],
+          "properties": {
+            "source_node_id": {
+              "$ref": "#/$defs/company_node"
+            },
+            "target_node_id": {
+              "$ref": "#/$defs/micro_theme_node"
+            },
+            "direction": {
+              "const": "SOURCE_TO_TARGET"
+            }
+          }
+        },
+        "target_definition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "theme_id",
+            "tier",
+            "asserted_on",
+            "definition_sha256",
+            "crosswalk_sha256",
+            "rights_family"
+          ],
+          "properties": {
+            "theme_id": {
+              "$ref": "#/$defs/micro_theme_node"
+            },
+            "tier": {
+              "const": "micro_theme"
+            },
+            "asserted_on": {
+              "$ref": "#/$defs/iso_date"
+            },
+            "definition_sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "crosswalk_sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "rights_family": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "source_evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "disclosure_id",
+            "fact_id",
+            "fact_revision",
+            "review_revision",
+            "edition",
+            "span",
+            "owner_bindings",
+            "owner"
+          ],
+          "properties": {
+            "disclosure_id": {
+              "type": "string",
+              "pattern": "^disclosure:[0-9a-f]{64}$"
+            },
+            "fact_id": {
+              "type": "string",
+              "pattern": "^(integration|activity):[0-9a-f]{64}$"
+            },
+            "fact_revision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "review_revision": {
+              "$ref": "#/$defs/sha256"
+            },
+            "edition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source_key",
+                "source_sha256",
+                "byte_length",
+                "published_date"
+              ],
+              "properties": {
+                "source_key": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source_sha256": {
+                  "$ref": "#/$defs/sha256"
+                },
+                "byte_length": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "published_date": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "$ref": "#/$defs/iso_date"
+                    }
+                  ]
+                }
+              }
+            },
+            "span": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "start_byte",
+                "end_byte",
+                "text_sha256"
+              ],
+              "properties": {
+                "start_byte": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "end_byte": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "text_sha256": {
+                  "$ref": "#/$defs/sha256"
+                }
+              }
+            },
+            "owner_bindings": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "spec",
+                "purpose",
+                "adoption"
+              ],
+              "properties": {
+                "spec": {
+                  "$ref": "#/$defs/sha256"
+                },
+                "purpose": {
+                  "$ref": "#/$defs/sha256"
+                },
+                "adoption": {
+                  "$ref": "#/$defs/sha256"
+                }
+              }
+            },
+            "owner": {
+              "const": "engine.company_intelligence.issuer_disclosure_owner"
+            }
+          }
+        },
+        "use_qualification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "target_definition_rights",
+            "source_rights",
+            "purpose",
+            "graph_membership_use"
+          ],
+          "properties": {
+            "target_definition_rights": {
+              "$ref": "#/$defs/rights_read"
+            },
+            "source_rights": {
+              "$ref": "#/$defs/rights_read"
+            },
+            "purpose": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "ruling_binding_sha256",
+                "permitted_purpose",
+                "permitted_audience"
+              ],
+              "properties": {
+                "ruling_binding_sha256": {
+                  "$ref": "#/$defs/sha256"
+                },
+                "permitted_purpose": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "permitted_audience": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "graph_membership_use": {
+              "const": "NOT_GRANTED"
+            }
+          }
+        },
+        "magnitudes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "amount",
+            "economic_share"
+          ],
+          "properties": {
+            "amount": {
+              "$ref": "#/$defs/magnitude"
+            },
+            "economic_share": {
+              "$ref": "#/$defs/magnitude"
+            }
+          }
+        },
+        "clocks": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "publication",
+            "observation",
+            "knowledge",
+            "effective",
+            "admitted",
+            "correction",
+            "served_generation"
+          ],
+          "properties": {
+            "publication": {
+              "$ref": "#/$defs/clock"
+            },
+            "observation": {
+              "$ref": "#/$defs/clock"
+            },
+            "knowledge": {
+              "$ref": "#/$defs/clock"
+            },
+            "effective": {
+              "$ref": "#/$defs/clock"
+            },
+            "admitted": {
+              "$ref": "#/$defs/clock"
+            },
+            "correction": {
+              "$ref": "#/$defs/clock"
+            },
+            "served_generation": {
+              "$ref": "#/$defs/clock"
+            }
+          }
+        }
+      },
+            "allOf": [
+        {
+          "if": {
+            "properties": {
+              "species": {
+                "const": "planned_product_integration"
+              }
+            },
+            "required": [
+              "species"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "enum": [
+                  "component_supplier",
+                  "platform_owner"
+                ]
+              },
+              "lifecycle": {
+                "const": "planned"
+              },
+              "scope": {
+                "required": [
+                  "product",
+                  "platform",
+                  "counterparty_issuer_id",
+                  "segment"
+                ]
+              },
+              "source_evidence": {
+                "properties": {
+                  "fact_id": {
+                    "pattern": "^integration:[0-9a-f]{64}$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "species": {
+                "const": "principal_business_activity"
+              }
+            },
+            "required": [
+              "species"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "const": "operator"
+              },
+              "lifecycle": {
+                "const": "current"
+              },
+              "scope": {
+                "properties": {
+                  "product": false,
+                  "platform": false,
+                  "counterparty_issuer_id": false
+                }
+              },
+              "source_evidence": {
+                "properties": {
+                  "fact_id": {
+                    "pattern": "^activity:[0-9a-f]{64}$"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

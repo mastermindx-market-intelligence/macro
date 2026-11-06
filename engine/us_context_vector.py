@@ -65,6 +65,7 @@ from collections.abc import Iterable, Mapping
 import json
 import logging
 import math
+import re
 from typing import Any
 
 import pandas as pd
@@ -263,6 +264,27 @@ def load_candidates(root: Any = None, *, months: Iterable[str] | None = None,
     if not frames:
         return pd.DataFrame()
     return pd.concat(frames, ignore_index=True)
+
+
+def read_today_candidate_source_rows(root):
+    """Capture native candidate bytes for original Today provenance; no selection.
+
+    Uses the existing B1 intake byte reader and canonical source normalization.
+    Every part must be readable; general telemetry fail-soft semantics do not
+    authenticate a partial source. Receipts retain exact part inventory and bytes.
+    """
+    from engine.us_candidate_episode_intake import _records_snapshot, candidate_source_row
+
+    parts = sorted(_store_dir(root).glob("*.parquet"))
+    if not parts:
+        raise ValueError("candidate source parts are unavailable")
+    rows = []
+    receipts = []
+    for part in parts:
+        captured, receipt = _records_snapshot(part)
+        rows.extend(candidate_source_row(row) for row in captured)
+        receipts.append(receipt)
+    return rows, receipts
 
 
 def _finite(value: Any) -> float | None:
@@ -872,6 +894,7 @@ def build_records(
     attention_z: Mapping[str, Any] | None = None,
     short_flow: Mapping[str, Mapping[str, Any]] | None = None,
     hub_rows: Mapping[str, Mapping[str, Any]] | None = None,
+    today_selection_row_receipts: Mapping[str, str] | None = None,
 ) -> list[dict[str, Any]]:
     """One flattened context row per universe name.  Pure; no I/O.
 
@@ -1139,6 +1162,11 @@ def build_records(
         pool = _mapping(pool_columns.get(ticker))
         for column in POOL_COLUMNS:
             record[column] = pool.get(column) if column in pool else None
+        if today_selection_row_receipts is not None and ticker in today_selection_row_receipts:
+            receipt = today_selection_row_receipts[ticker]
+            if not isinstance(receipt, str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", receipt):
+                raise ValueError("Today selection row receipt must be canonical sha256")
+            record["today_selection_row_receipt"] = receipt
         records.append(record)
     return records
 
@@ -1271,6 +1299,7 @@ _OBJECT_COLUMNS = (
     "pool_admission_class",
     # §13 telemetry
     "gex_confirm_verdict", "hub_lifecycle",
+    "today_selection_row_receipt",
 )
 
 _BOOL_COLUMNS = (
@@ -1435,6 +1464,7 @@ def append_candidates(
     pool_columns: Mapping[str, Mapping[str, Any]] | None = None,
     sue_z: Mapping[str, Any] | None = None,
     short_flow: Mapping[str, Mapping[str, Any]] | None = None,
+    today_selection_row_receipts: Mapping[str, str] | None = None,
 ) -> int:
     """Append one settled full-universe US context snapshot.
 
@@ -1548,6 +1578,7 @@ def append_candidates(
             short_flow=short_flow,
             attention_z=attention_z_map(root),
             hub_rows=hub_columns(root),
+            today_selection_row_receipts=today_selection_row_receipts,
         )
         if not records:
             print("::warning title=us-context-vector-no-records::us_context_vector "

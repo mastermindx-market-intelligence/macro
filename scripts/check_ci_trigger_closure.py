@@ -353,6 +353,17 @@ def census(depth: int = 1) -> list[dict]:
     return rows
 
 
+def trigger_gap_findings(rows: list[dict] | None = None) -> list[dict]:
+    """The rows this guard fails on: a suite with a subject no gate that runs it matches.
+
+    ``main`` and ``scripts/check_contract_delta.py`` both call this, so the gate
+    here and contract-delta's differential copy of it cannot drift apart. The
+    default census is the gated depth, 1.
+    """
+    rows = census(depth=1) if rows is None else rows
+    return [r for r in rows if r["status"] == "GAP"]
+
+
 def _fix_hint(row: dict, rel: str) -> str:
     where = ", ".join(row["filters"]) or "the workflow path filter"
     return (
@@ -393,7 +404,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         args.json.write_text(json.dumps(rows, indent=1))
 
-    bad = [r for r in rows if r["status"] == "GAP"]
+    bad = trigger_gap_findings(rows)
     unreachable_self = [r for r in rows if not r["self_reachable"]]
     marked = [r for r in rows if r["data_marked"]]
     marked_count = sum(len(r["data_marked"]) for r in marked)
