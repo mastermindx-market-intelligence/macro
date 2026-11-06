@@ -107,3 +107,39 @@ reader. It is a different admission path, not a stronger CEO gate.
 Confidence is `verified` for the RAW-v1 reproduction, the service-stamp refusal, and the cited
 reads. The behavioral consequence for any holder of a RAW v1 stamp remains a property of the
 current protected master, and the falsifier on that stamp is what re-testing it costs.
+
+## Qualification — dated source evidence, not a present finding (2026-11-06)
+
+Everything above was REPRODUCED on 2026-09-18 at protected Mastermind master
+`320f586126b7c82c843ef17612f12d40d20a42e0` and Mastermind PR #804 repaired head
+`4c4139b2d30f78a3884c777b144aadf32bfc69ec`. That is DATED source evidence. It is not a present
+protected-runtime finding: this 2026-11-06 records fold did not re-run the reproduction and does
+not publish the 2026-09-18 schema-gate observation as a newly observed current vulnerability.
+
+Bounded readonly carrier state, read 2026-11-06 (merge and protection facts only): Mastermind PR
+#804 is MERGED — merged 2026-09-27T11:00:32Z, head
+`e978d6a25ca20b039d98cbafd477a273f95ea595` — so the "open PR #699" collision named above is a
+2026-09-18 statement. Mastermind PR #699 is CLOSED and unmerged (head
+`bdd124c4aa295dbb67f4ffd2f60ef2a9f7946128`, title "[HOLD / evidence only] AD-RET2 synthetic
+durability checkpoint"). The residual RAW-v1 CEO-origin hole therefore has no OPEN carrier under
+that number as read; the `#699` reference needs re-identification before any residual routing.
+This fold does not re-assign the residual, re-adjudicate the programme, or close it.
+
+The exact observation needed to re-assert this claim as present protected-runtime truth is the
+falsifier recorded in this record's frontmatter, run at the CURRENT protected Mastermind master
+(read 2026-11-06 as `32a354c3dd77751e206a80b2abc4e497efdbe5e6`; the current protected operation pin is `44b7a4717240201828915bf2f5cbc2fe2ecc60b5`, INDEX blob `b69d45de68d1f1c31d12dcf5203037122c694711`,
+skillpack 1.0.1, bootstrap_major 1; only the INDEX was compared byte-for-byte at that master):
+
+```
+python3 -c "from control_plane.executive_runtime import _has_executive_provenance; print(_has_executive_provenance({'schema': 'mastermind.ceo_intent.v1', 'actor': 'svc-site-maintenance'}, target='ceo'))"
+sed -n '928,942p' control_plane/executive_runtime.py
+```
+
+Until that runs, the claim stays dated evidence. The old "non-#699 PR" restriction records
+September custody; it does not create a permanent approval or carrier requirement for a PR now
+observed closed. Under protected `RECONCILE_STATE.md` at
+`32a354c3dd77751e206a80b2abc4e497efdbe5e6`, the currently assigned session must identify the actual
+current source owner and reconcile live writers, explicit denials and uncertain effects before
+any separately authorized repair. This records fold releases no writer and grants no runtime
+repair. The service-schema qualification above — that a service stamp is refused at
+`owner_seat="ceo"|"chairman"` — is likewise dated 2026-09-18 evidence.

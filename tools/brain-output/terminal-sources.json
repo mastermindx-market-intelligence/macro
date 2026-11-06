@@ -1,0 +1,23 @@
+{
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "revision": "38723cef63e87e478b1652d42322a69bdec462fd",
+  "normalizer_version": "terminal-statements-38723cef-v1",
+  "sources": {
+    "fund.ts": {
+      "path": "terminal/lib/fund.ts",
+      "sha256": "0a7a26e47b6e30da7c4a8ea72e93278a94902763563bb56ae6f0c5ed5bcb8f27"
+    },
+    "finStatementMath.ts": {
+      "path": "terminal/lib/finStatementMath.ts",
+      "sha256": "1436e4df94e3836a6d1819048b143c472cc4a9f9656b191aff17b72f4f484ee3"
+    },
+    "finStatements.ts": {
+      "path": "terminal/lib/finStatements.ts",
+      "sha256": "d6b8508c631634a6fd151f489519f2a705d6a4a3c55a95dd5114f6e525673ceb"
+    },
+    "markets.ts": {
+      "path": "terminal/lib/markets.ts",
+      "sha256": "6a113c2faa6237f134792f0988d44e657f9fa182fecff9c57eef2919964a50f0"
+    }
+  }
+}

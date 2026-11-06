@@ -270,3 +270,57 @@ Ambiguity, substitution, unresolvable allowlist or config-generation drift is a 
 After lawful R90 same-owner resume: re-pin protected Mastermind + same-SHA Skillpack; reconcile retained `5b461fb2...`; consume #759/#586 as DO_NOT_REDO; selectively fold only still-needed #762 deltas; close D8 + exact-model admission; then run fresh current-base behavioral tests and genuine non-author review.
 Reuse the protected native preflight surface. Only after the Family-B realm/config owner and those source gates are current may the retained PF1 owner attempt one bounded real Executive child Job.
 This addendum is knowledge-plane continuity only: it does not release R90, transfer PF1 custody, authorize provider/login/credential work, Ready/merge held PRs, or create a runtime effect.
+
+# Records-fold addendum — 2026-11-06 (composition onto current Macro main)
+
+Same carrier: Macro PR #7300, branch `claude/agentos-vps-fabric-fold-20260918`, original head
+`457c523e0de31c63581eefb3b323440582071964`. This addendum records a RECORDS-ONLY composition of
+the four owned Agent OS records onto Macro main `075445df2872a877fe11049da4d35245068c3a08` (tree
+`53a430c37d89f269a90a133eb2011dfb7db30d54`; true merge base `6614bfc1c345bbbd01113a903fab8877f66a9c9b`). It creates no source, it
+readies/merges/arms nothing, it calls no provider, it starts no runtime Job and it claims no
+production proof.
+
+## What was composed
+- Checkpoint 1, Checkpoint 2 and the 2026-09-19 PF1 addendum above are preserved in THIS file. No
+  second handoff filename was created.
+- The workstream's global `next_action` keeps current main's 2026-09-29 credit-cause retraction
+  (the "Chairman checks Codex credits / spend controls in the admin console" control is RETRACTED;
+  no purchase, reset or setting change) together with every newer main amendment, and carries the
+  2026-09-19 checkpoint-2 fold in its dated place.
+- `DEC:EXECUTIVE-SERVICE-INTENT-SCHEMA-ON-EXISTING-SINK` and
+  `DSC:EXECUTIVE-PROVENANCE-GATE-IS-SCHEMA-ONLY` keep their accepted scope and history and gain a
+  dated 2026-11-06 qualification separating the September observation from present
+  protected-runtime truth.
+
+## Bounded readonly carrier state, read 2026-11-06 (merge and protection facts only)
+- Macro #7280: MERGED, head `c3df7b7689f70ec682227f8b43692fa997f2d8ec`. The "OPEN, DRAFT +
+  HOLD-FOR-SOL at 957927b8" statement above is retained as dated history.
+- Macro #7289 economics contract: still OPEN and DRAFT, head
+  `642b680ef7dc31645ac9ce895cc742d9d1c4eaf5`; the recorded head `c95cb6a0…` has moved.
+- Mastermind #804: MERGED 2026-09-27T11:00:32Z, head `e978d6a25ca20b039d98cbafd477a273f95ea595`.
+- Mastermind #759: MERGED 2026-09-17. Mastermind #586: MERGED 2026-09-19, head `bdaa6d6f…`.
+  Mastermind #762: MERGED 2026-09-22, head `dd54061b…`. Mastermind #600: MERGED 2026-11-05.
+- Mastermind #699: CLOSED and unmerged, head `bdd124c4…`; the "open PR #699" collision and the
+  residual-ownership statements above are dated 2026-09-18 and need re-identification before any
+  residual routing.
+
+Merged is not proven, not admitted, not started and not production-accepted. Source acceptance,
+merge and protection, runtime admission, worker START and production proof remain distinct facts,
+and none of them is established by this fold.
+
+## Current recovery boundary (2026-11-06)
+The 2026-09-19 PF1 addendum above is retained as dated evidence that the old NOT_BUILT /
+old-native-branch continuation must not be served. Its R90 same-owner / no-retry wording is that
+dated ruling; it is NOT a standing approval gate, and no old chat, author or seat must approve
+routine recovery. Under the current protected Mastermind law (pin `44b7a4717240201828915bf2f5cbc2fe2ecc60b5`, INDEX blob `b69d45de68d1f1c31d12dcf5203037122c694711`,
+skillpack 1.0.1, bootstrap_major 1 — the INDEX was byte-identical at protected master `32a354c3dd77751e206a80b2abc4e497efdbe5e6` read 2026-11-06),
+the assigned session owns recovery of an unstarted or continuing source carrier when no live
+writer is displaced and no effect is uncertain; actual live writers, source custody, explicit
+denials and EFFECT_UNKNOWN remain protected, and no receipt is erased by this fold. This fold
+releases no native operation.
+
+## Exact observation still needed
+A fresh read of the retained PF1 branch `5b461fb2…`, Mastermind #759/#586/#762 and the current
+protected master, plus a re-run of the discovery's recorded falsifier at that master, are the
+observations that would move the dated statements above to current facts. Nothing here authorizes
+arming, Ready, merge, provider/login/credential work or a runtime Job.

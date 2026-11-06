@@ -11,8 +11,10 @@ This script is the registry keeper. It enforces five passes:
   C. WIRING   — for each ci_wiring item with lane != hook: the workflow file exists,
                 contains the named job under jobs:, and the job's steps mention the
                 check_script basename (or the notes invocation string when check_script is null).
-  D. SELFTEST TRUTH — selftest:true requires the script text to contain "selftest" or "self-test".
-                selftest:false with a script that DOES advertise a selftest flag is stale.
+  D. SELFTEST TRUTH — selftest:true requires the script to advertise a "--selftest"
+                (or "--self-test") FLAG; selftest:false on a script that DOES advertise
+                one is stale. Matching the bare word instead of the flag made ordinary
+                prose ("...self-tests it") indistinguishable from a real flag.
   E. RATCHET  — expired ratchet dates emit GitHub ::warning:: annotations; exit stays 0.
 
 Usage:
@@ -321,7 +323,7 @@ def pass_c_wiring(checks: list[dict], root: Path, findings: list[str]) -> None:
 # ── Pass D: Selftest Truth ────────────────────────────────────────────────────
 
 def pass_d_selftest_truth(checks: list[dict], root: Path, findings: list[str]) -> None:
-    """selftest:true requires script to contain 'selftest' or 'self-test'."""
+    """selftest:true requires the script to expose a --selftest/--self-test flag."""
     for entry in checks:
         law_id = entry.get("law_id", "?")
         check_script = entry.get("check_script")
@@ -337,12 +339,23 @@ def pass_d_selftest_truth(checks: list[dict], root: Path, findings: list[str]) -
             continue  # already caught by census
 
         script_text = script_path.read_text(errors="replace")
-        has_selftest_flag = "selftest" in script_text or "self-test" in script_text
+        # The FLAG, not the word. A bare "selftest"/"self-test" substring also
+        # matches ordinary prose — scripts/check_macro_anon_dependency.py says
+        # "is how tests/test_macro_anon_dependency_guard.py self-tests it" in a
+        # docstring and exposes only --root — so the loose predicate turned an
+        # HONEST `selftest: false` into a HARD finding and the only way to
+        # silence it was to write `selftest: true` about a script that has no
+        # such flag. A registry whose purpose is honesty must not have a pass
+        # that can only be satisfied by a false entry. Measured before the
+        # change: every already-registered scripts/ guard detects identically
+        # under both predicates, so this tightening reclassifies nothing that
+        # was already in the registry.
+        has_selftest_flag = "--selftest" in script_text or "--self-test" in script_text
 
         if selftest is True and not has_selftest_flag:
             findings.append(
-                f"SELFTEST [{law_id}]: selftest=true but '{check_script}' contains no "
-                f"'selftest'/'self-test' text — stale claim"
+                f"SELFTEST [{law_id}]: selftest=true but '{check_script}' exposes no "
+                f"--selftest/--self-test flag — stale claim"
             )
         if selftest is False and has_selftest_flag:
             findings.append(

@@ -1,0 +1,41 @@
+{# B03: public shell only. All observation rows come from the entitled API. #}
+<style>
+#us-early-observations { margin-block:var(--sp-4,16px); padding:var(--sp-4,16px); }
+#us-early-observations summary { cursor:pointer; }
+#us-early-observations > summary { font-weight:700; font-size:var(--fs-md); }
+#us-early-observations .eo-body { margin-top:var(--sp-4,16px); }
+#us-early-observations .eo-note { color:var(--muted); font-size:var(--fs-sm); line-height:1.6; }
+#us-early-observations .eo-relation { font-size:var(--fs-sm); color:var(--muted); }
+#us-early-observations .eo-controls { display:flex; flex-wrap:wrap; gap:var(--sp-2,8px); align-items:center; }
+#us-early-observations .eo-skeleton { height:48px; margin-block:var(--sp-2,8px); }
+#us-early-observations [hidden] { display:none; }
+#us-early-observations .mx-chg-row { overflow-wrap:anywhere; }
+#us-early-observations button:disabled { opacity:.5; cursor:default; }
+@media(max-width:640px) {
+  #us-early-observations .tbl-filter label { flex-basis:100%; }
+  #us-early-observations .eo-relation { flex-basis:100%; }
+}
+</style>
+<details id="us-early-observations" class="panel" data-state="idle">
+  <summary><span class="l-en">Early observations · search every observed name</span><span class="l-zh">早期观察 · 搜索全部观察标的</span></summary>
+  <div class="eo-body">
+    <p class="eo-note"><span class="l-en">Developing turns from the observation feed. These are not qualified candidates or confirmed entries.</span><span class="l-zh">观察源记录的潜在转向，不代表已合格的候选或已确认的入场机会。</span></p>
+    <form class="tbl-filter" data-eo-form>
+      <label for="eo-search"><span class="l-en">Exact ticker</span><span class="l-zh">完整股票代码</span></label>
+      <input id="eo-search" type="search" maxlength="32" autocomplete="off" spellcheck="false">
+      <button type="submit" class="gbtn gbtn-sm" data-eo-search><span class="l-en">Search all</span><span class="l-zh">搜索全部</span></button>
+      <button type="button" class="gbtn gbtn-sm gbtn-quiet" data-eo-reset><span class="l-en">Show all</span><span class="l-zh">显示全部</span></button>
+    </form>
+    <div data-eo-loading hidden aria-hidden="true"><div class="skel eo-skeleton"></div><div class="skel eo-skeleton"></div></div>
+    <div data-eo-status role="status" aria-live="polite"></div>
+    <p class="eo-note dtp-asof" data-eo-source hidden></p>
+    <p class="eo-note" data-eo-counts hidden></p>
+    <div data-eo-rows></div>
+    <div class="eo-controls">
+      <button type="button" class="gbtn gbtn-sm" data-eo-prev disabled><span class="l-en">Previous</span><span class="l-zh">上一页</span></button>
+      <button type="button" class="gbtn gbtn-sm" data-eo-next disabled><span class="l-en">Next</span><span class="l-zh">下一页</span></button>
+      <button type="button" class="gbtn gbtn-sm gbtn-quiet" data-eo-retry><span class="l-en">Refresh / retry</span><span class="l-zh">刷新 / 重试</span></button>
+    </div>
+  </div>
+</details>
+<script>{% include "_us_early_observations_client.js" %}</script>

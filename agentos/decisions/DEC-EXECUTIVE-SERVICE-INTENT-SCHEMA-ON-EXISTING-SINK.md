@@ -66,3 +66,24 @@ service branch of the existing sink and the path is gone. It does not authorize
 Ready/merge of Mastermind #804. That carrier stays DRAFT + HOLD until an
 explicit Sol acceptance ruling. Residual RAW-v1 CEO-origin stamps remain
 `executive_runtime.py` / #699 work, not this decision.
+
+## Qualification — records-only scope, dated 2026-11-06
+
+This decision is a RECORDS-ONLY source ruling. It records the shape of the non-CEO
+service-intent schema on the existing `ceo_intent.submit_intent` sink. It is not proof that a
+current service route, an admitted Executive Job, a started Worker or a production provider turn
+exists, and the 2026-11-06 records fold did not re-adjudicate it.
+
+Dated carrier state, read 2026-11-06 (bounded readonly; merge and protection facts only, not
+runtime): Mastermind PR #804 is MERGED — merged 2026-09-27T11:00:32Z, head
+`e978d6a25ca20b039d98cbafd477a273f95ea595`. The "stays DRAFT + HOLD" statement in the body
+above is retained as its dated 2026-09-18 record and is superseded as a CURRENT carrier state by
+that merged read. Merged is not admitted: the exact observation needed for the present runtime
+question is an admitted service Job and its receipt on the current protected Mastermind, not a
+merge receipt.
+
+The answer above — one strict non-CEO schema on the existing sink, inbox provenance not
+broadened, the v2 orchestration branch not reused — is unchanged and is not reopened here. The
+residual CEO-origin RAW-v1 gate that the body assigns to `executive_runtime.py` / #699 is
+unchanged as a DATED assignment; see `DSC:EXECUTIVE-PROVENANCE-GATE-IS-SCHEMA-ONLY` for the
+2026-11-06 qualification of that #699 reference.

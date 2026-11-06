@@ -1,0 +1,397 @@
+{
+  "case_key": "umc_output_utilization",
+  "expected_regression": "Native output-based utilization is not overwritten by shipment/capacity quotient",
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T07",
+    "T08"
+  ],
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "slice_key": "hbm_packaging",
+    "view": "capacity",
+    "time_mode": "latest",
+    "source_cutoff": null,
+    "recorded_cutoff": null,
+    "offset": 0,
+    "limit": 50,
+    "expected_generation": null
+  },
+  "bundle": {
+    "revision_tuple": [
+      [
+        "assertion",
+        "gmirca_14440047b0b5377db75d13c5a35aa66b"
+      ],
+      [
+        "assertion",
+        "gmirca_6487531db4e9fd1d4a2b22327e3be8fc"
+      ],
+      [
+        "assertion",
+        "gmirca_e49f5e70433038914650b482e9f75efe"
+      ],
+      [
+        "identity",
+        "identity-vintage-006"
+      ]
+    ],
+    "rights_revision": "synthetic-rights-0",
+    "assertions": [
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_6487531db4e9fd1d4a2b22327e3be8fc",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Output Foundry Sigma",
+              "model": null,
+              "selector": "fac:sigma-fab",
+              "source_label": "Sigma wafer fab"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-06-30",
+            "period_kind": "quarter",
+            "period_start": "2026-04-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "output-based utilization",
+            "wafer_diameter_mm": 300
+          },
+          "relation": null,
+          "stage": "reported_output",
+          "stage_source_language": "output-based utilization of 78 percent in the quarter"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "any shipment-over-capacity quotient"
+          ],
+          "establishes": [
+            "the native output-based utilization figure"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Sigma fab output utilization"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "%",
+          "value": 78,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "foundry operations",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "output utilization"
+        },
+        "source": {
+          "locator": "para-4",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-05-13T08:00:00Z",
+          "published_at": "2026-05-12",
+          "published_at_grain": "date",
+          "publisher": "Example Foundry Wire",
+          "retained_at": "2026-05-13T08:05:00Z",
+          "retention_ref": "retention:umc/sigma-output-utilization",
+          "source_uri": "https://example.invalid/umc/sigma-output-utilization"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Output Foundry Sigma",
+          "source_platform_label": null,
+          "source_product_label": "Sigma fab output utilization"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_14440047b0b5377db75d13c5a35aa66b",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Output Foundry Sigma",
+              "model": null,
+              "selector": "fac:sigma-fab",
+              "source_label": "Sigma wafer fab"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-06-30",
+            "period_kind": "quarter",
+            "period_start": "2026-04-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "quarterly shipment",
+            "wafer_diameter_mm": 300
+          },
+          "relation": null,
+          "stage": "reported_shipment",
+          "stage_source_language": "210 thousand wafers shipped in the quarter"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "a utilization quotient",
+            "capacity utilization"
+          ],
+          "establishes": [
+            "quarterly shipment volume"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Sigma quarterly shipments"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_wafer_per_quarter",
+          "value": 210,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "foundry operations",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "shipments"
+        },
+        "source": {
+          "locator": "para-6",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-05-13T08:00:00Z",
+          "published_at": "2026-05-12",
+          "published_at_grain": "date",
+          "publisher": "Example Foundry Wire",
+          "retained_at": "2026-05-13T08:05:00Z",
+          "retention_ref": "retention:umc/sigma-shipments",
+          "source_uri": "https://example.invalid/umc/sigma-shipments"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Output Foundry Sigma",
+          "source_platform_label": null,
+          "source_product_label": "Sigma quarterly shipments"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_e49f5e70433038914650b482e9f75efe",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Output Foundry Sigma",
+              "model": null,
+              "selector": "fac:sigma-fab",
+              "source_label": "Sigma wafer fab"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-06-30",
+            "period_kind": "quarter",
+            "period_start": "2026-04-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "nameplate capacity",
+            "wafer_diameter_mm": 300
+          },
+          "relation": null,
+          "stage": "qualified",
+          "stage_source_language": "nameplate capacity qualified at 270 thousand wafers per quarter"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "a utilization quotient",
+            "any output inference"
+          ],
+          "establishes": [
+            "the qualified nameplate capacity"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Sigma nameplate capacity"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_wafer_per_quarter",
+          "value": 270,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "foundry operations",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "capacity"
+        },
+        "source": {
+          "locator": "para-8",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-05-13T08:00:00Z",
+          "published_at": "2026-05-12",
+          "published_at_grain": "date",
+          "publisher": "Example Foundry Wire",
+          "retained_at": "2026-05-13T08:05:00Z",
+          "retention_ref": "retention:umc/sigma-nameplate",
+          "source_uri": "https://example.invalid/umc/sigma-nameplate"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Output Foundry Sigma",
+          "source_platform_label": null,
+          "source_product_label": "Sigma nameplate capacity"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      }
+    ],
+    "identity_results": [
+      {
+        "company_node_id": "co:synth_sigma",
+        "source_business_label": "Synthetic Output Foundry Sigma",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-01T00:00:00Z"
+      }
+    ],
+    "event_workspaces": [],
+    "financial_packets": [],
+    "interpretation_blocks": [],
+    "native_refs": [],
+    "omissions": [
+      "event_workspaces_pending_T05",
+      "financial_packets_pending_T05"
+    ]
+  },
+  "expected": {
+    "native_utilization": 78,
+    "quotient": null,
+    "quotient_reason": "not_computed"
+  }
+}
