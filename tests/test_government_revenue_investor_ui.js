@@ -34,10 +34,10 @@ function historyJourney(){
   const row={dataset:{row:'award:kept'},focus(){focus='row'}},tab={dataset:{mode:'awards'},focus(){focus='tab'}};
   const button=t=>({focus(){focus='issuer:'+t}});
   const document={activeElement:null,documentElement:{getAttribute(){return'en'}},querySelectorAll(selector){return selector==='.queue-row'?[row]:selector==='.mode-tab'?[tab]:[]},querySelector(selector){const match=selector.match(/^#defenseInvestor \[data-investor-ticker="(LMT|RTX|NOC|LHX)"\]$/);return match?button(match[1]):null}};
-  const ctx={URL,URLSearchParams,console,document,location,history,state:{q:'Navy',truth:'official',mode:'awards',ticker:'LMT',agency:'Navy',selected:'award:kept'},pendingSelection:'',missingCandidateSelection:'',identityGeneration:null,$:control,preserveFilterValue(){},closeTopOverlay(){},activateMode(){},addEventListener(type,fn){if(type==='popstate')listeners.push(fn)}};
+  const ctx={URL,URLSearchParams,console,document,location,history,state:{q:'Navy',truth:'official',mode:'awards',ticker:'LMT',agency:'Navy',selected:'award:kept'},pendingSelection:'',missingCandidateSelection:'',identityGeneration:null,$:control,preserveFilterValue(){},closeTopOverlay(){},overlaySurface(){return null},applyFilters(){},activateMode(){},addEventListener(type,fn){if(type==='popstate')listeners.push(fn)}};
   vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(__dirname,'../templates/government-revenue-investor.js'),'utf8'),ctx);
   const h=host();ctx.investorUI=ctx.createGovernmentRevenueInvestor({host:()=>h});ctx.investorUI.mount();
-  for(const name of ['syncUrl','restoreUrl','restoreHistoryView']){const start=page.indexOf('  function '+name+'('),end=page.indexOf('\n  function ',start+1);assert.ok(start>=0&&end>start);vm.runInContext(page.slice(start,end),ctx);}
+  for(const name of ['syncUrl','deskSearchKey','restoreUrl','restoreHistoryView']){const start=page.indexOf('  function '+name+'('),end=page.indexOf('\n  function ',start+1);assert.ok(start>=0&&end>start);vm.runInContext(page.slice(start,end),ctx);}
   listeners.push(ctx.restoreHistoryView);
   return {ctx,entries,initial,get focus(){return focus},get url(){return url},move(delta){position+=delta;url=new URL(entries[position].url);listeners.forEach(fn=>fn())}};
 }
@@ -61,4 +61,11 @@ test('replace, silent selection and invalid issuer preserve their history contra
 test('ordinary workspace history restores row focus and absent snapshot remains an honest default',()=>{
   const j=historyJourney();j.ctx.restoreHistoryView();assert.equal(j.focus,'row');
   j.ctx.history.replaceState(null,'',j.url.href);j.ctx.restoreHistoryView();assert.equal(j.ctx.state.q,'');assert.equal(j.ctx.state.truth,'all');assert.equal(j.focus,'row');
+});
+
+test('Escape-cleared desk search stays cleared across repeated issuer Back/Forward',()=>{
+  const j=historyJourney(),search=j.ctx.$('deskSearch');search.value='Navy';let prevented=false;
+  j.ctx.deskSearchKey.call(search,{key:'Escape',preventDefault(){prevented=true}});assert.equal(prevented,true);assert.equal(search.value,'');assert.equal(j.ctx.state.q,'');
+  j.ctx.investorUI.select('RTX',{history:'push'});j.ctx.investorUI.select('NOC',{history:'push'});j.move(-1);
+  assert.equal(j.ctx.state.q,'');assert.equal(search.value,'');assert.equal(j.ctx.state.truth,'official');assert.equal(j.focus,'issuer:RTX');j.move(1);assert.equal(j.ctx.state.q,'');assert.equal(j.focus,'issuer:NOC');
 });
