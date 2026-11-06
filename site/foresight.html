@@ -369,8 +369,8 @@
         <span class="fx-heat-nm">AI-capex complex</span>
         <span class="fx-heat-badge" style="--st:var(--warn)"><span class="l-en">shared driver</span><span class="l-zh">共同驱动</span></span>
       </div>
-      <div class="fx-heat-src"><span class="fx-src" style="color:var(--ink-warn, var(--warn));background:color-mix(in srgb,var(--warn) 11%,transparent)">physical</span><span class="fx-src" style="color:var(--ink-warn, var(--warn));background:color-mix(in srgb,var(--warn) 11%,transparent)">demand</span></div>
-      <div class="fx-heat-meta"><b>3 <span class="l-en">themes moving together</span><span class="l-zh">个主题同步</span></b>: Memory, HBM &amp; Storage · Data Center Power &amp; Cooling · Semiconductor Equipment (WFE) — AI-capex complex (3 themes) share physical, demand — one macro bet in multiple hats.</div>
+      <div class="fx-heat-src"><span class="fx-src" style="color:var(--ink-warn, var(--warn));background:color-mix(in srgb,var(--warn) 11%,transparent)">demand</span><span class="fx-src" style="color:var(--ink-warn, var(--warn));background:color-mix(in srgb,var(--warn) 11%,transparent)">physical</span></div>
+      <div class="fx-heat-meta"><b>3 <span class="l-en">themes moving together</span><span class="l-zh">个主题同步</span></b>: Memory, HBM &amp; Storage · Data Center Power &amp; Cooling · Semiconductor Equipment (WFE) — AI-capex complex (3 themes) share demand, physical — one macro bet in multiple hats.</div>
     </div>
     
 
@@ -1128,7 +1128,7 @@ FY2026 ·
     <span class="fx-node"></span><span class="fx-slbl"><span class="l-en">Supply</span><span class="l-zh">供给</span></span></div>
   <div class="fx-stop">
     <span class="fx-node"></span><span class="fx-slbl"><span class="l-en">Demand</span><span class="l-zh">需求</span></span></div>
-  <div class="fx-stop" title="Guidance: NEUTRAL · 1 raising">
+  <div class="fx-stop">
     <span class="fx-node"></span><span class="fx-slbl"><span class="l-en">Guidance</span><span class="l-zh">指引</span></span></div>
 <div class="fx-stop lit" title="Estimates / revision breadth +0.13 · 90d EPS drift +5%">
     <span class="fx-node"></span><span class="fx-slbl"><span class="l-en">Estimates</span><span class="l-zh">预期</span></span></div>
@@ -1155,6 +1155,8 @@ FY2026 ·
         
         
         
+        <span class="fx-prov" tabindex="0"><span class="l-en">no trend window</span><span class="l-zh">暂无趋势窗口</span>
+        <span class="fxq-tip"><span class="l-en">The estimates leg has no trend window for this theme, so the direction is an admitted gap, not a reading.</span><span class="l-zh">该主题的预期腿没有趋势窗口，因此方向是如实标注的缺口，而非读数。</span></span></span>
         
       </div>
       
@@ -1934,25 +1936,37 @@ FY2026</p>
         <div class="fx-ai-th">
           <div class="fx-ai-mech"><b>Defense Aerospace</b> <span class="fx-ai-conf c-low">low</span></div>
           
-          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">Gov-award acceleration stalls or reverses</span><span class="fx-kc">Patent cluster dissolves with no follow-on filings</span><span class="fx-kc">EDGAR scarcity language turns neutral or loose</span><span class="fx-kc">No physical bottleneck confirmation within two quarters</span></div>
+          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">physical_confirmed never flips to true</span><span class="fx-kc">altdata government-award acceleration reverses</span><span class="fx-kc">revision_breadth rises then rolls over without physical confirmation</span><span class="fx-kc">EDGAR scarcity disappears</span></div>
         </div>
         
         <div class="fx-ai-th">
           <div class="fx-ai-mech"><b>Data Center Power</b> <span class="fx-ai-conf c-medium">medium</span></div>
           
-          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">Physical bottleneck loosens from TIGHTENING to NEUTRAL</span><span class="fx-kc">Guidance band reverses from RAISING to NEUTRAL or cuts</span><span class="fx-kc">Demand band decelerates from ACCELERATING to NEUTRAL</span><span class="fx-kc">Revision breadth rolls over or broadens then collapses</span></div>
-        </div>
-        
-        <div class="fx-ai-th">
-          <div class="fx-ai-mech"><b>Grid Electrification</b> <span class="fx-ai-conf c-medium">medium</span></div>
-          
-          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">Physical bottleneck loosens from TIGHTENING to NEUTRAL</span><span class="fx-kc">Guidance band turns from RAISING to cuts</span><span class="fx-kc">Demand band decelerates from ACCELERATING</span><span class="fx-kc">Revision breadth stays negative after two quarters of confirmed demand</span></div>
+          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">bottleneck_band reverses to NEUTRAL</span><span class="fx-kc">guidance_band turns to cuts or neutral</span><span class="fx-kc">revision_breadth broadens but then rolls over</span><span class="fx-kc">physical_confirmed flips to false</span></div>
         </div>
         
         <div class="fx-ai-th">
           <div class="fx-ai-mech"><b>Space Satellite</b> <span class="fx-ai-conf c-low">low</span></div>
           
-          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">Government-award acceleration disappears or reverses.</span><span class="fx-kc">Subsector scarcity falls to NEUTRAL.</span><span class="fx-kc">Numeric physical evidence contradicts the text-based tightness signal.</span><span class="fx-kc">Revisions broaden and then roll over without additional independent confirmation.</span></div>
+          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">physical_confirmed never flips to true</span><span class="fx-kc">revision_breadth continues negative without inflection</span><span class="fx-kc">EDGAR scarcity disappears</span><span class="fx-kc">policy pipeline (13 proposed rules) fails to convert to final rules</span></div>
+        </div>
+        
+        <div class="fx-ai-th">
+          <div class="fx-ai-mech"><b>Grid Electrification</b> <span class="fx-ai-conf c-low">low</span></div>
+          
+          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">bottleneck_band reverses to NEUTRAL</span><span class="fx-kc">guidance_band stops RAISING</span><span class="fx-kc">revision_breadth stays near zero for an extended period with no broadening</span><span class="fx-kc">demand_band cools to NEUTRAL</span></div>
+        </div>
+        
+        <div class="fx-ai-th">
+          <div class="fx-ai-mech"><b>Memory Storage</b> <span class="fx-ai-conf c-low">low</span></div>
+          
+          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">Alt-data award/patent cluster in MU reverts to no unusual activity</span><span class="fx-kc">EDGAR scarcity cross-surface disappears (filings broaden)</span><span class="fx-kc">Demand band rolls over from ACCELERATING to NEUTRAL or lower</span><span class="fx-kc">Revision breadth peaks and rolls over before physical tightens</span></div>
+        </div>
+        
+        <div class="fx-ai-th">
+          <div class="fx-ai-mech"><b>Semicap Equipment</b> <span class="fx-ai-conf c-low">low</span></div>
+          
+          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">Demand band decelerates from ACCELERATING</span><span class="fx-kc">Guidance band stays NEUTRAL or turns to CUTTING</span><span class="fx-kc">Revision breadth stalls or falls</span><span class="fx-kc">No altdata catalyst emerges within one cycle</span></div>
         </div>
         
         <div class="fx-ai-th">
@@ -2569,7 +2583,7 @@ FY2026</p>
           <span class="fx-hchip hl-LIVE" title="power scarcity live: band=TIGHTENING"><span class="hdot"></span>Power <span style="opacity:.7">TIGHTENING</span></span>
           <span class="fx-hchip hl-PARTIAL" title="6/18 themes have an alt-data confirmer read"><span class="hdot"></span>Alt-data <span style="opacity:.7">6/18</span></span>
           <span class="fx-hchip hl-PARTIAL" title="analyst theses replayed from the last committed ledger rows — this lane makes no model call, so the read is as of the last nightly"><span class="hdot"></span>Analyst</span>
-          <span class="fx-hchip hl-LIVE" title="monitor watching 7 active thesis/theses"><span class="hdot"></span>Monitor <span style="opacity:.7">7 theses</span></span>
+          <span class="fx-hchip hl-LIVE" title="monitor watching 9 active thesis/theses"><span class="hdot"></span>Monitor <span style="opacity:.7">9 theses</span></span>
           <span class="fx-hchip hl-LIVE" title="355 cascade flag rows logged (forward-grading accruing)"><span class="hdot"></span>Grading <span style="opacity:.7">355 rows</span></span>
           
         </div>
@@ -2583,7 +2597,7 @@ FY2026</p>
       <div class="sh-body">
         <p><b><span class="l-en">Display-only.</span><span class="l-zh">仅供展示。</span></b> <span class="l-en">Nothing here is a scored signal or a sized position. The relay reads free public data: supply tightness from FRED capacity, inventories, orders and industry prices plus SEC filing language (the leading leg); demand from the hyperscaler-capex pool (capex leads beneficiary revenue ~2–4 quarters); guidance from SEC 8-K “raising / lowering” language (management pre-signalling, days-to-weeks ahead); and estimate breadth from analyst EPS revisions (the confirmation gauge, never the entry).</span><span class="l-zh">此处任何内容都不是评分信号或仓位。接力读取免费公开数据：供给紧张来自 FRED 产能、库存、订单与行业价格＋ SEC 备案文本（领先腿）；需求来自云厂商资本开支池（资本开支领先受益方营收约2–4个季度）；指引来自 SEC 8-K "上调／下调"文本（管理层预示，领先数日至数周）；预期广度来自分析师 EPS 修正（确认指标，绝非入场）。</span></p>
         <p><span class="l-en">The desk builds a watchlist and confirms a thesis — it does not time entries. The 2024 memory call was right and ~9 months early, so the buy is deferred to a market dislocation (buy the flush, not the pop). Fade-risk inverts the supply read and takes precedence: a forming glut while estimates stay high is the trim / exit clock. No point-dates — turn detection is coincident, so risk reads are banded.</span><span class="l-zh">本台构建观察名单并确认论点——不择时入场。2024年的存储判断正确但早约9个月，故买点交由市场错位（买回调，不买冲高）。退潮风险与供给读数相反且优先：预期仍高而过剩正在形成即为减仓／退出倒计时。不给精确日期——拐点检测为同步指标，故风险读数以区间呈现。</span></p>
-        <p class="fx-note" style="font-size:11.5px"><span class="l-en">Revisions as of</span><span class="l-zh">预期数据截至</span> 2026-11-06 · <span class="l-en">generated</span><span class="l-zh">生成于</span> 2026-11-06 12:09 UTC</p>
+        <p class="fx-note" style="font-size:11.5px"><span class="l-en">Revisions as of</span><span class="l-zh">预期数据截至</span> 2026-11-06 · <span class="l-en">generated</span><span class="l-zh">生成于</span> 2026-11-06 15:23 UTC</p>
       </div>
     </details>
   </div>
