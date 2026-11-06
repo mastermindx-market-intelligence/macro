@@ -212,6 +212,7 @@
               "child_tier": {
                 "enum": [
                   "theme",
+                  "sub_theme",
                   "micro_theme"
                 ]
               },

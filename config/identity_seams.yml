@@ -88,8 +88,9 @@ master:
   # multi-member group ONLY when its CIK is listed in
   # config/issuer_group_allowlist.yml; an unlisted CIK's would-be group members are
   # typed EVIDENCE_CONFLICT instead (recorded, never executed — spec §2), with a
-  # ::warning naming the CIK and members. Adoption of an ALREADY-established group is
-  # unaffected. This is a documentary/governance gate, not a competing identity
+  # ::warning naming the CIK and members. Once that CIK is ratified, such NULL-issuer
+  # refused rows are re-examined (all-or-nothing per CIK; D2B1 AMENDMENT §7).
+  # Adoption of an ALREADY-established group is unaffected. This is a documentary/governance gate, not a competing identity
   # surface, so it is not listed under `surfaces:` below.
   models_lifecycle: false
 

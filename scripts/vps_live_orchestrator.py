@@ -87,6 +87,7 @@ def quote_snapshot_error(
     *,
     min_resolved: int,
     min_coverage: float,
+    require_source_clock: bool = False,
 ) -> str | None:
     """Return a quality error for an empty/severely degraded quote snapshot."""
     try:
@@ -105,6 +106,15 @@ def quote_snapshot_error(
                 f"quote snapshot quality too low: {resolved}/{requested} "
                 f"({coverage:.1%})"
             )
+        if require_source_clock:
+            # Presence and parseability only. Age is not a publish condition.
+            source_asof = meta.get("source_asof")
+            if not isinstance(source_asof, str) or not source_asof.strip():
+                return "quote snapshot has no source clock (meta.source_asof)"
+            try:
+                datetime.fromisoformat(source_asof.strip().replace("Z", "+00:00"))
+            except ValueError:
+                return "quote snapshot has no source clock (meta.source_asof)"
         return None
     except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
         return f"quote snapshot quality check failed: {exc}"
@@ -120,14 +130,34 @@ def flow_pulse_error(path: Path, *, min_coverage: float) -> str | None:
             return f"flow pulse is not live: mode={payload.get('mode') or 'missing'}"
         if not isinstance(rows, list) or requested <= 0 or requested != len(rows):
             return "flow pulse ticker count does not match payload"
+        # Presence and parseability only. Age is not a publish condition.
+        source_asof = payload.get("source_asof")
+        if not isinstance(source_asof, str) or not source_asof.strip():
+            return "flow pulse has no source clock"
+        try:
+            datetime.fromisoformat(source_asof.strip().replace("Z", "+00:00"))
+        except ValueError:
+            return "flow pulse has no source clock"
+        if "n_universe" in payload:
+            n_universe = payload.get("n_universe")
+            if (
+                type(n_universe) is not int
+                or n_universe <= 0
+                or len(rows) != n_universe
+                or n_universe != requested
+            ):
+                return "flow pulse ticker count does not match payload"
+            denominator = n_universe
+        else:
+            denominator = requested
         resolved = sum(
             1 for row in rows
             if isinstance(row, dict) and int(row.get("bars_today") or 0) > 0
         )
-        coverage = resolved / requested
+        coverage = resolved / denominator
         if coverage < min_coverage:
             return (
-                f"flow pulse quality too low: {resolved}/{requested} "
+                f"flow pulse quality too low: {resolved}/{denominator} "
                 f"({coverage:.1%}) have current-session bars"
             )
         return None
@@ -424,7 +454,7 @@ class Orchestrator:
             outputs=self._publish_pairs(("intraday_quotes.json",)),
             timeout=30,
             validator=lambda path: quote_snapshot_error(
-                path, min_resolved=80, min_coverage=0.90
+                path, min_resolved=80, min_coverage=0.90, require_source_clock=True,
             ),
         )
         for market, filename in (

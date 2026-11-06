@@ -1,0 +1,142 @@
+{
+  "aggregate_performance_statistic": null,
+  "candidate_rows": 23,
+  "censoring": {
+    "126": {
+      "observed": 0,
+      "right_censored": 23
+    },
+    "21": {
+      "observed": 23,
+      "right_censored": 0
+    },
+    "5": {
+      "observed": 23,
+      "right_censored": 0
+    },
+    "63": {
+      "observed": 0,
+      "right_censored": 23
+    }
+  },
+  "contract": "defense.retrospective_unweighted_issuer_entry_summary.v1",
+  "distinct_issuer_entry_pairs": 8,
+  "entries": [
+    {
+      "elapsed_intervals": 35,
+      "elapsed_ita_excess": 0.009544389945574383,
+      "elapsed_spy_excess": -0.14304002357121848,
+      "entry": "2026-08-20",
+      "h21_ita_excess": 0.006555666979997543,
+      "h21_spy_excess": -0.09936989360036996,
+      "h5_ita_excess": -0.01739112720188629,
+      "h5_spy_excess": -0.04242843388398765,
+      "prior_available_ita_excess": -0.24376649816373896,
+      "prior_available_spy_excess": -0.13964530089771465,
+      "row_count": 2,
+      "ticker": "LHX"
+    },
+    {
+      "elapsed_intervals": 33,
+      "elapsed_ita_excess": 0.01951429032897012,
+      "elapsed_spy_excess": -0.11638150695107785,
+      "entry": "2026-08-24",
+      "h21_ita_excess": -0.0031065523603575063,
+      "h21_spy_excess": -0.09368951426814509,
+      "h5_ita_excess": 0.03464888845331637,
+      "h5_spy_excess": 0.008323096421986698,
+      "prior_available_ita_excess": -0.19007886716175648,
+      "prior_available_spy_excess": -0.1593664933625315,
+      "row_count": 3,
+      "ticker": "LHX"
+    },
+    {
+      "elapsed_intervals": 35,
+      "elapsed_ita_excess": -0.014463147562678524,
+      "elapsed_spy_excess": -0.16704756107947138,
+      "entry": "2026-08-20",
+      "h21_ita_excess": 0.027387452119013722,
+      "h21_spy_excess": -0.07853810846135378,
+      "h5_ita_excess": -0.019326237848899197,
+      "h5_spy_excess": -0.044363544531000554,
+      "prior_available_ita_excess": -0.06990866264700313,
+      "prior_available_spy_excess": 0.034212534619021184,
+      "row_count": 3,
+      "ticker": "NOC"
+    },
+    {
+      "elapsed_intervals": 34,
+      "elapsed_ita_excess": 0.0046703989866573314,
+      "elapsed_spy_excess": -0.14293649503775352,
+      "entry": "2026-08-21",
+      "h21_ita_excess": 0.026789599254862462,
+      "h21_spy_excess": -0.08301845770668592,
+      "h5_ita_excess": 0.009135692461094136,
+      "h5_spy_excess": -0.014649352667733817,
+      "prior_available_ita_excess": -0.07601950044398609,
+      "prior_available_spy_excess": 0.001393310815665627,
+      "row_count": 1,
+      "ticker": "NOC"
+    },
+    {
+      "elapsed_intervals": 33,
+      "elapsed_ita_excess": -0.007252560873791558,
+      "elapsed_spy_excess": -0.14314835815383953,
+      "entry": "2026-08-24",
+      "h21_ita_excess": 0.023195199010702106,
+      "h21_spy_excess": -0.06738776289708548,
+      "h5_ita_excess": 0.008663933945175617,
+      "h5_spy_excess": -0.01766185808615406,
+      "prior_available_ita_excess": -0.06093474695768841,
+      "prior_available_spy_excess": -0.030222373158463434,
+      "row_count": 6,
+      "ticker": "NOC"
+    },
+    {
+      "elapsed_intervals": 32,
+      "elapsed_ita_excess": 0.007107044909074878,
+      "elapsed_spy_excess": -0.12893684569134178,
+      "entry": "2026-08-25",
+      "h21_ita_excess": 0.03332631647426709,
+      "h21_spy_excess": -0.06170158885591903,
+      "h5_ita_excess": 0.024482806707994187,
+      "h5_spy_excess": -0.007854321569358835,
+      "prior_available_ita_excess": -0.06093474695768841,
+      "prior_available_spy_excess": -0.030222373158463434,
+      "row_count": 3,
+      "ticker": "NOC"
+    },
+    {
+      "elapsed_intervals": 28,
+      "elapsed_ita_excess": -0.015300731650699229,
+      "elapsed_spy_excess": -0.12682195678861685,
+      "entry": "2026-08-31",
+      "h21_ita_excess": -0.012510464101751828,
+      "h21_spy_excess": -0.10087548855985784,
+      "h5_ita_excess": -0.01802490325927364,
+      "h5_spy_excess": -0.03771182296808684,
+      "prior_available_ita_excess": -0.017432841657570308,
+      "prior_available_spy_excess": -0.047500227167928566,
+      "row_count": 3,
+      "ticker": "NOC"
+    },
+    {
+      "elapsed_intervals": 35,
+      "elapsed_ita_excess": 0.005126399672835125,
+      "elapsed_spy_excess": -0.14745801384395774,
+      "entry": "2026-08-20",
+      "h21_ita_excess": 0.004559562550474849,
+      "h21_spy_excess": -0.10136599802989266,
+      "h5_ita_excess": 0.012902014610185475,
+      "h5_spy_excess": -0.012135292071915882,
+      "prior_available_ita_excess": 0.1453834009994317,
+      "prior_available_spy_excess": 0.249504598265456,
+      "row_count": 2,
+      "ticker": "RTX"
+    }
+  ],
+  "independent_draws_admitted": 0,
+  "limitations": "Repeated candidate rows collapse only for identical displayed price windows.8 unique issuer/entry pairs are not independent economic/program clusters. No pooling or interval/efficacy claim.",
+  "numeric_rows_sha256": "3397ed93de5ee43e169527247a0e2f4b321507e1dd3c5ef8786d2569d4a0c558",
+  "scope_sha256": "a7d54f3c9a4fe8e3f71ec6e2058317cb85d9b093abf50c2796e97d93b60d984f"
+}

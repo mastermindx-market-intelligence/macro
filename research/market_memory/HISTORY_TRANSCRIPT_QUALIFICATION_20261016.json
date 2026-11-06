@@ -1,0 +1,59 @@
+{
+  "Chinese_disclosure_copy_guard_exit": 0,
+  "actual_installed_new_feature": false,
+  "canonical_scope_checks": {
+    "ancestor_findings": [],
+    "closures": [
+      {
+        "job": "research-price-panel",
+        "missing": [],
+        "note": "derived scopes for 1/1 jobs"
+      },
+      {
+        "job": "dataos-web-workspace",
+        "missing": [],
+        "note": "derived scopes for 1/1 jobs"
+      },
+      {
+        "job": "dataos-foundation",
+        "missing": [],
+        "note": "derived scopes for 1/1 jobs"
+      }
+    ]
+  },
+  "canonical_visual_guard_exit": 0,
+  "external_review": "Explicit OpenAI safety denial on first dispatch, followed by original-run NOT_FOUND. Not retried; no quality verdict or acceptance claimed.",
+  "focused_and_existing_regressions": {
+    "log_sha256": "ce3e1e436db46b6ad2594b1d7739347a94395f147e9f57cd939afb15b1a7b2a8",
+    "passed": 580,
+    "seconds": 30.77
+  },
+  "independent_old_reader_matches_entire_historical_date": true,
+  "new_negative_tests_failed_before_fixes": {
+    "API_and_shared_dossier": 12,
+    "catalogue_export_and_CLI": 5,
+    "pure_reader": 22,
+    "source_int32_precision": 1,
+    "workflow": 1
+  },
+  "original_transcript_intake_or_sealed_experiments_changed": false,
+  "real_browser_matrix_states": 8,
+  "recorded_at": "2026-10-16T09:49:26.957359+00:00",
+  "schema": "market_memory.transcript_source_qualification.v1",
+  "source_base": "e5e84272bc9128e2577f907de4d4960e84950a9b",
+  "source_blobs": {
+    "engine/neuralweb/market_memory_history_dossier.py": "f72e981a8015209500d2372795f7129bd113534396563c325afb649c15cd8b7e",
+    "engine/neuralweb/market_memory_history_transcripts.py": "2fe22c48d5d6f6b295dbacfe606b48792f4ca1264d0759a742d7f0523bc3293e",
+    "engine/neuralweb/market_memory_history_view.py": "8dd8c9820b166156d56f981ec9ac8f945f79e94c3a3ae456ac7261f8311f71cb",
+    "lib/dataos/web_api.py": "3f7a8da920b1d3fdba5f7488fceb9d092f24b6dc0cdb6fe4a1f759d8add5ef18",
+    "lib/dataos/web_history.py": "b5f7e1a959d9ab47d66431226a2c4f786a37371a14bcbe7bbc568dbc725e3403",
+    "scripts/market_memory_history.py": "ba82088a490348cac4b1450aa6b9feeac3493e5e63c5cbb3fa0989f0b4583647",
+    "templates/market_memory_history.html.j2": "1b1f87b985731a4b20d9662fe2d4d9a611945cce711459dc3a48bb585b800c7a",
+    "templates/market_memory_history.js": "a82f24b4bc88ed3b37583f1a20c08ff5ba6f2dc9c675de256b8438fe9902d99c"
+  },
+  "source_body_corpus_copies": 0,
+  "source_provider_calls": 0,
+  "source_text_roundtrip_verified": true,
+  "strict_point_in_time_proven": false,
+  "synthetic_canonical_browser_states": 16
+}

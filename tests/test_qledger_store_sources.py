@@ -627,3 +627,85 @@ def test_output_overrun_stops_exact_owned_process_and_preserves_limit(tmp_path, 
     pid = int(marker.read_text())
     with pytest.raises(ProcessLookupError):
         os.kill(pid, 0)
+
+
+# Exact legacy Git-source witness for a separately admitted conversion.
+# This does not select native mode or read any real financial repository.
+@pytest.mark.parametrize("raw", [b"", b"unterminated", b'{bad}\n\n',
+    b'{"claim_id":"same"}\n{"claim_id":"same"}\n', b'\xff\r\n\xe6\xbc\xa2\n'])
+def test_explicit_legacy_git_blob_preserves_exact_unparsed_bytes(tmp_path, limits, raw):
+    repo = tmp_path / "legacy-object"
+    tree = git_store(repo, {p.BASE_PATH: raw})
+    oid = git(repo, "rev-parse", tree + ":" + p.BASE_PATH).decode().strip()
+    before_index = (repo / ".git/index").read_bytes()
+    (repo / p.BASE_PATH).write_bytes(b"different uncommitted contents\n")
+    result = s.read_legacy_claims_blob(repo, tree_oid=tree, expected_blob_oid=oid, limits=limits)
+    assert result.raw_bytes == raw and result.blob_oid == oid and result.tree_oid == tree
+    assert result.byte_count == len(raw) and result.logical_digest == digest(raw)
+    assert result.source_assurance == "EXACT_GIT_TREE_BYTES_ONLY"
+    assert result.eligible_for_cutover is False
+    assert (repo / p.BASE_PATH).read_bytes() == b"different uncommitted contents\n"
+    assert (repo / ".git/index").read_bytes() == before_index
+    with pytest.raises(FrozenInstanceError):
+        result.raw_bytes = b"forged"
+
+
+def test_legacy_read_limit_is_logical_not_new_native_base_size(tmp_path, limits):
+    small = replace(limits, base_bytes=4, logical_bytes=128)
+    repo = tmp_path / "larger-legacy"
+    raw = b"original unparsed history\n" * 3
+    tree = git_store(repo, {p.BASE_PATH: raw})
+    oid = git(repo, "rev-parse", tree + ":" + p.BASE_PATH).decode().strip()
+    result = s.read_legacy_claims_blob(repo, tree_oid=tree, expected_blob_oid=oid, limits=small)
+    assert result.raw_bytes == raw
+    assert limits.base_bytes == 8192 and small.base_bytes == 4
+    assert_error("LIMIT", lambda: s.read_legacy_claims_blob(
+        repo, tree_oid=tree, expected_blob_oid=oid, limits=replace(small, logical_bytes=10)))
+
+
+@pytest.mark.parametrize("bad", ["HEAD", "a" * 39, "z" * 40, "--help", None])
+def test_legacy_source_requires_exact_expected_object_id(tmp_path, limits, bad):
+    repo = tmp_path / "legacy-id"
+    tree = git_store(repo, {p.BASE_PATH: b"original\n"})
+    assert_error("MALFORMED", lambda: s.read_legacy_claims_blob(
+        repo, tree_oid=tree, expected_blob_oid=bad, limits=limits))
+
+
+def test_legacy_source_refuses_a_different_expected_blob(tmp_path, limits):
+    repo = tmp_path / "legacy-wrong-object"
+    tree = git_store(repo, {p.BASE_PATH: b"original\n", "data/qledger/other.txt": b"other\n"})
+    other = git(repo, "rev-parse", tree + ":data/qledger/other.txt").decode().strip()
+    assert_error("CONFLICT", lambda: s.read_legacy_claims_blob(
+        repo, tree_oid=tree, expected_blob_oid=other, limits=limits))
+
+
+@pytest.mark.parametrize("reserved", [p.ROOT_PATH, p.PART_PREFIX + "0" * 64 + ".jsonl",
+                                      p.PAGE_PREFIX + "0" * 64 + ".json"])
+def test_legacy_source_refuses_native_or_incomplete_native_namespaces(tmp_path, limits, reserved):
+    repo = tmp_path / "not-legacy"
+    tree = git_store(repo, {p.BASE_PATH: b"raw\n", reserved: b"unadmitted native member\n"})
+    oid = git(repo, "rev-parse", tree + ":" + p.BASE_PATH).decode().strip()
+    assert_error("CONFLICT", lambda: s.read_legacy_claims_blob(
+        repo, tree_oid=tree, expected_blob_oid=oid, limits=limits))
+
+
+def test_legacy_source_refuses_a_symlink_claims_member(tmp_path, limits):
+    repo = tmp_path / "legacy-link"
+    git_store(repo, {"data/qledger/other.txt": b"original\n"})
+    (repo / p.BASE_PATH).symlink_to("other.txt")
+    git(repo, "add", "--", p.BASE_PATH)
+    tree = git(repo, "write-tree").decode().strip()
+    oid = git(repo, "rev-parse", tree + ":" + p.BASE_PATH).decode().strip()
+    assert_error("MALFORMED", lambda: s.read_legacy_claims_blob(
+        repo, tree_oid=tree, expected_blob_oid=oid, limits=limits))
+
+
+def test_legacy_blob_corruption_cannot_pass_a_git_filename_pin(tmp_path, limits):
+    repo = tmp_path / "legacy-corruption"
+    tree = git_store(repo, {p.BASE_PATH: b"original\n"})
+    oid = git(repo, "rev-parse", tree + ":" + p.BASE_PATH).decode().strip()
+    obj = repo / ".git/objects" / oid[:2] / oid[2:]
+    obj.chmod(0o600)  # Only this test's newly created loose object is corrupted.
+    obj.write_bytes(zlib.compress(b"blob 9\0changed!\n"))
+    assert_error("HASH", lambda: s.read_legacy_claims_blob(
+        repo, tree_oid=tree, expected_blob_oid=oid, limits=limits))

@@ -168,7 +168,9 @@ def _is_finite_number(value: Any) -> bool:
     return False
 
 
-def _validate_single_bar(result: Any, *, session_date: date) -> tuple[bool, str | None]:
+def _validate_single_bar(
+    result: Any, *, session_date: date, response_ticker: str | None = None
+) -> tuple[bool, str | None]:
     """Return (valid, reason_if_invalid) for one bar result object."""
     if not isinstance(result, dict):
         return False, "result is not an object"
@@ -177,10 +179,18 @@ def _validate_single_bar(result: Any, *, session_date: date) -> tuple[bool, str 
             return False, f"result missing required field {field!r}"
         if field != "t" and not _is_finite_number(result[field]):
             return False, f"result field {field!r} is not a finite number"
-    # Validate ticker
-    ticker = result.get("T") or result.get("ticker") or ""
-    if str(ticker).upper() != "SPY":
-        return False, f"result ticker {ticker!r} is not SPY"
+    # Custom-bars identity lives on the authenticated response envelope.  The
+    # default remains strict for legacy callers that pass standalone row data.
+    if response_ticker is None:
+        ticker = result.get("T") or result.get("ticker") or ""
+        if str(ticker).upper() != "SPY":
+            return False, f"result ticker {ticker!r} is not SPY"
+    else:
+        if response_ticker != "SPY":
+            return False, "response ticker is not SPY"
+        for field in ("T", "ticker"):
+            if field in result and result[field] != "SPY":
+                return False, "result ticker conflicts with SPY response"
     # bar.t is a consistency witness — milliseconds since epoch
     t_val = result.get("t")
     if not isinstance(t_val, (int, float)) or isinstance(t_val, bool):
@@ -394,7 +404,9 @@ def _validate_spy_rest_artifact(
     results = clean.get("results")
     if not isinstance(results, list) or len(results) != 1:
         raise SourceStoreError("SPY REST source object must have exactly one result")
-    valid, reason = _validate_single_bar(results[0], session_date=session)
+    valid, reason = _validate_single_bar(
+        results[0], session_date=session, response_ticker=clean["ticker"]
+    )
     if not valid:
         raise SourceStoreError(f"SPY REST source object bar is invalid: {reason}")
     return clean

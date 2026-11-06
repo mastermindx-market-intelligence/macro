@@ -1,6 +1,6 @@
 {
   "schema": "release_forecast_scoreboard.v2",
-  "asof": "2026-10-09T15:19:04Z",
+  "asof": "2026-10-16T18:20:05Z",
   "forward_accrual_began": "2026-07-07",
   "note": "Forward-only: no backtest rows enter this scoreboard (MRI-R8). Primary metrics use evaluation-eligible rows only; all_forward preserves the immutable raw record.",
   "evaluation_basis": "clean_structured_defect_epochs_v1",
@@ -184,6 +184,49 @@
     }
   },
   "by_shadow_epoch_note": "Like-for-like forward evidence segmented by exact model and target epochs. The legacy by_shadow aggregate is retained for compatibility and may span epochs.",
+  "evaluation_basis_counts": {
+    "claims:champion": {
+      "n": 14,
+      "by_actual_basis": {
+        "official_initial_level": 8,
+        "official_published_metric": 3,
+        "unspecified": 3
+      },
+      "first_print_matched_n": 3,
+      "proxy_scored_n": 0,
+      "other_basis_n": 11,
+      "target_epochs": [
+        "legacy_unspecified",
+        "official_initial_level_v1"
+      ]
+    },
+    "cpi_core:coherent_ridge_v1": {
+      "n": 2,
+      "by_actual_basis": {
+        "official_published_metric": 1,
+        "same_release_vintage_published_proxy": 1
+      },
+      "first_print_matched_n": 1,
+      "proxy_scored_n": 1,
+      "other_basis_n": 0,
+      "target_epochs": [
+        "alfred_same_release_vintage_proxy_v1"
+      ]
+    },
+    "cpi_headline:coherent_ridge_v1": {
+      "n": 2,
+      "by_actual_basis": {
+        "official_published_metric": 1,
+        "same_release_vintage_published_proxy": 1
+      },
+      "first_print_matched_n": 1,
+      "proxy_scored_n": 1,
+      "other_basis_n": 0,
+      "target_epochs": [
+        "alfred_same_release_vintage_proxy_v1"
+      ]
+    }
+  },
   "promotion_review": [],
   "all_forward": {
     "claims:champion": {
@@ -192,9 +235,9 @@
       "mae_ours": null
     },
     "cpi_core:champion": {
-      "n": 3,
-      "excluded_n": 3,
-      "mae_ours": 0.1545
+      "n": 4,
+      "excluded_n": 4,
+      "mae_ours": 0.1239
     },
     "cpi_core:coherent_ridge_v1": {
       "n": 2,
@@ -202,19 +245,19 @@
       "mae_ours": 0.15
     },
     "cpi_core:combined_v1": {
-      "n": 2,
-      "excluded_n": 2,
-      "mae_ours": 0.0926
+      "n": 3,
+      "excluded_n": 3,
+      "mae_ours": 0.0821
     },
     "cpi_core:v3_factor": {
-      "n": 3,
-      "excluded_n": 3,
-      "mae_ours": 0.1414
+      "n": 4,
+      "excluded_n": 4,
+      "mae_ours": 0.1193
     },
     "cpi_headline:champion": {
-      "n": 3,
-      "excluded_n": 3,
-      "mae_ours": 0.2104
+      "n": 4,
+      "excluded_n": 4,
+      "mae_ours": 0.2162
     },
     "cpi_headline:coherent_ridge_v1": {
       "n": 2,
@@ -222,24 +265,24 @@
       "mae_ours": 0.1
     },
     "cpi_headline:combined_v1": {
-      "n": 2,
-      "excluded_n": 2,
-      "mae_ours": 0.1087
+      "n": 3,
+      "excluded_n": 3,
+      "mae_ours": 0.1162
     },
     "cpi_headline:cpi_bridge": {
-      "n": 3,
-      "excluded_n": 3,
-      "mae_ours": 0.2807
+      "n": 4,
+      "excluded_n": 4,
+      "mae_ours": 0.2459
     },
     "cpi_headline:mf_energy": {
-      "n": 3,
-      "excluded_n": 3,
-      "mae_ours": 0.0755
+      "n": 4,
+      "excluded_n": 4,
+      "mae_ours": 0.0586
     },
     "cpi_headline:v3_factor": {
-      "n": 3,
-      "excluded_n": 3,
-      "mae_ours": 0.3294
+      "n": 4,
+      "excluded_n": 4,
+      "mae_ours": 0.3019
     },
     "nfp:champion": {
       "n": 3,
@@ -262,23 +305,23 @@
       "mae_ours": 0.095
     },
     "ppi_finaldemand:champion": {
-      "n": 3,
-      "excluded_n": 3,
-      "mae_ours": 0.4245
+      "n": 4,
+      "excluded_n": 4,
+      "mae_ours": 0.5534
     }
   },
   "evaluation_exclusions": {
-    "n": 37,
+    "n": 46,
     "by_defect": {
       "DN-001": 4,
       "DN-002": 1,
-      "DN-004": 37
+      "DN-004": 46
     }
   },
   "score_receipts": {
-    "raw_n": 613,
-    "canonical_n": 55,
-    "superseded_n": 558,
+    "raw_n": 644,
+    "canonical_n": 64,
+    "superseded_n": 580,
     "note": "Official actual receipts supersede same-vintage proxies and legacy calculations for evaluation; every receipt remains in the ledger."
   },
   "defect_notices": [

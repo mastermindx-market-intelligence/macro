@@ -388,6 +388,29 @@ def test_actual_cn_final_shared_seam_preserves_both_render_vm_and_refuses_no_cap
     assert vm["setups"]==before and vm["cn_selection_cohort_internal"] is None
     assert not (tmp_path/"internal").exists()
 
+def _actual_us_today_source_helpers(module):
+    # The parsed build_site module's OWN Today source helpers, exec'd from the
+    # SAME AST — never a stub receipt, re-implementation or new selector.
+    wanted=("_us_today_source_binding","_us_today_native_binding","_us_today_bind_rows")
+    helpers=[node for node in module.body
+             if isinstance(node,ast.FunctionDef) and node.name in wanted]
+    assert "_us_today_source_binding" in {h.name for h in helpers}
+    return helpers
+
+def _actual_fresh_read_prefix(fresh):
+    # Actual fresh read/bind/attach prefix: the native source sets
+    # `_fresh_su=None` BEFORE its owner/attach branch, so cut before
+    # `_prior_as_of`; the two-pin source's `_fresh_su` attach assign directly
+    # precedes `_prior_as_of`, so both shapes keep the same fixture composed.
+    stop=next((i for i,node in enumerate(fresh.body)
+               if ast.unparse(node).startswith("_prior_as_of")),None)
+    if stop is None:
+        stop=1+next(i for i,node in enumerate(fresh.body)
+                    if isinstance(node,ast.Assign)
+                    and any(isinstance(t,ast.Name) and t.id=="_fresh_su"
+                            for t in node.targets))
+    return fresh.body[:stop]
+
 def test_actual_first_and_fresh_us_reader_failures_preserve_board(tmp_path,monkeypatch):
     from types import SimpleNamespace
     module=ast.parse((ROOT/"scripts/build_site.py").read_text())
@@ -407,13 +430,12 @@ def test_actual_first_and_fresh_us_reader_failures_preserve_board(tmp_path,monke
         us_standouts=None,_us_w3c=None,_us_w3c_binding=None,log=log,
         config=SimpleNamespace(data_dir=lambda:tmp_path/"internal"),
         _attach_board_display_chips=lambda site,doc:doc)
+    exec(compile(ast.Module(body=_actual_us_today_source_helpers(module),type_ignores=[]),
+        "<actual build_site Today source helpers>","exec"),namespace)
     exec(compile(ast.Module(body=[first],type_ignores=[]),"<actual first US source seam>","exec"),namespace)
     assert namespace["us_standouts"]==json.loads(raw()) and namespace["_us_w3c"] is None
     # Narrow actual fresh read/bind/attach prefix, before financial view logic/render.
-    prefix=[]
-    for node in fresh.body:
-        prefix.append(node)
-        if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=="_fresh_su" for t in node.targets):break
+    prefix=_actual_fresh_read_prefix(fresh)
     exec(compile(ast.Module(body=prefix,type_ignores=[]),"<actual fresh US source seam>","exec"),namespace)
     assert namespace["_fresh_su"]==json.loads(raw()) and namespace["_fresh_w3c"] is None
 
@@ -725,14 +747,12 @@ def test_actual_us_typed_refusal_reaches_product_projection_only(tmp_path, monke
     )
     (tmp_path / "factordata").mkdir()
     (tmp_path / "factordata/us_standouts.json").write_bytes(raw())
+    exec(compile(ast.Module(body=_actual_us_today_source_helpers(module), type_ignores=[]),
+                 "<actual build_site Today source helpers>", "exec"), namespace)
     exec(compile(ast.Module(body=[first], type_ignores=[]), "<actual first US source seam>", "exec"), namespace)
     assert namespace["_us_w3c"] is None
     assert namespace["_us_w3c_refusal"]["reason_codes"] == ["CAPTURE_RIGHTS_UNAVAILABLE"]
-    prefix = []
-    for node in fresh.body:
-        prefix.append(node)
-        if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "_fresh_su" for t in node.targets):
-            break
+    prefix = _actual_fresh_read_prefix(fresh)
     exec(compile(ast.Module(body=prefix, type_ignores=[]), "<actual fresh US source seam>", "exec"), namespace)
     assert namespace["_fresh_w3c"] is None
     assert namespace["_fresh_w3c_refusal"]["reason_codes"] == ["CAPTURE_RIGHTS_UNAVAILABLE"]

@@ -142,7 +142,7 @@ def _pin_ok(root: Path, source_path: str, source_line: int, status_literal: str)
         return False
     try:
         text = resolved.read_text(encoding="utf-8")
-    except OSError:
+    except (OSError, UnicodeDecodeError):
         return False
     lines = text.splitlines()
     if source_line < 1 or source_line > len(lines):
@@ -157,7 +157,7 @@ def build_verdict_preservation(root: Path) -> dict[str, Any]:
 
     try:
         data = json.loads(registry_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         return _unavailable("verdict_preservation registry unreadable: %s", exc)
 
     if not _validate_registry(data):

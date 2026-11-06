@@ -1,0 +1,63 @@
+{
+ "e2": {
+  "ci95": null,
+  "decision": null,
+  "estimate_vol_points": null,
+  "honest_n": {
+   "blocks": 0,
+   "eligible_pairs": 0,
+   "test_dates_with_eligible_pairs": 0,
+   "underlyings": 0
+  },
+  "reason": "HG fails (PREREG section 9): E2 is not run",
+  "status": "NOT_RUN"
+ },
+ "robustness": {
+  "joinable_sources_for_failing_stages": {
+   "deliverable_multiplier": 3,
+   "exercise_style": 0,
+   "pit_dividend_schedule": 0,
+   "settlement_clock": 0
+  },
+  "sensitivity_fails_at": "deliverable_multiplier",
+  "strict_fails_at": "exercise_style"
+ },
+ "sensitivity": {
+  "a_dates_with_eligible_pair_test": 0,
+  "a_dates_with_eligible_pair_train": 0,
+  "a_holds": false,
+  "a_threshold_per_half": 10,
+  "arm": "sensitivity",
+  "b_holds": false,
+  "b_test_underlyings_with_eligible_pairs": 0,
+  "b_threshold": 10,
+  "c_eligible_pairs": 0,
+  "c_holds": true,
+  "c_note": "vacuous over 0 eligible pairs",
+  "c_priced_both_legs": 0,
+  "dates_test": 14,
+  "dates_total": 28,
+  "dates_train": 14,
+  "hg_holds": false
+ },
+ "strict": {
+  "a_dates_with_eligible_pair_test": 0,
+  "a_dates_with_eligible_pair_train": 0,
+  "a_holds": false,
+  "a_threshold_per_half": 10,
+  "arm": "strict",
+  "b_holds": false,
+  "b_test_underlyings_with_eligible_pairs": 0,
+  "b_threshold": 10,
+  "c_eligible_pairs": 0,
+  "c_holds": true,
+  "c_note": "vacuous over 0 eligible pairs",
+  "c_priced_both_legs": 0,
+  "dates_test": 14,
+  "dates_total": 28,
+  "dates_train": 14,
+  "hg_holds": false
+ },
+ "structural_pairs_all_dates": 1829760,
+ "structural_pairs_priced_both_legs": 0
+}

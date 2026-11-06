@@ -1,0 +1,60 @@
+{
+  "observed_at": "2026-10-15T19:59:29.071409+00:00",
+  "source": "3a6a5be90ecd34ca27d5f93af3fc6a52ba559adb",
+  "command": [
+    "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/bin/python",
+    "scripts/agentos.py",
+    "compile-context",
+    "--workstream",
+    "EVAL-OS-EVIDENCE-VIEW",
+    "--json"
+  ],
+  "returncode": 0,
+  "stdout_sha256": "1ff68a8361a1ffb56831cfa00cd8c0cfcf1d8d92b000a21abecd1f475734b893",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual existing read-only downstream context consumer on published follow-on source. No clock override, model, live grade read, release or installed adoption.",
+  "schema": "context_bundle.v1",
+  "target": {
+    "workstream": "WS:EVAL-OS-EVIDENCE-VIEW",
+    "task": null,
+    "resolution": "explicit",
+    "candidates": [],
+    "wait": null
+  },
+  "token_budget": 8000,
+  "token_estimate": 9761,
+  "finding_occurrences": [
+    {
+      "path": "/sections/3/items/0",
+      "record": {
+        "kind": "discovery",
+        "key": "DSC:WHITEHOUSE-CLAIM-SNAPSHOT-REQUIRES-DIRECTION-SPLIT-EXCESS",
+        "path": "agentos/discoveries/DSC-WHITEHOUSE-CLAIM-SNAPSHOT-REQUIRES-DIRECTION-SPLIT-EXCESS.md",
+        "locator": "agentos/discoveries/DSC-WHITEHOUSE-CLAIM-SNAPSHOT-REQUIRES-DIRECTION-SPLIT-EXCESS.md#frontmatter",
+        "authority_class": "A3",
+        "status": "verified",
+        "updated": "2026-10-15",
+        "excerpt": "claim: The 2026-10-15T17:46:25Z production claim snapshot binds whitehouse uniquely to scripts/build_whitehouse.py::whitehouse-desk by canonical registry rule 2 and contains 210 positive-direction and 90 negative-direction non-placebo claims. The T12 consumer rejects interpreting a pooled raw signed excess_mean over this mixed-direction snapshot as forecasting skill. This is an intended-report legality finding, not evidence of a published invalid report or observed returns.\nso what: Before presenting a whitehouse excess mean as skill, split it by direction or choose a metric whose semantics match the claim family. Preserve not_assessed, do not infer an earned tier or change a gate, producer\u2026",
+        "why_included": "scoped to WS:EVAL-OS-EVIDENCE-VIEW"
+      }
+    }
+  ],
+  "source_records_digest": "sha256:fe153609c53909e6a3b5fa60d102fb13d823d084e1b803bc2c3d7c32ee46694a",
+  "degraded": [
+    "data/governance/active_builds.json absent \u2014 PR state unknown; wave/PR agreement unchecked (normal in a sparse worktree; the nightly writes it)",
+    "token_estimate 9761 exceeds token_budget 8000 \u2014 always-included constraint context (1857) + packed items (6069) + accounting tails (1835); the always-included set and the tails are never dropped, so raise --budget"
+  ],
+  "no_answer_reason": null,
+  "acceptance_basis_authoritative": false,
+  "budget_overrun_is_declared": true,
+  "raw_output_retained_at": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/t12-real-context-consumer-stdout.json",
+  "adjudication": "ACCEPTED_BOUNDED_LOCAL_CONTEXT_CONSUMPTION_WITH_DECLARED_DEGRADATION",
+  "production_verified": false,
+  "programme_complete": false,
+  "installed_adoption": false,
+  "limitations": [
+    "Existing compiler emits a cited excerpt and frontmatter locator, not the typed evaluation_finding object or an earned tier.",
+    "Missing active-build metadata and accounting-tail budget overrun remain explicit; no PR-state or budget-compliance claim.",
+    "Parent consumed this exact existing CLI result on published source; no independent operator, protected landing, installed runtime or general model/PIT acceptance."
+  ]
+}

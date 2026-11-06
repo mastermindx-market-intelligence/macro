@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-17T20:50:29Z",
+ "accession": "0001628280-26-057406",
+ "cik": "0002023554",
+ "doc_byte_length": 2223398,
+ "doc_sha256": "67db98cde04724db6c97f165d660b795179294112814bbf0a5411ad916651848",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "sndk-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 221396,
+  "byte_start": 220453,
+  "normalized": "Our broad portfolio of technology and products addresses multiple end markets of “Datacenter,” “Edge” and “Consumer” and are comprised of the Sandisk™ brand. Certain of our products will also be sold for a limited transitional period under the Western Digital®, WD® and other brands under license from WDC.",
+  "normalized_sha256": "22500a0c5c3feb473d33787eb565198423663c26e9eb9745fbe5affbf7b15d96",
+  "raw": "Our broad portfolio of technology and products addresses multiple end markets of &#8220;Datacenter,&#8221; &#8220;Edge&#8221; and &#8220;Consumer&#8221; and are comprised of the Sandisk&#8482; brand. Certain of our products will also be sold for a limited transitional period under the Western Digital</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:6.5pt;font-weight:400;line-height:120%;position:relative;top:-3.5pt;vertical-align:baseline\">&#174;</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">, WD</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:6.5pt;font-weight:400;line-height:120%;position:relative;top:-3.5pt;vertical-align:baseline\">&#174;</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"> and other brands under license from WDC. ",
+  "raw_sha256": "a9098b5fa11fa440533982a6a9e326f4d6f682858747aad90bbc6478737a5cad"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2023554/000162828026057406/sndk-20260703.htm",
+ "xbrl_contexts": []
+}

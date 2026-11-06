@@ -427,3 +427,76 @@ def test_fingerprint_no_evidence_stays_dark(tmp_path):
     leg = h["legs"]["t1_fingerprint"]
     assert leg["status"] == "DARK"
     assert leg["detail"] == "0/2"
+
+
+# ── W17 Spec 1: t1_fred counts ONLY numeric FRED bands ────────────────────────
+# The shipped page published Supply (FRED) LIVE 18/18 while 5 of the 18 cascade
+# rows carry text/fingerprint-variant bands (site/basketdata/foresight_cascade.json:
+# 3× TIGHT (text), 2× TIGHTENING (fingerprint)). engine/foresight_score.py:123-150
+# is the contract — only SOLD_OUT / TIGHT / TIGHTENING / NEUTRAL / LOOSE are physical
+# FRED confirmation; text bands belong to t1_text and fingerprint bands to
+# t1_fingerprint. The FRED chip must not double-count them.
+
+def test_t1_fred_ignores_text_band(tmp_path):
+    """TIGHT (text) is an EDGAR language read, not a FRED band: t1_fred DARK 0/2,
+    while t1_text still reads PARTIAL — the two legs stay distinct."""
+    themes = [
+        dict(_theme(bottleneck_band="TIGHT (text)"), bottleneck_text_only=True),
+        _theme(bottleneck_band="AWAITING_DATA"),
+    ]
+    cascade = {"themes": themes, "asof": "2026-08-04"}
+
+    with mock.patch("engine.foresight_health._health_log_path", return_value=tmp_path / "h.jsonl"):
+        h = compute_foresight_health(cascade=cascade)
+
+    fred = h["legs"]["t1_fred"]
+    assert fred["status"] == "DARK", (
+        f"a text-only band must not light the FRED leg, got {fred['status']} {fred['detail']}"
+    )
+    assert fred["detail"] == "0/2"
+    assert "1 carry text/fingerprint bands" in fred["why"]
+    assert "not yet collected" not in fred["why"]
+    assert h["legs"]["t1_text"]["status"] == "PARTIAL", (
+        "the text band still counts on the text leg — it moved, it did not vanish"
+    )
+
+
+def test_t1_fred_ignores_fingerprint_band(tmp_path):
+    """TIGHTENING (fingerprint) is annual XBRL, not a FRED series: t1_fred DARK 0/2
+    while t1_fingerprint keeps counting it (PARTIAL 1/2)."""
+    themes = [_fp_theme(), _theme(bottleneck_band="AWAITING_DATA")]
+    cascade = {"themes": themes, "asof": "2026-08-04"}
+
+    with mock.patch("engine.foresight_health._health_log_path", return_value=tmp_path / "h.jsonl"):
+        h = compute_foresight_health(cascade=cascade)
+
+    fred = h["legs"]["t1_fred"]
+    assert fred["status"] == "DARK", (
+        f"a fingerprint band must not light the FRED leg, got {fred['status']} {fred['detail']}"
+    )
+    assert fred["detail"] == "0/2"
+    assert h["legs"]["t1_fingerprint"]["detail"] == "1/2"
+
+
+def test_t1_fred_numeric_neutral_and_loose_count(tmp_path):
+    """NEUTRAL and LOOSE are numeric FRED physical bands (foresight_score.py:149-150):
+    they count; the text band does not → PARTIAL 2/3, not LIVE 3/3. Scaled shape of the
+    committed cascade (13 FRED + 5 text/fingerprint of 18)."""
+    themes = [
+        _theme(bottleneck_band="NEUTRAL"),
+        _theme(bottleneck_band="LOOSE"),
+        dict(_theme(bottleneck_band="TIGHT (text)"), bottleneck_text_only=True),
+    ]
+    cascade = {"themes": themes, "asof": "2026-08-04"}
+
+    with mock.patch("engine.foresight_health._health_log_path", return_value=tmp_path / "h.jsonl"):
+        h = compute_foresight_health(cascade=cascade)
+
+    fred = h["legs"]["t1_fred"]
+    assert fred["status"] == "PARTIAL", (
+        f"2 of 3 themes carry a numeric FRED band → PARTIAL, got {fred['status']}"
+    )
+    assert fred["detail"] == "2/3"
+    # the text row is on its own leg, not still waiting on FRED data
+    assert "0 AWAITING_DATA" in fred["why"]
+    assert "1 text/fingerprint" in fred["why"]

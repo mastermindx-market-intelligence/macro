@@ -1,0 +1,214 @@
+{
+  "schema": "risk_radar.foreign_source_archive_publication.v1",
+  "observed_at_utc": "2026-10-18T09:25:55.273141+00:00",
+  "failed_evidence_head": "f11fa0c66273ca1976f37e2f529fe9ff689ee439",
+  "failed_ci_run": 39113159863,
+  "archive_count": 25,
+  "archive_bytes": 936396,
+  "raw_bytes_preserved": true,
+  "owning_mastermind_source_changed": false,
+  "macro_ci_or_waiver_changed": false,
+  "interpretation": "These are retained evidence copies of another repository or an earlier execution stage, not executable Macro source or newly admitted Macro test suites. Original review paths are logical archive names resolved through this map. Restore a named copy only in a separately qualified owning workspace; this mapping is not execution admission.",
+  "files": [
+    {
+      "original_archive_path": "candidate/scripts/deploy_code_to_vps.sh",
+      "published_archive_path": "candidate/scripts/deploy_code_to_vps.sh.txt",
+      "bytes": 20370,
+      "sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+      "git_blob": "f871e88815e70338a646008dbe77dfcc1727e978",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "candidate/tests/test_deploy_provenance.py",
+      "published_archive_path": "candidate/tests/test_deploy_provenance.py.txt",
+      "bytes": 40060,
+      "sha256": "1e463a9116fb6c9bc6e6fe10ea23bf619d8674fd7e0ad6ce2392410e302a897c",
+      "git_blob": "7eb913cc8c6bcbe501086f91f3d225bf9a928c38",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "helper_fixture_driver_20261018.py",
+      "published_archive_path": "helper_fixture_driver_20261018.py.txt",
+      "bytes": 3434,
+      "sha256": "380ea13a8dcda1ef7a25eb888a5223e43ae1ab8bc36276509917303e9864be44",
+      "git_blob": "33189fbd5a51637ba197ace03436581368624aa3",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "native_run2_candidate/scripts/deploy_code_to_vps.sh",
+      "published_archive_path": "native_run2_candidate/scripts/deploy_code_to_vps.sh.txt",
+      "bytes": 20370,
+      "sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+      "git_blob": "f871e88815e70338a646008dbe77dfcc1727e978",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "native_run2_candidate/tests/test_deploy_provenance.py",
+      "published_archive_path": "native_run2_candidate/tests/test_deploy_provenance.py.txt",
+      "bytes": 40161,
+      "sha256": "d9dd66255444a70ba2160d30a2b62e540bcbc6620736030152cbef50c7ab7f59",
+      "git_blob": "786d078729ac0914ea27b13c2a5e21d0236cb49b",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "pre_native_candidate/scripts/deploy_code_to_vps.sh",
+      "published_archive_path": "pre_native_candidate/scripts/deploy_code_to_vps.sh.txt",
+      "bytes": 20370,
+      "sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+      "git_blob": "f871e88815e70338a646008dbe77dfcc1727e978",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "pre_native_candidate/tests/test_deploy_provenance.py",
+      "published_archive_path": "pre_native_candidate/tests/test_deploy_provenance.py.txt",
+      "bytes": 39649,
+      "sha256": "a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a",
+      "git_blob": "6a43924c31c8d5e8c1a21168977b37c369b42f7b",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "red_baseline/scripts/deploy_code_to_vps.sh",
+      "published_archive_path": "red_baseline/scripts/deploy_code_to_vps.sh.txt",
+      "bytes": 14934,
+      "sha256": "c158fc903121b8c4ad680049ded16000913393039944c6eec3a23d44ca376204",
+      "git_blob": "27f66c96a48ac081f43d46c1d52fbebc2d912ba2",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "red_baseline/tests/test_deploy_provenance.py",
+      "published_archive_path": "red_baseline/tests/test_deploy_provenance.py.txt",
+      "bytes": 26234,
+      "sha256": "8a5a275be5243201428c80636b531b778e43dd4503e1037d8e927306dd63a8aa",
+      "git_blob": "12cac89894a023cc10bbd2030deebf5821fce0bf",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "review_red_baseline/scripts/deploy_code_to_vps.sh",
+      "published_archive_path": "review_red_baseline/scripts/deploy_code_to_vps.sh.txt",
+      "bytes": 19919,
+      "sha256": "c64b940d75a70db26eeed6af1305c2c0e7c924201026a45b69aaa8de2ebe483d",
+      "git_blob": "e368848fb60633d4b5c1ff3509827058e99133b6",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "review_red_baseline/tests/test_deploy_provenance.py",
+      "published_archive_path": "review_red_baseline/tests/test_deploy_provenance.py.txt",
+      "bytes": 39649,
+      "sha256": "a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a",
+      "git_blob": "6a43924c31c8d5e8c1a21168977b37c369b42f7b",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/app/main.py",
+      "published_archive_path": "source/app/main.py.txt",
+      "bytes": 34012,
+      "sha256": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+      "git_blob": "fdb22dc1a2650ff57d50a1c9c1cfebcf10521da4",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/app/scheduler.py",
+      "published_archive_path": "source/app/scheduler.py.txt",
+      "bytes": 111145,
+      "sha256": "e1e1965a172e7edf168fca6d144b59f572cff1f662b6a683d2d040c0707e9333",
+      "git_blob": "979ae223b87c85b14a5906c009de4eb78fda31d4",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/app/web.py",
+      "published_archive_path": "source/app/web.py.txt",
+      "bytes": 167964,
+      "sha256": "721b792941160c962adf99c28febd048163be5c39eb8a5c8d67786c93fdc8a2d",
+      "git_blob": "3cff8680694edc84aeb8dc64361422ba4c5e7944",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/bot/__init__.py",
+      "published_archive_path": "source/bot/__init__.py.txt",
+      "bytes": 1182,
+      "sha256": "2e5bd759495533c77f6ac0016f0f582aa256daf5ec47d45015efbd2969036f18",
+      "git_blob": "7cd08f9dbb5a7534f997a1394062b4d72774d7a0",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/bot/settle.py",
+      "published_archive_path": "source/bot/settle.py.txt",
+      "bytes": 49282,
+      "sha256": "3aef6a0d8f4501a110bb4af240e9cc12988a11754128d50d3ae105c11cab7915",
+      "git_blob": "abfe4b92f24061a82855af116d697cdbd25f5656",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/control_plane/locks.py",
+      "published_archive_path": "source/control_plane/locks.py.txt",
+      "bytes": 5687,
+      "sha256": "d188aa91c682481c403c5fc0cd383f3956007d5d86b36d701d5920a1e1b5fd54",
+      "git_blob": "e207d7da64ea2a1bb591b65c3229962b11945993",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/portfolio/__init__.py",
+      "published_archive_path": "source/portfolio/__init__.py.txt",
+      "bytes": 78,
+      "sha256": "d6d41b937d800443f780120d33575dd9379cc74c714b841452f5ef5852096164",
+      "git_blob": "8f957bc85f3f20f0fd1d8f97d27ba56f69f5d026",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/portfolio/forward_evaluation.py",
+      "published_archive_path": "source/portfolio/forward_evaluation.py.txt",
+      "bytes": 75128,
+      "sha256": "19e053bbab9372bfd7c8dd075bfc9a6d3c7ce3450641982086400184a6e07a22",
+      "git_blob": "ef9944ebed235803ea32e7532c0a03884675cc69",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/portfolio/paper_account.py",
+      "published_archive_path": "source/portfolio/paper_account.py.txt",
+      "bytes": 156107,
+      "sha256": "6c22b0609e867bf8160811487cb7bb942291cc9a336e6422dcb4d7628e6468d0",
+      "git_blob": "d80b8cfc3397742e203e99ee8c15e5f44969cd50",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/portfolio/registry.py",
+      "published_archive_path": "source/portfolio/registry.py.txt",
+      "bytes": 14256,
+      "sha256": "e8beaf286fdc2c628fc79c37f4e5be30bf746bd1159fe220afc9dad02980f05e",
+      "git_blob": "f5eb632d8f2d8dfcdbe11abb19076f9d746b38fe",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/scripts/deploy_code_to_vps.sh",
+      "published_archive_path": "source/scripts/deploy_code_to_vps.sh.txt",
+      "bytes": 14934,
+      "sha256": "c158fc903121b8c4ad680049ded16000913393039944c6eec3a23d44ca376204",
+      "git_blob": "27f66c96a48ac081f43d46c1d52fbebc2d912ba2",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/scripts/deploy_from_git.sh",
+      "published_archive_path": "source/scripts/deploy_from_git.sh.txt",
+      "bytes": 1493,
+      "sha256": "b983a9e88f6eddeac00929797d1e05c80e09e3c206bcabf4e26342fdb7dbb42f",
+      "git_blob": "f40e7895e88b0cd755fb7ef9b41a4783a1df4ed9",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/scripts/refresh_datadog_release_tag.sh",
+      "published_archive_path": "source/scripts/refresh_datadog_release_tag.sh.txt",
+      "bytes": 881,
+      "sha256": "985a3ee9757daa65604d7b53752fc7d10dc3aed2cfd4888208c4f47d0bdd8ad9",
+      "git_blob": "a7a32713ef1477d1b84398ff24c6b9fda938831e",
+      "content_changed": false
+    },
+    {
+      "original_archive_path": "source/tests/test_deploy_provenance.py",
+      "published_archive_path": "source/tests/test_deploy_provenance.py.txt",
+      "bytes": 19097,
+      "sha256": "1bc5bf5e1980cb97fb8051d062e90e60536432b03782ff008cb31066f950bd3c",
+      "git_blob": "0068291b2764f67c74acfb2f4cc26949631d2eb9",
+      "content_changed": false
+    }
+  ]
+}

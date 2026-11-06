@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-09T21:16:02Z",
+ "accession": "0001193125-26-042813",
+ "cik": "0001114995",
+ "doc_byte_length": 4450456,
+ "doc_sha256": "22438acefc1da9af4b10c74fef57e699778d431be89303a9c45753f8226d16ee",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-09",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "pi-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4213939,
+  "byte_start": 4213811,
+  "normalized": "Amendment No. 1 to Purchase Agreement—Services Phase 2, dated March 26, 2010, between the registrant and Intel Corporation",
+  "normalized_sha256": "cff6f562ca2890440c6ed2a663885ceb60d061e6c35eae19d91e89882d46ac97",
+  "raw": "Amendment No. 1 to Purchase Agreement&#8212;Services Phase 2, dated March 26, 2010, between the registrant and Intel Corporation",
+  "raw_sha256": "9a13e2eb5ccf927ec41f6443cfabb41acba9f0f01a46c4a04a7af65668e9b52b"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1114995/000119312526042813/pi-20251231.htm",
+ "xbrl_contexts": []
+}

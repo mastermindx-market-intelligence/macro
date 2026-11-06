@@ -1,0 +1,7 @@
+{
+  "observed_at": "2026-10-20T04:46:04.165419+00:00",
+  "script_sha256": "c263474cc3e4a76c40d17621edae480e75ea2c7bce288a6dbc61a3a23ad6d881",
+  "failure": "unmatched ')' (macro-0f05-measured-budget-repair.py, line 45)",
+  "source_effect": false,
+  "reason": "Python parse refusal before any statement execution"
+}

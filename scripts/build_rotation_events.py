@@ -109,6 +109,93 @@ def _load_sector_breadth() -> tuple[dict[str, float], dict[str, pd.Series]]:
     return breadth_by_sector, breadth_series_by_sector
 
 
+def _publish_latest_observation(payload, data_dir, site):
+    """Atomically republish rotation_events.json with the latest recorded view.
+
+    Runs only after the recorder has returned "recorded". The view is projected
+    from the canonical ledger (read-only, strict) and the published context; the
+    in-memory payload is never mutated, so alerts and returns are unchanged. Any
+    failure leaves the legacy publication exactly as already written.
+    """
+    import os
+    import tempfile
+
+    try:
+        ec = payload.get("early_context")
+        if not isinstance(ec, dict):
+            return "absent"
+        view = rotation_events.project_latest_observation_view(
+            ec, rotation_events.read_early_observation_ledger(data_dir))
+        if view is None:
+            return "absent"
+        published = {**payload, "early_context": {**ec, "latest_observation": view}}
+        text = json.dumps(_clean(published), separators=(",", ":"),
+                          ensure_ascii=False, allow_nan=False)
+        target = Path(site) / "marketdata" / "rotation_events.json"
+        fd, tmp = tempfile.mkstemp(dir=str(target.parent), prefix=".rotation_events.", suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as out:
+                out.write(text)
+                out.flush()
+                os.fsync(out.fileno())
+            # mkstemp creates 0600; the published file must stay world-readable
+            os.chmod(tmp, 0o644)
+            os.replace(tmp, target)
+        except BaseException:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+            raise
+        # The rename is durable only once the directory entry is flushed as well. The file
+        # is already published, so a failure here is logged, never reported as unavailable.
+        try:
+            dfd = os.open(str(target.parent), os.O_RDONLY)
+            try:
+                os.fsync(dfd)
+            finally:
+                os.close(dfd)
+        except OSError as exc:
+            log.warning("rotation observation view directory fsync skipped: %s", type(exc).__name__)
+        return "published"
+    except Exception as exc:  # the view is display-only; never damage the publication
+        log.warning("rotation observation view unavailable: %s", type(exc).__name__)
+        return "unavailable"
+
+
+def _record_early_observations(payload, *, data_dir, site, art_dir, explicit_stamp):
+    """Opt-in observation recording by the existing canonical nightly builder.
+
+    Disabled by default. This records no delivery and never reads users or touches
+    an outbox. Historical/scratch/alternate publication paths cannot advance the
+    canonical notification baseline, even when the environment flag is inherited.
+    """
+    import os
+
+    if os.environ.get("ROTATION_OBSERVATION_RECORDING_ENABLED") != "1":
+        return {"status": "disabled", "receipts": 0}
+    if art_dir is not None or explicit_stamp:
+        return {"status": "replay_or_scratch", "receipts": 0}
+    if not rotation_events._ledger_lane_armed():
+        return {"status": "off_lane", "receipts": 0}
+    try:
+        canonical_data = Path(config.data_dir()).resolve()
+        canonical_site = (config.ROOT / config.load()["storage"]["site_dir"]).resolve()
+        if Path(data_dir).resolve() != canonical_data or Path(site).resolve() != canonical_site:
+            return {"status": "noncanonical_path", "receipts": 0}
+        # Use the time the existing publisher has actually returned, not a
+        # reconstructed bar date or the earlier start-of-build timestamp.
+        result = rotation_events.record_early_observation_history(
+            payload, canonical_data, observed_at=datetime.now(timezone.utc))
+        summary = {"status": result["status"], "receipts": len(result.get("records", []))}
+        if result["status"] == "recorded":
+            summary["view"] = _publish_latest_observation(payload, canonical_data, canonical_site)
+        return summary
+    except Exception as exc:  # observation quality cannot damage legacy publication
+        log.warning("rotation observation recording unavailable: %s", type(exc).__name__)
+        return {"status": "unavailable", "receipts": None, "error_class": type(exc).__name__}
+
+
 def build(site: Path | None = None, *, generated_utc: str | None = None,
           art_dir: Path | None = None) -> dict:
     """Main build function.
@@ -116,10 +203,17 @@ def build(site: Path | None = None, *, generated_utc: str | None = None,
     art_dir: optional scratch override for the data_dir used by rotation_events
     (for repeatable local/test runs that must not write real data/).
     When not set, uses config.data_dir() (the production path).
+    When art_dir is set and site is not, the published JSON goes to art_dir/'site'
+    — a scratch run never writes the live site tree.
     """
-    site = site or (config.ROOT / config.load()["storage"]["site_dir"])
+    explicit_stamp = generated_utc is not None
     generated_utc = generated_utc or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     data_dir = art_dir or config.data_dir()
+    if site is None:
+        # LR-T16 / RC-R14: a scratch art_dir run publishes into art_dir/"site", never the
+        # live site tree; with no art_dir the production default is unchanged.
+        site = (Path(art_dir) / "site") if art_dir is not None else (
+            config.ROOT / config.load()["storage"]["site_dir"])
 
     registry = sector_legs.load_registry()
     sectors = sector_legs.sector_closes(registry)
@@ -171,6 +265,8 @@ def build(site: Path | None = None, *, generated_utc: str | None = None,
     except Exception:  # noqa: BLE001 — ruler absent → rail simply omits the line
         pass
     _write_json(site / "marketdata" / "rotation_events.json", payload)
+    observation_recording = _record_early_observations(
+        payload, data_dir=data_dir, site=site, art_dir=art_dir, explicit_stamp=explicit_stamp)
 
     # RC-R5: creation alerts into the shared rotation alert store (same schema the
     # triage already reads; dedup by id, prune like subsector_rotation_alerts.rebuild).
@@ -178,14 +274,14 @@ def build(site: Path | None = None, *, generated_utc: str | None = None,
         from engine import subsector_rotation_alerts as sra
         new_alerts = rotation_events.to_alerts(payload)
         if new_alerts:
-            by_id = {e["id"]: e for e in sra.load_events()}
+            by_id = {e["id"]: e for e in sra.load_events(data_root=data_dir)}
             for e in new_alerts:
                 by_id.setdefault(e["id"], e)
             merged = list(by_id.values())
             ref = max(pd.Timestamp(e["ts"]) for e in merged)
             merged = [e for e in merged if pd.Timestamp(e["ts"]) >= ref - pd.Timedelta(days=sra.KEEP_DAYS)]
             merged.sort(key=lambda e: e["ts"])
-            sra.write_events(merged)
+            sra.write_events(merged, data_root=data_dir)
             log.info("rotation-event alerts: %d fired (%s)", len(new_alerts),
                      ", ".join(a["asset"] for a in new_alerts[:4]))
     except Exception as e:  # noqa: BLE001 — alerts are additive, never fatal
@@ -203,7 +299,8 @@ def build(site: Path | None = None, *, generated_utc: str | None = None,
             "fragmented": frag["n_fragmented"],
             "active_events": len(payload["active"]),
             "created": payload["created_tonight"],
-            "as_of": payload["as_of"]}
+            "as_of": payload["as_of"],
+            "early_observation_recording": observation_recording}
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -77,7 +77,9 @@ membership.json and stamps ``pit=False``.  A consumer that silently treats a
 fallback answer as point-in-time is exactly the look-ahead bug this store was
 built to end, so the flag is not optional metadata: it is the answer.  The same
 goes for ``source_shape``: a caveat that does not travel with the answer is a
-caveat nobody reads.
+caveat nobody reads.  An existing-but-unreadable store is a third thing
+altogether, answered ``pit=False`` with ``basis="membership_unreadable"`` and
+no members — never as the current-membership fallback and never as absence.
 """
 from __future__ import annotations
 
@@ -146,6 +148,7 @@ KEY: tuple[str, ...] = ("snapshot_date", "basket_id", "ticker")
 _BASIS_PIT = "pit_snapshot"
 _BASIS_CURRENT = "current_membership"
 _BASIS_UNKNOWN = "unknown_basket"
+_BASIS_UNREADABLE = "membership_unreadable"
 
 
 # ---------------------------------------------------------------------------
@@ -1020,6 +1023,11 @@ def members_asof(basket_id: str, date: str, *, suite: str = SUITE_THS) -> dict:
     ``pit=False`` answer is contaminating its own study; the flag exists so that
     is a decision, never an accident.
 
+    A third outcome is ``pit=False, basis="membership_unreadable"`` with
+    ``members=[]``: the PIT store exists but cannot be read (corrupt bytes,
+    failed integrity validation, or any other read failure).  It is neither
+    absence nor current membership; callers must refuse it, never measure on it.
+
     ``source_shape`` is the SECOND basis, and it matters for the same reason.
     The earliest side-car is the raw vendor concept dump (every name on the
     board); every later one is the seeded membership (the capped subset the
@@ -1034,7 +1042,7 @@ def members_asof(basket_id: str, date: str, *, suite: str = SUITE_THS) -> dict:
            "members": [], "pit": False, "basis": _BASIS_CURRENT,
            "snapshot_date": None, "source_shape": None, "note": ""}
     try:
-        df = read_history(suite, include_collection_records=True)
+        df = read_history(suite, strict=True, include_collection_records=True)
         covered = df[df["snapshot_date"].astype(str) <= date] if not df.empty else df
         # Collection records are basket-scoped. A newer collection of A says
         # nothing about uncollected B; never use a global date as deletion proof.
@@ -1094,15 +1102,29 @@ def members_asof(basket_id: str, date: str, *, suite: str = SUITE_THS) -> dict:
             "(look-ahead basis)"
         )
         return out
+    except HistoryIntegrityError as exc:
+        log.warning("basket_membership_pit: members_asof history unreadable (%s)", exc)
+        out.update(members=[], pit=False, basis=_BASIS_UNREADABLE,
+                   snapshot_date=None, source_shape=None)
+        out["note"] = ("PIT history unreadable (HistoryIntegrityError) — corruption is "
+                       "never answered as absence or as current membership")
+        return out
     except Exception as exc:  # noqa: BLE001 — a reader never raises into a build
         log.warning("basket_membership_pit: members_asof failed (%s)", exc)
+        out.update(members=[], pit=False, basis=_BASIS_UNREADABLE,
+                   snapshot_date=None, source_shape=None)
         out["note"] = f"read failed ({type(exc).__name__})"
         return out
 
 
 def coverage(suite: str = SUITE_THS) -> dict:
-    """Compact store description: {suite, snapshots, first, last, rows}."""
-    df = read_history(suite)
+    """Compact store description: {suite, snapshots, first, last, rows}.
+
+    An absent store describes as zero snapshots.  An existing but unreadable
+    store raises ``HistoryIntegrityError`` rather than describing as empty —
+    corruption is never reported as absence (Q02-F1 gap A1).
+    """
+    df = read_history(suite, strict=True)
     if df.empty:
         return {"suite": suite, "snapshots": 0, "first": None, "last": None, "rows": 0}
     dates = sorted(set(df["snapshot_date"].astype(str)))

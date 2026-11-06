@@ -115,6 +115,78 @@ def test_positive_manual_planned_product_is_deterministic_and_ephemeral():
     assert not any(first["authority"].values())
 
 
+def synthetic_disclosed_supplier(source=None):
+    source = source or "SYNTHETIC: Aurora purchases Widget wafers from Boreal."
+    candidate = make_candidate(source=source, span=source)
+    candidate["assertion"].update(kind="disclosed_supplier", lifecycle="reported_use",
+                                  product_scope="Widget")
+    return candidate, source
+
+
+def test_disclosed_supplier_preserves_manual_direction_and_document_scope_only():
+    candidate, source = synthetic_disclosed_supplier()
+    before = deepcopy(candidate)
+    result = inspect_candidate(candidate, source=source)
+    assert candidate == before
+    assert result["inspection_status"] == "INSPECTABLE"
+    view = result["current_candidate_view"]
+    assert view["disposition"] == "disclosed_supplier_candidate"
+    assert view["scope"] == "disclosed_role_product_scope_only"
+    assert view["role_semantics"] == {
+        "supplier_label": "Boreal", "customer_label": "Aurora",
+        "direction": "object_supplies_subject",
+        "status_scope": "selected_document_only_not_current_status",
+        "qualification": "manual_assertion_not_owner_adopted",
+    }
+    assert view["canonical_subject_id"] is view["canonical_object_id"] is None
+    assert result["support"]["semantic_adjudication"] == "NOT_PERFORMED"
+    assert result["admission"] == "NOT_ADMITTED" and result["graph1_projection"] is None
+    assert not any(result["authority"].values())
+    for field in ("shipments", "revenue", "economic_weight", "theme_membership"):
+        assert view[field] is None
+
+
+@pytest.mark.parametrize("lifecycle", ["planned", "announced", "listed", "in_force"])
+def test_disclosed_supplier_does_not_relabel_plan_roster_or_framework(lifecycle):
+    candidate, source = synthetic_disclosed_supplier()
+    candidate["assertion"]["lifecycle"] = lifecycle
+    assert_refused(inspect_candidate(candidate, source=source), "LIFECYCLE_UNSUPPORTED")
+
+
+@pytest.mark.parametrize("change,code", [
+    ({"object_label": None}, "OBJECT_LABEL_REQUIRED"),
+    ({"object_label": "Unmentioned supplier"}, "SOURCE_LOCAL_LABEL_UNSUPPORTED"),
+    ({"magnitude": 1}, "QUANTITY_MUST_BE_NULL"),
+])
+def test_disclosed_supplier_missing_party_support_or_quantity_refuses(change, code):
+    candidate, source = synthetic_disclosed_supplier()
+    candidate["assertion"].update(change)
+    assert_refused(inspect_candidate(candidate, source=source), code)
+
+
+def test_disclosed_supplier_species_does_not_semantically_admit_co_mentions():
+    candidate, source = synthetic_disclosed_supplier(
+        "SYNTHETIC: Aurora and Boreal attend an unrelated Widget conference.")
+    result = inspect_candidate(candidate, source=source)
+    # Literal replay cannot adjudicate a role. This deliberately stays manual
+    # and unadmitted even when all three source-local labels happen to occur.
+    assert result["support"]["semantic_adjudication"] == "NOT_PERFORMED"
+    assert result["admission"] == "NOT_ADMITTED" and result["graph1_projection"] is None
+    assert result["gaps"]["native_adoption"] and result["gaps"]["rights"]
+
+
+@pytest.mark.parametrize("kind,lifecycle", [
+    ("supplier_roster", "listed"), ("framework_agreement", "in_force"),
+    ("product_integration", "planned"),
+])
+def test_existing_species_never_acquire_disclosed_supplier_direction(kind, lifecycle):
+    candidate, source = synthetic_disclosed_supplier()
+    candidate["assertion"].update(kind=kind, lifecycle=lifecycle)
+    result = inspect_candidate(candidate, source=source)
+    assert result["inspection_status"] == "INSPECTABLE"
+    assert "role_semantics" not in result["current_candidate_view"]
+
+
 def test_private_support_opt_in_only_structurally_replays_normalized_text():
     result = inspect(include_support_text=True)
     assert result["support"]["replayed_value_text"] == (

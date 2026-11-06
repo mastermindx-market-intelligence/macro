@@ -21,6 +21,8 @@ from typing import Any, Callable, Mapping
 
 import requests
 
+from collectors.sec_request_pacer import SecRequestPacer
+
 # Re-export the engine's exact pure contracts; HTTP and persistence stay here.
 from engine.fundamental_forensics.sec_document_spine import (
     ArchiveReceipt,
@@ -817,6 +819,7 @@ class SecFilingArchiveCollector:
         sleeper: Callable[[float], None] = time.sleep,
         monotonic: Callable[[], float] = time.monotonic,
         utc_now: Callable[[], str] = _utc_now,
+        pacer: SecRequestPacer | None = None,
     ) -> None:
         if "@" not in user_agent:
             raise ValueError("SEC user agent must identify an application and contact email")
@@ -832,12 +835,23 @@ class SecFilingArchiveCollector:
         self._sleep = sleeper
         self._monotonic = monotonic
         self._utc_now = utc_now
+        # One incumbent SEC request pacer per process (A20): inject a shared
+        # ``pacer`` or get a private one bound to this collector's interval and
+        # injected clocks.  ``_sleep``/``_monotonic`` stay for retry backoff.
+        self._pacer = (
+            pacer
+            if pacer is not None
+            else SecRequestPacer(
+                min_interval_seconds=self.min_interval_seconds,
+                sleeper=sleeper,
+                monotonic=monotonic,
+            )
+        )
+        # Truthful post-response mirror only; pacing consults the pacer.
         self._last_request_at = 0.0
 
     def _pace(self) -> None:
-        wait = self.min_interval_seconds - (self._monotonic() - self._last_request_at)
-        if wait > 0:
-            self._sleep(wait)
+        self._pacer.acquire()
 
     def fetch_document(
         self,

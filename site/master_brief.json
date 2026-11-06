@@ -2,55 +2,61 @@
   "schema": "master_brief.v2",
   "lens": "macro",
   "is_context_only": true,
-  "generated_at": "2026-10-09T14:42:46.107129+00:00",
+  "generated_at": "2026-10-18T06:50:33.674988+00:00",
   "model": "gpt-5.6-sol",
   "served_by": "codex",
-  "state_asof": "2026-10-08",
+  "state_asof": "2026-10-16",
   "tldr": [
-    "Main driver: Chip stocks are unwinding, but the signal remains mixed.",
-    "Map shifting: Reflation remains displayed while momentum moves toward a Growth-scare.",
-    "Hidden strain: Credit is widening and the firm dollar pressures risk assets.",
-    "What to do: Get ready."
+    "Main driver: Chip stocks are unwinding and dragging growth shares lower.",
+    "Map shift: Reflation is gaining, but the transition remains unsettled.",
+    "Pressure points: A firm dollar and restrictive yields weigh on risk assets.",
+    "What to do: Watch \u2014 don't chase"
   ],
-  "summary": "Markets look calm on the surface, but rising yields, widening credit and a firm dollar make that calm fragile.",
-  "regime_read": "The map still shows Reflation, though current growth and inflation signs look more like Goldilocks. Broader transition momentum is moving toward a Growth-scare.\n\nThe dominant driver is the chip-stock unwind. Confidence is low because market stress remains calm and labor is firm.",
+  "summary": "Reflation odds are firming, yet falling chip leadership, tighter credit and a strong dollar keep the market fragile.",
+  "regime_read": "The US remains near the Reflation position, with odds moving further toward Reflation. Growth is firm and inflation is warming, but low confidence and transition flags make this an unsettled position.\n\nThe dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yields and a firm dollar add pressure, while low recession risk limits the broader alarm.",
   "conflicts": [
-    "Risk split: Stocks look calm, but credit is widening and the dollar is defensive \u2014 treat the calm as fragile.",
-    "Bitcoin split: Bitcoin remains risk-on, but the firm dollar and high real yields are headwinds \u2014 strength lacks broad support.",
-    "Bond split: Bond health is good, but Treasuries are not cushioning stocks \u2014 protection may fail when needed."
+    "Bonds: The bond desk says health is solid, but credit is widening \u2014 markets look calm, not carefree.",
+    "Stress: The washout screen sees recovery potential, but chip leadership is still breaking \u2014 wait for stabilization.",
+    "Global split: The US leans Reflation, but China has weak growth and shrinking liquidity \u2014 overseas demand is not confirming."
   ],
-  "rotation_check": "Chip leadership has rolled over while China and Hong Kong liquidity contract, but Bitcoin remains risk-on. That weakens the usual forward sequence and makes the unwind incomplete.",
+  "rotation_check": "Chip leadership broke while Bitcoin remains risk-on, so the usual rotation sequence is not confirming.",
   "transmission": [
-    "If the dollar stays firm \u2192 pressure builds on US stocks, emerging markets, metals and Bitcoin",
-    "If real yields keep rising \u2192 expensive growth shares weaken and value holds up better"
+    "If the dollar keeps strengthening \u2192 stocks, emerging markets, metals and Bitcoin face more pressure",
+    "If restrictive real yields keep up \u2192 growth shares and long bonds remain under strain"
   ],
   "watch_items": [
-    "Chip rebound: would weaken the main market story",
-    "Credit stops widening: would ease the clearest independent warning",
-    "Dollar rolls over: would relieve pressure on stocks, metals and Bitcoin",
-    "Inflation cools: would ease pressure from high yields"
+    "Chip rebound: Leadership pressure is easing",
+    "Credit stops widening: Bond-market concern is fading",
+    "Dollar weakens: Pressure on global risk assets eases",
+    "Inflation stays warm: Restrictive policy lasts longer"
   ],
   "confidence": "medium",
   "theses": [],
-  "raw_text": "{\"tldr\":[\"Main driver: Chip stocks are unwinding, but the signal remains mixed.\",\"Map shifting: Reflation remains displayed while momentum moves toward a Growth-scare.\",\"Hidden strain: Credit is widening and the firm dollar pressures risk assets.\",\"What to do: Get ready.\"],\"summary\":\"Markets look calm on the surface, but rising yields, widening credit and a firm dollar make that calm fragile.\",\"regime_read\":\"The map still shows Reflation, though current growth and inflation signs look more like Goldilocks. Broader transition momentum is moving toward a Growth-scare.\\n\\nThe dominant driver is the chip-stock unwind. Confidence is low because market stress remains calm and labor is firm.\",\"conflicts\":[\"Risk split: Stocks look calm, but credit is widening and the dollar is defensive \u2014 treat the calm as fragile.\",\"Bitcoin split: Bitcoin remains risk-on, but the firm dollar and high real yields are headwinds \u2014 strength lacks broad support.\",\"Bond split: Bond health is good, but Treasuries are not cushioning stocks \u2014 protection may fail when needed.\"],\"transmission\":[\"If the dollar stays firm \u2192 pressure builds on US stocks, emerging markets, metals and Bitcoin\",\"If real yields keep rising \u2192 expensive growth shares weaken and value holds up better\"],\"rotation_check\":\"Chip leadership has rolled over while China and Hong Kong liquidity contract, but Bitcoin remains risk-on. That weakens the usual forward sequence and makes the unwind incomplete.\",\"watch_items\":[\"Chip rebound: would weaken the main market story\",\"Credit stops widening: would ease the clearest independent warning\",\"Dollar rolls over: would relieve pressure on stocks, metals and Bitcoin\",\"Inflation cools: would ease pressure from high yields\"],\"confidence\":\"medium\",\"forward_watch\":[{\"date\":\"2026-10-14\",\"label\":\"CPI (consumer prices)\",\"kind\":\"CPI\",\"note\":\"Inflation test for the high-yield, firm-dollar backdrop.\"},{\"date\":\"2026-10-15\",\"label\":\"PPI (producer prices)\",\"kind\":\"PPI\",\"note\":\"Factory-price pressure could reinforce or soften the inflation concern.\"}],\"forward_read\":\"The inflation releases matter because policy remains tight while markets are drifting toward a growth scare.\"}",
+  "raw_text": "{\n  \"tldr\": [\n    \"Main driver: Chip stocks are unwinding and dragging growth shares lower.\",\n    \"Map shift: Reflation is gaining, but the transition remains unsettled.\",\n    \"Pressure points: A firm dollar and restrictive yields weigh on risk assets.\",\n    \"What to do: Watch \u2014 don't chase\"\n  ],\n  \"summary\": \"Reflation odds are firming, yet falling chip leadership, tighter credit and a strong dollar keep the market fragile.\",\n  \"regime_read\": \"The US remains near the Reflation position, with odds moving further toward Reflation. Growth is firm and inflation is warming, but low confidence and transition flags make this an unsettled position.\\n\\nThe dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yields and a firm dollar add pressure, while low recession risk limits the broader alarm.\",\n  \"conflicts\": [\n    \"Bonds: The bond desk says health is solid, but credit is widening \u2014 markets look calm, not carefree.\",\n    \"Stress: The washout screen sees recovery potential, but chip leadership is still breaking \u2014 wait for stabilization.\",\n    \"Global split: The US leans Reflation, but China has weak growth and shrinking liquidity \u2014 overseas demand is not confirming.\"\n  ],\n  \"transmission\": [\n    \"If the dollar keeps strengthening \u2192 stocks, emerging markets, metals and Bitcoin face more pressure\",\n    \"If restrictive real yields keep up \u2192 growth shares and long bonds remain under strain\"\n  ],\n  \"rotation_check\": \"Chip leadership broke while Bitcoin remains risk-on, so the usual rotation sequence is not confirming.\",\n  \"watch_items\": [\n    \"Chip rebound: Leadership pressure is easing\",\n    \"Credit stops widening: Bond-market concern is fading\",\n    \"Dollar weakens: Pressure on global risk assets eases\",\n    \"Inflation stays warm: Restrictive policy lasts longer\"\n  ],\n  \"confidence\": \"medium\",\n  \"forward_watch\": [\n    {\n      \"date\": \"2026-10-28\",\n      \"label\": \"FOMC rate decision\",\n      \"kind\": \"FOMC\",\n      \"note\": \"Tests whether the Fed keeps its tightening message.\"\n    },\n    {\n      \"date\": \"2026-10-29\",\n      \"label\": \"GDP (BEA estimate)\",\n      \"kind\": \"GDP\",\n      \"note\": \"Tests whether firm growth still supports the Reflation drift.\"\n    },\n    {\n      \"date\": \"2026-10-29\",\n      \"label\": \"PCE / personal income (BEA)\",\n      \"kind\": \"PCE\",\n      \"note\": \"Tests whether warming inflation remains the main policy constraint.\"\n    }\n  ],\n  \"forward_read\": \"The Fed decision leads into growth and inflation data. That cluster will test whether the Reflation drift can survive current market stress.\"\n}",
   "degraded_reason": null,
   "disclaimer": "Context only \u2014 not a signal. This is an AI-generated SYNTHESIS of the dashboards' own deterministic outputs. It does not feed any score, signal or allocation, and it can be wrong or overconfident. Use it as a research read; verify every claim against the underlying dashboard it cites. Effective sample sizes on macro regimes are small \u2014 treat cross-asset 'reads' as odds, not forecasts.",
   "style_flags": [],
   "forward_watch": [
     {
-      "date": "2026-10-14",
-      "label": "CPI (consumer prices)",
-      "kind": "CPI",
-      "note": "Inflation test for the high-yield, firm-dollar backdrop."
+      "date": "2026-10-28",
+      "label": "FOMC rate decision",
+      "kind": "FOMC",
+      "note": "Tests whether the Fed keeps its tightening message."
     },
     {
-      "date": "2026-10-15",
-      "label": "PPI (producer prices)",
-      "kind": "PPI",
-      "note": "Factory-price pressure could reinforce or soften the inflation concern."
+      "date": "2026-10-29",
+      "label": "GDP (BEA estimate)",
+      "kind": "GDP",
+      "note": "Tests whether firm growth still supports the Reflation drift."
+    },
+    {
+      "date": "2026-10-29",
+      "label": "PCE / personal income (BEA)",
+      "kind": "PCE",
+      "note": "Tests whether warming inflation remains the main policy constraint."
     }
   ],
-  "forward_read": "The inflation releases matter because policy remains tight while markets are drifting toward a growth scare.",
+  "forward_read": "The Fed decision leads into growth and inflation data. That cluster will test whether the Reflation drift can survive current market stress.",
   "nw_context_used": true,
   "cortex_status": "absent",
   "refresh_days": 1,
@@ -75,17 +81,17 @@
       "key": "money",
       "label_en": "Money",
       "label_zh": "\u8d44\u91d1\u9762",
-      "value_en": "Neutral",
-      "value_zh": "\u4e2d\u6027",
-      "tone": "neutral"
+      "value_en": "Expanding",
+      "value_zh": "\u6269\u5f20",
+      "tone": "good"
     },
     {
       "key": "bonds",
       "label_en": "Bonds vs stocks",
       "label_zh": "\u503a\u80a1\u5173\u7cfb",
-      "value_en": "Disagree \u2014 bonds worried",
-      "value_zh": "\u5206\u6b67 \u2014 \u503a\u5e02\u62c5\u5fe7",
-      "tone": "warn"
+      "value_en": "Mixed",
+      "value_zh": "\u597d\u574f\u53c2\u534a",
+      "tone": "neutral"
     },
     {
       "key": "credit",
@@ -105,29 +111,29 @@
     }
   ],
   "zh": {
-    "summary": "\u5e02\u573a\u8868\u9762\u770b\u4f3c\u5e73\u9759\uff0c\u4f46\u6536\u76ca\u7387\u4e0a\u5347\u3001\u4fe1\u7528\u5229\u5dee\u6269\u5927\u548c\u7f8e\u5143\u575a\u633a\uff0c\u4f7f\u8fd9\u79cd\u5e73\u9759\u663e\u5f97\u8106\u5f31\u3002",
-    "regime_read": "\u5e02\u573a\u56fe\u666f\u4ecd\u663e\u793a\u518d\u901a\u80c0\uff0c\u4f46\u5f53\u524d\u589e\u957f\u548c\u901a\u80c0\u4fe1\u53f7\u66f4\u63a5\u8fd1\u201c\u7406\u60f3\u589e\u957f\u201d\u72b6\u6001\u3002\u6574\u4f53\u8f6c\u5411\u52a8\u80fd\u6b63\u671d\u589e\u957f\u62c5\u5fe7\u65b9\u5411\u53d1\u5c55\u3002\n\n\u4e3b\u5bfc\u56e0\u7d20\u662f\u82af\u7247\u80a1\u884c\u60c5\u9006\u8f6c\u3002\u7531\u4e8e\u5e02\u573a\u538b\u529b\u4ecd\u8f83\u5e73\u9759\u4e14\u52b3\u52a8\u529b\u5e02\u573a\u7a33\u5065\uff0c\u5224\u65ad\u4fe1\u5fc3\u8f83\u4f4e\u3002",
-    "rotation_check": "\u82af\u7247\u80a1\u7684\u9886\u6da8\u52bf\u5934\u5df2\u7ecf\u9006\u8f6c\uff0c\u540c\u65f6\u4e2d\u56fd\u5185\u5730\u548c\u9999\u6e2f\u7684\u6d41\u52a8\u6027\u6536\u7f29\uff0c\u4f46 Bitcoin \u4ecd\u5904\u4e8e\u98ce\u9669\u504f\u597d\u72b6\u6001\u3002\u8fd9\u524a\u5f31\u4e86\u901a\u5e38\u7684\u524d\u77bb\u4f20\u5bfc\u987a\u5e8f\uff0c\u4e5f\u8868\u660e\u8c03\u6574\u5c1a\u672a\u5b8c\u6210\u3002",
+    "summary": "\u518d\u901a\u80c0\u6982\u7387\u6b63\u5728\u4e0a\u5347\uff0c\u4f46\u82af\u7247\u80a1\u9886\u6da8\u52bf\u5934\u51cf\u5f31\u3001\u4fe1\u8d37\u8d8b\u7d27\u548c\u7f8e\u5143\u8d70\u5f3a\u4ee4\u5e02\u573a\u4f9d\u7136\u8106\u5f31\u3002",
+    "regime_read": "\u7f8e\u56fd\u4ecd\u63a5\u8fd1\u518d\u901a\u80c0\u533a\u95f4\uff0c\u4e14\u8fdb\u5165\u518d\u901a\u80c0\u7684\u6982\u7387\u8fdb\u4e00\u6b65\u4e0a\u5347\u3002\u589e\u957f\u7a33\u5065\u3001\u901a\u80c0\u5347\u6e29\uff0c\u4f46\u7f6e\u4fe1\u5ea6\u504f\u4f4e\u4e14\u5b58\u5728\u8f6c\u578b\u4fe1\u53f7\uff0c\u8868\u660e\u5f53\u524d\u72b6\u6001\u5c1a\u672a\u7a33\u5b9a\u3002\n\n\u4e3b\u5bfc\u56e0\u7d20\u662f\u82af\u7247\u80a1\u56de\u8c03\u3002\u7f8e\u8054\u50a8\u7acb\u573a\u504f\u9e70\u3001\u5b9e\u9645\u6536\u76ca\u7387\u5177\u6709\u9650\u5236\u6027\u4ee5\u53ca\u7f8e\u5143\u575a\u633a\u8fdb\u4e00\u6b65\u65bd\u538b\uff0c\u800c\u8870\u9000\u98ce\u9669\u8f83\u4f4e\u5219\u7f13\u89e3\u4e86\u6574\u4f53\u62c5\u5fe7\u3002",
+    "rotation_check": "\u82af\u7247\u80a1\u7684\u9886\u6da8\u683c\u5c40\u5df2\u88ab\u6253\u7834\uff0c\u800c Bitcoin \u4ecd\u5904\u4e8e\u98ce\u9669\u504f\u597d\u72b6\u6001\uff0c\u56e0\u6b64\u901a\u5e38\u7684\u8f6e\u52a8\u987a\u5e8f\u5c1a\u672a\u5f97\u5230\u786e\u8ba4\u3002",
     "tldr": [
-      "\u4e3b\u8981\u9a71\u52a8\u56e0\u7d20\uff1a\u82af\u7247\u80a1\u6b63\u5728\u56de\u5410\u6da8\u5e45\uff0c\u4f46\u4fe1\u53f7\u4ecd\u7136\u559c\u5fe7\u53c2\u534a\u3002",
-      "\u683c\u5c40\u53d8\u5316\uff1a\u518d\u901a\u80c0\u4ecd\u5728\u663e\u73b0\uff0c\u800c\u52a8\u80fd\u6b63\u8f6c\u5411\u589e\u957f\u62c5\u5fe7\u3002",
-      "\u6f5c\u5728\u538b\u529b\uff1a\u4fe1\u7528\u5229\u5dee\u6b63\u5728\u6269\u5927\uff0c\u7f8e\u5143\u8d70\u5f3a\u4ee4\u98ce\u9669\u8d44\u4ea7\u627f\u538b\u3002",
-      "\u5e94\u5bf9\u7b56\u7565\uff1a\u505a\u597d\u51c6\u5907\u3002"
+      "\u4e3b\u8981\u9a71\u52a8\u56e0\u7d20\uff1a\u82af\u7247\u80a1\u6b63\u5728\u56de\u8c03\uff0c\u5e76\u62d6\u7d2f\u6210\u957f\u80a1\u8d70\u4f4e\u3002",
+      "\u5e02\u573a\u683c\u5c40\u53d8\u5316\uff1a\u518d\u901a\u80c0\u4ea4\u6613\u5347\u6e29\uff0c\u4f46\u8f6c\u5411\u4ecd\u4e0d\u7a33\u5b9a\u3002",
+      "\u538b\u529b\u70b9\uff1a\u7f8e\u5143\u575a\u633a\u548c\u6536\u76ca\u7387\u7ef4\u6301\u9650\u5236\u6027\u6c34\u5e73\uff0c\u4ee4\u98ce\u9669\u8d44\u4ea7\u627f\u538b\u3002",
+      "\u5e94\u5bf9\u7b56\u7565\uff1a\u4fdd\u6301\u89c2\u671b\u2014\u2014\u4e0d\u8981\u8ffd\u6da8"
     ],
     "conflicts": [
-      "\u98ce\u9669\u5206\u5316\uff1a\u80a1\u5e02\u770b\u4f3c\u5e73\u9759\uff0c\u4f46\u4fe1\u7528\u5229\u5dee\u6b63\u5728\u6269\u5927\uff0c\u7f8e\u5143\u4e5f\u5448\u9632\u5fa1\u6027\u2014\u2014\u5e94\u5c06\u8fd9\u79cd\u5e73\u9759\u89c6\u4e3a\u8106\u5f31\u3002",
-      "Bitcoin \u5206\u5316\uff1aBitcoin \u4ecd\u5904\u4e8e\u98ce\u9669\u504f\u597d\u72b6\u6001\uff0c\u4f46\u7f8e\u5143\u575a\u633a\u548c\u5b9e\u9645\u6536\u76ca\u7387\u9ad8\u4f01\u6784\u6210\u963b\u529b\u2014\u2014\u5176\u5f3a\u52bf\u7f3a\u4e4f\u5e7f\u6cdb\u652f\u6491\u3002",
-      "\u503a\u5238\u5206\u5316\uff1a\u503a\u5238\u5e02\u573a\u72b6\u51b5\u826f\u597d\uff0c\u4f46\u7f8e\u56fd\u56fd\u503a\u5e76\u672a\u5bf9\u80a1\u5e02\u5f62\u6210\u7f13\u51b2\u2014\u2014\u5728\u9700\u8981\u4fdd\u62a4\u65f6\u53ef\u80fd\u5931\u6548\u3002"
+      "\u503a\u5238\uff1a\u503a\u5238\u4ea4\u6613\u53f0\u8ba4\u4e3a\u57fa\u672c\u9762\u7a33\u5065\uff0c\u4f46\u4fe1\u7528\u5229\u5dee\u6b63\u5728\u6269\u5927\u2014\u2014\u5e02\u573a\u770b\u4f3c\u5e73\u9759\uff0c\u5374\u5e76\u975e\u9ad8\u6795\u65e0\u5fe7\u3002",
+      "\u538b\u529b\uff1a\u8d85\u5356\u7b5b\u9009\u663e\u793a\u5b58\u5728\u590d\u82cf\u6f5c\u529b\uff0c\u4f46\u82af\u7247\u80a1\u9886\u6da8\u683c\u5c40\u4ecd\u5728\u74e6\u89e3\u2014\u2014\u5e94\u7b49\u5f85\u4f01\u7a33\u3002",
+      "\u5168\u7403\u5206\u5316\uff1a\u7f8e\u56fd\u503e\u5411\u518d\u901a\u80c0\uff0c\u4f46\u4e2d\u56fd\u589e\u957f\u75b2\u5f31\u4e14\u6d41\u52a8\u6027\u6536\u7f29\u2014\u2014\u6d77\u5916\u9700\u6c42\u5c1a\u672a\u5f62\u6210\u786e\u8ba4\u3002"
     ],
     "transmission": [
-      "\u5982\u679c\u7f8e\u5143\u4fdd\u6301\u5f3a\u52bf \u2192 \u7f8e\u56fd\u80a1\u7968\u3001\u65b0\u5174\u5e02\u573a\u3001\u91d1\u5c5e\u548c\u6bd4\u7279\u5e01\u7684\u538b\u529b\u5c06\u52a0\u5927",
-      "\u5982\u679c\u5b9e\u9645\u6536\u76ca\u7387\u6301\u7eed\u4e0a\u5347 \u2192 \u9ad8\u4f30\u503c\u6210\u957f\u80a1\u5c06\u8d70\u5f31\uff0c\u4ef7\u503c\u80a1\u8868\u73b0\u76f8\u5bf9\u66f4\u597d"
+      "\u5982\u679c\u7f8e\u5143\u6301\u7eed\u8d70\u5f3a \u2192 \u80a1\u7968\u3001\u65b0\u5174\u5e02\u573a\u3001\u91d1\u5c5e\u548c\u6bd4\u7279\u5e01\u5c06\u9762\u4e34\u66f4\u5927\u538b\u529b",
+      "\u5982\u679c\u9650\u5236\u6027\u5b9e\u9645\u6536\u76ca\u7387\u7ef4\u6301\u9ad8\u4f4d \u2192 \u6210\u957f\u80a1\u548c\u957f\u671f\u503a\u5238\u5c06\u7ee7\u7eed\u627f\u538b"
     ],
     "watch_items": [
-      "\u82af\u7247\u80a1\u53cd\u5f39\uff1a\u5c06\u524a\u5f31\u5e02\u573a\u7684\u4e3b\u8981\u53d9\u4e8b",
-      "\u4fe1\u7528\u5229\u5dee\u505c\u6b62\u6269\u5927\uff1a\u5c06\u7f13\u89e3\u6700\u660e\u786e\u7684\u72ec\u7acb\u9884\u8b66\u4fe1\u53f7",
-      "\u7f8e\u5143\u8f6c\u800c\u8d70\u5f31\uff1a\u5c06\u7f13\u89e3\u80a1\u7968\u3001\u91d1\u5c5e\u548c\u6bd4\u7279\u5e01\u7684\u538b\u529b",
-      "\u901a\u80c0\u964d\u6e29\uff1a\u5c06\u7f13\u89e3\u9ad8\u6536\u76ca\u7387\u5e26\u6765\u7684\u538b\u529b"
+      "\u82af\u7247\u80a1\u53cd\u5f39\uff1a\u9886\u6da8\u538b\u529b\u6b63\u5728\u7f13\u89e3",
+      "\u4fe1\u7528\u5229\u5dee\u505c\u6b62\u6269\u5927\uff1a\u503a\u5238\u5e02\u573a\u62c5\u5fe7\u6b63\u5728\u6d88\u9000",
+      "\u7f8e\u5143\u8d70\u5f31\uff1a\u5168\u7403\u98ce\u9669\u8d44\u4ea7\u538b\u529b\u7f13\u89e3",
+      "\u901a\u80c0\u6301\u7eed\u504f\u70ed\uff1a\u9650\u5236\u6027\u653f\u7b56\u5c06\u7ef4\u6301\u66f4\u4e45"
     ]
   }
 }

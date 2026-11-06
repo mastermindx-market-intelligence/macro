@@ -1,0 +1,154 @@
+# producer_run.txt — F1 regeneration, gmi-rel-m2-dirfix-20261022-r1
+# command (run A): TZ=UTC python3 scripts/build_relationship_observations.py --as-of 2026-10-21T00:00:00Z
+# (ALL defaults: extraction DIRECTORY, default sources, default manifest, default out-dir)
+
+## RUN A stdout:
+::warning title=relationship-provider-unnamed::obs:1d62d1f80bf7faa5e724: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:2373c9717cb4a46ad398: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:5e13b722018618234cd3: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:7cf0ea4c454941de6bc6: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:860e7787242871c8a8ee: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:beb2f8495553665130a5: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:d39b0793686541649f9b: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:e9f48707c6c8e0a660fa: component_dependency has no named provider
+relationship_observations: as_of=2026-10-21T00:00:00Z edges=248 non_edges=1107 revisions=111 warnings=8 package=pkg:4aba1d2a658bdff832c5
+## RUN A artifact sha256:
+455c0b95392e4523bee1aaa483f77fb35ff537bc93080f2c271c2cfc4b64a136  data/company_intelligence/relationships/observation_package.v2.json
+d80f23fff40e6e653ed4c0a985e39daf9a3e1a533623d8096609166a5fc0992f  data/company_intelligence/relationships/relationship_edges.json
+
+# command (run B): TZ=UTC python3 scripts/build_relationship_observations.py --as-of 2026-10-21T00:00:00Z
+
+## RUN B stdout:
+::warning title=relationship-provider-unnamed::obs:1d62d1f80bf7faa5e724: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:2373c9717cb4a46ad398: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:5e13b722018618234cd3: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:7cf0ea4c454941de6bc6: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:860e7787242871c8a8ee: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:beb2f8495553665130a5: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:d39b0793686541649f9b: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:e9f48707c6c8e0a660fa: component_dependency has no named provider
+relationship_observations: as_of=2026-10-21T00:00:00Z edges=248 non_edges=1107 revisions=111 warnings=8 package=pkg:4aba1d2a658bdff832c5
+## RUN B artifact sha256:
+455c0b95392e4523bee1aaa483f77fb35ff537bc93080f2c271c2cfc4b64a136  data/company_intelligence/relationships/observation_package.v2.json
+d80f23fff40e6e653ed4c0a985e39daf9a3e1a533623d8096609166a5fc0992f  data/company_intelligence/relationships/relationship_edges.json
+
+## byte-identity checks:
+run A stdout == run B stdout: IDENTICAL
+run A artifacts == run B artifacts: IDENTICAL
+
+## F5 snippet (reads ONLY data/company_intelligence/relationships/*.json + m2_inputs/leaves_v1.json):
+import json, collections
+from pathlib import Path
+ROOT = Path(".")
+pkg = json.loads((ROOT / "data/company_intelligence/relationships/observation_package.v2.json").read_text())
+doc = json.loads((ROOT / "data/company_intelligence/relationships/relationship_edges.json").read_text())
+domain_of = json.loads((ROOT / "research/theme_graph/gmi_relationships_20261021/m2_inputs/leaves_v1.json").read_text())["domain_of"]
+obs_by_id = {o["observation_id"]: o for o in pkg["observations"]}
+attr = collections.Counter()  # (domain, species) -> observations
+for edge in doc["edges"]:
+    dom = domain_of.get(edge["direction"]["from_issuer_id"])
+    for ref in edge["source_refs"]:
+        assert obs_by_id[ref["observation_id"]]["disposition"] == "edge"
+        attr[(dom, edge["species"])] += 1
+for ne in doc["non_edges"]:
+    assert obs_by_id[ne["observation_id"]]["disposition"] == "non_edge"
+    attr[(domain_of.get(ne["subject_issuer_id"]), ne["species"])] += 1
+species = sorted({s for _d, s in attr} | {e["species"] for e in doc["edges"]} | {n["species"] for n in doc["non_edges"]})
+out = {}
+for dom in ("D1", "D2", "ALL"):
+    keep = (lambda d: True) if dom == "ALL" else (lambda d, dom=dom: d == dom)
+    out[dom] = {
+        "observations": {s: sum(v for (d, s2), v in attr.items() if s2 == s and keep(d)) for s in species},
+        "edges": {s: sum(1 for e in doc["edges"] if e["species"] == s and keep(domain_of.get(e["direction"]["from_issuer_id"]))) for s in species},
+        "non_edges": {s: sum(1 for n in doc["non_edges"] if n["species"] == s and keep(domain_of.get(n["subject_issuer_id"]))) for s in species},
+        "coverage_states": dict(sorted(collections.Counter(c["state"] for c in doc["coverage"] if keep(domain_of.get(c["issuer_id"]))).items())),
+    }
+Path("research/theme_graph/gmi_relationships_20261021/m2_integration/counts_by_species.json").write_text(json.dumps(out, indent=1, sort_keys=True) + "\n")
+print(json.dumps(out, indent=1, sort_keys=True))
+## F5 output -> counts_by_species.json:
+{
+ "ALL": {
+  "coverage_states": {
+   "assessed": 186,
+   "no_supported_result": 95,
+   "not_assessed": 2
+  },
+  "edges": {
+   "component_dependency": 10,
+   "contract_manufacturing": 51,
+   "distribution": 20,
+   "licensing": 50,
+   "supplier_customer": 117
+  },
+  "non_edges": {
+   "component_dependency": 0,
+   "contract_manufacturing": 108,
+   "distribution": 121,
+   "licensing": 182,
+   "supplier_customer": 696
+  },
+  "observations": {
+   "component_dependency": 13,
+   "contract_manufacturing": 234,
+   "distribution": 159,
+   "licensing": 272,
+   "supplier_customer": 911
+  }
+ },
+ "D1": {
+  "coverage_states": {
+   "assessed": 114,
+   "no_supported_result": 31,
+   "not_assessed": 1
+  },
+  "edges": {
+   "component_dependency": 4,
+   "contract_manufacturing": 51,
+   "distribution": 19,
+   "licensing": 41,
+   "supplier_customer": 66
+  },
+  "non_edges": {
+   "component_dependency": 0,
+   "contract_manufacturing": 107,
+   "distribution": 118,
+   "licensing": 166,
+   "supplier_customer": 398
+  },
+  "observations": {
+   "component_dependency": 6,
+   "contract_manufacturing": 233,
+   "distribution": 155,
+   "licensing": 241,
+   "supplier_customer": 527
+  }
+ },
+ "D2": {
+  "coverage_states": {
+   "assessed": 72,
+   "no_supported_result": 64,
+   "not_assessed": 1
+  },
+  "edges": {
+   "component_dependency": 1,
+   "contract_manufacturing": 0,
+   "distribution": 0,
+   "licensing": 7,
+   "supplier_customer": 45
+  },
+  "non_edges": {
+   "component_dependency": 0,
+   "contract_manufacturing": 1,
+   "distribution": 3,
+   "licensing": 16,
+   "supplier_customer": 298
+  },
+  "observations": {
+   "component_dependency": 1,
+   "contract_manufacturing": 1,
+   "distribution": 3,
+   "licensing": 29,
+   "supplier_customer": 376
+  }
+ }
+}

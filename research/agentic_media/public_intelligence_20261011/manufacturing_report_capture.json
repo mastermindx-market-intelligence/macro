@@ -1,0 +1,33 @@
+{
+  "observed_at": "2026-10-12T04:07:55.398685+00:00",
+  "source_revision": "b7f4710ae24abf89a1f52c6a7b59e9cc71e32a73",
+  "parser_sha256": "1be31eb229a828aa11554fed50c29c51cdd572e5122469673fb866d9b7fd0c7e",
+  "feed_sha256": "1d0b7af8f564569c793aa9bf3dba9878999ac6e098b54f1ed0ee536bc1dd47ba",
+  "source": {
+    "id": "wh-2026-10-10-the-state-of-american-manufacturing",
+    "guid": "https://www.whitehouse.gov/?p=52545",
+    "title": "The State of American Manufacturing",
+    "url": "https://www.whitehouse.gov/research/2026/10/the-state-of-american-manufacturing/",
+    "published": "2026-10-10T20:46:32+00:00",
+    "section": "news",
+    "body_origin": "content_encoded",
+    "body_truncated": false
+  },
+  "capture_receipt": {
+    "path": "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/whitehouse-news-20261012/source_documents/7e89075b84af8299bb3123d9e8ed5b2633257c2c9c40ed28723cb231d5c01fc5.json",
+    "sha256": "7e89075b84af8299bb3123d9e8ed5b2633257c2c9c40ed28723cb231d5c01fc5",
+    "body_sha256": "11843079da9dff9879f8e8fc366c196a5b1d7289765f6bf860d2cb7a6cbacc2b"
+  },
+  "canonical_dossier_mentions": {
+    "AAPL": false,
+    "MU": false,
+    "NVDA": false
+  },
+  "allow_stage": false,
+  "allow_emit": false,
+  "publication_approved": false,
+  "capture_permissions": {
+    "directory": "0o700",
+    "document": "0o600"
+  }
+}

@@ -462,42 +462,11 @@ oip_restore_locked_index() {
 # is acquired while Git's index lock is held. A later rejection may remove only
 # the same still-empty regular inode; replacement or ambiguity preserves it.
 oip_acquire_owned_empty_lock_identity() {
-  python3 - "$1" <<'QL_LOCK_IDENTITY_PY'
-import os, stat, sys
-try:
-    fd = os.open(sys.argv[1], os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_NONBLOCK, 0o666)
-    try:
-        st = os.fstat(fd)
-        named = os.stat(sys.argv[1], follow_symlinks=False)
-        if not stat.S_ISREG(st.st_mode) or st.st_nlink != 1 or st.st_size != 0 or (st.st_dev, st.st_ino) != (named.st_dev, named.st_ino):
-            raise ValueError('not the owned empty lock')
-        print(f'{st.st_dev}:{st.st_ino}')
-    finally:
-        os.close(fd)
-except (OSError, ValueError):
-    raise SystemExit(1)
-QL_LOCK_IDENTITY_PY
+  python3 "$REPO_ROOT/scripts/ci/options_index_lock_identity.py" acquire "$1"
 }
 
 oip_release_owned_empty_lock() {
-  python3 - "$1" "$2" <<'QL_LOCK_RELEASE_PY'
-import os, stat, sys
-try:
-    expected = tuple(int(value) for value in sys.argv[2].split(':'))
-    if len(expected) != 2:
-        raise ValueError('invalid owned lock identity')
-    fd = os.open(sys.argv[1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
-    try:
-        st = os.fstat(fd)
-        named = os.stat(sys.argv[1], follow_symlinks=False)
-        if not stat.S_ISREG(st.st_mode) or st.st_nlink != 1 or st.st_size != 0 or (st.st_dev, st.st_ino) != expected or (named.st_dev, named.st_ino) != expected:
-            raise ValueError('lock identity changed; preserve it')
-        os.unlink(sys.argv[1])
-    finally:
-        os.close(fd)
-except (OSError, ValueError):
-    raise SystemExit(1)
-QL_LOCK_RELEASE_PY
+  python3 "$REPO_ROOT/scripts/ci/options_index_lock_identity.py" release "$1" "$2"
 }
 
 # Commit the exact live index snapshot while owning Git's real index lock.

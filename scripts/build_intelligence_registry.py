@@ -65,17 +65,25 @@ Usage
 -----
   python3 scripts/build_intelligence_registry.py           # human report on stdout
   python3 scripts/build_intelligence_registry.py --json    # the whole view as JSON
+  python3 scripts/build_intelligence_registry.py --required-tier engine/a.py
+
+The repeatable --required-tier mode returns the read-only T12 query plus the
+existing source-read report. Exit zero means the query executed, including
+partial/unresolved coverage; it never means an evaluation passed or admission
+was granted. Source channels are observations, not immutable revision proof.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from collections import Counter, defaultdict
+from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, Iterable, cast
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -86,6 +94,7 @@ from engine.intelligence_registry import (  # noqa: E402
     audit_content,
     build_registry,
     partition_artifacts,
+    required_tier,
     placeholder_reason,
     scan_producer_source,
     serialise,
@@ -138,10 +147,10 @@ class SynapseUnavailable(SystemExit):
 # Sparse-tolerant reads
 # ---------------------------------------------------------------------------
 
-#: In-process read cache. ``data/qledger/claims.jsonl`` is 45k rows behind a ``git show``
-#: in sparse worktrees. Caching within one invocation is also the correct semantics — a
-#: build must be a function of ONE snapshot of its inputs.
-_READ_CACHE: dict[tuple[str, str], tuple[str | None, str]] = {}
+#: Invocation cache, cleared by T4 reset_caches(). Claims keep their complete derived
+#: summary under a non-path key instead of retaining the corpus text. Ordinary tracked
+#: file reads retain their incumbent (text, source) values.
+_READ_CACHE: dict[tuple[str, str], tuple[str | None, str] | QLedgerRead] = {}
 
 
 def read_tracked(root: Path, rel: Path) -> tuple[str | None, str]:
@@ -153,7 +162,7 @@ def read_tracked(root: Path, rel: Path) -> tuple[str | None, str]:
     cache_key = (str(root), rel.as_posix())
     if cache_key not in _READ_CACHE:
         _READ_CACHE[cache_key] = _read_tracked_uncached(root, rel)
-    return _READ_CACHE[cache_key]
+    return cast(tuple[str | None, str], _READ_CACHE[cache_key])
 
 
 def _read_tracked_uncached(root: Path, rel: Path) -> tuple[str | None, str]:
@@ -161,7 +170,7 @@ def _read_tracked_uncached(root: Path, rel: Path) -> tuple[str | None, str]:
     if on_disk.is_file():
         try:
             return on_disk.read_text(encoding="utf-8"), "worktree"
-        except OSError:
+        except (OSError, UnicodeError):
             pass
     try:
         result = subprocess.run(
@@ -173,7 +182,7 @@ def _read_tracked_uncached(root: Path, rel: Path) -> tuple[str | None, str]:
         )
         if result.returncode == 0 and result.stdout:
             return result.stdout, "git"
-    except (OSError, subprocess.SubprocessError):
+    except (OSError, subprocess.SubprocessError, UnicodeError):
         pass
     return None, "absent"
 
@@ -269,54 +278,149 @@ class QLedgerRead:
         return f"{self.source} ({self.unparseable} unparseable line(s))"
 
 
-def _load_qledger(root: Path) -> QLedgerRead:
-    """Desk row counts and declared horizons from the claim corpus."""
-    from engine.qledger_store import read_tracked_claims_text
+def _summarise_qledger(
+    lines: Iterable[str], source: str, *, complete: Callable[[], bool] | None = None,
+) -> tuple[QLedgerRead, bool]:
+    """Consume every line; retain counts/horizons and at most one physical line.
 
-    from engine.qledger_store_protocol import SnapshotIntegrityError
-
-    try:
-        text, source = read_tracked_claims_text(
-            root, CLAIMS_REL, legacy_reader=read_tracked
-        )
-    except SnapshotIntegrityError as exc:
-        return QLedgerRead(None, None, f"qledger-native-unreadable: {exc}", 0, 0)
-    if text is None:
-        return QLedgerRead(None, None, source, 0, 0)
+    The boolean distinguishes an empty Git blob (incumbent absent) from a nonempty
+    corpus with no considered rows. Nothing escapes before the stream completes.
+    """
     rows: Counter[str] = Counter()
     horizons: dict[str, set[int]] = defaultdict(set)
     unparseable = 0
     considered = 0
-    for line in text.splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
+    nonempty = False
+    parse_failure: Exception | None = None
+    for physical_line in lines:
+        nonempty |= bool(physical_line)
+        # File iteration preserves physical CR/LF lines; splitlines also recognizes
+        # the other Unicode separators the former whole-text parser recognized.
+        if parse_failure is not None:
             continue
-        considered += 1
         try:
-            record = json.loads(line)
-        except json.JSONDecodeError:
-            unparseable += 1
-            continue
-        if not isinstance(record, dict):
-            # Valid JSON, wrong shape — a bare list or scalar carries no desk and cannot
-            # be read as a claim. Counting it is what separates "the store is malformed"
-            # from "the store has no rows for this desk".
-            unparseable += 1
-            continue
-        desk = record.get("desk")
-        if not desk:
-            continue
-        rows[desk] += 1
-        horizon = record.get("horizon_d")
-        if isinstance(horizon, int):
-            horizons[desk].add(horizon)
+            for line in physical_line.splitlines():
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                considered += 1
+                try:
+                    record = json.loads(line)
+                except json.JSONDecodeError:
+                    unparseable += 1
+                    continue
+                if not isinstance(record, dict):
+                    # Valid JSON, wrong shape — a bare list or scalar carries no desk and cannot
+                    # be read as a claim. Counting it is what separates "the store is malformed"
+                    # from "the store has no rows for this desk".
+                    unparseable += 1
+                    continue
+                desk = record.get("desk")
+                if not desk:
+                    continue
+                rows[desk] += 1
+                horizon = record.get("horizon_d")
+                if isinstance(horizon, int):
+                    horizons[desk].add(horizon)
+        except Exception as exc:
+            # Eager transport completed before parsing. Keep that failure order:
+            # a later read/decode failure or failed Git exit still wins over an
+            # earlier malformed desk/type error; no prefix counts escape.
+            parse_failure = exc
+    if complete is not None and not complete():
+        return QLedgerRead(None, None, "absent", 0, 0), nonempty
+    if parse_failure is not None:
+        raise parse_failure
     return QLedgerRead(
         dict(rows),
         {k: sorted(v) for k, v in horizons.items()},
         source,
         unparseable,
         considered,
-    )
+    ), nonempty
+
+
+def _load_legacy_qledger(root: Path) -> QLedgerRead:
+    from engine.qledger_store import open_raw_lines
+
+    # Same invocation/reset lifetime as tracked text. This is a derived value in
+    # the existing cache, not another store or a persistent source selection.
+    cache_key = (str(root), CLAIMS_REL.as_posix() + "::desk-summary")
+    if cache_key in _READ_CACHE:
+        return deepcopy(cast(QLedgerRead, _READ_CACHE[cache_key]))
+    text_key = (str(root), CLAIMS_REL.as_posix())
+    if text_key in _READ_CACHE:
+        # Honor a prior ordinary read without making another corpus-sized copy.
+        text, source = cast(tuple[str | None, str], _READ_CACHE[text_key])
+        result = (QLedgerRead(None, None, source, 0, 0) if text is None else
+                  _summarise_qledger(
+                      (m.group() for m in re.finditer(r"[^\n]*\n|[^\n]+$", text)), source
+                  )[0])
+    else:
+        result = None
+        path = root / CLAIMS_REL
+        if path.is_file():
+            try:
+                with open_raw_lines(path) as lines:
+                    result, _ = _summarise_qledger(lines, "worktree")
+            except (OSError, UnicodeError):
+                # A late failure discards all provisional worktree counts before
+                # restarting the incumbent HEAD fallback from its beginning.
+                pass
+        if result is None:
+            result = _load_git_qledger(root)
+    _READ_CACHE[cache_key] = result
+    return deepcopy(result)
+
+
+def _load_git_qledger(root: Path) -> QLedgerRead:
+    process = None
+    try:
+        process = subprocess.Popen(
+            ["git", "show", f"HEAD:{CLAIMS_REL.as_posix()}"], cwd=root,
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
+        )
+        assert process.stdout is not None
+        result, nonempty = _summarise_qledger(
+            process.stdout, "git", complete=lambda: process.wait() == 0
+        )
+        if nonempty:
+            return result
+    except (OSError, subprocess.SubprocessError, UnicodeError):
+        pass
+    finally:
+        if process is not None:
+            if process.stdout is not None:
+                process.stdout.close()
+            if process.poll() is None:
+                # Only our read-only Git child. Reap after a decode/consumer error;
+                # this cleanup grace is not a read deadline or performance claim.
+                process.terminate()
+                try:
+                    process.wait(timeout=1)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait()
+    return QLedgerRead(None, None, "absent", 0, 0)
+
+
+def _load_qledger(root: Path) -> QLedgerRead:
+    """Complete counts/horizons through the selected binding, without eager text."""
+    from engine.qledger_store import ClaimsReadScope, open_raw_lines
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+
+    try:
+        # Reuses an enclosing same-root snapshot, and binds both the stream and
+        # provenance to this exact generation. Native failures never use legacy.
+        with ClaimsReadScope(root) as scope:
+            if scope.snapshot is not None:
+                receipt = scope.snapshot.receipt
+                source = "qledger-native:" + receipt.source_id + ":" + receipt.root_digest
+                with open_raw_lines(root / CLAIMS_REL) as lines:
+                    return _summarise_qledger(lines, source)[0]
+            return _load_legacy_qledger(root)
+    except SnapshotIntegrityError as exc:
+        return QLedgerRead(None, None, f"qledger-native-unreadable: {exc}", 0, 0)
 
 
 def _load_overlay(root: Path) -> tuple[dict[str, Any] | None, str, bool]:
@@ -541,12 +645,34 @@ def build(root: Path) -> tuple[dict[str, Any], dict[str, Any]]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
-    parser.add_argument("--json", action="store_true", help="print the whole view as JSON")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--json", action="store_true", help="print the whole view as JSON")
+    mode.add_argument("--required-tier", action="append", metavar="PRODUCER_PATH",
+                      help="read-only tier query for an exact producer path (repeatable); JSON with source report")
     args = parser.parse_args()
     root: Path = args.root
 
-    registry, report = build(root)
+    if args.required_tier is not None:
+        try:
+            required_tier(None, args.required_tier)  # Validate paths before source I/O.
+        except ValueError as exc:
+            parser.error(str(exc))
+    try:
+        registry, report = build(root)
+    except SynapseUnavailable:
+        if args.required_tier is None:
+            raise
+        print(json.dumps({"schema": "intelligence_registry.required_tier_cli.v1",
+            "query": required_tier(None, args.required_tier), "source_report": None,
+            "source_failure": {"code": "synapse_unavailable", "input": str(SYNAPSE_REL)}},
+            indent=2, sort_keys=True))
+        return 1
 
+    if args.required_tier is not None:
+        print(json.dumps({"schema": "intelligence_registry.required_tier_cli.v1",
+            "query": required_tier(registry, args.required_tier), "source_report": report},
+            indent=2, sort_keys=True))
+        return 0
     if args.json:
         print(serialise(registry), end="")
         return 0

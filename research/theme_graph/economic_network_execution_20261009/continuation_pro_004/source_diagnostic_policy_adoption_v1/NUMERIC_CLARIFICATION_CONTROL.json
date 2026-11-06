@@ -1,0 +1,14 @@
+{
+  "authority_granted": false,
+  "base_shares": "100000000",
+  "correct_cap": "1800000000",
+  "executed_at_utc": "2026-10-09T12:07:32.746860+00:00",
+  "incorrect_abs_delta_cap": "2200000000",
+  "price": "20",
+  "real_source_no_change_evidence_verified": false,
+  "schema": "research.gmi.wp02.numeric_clarification_control/v1",
+  "scope": "SYNTHETIC_EXACT_RATIONAL_ARITHMETIC_ONLY",
+  "selector_code_tested": false,
+  "signed_retirement": "-10000000",
+  "zero_delta_is_identity_in_arithmetic": true
+}

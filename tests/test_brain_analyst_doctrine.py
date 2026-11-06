@@ -358,7 +358,7 @@ def test_two_libraries_stay_separate():
     # technician still routes its own modules, unchanged by the refactor
     tech_routed = _ids(tech.route("where is support?"))
     assert "protocol" in tech_routed and "lens_sr" in tech_routed
-    assert len(tech._load()) == 11
+    assert len(tech._load()) == 14
     assert len(a._load()) == 10
 
     # no id bleed except the shared 'protocol' stem, and no body bleed at all

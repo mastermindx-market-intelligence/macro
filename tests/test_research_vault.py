@@ -256,6 +256,29 @@ def test_clean_title_does_not_collapse_repeated_lead_or_strip_trailing_date():
     assert sidecar_mod.clean_title("US Econ Notes July 24") == "US Econ Notes July 24"
 
 
+
+def test_display_title_date_removal_does_not_leave_orphaned_commas():
+    from engine.research_vault import title as title_mod
+    from engine.research_vault.slugs import slug_map
+
+    cases = (
+        ("The Point for Europe: Thursday, 24 September 2026", "The Point for Europe: Thursday"),
+        ("The Point for Europe Wednesday, 23 September 2026", "The Point for Europe Wednesday"),
+        ("Oil Market Report, Sep 9, 2026", "Oil Market Report"),
+    )
+    for raw, expected in cases:
+        item = {"id": "synthetic-title-123abc", "title": raw}
+        original_slug = slug_map([item])[item["id"]]
+        assert sidecar_mod.display_title(raw) == expected
+        assert sidecar_mod.display_title(expected) == expected
+        assert not title_mod.looks_filename_derived(expected)
+        assert sidecar_mod.clean_title(raw) == raw
+        assert item["title"] == raw
+        assert slug_map([item])[item["id"]] == original_slug
+    # A weekday or comma without a stripped complete date is source content.
+    for raw in ("Black Thursday", "The Point for Europe Thursday,", "US Econ Notes July 24", "Europe Wednesday, September 2026"):
+        assert sidecar_mod.display_title(raw) == raw
+
 def test_display_title_collapses_repeated_lead_and_trailing_calendar_date():
     assert sidecar_mod.display_title("GS Vol Views GS Vol Views 9 Sep 2026") == "GS Vol Views"
     assert sidecar_mod.display_title("GS Vol Views") == "GS Vol Views"

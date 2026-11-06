@@ -161,14 +161,8 @@ def test_resolution_never_falls_back_to_another_vendor_namespace():
     assert unresolved["unmapped_count"] == 1
     assert unresolved["subjects"][0]["security_id"] is None
 
-    resolved = subjects.resolve_candidates(
-        candidate,
-        aliases=table,
-        alias_vendor="store",
-        published_at="2026-10-05",
-    )
-    assert resolved["resolved_count"] == 1
-    assert resolved["subjects"][0]["security_id"] == "SEC:US-XNAS-NVDA"
+    with pytest.raises(ValueError, match="current-catalog"):
+        subjects.resolve_candidates(candidate, aliases=table, alias_vendor="store", published_at="2026-10-05")
 
 
 def test_resolution_preserves_unmapped_candidates_instead_of_dropping():
@@ -401,3 +395,57 @@ def test_resolution_refuses_non_security_dataos_alias_target():
             alias_vendor="exchange",
             published_at="2026-10-05",
         )
+
+
+# Exact canonical Data OS API tests: the bridge is not a second resolver.
+from lib.dataos.identity import NATIVE_REFERENCE_VENDOR, alias_binding_sha256, IdentityError
+from datetime import datetime, timezone
+
+
+def native_table(symbol="NVDA", security="SEC:US-XNAS-NVDA", known="2026-10-07T06:24:36Z"):
+    start=date(2026,10,5); evidence="a"*64
+    seal=alias_binding_sha256(NATIVE_REFERENCE_VENDOR,symbol,security,start,None,known,evidence)
+    return VendorAliasTable([AliasRow(NATIVE_REFERENCE_VENDOR,symbol,security,start,None,known,evidence,seal)])
+
+
+def native_candidates():
+    return subjects.discover_candidates(report_id="native-clock",source_tickers=["NVDA"])
+
+
+def test_native_reference_requires_explicit_cutoff():
+    with pytest.raises(ValueError,match="decision_at"):
+        subjects.resolve_candidates(native_candidates(),aliases=native_table(),alias_vendor=NATIVE_REFERENCE_VENDOR,published_at="2026-10-05")
+
+
+def test_native_reference_known_after_cutoff_stays_unmapped():
+    got=subjects.resolve_candidates(native_candidates(),aliases=native_table(),alias_vendor=NATIVE_REFERENCE_VENDOR,published_at="2026-10-05",decision_at="2026-10-07T06:24:35Z")
+    assert got["unmapped_count"]==1 and got["subjects"][0]["security_id"] is None
+
+
+def test_native_reference_known_at_cutoff_resolves_and_binds_clock():
+    clock=datetime(2026,10,7,6,24,36,tzinfo=timezone.utc)
+    got=subjects.resolve_candidates(native_candidates(),aliases=native_table(),alias_vendor=NATIVE_REFERENCE_VENDOR,published_at="2026-10-05",decision_at=clock)
+    assert got["resolved_count"]==1 and got["subjects"][0]["security_id"]=="SEC:US-XNAS-NVDA"
+    assert got["decision_at"]==clock.isoformat()
+
+
+def test_native_publication_after_cutoff_does_not_resolve():
+    got=subjects.resolve_candidates(native_candidates(),aliases=native_table(),alias_vendor=NATIVE_REFERENCE_VENDOR,published_at="2026-10-08",decision_at="2026-10-07T06:24:36Z")
+    assert got["unmapped_count"]==1
+
+
+@pytest.mark.parametrize("clock",["2026-10-07",datetime(2026,10,7),"malformed"])
+def test_malformed_native_cutoff_rejected_by_canonical_identity(clock):
+    with pytest.raises(IdentityError):
+        subjects.resolve_candidates(native_candidates(),aliases=native_table(),alias_vendor=NATIVE_REFERENCE_VENDOR,published_at="2026-10-05",decision_at=clock)
+
+
+@pytest.mark.parametrize("vendor",["store","yahoo_fetch"])
+def test_current_catalog_refused_even_with_native_clock(vendor):
+    with pytest.raises(ValueError,match="current-catalog"):
+        subjects.resolve_candidates(native_candidates(),aliases=VendorAliasTable([]),alias_vendor=vendor,published_at="2010-01-01",decision_at="2026-10-07T06:24:36Z")
+
+
+def test_dated_namespace_remains_compatible_without_new_artifact_key():
+    got=subjects.resolve_candidates(native_candidates(),aliases=VendorAliasTable([AliasRow("membership","NVDA","SEC:US-XNAS-NVDA")]),alias_vendor="membership",published_at="2026-10-05")
+    assert got["resolved_count"]==1 and "decision_at" not in got

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:45:35Z",
+ "accession": "0001801368-26-000008",
+ "cik": "0001801368",
+ "doc_byte_length": 3138683,
+ "doc_sha256": "5a886ef2e336b6b374b630f95ccc340e0abb6f4d652c6e0d313897d17e4f4048",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mp-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2263762,
+  "byte_start": 2262370,
+  "normalized": "The Company determined that the DoW Offtake Agreement contains an embedded lease of the 10X Facility as a result of the DoW’s (i) right to obtain substantially all of the economic benefits of the 10X Facility and (ii) ability to direct the use of the 10X Facility for magnet production. See Note 3, “Public-Private Partnership with U.S. Department of War,” for more information about the DoW Offtake Agreement.",
+  "normalized_sha256": "720fc2064def20cb73f358a71f4141447178ace4fd58261c8ff7f15a86256a21",
+  "raw": "The Company determined that the DoW Offtake Agreement contains an embedded lease of the 10X Facility as a result of the DoW&#8217;s (i) right to obtain substantially all of the economic benefits of the 10X Facility and (ii) ability to direct the use of the 10X Facility for magnet production. See </span><span style=\"color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\"><a style=\"color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\" href=\"#i876fda1395634b2193065cf7a0446f66_841\">Note</a></span><span style=\"color:#0000ee;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\"><a style=\"color:#0000ee;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\" href=\"#i876fda1395634b2193065cf7a0446f66_841\"> </a>3<a style=\"color:#0000ee;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\" href=\"#i876fda1395634b2193065cf7a0446f66_841\">, &#8220;Public-Private Partnership with U.S. Department of War,&#8221;</a></span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"> for more information about the DoW Offtake Agreement.",
+  "raw_sha256": "e3556b7ce33e3a194c2527a836fe2fcccdb52f0a83042169dfb9d5d145daed37"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1801368/000180136826000008/mp-20251231.htm",
+ "xbrl_contexts": []
+}

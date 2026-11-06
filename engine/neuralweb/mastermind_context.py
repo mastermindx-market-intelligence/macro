@@ -551,7 +551,7 @@ def _summarize_macro_weather(repo: Path) -> tuple[dict, str | None]:
             # v2 compact delta fields for LLM context
             # calendar days from streak start to latest ledger asof (inclusive)
             "usd_trend_days": (fx_deltas.get("usd_trend") or {}).get("days_in_state"),
-            "regime_since": (fx_deltas.get("usd_regime") or {}).get("since"),
+            "regime_since": (fx_deltas.get("usd_regime") or {}).get("since") if fx_ws.get("regime") is not None else None,
             "top_scenario": (
                 (fx_ws.get("scenario_intensity") or [{}])[0].get("name")
                 if fx_ws.get("scenario_intensity") else None

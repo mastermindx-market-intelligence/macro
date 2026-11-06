@@ -1,0 +1,71 @@
+{
+  "observed_at": "2026-10-14T05:21:09.157983+00:00",
+  "source_ref": "research_vault:marketdesk-60kies6hqgh-b50195",
+  "title": "JPM US Market Intelligence Afternoon Briefing Oct 13",
+  "catalog_sha256": "8a6c0dba0fd83d9bdded1a36a0476e5befcd163ca642257e22e23cb2df42bcde",
+  "catalog_published_at": "2026-10-14T01:34:30Z",
+  "rank_position": 12,
+  "public_report_url": "https://www.mastermind-x.com/research/jpm-us-market-intelligence-afternoon-briefing-oct-13-b50195.html",
+  "browser_observation": {
+    "browser_id": "2",
+    "tab_id": "1925920602",
+    "state": "NAVIGATION_BLOCKED_BY_CLIENT",
+    "original_report_read": false,
+    "retry": false,
+    "alternate_fetch_of_blocked_report": false
+  },
+  "issuer_sources": [
+    {
+      "url": "https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/quarterly-earnings/2026/3rd-quarter/c89c7479-82df-4c9f-a7be-957956430abd.pdf",
+      "local_path": "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/source-review-20261014-0518/jpm-q3-supplement.pdf",
+      "status": 200,
+      "bytes": 238822,
+      "sha256": "baf06d8ebd92088fcc9ca5e75e5e5166c320826df29409a15ac1fd4f0f6aeebd"
+    },
+    {
+      "url": "https://www.citigroup.com/rcs/citigpa/storage/public/Earnings/Q32026/2026prqtr3rslt.pdf",
+      "local_path": "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/source-review-20261014-0518/citi-q3-results.pdf",
+      "status": 200,
+      "bytes": 325246,
+      "sha256": "6eeae3ea3a889fbaee2d41062e7947cb66bee25b94b6e88614f1986cddbbb77f"
+    }
+  ],
+  "qualification": [
+    {
+      "claim": "JPM card spending growth",
+      "result": "PARTIALLY_CORROBORATED",
+      "evidence": "JPM Q3 financial supplement printed page15/PDF page16 reports combined debit and credit card sales $539.5bn versus $492.3bn in 3Q25, with displayed rounded growth10%. Pure arithmetic is about9.59%. This is reported nominal bank-customer volume, not national real consumption or household-wide evidence."
+    },
+    {
+      "claim": "Citi card spending growth",
+      "result": "DO_NOT_INFER_SUMMARY_ENDPOINT",
+      "evidence": "Citi Q3 release PDFpage8 reports US credit-card spend $175bn versus $157bn, displayed growth11%. Its page4 commercial-card measure reports10%. These scopes differ; the summary10-13% range is not sufficiently attributed by the retained evidence."
+    },
+    {
+      "claim": "Citi FY RoTCE likely12%",
+      "result": "NOT_ESTABLISHED_AS_ISSUER_GUIDANCE",
+      "evidence": "Citi reports quarterly RoTCE11.5%; page1 gives near-term11-13% goal and expected performance above this year's target. Neither is equivalent to an issuer commitment of12% for FY2026. Preserve possible broker forecast attribution until original report is readable."
+    },
+    {
+      "claim": "New York Fed signals no2027 rate hike",
+      "result": "UNVERIFIED_NOT_ADJUDICATED_FALSE",
+      "evidence": "Targeted New York Fed source search found October13 Nobel congratulations and an October12-18 schedule with no speeches. No matching policy statement established. A search miss does not disprove another interview or the report's interpretation.",
+      "urls": [
+        "https://www.newyorkfed.org/newsevents/statements/2026/1013-2026",
+        "https://www.newyorkfed.org/press"
+      ]
+    },
+    {
+      "claim": "Other summary claims and interpretation",
+      "result": "UNREVIEWED",
+      "evidence": "Wages/inequality, delinquencies, positioning, ticker returns, event schedules and the CPI scenario need their actual dated source evidence. Charge-offs cannot stand in for delinquencies."
+    }
+  ],
+  "decision": "HOLD_UNEDITED_NO_WRITER",
+  "scope": "Primary-source corroboration only; no transcript ingress, credential use, source producer rewrite, qualification grant or public release approval. Issuer facts remain third-party.",
+  "provider_calls": 0,
+  "staging_writes": 0,
+  "publication": false,
+  "cutover": false,
+  "d14_credit": 0
+}

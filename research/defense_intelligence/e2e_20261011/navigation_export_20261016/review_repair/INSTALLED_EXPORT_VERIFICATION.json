@@ -1,0 +1,27 @@
+{
+  "observed_at": "2026-10-18T00:41:24.758709+00:00",
+  "scope": "Actual installed9498 signed-in browser exports; not second-principal privacy or whole-program acceptance",
+  "state": "PASS_MATCHING_12_REAL_RECORD_EXPORTS_WITH_AMOUNT_BASIS_AND_CLOCKS",
+  "bundle": "grw2-120d87bf4021f8d3610168df",
+  "query": {
+    "filters": {
+      "mode": "changes",
+      "truth": "all",
+      "q": "N0002418C2305",
+      "agency": "",
+      "ticker": ""
+    },
+    "result_scope": "current visible governed workspace cut"
+  },
+  "records": 12,
+  "numeric_amounts_checked": 12,
+  "amount_as_of_present": 12,
+  "all_eight_metadata_columns": true,
+  "ordered_ids_equal": true,
+  "authority_limits_preserved": true,
+  "sha256": {
+    "government-revenue-2026-10-16-grw2-120d87bf4021f8d3610168df-view.json": "6f755417baee2000dea37de347bc42e7893c9184ef17a71ef9f94a3ad6da1e90",
+    "government-revenue-2026-10-16-grw2-120d87bf4021f8d3610168df-view.csv": "8de3bb3ca1538530f2400243058d783f5f2d098618c6d462913067bfd321bc3d"
+  },
+  "download_event": "JSONwaitForEventtimedout;successDOMandtimestampedactualfileprovedcompletion;no duplicateJSONclick;CSVclickedonce"
+}

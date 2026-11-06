@@ -1,0 +1,19 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/mm_brain.js
+  - templates/mm_brain_finance.js
+  - templates/mm_brain_finance.css
+  - templates/mm_brain_presentation.js
+  - templates/mm_brain_math.js
+  - templates/mm_brain_markdown.js
+  - templates/chat.css
+  - templates/chat.html
+  - site/mm_brain.js
+  - site/mm_brain_finance.js
+  - site/mm_brain_finance.css
+  - site/mm_brain_presentation.js
+  - site/mm_brain_math.js
+  - site/mm_brain_markdown.js
+  - site/chat.css
+  - site/chat.html
+manifest: mockups/evidence/brain-intelligent-output/manifest.json

@@ -1,0 +1,45 @@
+{
+ "accepted_at": "2026-08-31T18:21:23Z",
+ "accession": "0001375365-26-000022",
+ "cik": "0001375365",
+ "doc_byte_length": 3990484,
+ "doc_sha256": "ec08d63ef6fd7b9969cd7a6aed03ff9cf6877b1f3d7bc9247bf9aae1303d9036",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-31",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "smci-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2174522,
+  "byte_start": 2173271,
+  "normalized": "Under these agreements, we outsource a portion of our design activities, a significant part of our power supplies manufacturing and an immaterial portion of other components to Compuware. Compuware manufactured approximately 94.4%, 94.6% and 96.6% of the power supplies purchased by us during the fiscal years ended June 30, 2026, 2025 and 2024, respectively. With respect to design activities, Compuware generally agrees to design certain agreed-upon products according to our specifications and further agrees to build the tools needed to manufacture the products.",
+  "normalized_sha256": "fc1baeb6f4d77d396be3589771c8e0b5e624abb0d7b6bc0b8789f5d74e89b3c3",
+  "raw": "Under these agreements, we outsource a portion of our design activities, a significant part of our power supplies manufacturing and an immaterial portion of other components to Compuware. Compuware manufactured approximately</span><span style=\"color:#ee2724;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"> </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-426\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1360\">94.4</ix:nonFraction>%, <ix:nonFraction unitRef=\"number\" contextRef=\"c-427\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1361\">94.6</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-428\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1362\">96.6</ix:nonFraction>% of the power supplies purchased by us during the fiscal years ended June 30, 2026, 2025 and 2024, respectively. With respect to design activities, Compuware generally agrees to design certain agreed-upon products according to our specifications and further agrees to build the tools needed to manufacture the products.",
+  "raw_sha256": "e4bd19166352af2d9b68980fceb110aa9a4ec3bc2d48b7072d0e96fe442e6e49"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1375365/000137536526000022/smci-20260630.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 250495,
+   "byte_start": 249685,
+   "context_ref": "c-426",
+   "raw": "<xbrli:context id=\"c-426\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001375365</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">smci:CompuwareMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">smci:PowerSuppliesPurchasedBenchmarkMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:RelatedPartyTransactionsByRelatedPartyAxis\">us-gaap:RelatedPartyMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-07-01</xbrli:startDate><xbrli:endDate>2026-06-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "6a249e2cad41f7b5e0ab3d7f29ae7e8486125b6ad6fb2158434cc59366753ff6"
+  },
+  {
+   "byte_end": 251305,
+   "byte_start": 250495,
+   "context_ref": "c-427",
+   "raw": "<xbrli:context id=\"c-427\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001375365</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">smci:CompuwareMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">smci:PowerSuppliesPurchasedBenchmarkMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:RelatedPartyTransactionsByRelatedPartyAxis\">us-gaap:RelatedPartyMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-07-01</xbrli:startDate><xbrli:endDate>2025-06-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "49d4cbbe71d52334fcaa86a040bf4a8cc2aab98882904fbc1f6666fce31385d4"
+  },
+  {
+   "byte_end": 252115,
+   "byte_start": 251305,
+   "context_ref": "c-428",
+   "raw": "<xbrli:context id=\"c-428\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001375365</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">smci:CompuwareMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">smci:PowerSuppliesPurchasedBenchmarkMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:RelatedPartyTransactionsByRelatedPartyAxis\">us-gaap:RelatedPartyMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-07-01</xbrli:startDate><xbrli:endDate>2024-06-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "7534a56ba3224d963ee3ccb23b710ff920fa0a9763e95878c6a025939f05f2dd"
+  }
+ ]
+}

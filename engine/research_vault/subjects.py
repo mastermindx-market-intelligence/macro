@@ -14,12 +14,12 @@ No I/O and no model calls live here.
 """
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 import math
 import re
 from typing import Any, Iterable, Mapping
 
-from lib.dataos.identity import IdentityError, VendorAliasTable, parse_id
+from lib.dataos.identity import IdentityError, NATIVE_REFERENCE_VENDOR, VendorAliasTable, parse_id
 
 CANDIDATE_SCHEMA = "research_vault.subject_candidates.v1"
 RESOLUTION_SCHEMA = "research_vault.subject_resolution.v1"
@@ -214,6 +214,7 @@ def resolve_candidates(
     aliases: VendorAliasTable,
     alias_vendor: str,
     published_at: date | datetime | str,
+    decision_at: datetime | str | None = None,
 ) -> dict[str, Any]:
     """Bind candidates to exact Data OS security ids or preserve typed UNMAPPED.
 
@@ -230,6 +231,13 @@ def resolve_candidates(
         raise TypeError("aliases must be VendorAliasTable")
     if not isinstance(alias_vendor, str) or not alias_vendor.strip():
         raise ValueError("alias_vendor must be explicit")
+    vendor = alias_vendor.strip()
+    # Historical naming must never consume the present fetch/store-key catalog.
+    # Data OS owns the namespace families and native reference decision clock.
+    if vendor in {"store", "yahoo_fetch"}:
+        raise ValueError("current-catalog alias namespace cannot resolve historical report subjects")
+    if vendor == NATIVE_REFERENCE_VENDOR and decision_at is None:
+        raise ValueError("native reference requires explicit decision_at")
     on = _publication_date(published_at)
 
     raw_rows = candidates.get("candidates")
@@ -255,7 +263,7 @@ def resolve_candidates(
         ):
             raise ValueError(f"candidates[{index}].source_fields is invalid")
 
-        security_id = aliases.resolve(alias_vendor.strip(), symbol, on)
+        security_id = aliases.resolve(vendor, symbol, on, decision_at=decision_at)
         if security_id is not None:
             try:
                 kind, _listing = parse_id(security_id)
@@ -281,7 +289,7 @@ def resolve_candidates(
             }
         )
 
-    return {
+    artifact = {
         "schema": RESOLUTION_SCHEMA,
         "report_id": report_id.strip(),
         "alias_vendor": alias_vendor.strip(),
@@ -294,3 +302,11 @@ def resolve_candidates(
             "exact_security_identity": "data_os_vendor_alias_table",
         },
     }
+
+    if decision_at is not None:
+        # Keep non-native provenance verbatim; canonical native resolution alone
+        # validates the cutoff. Never invent a decision clock from publication.
+        artifact["decision_at"] = (decision_at.astimezone(timezone.utc).isoformat()
+                                   if isinstance(decision_at, datetime) and decision_at.tzinfo is not None
+                                   else decision_at.isoformat() if isinstance(decision_at, datetime) else decision_at)
+    return artifact

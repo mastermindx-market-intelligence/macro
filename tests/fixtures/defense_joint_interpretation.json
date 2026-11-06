@@ -1,0 +1,1506 @@
+{
+  "authority": {
+    "can_escalate": false,
+    "can_gate": false,
+    "can_originate_signal": false,
+    "can_rank": false,
+    "can_size": false,
+    "context_only": true
+  },
+  "content_id": "dfe1-b2e0322770b717deb1c3471e",
+  "contract": "defense_economics.v1",
+  "generated_at": "2026-10-13T07:13:52.291383+00:00",
+  "profiles": [
+    {
+      "authority": {
+        "can_escalate": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false,
+        "context_only": true
+      },
+      "axes": {
+        "demand": {
+          "evidence_refs": [],
+          "facts": [],
+          "fiscal_period": null,
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "observed_at": null,
+          "owner_ref": null,
+          "reason_code": "owner_not_supplied",
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。"
+        },
+        "economics": {
+          "evidence_refs": [
+            "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+          ],
+          "facts": [
+            {
+              "accounting_basis": "issuer_reported_segment:Missiles and Fire Control:reported",
+              "fact_class": "reported_segment_sales",
+              "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_sales",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_a2a1a6468e04d0060c3be22d18fbe46f347bd14e4a29c3d46b815bc7ee3844fc",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/936468/000162828026049277/ex991q22026.htm",
+                "span_id": "span_dd4ad4c92cda6212847e",
+                "text_sha256": "e2d8a3e1144d9661306961013270f5dec43870909749c5d8f1cceb8c62b933b2"
+              },
+              "unit": "USD_million",
+              "value": 4101.0
+            },
+            {
+              "accounting_basis": "issuer_reported_segment:Missiles and Fire Control:reported",
+              "fact_class": "reported_segment_operating_profit",
+              "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_operating_profit",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_a2a1a6468e04d0060c3be22d18fbe46f347bd14e4a29c3d46b815bc7ee3844fc",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/936468/000162828026049277/ex991q22026.htm",
+                "span_id": "span_c99d75618699fde79237",
+                "text_sha256": "e2fa8f5b4364b8ef4dd1f26ab47105d908d06ec84d835e3d1aac404a63f1464a"
+              },
+              "unit": "USD_million",
+              "value": 594.0
+            },
+            {
+              "accounting_basis": "issuer_reported_segment:Missiles and Fire Control:reported",
+              "fact_class": "reported_segment_margin",
+              "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_margin",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_a2a1a6468e04d0060c3be22d18fbe46f347bd14e4a29c3d46b815bc7ee3844fc",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/936468/000162828026049277/ex991q22026.htm",
+                "span_id": "span_6026c1639440b042e9ad",
+                "text_sha256": "6978e2340a8503590a60b7d19aae46c4ea02a62986b91628d06ae0e35b011e0d"
+              },
+              "unit": "percent",
+              "value": 14.5
+            }
+          ],
+          "fiscal_period": "2026Q2",
+          "limitations": [
+            "segment_not_program_workshare",
+            "shareholder_capture_not_asserted",
+            "historical_pit_not_admitted"
+          ],
+          "observed_at": "2026-10-13T05:42:08Z",
+          "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results",
+          "reason_code": "reported_segment_context",
+          "state": "supported",
+          "summary_en": "Missiles and Fire Control: 2026Q2 reported segment context.",
+          "summary_zh": "Missiles and Fire Control：2026Q2 报告分部资料。"
+        },
+        "participation": {
+          "evidence_refs": [],
+          "facts": [],
+          "fiscal_period": null,
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "observed_at": null,
+          "owner_ref": null,
+          "reason_code": "owner_not_supplied",
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。"
+        },
+        "recognition": {
+          "evidence_refs": [
+            "market_context:LMT:ad80e9b44cccd900431a41d8"
+          ],
+          "expectations_kind": "not_observed",
+          "facts": [],
+          "fiscal_period": null,
+          "limitations": [
+            "raw_price_change_not_total_return",
+            "no_observed_market_expectations",
+            "no_historical_identity_admission",
+            "archive_behind_exchange_calendar"
+          ],
+          "observed_at": "2026-10-13T05:33:08.155691+00:00",
+          "owner_ref": "market_context:LMT:ad80e9b44cccd900431a41d8",
+          "price_response": {
+            "market_as_of": "2026-10-09",
+            "observed_at": "2026-10-13T05:33:08.155691+00:00",
+            "owner_ref": "market_context:LMT:ad80e9b44cccd900431a41d8",
+            "previous_session": "2026-10-08",
+            "price_adjustment": "raw",
+            "price_vintage": "2026-10-10T09:19:58+00:00",
+            "return_pct": 0.3,
+            "security_id": "xnys:LMT",
+            "sessions_behind": 1,
+            "state": "stale",
+            "window_sessions": 1
+          },
+          "reason_code": "observed_raw_price_context",
+          "state": "stale",
+          "summary_en": "Archived session 2026-10-09: one-session raw closing-price change +0.3%. At this snapshot the archive is 1 completed session behind the exchange calendar.",
+          "summary_zh": "存档交易日 2026-10-09：单个交易日未经调整的收盘价变化 +0.3%。此快照的存档较交易所日历落后 1 个已结束的交易日。",
+          "valuation_scenario": {
+            "observed_at": null,
+            "owner_ref": null,
+            "state": "missing_owner"
+          }
+        }
+      },
+      "contrary_case": "Segment sales and margin do not establish program workshare or shareholder capture.",
+      "contrary_case_zh": "分部销售额及利润率不能证明项目份额或股东获益。",
+      "identity_mode": "current",
+      "identity_owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results",
+      "interpretation": {
+        "chain": [
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_sales",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "demand",
+            "state": "unknown",
+            "summary_en": "Reported segment sales are historical revenue; they do not measure new program funding, funded orders, or future issuer demand.",
+            "summary_zh": "已披露分部销售额属于历史收入，不能作为新增项目资金、已获资金订单或未来发行人需求的数值。"
+          },
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_sales",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "capture",
+            "state": "unknown",
+            "summary_en": "Missiles and Fire Control is verified issuer segment context. Specific procurement roles, workshare, and conversion timing remain unqualified.",
+            "summary_zh": "导弹与火控是已核验的发行人分部资料；具体采购角色、项目份额及转化时间仍未核验。"
+          },
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_sales",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "margin",
+            "state": "reported",
+            "summary_en": "2026Q2 Missiles and Fire Control: sales USD 4,101 million, reported operating profit USD 594 million, margin 14.5%.",
+            "summary_zh": "2026Q2 导弹与火控：销售额4,101百万美元、已披露营业利润594百万美元、利润率14.5%。"
+          },
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "common_cash",
+            "state": "unknown",
+            "summary_en": "Reported segment profit does not fix cash available to common shareholders; payment timing, working capital, capital spending, and corporate claims remain unquantified.",
+            "summary_zh": "分部营业利润不能确定普通股股东可得现金；收款时间、营运资金、资本支出及公司层面索偿仍未量化。"
+          }
+        ],
+        "scenarios": [
+          {
+            "assumption_en": "Assume verified contract work is delivered and future cost discipline is consistent with the reported Missiles and Fire Control baseline.",
+            "assumption_zh": "假设已核验合约工作获交付，且未来成本控制与已披露导弹与火控基准一致。",
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_sales",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              }
+            ],
+            "implication_en": "Work may convert into profit under those conditions; payment timing and investment needs still determine cash conversion. No revenue increment or per-share value is estimated.",
+            "implication_zh": "在这些条件下，工作量可能转化为利润；收款时间及投资需要仍决定现金转化。不估计收入增量或每股价值。",
+            "invalidation_en": "A new unfavorable charge, weaker reported margin, delivery delay, or source correction weakens this premise.",
+            "invalidation_zh": "新增不利费用、已披露利润率转弱、交付延误或来源更正，均削弱这一前提。",
+            "kind": "conditional_baseline",
+            "owner_refs": []
+          },
+          {
+            "assumption_en": "Assume delivery or qualification takes longer, or costs and investment needs rise before customer payments.",
+            "assumption_zh": "假设交付或认证需时更长，或成本及投资需要在客户付款前上升。",
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results"
+              }
+            ],
+            "implication_en": "More program funding can coexist with weaker margin or cash conversion. Issuer workshare and the size of any effect are not assumed.",
+            "implication_zh": "项目资金增加仍可能伴随利润率或现金转化转弱。不假设发行人项目份额或影响幅度。",
+            "invalidation_en": "Verified delivery, cost, margin, and cash evidence contradicting these conditions would weaken the downside case.",
+            "invalidation_zh": "经核验的交付、成本、利润率及现金证据若与这些条件相反，将削弱下行情景。",
+            "kind": "downside",
+            "owner_refs": []
+          }
+        ],
+        "schema": "defense_economic_interpretation.v1",
+        "unknowns": [
+          "program_workshare",
+          "issuer_specific_forward_demand",
+          "revenue_conversion_timing",
+          "working_capital",
+          "capital_spending",
+          "common_shareholder_cash",
+          "observed_market_expectations",
+          "numerical_valuation"
+        ]
+      },
+      "invalidation": "A new unfavorable charge, weaker reported margin, delivery delay, or source correction weakens this premise. A source or identity correction also requires requalification.",
+      "invalidation_zh": "新增不利费用、已披露利润率转弱、交付延误或来源更正，均削弱这一前提。 来源或身份更正也需要重新核验。",
+      "issuer_id": "cik:0000936468",
+      "name": "Lockheed Martin",
+      "next_condition": "Confirm contract scope and delivery, then review reported margin and cash conversion; evaluate observed market context separately.",
+      "next_condition_zh": "先核实合约范围及交付，再检视已披露利润率及现金转化；独立评估已观察到的市场背景。",
+      "program_workshare": null,
+      "program_workshare_state": "not_disclosed",
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "security_id": "xnys:LMT",
+      "shareholder_capture": {
+        "source_refs": [],
+        "state": "not_asserted"
+      },
+      "ticker_display": "LMT"
+    },
+    {
+      "authority": {
+        "can_escalate": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false,
+        "context_only": true
+      },
+      "axes": {
+        "demand": {
+          "evidence_refs": [],
+          "facts": [],
+          "fiscal_period": null,
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "observed_at": null,
+          "owner_ref": null,
+          "reason_code": "owner_not_supplied",
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。"
+        },
+        "economics": {
+          "evidence_refs": [
+            "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+          ],
+          "facts": [
+            {
+              "accounting_basis": "issuer_reported_segment:Raytheon:reported",
+              "fact_class": "reported_segment_sales",
+              "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_sales",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_4fee22951e298854f7bf1c68f5bd50164159d9bba755f7cfa0d425b518f55bba",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/101829/000010182926000025/a2026-07x238xkerexhibit99.htm",
+                "span_id": "span_84315b0edcc7065793c4",
+                "text_sha256": "d449b14ceec38a656c5c5e637d37ec474226cf3ee623778421669ca38b49f971"
+              },
+              "unit": "USD_million",
+              "value": 8269.0
+            },
+            {
+              "accounting_basis": "issuer_reported_segment:Raytheon:reported",
+              "fact_class": "reported_segment_operating_profit",
+              "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_operating_profit",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_4fee22951e298854f7bf1c68f5bd50164159d9bba755f7cfa0d425b518f55bba",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/101829/000010182926000025/a2026-07x238xkerexhibit99.htm",
+                "span_id": "span_c682a0d64f2e878d719f",
+                "text_sha256": "6ef2f188e9d2ce34ed7857879668626c31da066a68f4eb7e2e724e1adfd2f588"
+              },
+              "unit": "USD_million",
+              "value": 1042.0
+            },
+            {
+              "accounting_basis": "issuer_reported_segment:Raytheon:reported",
+              "fact_class": "reported_segment_margin",
+              "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_margin",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_4fee22951e298854f7bf1c68f5bd50164159d9bba755f7cfa0d425b518f55bba",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/101829/000010182926000025/a2026-07x238xkerexhibit99.htm",
+                "span_id": "span_2a0f74e42b29ab4d81fe",
+                "text_sha256": "bbff10a626398017146b3020ca8f2399cf1e5a56c08c1f3eeb907ad8f1291d57"
+              },
+              "unit": "percent",
+              "value": 12.6
+            }
+          ],
+          "fiscal_period": "2026Q2",
+          "limitations": [
+            "segment_not_program_workshare",
+            "shareholder_capture_not_asserted",
+            "historical_pit_not_admitted"
+          ],
+          "observed_at": "2026-10-13T05:43:26Z",
+          "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results",
+          "reason_code": "reported_segment_context",
+          "state": "supported",
+          "summary_en": "Raytheon: 2026Q2 reported segment context.",
+          "summary_zh": "Raytheon：2026Q2 报告分部资料。"
+        },
+        "participation": {
+          "evidence_refs": [],
+          "facts": [],
+          "fiscal_period": null,
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "observed_at": null,
+          "owner_ref": null,
+          "reason_code": "owner_not_supplied",
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。"
+        },
+        "recognition": {
+          "evidence_refs": [
+            "market_context:RTX:c5e10a934c5cac246fa1ed7c"
+          ],
+          "expectations_kind": "not_observed",
+          "facts": [],
+          "fiscal_period": null,
+          "limitations": [
+            "raw_price_change_not_total_return",
+            "no_observed_market_expectations",
+            "no_historical_identity_admission",
+            "archive_behind_exchange_calendar"
+          ],
+          "observed_at": "2026-10-13T05:33:18.740093+00:00",
+          "owner_ref": "market_context:RTX:c5e10a934c5cac246fa1ed7c",
+          "price_response": {
+            "market_as_of": "2026-10-09",
+            "observed_at": "2026-10-13T05:33:18.740093+00:00",
+            "owner_ref": "market_context:RTX:c5e10a934c5cac246fa1ed7c",
+            "previous_session": "2026-10-08",
+            "price_adjustment": "raw",
+            "price_vintage": "2026-10-10T09:20:47+00:00",
+            "return_pct": 0.9,
+            "security_id": "xnys:RTX",
+            "sessions_behind": 1,
+            "state": "stale",
+            "window_sessions": 1
+          },
+          "reason_code": "observed_raw_price_context",
+          "state": "stale",
+          "summary_en": "Archived session 2026-10-09: one-session raw closing-price change +0.9%. At this snapshot the archive is 1 completed session behind the exchange calendar.",
+          "summary_zh": "存档交易日 2026-10-09：单个交易日未经调整的收盘价变化 +0.9%。此快照的存档较交易所日历落后 1 个已结束的交易日。",
+          "valuation_scenario": {
+            "observed_at": null,
+            "owner_ref": null,
+            "state": "missing_owner"
+          }
+        }
+      },
+      "contrary_case": "Segment sales and margin do not establish program workshare or shareholder capture.",
+      "contrary_case_zh": "分部销售额及利润率不能证明项目份额或股东获益。",
+      "identity_mode": "current",
+      "identity_owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results",
+      "interpretation": {
+        "chain": [
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_sales",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "demand",
+            "state": "unknown",
+            "summary_en": "Reported segment sales are historical revenue; they do not measure new program funding, funded orders, or future issuer demand.",
+            "summary_zh": "已披露分部销售额属于历史收入，不能作为新增项目资金、已获资金订单或未来发行人需求的数值。"
+          },
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_sales",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "capture",
+            "state": "unknown",
+            "summary_en": "Raytheon is verified issuer segment context. Specific procurement roles, workshare, and conversion timing remain unqualified.",
+            "summary_zh": "雷神是已核验的发行人分部资料；具体采购角色、项目份额及转化时间仍未核验。"
+          },
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_sales",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "margin",
+            "state": "reported",
+            "summary_en": "2026Q2 Raytheon: sales USD 8,269 million, reported operating profit USD 1,042 million, margin 12.6%.",
+            "summary_zh": "2026Q2 雷神：销售额8,269百万美元、已披露营业利润1,042百万美元、利润率12.6%。"
+          },
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "common_cash",
+            "state": "unknown",
+            "summary_en": "Reported segment profit does not fix cash available to common shareholders; payment timing, working capital, capital spending, and corporate claims remain unquantified.",
+            "summary_zh": "分部营业利润不能确定普通股股东可得现金；收款时间、营运资金、资本支出及公司层面索偿仍未量化。"
+          }
+        ],
+        "scenarios": [
+          {
+            "assumption_en": "Assume verified contract work is delivered and future cost discipline is consistent with the reported Raytheon baseline.",
+            "assumption_zh": "假设已核验合约工作获交付，且未来成本控制与已披露雷神基准一致。",
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_sales",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              }
+            ],
+            "implication_en": "Work may convert into profit under those conditions; payment timing and investment needs still determine cash conversion. No revenue increment or per-share value is estimated.",
+            "implication_zh": "在这些条件下，工作量可能转化为利润；收款时间及投资需要仍决定现金转化。不估计收入增量或每股价值。",
+            "invalidation_en": "A new unfavorable charge, weaker reported margin, delivery delay, or source correction weakens this premise.",
+            "invalidation_zh": "新增不利费用、已披露利润率转弱、交付延误或来源更正，均削弱这一前提。",
+            "kind": "conditional_baseline",
+            "owner_refs": []
+          },
+          {
+            "assumption_en": "Assume delivery or qualification takes longer, or costs and investment needs rise before customer payments.",
+            "assumption_zh": "假设交付或认证需时更长，或成本及投资需要在客户付款前上升。",
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results"
+              }
+            ],
+            "implication_en": "More program funding can coexist with weaker margin or cash conversion. Issuer workshare and the size of any effect are not assumed.",
+            "implication_zh": "项目资金增加仍可能伴随利润率或现金转化转弱。不假设发行人项目份额或影响幅度。",
+            "invalidation_en": "Verified delivery, cost, margin, and cash evidence contradicting these conditions would weaken the downside case.",
+            "invalidation_zh": "经核验的交付、成本、利润率及现金证据若与这些条件相反，将削弱下行情景。",
+            "kind": "downside",
+            "owner_refs": []
+          }
+        ],
+        "schema": "defense_economic_interpretation.v1",
+        "unknowns": [
+          "program_workshare",
+          "issuer_specific_forward_demand",
+          "revenue_conversion_timing",
+          "working_capital",
+          "capital_spending",
+          "common_shareholder_cash",
+          "observed_market_expectations",
+          "numerical_valuation"
+        ]
+      },
+      "invalidation": "A new unfavorable charge, weaker reported margin, delivery delay, or source correction weakens this premise. A source or identity correction also requires requalification.",
+      "invalidation_zh": "新增不利费用、已披露利润率转弱、交付延误或来源更正，均削弱这一前提。 来源或身份更正也需要重新核验。",
+      "issuer_id": "cik:0000101829",
+      "name": "RTX",
+      "next_condition": "Confirm contract scope and delivery, then review reported margin and cash conversion; evaluate observed market context separately.",
+      "next_condition_zh": "先核实合约范围及交付，再检视已披露利润率及现金转化；独立评估已观察到的市场背景。",
+      "program_workshare": null,
+      "program_workshare_state": "not_disclosed",
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "security_id": "xnys:RTX",
+      "shareholder_capture": {
+        "source_refs": [],
+        "state": "not_asserted"
+      },
+      "ticker_display": "RTX"
+    },
+    {
+      "authority": {
+        "can_escalate": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false,
+        "context_only": true
+      },
+      "axes": {
+        "demand": {
+          "evidence_refs": [],
+          "facts": [],
+          "fiscal_period": null,
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "observed_at": null,
+          "owner_ref": null,
+          "reason_code": "owner_not_supplied",
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。"
+        },
+        "economics": {
+          "evidence_refs": [
+            "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+          ],
+          "facts": [
+            {
+              "accounting_basis": "issuer_reported_segment:Defense Systems:reported",
+              "fact_class": "reported_segment_sales",
+              "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_sales",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm",
+                "span_id": "span_53fab29ae5bd1d8fca18",
+                "text_sha256": "c9add69f010ac1b0fa8bb613bc0a165221d36f062a86a1fd5b9b91cc00e239be"
+              },
+              "unit": "USD_million",
+              "value": 2093.0
+            },
+            {
+              "accounting_basis": "issuer_reported_segment:Defense Systems:reported",
+              "fact_class": "reported_segment_operating_profit",
+              "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_operating_profit",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm",
+                "span_id": "span_ddb128431560afd9173e",
+                "text_sha256": "0fecf9247f3ddc84db8a804fa3065c013baf6b7c2458c2ba2bf56c2e1d42ddd4"
+              },
+              "unit": "USD_million",
+              "value": 156.0
+            },
+            {
+              "accounting_basis": "issuer_reported_segment:Defense Systems:reported",
+              "fact_class": "reported_segment_margin",
+              "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_margin",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm",
+                "span_id": "span_df877e77d5d8020f8f70",
+                "text_sha256": "c4495da75095c64bf4e0587e45d7426f496ca4fc9fe72111715005361cfe0041"
+              },
+              "unit": "percent",
+              "value": 7.5
+            },
+            {
+              "accounting_basis": "issuer_reported_segment:Defense Systems:reported",
+              "fact_class": "reported_segment_margin",
+              "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_prior_margin",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results",
+              "period": "2025Q2",
+              "source_span": {
+                "document_id": "disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm",
+                "span_id": "span_fd69862f29437d558f3d",
+                "text_sha256": "eda90e5b66a4d492e1140f856caae1b71e55f1cbb34e6fda5d2f5921e3925d8e"
+              },
+              "unit": "percent",
+              "value": 12.7
+            },
+            {
+              "accounting_basis": "issuer_reported_program_cost_estimate:SiAW:unfavorable_EAC",
+              "fact_class": "reported_eac",
+              "fact_id": "evt_cik0001133421_2026q2_results:siaw_unfavorable_eac",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm",
+                "span_id": "span_4a699239fa5df7f2cf39",
+                "text_sha256": "a21855da08cb102d1d217c53dc5824a3a795c1c1a44e971bf01ab9da3a2acbbf"
+              },
+              "unit": "USD_million",
+              "value": 68.0
+            },
+            {
+              "accounting_basis": "issuer_reported_program_cost_estimate:Sentinel:prior_favorable_EAC",
+              "fact_class": "reported_eac",
+              "fact_id": "evt_cik0001133421_2026q2_results:sentinel_prior_favorable_eac",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results",
+              "period": "2025Q2",
+              "source_span": {
+                "document_id": "disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm",
+                "span_id": "span_c3511f058adf532f40ff",
+                "text_sha256": "f74efabef12ea619e30b79bddef89cffa9dda494761681ca862cff2871a85980"
+              },
+              "unit": "USD_million",
+              "value": 76.0
+            }
+          ],
+          "fiscal_period": "2026Q2",
+          "limitations": [
+            "segment_not_program_workshare",
+            "shareholder_capture_not_asserted",
+            "historical_pit_not_admitted"
+          ],
+          "observed_at": "2026-10-13T05:44:47Z",
+          "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results",
+          "reason_code": "reported_segment_context",
+          "state": "supported",
+          "summary_en": "Defense Systems: 2026Q2 reported segment context.",
+          "summary_zh": "Defense Systems：2026Q2 报告分部资料。"
+        },
+        "participation": {
+          "evidence_refs": [],
+          "facts": [],
+          "fiscal_period": null,
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "observed_at": null,
+          "owner_ref": null,
+          "reason_code": "owner_not_supplied",
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。"
+        },
+        "recognition": {
+          "evidence_refs": [
+            "market_context:NOC:6cd3b70331c73ba85b13ab0b"
+          ],
+          "expectations_kind": "not_observed",
+          "facts": [],
+          "fiscal_period": null,
+          "limitations": [
+            "raw_price_change_not_total_return",
+            "no_observed_market_expectations",
+            "no_historical_identity_admission",
+            "archive_behind_exchange_calendar"
+          ],
+          "observed_at": "2026-10-13T05:33:20.185466+00:00",
+          "owner_ref": "market_context:NOC:6cd3b70331c73ba85b13ab0b",
+          "price_response": {
+            "market_as_of": "2026-10-09",
+            "observed_at": "2026-10-13T05:33:20.185466+00:00",
+            "owner_ref": "market_context:NOC:6cd3b70331c73ba85b13ab0b",
+            "previous_session": "2026-10-08",
+            "price_adjustment": "raw",
+            "price_vintage": "2026-10-10T09:20:27+00:00",
+            "return_pct": -0.8,
+            "security_id": "xnys:NOC",
+            "sessions_behind": 1,
+            "state": "stale",
+            "window_sessions": 1
+          },
+          "reason_code": "observed_raw_price_context",
+          "state": "stale",
+          "summary_en": "Archived session 2026-10-09: one-session raw closing-price change -0.8%. At this snapshot the archive is 1 completed session behind the exchange calendar.",
+          "summary_zh": "存档交易日 2026-10-09：单个交易日未经调整的收盘价变化 -0.8%。此快照的存档较交易所日历落后 1 个已结束的交易日。",
+          "valuation_scenario": {
+            "observed_at": null,
+            "owner_ref": null,
+            "state": "missing_owner"
+          }
+        }
+      },
+      "contrary_case": "The issuer reports a $68 million unfavorable SiAW EAC adjustment in Q2 2026; the $76 million favorable Sentinel comparison belongs to Q2 2025.",
+      "contrary_case_zh": "发行人报告2026年第二季SiAW有6,800万美元不利EAC调整；7,600万美元有利Sentinel调整属于2025年第二季对比期。",
+      "identity_mode": "current",
+      "identity_owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results",
+      "interpretation": {
+        "chain": [
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_sales",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "demand",
+            "state": "unknown",
+            "summary_en": "Reported segment sales are historical revenue; they do not measure new program funding, funded orders, or future issuer demand.",
+            "summary_zh": "已披露分部销售额属于历史收入，不能作为新增项目资金、已获资金订单或未来发行人需求的数值。"
+          },
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_sales",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "capture",
+            "state": "unknown",
+            "summary_en": "Defense Systems is verified issuer segment context. Specific procurement roles, workshare, and conversion timing remain unqualified.",
+            "summary_zh": "防务系统是已核验的发行人分部资料；具体采购角色、项目份额及转化时间仍未核验。"
+          },
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_prior_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:siaw_unfavorable_eac",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:sentinel_prior_favorable_eac",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "margin",
+            "state": "reported",
+            "summary_en": "2026Q2 margin 7.5% versus 2025Q2 12.7%; SiAW unfavorable EAC USD 68 million is current, Sentinel favorable EAC USD 76 million is prior and a different program.",
+            "summary_zh": "2026Q2利润率7.5%，对比2025Q2的12.7%；当前SiAW不利EAC为68百万美元，Sentinel有利EAC76百万美元属于前期及不同项目。"
+          },
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:siaw_unfavorable_eac",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:sentinel_prior_favorable_eac",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "common_cash",
+            "state": "unknown",
+            "summary_en": "An EAC estimate adjustment is not a cash-flow timing measure. The prior Sentinel credit cannot be netted against the current SiAW charge to establish cash capture.",
+            "summary_zh": "EAC估计调整不是现金流时间指标；不能以此前Sentinel有利调整抵销当前SiAW不利费用来推定现金获益。"
+          }
+        ],
+        "scenarios": [
+          {
+            "assumption_en": "Assume no further unfavorable cost-estimate revisions and no additional schedule deterioration.",
+            "assumption_zh": "假设不再出现不利成本估计修订，且进度不进一步恶化。",
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:siaw_unfavorable_eac",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_prior_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              }
+            ],
+            "implication_en": "That could reduce the cost-risk concern; it does not establish margin reversion to the prior-year comparison or normalized common-shareholder cash.",
+            "implication_zh": "这可能减轻成本风险疑虑，但不能证明利润率回归此前对比期水平，或普通股股东现金达到正常化水平。",
+            "invalidation_en": "Further unfavorable EACs or weaker reported margin invalidate the stabilization premise.",
+            "invalidation_zh": "后续不利EAC调整或已披露利润率转弱，将否定成本稳定这一前提。",
+            "kind": "conditional_baseline",
+            "owner_refs": []
+          },
+          {
+            "assumption_en": "Assume further unfavorable EAC revisions arise while program funding or backlog remains available.",
+            "assumption_zh": "假设项目资金或积压订单仍存在，但继续出现不利EAC修订。",
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:siaw_unfavorable_eac",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:sentinel_prior_favorable_eac",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
+              }
+            ],
+            "implication_en": "Demand availability may then fail to protect margin and cash conversion. The prior favorable Sentinel item is a separate program/period, not an offset.",
+            "implication_zh": "需求存在也可能无法保障利润率及现金转化；此前Sentinel有利项目属于不同项目及期间，不是抵销项。",
+            "invalidation_en": "Source-qualified cost recovery and margin evidence inconsistent with continuing estimate losses would weaken this case.",
+            "invalidation_zh": "经来源核验的成本回收及利润率证据若与持续估计损失不一致，将削弱该情景。",
+            "kind": "downside",
+            "owner_refs": []
+          }
+        ],
+        "schema": "defense_economic_interpretation.v1",
+        "unknowns": [
+          "program_workshare",
+          "issuer_specific_forward_demand",
+          "revenue_conversion_timing",
+          "working_capital",
+          "capital_spending",
+          "common_shareholder_cash",
+          "observed_market_expectations",
+          "numerical_valuation"
+        ]
+      },
+      "invalidation": "Further unfavorable EACs or weaker reported margin invalidate the stabilization premise. A source or identity correction also requires requalification.",
+      "invalidation_zh": "后续不利EAC调整或已披露利润率转弱，将否定成本稳定这一前提。 来源或身份更正也需要重新核验。",
+      "issuer_id": "cik:0001133421",
+      "name": "Northrop Grumman",
+      "next_condition": "Watch new EAC revisions and reported margin; qualify delivery, cost recovery and cash evidence separately.",
+      "next_condition_zh": "关注新的EAC修订及已披露利润率；分别核验交付、成本回收及现金证据。",
+      "program_workshare": null,
+      "program_workshare_state": "not_disclosed",
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "security_id": "xnys:NOC",
+      "shareholder_capture": {
+        "source_refs": [],
+        "state": "not_asserted"
+      },
+      "ticker_display": "NOC"
+    },
+    {
+      "authority": {
+        "can_escalate": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false,
+        "context_only": true
+      },
+      "axes": {
+        "demand": {
+          "evidence_refs": [],
+          "facts": [],
+          "fiscal_period": null,
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "observed_at": null,
+          "owner_ref": null,
+          "reason_code": "owner_not_supplied",
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。"
+        },
+        "economics": {
+          "evidence_refs": [
+            "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results"
+          ],
+          "facts": [
+            {
+              "accounting_basis": "issuer_reported_segment:Missile Solutions:reported",
+              "fact_class": "reported_segment_sales",
+              "fact_id": "evt_cik0000202058_2026q2_results:defense_segment_sales",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_3df4c7a26f2785d867ef9db04de63564d0bc060892ac123414fa43b5417b9125",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/202058/000020205826000054/exhibit991q2cy26earnings.htm",
+                "span_id": "span_ac7907fdcdc6c30fe217",
+                "text_sha256": "b7fd883b761544ca41ab950f6a9c9e63e8a7732862f3bf6f7a1d173d0a1bde6f"
+              },
+              "unit": "USD_million",
+              "value": 1054.0
+            },
+            {
+              "accounting_basis": "issuer_reported_segment:Missile Solutions:reported",
+              "fact_class": "reported_segment_operating_profit",
+              "fact_id": "evt_cik0000202058_2026q2_results:defense_segment_operating_profit",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_3df4c7a26f2785d867ef9db04de63564d0bc060892ac123414fa43b5417b9125",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/202058/000020205826000054/exhibit991q2cy26earnings.htm",
+                "span_id": "span_7487a0ca7c257b2a177b",
+                "text_sha256": "38d66d9692ac590000a91b03a88da1c88d51fab2b78f63171f553ecc551a0c6f"
+              },
+              "unit": "USD_million",
+              "value": 130.0
+            },
+            {
+              "accounting_basis": "issuer_reported_segment:Missile Solutions:reported",
+              "fact_class": "reported_segment_margin",
+              "fact_id": "evt_cik0000202058_2026q2_results:defense_segment_margin",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_3df4c7a26f2785d867ef9db04de63564d0bc060892ac123414fa43b5417b9125",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/202058/000020205826000054/exhibit991q2cy26earnings.htm",
+                "span_id": "span_b9f5d1d8adaaa3d3e803",
+                "text_sha256": "cc4b3eb82f5eb96cbf5b959d19ff477508b32c4b6bc1e21432b48caa20d0270b"
+              },
+              "unit": "percent",
+              "value": 12.3
+            },
+            {
+              "accounting_basis": "contractual_preferred_terms:conditional_alternatives",
+              "fact_class": "reported_shareholder_terms",
+              "fact_id": "evt_cik0000202058_2026q2_results:msl_preferred_payout_terms",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/202058/000020205826000058/hrs-20260703.htm",
+                "span_id": "span_54be3964adc5d4ac5ebc",
+                "text_sha256": "fdd8988673c21e9ef3a47aea06f9cdc89a0c6ea7756ebf14d59051bef44a1a7e"
+              },
+              "unit": "source_reported_terms",
+              "value": "The Subsidiary Series A Preferred Stock payout options include either one of the following: (i) a liquidation preference equal to face value of the preferred shares plus 7% cumulative annual dividends, compounded quarterly (the “Liquidation Preference”); (ii) an automatic conversion to AXYV Inc., our newly formed wholly owned subsidiary (“AXYV”), common stock upon a Qualified Initial Public Offering of AR on or before December 31, 2027 (as defined in the DoW Investment Agreement; herein “QIPO”); or (iii) a redemption feature at fair value of the Missile Solutions segment on April 17, 2031 if a QIPO does not occur. Under the DoW Investment Agreement, we are expected to use commercially reasonable efforts to consummate a QIPO, assuming certain contractual milestones are met. The options are mutually exclusive and are dependent on achieving those milestones."
+            },
+            {
+              "accounting_basis": "contractual_preferred_conversion:conditional_QIPO",
+              "fact_class": "company_forward",
+              "fact_id": "evt_cik0000202058_2026q2_results:msl_qipo_conversion_terms",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/202058/000020205826000058/hrs-20260703.htm",
+                "span_id": "span_a3e41417cfbc43b96ec9",
+                "text_sha256": "775846c2473f486657b83f44735ac68ab121ec6d69b35591a36dc5e76ec52408"
+              },
+              "unit": "source_reported_terms",
+              "value": "Conversion Upon QIPO. Upon completion of a QIPO, the Subsidiary Series A Preferred Stock will convert into common stock of AXYV (the “AXYV Common Stock”) at a 20% discount (the “Conversion Price”) to the public offering price in the QIPO (the “QIPO Price”). The conversion terms are designed to provide the holder with a fixed return settled in a variable number of AXYV Common Stock. At QIPO, depending on valuation, we expect the investor to own approximately 10% of the outstanding shares."
+            },
+            {
+              "accounting_basis": "contractual_preferred_redemption:conditional_no_QIPO",
+              "fact_class": "reported_shareholder_terms",
+              "fact_id": "evt_cik0000202058_2026q2_results:msl_nonipo_redemption_terms",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/202058/000020205826000058/hrs-20260703.htm",
+                "span_id": "span_709622e9b699e8e2ba3c",
+                "text_sha256": "7091bb0ee4d6e851fc4f4dfbd361342fcdfebeded45e982a279f63d48b499ab5"
+              },
+              "unit": "source_reported_terms",
+              "value": "Non-IPO Redemption. If a QIPO does not occur on or before December 31, 2027, the redemption price calculation methodology varies depending on whether specified milestones have been achieved by such date. If such milestones are not achieved by December 31, 2027, the redemption price would be calculated using an alternative methodology that applies a contractual premium of 110% to the Liquidation Preference. If the milestones are achieved by December 31, 2027, the redemption price would be calculated on or after April 16, 2031, and would equal the greater of (i) the Liquidation Preference or (ii) the fair market value on a proforma ownership percentage basis. If there is a sale of AXYV before a QIPO, the Investor is entitled to receive cash equal to the greater of the Liquidation Preference or the if-converted value based on the Conversion Price described above."
+            },
+            {
+              "accounting_basis": "business_disposal:pending:net_enterprise_value",
+              "fact_class": "reported_shareholder_terms",
+              "fact_id": "evt_cik0000202058_2026q2_results:space_business_sale_pending_terms",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/202058/000020205826000058/hrs-20260703.htm",
+                "span_id": "span_8bde057b6917e164fe0d",
+                "text_sha256": "cb4cf58bd3a3ef4bab84c04d2f22433441a2cfca7205e7fabad97d735dfe5d02"
+              },
+              "unit": "source_reported_terms",
+              "value": "During fourth quarter 2025, we entered into an agreement with AE Industrial Partners (“AE Industrial”) to establish a new space technology company (“Space Technology disposal group”). Under the agreement we will contribute certain assets and liabilities of the Space Propulsion and Power Systems business (“SPPS business”) and the Space Avionics & Communications division (“SA&C business”), both reported in our Missile Solutions segment, to a new entity in which we will retain approximately 40% noncontrolling interest. The Space Technology disposal group, which excludes our RS-25 rocket engine and hypersonics businesses, provides premier propulsion, power, space flight avionics and communications systems. AE Industrial will acquire a controlling interest of approximately 60% in the new space technology company, at a net enterprise value of $825 million, subject to regulatory approvals and other customary closing conditions. The transaction is expected to close early in the second half of 2026."
+            },
+            {
+              "accounting_basis": "business_disposal:conditional_equity_method_accounting",
+              "fact_class": "reported_shareholder_terms",
+              "fact_id": "evt_cik0000202058_2026q2_results:space_business_sale_pending_accounting",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63",
+              "period": "2026Q2",
+              "source_span": {
+                "document_id": "disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/202058/000020205826000058/hrs-20260703.htm",
+                "span_id": "span_e29c22d4ac8b7c419a0f",
+                "text_sha256": "1dc25f63d2530d9f298e4630bbc5998797dfbcdc0743fee2feb549cd7759a995"
+              },
+              "unit": "source_reported_terms",
+              "value": "Upon closing, we will derecognize the assets and liabilities of the Space Technology disposal group and record an equity method investment at the fair value of our retained noncontrolling interest in the newly formed entity."
+            },
+            {
+              "accounting_basis": "business_disposal:completed:total_enterprise_value",
+              "fact_class": "reported_shareholder_terms",
+              "fact_id": "evt_cik0000202058_2026q2_results:space_business_sale_completed_terms",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12",
+              "period": "2026-08-04",
+              "source_span": {
+                "document_id": "disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://investors.l3harris.com/news/news-details/2026/L3Harris-Completes-Sale-of-Majority-Stake-in-Commercial-Space-Propulsion-Power-and-Electronics-Businesses-to-AE-Industrial-Partners/default.aspx",
+                "span_id": "span_8f869313f284954d3309",
+                "text_sha256": "08429a2994a26d3fd604d7edeec175e7b36f93b37bcab155f293522c179f3900"
+              },
+              "unit": "source_reported_terms",
+              "value": "MELBOURNE, Fla.--(BUSINESS WIRE)-- L3Harris Technologies (NYSE: LHX) has completed the sale of a majority stake in its commercial space propulsion, power and electronics businesses to AE Industrial Partners at a total enterprise value of $845 million."
+            },
+            {
+              "accounting_basis": "business_disposal:completed:retained_interest_scope",
+              "fact_class": "reported_shareholder_terms",
+              "fact_id": "evt_cik0000202058_2026q2_results:space_business_sale_retained_scope",
+              "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12",
+              "period": "2026-08-04",
+              "source_span": {
+                "document_id": "disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12",
+                "receipt_state": "byte_replayed",
+                "source_url": "https://investors.l3harris.com/news/news-details/2026/L3Harris-Completes-Sale-of-Majority-Stake-in-Commercial-Space-Propulsion-Power-and-Electronics-Businesses-to-AE-Industrial-Partners/default.aspx",
+                "span_id": "span_6e87348dd609672e1f59",
+                "text_sha256": "417ceaa97ccaeb7c6f7cf046e7f233932d16b89f939712ab1cc6bb4f96f53329"
+              },
+              "unit": "source_reported_terms",
+              "value": "L3Harris’ RS-25 rocket engine operations were excluded from the sale, and the company will maintain a ~40% ownership stake in AE Industrial Partners’ new space technologies business, which will be named Rocketdyne."
+            }
+          ],
+          "fiscal_period": "2026Q2",
+          "limitations": [
+            "segment_not_program_workshare",
+            "shareholder_capture_not_asserted",
+            "historical_pit_not_admitted"
+          ],
+          "observed_at": "2026-10-13T05:47:02Z",
+          "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results",
+          "reason_code": "reported_segment_context",
+          "state": "supported",
+          "summary_en": "Missile Solutions: 2026Q2 reported segment context.",
+          "summary_zh": "Missile Solutions：2026Q2 报告分部资料。"
+        },
+        "participation": {
+          "evidence_refs": [],
+          "facts": [],
+          "fiscal_period": null,
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "observed_at": null,
+          "owner_ref": null,
+          "reason_code": "owner_not_supplied",
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。"
+        },
+        "recognition": {
+          "evidence_refs": [
+            "market_context:LHX:4e768faa471160564f131e1f"
+          ],
+          "expectations_kind": "not_observed",
+          "facts": [],
+          "fiscal_period": null,
+          "limitations": [
+            "raw_price_change_not_total_return",
+            "no_observed_market_expectations",
+            "no_historical_identity_admission",
+            "archive_behind_exchange_calendar"
+          ],
+          "observed_at": "2026-10-13T05:33:21.625844+00:00",
+          "owner_ref": "market_context:LHX:4e768faa471160564f131e1f",
+          "price_response": {
+            "market_as_of": "2026-10-09",
+            "observed_at": "2026-10-13T05:33:21.625844+00:00",
+            "owner_ref": "market_context:LHX:4e768faa471160564f131e1f",
+            "previous_session": "2026-10-08",
+            "price_adjustment": "raw",
+            "price_vintage": "2026-10-10T09:20:12+00:00",
+            "return_pct": 0.0,
+            "security_id": "xnys:LHX",
+            "sessions_behind": 1,
+            "state": "stale",
+            "window_sessions": 1
+          },
+          "reason_code": "observed_raw_price_context",
+          "state": "stale",
+          "summary_en": "Archived session 2026-10-09: one-session raw closing-price change +0.0%. At this snapshot the archive is 1 completed session behind the exchange calendar.",
+          "summary_zh": "存档交易日 2026-10-09：单个交易日未经调整的收盘价变化 +0.0%。此快照的存档较交易所日历落后 1 个已结束的交易日。",
+          "valuation_scenario": {
+            "observed_at": null,
+            "owner_ref": null,
+            "state": "missing_owner"
+          }
+        }
+      },
+      "contrary_case": "Preferred payout and conditional conversion terms affect common-shareholder transmission. The completed space-business sale has a different scope and value basis from the prior pending transaction.",
+      "contrary_case_zh": "优先股支付及有条件转换条款影响普通股股东获益路径。已完成航天业务出售的范围及价值口径，与此前待完成交易分别记录。",
+      "identity_mode": "current",
+      "identity_owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results",
+      "interpretation": {
+        "chain": [
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:defense_segment_sales",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "demand",
+            "state": "unknown",
+            "summary_en": "Reported segment sales are historical revenue; they do not measure new program funding, funded orders, or future issuer demand.",
+            "summary_zh": "已披露分部销售额属于历史收入，不能作为新增项目资金、已获资金订单或未来发行人需求的数值。"
+          },
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:space_business_sale_pending_terms",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63"
+              },
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:space_business_sale_completed_terms",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12"
+              },
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:space_business_sale_retained_scope",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "capture",
+            "state": "reported",
+            "summary_en": "Completed space-business majority sale: USD 845 million total enterprise value, about 40% of the new company retained, RS-25 excluded; prior pending net-value basis is separate.",
+            "summary_zh": "已完成航天业务多数股权出售报告总企业价值845百万美元、保留约40%股权，RS-25不在出售范围；此前待完成交易的净价值口径另列。"
+          },
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:defense_segment_sales",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results"
+              },
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:defense_segment_margin",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "margin",
+            "state": "reported",
+            "summary_en": "2026Q2 Missile Solutions: sales USD 1,054 million, reported operating profit USD 130 million, margin 12.3%.",
+            "summary_zh": "2026Q2 导弹解决方案：销售额1,054百万美元、已披露营业利润130百万美元、利润率12.3%。"
+          },
+          {
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:msl_preferred_payout_terms",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63"
+              },
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:msl_qipo_conversion_terms",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63"
+              },
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:msl_nonipo_redemption_terms",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63"
+              }
+            ],
+            "owner_refs": [],
+            "stage": "common_cash",
+            "state": "conditional",
+            "summary_en": "Preferred liquidation preference, conditional QIPO conversion and non-IPO redemption constrain common-holder transmission; the approximately 10% QIPO stake is a company expectation, not current ownership.",
+            "summary_zh": "优先股清算优先额、有条件QIPO转换及无IPO赎回条款约束普通股获益路径；QIPO约10%股权是公司预期，不是当前持股。"
+          }
+        ],
+        "scenarios": [
+          {
+            "assumption_en": "Assume the disclosed preferred terms remain in force and a qualifying IPO meets the contractual conditions.",
+            "assumption_zh": "假设已披露优先股条款继续有效，且合资格IPO符合合约条件。",
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:msl_qipo_conversion_terms",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63"
+              },
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:msl_preferred_payout_terms",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63"
+              }
+            ],
+            "implication_en": "Conversion at the disclosed 20% discount uses a variable number of subsidiary common shares; ownership depends on IPO valuation. No current dilution percentage or LHX per-share value is inferred.",
+            "implication_zh": "按已披露20%折让转换时，子公司普通股数量可变，持股取决于IPO估值；不推定当前摊薄比例或LHX每股价值。",
+            "invalidation_en": "A change in contractual terms, a nonqualifying IPO, or failure to meet conditions invalidates this branch.",
+            "invalidation_zh": "合约条款变化、IPO不符合资格或条件未达成，将使该分支失效。",
+            "kind": "conditional_baseline",
+            "owner_refs": []
+          },
+          {
+            "assumption_en": "Assume a qualifying IPO does not occur by the disclosed deadline; apply the disclosed milestone-dependent redemption alternatives, not an assumed ordinary-share cash payout.",
+            "assumption_zh": "假设合资格IPO未在已披露期限前发生；适用条款所述、取决于里程碑的赎回备选方式，而非假设普通股获得现金支付。",
+            "fact_refs": [
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:msl_preferred_payout_terms",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63"
+              },
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:msl_qipo_conversion_terms",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63"
+              },
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:msl_nonipo_redemption_terms",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63"
+              },
+              {
+                "fact_id": "evt_cik0000202058_2026q2_results:defense_segment_operating_profit",
+                "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results"
+              }
+            ],
+            "implication_en": "The cumulative preferred claim and contractual redemption premium can change the residual economic path. Reported segment profit and the sale enterprise value do not equal common-holder cash.",
+            "implication_zh": "累计优先索偿及合约赎回溢价可能改变剩余权益路径；分部营业利润及出售企业价值均不等于普通股股东现金。",
+            "invalidation_en": "A qualifying conversion or source-qualified evidence of different milestone/redemption treatment would invalidate this branch.",
+            "invalidation_zh": "合资格转换，或经来源核验的不同里程碑／赎回处理证据，将使该分支失效。",
+            "kind": "downside",
+            "owner_refs": []
+          }
+        ],
+        "schema": "defense_economic_interpretation.v1",
+        "unknowns": [
+          "program_workshare",
+          "issuer_specific_forward_demand",
+          "revenue_conversion_timing",
+          "working_capital",
+          "capital_spending",
+          "common_shareholder_cash",
+          "observed_market_expectations",
+          "numerical_valuation",
+          "preferred_common_cash_bridge",
+          "sale_net_proceeds_to_common",
+          "future_QIPO_valuation"
+        ]
+      },
+      "invalidation": "A change in contractual terms, a nonqualifying IPO, or failure to meet conditions invalidates this branch. A source or identity correction also requires requalification.",
+      "invalidation_zh": "合约条款变化、IPO不符合资格或条件未达成，将使该分支失效。 来源或身份更正也需要重新核验。",
+      "issuer_id": "cik:0000202058",
+      "name": "L3Harris Technologies",
+      "next_condition": "Watch the contractual QIPO, milestone and redemption conditions, retained business scope and subsequent cash disclosures.",
+      "next_condition_zh": "关注合约QIPO、里程碑及赎回条件、保留业务范围，以及后续现金披露。",
+      "program_workshare": null,
+      "program_workshare_state": "not_disclosed",
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "security_id": "xnys:LHX",
+      "shareholder_capture": {
+        "source_refs": [],
+        "state": "not_asserted"
+      },
+      "ticker_display": "LHX"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_bindings": {
+    "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results": {
+      "content_id": "883fb5c69607c3d248b45f7e",
+      "contract": "event_workspace.v1",
+      "issuer_id": "cik:0000101829",
+      "observed_at": "2026-10-13T05:43:26Z",
+      "owner_admission_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000101829_2026q2_results",
+      "owner_family": "company_intelligence",
+      "periods": [
+        "2026Q2"
+      ],
+      "security_id": "xnys:RTX",
+      "sha256": "794d964b66bdee564f44e2e34c150b2e9bd7afb80be990e95f64ab0857177cb2",
+      "source_available_at": "2026-07-23T14:51:03Z"
+    },
+    "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results": {
+      "content_id": "883fb5c69607c3d248b45f7e",
+      "contract": "event_workspace.v1",
+      "issuer_id": "cik:0000202058",
+      "observed_at": "2026-10-13T05:47:01Z",
+      "owner_admission_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results",
+      "owner_family": "company_intelligence",
+      "periods": [
+        "2026Q2"
+      ],
+      "security_id": "xnys:LHX",
+      "sha256": "19bc8cd2c70367910aa0f014d8a0a03ff05da7106c5e088f68b27388c7c7e203",
+      "source_available_at": "2026-07-29T20:08:15Z"
+    },
+    "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63": {
+      "content_id": "883fb5c69607c3d248b45f7e",
+      "contract": "event_workspace.v1",
+      "issuer_id": "cik:0000202058",
+      "observed_at": "2026-10-13T05:47:02Z",
+      "owner_admission_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_435ecc9c106520a6fee9188a537abff60e10d5fad84f930c46224ce23ec48f63",
+      "owner_family": "company_intelligence",
+      "periods": [
+        "2026Q2"
+      ],
+      "security_id": "xnys:LHX",
+      "sha256": "19bc8cd2c70367910aa0f014d8a0a03ff05da7106c5e088f68b27388c7c7e203",
+      "source_available_at": "2026-07-30T13:06:49Z"
+    },
+    "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12": {
+      "content_id": "883fb5c69607c3d248b45f7e",
+      "contract": "event_workspace.v1",
+      "issuer_id": "cik:0000202058",
+      "observed_at": "2026-10-13T05:47:02Z",
+      "owner_admission_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000202058_2026q2_results:disclosure_document_76b6defc800105f62704c435f4ea803c84a0cd2d8fa2fa055752b1a4ad70ab12",
+      "owner_family": "company_intelligence",
+      "periods": [
+        "2026-08-04"
+      ],
+      "security_id": "xnys:LHX",
+      "sha256": "19bc8cd2c70367910aa0f014d8a0a03ff05da7106c5e088f68b27388c7c7e203",
+      "source_available_at": "2026-10-13T05:47:02Z"
+    },
+    "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results": {
+      "content_id": "883fb5c69607c3d248b45f7e",
+      "contract": "event_workspace.v1",
+      "issuer_id": "cik:0000936468",
+      "observed_at": "2026-10-13T05:42:08Z",
+      "owner_admission_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0000936468_2026q2_results",
+      "owner_family": "company_intelligence",
+      "periods": [
+        "2026Q2"
+      ],
+      "security_id": "xnys:LMT",
+      "sha256": "2320bd604e399afccee1025da0c3c77829fbccb4f9c80760479fc95cf091db90",
+      "source_available_at": "2026-07-23T10:30:57Z"
+    },
+    "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results": {
+      "content_id": "883fb5c69607c3d248b45f7e",
+      "contract": "event_workspace.v1",
+      "issuer_id": "cik:0001133421",
+      "observed_at": "2026-10-13T05:44:47Z",
+      "owner_admission_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results",
+      "owner_family": "company_intelligence",
+      "periods": [
+        "2026Q2",
+        "2025Q2"
+      ],
+      "security_id": "xnys:NOC",
+      "sha256": "8b1dfa4caa0f642eecf8d0f71cd8f833a2e7ca3cf278a7846e587f59519e8cab",
+      "source_available_at": "2026-07-21T10:45:45Z"
+    },
+    "market_context:LHX:4e768faa471160564f131e1f": {
+      "content_id": "raw-price-context:4e768faa471160564f131e1f",
+      "contract": "equity.bars.daily.massive@1.0.0",
+      "issuer_id": "cik:0000202058",
+      "observed_at": "2026-10-13T05:33:21.625844+00:00",
+      "owner_admission_ref": "bounded_canonical_R2_read:39e524967c8310d411491a1d9085accefd12ac2f67d2e9b3a495c565f337f66d",
+      "owner_family": "market",
+      "price_adjustment": "raw",
+      "security_id": "xnys:LHX",
+      "sha256": "4e768faa471160564f131e1fcbe8cfc5d1b52df5fe31424d5d3b54d044250f21"
+    },
+    "market_context:LMT:ad80e9b44cccd900431a41d8": {
+      "content_id": "raw-price-context:ad80e9b44cccd900431a41d8",
+      "contract": "equity.bars.daily.massive@1.0.0",
+      "issuer_id": "cik:0000936468",
+      "observed_at": "2026-10-13T05:33:08.155691+00:00",
+      "owner_admission_ref": "bounded_canonical_R2_read:39e524967c8310d411491a1d9085accefd12ac2f67d2e9b3a495c565f337f66d",
+      "owner_family": "market",
+      "price_adjustment": "raw",
+      "security_id": "xnys:LMT",
+      "sha256": "ad80e9b44cccd900431a41d89a45250da9f1001830fda273c4e2f153edb41b70"
+    },
+    "market_context:NOC:6cd3b70331c73ba85b13ab0b": {
+      "content_id": "raw-price-context:6cd3b70331c73ba85b13ab0b",
+      "contract": "equity.bars.daily.massive@1.0.0",
+      "issuer_id": "cik:0001133421",
+      "observed_at": "2026-10-13T05:33:20.185466+00:00",
+      "owner_admission_ref": "bounded_canonical_R2_read:39e524967c8310d411491a1d9085accefd12ac2f67d2e9b3a495c565f337f66d",
+      "owner_family": "market",
+      "price_adjustment": "raw",
+      "security_id": "xnys:NOC",
+      "sha256": "6cd3b70331c73ba85b13ab0b765fdb3b695fb8f2e77feb0b5ad3dc846e26946e"
+    },
+    "market_context:RTX:c5e10a934c5cac246fa1ed7c": {
+      "content_id": "raw-price-context:c5e10a934c5cac246fa1ed7c",
+      "contract": "equity.bars.daily.massive@1.0.0",
+      "issuer_id": "cik:0000101829",
+      "observed_at": "2026-10-13T05:33:18.740093+00:00",
+      "owner_admission_ref": "bounded_canonical_R2_read:39e524967c8310d411491a1d9085accefd12ac2f67d2e9b3a495c565f337f66d",
+      "owner_family": "market",
+      "price_adjustment": "raw",
+      "security_id": "xnys:RTX",
+      "sha256": "c5e10a934c5cac246fa1ed7c8adf8165cbe4c51aadf05703dd5d33c3e7fda4d8"
+    }
+  }
+}

@@ -1,0 +1,1418 @@
+{
+  "lane": "LR-FIX-B2-1",
+  "head": "b7694dc2b764edf60785816404efc6cf6bf03b31",
+  "template_blob": "e7d4f76a56c8fc8dbb703c62e0d8cc3084bf1fd9",
+  "site_assets_from": "4d9d8b731d201be466264266c28e71d41444ad4a",
+  "evidence_class": "synthetic (LOCAL render + LOCAL injected data)",
+  "label": "LOCAL",
+  "generated_utc": "2026-10-14T17:36:08Z",
+  "variants": [
+    {
+      "variant": "ok",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.measured_read=MR_OK"
+      ],
+      "sha256": {
+        "sector_central_data.js": "e561e844add1e7f2aa76965c94b59262fe23879ae82745bdd7472aa1432b35fb",
+        "sector_cycles_data.js": "6bff051602948cb44acd0b873f32ef6e056aec161987aa382abbfdb3b5448deb"
+      }
+    },
+    {
+      "variant": "full",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.measured_read=MR_OK(status=available)"
+      ],
+      "sha256": {
+        "sector_central_data.js": "1246fa9889546c4d02587cfdf2e30621178eb790516b7414e5c3848f06b11832",
+        "sector_cycles_data.js": "6bff051602948cb44acd0b873f32ef6e056aec161987aa382abbfdb3b5448deb"
+      }
+    },
+    {
+      "variant": "stale",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.as_of=2026-10-14 (>H)",
+        "sc.measured_read=MR_OK"
+      ],
+      "sha256": {
+        "sector_central_data.js": "45191827fd5c7c6197868b67567101571795df7cd6f52d4a67d96aa19d72ed0c",
+        "sector_cycles_data.js": "6bff051602948cb44acd0b873f32ef6e056aec161987aa382abbfdb3b5448deb"
+      }
+    },
+    {
+      "variant": "absent",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.measured_read REMOVED"
+      ],
+      "sha256": {
+        "sector_central_data.js": "dbbb8f4bb395423bdd94e14ab6ede5b5410bb1f80f4bc6771fa4f45257203608",
+        "sector_cycles_data.js": "6bff051602948cb44acd0b873f32ef6e056aec161987aa382abbfdb3b5448deb"
+      }
+    },
+    {
+      "variant": "outage",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.measured_read={status:unavailable,reason:source_missing}"
+      ],
+      "sha256": {
+        "sector_central_data.js": "462eae3d431ce1ff2f390d3e9672a4c7e32c96bc215e26655487360d950d98d6",
+        "sector_cycles_data.js": "6bff051602948cb44acd0b873f32ef6e056aec161987aa382abbfdb3b5448deb"
+      }
+    },
+    {
+      "variant": "invalid",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.measured_read.schema=v0 (mismatched)"
+      ],
+      "sha256": {
+        "sector_central_data.js": "0f42533c9e5156943d4b2e57aaccb841a5ef35f13b63b144e0667c31cb68be59",
+        "sector_cycles_data.js": "6bff051602948cb44acd0b873f32ef6e056aec161987aa382abbfdb3b5448deb"
+      }
+    },
+    {
+      "variant": "nodata",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sector_central_data.js = comment only"
+      ],
+      "sha256": {
+        "sector_central_data.js": "802ec7d20c142f6e3617122c821cdd83072033a5a8319e3595d5171b182a24e0",
+        "sector_cycles_data.js": "6bff051602948cb44acd0b873f32ef6e056aec161987aa382abbfdb3b5448deb"
+      }
+    },
+    {
+      "variant": "hloading",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sector_cycles_data.js = comment only (loading)"
+      ],
+      "sha256": {
+        "sector_central_data.js": "e561e844add1e7f2aa76965c94b59262fe23879ae82745bdd7472aa1432b35fb",
+        "sector_cycles_data.js": "f4525bfc410a1302e5cbb75a5823eb6bc7da4a968f1fada7642d6b62c99719fd"
+      }
+    },
+    {
+      "variant": "hfailed",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sector_cycles_data.js = 404"
+      ],
+      "sha256": {
+        "sector_central_data.js": "e561e844add1e7f2aa76965c94b59262fe23879ae82745bdd7472aa1432b35fb",
+        "sector_cycles_data.js": null
+      }
+    },
+    {
+      "variant": "genmis",
+      "label": "LOCAL",
+      "synthetic": true,
+      "mutations": [
+        "sc.measured_read.generation.session_end=2026-10-10",
+        "sc.measured_read.generation.history_as_of=2026-10-10",
+        "cycles=CYR (synth)"
+      ],
+      "sha256": {
+        "sector_central_data.js": "ff423eaa5bfb9985be0165b22008cf9ab97b5bc79b4ab4f250d2a17bbe927a5a",
+        "sector_cycles_data.js": "1705ae38e714419fbb0fd8e50ac2554028c2ad3e8920e0e00730b3cc54315538"
+      }
+    },
+    {
+      "variant": "hrecon",
+      "label": "LOCAL",
+      "synthetic": true,
+      "mutations": [
+        "cycles=CYR (synth)"
+      ],
+      "sha256": {
+        "sector_central_data.js": "e561e844add1e7f2aa76965c94b59262fe23879ae82745bdd7472aa1432b35fb",
+        "sector_cycles_data.js": "1705ae38e714419fbb0fd8e50ac2554028c2ad3e8920e0e00730b3cc54315538"
+      }
+    },
+    {
+      "variant": "obsincompat",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.measured_read.confirmed_events.status=incompatible_generation",
+        "sc.measured_read.confirmed_events.as_of=2026-10-10"
+      ],
+      "sha256": {
+        "sector_central_data.js": "6826c7e4933fdbf1aa7456f73ef7bed5944b4af8c773e68606f89d124a2fe706",
+        "sector_cycles_data.js": "6bff051602948cb44acd0b873f32ef6e056aec161987aa382abbfdb3b5448deb"
+      }
+    },
+    {
+      "variant": "groupsnull",
+      "label": "LOCAL",
+      "synthetic": true,
+      "mutations": [
+        "sc.measured_read.groups=[null] (synthetic hostile)"
+      ],
+      "sha256": {
+        "sector_central_data.js": "b870adb6295ca06bfd7642fd870743de4db21618cc8223980f7edf7adebe4029",
+        "sector_cycles_data.js": "6bff051602948cb44acd0b873f32ef6e056aec161987aa382abbfdb3b5448deb"
+      }
+    },
+    {
+      "variant": "estimate",
+      "label": "LOCAL",
+      "synthetic": true,
+      "mutations": [
+        "sc.measured_read.research_estimate={status:estimate,probability:0.62,horizon_sessions:21}"
+      ],
+      "sha256": {
+        "sector_central_data.js": "53f8457528d2f04478f7f5d7f4f12aa90d1231a950d2874b4d353b1a216d3df0",
+        "sector_cycles_data.js": "6bff051602948cb44acd0b873f32ef6e056aec161987aa382abbfdb3b5448deb"
+      }
+    },
+    {
+      "variant": "basisunknown",
+      "label": "LOCAL",
+      "synthetic": true,
+      "mutations": [
+        "sc.measured_read.generation.price_basis=\"unknown\""
+      ],
+      "sha256": {
+        "sector_central_data.js": "9c02db5a4d18a169edc98189e2d542dab6509626a25318f21a6851e490991758",
+        "sector_cycles_data.js": "6bff051602948cb44acd0b873f32ef6e056aec161987aa382abbfdb3b5448deb"
+      }
+    }
+  ],
+  "png_count": 52,
+  "png_total_bytes": 10164921,
+  "pngs": [
+    {
+      "file": "matrix-1440-en-dark.png",
+      "sha256": "f58b09f4f21350b86bba411774c84918b6e8cd2a4f22f55c57a378fab7d8b73a",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 245034,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "matrix-1440-en-light.png",
+      "sha256": "cf40775a1aa8e282504f26ad2211596435d4dd4f4647ea1f600b48ca4d283e0a",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 256451,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "matrix-1440-zh-dark.png",
+      "sha256": "17f178a72d614333e099d078ac25893370d406bbf1fb376f918a9052b3905a05",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "zh",
+      "synthetic": false,
+      "bytes": 233740,
+      "lang_facts": {
+        "data_lang": "zh",
+        "cjk_present": true,
+        "cjk_count": 332,
+        "panel_inner_first": "实际在变什么\n— 实测，非预测\n\n证据日期 2026-10-13 · 11 个美国板块 · 相对标普500 · 含股息总回报\n\n相对标普500的实测表现 — 只",
+        "differs_from_en_twin": true,
+        "en_twin": "matrix-1440-en-dark.png",
+        "en_twin_sha256": "f58b09f4f21350b86bba411774c84918b6e8cd2a4f22f55c57a378fab7d8b73a"
+      }
+    },
+    {
+      "file": "matrix-1440-zh-light.png",
+      "sha256": "6b681bb6317d870c25e20d13b03f4f2248ff8e4f502b59bf077282c25d48d6f0",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "zh",
+      "synthetic": false,
+      "bytes": 246260,
+      "lang_facts": {
+        "data_lang": "zh",
+        "cjk_present": true,
+        "cjk_count": 332,
+        "panel_inner_first": "实际在变什么\n— 实测，非预测\n\n证据日期 2026-10-13 · 11 个美国板块 · 相对标普500 · 含股息总回报\n\n相对标普500的实测表现 — 只",
+        "differs_from_en_twin": true,
+        "en_twin": "matrix-1440-en-light.png",
+        "en_twin_sha256": "cf40775a1aa8e282504f26ad2211596435d4dd4f4647ea1f600b48ca4d283e0a"
+      }
+    },
+    {
+      "file": "matrix-390-en-dark.png",
+      "sha256": "aadc8dfeba86c676fe290bb99ef47a168be163f392642276184ff02664fc2dd9",
+      "variant": "ok",
+      "viewport": "390x844",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 117983,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "matrix-390-en-light.png",
+      "sha256": "e4dcee36bc829e9a95f6fb3f755b7cad4cdda68aa0292d3d3d218e0ed36ff204",
+      "variant": "ok",
+      "viewport": "390x844",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 118521,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "matrix-390-zh-dark.png",
+      "sha256": "075a9fad560818894310fed211e359a2615a54763a99c87be258034a2e47a091",
+      "variant": "ok",
+      "viewport": "390x844",
+      "theme": "dark",
+      "lang": "zh",
+      "synthetic": false,
+      "bytes": 107194,
+      "lang_facts": {
+        "data_lang": "zh",
+        "cjk_present": true,
+        "cjk_count": 332,
+        "panel_inner_first": "实际在变什么\n— 实测，非预测\n\n证据日期 2026-10-13 · 11 个美国板块 · 相对标普500 · 含股息总回报\n\n相对标普500的实测表现 — 只",
+        "differs_from_en_twin": true,
+        "en_twin": "matrix-390-en-dark.png",
+        "en_twin_sha256": "aadc8dfeba86c676fe290bb99ef47a168be163f392642276184ff02664fc2dd9"
+      }
+    },
+    {
+      "file": "matrix-390-zh-light.png",
+      "sha256": "92365ee17a16c615f4b882023b7dc7cb461102d1c3b9f43fa829911536fe1f64",
+      "variant": "ok",
+      "viewport": "390x844",
+      "theme": "light",
+      "lang": "zh",
+      "synthetic": false,
+      "bytes": 109034,
+      "lang_facts": {
+        "data_lang": "zh",
+        "cjk_present": true,
+        "cjk_count": 332,
+        "panel_inner_first": "实际在变什么\n— 实测，非预测\n\n证据日期 2026-10-13 · 11 个美国板块 · 相对标普500 · 含股息总回报\n\n相对标普500的实测表现 — 只",
+        "differs_from_en_twin": true,
+        "en_twin": "matrix-390-en-light.png",
+        "en_twin_sha256": "e4dcee36bc829e9a95f6fb3f755b7cad4cdda68aa0292d3d3d218e0ed36ff204"
+      }
+    },
+    {
+      "file": "state-ok-hnotpub-dark.png",
+      "sha256": "d355e66873ba2e77797c9de66df08b3ed5e9bf0a989055cc80b1e56f5aee1b50",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 245001,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-ok-hnotpub-light.png",
+      "sha256": "1671f05b6d3bec2e62c10f6cdfe6a439d837895e2cf30ff8e776b5d668f3642d",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 256431,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-hrecon-synth-dark.png",
+      "sha256": "27282adca7a5a12ab9275c23470497e773dfea32a92381a8c01d5ea7175f9cb5",
+      "variant": "hrecon",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": true,
+      "bytes": 241910,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-hrecon-synth-light.png",
+      "sha256": "485550bab40ccb67913a8806ba7c6e0f9f2443ff6bf759e15062c7e2f09dac9d",
+      "variant": "hrecon",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": true,
+      "bytes": 253329,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-full-dark.png",
+      "sha256": "69fda72440fdaf2d4201fb8a0b342d82f70b53a55217c134d5c0ea9d8cf2b839",
+      "variant": "full",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 239693,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-full-light.png",
+      "sha256": "4de1d32265c7db134cc6d3cdac4474bff3be49351217b51f71af9a35771a8bb9",
+      "variant": "full",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 250313,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-partialstale-dark.png",
+      "sha256": "31e350a4a065dbbe9b323c573832f37dbc23466c63306a9def9b957feff1db5f",
+      "variant": "stale",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 249231,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-partialstale-light.png",
+      "sha256": "d562ff085417dcea251d3ed1672497b9aa84111d98172aab2dfb98e3960e3a91",
+      "variant": "stale",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 261035,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-absent-dark.png",
+      "sha256": "4b3d16ddf52bf597071ce7f2317f2e15fefc1a5918695badb8d182f4a6e6abb9",
+      "variant": "absent",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 34620,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nMeasured performance relativ",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-absent-light.png",
+      "sha256": "622a8b9831a4b54b9e5f86fcca7562681452a8c90fbd47eea791bd7a8ea8b76e",
+      "variant": "absent",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 35564,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nMeasured performance relativ",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-outage-dark.png",
+      "sha256": "5315333075d4342f9d39ad77a96f733fc6196599bc299a5e8e499fd47b10f655",
+      "variant": "outage",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 26901,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nMeasured performance relativ",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-outage-light.png",
+      "sha256": "38011665b546bd23591ce7b28414523dc64a1a291d021bb894ec930b77195ad2",
+      "variant": "outage",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 27746,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nMeasured performance relativ",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-invalid-dark.png",
+      "sha256": "d6a84bade17d643cde0edaee061443ce8a1f98e43010f2dd24a63c0569677963",
+      "variant": "invalid",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 28443,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nMeasured performance relativ",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-invalid-light.png",
+      "sha256": "04d7217d110bebe0cdf8add138d2e09ae0cf0d34f8f388c6f856fb1a1f3fe82d",
+      "variant": "invalid",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 29534,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nMeasured performance relativ",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-nodata-dark.png",
+      "sha256": "328759e6dc7cf81fe76b579b42fe2b7bc21daf64ec1b05c8893c3e608ade9d88",
+      "variant": "nodata",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 25802,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nMeasured performance relativ",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-nodata-light.png",
+      "sha256": "c73b3fcabcd01c7c62003e2423b590a6bafcd3e6236bd1b12e756f617ac47465",
+      "variant": "nodata",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 26632,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nMeasured performance relativ",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-hloading-dark.png",
+      "sha256": "a2bcaf299d713918996a70c92b60691a8a240309b988fe81a7480f915046a5a8",
+      "variant": "hloading",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 260601,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-hloading-light.png",
+      "sha256": "4a9c610cf8b0d06c71dc46948d4037c53a440bd5d7cb389da5c312454648fbd9",
+      "variant": "hloading",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 273079,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-hfailed-dark.png",
+      "sha256": "455b3167567b6ee76b471acb0472c97ac9f434cb84a6673961447f53329a60a9",
+      "variant": "hfailed",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 237915,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-hfailed-light.png",
+      "sha256": "3a0bfa90d07eae2926f792583789cc42af374031c1aa1f40d2b6e1b81c024121",
+      "variant": "hfailed",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 249716,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-genmis-synth-dark.png",
+      "sha256": "e2f47afab10497124ab2d3cf944c58e83fc31fd82de1aba74d29a2a102bb8a37",
+      "variant": "genmis",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": true,
+      "bytes": 244574,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-10 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-genmis-synth-light.png",
+      "sha256": "90ce85d07471e7cdcfc45e639bfbc1769b20df2361d3cb93036d3b47d483d1ba",
+      "variant": "genmis",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": true,
+      "bytes": 256224,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-10 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-obsnone-dark.png",
+      "sha256": "ab9c757c86459789977e904259add2019289567075db596ef968182975191b7d",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 234713,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-obsnone-light.png",
+      "sha256": "7951edc20854bb993a5e58871a8e322ac67e4acec1d795622d88254a627b9e21",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 245750,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-obsevent-dark.png",
+      "sha256": "9ec2d75a28bba5b6081f93711a8b67fec3dd36a93f1ffe08be71aaf82ffebf8f",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 245676,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-obsevent-light.png",
+      "sha256": "bc057f7157e12b732fa343d7291bb3e71afe929e41842c20159bded3dffb5119",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 256133,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-obsincompat-dark.png",
+      "sha256": "a262b41b61fa109b6066750f2c290ba989baa3d85359f9757b7dfacc154750b9",
+      "variant": "obsincompat",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 241681,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-obsincompat-light.png",
+      "sha256": "c7180055e1596625cbac08b56901b821b8a26575a4a2f7393399c39373f35b35",
+      "variant": "obsincompat",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 252823,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-unmeasured-dark.png",
+      "sha256": "b2c48a4e1ee67ba2213cfedefcb04a0c77ce6ee1ef8dcb5f94e92600a9ebc64e",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 243882,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-unmeasured-light.png",
+      "sha256": "48e2bc67e95c4fde02e8662ba1ac5a7e15e2a7634ae4430369f9599131502f91",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 255680,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-absent-zh-dark.png",
+      "sha256": "41bf54aabef10851e193d2da821fd4076adaea61abd69661a1b1368e05905488",
+      "variant": "absent",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "zh",
+      "synthetic": false,
+      "bytes": 32777,
+      "lang_facts": {
+        "data_lang": "zh",
+        "cjk_present": true,
+        "cjk_count": 61,
+        "panel_inner_first": "实际在变什么\n— 实测，非预测\n\n相对标普500的实测表现 — 只是描述，不是预测，也不是入场信号。\n\n今日数据尚未包含此项读数。\n\n下次夜间构建发布后将自动出",
+        "differs_from_en_twin": true,
+        "en_twin": "state-absent-dark.png",
+        "en_twin_sha256": "4b3d16ddf52bf597071ce7f2317f2e15fefc1a5918695badb8d182f4a6e6abb9"
+      }
+    },
+    {
+      "file": "state-absent-zh-light.png",
+      "sha256": "bb804c95a915cec6b23102040e609fcdc5b98e78c83750f9b1ddb7a89d71d163",
+      "variant": "absent",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "zh",
+      "synthetic": false,
+      "bytes": 34109,
+      "lang_facts": {
+        "data_lang": "zh",
+        "cjk_present": true,
+        "cjk_count": 61,
+        "panel_inner_first": "实际在变什么\n— 实测，非预测\n\n相对标普500的实测表现 — 只是描述，不是预测，也不是入场信号。\n\n今日数据尚未包含此项读数。\n\n下次夜间构建发布后将自动出",
+        "differs_from_en_twin": true,
+        "en_twin": "state-absent-light.png",
+        "en_twin_sha256": "622a8b9831a4b54b9e5f86fcca7562681452a8c90fbd47eea791bd7a8ea8b76e"
+      }
+    },
+    {
+      "file": "state-invalid-zh-dark.png",
+      "sha256": "a870c522e54a1a809c15c6de3699f92c3db77c84ffaf3241c8618e8539e225f7",
+      "variant": "invalid",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "zh",
+      "synthetic": false,
+      "bytes": 26584,
+      "lang_facts": {
+        "data_lang": "zh",
+        "cjk_present": true,
+        "cjk_count": 48,
+        "panel_inner_first": "实际在变什么\n— 实测，非预测\n\n相对标普500的实测表现 — 只是描述，不是预测，也不是入场信号。\n\n此项数据无法校验，因此不显示。",
+        "differs_from_en_twin": true,
+        "en_twin": "state-invalid-dark.png",
+        "en_twin_sha256": "d6a84bade17d643cde0edaee061443ce8a1f98e43010f2dd24a63c0569677963"
+      }
+    },
+    {
+      "file": "state-invalid-zh-light.png",
+      "sha256": "cdbe9f10fd2ef511c4b12f243d7c53a0658c89f26552838a2b9cf398cb918e8d",
+      "variant": "invalid",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "zh",
+      "synthetic": false,
+      "bytes": 27750,
+      "lang_facts": {
+        "data_lang": "zh",
+        "cjk_present": true,
+        "cjk_count": 48,
+        "panel_inner_first": "实际在变什么\n— 实测，非预测\n\n相对标普500的实测表现 — 只是描述，不是预测，也不是入场信号。\n\n此项数据无法校验，因此不显示。",
+        "differs_from_en_twin": true,
+        "en_twin": "state-invalid-light.png",
+        "en_twin_sha256": "04d7217d110bebe0cdf8add138d2e09ae0cf0d34f8f388c6f856fb1a1f3fe82d"
+      }
+    },
+    {
+      "file": "state-groupsnull-dark.png",
+      "sha256": "4b6a52d4017c35e2c7cb1d4a9c68eb96a74b2804b06b48135de7f59ffc490002",
+      "variant": "groupsnull",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": true,
+      "bytes": 28460,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nMeasured performance relativ",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-groupsnull-light.png",
+      "sha256": "1b623f2d9edd83d652f7b98446827817c719371ecdba661c514eeae4fb3d67a0",
+      "variant": "groupsnull",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": true,
+      "bytes": 29666,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nMeasured performance relativ",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-estimate-dark.png",
+      "sha256": "2d13fe80ec88ef5bf8e1c3ac9821ee6ed9cc307e7f4b4dfcae7f8b658a1470c0",
+      "variant": "estimate",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": true,
+      "bytes": 246266,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-estimate-light.png",
+      "sha256": "4669c67f489dd8c1a62e2007f691dbe5f161cf52fac5faa5a401ca52ba3841bd",
+      "variant": "estimate",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": true,
+      "bytes": 257690,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "state-estimate-zh-dark.png",
+      "sha256": "1ccbb89a2d6e994688d21e2622bb20b450f6b80c60f363822ba4db6304ad7af2",
+      "variant": "estimate",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "zh",
+      "synthetic": true,
+      "bytes": 236426,
+      "lang_facts": {
+        "data_lang": "zh",
+        "cjk_present": true,
+        "cjk_count": 341,
+        "panel_inner_first": "实际在变什么\n— 实测，非预测\n\n证据日期 2026-10-13 · 11 个美国板块 · 相对标普500 · 含股息总回报\n\n相对标普500的实测表现 — 只",
+        "differs_from_en_twin": true,
+        "en_twin": "state-estimate-dark.png",
+        "en_twin_sha256": "2d13fe80ec88ef5bf8e1c3ac9821ee6ed9cc307e7f4b4dfcae7f8b658a1470c0"
+      }
+    },
+    {
+      "file": "state-basisunknown-dark.png",
+      "sha256": "6bae84b2f8c9df7da8ec1fcb019995560bdc5f20dc930cb790f3c2527541cb23",
+      "variant": "basisunknown",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": true,
+      "bytes": 241588,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "zh-detail-dark.png",
+      "sha256": "d383d15e502569433012c21a4d36f486af340d23fcf98b83e8e3a7e7fc4d7571",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "dark",
+      "lang": "zh",
+      "synthetic": false,
+      "bytes": 235027,
+      "lang_facts": {
+        "data_lang": "zh",
+        "cjk_present": true,
+        "cjk_count": 332,
+        "panel_inner_first": "实际在变什么\n— 实测，非预测\n\n证据日期 2026-10-13 · 11 个美国板块 · 相对标普500 · 含股息总回报\n\n相对标普500的实测表现 — 只",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "zh-detail-light.png",
+      "sha256": "ad02cce9ca459f61ec85fc08e0cd55b6d3b632aee2a88738ce3ad0df04b0ef39",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "theme": "light",
+      "lang": "zh",
+      "synthetic": false,
+      "bytes": 247408,
+      "lang_facts": {
+        "data_lang": "zh",
+        "cjk_present": true,
+        "cjk_count": 332,
+        "panel_inner_first": "实际在变什么\n— 实测，非预测\n\n证据日期 2026-10-13 · 11 个美国板块 · 相对标普500 · 含股息总回报\n\n相对标普500的实测表现 — 只",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "m390-selected-dark.png",
+      "sha256": "dcd5bafe3f11ea5c868b42f0c8d4ef1fdb3954a90348cd5f97e3831abe32fca3",
+      "variant": "ok",
+      "viewport": "390x844",
+      "theme": "dark",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 676088,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    },
+    {
+      "file": "m390-selected-light.png",
+      "sha256": "2e119d7af538af1167b071d3b736be81a2db51cc61b49fd6d0dd5e21d6e71101",
+      "variant": "ok",
+      "viewport": "390x844",
+      "theme": "light",
+      "lang": "en",
+      "synthetic": false,
+      "bytes": 680233,
+      "lang_facts": {
+        "data_lang": "en",
+        "cjk_present": false,
+        "cjk_count": 0,
+        "panel_inner_first": "What is actually changing\n— measured, not forecast\n\nEvidence date 2026-10-13 · 1",
+        "differs_from_en_twin": null,
+        "en_twin": null,
+        "en_twin_sha256": null
+      }
+    }
+  ],
+  "r4_zh_acceptance": {
+    "matrix_zh_crops": [
+      {
+        "file": "matrix-1440-zh-dark.png",
+        "data_lang_zh": true,
+        "cjk_present": true,
+        "differs_from_en_twin": true
+      },
+      {
+        "file": "matrix-1440-zh-light.png",
+        "data_lang_zh": true,
+        "cjk_present": true,
+        "differs_from_en_twin": true
+      },
+      {
+        "file": "matrix-390-zh-dark.png",
+        "data_lang_zh": true,
+        "cjk_present": true,
+        "differs_from_en_twin": true
+      },
+      {
+        "file": "matrix-390-zh-light.png",
+        "data_lang_zh": true,
+        "cjk_present": true,
+        "differs_from_en_twin": true
+      }
+    ],
+    "verdict": "PASS"
+  },
+  "a44": {
+    "table": [
+      {
+        "state": "absent",
+        "variant": "absent",
+        "container_class": "mx-empty",
+        "background_color": "rgba(0, 0, 0, 0)",
+        "border_color": "rgb(200, 208, 220)",
+        "copy_first_line": "This read is not in today's data yet."
+      },
+      {
+        "state": "outage",
+        "variant": "outage",
+        "container_class": "mx-error",
+        "background_color": "color(srgb 0.130118 0.126118 0.129255)",
+        "border_color": "color(srgb 0.448784 0.381569 0.271059)",
+        "copy_first_line": "This read could not be produced today."
+      },
+      {
+        "state": "invalid",
+        "variant": "invalid",
+        "container_class": "mr-invalid",
+        "background_color": "rgba(0, 0, 0, 0)",
+        "border_color": "rgb(58, 65, 80)",
+        "copy_first_line": "This read could not be checked, so it is not shown."
+      },
+      {
+        "state": "nodata",
+        "variant": "nodata",
+        "container_class": "mx-error",
+        "background_color": "color(srgb 0.130118 0.126118 0.129255)",
+        "border_color": "color(srgb 0.448784 0.381569 0.271059)",
+        "copy_first_line": "Data for this page did not load."
+      },
+      {
+        "state": "hloading",
+        "variant": "hloading",
+        "container_class": "mr-grid",
+        "background_color": "rgba(0, 0, 0, 0)",
+        "border_color": "rgb(200, 208, 220)",
+        "copy_first_line": "Measured 9 of 11"
+      },
+      {
+        "state": "hfailed",
+        "variant": "hfailed",
+        "container_class": "mr-grid",
+        "background_color": "rgba(0, 0, 0, 0)",
+        "border_color": "rgb(200, 208, 220)",
+        "copy_first_line": "Measured 9 of 11"
+      },
+      {
+        "state": "genmis",
+        "variant": "genmis",
+        "container_class": "mr-grid",
+        "background_color": "rgba(0, 0, 0, 0)",
+        "border_color": "rgb(200, 208, 220)",
+        "copy_first_line": "Measured 9 of 11"
+      }
+    ],
+    "collisions": [
+      {
+        "a": "hloading",
+        "b": "hfailed",
+        "class": "mr-grid",
+        "copy": "Measured 9 of 11"
+      },
+      {
+        "a": "hloading",
+        "b": "genmis",
+        "class": "mr-grid",
+        "copy": "Measured 9 of 11"
+      },
+      {
+        "a": "hfailed",
+        "b": "genmis",
+        "class": "mr-grid",
+        "copy": "Measured 9 of 11"
+      }
+    ],
+    "verdict": "FINDING: 3 collision(s)"
+  },
+  "section4": [
+    {
+      "kind": "4a",
+      "name": "deep_link_XLK",
+      "status": "PASS",
+      "observed": "aria-pressed=true dhText=\"TechnologyXLK\""
+    },
+    {
+      "kind": "4b",
+      "name": "click_back_fwd",
+      "status": "PASS",
+      "observed": "click→XLE back→XLK(xlk=true) fwd→XLE(xle=true)"
+    },
+    {
+      "kind": "4c",
+      "name": "keyboard_dark",
+      "status": "PASS",
+      "observed": "[dark] init=XLE down→XLY(ring=true) up→XLE"
+    },
+    {
+      "kind": "4c",
+      "name": "keyboard_light",
+      "status": "PASS",
+      "observed": "[light] init=XLE down→XLY(ring=true) up→XLE"
+    },
+    {
+      "kind": "4d",
+      "name": "segbtn_space",
+      "status": "PASS",
+      "observed": "n=2 init recon=true/obs=false → afterSpaceObs obs=true histChanged=true → afterSpaceRecon recon=true histBack=true"
+    },
+    {
+      "kind": "4e-A42",
+      "name": "hfailed_list_and_failure",
+      "status": "PASS",
+      "observed": "rows=11 pressed=true url=?g=XLY histNotBlank=true hist=\"History unavailable right now the current read above is unaffected\""
+    },
+    {
+      "kind": "4f",
+      "name": "touch_44px",
+      "status": "PASS",
+      "observed": "row=44 seg=44 link=44 detailVisible=true"
+    },
+    {
+      "kind": "4g-A39/A40",
+      "name": "runtime_purity",
+      "status": "PASS",
+      "observed": "init.slen=161393 after.slen=161393 extraKeys=[]"
+    },
+    {
+      "kind": "setThemeLang",
+      "name": "setTheme_setLang_attrs",
+      "status": "PASS",
+      "observed": "init t=dark/l=en after t=light/l=zh hasSetTheme=true hasSetLang=true"
+    }
+  ],
+  "aborted_urls": [],
+  "console_errors_first5_per_variant": {
+    "absent": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "outage": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "invalid": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "nodata": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "hloading": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "hfailed": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "genmis": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "ok": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ]
+  },
+  "notes": [
+    "R4 (LR-FIX-B2) — the prior receipt's matrix-390-zh-* crops were byte-identical to their EN twins because setPrefs in smoke.cjs and cap.cjs called Playwright's addInitScript(script, T, L) with TWO positional args. Playwright's addInitScript signature is addInitScript(script, arg?), so the script's L parameter was undefined, localStorage.setItem('lang', undefined) coerced to the STRING 'undefined', the boot inline script stamped data-lang='undefined' on <html>, and the panel's isZh() returned false. The fix is a one-liner in both files: pass a single object and destructure inside. Acceptance is checked per ZH crop in `r4_zh_acceptance` and per crop in `pngs[].lang_facts`. The page's langchange re-render still has a stale-listEl bug in the template, so setLang is not called in capture paths — the boot inline script at templates/sector_central.html.j2 L20 is what sets data-lang from localStorage.",
+    "B2 NEW SYNTH variants: groupsnull (hostile groups=[null] triggers render()'s groupsOk guard → mr-invalid), estimate (measured_read.research_estimate={status:estimate, probability:0.62, horizon_sessions:21} renders the 'Research estimate — display only: 62% over the next 21 sessions.' line), basisunknown (measured_read.generation.price_basis='unknown' → basis() returns 'basis not stated' / '未注明价格口径'). Marked synthetic in VARIANTS.json and the per-PNG record.",
+    "setTheme/setLang are NOT called in capture paths because the page's panel re-render on `langchange` has a stale listEl reference bug (bodyEl.innerHTML is reset to GRID_HTML, but the IIFE's listEl/unEl references still point to the detached originals, so the re-populated list is invisible). The addInitScript pre-populates localStorage, and the page's boot inline script sets data-theme/data-lang from it. setTheme/setLang existence and attribute-setting are verified in a separate assertion (PASS).",
+    "All §4 assertions PASS at this change (4a deep_link_XLK, 4b click_back_fwd, 4c keyboard dark+light, 4d segbtn_space, 4e-A42 hfailed list+msg, 4f touch_44px row/seg/link all ≥44, 4g-A39/A40 runtime_purity, setThemeLang attrs)."
+  ]
+}

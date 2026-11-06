@@ -37,10 +37,22 @@ _STANCE = {
     ),
 }
 
+#: Plain-word ZH for the leadership-breadth label. The producer
+#: (engine/group_flow.py _leadership) emits only "broad", "narrow" or None;
+#: any other value gives label_zh None — a raw English slug is never echoed
+#: into the ZH field.
+_BREADTH_LABEL_ZH = {
+    "broad": "广泛",
+    "narrow": "狭窄",
+}
+
+
 def _parse_date(value: object) -> date | None:
     if value is None:
         return None
-    if isinstance(value, date) and not isinstance(value, datetime):
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
         return value
     if isinstance(value, str):
         try:
@@ -147,8 +159,13 @@ def _theme_state_block(
     status = "fresh"
     if ts_as_of is None or ti_as_of is None:
         status = "missing"
-    elif (ti_as_of - ts_as_of).days > _THEME_STATE_MAX_AGE_DAYS:
-        status = "stale"
+    else:
+        age_days = (ti_as_of - ts_as_of).days
+        if age_days <= -1:
+            # theme_state as_of is dated after the read itself — unusable
+            status = "invalid"
+        elif age_days > _THEME_STATE_MAX_AGE_DAYS:
+            status = "stale"
 
     return {
         "status": status,
@@ -205,8 +222,19 @@ def _freshness_row(ts: dict[str, Any]) -> tuple[str, str]:
             f"主题状态截至{ts_as_of}——当前；{stale_n}项输入标记为陈旧。"
         )
     elif status == "stale":
-        en = f"Theme state as of {ts_as_of} — more than 5 days old; read with care."
-        zh = f"主题状态截至{ts_as_of}——超过5天；请谨慎阅读。"
+        en = (
+            f"Theme state as of {ts_as_of} — more than "
+            f"{_THEME_STATE_MAX_AGE_DAYS} days old; read with care."
+        )
+        zh = (
+            f"主题状态截至{ts_as_of}——超过{_THEME_STATE_MAX_AGE_DAYS}天；请谨慎阅读。"
+        )
+    elif status == "invalid":
+        en = (
+            f"Theme state is dated {ts_as_of}, after this read; "
+            "treat it as unreliable."
+        )
+        zh = f"主题状态日期为{ts_as_of}，晚于本次判读；请谨慎看待。"
     elif status == "not_published":
         en = "Theme state is not published for this market; the read uses prices only."
         zh = "该市场未发布主题状态；本判读仅使用价格。"
@@ -324,7 +352,13 @@ def _unavailable_receipt(reason_en: str, reason_zh: str) -> dict[str, Any]:
         "as_of": None,
         "sample": {},
         "roster_changed": False,
-        "breadth": {"pct50": None, "pct200": None, "n": None, "label": None},
+        "breadth": {
+            "pct50": None,
+            "pct200": None,
+            "n": None,
+            "label": None,
+            "label_zh": None,
+        },
         "leaders": [],
         "split": {"flag": False, "note_en": None, "note_zh": None},
         "theme_state": {
@@ -537,6 +571,7 @@ def _build_receipt_core(
             "pct200": breadth_raw.get("pct200"),
             "n": breadth_raw.get("n"),
             "label": leadership.get("breadth"),
+            "label_zh": _BREADTH_LABEL_ZH.get(leadership.get("breadth")),
         },
         "leaders": leaders_out,
         "split": {

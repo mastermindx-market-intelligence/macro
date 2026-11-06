@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import json
 
-from collectors import benzinga_news
+from collectors import alpaca_news, benzinga_news
 from engine import qbus_news_store as store_mod
 from engine.qbus_news_universe import qualify_universe
 from scripts import run_qbus_news
@@ -334,6 +334,175 @@ def test_failed_catchup_does_not_prevent_fresh_stream_ingest_and_cursor_stays_pu
 
     assert stats.catchups_failed == 1
     assert stats.stream_events == 1
+
+
+class UnauthorizedCatchupClient:
+    def __init__(self, exc):
+        self.exc = exc
+        self.calls = 0
+
+    def fetch_delta(self, *, cursor_epoch, observed_at):
+        self.calls += 1
+        raise self.exc
+
+
+class RecoveringCatchupClient(FakeCatchupClient):
+    """Fail the first catch-up, then behave like the committed fixture."""
+
+    def __init__(self, exc):
+        super().__init__()
+        self.exc = exc
+
+    def fetch_delta(self, *, cursor_epoch, observed_at):
+        if self.calls == 0:
+            self.calls += 1
+            raise self.exc
+        return super().fetch_delta(
+            cursor_epoch=cursor_epoch, observed_at=observed_at
+        )
+
+
+def _run_with_health(tmp_path, *, client, connect=None, max_connections=1, **runner_kwargs):
+    """Drive one runner with a health receipt; return (stats, runner, payload)."""
+    clock = Clock()
+    health = tmp_path / "health.json"
+
+    with store_mod.NewsStore(
+        tmp_path / "q.sqlite3", source_key="benzinga-rest"
+    ) as store:
+        runner = run_qbus_news.NewsIngestRunner(
+            token=runner_kwargs.pop("token", "TOKEN"),
+            store=store,
+            universe_provider=_universe,
+            direct_client=client,
+            connect=connect if connect is not None else FakeConnect([]),
+            clock=clock.utcnow,
+            monotonic=clock.monotonic,
+            wait=lambda _: None,
+            health_path=health,
+            **runner_kwargs,
+        )
+        stats = runner.run(max_connections=max_connections)
+
+    payload = json.loads(health.read_text(encoding="utf-8"))
+    return stats, runner, payload
+
+
+def test_catchup_transport_error_code_lands_in_health_receipt(tmp_path):
+    # 2026-10-11 incident shape: every REST call answered 401 while the
+    # receipt only said "catching_up". The code must name the fault class.
+    client = UnauthorizedCatchupClient(alpaca_news.AlpacaTransportError("http_401"))
+    stats, runner, payload = _run_with_health(tmp_path, client=client)
+
+    assert client.calls == 1
+    assert payload["last_catchup_error"] == "http_401"
+    assert stats.catchups_failed == 1
+
+
+def test_catchup_error_code_never_carries_exception_message_text(tmp_path):
+    client = UnauthorizedCatchupClient(
+        RuntimeError("Bearer SECRETVALUE https://x?apiKey=SECRETVALUE")
+    )
+    stats, runner, payload = _run_with_health(tmp_path, client=client)
+
+    assert payload["last_catchup_error"] == "exception_runtimeerror"
+    assert "SECRETVALUE" not in json.dumps(payload)
+    assert "SECRETVALUE" not in (tmp_path / "health.json").read_text(
+        encoding="utf-8"
+    )
+
+
+def test_committed_catchup_after_failure_clears_the_catchup_error_code(tmp_path):
+    client = RecoveringCatchupClient(
+        benzinga_news.BenzingaTransportError("http_503")
+    )
+    connect = FakeConnect(
+        [FakeWS([ConnectionError("drop")]), FakeWS([ConnectionError("drop")])]
+    )
+    stats, runner, payload = _run_with_health(
+        tmp_path, client=client, connect=connect, max_connections=2
+    )
+
+    assert client.calls == 2
+    assert stats.catchups_failed == 1
+    assert stats.catchups_ok == 1
+    assert payload["last_catchup_error"] is None
+    assert runner._last_catchup_error is None
+
+
+def test_stream_handshake_error_code_lands_in_health_receipt(tmp_path):
+    def failing_handshake(ws):
+        raise alpaca_news.AlpacaStreamError("stream_auth_error_406")
+
+    client = FakeCatchupClient()
+    stats, runner, payload = _run_with_health(
+        tmp_path,
+        client=client,
+        connect=FakeConnect([FakeWS([])]),
+        token="",
+        provider="alpaca",
+        stream_target=alpaca_news.STREAM_URL,
+        stream_handshake=failing_handshake,
+        frame_normalizer=alpaca_news.normalize_stream_frames,
+    )
+
+    assert payload["last_stream_error"] == "stream_auth_error_406"
+    assert payload["last_catchup_error"] is None
+    assert stats.disconnects == 1
+
+
+def test_successful_handshake_after_failure_clears_the_stream_error_code(tmp_path):
+    stop = run_qbus_news.StopFlag()
+    handshakes = []
+
+    def failing_then_clean_handshake(ws):
+        handshakes.append(ws)
+        if len(handshakes) == 1:
+            raise alpaca_news.AlpacaStreamError("stream_auth_error_406")
+        stop.set()  # clean exit right after the clear, no recv to overwrite it
+
+    client = FakeCatchupClient()
+    stats, runner, payload = _run_with_health(
+        tmp_path,
+        client=client,
+        connect=FakeConnect([FakeWS([]), FakeWS([])]),
+        max_connections=2,
+        token="",
+        provider="alpaca",
+        stream_target=alpaca_news.STREAM_URL,
+        stream_handshake=failing_then_clean_handshake,
+        frame_normalizer=alpaca_news.normalize_stream_frames,
+        stop=stop,
+    )
+
+    assert len(handshakes) == 2
+    assert payload["last_stream_error"] is None
+    assert runner._last_stream_error is None
+    assert stats.disconnects == 1  # only the failed handshake disconnects
+
+
+def test_error_code_falls_back_to_exception_class_when_code_is_not_a_safe_string():
+    class CodedError(Exception):
+        def __init__(self, code):
+            self.code = code
+
+    assert (
+        run_qbus_news._error_code(alpaca_news.AlpacaTransportError("http_401"))
+        == "http_401"
+    )
+    assert (
+        run_qbus_news._error_code(CodedError("HTTP 401 Bearer abc"))
+        == "exception_codederror"
+    )
+    assert run_qbus_news._error_code(CodedError(406)) == "exception_codederror"
+    assert run_qbus_news._error_code(CodedError(None)) == "exception_codederror"
+    assert run_qbus_news._error_code(CodedError("a" * 65)) == "exception_codederror"
+    assert (
+        run_qbus_news._error_code(
+            RuntimeError("Bearer SECRETVALUE https://x?apiKey=SECRETVALUE")
+        )
+        == "exception_runtimeerror"
+    )
 
 
 def test_stop_before_run_opens_no_connection(tmp_path):

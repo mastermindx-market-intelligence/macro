@@ -1,0 +1,112 @@
+{
+  "schema": "gmi.ci_enrollment_static_review_evidence/v1",
+  "reviewer": "/root/pure_reader_builder",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-observations-20261009-pro-003",
+  "reported_head": "dfa8533b07f1f603ef9f9bb6fbf957e4b1c112a1",
+  "head_verification": "Parent-provided; no Git operation by reviewer",
+  "host": "m2studio",
+  "platform": "Darwin",
+  "read_only_interpreter": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "manifest": {
+    "path": ".github/ci/legacy-jobs.yml",
+    "byte_length": 1248094,
+    "sha256": "3c23ea9dcc9094a10a3e5874b8281998f203227f522752d00f578820c5b9e581",
+    "owner_start_line": 22340,
+    "owner_end_line": 22429
+  },
+  "accepted_manifest": {
+    "byte_length": 1247930,
+    "sha256": "8754604c46e236023fab35aa6914196bc2462d9308772d406efed96c58dce7b2",
+    "source_receipt": "lanes/pr8705_final_ci_review/immutable_source_read_001.json"
+  },
+  "owner_before": "  company-relationship-candidates:\n    # Pure analyst inspection; no source ingestion, admission or publication.\n    # Curated native imports/reads, package initialization and shared pytest hooks.\n    # Avoid broad runtime-input fallbacks selecting this utility for unrelated\n    # homepage/strategy changes; contract-delta keeps those packing limits.\n    if: ${{ false }}\n    gate: code\n    scope: exclusive\n    paths:\n      - collectors/__init__.py\n      - collectors/edgar_forensics.py\n      - collectors/fundamental_forensics_acquisition.py\n      - collectors/fundamental_forensics_companyfacts.py\n      - collectors/sec_document_spine.py\n      - collectors/sec_filing_parser.py\n      - config/dataset_registry.yml\n      - config/fundamental_forensics_disclosure_diff.v1.json\n      - engine/__init__.py\n      - engine/basket_breadth_divergence.py\n      - engine/catalyst_tone.py\n      - engine/company_intelligence/__init__.py\n      - engine/company_intelligence/contracts.py\n      - engine/company_intelligence/health.py\n      - engine/company_intelligence/pinned_relationship_candidates.py\n      - engine/company_intelligence/relationship_candidates.py\n      - engine/company_intelligence/views.py\n      - engine/desk_ledger.py\n      - engine/earnings_release/__init__.py\n      - engine/earnings_release/receipts.py\n      - engine/fundamental_forensics/__init__.py\n      - engine/fundamental_forensics/detectors.py\n      - engine/fundamental_forensics/disclosure_diff.py\n      - engine/fundamental_forensics/filing_attestation.py\n      - engine/fundamental_forensics/filing_package.py\n      - engine/fundamental_forensics/ixbrl_extraction.py\n      - engine/fundamental_forensics/models.py\n      - engine/fundamental_forensics/normalize.py\n      - engine/fundamental_forensics/pipeline.py\n      - engine/fundamental_forensics/sec_companyfacts.py\n      - engine/fundamental_forensics/sec_document_spine.py\n      - engine/fundamental_forensics/source_sync.py\n      - engine/gdelt_client.py\n      - engine/marketing/__init__.py\n      - engine/marketing/accounts.py\n      - engine/marketing/authority.py\n      - engine/marketing/chart_render.py\n      - engine/marketing/charter.py\n      - engine/marketing/claims.py\n      - engine/marketing/cmo.py\n      - engine/marketing/departments.py\n      - engine/marketing/economics.py\n      - engine/marketing/events.py\n      - engine/marketing/ledgers.py\n      - engine/marketing/logo_cache.py\n      - engine/marketing/opportunity_bus.py\n      - engine/marketing/publication.py\n      - engine/marketing/state.py\n      - engine/master_brain.py\n      - engine/research_vault/__init__.py\n      - engine/research_vault/r2_store.py\n      - lib/__init__.py\n      - lib/config.py\n      - lib/dataos/__init__.py\n      - lib/dataos/identity.py\n      - lib/dataos/nulls.py\n      - lib/dataos/price.py\n      - lib/dataos/quality.py\n      - lib/dataos/registry.py\n      - lib/dataos/temporal.py\n      - research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json\n      - research/theme_graph/economic_network_execution_20261009/replay_micron_witness.py\n      - scripts/__init__.py\n      - scripts/worktree_sparse.py\n      - tests/__init__.py\n      - tests/conftest.py\n      - tests/test_company_pinned_relationship_candidates.py\n      - tests/test_company_relationship_candidates.py\n      - tests/test_company_relationship_review_set.py\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with:\n          python-version: \"3.12\"\n      - name: install candidate inspection test dependencies\n        run: pip install pytest pyyaml requests\n      - name: File and pinned-source replay, manual boundary and temporal refusals\n        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py -q\n",
+  "owner_after": "  company-relationship-candidates:\n    # Private analyst inspection and immutable retained observation contracts.\n    # Curated native imports/reads, package initialization and shared pytest hooks.\n    # Avoid broad runtime-input fallbacks selecting this utility for unrelated\n    # homepage/strategy changes; contract-delta keeps those packing limits.\n    if: ${{ false }}\n    gate: code\n    scope: exclusive\n    paths:\n      - collectors/__init__.py\n      - collectors/edgar_forensics.py\n      - collectors/fundamental_forensics_acquisition.py\n      - collectors/fundamental_forensics_companyfacts.py\n      - collectors/sec_document_spine.py\n      - collectors/sec_filing_parser.py\n      - config/dataset_registry.yml\n      - config/fundamental_forensics_disclosure_diff.v1.json\n      - engine/__init__.py\n      - engine/basket_breadth_divergence.py\n      - engine/catalyst_tone.py\n      - engine/company_intelligence/__init__.py\n      - engine/company_intelligence/contracts.py\n      - engine/company_intelligence/health.py\n      - engine/company_intelligence/pinned_relationship_candidates.py\n      - engine/company_intelligence/relationship_candidates.py\n      - engine/company_intelligence/relationship_observations.py\n      - engine/company_intelligence/views.py\n      - engine/desk_ledger.py\n      - engine/earnings_release/__init__.py\n      - engine/earnings_release/receipts.py\n      - engine/fundamental_forensics/__init__.py\n      - engine/fundamental_forensics/detectors.py\n      - engine/fundamental_forensics/disclosure_diff.py\n      - engine/fundamental_forensics/filing_attestation.py\n      - engine/fundamental_forensics/filing_package.py\n      - engine/fundamental_forensics/ixbrl_extraction.py\n      - engine/fundamental_forensics/models.py\n      - engine/fundamental_forensics/normalize.py\n      - engine/fundamental_forensics/pipeline.py\n      - engine/fundamental_forensics/sec_companyfacts.py\n      - engine/fundamental_forensics/sec_document_spine.py\n      - engine/fundamental_forensics/source_sync.py\n      - engine/gdelt_client.py\n      - engine/marketing/__init__.py\n      - engine/marketing/accounts.py\n      - engine/marketing/authority.py\n      - engine/marketing/chart_render.py\n      - engine/marketing/charter.py\n      - engine/marketing/claims.py\n      - engine/marketing/cmo.py\n      - engine/marketing/departments.py\n      - engine/marketing/economics.py\n      - engine/marketing/events.py\n      - engine/marketing/ledgers.py\n      - engine/marketing/logo_cache.py\n      - engine/marketing/opportunity_bus.py\n      - engine/marketing/publication.py\n      - engine/marketing/state.py\n      - engine/master_brain.py\n      - engine/research_vault/__init__.py\n      - engine/research_vault/r2_store.py\n      - lib/__init__.py\n      - lib/config.py\n      - lib/dataos/__init__.py\n      - lib/dataos/identity.py\n      - lib/dataos/nulls.py\n      - lib/dataos/price.py\n      - lib/dataos/quality.py\n      - lib/dataos/registry.py\n      - lib/dataos/temporal.py\n      - research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json\n      - research/theme_graph/economic_network_execution_20261009/replay_micron_witness.py\n      - scripts/__init__.py\n      - scripts/worktree_sparse.py\n      - tests/__init__.py\n      - tests/conftest.py\n      - tests/test_company_pinned_relationship_candidates.py\n      - tests/test_company_relationship_candidates.py\n      - tests/test_company_relationship_observations.py\n      - tests/test_company_relationship_review_set.py\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with:\n          python-version: \"3.12\"\n      - name: install candidate inspection test dependencies\n        run: pip install pytest pyyaml requests\n      - name: File, pinned-source and immutable observation replay contracts\n        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py -q\n",
+  "files": {
+    "engine/company_intelligence/relationship_observations.py": {
+      "bytes": 42756,
+      "sha256": "85c07b309ff7b7220ec12f2b3f25c924a2ef4c9ab495ce9030f61038cbb9e8c7"
+    },
+    "scripts/run_ci_pack.py": {
+      "bytes": 223426,
+      "sha256": "65564916a55eb806d3d9fb0cd4e12726f05fec953f6e47ccd9240f5a141049df"
+    },
+    "tests/test_ci_pack.py": {
+      "bytes": 304249,
+      "sha256": "e2e7e0307a2e02fdd6703a40ff87f2efbd1d1fd82bf65d7ed365d579cccb8d52"
+    },
+    "tests/test_company_relationship_observations.py": {
+      "bytes": 49406,
+      "sha256": "a73700e639c8e97a4ff84951b48358abe63b1f5048560d03b0e40f2310ac44da"
+    }
+  },
+  "selected_test_bodies": {
+    "test_curated_exclusive_scopes_cover_their_own_import_closure": {
+      "start_line": 4676,
+      "end_line": 4699,
+      "body_without_docstring": "def test_curated_exclusive_scopes_cover_their_own_import_closure() -> None:\n    misses_full = curated_exclusive_closure_findings(MANIFEST)\n    misses = {job_id: list(paths[:8]) for job_id, paths in misses_full.items()}\n    assert not misses, (\n        \"curated exclusive scope(s) no longer cover their own import closure:\\n  \"\n        + \"\\n  \".join(f\"{k}: {v}\" for k, v in misses.items())\n        + \"\\n\\nA new import reached a tree the declaration does not name, so that \"\n        \"job silently stopped running for edits to it. Widen the job's `paths:` \"\n        \"in .github/ci/legacy-jobs.yml to cover the listed files — widening is \"\n        \"always the safe direction.\"\n    )\n"
+    },
+    "test_every_declared_scope_in_the_real_manifest_is_covered": {
+      "start_line": 904,
+      "end_line": 906,
+      "body_without_docstring": "def test_every_declared_scope_in_the_real_manifest_is_covered() -> None:\n    PACK.load_legacy_jobs(MANIFEST)  # raises ManifestError on any gap\n"
+    },
+    "test_exclusive_curation_narrows_ordinary_code_prs": {
+      "start_line": 4819,
+      "end_line": 5463,
+      "body_without_docstring": "def test_exclusive_curation_narrows_ordinary_code_prs() -> None:\n    rows = packing_probe_measurements(\n        MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS\n    )\n    breaches = packing_probe_breaches(rows)\n    assert not breaches, [\n        (breach, row[\"reason\"])\n        for breach in breaches\n        for row in rows\n        if row[\"probe\"] == breach[0]\n    ]\n"
+    },
+    "test_plan_is_deterministic": {
+      "start_line": 2920,
+      "end_line": 2926,
+      "body_without_docstring": "def test_plan_is_deterministic() -> None:\n    first = _full_plan()\n    second = _full_plan()\n    assert first == second\n    assert first.plan_sha256 == second.plan_sha256\n    # Not satisfied by two empty plans agreeing about nothing.\n    assert any(first.pack_jobs)\n"
+    },
+    "test_the_curated_exclusive_set_is_actually_declared": {
+      "start_line": 4657,
+      "end_line": 4660,
+      "body_without_docstring": "def test_the_curated_exclusive_set_is_actually_declared() -> None:\n    declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}\n    assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)\n"
+    }
+  },
+  "native_processes": [
+    {
+      "pid": 49667,
+      "operation": "Hash and bounded source/AST read",
+      "exit_code": 0
+    },
+    {
+      "pid": 52181,
+      "operation": "Read-only inverse/schema/import checker",
+      "exit_code": 1,
+      "failure": "Reviewer resolver modeled engine.company_intelligence as a .py file instead of its package __init__.py",
+      "assertions_before_failure": [
+        "current full manifest hash",
+        "inverse full manifest hash equals accepted 8754604c",
+        "jobs mappings parse as dicts",
+        "job key sets equal",
+        "all non-owner parsed job values equal",
+        "69 to 71 unique literal owner paths",
+        "exact two added paths, none removed",
+        "same code/exclusive owner"
+      ],
+      "limitation": "Failed command is not a complete checker PASS; listed assertions were reached and passed before the uncaught later resolver AssertionError"
+    }
+  ],
+  "denied_attempt": {
+    "pid": null,
+    "operation": "Corrected read-only import-resolver command",
+    "error": "Command not allowed",
+    "retry": "No repeated native process command; direct read API used instead",
+    "changes": "None"
+  },
+  "read_api_fallback": {
+    "tool": "read_multiple_files",
+    "scope": "First 700 manifest lines only, with truncation explicitly observed; not a full source copy"
+  },
+  "execution": {
+    "git": "NOT_RUN",
+    "application_import": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "store": "NOT_RUN",
+    "source_write": "NOT_RUN",
+    "source_capture": "NOT_RUN"
+  }
+}

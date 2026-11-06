@@ -311,6 +311,37 @@ def test_restart_preserves_cursor_state_and_index(tmp_path):
         assert len(rows) == 1 and rows[0].source_item_id == "1"
 
 
+def test_same_revision_seen_before_and_after_publication_is_one_revision(tmp_path):
+    from engine import qbus_news_store as m
+
+    db = tmp_path / "qbus.sqlite3"
+    payload = _rest_payload(item_id=7, title="Clock order", updated=T0)
+    early = normalize_news(
+        payload, transport="benzinga_rest", received_at=T0 - timedelta(minutes=1)
+    )
+    late = normalize_news(
+        payload, transport="benzinga_rest", received_at=T0 + timedelta(minutes=1)
+    )
+    assert "updated_after_received" in early.clock_anomalies
+    assert late.clock_anomalies == ()
+    assert early.revision_id == late.revision_id
+
+    def routed(revision):
+        return m.RoutedRevision(
+            revision=revision,
+            security_ids=("sec-NVDA",),
+            universe_revision="sp500-r1",
+        )
+
+    with m.NewsStore(db, source_key="benzinga-live") as store:
+        store.commit([routed(early)], expected_cursor=None, next_cursor="c1")
+        replay = store.commit([routed(late)], expected_cursor="c1", next_cursor="c2")
+        assert replay.inserted_revisions == 0
+        assert replay.duplicate_revisions == 1
+        assert store.current_cursor() == "c2"
+        assert store.counts()["changes"] == 1
+
+
 def test_revision_id_collision_with_different_persisted_bytes_refuses(tmp_path):
     from engine import qbus_news_store as m
 

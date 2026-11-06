@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 317045,
+  "byte_start": 316496,
+  "normalized": "We have also licensed our patents to Sony for use in virtual reality (“VR”) products. Additionally, we have licensed our patents to third party gaming peripheral manufacturers and distributors for use in spinning mass and force feedback devices such as controllers, steering wheels and joysticks, to be used with PC platforms running on Microsoft Windows and other operating systems, as well as in connection with video game consoles made by Microsoft, Sony, Nintendo and others. Our PC gaming licensees include Guillemot and Microsoft.",
+  "normalized_sha256": "7e9db085735aeb94e455c84da602e5e0dade064a4588620b3e8a7bdb9e0fb555",
+  "raw": " We have also licensed our patents to Sony for use in virtual reality (&#8220;VR&#8221;) products. Additionally, we have licensed our patents to third party gaming peripheral manufacturers and distributors for use in spinning mass and force feedback devices such as controllers, steering wheels and joysticks, to be used with PC platforms running on Microsoft Windows and other operating systems, as well as in connection with video game consoles made by Microsoft, Sony, Nintendo and others. Our PC gaming licensees include Guillemot and Microsoft.",
+  "raw_sha256": "76e73711a450546c05bb18b02ff307bb651db9916e673a4f56a3ee58be2a2471"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

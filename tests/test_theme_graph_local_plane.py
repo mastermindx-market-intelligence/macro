@@ -3889,3 +3889,57 @@ def test_m1_r3_zero_memberships_still_require_room_for_resolved_companies():
     profile["graph_snapshot"]["node_rows"] = 2
     with pytest.raises(ValueError, match="graph snapshot node count cannot contain"):
         probation.require_valid_observation_profile(profile)
+
+
+# Theme Fabric microtheme membership research review: CI-enrolled in this owner suite.
+# These tests use the incumbent source crosswalk but never mutate the graph.
+@pytest.fixture
+def _micro_member_research_document():
+    from copy import deepcopy
+    path = ROOT / "research/theme_graph/microtheme_membership_candidates_2026-10-08.json"
+    return deepcopy(json.loads(path.read_text(encoding="utf-8")))
+
+
+def test_micro_member_research_in_existing_owner_returns_no_admission(
+    _micro_member_research_document,
+):
+    from engine.theme_graph.membership_evidence import build_microtheme_research_evidence
+    result = build_microtheme_research_evidence(_micro_member_research_document)
+    counts = result["counts"]
+    assert (counts["micro_definitions"], counts["subtheme_definitions"],
+            counts["parent_relationships"]) == (68, 12, 132)
+    assert counts["canonical_memberships_admitted"] == 0
+    assert counts["dataos_identities_qualified"] == 0
+    assert counts["measurement_cohorts_admitted"] == 0
+    assert not any(result["authority"].values())
+    assert all(row["admission_status"] == "UNADMITTED_RESEARCH"
+               for row in result["candidates"])
+
+
+@pytest.mark.parametrize("tamper", [
+    "invented_id", "authority", "issuer", "source_rights",
+    "score_field", "false_count", "future_source", "unreviewed_subtheme",
+])
+def test_micro_member_research_owner_refuses_privilege_or_content_mutation(
+    _micro_member_research_document, tamper,
+):
+    from engine.theme_graph.membership_evidence import build_microtheme_research_evidence
+    d = _micro_member_research_document
+    if tamper == "invented_id":
+        d["microthemes"][0]["micro_id"] = "theme:fake"
+    elif tamper == "authority":
+        d["authority"]["ranking"] = True
+    elif tamper == "issuer":
+        d["candidates"][0]["canonical_security_id"] = "security:UNREVIEWED"
+    elif tamper == "source_rights":
+        d["sources"]["S001"]["rights_use_qualification"] = "PUBLIC_GRANTED"
+    elif tamper == "score_field":
+        d["candidates"][0]["rank_score"] = 100
+    elif tamper == "false_count":
+        d["population"]["candidate_activity_records"] = 0
+    elif tamper == "future_source":
+        d["sources"]["S001"]["published_on"] = "2027-01-01"
+    elif tamper == "unreviewed_subtheme":
+        d["subthemes"][0]["node_id"] = "theme:made_up"
+    with pytest.raises(ValueError, match="microtheme research refused"):
+        build_microtheme_research_evidence(d)

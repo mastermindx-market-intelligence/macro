@@ -10,10 +10,15 @@ files:
 
     '
 - path: engine/foresight_leadlag.py
-  sha256: 04d84438f6d6e5bfb381954afce21f17e64c8fe2825dd62c31b523c0797a62e2
+  sha256: 8920b5e84912694f2444172cfce919bdd96bcb27aa438d6c613a31bae6b4aa10
   role: sensor
   notes: 'Crowd-arrival lead-lag grader: signed lead-days between flag date and attention
-    leg crossings.  Writes data/foresight/earliness_grades.json.
+    leg crossings.  Writes data/foresight/earliness_grades.json. 2026-10-19 hash update
+    ratifies the W17 asof guard in grade_flag: a NaT or unparseable flag asof now yields
+    a null lead_days with note unusable_asof instead of raising. Replay vs the committed
+    earliness corpus is byte-identical except produced_at (1272 lead_days fields, notes
+    unchanged); grading semantics for valid asofs unchanged. Seat-ratified, not an
+    independent review.
 
     '
 - path: engine/theme_placebo.py

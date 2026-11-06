@@ -36,8 +36,8 @@
       "description": "us | cn | hk | ca | intl | global — the market the node lives in, lower-case."
     },
     "tier": {
-      "enum": ["macro_category", "theme", "micro_theme", null],
-      "description": "Tier of a kind=theme node per DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK: macro_category, theme, or micro_theme. The 18 legacy canonical crosswalk themes are tier theme. Null for every other node kind."
+      "enum": ["macro_category", "theme", "sub_theme", "micro_theme", null],
+      "description": "Tier of a kind=theme node per DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK: macro_category, theme, sub_theme, or micro_theme. The 18 legacy canonical crosswalk themes are tier theme. sub_theme is optional between theme and micro_theme; a theme→micro_theme edge without a sub_theme stays valid. Null for every other node kind."
     },
     "status": {"enum": ["candidate", "canonical", "retired", "merged"]},
     "merged_into": {
@@ -64,7 +64,7 @@
     "engine_version": {"type": "string", "minLength": 1},
     "source_meta": {
       "type": ["string", "null"],
-      "description": "JSON-encoded object for SOURCE-LOCAL nodes; null for every node minted from house vocabulary. Keys: source_family (the join key into config/theme_sources.yml), source_local_id, market, source_label, source_description, grain (finviz_subtheme|ths_concept), parent_source_label/parent_source_key (the source's own parent — metadata, NOT hierarchy: curated PARENT_OF edges and tiered theme nodes are defined in DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK), supergroup_index, key_aliases (empty unless a ratified continuity act), rights_family. A kind=theme tier=micro_theme node may carry nominated_from (house curation receipt: basket, vertical registry slice, or research path — not source-local, no rights_family). Like name_en this is a MINT-TIME snapshot. The guard fails closed on a rights_family with no registry row."
+      "description": "JSON-encoded object for SOURCE-LOCAL nodes; null for every node minted from house vocabulary. Keys: source_family (the join key into config/theme_sources.yml), source_local_id, market, source_label, source_description, grain (finviz_subtheme|ths_concept), parent_source_label/parent_source_key (the source's own parent — metadata, NOT hierarchy: curated PARENT_OF edges and tiered theme nodes are defined in DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK), supergroup_index, key_aliases (empty unless a ratified continuity act), rights_family. A kind=theme node of tier sub_theme or micro_theme may carry nominated_from (house curation receipt: basket, vertical registry slice, or research path — not source-local, no rights_family) and an optional value_chain_position ∈ upstream|midstream|downstream|enabler (display attribute, mint-time snapshot). Like name_en this is a MINT-TIME snapshot. The guard fails closed on a rights_family with no registry row."
     }
   },
   "allOf": [
@@ -76,7 +76,7 @@
       "then": {
         "required": ["tier"],
         "properties": {
-          "tier": {"enum": ["macro_category", "theme", "micro_theme"]}
+          "tier": {"enum": ["macro_category", "theme", "sub_theme", "micro_theme"]}
         }
       },
       "else": {
