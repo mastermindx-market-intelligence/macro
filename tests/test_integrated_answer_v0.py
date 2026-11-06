@@ -15,6 +15,7 @@ import app.forensics as forensics_mod
 from app.forensics import _PRIVATE_HEADERS, require_site_full_user
 from app.integrated_answer import router as integrated_answer_router
 import app.integrated_answer as integrated_answer
+from app import capital_structure as cs_api
 from engine.company_theme_exposure.contracts import company_filename
 from engine.company_theme_exposure.views import write_generation
 from engine.k3e_expectation_surface import QueryRefusal
@@ -72,6 +73,35 @@ def _leg_by_id(page: dict, leg_id: str) -> dict:
         if item["leg"] == leg_id:
             return item
     raise KeyError(leg_id)
+
+
+_REAL_CS_LEG = integrated_answer._leg_capital_structure
+
+
+def pin_capital_structure_leg(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pin the capital-structure leg to its typed absent shape.
+
+    Every page-composing test module mounts this pin (module autouse fixture
+    below, and inside ``_patch_all_seams``), so no test depends on the committed
+    ``data/capital_structure`` artifacts or on the leg's real resolution path.
+    The real leg over a served fixture generation is exercised by
+    tests/test_integrated_answer_cs_context_leg.py instead.
+    """
+
+    def _pinned(_ticker, *_args, **_kwargs) -> dict:
+        leg = integrated_answer._leg_shell("capital_structure") | {
+            "status": "absent",
+            "degraded_reason": "state_unavailable",
+        }
+        integrated_answer._apply_copy(leg)
+        return leg
+
+    monkeypatch.setattr(integrated_answer, "_leg_capital_structure", _pinned)
+
+
+@pytest.fixture(autouse=True)
+def _pin_capital_structure_leg(monkeypatch: pytest.MonkeyPatch) -> None:
+    pin_capital_structure_leg(monkeypatch)
 
 
 def _patch_all_seams(monkeypatch, *, ticker: str = "AAPL") -> None:
@@ -137,6 +167,7 @@ def _patch_all_seams(monkeypatch, *, ticker: str = "AAPL") -> None:
             ).hexdigest(),
         },
     })
+    pin_capital_structure_leg(monkeypatch)
 
 
 def test_flag_off_returns_404_before_entitlement(monkeypatch) -> None:
@@ -429,17 +460,23 @@ def test_stale_vs_page_stamp(monkeypatch) -> None:
     assert event["status"] != "stale"
 
 
-def test_h05_held_and_fixed_absent_legs(monkeypatch) -> None:
+def test_h05_absent_and_fixed_absent_legs(monkeypatch) -> None:
     monkeypatch.setattr(integrated_answer, "_k3e_source", lambda: (_ for _ in ()).throw(QueryRefusal("x")))
     monkeypatch.setattr(integrated_answer, "_expectation_chips", lambda _d: {})
     monkeypatch.setattr(integrated_answer, "_receipt_identity", lambda: (_ for _ in ()).throw(RuntimeError()))
     monkeypatch.setattr(integrated_answer, "_event_result", lambda _t: {"available": False})
     monkeypatch.setattr(integrated_answer, "_theme_context", lambda: None)
     monkeypatch.setattr(integrated_answer, "_cte_dir", lambda: Path("/nonexistent"))
+    # Un-pin the leg so this asserts the real leg over a missing projection.
+    monkeypatch.setattr(integrated_answer, "_leg_capital_structure", _REAL_CS_LEG)
+    monkeypatch.setattr(cs_api, "PROJECTION_PATH", Path("/nonexistent/capital_structure/projection.json"))
+    cs_api._reset_cache()
     page = _page(_client(monkeypatch), "AAPL")
     cs = _leg_by_id(page, "capital_structure")
-    assert cs["status"] == "held_unavailable"
-    assert "W4/W6" in cs["degraded_reason"]
+    assert cs["status"] == "absent"
+    assert cs["degraded_reason"] == "state_unavailable"
+    assert cs["copy"]["en"]
+    assert cs["copy"]["zh"]
     for leg_id in ("basket_labels", "theme_membership_file"):
         leg = _leg_by_id(page, leg_id)
         assert leg["status"] == "absent"
