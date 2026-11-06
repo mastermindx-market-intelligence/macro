@@ -3533,3 +3533,9 @@ html[data-theme="light"]{
   --gmi-hist-glow:  none;
 }
 /* ===== end GMI explorer extension ===== */
+
+/* Macro tablet: keep the Brain launcher compact without covering dashboard cards. */
+@media(max-width:1024px){
+  body.page-macro #mmb-launch{right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));padding:8px;gap:0}
+  body.page-macro #mmb-launch .lt{display:none}
+}

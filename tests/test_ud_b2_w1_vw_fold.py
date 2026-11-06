@@ -390,6 +390,28 @@ class TestUDB2W1VwFold:
         assert "grid-template-columns:minmax(0,1fr);" in mobile
 
 
+    def test_macro_brain_launcher_is_compact_through_tablet(self, macro_html):
+        """The Macro launcher stays an orb through tablet widths."""
+        projection = _shipping_projection(macro_html)
+        tablet = re.search(
+            r"@media\s*\(\s*max-width\s*:\s*1024px\s*\)\s*\{\s*"
+            r"body\.page-macro\s+#mmb-launch\s*\{([^{}]*)\}\s*"
+            r"body\.page-macro\s+#mmb-launch\s+\.lt\s*\{([^{}]*)\}",
+            projection,
+        )
+        assert tablet, "Macro needs a scoped compact Brain launcher through 1024px"
+        launcher = re.sub(r"\s+", "", tablet.group(1))
+        label = re.sub(r"\s+", "", tablet.group(2))
+        for declaration in (
+            "right:16px",
+            "bottom:calc(16px+env(safe-area-inset-bottom,0px))",
+            "padding:8px",
+            "gap:0",
+        ):
+            assert declaration in launcher, declaration
+        assert "display:none" in label, "The tablet launcher must hide its text label"
+
+
     def test_glance_cor1m_and_cor3m_labels_are_distinct(self, macro_html):
         """Glance rows 6/7 (cor1m / cor3m) must not share one label.
         Labels come from the engine's own names, not invented copy.
