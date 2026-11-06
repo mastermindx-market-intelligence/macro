@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ICHR-BULL-20260925",
-  "asof": "2026-11-04",
+  "asof": "2026-11-06",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 14.2,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 32.8
   },
   "geometry": {
-    "dist_to_stop_r": -0.975,
+    "dist_to_stop_r": -1.612,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 58.9,
-    "p1": -1.3169,
-    "p2": -0.6584,
+    "horizon_pct_used": 62.5,
+    "p1": -1.741,
+    "p2": -0.8705,
     "p3": null,
-    "move_r": -1.975,
+    "move_r": -2.612,
     "mfe_r": 0.031,
-    "mae_r": -1.981
+    "mae_r": -2.612
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.4100018310546858,
-  "_mae": -26.46999923706055,
+  "_mae": -34.889999313354494,
   "_max_p1": 0.020459173206321655,
   "_first_trigger_ts": "2026-10-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 33,
-  "tau": 0.5893,
+  "days_elapsed": 35,
+  "tau": 0.625,
   "closed": true,
   "outcome": "INVALIDATED"
 }
