@@ -74,7 +74,9 @@ def test_absent_brief_shows_honest_note():
     """No brief for a lens → an honest 'not generated yet' note, never a stray body."""
     html = _render()  # all briefs absent
     assert "has not generated yet" in html
-    assert '"aib2"' not in html  # no empty body frame when all absent
+    # Live placeholders recover through the entitled API without a page rebuild.
+    assert html.count('class="aib2"') == 3
+    assert 'data-status="unverified"' in html
 
 
 def test_toggle_tabs_present():
@@ -151,3 +153,4 @@ def test_no_template_links_deleted_brief_pages():
             if needle in src:
                 offenders.append(f"{path.name}: {needle}")
     assert not offenders, "templates still link retired brief pages: " + "; ".join(offenders)
+

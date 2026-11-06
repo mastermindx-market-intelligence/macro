@@ -252,8 +252,8 @@
 </div>
 
 {# Bodies are SERVER-rendered by the shared macro (build_aibrief.py loads the three
-   lens JSONs into master_brief / china_brief / btc_brief). aibrief.js now handles
-   only the cortex panel. Absent brief → an honest "not generated yet" note. #}
+   lens JSONs into master_brief / china_brief / btc_brief). aibrief.js refreshes these shared fragments through the entitled API. An absent
+   brief keeps a live placeholder so recovery does not need another page build. #}
 {% set _absent_en = 'This brief has not generated yet. It rebuilds on its own cadence from the dashboards — check back after the next run.' %}
 {% set _absent_zh = '该简报尚未生成。它按自身节奏由看板重新生成 — 请在下次运行后再查看。' %}
 
@@ -261,33 +261,21 @@
   <h2>🇺🇸 {{ t('Macro · cross-asset synthesis', '宏观 · 跨资产综合') }}
     {{ help('AI synthesis of the macro picture as one cross-asset read — US growth/inflation regime, the dollar, global liquidity, rates, commodities and crypto. RESEARCH CONTEXT only: it narrates the regime, flags conflicting signals and tests the liquidity-rotation thesis; it never feeds a score, signal or allocation. Can be wrong — verify against the panels.', 'AI 将宏观图景作为单一跨资产解读 — 美国增长／通胀周期、美元、全球流动性、利率、商品与加密货币。仅供研究参考：它解读周期、标注信号冲突并检验流动性轮动假设，绝不参与任何评分、信号或仓位。可能出错，请对照各面板核实。') }}
   </h2>
-  {% if master_brief is defined and master_brief and (master_brief.get('summary') or master_brief.get('tldr') or master_brief.get('regime_read') or master_brief.get('degraded_reason')) %}
-  {{ aib.aibrief_body(master_brief, 'macro', show_catalysts=True) }}
-  {% else %}
-  <p class="muted sm">{{ t(_absent_en, _absent_zh) }}</p>
-  {% endif %}
+  {{ aib.aibrief_body(master_brief if master_brief is defined else None, 'macro', show_catalysts=True) }}
 </div>
 
 <div class="panel ai-brief brief-tab" data-lens="china">
   <h2>🇨🇳 {{ t('China & Hong Kong synthesis', '中港综合') }}
     {{ help('An AI-generated synthesis of the China & Hong-Kong dashboards, with US macro, the dollar, global liquidity and commodities as backdrop. RESEARCH CONTEXT only — it narrates the regime, flags where signals conflict and tests the policy/liquidity thesis (A-shares mean-revert, so leaders read as extended); it never feeds a score, signal or allocation. Can be wrong or overconfident — verify against the underlying panels.', 'AI 对中港看板的综合分析，以美国宏观、美元、全球流动性与商品为背景。仅供研究参考——它解读周期、标注信号冲突并检验政策／流动性假设（A股均值回归，故强势股视为已拉伸），绝不参与任何评分、信号或仓位。可能出错或过度自信，请对照各底层面板核实。') }}
   </h2>
-  {% if china_brief is defined and china_brief and (china_brief.get('summary') or china_brief.get('tldr') or china_brief.get('regime_read') or china_brief.get('degraded_reason')) %}
-  {{ aib.aibrief_body(china_brief, 'china', show_catalysts=False) }}
-  {% else %}
-  <p class="muted sm">{{ t(_absent_en, _absent_zh) }}</p>
-  {% endif %}
+  {{ aib.aibrief_body(china_brief if china_brief is defined else None, 'china', show_catalysts=False) }}
 </div>
 
 <div class="panel ai-brief brief-tab" data-lens="btc">
   <h2>₿ {{ t('Bitcoin synthesis', '比特币综合') }}
     {{ help('An AI-generated synthesis of the Bitcoin Vector — cycle, valuation, leverage, on-chain activity and ETF flows, with US macro and global liquidity as backdrop (BTC as the long-duration tail of global liquidity). RESEARCH CONTEXT only — it never feeds a score, signal or allocation, and can be wrong or overconfident. Verify against the Bitcoin Vector panels.', 'AI 对比特币向量的综合分析 — 周期、估值、杠杆、链上活动与 ETF 资金流，以美国宏观与全球流动性为背景（比特币为全球流动性的长久期尾部）。仅供研究参考 — 绝不参与任何评分、信号或仓位，且可能出错或过度自信。请对照比特币向量面板核实。') }}
   </h2>
-  {% if btc_brief is defined and btc_brief and (btc_brief.get('summary') or btc_brief.get('tldr') or btc_brief.get('regime_read') or btc_brief.get('degraded_reason')) %}
-  {{ aib.aibrief_body(btc_brief, 'btc', show_catalysts=False) }}
-  {% else %}
-  <p class="muted sm">{{ t(_absent_en, _absent_zh) }}</p>
-  {% endif %}
+  {{ aib.aibrief_body(btc_brief if btc_brief is defined else None, 'btc', show_catalysts=False) }}
 </div>
 
 {# ── Panel C: The brief's own record (server-side) ────────────────────────────── #}
@@ -381,3 +369,4 @@
 </footer>
 </body>
 </html>
+

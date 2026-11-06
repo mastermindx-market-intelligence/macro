@@ -141,6 +141,7 @@ for unit in \
   macro-live-fast.service macro-live-fast.timer \
   macro-live-snapshot.service macro-live-snapshot.timer \
   macro-live-bars.service macro-live-bars.timer \
+  macro-live-aibrief.service macro-live-aibrief.timer \
   macro-live-prophet.service macro-live-prophet.timer \
   macro-live-closepass.service macro-live-closepass.timer \
   macro-live-breadth.service macro-live-breadth.timer
@@ -184,6 +185,7 @@ systemctl enable --now \
   macro-live-fast.timer \
   macro-live-snapshot.timer \
   macro-live-bars.timer \
+  macro-live-aibrief.timer \
   macro-live-prophet.timer \
   macro-live-closepass.timer \
   macro-live-breadth.timer >/dev/null
@@ -203,3 +205,4 @@ systemctl list-timers \
   macro-live-prophet.timer macro-live-closepass.timer macro-live-breadth.timer \
   --no-pager
 log "After production freshness is verified, set GitHub repository variable VPS_LIVE_PRIMARY=true."
+

@@ -59,16 +59,19 @@
      emitting <b>Head</b>: rest. Mirrors the ratified watch-row splitting idiom.
      No colon → whole string, unbolded (never raises). --#}
 {%- macro _split_en(s) -%}
-{%- if s and ':' in s -%}<b>{{ s.split(':',1)[0] }}</b>:{{ s.split(':',1)[1] }}{%- else -%}{{ s }}{%- endif -%}
+{%- if s and ':' in s -%}<b>{{ s.split(':',1)[0] | e }}</b>:{{ s.split(':',1)[1] | e }}{%- else -%}{{ s | e }}{%- endif -%}
 {%- endmacro -%}
 {%- macro _split_zh(s) -%}
-{%- if s and '：' in s -%}<b>{{ s.split('：',1)[0] }}</b>：{{ s.split('：',1)[1] }}{%- elif s and ':' in s -%}<b>{{ s.split(':',1)[0] }}</b>:{{ s.split(':',1)[1] }}{%- else -%}{{ s }}{%- endif -%}
+{%- if s and '：' in s -%}<b>{{ s.split('：',1)[0] | e }}</b>：{{ s.split('：',1)[1] | e }}{%- elif s and ':' in s -%}<b>{{ s.split(':',1)[0] | e }}</b>:{{ s.split(':',1)[1] | e }}{%- else -%}{{ s | e }}{%- endif -%}
 {%- endmacro -%}
 
-{% macro aibrief_body(brief, lens='macro', show_catalysts=False) %}
+{% macro aibrief_body(brief, lens='macro', show_catalysts=False, live=None) %}
+{% autoescape true %}
 {%- set b = brief or {} -%}
 {%- set bzh = b.get('zh') or {} -%}
 {%- set _asof = b.get('state_asof') -%}
+{%- set _live = live or {} -%}
+{%- set _current = _live.get('current', False) -%}
 {#-- header title varies per lens so the reader knows which market this reads --#}
 {%- set _titles = {
   'macro': ['AI Daily Brief · cross-asset synthesis', 'AI 每日简报 · 跨资产综合'],
@@ -76,7 +79,10 @@
   'btc':   ['AI Daily Brief · Bitcoin synthesis', 'AI 每日简报 · 比特币综合']
 } -%}
 {%- set _title = _titles.get(lens, _titles['macro']) -%}
-<div class="aib2" data-lens="{{ lens }}">
+<div class="aib2" data-lens="{{ lens }}" data-status="{{ _live.get('status', 'unverified') }}"
+     data-generated-at="{{ b.get('generated_at') or '' }}" data-state-asof="{{ _asof or '' }}"
+     data-refresh-days="{{ b.get('refresh_days') or (3 if lens == 'btc' else 1) }}"
+     data-valid-until="{{ _live.get('valid_until') or '' }}" data-sequence="{{ _live.get('sequence', 0) }}">
 
   {#-- 1 · HEADER STRIP — icon plate, title, as-of + cadence chip, house-law badge --#}
   <div class="aib2-hdr">
@@ -89,8 +95,8 @@
         {%- set _rd = b.get('refresh_days') -%}
         {%- if _rd %}
         <span class="aib2-cadence">
-          {%- if _rd == 1 -%}<span class="l-en">Updated daily</span><span class="l-zh">每日更新</span>
-          {%- else -%}<span class="l-en">Updated every {{ _rd }} days</span><span class="l-zh">每{{ _rd }}天更新</span>{%- endif -%}
+          {%- if _rd == 1 -%}<span class="l-en">Scheduled daily</span><span class="l-zh">计划每日更新</span>
+          {%- else -%}<span class="l-en">Scheduled every {{ _rd }} days</span><span class="l-zh">计划每{{ _rd }}天更新</span>{%- endif -%}
         </span>
         {%- endif -%}
       </div>
@@ -98,6 +104,24 @@
     {#-- HOUSE LAW: badge text is fixed — never delete or alter. --#}
     <span class="aib2-badge"><span class="l-en">A read-through of existing signals — not a signal source</span><span class="l-zh">仅为现有信号的汇总解读 — 非独立信号源</span></span>
   </div>
+
+  <div class="aib2-freshness" role="status" aria-live="polite">
+    <p class="aib2-status-text"><span class="l-en">{{ _live.get('message_en', 'This is the retained AI read. Verify its evidence date before using it; live freshness has not been checked.') }}</span><span class="l-zh">{{ _live.get('message_zh', '这是保留的 AI 解读。使用前请核对数据日期；尚未核验实时更新状态。') }}</span></p>
+    <p class="aib2-clocks"><span class="l-en">Evidence: {{ _asof or 'unavailable' }} · AI drafted: {{ b.get('generated_at') or 'unavailable' }}</span><span class="l-zh">数据日期：{{ _asof or '暂无' }} · AI 生成时间：{{ b.get('generated_at') or '暂无' }}</span></p>
+  </div>
+
+  {%- set _facts = _live.get('facts') or {} -%}
+  {%- if _facts.get('key_facts') and not _current %}
+  <div class="aib2-live-facts">
+    <h3><span class="l-en">Dashboard readings · {{ _facts.get('state_asof') or 'date unavailable' }}{% if not _facts.get('current') %} · older evidence{% endif %}</span><span class="l-zh">看板读数 · {{ _facts.get('state_asof') or '日期暂无' }}{% if not _facts.get('current') %} · 旧数据{% endif %}</span></h3>
+    <p><span class="l-en">Existing readings only; no new AI interpretation.</span><span class="l-zh">仅显示现有读数，未加入新的 AI 判断。</span></p>
+    <ul>{% for fact in _facts.get('key_facts') %}<li><span class="l-en">{{ fact.get('label_en') }}: {{ fact.get('value_en') }}</span><span class="l-zh">{{ fact.get('label_zh') or fact.get('label_en') }}：{{ fact.get('value_zh') or fact.get('value_en') }}</span></li>{% endfor %}</ul>
+  </div>
+  {%- endif %}
+
+  {% if not _current %}<details class="aib2-retained"><summary><span class="l-en">Previous AI read{% if _asof %} · evidence {{ _asof }}{% endif %}</span><span class="l-zh">历史 AI 解读{% if _asof %} · 数据日期 {{ _asof }}{% endif %}</span></summary>{% endif %}
+  <div class="aib2-content">
+  {% if not b %}<p><span class="l-en">This brief has not generated yet.</span><span class="l-zh">该简报尚未生成。</span></p>{% endif %}
 
   {%- set _tldr = b.get('tldr') or [] -%}
   {%- set _tldr_zh = bzh.get('tldr') or [] -%}
@@ -280,7 +304,12 @@
     <span class="l-zh">今日简报为降级运行：{{ b.get('degraded_reason') }}</span>
   </div>
   {%- endif -%}
-  {#-- caller() footer: each surface injects its own link-out / receipt line. --#}
-  {{ caller() if caller is defined else '' }}
+  </div>
+  {% if not _current %}</details>{% endif %}
+  {#-- Preserve the surface's navigation/footer when a live fragment replaces it. --#}
+  <div class="aib2-footer">{{ caller() if caller is defined else '' }}</div>
 </div>
+{% if live is none %}<script src="/aibrief.js?v=20261106-live1" defer></script>{% endif %}
+{% endautoescape %}
 {% endmacro %}
+

@@ -5068,6 +5068,7 @@ catalyst_tone:
 # Run one lens on-demand: `python -m engine.master_brain china --force`.
 # =============================================================================
 master_brain:
+  refresh_owner: vps_live         # sole publication owner; independent of nightly/HTML builds
   enabled: true                   # MASTER SWITCH — pipeline runs it only when true
   interval_days: 1                # regenerate the briefs every N days (1..7). 1 = every
                                   # build (default); >1 keeps the prior brief live and
@@ -7973,3 +7974,4 @@ odds:
     - AAOI
     - CRDO
     - ONDS
+

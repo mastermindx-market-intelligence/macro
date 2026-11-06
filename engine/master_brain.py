@@ -2719,6 +2719,11 @@ def run(persist: bool = True, root: Path | None = None, force: bool = False,
     LENS. Returns the brief, or None when disabled (unless `force`, for on-demand/CLI
     use) or the lens is unknown. NEVER raises into the pipeline."""
     cfg = _cfg()
+    if cfg.get("refresh_owner") == "vps_live":
+        # One production writer. The independently locked live lane consumes
+        # this engine's state/prompt; nightly/--force cannot race that owner.
+        log.info("AI Brief refresh is owned by the VPS live lane; see /api/status checks.ai_brief")
+        return None
     if not force and not cfg.get("enabled", False):
         return None
     spec = LENSES.get(lens)
@@ -2783,6 +2788,9 @@ def run_all(persist: bool = True, root: Path | None = None,
     """Run every configured lens (master_brain.lenses, default macro+china+btc).
     Returns {lens: brief}. Disabled (and not forced) -> {} . NEVER raises."""
     cfg = _cfg()
+    if cfg.get("refresh_owner") == "vps_live":
+        log.info("AI Brief refresh is owned by the VPS live lane; this nightly invocation does not dispatch")
+        return {}
     if not force and not cfg.get("enabled", False):
         return {}
     lenses = cfg.get("lenses") or list(LENSES.keys())
@@ -2805,9 +2813,12 @@ if __name__ == "__main__":
     results = ({ln: run(persist=True, force=force, lens=ln) for ln in want}
                if want else run_all(persist=True, force=force))
     if not results:
-        print("master_brain disabled — set master_brain.enabled: true, or pass --force")
+        print("AI Brief refresh is owned by the VPS live lane; freshness: /api/status checks.ai_brief"
+              if _cfg().get("refresh_owner") == "vps_live" else
+              "master_brain disabled — set master_brain.enabled: true, or pass --force")
     for ln, b in results.items():
         print(f"\n===== lens: {ln} =====")
         print(render_markdown(b) if b else "(none)")
         if b and b.get("degraded_reason"):
             print(f"[degraded: {b['degraded_reason']}]")
+

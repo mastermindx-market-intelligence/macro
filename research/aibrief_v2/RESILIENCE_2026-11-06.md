@@ -40,3 +40,66 @@ Principal retains architecture/integration/custody. Eligible bounded source inve
 ## Current frontier
 Initial source plan only. P1 in progress. Source/production outcome not complete.
 Next: trace run/persist/scheduler and incumbent Fabric composition; implement independent freshness consumer while preserving active provider writers.
+
+
+## Implementation milestone — 2026-11-06
+
+P1 diagnosis is complete for the observed failure. Production readback on the
+existing site VPS found all three served and canonical AI briefs unchanged since
+2026-10-18 (macro/China evidence 2026-10-16; BTC 2026-10-17), while primary macro
+data was 2026-11-05 and China data 2026-11-06. Installed source was
+`89597d42edfaacaa81e9e8f948083aa225a2f642`. No application Fabric client was
+installed and neither incumbent service environment selected
+`MM_PROVIDER_APPLICATION_MODE`. No credentials were printed or changed.
+
+The latest inspected nightly run, 42157007681, cancelled engine job
+127750399349; its AI Brief synthesis step was skipped. Run 42152297910 was
+SUCCESS with the engine skipped. The source also renders dashboard shells before
+the legacy synthesis step and swallows generation/publication failures. This
+proves concrete skipped-run and stale-presentation paths, not that every missed
+day had the same cause.
+
+Paid Fabric diagnostic run `ai-brief-source-diagnosis-20261106-c3` was reconciled
+on its original request/controller (PID 73050): REQUEST_REFUSED_BEFORE_LAUNCH,
+exit 75, no result, no worker start, execution absence proven for the correlated
+request, replay not allowed. No request was retried or re-homed. Direct source
+implementation continued under the no-eligible-pre-effect-worker exception; no
+native implementation worker substituted for paid Fabric. A native Sol adviser
+provided architectural judgment only, with no effects or source edits.
+
+P2/P3 source now implements:
+- an independent lane in the existing VPS orchestrator, with its existing lock,
+  atomic writer, resource bound and status mechanisms;
+- one private last-good/facts/attempt envelope per lens, pre-dispatch original
+  operation persistence, and sticky uncertain/refused-effect holds;
+- a consumer of the existing PR10740 application Fabric factory and llm_auth
+  interface, without a second account/router/credential/fallback plane;
+- explicit input qualification and a consumed-input fingerprint, including
+  same-date corrections, excluded-source disclosure and bounded refresh spend;
+- the existing authenticated API with the shared Jinja body, truthful cadence
+  and two separate clocks, a visible facts-only fallback and archived old reads;
+- bounded live browser loading, monotonic publication checks, late/stale-cache
+  rejection, private-content removal on auth denial and expiry while offline;
+- an idempotent deployment refresh of existing AI Brief fragments, preserving
+  the page shells/footer and never baking private live content into public HTML;
+- health based on content/evidence clocks in the existing freshness sentinel;
+- an explicit single-writer transition from the legacy nightly generation path.
+
+Local qualification at this milestone: 48 Python tests pass; 8 DOM scenarios
+pass using actual Jinja/view output; deployment shell syntax and JavaScript
+syntax pass. A headless Chromium download failed with invalid/truncated archive
+data; this is a tooling failure, not production browser proof or permission
+denial. DOM qualification is explicitly distinct from real browser acceptance.
+The new tests are registered in the existing CI manifest.
+
+P4 remains open: hosted checks, release enforcement, actual merge/deployment,
+Fabric owner installation/selection/admission, native durable turn reconciliation
+and an entitled production browser path. PR10740 was re-read at the same head
+`2ef828e569b683b9dfaa94f81116da3ac55f6186`: OPEN, DRAFT, conflicting. Its active
+carrier is protected. This operation has not merged, deployed, enabled a provider
+mode, run a production AI call, sent an operator message, or claimed acceptance.
+
+See `docs/AI_BRIEF_RUNTIME.md` for the complete runtime/failure contract and
+production acceptance requirements. Do not redo accepted diagnosis or the same
+unchanged tests; advance exact-head CI and the unresolved owner/release boundaries.
+

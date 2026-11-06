@@ -1,0 +1,11 @@
+[Unit]
+Description=Check AI Brief freshness independently of nightly dashboard builds
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=10min
+RandomizedDelaySec=30s
+Unit=macro-live-aibrief.service
+
+[Install]
+WantedBy=timers.target

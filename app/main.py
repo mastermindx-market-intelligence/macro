@@ -743,6 +743,11 @@ def status() -> dict:
 
     checks: dict = {}
 
+    # Content/evidence clocks, not file mtimes or a green timer, own AI freshness.
+    from lib.aibrief_live import health as _aibrief_health
+    checks["ai_brief"] = _aibrief_health(
+        REPO, Path(os.environ.get("MACRO_LIVE_STATE_DIR", "/var/lib/macro-live/state")))
+
     # site — the 3-min macro-update pull loop
     try:
         ctime = subprocess.check_output(
@@ -1075,6 +1080,12 @@ def require_site_full_user(user: dict = Depends(require_user)) -> dict:
     """Registered user now; site_full user when the paid launch switch is armed."""
     from app.paywall import enforce_site_full  # noqa: PLC0415
     return enforce_site_full(user)
+
+
+# AI Brief is a read of the existing private live publication. The dependency
+# above owns authentication/entitlement; GET never invokes an AI provider.
+from app.aibrief import create_router as _aibrief_router
+app.include_router(_aibrief_router(require_site_full_user, root=REPO))
 
 
 def _user_display_name(user: dict) -> str | None:
@@ -2926,3 +2937,4 @@ except Exception as _catalyst_secure_exc:  # noqa: BLE001
     _logging.getLogger("macro.api").error(
         "catalyst secure opt-in router unavailable (fail closed): %r",
         _catalyst_secure_exc)
+

@@ -372,6 +372,14 @@ PROPHET_LIVE_EMPTY_STATES_GRACE_PASSES = 2
 # at 26h; only the board-lag check waits.
 SURFACES: list[dict] = [
     {
+        "id": "ai_brief",
+        "kind": "page",
+        "path": "/api/status",
+        "bake_budget_hours": None,
+        "delay_budget_days": None,
+        "aibrief_health": True,
+    },
+    {
         "id": "us_stocks",
         "kind": "page",
         "path": "/us_stocks.html",
@@ -1343,6 +1351,11 @@ def check_surface(surface: dict, fr: FetchResult, now: datetime,
             out["detail"] = "not published yet (absence is a normal state here)"
         return out
 
+    if surface.get("aibrief_health"):
+        from lib.aibrief_live import health_verdict
+        out["status"], out["detail"] = health_verdict(fr.body, now=now)
+        return out
+
     problems: list[str] = []
     bake_budget_h = surface["bake_budget_hours"]
 
@@ -2295,7 +2308,7 @@ def run(now: datetime, base: str, r2_base: str, public_dir: Path, state_dir: Pat
         # every 30 minutes forever.
         results[s["id"]] = fetcher(
             root.rstrip("/") + s["path"],
-            want_body=s["delay_budget_days"] is not None or bool(s.get("asof_field")),
+            want_body=s["delay_budget_days"] is not None or bool(s.get("asof_field")) or bool(s.get("aibrief_health")),
         )
 
     # The reader's own artifacts, read off the same live plane. NOT surfaces:
@@ -2528,3 +2541,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

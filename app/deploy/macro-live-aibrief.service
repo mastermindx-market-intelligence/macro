@@ -1,0 +1,22 @@
+[Unit]
+Description=macro live AI Brief (existing Fabric owner, atomic last-good publication)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/macro
+# Reuse the application's existing trusted host selection and credential
+# environment. Provider eligibility still belongs to its incumbent owner.
+EnvironmentFile=-/etc/macro-api.env
+EnvironmentFile=-/etc/macro-live.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/macro/.venv/bin/python -m scripts.vps_live_orchestrator --lane aibrief
+TimeoutStartSec=10min
+KillMode=control-group
+Nice=10
+CPUQuota=90%
+MemoryMax=1G
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true

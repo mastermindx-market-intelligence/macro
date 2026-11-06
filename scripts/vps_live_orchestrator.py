@@ -426,6 +426,11 @@ class Orchestrator:
                 timeout=100,
             )
 
+    def aibrief(self) -> None:
+        """Independent AI Brief refresh; uses this owner's lock/status/publication."""
+        from scripts.refresh_aibrief_live import run
+        run(self)
+
     def snapshot(self) -> None:
         """Five-minute, network-heavy full snapshot followed by both basket pulses."""
         snapshot_stage = self.stage_dir / "quotes_full.json"
@@ -567,7 +572,7 @@ def _lock_lane(state_dir: Path, lane: str):
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--lane", choices=("fast", "snapshot", "bars"), required=True)
+    parser.add_argument("--lane", choices=("fast", "snapshot", "bars", "aibrief"), required=True)
     parser.add_argument(
         "--live-dir",
         default=os.environ.get("MACRO_LIVE_DIR", "/var/lib/macro-live/public/live"),
@@ -609,3 +614,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

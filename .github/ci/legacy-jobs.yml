@@ -27,6 +27,47 @@
 # unscoped — always-on is correct, not lazy.
 # ---------------------------------------------------------------------------
 jobs:
+  ai-brief-live-resilience:
+    # One consumer of the existing Fabric/runtime owners; no live provider effects.
+    if: ${{ false }}  # executed by the ordinary PR code pack
+    gate: code
+    paths:
+      - app/aibrief.py
+      - app/main.py
+      - engine/aibrief_runtime.py
+      - engine/master_brain.py
+      - lib/aibrief_live.py
+      - scripts/refresh_aibrief_live.py
+      - scripts/aibrief_shells.py
+      - scripts/vps_live_orchestrator.py
+      - scripts/freshness_sentinel.py
+      - app/deploy/macro-live-aibrief.service
+      - app/deploy/macro-live-aibrief.timer
+      - app/deploy/live-setup.sh
+      - app/deploy/live-rollback.sh
+      - app/deploy/update.sh
+      - templates/_aibrief_body.html.j2
+      - templates/_aibrief_css.j2
+      - templates/aibrief.js
+      - templates/aibrief.html.j2
+      - tests/test_aibrief_live.py
+      - tests/test_aibrief_fabric_boundary.py
+      - tests/aibrief_live_dom.cjs
+      - tests/build_aibrief_dom_fixture.py
+      - config.yml
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install brief read and failure-path test dependencies
+        run: pip install pytest "Jinja2>=3.1,<4" "fastapi>=0.115,<1" httpx
+      - name: qualify publication, source freshness, Fabric refusal and private reads
+        run: python -m pytest tests/test_aibrief_live.py tests/test_aibrief_fabric_boundary.py -q
+      - name: validate deployment shell syntax
+        run: bash -n app/deploy/update.sh app/deploy/live-setup.sh app/deploy/live-rollback.sh
   stock-identity-method-projection:
     if: ${{ false }}  # executed inside the ordinary PR code pack
     gate: code
@@ -52023,3 +52064,4 @@ jobs:
       # nightly or wire data commit can move this verdict.
       - name: GDELT client + both news leaves — query bounds, structural rejection, cache fences
         run: python -m pytest tests/test_gdelt_client.py tests/test_macro_news.py tests/test_news_vector.py -q
+
