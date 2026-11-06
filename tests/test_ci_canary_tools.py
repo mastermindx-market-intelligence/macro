@@ -1970,6 +1970,51 @@ def test_cache_update_publication_failure_leaves_no_usable_or_partial_seal(
     assert list(cache.glob(".last-update-ok.tmp.*")) == []
 
 
+
+def track_cache_publication_descriptors(
+    monkeypatch: pytest.MonkeyPatch, seal_tool: dict[str, object], cache: Path
+) -> tuple[dict[str, int], list[int]]:
+    """Observe only the two descriptors owned by this publication."""
+    handles: dict[str, int] = {}
+    closes: list[int] = []
+    real_open, real_close = os.open, os.close
+    temporary_module = seal_tool["tempfile"]
+    real_mkstemp = temporary_module.mkstemp
+
+    def tracked_open(path, flags, *args, **kwargs):
+        descriptor = real_open(path, flags, *args, **kwargs)
+        if Path(path) == cache:
+            handles["directory"] = descriptor
+        return descriptor
+
+    def tracked_mkstemp(*args, **kwargs):
+        descriptor, path = real_mkstemp(*args, **kwargs)
+        handles["seal"] = descriptor
+        return descriptor, path
+
+    def tracked_close(descriptor):
+        if descriptor in handles.values():
+            closes.append(descriptor)
+        return real_close(descriptor)
+
+    monkeypatch.setattr(os, "open", tracked_open)
+    monkeypatch.setattr(temporary_module, "mkstemp", tracked_mkstemp)
+    monkeypatch.setattr(os, "close", tracked_close)
+    return handles, closes
+
+
+def assert_cache_publication_descriptors_closed(
+    handles: dict[str, int], closes: list[int]
+) -> None:
+    assert set(handles) == {"directory", "seal"}
+    assert handles["directory"] != handles["seal"]
+    for descriptor in handles.values():
+        assert closes.count(descriptor) == 1
+        with pytest.raises(OSError) as closed:
+            os.fstat(descriptor)
+        assert closed.value.errno == 9
+
+
 def test_cache_update_short_payload_write_cannot_publish_or_be_reused(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -1978,6 +2023,7 @@ def test_cache_update_short_payload_write_cannot_publish_or_be_reused(
     lookup_digest = "a" * 64
     state = seal_tool["expected_state"](str(cache), sha, lookup_digest)
     fingerprint = seal_tool["state_fingerprint"](state)
+    handles, closes = track_cache_publication_descriptors(monkeypatch, seal_tool, cache)
     real_write = os.write
 
     def short_write(descriptor: int, payload: bytes) -> int:
@@ -1988,6 +2034,7 @@ def test_cache_update_short_payload_write_cannot_publish_or_be_reused(
     with pytest.raises(seal_tool["UnsafeState"], match="short.*write"):
         seal_tool["publish"](str(cache), sha, lookup_digest, fingerprint)
 
+    assert_cache_publication_descriptors_closed(handles, closes)
     assert "FULL_VALIDATION" not in capsys.readouterr().out
     assert not (cache / ".last-update-ok").exists()
     assert list(cache.glob(".last-update-ok.tmp.*")) == []
@@ -2004,6 +2051,7 @@ def test_cache_update_post_rename_fsync_failure_removes_only_this_publication(
     lookup_digest = "b" * 64
     state = seal_tool["expected_state"](str(cache), sha, lookup_digest)
     fingerprint = seal_tool["state_fingerprint"](state)
+    handles, closes = track_cache_publication_descriptors(monkeypatch, seal_tool, cache)
     real_fsync = os.fsync
 
     def fail_directory_fsync(descriptor: int) -> None:
@@ -2015,6 +2063,7 @@ def test_cache_update_post_rename_fsync_failure_removes_only_this_publication(
     with pytest.raises(seal_tool["UnsafeState"], match="durability"):
         seal_tool["publish"](str(cache), sha, lookup_digest, fingerprint)
 
+    assert_cache_publication_descriptors_closed(handles, closes)
     assert "FULL_VALIDATION" not in capsys.readouterr().out
     assert not (cache / ".last-update-ok").exists()
     assert list(cache.glob(".last-update-ok.tmp.*")) == []
@@ -2024,13 +2073,14 @@ def test_cache_update_post_rename_fsync_failure_removes_only_this_publication(
 
 
 def test_cache_update_publication_settlement_refuses_a_foreign_seal(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     _, _, cache, sha = cache_update_fixture(tmp_path)
     seal_tool = cache_seal_namespace()
     lookup_digest = "c" * 64
     state = seal_tool["expected_state"](str(cache), sha, lookup_digest)
     fingerprint = seal_tool["state_fingerprint"](state)
+    handles, closes = track_cache_publication_descriptors(monkeypatch, seal_tool, cache)
     seal = cache / ".last-update-ok"
     real_fsync = os.fsync
     substituted = False
@@ -2039,8 +2089,16 @@ def test_cache_update_publication_settlement_refuses_a_foreign_seal(
         nonlocal substituted
         if stat.S_ISDIR(os.fstat(descriptor).st_mode) and not substituted:
             substituted = True
+            original = os.fstat(handles["seal"])
+            installed = seal.stat()
+            assert (original.st_dev, original.st_ino) == (installed.st_dev, installed.st_ino)
             seal.unlink()
+            # The original inode must stay live even after its last link is gone,
+            # making this regression independent of filesystem inode reuse luck.
+            assert os.fstat(handles["seal"]).st_nlink == 0
             seal.write_text("foreign-state\n", encoding="utf-8")
+            foreign = seal.stat()
+            assert (foreign.st_dev, foreign.st_ino) != (original.st_dev, original.st_ino)
             raise OSError(5, "injected directory fsync failure")
         real_fsync(descriptor)
 
@@ -2048,8 +2106,109 @@ def test_cache_update_publication_settlement_refuses_a_foreign_seal(
     with pytest.raises(seal_tool["UnsafeState"], match="foreign"):
         seal_tool["publish"](str(cache), sha, lookup_digest, fingerprint)
 
+    assert_cache_publication_descriptors_closed(handles, closes)
+    assert "FULL_VALIDATION" not in capsys.readouterr().out
     assert seal.read_text(encoding="utf-8") == "foreign-state\n"
     assert list(cache.glob(".last-update-ok.tmp.*")) == []
+
+
+
+def test_cache_update_success_pins_the_seal_until_directory_durability(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _, _, cache, sha = cache_update_fixture(tmp_path)
+    seal_tool = cache_seal_namespace()
+    lookup_digest = "d" * 64
+    state = seal_tool["expected_state"](str(cache), sha, lookup_digest)
+    fingerprint = seal_tool["state_fingerprint"](state)
+    handles, closes = track_cache_publication_descriptors(monkeypatch, seal_tool, cache)
+    real_fsync = os.fsync
+    directory_synced = False
+
+    def observe_directory_fsync(descriptor: int) -> None:
+        nonlocal directory_synced
+        if descriptor == handles["directory"]:
+            owned_seal = os.fstat(handles["seal"])
+            installed = (cache / ".last-update-ok").stat()
+            assert (owned_seal.st_dev, owned_seal.st_ino) == (installed.st_dev, installed.st_ino)
+            assert closes == []
+            directory_synced = True
+        real_fsync(descriptor)
+
+    monkeypatch.setattr(os, "fsync", observe_directory_fsync)
+    seal_tool["publish"](str(cache), sha, lookup_digest, fingerprint)
+
+    assert directory_synced
+    assert_cache_publication_descriptors_closed(handles, closes)
+    assert "FULL_VALIDATION" in capsys.readouterr().out
+    assert list(cache.glob(".last-update-ok.tmp.*")) == []
+
+
+def test_cache_update_rename_failure_closes_both_publication_descriptors(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _, _, cache, sha = cache_update_fixture(tmp_path)
+    seal_tool = cache_seal_namespace()
+    lookup_digest = "e" * 64
+    state = seal_tool["expected_state"](str(cache), sha, lookup_digest)
+    fingerprint = seal_tool["state_fingerprint"](state)
+    handles, closes = track_cache_publication_descriptors(monkeypatch, seal_tool, cache)
+
+    def fail_rename(source, destination):
+        assert os.fstat(handles["seal"]).st_nlink == 1
+        raise OSError(5, "injected rename failure")
+
+    monkeypatch.setattr(os, "replace", fail_rename)
+    with pytest.raises(seal_tool["UnsafeState"], match="rename failure"):
+        seal_tool["publish"](str(cache), sha, lookup_digest, fingerprint)
+
+    assert_cache_publication_descriptors_closed(handles, closes)
+    assert "FULL_VALIDATION" not in capsys.readouterr().out
+    assert not (cache / ".last-update-ok").exists()
+    assert list(cache.glob(".last-update-ok.tmp.*")) == []
+
+
+@pytest.mark.parametrize("failure", ["seal-close", "temporary-unlink"])
+def test_cache_update_cleanup_failure_still_attempts_both_descriptor_closes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str], failure: str
+) -> None:
+    _, _, cache, sha = cache_update_fixture(tmp_path)
+    seal_tool = cache_seal_namespace()
+    lookup_digest = "f" * 64
+    state = seal_tool["expected_state"](str(cache), sha, lookup_digest)
+    fingerprint = seal_tool["state_fingerprint"](state)
+    handles, closes = track_cache_publication_descriptors(monkeypatch, seal_tool, cache)
+
+    if failure == "seal-close":
+        tracked_close = os.close
+
+        def fail_after_close(descriptor: int) -> None:
+            tracked_close(descriptor)
+            if descriptor == handles["seal"]:
+                raise OSError(5, "injected seal close failure")
+
+        monkeypatch.setattr(os, "close", fail_after_close)
+    else:
+        real_unlink = os.unlink
+
+        def fail_rename(source, destination):
+            raise OSError(5, "injected rename failure")
+
+        def fail_temporary_unlink(path, *args, **kwargs):
+            if Path(path).name.startswith(".last-update-ok.tmp."):
+                assert os.fstat(handles["seal"]).st_nlink == 1
+                raise OSError(5, "injected temporary unlink failure")
+            return real_unlink(path, *args, **kwargs)
+
+        monkeypatch.setattr(os, "replace", fail_rename)
+        monkeypatch.setattr(os, "unlink", fail_temporary_unlink)
+
+    with pytest.raises(OSError, match="injected (seal close|temporary unlink) failure"):
+        seal_tool["publish"](str(cache), sha, lookup_digest, fingerprint)
+
+    assert_cache_publication_descriptors_closed(handles, closes)
+    assert "FULL_VALIDATION" not in capsys.readouterr().out
 
 
 def test_cache_update_refuses_to_seal_object_context_that_changed_during_scan(

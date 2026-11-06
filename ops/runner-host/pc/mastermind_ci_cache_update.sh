@@ -334,8 +334,9 @@ def publish(cache_arg, main_oid, lookup_digest, validated_state_fingerprint):
                 % (written, len(payload))
             )
         os.fsync(descriptor)
-        os.close(descriptor)
-        descriptor = None
+        # Pin this exact object until publication or failure settlement finishes.
+        # Closing before rename allows a removed seal's inode to be reused by a
+        # foreign replacement that would match the historical device/inode pair.
         os.replace(temporary, seal)
         temporary = None
         published_identity = (temporary_stat.st_dev, temporary_stat.st_ino)
@@ -358,15 +359,21 @@ def publish(cache_arg, main_oid, lookup_digest, validated_state_fingerprint):
             raise
         raise UnsafeState("seal publication failed: %s" % exc) from exc
     finally:
-        if descriptor is not None:
-            os.close(descriptor)
-        if temporary is not None:
+        # Keep the object pinned through temporary-path settlement too. A cleanup
+        # failure must not skip either descriptor's one close attempt.
+        try:
+            if temporary is not None:
+                try:
+                    os.unlink(temporary)
+                except FileNotFoundError:
+                    pass
+        finally:
             try:
-                os.unlink(temporary)
-            except FileNotFoundError:
-                pass
-        if directory_fd is not None:
-            os.close(directory_fd)
+                if descriptor is not None:
+                    os.close(descriptor)
+            finally:
+                if directory_fd is not None:
+                    os.close(directory_fd)
     print(receipt("FULL_VALIDATION", main_oid, full_validated_at, None))
 
 
