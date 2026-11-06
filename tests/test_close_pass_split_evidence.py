@@ -494,3 +494,82 @@ def test_unrelated_valueerror_still_propagates(monkeypatch):
     monkeypatch.setattr(S,'_open_split_request',fail)
     with pytest.raises(ValueError,match='implementation defect'):
         S.acquire_split_history('SPY','2025-01-01','2026-01-01')
+
+
+def test_recording_boundary_rejects_late_revision_despite_old_event_date(monkeypatch, root):
+    first = retain(monkeypatch, root, page([event(split_to=2)]))
+    cutoff = first.receipt['owner_receipt_assembled_utc_ns']
+    revised = retain(monkeypatch, root, page([event(split_to=3)]))
+    reader = S.SplitEvidenceReader(root)
+    assert first.receipt['vintage_id'] == revised.receipt['vintage_id']
+    assert first.receipt['revision_id'] != revised.receipt['revision_id']
+    with pytest.raises(S.K.SourceNotFound, match='recorded after requested cutoff'):
+        reader.read_recorded_by(revised.receipt['receipt_id'], cutoff_utc_ns=cutoff)
+    snap = reader.read_recorded_by(first.receipt['receipt_id'], cutoff_utc_ns=cutoff)
+    assert snap.artifact['rows'][0]['split_to'] == '2'
+    assert snap.owner_receipt == first.receipt
+    assert snap.read_receipt['recording_boundary'] == {
+        'cutoff_utc_ns': cutoff,
+        'owner_receipt_assembled_utc_ns': cutoff,
+        'source_publication_utc_ns': None,
+        'generation_publication_utc_ns': None,
+        'historical_availability_proven': False,
+    }
+    assert snap.artifact['basis_eligible'] is False
+    assert snap.read_receipt['basis_eligible'] is False
+    receipt = dict(snap.read_receipt)
+    digest = receipt.pop('read_receipt_sha256')
+    assert digest == sha256(S.K._canonical_bytes(receipt)).hexdigest()
+
+
+@pytest.mark.parametrize('cutoff', [True, False, 0, -1, 1.0, '1', None])
+def test_recording_boundary_invalid_clock_does_not_read(monkeypatch, root, cutoff):
+    reader = S.SplitEvidenceReader(root)
+    def forbidden(*args, **kwargs):
+        raise AssertionError('invalid cutoff must fail before native read')
+    monkeypatch.setattr(reader, 'read', forbidden)
+    with pytest.raises(S.SplitEvidenceError, match='invalid_clock'):
+        reader.read_recorded_by('not-a-receipt', cutoff_utc_ns=cutoff)
+
+
+def test_recording_boundary_preserves_pinned_generation(monkeypatch, root):
+    first = retain(monkeypatch, root, page([event()]))
+    second = retain(monkeypatch, root, page([event('second')]))
+    reader = S.SplitEvidenceReader(root, generation_id=first.generation_id)
+    with pytest.raises(S.K.SourceNotFound, match='absent from the pinned generation'):
+        reader.read_recorded_by(second.receipt['receipt_id'],
+                                cutoff_utc_ns=second.receipt['owner_receipt_assembled_utc_ns'])
+
+
+@pytest.mark.parametrize('observed_status', ['complete', 'partial', 'failed'])
+def test_recording_boundary_never_upgrades_coverage(monkeypatch, root, observed_status):
+    responses = {
+        'complete': [page()],
+        'partial': [page([event()], next_url=S.ENDPOINT+'?cursor=x'), urllib.error.URLError('synthetic')],
+        'failed': [urllib.error.URLError('synthetic')],
+    }
+    stored = retain(monkeypatch, root, *responses[observed_status])
+    before = files(root)
+    snap = S.SplitEvidenceReader(root).read_recorded_by(
+        stored.receipt['receipt_id'], cutoff_utc_ns=stored.receipt['owner_receipt_assembled_utc_ns'])
+    assert snap.artifact == stored.artifact
+    assert snap.artifact['status'] == observed_status
+    assert snap.read_receipt['recording_boundary']['historical_availability_proven'] is False
+    assert snap.read_receipt['basis_eligible'] is False
+    assert files(root) == before
+
+
+def test_recorded_split_still_cannot_supply_dataos_publication_clock(monkeypatch, root):
+    from lib.dataos.read_contract import ReadRefusal, RefusalCode, eligible_rows
+    from lib.dataos.temporal import TemporalProfile
+
+    stored = retain(monkeypatch, root, page([event()]))
+    snap = S.SplitEvidenceReader(root).read_recorded_by(
+        stored.receipt['receipt_id'], cutoff_utc_ns=stored.receipt['owner_receipt_assembled_utc_ns'])
+    # Native rows have an execution date and local capture provenance, not an
+    # original provider-publication timestamp. The existing PIT consumer must
+    # continue to refuse; neither the cutoff receipt nor event date repairs it.
+    with pytest.raises(ReadRefusal) as exc:
+        eligible_rows(snap.artifact['rows'], TemporalProfile.SNAPSHOT_SERIES,
+                      cutoff='2026-12-31T23:59:59+00:00', clock='published_at')
+    assert exc.value.code is RefusalCode.MISSING_CLOCK_VALUE

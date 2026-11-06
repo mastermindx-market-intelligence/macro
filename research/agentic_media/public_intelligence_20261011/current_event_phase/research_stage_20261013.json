@@ -1,0 +1,764 @@
+{
+  "id": "press-research_desk-2026-10-13-6baf3247f154",
+  "desk": "research_desk",
+  "publication": "mastermind_research",
+  "as_of": "2026-10-13",
+  "staged_at": "2026-10-14T00:03:00Z",
+  "sources": [
+    "research_vault:marketdesk-ergkmhwhsow-e05c9a"
+  ],
+  "source_revisions": {},
+  "seed_refs": [
+    "artifact:data/gex/latest.json",
+    "artifact:data/market_state/latest.json",
+    "artifact:data/risk_radar/forward_log.jsonl",
+    "artifact:site/basketdata/breadth_split.json",
+    "artifact:site/basketdata/fear_greed.json",
+    "research_vault:marketdesk-ergkmhwhsow-e05c9a"
+  ],
+  "slot": {
+    "id": "press-research_desk-2026-10-13-6baf3247f154",
+    "desk": "research_desk",
+    "publication": "mastermind_research",
+    "byline": "Research Desk — Mastermind Research",
+    "cluster": "research-desk",
+    "as_of": "2026-10-13",
+    "model_key": "press_research",
+    "min_words": 500,
+    "max_words": 900,
+    "min_anchored_receipts": 4,
+    "allowed_links": [
+      "https://www.mastermind-x.com/research/gs-european-express-carbonomics-telcos-daimler-heidelberg-abi-macro-gl-e05c9a.html"
+    ],
+    "story": {
+      "kind": "research_report",
+      "title_hint": "GS European Express Carbonomics, Telcos, Daimler, Heidelberg, ABI, Macro, Global, Corporate Access",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "published_at": "2026-09-23T14:38:59Z",
+      "tickers": [],
+      "themes": []
+    },
+    "primary_source": {
+      "kind": "first_party",
+      "name": "Mastermind Research: GS European Express Carbonomics, Telcos, Daimler, Heidelberg, ABI, Macro, Global, Corporate Access",
+      "url": "https://www.mastermind-x.com/research/gs-european-express-carbonomics-telcos-daimler-heidelberg-abi-macro-gl-e05c9a.html",
+      "ref": "research_vault:marketdesk-ergkmhwhsow-e05c9a"
+    },
+    "sources": [
+      "research_vault:marketdesk-ergkmhwhsow-e05c9a"
+    ],
+    "seed_refs": [
+      "artifact:data/gex/latest.json",
+      "artifact:data/market_state/latest.json",
+      "artifact:data/risk_radar/forward_log.jsonl",
+      "artifact:site/basketdata/breadth_split.json",
+      "artifact:site/basketdata/fear_greed.json",
+      "research_vault:marketdesk-ergkmhwhsow-e05c9a"
+    ],
+    "facts": [
+      {
+        "id": "vault_point_0",
+        "text": "Carbonomics BTM Power Outlook: $55bn cumulative equipment opportunity for data centers by 2030 (67GW BTM power forecast), favoring Ceres Power, Weichai Power, Delta Electronics due to execution strength.",
+        "ref": "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/gs-european-express-carbonomics-telcos-daimler-heidelberg-abi-macro-gl-e05c9a.html",
+        "source_name": "Mastermind Research coverage of Goldman Sachs",
+        "dated": "2026-09-23"
+      },
+      {
+        "id": "vault_point_1",
+        "text": "Fed Dovish Shift: Core PCE slowed to 2.5% annualized, Fed abandoned no-hike forecast, signaling dovish shift impacting rate expectations and asset valuations.",
+        "ref": "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/gs-european-express-carbonomics-telcos-daimler-heidelberg-abi-macro-gl-e05c9a.html",
+        "source_name": "Mastermind Research coverage of Goldman Sachs",
+        "dated": "2026-09-23"
+      },
+      {
+        "id": "vault_point_2",
+        "text": "German Telco Consolidation: Bullish on telco consolidation (buy ratings on DT, United Internet, 1&1, Ionos, Vodafone) with modest cost efficiency gains.",
+        "ref": "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/gs-european-express-carbonomics-telcos-daimler-heidelberg-abi-macro-gl-e05c9a.html",
+        "source_name": "Mastermind Research coverage of Goldman Sachs",
+        "dated": "2026-09-23"
+      },
+      {
+        "id": "vault_point_3",
+        "text": "Daimler Truck Fundamentals: Robust North America demand (replacement-driven), 15-20% discount vs Chinese OEMs, feasible peak margins, Torc autonomous ops targeting.",
+        "ref": "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/gs-european-express-carbonomics-telcos-daimler-heidelberg-abi-macro-gl-e05c9a.html",
+        "source_name": "Mastermind Research coverage of Goldman Sachs",
+        "dated": "2026-09-23"
+      },
+      {
+        "id": "vault_meta",
+        "text": "The report is Goldman Sachs research published 2026-09-23, 8 pages.",
+        "ref": "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+        "tier": "first_party",
+        "values": [
+          "8"
+        ],
+        "url": "https://www.mastermind-x.com/research/gs-european-express-carbonomics-telcos-daimler-heidelberg-abi-macro-gl-e05c9a.html",
+        "source_name": "Mastermind Research vault",
+        "dated": "2026-09-23"
+      },
+      {
+        "id": "market_state_score",
+        "text": "Mastermind's market-state composite reads 50 of 100 (MIXED) as of 2026-10-12.",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "50"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-12"
+      },
+      {
+        "id": "market_state_trend",
+        "text": "Market-state component Trend & technicals scores 70 (weight 0.24).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "70",
+          "0.24"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-12"
+      },
+      {
+        "id": "market_state_risk",
+        "text": "Market-state component Risk appetite scores 27 (weight 0.18).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "27",
+          "0.18"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-12"
+      },
+      {
+        "id": "market_state_vol",
+        "text": "Market-state component volatility backdrop scores 84 (weight 0.16).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "84",
+          "0.16"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-12"
+      },
+      {
+        "id": "market_state_breadth",
+        "text": "Market-state component Breadth & participation scores 0 (weight 0.16).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "0",
+          "0.16"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-12"
+      },
+      {
+        "id": "gex_dia",
+        "text": "DIA dealer gamma is 0.05bn net with the gamma flip at 511.14; spot sits 0.33% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "0.05",
+          "511.14",
+          "0.33",
+          "512.82"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_iwm",
+        "text": "IWM dealer gamma is -4.45bn net with the gamma flip at 289.63; spot sits -4.17% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "-4.45",
+          "289.63",
+          "-4.17",
+          "278.03"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_ndx",
+        "text": "NDX dealer gamma is 2.35bn net with the gamma flip at 30232.43; spot sits 2.07% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "2.35",
+          "30232.43",
+          "2.07",
+          "30871.8"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_qqq",
+        "text": "QQQ dealer gamma is 0.92bn net with the gamma flip at 748.96; spot sits 0.24% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "0.92",
+          "748.96",
+          "0.24",
+          "750.79"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_rut",
+        "text": "RUT dealer gamma is -2.51bn net with the gamma flip at 2878.14; spot sits -2.69% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "-2.51",
+          "2878.14",
+          "-2.69",
+          "2802.66"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_spx",
+        "text": "SPX dealer gamma is 76.9bn net with the gamma flip at 7715.74; spot sits 0.95% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "76.9",
+          "7715.74",
+          "0.95",
+          "7790.1"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_spy",
+        "text": "SPY dealer gamma is 1.59bn net with the gamma flip at 775.05; spot sits 0.15% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "1.59",
+          "775.05",
+          "0.15",
+          "776.23"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "breadth_split",
+        "text": "As of 2026-10-08, 62.3% of the AI cohort is above its 50-day average against 27.0% of the non-AI cohort — a 35.3 point spread.",
+        "ref": "artifact:site/basketdata/breadth_split.json",
+        "tier": "first_party",
+        "values": [
+          "62.3",
+          "27.0",
+          "35.3",
+          "26.1",
+          "74.1"
+        ],
+        "url": null,
+        "source_name": "Mastermind breadth engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "fear_greed",
+        "text": "The Mastermind fear/greed dial reads 52 (Neutral) as of 2026-10-12, built from 11 qualifying legs.",
+        "ref": "artifact:site/basketdata/fear_greed.json",
+        "tier": "first_party",
+        "values": [
+          "52",
+          "11"
+        ],
+        "url": null,
+        "source_name": "Mastermind sentiment engine",
+        "dated": "2026-10-12"
+      },
+      {
+        "id": "risk_radar",
+        "text": "The risk radar is in `caution` with rates the dominant scare (score 70.3); modelled 21-session drawdown probability 0.19 as of 2026-10-12.",
+        "ref": "artifact:data/risk_radar/forward_log.jsonl",
+        "tier": "first_party",
+        "values": [
+          "70.3",
+          "0.19",
+          "0.1",
+          "0.042"
+        ],
+        "url": null,
+        "source_name": "Mastermind risk radar",
+        "dated": "2026-10-12"
+      }
+    ],
+    "raw_documents": [
+      {
+        "ref": "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+        "text": "Carbonomics BTM Power Outlook: $55bn cumulative equipment opportunity for data centers by 2030 (67GW BTM power forecast), favoring Ceres Power, Weichai Power, Delta Electronics due to execution strength. Fed Dovish Shift: Core PCE slowed to 2.5% annualized, Fed abandoned no-hike forecast, signaling dovish shift impacting rate expectations and asset valuations. German Telco Consolidation: Bullish on telco consolidation (buy ratings on DT, United Internet, 1&1, Ionos, Vodafone) with modest cost efficiency gains. Daimler Truck Fundamentals: Robust North America demand (replacement-driven), 15-20% discount vs Chinese OEMs, feasible peak margins, Torc autonomous ops targeting."
+      }
+    ],
+    "chronicle_context": {
+      "lines": [
+        {
+          "text": "[2026-10-11] Goldman Sachs: WUS (002463) — AI PCB Demand & Margins: Q3 2026 revenue up 5% QoQ to Rmb7.8bn with gross margin expanding to 37.6% (vs. 8% YoY) driven by AI server/switch upgrades, higher-margin PCB product mix, and capacity…; Earnings & TAM Revision: 2026–2028 earnings revised up 8%/4%/4% (vs. prior), AI server PCB TAM raised to US$38bn by 2027E, with high-speed networking PCBs growing at 63% CAGR (2026–2028).; Valuation Upside: Target price raised to Rmb148 (31.8% upside from current Rmb112.29), based on 23x 2027E P/E (vs.",
+          "source_ref": "marketdesk-wjsf6ezrbet-d10add",
+          "site_url": "/research/wus-002463-d10add.html",
+          "source_url": null,
+          "receipt": null
+        },
+        {
+          "text": "[2026-10-10] Goldman Sachs: China Weekly Kickstart MXCN gained 1 while A shares lost 1 — China's Domestic Resilience: Golden Week tourism (826m trips, Rmb 738bn spending) and 9% YoY outbound travel growth (Macau +11%, HK +9%) signal robust consumer recovery, countering trade tension…; Geopolitical Risk Surge: US-China relations barometer at 53 (geopolitics component 80) and FCC restrictions on Chinese labs + Huawei/Qualcomm patent deal heighten tensions, impacting capital flows…; 3Q Earnings Catalyst: Concentrated HADR (A+H) earnings window (Nov 8–15) drives market flows; positive profit alerts and offshore tech profit growth improvement offset flattened hard tech earnings…; Critical Valuation Divergence: MSCI China 12m forward P/E (25.7x) exceeds CSI300 (23.1x), with Health Care/Cons Staples overvalued in MSCI China (18.3x/11.2x vs. 9x/15.0x), signaling sector-specific…",
+          "source_ref": "marketdesk-8inwlunucuj-8950ab",
+          "site_url": "/research/china-weekly-kickstart-mxcn-gained-1-while-a-shares-lost-1-8950ab.html",
+          "source_url": null,
+          "receipt": null
+        }
+      ],
+      "narratives": [],
+      "coverage": {
+        "start": "2013-04-02",
+        "end": "2026-10-11",
+        "note": "chronicle coverage 2013-04-02..2026-10-11; 16 matching event(s) omitted to fit the 1200-token budget"
+      },
+      "budget_used": 356
+    },
+    "slug_hint": "gs-european-express-carbonomics-telcos-daimler-heidelberg-abi-macro-gl",
+    "triage": {
+      "tier": "flagship",
+      "rank": 1,
+      "w_score": 0.471433,
+      "w_score_pre_veto": 0.471433,
+      "components": {
+        "institution_tier": 0.5,
+        "cluster_density": 0.0,
+        "relevance": 0.333333,
+        "extraction_quality": 0.915417,
+        "attention_potential": 0.48,
+        "novelty": 0.5
+      },
+      "veto": null,
+      "scoring_version": "w2r.1",
+      "score_source": "planner-recomputed",
+      "datasketch_present": false,
+      "ordered": true
+    }
+  },
+  "attempts": [
+    {
+      "attempt": 0,
+      "ok": true,
+      "failed": [],
+      "our_value_share": 0.4557,
+      "max_block_jaccard": 0.0179,
+      "provider": "codex"
+    }
+  ],
+  "status": "passed",
+  "slug": "european-express-meets-a-mixed-market",
+  "draft": {
+    "title": "European Express Meets a Mixed Market",
+    "description": "Our reading of Goldman’s European Express: data-center power, telcos, trucks and policy meet a mixed market backdrop with clear crosscurrents.",
+    "slug": "european-express-meets-a-mixed-market",
+    "body_html": "<p class=\"press-byline\">Research Desk — Mastermind Research</p><h2>What the desk argued</h2><p>Mastermind Research’s coverage of Goldman Sachs’ 8-page European Express, published on 2026-09-23, brings together several distinct business cases under a macro lens. The clearest growth claim concerns behind-the-meter power for data centers: the desk sees a $55bn cumulative equipment opportunity by 2030 alongside a 67GW forecast for this power market.</p><p>That argument rests on execution rather than on demand alone. Ceres Power, Weichai Power and Delta Electronics are presented as companies positioned to benefit if projects move from planning into delivered capacity. The report also frames European telecom consolidation as a source of modest cost efficiency gains, while retaining a constructive view across DT, United Internet, 1&amp;1, Ionos and Vodafone.</p><p>Elsewhere, the desk highlights replacement-driven North American demand for Daimler Truck and describes a 15-20% discount against Chinese OEMs. Its case includes feasible peak margins and an operational target for Torc’s autonomous work. On macro conditions, it points to core PCE slowing to 2.5% annualized and interprets the Fed’s departure from its no-hike forecast as a softer turn for rate expectations and asset values.</p><p>The common thread is that company-specific execution, consolidation and replacement demand may matter even when the broader setting remains unsettled. Our <a href=\"https://www.mastermind-x.com/research/gs-european-express-carbonomics-telcos-daimler-heidelberg-abi-macro-gl-e05c9a.html\">coverage page</a> sets out the full desk read.</p><h2>What our data says</h2><p>Our market-state composite was 50 of 100, or MIXED, on 2026-10-12. That reading supports restraint around broad claims: the Trend &amp; technicals component scored 70, but Breadth &amp; participation scored 0. Stronger directional conditions therefore coexist with very limited participation.</p><p>Risk appetite scored 27 on 2026-10-12, while the volatility backdrop scored 84. The difference matters for the report’s execution-heavy themes. A favorable backdrop for some market mechanics does not establish a uniformly receptive environment for every growth or consolidation thesis.</p><p>The breadth split is particularly relevant to the data-center power argument. As of 2026-10-08, 62.3% of the AI cohort stood above its 50-day average, compared with 27.0% of the non-AI cohort. The 35.3 point spread shows that participation was concentrated rather than broadly shared.</p><p>Our risk radar remained in caution on 2026-10-12, with rates the dominant scare at 70.3 and a modelled 21-session drawdown probability of 0.19. That does not contradict the report’s lower-rate interpretation, but it does show that rate sensitivity remains the live fault line rather than a settled tailwind.</p><p>Dealer positioning also separates large-cap support from smaller-company fragility. SPX dealer gamma was 76.9bn net on 2026-10-08, while IWM was -4.45bn net and RUT was -2.51bn net. That contrast agrees with a selective reading of the desk’s themes and argues against treating them as one uniform market call.</p><h2>What would change the picture</h2><p>A broader improvement in participation would strengthen the case that the report’s opportunities are becoming less concentrated. Conversely, persistently weak breadth alongside low risk appetite would leave the current mixed assessment intact even if the 67GW power opportunity remains compelling on paper.</p><p>For the macro portion, a change in the rates signal would be decisive. The current 2.5% core PCE observation and the caution reading can coexist, but a clearer shift in either direction would alter how much weight to place on valuation support. For the company themes, evidence that execution, cost savings and replacement demand are translating into durable results would matter more than a general market move. For now, the appropriate conclusion is watch, do not chase.</p><p class=\"press-footer\">Educational content — not investment advice. Markets involve risk.</p>"
+  },
+  "validator_report": {
+    "ok": true,
+    "failed": [],
+    "checks": [
+      {
+        "name": "fact_anchor",
+        "ok": true,
+        "detail": "every number and quote resolves to a source fact",
+        "metrics": {
+          "numbers_checked": 22,
+          "unanchored": [],
+          "source_pool_size": 98,
+          "unsourced_quotes": []
+        }
+      },
+      {
+        "name": "claim_scope",
+        "ok": true,
+        "detail": "not a canonical claim-scoped slot",
+        "metrics": {
+          "active": false
+        }
+      },
+      {
+        "name": "close_paraphrase",
+        "ok": true,
+        "detail": "max block/source overlap 0.018 <= 0.18",
+        "metrics": {
+          "max_block_jaccard": 0.0179,
+          "doc_jaccard": 0.0031,
+          "threshold": 0.18,
+          "shingle_n": 5,
+          "worst_source": "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+          "worst_block": "That argument rests on execution rather than on demand alone. Ceres Power, Weichai Power and Delta Electronics are prese"
+        }
+      },
+      {
+        "name": "our_value",
+        "ok": true,
+        "detail": "our-value share 45.6% (>= floor 40%) over 33 sentence(s); 18 distinct receipt(s)",
+        "metrics": {
+          "our_value_share": 0.4557,
+          "floor": 0.4,
+          "our_words": 257,
+          "total_words": 564,
+          "granularity": "sentence",
+          "receipts": 18,
+          "receipt_values": [
+            55.0,
+            67.0,
+            15.0,
+            20.0,
+            2.5,
+            50.0,
+            100.0,
+            70.0,
+            27.0,
+            84.0,
+            62.3,
+            35.3,
+            70.3,
+            21.0,
+            0.19,
+            76.9,
+            -4.45,
+            -2.51
+          ],
+          "sentences": [
+            {
+              "words": 4,
+              "tier": "neutral"
+            },
+            {
+              "words": 22,
+              "tier": "neutral"
+            },
+            {
+              "words": 28,
+              "tier": "first_party"
+            },
+            {
+              "words": 10,
+              "tier": "neutral"
+            },
+            {
+              "words": 22,
+              "tier": "neutral"
+            },
+            {
+              "words": 29,
+              "tier": "neutral"
+            },
+            {
+              "words": 19,
+              "tier": "first_party"
+            },
+            {
+              "words": 14,
+              "tier": "neutral"
+            },
+            {
+              "words": 32,
+              "tier": "first_party"
+            },
+            {
+              "words": 20,
+              "tier": "neutral"
+            },
+            {
+              "words": 9,
+              "tier": "neutral"
+            },
+            {
+              "words": 4,
+              "tier": "neutral"
+            },
+            {
+              "words": 11,
+              "tier": "first_party"
+            },
+            {
+              "words": 18,
+              "tier": "first_party"
+            },
+            {
+              "words": 9,
+              "tier": "neutral"
+            },
+            {
+              "words": 12,
+              "tier": "first_party"
+            },
+            {
+              "words": 8,
+              "tier": "neutral"
+            },
+            {
+              "words": 20,
+              "tier": "neutral"
+            },
+            {
+              "words": 11,
+              "tier": "neutral"
+            },
+            {
+              "words": 22,
+              "tier": "first_party"
+            },
+            {
+              "words": 14,
+              "tier": "first_party"
+            },
+            {
+              "words": 25,
+              "tier": "first_party"
+            },
+            {
+              "words": 25,
+              "tier": "neutral"
+            },
+            {
+              "words": 9,
+              "tier": "neutral"
+            },
+            {
+              "words": 21,
+              "tier": "first_party"
+            },
+            {
+              "words": 21,
+              "tier": "neutral"
+            },
+            {
+              "words": 5,
+              "tier": "neutral"
+            },
+            {
+              "words": 17,
+              "tier": "neutral"
+            },
+            {
+              "words": 25,
+              "tier": "first_party"
+            },
+            {
+              "words": 13,
+              "tier": "neutral"
+            },
+            {
+              "words": 30,
+              "tier": "first_party"
+            },
+            {
+              "words": 25,
+              "tier": "neutral"
+            },
+            {
+              "words": 10,
+              "tier": "neutral"
+            }
+          ]
+        }
+      },
+      {
+        "name": "receipts",
+        "ok": true,
+        "detail": "19 distinct anchored receipt(s) (>= minimum 4)",
+        "metrics": {
+          "receipts": 19,
+          "minimum": 4,
+          "values": [
+            55.0,
+            67.0,
+            15.0,
+            20.0,
+            2.5,
+            50.0,
+            100.0,
+            70.0,
+            27.0,
+            84.0,
+            62.3,
+            35.3,
+            70.3,
+            21.0,
+            0.19,
+            76.9,
+            -4.45,
+            -2.51,
+            2.51
+          ]
+        }
+      },
+      {
+        "name": "quote_lint",
+        "ok": true,
+        "detail": "0 quote(s), longest 0 words",
+        "metrics": {
+          "quotes": 0,
+          "max_quotes": 2,
+          "max_quote_words": 25,
+          "oversized": []
+        }
+      },
+      {
+        "name": "banned_lexicon",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "advice_lexicon",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "cheese_test",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "ai_tells",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": [],
+          "not_only_but_also": 0,
+          "budget": 1
+        }
+      },
+      {
+        "name": "primary_source",
+        "ok": true,
+        "detail": "first-party slot: receipts carried inline (see our_value / receipts); no above-the-fold source link required",
+        "metrics": {
+          "kind": "first_party",
+          "url": "https://www.mastermind-x.com/research/gs-european-express-carbonomics-telcos-daimler-heidelberg-abi-macro-gl-e05c9a.html",
+          "named": null,
+          "linked": null
+        }
+      },
+      {
+        "name": "link_allowlist",
+        "ok": true,
+        "detail": "1 internal link(s), all public",
+        "metrics": {
+          "internal_links": 1,
+          "offenders": [],
+          "prefixes": [
+            "/research/",
+            "/blog/",
+            "/stocks/"
+          ]
+        }
+      },
+      {
+        "name": "byline",
+        "ok": true,
+        "detail": "desk byline present",
+        "metrics": {
+          "byline": "Research Desk — Mastermind Research",
+          "block": true,
+          "text": true
+        }
+      },
+      {
+        "name": "footer",
+        "ok": true,
+        "detail": "standing footer present",
+        "metrics": {
+          "block": true,
+          "text": true,
+          "required_text": "Educational content — not investment advice. Markets involve risk."
+        }
+      },
+      {
+        "name": "frontmatter",
+        "ok": true,
+        "detail": "frontmatter matches the free-estate contract",
+        "metrics": {
+          "title_len": 37,
+          "description_len": 142,
+          "slug": "european-express-meets-a-mixed-market",
+          "problems": [],
+          "upstream": ""
+        }
+      },
+      {
+        "name": "length",
+        "ok": true,
+        "detail": "564 words (budget 500–900)",
+        "metrics": {
+          "words": 564,
+          "min_words": 500,
+          "max_words": 900
+        }
+      },
+      {
+        "name": "self_similarity",
+        "ok": true,
+        "detail": "no own posts in the last 30 days and nothing staged — nothing to compare",
+        "metrics": {
+          "max_jaccard": 0.0,
+          "threshold": 0.18,
+          "peers": 0
+        }
+      }
+    ],
+    "our_value_share": 0.4557,
+    "our_value_granularity": "sentence",
+    "receipts": 19,
+    "max_block_jaccard": 0.0179,
+    "doc_jaccard": 0.0031,
+    "words": 564,
+    "slug": "european-express-meets-a-mixed-market",
+    "desk": "research_desk",
+    "publication": "mastermind_research"
+  },
+  "provider": "codex",
+  "model": "claude-sonnet-4-6"
+}

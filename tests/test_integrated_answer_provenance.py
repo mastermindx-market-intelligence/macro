@@ -14,6 +14,7 @@ from pathlib import Path
 import pytest
 
 import app.integrated_answer as integrated_answer
+from tests.test_integrated_answer_v0 import pin_capital_structure_leg
 from engine.company_theme_exposure.views import build_bundle, write_generation
 from engine.k3e_expectation_surface import QueryRefusal
 from tests.test_company_theme_exposure import _company_tree, _crosswalk, _membership, _state
@@ -100,6 +101,7 @@ def _leg(page: dict, leg_id: str) -> dict:
 
 def _silence(monkeypatch) -> None:
     """Every reader answers absent. Tests override the legs they care about."""
+    pin_capital_structure_leg(monkeypatch)
     monkeypatch.setattr(integrated_answer, "_utc_now", lambda: COMPOSED_AT)
     monkeypatch.setenv("MACRO_CTE_DIR", "/nonexistent/cte-provenance-test")
     monkeypatch.setattr(
