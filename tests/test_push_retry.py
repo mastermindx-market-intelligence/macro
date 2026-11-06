@@ -3700,3 +3700,41 @@ def test_hold_recovery_preserves_the_callers_errexit_and_reports_failure(tmp_pat
     report = next(line for line in result.stdout.splitlines() if line.startswith("rc="))
     assert report.startswith("rc=1 ")
     assert ("e" in report.split("flags=", 1)[1]) is errexit
+
+
+def test_us_board_unreadable_state_cannot_hide_an_unreconciled_ref(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    held = b"old\n" + b"R" * 60
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+    first = _run_us_board_commit(repo, **_hold_env(tmp_path, "1301"))
+    assert first.returncode == 1, first.stdout + first.stderr
+    refs = _hold_refs(bare)
+    assert len(refs) == 1
+    lane = _clone_of(bare, tmp_path / "next-lane")
+    env = _hold_env(tmp_path, "1302")
+    state = Path(env["RUNNER_TEMP"]) / "push_hold.1302.us_board_ledgers"
+    state.mkdir()
+    (state / "unreconciled").write_text(refs[0] + "\n")
+    board = lane / "data/us_board_ledger/snapshots.jsonl"
+    rotation = lane / "data/us_sector_rotation/latest.json"
+    board.write_text("small later source\n")
+    rotation.write_text("small later projection\n")
+    _git_output(lane, "add", "data/us_board_ledger/snapshots.jsonl")
+    index_before = _git_output(lane, "write-tree")
+    before = _git_output(bare, "rev-parse", "main")
+    state.chmod(0)
+    try:
+        assert not os.access(state, os.R_OK | os.W_OK | os.X_OK)
+        recovery = _run_us_board_commit(lane, "--recover", **env)
+        assert recovery.returncode == 1, recovery.stdout + recovery.stderr
+        result = _run_us_board_commit(lane, **env)
+        assert result.returncode == 1, result.stdout + result.stderr
+        assert _git_output(bare, "rev-parse", "main") == before
+        assert _git_output(lane, "write-tree") == index_before
+        assert board.read_text() == "small later source\n"
+        assert rotation.read_text() == "small later projection\n"
+        assert _hold_refs(bare) == refs
+        entries, _ = _manifest(bare, refs[0])
+        assert _rebuild(bare, refs[0], entries[0]) == held
+    finally:
+        state.chmod(0o700)

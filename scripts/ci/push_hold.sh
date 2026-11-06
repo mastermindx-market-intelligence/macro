@@ -534,6 +534,10 @@ push_hold_recovery_ok() {
     echo "::error title=held rows not restored::could not prepare recovery state"
     return 1
   }
+  if [ ! -r "$PUSH_HOLD_STATE" ] || [ ! -w "$PUSH_HOLD_STATE" ] || [ ! -x "$PUSH_HOLD_STATE" ]; then
+    echo "::error title=held rows not restored::recovery state cannot be inspected and updated"
+    return 1
+  fi
   if [ -e "$PUSH_HOLD_STATE/unreconciled" ] || [ -L "$PUSH_HOLD_STATE/unreconciled" ]; then
     if [ ! -f "$PUSH_HOLD_STATE/unreconciled" ] || [ ! -r "$PUSH_HOLD_STATE/unreconciled" ] || [ -s "$PUSH_HOLD_STATE/unreconciled" ]; then
       echo "::error title=held rows not restored::unreconciled recovery state blocks new source publication"
