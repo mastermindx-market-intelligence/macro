@@ -63,7 +63,7 @@ _push_hold_work_reset() {
     *push_hold.*) ;;
     *) return 1 ;;
   esac
-  rm -rf "$PUSH_HOLD_STATE/work"
+  rm -rf "$PUSH_HOLD_STATE/work" || return 1
   mkdir -p "$PUSH_HOLD_STATE/work" || return 1
   PUSH_HOLD_WORK="$PUSH_HOLD_STATE/work"
   PUSH_HOLD_INDEX="$PUSH_HOLD_WORK/index"
@@ -113,9 +113,9 @@ _push_hold_save_groups() {
   local i=0 g
   for g in "$@"; do
     i=$((i + 1))
-    printf '%s\n' "$g" > "$PUSH_HOLD_WORK/g.$i"
+    printf '%s\n' "$g" > "$PUSH_HOLD_WORK/g.$i" || return 1
   done
-  printf '%s\n' "$i" > "$PUSH_HOLD_WORK/group.count"
+  printf '%s\n' "$i" > "$PUSH_HOLD_WORK/group.count" || return 1
   return 0
 }
 
@@ -228,18 +228,51 @@ _push_hold_verify_commit() {
 }
 
 _push_hold_push_ref() {
-  local commit="$1" ref="$2" try=1 line remote_sha
+  local commit="$1" ref="$2" try=1 line remote_sha remote_ref push_output push_rc
   while [ "$try" -le "$PUSH_HOLD_TRIES" ]; do
-    if perl -e 'alarm 120; exec @ARGV or die' -- git push origin "${commit}:${ref}"; then
-      line=$(git ls-remote origin "$ref" 2>/dev/null) || line=""
+    push_rc=0
+    push_output=$(perl -e 'alarm 120; exec @ARGV or die' -- git push origin "${commit}:${ref}" 2>&1) || push_rc=$?
+    [ -z "$push_output" ] || printf '%s\n' "$push_output"
+    # A failed client can still have installed the ref. Reconcile this exact
+    # immutable target before deciding whether another attempt is admissible.
+    if ! line=$(perl -e 'alarm 120; exec @ARGV or die' -- git ls-remote --refs origin "$ref" 2>/dev/null); then
+      _push_hold_mark_unreconciled "$ref" "EFFECT_UNKNOWN: could not read back intended commit ${commit}" || true
+      echo "::error title=hold custody failed::EFFECT_UNKNOWN ${ref} -> ${commit}; no retry or local revert"
+      return 2
+    fi
+    if [ "$line" = "${commit}"$'\t'"${ref}" ]; then
+      return 0
+    fi
+    if [ -n "$line" ]; then
       remote_sha=${line%%$'\t'*}
-      if [ -n "$remote_sha" ] && [ "$remote_sha" = "$commit" ]; then
-        return 0
+      remote_ref=${line#*$'\t'}
+      case "$remote_sha" in
+        *[!0-9a-f]*|"") remote_sha="" ;;
+      esac
+      if [ -n "$remote_sha" ] && [ "${#remote_sha}" -eq "${#commit}" ] && [ "$remote_ref" = "$ref" ]; then
+        _push_hold_mark_unreconciled "$ref" "custody collision: observed ${remote_sha}, intended ${commit}" || true
+        echo "::error title=hold custody failed::collision at ${ref}: observed ${remote_sha}, intended ${commit}; no retry or overwrite"
+      else
+        _push_hold_mark_unreconciled "$ref" "EFFECT_UNKNOWN: malformed readback for intended commit ${commit}" || true
+        echo "::error title=hold custody failed::EFFECT_UNKNOWN invalid exact-ref readback for ${ref} -> ${commit}; no retry or local revert"
       fi
+      return 2
+    fi
+    # Only a successful lookup with no matching ref proves absence. Even then,
+    # an explicit authorization/rules rejection is terminal, not contention.
+    if [ "$push_rc" -ne 0 ]; then
+      case "$push_output" in
+        *GH006*|*GH013*|*"Permission denied"*|*"permission denied"*|*"Permission to "*denied*|*"Authentication failed"*|*"authentication failed"*|*"Write access"*|*"write access"*|*"403"*|*"protected branch"*|*"Repository rule violations"*|*"pre-receive hook declined"*)
+          _push_hold_mark_unreconciled "$ref" "terminal push rejection for intended commit ${commit}" || true
+          echo "::error title=hold custody failed::${ref} absent after terminal push rejection; no retry"
+          return 2
+          ;;
+      esac
     fi
     try=$((try + 1))
   done
-  echo "::error title=hold custody failed::${ref} was not verified on origin after ${PUSH_HOLD_TRIES} tries"
+  _push_hold_mark_unreconciled "$ref" "custody not established for ${commit}; confirmed absent after ${PUSH_HOLD_TRIES} tries" || true
+  echo "::error title=hold custody failed::${ref} was confirmed absent after ${PUSH_HOLD_TRIES} tries for ${commit}"
   return 2
 }
 
@@ -309,12 +342,12 @@ _push_hold_base_ok() {
 }
 
 _push_hold_mark_unreconciled() {
-  local ref="$1" reason="$2" msg
-  printf '%s\n' "$ref" >> "$PUSH_HOLD_STATE/unreconciled"
+  local ref="$1" reason="$2" msg rc=0
+  printf '%s\n' "$ref" >> "$PUSH_HOLD_STATE/unreconciled" || rc=1
   msg="${ref}: ${reason}. The ref is kept."
   echo "::error title=held rows not restored::${msg}"
   _push_hold_summary "$msg"
-  return 0
+  return "$rc"
 }
 
 _push_hold_record_recovered() {
@@ -323,7 +356,7 @@ _push_hold_record_recovered() {
   while IFS= read -r line || [ -n "$line" ]; do
     [ -n "$line" ] || continue
     _push_hold_load_ent "$line"
-    printf '%s\t%s\n' "$ref" "$PH_PATH" >> "$PUSH_HOLD_STATE/recovered"
+    printf '%s\t%s\n' "$ref" "$PH_PATH" >> "$PUSH_HOLD_STATE/recovered" || return 1
   done < "$PUSH_HOLD_WORK/ent.$n"
   return 0
 }
@@ -338,6 +371,7 @@ _push_hold_delete_remote() {
 
 _push_hold_refs_share_path() {
   local a="$1" b="$2" la lb pa pb
+  [ -r "$PUSH_HOLD_WORK/ent.$a" ] && [ -r "$PUSH_HOLD_WORK/ent.$b" ] || return 2
   while IFS= read -r la || [ -n "$la" ]; do
     [ -n "$la" ] || continue
     _push_hold_load_ent "$la"
@@ -356,14 +390,14 @@ _push_hold_refs_share_path() {
 
 _push_hold_parse_manifest() {
   local n="$1" line first=1 rest i path blob size headblob layout
-  : > "$PUSH_HOLD_WORK/ent.$n"
-  : > "$PUSH_HOLD_WORK/from.$n"
+  : > "$PUSH_HOLD_WORK/ent.$n" || return 1
+  : > "$PUSH_HOLD_WORK/from.$n" || return 1
   while IFS= read -r line || [ -n "$line" ]; do
     if [ "$first" -eq 1 ]; then
       first=0
       if [ "$line" != "push-hold/v1" ]; then
-        printf '%s\n' "manifest is not push-hold/v1" > "$PUSH_HOLD_WORK/why.$n"
-        printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n"
+        printf '%s\n' "manifest is not push-hold/v1" > "$PUSH_HOLD_WORK/why.$n" || return 1
+        printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n" || return 1
         return 1
       fi
       continue
@@ -382,49 +416,49 @@ _push_hold_parse_manifest() {
         headblob=${rest%%$'\t'*}
         layout=${rest#*$'\t'}
         if [ -z "$layout" ] || [ -z "$path" ] || [ -z "$blob" ]; then
-          printf '%s\n' "manifest entry is incomplete" > "$PUSH_HOLD_WORK/why.$n"
-          printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n"
+          printf '%s\n' "manifest entry is incomplete" > "$PUSH_HOLD_WORK/why.$n" || return 1
+          printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n" || return 1
           return 1
         fi
         if ! _push_hold_path_in_any "$path"; then
-          printf '%s\n' "entry ${path} belongs to no declared group" > "$PUSH_HOLD_WORK/why.$n"
-          printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n"
+          printf '%s\n' "entry ${path} belongs to no declared group" > "$PUSH_HOLD_WORK/why.$n" || return 1
+          printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n" || return 1
           return 1
         fi
-        printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$i" "$path" "$blob" "$size" "$headblob" "$layout" >> "$PUSH_HOLD_WORK/ent.$n"
+        printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$i" "$path" "$blob" "$size" "$headblob" "$layout" >> "$PUSH_HOLD_WORK/ent.$n" || return 1
         ;;
       from$'\t'*)
-        printf '%s\n' "${line#from$'\t'}" >> "$PUSH_HOLD_WORK/from.$n"
+        printf '%s\n' "${line#from$'\t'}" >> "$PUSH_HOLD_WORK/from.$n" || return 1
         ;;
       run$'\t'*|scope$'\t'*|head$'\t'*|"")
         ;;
       *)
-        printf '%s\n' "manifest line not understood" > "$PUSH_HOLD_WORK/why.$n"
-        printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n"
+        printf '%s\n' "manifest line not understood" > "$PUSH_HOLD_WORK/why.$n" || return 1
+        printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n" || return 1
         return 1
         ;;
     esac
   done < "$PUSH_HOLD_WORK/man.$n"
   if [ "$first" -eq 1 ]; then
-    printf '%s\n' "manifest is not push-hold/v1" > "$PUSH_HOLD_WORK/why.$n"
-    printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n"
+    printf '%s\n' "manifest is not push-hold/v1" > "$PUSH_HOLD_WORK/why.$n" || return 1
+    printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n" || return 1
     return 1
   fi
-  printf '%s\n' "ok" > "$PUSH_HOLD_WORK/st.$n"
+  printf '%s\n' "ok" > "$PUSH_HOLD_WORK/st.$n" || return 1
   return 0
 }
 
 _push_hold_apply_ref() {
   local n="$1" ref localref line dest got all_landed can_apply why st path
-  ref=$(cat "$PUSH_HOLD_WORK/ref.$n") || return 0
-  localref=$(cat "$PUSH_HOLD_WORK/local.$n") || return 0
+  ref=$(cat "$PUSH_HOLD_WORK/ref.$n") || return 1
+  localref=$(cat "$PUSH_HOLD_WORK/local.$n") || return 1
   if [ ! -s "$PUSH_HOLD_WORK/ent.$n" ]; then
     _push_hold_mark_unreconciled "$ref" "manifest has no entries"
-    return 0
+    return 1
   fi
   mkdir -p "$PUSH_HOLD_WORK/rb.$n" || {
     _push_hold_mark_unreconciled "$ref" "could not stage rebuilt bytes"
-    return 0
+    return 1
   }
   all_landed=1
   can_apply=1
@@ -435,12 +469,12 @@ _push_hold_apply_ref() {
     dest="$PUSH_HOLD_WORK/rb.$n/$PH_I"
     if ! _push_hold_rebuild_to "$localref" "$PH_I" "$PH_LAYOUT" "$dest"; then
       _push_hold_mark_unreconciled "$ref" "could not rebuild ${PH_PATH}"
-      return 0
+      return 1
     fi
     got=$(git hash-object "$dest" 2>/dev/null) || got=""
     if [ "$got" != "$PH_BLOB" ]; then
       _push_hold_mark_unreconciled "$ref" "rebuilt bytes for ${PH_PATH} do not match ${PH_BLOB}"
-      return 0
+      return 1
     fi
     if ! _push_hold_entry_landed "$dest" "$PH_PATH"; then
       all_landed=0
@@ -465,7 +499,7 @@ _push_hold_apply_ref() {
   fi
   if [ "$can_apply" -ne 1 ]; then
     _push_hold_mark_unreconciled "$ref" "$why"
-    return 0
+    return 1
   fi
   while IFS= read -r line || [ -n "$line" ]; do
     [ -n "$line" ] || continue
@@ -474,71 +508,93 @@ _push_hold_apply_ref() {
     path=$PH_PATH
     mkdir -p -- "$(dirname -- "$path")" || {
       _push_hold_mark_unreconciled "$ref" "could not create ${path}"
-      return 0
+      return 1
     }
     if ! cat "$dest" > "$path"; then
       _push_hold_mark_unreconciled "$ref" "could not write ${path}"
-      return 0
+      return 1
     fi
     got=$(git hash-object "$path" 2>/dev/null) || got=""
     if [ "$got" != "$PH_BLOB" ]; then
       _push_hold_mark_unreconciled "$ref" "wrote ${path} but bytes do not match ${PH_BLOB}"
-      return 0
+      return 1
     fi
   done < "$PUSH_HOLD_WORK/ent.$n"
-  _push_hold_record_recovered "$n" || _push_hold_mark_unreconciled "$ref" "could not record recovery"
+  if ! _push_hold_record_recovered "$n"; then
+    _push_hold_mark_unreconciled "$ref" "could not record recovery"
+    return 1
+  fi
+  return 0
+}
+
+# Admission is distinct from push_hold_red: a legitimate current-run hold and
+# successfully recovered rows do not mean an older ref is unreconciled.
+push_hold_recovery_ok() {
+  _push_hold_prepare_state || {
+    echo "::error title=held rows not restored::could not prepare recovery state"
+    return 1
+  }
+  if [ -e "$PUSH_HOLD_STATE/unreconciled" ] || [ -L "$PUSH_HOLD_STATE/unreconciled" ]; then
+    if [ ! -f "$PUSH_HOLD_STATE/unreconciled" ] || [ ! -r "$PUSH_HOLD_STATE/unreconciled" ] || [ -s "$PUSH_HOLD_STATE/unreconciled" ]; then
+      echo "::error title=held rows not restored::unreconciled recovery state blocks new source publication"
+      return 1
+    fi
+  fi
   return 0
 }
 
 _push_hold_recover_impl() {
-  local ls_out line ref tail localref n i j fromref st why
-  _push_hold_state_var || return 0
-  ls_out=$(git ls-remote origin "${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}/*" 2>/dev/null) || {
-    _push_hold_prepare_state || return 0
-    printf '%s\n' "ls-remote" >> "$PUSH_HOLD_STATE/unreconciled"
+  local ls_out line ref tail localref n i j fromref st why rc failed=0
+  push_hold_recovery_ok || return 1
+  ls_out=$(perl -e 'alarm 120; exec @ARGV or die' -- git ls-remote origin "${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}/*" 2>/dev/null) || {
+    _push_hold_prepare_state || return 1
+    printf '%s\n' "ls-remote" >> "$PUSH_HOLD_STATE/unreconciled" || return 1
     echo "::error title=held rows not restored::ls-remote failed for ${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}. The ref is kept."
     _push_hold_summary "ls-remote failed for ${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}. The ref is kept."
-    return 0
+    return 1
   }
   [ -n "$ls_out" ] || return 0
-  _push_hold_work_reset || return 0
-  _push_hold_save_groups "$@" || return 0
-  printf '%s\n' "$ls_out" > "$PUSH_HOLD_WORK/lsremote"
+  _push_hold_work_reset || return 1
+  _push_hold_save_groups "$@" || return 1
+  printf '%s\n' "$ls_out" > "$PUSH_HOLD_WORK/lsremote" || return 1
   n=0
   while IFS= read -r line; do
     [ -n "$line" ] || continue
     ref=${line#*$'\t'}
     [ -n "$ref" ] || continue
     n=$((n + 1))
-    printf '%s\n' "$ref" > "$PUSH_HOLD_WORK/ref.$n"
+    printf '%s\n' "$ref" > "$PUSH_HOLD_WORK/ref.$n" || return 1
     case "$ref" in
       refs/heads/*) tail=${ref#refs/heads/} ;;
       *) tail=$ref ;;
     esac
     localref="refs/${tail}"
-    printf '%s\n' "$localref" > "$PUSH_HOLD_WORK/local.$n"
+    printf '%s\n' "$localref" > "$PUSH_HOLD_WORK/local.$n" || return 1
     if ! git fetch -q --no-tags origin "+${ref}:${localref}"; then
-      printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n"
-      printf '%s\n' "fetch failed" > "$PUSH_HOLD_WORK/why.$n"
+      printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n" || return 1
+      printf '%s\n' "fetch failed" > "$PUSH_HOLD_WORK/why.$n" || return 1
       continue
     fi
     if ! git cat-file blob "${localref}:MANIFEST" > "$PUSH_HOLD_WORK/man.$n" 2>/dev/null; then
-      printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n"
-      printf '%s\n' "MANIFEST unreadable" > "$PUSH_HOLD_WORK/why.$n"
+      printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n" || return 1
+      printf '%s\n' "MANIFEST unreadable" > "$PUSH_HOLD_WORK/why.$n" || return 1
       continue
     fi
-    _push_hold_parse_manifest "$n" || true
+    if ! _push_hold_parse_manifest "$n"; then
+      _push_hold_mark_unreconciled "$ref" "manifest validation or state bookkeeping failed"
+      return 1
+    fi
   done < "$PUSH_HOLD_WORK/lsremote"
-  printf '%s\n' "$n" > "$PUSH_HOLD_WORK/ref.count"
-  [ "$n" -gt 0 ] || return 0
+  printf '%s\n' "$n" > "$PUSH_HOLD_WORK/ref.count" || return 1
+  [ "$n" -gt 0 ] || return 1
 
-  : > "$PUSH_HOLD_WORK/super_names"
+  : > "$PUSH_HOLD_WORK/super_names" || return 1
   i=1
   while [ "$i" -le "$n" ]; do
     if [ "$(cat "$PUSH_HOLD_WORK/st.$i")" = "ok" ]; then
       while IFS= read -r fromref; do
         [ -n "$fromref" ] || continue
-        printf '%s\n' "$fromref" >> "$PUSH_HOLD_WORK/super_names"
+        printf '%s\n' "$fromref" >> "$PUSH_HOLD_WORK/super_names" || return 1
       done < "$PUSH_HOLD_WORK/from.$i"
     fi
     i=$((i + 1))
@@ -548,7 +604,7 @@ _push_hold_recover_impl() {
     if [ "$(cat "$PUSH_HOLD_WORK/st.$i")" = "ok" ]; then
       ref=$(cat "$PUSH_HOLD_WORK/ref.$i")
       if grep -qxF "$ref" "$PUSH_HOLD_WORK/super_names"; then
-        printf '%s\n' "super" > "$PUSH_HOLD_WORK/st.$i"
+        printf '%s\n' "super" > "$PUSH_HOLD_WORK/st.$i" || return 1
       fi
     fi
     i=$((i + 1))
@@ -564,10 +620,13 @@ _push_hold_recover_impl() {
     while [ "$j" -le "$n" ]; do
       if [ "$(cat "$PUSH_HOLD_WORK/st.$j")" = "ok" ]; then
         if _push_hold_refs_share_path "$i" "$j"; then
-          printf '%s\n' "clash" > "$PUSH_HOLD_WORK/st.$i"
-          printf '%s\n' "clash" > "$PUSH_HOLD_WORK/st.$j"
-          printf '%s\n' "shares a path with $(cat "$PUSH_HOLD_WORK/ref.$j")" > "$PUSH_HOLD_WORK/why.$i"
-          printf '%s\n' "shares a path with $(cat "$PUSH_HOLD_WORK/ref.$i")" > "$PUSH_HOLD_WORK/why.$j"
+          printf '%s\n' "clash" > "$PUSH_HOLD_WORK/st.$i" || return 1
+          printf '%s\n' "clash" > "$PUSH_HOLD_WORK/st.$j" || return 1
+          printf '%s\n' "shares a path with $(cat "$PUSH_HOLD_WORK/ref.$j")" > "$PUSH_HOLD_WORK/why.$i" || return 1
+          printf '%s\n' "shares a path with $(cat "$PUSH_HOLD_WORK/ref.$i")" > "$PUSH_HOLD_WORK/why.$j" || return 1
+        else
+          rc=$?
+          [ "$rc" -eq 1 ] || return 1
         fi
       fi
       j=$((j + 1))
@@ -581,32 +640,41 @@ _push_hold_recover_impl() {
     ref=$(cat "$PUSH_HOLD_WORK/ref.$i")
     case "$st" in
       super)
-        _push_hold_record_recovered "$i" || _push_hold_mark_unreconciled "$ref" "could not record a superseded ref"
+        if ! _push_hold_record_recovered "$i"; then
+          _push_hold_mark_unreconciled "$ref" "could not record a superseded ref"
+          failed=1
+        fi
         ;;
       ok)
-        _push_hold_apply_ref "$i"
+        _push_hold_apply_ref "$i" || failed=1
         ;;
       *)
         why=$(cat "$PUSH_HOLD_WORK/why.$i" 2>/dev/null) || why=""
         [ -n "$why" ] || why="unreconciled"
         _push_hold_mark_unreconciled "$ref" "$why"
+        failed=1
         ;;
     esac
     i=$((i + 1))
   done
-  return 0
+  [ "$failed" -eq 0 ] || return 1
+  push_hold_recovery_ok
 }
 
-# Always returns 0. set -e is restored to whatever the caller had.
+# 0 admits the source writers; 1 fences them. Restore the caller's set -e.
 push_hold_recover() {
-  local flags
+  local flags rc
   flags=$-
   set +e
   _push_hold_recover_impl "$@"
+  rc=$?
+  if [ "$rc" -ne 0 ]; then
+    _push_hold_mark_unreconciled "recovery" "recovery did not establish admission" || true
+  fi
   case "$flags" in
     *e*) set -e ;;
   esac
-  return 0
+  return "$rc"
 }
 
 _push_hold_held_has() {

@@ -424,7 +424,13 @@ class TestUsBoardLandingJob:
     def test_a_failed_writer_does_not_stop_the_steps_after_it(self, landing):
         steps = landing["steps"]
         first = next(i for i, s in enumerate(steps) if str(s.get("run") or "").strip() == self.ROTATION)
-        assert all(s.get("if") == "always()" for s in steps[first + 1:])
+        for step in steps[first + 1:]:
+            expected = (
+                "always()"
+                if "nightly_timings_finish.sh" in str(step.get("run") or "")
+                else "always() && steps.custody_recovery.outcome == 'success'"
+            )
+            assert step.get("if") == expected, step.get("name")
 
     def test_the_commit_stages_only_what_these_writers_own(self, landing):
         run = self._commit_run(landing)
@@ -452,6 +458,11 @@ class TestUsBoardLandingJob:
         runs = [str(s.get("run") or "").strip() for s in landing["steps"]]
         recover = next(i for i, r in enumerate(runs) if r.endswith(f"bash {self.COMMIT_SH} --recover"))
         assert recover < runs.index(self.ROTATION) < runs.index(self.GRADER)
+        assert landing["steps"][recover]["id"] == "custody_recovery"
+        assert "if" not in landing["steps"][runs.index(self.ROTATION)]
+        for run in (self.GRADER, f"bash {self.COMMIT_SH}"):
+            step = landing["steps"][runs.index(run)]
+            assert step["if"] == "always() && steps.custody_recovery.outcome == 'success'"
 
     def test_a_lost_push_goes_red(self, landing):
         run = self._commit_run(landing)

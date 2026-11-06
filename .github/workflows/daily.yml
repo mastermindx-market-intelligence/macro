@@ -6304,7 +6304,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - run: git pull origin main && bash scripts/ci/us_board_commit.sh --recover
+      - id: custody_recovery
+        run: git pull origin main && bash scripts/ci/us_board_commit.sh --recover
       - name: python 3.12 (Homebrew venv — self-hosted runner)
         run: |
           VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
@@ -6315,10 +6316,10 @@ jobs:
       - name: US fast-rotation lens, outside the engine
         run: python -m scripts.build_us_sector_rotation --strict
       - name: US board grade, outside the engine
-        if: always()
+        if: always() && steps.custody_recovery.outcome == 'success'
         run: python -m scripts.grade_us_board --nightly
       - name: commit US board and rotation artifacts
-        if: always()
+        if: always() && steps.custody_recovery.outcome == 'success'
         run: bash scripts/ci/us_board_commit.sh
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
