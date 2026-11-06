@@ -3,9 +3,10 @@ schema: agentos.handoff.v1
 workstream: WS:PROPHET-US-ENTRY-TIMING
 session: sol/web-bottom-pivot-delivery-20261105
 model: sol
-ended_because: ci_handoff
-mission: Complete early-pivot versus false-bounce intelligence without requiring long-MA recovery; this
-  is an implementation/release milestone, parent mission incomplete and attended work continues.
+ended_because: context_budget
+mission: Complete early-pivot versus false-bounce intelligence without requiring long-MA recovery.
+  Implementation is preserved; parent mission remains incomplete. This recovery seals the failed,
+  materially heavy conversation for a fresh same-mode continuation on the original source carrier.
 state_before: Existing COILED, bottom sensors, bottom ruler and completed pivot research existed, but
   their raw clocks, early-turn evidence and forward records were not coherently composed for this consumer.
 changed:
@@ -58,8 +59,12 @@ unresolved:
 - Market/group/intraday and public Terminal workflow remain unfinished.
 - Existing local data is stale/mixed-date and original ledger lacks issuance clocks.
 next_actions:
-- 'Current assigned principal: publish qualified source on same PR10785 and reconcile exact-head CI/required
-  release gates; do not restart workspace.'
+- 'Fresh same-mode assigned continuation: read this checkpoint, reconcile original PR10785/head/workspace,
+  then repair the exact contract-delta and design-governance failures below. Do not restart the build.'
+- 'Keep the existing Studio Direct publisher and operation. Restore truthful import-closure coverage
+  and narrow overbroad CI selection without suppressing tests or raising ceilings to hide a regression.'
+- 'Replace the two new literal radii with canonical design tokens, run the relevant design/visual-evidence
+  guards, then qualify required exact-head CI and actual release rules on the same PR.'
 - Use existing authenticated product owner for natural producer-to-browser/AI proof after release; do
   not replay denied private endpoint unauthenticated.
 - 'Extend market/group/intraday and scientific work by consuming existing #10212/#10213/#10227 holds and
@@ -84,10 +89,49 @@ prs:
 ---
 
 MISSION_COMPLETE: false
-FINALIZATION_CLASSIFICATION: MORE_WORK_EXISTS
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+SESSION_HEALTH: ROTATION_REQUIRED
 
-This is a durable source milestone, not a turn-ending handback. The assigned principal continues.
+## Recovered frontier after the interrupted Web response
+
+The preceding response ended with a visible `Thinking failed` after a materially heavy conversation. This is the reason for a fresh same-mode continuation, not a claim about the provider's root cause or context exhaustion. Recovery was limited to original-effect/source reconciliation, exact CI failure diagnosis and this durable save. No implementation was recreated, no child resubmitted, no failed work retried, and no release attempted.
+
+### Exact identities and verified effects
+
+- Operation/root: `bottom-pivot-delivery-20261105`.
+- Repository/PR: `mastermindx-market-intelligence/macro#10785`, open and non-draft at recovery; not merged.
+- Branch: `sol/web-bottom-pivot-delivery-20261105`.
+- Implementation head: `00df93298693a6705719f5f07a3421ac7b886e82`. Both local and remote matched and the worktree was clean before this checkpoint edit.
+- Workspace: `/Volumes/Mastermind 2/agent-workspaces/macro/web/bottom-pivot-delivery-20261105`.
+- Publication carrier: existing Studio Direct `studio_git_commit_current_changes` and `studio_git_push_current_branch`, repository `macro`, original operation, exact expected HEAD. Never create a replacement branch/PR to evade a failure.
+- Compared with initial plan commit `d4ff67a0542d22fac40890e9ace9c7fb523c2717`, the implementation head contains one additional commit and the completed 25-file implementation. The apparent missing work was recovered from canonical source, not reconstructed from chat.
+- Fabric child `bottom-pivot-context-bp1-20261105`, root/parent `bottom-pivot-delivery-20261105`: original `fabric_status` now verifies TERMINAL, rc0, result_available=true, no continuation attempts, NOT_ACCEPTED. This matches the existing decision not to accept the original raw artifact after parent repairs. Do not call accept just to clear that state.
+- Original Fabric adapter response: 39,583 bytes; SHA256 `ead48eca69a8d4d2a5b51da3a371da456f2e1ede37fbc27871a0faad244c8431`, re-observed through the same Fabric result action. The original result was not newly re-reviewed in this recovery. Gateway paging receipts are transient, not durable artifact ownership.
+- BP2/BP3 thermal admission refusals and no-retry disposition remain recorded in the implementation evidence; no new request was issued during recovery.
+- No unresolved modifying effect was found on the recovered source or original BP1 request. No background execution or automatic wake is claimed.
+
+### Recovered proof; do not repeat unchanged work
+
+`research/evidence/bottom_pivot_delivery_20261105/verification.json` at the implementation head has SHA256 `d3fe9cba9d85f6fe5ffaad5c969b5c4de25d3c0262d4a29da06e07336538aeac`. It records 453 passing tests (exit0, data guard enabled), eight fixture browser states, source hashes, actual stale-input rejection and the unchanged AI byte-budget proof. These are prior executed evidence, not tests newly run during recovery and not production acceptance. Reuse unaffected results; re-run only what the subsequent fixes invalidate.
+
+### Exact CI blockers isolated
+
+Observed run: `42142090338`. The failed jobs tested merge tree `4564d85d83a5441d0b27a67ffdb62722d3dacc9a`, implementation head above, against base `684904bf2524b2ef08a36954cf12dd35df840e51`. Current PR base had subsequently advanced to `96633a798efda34d899e1b135487c89b596215fc`; qualify the next exact integration base rather than assuming old mergeability.
+
+1. `contract-delta`, job `127644614491`: six introduced findings, zero inherited against the tested base. The `regime-outlook-mapping` and `transmission-chains` jobs now transitively import `engine/neuralweb/pivot_context.py`, absent from their declared paths. Also, adding the pivot integration tests to `signal-gate-pair-coherence` broadens unrelated selection: `engine/prophet/plan_book.py` selects 132 jobs versus ceiling131 and 5696 weight-seconds versus5668; `scripts/build_free_content.py` selects5955 seconds versus5927; `templates/index.html`5932 versus5912. Repair accurate dependency coverage and job scoping; do not suppress coverage or blindly increase ceilings.
+2. `ci-pack-3`, job `127647978479`: only `design-governance` failed. Its 202 unit tests and selftests passed, but the added-line design ratchet found literal `border-radius: 6px` and `8px` at `templates/qa_bottom_sensors.html.j2` lines123 and125. The exact-base replay had zero such blocking findings, confirming this is introduced. Use canonical radius tokens, then run the actual added-line and visual-evidence guards; existing screenshots alone do not establish those guards pass.
+3. `ci-authority/codex/merge-queue-pilot`, check127647382681: the receipt explicitly reports `context_active=false`, `context_reason=inactive_base_context`, while actual `base_ref=main`, `allowed=true`, `reason=same_repo_admin_authority_change`. `ci-authority/main` passed. Do not misclassify this inactive-context failure as a permission denial for main or bypass any real required check.
+4. Nine numbered packs had passed and packs0/10 were still in progress at the single recovery observation. This is not a final CI verdict; consume the original run at the next integration boundary, without duplicate dispatch or polling loops.
+
+Read commands used: original `fabric_status`/`fabric_result`; Studio exact operation publication status; GitHub exact PR metadata and commit comparison; `gh api repos/mastermindx-market-intelligence/macro/commits/<implementation-head>/check-runs`; exact job logs127644614491/127647978479 and check127647382681. CLI log rendering initially refused terminal escape bytes; one same-carrier output-format correction captured and stripped those bytes. It was not a permission denial or a repeated job execution.
+
+### Exact next action and preserved scope
+
+A fresh Pro conversation assigned this continuation should load the protected procedure (reuse this compatible pin unless materially invalidated), read this cumulative checkpoint and the task tree, reconcile original workspace/head/effects, and repair the CI dependency/scoping and radius-token defects on PR10785. Keep the original repaired feature and test receipts. Verify actual required release approvals/rules rather than inventing a blanket independent-review gate. Then continue release, authenticated natural-source-to-consumer proof, market/group/intraday integration, public/Terminal UX and scientifically qualified durability research. The present daily single-stock evidence wrapper is not the entire commissioned market-bottom capability.
+
+Preserve adjacent held carriers, the exact private-endpoint401 boundary, incumbent source/ledger/alert/ranking owners and every do-not-redo above. Do not revive ARMED/PRIMED, treat the October21 study as untouched data, or claim precise-bottom prediction from fixtures.
+
 Protected procedure: Mastermind@49c2e1d93e5e080b1671c98087a845e5beb09dd5.
 Owning source plan: research/signal_engine/BOTTOM_PIVOT_DELIVERY_2026_11_05.md.
 Evidence: research/evidence/bottom_pivot_delivery_20261105/verification.json.
-Exact source identity is the containing Git commit; no unmerged record is product acceptance.
+Exact recovery checkpoint identity is its containing Git commit, verified after publication; no unmerged record is product acceptance.
