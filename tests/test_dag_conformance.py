@@ -441,6 +441,12 @@ class TestParserDrivenPositiveControl:
         wf_dir = tmp_path / ".github" / "workflows"
         wf_dir.mkdir(parents=True)
         shutil.copy(real_wf, wf_dir / "engine-render.yml")
+        # The fixture must retain each actual extracted publisher/final body;
+        # an absent dependency is a source error, not this negative control.
+        for relative in set(re.findall(r'# SOURCE-PINNED-WORKFLOW-SHELL: (scripts/ci/[^ ]+\.sh) ',real_wf.read_text())):
+            destination=tmp_path/relative
+            destination.parent.mkdir(parents=True,exist_ok=True)
+            shutil.copy(REPO_ROOT/relative,destination)
 
         # --- parse the UNMODIFIED workflow: build_sector_central MUST be found ---
         job_steps = _parse_workflow(wf_dir / "engine-render.yml")
