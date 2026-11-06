@@ -1,0 +1,7 @@
+{
+  "exact_snapshot_sha256": "473df8b2331240fb2098b94b0780489c1812a5a641bbd5d41c003c28984ab2e4",
+  "page_built_at_preserved": "2026-11-06T18:07:55Z",
+  "canonical_html_sha256": "56bc93a05423e942e8a44bd9e5a5d7b1f9f8bcf2a208a8bc20e822dea5a5d4d2",
+  "diff_lines": 63,
+  "scope": "one page from existing snapshot; no producer or runtime authority change; first candidate stopped on technical prefix argument before source mutation"
+}

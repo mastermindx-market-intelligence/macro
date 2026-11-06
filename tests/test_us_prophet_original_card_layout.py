@@ -9,6 +9,11 @@ def test_legacy_fallback_keeps_original_card_geometry():
     """Rich-card composition must not re-enlarge or intercept legacy cards."""
     source = (ROOT / "templates/_prophet_workspace.css.j2").read_text()
     legacy = source.split("/* Legacy compact cards retain their original interactive overlays. */", 1)[1]
+    # The following R8 footer section belongs to rich cards. Keep this guard
+    # strict over the compact overlay section rather than treating every later
+    # rule in the shared stylesheet as a legacy-card rule.
+    legacy, section_end, _ = legacy.partition("/* R8 card Sources shortcut:")
+    assert section_end, "the compact overlay section must have a clear boundary"
     css = re.sub(r"\{#.*?#\}", "", legacy, flags=re.DOTALL)
     assert ".pvcard:not(.po-card) .pv-ov" in css
     assert "z-index: 5" in css

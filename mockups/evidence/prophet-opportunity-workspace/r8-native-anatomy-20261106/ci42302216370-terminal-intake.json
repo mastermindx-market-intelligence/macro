@@ -1,0 +1,26 @@
+{
+  "run_id": 42302216370,
+  "artifact_id": 13548113210,
+  "zip_sha256": "e3fafa136fb3344849207af5e617b2416e8666e780f70cbe05581cb4983eb8d9",
+  "status": "failure",
+  "subject": "9dbffa55cb1dbae715be6524adf813e81908a558",
+  "tested_commit": "a2dd5144a645aadf81456d9deebb847779fdded8",
+  "actual_tested_git_tree": "3cab942a26cbf1f214c2a456349b67d4013d8601",
+  "base": "4d1a46f22108dbb38887c32b81066a223d80257e",
+  "plan_sha256": "2cd1684c39fceb9a8cd053eafd6c9347868a608ebdcccdf19e206e4dc60fdbcb",
+  "jobs": 187,
+  "proof_classifications": {
+    "passed": 485,
+    "unknown": 23,
+    "pr_regression": 2,
+    "pr_ci_contract_change": 1
+  },
+  "reader": "scripts.ci_semantic_proof.load_semantic_evidence; exact run/head/base/role and canonical plan/job identity verified",
+  "scope": "complete final evidence; old 9db candidate CLOSED, no replay; passing485 reused except changed dependencies. Local new repair not hosted green.",
+  "repair_status": {
+    "research_stamp": "canonical existing-payload bake included25178;2affectedPASS",
+    "compact_test": "scope only original compact overlay section; existing six geometry/interaction assertionsPASS",
+    "macro_copy": "one page canonically built from unchanged existing snapshot; preserved18:07:55page stamp;161affectedcopy/layoutPASS",
+    "browser_receipts": "existing coordinator regenerating from pinned actualbrowser; not accepted yet"
+  }
+}

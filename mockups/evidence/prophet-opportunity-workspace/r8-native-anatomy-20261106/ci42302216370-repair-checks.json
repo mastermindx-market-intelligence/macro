@@ -1,0 +1,20 @@
+[
+  {
+    "job": "washout-turn-organ",
+    "step": "Prophet source, lifecycle and presentation contracts (one native process)",
+    "canonical_command": "python -m pytest tests/test_prophet_card_shared.py tests/test_us_prophet_original_card_layout.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py tests/test_prophet_plan_presentation.py tests/test_prophet_opportunity_card.py tests/test_prophet_opportunity_presentation.py tests/test_prophet_opportunity_integration.py tests/test_prophet_table_opportunity_parity.py tests/test_prophet_memory_handoff.py tests/test_prophet_setup_list_navigation.py tests/test_prophet_setup_sections.py tests/test_prophet_save_composition.py tests/test_prophet_save_account_isolation.py tests/test_prophet_same_date_publication.py -q",
+    "local_python": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "exit_code": 0,
+    "elapsed_s": 163.49,
+    "log": "/Volumes/Mastermind/evidence/prophet-r6-local-20261008-01a11e89/prophet-end-to-end-resumption-20261012/paper-to-product-20261014/product-reset-20261015/acceptance-447b5d6d/main-integration-20261104/card-sources-20261106/main-574ce-native/washout-turn-organ-repair-native-python3-tests.log"
+  },
+  {
+    "job": "market-os-macro-suite-pages",
+    "step": "Market OS macro suite pages \u2014 shell, labels, view model, builder",
+    "canonical_command": "python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py tests/test_macro_command_shell.py tests/test_macro_command_copy_law.py tests/test_macro_command_read_strip.py tests/test_macro_command_panels.py tests/test_macro_command_empty_states.py tests/test_macro_command_p4_copy.py tests/test_macro_command_capture_guards.py -q",
+    "local_python": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "exit_code": 0,
+    "elapsed_s": 87.59,
+    "log": "/Volumes/Mastermind/evidence/prophet-r6-local-20261008-01a11e89/prophet-end-to-end-resumption-20261012/paper-to-product-20261014/product-reset-20261015/acceptance-447b5d6d/main-integration-20261104/card-sources-20261106/main-574ce-native/market-os-macro-suite-pages-repair-native-python3-tests.log"
+  }
+]
