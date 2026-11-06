@@ -14,6 +14,7 @@ import math
 import os
 from pathlib import Path
 import pwd
+import re
 import selectors
 import shutil
 import socket
@@ -46,6 +47,28 @@ def sanitize_reported_errors(value) -> list[str]:
     return [code for code in REPORTED_ERROR_CODES if code in value]
 
 
+def _reported_http_authorization_denial(text: bytes) -> bool:
+    """Preserve explicit native HTTP denials; never treat a status as retry authority.
+
+    Match the response after APT's URI token, or its Err:n continuation. A
+    number in a URI, progress count or caller-shaped JSON is not a response.
+    Only the fixed PERMISSION enum escapes this private output inspection.
+    """
+    denial = re.compile(
+        rb"(?:http(?:/[0-9]+(?:\.[0-9]+)?)?(?:[ \t]+error)?[ \t]+(?:401|403)(?:[ \t:]|$)"
+        rb"|(?:401[ \t]+unauthorized|403[ \t]+forbidden)(?:[ \t]|$))")
+    previous_error = False
+    for line in text.splitlines():
+        if line.startswith(b"e: failed to fetch "):
+            _, separator, response = line[len(b"e: failed to fetch "):].partition(b" ")
+            if separator and denial.match(response.lstrip()):
+                return True
+        elif previous_error and line[:1] in (b" ", b"\t") and denial.match(line.lstrip()):
+            return True
+        previous_error = re.match(rb"err:[0-9]+[ \t]+\S", line) is not None
+    return False
+
+
 def reported_download_errors(output) -> list[str]:
     """Bounded private inspection; return ONLY fixed enum values, never text."""
     if type(output) is not bytes or len(output) > LIMIT or b"\x00" in output:
@@ -65,6 +88,8 @@ def reported_download_errors(output) -> list[str]:
         ("METHOD", (b"method driver", b"method has died unexpectedly")),
     )
     found = [code for code, phrases in patterns if any(phrase in text for phrase in phrases)]
+    if _reported_http_authorization_denial(text) and "PERMISSION" not in found:
+        found.append("PERMISSION")  # existing completion gates exclude this enum
     return sanitize_reported_errors(found)
 
 

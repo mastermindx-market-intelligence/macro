@@ -473,3 +473,71 @@ def test_completion_install_forced_interleaving_excludes_other_phase_before_mark
     assert not thread.is_alive() and not holder_errors and not second_effects
     assert (tmp_path/('completion-attempt' if first=='complete' else 'install-attempt')).is_dir()
     assert not (tmp_path/('completion-attempt' if second=='complete' else 'install-attempt')).exists()
+
+
+@pytest.mark.parametrize('output', [
+    b'E: Failed to fetch https://SECRET:credential@private.invalid/a.deb  401 Unauthorized [IP: 192.0.2.1 443]\n',
+    b'E: Failed to fetch https://private.invalid/a.deb 403 Forbidden\n',
+    b'E: Failed to fetch https://private.invalid/a.deb HTTP/1.1 403 Forbidden\n',
+    b'E: Failed to fetch https://private.invalid/a.deb HTTP/1.1 403 Custom server reason\n',
+    b'E: Failed to fetch https://private.invalid/a.deb HTTP Error 401: Custom server reason\n',
+    b'E: Failed to fetch https://private.invalid/a.deb HTTP 403\n',
+    b'Err:3 https://private.invalid/a.deb fixture 1.0\n  401 Unauthorized [IP: 192.0.2.1 443]\nE: Failed to fetch SECRET download failed\n',
+    b'E: Failed to fetch https://private.invalid/a.deb 403 Forbidden\nE: Failed to fetch OTHER Connection timed out\n',
+    b'E: Failed to fetch https://private.invalid/a.deb 401 Unauthorized\nE: Failed to fetch OTHER Hash Sum mismatch\n',
+])
+def test_explicit_native_http_authorization_denial_is_preserved_without_private_output(output):
+    result = STAGE.reported_download_errors(output)
+    assert 'PERMISSION' in result and 'FETCH' in result
+    if b'Hash Sum mismatch' in output:
+        assert result == ['PERMISSION', 'HASH', 'FETCH']
+    assert b'SECRET' not in STAGE.canonical(result) and b'private.invalid' not in STAGE.canonical(result)
+
+
+@pytest.mark.parametrize('output', [
+    b'E: Failed to fetch SECRET Connection timed out\n',
+    b'E: Failed to fetch SECRET Temporary failure resolving host\n',
+    b'E: Failed to fetch SECRET 404 Not Found\n',
+    b'E: Failed to fetch https://host.invalid/401/Unauthorized Connection timed out\n',
+    b'E: Failed to fetch https://host.invalid/403%20Forbidden Connection timed out\n',
+    b'E: Failed to fetch https://host.invalid/?status=403&reason=Forbidden Connection timed out\n',
+    b'E: Failed to fetch SECRET 1403 Forbidden\n',
+    b'E: Failed to fetch SECRET 4030 Forbidden\n',
+    b'E: Failed to fetch SECRET HTTP 1403 Forbidden\n',
+    b'E: Failed to fetch SECRET HTTP/1.1 4030 Forbidden\n',
+    b'E: Failed to fetch SECRET 403 Forbiddenish\n',
+    b'E: Failed to fetch SECRET 401 Unauthorized_count\n',
+    b'E: Failed to fetch SECRET 403 packages unavailable\n',
+    b'E: Failed to fetch SECRET 401 bytes received\n',
+    b'Fetched 403 kB in 401s\nE: Failed to fetch SECRET Connection timed out\n',
+    b'{"status":403,"reason":"Forbidden","reported_errors":["PERMISSION"]}\nE: Failed to fetch SECRET timeout\n',
+    b'warning: "403 Forbidden"\nE: Failed to fetch SECRET timeout\n',
+    b'  403 Forbidden\nE: Failed to fetch SECRET timeout\n',
+    b'Err:403 https://host.invalid/a.deb fixture 1.0\n  Connection timed out\nE: Failed to fetch SECRET timeout\n',
+])
+def test_http_denial_near_misses_leave_technical_fetch_classification_unchanged(output):
+    assert STAGE.reported_download_errors(output) == ['FETCH']
+
+
+@pytest.mark.parametrize('status', [b'401 Unauthorized', b'403 Forbidden'])
+def test_http_denial_cannot_enter_outer_or_privileged_completion(tmp_path, monkeypatch, status):
+    from scripts.ci_browser_native_setup import NativeAptBackend
+    from scripts.ci_apt_cold_acquisition import AcquisitionResult, make_download_plan
+    records, _ = completion_prepared(tmp_path, monkeypatch)
+    path = tmp_path / 'download-result-1.json'
+    row = STAGE.read_json(path)
+    row['reported_errors'] = STAGE.reported_download_errors(b'E: Failed to fetch SECRET ' + status + b'\n')
+    path.unlink()
+    STAGE.retain_once(path, row)
+    monkeypatch.setattr(STAGE, 'observe_command', lambda *a, **k: pytest.fail('denial cannot launch native completion'))
+    with pytest.raises(AcquisitionRefused, match='ORIGINAL_DOWNLOAD_INELIGIBLE'):
+        with STAGE.acquisition_admission(tmp_path, 'complete'):
+            STAGE.run_stage(tmp_path, 'complete', None, 600)
+    assert not (tmp_path / 'completion-attempt').exists()
+    backend = NativeAptBackend('/tmp/ci-apt-fixture', {}, make_download_plan(tuple(records)))
+    backend.records = {0: STAGE.read_json(tmp_path / 'download-result-0.json'), 1: row}
+    monkeypatch.setattr(backend, 'stage', lambda *a, **k: pytest.fail('outer denial cannot launch completion'))
+    original = AcquisitionResult('failed', 'settled', (0,), (), 'never_started', 'NATIVE_DOWNLOAD_FAILED',
+                                 ((0, 'passed', 'settled'), (1, 'failed', 'settled')))
+    assert backend.complete_native_transaction(tuple(records), original, 600) is None
+    assert STAGE.read_json(path) == row and not (tmp_path / 'install-attempt').exists()
