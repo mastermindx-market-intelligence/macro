@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-14T16:32:16.741209+00:00",
+  "head": "b4e1d4c724a91a608448b468baf94d4558bf91e8",
+  "installed_updater_sha256": "9943a824deef6c7f1a346c9f48ff4b64447e888c186fc4f676d368f103036e9d",
+  "checkout_updater_sha256": "9943a824deef6c7f1a346c9f48ff4b64447e888c186fc4f676d368f103036e9d",
+  "head_updater_sha256": "9943a824deef6c7f1a346c9f48ff4b64447e888c186fc4f676d368f103036e9d",
+  "updater_identity_equal": true,
+  "no_mutation": true
+}

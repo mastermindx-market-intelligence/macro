@@ -954,9 +954,23 @@ def pytest_invocation_ambiguities(command: str) -> tuple[str, ...]:
 
     Directory targets are load-bearing here: ``pytest tests/`` discovers a
     runtime-dependent set, so no static per-suite closure may be used to skip it.
+
+    Full-line shell comments are dropped before tokenizing. They are prose, not
+    argv, and a lone apostrophe in one ("the planner's token") is an unclosed
+    quote to shlex that used to mark the whole run block unparseable, silently
+    discarding the job's inferred closure. Only a line whose first non-blank
+    character is ``#`` is dropped: ``comments=True`` would also end a word at a
+    mid-word ``#`` and truncate ``${VAR#pattern}``, which bash reads as one
+    word, and a trailing inline comment stays in place, so a quote there still
+    fails closed.
     """
+    executable = "\n".join(
+        line
+        for line in command.split("\n")
+        if not line.lstrip(" \t").startswith("#")
+    )
     try:
-        tokens = shlex.split(command, comments=False, posix=True)
+        tokens = shlex.split(executable, comments=False, posix=True)
     except ValueError as exc:
         return (f"unparseable pytest invocation: {exc}",)
 

@@ -1,0 +1,697 @@
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en|safe }}</span><span class="l-zh">{{ (zh if zh else en)|safe }}</span>
+{%- endmacro %}
+{# Breadth strip — N ticks. Empty macro → one hollow tick. §4. #}
+{% macro breadth_strip(n) -%}
+{%- set N = (n if (n and n > 0) else 1) -%}
+{%- if n and n > 0 -%}
+<span class="tt-strip" aria-hidden="true"><span class="tt-strip-tick"></span>{% for _ in range(N - 1) %}<span class="tt-strip-tick"></span>{% endfor %}</span>
+<span class="tt-strip-count">{{ n }}</span>
+{%- else -%}
+<span class="tt-strip tt-strip-empty" aria-hidden="true"><span class="tt-strip-tick tt-strip-tick-empty"></span></span>
+<span class="tt-strip-count">{{ t('0', '0') }}</span>
+{%- endif -%}
+{%- endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theme Map — Mastermind</title>
+{% set seo_title = 'Theme Map — Every theme the house tracks, category to micro-theme | Mastermind' %}
+{% set seo_desc = 'A map of every theme the house tracks, from broad category down to its smallest pieces — how the universe is grouped, not a ranking or a signal.' %}
+{% set seo_path = 'theme_tree.html' %}
+{% include "_seo_head.html.j2" %}
+<script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
+<link rel="stylesheet" href="theme.css">
+<script defer src="theme.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html:not([data-lang="zh"]) .l-zh{display:none}
+html[data-lang="zh"] .l-en{display:none}
+body{margin:0;padding:24px 0 64px;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;font-family:var(--font-ui);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+a{color:var(--ink-link, var(--link));text-decoration:none}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:var(--r-ctl,8px)}
+
+/* ── HERO ── */
+.tt-hero{padding:18px 0 28px}
+.tt-h1{font-size:clamp(28px,4.2vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:0 0 6px;color:var(--text)}
+.tt-h1 .l-en,.tt-h1 .l-zh{display:inline}
+.tt-subtitle{font-size:15px;color:var(--muted);margin:0 0 14px;max-width:760px;line-height:1.55}
+.tt-asof{font-size:12px;color:var(--muted);margin:0 0 10px;font-variant-numeric:tabular-nums}
+.tt-asof .bdot{display:inline-block;width:7px;height:7px;border-radius:var(--r-pill);background:var(--ok);margin-right:6px;vertical-align:middle}
+.tt-summary{font-size:14px;color:var(--text);margin:0 0 8px;line-height:1.55;max-width:880px}
+.tt-summary b{font-weight:800}
+.tt-disclosure{font-size:12.5px;color:var(--muted);margin:0;line-height:1.5;max-width:760px;font-style:italic}
+.tt-footnote{margin-top:18px}
+.tt-asof-unknown{font-style:italic}
+.tt-cat-empty{margin:14px 0 6px;color:var(--muted);font-size:13.5px}
+.tt-missing{font-size:12px;color:var(--ink-warn, var(--warn));margin:18px 0 0;padding:10px 14px;border-radius:var(--r-ctl,8px);background:var(--ff-tint-warn-6);border:1px solid var(--ff-tint-warn-40-line)}
+.tt-missing b{color:var(--ink-warn, var(--warn))}
+
+/* ── CATEGORY (the editorial <details>) ── */
+.tt-cat{display:block;background:transparent;border:1px solid var(--line);border-radius:var(--r-card,12px);margin:14px 0;overflow:hidden;transition:border-color .2s ease}
+html[data-theme="dark"] .tt-cat{box-shadow:var(--card-shadow)}
+.tt-cat[open]{border-color:var(--ff-tint-info-40-line)}
+html[data-theme="dark"] .tt-cat[open]{background:var(--ff-tint-info-4-panel);box-shadow:inset 2px 0 0 var(--ff-tint-info-45)}
+html[data-theme="light"] .tt-cat[open]{background:var(--panel);box-shadow:var(--popover-shadow)}
+.tt-cat summary{list-style:none;cursor:pointer;padding:18px 22px;display:grid;grid-template-columns:1fr auto;gap:8px 18px;align-items:center;color:var(--text);font-weight:700}
+.tt-cat summary::-webkit-details-marker{display:none}
+.tt-cat summary::marker,.tt-theme summary::marker{content:""}
+.tt-cat summary:hover{background:var(--ff-tint-info-8)}
+.tt-cat summary .caret{flex:none;color:var(--muted);font-size:11px;transition:transform .25s}
+.tt-cat[open] summary .caret{transform:rotate(90deg)}
+.tt-cat-head-name{font-size:16.5px;font-weight:800;color:var(--text);letter-spacing:-.01em;line-height:1.25}
+.tt-cat-head-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;font-size:12.5px;color:var(--muted);margin-top:4px}
+.tt-cat-head-meta .ct-num{font-variant-numeric:tabular-nums;font-weight:700;color:var(--text)}
+.tt-cat-body{padding:0 22px 18px;color:var(--muted);border-top:1px solid var(--line);margin-top:0}
+.tt-cat-body > div:first-child{padding-top:14px}
+
+/* ── THEME ROW (nested <details>) ── */
+.tt-theme{margin:10px 0;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:transparent;overflow:hidden}
+html[data-theme="dark"] .tt-theme{background:var(--panel2)}
+html[data-theme="light"] .tt-theme{background:var(--panel)}
+.tt-theme summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;align-items:center;gap:10px 14px;font-weight:700;color:var(--text);font-size:14px}
+.tt-theme summary::-webkit-details-marker{display:none}
+.tt-theme summary:hover{background:var(--ff-tint-info-8)}
+.tt-theme summary .tcaret{flex:none;color:var(--muted);font-size:10px;transition:transform .25s;width:14px;text-align:center}
+.tt-theme[open] summary .tcaret{transform:rotate(90deg)}
+.tt-theme summary .tname{font-weight:800;letter-spacing:-.01em}
+.tt-theme summary .tmeta{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tt-theme-body{padding:0 16px 14px;border-top:1px solid var(--line)}
+
+/* ── SUB_THEME ROW ── */
+.tt-subtheme{margin:10px 0 0;padding:0 0 0 12px;border-left:2px solid var(--ff-tint-info-40-line);color:var(--text);font-size:13.5px}
+.tt-subtheme-head{font-weight:700;color:var(--text);font-size:13.5px;padding:6px 0 4px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.tt-subtheme-head .sname{font-weight:800}
+.tt-subtheme-head .smeta{font-size:11.5px;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums;margin-left:auto}
+
+/* ── MICRO CHIPS ── */
+.tt-chips{display:flex;flex-wrap:wrap;gap:6px 8px;padding:6px 0 8px}
+.tt-chip{display:inline-flex;align-items:center;padding:5px 11px;border-radius:var(--r-pill);background:var(--panel2);border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--text);cursor:pointer;line-height:1.3;font-family:var(--font-ui);margin:0;transition:border-color .15s ease,background-color .15s ease}
+html[data-theme="light"] .tt-chip{background:var(--panel);border-color:var(--line)}
+.tt-chip:hover{border-color:var(--ff-tint-info-45-line)}
+
+.tt-chip:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.tt-chip[aria-expanded="true"]{border-color:var(--link)}
+
+/* ── DETAIL CARD (U2) — dark: instrument panel; light: white sheet + hairline + shadow ── */
+.tt-detail{position:fixed;z-index:60;right:24px;top:96px;width:340px;max-width:calc(100vw - 48px);max-height:calc(100vh - 120px);overflow:auto;background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:16px 18px 18px;color:var(--text);box-shadow:inset 0 1px 0 var(--line),var(--popover-shadow)}
+html[data-theme="light"] .tt-detail{background:var(--panel);border-color:var(--line);box-shadow:var(--popover-shadow)}
+.tt-detail[hidden]{display:none}
+@media (min-width:1101px){body.tt-detail-open .wrap{padding-right:388px}}
+.tt-detail-top{display:flex;align-items:flex-start;gap:10px}
+.tt-detail-name{font-size:16px;font-weight:800;line-height:1.3;margin:0;flex:1}
+.tt-detail-close{flex:none;width:32px;height:32px;border-radius:var(--r-ctl,8px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:16px;line-height:1;cursor:pointer;font-family:var(--font-ui)}
+.tt-detail-close:hover{color:var(--text)}
+.tt-detail-close:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.tt-detail-paths{list-style:none;margin:8px 0 0;padding:0;font-size:12.5px;color:var(--muted);line-height:1.5}
+.tt-detail-paths li + li{margin-top:2px}
+.tt-detail-breadth{margin:10px 0 0;font-size:12.5px;line-height:1.5}
+.tt-detail-sec{margin:14px 0 0;padding:12px 0 0;border-top:1px solid var(--line)}
+.tt-detail-h{font-size:13px;font-weight:800;margin:0}
+.tt-detail-note{font-size:11.5px;color:var(--muted);margin:2px 0 8px;line-height:1.45}
+.tt-detail-list{list-style:none;margin:0;padding:0;font-size:13px;line-height:1.45}
+.tt-detail-list li{display:flex;justify-content:space-between;gap:10px;padding:4px 0}
+.tt-detail-list a{color:var(--link);text-decoration:none}
+.tt-detail-list a:hover{text-decoration:underline}
+.tt-detail-mkt{flex:none;font-size:11.5px;color:var(--muted)}
+.tt-detail-empty{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+@media (max-width:560px){
+  .tt-detail{left:0;right:0;top:auto;bottom:0;width:auto;max-width:none;max-height:70vh;border-radius:var(--r-card,12px) var(--r-card,12px) 0 0;border-bottom:0;padding:14px 16px 22px}
+  .tt-detail-close{width:44px;height:44px}
+}
+
+/* ── DIRECT-CHIPS (theme with no sub_theme layer) ── */
+.tt-direct{margin:6px 0 0;padding:6px 0 0;color:var(--muted);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.tt-direct + .tt-chips{margin-top:2px}
+
+/* ── BREADTH STRIP (§4) ── */
+.tt-strip{display:inline-flex;align-items:center;gap:2px;vertical-align:middle}
+.tt-strip-tick{display:inline-block;width:6px;height:10px;border-radius:0;background:var(--muted);opacity:.7}
+html[data-theme="light"] .tt-strip-tick{background:var(--text);opacity:.6}
+.tt-strip-tick-empty{background:transparent;border:1px solid var(--muted)}
+.tt-strip-count{margin-left:8px;font-variant-numeric:tabular-nums;font-size:11.5px;font-weight:700;color:var(--muted)}
+
+/* ── CATEGORY SUMMARY (header line inside <details>) ── */
+.tt-cat-summary-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:6px}
+.tt-cat-summary-row .ct-pair{display:inline-flex;align-items:baseline;gap:6px;font-size:12.5px;color:var(--muted)}
+.tt-cat-summary-row .ct-pair b{font-weight:800;color:var(--text);font-variant-numeric:tabular-nums}
+
+/* ── EMPTY STATE (§5 store unreadable) ── */
+.tt-empty{padding:60px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
+.tt-empty h2{font-size:18px;font-weight:800;color:var(--text);margin:0 0 8px}
+.tt-empty p{font-size:13.5px;margin:0}
+
+/* ── MOBILE ── */
+@media (max-width:560px){
+  .wrap{padding:0 14px}
+  body{padding:18px 0 56px}
+  .tt-cat summary{grid-template-columns:1fr auto;gap:4px 12px;align-items:start;padding:14px 16px;min-height:44px}
+  .tt-cat summary .caret{padding-top:4px}
+  .tt-theme summary{min-height:44px}
+  .tt-cat-head-meta{font-size:11.5px}
+  .tt-h1{font-size:26px}
+  .tt-theme summary{flex-wrap:wrap}
+  .tt-theme summary .tmeta{flex-basis:100%;margin-left:0}
+}
+
+/* ── REDUCED MOTION ── */
+@media (prefers-reduced-motion: reduce){
+  .tt-cat,.tt-cat summary .caret,.tt-theme summary .tcaret{transition:none}
+}
+
+/* ── U3 — ticker lookup (search field + result panel) ── */
+.tt-lookup{display:flex;align-items:center;gap:10px;margin:14px 0 8px;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);box-shadow:inset 0 1px 0 var(--line);flex-wrap:wrap}
+html[data-theme="light"] .tt-lookup{background:var(--panel);box-shadow:var(--card-shadow)}
+.tt-lookup-label{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap}
+.tt-lookup-input{flex:1 1 180px;min-width:160px;background:transparent;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:8px 12px;font-size:14px;color:var(--text);font-family:var(--font-ui);outline:none}
+.tt-lookup-input::placeholder{color:var(--muted)}
+.tt-lookup-input:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-color:var(--link)}
+.tt-lookup-hint{font-size:12px;color:var(--muted);flex-basis:100%}
+.tt-lookup-empty{font-size:13px;color:var(--muted);margin:6px 0 0}
+.tt-ticker-result .tt-detail-paths li{font-size:13px;color:var(--text)}
+.tt-ticker-micro,.tt-ticker-abst,.tt-ticker-empty-public,.tt-ticker-not-found{margin:10px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5}
+.tt-ticker-not-found{color:var(--ink-warn,var(--warn));font-weight:700}
+.tt-ticker-empty-public{font-style:italic}
+.tt-ticker-abst li{margin:2px 0}
+.tt-ticker-match + .tt-ticker-match{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.tt-ticker-market{display:block;margin:0 0 6px;font-size:12px;font-weight:700;color:var(--muted)}
+.tt-detail-sec + .tt-detail-sec{margin-top:10px}
+.tt-ticker-profile{margin:12px 0 0;padding:10px 12px 10px;border-radius:var(--r-ctl,8px);background:var(--panel);border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--line)}
+html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:none}
+.tt-ticker-profile-title{font-size:12.5px;font-weight:800;margin:0 0 6px}
+.tt-ticker-profile dl{display:grid;grid-template-columns:max-content 1fr;column-gap:12px;row-gap:5px;margin:0;font-size:12.5px;line-height:1.45}
+.tt-ticker-profile dt{color:var(--muted)}
+.tt-ticker-profile dd{margin:0;color:var(--text);min-width:0;overflow-wrap:anywhere}
+.tt-ticker-profile dd.tt-ticker-profile-reason{color:var(--muted);font-style:italic}
+.tt-ticker-profile-note{margin:8px 0 0;font-size:11.5px;color:var(--muted)}
+@media (max-width:560px){.tt-ticker-profile dl{grid-template-columns:1fr;row-gap:1px}.tt-ticker-profile dd{margin-bottom:5px}}
+</style>
+</head>
+<body>
+
+{% include "_site_nav.html.j2" %}
+
+<div class="wrap">
+
+<header class="tt-hero">
+  <h1 class="tt-h1"><span class="l-en">Theme map</span><span class="l-zh">主题地图</span></h1>
+  <p class="tt-subtitle">
+    <span class="l-en">Every theme we track, from broad category down to its smallest pieces.</span>
+    <span class="l-zh">我们追踪的每个主题：从大类一直到最细的分支。</span>
+  </p>
+  {% if tree.as_of %}
+  <p class="tt-asof"><span class="bdot"></span>
+    <span class="l-en">As of {{ tree.as_of }}</span>
+    <span class="l-zh">截至 {{ tree.as_of }}</span>
+  </p>
+  {% elif tree.available %}
+  <p class="tt-asof tt-asof-unknown">
+    <span class="l-en">Date unavailable</span>
+    <span class="l-zh">日期未知</span>
+  </p>
+  {% endif %}
+  {% if tree.available %}
+  <p class="tt-summary">
+    <span class="l-en">
+      <b>{{ tree.summary.macro_count }}</b> categories,
+      <b>{{ tree.summary.theme_count }}</b> themes,
+      <b>{{ tree.summary.sub_theme_count }}</b> sub-themes,
+      <b>{{ tree.summary.micro_count }}</b> micro-themes.
+    </span>
+    <span class="l-zh">
+      <b>{{ tree.summary.macro_count }}</b> 个大类，
+      <b>{{ tree.summary.theme_count }}</b> 个主题，
+      <b>{{ tree.summary.sub_theme_count }}</b> 个子主题，
+      <b>{{ tree.summary.micro_count }}</b> 个细分主题。
+    </span>
+  </p>
+  {% if tree.summary.missing_count and tree.summary.missing_count > 0 %}
+  <p class="tt-missing">
+    <span class="l-en"><b>{{ tree.summary.missing_count }} item{{ '' if tree.summary.missing_count == 1 else 's' }} could not be shown</b> — the underlying graph is being updated.</span>
+    <span class="l-zh"><b>{{ tree.summary.missing_count }} 项无法显示</b>——底层图谱正在更新。</span>
+  </p>
+  {% endif %}
+  {% endif %}
+  {% if tree.ticker_lookup_json %}
+  <div class="tt-lookup" role="search">
+    <label class="tt-lookup-label" for="tt-lookup-input">
+      <span class="l-en">Find a company</span>
+      <span class="l-zh">查找公司</span>
+    </label>
+    <input id="tt-lookup-input" class="tt-lookup-input" type="text"
+      autocomplete="off" autocapitalize="characters" spellcheck="false"
+      placeholder="AAPL / 600519 / 0700.HK">
+    <span class="tt-lookup-hint">
+      <span class="l-en">Type a ticker. Enter to look up, Esc to clear.</span>
+      <span class="l-zh">输入代码；回车查询，Esc 清除。</span>
+    </span>
+  </div>
+  {% endif %}
+</header>
+
+{% if tree.available %}
+
+{% for macro in tree.macros %}
+{% set mid = macro.subject_id %}
+{% set macro_themes = macro.themes %}
+{% set is_empty = macro.empty %}
+<details class="tt-cat" {% if not is_empty and tree.empty_macros_count == 0 %}open{% endif %} data-empty="{{ '1' if is_empty else '0' }}">
+  <summary>
+    <span>
+      <span class="tt-cat-head-name">
+        <span class="l-en">{{ macro.name_en }}</span>
+        <span class="l-zh">{{ macro.name_zh or macro.name_en }}</span>
+      </span>
+      <span class="tt-cat-head-meta">
+        <span class="ct-pair">
+          <b class="ct-num">{{ macro_themes|length }}</b>
+          <span class="l-en">{{ 'theme' if macro_themes|length == 1 else 'themes' }}</span>
+          <span class="l-zh">个主题</span>
+        </span>
+        <span class="ct-pair">
+          <b class="ct-num">{{ macro.dist_micros_count }}</b>
+          <span class="l-en">{{ 'micro-theme' if macro.dist_micros_count == 1 else 'micro-themes' }}</span>
+          <span class="l-zh">个细分主题</span>
+        </span>
+        {{ breadth_strip(macro.dist_micros_count) }}
+      </span>
+    </span>
+    <span class="caret" aria-hidden="true">▶</span>
+  </summary>
+  <div class="tt-cat-body">
+    {% if is_empty %}
+    <p class="tt-cat-empty">
+      <span class="l-en">Nothing mapped here yet — we haven't built this category.</span>
+      <span class="l-zh">尚未归入任何主题——这个大类我们还没建好。</span>
+    </p>
+    {% else %}
+      {% for theme in macro_themes %}
+      {% if theme.has_sub_theme_layer %}
+      <details class="tt-theme" open>
+        <summary>
+          <span class="tcaret" aria-hidden="true">▶</span>
+          <span class="tname">
+            <span class="l-en">{{ theme.name_en }}</span>
+            <span class="l-zh">{{ theme.name_zh or theme.name_en }}</span>
+          </span>
+          <span class="tmeta">
+            {% set sc = theme.sub_themes|length %}
+            {% set tm = theme.sub_themes|sum(attribute='micro_count') + theme.direct_micros|length %}
+            <span class="l-en">{{ sc }} {{ 'sub-theme' if sc == 1 else 'sub-themes' }} · {{ tm }} micro</span>
+            <span class="l-zh">{{ sc }} 个子主题 · {{ tm }} 个细分</span>
+          </span>
+        </summary>
+        <div class="tt-theme-body">
+          {% for sub in theme.sub_themes %}
+          <div class="tt-subtheme">
+            <div class="tt-subtheme-head">
+              <span class="sname">
+                <span class="l-en">{{ sub.name_en }}</span>
+                <span class="l-zh">{{ sub.name_zh or sub.name_en }}</span>
+              </span>
+              <span class="smeta">
+                <span class="l-en">{{ sub.micro_count }} {{ 'micro' if sub.micro_count == 1 else 'micros' }}</span>
+                <span class="l-zh">{{ sub.micro_count }} 个细分</span>
+              </span>
+            </div>
+            <div class="tt-chips">
+              {% for chip in sub.micros %}
+              <button type="button" class="tt-chip" data-node="{{ chip.node_id }}" aria-controls="tt-detail" aria-expanded="false" data-tip-en="{{ chip.tip_en|e }}" data-tip-zh="{{ chip.tip_zh|e }}">
+                <span class="l-en">{{ chip.name_en }}</span>
+                <span class="l-zh">{{ chip.name_zh or chip.name_en }}</span>
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+          {% if theme.direct_micros %}
+          <div class="tt-subtheme">
+            <div class="tt-subtheme-head">
+              <span class="sname">
+                <span class="l-en">Directly under {{ theme.name_en }}</span>
+                <span class="l-zh">直属{{ theme.name_zh or theme.name_en }}</span>
+              </span>
+              <span class="smeta">
+                {% set dm = theme.direct_micros|length %}
+                <span class="l-en">{{ dm }} {{ 'micro' if dm == 1 else 'micros' }}</span>
+                <span class="l-zh">{{ dm }} 个细分</span>
+              </span>
+            </div>
+            <div class="tt-chips">
+              {% for chip in theme.direct_micros %}
+              <button type="button" class="tt-chip" data-node="{{ chip.node_id }}" aria-controls="tt-detail" aria-expanded="false" data-tip-en="{{ chip.tip_en|e }}" data-tip-zh="{{ chip.tip_zh|e }}">
+                <span class="l-en">{{ chip.name_en }}</span>
+                <span class="l-zh">{{ chip.name_zh or chip.name_en }}</span>
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </details>
+      {% else %}
+      <details class="tt-theme" open>
+        <summary>
+          <span class="tcaret" aria-hidden="true">▶</span>
+          <span class="tname">
+            <span class="l-en">{{ theme.name_en }}</span>
+            <span class="l-zh">{{ theme.name_zh or theme.name_en }}</span>
+          </span>
+          <span class="tmeta">
+            {% set mc = theme.direct_micros|length %}
+            <span class="l-en">{{ mc }} {{ 'micro-theme' if mc == 1 else 'micro-themes' }}</span>
+            <span class="l-zh">{{ mc }} 个细分主题</span>
+          </span>
+        </summary>
+        <div class="tt-theme-body">
+          <div class="tt-chips">
+            {% for chip in theme.direct_micros %}
+            <button type="button" class="tt-chip" data-node="{{ chip.node_id }}" aria-controls="tt-detail" aria-expanded="false" data-tip-en="{{ chip.tip_en|e }}" data-tip-zh="{{ chip.tip_zh|e }}">
+              <span class="l-en">{{ chip.name_en }}</span>
+              <span class="l-zh">{{ chip.name_zh or chip.name_en }}</span>
+            </button>
+            {% endfor %}
+          </div>
+        </div>
+      </details>
+      {% endif %}
+      {% endfor %}
+    {% endif %}
+  </div>
+</details>
+{% endfor %}
+
+<p class="tt-disclosure tt-footnote">
+  <span class="l-en">A map of how we group companies. It is not a ranking or a signal.</span>
+  <span class="l-zh">这是我们对公司归类的地图，不是排名，也不是信号。</span>
+</p>
+
+{% else %}
+
+<div class="tt-empty" role="status">
+  <h2>
+    <span class="l-en">Theme map unavailable</span>
+    <span class="l-zh">主题地图暂不可用</span>
+  </h2>
+  <p>
+    <span class="l-en">{{ tree.empty_reason_en if tree.empty_reason_en else 'The theme map could not be loaded. Other pages still work.' }}</span>
+    <span class="l-zh">{{ tree.empty_reason_zh if tree.empty_reason_zh else '主题地图无法加载。其他页面仍可使用。' }}</span>
+  </p>
+</div>
+
+{% endif %}
+
+{% if tree.details_json %}
+<aside id="tt-detail" class="tt-detail" hidden role="region" aria-live="polite" aria-labelledby="tt-detail-name">
+  <div class="tt-detail-top">
+    <h2 class="tt-detail-name" id="tt-detail-name"></h2>
+    <button type="button" class="tt-detail-close" data-close aria-label="Close">×</button>
+  </div>
+  <ul class="tt-detail-paths"></ul>
+  <p class="tt-detail-breadth"></p>
+  <div class="tt-detail-sec">
+    <p class="tt-detail-h"><span class="l-en">Watch instead</span><span class="l-zh">可替代观察</span></p>
+    <p class="tt-detail-note"><span class="l-en">Proxy, not membership — these baskets track the parent theme</span><span class="l-zh">代理，非成分——这些篮子跟踪上级主题</span></p>
+    <ul class="tt-detail-list"></ul>
+    <p class="tt-detail-empty" hidden><span class="l-en">No public proxy basket for this theme yet.</span><span class="l-zh">该主题暂无可公开的代理篮子。</span></p>
+    <p class="tt-detail-empty tt-detail-unknown" hidden><span class="l-en">Proxy coverage for this theme is being worked out.</span><span class="l-zh">该主题的代理覆盖仍在整理中。</span></p>
+  </div>
+</aside>
+<script type="application/json" id="tt-detail-data">{{ tree.details_json|safe }}</script>
+{% endif %}
+
+{% if tree.ticker_lookup_json %}
+<aside id="tt-ticker-result" class="tt-detail tt-ticker-result" hidden role="region" aria-live="polite" aria-labelledby="tt-ticker-name">
+  <div class="tt-detail-top">
+    <h2 class="tt-detail-name" id="tt-ticker-name"></h2>
+    <button type="button" class="tt-detail-close" data-close aria-label="Close">×</button>
+  </div>
+  <div class="tt-ticker-body"></div>
+  <p class="tt-ticker-not-found" hidden><span class="l-en">No company with that ticker on this map.</span><span class="l-zh">图中没有该代码的公司。</span></p>
+</aside>
+<script type="application/json" id="tt-ticker-data">{{ tree.ticker_lookup_json|safe }}</script>
+{% endif %}
+
+</div>
+
+<script>
+(function(){
+  // Micro-theme detail card (U2). Data from the JSON blob; textContent only.
+  var blob=document.getElementById('tt-detail-data');
+  var card=document.getElementById('tt-detail');
+  if(!blob||!card)return;
+  var data;try{data=JSON.parse(blob.textContent);}catch(e){return;}
+  var opener=null;
+  function el(tag,cls){var n=document.createElement(tag);if(cls)n.className=cls;return n;}
+  function bi(parent,en,zh){
+    var a=el('span','l-en');a.textContent=en;var b=el('span','l-zh');b.textContent=zh||en;
+    parent.appendChild(a);parent.appendChild(b);return parent;
+  }
+  function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
+  function fill(d){
+    var name=card.querySelector('.tt-detail-name');clear(name);bi(name,d.name_en,d.name_zh);
+    var paths=card.querySelector('.tt-detail-paths');clear(paths);
+    (d.chains||[]).forEach(function(ch){
+      var li=el('li');
+      bi(li,ch.map(function(x){return x.name_en;}).join(' › '),ch.map(function(x){return x.name_zh||x.name_en;}).join(' › '));
+      paths.appendChild(li);
+    });
+    var br=card.querySelector('.tt-detail-breadth');clear(br);
+    (d.breadth||[]).forEach(function(b,i){
+      if(i){br.appendChild(document.createTextNode(' '));}
+      var n=b.micro_count;
+      bi(br,n+(n===1?' micro-theme in ':' micro-themes in ')+b.theme.name_en+'.',(b.theme.name_zh||b.theme.name_en)+' 下共 '+n+' 个细分主题。');
+    });
+    br.hidden=!(d.breadth&&d.breadth.length);
+    var list=card.querySelector('.tt-detail-list');clear(list);
+    var empties=card.querySelectorAll('.tt-detail-empty');
+    var note=card.querySelector('.tt-detail-note');
+    empties[0].hidden=d.proxy_state!=='none';
+    empties[1].hidden=d.proxy_state!=='unknown';
+    note.hidden=d.proxy_state!=='available';
+    (d.instruments||[]).forEach(function(it){
+      var li=el('li');var label=it.href?el('a'):el('span');
+      if(it.href)label.setAttribute('href',it.href);
+      bi(label,it.name_en,it.name_zh);li.appendChild(label);
+      if(it.market_en){li.appendChild(bi(el('span','tt-detail-mkt'),it.market_en,it.market_zh));}
+      list.appendChild(li);
+    });
+    list.hidden=!(d.instruments&&d.instruments.length);
+  }
+  function close(){
+    if(card.hidden)return;
+    card.hidden=true;document.body.classList.remove('tt-detail-open');
+    if(opener){opener.setAttribute('aria-expanded','false');opener.focus();}
+    opener=null;
+  }
+  document.addEventListener('click',function(e){
+    if(e.target.closest('[data-close]')){close();return;}
+    var chip=e.target.closest('.tt-chip[data-node]');
+    if(!chip){return;}
+    var d=data[chip.getAttribute('data-node')];if(!d)return;
+    if(opener&&opener!==chip)opener.setAttribute('aria-expanded','false');
+    if(opener===chip&&!card.hidden){close();return;}
+    fill(d);opener=chip;chip.setAttribute('aria-expanded','true');card.hidden=false;document.body.classList.add('tt-detail-open');
+    card.querySelector('.tt-detail-close').focus();
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+})();
+</script>
+<script>
+(function(){
+  // Multi-parent tip on micro chips — stays a hover pop, no inline style mutation.
+  var _tip=null;
+  function _makeTip(){
+    if(_tip)return _tip;
+    _tip=document.createElement('div');
+    _tip.className='tt-tip';
+    document.body.appendChild(_tip);
+    return _tip;
+  }
+  function _lang(){return (document.documentElement.getAttribute('data-lang')||'')==='zh'?'zh':'en';}
+  document.addEventListener('mouseover',function(e){
+    var el=e.target.closest('[data-tip-en]');
+    if(!el)return;
+    var en=el.getAttribute('data-tip-en');if(!en)return;
+    var zh=el.getAttribute('data-tip-zh')||en;
+    var tip=_makeTip();
+    tip.textContent=_lang()==='zh'?zh:en;
+    tip.style.display='block';
+  });
+  document.addEventListener('mousemove',function(e){
+    if(!_tip||_tip.style.display==='none')return;
+    var x=e.clientX+13,y=e.clientY+14;
+    if(x+280>window.innerWidth)x=e.clientX-280;
+    if(y+90>window.innerHeight)y=e.clientY-90;
+    _tip.style.left=x+'px';_tip.style.top=y+'px';
+  });
+  document.addEventListener('mouseout',function(e){
+    var el=e.target.closest('[data-tip-en]');
+    if(!el)return;
+    if(_tip)_tip.style.display='none';
+  });
+  if(typeof MutationObserver!=='undefined'){
+    new MutationObserver(function(){if(_tip)_tip.style.display='none';})
+      .observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']});
+  }
+})();
+</script>
+<script>
+(function(){
+  // U3 — "Why is this company here?" ticker lookup. textContent only;
+  // data is the JSON blob built at compose() time and refuses any forbidden
+  // value key, so we never need to sanitise names here. Every line is
+  // emitted in both languages (l-en/l-zh) so a language toggle re-reads it.
+  var blob=document.getElementById('tt-ticker-data');
+  var input=document.getElementById('tt-lookup-input');
+  var card=document.getElementById('tt-ticker-result');
+  if(!blob||!input||!card)return;
+  var data;try{data=JSON.parse(blob.textContent);}catch(e){return;}
+  var records=(data&&data.records)||{};
+  var abstainers=(data&&data.abstainers)||{};
+  var names=(data&&data.basket_names)||[];
+  var cells=data&&data.axis_cells;
+  var MARKET={us:['US','美股'],cn:['China A-shares','A股'],hk:['Hong Kong','港股'],intl:['International','国际'],ca:['Canada','加拿大']};
+  var bySymbol={};
+  // Exact symbol, plus for non-US listings the code without its exchange
+  // suffix and without leading zeros, so "0700", "700" and "0700.HK" all
+  // find Tencent. US symbols (BRK.B) stay exact.
+  function aliases(mk,sym){
+    var out=[sym];
+    if(mk!=='us'){var dot=sym.lastIndexOf('.');var bare=dot>0?sym.slice(0,dot):sym;out.push(bare);
+      if(/^[0-9]+$/.test(bare))out.push(bare.replace(/^0+(?=.)/,''));}
+    return out;
+  }
+  function index(k){
+    var i=k.indexOf(':');if(i<0)return;
+    var mk=k.slice(0,i),sym=k.slice(i+1).toUpperCase();
+    aliases(mk,sym).forEach(function(a){var l=(bySymbol[a]=bySymbol[a]||[]);if(l.indexOf(k)<0)l.push(k);});
+  }
+  Object.keys(records).forEach(index);Object.keys(abstainers).forEach(index);
+
+  function el(tag,cls){var n=document.createElement(tag);if(cls)n.className=cls;return n;}
+  function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
+  function bi(parent,en,zh){
+    var a=el('span','l-en');a.textContent=en;
+    var b=el('span','l-zh');b.textContent=zh||en;
+    parent.appendChild(a);parent.appendChild(b);
+    return parent;
+  }
+  function nm(x,lang){return lang==='zh'?(x.name_zh||x.name_en||''):(x.name_en||x.node_id||'');}
+  function chainText(rec,lang){
+    var chain=rec.chain||[];
+    var cat=chain.length?chain[0]:null;
+    var theme=chain.length?chain[chain.length-1]:null;
+    if(cat&&theme&&cat.node_id!==theme.node_id)return ' → '+nm(cat,lang)+' › '+nm(theme,lang);
+    return theme?' → '+nm(theme,lang):'';
+  }
+  function pathLine(li,rec){
+    var basket=rec.basket||{};
+    [['en','In '],['zh','在']].forEach(function(l){
+      var sp=el('span','l-'+l[0]);
+      sp.appendChild(document.createTextNode(l[1]));
+      var name=nm(basket,l[0]);
+      if(basket.href){var a=el('a');a.href=basket.href;a.textContent=name;sp.appendChild(a);}
+      else sp.appendChild(document.createTextNode(name));
+      sp.appendChild(document.createTextNode(chainText(rec,l[0])));
+      li.appendChild(sp);
+    });
+    return li;
+  }
+  function abstentionText(code,basket,lang){
+    var n=nm(basket||{},lang);
+    if(code==='basket_not_a_theme')return lang==='zh'?(n+'是市场视角，不是主题'):(n+' is a market lens, not a theme');
+    if(code==='market_not_wired')return lang==='zh'?(n+'：该市场的主题关联尚未建立'):(n+': theme links for this market are not built yet');
+    return lang==='zh'?(n+'：尚未关联主题'):(n+': not linked to a theme yet');
+  }
+  function line(cls,en,zh){var p=el('p',cls);bi(p,en,zh);return p;}
+  function abstList(entries){
+    var ul=el('ul','tt-ticker-abst');
+    entries.forEach(function(a){var li=el('li');bi(li,abstentionText(a.code,a.basket,'en'),abstentionText(a.code,a.basket,'zh'));ul.appendChild(li);});
+    return ul;
+  }
+  // U4: six-axis company profile. Each record carries indices into the
+  // shared axis_cells table; non-available cells print their typed reason.
+  var AXIS={sic_industry:['Industry','行业'],geography:['Listing','上市地'],macro_sensitivity:['Macro sensitivity','宏观敏感度'],business_model:['Business model','商业模式'],lifecycle:['Status','状态'],value_chain:['Value chain','价值链位置']};
+  var REASON={unknown:['Not recorded yet','暂无记录'],unavailable:['Source not available on this build','本次构建无此数据源'],stale:['Out of date','数据过期'],not_applicable:['Not tracked for this market','该市场暂不跟踪'],rights_blocked:['Not shown (licence)','因授权不显示']};
+  // value_chain is a theme axis: for any company it is not_applicable by subject kind, not by market.
+  var REASON_AXIS={value_chain:{not_applicable:['Describes themes, not single companies','描述主题，不适用于单个公司']}};
+  function profile(refs){
+    var box=el('section','tt-ticker-profile');
+    bi(box.appendChild(el('h3','tt-ticker-profile-title')),'Company profile','公司概况');
+    var dl=box.appendChild(el('dl'));
+    refs.forEach(function(i){
+      var c=cells[i];if(!c||!AXIS[c.axis])return;
+      bi(dl.appendChild(el('dt')),AXIS[c.axis][0],AXIS[c.axis][1]);
+      var dd=dl.appendChild(el('dd'));
+      if(c.status==='available'&&c.label_en){
+        var a=el('span','l-en');a.textContent=c.label_en;
+        var b=el('span','l-zh');b.textContent=c.label_zh||c.label_en;
+        if(!c.label_zh||c.label_zh===c.label_en)b.setAttribute('lang','en');
+        dd.appendChild(a);dd.appendChild(b);
+      }else{
+        var r=(REASON_AXIS[c.axis]||{})[c.status]||REASON[c.status]||REASON.unknown;
+        dd.className='tt-ticker-profile-reason';bi(dd,r[0],r[1]);
+      }
+    });
+    bi(box.appendChild(el('p','tt-ticker-profile-note')),'Context only — not a rating','仅供参考，非评级');
+    return box;
+  }
+  function match(key){
+    var sec=el('section','tt-ticker-match');
+    var mk=key.slice(0,key.indexOf(':'));var m=MARKET[mk]||[mk,mk];
+    bi(sec.appendChild(el('span','tt-ticker-market')),m[0],m[1]);
+    var rec=records[key];
+    if(rec){
+      var ul=el('ul','tt-detail-paths tt-ticker-paths');
+      (rec.paths||[]).forEach(function(p){ul.appendChild(pathLine(el('li'),p));});
+      sec.appendChild(ul);
+      if(rec.micro==='micro_not_wired')sec.appendChild(line('tt-ticker-micro','Micro-theme: not yet linked for this basket','细分主题：该篮子尚未关联'));
+      if(rec.abstentions&&rec.abstentions.length)sec.appendChild(abstList(rec.abstentions));
+      if(Array.isArray(rec.axes)&&Array.isArray(cells))sec.appendChild(profile(rec.axes));
+      return sec;
+    }
+    var a=abstainers[key];
+    if(Array.isArray(a)&&a.length){
+      sec.appendChild(abstList(a.map(function(pr){return {code:pr[0],basket:names[pr[1]]||{}};})));
+    }else{
+      sec.appendChild(line('tt-ticker-empty-public','Not in any public basket yet.','暂未纳入任何公开篮子。'));
+    }
+    return sec;
+  }
+  function open(){card.hidden=false;document.body.classList.add('tt-detail-open');}
+  function close(){
+    if(card.hidden)return;
+    card.hidden=true;document.body.classList.remove('tt-detail-open');
+  }
+  function lookup(raw){
+    var s=(raw||'').trim().toUpperCase();
+    if(!s){close();return;}
+    var nameEl=card.querySelector('.tt-detail-name');clear(nameEl);nameEl.textContent=s;
+    var body=card.querySelector('.tt-ticker-body');clear(body);
+    var nf=card.querySelector('.tt-ticker-not-found');
+    var keys=(bySymbol[s]||bySymbol[s.replace(/^0+(?=.)/,'')]||[]).slice().sort();
+    nf.hidden=keys.length>0;
+    keys.forEach(function(k){body.appendChild(match(k));});
+    open();
+  }
+  input.addEventListener('keydown',function(e){
+    if(e.key==='Enter'){e.preventDefault();lookup(input.value);}
+    else if(e.key==='Escape'){e.stopPropagation();input.value='';close();input.focus();}
+  });
+  document.addEventListener('click',function(e){
+    if(e.target.closest('#tt-ticker-result [data-close]')){close();input.focus();return;}
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&!card.hidden){close();input.focus();}
+  });
+})();
+</script>
+<style>
+.tt-tip{position:fixed;z-index:999;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:7px 11px;font-size:12px;max-width:270px;pointer-events:none;line-height:1.5;display:none;color:var(--text);box-shadow:var(--popover-shadow)}
+</style>
+</body>
+</html>

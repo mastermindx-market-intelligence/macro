@@ -4,7 +4,8 @@ This module is the production constructor for the closed
 ``derive_result_cash`` / ``qualify_operands`` typed-limitation pair, plus
 the comparison-receipt constructor ``build_comparison_receipt``.  It is
 deliberately new: no imports from ``engine.fundamental_forensics.detectors``
-or any other private forensic helper, no I/O, no persistence, no model
+or any other private forensic helper (the one sibling import is the public
+IND-R206 ``denominator_refusal`` guard), no I/O, no persistence, no model
 call, no store, no ranking/valuation.  All numbers are exact-decimal text
 produced from ``Decimal``; a loss keeps its sign; equal nulls never
 certify comparability.
@@ -26,6 +27,9 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from engine.fundamental_forensics.industrials_denominator_guard import (
+    denominator_refusal,
+)
 
 FORMULA_VERSION = "v1"
 
@@ -61,6 +65,12 @@ _REQUIRED_QUALIFIER_FIELDS: tuple[str, ...] = (
 )
 
 _NON_FINITE_TOKENS: frozenset[str] = frozenset({"nan", "inf", "-inf", "infinity", "-infinity", "+inf", "-inf"})
+
+# Largest |adjusted exponent| an operand may carry. Finite text such as
+# "1E+999999" passes is_finite() but overflows the ambient decimal context
+# (Emax 999999) in the growth and ratio arithmetic; 9999 leaves ample
+# headroom for 100 * x and for sums of a handful of operands.
+_MAX_OPERAND_ADJUSTED_EXPONENT: int = 9999
 
 _REFUSAL_UNAUTHORIZED_REF_FORMAT: str = "operand_ref_malformed"
 
@@ -127,7 +137,8 @@ def build_comparison_receipt(
 ) -> dict[str, Any]:
     """Build the production comparison receipt.
 
-    Closed shape — exactly the keys ``T01.comparison(...)`` documents:
+    Closed shape — the keys ``T01.comparison(...)`` documents, plus
+    ``formula_version``:
     ``receipt_id``, ``purpose``, ``operand_refs`` (in cell order),
     ``checked`` with ``basis``, ``currency``, ``scale``, ``duration``,
     ``perimeter``, ``definition``, ``source_mode`` booleans,
@@ -140,6 +151,11 @@ def build_comparison_receipt(
     says nothing about comparability has verified nothing, so every gate
     defaults False.  ``checked=None`` and ``checked={}`` are therefore the
     same receipt.
+
+    ``formula_version`` is both hashed into ``receipt_id`` and returned, so a
+    method change mints a new derived identity AND stays readable on the object
+    a consumer caches (IND-R214).  T01 parity is unaffected: the parity test
+    asserts a key SUPERSET, and every T01-documented key keeps its meaning.
     """
     if purpose not in _ALLOWED_PURPOSES:
         raise ValueError(f"unknown comparison purpose: {purpose}")
@@ -182,8 +198,17 @@ def build_comparison_receipt(
             raise ValueError("transformation lineage must be a string")
         transforms.append({"kind": kind, "factor": factor, "lineage": lineage})
 
+    # IND-R214 (r2 blob 9c98e106b954d0a48610afad418de2a9eeb1e58b, section 11):
+    # "Same operands with changed normalization/formula version | New derived
+    # identity and visible method; no stale cached summary."  Normalization was
+    # already covered, because a normalization step is a `transformations` entry
+    # and those are hashed below.  The formula VERSION was not, so changing the
+    # method left `receipt_id` byte-identical: one derived identity addressed two
+    # different computations, and a consumer cache keyed on it would answer a v2
+    # request with the v1 body.  The version therefore leads the digest.
     digest_input = (
-        purpose + "|"
+        FORMULA_VERSION + "|"
+        + purpose + "|"
         + "|".join(refs) + "|"
         + "|".join(f"{k}:{int(v)}" for k, v in sorted(checked_dict.items())) + "|"
         + "|".join(sorted(unknown_list)) + "|"
@@ -193,6 +218,7 @@ def build_comparison_receipt(
 
     return {
         "receipt_id": receipt_id,
+        "formula_version": FORMULA_VERSION,
         "purpose": purpose,
         "operand_refs": refs,
         "checked": checked_dict,
@@ -277,9 +303,13 @@ def _parse_operand(index: int, raw: Mapping[str, Any]) -> _Operand | None:
         if value_text.strip().lower() in _NON_FINITE_TOKENS:
             raise _OperandParseError(["operand_malformed:non_finite"])
         try:
-            Decimal(value_text)
+            parsed_decimal = Decimal(value_text)
         except InvalidOperation as exc:
             raise _OperandParseError(["operand_malformed:not_decimal"]) from exc
+        if not parsed_decimal.is_finite():
+            raise _OperandParseError(["operand_malformed:non_finite"])
+        if abs(parsed_decimal.adjusted()) > _MAX_OPERAND_ADJUSTED_EXPONENT:
+            raise _OperandParseError(["operand_malformed:magnitude_out_of_range"])
         value_text_parsed = value_text
 
     return _Operand(
@@ -361,6 +391,12 @@ def qualify_operands(
         which legitimately compares same-owner / same-metric across distinct
         editions; the ``distinct_edition_required`` limitation lives in the
         formula dispatch.
+      - ``mislabeled_denominator`` (IND-R206) when any parsed
+        ``revenue_share_pct`` operand carries a ``(segment, denominator)``
+        pair outside the two agreed pairs, or omits either key; evaluated
+        for every operand and never conditioned on a
+        ``comparison_receipt`` field — a receipt cannot vouch a mislabeled
+        denominator into a legal operand.
     """
     if not isinstance(cells, list):
         # Allow tuple for backward compatibility but require sequence-like.
@@ -387,6 +423,15 @@ def qualify_operands(
 
     if len(parsed) < len(cells_list):
         limitations.append("operand_not_mapping")
+
+    # IND-R206: every parsed operand meets the denominator guard, and no
+    # comparison_receipt field gates the call, so a receipt cannot vouch a
+    # mislabeled denominator into a legal operand.
+    if any(
+        denominator_refusal(_as_mapping(op)) == "mislabeled_denominator"
+        for op in parsed
+    ):
+        limitations.append("mislabeled_denominator")
 
     # Receipt completeness — every operand must be named in the receipt.
     receipt_refs = list(comparison_receipt.get("operand_refs") or [])
@@ -450,8 +495,23 @@ def qualify_operands(
     transforms = list(comparison_receipt.get("transformations") or [])
     if parsed and not _scales_compatible(parsed) and not (scale_checked and transforms):
         limitations.append("scale_mismatch")
+    # Unit — IND-D08.  Same conjunction as scale and currency: a magnitude
+    # mismatch is permitted only when the receipt BOTH declares the magnitude
+    # checked and carries the conversion that makes it exact.  Declaring it
+    # alone is not a conversion receipt, and comparing the raw decimal text
+    # across thousands and millions is the error the requirement names.
+    if parsed and not _units_compatible(parsed) and not (scale_checked and transforms):
+        limitations.append("unit_mismatch")
     if parsed and not _currencies_compatible(parsed) and not (currency_checked and transforms):
         limitations.append("currency_mismatch")
+    # Purpose — IND-R208.  The receipt CARRIES a declared purpose; until now it
+    # was never compared with the purpose the caller is qualifying for, so a
+    # receipt declaring `same_period` was accepted for a year-over-year
+    # comparison and "different dates only under a declared comparable-duration
+    # purpose" was nominal.  A receipt that declares nothing is unchanged.
+    declared_purpose = comparison_receipt.get("purpose")
+    if declared_purpose is not None and declared_purpose != purpose:
+        limitations.append("purpose_mismatch")
 
     if limitations:
         return {
@@ -497,7 +557,14 @@ def _operand_ref_payload(op: _Operand) -> dict[str, str]:
 def _all_basis_present(operands: Sequence[_Operand]) -> bool:
     for op in operands:
         basis = op.basis or {}
-        if not basis.get("accounting"):
+        # "unknown" is truthy, so a bare get() would treat the token as a basis.
+        # strip() in _parse_operand is only the non-finite predicate; value_text
+        # is stored raw and basis is the caller's mapping. A stripped casefold
+        # equal to "unknown" is the same missing basis.
+        accounting = basis.get("accounting")
+        if not accounting:
+            return False
+        if isinstance(accounting, str) and str(accounting).strip().casefold() == "unknown":
             return False
         if "recast" not in basis:
             return False
@@ -524,6 +591,17 @@ def _durations_compatible(operands: Sequence[_Operand]) -> bool:
 
 def _scales_compatible(operands: Sequence[_Operand]) -> bool:
     return len({op.scale for op in operands}) <= 1
+
+
+def _units_compatible(operands: Sequence[_Operand]) -> bool:
+    """``unit`` is the authoritative magnitude carrier in this corpus.
+
+    T01's ``cell()`` fixes ``scale`` at 1 and lets ``unit`` name the reporting
+    magnitude (``USD_thousands`` vs ``USD_millions``), so the very situation
+    IND-D08 names -- thousands compared against millions -- is invisible to
+    ``_scales_compatible``, which only ever sees ``{1}``.
+    """
+    return len({op.unit for op in operands}) <= 1
 
 
 def _currencies_compatible(operands: Sequence[_Operand]) -> bool:
@@ -601,7 +679,7 @@ def derive_result_cash(
             operand_refs=[],
         )
 
-    # Qualification gate — only when needed by the formula.
+    # Qualification gate — unconditional for every formula.
     qualifier = qualify_operands(
         _purpose_for(formula),
         [_as_mapping(op) for op in parsed],
@@ -791,6 +869,26 @@ def _derive_growth_pct(
             limitations=["operand_missing"],
             operand_refs=[_operand_ref_payload(op) for op in cells],
         )
+    # IND-D09 — growth_pct picks its operands POSITIONALLY and `metric` names the
+    # period ROLE in this corpus (`revenue_current` / `revenue_prior`), so metric
+    # equality is the wrong instrument: a legitimate year-over-year pair has two
+    # different metric strings.  The MEASURE lives in `quality.definition`, and
+    # `_all_definition_present` only ever checked that one was present -- never
+    # that the two agreed.  So a total-revenue prior could be divided into a
+    # net-reimbursement current and returned as `ready`, `label="reported"`, with
+    # no limitation: exactly the relabelling the requirement forbids.  Refused
+    # unconditionally, like `final_vs_preview`'s metric gate -- a receipt cannot
+    # declare two different measures into one growth number.
+    current_definition = (current.quality or {}).get("definition")
+    prior_definition = (prior.quality or {}).get("definition")
+    if current_definition != prior_definition:
+        return _refusal_result(
+            formula="growth_pct",
+            cells=cells,
+            receipt=receipt,
+            limitations=["definition_mismatch"],
+            operand_refs=[_operand_ref_payload(op) for op in cells],
+        )
     current_dec = _decimal_from_operand(current)
     prior_dec = _decimal_from_operand(prior)
     abs_change = current_dec - prior_dec
@@ -873,6 +971,26 @@ def _derive_paired_remeasurement(
             cells=cells,
             receipt=receipt,
             limitations=missing,
+            operand_refs=[_operand_ref_payload(op) for op in cells],
+        )
+    # IND-D10 — "remove both or neither, preserve pretax".  The absence check
+    # above enforces both-or-neither on PRESENCE; it never compared the two
+    # legs' AMOUNTS.  A matched deferred-comp remeasurement is one movement seen
+    # from two sides, so its expense and gain legs are the same number by
+    # construction: adding back an expense of 5 while removing a gain of 7
+    # removes more than was ever added, and moves pretax by the difference —
+    # precisely the pretax the requirement says must be preserved.  Measured
+    # before this guard: legs 5 / 7 returned ``ready`` with
+    # ``label="company_adjusted"`` and ``pretax_after_pairing="92"`` against the
+    # matched pair's "90", carrying no limitation at all — an invented pairing
+    # presented as the issuer's own adjustment.  Unequal legs are not a pairing
+    # this module may complete, so it refuses rather than choosing a leg.
+    if _decimal_from_operand(expense) != _decimal_from_operand(matched_gain):
+        return _refusal_result(
+            formula="paired_remeasurement",
+            cells=cells,
+            receipt=receipt,
+            limitations=["matched_pair_unequal"],
             operand_refs=[_operand_ref_payload(op) for op in cells],
         )
     op_with_expense = _decimal_from_operand(operating) + _decimal_from_operand(expense)

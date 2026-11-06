@@ -1,0 +1,1318 @@
+{
+  "runtime": {
+    "proof_class": "actual_shared_macro_controlled_chromium_no_network_or_account",
+    "base": "e59a7baeaa1ab9542f65e73eda5f43ca13c14f34",
+    "bindings": {
+      "templates/theme.js": {
+        "before": "16ea1ebb4c63efdab73c846b12db37f4d8af40b30b18d388944f83ee97029672",
+        "after": "d08efe725ef9050bcecf3c55621238efd6a93441b059392572a822d443e7d504"
+      },
+      "site/theme.js": {
+        "before": "d8b0ede88f509f0480209e4bc514e3979a94294f187e1956de6a008cd321f206",
+        "after": "ce012e86762ab76e30088d7b2324895b1512ea931849dc8e42bffb07878e65f8"
+      }
+    },
+    "browser": "151.0.7922.34",
+    "cases": [
+      {
+        "path": "templates/theme.js",
+        "revision": "r21",
+        "case": "us-positive",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r21",
+        "case": "pool-positive",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r21",
+        "case": "hk-unopted",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r21",
+        "case": "ca-unopted",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r21",
+        "case": "china-unopted",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r21",
+        "case": "no-host",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r21",
+        "case": "root-relative",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": false,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r21",
+        "case": "foreign-link",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": false,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r21",
+        "case": "missing-link",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": false,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r22",
+        "case": "us-positive",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r22",
+        "case": "pool-positive",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r22",
+        "case": "hk-unopted",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r22",
+        "case": "ca-unopted",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r22",
+        "case": "china-unopted",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r22",
+        "case": "no-host",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r22",
+        "case": "root-relative",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r22",
+        "case": "foreign-link",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "templates/theme.js",
+        "revision": "r22",
+        "case": "missing-link",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r21",
+        "case": "us-positive",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r21",
+        "case": "pool-positive",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r21",
+        "case": "hk-unopted",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r21",
+        "case": "ca-unopted",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r21",
+        "case": "china-unopted",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r21",
+        "case": "no-host",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r21",
+        "case": "root-relative",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": false,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r21",
+        "case": "foreign-link",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": false,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r21",
+        "case": "missing-link",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": false,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r22",
+        "case": "us-positive",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r22",
+        "case": "pool-positive",
+        "result": {
+          "nativeOpen": false,
+          "modalOpen": true,
+          "allocated": 1,
+          "prevented": true,
+          "nativeBodyRemains": false
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r22",
+        "case": "hk-unopted",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r22",
+        "case": "ca-unopted",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r22",
+        "case": "china-unopted",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r22",
+        "case": "no-host",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r22",
+        "case": "root-relative",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r22",
+        "case": "foreign-link",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      },
+      {
+        "path": "site/theme.js",
+        "revision": "r22",
+        "case": "missing-link",
+        "result": {
+          "nativeOpen": true,
+          "modalOpen": false,
+          "allocated": 0,
+          "prevented": false,
+          "nativeBodyRemains": true
+        },
+        "errors": [],
+        "external_requests": 0,
+        "expected_behavior_verified": true
+      }
+    ],
+    "baseline_defects_reproduced": true,
+    "r22_f1_f2_pass": true
+  },
+  "grid_research_plan": {
+    "proof_class": "local_native_template_split_payload_hydration_not_live_auth",
+    "head": "549215c3f4bf84d4af999302dc64f900971a89b8",
+    "source_adopted": false,
+    "checks": {
+      "native_functions": [
+        "_split_us_board",
+        "_split_us_prophet_board",
+        "_split_us_panels",
+        "_write_us_payload",
+        "_render_us_panel_payload"
+      ],
+      "parity_cases": [
+        [
+          "us",
+          false
+        ],
+        [
+          "us",
+          true
+        ],
+        [
+          "china",
+          false
+        ],
+        [
+          "china",
+          true
+        ],
+        [
+          "hk",
+          false
+        ],
+        [
+          "hk",
+          true
+        ],
+        [
+          "canada",
+          false
+        ],
+        [
+          "canada",
+          true
+        ]
+      ],
+      "gates": [
+        {
+          "tier": "essential",
+          "payload": "/premiumdata/us_stocks.json",
+          "preview": 1,
+          "locked": 3,
+          "total": 4,
+          "stage_counts": {
+            "live": 3,
+            "setting_up": 1,
+            "ran": 0,
+            "basing": 0,
+            "blocked": 0,
+            "bottoming": 4,
+            "continuation": 0,
+            "trend": 0,
+            "recovery": 0,
+            "watch": 0
+          }
+        },
+        {
+          "tier": "essential",
+          "payload": "/premiumdata/us_stocks.json",
+          "preview": 1,
+          "locked": 2,
+          "total": 3
+        },
+        {
+          "tier": "essential",
+          "payload": "/premiumdata/us_stocks.json",
+          "preview": 1,
+          "candidate_pool": {
+            "preview": 1,
+            "locked": 2,
+            "total": 3
+          }
+        }
+      ]
+    },
+    "browser": {
+      "version": "151.0.7922.34",
+      "cases": [
+        {
+          "locale": "en",
+          "theme": "dark",
+          "width": 390,
+          "anonymous_board": 1,
+          "hydrated_board": 4,
+          "hydrated_pool": 3,
+          "keyboard_return": true,
+          "native_payload_hydration": true,
+          "source_bound_levels": true,
+          "same_symbol_not_joined": true,
+          "plan_record_content_preserved": true,
+          "auth_event_clears_detail": true,
+          "removed_source_not_resurrected": true,
+          "page_errors": []
+        },
+        {
+          "locale": "en",
+          "theme": "dark",
+          "width": 768,
+          "anonymous_board": 1,
+          "hydrated_board": 4,
+          "hydrated_pool": 3,
+          "keyboard_return": true,
+          "native_payload_hydration": true,
+          "source_bound_levels": true,
+          "same_symbol_not_joined": true,
+          "plan_record_content_preserved": true,
+          "auth_event_clears_detail": true,
+          "removed_source_not_resurrected": true,
+          "page_errors": []
+        },
+        {
+          "locale": "en",
+          "theme": "dark",
+          "width": 1440,
+          "anonymous_board": 1,
+          "hydrated_board": 4,
+          "hydrated_pool": 3,
+          "keyboard_return": true,
+          "native_payload_hydration": true,
+          "source_bound_levels": true,
+          "same_symbol_not_joined": true,
+          "plan_record_content_preserved": true,
+          "auth_event_clears_detail": true,
+          "removed_source_not_resurrected": true,
+          "page_errors": []
+        },
+        {
+          "locale": "en",
+          "theme": "light",
+          "width": 390,
+          "anonymous_board": 1,
+          "hydrated_board": 4,
+          "hydrated_pool": 3,
+          "keyboard_return": true,
+          "native_payload_hydration": true,
+          "source_bound_levels": true,
+          "same_symbol_not_joined": true,
+          "plan_record_content_preserved": true,
+          "auth_event_clears_detail": true,
+          "removed_source_not_resurrected": true,
+          "page_errors": []
+        },
+        {
+          "locale": "en",
+          "theme": "light",
+          "width": 768,
+          "anonymous_board": 1,
+          "hydrated_board": 4,
+          "hydrated_pool": 3,
+          "keyboard_return": true,
+          "native_payload_hydration": true,
+          "source_bound_levels": true,
+          "same_symbol_not_joined": true,
+          "plan_record_content_preserved": true,
+          "auth_event_clears_detail": true,
+          "removed_source_not_resurrected": true,
+          "page_errors": []
+        },
+        {
+          "locale": "en",
+          "theme": "light",
+          "width": 1440,
+          "anonymous_board": 1,
+          "hydrated_board": 4,
+          "hydrated_pool": 3,
+          "keyboard_return": true,
+          "native_payload_hydration": true,
+          "source_bound_levels": true,
+          "same_symbol_not_joined": true,
+          "plan_record_content_preserved": true,
+          "auth_event_clears_detail": true,
+          "removed_source_not_resurrected": true,
+          "page_errors": []
+        },
+        {
+          "locale": "zh",
+          "theme": "dark",
+          "width": 390,
+          "anonymous_board": 1,
+          "hydrated_board": 4,
+          "hydrated_pool": 3,
+          "keyboard_return": true,
+          "native_payload_hydration": true,
+          "source_bound_levels": true,
+          "same_symbol_not_joined": true,
+          "plan_record_content_preserved": true,
+          "auth_event_clears_detail": true,
+          "removed_source_not_resurrected": true,
+          "page_errors": []
+        },
+        {
+          "locale": "zh",
+          "theme": "dark",
+          "width": 768,
+          "anonymous_board": 1,
+          "hydrated_board": 4,
+          "hydrated_pool": 3,
+          "keyboard_return": true,
+          "native_payload_hydration": true,
+          "source_bound_levels": true,
+          "same_symbol_not_joined": true,
+          "plan_record_content_preserved": true,
+          "auth_event_clears_detail": true,
+          "removed_source_not_resurrected": true,
+          "page_errors": []
+        },
+        {
+          "locale": "zh",
+          "theme": "dark",
+          "width": 1440,
+          "anonymous_board": 1,
+          "hydrated_board": 4,
+          "hydrated_pool": 3,
+          "keyboard_return": true,
+          "native_payload_hydration": true,
+          "source_bound_levels": true,
+          "same_symbol_not_joined": true,
+          "plan_record_content_preserved": true,
+          "auth_event_clears_detail": true,
+          "removed_source_not_resurrected": true,
+          "page_errors": []
+        },
+        {
+          "locale": "zh",
+          "theme": "light",
+          "width": 390,
+          "anonymous_board": 1,
+          "hydrated_board": 4,
+          "hydrated_pool": 3,
+          "keyboard_return": true,
+          "native_payload_hydration": true,
+          "source_bound_levels": true,
+          "same_symbol_not_joined": true,
+          "plan_record_content_preserved": true,
+          "auth_event_clears_detail": true,
+          "removed_source_not_resurrected": true,
+          "page_errors": []
+        },
+        {
+          "locale": "zh",
+          "theme": "light",
+          "width": 768,
+          "anonymous_board": 1,
+          "hydrated_board": 4,
+          "hydrated_pool": 3,
+          "keyboard_return": true,
+          "native_payload_hydration": true,
+          "source_bound_levels": true,
+          "same_symbol_not_joined": true,
+          "plan_record_content_preserved": true,
+          "auth_event_clears_detail": true,
+          "removed_source_not_resurrected": true,
+          "page_errors": []
+        },
+        {
+          "locale": "zh",
+          "theme": "light",
+          "width": 1440,
+          "anonymous_board": 1,
+          "hydrated_board": 4,
+          "hydrated_pool": 3,
+          "keyboard_return": true,
+          "native_payload_hydration": true,
+          "source_bound_levels": true,
+          "same_symbol_not_joined": true,
+          "plan_record_content_preserved": true,
+          "auth_event_clears_detail": true,
+          "removed_source_not_resurrected": true,
+          "page_errors": []
+        }
+      ],
+      "observed_page_errors": []
+    }
+  },
+  "dense_table": {
+    "proof_class": "review_only_native_dense_table_integration_not_live_auth",
+    "head": "549215c3f4bf84d4af999302dc64f900971a89b8",
+    "source_adopted": false,
+    "checks": {
+      "native_functions": [
+        "_split_us_board",
+        "_split_us_prophet_board",
+        "_split_us_panels",
+        "_write_us_payload",
+        "_render_us_panel_payload"
+      ],
+      "parity_cases": [
+        [
+          "us",
+          false
+        ],
+        [
+          "us",
+          true
+        ],
+        [
+          "china",
+          false
+        ],
+        [
+          "china",
+          true
+        ],
+        [
+          "hk",
+          false
+        ],
+        [
+          "hk",
+          true
+        ],
+        [
+          "canada",
+          false
+        ],
+        [
+          "canada",
+          true
+        ]
+      ],
+      "gates": [
+        {
+          "tier": "essential",
+          "payload": "/premiumdata/us_stocks.json",
+          "preview": 1,
+          "locked": 3,
+          "total": 4,
+          "stage_counts": {
+            "live": 3,
+            "setting_up": 1,
+            "ran": 0,
+            "basing": 0,
+            "blocked": 0,
+            "bottoming": 4,
+            "continuation": 0,
+            "trend": 0,
+            "recovery": 0,
+            "watch": 0
+          }
+        },
+        {
+          "tier": "essential",
+          "payload": "/premiumdata/us_stocks.json",
+          "preview": 1,
+          "locked": 2,
+          "total": 3
+        },
+        {
+          "tier": "essential",
+          "payload": "/premiumdata/us_stocks.json",
+          "preview": 1,
+          "candidate_pool": {
+            "preview": 1,
+            "locked": 2,
+            "total": 3
+          }
+        }
+      ],
+      "table_rows": 4,
+      "flat_fields_unchanged": true,
+      "shell_contains_only_preview": true,
+      "table_card_body_identical": true,
+      "payload_bytes": 94168,
+      "payload_gzip": 7157,
+      "predecessor_payload_bytes": 64503,
+      "predecessor_payload_gzip": 6447
+    },
+    "browser": {
+      "version": "151.0.7922.34",
+      "cases": [
+        {
+          "locale": "en",
+          "theme": "dark",
+          "width": 390,
+          "native_table_hydration": true,
+          "initial_rows": 1,
+          "hydrated_rows": 4,
+          "same_row_body": true,
+          "entry_state_preserved": true,
+          "sort_filter_return": true,
+          "stored_column_layout_unchanged": true,
+          "focus_scroll_return": true,
+          "native_stock_link_preserved": true,
+          "removed_row_invalidates": true,
+          "no_page_errors": true,
+          "extra_detail_fetches": 0
+        },
+        {
+          "locale": "en",
+          "theme": "dark",
+          "width": 768,
+          "native_table_hydration": true,
+          "initial_rows": 1,
+          "hydrated_rows": 4,
+          "same_row_body": true,
+          "entry_state_preserved": true,
+          "sort_filter_return": true,
+          "stored_column_layout_unchanged": true,
+          "focus_scroll_return": true,
+          "native_stock_link_preserved": true,
+          "removed_row_invalidates": true,
+          "no_page_errors": true,
+          "extra_detail_fetches": 0
+        },
+        {
+          "locale": "en",
+          "theme": "dark",
+          "width": 1440,
+          "native_table_hydration": true,
+          "initial_rows": 1,
+          "hydrated_rows": 4,
+          "same_row_body": true,
+          "entry_state_preserved": true,
+          "sort_filter_return": true,
+          "stored_column_layout_unchanged": true,
+          "focus_scroll_return": true,
+          "native_stock_link_preserved": true,
+          "removed_row_invalidates": true,
+          "no_page_errors": true,
+          "extra_detail_fetches": 0
+        },
+        {
+          "locale": "en",
+          "theme": "light",
+          "width": 390,
+          "native_table_hydration": true,
+          "initial_rows": 1,
+          "hydrated_rows": 4,
+          "same_row_body": true,
+          "entry_state_preserved": true,
+          "sort_filter_return": true,
+          "stored_column_layout_unchanged": true,
+          "focus_scroll_return": true,
+          "native_stock_link_preserved": true,
+          "removed_row_invalidates": true,
+          "no_page_errors": true,
+          "extra_detail_fetches": 0
+        },
+        {
+          "locale": "en",
+          "theme": "light",
+          "width": 768,
+          "native_table_hydration": true,
+          "initial_rows": 1,
+          "hydrated_rows": 4,
+          "same_row_body": true,
+          "entry_state_preserved": true,
+          "sort_filter_return": true,
+          "stored_column_layout_unchanged": true,
+          "focus_scroll_return": true,
+          "native_stock_link_preserved": true,
+          "removed_row_invalidates": true,
+          "no_page_errors": true,
+          "extra_detail_fetches": 0
+        },
+        {
+          "locale": "en",
+          "theme": "light",
+          "width": 1440,
+          "native_table_hydration": true,
+          "initial_rows": 1,
+          "hydrated_rows": 4,
+          "same_row_body": true,
+          "entry_state_preserved": true,
+          "sort_filter_return": true,
+          "stored_column_layout_unchanged": true,
+          "focus_scroll_return": true,
+          "native_stock_link_preserved": true,
+          "removed_row_invalidates": true,
+          "no_page_errors": true,
+          "extra_detail_fetches": 0
+        },
+        {
+          "locale": "zh",
+          "theme": "dark",
+          "width": 390,
+          "native_table_hydration": true,
+          "initial_rows": 1,
+          "hydrated_rows": 4,
+          "same_row_body": true,
+          "entry_state_preserved": true,
+          "sort_filter_return": true,
+          "stored_column_layout_unchanged": true,
+          "focus_scroll_return": true,
+          "native_stock_link_preserved": true,
+          "removed_row_invalidates": true,
+          "no_page_errors": true,
+          "extra_detail_fetches": 0
+        },
+        {
+          "locale": "zh",
+          "theme": "dark",
+          "width": 768,
+          "native_table_hydration": true,
+          "initial_rows": 1,
+          "hydrated_rows": 4,
+          "same_row_body": true,
+          "entry_state_preserved": true,
+          "sort_filter_return": true,
+          "stored_column_layout_unchanged": true,
+          "focus_scroll_return": true,
+          "native_stock_link_preserved": true,
+          "removed_row_invalidates": true,
+          "no_page_errors": true,
+          "extra_detail_fetches": 0
+        },
+        {
+          "locale": "zh",
+          "theme": "dark",
+          "width": 1440,
+          "native_table_hydration": true,
+          "initial_rows": 1,
+          "hydrated_rows": 4,
+          "same_row_body": true,
+          "entry_state_preserved": true,
+          "sort_filter_return": true,
+          "stored_column_layout_unchanged": true,
+          "focus_scroll_return": true,
+          "native_stock_link_preserved": true,
+          "removed_row_invalidates": true,
+          "no_page_errors": true,
+          "extra_detail_fetches": 0
+        },
+        {
+          "locale": "zh",
+          "theme": "light",
+          "width": 390,
+          "native_table_hydration": true,
+          "initial_rows": 1,
+          "hydrated_rows": 4,
+          "same_row_body": true,
+          "entry_state_preserved": true,
+          "sort_filter_return": true,
+          "stored_column_layout_unchanged": true,
+          "focus_scroll_return": true,
+          "native_stock_link_preserved": true,
+          "removed_row_invalidates": true,
+          "no_page_errors": true,
+          "extra_detail_fetches": 0
+        },
+        {
+          "locale": "zh",
+          "theme": "light",
+          "width": 768,
+          "native_table_hydration": true,
+          "initial_rows": 1,
+          "hydrated_rows": 4,
+          "same_row_body": true,
+          "entry_state_preserved": true,
+          "sort_filter_return": true,
+          "stored_column_layout_unchanged": true,
+          "focus_scroll_return": true,
+          "native_stock_link_preserved": true,
+          "removed_row_invalidates": true,
+          "no_page_errors": true,
+          "extra_detail_fetches": 0
+        },
+        {
+          "locale": "zh",
+          "theme": "light",
+          "width": 1440,
+          "native_table_hydration": true,
+          "initial_rows": 1,
+          "hydrated_rows": 4,
+          "same_row_body": true,
+          "entry_state_preserved": true,
+          "sort_filter_return": true,
+          "stored_column_layout_unchanged": true,
+          "focus_scroll_return": true,
+          "native_stock_link_preserved": true,
+          "removed_row_invalidates": true,
+          "no_page_errors": true,
+          "extra_detail_fetches": 0
+        }
+      ],
+      "edges": [
+        {
+          "case": "remove_table_control_carveout",
+          "result": "MUTATION_KILLED",
+          "signature": "native row navigation fired during summary action"
+        },
+        {
+          "case": "payload_401",
+          "result": "PASS",
+          "withheld_detail_bytes": 0,
+          "existing_payload_requests": 1
+        },
+        {
+          "case": "payload_503",
+          "result": "PASS",
+          "withheld_detail_bytes": 0,
+          "existing_payload_requests": 1
+        },
+        {
+          "case": "data-setup-ticker_mismatch",
+          "result": "PASS",
+          "guessed_join": false
+        },
+        {
+          "case": "data-setup-asof_mismatch",
+          "result": "PASS",
+          "guessed_join": false
+        }
+      ]
+    }
+  },
+  "inert_content": {
+    "proof_class": "local_native_table_inert_content_no_auth_or_source_ref_effect",
+    "source_adopted": false,
+    "browser_version": "151.0.7922.34",
+    "cases": [
+      {
+        "width": 390,
+        "case": "five_open_close_cycles",
+        "same_node_not_cloned": true,
+        "live_table_bodies_closed": 0,
+        "status": "PASS"
+      },
+      {
+        "width": 390,
+        "case": "native_row_replacement",
+        "removed_content_not_resurrected": true,
+        "status": "PASS"
+      },
+      {
+        "width": 1440,
+        "case": "five_open_close_cycles",
+        "same_node_not_cloned": true,
+        "live_table_bodies_closed": 0,
+        "status": "PASS"
+      },
+      {
+        "width": 1440,
+        "case": "native_row_replacement",
+        "removed_content_not_resurrected": true,
+        "status": "PASS"
+      }
+    ]
+  },
+  "adverse_states": {
+    "head": "549215c3f4bf84d4af999302dc64f900971a89b8",
+    "proof_class": "native_owner_with_controlled_local_auth_and_network",
+    "production": false,
+    "cases": [
+      {
+        "case": "protected_response_401",
+        "result": "PASS",
+        "detail_fetches": 0,
+        "withheld_rows": 0
+      },
+      {
+        "case": "protected_response_503",
+        "result": "PASS",
+        "detail_fetches": 0,
+        "withheld_rows": 0
+      },
+      {
+        "case": "native_pool_digest_rejection",
+        "result": "PASS",
+        "scope": "candidate pool only; board owner is independent"
+      },
+      {
+        "case": "native_suppressed_row_has_no_detail_escape",
+        "result": "PASS"
+      },
+      {
+        "case": "owner_epoch_change_invalidates_detail",
+        "result": "PASS"
+      },
+      {
+        "case": "unsafe_geometry_is_labelled_unavailable",
+        "result": "PASS"
+      },
+      {
+        "case": "no_javascript_native_details_and_stock_link",
+        "result": "PASS"
+      },
+      {
+        "case": "remove_native_summary_control_exception",
+        "result": "MUTATION_KILLED",
+        "signature": "Lens sheet steals Plan detail click before dispatch"
+      }
+    ]
+  },
+  "source_snapshot": {
+    "proof_class": "latest_inspected_repository_source_native_composition_local_auth",
+    "field_parity_rows": 221,
+    "r21_source_field_names_and_values_preserved": true,
+    "code_postimages": {
+      "templates/theme.js": "d08efe725ef9050bcecf3c55621238efd6a93441b059392572a822d443e7d504",
+      "site/theme.js": "ce012e86762ab76e30088d7b2324895b1512ea931849dc8e42bffb07878e65f8",
+      "templates/_prophet_setup_detail.html.j2": "5fe6131f2c23e9bd09b7f66a7a795602a28f09f0951cde2db2cca859bb727e9e",
+      "tests/test_prophet_card_shared.py": "505b6e3b74f5e28367deb2896cba2bf869db90b3057b60a2480f67ad86eeb0dd"
+    },
+    "code_identity_kind": "integrated_base_plus_exact_bound_R22_postimages",
+    "code": "549215c3f4bf84d4af999302dc64f900971a89b8",
+    "data_source": "549215c3f4bf84d4af999302dc64f900971a89b8",
+    "as_of": "2026-09-25",
+    "board_sha256": "afb1cfc08290851a7078a7f082dffe3dd4bafbc1fb037383e20b6445de99af17",
+    "plan_sha256": "cb88a804946d98c0ded4c08eb88b638564e5bb07c9c19bfc2bb4bf1ef2aa9756",
+    "witness": "ENS",
+    "witness_rule": "first existing owner-Featured bounce_wait row with published chart; not a pick",
+    "counts": {
+      "board": 69,
+      "research": 152,
+      "plans": 448
+    },
+    "same_row_presenter_equalities": 69,
+    "source_unmodified": true,
+    "anonymous_table_rows": 1,
+    "source_adopted": false,
+    "cases": [
+      {
+        "locale": "en",
+        "theme": "dark",
+        "width": 1440,
+        "all_counts_preserved": true,
+        "wait_not_promoted": true,
+        "levels_equal_source": true,
+        "missing_target_holding_visible": true,
+        "source_date_visible": true,
+        "published_geometry_painted": true,
+        "same_filtered_row_return": true,
+        "expanded_disclosure_verified": true,
+        "raw_status_and_neutral_labels_verified": true,
+        "page_errors": 0,
+        "external_requests": 0
+      },
+      {
+        "locale": "zh",
+        "theme": "light",
+        "width": 390,
+        "all_counts_preserved": true,
+        "wait_not_promoted": true,
+        "levels_equal_source": true,
+        "missing_target_holding_visible": true,
+        "source_date_visible": true,
+        "published_geometry_painted": true,
+        "same_filtered_row_return": true,
+        "expanded_disclosure_verified": true,
+        "raw_status_and_neutral_labels_verified": true,
+        "page_errors": 0,
+        "external_requests": 0
+      }
+    ],
+    "browser": "151.0.7922.34"
+  }
+}

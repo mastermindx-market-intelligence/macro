@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:45:35Z",
+ "accession": "0001801368-26-000008",
+ "cik": "0001801368",
+ "doc_byte_length": 3138683,
+ "doc_sha256": "5a886ef2e336b6b374b630f95ccc340e0abb6f4d652c6e0d313897d17e4f4048",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mp-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2800540,
+  "byte_start": 2799830,
+  "normalized": "The initial term of the Shenghe Offtake Agreement was two years, with the option for the Company to extend the term for an additional one-year period. In July 2025, to align with the terms of the DoW Transaction Agreements and in further support of its domestic supply chain objectives, the Company ceased all sales of its products to China and did not extend the term of the Shenghe Offtake Agreement when it expired in January 2026.",
+  "normalized_sha256": "fa2bb281a656f2963d42780b82ab22b4789b7f3caaa20e71157942806bafde72",
+  "raw": "The initial term of the Shenghe Offtake Agreement was <ix:nonNumeric contextRef=\"c-362\" name=\"mp:RelatedPartyTransactionsInitialTerm\" format=\"ixt-sec:durwordsen\" id=\"f-1668\">two years</ix:nonNumeric>, with the option for the Company to extend the term for an additional <ix:nonNumeric contextRef=\"c-362\" name=\"mp:RelatedPartyTransactionsExtensionPeriod\" format=\"ixt-sec:durwordsen\" id=\"f-1669\">one-year</ix:nonNumeric> period. In July 2025, to align with the terms of the DoW Transaction Agreements and in further support of its domestic supply chain objectives, the Company ceased all sales of its products to China and did not extend the term of the Shenghe Offtake Agreement when it expired in January 2026.",
+  "raw_sha256": "f20d6fbef2e4256d1bb1390db5f3c201eb66a11ec071de0eb3d76ccf5f10a0b8"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1801368/000180136826000008/mp-20251231.htm",
+ "xbrl_contexts": []
+}

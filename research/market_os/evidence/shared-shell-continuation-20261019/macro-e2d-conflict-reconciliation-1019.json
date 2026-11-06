@@ -1,0 +1,134 @@
+{
+  "observed_at": "2026-10-20T10:18:32.019483+00:00",
+  "reads": [
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "status",
+        "--porcelain=v1"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "e2d10f933587f58be8716505529a37f8839901f7\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "branch",
+        "--show-current"
+      ],
+      "exit": 0,
+      "stdout": "sol/market-os-shared-shell-design-20260924\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "diff",
+        "--name-only",
+        "--diff-filter=U"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "rev-parse",
+        "--verify",
+        "MERGE_HEAD"
+      ],
+      "exit": 128,
+      "stdout": "",
+      "stderr": "fatal: Needed a single revision\n"
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "rev-parse",
+        "HEAD:AGENTS.md"
+      ],
+      "exit": 0,
+      "stdout": "7aa82fbb309081c6d1297ee35405507d30e7d3c6\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "run",
+        "list",
+        "--repo",
+        "mastermindx-market-intelligence/macro",
+        "--workflow",
+        "merge-on-green.yml",
+        "--limit",
+        "3",
+        "--json",
+        "databaseId,status,conclusion,headSha,createdAt,updatedAt,event,url"
+      ],
+      "exit": 0,
+      "stdout": [
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-20T10:17:03Z",
+          "databaseId": 39406834956,
+          "event": "workflow_run",
+          "headSha": "42c859546ececa797b400db0adeb8c5a22f96832",
+          "status": "in_progress",
+          "updatedAt": "2026-10-20T10:17:06Z",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39406834956"
+        },
+        {
+          "conclusion": "success",
+          "createdAt": "2026-10-20T10:14:12Z",
+          "databaseId": 39406493859,
+          "event": "workflow_run",
+          "headSha": "42c859546ececa797b400db0adeb8c5a22f96832",
+          "status": "completed",
+          "updatedAt": "2026-10-20T10:17:01Z",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39406493859"
+        },
+        {
+          "conclusion": "skipped",
+          "createdAt": "2026-10-20T10:13:05Z",
+          "databaseId": 39406357480,
+          "event": "workflow_run",
+          "headSha": "42c859546ececa797b400db0adeb8c5a22f96832",
+          "status": "completed",
+          "updatedAt": "2026-10-20T10:13:06Z",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39406357480"
+        }
+      ],
+      "stderr": ""
+    }
+  ]
+}
