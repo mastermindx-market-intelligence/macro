@@ -118,7 +118,19 @@ test('B11 no horizontal scroll at 390; picker links are 40px focusable targets',
     const panel = page.locator('[data-im-panel][data-view="dossier"]:not([hidden])');
     const links = panel.locator('.intl-gs__pickerlist a[data-gs-select-market]');
     const count = await links.count();
-    assert.ok(count >= 64, 'picker links rendered');
+    // All 64+ jurisdiction rows remain present; only configured markets
+    // are actionable, and unavailable rows have explicit disabled semantics.
+    const rows = panel.locator('.intl-gs__pickerlist [data-gs-market-row]');
+    const unavailable = panel.locator('.intl-gs__pickerlist [data-gs-market-row][aria-disabled="true"]');
+    assert.ok(await rows.count() >= 64, 'full jurisdiction picker inventory rendered');
+    assert.equal(await rows.count(), count + await unavailable.count(),
+      'each market is either actionable or explicitly unavailable');
+    assert.ok(count >= 1, 'at least one configured picker link rendered');
+    const config = JSON.parse(await page.locator('[data-im-config]').first().textContent());
+    const actionableIds = await links.evaluateAll(nodes =>
+      nodes.map(node => node.getAttribute('data-gs-select-market')));
+    assert.ok(actionableIds.every(id => config.markets.includes(id)),
+      'every link targets a configured market');
     const firstLink = links.first();
     const box = await firstLink.boundingBox();
     assert.ok(box && box.height >= 40, `picker link target ${box && box.height} < 40`);
@@ -196,6 +208,39 @@ test('B13 correction note separator and clock share ONE line box at 390', async 
   }
 });
 
+// The standalone Board-11 specimen intentionally has no full workspace shell.
+// Its real dossier template emits inert, source-bound JSON carriers, never
+// live market articles. Materialize exactly the default fixture article for
+// visual geometry tests; production hydration remains tested on intl.html.
+async function materializeSpecimenDefault(page) {
+  await page.evaluate(() => {
+    const scripts = document.querySelectorAll(
+      'script[type="application/json"][data-im-gs-market-id][data-im-gs-market-default]');
+    if (scripts.length !== 1) throw new Error('fixture default market carrier cardinality');
+    const script = scripts[0];
+    const data = JSON.parse(script.textContent);
+    if (!data || data.schema !== 'intl-gs-market.v1' ||
+        data.market_id !== script.getAttribute('data-im-gs-market-id') ||
+        data.market_id !== 'BR' || data.default !== true ||
+        typeof data.markup !== 'string') throw new Error('fixture default market identity');
+    const scope = script.closest('[data-gs-market-scope]');
+    if (!scope || scope.querySelector('article[data-gs-market]')) {
+      throw new Error('fixture unexpectedly contained an already-live market');
+    }
+    const template = document.createElement('template');
+    template.innerHTML = data.markup;
+    if (template.content.children.length !== 1) throw new Error('fixture market shape');
+    const article = template.content.firstElementChild;
+    if (article.tagName !== 'ARTICLE' ||
+        article.getAttribute('data-gs-market') !== data.market_id ||
+        !article.hasAttribute('data-gs-market-default') ||
+        article.hasAttribute('hidden') || article.querySelector('script')) {
+      throw new Error('fixture market article identity');
+    }
+    scope.appendChild(article);
+  });
+}
+
 test('B13 specimen correction row keeps one line box at 390', async () => {
   const browser = await chromium.launch({headless: true});
   try {
@@ -204,6 +249,7 @@ test('B13 specimen correction row keeps one line box at 390', async () => {
     await page.route('**/*', route => serveRoute(route, new URL(route.request().url()).pathname));
     await page.goto('http://fixture.local/intl-gs-dossier-specimen.html', {waitUntil: 'load'});
     await page.waitForTimeout(300);
+    await materializeSpecimenDefault(page);
     const spans = await page.locator('.intl-gs__corr-when').count();
     assert.ok(spans >= 1, 'specimen correction row present');
     const rects = await page.locator('.intl-gs__corr-when').first()
@@ -255,6 +301,7 @@ test('GB1 graph-boundary chip present, non-empty value and text, member + out-of
       await page.route('**/*', route => serveRoute(route, new URL(route.request().url()).pathname));
       await page.goto(url, {waitUntil: 'load'});
       await page.waitForTimeout(300);
+      if (name === 'specimen out-of-graph') await materializeSpecimenDefault(page);
       const chip = await scope(page)
         .locator('article:not([hidden]) [data-graph-boundary]').first();
       assert.ok(await chip.count() >= 1, `${name}: chip present on the visible article`);
