@@ -295,6 +295,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2463,6 +2465,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3538,6 +3542,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -6196,6 +6202,8 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
@@ -8130,6 +8138,8 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -9257,6 +9267,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
@@ -12367,6 +12379,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -14712,7 +14726,7 @@ jobs:
       - name: factor boundary selftest (guard fires on planted violations)
         run: python3 scripts/check_factor_boundaries.py --selftest
       - name: synapse owning contracts in one pytest session
-        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_multi_asset_context.py tests/test_multi_asset_daily.py tests/test_risk_envelope_multi_asset.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
+        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
       # Share one pytest session across the five existing offline EDGAR suites.
       # Test inventory, dependencies and ordinary scope inference are unchanged.
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
@@ -14891,6 +14905,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "scripts/risk_envelope_multi_asset.py"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/rotation_observation_notification.py"
@@ -16399,6 +16414,9 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
+      - "scripts/risk_envelope_multi_asset.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
@@ -16609,6 +16627,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -19080,6 +19100,9 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
+      - "scripts/risk_envelope_multi_asset.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -22237,6 +22260,9 @@ jobs:
     # the shared closure guard keeps every concrete dependency selecting this job.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
+      - "scripts/risk_envelope_multi_asset.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -23962,6 +23988,9 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
+      - "scripts/risk_envelope_multi_asset.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -26709,6 +26738,9 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
+      - "scripts/risk_envelope_multi_asset.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "config/dataset_registry.yml"
@@ -26973,6 +27005,8 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       - "engine/options_hub_retention.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
@@ -27610,6 +27644,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
+      - "scripts/risk_envelope_multi_asset.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -28461,6 +28498,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -30215,6 +30254,7 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "scripts/risk_envelope_multi_asset.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -30748,6 +30788,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -33467,6 +33509,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -35351,6 +35395,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
+      - "scripts/risk_envelope_multi_asset.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -36835,6 +36882,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
+      - "scripts/risk_envelope_multi_asset.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -39961,6 +40011,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -40512,6 +40564,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -43827,6 +43881,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -45101,6 +45157,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -47126,6 +47184,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/risk_envelope_multi_asset.py"
+      - "tests/test_multi_asset_context.py"
+      - "tests/test_multi_asset_daily.py"
+      - "tests/test_risk_envelope_multi_asset.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -47377,7 +47439,7 @@ jobs:
       - name: install EW-P4 descriptive UI test dependencies
         run: pip install pytest pyyaml jinja2 beautifulsoup4 pandas plotly pyarrow requests
       - name: EW-P4 descriptive observation UI — Radar band, Sector Central glance mirror, shot receipt
-        run: python -m pytest tests/test_ew_p4_descriptive_ui.py -q
+        run: python -m pytest tests/test_ew_p4_descriptive_ui.py tests/test_multi_asset_context.py tests/test_multi_asset_daily.py tests/test_risk_envelope_multi_asset.py -q
 
   options-skew-engine:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -50299,6 +50361,9 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/multi_asset_context.py"
+      - "engine/multi_asset_daily.py"
+      - "scripts/risk_envelope_multi_asset.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
