@@ -90,8 +90,8 @@
   .topline { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
   .muted { color:var(--muted); }
   .asof { font-size:12px; white-space:nowrap; }
-  .fail-note { margin:6px 0 0; padding:6px 10px; border-radius:8px; color:var(--text);
-           background:color-mix(in srgb, var(--warn) 14%, var(--panel2)); border:1px solid var(--line); font-size:13px; }
+  .fail-note { margin:6px 0 0; padding:6px 10px; border-radius:var(--r-ctl,8px); color:var(--text);
+           background:var(--esurf-warn-soft); border:1px solid var(--line); font-size:13px; }
   .state { display:inline-block; padding:2px 11px; border-radius:12px; font-weight:700;
            font-size:12.5px; }
   .card { background:var(--panel2); border:1px solid var(--line); border-radius:10px;
@@ -115,7 +115,7 @@
   .tv { margin-top:8px; overflow:hidden; }
   /* third-party chart failure state — a neutral surface in the widget's 440px frame: no
      direction or health ink, no edge stripe. The rest of the dossier stays. */
-  .tv-err { box-sizing:border-box; min-height:440px; display:flex; flex-direction:column; justify-content:center; gap:6px; padding:24px; background:var(--panel2); border:1px solid var(--line); border-radius:8px; }
+  .tv-err { box-sizing:border-box; min-height:440px; display:flex; flex-direction:column; justify-content:center; gap:6px; padding:24px; background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-ctl,8px); }
   .tv-err .t { margin:0; font-weight:600; color:var(--text); }
   .tv-err .s { margin:0; color:var(--muted); font-size:13px; max-width:52ch; }
   details summary { cursor:pointer; color:var(--ink-link, var(--link)); font-size:12.5px; margin-top:6px; }

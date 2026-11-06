@@ -242,7 +242,9 @@ def test_fund_dossier_failed_cycle_note_takes_warning_ink():
     assert "{% if s.cycle.failed_cycle %}<p class=\"neg\"" not in text
     start = text.index("  .fail-note {")
     css = text[start:text.index("}", start)]
-    assert "var(--warn)" in css
+    # The tint is the theme's warning surface token (the design ratchet forbids
+    # a colour-mix literal on an added line), so the note reads the token.
+    assert "var(--esurf-warn-soft)" in css
     for banned in ("var(--up)", "var(--down)", "var(--ok)", "var(--act)", "border-left", "border-right", "border-top:", "border-bottom:"):
         assert banned not in css, banned
 

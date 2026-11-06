@@ -68,7 +68,7 @@
   .si-view-btn:hover { color:var(--text); background:color-mix(in srgb, var(--link) 6%, transparent); }
   /* Selected view: a quiet fill and stronger ink, never an edge accent (DESIGN_DOCTRINE §3). */
   .si-view-btn.on { color:var(--ink-link, var(--link)); font-weight:700;
-    background:color-mix(in srgb, var(--link) 11%, var(--panel)); }
+    background:var(--panel2); }
   .si-view-btn:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
   .si-side-out { display:flex; align-items:center; gap:10px; margin-top:8px; padding:11px 10px 0;
     border-top:1px solid var(--line); text-decoration:none;
@@ -116,7 +116,7 @@
       margin:0 -18px 14px; overflow-x:auto;
       border-right:0; border-bottom:1px solid var(--line); }
     .si-view-btn { flex:1 1 0; min-width:0; flex-direction:column; gap:3px; justify-content:center;
-      padding:8px 2px; text-align:center; border-radius:8px; }
+      padding:8px 2px; text-align:center; border-radius:var(--r-ctl,8px); }
     .si-view-btn .si-vb-l { display:block; font-size:10.5px; font-weight:600; }
     .si-view-btn:focus-visible { outline-offset:-2px; }
     .si-side-out { display:none; }

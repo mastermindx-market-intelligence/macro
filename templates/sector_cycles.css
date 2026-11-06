@@ -281,7 +281,7 @@ html[data-theme="light"] .sc-mbtn.on, html[data-theme="light"] .sc-sbtn.on { col
 /* It wraps to two short lines: a one-line chip (~185px) squeezed the sector name
    in the header to ~73px, and "Technology" broke mid-word (SIC GAP-B M2). */
 .cc-frag { font-size: 10.5px; font-weight: 750; letter-spacing: .03em; padding: 2px 8px;
-  border-radius: 6px; line-height: 1.45; white-space: normal; max-width: 16ch; text-align: right; color: var(--muted);
+  border-radius: calc(var(--r-ctl,8px) * .75); line-height: 1.45; white-space: normal; max-width: 16ch; text-align: right; color: var(--muted);
   background: color-mix(in srgb, var(--muted) 10%, transparent);
   border: 1px dashed color-mix(in srgb, var(--muted) 45%, var(--line)); }
 
