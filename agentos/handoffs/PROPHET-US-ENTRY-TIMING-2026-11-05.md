@@ -135,3 +135,19 @@ Protected procedure: Mastermind@49c2e1d93e5e080b1671c98087a845e5beb09dd5.
 Owning source plan: research/signal_engine/BOTTOM_PIVOT_DELIVERY_2026_11_05.md.
 Evidence: research/evidence/bottom_pivot_delivery_20261105/verification.json.
 Exact recovery checkpoint identity is its containing Git commit, verified after publication; no unmerged record is product acceptance.
+
+
+## Current continuation frontier - CI/UI repair, 2026-11-05 Vancouver
+
+MISSION_COMPLETE: false. Active attended continuation; not a final handoff or background-execution claim.
+Original operation `bottom-pivot-delivery-20261105`, branch and Studio Direct publisher remain unchanged. Source parent is `3795f2b88e3bfebcfcdec07f836c6b38723113a7`; takeover is PR10785 comment6675056759. Compatible protected procedure is now Mastermind `5c3b2121bd75e30be1341a2f1048df9119cd8218`. This section supersedes only the earlier next-action/repair frontier, not its product limits, holds, original evidence or do-not-redo boundaries.
+
+Repaired the two missing transitive pivot import declarations. Curated `signal-gate-pair-coherence` to 212 exact source/package/data/template dependencies, retaining every existing test and unchanged packing ceilings. Whole-index auditing found 17 source artifacts invisible to a naive sparse-filesystem census; those are explicitly covered, not waived. Added 13 selection regression cases and the required exclusive-job inventory entry. Both radius literals now use the incumbent control/card tokens.
+
+Qualified: 25 focused tests passed; all three affected jobs have zero uncovered dependencies under the canonical exact tracked-tree inventory; all three previously over-selected unrelated probes exclude this job. Changed-line design guard has zero introduced blockers. Canonical visual-evidence guard passes after the supported sparse owner materialized only `mockups`. Canonical Chrome captures produced 16 rest/focus cells plus eight expanded-detail cells; all are labeled synthetic. Representative dark/light expanded and light desktop/mobile views were visually inspected. Original 453-test proof and all non-style/non-manifest source hashes remain unchanged; no BP1 duplicate or BP2/BP3 retry.
+
+Evidence: `research/evidence/bottom_pivot_delivery_20261105/release_repair.json`; canonical receipt `mockups/evidence/bottom-pivot-delivery-20261105/EVIDENCE.yml`. The full contract-delta rerun is the original foreground Studio process46185, log `.cache/bottom-pivot-resume-20261105/contract-delta-fixed.log`, base96633a798efda34d899e1b135487c89b596215fc. Consume that exact process; do not duplicate it. Its result was not yet available when this milestone was written.
+
+Live release inspection found PR10785 OPEN/Ready, no labels/auto-merge/reviews/hold comment, Macro/main unprotected and no effective native rules. Therefore no blanket formal approval is invented. Exact repaired-head hosted checks and the existing `merge-on-green` controller remain mandatory. Do not use native auto-merge or direct/admin merge. Latest observed mainae08e895362536af10c40093b6b010554cb9d4c3 changed a disjoint Prophet CI subsection; the original base comparison and repaired packing-probe evidence remain scoped, not integration acceptance.
+
+Next: publish this scoped repair through the original publisher; consume the full local guard and new exact-head hosted CI; repair any real delta; qualify and opt into the existing Macro controller once genuinely green. Continue authenticated natural-source proof and BP4/BP5/BP7 work in the same mission. Terminal currently has an existing rotation-pivot PR1281 and company/analysis writers: reconcile exact file overlap before opening a consumer lane; do not duplicate their work. Held Macro10212/10213/10227 remain held and unreleased; especially do not infer per-member fresh intraday quotes from the incumbent newest-timestamp aggregate.

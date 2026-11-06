@@ -126,3 +126,8 @@ Exact engineering receipt: `research/evidence/bottom_pivot_delivery_20261105/ver
 Adjacent #9457 modifies the Mastermind market-plane portion of the same source file; this increment touches the disjoint candidate-context bottom block. Its head, release holds and original effects remain unchanged. #8257 was inspected and does not touch this file. Formal required source approval/release remains separate from local self-review.
 
 **Not complete:** public/Terminal pivot workflow, market/group/intraday adapters, current authenticated production proof, and qualified future-outcome probabilities. Existing original research is preserved, including the October21 completed multi-asset study and explicitly rejected/test-leaked constructions. No waiting-for-MA rule is introduced and no claim of an ultimate-bottom oracle is made.
+
+
+### 2026-11-05 attended continuation: release repair milestone
+
+The original PR10785 carrier now contains the CI closure/selection repair and canonical radius-token fix. All original signal/producer/replay/Brain bytes and the 453-test receipt are preserved. Added 13 selection regressions; 25 focused cases pass, the exact tracked-index closure for three affected jobs passes, design-added and canonical visual-evidence guards pass. Twenty-four explicitly synthetic captures cover rest/focus/expanded detail. Full contract-delta and new exact-head hosted release qualification remain pending at this milestone; see the cumulative Agent OS frontier and `research/evidence/bottom_pivot_delivery_20261105/release_repair.json`. BP4/BP5/BP7 are still not accepted, and no held upstream is promoted by this repair.

@@ -120,9 +120,9 @@ html[data-lang="zh"] .dist-far  { color:var(--ink-down, var(--down)); } /* --dow
 
 /* Additive evidence detail: same hierarchy in both theme art directions. */
 .pivot-detail { min-width:220px; max-width:420px; white-space:normal; }
-.pivot-detail summary { min-height:40px; cursor:pointer; display:list-item; padding:8px; border-radius:6px; background:var(--panel2); }
+.pivot-detail summary { min-height:40px; cursor:pointer; display:list-item; padding:8px; border-radius:var(--r-ctl,8px); background:var(--panel2); }
 .pivot-detail summary:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
-.pivot-detail[open] { padding:8px; border:1px solid var(--line); border-radius:8px; background:var(--panel); }
+.pivot-detail[open] { padding:8px; border:1px solid var(--line); border-radius:var(--r-card,12px); background:var(--panel); }
 html[data-theme="light"] .pivot-detail[open] { box-shadow:var(--card-shadow); }
 .pivot-detail p { margin:10px 0; overflow-wrap:anywhere; }
 .pivot-detail .pivot-meta { color:var(--muted); font-size:11px; }
