@@ -5473,9 +5473,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_929),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_670),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5483,6 +5483,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-06 analyst-method code ownership (#7285): actual paired
+    contract-delta run42311572786/job128214017556, head cc909ae7d98a
+    against base e7806d54c0bc, measured index137jobs/5912->5914,
+    free137jobs/5927->5929 and Prophet131jobs/5668->5670; all ten packs
+    on both sides and no newly selected jobs. The existing unrun-brain-gateway
+    command gains the previously data-only analyst-doctrine suite, costing
+    +2 estimated weight units. These are planner estimates, not measured
+    runtime seconds. Raise only the three weight ceilings to those exact
+    values, without padding. Preserve job ceilings137/138/131, the ten-pack
+    bound, timeout/admission limits, all suites and normal inferred coverage.
+    Actual source log SHA256
+    805dbb569d2e42510a66f522132bf84a96d896f1a36613a49796a06d12725fc2.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
