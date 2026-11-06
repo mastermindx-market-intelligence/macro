@@ -1,4 +1,90 @@
 ---
+workstream: WS:GMI-THEME-GRAPH
+session: ChatGPT Web Macro backlog records recovery, 2026-11-06; original A session details are preserved
+  in the historical checkpoint.
+model: sol
+ended_because: ci_handoff
+operation_key: gmi-theme-research-food-agriculture-environment-20260924-001
+program: gmi-theme-graph
+repository: mastermindx-market-intelligence/macro
+mission_complete: false
+research_stage: ACCEPTED_FOR_META_CEO_SYNTHESIS
+mission: Repair only the existing GMI A handoff schema and dated acceptance frontier while preserving
+  the accepted research tranche and original incomplete product mission.
+state_before: 'The research at 0d68ec2aa01150935b3bf93c4fb586fff413bfb8 was accepted and made terminal
+  by parent #7886 comment5810349037, with Draft/HOLD and downstream gates retained. This handoff was malformed
+  and still described acceptance as pending.'
+changed:
+- path: agentos/handoffs/GMI-THEMATIC-A-2026-09-24.md
+  what: Restore the required handoff fields, record the later exact-head acceptance, and preserve all
+    original checkpoint text and 10 research blobs.
+verified:
+- claim: The original research tranche has a source-linked exact-head acceptance and terminal research
+    disposition.
+  command: GitHub connector fetch https://api.github.com/repos/mastermindx-market-intelligence/macro/issues/comments/5810349037
+    on 2026-11-06
+  result: 19 leaf assessments, three case jobs, source qualifications and observation/integration proposals
+    accepted for Meta-CEO synthesis. Draft/HOLD/no Ready or merge was expressly retained; STOP publication
+    does not prove consumption or writer release.
+- claim: The unchanged source carrier and original file inventory are identified.
+  command: GitHub connector fetch https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/7890
+    and /pulls/7890/files?per_page=100 on 2026-11-06
+  result: OPEN/Draft/unarmed at original head 0d68ec2aa01150935b3bf93c4fb586fff413bfb8; exactly one handoff
+    plus 10 research files. This amendment does not rerun or reinterpret their accepted empirical/synthetic
+    work.
+unverified:
+- claim: Current hosted CI and source-release qualification of the amended head.
+  what_would_verify: Exact amended-head required checks and an explicit scoped source-release disposition
+    on the existing carrier/parent; no approval or merge is inferred from this record.
+- claim: Historical served model/session identity and original STOP consumption or source-writer release.
+  what_would_verify: Actual exposed identity and canonical effect/custody receipts if required for a later
+    action. The registry model value sol and ended_because ci_handoff classify this bounded records continuation,
+    not a served-model or historical writer-release attestation.
+- claim: Original GMI product, data/rights and implementation acceptance.
+  what_would_verify: Current incumbent-owner admission and real consumer/product proof under the original
+    scope; research acceptance alone is insufficient.
+unresolved:
+- Required CI and the explicit Draft/HOLD source-release restriction remain pending for this corrected
+  record.
+- Preserve collection/cohort limits, FMC prepurchase/deferred-revenue/future-supply distinctions, current
+  water amendments/acceptance/full-cost gaps, taxonomy exceptions, rights and native identity boundaries.
+- 'Parent GMI synthesis/shared consumers and original product acceptance remain incomplete; shared #7870
+  custody is outside this repair.'
+next_actions:
+- 'Qualify the schema-only amendment on the existing #7890 branch with current required checks while preserving
+  all accepted research blobs.'
+- Adjudicate the remaining records source-release restriction explicitly on the existing parent/carrier;
+  retain downstream research/data/rights/runtime/trade boundaries and any actual live writer or uncertain
+  effect.
+- Continue only genuinely new, bounded authorized work from current canonical owners; do not revive the
+  stopped research operation or request the already-issued acceptance again.
+do_not_redo:
+- Do not repeat the accepted A tranche, AGR5/FOOD3 foundations, Case1 arithmetic, completed Case2/Case3
+  research, nineteen-leaf assessment or sibling work.
+- Do not rerun historical tests or reinterpret missing private measurements as zero/absent. Preserve the
+  original checkpoint's complete no-redo and evidence limits.
+- 'Do not edit parent #7886/shared #7870 source, mint a replacement carrier, recreate a watcher/queue,
+  dispatch Fable/workers, or infer new native source/identity/rights/trade authority.'
+danger_areas:
+- Registry model sol is the permitted Mastermind role vocabulary for this attended records repair; it
+  is not independent served-model/mode proof.
+- ended_because ci_handoff describes this bounded source-to-CI handoff, not completion of the overall
+  backlog or GMI product mission.
+- The original acceptance was for Meta-CEO synthesis. The original Draft/HOLD restriction and actual custody/effect
+  fences are not released by fixing schema.
+- Historical claims and test receipts below remain dated evidence; no original research check or new data
+  acquisition was performed in this repair.
+---
+
+# Current records qualification — 2026-11-06
+
+Parent [#7886 comment5810349037](https://github.com/mastermindx-market-intelligence/macro/pull/7886#issuecomment-5810349037) accepted the exact original head `0d68ec2aa01150935b3bf93c4fb586fff413bfb8` and made the bounded research tranche terminal. 19 leaf assessments, three case jobs, source qualifications and observation/integration proposals accepted for Meta-CEO synthesis. The preserved September checkpoint's pending-acceptance language is historical and is superseded by that later disposition. No duplicate acceptance request or research rerun is owed.
+
+This is only the Chairman-authorized handoff-schema repair under [Mastermind #2028](https://github.com/mastermindx-market-intelligence/Mastermind/issues/2028), using protected source pin `49c2e1d93e5e080b1671c98087a845e5beb09dd5`. All 10 research blobs and the complete original checkpoint are preserved. The current fields describe this bounded records continuation; they create no served-model, STOP-consumption, writer-release, runtime or product-completion receipt. **Draft/HOLD remains pending explicit source-release qualification.** Original downstream limits and shared-owner boundaries remain in force.
+
+## Preserved historical frontmatter — 2026-09-24
+
+```yaml
 workstream: "WS:GMI-THEME-GRAPH"
 session: sol/gmi-theme-research-a-20260924
 model: unknown
@@ -6,7 +92,9 @@ ended_because: checkpoint
 mission_complete: false
 research_stage: FULL_BOUNDED_TRANCHE_RETURNED_FOR_META_CEO_REVIEW
 finalization_classification: CHECKPOINTED_CONTINUATION
----
+```
+
+# Preserved historical checkpoint body — 2026-09-24
 
 # GMI A - full bounded research return frontier
 

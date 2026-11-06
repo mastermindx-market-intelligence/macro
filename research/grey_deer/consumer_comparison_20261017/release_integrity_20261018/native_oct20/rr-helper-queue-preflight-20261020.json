@@ -1,0 +1,50 @@
+{
+  "observed_at": "2026-10-20T03:27:11.157396+00:00",
+  "expected_head": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+  "source_hashes": {
+    "scripts/deploy_code_to_vps.sh": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+    "tests/test_deploy_provenance.py": "80ebb89997b575aed4b8986fdec11f27a1987c0ec5cb3e3d80ad8041c9ae7d10",
+    "tests/test_datadog_vps_install.py": "a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95",
+    "tests/test_forward_evaluation.py": "637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d",
+    "tests/test_portfolio_archival.py": "0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384"
+  },
+  "clean": true,
+  "pr": {
+    "autoMergeRequest": null,
+    "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+    "isDraft": true,
+    "labels": [],
+    "mergeStateStatus": "CLEAN",
+    "reviewDecision": "",
+    "state": "OPEN"
+  },
+  "required_checks": [
+    {
+      "bucket": "pass",
+      "link": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39359674398/job/118432316110",
+      "name": "test",
+      "state": "SUCCESS"
+    }
+  ],
+  "quota_pre_queue": {
+    "core": {
+      "limit": 5000,
+      "used": 714,
+      "remaining": 4286,
+      "reset": 1792466949
+    },
+    "graphql": {
+      "limit": 5000,
+      "used": 64,
+      "remaining": 4936,
+      "reset": 1792468642
+    }
+  },
+  "review_basis": [
+    "HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md",
+    "CI_CONTRACT_COMPANION_V2_SEMANTIC_REVIEW_2026-10-18.md",
+    "HELPER_V3_INTERPRETER_PATH_REVIEW_2026-10-18.md",
+    "HELPER_V4_INTERPRETER_WITNESS_REVIEW_2026-10-18.md"
+  ],
+  "runtime_mutated": false
+}

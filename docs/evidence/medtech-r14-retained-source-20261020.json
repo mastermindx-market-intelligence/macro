@@ -1,0 +1,59 @@
+{
+  "schema": "medtech.retained_source_qualification/v1",
+  "qualified_at": "2026-10-20T02:52:47.495138Z",
+  "original_store_preserved": true,
+  "original_schema": 1,
+  "qualified_schema": 2,
+  "source_records": {
+    "510k": 37,
+    "pma": 20
+  },
+  "events": 57,
+  "raw_pages": [
+    {
+      "run_id": "39cf1fd2839c1a1d6c270dfab06d55a5638c45f7e393ca52b59e1f92699ec350",
+      "sha256": "8b1f02878c044d63077847274698954af6e0e27321625a66c7f809009a982676",
+      "bytes": 317484
+    },
+    {
+      "run_id": "bc3403a7ca9493944a472c306c2cd9763cb9c799ee445a6c09e80aadb411dcc1",
+      "sha256": "43e396ff93e0a74387bc35eb910bdbef20d52c2a5d192624fd4ab9268d27bae4",
+      "bytes": 50899
+    }
+  ],
+  "receipts": [
+    {
+      "original_run_id": "39cf1fd2839c1a1d6c270dfab06d55a5638c45f7e393ca52b59e1f92699ec350",
+      "run_id": "d66a98e90aab95030ae772e8bb4d760cf89a2de99dfcf0775854737d0a2cc46c",
+      "records": 37,
+      "new_versions": 37,
+      "replayed": false
+    },
+    {
+      "original_run_id": "bc3403a7ca9493944a472c306c2cd9763cb9c799ee445a6c09e80aadb411dcc1",
+      "run_id": "61514a9271cad298e678501be0d63831e85b9dc27094cf33d7083852b6fb0f17",
+      "records": 20,
+      "new_versions": 20,
+      "replayed": false
+    }
+  ],
+  "observation_clocks_preserved": true,
+  "normalized_facts_unchanged": true,
+  "snapshot_as_of": "2026-10-19T01:56:25.002631Z",
+  "snapshot_id": "4f9f0ef65bc94ecb21187b0463dd0c88525a0d3955b0f74132ff940a54152bcb",
+  "checks": [
+    "retained raw page digests",
+    "complete source-batch validation",
+    "schema-v2 ingestion",
+    "unchanged normalized state",
+    "original observation clocks",
+    "historical snapshot",
+    "atomic publication readback",
+    "list and detail API",
+    "generation mismatch rejection",
+    "private cache headers"
+  ],
+  "authentication_proof": "local test override only",
+  "production_effects": false,
+  "code_commit": "b939c32a2c98880f9f57b646f99e4243182d3e64"
+}

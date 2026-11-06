@@ -29,6 +29,7 @@ from engine import china_allocation as ca  # noqa: E402
 from engine import china_strategies as S  # noqa: E402
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from scripts import _china_income_card as IC  # noqa: E402
 from scripts.build_strategies import _card, _detail_vm, _evaluate  # noqa: E402
 from scripts.build_vector import C  # noqa: E402
 
@@ -45,12 +46,15 @@ def _income_vector_card() -> dict:
         if bt.get("cagr") is not None and bc.get("cagr") is not None:
             cagr, sharpe, maxdd, years = bt["cagr"], bt["sharpe"], bt["maxdd"], bt.get("years")
             hcagr, hsharpe, hmaxdd = bc.get("cagr"), bc.get("sharpe"), bc.get("maxdd")
-            income = round(bt.get("cagr") or 0, 1)
+            income, tile = None, IC.sample_tile(bt)
+            as_of = IC.as_of_label(ca._as_of())
         else:
             raise ValueError("alloc backtest unavailable (sleeve ETFs absent locally)")
     except Exception:  # noqa: BLE001 — local fallback; CI recomputes live
         cagr, sharpe, maxdd, years = 6.8, 1.06, -13.8, 8.4
         hcagr, hsharpe, hmaxdd, income = 1.9, 0.42, -45.5, 2.6
+        tile = IC.sample_tile(None)
+        as_of = None
     return {
         "key": "income_vector", "icon": "◎", "href": "china_allocation.html",
         "name_en": "China Income Vector", "name_zh": "中国收入向量",
@@ -61,6 +65,8 @@ def _income_vector_card() -> dict:
         "cagr": cagr, "hodl_cagr": hcagr, "sharpe": sharpe, "hodl_sharpe": hsharpe,
         "maxdd": maxdd, "hodl_maxdd": hmaxdd, "income": income, "years": years or 8.4,
         "stance_en": "Income + gold + bonds", "stance_zh": "红利 + 黄金 + 国债",
+        "as_of": as_of,
+        **tile,
     }
 
 

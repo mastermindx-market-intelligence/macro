@@ -1,0 +1,71 @@
+{
+  "recorded_at": "2026-10-21T11:26:07.166266+00:00",
+  "operation": "forex-r26-native-review-db1e-20261021-001",
+  "reviewer": "/root/forex_db1e_independent_review",
+  "route": "native_chatgpt_independent_read_only",
+  "protected_source_pin": "a0faf7e44f76ac77c61e177738663544ddb6949d",
+  "head": "db1e2b4b440e09d15fc8002b27029ff33c71daf1",
+  "base": "da968a5bdb4b8021711e50bcfb859517129c6ed8",
+  "disposition": "REQUEST_CHANGES",
+  "findings": [
+    {
+      "priority": "P1",
+      "path": "scripts/build_forex.py",
+      "function": "_project_event_display",
+      "event_type": "residual_shock",
+      "problem": "Residual-shock headlines retain the literal pair name although direction belongs to assessed-currency residuals; actual Today and pair History omit the producer detail that named that currency.",
+      "repro": {
+        "pair": "USDJPY",
+        "assessed": "JPY",
+        "literal_quote": [
+          150,
+          149
+        ],
+        "shock_state": [
+          "normal",
+          "exogenous_bid"
+        ],
+        "shock_z": 3.2,
+        "visible_en": "USD/JPY: Unusual move the dollar and rates don't explain (up)",
+        "visible_zh": "USD/JPY：出现美元与利率无法解释的异常上行"
+      },
+      "required_repair": "Display-only assessed-currency/residual-basis qualification in EN/ZH; preserve all original producer fields and event IDs; producer-to-rendered-consumer regression."
+    }
+  ],
+  "other_material_findings": [],
+  "reviewer_validation": {
+    "r26_suites": {
+      "passed": 259,
+      "skipped": 1
+    },
+    "canonical_smoke": {
+      "passed": 1,
+      "asof": "2026-10-21",
+      "sha256": "04ae82e5218fdf58a615afa97f8c7bc962d75be5168d5e11c05b1f56bab3485d"
+    },
+    "compatibility_suites": {
+      "passed": 282,
+      "fixture_omission": "Two initial failures caused by omitted exact-head .github/ci/legacy-jobs.yml; both passed after materialization."
+    },
+    "unique_tests_passed": 542,
+    "actual_builder_chromium_cases": 14,
+    "browser_errors": [],
+    "source_unchanged": true,
+    "visual_states_inspected": [
+      "desktop-en-light-today",
+      "desktop-en-dark-outlook",
+      "mobile-zh-light-today",
+      "mobile-zh-dark-condition"
+    ],
+    "review_output_root": "/Volumes/Mastermind 2/agent-workspaces/tmp/forex-r26-native-review-db1e-20261021-001"
+  },
+  "limitations": [
+    "Frozen head only; repair needs delta review.",
+    "No live account persistence, admitted 4H feed, delivery, deployment or production proof.",
+    "No final hosted CI adjudication or release authority.",
+    "Four screenshots inspected; no comprehensive taste approval."
+  ],
+  "failed_fabric_operation_preserved": "forex-r26-combined-candidate-review-20261021-001",
+  "fabric_result_claimed": false,
+  "production_acceptance": false
+}

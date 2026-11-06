@@ -1,0 +1,8 @@
+{
+  "candidate": "f45ace4a7d11b5f91c9275d1d79be25a17033411",
+  "sha256": {
+    "templates/terminal_overlay.js": "136254f336a6e4eb7db0047976ea397e3401f335d4dfd4cb7e288549d22f1842",
+    "site/terminal_overlay.js": "136254f336a6e4eb7db0047976ea397e3401f335d4dfd4cb7e288549d22f1842",
+    "site/theme.js": "b3223a2c86f180c6ce0bf29d089c2cebf6793d1835de5163ab07dc51e80b8f59"
+  }
+}

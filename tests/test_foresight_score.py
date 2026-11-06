@@ -4,6 +4,8 @@ underpricing inverse to breadth), and annotate() re-ranks by score.
 """
 from __future__ import annotations
 
+import math
+
 from engine import foresight_score as fs
 
 
@@ -61,3 +63,31 @@ def test_annotate_reranks_by_score():
     assert out["scored"] is True
     assert out["themes"][0]["theme"] == "early"          # higher score sorts first
     assert out["themes"][0]["score"] > out["themes"][1]["score"]
+
+
+def test_magnitude_none_on_nan_capex():
+    """A NaN capex_yoy is a broken feed, not a demand signal — the axis must refuse."""
+    assert fs._magnitude({"capex_yoy": float("nan")}) is None
+
+
+def test_magnitude_none_on_inf_capex():
+    assert fs._magnitude({"capex_yoy": float("inf")}) is None
+
+
+def test_score_row_nan_capex_does_not_max_magnitude():
+    """score_row must not publish magnitude=1.0 (or a high-conviction score) off NaN capex;
+    a finite capex=69 row still scores exactly as today."""
+    nan_s = fs.score_row(dict(_early_confirmed(), capex_yoy=float("nan")))
+    ok_s = fs.score_row(_early_confirmed())
+    assert nan_s["axes"]["magnitude"] is None          # today 1.0
+    assert math.isfinite(nan_s["score"])
+    assert nan_s["score"] < ok_s["score"]              # no tie with the real-capex row
+    assert ok_s["axes"]["magnitude"] == 1.0            # finite path unchanged
+
+
+def test_nan_axis_is_dropped_not_propagated_into_the_score():
+    """A NaN divergence_share leaks through _magnitude as NaN; the live-axes
+    filter must drop that axis so the published score stays finite."""
+    s = fs.score_row(dict(_early_confirmed(), divergence_share=float("nan")))
+    assert math.isfinite(s["score"])
+    assert s["score"] > 0

@@ -1,0 +1,349 @@
+{
+  "lane": "s2_event_response",
+  "base_commit": "5ef7a7f39f99232bf9b574c7603da1011ee3af66",
+  "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66",
+  "branch": "claude/sni-s2-event-response-20261011",
+  "version": "v1",
+  "labels": {
+    "status": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+    "identity_view": "RETROSPECTIVE_JOIN",
+    "authority_flags": {
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    }
+  },
+  "families": [
+    {
+      "protocol_id": "P04",
+      "title": "EVT-RESULTS (REG P04)",
+      "family": "results",
+      "counting_clock": "MARKET_US",
+      "ledger_family": "sni.s2_event_response.P04",
+      "reg_canonical_family": "sni.s0.P04",
+      "declared_budget": 6,
+      "itemized_grid_size": 12,
+      "reg_note": "REG §6 stays empty in S2; the seat integrates the seal row"
+    },
+    {
+      "protocol_id": "P05",
+      "title": "EVT-CAPITAL (REG P05)",
+      "family": "capital_action",
+      "counting_clock": "MARKET_US",
+      "ledger_family": "sni.s2_event_response.P05",
+      "reg_canonical_family": "sni.s0.P05",
+      "declared_budget": 6,
+      "itemized_grid_size": 12,
+      "reg_note": "REG §6 stays empty in S2; the seat integrates the seal row"
+    },
+    {
+      "protocol_id": "P06",
+      "title": "EVT-REGULATORY (REG P06)",
+      "family": "regulatory_material",
+      "counting_clock": "MARKET_US",
+      "ledger_family": "sni.s2_event_response.P06",
+      "reg_canonical_family": "sni.s0.P06",
+      "declared_budget": 6,
+      "itemized_grid_size": 12,
+      "reg_note": "REG §6 stays empty in S2; the seat integrates the seal row"
+    }
+  ],
+  "not_supported_in_s2": [
+    {
+      "protocol_id": "P07",
+      "line": "NOT SUPPORTED in S2 (not commissioned)"
+    },
+    {
+      "protocol_id": "P08",
+      "line": "NOT SUPPORTED in S2 (not commissioned)"
+    },
+    {
+      "protocol_id": "P11",
+      "line": "NOT SUPPORTED in S2 (not commissioned)"
+    }
+  ],
+  "graded_cohort": {
+    "issuer_group": "alibaba",
+    "graded_leg": "adr_baba (SEC:US-XNYS-BABA, MARKET_US)",
+    "census_only": [
+      "tencent issuer group (00700) — counted, listed, abstained, never graded",
+      "HK legs (9988, 0700) — never graded (V0 row 14)"
+    ]
+  },
+  "trial_ledger_path": "research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl",
+  "s0_blob_ids": {
+    "REG": {
+      "path": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md",
+      "blob": "1b891b3c60a54bc5eba94cb7fafa8fec6ffb6ea6"
+    },
+    "IL": {
+      "path": "research/single_name_intelligence/protocols/S0_INDEPENDENCE_LAW.md",
+      "blob": "6ec4b097ce3fd24261da12061b3418fde945efaf"
+    },
+    "SL": {
+      "path": "research/single_name_intelligence/protocols/S0_SPLIT_AND_CONTAMINATION_LAW.md",
+      "blob": "c06a91beee22626eab1912aaa8a3baa6856913a2"
+    }
+  },
+  "input_manifest": {
+    "data/yahoo/BABA.parquet": "2c627eecb86b92f20c969498fed2d127e032b3b6",
+    "data/yahoo/SPY.parquet": "9b306b50884279e4155030298627faa26e5c6d9a",
+    "data/hk_stocks/9988.HK.parquet": "2792f4bc5685cd13ceabcdac25acf37a43acb199",
+    "data/hk_stocks/0700.HK.parquet": "b439ba667ff8bfcdd35d854b7d461ff624a48df9",
+    "data/hk_filings/events.parquet": "be30a5bc5ecbb8d007c248f0a26d51010c5027ab",
+    "data/earnings/earnings.parquet": "8f0575464ba0a1abed7cee7799e90b8fab7bd6fc",
+    "data/reference/security_master.parquet": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+    "config/single_name_intelligence/coverage_profiles/alibaba.yml": "0914dd8bdf9330a77c442cf5015315235a7878e7",
+    "config/single_name_intelligence/coverage_profiles/tencent.yml": "d5f952887b82a254a6ec3cf3d816ba22ca366f97",
+    "research/single_name_intelligence/evidence/Alibaba/E1_COVERAGE_REPORT_2026-10-11.json": "11170a7406abcb70386a8827d5acf5e8b5a5ca0b",
+    "research/single_name_intelligence/evidence/Tencent/E2_COVERAGE_REPORT_2026-10-11.json": "5c29370884099389454f336ed1dd794b97ce7901",
+    "research/single_name_intelligence/evidence/Alibaba/E1_EVIDENCE_PACK_2026-10-11.md": "fde534f8fb912738fde8e2d9b3ebd03881b5ffa4",
+    "research/single_name_intelligence/evidence/Alibaba/E1_ADVERSARIAL_CASES_2026-10-11.md": "49225d3e71ea3d141aef837dc6f351ac1cbb7544",
+    "research/single_name_intelligence/evidence/Tencent/E2_EVIDENCE_PACK_2026-10-11.md": "47ec0d812c7fd5d160b6658b69858ed3f298ad81",
+    "research/single_name_intelligence/evidence/Tencent/E2_ADVERSARIAL_CASES_2026-10-11.md": "817f8eefda838cb17300beac98f43133041d6631"
+  },
+  "membership_table": [
+    {
+      "protocol_id": "P04",
+      "horizon": 5,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 5,
+      "split": "TUNE",
+      "count": 2,
+      "membership_sha256": "3987f51b24bc47ce9961206ffef580f810ea634964864f2f9659f5705dd24a0b"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 5,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 21,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 21,
+      "split": "TUNE",
+      "count": 2,
+      "membership_sha256": "f392d0c6efe30cc44af8406d72542a70ac4a559fc989ccdf287cbd71cdfbf298"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 21,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 63,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 63,
+      "split": "TUNE",
+      "count": 2,
+      "membership_sha256": "7fbe134bb1e72f6a5635a547cb6d562b1b5364f59168e67b12321ee64bf805c7"
+    },
+    {
+      "protocol_id": "P04",
+      "horizon": 63,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 5,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 5,
+      "split": "TUNE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 5,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 21,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 21,
+      "split": "TUNE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 21,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 63,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 63,
+      "split": "TUNE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P05",
+      "horizon": 63,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 5,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 5,
+      "split": "TUNE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 5,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 21,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 21,
+      "split": "TUNE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 21,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 63,
+      "split": "TRAIN",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 63,
+      "split": "TUNE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "protocol_id": "P06",
+      "horizon": 63,
+      "split": "QUARANTINE",
+      "count": 0,
+      "membership_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "prereg_digest_sha256": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+  "census_counts": {
+    "event_rows": 6,
+    "earnings_rows": 1,
+    "selected": 5,
+    "programmes": [
+      {
+        "key": "placing:alibaba",
+        "issuer_key": "alibaba",
+        "counter": "hkd_9988",
+        "member_ids": [
+          "12295308",
+          "12295380",
+          "12300619"
+        ]
+      }
+    ]
+  },
+  "collapse_counts": {
+    "literal_row_count_pre_step0": 7,
+    "kept_after_step0": 5,
+    "excluded_and_listed": [
+      {
+        "id": "12291963",
+        "issuer_key": "tencent",
+        "family": "results",
+        "reason": "exact-token selection refused: token '40700' is not '00700'",
+        "step": "step0_admission",
+        "family_scope": null
+      },
+      {
+        "id": "earnings.parquet#ticker=BABA",
+        "issuer_key": "alibaba",
+        "family": "results",
+        "reason": "TIMESTAMP_QUALITY EVENT_DATE is not an admissible t_avail (IL §1); the row is listed, never an anchor",
+        "step": "step0_admission",
+        "family_scope": "results"
+      },
+      {
+        "id": "12295308,12295380,12300619",
+        "issuer_key": "alibaba",
+        "family": "capital_action",
+        "reason": "E0 gap 10: HK placement coverage misses general-mandate placings; the one programme (one event under REG P05) is excluded and listed, never silently dropped",
+        "step": "post_step2_coverage_exclusion",
+        "family_scope": "capital_action"
+      }
+    ],
+    "events_after_step2": 3,
+    "events_after_step2_and_step3": 2
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "source": "4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e",
+  "installed_head": "d8e8f1a4a085f3e219b56dfd88ad0c7d48a1af6e",
+  "installed_17_matches": true,
+  "updater_matches": true,
+  "stable_observed_epoch": true,
+  "served_asset_matches": {
+    "app.js": true,
+    "styles.css": true,
+    "preferences.js": true,
+    "assets/theme-tokens.css": true,
+    "index": true
+  },
+  "authenticated_overview_status": 200,
+  "observed_bands": {
+    "Validated": 0,
+    "Accruing": 36,
+    "Ungraded by design": 10,
+    "Degraded": 339,
+    "Disproven": 0
+  },
+  "legacy_source_preserved": true,
+  "first_page_request_ms": 25921.799999952316,
+  "scope": "Source/install/public bytes/authenticated overview bounded acceptance only; detail, visual states, natural owner and full programme remain separate.",
+  "visual_matrix": {
+    "desktop": [
+      1440,
+      879
+    ],
+    "mobile": [
+      390,
+      844
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "languages": [
+      "en",
+      "zh-CN"
+    ],
+    "eight_cells_captured_and_visually_inspected": true,
+    "mobile_ceo_stacked_additional_screenshots_inspected": true,
+    "document_overflow_observed": false,
+    "scope": "Responsive emulation, not physical handset; overview plus mobile detail bounded inspection."
+  },
+  "detail": {
+    "engine": "collectors/symbol_directory.py::long-hold",
+    "status": 200,
+    "evidence_status": "Accruing",
+    "health": "healthy",
+    "unknown_horizon_coverage_preserved": true,
+    "back_focus_restored": true
+  },
+  "empty_filter": "Validated0 retains band and No engine matches this filter.",
+  "independent_operator_comprehension": false,
+  "natural_postrelease_owner_progression": false,
+  "overall_programme_complete": false,
+  "global_native_browser_custody": "Both coordinate clicks were issued in one System Events script. Only the final generic US Mobile page-element return is retained. This proves loss of foreground custody but identifies neither click semantic target, first recipient nor exact transition. Effects of both global clicks UNKNOWN; no per-click before/after record.",
+  "remaining": "Natural owner/QLedger qualified fullplane transition and independent operator comprehension; same follow-on release/adoption. Loading latency25.9s retained, no broad performance pass. Original experienceUNKNOWN/lostCLIreview unchanged.",
+  "A28": {
+    "state": "OPEN",
+    "first_page_ms": 25921.799999952316,
+    "detail_page_ms": 2269.1999999284744,
+    "same_admin_process_after_consumer": true,
+    "memory_current_after_bytes": 354607104,
+    "memory_peak_after_bytes": 703799296,
+    "runtime_memory_limit": "infinity",
+    "mutation_invalidation": "Accepted local negative tests retained; actual deployment mutation not induced. No production mutation-invalidation claim."
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "accepted_pr8705": "c63a92576a43247bb8c43dc275f827b8871fda3b",
+  "application_edits_applied": false,
+  "before": "a48d5c0c078bc531cfc0f6b37643f44f77c2e937",
+  "fetched_main": "afbe5c4094943a9bb793d47c4953e594515a5d5c",
+  "head": "dfa8533b07f1f603ef9f9bb6fbf957e4b1c112a1",
+  "ignored_files": 0,
+  "instructions": {
+    "AGENTS.md": "463ea7c70ea9a1ddbb5154b9f65b7c745d0093dc15485db216936fa9bddf057c",
+    "CLAUDE.md": "3c2016ddb9a67a6488f7938e665cb5f37b767b7d39c2122057cb9d110149d329"
+  },
+  "observed_at": "2026-10-09T11:03:55.193468+00:00",
+  "owned_files": [
+    {
+      "bytes": 23612,
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/case_adjudications.jsonl",
+      "sha256": "039cfbfa04738612457e5ed04be4b20864c088103bb5a8309ff7839938830b25"
+    },
+    {
+      "bytes": 15228,
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/native_adoption_return.md",
+      "sha256": "fe175837da1b64eea082bc8873071c93fb5c582263d11928b48a59733e079c1f"
+    },
+    {
+      "bytes": 8673,
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/protocol.json",
+      "sha256": "cfff2160744ca51c6aabd1e6dd023ec07d6ddf99a345b93641056696b779763a"
+    },
+    {
+      "bytes": 5130,
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/replay_receipt.json",
+      "sha256": "75dfbc580ce302c9802bf6d6da12d48401434f405505219cfdfb38719e2e502f"
+    },
+    {
+      "bytes": 12185,
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/source_attempts.jsonl",
+      "sha256": "52a82c80857ba403b8db5bd1d971638e5fe4daec2e3416789386906ade9679a9"
+    },
+    {
+      "bytes": 15718,
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/supporting_evidence/first_reader_judgments_v1.jsonl",
+      "sha256": "e1f997bb0036596c6822b7ecf5a30f7a990652ce8f952d1adfda980587bd43c6"
+    },
+    {
+      "bytes": 12186,
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/supporting_evidence/first_source_attempts_v1.jsonl",
+      "sha256": "ff54a27862fedf7a29c3dc3d8aa2f6524210a69b4b2a3f0ab1d72dd7b46a5ef2"
+    },
+    {
+      "bytes": 10309,
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/supporting_evidence/independent_semantic_judgments.json",
+      "sha256": "4357ab18cd8dddafd944b30641bf4c9168f755e1da60059a6ee5d8ded9192652"
+    },
+    {
+      "bytes": 1402,
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/supporting_evidence/integration_receipt.json",
+      "sha256": "bf41c0f6e1cdb81ab855487a7b3d9e8108bdedd756fee4dbddd2e1242bf899ee"
+    },
+    {
+      "bytes": 32181,
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/supporting_evidence/independent_semantic_review.md",
+      "sha256": "c24cd161708a5ad696eedcf5159b976716581e2fe29cd8dcd1231d2c590c22b3"
+    },
+    {
+      "bytes": 6032,
+      "path": "research/theme_graph/economic_network_execution_20261009/retained_micron_semantic_addendum_v1/first_reader_judgment.json",
+      "sha256": "3a9ce686a0593f9731c89ef63c20afb92dce810681aa3d0039bd72ce0f4d6408"
+    },
+    {
+      "bytes": 6185,
+      "path": "research/theme_graph/economic_network_execution_20261009/retained_micron_semantic_addendum_v1/native_read_receipt.json",
+      "sha256": "890ff36f83f707e16ad320b0062cefdd4042385b3d677cddb804eb12054bccea"
+    },
+    {
+      "bytes": 9728,
+      "path": "research/theme_graph/economic_network_execution_20261009/retained_micron_semantic_addendum_v1/retained_micron_semantic_return.md",
+      "sha256": "4a0d75214e2160f702301bda55490afc611b311c3090f37af166f554086b852d"
+    },
+    {
+      "bytes": 3732,
+      "path": "research/theme_graph/economic_network_execution_20261009/retained_micron_semantic_addendum_v1/principal_independent_judgment.json",
+      "sha256": "96c5a97fd64a3c4330bba160310e5ade8babb211fd61d567fc5b119346837d9a"
+    },
+    {
+      "bytes": 45586,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/NATIVE_OBSERVATION_STORAGE_ADJUDICATION.md",
+      "sha256": "e4966d1e38fe0c5cc495982b74600ab77860fdf0d807db1129d70638bba67543"
+    },
+    {
+      "bytes": 12462,
+      "path": "agentos/decisions/DEC-GMI-ECONOMIC-RELATIONSHIP-OBSERVATION-MATERIALIZATION.md",
+      "sha256": "f362b947460477b808d9aa50f7b6557cc9b738af9280da0ef014da6901fcd091"
+    },
+    {
+      "bytes": 4874,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/README.md",
+      "sha256": "fc8dc69a5bb5893d518d6cb39a45309110393c20287557b2e0510e8f84a22ada"
+    },
+    {
+      "bytes": 4213,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/EVIDENCE_MANIFEST.json",
+      "sha256": "36270629c367bc06caec5a2a079b9f0be8a0d0fac97a54675f8654838adc24ab"
+    }
+  ],
+  "prior_action": {
+    "exit": 1,
+    "failure": "post-merge assertion used incomplete path-prefix set",
+    "merge_completed": true,
+    "merge_replayed": false,
+    "pid": 34188
+  },
+  "schema": "economic_network.pro003_main_integration/v1",
+  "status": "PASS_RECONCILED",
+  "store_operations_performed": false,
+  "workspace_clean": true
+}

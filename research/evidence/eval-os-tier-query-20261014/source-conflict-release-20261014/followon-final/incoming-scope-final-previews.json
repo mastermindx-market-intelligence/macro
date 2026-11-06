@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-10-14T13:35:14.863795+00:00",
+  "source": "566a10d139a041b4eca915420063290a9a302882",
+  "results": [
+    {
+      "comparison": "composed-a1",
+      "other": "7c610b6d8a771cc66d8c2a43548a0328c817b79c",
+      "rc": 0,
+      "tree": "c1a2cbbd3da563e3e8e4df0e3887d2d031a99c98",
+      "conflicts": []
+    },
+    {
+      "comparison": "main",
+      "other": "c7037383bb279dada70e539af2bec58dabe19bb5",
+      "rc": 0,
+      "tree": "ddf9a773663eae6c238e7f42dd54f22fda47b478",
+      "conflicts": []
+    }
+  ],
+  "no_branch_base_merge": true
+}

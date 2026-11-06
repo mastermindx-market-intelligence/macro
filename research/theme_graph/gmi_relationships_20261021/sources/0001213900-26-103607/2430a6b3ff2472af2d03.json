@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-09-25T21:20:01Z",
+ "accession": "0001213900-26-103607",
+ "cik": "0001951089",
+ "doc_byte_length": 2850643,
+ "doc_sha256": "6b49884fb76ff3459c9ff7a501d855060ce7ff183a605ddb96109fadd30ebe88",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-25",
+ "form": "20-F",
+ "period_of_report": "2026-06-30",
+ "primary_document": "ea0302128-20f_critical.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 976721,
+  "byte_start": 976683,
+  "normalized": "Previous Offtake Agreement with BMW AG",
+  "normalized_sha256": "2430a6b3ff2472af2d03641100167969a8b7c81c144046eee289acc3bbc4b3ad",
+  "raw": "Previous Offtake Agreement with BMW AG",
+  "raw_sha256": "2430a6b3ff2472af2d03641100167969a8b7c81c144046eee289acc3bbc4b3ad"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1951089/000121390026103607/ea0302128-20f_critical.htm",
+ "xbrl_contexts": []
+}

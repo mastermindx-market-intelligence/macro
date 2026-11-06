@@ -5,6 +5,21 @@ Working name: **Research Vault** (page `research_vault.html`; ZH 研报库). Slu
 `research_vault` everywhere (avoids the taken `research/` build-dir, the internal
 `research_factory` pipeline, the `reports.html` blog, and `about-research.html`).
 
+## Dedicated-reader source ordering (2026-10-19)
+
+DEC:RESEARCH-VAULT-GUARDED-BACKEND-SOURCE-ORDERING narrowly amends the AI Fabric
+masterplan's F12-Q-L4-2 (f) source ordering: guarded dedicated-reader backend libraries
+needed to construct the MCP runtime may follow normal protected source delivery before
+95% common-generation coverage. The full F11 ordinary Brain wiring and activation
+still require that coverage proof. Retained full F11 at `8f5ad6dc` remains the desired
+later consumer slice; this amendment does not reduce the product scope.
+
+Source tests and constructor closure do not establish writer custody, selected-reader
+admission, fresh common-generation coverage, authentication or consumer acceptance.
+All runtime refusal and original-operation/no-replay controls remain in force. See
+[the decision](../agentos/decisions/DEC-RESEARCH-VAULT-GUARDED-BACKEND-SOURCE-ORDERING.md)
+and [the current workstream](../agentos/workstreams/WS-RESEARCH-VAULT-AI-FABRIC.md).
+
 ## 1. What this is
 
 A gated vault + feed of third-party buy-side / sell-side research PDFs. PDFs arrive

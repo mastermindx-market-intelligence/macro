@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T21:13:06Z",
+ "accession": "0001062993-26-001765",
+ "cik": "0001308648",
+ "doc_byte_length": 2494684,
+ "doc_sha256": "c074e86dadc13e9cf06962631dddb23ebacefc8024982faa2f93ff7dd8e9045f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "exhibit99-3.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1729002,
+  "byte_start": 1728194,
+  "normalized": "When Primero, the previous owner of San Dimas acquired the San Dimas mine in August 2010, it assumed the obligations under a Silver Purchase Agreement (“Old Stream Agreement”) that required its subsidiary, PEM, to sell exclusively to Wheaton Precious Metals (“WPMI”) up to 6 million ounces of silver produced from the San Dimas mine, and 50% of silver produced thereafter, at the lower of: (i) the spot market price and (ii) $4.04 per ounce plus an annual increase of 1% (“PEM Realized Price”). In May 2018, the Old Stream Agreement was terminated between WPMI and Silver Trading (Barbados) Limited (“STB”) in connection with the Company entering into a new precious metal purchase agreement with WPMI concurrent with the acquisition of Primero by the Company.",
+  "normalized_sha256": "a1cbb3b6606a79e3cb891c1d184c5b9884bae1155a5e7aa960e82f12f4c046c7",
+  "raw": "When Primero, the previous owner of San Dimas acquired the San Dimas mine in August 2010, it assumed the obligations under a Silver Purchase Agreement (&#8220;Old Stream Agreement&#8221;) that required its subsidiary, PEM, to sell exclusively to Wheaton Precious Metals (&#8220;WPMI&#8221;) up to 6 million ounces of silver produced from the San Dimas mine, and 50% of silver produced thereafter, at the lower of: (i) the spot market price and (ii) $4.04 per ounce plus an annual increase of 1% (&#8220;PEM Realized Price&#8221;). In May 2018, the Old Stream Agreement was terminated between WPMI and Silver Trading (Barbados) Limited (&#8220;STB&#8221;) in connection with the Company entering into a new precious metal purchase agreement with WPMI concurrent with the acquisition of Primero by the Company.",
+  "raw_sha256": "4dcfceae6411ddf6de136acb233bcf83460fa901be08bd9ec4aeea751e89bcd1"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1308648/000106299326001765/exhibit99-3.htm",
+ "xbrl_contexts": []
+}

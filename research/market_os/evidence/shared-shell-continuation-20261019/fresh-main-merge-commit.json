@@ -1,0 +1,14 @@
+{
+  "completed_at": "2026-10-19T12:08:30.880680+00:00",
+  "head": "b4255da8c14a14d5654a03b466ebabe943f2c24e",
+  "parents": [
+    "0905751badd88752cbab19ffedac51e610488035",
+    "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd"
+  ],
+  "tree": "584015252eddaf9ec25a74da2fb2e0afe136b9ef",
+  "branch": "sol/market-os-shared-shell-design-20260924",
+  "status": "",
+  "pr_changed_paths": 333,
+  "pushed": false,
+  "armed": false
+}

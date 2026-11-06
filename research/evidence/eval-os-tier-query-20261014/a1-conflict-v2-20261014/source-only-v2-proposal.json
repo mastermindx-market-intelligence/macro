@@ -1,0 +1,32 @@
+{
+  "schema": "eval_os.a1_source_only_repair_v2.v1",
+  "at": "2026-10-14T12:45:14.774213+00:00",
+  "a1_head": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+  "superseded_unpublished_proposal": "a8d9f1952dd621a80e30525374145aee71ff3a7f",
+  "candidate": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "sole_parent": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+  "observed_main": "479e2c695154e0604436c10058799532cbad5e8f",
+  "only_changed_path": ".github/ci/legacy-jobs.yml",
+  "all_309_job_definitions_and_order_preserved": true,
+  "entire_yaml_equal_when_only_path_lists_sorted": true,
+  "all_path_memberships_and_counts_preserved": true,
+  "relocated_readiness_paths_by_job": {
+    "flow-surface": 2,
+    "fif-kernel-guards": 3,
+    "biocatalyst-serving": 2,
+    "biocatalyst-history": 2,
+    "crypto-assistant-context": 3,
+    "unrun-government-revenue-candidate-projection": 2,
+    "unrun-government-revenue-grader": 2,
+    "research-price-panel": 3,
+    "ticker-news-qbus": 3
+  },
+  "relocated_path_entries": 22,
+  "patch_sha256": "1f365e0aeb2ed772f99f8cc4828f331870261d460d578782c6d810cc429af852",
+  "manifest_sha256": "c3933866c796fce99c7b723efee4a6922184ecc02af5dfee9f3bc9d8138aaeb6",
+  "preview_rc": 0,
+  "preview_tree": "818a9e489f58ff96b423b2eb9cbd2038044f17e8",
+  "source_branch_or_remote_updated": false,
+  "ci_launched": false,
+  "review": "Root semantic comparison and current-base merge preview; independent hosted checks still required. Original4conflicts plus5new conflicts from RIC basis additions repaired without importing main."
+}

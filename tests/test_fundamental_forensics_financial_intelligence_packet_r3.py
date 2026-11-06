@@ -58,6 +58,7 @@ from tests.test_fundamental_forensics_financial_intelligence_packet import (
     _build,
     _cell,
     _context,
+    _fip1_issuer_sic_resolver,
     _input_digests,
 )
 from tests.test_fundamental_forensics_financial_intelligence_packet_r2 import (
@@ -172,6 +173,7 @@ def _against(packet, *, fixture=None, **build_kwargs) -> None:
         metric_registry=load_core_registry(ROOT),
         context=_context(),
         input_digests=build_kwargs.get("input_digests", _input_digests()),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
 
 
@@ -517,6 +519,7 @@ def test_future_rule_does_not_rewrite_historical_packet_identity(
         metric_registry=registry,
         context=_context(),
         input_digests=_input_digests(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     extended = _registry_with_future_revenue_mapping(
         datetime(2026, 8, 7, tzinfo=timezone.utc)
@@ -537,6 +540,7 @@ def test_future_rule_does_not_rewrite_historical_packet_identity(
         metric_registry=extended,
         context=_context(),
         input_digests=_input_digests(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     assert r1_packet["cells"] == r2_at_t["cells"]
     assert r1_packet["evidence_cells"] == r2_at_t["evidence_cells"]
@@ -561,6 +565,7 @@ def test_future_rule_does_not_rewrite_historical_packet_identity(
         metric_registry=extended,
         context=_context(),
         input_digests=_input_digests(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     assert later["governance"]["governance_bundle_id"] != r1_packet["governance"]["governance_bundle_id"]
 
@@ -590,6 +595,7 @@ def test_future_metric_contract_does_not_rewrite_historical_packet(
         metric_registry=r1,
         context=_context(),
         input_digests=_input_digests(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     r2 = _registry_with_future_metric_contract(
         datetime(2026, 8, 7, tzinfo=timezone.utc)
@@ -603,6 +609,7 @@ def test_future_metric_contract_does_not_rewrite_historical_packet(
         metric_registry=r2,
         context=_context(),
         input_digests=_input_digests(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     future_cells = [
         cell for cell in r1_packet["cells"] if cell["metric_id"] == FUTURE_METRIC_ID
@@ -640,6 +647,7 @@ def test_future_metric_contract_does_not_rewrite_historical_packet(
         metric_registry=r2,
         context=_context(),
         input_digests=_input_digests(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     later_future = [
         cell for cell in later["cells"] if cell["metric_id"] == FUTURE_METRIC_ID

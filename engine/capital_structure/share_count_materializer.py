@@ -45,7 +45,7 @@ SOURCE_SNAPSHOT_SCHEMA = "capital_structure.companyfacts_source_snapshot.v2"
 SNAPSHOT_FACT_SCHEMA = "capital_structure.share_count_snapshot_fact_observation.v2"
 LEDGER_RECEIPT_SCHEMA = "capital_structure.share_count_ledger_receipt.v2"
 LEDGER_SCHEMA = "capital_structure.share_count_ledger.v2"
-COMPILER_VERSION = "capital-structure-share-count-materializer/2.1.0"
+COMPILER_VERSION = "capital-structure-share-count-materializer/2.2.0"
 
 MAX_SOURCE_PREFIX = 16_384
 MAX_SOURCE_BATCH = 24

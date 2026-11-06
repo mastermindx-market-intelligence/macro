@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-08-18T21:05:10Z",
+ "accession": "0001049521-26-000045",
+ "cik": "0001049521",
+ "doc_byte_length": 2182366,
+ "doc_sha256": "763b48fcf45a9a588a2eabc819e67c38a19dabe746b4eb1c914b6bdb97a9bb2e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-18",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "mrcy-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1974178,
+  "byte_start": 1973090,
+  "normalized": "Lockheed Martin Corporation11 %10",
+  "normalized_sha256": "5326b93f52b16295c9b1e482088f06cded691a88a23947dbf9923f8cb9b4e2e5",
+  "raw": "Lockheed Martin Corporation</span></td><td colspan=\"2\" style=\"background-color:#ffffff;padding:2.62pt 0 1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-275\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1276\">11</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:2.62pt 1pt 1.5pt 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:2.62pt 0 1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-276\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1277\">10",
+  "raw_sha256": "8556a7299e089f473294118a3d98b7ca1dd7e1bae1382222ca3dfb9457105ec3"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1049521/000104952126000045/mrcy-20260703.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 127277,
+   "byte_start": 126600,
+   "context_ref": "c-276",
+   "raw": "<xbrli:context id=\"c-276\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001049521</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mrcy:LockheedMartinCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-06-29</xbrli:startDate><xbrli:endDate>2025-06-27</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "b2943b8aaad21ac11f825a59b6b7cf6dc56ea4d0d26de44b1d86113e66939975"
+  }
+ ]
+}

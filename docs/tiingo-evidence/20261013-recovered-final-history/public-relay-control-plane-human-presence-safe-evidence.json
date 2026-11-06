@@ -1,0 +1,17 @@
+{
+  "schema": "tiingo.actual_control_plane_auth_human_presence_gate/v1",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "observed_at_utc": "2026-10-14T04:08:01.878254+00:00",
+  "original_control_destination": "https://dash.cloudflare.com/",
+  "actual_visible_gate": "Use your passkey to confirm it\u2019s really you",
+  "human_presence": "Your device will ask for your fingerprint, face, or screen lock",
+  "no_passkey_or_more_ways_action_taken": true,
+  "no_password_or_secret_revealed": true,
+  "control_configuration_not_yet_read": true,
+  "denied_public_relay_effect_remains_frozen": true,
+  "no_relay_object_GET_or_body": true,
+  "no_R2_write_or_Tiingo_provider_request": true,
+  "human_gate_only_for_this_configuration_lane": true,
+  "original_evidence_sha256": "416070e8a1e0f2e208d9b1e3a64da6c8ed65c6344c618454310f451e64adf04c",
+  "intended_MastermindX_account_matched_without_secret_disclosure": true
+}

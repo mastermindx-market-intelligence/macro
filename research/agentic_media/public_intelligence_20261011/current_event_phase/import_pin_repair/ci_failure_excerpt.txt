@@ -1,0 +1,47 @@
+___________________ test_unpinned_entry_scripts_only_shrink ____________________
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2835457Z 
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2835870Z     def test_unpinned_entry_scripts_only_shrink():
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2837008Z         baseline = {
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2837624Z             line.strip() for line in
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2838485Z             BASELINE_PATH.read_text(encoding="utf-8").splitlines()
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2839284Z             if line.strip()
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2839769Z         }
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2840217Z         waivers = _load_sealed_runtime_waivers()
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2840838Z         current = set(_affected_entry_scripts())
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2841473Z         stale = sorted(set(waivers) - current)
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2842019Z         assert not stale, (
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2842607Z             "Sealed-runtime waiver names a script that is no longer an unpinned "
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2843229Z             "entry script (it grew a strong pin, left scripts/**, or no longer "
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2843846Z             "imports repo packages). Delete the waiver row; do not keep a stale "
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2844356Z             "exception.\n\n  " + "\n  ".join(stale)
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2844682Z         )
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2844943Z         current -= set(waivers)
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2845280Z         added = sorted(current - baseline)
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2845623Z >       assert not added, (
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2846095Z             "New entry scripts import repo packages with no repo-root pin.  Add the "
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2847026Z             "pin, never extend the baseline; prune entries you fix.  A sealed-"
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2847597Z             "runtime runner that must not pin at module load goes in "
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2848515Z             f"{_rel(WAIVERS_PATH)} with a non-empty reason, not in the baseline.\n\n"
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2849099Z             f"{PIN_IDIOM}\n\nunpinned and not in the baseline:\n  "
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2849516Z             + "\n  ".join(added)
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2849794Z         )
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2851324Z E       AssertionError: New entry scripts import repo packages with no repo-root pin.  Add the pin, never extend the baseline; prune entries you fix.  A sealed-runtime runner that must not pin at module load goes in config/script_import_pin_sealed_runtime_waivers.yml with a non-empty reason, not in the baseline.
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2852571Z E         
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2853043Z E             _ROOT = Path(__file__).resolve().parent.parent   # scripts/ci/* -> parents[2]
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2853546Z E             sys.path.insert(0, str(_ROOT))
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2853838Z E         
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2854115Z E         unpinned and not in the baseline:
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2854509Z E           scripts/stage_official_feed_press.py
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2854935Z E       assert not ['scripts/stage_official_feed_press.py']
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2855184Z 
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2855436Z tests/test_check_script_import_pinning.py:466: AssertionError
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2855941Z =========================== short test summary info ============================
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2858177Z FAILED tests/test_check_script_import_pinning.py::test_unpinned_entry_scripts_only_shrink - AssertionError: New entry scripts import repo packages with no repo-root pin.  Add the pin, never extend the baseline; prune entries you fix.  A sealed-runtime runner that must not pin at module load goes in config/script_import_pin_sealed_runtime_waivers.yml with a non-empty reason, not in the baseline.
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2859842Z   
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2860209Z       _ROOT = Path(__file__).resolve().parent.parent   # scripts/ci/* -> parents[2]
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2860647Z       sys.path.insert(0, str(_ROOT))
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2860912Z   
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2861149Z   unpinned and not in the baseline:
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2861470Z     scripts/stage_official_feed_press.py
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2861859Z assert not ['scripts/stage_official_feed_press.py']
+ci-pack-6	UNKNOWN STEP	2026-10-14T02:23:48.2862211Z 1 failed, 10 passed

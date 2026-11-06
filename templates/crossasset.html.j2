@@ -196,8 +196,8 @@
 {% set _hero_stance_cls = 'stance-up' if _hero_tone == 'green' else 'stance-down' if _hero_tone == 'red' else 'stance-warn' if _hero_tone == 'amber' else 'stance-muted' %}
 
 {# Absorption pctile for gauge (0-1) — engine snapshot key is absorption_pctile_5y #}
-{% set _abs_raw = None %}
-{% if correlation is not none and correlation.absorption_pctile_5y is not none %}
+{% set _abs_raw = None %}{% set _abs_available = correlation is not none and correlation.verdict in ('diversified', 'converging', 'concentrated') and correlation.absorption_pctile_5y is defined and correlation.absorption_pctile_5y is number and correlation.absorption_pctile_5y is not boolean and 0 <= correlation.absorption_pctile_5y <= 1 %}
+{% if _abs_available %}
   {% set _abs_raw = correlation.absorption_pctile_5y %}
 {% endif %}
 {% set _abs_pct = ((_abs_raw or 0) * 100) | round | int %}
@@ -258,7 +258,7 @@
          Rotated -120° (to start at bottom-left, end at bottom-right, gap faces bottom).
          Track arc = 240° = 184.31px of 276.46px circumference.
          Fill uses stroke-dasharray: fill_len (gap filler) so only fill_len px of color shows. #}
-      <svg width="110" height="100" viewBox="0 0 110 100" aria-label="Correlation absorption gauge" role="img"
+      {% if _abs_available %}<svg width="110" height="100" viewBox="0 0 110 100" aria-label="Correlation absorption gauge" role="img"
            class="ca-breathe" style="animation:ca-gentle 3.8s ease-in-out infinite;filter:drop-shadow(0 0 10px color-mix(in srgb,{{ _hero_col }} 30%,transparent))">
         <g transform="rotate(-120 55 55)">
           {# Background track (240° arc) #}
@@ -288,7 +288,7 @@
         {% if _abs_pct >= 80 %}{{ t('Markets moving together', '各市场同步运动') }}
         {% elif _abs_pct >= 50 %}{{ t('Partial overlap', '部分联动') }}
         {% else %}{{ t('Mostly independent', '大体独立') }}{% endif %}
-      </div>
+      </div>{% else %}<p class="muted sm">{{ t('Correlation data not available this build.', '本次构建暂无相关性数据。') }}</p>{% endif %}
     </div>
   </div>
 

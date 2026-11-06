@@ -1,0 +1,26 @@
+{
+  "schema": "forex_r26.focused_source_validation.v1",
+  "started_at": "2026-10-22T03:12:53.979366+00:00",
+  "completed_at": "2026-10-22T03:12:59.205937+00:00",
+  "exit_code": 0,
+  "duration_seconds": 5.226,
+  "command": [
+    "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+    "-m",
+    "pytest",
+    "tests/test_tiingo_forex_source.py",
+    "tests/test_tiingo_reader.py",
+    "tests/test_tiingo_additional_history.py",
+    "-q"
+  ],
+  "before_sha256": {
+    "lib/dataos/tiingo_forex.py": "0752ce9cb0ee9e24ebb993561881cceb162fb4a1290454371eb3155115de013f",
+    "tests/test_tiingo_forex_source.py": "153b56b5065c75ffa1fa37ccb87ba1a2493a9ba40eac728814c29573974e4a75"
+  },
+  "after_sha256": {
+    "lib/dataos/tiingo_forex.py": "0752ce9cb0ee9e24ebb993561881cceb162fb4a1290454371eb3155115de013f",
+    "tests/test_tiingo_forex_source.py": "153b56b5065c75ffa1fa37ccb87ba1a2493a9ba40eac728814c29573974e4a75"
+  },
+  "log": "interval-reconciliation-tests-final.log",
+  "delta": "Charge all per-window emitted ordinal references, including unplaced and edge lists; discriminating small-cap tests"
+}

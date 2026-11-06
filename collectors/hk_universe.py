@@ -88,6 +88,7 @@ import requests
 from collectors._stock_ohlc import fetch_ohlc
 from collectors.base import Adapter
 from lib import config, store
+from lib.market_observations import filter_session_observations
 
 log = logging.getLogger(__name__)
 
@@ -341,6 +342,7 @@ class HkUniverseAdapter(Adapter):
                 # the whole batch completes).
                 for ticker, df in batch_frames.items():
                     try:
+                        df = filter_session_observations(df, "HK")
                         store.upsert(
                             self.group, ticker, df,
                             overwrite_overlap=self.overwrite_overlap,

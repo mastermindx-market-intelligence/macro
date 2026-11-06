@@ -1,0 +1,26 @@
+{
+  "state": "PASS_SCOPED_SOURCE_ACCEPTED",
+  "mission_complete": false,
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "history": {
+    "source_sha256": "c4812130c14b62e4e7729a5d284090165d3b69a8289b71201c3359e6c7e29599",
+    "review_id": "paper-01a1101f-im06-history-projection-review-r1",
+    "parent_and_product_tests": 95
+  },
+  "draft": {
+    "source_sha256": "91217398f9f527173fc0be1a01dca305b84f2060c7b3b0e215866ef564471ab4",
+    "review_id": "paper-01a1101f-im06-scenario-draft-review-r1",
+    "parent_tests": 117,
+    "product_behavioral_tests": 116,
+    "review_harness_correction": "Node26 exposes sessionStorage; snapshot global keys after installing storage spies, not before. Frozen original returned test retained. Immutable capsule hash test retained externally."
+  },
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f",
+  "not_proven": [
+    "History mount/UI/controller",
+    "ordinary publication",
+    "production source/method/universe/disclosure binding",
+    "original-known history",
+    "Saved persistence",
+    "served acceptance"
+  ]
+}

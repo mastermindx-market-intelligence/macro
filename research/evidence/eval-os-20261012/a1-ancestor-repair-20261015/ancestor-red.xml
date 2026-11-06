@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="6.880" timestamp="2026-10-14T23:33:28.411449-07:00" hostname="m2studio"><testcase classname="tests.test_ci_pack" name="test_ancestor_init_census_does_not_grow" time="5.609"><failure message="AssertionError: ancestor-init blind spot GREW: total rows measured 357 against ceiling 344 (main 3a316a30) — 13 over. Remedy: declare the ancestor `__init__.py` in that job's `paths:` so the change that executes it selects the job. List every row with `python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --ancestor-init-census`; jobs currently covered: 108 (agentos-knowledge-contracts, am-edition-producer, biocatalyst-history, biocatalyst-serving, biocatalyst-worker, china-search-universe, ci-control-plane-contracts, cn-standout-audit ...)&#10;assert 357 &lt;= 344&#10; +  where 357 = len([('agentos-knowledge-contracts', 'engine/context_index/fusion.py', 'engine/__init__.py'), ('agentos-knowledge-contract...se/__init__.py'), ('biocatalyst-history', 'tests/test_biocatalyst_change_classification.py', 'tests/__init__.py'), ...])">def test_ancestor_init_census_does_not_grow() -&gt; None:
+        """Ratchet: the undeclared-ancestor-init blind spot may not grow.
+    
+        Closes the 2026-10-14 measurement at main 3a316a30 (344 rows / 107
+        jobs, 138 substantive / 43 jobs) behind two ``&lt;=`` ceilings. Counts
+        come from HEAD's tracked inventory, so the verdict is identical in a
+        full CI checkout and in a sparse session tree.
+        """
+        # The CLI's own two calls (_run_ancestor_init_census,
+        # scripts/run_ci_pack.py:4800 and :4802; ``gate`` defaults to None,
+        # i.e. the whole manifest, which is what this call loads):
+        #   jobs = load_legacy_jobs(args.workflow, gate=args.gate)
+        #   findings = ancestor_init_census(jobs, repo_root=repo_root)
+        jobs = PACK.load_legacy_jobs(MANIFEST)
+        tracked_paths = _aic_tracked_paths()
+        rows = _aic_rows_from_tracked_inventory(jobs, tracked_paths)
+    
+        # Cross-check against the shipped census function itself: every row it
+        # emits from the working tree must exist in the tracked mapping too.
+        census = PACK.ancestor_init_census(jobs, repo_root=ROOT)
+        tracked_keys = {(job, init) for job, _declared, init in rows}
+        census_keys = {(f.job, f.init_path) for f in census}
+        assert census_keys &lt;= tracked_keys, (
+            "ancestor_init_census emitted working-tree rows absent from the "
+            f"tracked mapping: {sorted(census_keys - tracked_keys)}"
+        )
+    
+        substantive_cache: dict[str, bool] = {}
+    
+        def _substantive(init_path: str) -&gt; bool:
+            if init_path not in substantive_cache:
+                blob = subprocess.run(
+                    ["git", "show", f"HEAD:{init_path}"],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                ).stdout
+                substantive_cache[init_path] = _aic_init_is_substantive(blob)
+            return substantive_cache[init_path]
+    
+        substantive_rows = [row for row in rows if _substantive(row[2])]
+    
+&gt;       assert len(rows) &lt;= _ANCESTOR_INIT_CENSUS_CEILING, _aic_ceiling_failure(
+            "total", len(rows), _ANCESTOR_INIT_CENSUS_CEILING, rows
+        )
+E       AssertionError: ancestor-init blind spot GREW: total rows measured 357 against ceiling 344 (main 3a316a30) — 13 over. Remedy: declare the ancestor `__init__.py` in that job's `paths:` so the change that executes it selects the job. List every row with `python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --ancestor-init-census`; jobs currently covered: 108 (agentos-knowledge-contracts, am-edition-producer, biocatalyst-history, biocatalyst-serving, biocatalyst-worker, china-search-universe, ci-control-plane-contracts, cn-standout-audit ...)
+E       assert 357 &lt;= 344
+E        +  where 357 = len([('agentos-knowledge-contracts', 'engine/context_index/fusion.py', 'engine/__init__.py'), ('agentos-knowledge-contract...se/__init__.py'), ('biocatalyst-history', 'tests/test_biocatalyst_change_classification.py', 'tests/__init__.py'), ...])
+
+tests/test_ci_pack.py:7351: AssertionError</failure></testcase></testsuite></testsuites>

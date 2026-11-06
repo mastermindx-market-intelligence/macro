@@ -66,6 +66,7 @@ _FIELDS = {
 class HkConnectChannelsAdapter(Adapter):
     name = "hk_connect_channels"
     group = "hk_connect"
+    session_calendar = "CONNECT"  # observation dates follow the cash/Connect session
     stale_after_days = 6   # trading-day series; tolerate a long weekend / holiday
 
     def __init__(self) -> None:

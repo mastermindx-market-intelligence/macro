@@ -1,0 +1,47 @@
+[
+  {
+    "accession": "0001652044-26-000018",
+    "form": "10-K",
+    "period_of_report": "2025-12-31",
+    "selection": "admission_candidate",
+    "manifest_sha256": "020717667a072222c70292155eb1050377ebc7c2b75c06225494b71b77f9112e",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0001652044-25-000014",
+    "form": "10-K",
+    "period_of_report": "2024-12-31",
+    "selection": "admission_candidate",
+    "manifest_sha256": "be8ea37891071eec6cf5afc68f74beacf6d7df897e0250d029a156dd22b27d46",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0001652044-26-000071",
+    "form": "10-Q",
+    "period_of_report": "2026-06-30",
+    "selection": "admission_candidate",
+    "manifest_sha256": "3f652297a35d6bafbf479044a0815df8752155d00fcf86c18488eb726722e892",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0001652044-26-000048",
+    "form": "10-Q",
+    "period_of_report": "2026-03-31",
+    "selection": "admission_candidate",
+    "manifest_sha256": "837db3ff4356a88ee6acdff8d673177af9a5be4571b53279c215ed0780397c09",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0001652044-25-000062",
+    "form": "10-Q",
+    "period_of_report": "2025-06-30",
+    "selection": "capture_only",
+    "manifest_sha256": "859847e57dfef0b7e7dc6ae3c8b376fbe9628f20963b356258108008b523ddbb",
+    "admission": "not_admitted:capture_only",
+    "statement_roles_state": "extracted"
+  }
+]

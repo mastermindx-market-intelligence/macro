@@ -1,0 +1,84 @@
+FFFFFFFF.FFFF..F.F..                                                     [100%]
+=================================== FAILURES ===================================
+____ test_furniture_class_cannot_hide_unanchored_advice[False-press-byline] ____
+tests/test_press_validators.py:885: in test_furniture_class_cannot_hide_unanchored_advice
+    assert V.check_fact_anchor(draft, F.slot(), F.config())['ok'] is False
+E   assert True is False
+____ test_furniture_class_cannot_hide_unanchored_advice[False-press-footer] ____
+tests/test_press_validators.py:885: in test_furniture_class_cannot_hide_unanchored_advice
+    assert V.check_fact_anchor(draft, F.slot(), F.config())['ok'] is False
+E   assert True is False
+____ test_furniture_class_cannot_hide_unanchored_advice[True-press-byline] _____
+tests/test_press_validators.py:885: in test_furniture_class_cannot_hide_unanchored_advice
+    assert V.check_fact_anchor(draft, F.slot(), F.config())['ok'] is False
+E   assert True is False
+____ test_furniture_class_cannot_hide_unanchored_advice[True-press-footer] _____
+tests/test_press_validators.py:885: in test_furniture_class_cannot_hide_unanchored_advice
+    assert V.check_fact_anchor(draft, F.slot(), F.config())['ok'] is False
+E   assert True is False
+_ test_genuine_footer_with_extra_prose_is_still_scored[<strong> $999999</strong>] _
+tests/test_press_validators.py:895: in test_genuine_footer_with_extra_prose_is_still_scored
+    assert check(draft, F.slot(), F.config())['ok'] is False
+E   assert True is False
+___ test_genuine_footer_with_extra_prose_is_still_scored[ Buy the dip now.] ____
+tests/test_press_validators.py:895: in test_genuine_footer_with_extra_prose_is_still_scored
+    assert check(draft, F.slot(), F.config())['ok'] is False
+E   assert True is False
+_ test_financial_quantity_scale_cannot_be_invented[$750 million-$750 billion-False] _
+tests/test_press_validators.py:919: in test_financial_quantity_scale_cannot_be_invented
+    assert row['ok'] is expected, row
+E   AssertionError: {'name': 'fact_anchor', 'ok': True, 'detail': 'every number and quote resolves to a source fact', 'metrics': {'numbers_checked': 1, 'unanchored': [], 'source_pool_size': 2, 'unsourced_quotes': []}}
+E   assert True is False
+_ test_financial_quantity_scale_cannot_be_invented[$750 million-750 trillion dollars-False] _
+tests/test_press_validators.py:919: in test_financial_quantity_scale_cannot_be_invented
+    assert row['ok'] is expected, row
+E   AssertionError: {'name': 'fact_anchor', 'ok': True, 'detail': 'every number and quote resolves to a source fact', 'metrics': {'numbers_checked': 1, 'unanchored': [], 'source_pool_size': 2, 'unsourced_quotes': []}}
+E   assert True is False
+_ test_financial_quantity_scale_cannot_be_invented[$750 million-750,000,000 dollars-True] _
+tests/test_press_validators.py:919: in test_financial_quantity_scale_cannot_be_invented
+    assert row['ok'] is expected, row
+E   AssertionError: {'name': 'fact_anchor', 'ok': False, 'detail': "originated number(s) not in the source facts: ['750,000,000']", 'metrics': {'numbers_checked': 1, 'unanchored': ['750,000,000'], 'source_pool_size': 2, 'unsourced_quotes': []}}
+E   assert False is True
+__ test_financial_quantity_scale_cannot_be_invented[$750 million-$750-False] ___
+tests/test_press_validators.py:919: in test_financial_quantity_scale_cannot_be_invented
+    assert row['ok'] is expected, row
+E   AssertionError: {'name': 'fact_anchor', 'ok': True, 'detail': 'every number and quote resolves to a source fact', 'metrics': {'numbers_checked': 1, 'unanchored': [], 'source_pool_size': 2, 'unsourced_quotes': []}}
+E   assert True is False
+_____ test_financial_quantity_scale_cannot_be_invented[$750m-$0.75bn-True] _____
+tests/test_press_validators.py:919: in test_financial_quantity_scale_cannot_be_invented
+    assert row['ok'] is expected, row
+E   AssertionError: {'name': 'fact_anchor', 'ok': False, 'detail': "originated number(s) not in the source facts: ['$0.75bn']", 'metrics': {'numbers_checked': 1, 'unanchored': ['$0.75bn'], 'source_pool_size': 2, 'unsourced_quotes': []}}
+E   assert False is True
+_____ test_financial_quantity_scale_cannot_be_invented[$750M-$750B-False] ______
+tests/test_press_validators.py:919: in test_financial_quantity_scale_cannot_be_invented
+    assert row['ok'] is expected, row
+E   AssertionError: {'name': 'fact_anchor', 'ok': True, 'detail': 'every number and quote resolves to a source fact', 'metrics': {'numbers_checked': 1, 'unanchored': [], 'source_pool_size': 2, 'unsourced_quotes': []}}
+E   assert True is False
+_ test_financial_quantity_scale_cannot_be_invented[Gamma is 26.8bn-Gamma is 26.8tn-False] _
+tests/test_press_validators.py:919: in test_financial_quantity_scale_cannot_be_invented
+    assert row['ok'] is expected, row
+E   AssertionError: {'name': 'fact_anchor', 'ok': True, 'detail': 'every number and quote resolves to a source fact', 'metrics': {'numbers_checked': 1, 'unanchored': [], 'source_pool_size': 2, 'unsourced_quotes': []}}
+E   assert True is False
+_ test_financial_quantity_scale_cannot_be_invented[The score is 56-The score is 56 billion-False] _
+tests/test_press_validators.py:919: in test_financial_quantity_scale_cannot_be_invented
+    assert row['ok'] is expected, row
+E   AssertionError: {'name': 'fact_anchor', 'ok': True, 'detail': 'every number and quote resolves to a source fact', 'metrics': {'numbers_checked': 1, 'unanchored': [], 'source_pool_size': 2, 'unsourced_quotes': []}}
+E   assert True is False
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_validators.py::test_furniture_class_cannot_hide_unanchored_advice[False-press-byline]
+FAILED tests/test_press_validators.py::test_furniture_class_cannot_hide_unanchored_advice[False-press-footer]
+FAILED tests/test_press_validators.py::test_furniture_class_cannot_hide_unanchored_advice[True-press-byline]
+FAILED tests/test_press_validators.py::test_furniture_class_cannot_hide_unanchored_advice[True-press-footer]
+FAILED tests/test_press_validators.py::test_genuine_footer_with_extra_prose_is_still_scored[<strong> $999999</strong>]
+FAILED tests/test_press_validators.py::test_genuine_footer_with_extra_prose_is_still_scored[ Buy the dip now.]
+FAILED tests/test_press_validators.py::test_financial_quantity_scale_cannot_be_invented[$750 million-$750 billion-False]
+FAILED tests/test_press_validators.py::test_financial_quantity_scale_cannot_be_invented[$750 million-750 trillion dollars-False]
+FAILED tests/test_press_validators.py::test_financial_quantity_scale_cannot_be_invented[$750 million-750,000,000 dollars-True]
+FAILED tests/test_press_validators.py::test_financial_quantity_scale_cannot_be_invented[$750 million-$750-False]
+FAILED tests/test_press_validators.py::test_financial_quantity_scale_cannot_be_invented[$750m-$0.75bn-True]
+FAILED tests/test_press_validators.py::test_financial_quantity_scale_cannot_be_invented[$750M-$750B-False]
+FAILED tests/test_press_validators.py::test_financial_quantity_scale_cannot_be_invented[Gamma is 26.8bn-Gamma is 26.8tn-False]
+FAILED tests/test_press_validators.py::test_financial_quantity_scale_cannot_be_invented[The score is 56-The score is 56 billion-False]
+14 failed, 6 passed, 95 deselected in 4.34s

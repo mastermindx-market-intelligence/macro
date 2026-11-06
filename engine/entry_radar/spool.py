@@ -88,6 +88,7 @@ from engine.entry_radar.contracts import (
     Nomination,
     NominationError,
     ProducerRead,
+    finite_or_none,
     iso,
     parse_ts,
     utcnow,
@@ -411,10 +412,7 @@ def tap_hot_tape_events(events: Iterable[Any], *,
             continue
         kind = str(get("kind") or get("event") or get("reason") or "move").strip() or "move"
         val = get("change_pct")
-        try:
-            value = float(val) if val is not None else None
-        except (TypeError, ValueError):
-            value = None
+        value = finite_or_none(val)
         try:
             out.append(Nomination(
                 ticker=str(sym),

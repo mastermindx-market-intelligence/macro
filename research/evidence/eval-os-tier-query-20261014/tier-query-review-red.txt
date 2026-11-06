@@ -1,0 +1,110 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_________ test_required_tier_refuses_shared_artifact_identity[engine] __________
+
+other_owner = 'engine'
+
+    @pytest.mark.parametrize("other_owner", ["engine", "excluded"])
+    def test_required_tier_refuses_shared_artifact_identity(other_owner):
+        registry = build_registry(synapse=_synapse({
+            "a": _artifact(),
+            "b": _artifact(producer="engine/other.py" if other_owner == "engine" else "<EXTERNAL>"),
+        }))
+        if other_owner == "engine":
+            other = next(row for row in registry["engines"] if row["producer"] == "engine/other.py")
+            other["artifacts"][0]["id"] = "a"
+            other["authority_evidence"]["artifact_ids"] = ["a"]
+        else:
+            registry["excluded"][0]["artifacts"] = ["a"]
+        answer = required_tier(registry, ["engine/a.py"])
+>       assert answer["required_tier"] is None
+E       AssertionError: assert 'T1' is None
+
+tests/test_intelligence_registry.py:1706: AssertionError
+________ test_required_tier_refuses_shared_artifact_identity[excluded] _________
+
+other_owner = 'excluded'
+
+    @pytest.mark.parametrize("other_owner", ["engine", "excluded"])
+    def test_required_tier_refuses_shared_artifact_identity(other_owner):
+        registry = build_registry(synapse=_synapse({
+            "a": _artifact(),
+            "b": _artifact(producer="engine/other.py" if other_owner == "engine" else "<EXTERNAL>"),
+        }))
+        if other_owner == "engine":
+            other = next(row for row in registry["engines"] if row["producer"] == "engine/other.py")
+            other["artifacts"][0]["id"] = "a"
+            other["authority_evidence"]["artifact_ids"] = ["a"]
+        else:
+            registry["excluded"][0]["artifacts"] = ["a"]
+        answer = required_tier(registry, ["engine/a.py"])
+>       assert answer["required_tier"] is None
+E       AssertionError: assert 'T1' is None
+
+tests/test_intelligence_registry.py:1706: AssertionError
+______ test_required_tier_checks_supported_rule_premises[gate_unweighted] ______
+
+damage = 'gate_unweighted'
+
+    @pytest.mark.parametrize("damage", ["gate_unweighted", "display_weighted", "display_ranked"])
+    def test_required_tier_checks_supported_rule_premises(damage):
+        registry = build_registry(synapse=_synapse({"a": _artifact(tier="scored" if damage == "gate_unweighted" else "display")}))
+        artifact = registry["engines"][0]["artifacts"][0]
+        if damage == "gate_unweighted":
+            artifact["tier"] = "display"
+        elif damage == "display_weighted":
+            artifact["tier"] = "scored"
+        else:
+            artifact["scored_path_surfaces"] = ["board_ordering"]
+        answer = required_tier(registry, ["engine/a.py"])
+>       assert answer["required_tier"] is None
+E       AssertionError: assert 'T3' is None
+
+tests/test_intelligence_registry.py:1721: AssertionError
+_____ test_required_tier_checks_supported_rule_premises[display_weighted] ______
+
+damage = 'display_weighted'
+
+    @pytest.mark.parametrize("damage", ["gate_unweighted", "display_weighted", "display_ranked"])
+    def test_required_tier_checks_supported_rule_premises(damage):
+        registry = build_registry(synapse=_synapse({"a": _artifact(tier="scored" if damage == "gate_unweighted" else "display")}))
+        artifact = registry["engines"][0]["artifacts"][0]
+        if damage == "gate_unweighted":
+            artifact["tier"] = "display"
+        elif damage == "display_weighted":
+            artifact["tier"] = "scored"
+        else:
+            artifact["scored_path_surfaces"] = ["board_ordering"]
+        answer = required_tier(registry, ["engine/a.py"])
+>       assert answer["required_tier"] is None
+E       AssertionError: assert 'T1' is None
+
+tests/test_intelligence_registry.py:1721: AssertionError
+______ test_required_tier_checks_supported_rule_premises[display_ranked] _______
+
+damage = 'display_ranked'
+
+    @pytest.mark.parametrize("damage", ["gate_unweighted", "display_weighted", "display_ranked"])
+    def test_required_tier_checks_supported_rule_premises(damage):
+        registry = build_registry(synapse=_synapse({"a": _artifact(tier="scored" if damage == "gate_unweighted" else "display")}))
+        artifact = registry["engines"][0]["artifacts"][0]
+        if damage == "gate_unweighted":
+            artifact["tier"] = "display"
+        elif damage == "display_weighted":
+            artifact["tier"] = "scored"
+        else:
+            artifact["scored_path_surfaces"] = ["board_ordering"]
+        answer = required_tier(registry, ["engine/a.py"])
+>       assert answer["required_tier"] is None
+E       AssertionError: assert 'T1' is None
+
+tests/test_intelligence_registry.py:1721: AssertionError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intelligence_registry.py::test_required_tier_refuses_shared_artifact_identity[engine]
+FAILED tests/test_intelligence_registry.py::test_required_tier_refuses_shared_artifact_identity[excluded]
+FAILED tests/test_intelligence_registry.py::test_required_tier_checks_supported_rule_premises[gate_unweighted]
+FAILED tests/test_intelligence_registry.py::test_required_tier_checks_supported_rule_premises[display_weighted]
+FAILED tests/test_intelligence_registry.py::test_required_tier_checks_supported_rule_premises[display_ranked]
+5 failed, 172 deselected in 11.36s

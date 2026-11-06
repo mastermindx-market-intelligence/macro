@@ -1,0 +1,118 @@
+{
+  "source_commit": "3adb0b0bfd163abf86069ab65f20601ef3df5bec",
+  "files": {
+    "followon-faed-integration-validation.json": {
+      "sha256": "31358b4f490f3ff71d733c686ba4c19d7ff3f5f979d4211e86660da6cc686747",
+      "bytes": 6277
+    },
+    "followon-faed-integration-tests.xml": {
+      "sha256": "053cf5dc6b12c44fe899b256d27193ba3fe074b5c8e1f80bfb39ea43fc3a3816",
+      "bytes": 102961,
+      "storage": {
+        "path": "followon-faed-integration-tests.xml.gz",
+        "format": "gzip",
+        "sha256": "5ca63ecfdb08f5fe77b912077be61e7df89af3ec0b383a915a3d8097b73662da",
+        "bytes": 20465,
+        "decoded_bytes_preserved": true
+      }
+    },
+    "followon-f095-integration-validation.json": {
+      "sha256": "32ede07a32147e015d6be7621abb6dbe116237ca3e3224c79ea26635acb70956",
+      "bytes": 13776
+    },
+    "followon-f095-integration-tests.xml": {
+      "sha256": "6b8b20b9a733dd1189d56cdbdba4544c3b7e1229143a417e30b54073c3f49e3a",
+      "bytes": 974
+    },
+    "followon-f095-source-preservation.json": {
+      "sha256": "dc99c2f7668f46bbf2563730a6ac7847bce4343b59f7c3acaddd72f21501461f",
+      "bytes": 3054
+    },
+    "followon-final-scope-validation.json": {
+      "sha256": "3fc782a8110d996d2d22ce05be96da70b23a7336ebd9819d7a86283bf77340e3",
+      "bytes": 14020
+    },
+    "followon-final-scope-tests.xml": {
+      "sha256": "651976c11231b9fb245e5eeae52bfa6af066dde83dfb0601ecd95147d24b268c",
+      "bytes": 607
+    },
+    "followon-scope-final-adjudication.json": {
+      "sha256": "6198fbeb213413558de09d2b5756c35b6a2219961b40d6f9120751a1bcc7cbd2",
+      "bytes": 7751
+    },
+    "qledger-ci-command-validation.json": {
+      "sha256": "6fd11b076a81f315b8df6cf6447c15d866fe74dbd976e7f27e4e41e24bbef0aa",
+      "bytes": 3512
+    },
+    "qledger-scope-runtime.json": {
+      "sha256": "1c835f367c1e35a9ff35da3d4434d3b462643c01381b1dbf568cbc00eaa8f7e4",
+      "bytes": 34675
+    },
+    "qledger-scope-review-retained.txt": {
+      "sha256": "d3d12d08d245fdfc7f20d9a75d6f2ef97c1bf0ee8aae5134ea17731a6068dc5b",
+      "bytes": 13858
+    },
+    "qledger-review-inputs-additions.json": {
+      "sha256": "424219196642ba9feddd5cc177ae441e92617c41870e25d756fd1845518d1ea3",
+      "bytes": 1166
+    },
+    "qledger-runtime-reader-closure.json": {
+      "sha256": "40c13378aa4c791894fc82e6419532bfa2a29a9c2d963cef93dfa6b8b3d3eebc",
+      "bytes": 5188
+    },
+    "qledger-conftest-closure.json": {
+      "sha256": "04d74be3628eb10c3785e2aaa8ac1f2ab46f46adddedac40f3fd70f7731b5fce",
+      "bytes": 6107
+    },
+    "qledger-phrasebook-repair.json": {
+      "sha256": "5ada8020c1043660871de5e2496feda9472c5107b0df2c5cec27fb85c95acb4e",
+      "bytes": 474
+    },
+    "qledger-phrasebook-tests.xml": {
+      "sha256": "c38bc5dc134297c7cdfc08e258ef0446ef054e290a3314b25351c7dd6b7c1049",
+      "bytes": 4229
+    },
+    "qledger-review-inputs-red.xml": {
+      "sha256": "c06a9ae7eb90685338304133a019547730367e42a9c270f6e32f95f1ffd235f8",
+      "bytes": 2522
+    },
+    "qledger-review-inputs-green.xml": {
+      "sha256": "2a29c98d72ea8a317133c5ee0c0541a43a6939c6ca7879aa0e9c541a1cecbfd0",
+      "bytes": 378
+    },
+    "qledger-ci-step-11.xml": {
+      "sha256": "7b1b096607989235a2a6bf88bd6cade15cef5459f605a10b501d96c5b472623b",
+      "bytes": 3935
+    },
+    "qledger-ci-step-3.xml": {
+      "sha256": "2cd96d336a86c59fdd83e018c91e7b01e5d6866a3d343dfd8d91fa9da702d1a8",
+      "bytes": 1282
+    },
+    "qledger-ci-step-4.xml": {
+      "sha256": "e2414cf039207f7a440b9c34ac390778a35a4eeae2be2e3ac2453faca40c20a7",
+      "bytes": 99318
+    },
+    "qledger-ci-step-5.xml": {
+      "sha256": "0c9cb798ae1c02018f8e77a780bb9f34c01ff7d7b2bc4e9082680e809907ec20",
+      "bytes": 34356
+    },
+    "qledger-ci-step-6.xml": {
+      "sha256": "d4c7620cc63a48e9840c4fd9396d65a5a12a2e482ae29119098c41fd9f07368f",
+      "bytes": 14055
+    },
+    "qledger-ci-step-7.xml": {
+      "sha256": "05d3fc0bea3a43c8e54b603684a7cb01cd74047a3f49ae03143ebd9a0d83c090",
+      "bytes": 4230
+    },
+    "qledger-ci-step-8.xml": {
+      "sha256": "fe0c6d84911a01a3a4a159ba87a7b8eab39bd8654c7050064bc5a4ea8ce16301",
+      "bytes": 10693
+    },
+    "qledger-ci-step-9.xml": {
+      "sha256": "4dc0d01892441199541356e078c37d242fc2545d3c6abf74f2edc430d79544f7",
+      "bytes": 16894
+    }
+  },
+  "scope": "Retained local RED/repaired proofs and review adjudication; no production acceptance.",
+  "storage_note": "Failed-test traces retain their original whitespace and bytes in lossless gzip archives. Logical filenames and SHA256 values identify decoded original evidence; storage fields identify the committed archive. Raw originals also remain in the programme evidence directory and prior source commit."
+}

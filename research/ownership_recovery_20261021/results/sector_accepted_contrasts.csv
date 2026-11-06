@@ -1,0 +1,3 @@
+comparator,n_closed,dates,mean_selected_minus_alternative,lo,hi,selected_beats_alternative,valid_draw_fraction,populated_halfyears,interval_available
+RSI_ALL_SECTORS,93,51,0.011729914522634409,-0.003888824343134946,0.023324360030512702,0.5268817204301075,1.0,13,True
+RSI_SPY,93,51,0.009854738304451612,-0.012509965890571252,0.027576938558870282,0.4731182795698925,1.0,13,True

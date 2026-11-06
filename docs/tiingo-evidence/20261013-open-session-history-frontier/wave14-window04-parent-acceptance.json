@@ -1,0 +1,38 @@
+{
+  "schema": "tiingo.actual_physical_continuation_qualification_window_parent_acceptance/v1",
+  "recorded_at_utc": "2026-10-13T00:06:01.735747+00:00",
+  "original_tool_session": 73072,
+  "original_terminal_return_consumed": true,
+  "original_exit_code": 0,
+  "method_sha256": "39e70d4b7b1712bfef7e5273864785e8129b31db564908f318a6ee75303b2f6f",
+  "log_sha256": "5bca19230d3d8fc3cf79891e2466198f8c28784a5798c84a4086c74190388a19",
+  "started_at_utc": "2026-10-12T23:49:30.164474+00:00",
+  "settled_at_utc": "2026-10-13T00:04:30.240717+00:00",
+  "completed_prefixes": [
+    "12",
+    "13",
+    "14",
+    "15"
+  ],
+  "next_unstarted_prefix": "16",
+  "proof_sha256": {
+    "eod-wave14-prefix12-qualified.json": "6704e9756ccefd7c50cb0441abe30c50811fdfaef2a3736b8535459b73d987e6",
+    "eod-qualified-catalogue-coverage-wave14-prefix12-delta.json": "20013d69d38a491ff55867e4f743663e9775422366612b777d7f574630df1d91",
+    "eod-wave14-prefix13-qualified.json": "205e2fc8a6e79d80e9d44ab3290245356cd5b405089d8d3842e04bc270d7b521",
+    "eod-qualified-catalogue-coverage-wave14-prefix13-delta.json": "72859381cb4ab5fe230ca1324285f41a87ebdbc72d76d00bc111216348f5e709",
+    "eod-wave14-prefix14-qualified.json": "ada8f8a8c8f16a20f016aa390730d4c5c23c68b69c46878e550d6e1783eb6562",
+    "eod-qualified-catalogue-coverage-wave14-prefix14-delta.json": "1f557843ea2025b2a9e7bfd6a4e221e692561a1259cb9decff6d535f0b3670d1",
+    "eod-wave14-prefix15-qualified.json": "e92772be60065ae4b9453c6706f8f014a82874613b232b32aa120f0074a2fae4",
+    "eod-qualified-catalogue-coverage-wave14-prefix15-delta.json": "5deb88f8f6223bcfa3e5496d107146f3d023f55ebe258c3728ea248012518eff"
+  },
+  "actual_original_partial_partition_sha256": "ed98a04d034fb267a411a4f8cacef6d01ad30bcdd469b479cc79df58b5410a53",
+  "physical_scope_sha256": "d4522213d7a9c26f3dfba38361c2c48cff3cb12773a91e3acf9dd631d0ead31f",
+  "qualified_continuation_responses": 1741,
+  "qualified_continuation_bars": 3873035,
+  "qualified_combined_original_wave_responses": 3429,
+  "last_census_histories": 41593,
+  "last_census_bars": 87936599,
+  "capture_original_tool40732_settlement_claimed": false,
+  "original_completion_remains_false": true,
+  "predecessor_parent_acceptance_sha256": "4c2ce7007984797c0259e6059d9bb02db3beab47eff01dd407cf48e10341b0ef"
+}

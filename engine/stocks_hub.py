@@ -22,8 +22,12 @@ of the spine can never drift apart from the heatmap's own arithmetic.
 from __future__ import annotations
 
 import math
+import re
+from collections import Counter
 from collections.abc import Mapping, Sequence
+from datetime import date
 from typing import Any
+from urllib.parse import urlencode
 
 from engine.market_heatmap import _ADV_BAND
 
@@ -1005,6 +1009,30 @@ def _pw_help(payload: Mapping, base: Mapping | None) -> dict:
     }
 
 
+def _pw_event_key(row: Mapping) -> tuple[str, str, str] | None:
+    """Original native identity only; display defaults cannot select an event."""
+    day, ticker, side = (row.get(key) for key in ("date", "ticker", "side"))
+    if (type(day) is not str or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", day)
+            or type(ticker) is not str or not re.fullmatch(r"[A-Z0-9][A-Z0-9.-]{0,14}", ticker)
+            or type(side) is not str or side not in {"up", "down"}):
+        return None
+    try:
+        if date.fromisoformat(day).isoformat() != day:
+            return None
+    except ValueError:
+        return None
+    return day, ticker, side
+
+
+def _pw_research_href(row: Mapping, counts: Counter) -> str | None:
+    key = _pw_event_key(row)
+    if key is None or counts[key] != 1:
+        return None
+    # Selection is not a captured source generation or permission to read it.
+    return "../ontology.html?" + urlencode(dict(zip(
+        ("research_date", "research_ticker", "research_side"), key))) + "#ox-research"
+
+
 def _pw_href(ticker: str, linkable: frozenset[str] | None) -> str | None:
     """`<TICKER>.html` when that dossier ships, else None.
 
@@ -1076,6 +1104,8 @@ def pressure_band(payload: Mapping | None, *, board_asof: str | None = None,
     base = _pw_base(payload.get("base_rates"))
     resolved_src = list(payload.get("recently_resolved") or [])
     open_src = list(payload.get("open_events") or [])
+    event_counts = Counter(key for row in resolved_src + open_src
+                           if isinstance(row, Mapping) and (key := _pw_event_key(row)) is not None)
     if not base and not resolved_src and not open_src:
         return warm
 
@@ -1110,6 +1140,7 @@ def pressure_band(payload: Mapping | None, *, board_asof: str | None = None,
         resolved.append({
             "t": _t,
             "href": _pw_href(_t, linkable),
+            "research_href": _pw_research_href(r, event_counts),
             "side": "up" if str(r.get("side")) == "up" else "down",
             "when_en": _pw_day(r.get("date")), "when_zh": _pw_day(r.get("date"), "zh"),
             "move_en": mv_en, "move_zh": mv_zh,
@@ -1129,6 +1160,7 @@ def pressure_band(payload: Mapping | None, *, board_asof: str | None = None,
         events.append({
             "t": _t,
             "href": _pw_href(_t, linkable),
+            "research_href": _pw_research_href(r, event_counts),
             "side": "up" if str(r.get("side")) == "up" else "down",
             "when_en": _pw_day(r.get("date")), "when_zh": _pw_day(r.get("date"), "zh"),
             "move_en": mv_en, "move_zh": mv_zh,

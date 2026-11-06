@@ -1,0 +1,33 @@
+{
+  "started_at": "2026-10-20T18:52:19.440553+00:00",
+  "source": "macro-b312-prearm-health-remote-v3.py",
+  "source_sha256": "ae53acf844cca7a86559643ba26d2b9a7db29d6d01f59093a6dc1fbd2acda21e",
+  "command": [
+    "ssh",
+    "-i",
+    "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "IdentitiesOnly=yes",
+    "-o",
+    "IdentityAgent=none",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "ConnectTimeout=8",
+    "root@146.190.142.17",
+    "python3 -I -B -"
+  ],
+  "scope": "Read-only action-boundary observation; no reservation or service effect",
+  "exit": 0,
+  "finished_at": "2026-10-20T18:52:20.704569+00:00",
+  "stdout": {
+    "bytes": 22899,
+    "sha256": "f0643bbae12c4f5cd4a680e9da3ed5c2a3cbb004b3a6c8a1578fb6e1dc83bbdd"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

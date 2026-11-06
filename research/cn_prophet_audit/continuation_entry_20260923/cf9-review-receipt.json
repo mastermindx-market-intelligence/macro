@@ -1,0 +1,13 @@
+{
+  "operation_key": "cn-action-derived-advice-review-cf9bf710-20260923",
+  "reviewed_head": "cf9bf71040f9e49cef8bef639b998d7b81abb09f",
+  "session": "e153a88d-1b9e-4038-ae3c-9a7b1faed998",
+  "status": "PARTIAL",
+  "initial_result": "error_max_turns; same-session report-only continuation",
+  "closure": "SOL_CLOSED_STOP_ACKNOWLEDGED",
+  "active_child": false,
+  "raw_return_sha256": "c195d6b3c9982515f76d970d62f277a8f6d5446676b17137f3d8543a826e54fa",
+  "report_sha256": "cccc35bd341d86e51d73a2837fe6c8a15ab529cbd19c425756c939b7e67679f1",
+  "raw_stop_sha256": "843f39d145145eeb027e5594e7811a0bb9df19bda99dc46b367690fd84b64c9f",
+  "parent_adjudication": "Core derived-advice fix closed. Accept theme-only copy, muted-note hierarchy, partial-note browser coverage, positive render controls. Reject a new material card as necessary for reused prose; reject per-theme settling as a requirement of the single-clock source. No release or production approval."
+}
