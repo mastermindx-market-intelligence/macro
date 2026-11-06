@@ -3,7 +3,9 @@
 `config/growth_events.yml` began life declarative: `app/main.py::_MM_EVENT_TYPES` was a
 hardcoded closed set, and `tests/test_growth_events_registry.py` could only assert the
 weaker direction (every accepted wire appears in the registry marked live). This module
-flips the arrow — the beacon's accepted set is DERIVED from the registry, so an event
+flips the arrow — the beacon's accepted set is DERIVED from live CLIENT entries in
+that registry. Live SERVER entries require an internal producer and never become
+publicly forgeable by activation. An event
 cannot ship "accepted but undeclared" or "declared live but dropped". That closes the
 silent-drop failure the registry header names: unknown types are dropped silently,
 which is how an instrumentation program ships dead.
@@ -12,11 +14,14 @@ Deliberately import-light: yaml + stdlib only. app/main.py imports this at start
 the registry tests import it directly — pulling FastAPI into a config test (or a second
 hand-typed whitelist into a test helper) is exactly the drift this file removes.
 
-Envelope v1 (DEC:ANALYTICS-EID-USES-EXISTING-EVENT-PRIMARY-KEY): events whose registry
-entry carries `envelope: v1` are the newly implemented commercial wires. For those and
-only those, acceptance additionally requires:
-  * `eid`    — a valid UUID string; it becomes the analytics_events.id primary key, so
-               an exact replay of the same event is ONE row (conflict-safe insert).
+Envelope v1: events whose registry entry carries `envelope: v1` are the newly
+implemented commercial wires. For those and only those, acceptance additionally
+requires:
+  * `eid`    — a valid UUID string; it is seated in the analytics_events.eid unique
+               column, so an exact replay of the same event is ONE row (conflict-safe
+               insert). (The handoff decision DEC:ANALYTICS-EID-USES-EXISTING-EVENT-
+               PRIMARY-KEY assumed a UUID id primary key; the live id is a bigint
+               identity, so the §16 canary corrected the seat to its own column.)
   * `schema` — the literal registry schema version ("growth_events.v1").
   * `meta`   — a dict whose keys are exactly a subset of the declared properties, every
                DECLARED property present, values matching the declared scalar/enum type.
@@ -61,22 +66,28 @@ def registry(path: Path | None = None) -> dict[str, Any]:
     return _load(str(path or REGISTRY_PATH))
 
 
-def accepted_wires(path: Path | None = None) -> frozenset[str]:
-    """Every wire the beacon accepts: exactly the `status: live` wires. THE whitelist."""
+def accepted_wires(path: Path | None = None, *, source: str | None = None) -> frozenset[str]:
+    """Live registry wires, optionally restricted to their declared producer source.
+
+    Public collectors must request source="client"; live server facts never acquire
+    client-ingress authority merely by shipping. None preserves the full registry view.
+    """
     reg = registry(path)
     return frozenset(
         e["wire"] for e in reg.get("events", ())
         if e.get("status") == "live" and isinstance(e.get("wire"), str)
+        and (source is None or e.get("source") == source)
     )
 
 
-def envelope_v1_wires(path: Path | None = None) -> frozenset[str]:
+def envelope_v1_wires(path: Path | None = None, *, source: str | None = None) -> frozenset[str]:
     """Live wires that require the v1 envelope (eid + schema + closed typed meta)."""
     reg = registry(path)
     return frozenset(
         e["wire"] for e in reg.get("events", ())
         if e.get("status") == "live" and e.get("envelope") == "v1"
         and isinstance(e.get("wire"), str)
+        and (source is None or e.get("source") == source)
     )
 
 
@@ -88,6 +99,10 @@ def _spec_by_wire(path: Path | None = None) -> dict[str, dict[str, Any]]:
 def _check_value(decl: str, value: Any, enums: dict[str, list]) -> str | None:
     """None when `value` satisfies `decl`; otherwise a short reason token."""
     decl = str(decl)
+    if decl == "string|null":
+        if value is None:
+            return None
+        decl = "string"
     if decl.startswith("enum:"):
         key = decl.split(":", 1)[1]
         nullable = key.endswith("|null")

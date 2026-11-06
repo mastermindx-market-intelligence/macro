@@ -1,0 +1,276 @@
+{
+  "schema": "w5_natural_issuance_readback.v1",
+  "status": "ROW_DECLARATIONS_OBSERVED_NATURAL_LINEAGE_PENDING",
+  "programme": "WS-GREY-DEER-RISK-INTELLIGENCE / GD-PB-W5",
+  "inspected_repo": "mastermindx-market-intelligence/macro",
+  "inspected_commit": "3e31f5dc8b770d371eb859e2de3df0362fc7fa57",
+  "inspected_tip_committer_at": "2026-10-18T09:06:52Z",
+  "inspected_tip_time_is_warning_publication_time": false,
+  "exact_artifact_read_times_utc": null,
+  "observation_time_limit": "Reads completed before the interrupted Studio lineage request; individual API receipt clocks were not captured.",
+  "natural_artifact_read_count": 2,
+  "issuance": {
+    "source_path": "data/grey_deer_pullback/forward_log.jsonl",
+    "capture": "evidence/forward_log.snapshot.jsonl",
+    "raw_nonempty_lines": 30,
+    "parsed_rows": 30,
+    "parse_errors": [],
+    "ends_in_newline": true,
+    "unique_declared_row_keys": 30,
+    "duplicate_declared_row_keys": 0,
+    "declared_source_sessions": [
+      "2026-10-16"
+    ],
+    "declared_issuance_times": [
+      "2026-10-18T06:24:18+00:00"
+    ],
+    "declared_source_session_count": 1,
+    "declared_issuance_batch_count": 1,
+    "lineage_qualified_natural_origin_count": null,
+    "independent_episode_N": null,
+    "observed_field_names": [
+      "Y",
+      "abstention_reason",
+      "asof",
+      "backfill",
+      "code_sha",
+      "collect_lane_env",
+      "config_id",
+      "evidence_class",
+      "fit_block_id",
+      "graded_at",
+      "grader_sha",
+      "horizon",
+      "inputs_digest",
+      "intraday",
+      "is_gate",
+      "issue_receipt",
+      "issued_at",
+      "kind",
+      "population",
+      "prereg_blob",
+      "prereg_path",
+      "probability",
+      "quantile",
+      "realized_A",
+      "recipe_fingerprint",
+      "rerun",
+      "schema",
+      "ticker",
+      "training_end_asof",
+      "writer_identity",
+      "writer_lane"
+    ],
+    "shared_declarations": {
+      "ticker": [
+        "SPY"
+      ],
+      "code_sha": [
+        "5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa"
+      ],
+      "prereg_blob": [
+        "49a68b5e9c6543d662044b0aa391c4b6e6e6052e"
+      ],
+      "prereg_path": [
+        "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md"
+      ],
+      "recipe_fingerprint": [
+        "9c8b7fe2f572b06b9253affd9a3ca7fb02b8f4d20e7723dd76b46538d235bb8c"
+      ],
+      "evidence_class": [
+        "GENUINELY_ISSUED"
+      ],
+      "writer_lane": [
+        "nightly"
+      ],
+      "writer_identity": [
+        "daily.yml:engine"
+      ],
+      "collect_lane_env": [
+        "nightly"
+      ],
+      "backfill": [
+        false
+      ],
+      "rerun": [
+        false
+      ],
+      "intraday": [
+        false
+      ],
+      "population": [
+        "P-all"
+      ],
+      "fit_block_id": [
+        "b9"
+      ],
+      "graded_at": [
+        null
+      ],
+      "grader_sha": [
+        null
+      ],
+      "Y": [
+        null
+      ],
+      "realized_A": [
+        null
+      ]
+    },
+    "by_horizon": {
+      "5": {
+        "rows": 10,
+        "configurations": [
+          "B0",
+          "B1-20",
+          "B1-63",
+          "B2-21",
+          "B2-63",
+          "M3-ALL@C=1.0",
+          "M3-ALL@C=0.1",
+          "Q0",
+          "Q1",
+          "Q3-ALL"
+        ],
+        "training_end_asof": [
+          "2026-10-05"
+        ],
+        "inputs_digest": [
+          "174a6679273528528ce6272c004e2e45b0acbdc20a5b02965bcdc80b493d81a1"
+        ]
+      },
+      "10": {
+        "rows": 10,
+        "configurations": [
+          "B0",
+          "B1-20",
+          "B1-63",
+          "B2-21",
+          "B2-63",
+          "M3-ALL@C=1.0",
+          "M3-ALL@C=0.1",
+          "Q0",
+          "Q1",
+          "Q3-ALL"
+        ],
+        "training_end_asof": [
+          "2026-09-28"
+        ],
+        "inputs_digest": [
+          "9089b2ab4e12720374a0e523b20cfcc14a7bca6b2ba43437e66bbefd51b7d13f"
+        ]
+      },
+      "21": {
+        "rows": 10,
+        "configurations": [
+          "B0",
+          "B1-20",
+          "B1-63",
+          "B2-21",
+          "B2-63",
+          "M3-ALL@C=1.0",
+          "M3-ALL@C=0.1",
+          "Q0",
+          "Q1",
+          "Q3-ALL"
+        ],
+        "training_end_asof": [
+          "2026-09-11"
+        ],
+        "inputs_digest": [
+          "ec26718398449dbf4abb4b5181519287d62bf45843873dff05266a9d01f1c186"
+        ]
+      }
+    },
+    "graded_outcome_fields_all_null": true
+  },
+  "refusals": {
+    "source_path": "data/grey_deer_pullback/forward_log_refusals.jsonl",
+    "capture": "evidence/forward_log_refusals.snapshot.jsonl",
+    "raw_nonempty_lines": 7,
+    "parsed_rows": 7,
+    "parse_errors": [],
+    "ends_in_newline": true,
+    "counts_by_reason": {
+      "CLOCK": 2,
+      "BACKFILL_ASOF": 4,
+      "OBSERVER_NOT_ON_MAIN": 1
+    },
+    "metadata": [
+      {
+        "asof": "2026-10-13",
+        "refused_at": "2026-10-14T18:35:18+00:00",
+        "reason": "CLOCK",
+        "population": null,
+        "ticker": "SPY"
+      },
+      {
+        "asof": "2026-10-13",
+        "refused_at": "2026-10-15T07:54:07+00:00",
+        "reason": "BACKFILL_ASOF",
+        "population": null,
+        "ticker": "SPY"
+      },
+      {
+        "asof": "2026-10-14",
+        "refused_at": "2026-10-16T06:33:55+00:00",
+        "reason": "BACKFILL_ASOF",
+        "population": null,
+        "ticker": "SPY"
+      },
+      {
+        "asof": "2026-10-15",
+        "refused_at": "2026-10-16T17:15:20+00:00",
+        "reason": "CLOCK",
+        "population": null,
+        "ticker": "SPY"
+      },
+      {
+        "asof": "2026-10-15",
+        "refused_at": "2026-10-17T06:19:30+00:00",
+        "reason": "BACKFILL_ASOF",
+        "population": null,
+        "ticker": "SPY"
+      },
+      {
+        "asof": "2026-10-15",
+        "refused_at": "2026-10-17T18:08:39+00:00",
+        "reason": "BACKFILL_ASOF",
+        "population": null,
+        "ticker": "SPY"
+      },
+      {
+        "asof": "2026-10-16",
+        "refused_at": "2026-10-18T06:24:18+00:00",
+        "reason": "OBSERVER_NOT_ON_MAIN",
+        "population": "P-active",
+        "ticker": "SPY"
+      }
+    ]
+  },
+  "clocks": {
+    "source_asof_field": "asof",
+    "source_asof": "2026-10-16",
+    "declared_issued_at": "2026-10-18T06:24:18+00:00",
+    "build_at": null,
+    "actual_source_available_at": null,
+    "first_publication_at": null,
+    "actual_source_available_to_issued_latency": null,
+    "producer_run_started_at": null,
+    "producer_run_completed_at": null,
+    "missing_reason": "No source-availability/build/publication clocks are recorded in the received issue rows. The separate run/publication lineage read did not return.",
+    "source_date_to_issue_description": "Friday source date; Sunday declared issuance. Do not substitute midnight or nominal market close for actual source availability."
+  },
+  "limits": [
+    "No forecasts or outcomes scored; no model/grade/trial operation invoked.",
+    "GENUINELY_ISSUED is a received row declaration; producing natural run and publication attribution remain unverified.",
+    "The current source body was read; its equality to the claimed producing checkout and its execution are not independently established.",
+    "Legacy Radar issued-session counts are not W5 observations.",
+    "These files are frozen evidence copies of two existing artifacts, not a replacement issuance ledger."
+  ],
+  "source_captures": [
+    "source/engine__grey_deer_pullback_forward.py.txt",
+    "source/scripts__grey_deer_pullback_nightly.py.txt",
+    "source/scripts__ci__daily_engine_regional_desk_builders.sh.txt"
+  ]
+}

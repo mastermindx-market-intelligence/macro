@@ -1,0 +1,112 @@
+{
+  "schema": "gmi.current_context_runtime_validation/v1",
+  "at": "2026-10-11T15:38:17.011237+00:00",
+  "base_head": "b536aeaa378eb8cd89e7b70f6a1ae5ae1e7a6482",
+  "red": {
+    "independent_capability": {
+      "exec": 53745,
+      "rc": 1,
+      "cases": 1
+    },
+    "review_counterexamples": {
+      "exec": 60879,
+      "rc": 1,
+      "cases": 5
+    },
+    "resolved_evidence": {
+      "exec": 28004,
+      "rc": 1,
+      "cases": 1
+    }
+  },
+  "green": {
+    "exec": 78239,
+    "rc": 0,
+    "tests": 190,
+    "seconds": 14.03
+  },
+  "review": {
+    "owner": "/root/native_fact_architecture",
+    "role": "independent reasoning only",
+    "verdict": "Final correction accepted; no remaining concrete defect identified",
+    "tests_run_by_reviewer": false
+  },
+  "ci_closure": {
+    "exec": 24374,
+    "rc": 0,
+    "findings": {},
+    "scope_change": "Only added actual inferred dependencies in seven existing exclusive jobs; no thresholds or jobs removed"
+  },
+  "ci_manifest": {
+    "exec": 94867,
+    "rc": 0,
+    "jobs": 278
+  },
+  "actual_committed_source_qualification": {
+    "schema": "gmi.current_context_runtime_source_qualification/v1",
+    "scope": "local incumbent committed source qualification only",
+    "production_accepted": false,
+    "private_io": false,
+    "elapsed_seconds": 1.776,
+    "qualified": true,
+    "generation": "cdab77c46a9e34184617c9c7f7a2158528b285a9",
+    "sources": {
+      "security_master": {
+        "sha256": "23b92f9cdd672425bceeece8709185fdfcc8014967408be50874d5e106fce22e",
+        "byte_length": 79534
+      },
+      "vendor_aliases": {
+        "sha256": "0bf122a6df17e54865c8d78e12aca592c8832c4de984972fae8658b6e696741f",
+        "byte_length": 50724
+      },
+      "issuer_master": {
+        "sha256": "8d2d136a1ed8466f1a1c57ebbb14b438f27c9a0d4e1ea17214b4ef3e79877402",
+        "byte_length": 43844
+      }
+    }
+  },
+  "sources": {
+    "engine/company_intelligence/current_context_runtime.py": "b5a55cdfa5fd3bf15e5f2554b9185fe517671c267bca5dfecfb4d6929276d8bb",
+    "app/company_disclosures.py": "367b51158f225c92eef4401e1b662507faa80bf8f29d98ab7275b3272ce5a42d",
+    "app/main.py": "a0d6ac570eb1827643862fe9e58be07ee1e96018ee73babc9069188e38c2d65f",
+    "tests/test_company_context_runtime.py": "9ace9865874c63a13fc15012cc86b38f7dbfd0aa6da042628afed281c687720f",
+    "tests/test_company_disclosures_api.py": "359848006e7e85d2289792f32fe65ae9e1482e3db85f8289fa562b67ca5260f0",
+    ".github/ci/legacy-jobs.yml": "64a1f7b04a1e6bfaa0e943d40d3d0c686956ee1d98dfbf07ffb7405cdec6de98"
+  },
+  "wire_schema_changed": false,
+  "disclosure_authority_created": false,
+  "private_store_access": false,
+  "production_runtime_installed": false,
+  "authenticated_production_proof": false,
+  "C01": "NOT_ADMITTED",
+  "compatibility": {
+    "actual_host_git": "2.43.0",
+    "unsupported_cli_rc": 129,
+    "actual_host_empty_protocol_whitelist_rc": 128,
+    "actual_host_protocol_result": "fatal: transport 'file' not allowed",
+    "host_negative_at": "2026-10-11T15:34:44.415784+00:00",
+    "host_capability_receipt_sha256": "46e47d30db30c2510a7b4f29279b77267642fd1e612767791a46a0650019d3a1",
+    "host_negative_receipt_sha256": "e21daebb61268395c93bb5cc848fac72ae2a848ac9aa240beca0a511f1ecd14d",
+    "red": {
+      "exec": 5531,
+      "rc": 1,
+      "cases": 1
+    },
+    "green": {
+      "exec": 27395,
+      "rc": 0,
+      "tests": 32,
+      "seconds": 11.07
+    },
+    "missing_promisor_proof": [
+      "file transport denied despite allow",
+      "custom helper never started despite allow",
+      "lazy suppression disabled to exercise fallback",
+      "object remained absent",
+      "isolated repo file hashes unchanged"
+    ],
+    "review": "Same independent reasoning reviewer accepted final compatibility correction",
+    "actual_local_generation_after_correction": "cdab77c46a9e34184617c9c7f7a2158528b285a9",
+    "production_installation_attested": false
+  }
+}

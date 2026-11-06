@@ -1,0 +1,31 @@
+{
+  "schema": "eval_os.a1_source_publication.v1",
+  "started_at": "2026-10-14T13:03:19.154729+00:00",
+  "base": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+  "candidate": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "observed_main": "b4a515dcbab349be7636ad8cb7a8ef8367240d8b",
+  "admission_receipt": "source-publication-observation-1303.json",
+  "active_proofs": 6,
+  "cap": 8,
+  "refresh_leases": [],
+  "source_only": true,
+  "incumbent_owns_base_refresh_and_merge": true,
+  "steps": [
+    {
+      "name": "merge-preview",
+      "rc": 0
+    },
+    {
+      "name": "local-fast-forward",
+      "rc": 0
+    },
+    {
+      "name": "normal-push",
+      "rc": 0
+    }
+  ],
+  "preview_tree": "7741e67527c47d0a390176daa6b8ebf576d3ac2e",
+  "phase": "push_returned",
+  "push_rc": 0,
+  "finished_at": "2026-10-14T13:04:11.034017+00:00"
+}

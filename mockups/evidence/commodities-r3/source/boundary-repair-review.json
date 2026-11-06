@@ -1,0 +1,16 @@
+{
+  "schema": "mmx.commodities.boundary_review.v1",
+  "previous_published_head": "8d7212be4264ddccf78d5d5fa3f087c12218791b",
+  "projection_revision": 6,
+  "unchanged_rendered_sections_sha256": {
+    "overview": "c8f48a09874c14568b6294889b83ef9cdd24259a618e75a5b3f421906a5543b6",
+    "explore": "fcd72f75fb03368976a61b2d31b246f7e2a3ab094fe37385962bcdbc93807d32",
+    "compare": "d7cf02534e531098da94144d28450edec928644ac56f3b25a70aaf3ae0fad692"
+  },
+  "visual_scope": "The 24 Overview and 16 Explore captures remain applicable to identical rendered sections. Relationships is recaptured for the changed FX wording.",
+  "independent_source_review": {
+    "fx_clock": "PASS: projection, rendered dollar block and ten boundary cases",
+    "import_boundary": "PASS: closed-set assets, bounded nesting and latest-selection ordering",
+    "company_return": "PASS: existing owner fields retained and exact bounded return"
+  }
+}

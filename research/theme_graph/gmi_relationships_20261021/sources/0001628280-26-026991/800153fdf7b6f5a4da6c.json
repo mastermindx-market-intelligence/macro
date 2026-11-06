@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-24T10:51:59Z",
+ "accession": "0001628280-26-026991",
+ "cik": "0001786909",
+ "doc_byte_length": 17263150,
+ "doc_sha256": "d7cc679b2a248cba7860d9fafa396859d4c941e2e5aa0a4bd63afe52fbad8da8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-24",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sbsw-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 14707311,
+  "byte_start": 14706989,
+  "normalized": "Ore from all the shafts is processed at the Beatrix No. 1 plant to produce dor&eacute; that is subsequently refined at Rand Refinery. Apart from gold, the license area also holds the Beisa gold/uranium deposit (No. 4 shaft area), which is currently the subject of a transaction with Neo Energy Metals PLC (Neo).",
+  "normalized_sha256": "2e2eacc1729991406ce2cd02635febe3b8b1b5e884cd27baf4ec5c5cb68c4995",
+  "raw": " Ore from all the shafts is processed at the Beatrix  No. 1 plant to  produce dor&amp;eacute; that is subsequently refined at Rand Refinery. Apart from gold, the license area also holds the Beisa gold/uranium  deposit (No. 4 shaft area), which is currently the subject of a  transaction with Neo Energy Metals PLC (Neo).  ",
+  "raw_sha256": "800153fdf7b6f5a4da6ca34dc877e56a0ab612cd56dc85289aa4b488acd26c09"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1786909/000162828026026991/sbsw-20251231.htm",
+ "xbrl_contexts": []
+}
