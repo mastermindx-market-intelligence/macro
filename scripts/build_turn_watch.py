@@ -13,7 +13,8 @@ Writes:
   .write_artifact.
 
 Reads (all committed, no network; the private sidecar above is the only data/ mutation):
-  data/yahoo/*.parquet                     the graded deck universe + the SPY benchmark
+  config/us_turn_watch_universe.v1.json    immutable selection-era membership + provenance
+  data/yahoo/*.parquet                     price histories for that population + SPY benchmark
   data/baskets/membership.json             group names (EN/ZH) and member lists
   site/basketdata/us_basket_turn.json      the group lifecycle states (that organ's artifact)
 
@@ -112,6 +113,16 @@ def build(argv: list[str] | None = None) -> int:
         print(f"::warning title=turn-watch::deck build failed ({e}) "
               f"— site/turn_watch/turn_watch.json NOT refreshed this run", flush=True)
         log.warning("build_turn_watch: compute_deck failed: %s", e, exc_info=True)
+        return 0
+
+    source_contract = ((artifact.get("coverage") or {}).get("source_contract") or {})
+    if not source_contract.get("pass"):
+        print(
+            "::warning title=turn-watch-source-contract::source population/freshness "
+            "contract failed — public artifact and B1 intake were NOT refreshed",
+            flush=True,
+        )
+        log.warning("build_turn_watch: source contract failed: %s", source_contract)
         return 0
 
     try:

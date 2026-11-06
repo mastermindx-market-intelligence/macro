@@ -168,4 +168,14 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
-        run: python -m scripts.publish_earnings_story_packets_r2 --audit-remote
+        run: >-
+          python -m scripts.publish_earnings_story_packets_r2 --audit-remote
+          --discovery-out "$RUNNER_TEMP/earnings-story-discovery.json"
+
+      - name: retain verified consumer discovery
+        uses: actions/upload-artifact@v4
+        with:
+          name: earnings-story-discovery-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/earnings-story-discovery.json
+          if-no-files-found: error
+          retention-days: 14

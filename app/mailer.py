@@ -58,8 +58,11 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import datetime, timezone
 from email.message import EmailMessage
 from typing import Any
+
+from lib import rotation_observation_notification as rotation_obs
 
 log = logging.getLogger("macro.mailer")
 
@@ -78,7 +81,46 @@ _SEND_ATTEMPTS = 2          # one retry, only on a transient connection failure
 _RETRY_BACKOFF_SEC = 1.5    # a 421 "too many connections" needs a beat, not an instant retry
 
 CLASSES = ("transactional", "marketing")
+# STATUSES is the email_log.status CHECK constraint, verbatim
+# (scripts/deploy/0007_support_email.sql). It is the DB's vocabulary, not this
+# module's return vocabulary -- see RESULTS below. Nothing may be added here
+# without a migration to that (externally owned) table.
 STATUSES = ("sent", "failed", "skipped_no_smtp", "suppressed", "queued")
+
+# --------------------------------------------------------------------------- #
+# The post-SMTP effect boundary
+#
+# send() writes email_log TWICE: 'queued' before SMTP, a terminal status after. The
+# physical delivery happens BETWEEN those writes, so a process death, a service
+# timeout, or a swallowed ledger write in that window leaves a durable 'queued' row
+# for a message that is already in the recipient's inbox. Read later, that row is
+# indistinguishable from one that never reached the transport at all -- and the
+# delivery drain's recovery for a never-sent row is to mint a FRESH idempotency key,
+# which is a licence to deliver the same logical message a second time.
+#
+# The fix is a WRITE-AHEAD MARKER, not a new table: the same row's `detail` column
+# records that the transport is ABOUT TO BE entered, before it is entered. A durable
+# 'queued' then answers three different questions instead of one:
+#
+#   detail has no marker          -> transport never entered   -> PROVABLY NOT SENT
+#   marker, younger than grace    -> a writer may still be live -> IN FLIGHT
+#   marker, older than grace      -> the writer is gone         -> EFFECT UNKNOWN
+#
+# The marker carries its own ISO-8601 timestamp because email_log has no updated_at
+# and no sent_at column (confirmed against the DDL above and every migration under
+# scripts/deploy/), so there is nothing else to age it by. Any terminal PATCH
+# overwrites `detail`, so the marker is self-clearing on every resolved send.
+# --------------------------------------------------------------------------- #
+SMTP_ATTEMPT_MARKER = "SMTP_ATTEMPTED"
+
+# A send() RESULT, never an email_log.status: the transport was entered and the
+# outcome is not knowable. The row stays 'queued' carrying the marker, and no caller
+# may convert this into a fresh send attempt under a new identity.
+EFFECT_UNKNOWN = "effect_unknown"
+
+# What send() can actually return. STATUSES is the DB's vocabulary; this is the
+# caller's.
+RESULTS = STATUSES + ("duplicate", EFFECT_UNKNOWN)
 
 
 def _env(name: str, default: str = "") -> str:
@@ -204,6 +246,88 @@ def _ledger_finish(idem_key: str, status: str, detail: str | None = None) -> Non
         log.warning("mailer: ledger finish %s -> %s failed (%s)", idem_key, status, type(exc).__name__)
 
 
+def _ledger_finish_if_current(idem_key: str, status: str, detail: str | None, *,
+                              expected_status: str,
+                              expected_detail: str | None = None) -> bool:
+    """Conditionally finish a row that was read before another fallible operation.
+
+    A parked-mail worker reads a row, then performs suppression and configuration
+    checks before it writes a terminal result.  Another worker may have claimed or
+    completed that row during those checks.  Requiring the source state on the PATCH
+    prevents the stale worker from erasing either an SMTP-attempt marker or a completed
+    delivery.  PostgREST reports a zero-row conditional PATCH as 2xx, so a single-row
+    representation is the acknowledgement that this worker actually won the transition.
+
+    Failures return False and leave the caller unable to claim the terminal outcome.
+    That is deliberately fail-closed: the caller must not report suppression/no-SMTP or
+    perform a later transport action based on a transition it did not win.
+    """
+    try:
+        path = (f"email_log?idem_key=eq.{urllib.parse.quote(idem_key, safe='')}"
+                "&status=eq." + urllib.parse.quote(expected_status, safe=""))
+        if expected_detail is not None:
+            path += "&detail=eq." + urllib.parse.quote(expected_detail, safe="")
+        rows = _pg("PATCH", path,
+                   body={"status": status, "detail": detail},
+                   prefer="return=representation")
+        if not isinstance(rows, list) or len(rows) != 1:
+            log.info("mailer: conditional finish %s -> %s lost race (%s rows)",
+                     idem_key, status,
+                     len(rows) if isinstance(rows, list) else "unknown")
+            return False
+        return True
+    except Exception as exc:  # noqa: BLE001
+        log.warning("mailer: conditional finish %s -> %s failed (%s)",
+                    idem_key, status, type(exc).__name__)
+        return False
+
+
+def _ledger_mark_attempting(idem_key: str, *, expected_status: str | None = None,
+                            expected_detail: str | None = None) -> bool:
+    """Durably record that SMTP is about to be entered. Returns whether it persisted.
+
+    FAIL-CLOSED, and deliberately the opposite of ``_ledger_finish``'s best-effort
+    posture. ``_ledger_finish`` may swallow a write because by then the send has
+    already happened and the in-process return value still carries the truth. This
+    write happens BEFORE the irreversible act, and if it does not land, a later crash
+    on the far side of the transport is indistinguishable from a crash before it --
+    which is exactly the ambiguity that licenses a duplicate delivery. So the caller
+    does not cross the boundary unless this returns True.
+
+    The asymmetry that buys: a marker write that lands server-side but whose reply is
+    lost makes us withhold a message that was never sent, and the drain later
+    quarantines it for an operator. That is a visible, recoverable under-delivery. The
+    opposite mistake is an invisible, unrecoverable double-delivery. We take the first.
+
+    ``expected_status`` / ``expected_detail`` turn this write into a conditional claim
+    for recovery lanes whose row was read before transport. PostgreSQL rechecks an UPDATE
+    predicate after waiting on a concurrent updater, so only the worker that changes the
+    expected state receives a one-row representation; every competitor stops before DATA.
+    """
+    try:
+        path = f"email_log?idem_key=eq.{urllib.parse.quote(idem_key, safe='')}"
+        if expected_status is not None:
+            path += "&status=eq." + urllib.parse.quote(expected_status, safe="")
+        if expected_detail is not None:
+            path += "&detail=eq." + urllib.parse.quote(expected_detail, safe="")
+        rows = _pg("PATCH", path,
+                   body={"status": "queued",
+                         "detail": f"{SMTP_ATTEMPT_MARKER}@{datetime.now(timezone.utc).isoformat()}"},
+                   prefer="return=representation")
+        # PostgREST treats a zero-row PATCH as a successful request.  A 2xx alone
+        # therefore does not prove that the marker is durable; representation is the
+        # acknowledgement that the claimed row actually matched and was updated.
+        if not isinstance(rows, list) or len(rows) != 1:
+            log.warning("mailer: attempt marker for %s matched %s ledger rows -- NOT sending",
+                        idem_key, len(rows) if isinstance(rows, list) else "an unknown number of")
+            return False
+        return True
+    except Exception as exc:  # noqa: BLE001
+        log.warning("mailer: could not mark %s as attempting (%s) -- NOT sending",
+                    idem_key, type(exc).__name__)
+        return False
+
+
 def _suppression_reason(to_email: str, user_id: str | None) -> str | None:
     """Why this MARKETING message must not be sent, or None when it may go.
 
@@ -253,6 +377,12 @@ _PERMANENT = (
     smtplib.SMTPDataError,
     smtplib.SMTPNotSupportedError,
 )
+# Bound at IMPORT time from the real module, like the tuples below: tests swap
+# `mailer.smtplib` for a stand-in, so anything resolved through that name at RUNTIME
+# would vanish under the fake. Raised by _deliver's post-marker session probe.
+_ServerDisconnected = smtplib.SMTPServerDisconnected
+_DataError = smtplib.SMTPDataError
+
 _TRANSIENT = (
     smtplib.SMTPServerDisconnected,
     smtplib.SMTPConnectError,
@@ -262,25 +392,161 @@ _TRANSIENT = (
 )
 
 
-def _smtp_send(msg: EmailMessage) -> None:
+class MarkerUnwritable(Exception):
+    """The write-ahead marker could not be persisted, so the message was NOT handed to
+    the relay. Proof of non-delivery: ``send_message`` was never called."""
+
+
+class TransportUncertain(Exception):
+    """SMTP was entered and the outcome is NOT knowable. May or may not have been
+    delivered. Never retried — not in-process, and not by any caller."""
+
+    def __init__(self, cause: BaseException):
+        super().__init__(type(cause).__name__)
+        self.cause = cause
+
+
+# Failures that are PROOF OF NON-DELIVERY, verified against CPython's
+# smtplib.SMTP.sendmail: each is raised at a point where the message body has not been
+# accepted, so retrying one can never duplicate.
+#   SMTPSenderRefused      — MAIL FROM rejected; RCPT and DATA never issued.
+#   SMTPRecipientsRefused  — raised only when EVERY recipient is refused, before DATA.
+#   SMTPDataError          — the server answered DATA with a non-2xx: an explicit "no",
+#                            BUT ONLY when the code actually parsed (see below).
+#   SMTPNotSupportedError  — raised before sendmail() is entered at all (SMTPUTF8).
+# Anything else escaping send_message — a disconnect or timeout while the body or the
+# terminating '.' is in flight — is NOT in this tuple, and that omission is the whole
+# point: the server may have committed the message before the socket died.
+_ENVELOPE_REFUSED = (
+    smtplib.SMTPSenderRefused,
+    smtplib.SMTPRecipientsRefused,
+    smtplib.SMTPDataError,
+    smtplib.SMTPNotSupportedError,
+)
+
+
+def _is_proof_of_non_delivery(exc: BaseException) -> bool:
+    """Is this exception a REFUSAL (nothing delivered) rather than an unknown?
+
+    The subtlety is SMTPDataError. CPython's ``SMTP.getreply`` sets ``errcode = -1``
+    when a reply line's first three bytes do not parse as an integer, and ``sendmail``
+    then raises ``SMTPDataError(-1, resp)`` for the reply to the TERMINATING '.'. A -1
+    is an UNPARSED reply, not a server "no" — the relay may well have committed the
+    message and then answered with something we could not read. Treating it as a
+    refusal marks a possibly-delivered message 'failed', which the delivery drain
+    retries under a fresh key: a duplicate. So only a parsed, genuinely negative code
+    counts as proof.
+    """
+    if isinstance(exc, _DataError):
+        code = getattr(exc, "smtp_code", -1)
+        return isinstance(code, int) and code > 0
+    return isinstance(exc, _ENVELOPE_REFUSED)
+
+
+def _deliver(s, msg: EmailMessage, before_data=None) -> bool:
+    """Hand the message to an open session. True once the server has accepted it.
+
+    Returning normally from ``send_message`` means ``sendmail`` read a 2xx reply to the
+    terminating '.', i.e. the relay took responsibility. That is the strongest claim
+    SMTP permits and it is what this ledger means by 'sent'.
+
+    ``before_data`` is the write-ahead hook, and it is called HERE — with the session
+    already open and authenticated — rather than before the connection, on purpose.
+    The marker is a claim that the outcome may be unknowable, and the only genuinely
+    unknowable window is the one this line opens: everything earlier (connect, TLS,
+    AUTH, and the envelope) fails with proof that nothing was delivered, so marking
+    before them would quarantine sends we can prove never happened. Placing it here
+    keeps the uncertain window down to the DATA phase itself, which is the part SMTP
+    really cannot settle.
+
+    The cost is one PostgREST round trip inside an open SMTP session. If that makes
+    the relay time the session out, the failure lands before DATA and is therefore
+    retryable — the safe direction.
+    """
+    if before_data is not None and not before_data():
+        raise MarkerUnwritable("attempt marker did not persist")
+    # The marker's round trip just left this session idle for up to the PostgREST
+    # timeout. Re-validate it BEFORE committing to DATA: a relay that dropped us during
+    # that idle window fails HERE, with zero body bytes on the wire, which is provably
+    # not delivered and therefore retryable. Without the probe the same drop surfaces
+    # from inside sendmail()'s MAIL FROM and is indistinguishable from a fault mid-body,
+    # so a message that certainly never went out would be quarantined instead. This
+    # NARROWS that window to the gap between NOOP and MAIL FROM; it does not close it.
+    code, _resp = s.noop()
+    if code != 250:
+        raise _ServerDisconnected(
+            f"relay did not survive the attempt-marker write (NOOP {code})")
+    try:
+        s.send_message(msg)
+    except Exception as exc:  # noqa: BLE001
+        if _is_proof_of_non_delivery(exc):
+            raise                               # provably not delivered — let it retry
+        raise TransportUncertain(exc) from None  # in flight — unknowable, never retry
+    return True
+
+
+def _smtp_send(msg: EmailMessage, before_data=None) -> None:
     """Deliver one message over the configured relay. Raises on failure.
 
     Port 465 is implicit TLS (SMTP_SSL); everything else is STARTTLS on a plain
     connection — the shape used by the greydeercapital intake relay, stdlib only.
+
+    PHASE-AWARE (this is what separates a retryable failure from an unknowable one):
+
+      connect / starttls / login   no message bytes sent      → raise as-is, retryable
+      write-ahead marker unwritable  send_message never called → raise as-is, retryable
+      envelope refusal             server refused before DATA  → raise as-is, retryable
+      fault while DATA is in flight  server may have committed → TransportUncertain
+      fault AFTER send_message returned  server already said 2xx → RETURN, it is sent
+
+    That last row is not a nicety. CPython's ``smtplib.SMTP.__exit__`` issues QUIT on
+    the way out and swallows only ``SMTPServerDisconnected``; a non-221 QUIT reply
+    raises ``SMTPResponseException`` out of the ``with`` block — after the message was
+    accepted. Treating that as a failure marked a delivered alert 'failed', which the
+    delivery drain then retried under a fresh idempotency key: a guaranteed duplicate
+    from a message that was never actually in doubt.
     """
     host, port = smtp_host(), smtp_port()
     ctx = ssl.create_default_context()
-    if port == 465:
-        with smtplib.SMTP_SSL(host, port, timeout=_SMTP_TIMEOUT, context=ctx) as s:
-            s.login(smtp_user(), smtp_pass())
-            s.send_message(msg)
-        return
-    with smtplib.SMTP(host, port, timeout=_SMTP_TIMEOUT) as s:
-        s.ehlo()
-        s.starttls(context=ctx)
-        s.ehlo()
-        s.login(smtp_user(), smtp_pass())
-        s.send_message(msg)
+    state: dict = {"accepted": False, "uncertain": None}
+
+    def _hand_over(s) -> None:
+        """Deliver, remembering UNCERTAINTY before it can be destroyed on the way out.
+
+        Python replaces a propagating exception with whatever ``__exit__`` raises, and
+        CPython's ``smtplib.SMTP.__exit__`` raises ``SMTPResponseException`` on any
+        non-221 QUIT reply. Since ``SMTPResponseException`` subclasses ``OSError``, an
+        unrecorded ``TransportUncertain`` unwinding past a grumpy QUIT would come out
+        of this function as a plain transient — matched by ``_TRANSIENT`` in ``send()``,
+        slept on, and RETRIED, re-entering DATA for a message the relay may already
+        have committed. Recording it here makes the uncertainty outrank teardown noise.
+        """
+        try:
+            state["accepted"] = _deliver(s, msg, before_data)
+        except TransportUncertain as exc:
+            state["uncertain"] = exc
+            raise
+
+    try:
+        if port == 465:
+            with smtplib.SMTP_SSL(host, port, timeout=_SMTP_TIMEOUT, context=ctx) as s:
+                s.login(smtp_user(), smtp_pass())
+                _hand_over(s)
+        else:
+            with smtplib.SMTP(host, port, timeout=_SMTP_TIMEOUT) as s:
+                s.ehlo()
+                s.starttls(context=ctx)
+                s.ehlo()
+                s.login(smtp_user(), smtp_pass())
+                _hand_over(s)
+    except Exception:
+        if state["accepted"]:
+            # Teardown noise after acceptance cannot un-deliver the message.
+            log.info("mailer: relay accepted the message; ignoring a fault during teardown")
+            return
+        if state["uncertain"] is not None:
+            raise state["uncertain"]
+        raise
 
 
 def _header_safe(value: str, *, limit: int = 400) -> str:
@@ -340,17 +606,28 @@ def _build_message(*, to_email: str, subject: str, html: str, text: str,
 # The single send path
 # --------------------------------------------------------------------------- #
 def send(*, template: str, cls: str, to_email: str, subject: str, html: str, text: str,
-         idem_key: str, user_id: str | None = None, headers: dict | None = None) -> str:
+         idem_key: str, user_id: str | None = None, headers: dict | None = None,
+         strict_ledger: bool = False) -> str:
     """Send one email through the ledger. Returns the final status; never raises.
 
     Order (SEE-R3, ledger-first):
       1. INSERT email_log(status='queued') keyed on ``idem_key``. A unique violation →
          return ``'duplicate'`` WITHOUT sending. This is the whole idempotency gate.
+         ``strict_ledger=True`` also refuses transport when the INSERT result is not
+         confirmed; alert delivery uses this because a POST may fail before commit or
+         commit and lose its reply, and neither state permits crossing SMTP safely.
       2. marketing only: suppression / opt-out → PATCH ``'suppressed'``, return it.
       3. mail-off → PATCH ``'skipped_no_smtp'``, return it.
-      4. SMTP (one retry on a transient connection failure) → PATCH ``'sent'`` or
-         ``'failed'``. ``detail`` on failure is the exception CLASS NAME only — never a
-         message body, an address list, or anything that could carry a credential.
+      4. Mark the row ``'queued'`` + ``SMTP_ATTEMPT_MARKER`` (fail-closed: no marker,
+         no send), then SMTP → PATCH ``'sent'`` or ``'failed'``. ``detail`` on failure
+         is the exception CLASS NAME only — never a message body, an address list, or
+         anything that could carry a credential.
+
+    Returns a value in ``RESULTS``. The one retry at step 4 fires only for failures
+    that are PROOF OF NON-DELIVERY (see ``_smtp_send``); a fault while the message was
+    in flight returns ``EFFECT_UNKNOWN`` with the row left at ``'queued'`` + marker,
+    and is never retried here or anywhere else. SMTP cannot prove exactly-once, so
+    this function preserves the uncertainty rather than resolving it by guess.
     """
     cls = cls if cls in CLASSES else "marketing"   # unknown → the stricter (suppressible) class
     to_email = (to_email or "").strip()
@@ -370,6 +647,13 @@ def send(*, template: str, cls: str, to_email: str, subject: str, html: str, tex
         log.info("mailer: %s duplicate idem_key %s — not sending", template, idem_key)
         return "duplicate"
     except Exception as exc:  # noqa: BLE001
+        if strict_ledger:
+            # An exception cannot distinguish a pre-commit failure from a committed
+            # claim whose response was lost.  In either case no alert has entered SMTP,
+            # so fail closed and let the bounded outbox retry use a fresh attempt key.
+            log.warning("mailer: durable ledger claim unconfirmed for %s (%s) -- NOT sending",
+                        template, type(exc).__name__)
+            return "failed"
         # The ledger is unreachable (no service-role key, network, table absent). We
         # proceed WITHOUT the idempotency guarantee rather than dropping the message:
         # for the traffic on this path (a support reply, an operator alert) a lost mail
@@ -418,12 +702,57 @@ def send(*, template: str, cls: str, to_email: str, subject: str, html: str, tex
         log.warning("mailer: %s could not be composed (%s)", template, type(exc).__name__)
         return _finish("failed", type(exc).__name__)
 
+    # WRITE-AHEAD. Handed to _smtp_send and fired at the last instant before the
+    # message goes on the wire, so the window it covers is the DATA phase — the only
+    # part of an SMTP exchange whose outcome is genuinely unknowable. Fail-closed:
+    # returning False aborts the send (MarkerUnwritable), leaving the row a bare
+    # 'queued' that correctly reads as provably-unsent and stays retryable.
+    #
+    # Re-fired on the retry attempt on purpose: the marker's timestamp must age from
+    # the LATEST transport entry, not the first, or a slow first attempt would make
+    # the second one's marker look stale the moment it is written.
+    def _mark() -> bool:
+        if _ledger_mark_attempting(idem_key):
+            return True
+        # The write did not land. If we hold a confirmed claim, that is fail-closed:
+        # no marker, no send (the row stays a bare 'queued', which reads as
+        # provably-unsent and stays retryable).
+        if ledgered:
+            return False
+        # `ledgered` is False only because _ledger_insert raised something that was
+        # not DuplicateKey -- which INCLUDES a POST that committed server-side and
+        # then lost its reply (_pg only translates HTTP 409, and it has a 6s timeout).
+        # So the claim row may well exist. That is exactly why the marker is ATTEMPTED
+        # above before this branch is reached: when the row is really there, the write
+        # succeeds and the boundary is durable after all. Only when it also fails is
+        # the ledger genuinely unreachable, and then the documented degraded mode
+        # applies -- send without idempotency rather than drop the message.
+        if not strict_ledger:
+            log.warning("mailer: sending %s with NO effect-boundary marker -- ledger "
+                        "unreachable; a duplicate is possible if this process dies", idem_key)
+            return True
+        return False
+
     last: Exception | None = None
     for attempt in range(_SEND_ATTEMPTS):
         try:
-            _smtp_send(msg)
+            _smtp_send(msg, before_data=_mark)
             log.info("mailer: %s sent (%s)", template, cls)
             return _finish("sent")
+        except MarkerUnwritable:
+            log.warning("mailer: %s not sent — attempt marker unwritable", template)
+            return _finish("failed", "ledger_attempt_marker_unwritable")
+        except TransportUncertain as exc:
+            # The message left this process and the relay's verdict never came back.
+            # Deliberately NOT _finish()ed: writing 'failed' here would be a claim we
+            # cannot support, and every consumer of a 'failed' row treats it as
+            # retryable. The row stays 'queued' carrying the marker — the one durable
+            # shape that says "effect unknown" — and there is no in-process retry,
+            # because a retry here is a second delivery of a message that may already
+            # be in the recipient's inbox.
+            log.warning("mailer: %s EFFECT UNKNOWN after %s — not retried, not failed",
+                        template, exc)
+            return EFFECT_UNKNOWN
         except _PERMANENT as exc:   # listed first: these subclass OSError, see above
             last = exc
             break
@@ -1049,23 +1378,210 @@ def _alert_fired_at_display(fired_at, *, zh: bool = False) -> str:
         return fallback
 
 
+# --------------------------------------------------------------------------- #
+# Defensive-rotation observations (DR3, category 'sector_rotation_relative')
+# --------------------------------------------------------------------------- #
+#: The ONE link an observation may point at. Hard-coded on purpose: the caller's
+#: ``evidence_url`` is ignored entirely, so no payload field and no caller prose can
+#: steer a reader to an arbitrary destination. Anchored on the page that actually
+#: carries the early-context comparison these notes describe.
+ROTATION_EVIDENCE_URL = "https://www.mastermind-x.com/sector_central.html#rc-events-mount"
+
+#: Percent is the unit, always, and always shown as one. A relative number printed
+#: without its unit is how "-0.4" reads as "-40%".
+def _pct(x: float) -> str:
+    return f"{x:+.2f}%"
+
+
+def _rotation_direction_lines(obs) -> tuple[str, str]:
+    """Describe absolute and relative outcomes without turning a loss into safety."""
+    values = obs.values
+    n, d, r = (values[key] for key in (
+        "numerator_return_pct", "denominator_return_pct", "ratio_return_pct"))
+    relative = 1 if n > d else (-1 if n < d else 0)
+    en = (f"Across the two sessions {obs.num} returned {_pct(n)} and {obs.den} "
+          f"returned {_pct(d)}. Relative wealth in {obs.num} was {_pct(r)}. ")
+    zh = (f"两个交易日内，{obs.num} 涨跌 {_pct(n)}，{obs.den} 涨跌 {_pct(d)}。"
+          f"{obs.num} 的相对财富变化为 {_pct(r)}。")
+    if n < 0 and d < 0:
+        en = (f"Both fell across the two sessions: {obs.num} {_pct(n)} and "
+              f"{obs.den} {_pct(d)}. Relative wealth in {obs.num} was {_pct(r)}. ")
+        zh = (f"两个交易日内两者均下跌：{obs.num} {_pct(n)}，{obs.den} {_pct(d)}。"
+              f"{obs.num} 的相对财富变化为 {_pct(r)}。")
+        if relative > 0:
+            return (en + f"{obs.num} fell less: a smaller loss is still a loss, not a gain.",
+                    zh + f"{obs.num} 跌幅较小：较小的跌幅仍是亏损，不是收益。")
+        if relative < 0:
+            return (en + f"{obs.num} fell more; both its absolute and relative returns were negative.",
+                    zh + f"{obs.num} 跌幅更大；其绝对收益与相对收益均为负。")
+        return (en + "Both fell equally; there was no relative advantage.",
+                zh + "两者跌幅相同；不存在相对优势。")
+    if n == 0 and d == 0:
+        return (en + "Both were flat; there was no measured change or relative advantage.",
+                zh + "两者均持平；没有可测变化或相对优势。")
+    if n == 0:
+        en += f"{obs.num} was flat. "
+        zh += f"{obs.num} 持平。"
+    elif d == 0:
+        en += f"{obs.den} was flat. "
+        zh += f"{obs.den} 持平。"
+    if relative > 0:
+        return en + f"{obs.num} was relatively stronger than {obs.den}.", zh + f"{obs.num} 相对 {obs.den} 更强。"
+    if relative < 0:
+        return en + f"{obs.num} was relatively weaker than {obs.den}.", zh + f"{obs.num} 相对 {obs.den} 更弱。"
+    return en + "The relative return was unchanged; neither leg outperformed.", zh + "相对收益没有变化；两者表现相同。"
+
+
+def _compose_rotation_observation(payload: dict, *, lang: str) -> dict:
+    """Compose one defensive-rotation observation. Pure, deterministic, bilingual.
+
+    Structure follows the frozen payload and NOTHING else. A wrong source, authority or
+    shape raises :class:`ValueError` from the contract rather than falling through to
+    the generic alert copy below -- that copy tells the reader a condition THEY SET was
+    met, which for an observation nobody authored would be a fabricated account of the
+    reader's own actions. Sending nothing is recoverable; that sentence is not.
+
+    What is deliberately ABSENT, because a two-session price comparison cannot support
+    it: any claim the user authored a thesis or holds a position; any crash probability,
+    fund flow, buy/sell instruction, leverage number or position size; and any
+    "first seen on" date, which would be invented rather than measured. ``observation_id``
+    / ``previous_observation_id`` / ``pair_id`` are unconstrained strings by contract and
+    so are never printed -- provenance is stated in prose instead.
+
+    This reads NO clock. ``Date.now`` does not appear here and never may: the drain owns
+    every freshness question (``rotation_observation_notification.evaluate``), and a
+    formatter that consulted its own clock would make the same payload render differently
+    at two instants and quietly defeat the stale-suppression the drain performs.
+    """
+    obs = rotation_obs.validate(payload)  # raises ValueError on any contract violation
+    zh = lang == "zh"
+
+    # --- what happened, in the reader's language ---------------------------- #
+    if obs.kind == "data_withdrawal":
+        lede_en = (f"The source evidence for a two-session {obs.num} against {obs.den} "
+                   "comparison is no longer available, so that observation has been "
+                   "withdrawn. This says the data behind it was withdrawn — it is not a "
+                   "statement that the market view was wrong.")
+        lede_zh = (f"某个关于 {obs.num} 对 {obs.den} 两个交易日比较的来源数据已不可用，"
+                   "因此该观察已撤回。这说明支撑它的数据被撤回，"
+                   "而不是市场判断被证伪。")
+    else:
+        dir_en, dir_zh = _rotation_direction_lines(obs)
+        if obs.kind == "reversal":
+            lede_en = ("Reversal: the earlier two-session comparison for this pair no "
+                       "longer holds. " + dir_en)
+            lede_zh = ("反转：此前针对该组合的两个交易日比较已不再成立。" + dir_zh)
+        elif obs.kind == "correction":
+            lede_en = ("Correction: the figures previously reported for this pair are "
+                       "revised. " + dir_en)
+            lede_zh = ("更正：此前针对该组合报告的数据已修订。" + dir_zh)
+        else:
+            lede_en, lede_zh = dir_en, dir_zh
+
+    # --- titles ------------------------------------------------------------ #
+    pair = f"{obs.num} vs {obs.den}"
+    pair_zh = f"{obs.num} 对 {obs.den}"
+    title_en = {
+        "observed_change": f"Defensive leadership change · {pair}",
+        "reversal": f"Reversal of an earlier comparison · {pair}",
+        "correction": f"Corrected comparison · {pair}",
+        "data_withdrawal": f"Withdrawn observation · {pair}",
+    }[obs.kind]
+    title_zh = {
+        "observed_change": f"防御板块领导力变化 · {pair_zh}",
+        "reversal": f"此前比较出现反转 · {pair_zh}",
+        "correction": f"比较数据更正 · {pair_zh}",
+        "data_withdrawal": f"观察已撤回 · {pair_zh}",
+    }[obs.kind]
+
+    # --- source date vs notification time, kept distinct ------------------- #
+    source_date = obs.source_as_of.isoformat() if obs.source_as_of else (
+        "撤回通知未记录来源日期" if zh else "not recorded on a withdrawal")
+    blocks: list = [
+        {"en": lede_en, "zh": lede_zh},
+        # Consent provenance, NOT authorship. This reader opted into a stream of
+        # observations; nothing here claims they wrote a condition or hold a position.
+        {"en": "You subscribed to defensive leadership observations.",
+         "zh": "你订阅了防御板块领导力观察。"},
+        {"kind": "kv",
+         "en": [("Market session", obs.event_as_of_iso),
+                ("Source date", source_date),
+                ("Noticed at", obs.observed_at.strftime("%Y-%m-%d %H:%M UTC"))],
+         "zh": [("市场交易日", obs.event_as_of_iso),
+                ("来源日期", source_date),
+                ("记录时间", obs.observed_at.strftime("%Y-%m-%d %H:%M UTC"))]},
+    ]
+    if obs.previous_observation_id:
+        # Provenance, stated in prose. No first-seen date is invented for the prior
+        # observation -- its date is not carried in this payload and guessing it would
+        # put a fabricated fact in front of the reader.
+        blocks.append({"kind": "fine",
+                       "en": ("Recorded against an earlier observation for the same "
+                              "sector pair. This note supersedes it; it makes no claim "
+                              "about when that earlier observation was first seen."),
+                       "zh": ("本条针对同一板块组合的此前观察记录，用以取代该观察；"
+                              "本条不对此前观察最初出现的时点作任何陈述。")})
+    blocks.append({"kind": "button",
+                   "en": "See the sector comparison", "zh": "查看板块比较",
+                   "url": ROTATION_EVIDENCE_URL})
+    blocks.append({"kind": "fine",
+                   "en": ("An observation about relative leadership, not advice — no "
+                          "recommendation to buy, sell, size or lever anything."),
+                   "zh": ("这是关于相对领先关系的观察，不是建议"
+                          "——不构成买入、卖出、加仓或使用杠杆的建议。")})
+
+    return {
+        "subject": (f"防御板块观察 · {pair_zh}" if zh
+                    else f"Defensive leadership observation · {pair}"),
+        "title_en": title_en,
+        "title_zh": title_zh,
+        "eyebrow": "观察" if zh else "OBSERVATION",
+        "preheader": title_zh if zh else title_en,
+        "why_en": "You subscribed to defensive leadership observations.",
+        "why_zh": "你订阅了防御板块领导力观察。",
+        "blocks": blocks,
+    }
+
+
 def compose_alert(payload: dict, *, lang: str = "en") -> dict:
     """Pure -- turn one ``alert_outbox.payload`` row into a plain-language email.
 
     No IO. Refuses machine text / raw slugs (F08 freeze plain-language filter); an
     offending source string is replaced by the neutral fallback rather than dropped
     or sent verbatim.
+
+    ``sector_rotation_relative`` takes its own branch FIRST, ahead of every generic
+    user-authored-condition path below. That ordering is the contract: those paths
+    exist to render a condition the reader personally configured, and routing an
+    observation through them would tell the reader they set something. The branch
+    validates rather than degrades, so a bad observation raises instead of silently
+    acquiring that false history. Every other category is untouched by this branch.
     """
     payload = payload or {}
+    if rotation_obs.claims_rotation_observation(payload):
+        return _compose_rotation_observation(payload, lang=lang)
     ticker = _alert_plain(payload.get("ticker"), "this name", "该标的")
+    held_event = (
+        payload.get("source") == "terminal.held_material_event.v1"
+        and payload.get("category") == "holdings_material_change"
+        and payload.get("authority") == "notification_only"
+    )
     raw_condition = str(payload.get("condition_plain") or "")
-    # The frozen outbox payload carries ONE source string with no zh field (F08 freeze
+    # Ordinary alert payloads carry ONE source string with no zh field (F08 freeze
     # section 6) -- there is nothing to genuinely select between, and fabricating a
     # translation is out of scope (no LLM-originated text, section 8). Detect which
     # language the source actually is and keep the OTHER slot on its neutral fallback,
     # rather than showing the untranslated source in both slots under a language label
     # it does not match -- that was the parity bug (title_zh == English condition_plain).
-    if any("\u4e00" <= ch <= "\u9fff" for ch in raw_condition):
+    if held_event:
+        # The implicit producer supplies both languages; preserve the source copy
+        # without claiming the user created a condition. The ordinary alert path
+        # below retains its original one-language/fallback behavior.
+        condition_plain = _alert_plain(payload.get("condition_plain"),
+                                       "Company results were published.", "公司业绩已发布。")
+        condition_plain_zh = _alert_plain(payload.get("condition_plain_zh"),
+                                          "Company results were published.", "公司业绩已发布。", zh=True)
+    elif any("\u4e00" <= ch <= "\u9fff" for ch in raw_condition):
         condition_plain = _alert_plain(None, "a condition you set was met", "你设置的条件已触发")
         condition_plain_zh = _alert_plain(raw_condition, "a condition you set was met",
                                           "你设置的条件已触发", zh=True)
@@ -1079,7 +1595,9 @@ def compose_alert(payload: dict, *, lang: str = "en") -> dict:
         evidence_url = ""
     fired_at_en = _alert_fired_at_display(payload.get("fired_at"))
     fired_at_zh = _alert_fired_at_display(payload.get("fired_at"), zh=True)
-    one_liner = _alert_plain(payload.get("subject"), condition_plain, condition_plain_zh)
+    one_liner = _alert_plain(
+        payload.get("subject_zh") if held_event and lang == "zh" else payload.get("subject"),
+        condition_plain, condition_plain_zh, zh=held_event and lang == "zh")
 
     if lang == "zh":
         subject = f"{ticker} 提醒 · {ticker} alert"
@@ -1092,6 +1610,12 @@ def compose_alert(payload: dict, *, lang: str = "en") -> dict:
         {"en": f"This is one of the names you are watching: {ticker}.",
          "zh": f"这是你正在关注的标的之一：{ticker}。"},
     ]
+    if held_event:
+        blocks[:2] = [
+            {"en": f"{ticker}: {condition_plain}", "zh": f"{ticker}：{condition_plain_zh}"},
+            {"en": f"Matched to your recorded open holding: {ticker}.",
+             "zh": f"匹配到你当时记录的未平仓持仓：{ticker}。"},
+        ]
     if evidence_url:
         blocks.append({"kind": "button", "en": "Open the evidence", "zh": "查看依据", "url": evidence_url})
     else:
@@ -1111,8 +1635,10 @@ def compose_alert(payload: dict, *, lang: str = "en") -> dict:
         "title_zh": condition_plain_zh,
         "eyebrow": "提醒" if lang == "zh" else "ALERT",
         "preheader": one_liner,
-        "why_en": f"You set an alert on {ticker}.",
-        "why_zh": f"你为 {ticker} 设置了提醒。",
+        "why_en": (f"This event matched your recorded holding in {ticker}." if held_event
+                   else f"You set an alert on {ticker}."),
+        "why_zh": (f"这条事件匹配了你当时记录的 {ticker} 持仓。" if held_event
+                   else f"你为 {ticker} 设置了提醒。"),
         "blocks": blocks,
     }
 
@@ -1121,8 +1647,11 @@ def send_alert(*, fire_event_id: str, to_email: str, payload: dict,
               lang: str = "en", user_id=None, attempt: int = 0) -> str:
     """Compose + send ONE fired-alert email. Returns a mailer status string.
 
-    Returns one of ``app.mailer.STATUSES`` plus ``'duplicate'``. No parallel enum
-    (F08 freeze section 8). ``attempt`` (default 0, byte-identical key) is the
+    Returns one of ``app.mailer.RESULTS`` -- ``STATUSES`` plus ``'duplicate'`` and
+    ``EFFECT_UNKNOWN``. No parallel enum (F08 freeze section 8). ``EFFECT_UNKNOWN`` is
+    load-bearing at the drain's seam: a caller written to the older
+    ``STATUSES + 'duplicate'`` contract would fall through to its failure branch and
+    reintroduce the duplicate this boundary exists to prevent. ``attempt`` (default 0, byte-identical key) is the
     drain's retry counter -- passed straight to ``alert_idem_key`` so a later retry
     of a terminally-failed row claims a FRESH ``email_log`` row instead of colliding
     with the first attempt's (review round 3 BLOCKER).
@@ -1141,4 +1670,5 @@ def send_alert(*, fire_event_id: str, to_email: str, payload: dict,
     # previous except clause was unreachable and encoded a false contract belief.
     return send(template=ALERT_TEMPLATE, cls=ALERT_CLS, to_email=to_email,
                subject=c["subject"], html=html, text=text,
-               idem_key=alert_idem_key(fire_event_id, attempt=attempt), user_id=user_id)
+               idem_key=alert_idem_key(fire_event_id, attempt=attempt), user_id=user_id,
+               strict_ledger=True)

@@ -831,7 +831,12 @@ class TestFetchRateLimits(unittest.TestCase):
         return json.dumps({"jsonrpc": "2.0", "id": 1, "result": {"capabilities": {}}})
 
     def _make_rl_response(self) -> str:
-        return json.dumps({"jsonrpc": "2.0", "id": 2, "result": _REAL_RATE_LIMITS_RESULT})
+        # Keep the historical captured response above intact. Field-normalizer
+        # tests use the documented current named bucket; an explicitly empty
+        # map is separately tested as unknown, not permission for legacy fallback.
+        result = {**_REAL_RATE_LIMITS_RESULT, "rateLimitsByLimitId": {
+            "codex": _REAL_RATE_LIMITS_RESULT["rateLimits"]}}
+        return json.dumps({"jsonrpc": "2.0", "id": 2, "result": result})
 
     def _make_notification(self) -> str:
         """A server-pushed notification (no id match) that should be ignored."""
@@ -1155,6 +1160,413 @@ class TestNoteRateLimitsSelfHeal(unittest.TestCase):
 # ---------------------------------------------------------------------------
 # FIX 2 — plan_type change tripwire
 # ---------------------------------------------------------------------------
+
+class TestObservedResetRefresh(unittest.TestCase):
+    """Provider resets replace observations, not local entitlements or history."""
+
+    def setUp(self):
+        import tempfile
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        self.now = datetime(2026, 10, 3, 7, tzinfo=timezone.utc)
+        clock = patch("engine.codex_lane.budget._now_utc", return_value=self.now)
+        clock.start()
+        self.addCleanup(clock.stop)
+
+    def snapshot(self, used=100.0, age=60, reset_days=2):
+        return {"primary": {"used_percent": used,
+            "resets_at": _to_iso(self.now + timedelta(days=reset_days)),
+            "window_mins": 10080}, "secondary": None, "plan_type": "pro",
+            "fetched_at": _to_iso(self.now - timedelta(seconds=age))}
+
+    def pause(self):
+        note_result({"ok": False, "error_kind": "usage_limit",
+                     "rate_limits": self.snapshot()}, root=self.root)
+        self.assertFalse(can_run(root=self.root)[0])
+
+    def test_provider_gift_replaces_clock_without_erasing_run_history(self):
+        self.pause()
+        history = load_state(self.root)["sessions"]
+        gift = self.snapshot(7.0, age=0, reset_days=7)
+        note_rate_limits(gift, root=self.root)
+        state = load_state(self.root)
+        self.assertEqual(can_run(root=self.root), (True, "ok"))
+        self.assertEqual(state["rate_limits"], gift)
+        self.assertEqual(state["sessions"], history)
+        self.assertIsNone(state["paused_until"])
+
+    def test_delayed_old_snapshot_cannot_undo_gift(self):
+        self.pause()
+        note_rate_limits(self.snapshot(7.0, age=0, reset_days=7), root=self.root)
+        before = load_state(self.root)
+        note_rate_limits(self.snapshot(), root=self.root)
+        self.assertEqual(load_state(self.root), before)
+        self.assertEqual(can_run(root=self.root), (True, "ok"))
+
+    def test_old_result_snapshot_cannot_replace_clock_or_suppress_real_failure(self):
+        self.pause()
+        gift = self.snapshot(7.0, age=0, reset_days=7)
+        note_rate_limits(gift, root=self.root)
+        note_result({"ok": False, "error_kind": "usage_limit",
+                     "rate_limits": self.snapshot()}, root=self.root)
+        state = load_state(self.root)
+        self.assertEqual(state["rate_limits"], gift)
+        # A cached observation is not the failure's timestamp. Retain the
+        # actual failure, but never restore its obsolete quota/reset schedule.
+        self.assertEqual(state["paused_until"], gift["primary"]["resets_at"])
+        self.assertEqual(len(state["sessions"]), 2)
+        self.assertEqual(state["sessions"][-1]["error_kind"], "usage_limit")
+        self.assertFalse(can_run(root=self.root)[0])
+        with patch("engine.codex_lane.budget._now_utc", return_value=self.now + timedelta(seconds=1)):
+            note_rate_limits(self.snapshot(8.0, age=-1, reset_days=7), root=self.root)
+            self.assertEqual(can_run(root=self.root), (True, "ok"))
+
+    def test_read_started_before_new_failure_cannot_release_its_pause(self):
+        note_rate_limits(self.snapshot(5.0, age=30, reset_days=7), root=self.root)
+        note_result({"ok": False, "error_kind": "usage_limit", "rate_limits": None}, root=self.root)
+        note_rate_limits(self.snapshot(6.0, age=10, reset_days=7), root=self.root)
+        self.assertFalse(can_run(root=self.root)[0])
+        self.assertIsNotNone(load_state(self.root)["paused_until"])
+
+    def test_older_healthy_snapshot_cannot_release_current_pause(self):
+        self.pause()
+        before = load_state(self.root)
+        note_rate_limits(self.snapshot(0, age=120), root=self.root)
+        self.assertEqual(load_state(self.root), before)
+        self.assertFalse(can_run(root=self.root)[0])
+
+    def test_duplicate_or_equal_time_conflict_is_not_fresh_clearance(self):
+        self.pause()
+        for used in (100, 0):
+            with self.subTest(used=used):
+                before = load_state(self.root)
+                note_rate_limits(self.snapshot(used), root=self.root)
+                self.assertEqual(load_state(self.root), before)
+                self.assertFalse(can_run(root=self.root)[0])
+
+    def test_unordered_future_and_invalid_time_cannot_release_pause(self):
+        self.pause()
+        for stamp in (None, "", "not-a-time", _to_iso(self.now + timedelta(seconds=1))):
+            with self.subTest(stamp=stamp):
+                incoming = self.snapshot(0, age=0)
+                incoming["fetched_at"] = stamp
+                before = load_state(self.root)
+                note_rate_limits(incoming, root=self.root)
+                self.assertEqual(load_state(self.root), before)
+
+    def test_partial_and_invalid_values_cannot_release_pause(self):
+        self.pause()
+        partial = self.snapshot(0, age=0)
+        del partial["secondary"]
+        packets = [partial]
+        for bad in (True, -1, float("nan"), float("inf"), "0"):
+            incoming = self.snapshot(bad, age=0)
+            packets.append(incoming)
+        malformed = self.snapshot(0, age=0)
+        malformed["secondary"] = {}
+        packets.append(malformed)
+        for incoming in packets:
+            with self.subTest(incoming=repr(incoming)):
+                before = load_state(self.root)
+                note_rate_limits(incoming, root=self.root)
+                self.assertEqual(load_state(self.root), before)
+                self.assertFalse(can_run(root=self.root)[0])
+
+    def test_old_observation_can_be_retained_but_not_clear_pause(self):
+        state = {"paused_until": _to_iso(self.now + timedelta(days=2)),
+                 "rate_limits": None, "degraded": True, "sessions": []}
+        target = self.root / "data/codex_lane/usage_state.json"
+        target.parent.mkdir(parents=True)
+        target.write_text(json.dumps(state))
+        note_rate_limits(self.snapshot(0, age=3600), root=self.root)
+        self.assertIsNotNone(load_state(self.root)["paused_until"])
+        self.assertFalse(can_run(root=self.root)[0])
+
+    def test_newer_real_failure_still_blocks_after_gift(self):
+        self.pause()
+        note_rate_limits(self.snapshot(0, age=30, reset_days=7), root=self.root)
+        note_result({"ok": False, "error_kind": "usage_limit",
+                     "rate_limits": self.snapshot(100, age=0, reset_days=7)}, root=self.root)
+        self.assertFalse(can_run(root=self.root)[0])
+        self.assertEqual(load_state(self.root)["rate_limits"]["primary"]["used_percent"], 100)
+
+    def test_missing_result_time_cannot_overwrite_observed_clock(self):
+        self.pause()
+        gift = self.snapshot(0, age=0, reset_days=7)
+        note_rate_limits(gift, root=self.root)
+        old = self.snapshot()
+        del old["fetched_at"]
+        note_result({"ok": False, "error_kind": "usage_limit", "rate_limits": old}, root=self.root)
+        state = load_state(self.root)
+        self.assertEqual(state["rate_limits"], gift)
+        # An unorderable actual failure is not proven stale; stay conservative.
+        self.assertIsNotNone(state["paused_until"])
+        self.assertFalse(can_run(root=self.root)[0])
+
+    def test_native_missing_or_malformed_window_is_not_normalized_to_na(self):
+        primary = {"usedPercent": 0, "windowDurationMins": 10080,
+                   "resetsAt": int((self.now + timedelta(days=7)).timestamp())}
+        buckets = [{"primary": primary}, {"primary": primary, "secondary": {}},
+                   {"primary": primary, "secondary": {"usedPercent": True}}]
+        for bucket in buckets:
+            with self.subTest(bucket=bucket):
+                self.assertIsNone(self.fetch_native({"rateLimits": bucket}))
+
+    def test_native_named_bucket_cannot_fall_back_to_healthy_legacy(self):
+        valid = {"primary": {"usedPercent": 0, "windowDurationMins": 10080,
+                 "resetsAt": int((self.now + timedelta(days=7)).timestamp())}, "secondary": None}
+        for buckets in ({}, None, {"another": valid}):
+            with self.subTest(buckets=buckets):
+                self.assertIsNone(self.fetch_native({"rateLimits": valid, "rateLimitsByLimitId": buckets}))
+
+    def test_native_gift_keeps_actual_percentage_duration_and_reset(self):
+        epoch = int((self.now + timedelta(days=7)).timestamp())
+        result = self.fetch_native({"rateLimitsByLimitId": {"codex": {
+            "primary": {"usedPercent": 7, "windowDurationMins": 10080, "resetsAt": epoch},
+            "secondary": None}}})
+        self.assertIsNotNone(result)
+        self.assertEqual(result["primary"], {"used_percent": 7.0,
+                         "window_mins": 10080, "resets_at": _to_iso(self.now + timedelta(days=7))})
+        self.assertIsNone(result["secondary"])
+
+    def test_provider_permission_controls_recovery_when_present(self):
+        self.pause()
+        for offset, allowed in enumerate((False, None, True)):
+            with self.subTest(allowed=allowed), patch("engine.codex_lane.budget._now_utc",
+                    return_value=self.now + timedelta(seconds=offset)):
+                incoming = {**self.snapshot(0, age=-offset, reset_days=7),
+                            "ordinary_usage_allowed": allowed}
+                note_rate_limits(incoming, root=self.root)
+                self.assertEqual(can_run(root=self.root)[0], allowed is True)
+                if allowed is not True:
+                    self.assertIsNotNone(load_state(self.root)["paused_until"])
+
+    def test_missing_permission_cannot_erase_newer_protocol_denial(self):
+        denied = {**self.snapshot(0, age=30), "ordinary_usage_allowed": False}
+        note_rate_limits(denied, root=self.root)
+        incoming = self.snapshot(7, age=0)
+        note_rate_limits(incoming, root=self.root)
+        current = load_state(self.root)["rate_limits"]
+        self.assertEqual(current, {**incoming, "ordinary_usage_allowed": False})
+        self.assertNotIn("ordinary_usage_allowed", incoming)
+        self.assertFalse(can_run(root=self.root)[0])
+
+    def test_newer_fieldless_restrictive_meter_keeps_permission_and_blocks(self):
+        for permission in (True, False, None):
+            for key in ("primary", "secondary"):
+                for used in (85, 100, 105):
+                    with self.subTest(permission=permission, key=key, used=used):
+                        root = self.root / f"{permission}-{key}-{used}"
+                        initial = {**self.snapshot(0, age=30), "ordinary_usage_allowed": permission}
+                        note_rate_limits(initial, root=root)
+                        incoming = self.snapshot(used, age=0, reset_days=3)
+                        if key == "secondary":
+                            incoming["secondary"], incoming["primary"] = incoming["primary"], None
+                        before = json.dumps(incoming, sort_keys=True)
+                        note_rate_limits(incoming, root=root)
+                        current = load_state(root)["rate_limits"]
+                        self.assertEqual(current[key]["used_percent"], used)
+                        self.assertEqual(current[key]["resets_at"], incoming[key]["resets_at"])
+                        self.assertIs(current["ordinary_usage_allowed"], permission)
+                        self.assertEqual(current["fetched_at"], incoming["fetched_at"])
+                        self.assertEqual(json.dumps(incoming, sort_keys=True), before)
+                        self.assertFalse(can_run(root=root)[0])
+
+    def test_fieldless_refill_updates_meters_but_cannot_clear_protocol_pause(self):
+        initial = {**self.snapshot(100, age=30), "ordinary_usage_allowed": True}
+        note_result({"ok": False, "error_kind": "usage_limit", "rate_limits": initial}, root=self.root)
+        pause = load_state(self.root)["paused_until"]
+        refill = self.snapshot(0, age=0, reset_days=7)
+        note_rate_limits(refill, root=self.root)
+        current = load_state(self.root)
+        self.assertEqual(current["rate_limits"]["primary"]["used_percent"], 0)
+        self.assertIs(current["rate_limits"]["ordinary_usage_allowed"], True)
+        self.assertEqual(current["paused_until"], pause)
+        self.assertFalse(can_run(root=self.root)[0])
+        with patch("engine.codex_lane.budget._now_utc", return_value=self.now + timedelta(seconds=1)):
+            explicit = {**self.snapshot(1, age=-1, reset_days=7), "ordinary_usage_allowed": True}
+            note_rate_limits(explicit, root=self.root)
+        self.assertIsNone(load_state(self.root)["paused_until"])
+        self.assertEqual(can_run(root=self.root), (True, "ok"))
+
+    def test_fieldless_result_keeps_newer_meter_without_erasing_permission(self):
+        note_rate_limits({**self.snapshot(0, age=30), "ordinary_usage_allowed": True}, root=self.root)
+        note_result({"ok": True, "rate_limits": self.snapshot(100, age=0),
+                     "token_usage": {"total_tokens": 123}}, root=self.root)
+        current = load_state(self.root)
+        self.assertEqual(current["rate_limits"]["primary"]["used_percent"], 100)
+        self.assertIs(current["rate_limits"]["ordinary_usage_allowed"], True)
+        self.assertEqual(current["token_usage_last"], {"total_tokens": 123})
+        self.assertEqual(len(current["sessions"]), 1)
+        self.assertFalse(can_run(root=self.root)[0])
+
+    def test_fieldless_meters_preserve_partial_protocol_denial(self):
+        for permission in (False, None):
+            with self.subTest(permission=permission):
+                root = self.root / str(permission)
+                partial = {"ordinary_usage_allowed": permission,
+                           "fetched_at": self.snapshot(age=30)["fetched_at"]}
+                note_rate_limits(partial, root=root)
+                note_rate_limits(self.snapshot(100, age=0), root=root)
+                current = load_state(root)
+                self.assertIs(current["rate_limits"]["ordinary_usage_allowed"], permission)
+                self.assertEqual(current["rate_limits"]["primary"]["used_percent"], 100)
+                self.assertFalse(current["degraded"])
+                self.assertFalse(can_run(root=root)[0])
+
+    def test_fieldless_older_observation_cannot_restore_lower_usage(self):
+        initial = {**self.snapshot(100, age=0), "ordinary_usage_allowed": True}
+        note_rate_limits(initial, root=self.root)
+        for age in (30, 0):
+            with self.subTest(age=age):
+                before = load_state(self.root)
+                note_rate_limits(self.snapshot(0, age=age), root=self.root)
+                self.assertEqual(load_state(self.root), before)
+                self.assertFalse(can_run(root=self.root)[0])
+
+    def test_existing_loop_stops_on_native_fieldless_exhaustion(self):
+        from scripts import codex_research_loop as loop
+        note_rate_limits({**self.snapshot(0, age=30), "ordinary_usage_allowed": True}, root=self.root)
+        packet = self.fetch_native({"rateLimits": {"primary": {
+            "usedPercent": 100, "windowDurationMins": 10080,
+            "resetsAt": int((self.now + timedelta(days=7)).timestamp())}, "secondary": None}})
+        self.assertIsNotNone(packet)
+        packet["fetched_at"] = _to_iso(self.now)
+        with patch.object(loop, "_fetch_rate_limits", return_value=packet) as fetch, \
+             patch.object(loop, "_run_cases") as run, \
+             patch.dict("os.environ", {"CODEX_DEADLINE_EPOCH": ""}):
+            result = loop.run_loop(root=self.root, lane="cases", iterations=1, dry_run=True)
+        self.assertEqual(result["iterations_run"], 0)
+        self.assertIn("budget:primary:100.0%", result["stop_reason"])
+        fetch.assert_called_once()
+        run.assert_not_called()
+        self.assertEqual(load_state(self.root)["rate_limits"]["primary"]["used_percent"], 100)
+
+    def test_native_permission_is_preserved_without_private_identity(self):
+        bucket = {"primary": {"usedPercent": 0, "windowDurationMins": 10080,
+                  "resetsAt": int((self.now + timedelta(days=7)).timestamp())}, "secondary": None}
+        for allowed in (False, None, True):
+            with self.subTest(allowed=allowed):
+                result = self.fetch_native({"rateLimits": bucket,
+                    "ordinaryUsageAllowed": allowed, "accountId": "private-fixture-identity"})
+                self.assertEqual(result["ordinary_usage_allowed"], allowed)
+                self.assertNotIn("private-fixture-identity", json.dumps(result))
+        for invalid in (0, 1, "true", {}):
+            with self.subTest(invalid=invalid):
+                self.assertIsNone(self.fetch_native({"rateLimits": bucket,
+                                                     "ordinaryUsageAllowed": invalid}))
+
+    def test_historical_empty_bucket_is_explicitly_unqualified(self):
+        self.assertIsNone(self.fetch_native(_REAL_RATE_LIMITS_RESULT))
+
+    def test_existing_loop_refreshes_before_gate_and_consumes_gift(self):
+        from scripts import codex_research_loop as loop
+        self.pause()
+        gift = {**self.snapshot(7, age=0, reset_days=7), "ordinary_usage_allowed": True}
+
+        def useful_fixture(root, dry_run):
+            self.assertEqual(load_state(root)["rate_limits"], gift)
+            self.assertIsNone(load_state(root)["paused_until"])
+            return {"ok": True, "action": "dry_run"}
+
+        with patch.object(loop, "_fetch_rate_limits", return_value=gift) as fetch, \
+             patch.object(loop, "_run_cases", side_effect=useful_fixture) as run, \
+             patch.dict("os.environ", {"CODEX_DEADLINE_EPOCH": ""}):
+            result = loop.run_loop(root=self.root, lane="cases", iterations=1, dry_run=True)
+        self.assertEqual(result["iterations_run"], 1)
+        self.assertIsNone(result["stop_reason"])
+        fetch.assert_called_once()
+        run.assert_called_once()
+        self.assertEqual(len(load_state(self.root)["sessions"]), 1)
+
+    def test_existing_loop_does_not_start_on_partial_gift(self):
+        from scripts import codex_research_loop as loop
+        self.pause()
+        partial = self.snapshot(0, age=0, reset_days=7)
+        partial["secondary"] = {"used_percent": 100,
+                                "resets_at": _to_iso(self.now + timedelta(hours=2))}
+        with patch.object(loop, "_fetch_rate_limits", return_value=partial) as fetch, \
+             patch.object(loop, "_run_cases") as run, \
+             patch.dict("os.environ", {"CODEX_DEADLINE_EPOCH": ""}):
+            result = loop.run_loop(root=self.root, lane="cases", iterations=1, dry_run=True)
+        self.assertEqual(result["iterations_run"], 0)
+        self.assertIn("budget_gate", result["stop_reason"])
+        fetch.assert_called_once()
+        run.assert_not_called()
+
+    def test_over_100_usage_is_over_budget_not_discarded_as_healthy(self):
+        note_rate_limits(self.snapshot(5, age=30), root=self.root)
+        note_rate_limits(self.snapshot(105, age=0), root=self.root)
+        self.assertEqual(load_state(self.root)["rate_limits"]["primary"]["used_percent"], 105)
+        self.assertFalse(can_run(root=self.root)[0])
+        normalized = self.fetch_native({"rateLimits": {"primary": {
+            "usedPercent": 105, "windowDurationMins": 10080,
+            "resetsAt": int((self.now + timedelta(days=7)).timestamp())}, "secondary": None}})
+        self.assertEqual(normalized["primary"]["used_percent"], 105)
+
+    def test_native_permission_survives_incomplete_quota_and_blocks_cached_health(self):
+        for index, allowed in enumerate((False, None, True)):
+            with self.subTest(allowed=allowed):
+                root = self.root / str(index)
+                healthy = {**self.snapshot(5, age=60), "ordinary_usage_allowed": True}
+                note_rate_limits(healthy, root=root)
+                self.assertTrue(can_run(root=root)[0])
+                packet = self.fetch_native({"ordinaryUsageAllowed": allowed,
+                    "rateLimits": {"primary": {"usedPercent": "invalid"}, "secondary": None}})
+                self.assertIsNotNone(packet)
+                self.assertEqual(packet["ordinary_usage_allowed"], allowed)
+                self.assertNotIn("primary", packet)
+                self.assertNotIn("secondary", packet)
+                packet["fetched_at"] = _to_iso(self.now)
+                note_rate_limits(packet, root=root)
+                self.assertFalse(can_run(root=root)[0])
+                state = load_state(root)
+                self.assertEqual(state["rate_limits"], packet)
+                self.assertTrue(state["degraded"])
+                # A subsequent actual complete, permitted read can recover.
+                with patch("engine.codex_lane.budget._now_utc", return_value=self.now + timedelta(seconds=1)):
+                    restored = {**self.snapshot(7, age=-1, reset_days=7), "ordinary_usage_allowed": True}
+                    note_rate_limits(restored, root=root)
+                    self.assertTrue(can_run(root=root)[0])
+
+    def test_numeric_overflow_cannot_drop_native_permission(self):
+        for field in ("usedPercent", "resetsAt"):
+            with self.subTest(field=field):
+                window = {"usedPercent": 0, "windowDurationMins": 10080,
+                          "resetsAt": int((self.now + timedelta(days=7)).timestamp())}
+                window[field] = 10 ** 1000
+                packet = self.fetch_native({"ordinaryUsageAllowed": False,
+                    "rateLimits": {"primary": window, "secondary": None}})
+                self.assertIsNotNone(packet)
+                self.assertIs(packet["ordinary_usage_allowed"], False)
+                self.assertNotIn("primary", packet)
+
+    def test_native_denial_survives_missing_named_bucket(self):
+        for buckets in ({}, None, {"other": {}}):
+            with self.subTest(buckets=buckets):
+                packet = self.fetch_native({"ordinaryUsageAllowed": False,
+                                           "rateLimitsByLimitId": buckets})
+                self.assertIsNotNone(packet)
+                self.assertIs(packet["ordinary_usage_allowed"], False)
+                self.assertNotIn("primary", packet)
+                self.assertNotIn("secondary", packet)
+
+    def test_applied_snapshot_is_detached_from_caller_mutation(self):
+        from engine.codex_lane.budget import _apply_rate_limits_to_state
+        incoming = self.snapshot(7, age=0)
+        state = {}
+        self.assertTrue(_apply_rate_limits_to_state(state, incoming))
+        incoming["primary"]["used_percent"] = 100
+        self.assertEqual(state["rate_limits"]["primary"]["used_percent"], 7)
+
+    def fetch_native(self, result):
+        lines = [json.dumps({"id": 1, "result": {}}), json.dumps({"id": 2, "result": result})]
+        fake = _make_fake_appserver(lines)
+        with patch("engine.codex_lane.runner.subprocess.Popen", return_value=fake), \
+             patch("engine.codex_lane.runner.resolve_codex_bin", return_value="/not-launched/codex"):
+            return fetch_rate_limits(timeout_s=5)
+
 
 class TestPlanTypeChangeTripwire(unittest.TestCase):
     """FIX 2 — _apply_rate_limits_to_state warns on plan_type change."""

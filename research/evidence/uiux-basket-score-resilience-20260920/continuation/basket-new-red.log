@@ -1,0 +1,108 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_____________ test_basket_timing_cards_use_source_language_labels ______________
+
+    def test_basket_timing_cards_use_source_language_labels():
+>       html = _timing_cards({'bull_age': {'in_bull': False, 'days': 0, 'approx_months': 0},
+                             'overbought': {'band': 'neutral', 'band_zh': '中性'},
+                             'clean_entry': {'flag': False, 'reasons': ['RSI room']},
+                             'rollover_risk': {'band': 'high', 'band_zh': '高', 'reasons': ['decelerating', 'below 50d']}})
+
+tests/test_ftr_w3_ui.py:458:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+payload = {'bull_age': {'in_bull': False, 'days': 0, 'approx_months': 0}, 'overbought': {'band': 'neutral', 'band_zh': '中性'}, 'c... 'reasons': ['RSI room']}, 'rollover_risk': {'band': 'high', 'band_zh': '高', 'reasons': ['decelerating', 'below 50d']}}
+
+    def _timing_cards(payload):
+        import json
+        import subprocess
+        src = _src('basket_detail.html.j2')
+>       assert 'function timingCardsHtml(' in src
+E       assert 'function timingCardsHtml(' in '{% set nav_prefix = \'../\' %}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ ...){_tw=d;tryInject();}).catch(function(){});\n})();\n</script>\n<script src="../theme.js"></script>\n</body>\n</html>\n'
+
+tests/test_ftr_w3_ui.py:451: AssertionError
+________ test_basket_timing_missing_evidence_stays_unknown_and_neutral _________
+
+    def test_basket_timing_missing_evidence_stays_unknown_and_neutral():
+        for empty in ({}, None, [], {'bull_age': [], 'clean_entry': {'flag': 'false'}}):
+>           html = _timing_cards(empty)
+                   ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ftr_w3_ui.py:470:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+payload = {}
+
+    def _timing_cards(payload):
+        import json
+        import subprocess
+        src = _src('basket_detail.html.j2')
+>       assert 'function timingCardsHtml(' in src
+E       assert 'function timingCardsHtml(' in '{% set nav_prefix = \'../\' %}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ ...){_tw=d;tryInject();}).catch(function(){});\n})();\n</script>\n<script src="../theme.js"></script>\n</body>\n</html>\n'
+
+tests/test_ftr_w3_ui.py:451: AssertionError
+_______ test_basket_timing_age_and_text_keep_precision_and_escape_markup _______
+
+    def test_basket_timing_age_and_text_keep_precision_and_escape_markup():
+>       html = _timing_cards({'bull_age': {'in_bull': True, 'approx_months': 0.4, 'days': 8},
+                             'overbought': {'band': '<img src=x>', 'band_zh': '<坏标签>'},
+                             'clean_entry': {'flag': True, 'reasons': ['<script>alert(1)</script>', {}]}})
+
+tests/test_ftr_w3_ui.py:477:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+payload = {'bull_age': {'in_bull': True, 'approx_months': 0.4, 'days': 8}, 'overbought': {'band': '<img src=x>', 'band_zh': '<坏标签>'}, 'clean_entry': {'flag': True, 'reasons': ['<script>alert(1)</script>', {}]}}
+
+    def _timing_cards(payload):
+        import json
+        import subprocess
+        src = _src('basket_detail.html.j2')
+>       assert 'function timingCardsHtml(' in src
+E       assert 'function timingCardsHtml(' in '{% set nav_prefix = \'../\' %}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ ...){_tw=d;tryInject();}).catch(function(){});\n})();\n</script>\n<script src="../theme.js"></script>\n</body>\n</html>\n'
+
+tests/test_ftr_w3_ui.py:451: AssertionError
+________ test_basket_score_native_state_survives_render_and_reinjection ________
+
+    def test_basket_score_native_state_survives_render_and_reinjection():
+        src = _src('basket_detail.html.j2')
+>       assert src.count('const scoreUi=basketScoreState(app);') == 2
+E       assert 0 == 2
+E        +  where 0 = <built-in method count of str object at 0xbab480000>('const scoreUi=basketScoreState(app);')
+E        +    where <built-in method count of str object at 0xbab480000> = '{% set nav_prefix = \'../\' %}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ ...){_tw=d;tryInject();}).catch(function(){});\n})();\n</script>\n<script src="../theme.js"></script>\n</body>\n</html>\n'.count
+
+tests/test_ftr_w3_ui.py:487: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-2eb2cf04-1aab-4770-8917-c26d036796bb/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-2eb2cf04-1aab-4770-8917-c26d036796bb/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-3ca40a25-36b3-4642-914a-5bfd9d49726d/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-3ca40a25-36b3-4642-914a-5bfd9d49726d/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-c8faa78a-b77e-4137-8594-73fff2c9e497/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-c8faa78a-b77e-4137-8594-73fff2c9e497/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-d34f073d-15df-46ba-87bc-d75f08492839/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-d34f073d-15df-46ba-87bc-d75f08492839/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-44bdafe1-c2ba-48e7-98b0-4ae6377bcf00/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-44bdafe1-c2ba-48e7-98b0-4ae6377bcf00/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, browser, calibration, content, data, finviz_themes, knowledge, mockups, ops, orch, properties, reports, research, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_ftr_w3_ui.py::test_basket_timing_cards_use_source_language_labels
+FAILED tests/test_ftr_w3_ui.py::test_basket_timing_missing_evidence_stays_unknown_and_neutral
+FAILED tests/test_ftr_w3_ui.py::test_basket_timing_age_and_text_keep_precision_and_escape_markup
+FAILED tests/test_ftr_w3_ui.py::test_basket_score_native_state_survives_render_and_reinjection
+4 failed, 50 deselected, 5 warnings in 2.64s

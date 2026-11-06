@@ -1,0 +1,33 @@
+{
+  "started_at": "2026-10-20T10:17:41.538501+00:00",
+  "finished_at": "2026-10-20T10:17:41.658778+00:00",
+  "scope": "one strict SNI-preserving direct-origin TLS HEAD read before Macro publication; not public DNS or browser acceptance",
+  "argv": [
+    "curl",
+    "--disable",
+    "--noproxy",
+    "*",
+    "--proto",
+    "=https",
+    "--resolve",
+    "beta.mastermind-x.com:443:146.190.142.17",
+    "--head",
+    "--max-time",
+    "20",
+    "--silent",
+    "--show-error",
+    "--write-out",
+    "\\nMMX_CURL_META http_code=%{http_code} ssl_verify_result=%{ssl_verify_result} remote_ip=%{remote_ip} time_total=%{time_total}\\n",
+    "https://beta.mastermind-x.com/api/shared-shell/status"
+  ],
+  "exit": 35,
+  "selected_headers_and_meta": [
+    "MMX_CURL_META http_code=000 ssl_verify_result=1 remote_ip=146.190.142.17 time_total=0.079121"
+  ],
+  "stdout_bytes": 94,
+  "stdout_sha256": "5fe47735148e24815f38526344785f52dea44f77516fb3573d6e928a0bf0a425",
+  "stderr": "curl: (35) LibreSSL/3.3.6: error:1404B438:SSL routines:ST_CONNECT:tlsv1 alert internal error\n",
+  "source_changed": false,
+  "host_mutated": false,
+  "bootstrap_invoked": false
+}

@@ -1,0 +1,15 @@
+{
+  "synthetic": true,
+  "case_key": "date_only_same_day",
+  "task_refs": [
+    "T04",
+    "T08"
+  ],
+  "status": "ready",
+  "expected_regression": "Intraday eligibility unknown, never synthesized midnight",
+  "base_case": "source_only_business",
+  "published_at": "2026-07-16",
+  "published_at_grain": "date",
+  "system_replay_cutoff": "2026-07-16T09:00:00Z",
+  "expect": "ambiguous_refused"
+}

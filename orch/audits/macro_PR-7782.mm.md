@@ -1,0 +1,155 @@
+# PR audit — mastermindx-market-intelligence/macro#7782
+
+**Auditor:** meta-ceo-b-2026-09-08 (one-pass remote useful-idle, no retries, no scope expansion)
+**Audit timestamp:** 2026-09-23
+**Repo / PR:** mastermindx-market-intelligence/macro #7782
+**PR title:** fix(risk): gate probability tuning on Brier and authority
+**Merged at:** 2026-09-23T09:41:11Z (within the 24 h audit window; the chronologically newest merged half-B payload — the day's other substantive merges are #7771 UK policy desk quiet-first-cycle, #7770 skew ledger backfill, #7768 admin publisher records, #7763 payoff-lab consumer, #7761 markets mobile cycle-stage, #7760 ci gate, #7759 payoff-lab producer, #7758 sector-intel publish shim, #7756 skew parity audit, #7755 retire Intelligence Hub entry, #7752 skew-lane docs, #7751 B4 prereg, plus the orch(audit) ledger entries #7766/#7757/#7750/#7748/#7746)
+**Head sha:** `163f908ea47e7d8bbe56bdc2e47c5ca3a76477ad` (Sol CEO bot squash; `gh pr view 7782 --json headRefOid`)
+**Author:** mastermidx4 (Sol CEO bot, per `gh pr view 7782 --json author`; bot push from a previous-session handoff)
+**Repo root verified:** `/Volumes/STORAGE/Offloaded/m1-20260917/lanes/repos/macro` on this session's working tree; merge confirmed in `origin/main` log via the recent-commits header at session start (`289fb841ca orch(audit): record macro PR #7770 …` precedes the head); `gh pr view 7782 --json headRefOid,mergedAt` returns the post-merge head.
+
+> **Scope note (§1):** #7782 is the most recent half-B payload in the 24 h window — the only other "fix(risk)" / "fix(...)" substantive change is #7768 (admin publisher records, already in audit-cargo from the same window). #7782 is the half-B pick.
+
+---
+
+## 1. PR metadata
+
+| field | value |
+|---|---|
+| repo | mastermindx-market-intelligence/macro |
+| number | 7782 |
+| title | fix(risk): gate probability tuning on Brier and authority |
+| merged_at | 2026-09-23T09:41:11Z |
+| head | `163f908ea47e7d8bbe56bdc2e47c5ca3a76477ad` |
+| base | `main` |
+| branch | (squash-merged bot push; branch deleted) |
+| changed files | 6 (per `gh pr view 7782 --json files --jq '.files\|length'` = 6) |
+| additions / deletions | 691 / 14 (per `gh pr view --json additions,deletions`); zero `templates/`, zero `site/`, zero `mockups/`, zero `data/`, zero `ops/`, zero `scripts/publish_r2.py`/`scripts/fetch_r2.py` bytes (per `git diff --stat origin/main...163f908e -- templates site mockups data ops scripts/publish_r2.py scripts/fetch_r2.py` — empty; the diff is bounded to `engine/` + `tests/` + `research/` + `agentos/`) |
+| files of interest | `engine/risk_radar_backtest.py` (+225 / −5 — new `probability_quality_report` helper that scores the **actual displayed probability surface** (gated state + shipped Tier-A conjunction bump) on native-price complete windows at H5/H10/H21, both full usable history and the fixed 2020+ slice, plus new `_probability_do_no_harm` guard that requires (a) identical scored outcome populations between base and proposed via `outcomes_sha256`, (b) non-worse Brier in every one of the six paired cells, (c) strictly-improved Brier in at least one cell, (d) unchanged H21 state-only authority partition relative to the shipped unconditional `_PROB_BASE`; `compare_calib` is rewired to call both gates and AND them — the old alert-F1 predicate becomes `alert_gate`, the new one becomes `probability_gate`, and `improves = alert_gate AND probability_gate.passes`); `engine/risk_radar_review.py` (+28 / −9 — module docstring paragraph restated, `_A6_GATE_SPEC` string expanded to record the paired gates, the Opus prompt paragraph notes prob_cal is no longer a free passenger, `_gov_proposal` records `prob_cal_horizons` in the ledger so the apply event names which horizon keys were touched, and the `backtest` summary now exposes `comparison_ready`, `alert_gate`, `probability_gate` alongside the existing `improves` and `legs_ok` keys — no template/site byte touched); `tests/test_risk_radar_review.py` (+223 / −0 — hermetic tests for the new guard: identical-population pass, Brier-harm reject, no-strict-gain reject, authority-partition-change reject, missing Brier cells, proposal with unchanged prob_cal, the full guard happy-path, and the committed `oos-candidate-gate.json` replay); `agentos/discoveries/DSC-RISK-RADAR-PROBABILITY-PROPOSALS-REQUIRE-OWN-DO-NO-HARM.md` (+29 / −0 — new DSC record; `key: RISK-RADAR-PROBABILITY-PROPOSALS-REQUIRE-OWN-DO-NO-HARM`; `claim` enumerates the six paired-cell rule + the authority-partition rule; `falsifier` names the test file and the OOS replay path; `so_what` notes future A6 lane-(ii) self-correction may still tune bands/legs under the existing alert gate; `verified_at: 2026-09-23`, `verified_by: "python3 -m pytest tests/test_risk_radar_review.py -q"`, `confidence: verified`); `research/grey_deer/RISK_RADAR_PROBABILITY_SELF_CORRECTION_GUARD_2026-09-23.md` (+60 / −0 — durable ruling: capability delta, the four-rule probability gate, why the authority-partition clause matters (it is one of the independent prerequisites `_market_state_authority()` reads for binding authority), the real negative control's outcome, and the verification receipts); `research/grey_deer/evidence/probability-guard-20260922/oos-candidate-gate.json` (+126 / −0 — receipt JSON from replaying the preregistered pre-2020 OOS probability candidate from #7715 through the new guard; rejected with `reason=probability_brier_worse` for H21 +0.000965 Brier harm; identical populations preserved; authority partition preserved) |
+| labels | (not disclosed in body) |
+| scope collision | none — body declares zero movement in the checked Risk Radar runtime/calibration dependencies and zero overlap across all six candidate-owned paths |
+
+**Nature of change (Risk Radar probability-tuning self-correction guardrail — engine backtest logic + governance spec + evidence, no user-facing surface):** the PR has three intertwined deliverables, all of which the body declares together:
+
+1. **Engine probability-quality helper.** `engine/risk_radar_backtest.py::probability_quality_report(calib, *, dd=0.05, horizons=(5,10,21))` evaluates the **actual displayed surface** (gated state + shipped Tier-A hot-count conjunction bump — the same `rr._drawdown_prob` path the live radar reads) on complete native SPY windows at H5/H10/H21, both full usable history and the fixed 2020+ slice. Each cell carries a paired `{brier_score, base_rate_brier_score, mean_displayed_probability, base_rate, n_days, evaluation}` plus an `evaluation` blob whose `outcomes_sha256` is the SHA-256 of the canonical JSON row list — a hash the comparator later uses to prove identical scored populations. The function is descriptive/read-only; it never writes calibration, ledger, policy, sizing or authority state. Argument validation guards both `dd ∈ (0,1)` finite and `horizons ⊂ ℤ⁺` non-empty.
+
+2. **Engine probability do-no-harm guard.** `engine/risk_radar_backtest.py::_probability_do_no_harm(proposed, base, *, dd=0.05, evaluator=None)` is short-circuit when `proposed.prob_cal == base.prob_cal` (returns `{"required": False, "passes": True, "reason": "prob_cal_unchanged"}`), otherwise runs paired `probability_quality_report` and AND-combines four predicates: `ready` (Brier scores are finite in [0,1]), `populations_match` (`n_days` equal AND `outcomes_sha256` equal between base and proposed), `brier_nonworse` (proposed ≤ base + 1e-12 in every one of the six paired cells), `strict` (proposed < base − 1e-12 in at least one cell), `authority_ok` (the H21 state-only above-base partition against the shipped unconditional `_PROB_BASE["h21"]` is byte-equivalent). The reject-reason ladder is `probability_evidence_unready` → `probability_population_mismatch` → `probability_brier_worse` → `probability_no_strict_brier_gain` → `probability_authority_partition_changed` → `probability_do_no_harm_passed`. **The last rule matters because `_market_state_authority()` reads the state-only H21 above-base flag as one of its independent prerequisites for binding authority** — a probability-tuning proposal is therefore not allowed to change which states can qualify for veto authority as an accidental side effect.
+
+3. **`compare_calib` rewiring.** The old single `improves = ready AND (pf ≥ bf − 1e-9) AND (p20 ≥ b20 − 1e-9) AND legs_ok AND (pf + p20) > (bf + b20)` predicate is replaced with `alert_gate` (the old expression, verbatim) AND `_probability_do_no_harm(proposed, base).passes`. The function now also returns `alert_gate`, `probability_gate`, and `comparison_ready` alongside the existing keys; `_probability_do_no_harm` short-circuits to `passes=True` when `prob_cal` is unchanged, so band/leg-only proposals do not pay the probability-evaluation cost.
+
+**Body signals — already-run gates (PR-quoted, NOT re-run in this audit per one-pass constraint):**
+- `tests/test_risk_radar_review.py` probability-guard / probability-quality / review-evidence tests → **6 passed**.
+- Full `tests/test_risk_radar_review.py` → **25 passed**.
+- `tests/test_risk_radar.py tests/test_risk_radar_scorecard.py` → **129 passed**.
+- Real #7715 OOS candidate replay → rejected for H21 Brier harm with identical populations and preserved authority partition.
+- Python compile: pass; `git diff --check`: pass.
+- `python3 scripts/agentos.py validate` → **0 errors** (inherited warnings only).
+- Body declares exact semantic head `163f908e`, current main checked `668237947e`, true merge-base `dea0a794a`, zero overlap across all six candidate-owned paths, zero movement in the checked Risk Radar runtime/calibration dependencies, and a clean read-only merge tree `24d02c25c`.
+- Protected Skillpack `Mastermind@7084d7c436a991c3a9d445a1afc6bc0f0642dc62` v1.0.1/bootstrap1.
+
+**Scope boundary (body-disclosed):** the PR is bounded to `engine/risk_radar_backtest.py` (helper + guard + `compare_calib` rewiring) + `engine/risk_radar_review.py` (docstring + `_A6_GATE_SPEC` + Opus prompt paragraph + `_gov_proposal` ledger field + `backtest` summary key list) + `tests/test_risk_radar_review.py` + the DSC + the research ruling + the OOS replay evidence JSON. Does **not** touch `templates/`, `site/`, `mockups/`, `data/`, `ops/`, `scripts/publish_r2.py`, `scripts/fetch_r2.py`, the shared `theme.js`, the Markets workspace template, the live Risk Radar page (`engine/risk_radar.py` is unchanged on the user-facing surface), or any user-facing tooltip/copy plane. The body states this explicitly: *"No live probability, calibration overlay, state, gate, policy, sizing, ranking, ledger or capital authority is changed by this PR."*
+
+**Cross-reference (body-disclosed, not re-run):** the preregistered pre-2020 OOS probability candidate from #7715 is the negative control — it improves 5 of 6 paired Brier cells, preserves the authority partition, but worsens modern H21 Brier by about +0.000965; the new guard rejects it with `reason=probability_brier_worse`. The acceptance contract is therefore empirically demonstrated, not theoretical.
+
+---
+
+## 2. Plain-language findings
+
+**Source for plain-language law:** the macro repo does not ship a standalone `check_plain_language.mjs` (that check is terminal-repo-only); the macro equivalent is the **visible-string audit** mandated by `CLAUDE.md` §"Design (user-first law)" — `docs/DESIGN_DOCTRINE.md` + the `frontend-design` skill — read against the Tier-1 obligations (state + plain-word stance under hard word budgets, no internal state names, no untranslated stats, no raw slugs, bilingual EN/ZH parity on every visible string, plain-word null disclosure) and the Tier-2 obligations (Tier-2 receipts for nulls, no falsifier vocabulary front-facing, plain-word cadence call-outs).
+
+**Scope check — does this PR carry plain-language surface?** **No.** `git diff origin/main...163f908e -- engine/risk_radar_backtest.py engine/risk_radar_review.py tests/test_risk_radar_review.py` contains zero user-facing copy. The diff is bounded to:
+  - engine code (Python: helper docstring + two new functions + `compare_calib` body; none of which print user-facing strings — `probability_quality_report` returns a dict, `_probability_do_no_harm` returns a dict),
+  - engine docstring paragraphs (programmer-facing only — `compare_calib` and the module docstring in `risk_radar_review.py`; the operator-facing CLI / argparse plane is not touched),
+  - Python string constants used inside governance events (`_A6_GATE_SPEC` records the gate description into the governance ledger; `_gov_proposal` records `prob_cal_horizons`; the `backtest` summary exposes new keys — none of these are printed to a user, they are written to `data/risk_radar/review_log.jsonl` and the `backtest` field of the governance event JSON),
+  - the DSC record (governance — internal `agentos/discoveries/`, never user-facing),
+  - the research ruling (governance — internal `research/grey_deer/`, never user-facing),
+  - the OOS replay evidence JSON (machine evidence — `research/grey_deer/evidence/probability-guard-20260922/oos-candidate-gate.json`, never user-facing).
+
+**Plain-language walkthrough — the two governance strings that did change:**
+
+| source | string (verbatim) | audience | plain-language read |
+|---|---|---|---|
+| `engine/risk_radar_review.py::_A6_GATE_SPEC` (governance ledger) | `"do-no-harm predicate: proposed calibration must improve historical alert F1 (full+2020+) without breaking the validated-leg evidence gate; if prob_cal changes, paired displayed-probability Brier must be non-worse at H5/H10/H21 on full+2020+, at least one Brier cell must strictly improve, scored populations must match, and the H21 Market-State authority partition must remain identical (n_graded >= min_graded=30 first); hard clamps: bands +/-12 from default and strictly ordered; leg thr_pct in [0.80,0.97]; prob_cal in [0,0.6] monotonic; alert_from in {caution,elevated,risk-off}"` | governance ledger reader (human auditors + tooling) | this is a governance predicate, not a user-facing surface; it is recorded in every governance event so the ledger carries the gate that was in force at the time of the proposal/apply/reject. Reads as a plain-language rule: "if a probability change is proposed, it must pass six paired Brier checks (H5/H10/H21 × full/2020+), keep identical populations, improve at least one, and preserve the authority partition." No internal state names on a user surface; no untranslated stats. ✓ |
+| `engine/risk_radar_review.py` (module docstring, point 2 — programmer-facing) | `"DO-NO-HARM BACKTEST GATE — every proposal must improve/preserve historical alert F1 (full AND 2020+) without breaking the validated-leg evidence gate. If a proposal changes prob_cal, it must ALSO pass paired displayed-probability Brier checks across H5/H10/H21 (full + 2020+), keep identical scored populations, improve at least one Brier cell, and preserve the H21 Market-State authority partition. engine.risk_radar_backtest.compare_calib decides; Opus never writes the engine directly."` | module reader (programmer / auditor) | programmer-facing rule restatement; reads as a plain-language description of the gate pairing. ✓ |
+| `engine/risk_radar_review.py::_OPUS_USER_PROMPT` (added paragraph) | `"If you propose prob_cal, it is NOT a free passenger on an alert-F1 improvement: the displayed probabilities must also pass paired Brier do-no-harm across H5/H10/H21 on full+2020+ and preserve the Market-State authority partition.\n\n"` | Opus LLM that is producing a prob_cal proposal | explicit instruction to the proposal-issuing LLM; reads as a plain-language rule statement. Not user-facing. ✓ |
+| `engine/risk_radar_backtest.py::compare_calib` (docstring) | `"Composite do-no-harm gate for the self-correction loop. Every proposal must preserve/improve full + 2020+ alert F1 and the validated-leg evidence gate. If `prob_cal` changes, it must ALSO pass the probability-specific gate: paired H5/H10/H21 Brier non-worsening on full + 2020+, at least one strict Brier improvement, identical scored populations, and an unchanged H21 authority partition. This prevents a probability change from piggybacking on a band/leg F1 win."` | module reader (programmer / auditor) | programmer-facing rule restatement; plain-language description of the paired-gate logic. ✓ |
+
+**Plain-language sub-finding 1 — no `templates/`, no `site/`, no `engine/*display-copy field that feeds a user template`, zero Tier-1 surface.** The PR is engine + tests + governance + research. The Tier-1 plain-language law does not bind because no engine bytes are reachable from `templates/` or `site/` by this head — `git grep -nE 'probability_quality_report|_probability_do_no_harm' templates/ site/` returns 0 hits. The PR body itself states *"No live probability, calibration overlay, state, gate, policy, sizing, ranking, ledger or capital authority is changed by this PR."* The governance string `_A6_GATE_SPEC` is recorded into `data/risk_radar/review_log.jsonl`, not into a user-facing template.
+
+**Plain-language sub-finding 2 — the live radar display is byte-unchanged against `origin/main`.** `compare_calib`'s public verdict shape gains two new top-level keys (`alert_gate`, `probability_gate`) but every pre-existing key (`base`, `proposed`, `improves`, `legs_ok`) is preserved. `_probability_do_no_harm` short-circuits to `{"required": False, "passes": True, "reason": "prob_cal_unchanged"}` when `prob_cal` is unchanged, so band/leg-only proposals produce a verdict shape indistinguishable from the pre-PR shape modulo the new top-level keys. No template or site file currently reads the new keys; the `backtest` field of the governance event JSON is consumed by `engine/risk_radar_review.py` and the audit trail, not by a user-facing template. The Tier-1 plain-language law is therefore not engaged on this head.
+
+**Plain-language sub-finding 3 — falsifier / refutation language front-facing check: N/A (no user-facing copy).** Per `DESIGN_DOCTRINE.md` §"Falsifier/refutation language is never front-facing (operator 2026-07-27, #3821)" — no template or site file is touched, so the rule does not bind. The DSC record's `falsifier` field is internal `agentos/discoveries/` prose, not user-facing.
+
+**Plain-language verdict:** **PASS / N/A** — this PR is engine-internal hardening (a probability-tuning guardrail). The plain-language law is not engaged because no user-facing copy changed; the only prose that did change is programmer/governance/auditor-facing and already reads as plain-language prose.
+
+---
+
+## 3. Theme findings
+
+**Source for theme law:** `CLAUDE.md` §"Theme art direction — required (dark and light are TWO art directions, not one skin; TP-0 2026-08-27)" + `research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md` + `docs/DESIGN_DOCTRINE.md`. Enforced by `scripts/check_design_system.py --mode enforce-added`, `scripts/check_runtime_style_injection.py`, and `scripts/check_ui_visual_evidence.py` (inherited-debt reports but does not newly block).
+
+**Scope check — does this PR touch any theme plane?** **No.** The diff is bounded to:
+  - `engine/risk_radar_backtest.py` — pure Python (no CSS, no JS, no theme tokens, no token swap).
+  - `engine/risk_radar_review.py` — pure Python (no CSS, no JS, no theme tokens).
+  - `tests/test_risk_radar_review.py` — hermetic Python tests.
+  - `agentos/discoveries/DSC-...md` — Markdown knowledge record.
+  - `research/grey_deer/RISK_RADAR_PROBABILITY_SELF_CORRECTION_GUARD_2026-09-23.md` — Markdown research ruling.
+  - `research/grey_deer/evidence/probability-guard-20260922/oos-candidate-gate.json` — JSON evidence.
+
+`git diff --stat origin/main...163f908e -- templates site mockups` is **empty**. `git diff --stat origin/main...163f908e -- theme.css theme.js nav_market.js navigation-refresh.css _site_nav.html.j2 _public_nav.html.j2 _public_chrome_css.html.j2 _public_chrome_js.html.j2 _navlinks.html.j2` is **empty**. No CSS bytes, no template bytes, no theme-token substitution. The art-direction contract is therefore not engaged on this head.
+
+**Theme sub-finding 1 — dark/light treatment is not engaged.** The two-theme rule (TP-0) requires every material UI packet to name `DARK TREATMENT`, `LIGHT TREATMENT`, the mechanisms that intentionally differ, the reference/baseline, theme-specific degraded states, and the evidence matrix. This PR ships no UI surface, so the two-theme rule does not bind; the rule binds only on packets that ship or touch a UI surface. The engine returns a JSON governance verdict (read by `data/risk_radar/review_log.jsonl` and the audit trail); no template reads it for display.
+
+**Theme sub-finding 2 — runtime-style-injection check: N/A.** Per `scripts/check_runtime_style_injection.py` — no JS file is touched; no `style.textContent` mutation, no parallel palette/token family, no duplicated light/dark branch. The engine reads `calib["bands"]["caution"]` (a JSON threshold, not a CSS byte) for the Tier-A hot-count bump; that bump is unchanged in value on this head (no `bands` change in `compare_calib`).
+
+**Theme sub-finding 3 — design-system / visual-evidence checks: N/A.** Per `scripts/check_design_system.py --mode enforce-added` and `scripts/check_ui_visual_evidence.py` — no `templates/` change, no `site/` change, no `mockups/` change. Both checks fail-closed forward-only on a UI surface change, and there is no such change here.
+
+**Theme verdict:** **PASS / N/A** — this PR is engine-internal hardening. The theme law is not engaged because no template, site, mockups, CSS, JS, or theme-token byte is touched.
+
+---
+
+## 4. Validated-claims findings
+
+**Source for validated-claims law:** `scripts/check_validated_claims.py` (CI-enforced) + `CLAUDE.md` §"Epistemics (gauntlet = PROMOTION gate, NOT a build gate)" — display-tier may ship freely; the gauntlet applies only when promoting to authority; "validated" in user-facing text is CI-enforced. The word "validated" is one of the regex-trigger words in the checker.
+
+**Scope check — does this PR introduce any user-facing "validated"-class claim?** **No.** The diff is bounded to the six files above. The seven strings that contain the substring `validat` are all internal/governance/programmer-facing:
+
+| source | string (verbatim, abbreviated) | audience | validated-claim read |
+|---|---|---|---|
+| `engine/risk_radar_backtest.py::compare_calib` (docstring) | `"Composite do-no-harm gate for the self-correction loop. … without breaking the validated-leg evidence gate. If `prob_cal` changes, it must ALSO pass the probability-specific gate: …"` | module reader (programmer / auditor) | the phrase `validated-leg evidence gate` names an **internal governance predicate** (`compare_calib.legs_ok`) that is true iff the validated (graded by `n_graded >= min_graded=30`) legs still lead in the proposed config. It is a code-level predicate, not a user-facing claim that the live radar's output is "validated". ✓ (internal use; `scripts/check_validated_claims.py` does not scan engine code) |
+| `engine/risk_radar_backtest.py` (in-function comment) | `"# validated legs must still lead under proposed (legs don't depend on bands, but thr_pct does)"` | module reader (programmer / auditor) | internal governance comment. ✓ |
+| `engine/risk_radar_review.py` (module docstring) | `"DO-NO-HARM BACKTEST GATE — every proposal must improve/preserve historical alert F1 (full AND 2020+) without breaking the validated-leg evidence gate. …"` | module reader (programmer / auditor) | internal governance predicate, not a user-facing claim. ✓ |
+| `engine/risk_radar_review.py::_A6_GATE_SPEC` | `"… without breaking the validated-leg evidence gate; …"` (embedded in the longer predicate string) | governance ledger reader | internal governance predicate. ✓ |
+| `agentos/discoveries/DSC-RISK-RADAR-PROBABILITY-PROPOSALS-REQUIRE-OWN-DO-NO-HARM.md` (`falsifier:` field) | `"Run the probability-guard tests in tests/test_risk_radar_review.py and replay the committed pre-2020 OOS candidate through engine.risk_radar_backtest._probability_do_no_harm. Any probability-changing proposal that passes despite Brier harm, population drift, no strict gain, or an authority-partition change falsifies this claim."` | DSC reader (governance) | falsifier is internal `agentos/discoveries/` prose; never user-facing. ✓ |
+| `research/grey_deer/RISK_RADAR_PROBABILITY_SELF_CORRECTION_GUARD_2026-09-23.md` | research ruling prose, references the "validated-leg evidence gate" as the binding pre-existing constraint | governance / audit reader | internal research ruling; never user-facing. ✓ |
+| `research/grey_deer/evidence/probability-guard-20260922/oos-candidate-gate.json` | JSON evidence receipt (the OOS replay's outcome) | evidence consumer (audit trail) | internal JSON; never user-facing. ✓ |
+
+**Validated-claims sub-finding 1 — no user-facing "validated" claim was added.** `git diff origin/main...163f908e -- templates site mockups` is empty. The checker (`scripts/check_validated_claims.py`) scans user-facing surfaces (templates, site, mockups, copy that ships to users); none of those bytes changed. The seven `validat`-substring hits above are all in `engine/` code comments/docstrings, `agentos/discoveries/`, or `research/grey_deer/` — none of which the checker treats as user-facing. The CI gate is therefore not engaged.
+
+**Validated-claims sub-finding 2 — the phrase `validated-leg evidence gate` is an internal predicate, not a user-facing claim.** The "validated-leg" predicate is the code-level fact that the graded legs in the proposed calibration (legs with `n_graded >= min_graded=30`) still lead in the same direction as the base calibration — it is a do-no-harm invariant, not a claim that the radar's *outputs* are "validated". The DSC record's `confidence: verified` is honest: the `verified_by` field cites the pytest command; the `verified_at` field is the run date. Per `CLAUDE.md` §"Epistemics", `confidence: verified` is the correct grade for a guard that is empirically demonstrated against a real negative control (the #7715 OOS candidate replay).
+
+**Validated-claims sub-finding 3 — the live radar display is not promoted to "validated" by this PR.** `engine/risk_radar.py` (the runtime module the live radar reads) is byte-unchanged against `origin/main` on this head — the guard rails the proposal flow, the runtime reads the unchanged `data/risk_radar/calibration.json`. The Probability Surface on the Risk Radar page is therefore identical before and after the merge in any state the guard accepts (which on a probability-unchanged submission is identical to the pre-PR behavior). The gauntlet — the promotion gate from display to authority — does not bind because the live radar is display-tier today and this PR does not move it to authority. The pre-2020 OOS candidate rejection is itself a negative-control receipt of the guard, not a promotion of the live radar.
+
+**Validated-claims verdict:** **PASS / N/A** — this PR adds an engine-internal guardrail and a knowledge/research ruling. No user-facing "validated" claim is added; no `templates/`/`site/`/`mockups/` byte is touched; the CI-enforced `scripts/check_validated_claims.py` is not engaged.
+
+---
+
+## 5. Overall verdict
+
+| dimension | verdict | reason |
+|---|---|---|
+| Plain-language | PASS / N/A | no `templates/`/`site/`/`mockups/` byte touched; the only prose changes are programmer/governance/auditor-facing (engine docstrings, `_A6_GATE_SPEC`, the Opus prompt paragraph) and already read as plain-language prose |
+| Theme | PASS / N/A | no CSS / JS / theme-token / template / mockups byte touched; no runtime-style-injection surface; dark/light treatment is not engaged because no UI surface changed |
+| Validated-claims | PASS / N/A | no user-facing "validated" claim added; the seven `validat`-substring hits are all internal `engine/`/`agentos/`/`research/` prose; the CI-enforced `scripts/check_validated_claims.py` does not scan engine code or governance markdown |
+| Engine correctness | ACCEPTED | body-quoted gates: 6 probability-guard/probability-quality/review-evidence tests pass, full `tests/test_risk_radar_review.py` 25 pass, `tests/test_risk_radar.py` + `tests/test_risk_radar_scorecard.py` 129 pass, real #7715 OOS candidate rejected with `reason=probability_brier_worse` for H21 +0.000965 Brier harm with identical populations and preserved authority partition, Python compile pass, `git diff --check` pass, agentos validate 0 errors |
+| Governance / agentos | ACCEPTED | new DSC record `DSC-RISK-RADAR-PROBABILITY-PROPOSALS-REQUIRE-OWN-DO-NO-HARM.md` carries `verified_at`/`verified_by`/`falsifier`/`so_what`/`confidence: verified`; new research ruling `RISK_RADAR_PROBABILITY_SELF_CORRECTION_GUARD_2026-09-23.md` records the capability delta + the four-rule probability gate + the real negative control's outcome |
+| Scope discipline | PASS | body declares zero movement in the checked Risk Radar runtime/calibration dependencies and zero overlap across all six candidate-owned paths; read-only merge tree `24d02c25c` is conflict-free; evaluator, review loop, tests, research ruling and discovery blobs are preserved exactly; no template / site / mockups / data / ops / publish_r2 / fetch_r2 byte touched |
+
+**Net read:** #7782 is an engine-internal guardrail addition — a probability-specific do-no-harm gate paired with the existing alert-F1 gate inside `compare_calib`. It is the kind of half-B payload where the plain-language / theme / validated-claims laws are not engaged because there is no user-facing surface to audit. The PR is correctly bounded, the empirical demonstration is honest (a real #7715 OOS candidate that improves 5 of 6 Brier cells but worsens H21 Brier is correctly rejected by the new guard with `reason=probability_brier_worse`), the `falsifier` on the DSC record names the exact test + replay path, and the `verified_by` field cites the actual pytest invocation. **The three user-facing laws all return PASS/N/A on this head — the audit's value is the negative confirmation that no UI surface was inadvertently touched and the empirical confirmation that the guard's `falsifier` is reachable, not theoretical.**
+
+**Recommendation:** **MERGED — AUDIT CLOSED.** No follow-on user-facing work is owed by this PR; the user-facing plain-language content for the Risk Radar probability surface, if any is owed, would attach to whichever half-B packet changes `engine/risk_radar.py`'s display read path or the Risk Radar page template. The probability-tuning flow is correctly guarded against piggybacking on alert-F1 improvements and against accidentally changing the Market-State authority partition; the live radar's user-visible behavior is identical to `origin/main` on any proposal the guard accepts.
+
+**Audit lane closed. No durable state written outside this audit file. Wall-clock under external child bound.**
+
+`SESSION END: PROVEN_OUTCOME` (one-pass remote useful-idle audit, no retries, no scope expansion; result persisted to `orch/audits/macro_PR-7782.mm.md` per the seat's contract).

@@ -1,0 +1,19 @@
+{
+  "controls": [
+    "original_source_passes",
+    "missing_receipt_pending",
+    "missing_fulltext_pending",
+    "wrong_date_refused",
+    "invented_ticker_refused",
+    "wrong_pages_refused",
+    "changed_summary_refused",
+    "wrong_pdf_refused",
+    "wrong_sidecar_refused",
+    "wrong_fulltext_refused"
+  ],
+  "passed": 10,
+  "source_store_unchanged": true,
+  "canonical_writes": 0,
+  "provider_calls": 0,
+  "publication": false
+}

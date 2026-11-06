@@ -52,16 +52,16 @@ _SPEC.loader.exec_module(GUARD)
 # The three CLI measurement instruments. Each has a `def main()` behind an
 # `if __name__ == "__main__"` and no test functions; `pytest` exits 5 on each.
 INSTRUMENTS = (
-    "research/cn_prophet_audit/sector_intel_exante_test.py",
-    "research/signal_engine/test_breadth_consume.py",
-    "research/signal_engine/test_buyfilter.py",
+    "research/cn_prophet_audit/sector_intel_exante_test.py",  # ci-trigger-closure: data — CLI-instrument subject, declared in ci-control-plane-contracts paths; verdict ignores its imports
+    "research/signal_engine/test_breadth_consume.py",  # ci-trigger-closure: data — CLI-instrument subject, declared in ci-control-plane-contracts paths; verdict ignores its imports
+    "research/signal_engine/test_buyfilter.py",  # ci-trigger-closure: data — CLI-instrument subject, declared in ci-control-plane-contracts paths; verdict ignores its imports
 )
 
 # The real suites that live outside tests/ — the reason the widening exists.
 OUTSIDE_TESTS = (
-    "research/prophet_us_audit/test_label_grading_battery.py",
-    "research/signal_engine/test_buy_filters.py",
-    "scripts/research/test_run_w4_controls_fingerprints.py",
+    "research/prophet_us_audit/test_label_grading_battery.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
+    "research/signal_engine/test_buy_filters.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
+    "scripts/research/test_run_w4_controls_fingerprints.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
 )
 
 _SUITE = "def test_thing():\n    assert True\n"
@@ -421,7 +421,7 @@ def test_a_shared_basename_does_not_cover_a_sibling_suite() -> None:
     blob = "python -m pytest research/prophet_us_audit/test_price_ladder.py -q"
     ambiguous = frozenset({"test_price_ladder.py"})
     assert GUARD._named_by_a_run_step(
-        "research/prophet_us_audit/test_price_ladder.py", blob, ambiguous) is True
+        "research/prophet_us_audit/test_price_ladder.py", blob, ambiguous) is True  # ci-trigger-closure: data — run-step text fixture name, never opened
     assert GUARD._named_by_a_run_step(
         "tests/test_price_ladder.py", blob, ambiguous) is False
     # …and an UNambiguous basename still matches, so a `cd`-then-bare-name step

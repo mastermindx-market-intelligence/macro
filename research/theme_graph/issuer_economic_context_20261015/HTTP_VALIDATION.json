@@ -1,0 +1,132 @@
+{
+  "reviewed_parent_head": "012b199d50df0c34cb97735e6b5a5dd781e31d22",
+  "new_route": "GET /api/company-intelligence/private/issuers/{issuer_id}/economic-context",
+  "original_api_functions_classes_ast_unchanged": true,
+  "existing_app_mount_unchanged": true,
+  "new_native_collection_registry_source_permission": false,
+  "production_http_read_or_deployment": false,
+  "clean_python312_declared_dependencies": {
+    "tests": 709,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "test_partition": {
+    "native_libraries": 575,
+    "existing_api": 90,
+    "new_api": 44
+  },
+  "source_sha256": {
+    "app/company_disclosures.py": "cd81cc6af6b165b31927f63bf2a3e8df67c2ca00db68eadea41bd8e9ab806569",
+    "tests/test_gmi_issuer_economic_context_api.py": "da54bef9c515f8ba83c80a9cb207b678e7988708fa6a0aa5f8b62f953a7934c3",
+    "research/theme_graph/issuer_economic_context_20261015/verify_http_mutations.py": "703979748c172c3dbfecfe5b9bb8d4e94816d61803ee3d3c2456015d7b998968",
+    "engine/theme_graph/issuer_economic_context.py": "0c5f4c8d1fe8eda9e5d0431a3b33ed620690f3331bc15d57d2f01cdacf1702fe",
+    "engine/company_intelligence/issuer_disclosure_selection.py": "d33945733eb99a2eea823c2ab9ddd08d5f6a404d22b51051532ca3fcac413d5f"
+  },
+  "ci_enrollment": "existing prelaunch-hardening only; inherited inferred scope retained",
+  "ci_transitive_scope_additions": {
+    "jobs": [
+      "crypto-assistant-context",
+      "fif-kernel-guards",
+      "research-price-panel",
+      "ticker-news-qbus"
+    ],
+    "paths": [
+      "engine/theme_graph/economic_context.py",
+      "engine/theme_graph/issuer_economic_context.py"
+    ]
+  },
+  "ci_conservation": true,
+  "fault_detection": [
+    {
+      "case": "control",
+      "result": "passed",
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "case": "removed_final_entitlement",
+      "result": "fault_detected",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "case": "ignored_query_controls",
+      "result": "fault_detected",
+      "tests": 11,
+      "failures": 11,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "case": "removed_principal_consistency",
+      "result": "fault_detected",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "case": "returned_unavailable_partial_result",
+      "result": "fault_detected",
+      "tests": 5,
+      "failures": 5,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "earlier_diagnostics": [
+    "initial CI modifier assumed paths on inferred job; stopped before write",
+    "initial direct mutation fixture run refused native store outside pytest harness",
+    "initial global closure check1pass/1failure; repaired missing transitive paths"
+  ],
+  "dependency_packages": [
+    "annotated-doc==0.0.5",
+    "annotated-types==0.8.0",
+    "anyio==4.15.1",
+    "certifi==2026.7.22",
+    "charset-normalizer==3.5.2",
+    "fastapi==0.143.1",
+    "h11==0.16.0",
+    "httpcore==1.0.9",
+    "httpx==0.28.1",
+    "idna==3.20",
+    "iniconfig==2.3.1",
+    "numpy==2.5.4",
+    "opentelemetry-api==1.45.1",
+    "packaging==26.3",
+    "pandas==3.0.6",
+    "pluggy==1.6.0",
+    "pyarrow==26.0.0",
+    "pydantic==2.14.1",
+    "pydantic_core==2.50.1",
+    "Pygments==2.21.0",
+    "pytest==9.1.1",
+    "python-dateutil==2.9.0.post0",
+    "PyYAML==6.0.3",
+    "requests==2.34.2",
+    "six==1.17.0",
+    "starlette==1.8.0",
+    "typing-inspection==0.4.4",
+    "typing_extensions==4.16.0",
+    "urllib3==2.8.0"
+  ],
+  "evidence_sha256": {
+    "http-complete-python312.xml": "b31c0c720e19ba795cbae3e35a2ae3f63dc99e11292fc523a17cbec353924159",
+    "http-complete-python312.log": "87328d8d2c50988abcaf572a01089c4429903d1c1beaa16d13856d622a9c6b70",
+    "http-mutation-pytest-results.json": "a82d9e53b6555bb346a711ecd011a83168df7e9780b40bb794dda682bcb925fa",
+    "economic-http-tests.xml": "6a5f889e7c4ce0ceba6048a7a77e8962d5144bc79323fcbef9a592ae8a6e511f",
+    "economic-http-ci-corrected.xml": "a2e71917104beebedb138109a40cd6f367e3c2cce81669ac4f6a8aa9bc292050"
+  },
+  "ci_scope_tests": {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "after_test_cleanup": "one trailing space removed; complete test AST identical"
+}

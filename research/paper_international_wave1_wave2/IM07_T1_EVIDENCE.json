@@ -1,0 +1,26 @@
+{
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_ref": "Macro PR8527 a15bcf4def597cdace29517824db0ad9a66cf21b plus exact approved additive consumer",
+  "accepted_hashes": {
+    "lib/intl_library_view.py": "91fdfd4f0bd0acb992dee8470b0cb556e8c05490f6e4f7c875d6e760310f185f",
+    "tests/test_intl_library_view.py": "ac07c63db4bd973182fd9eedd78cd359a1973eef1a4475a813908a496463c4c5"
+  },
+  "review_sha256": "86188db13194b725079d61e1dcbc5204784dcbf8266ce77de0a93dcac2d03489",
+  "accepted_run": "rs_20261006T221430Z_5259",
+  "requested_model": "glm-5.3",
+  "served_model": null,
+  "complexity": "C2_COMPLEX_BOUNDED",
+  "prior_attempt": "Flash rs_20261006T215617Z_66159 rejected for three concrete invariants",
+  "tests": {
+    "pytest_cases": 23,
+    "frozen_assertions": 24,
+    "independent_Sol_delta_assertions": 73
+  },
+  "scope": "Pure qualified catalogue/resolve consumer;18existing tools6groups, declared order, exact source/disclosure/routebinding, no I/O",
+  "limits": [
+    "Caller qualifications are inputs, not issuer authority",
+    "Not mounted in product; current owner and real region bindings still required",
+    "No UI/production/Saved/account effects or live qualification acceptance"
+  ],
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/library-projection"
+}

@@ -1,0 +1,275 @@
+{
+  "as_of": "2026-10-02",
+  "coverage": {
+    "end": "2026-09-30",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-19 to 2026-09-30; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-19"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-09-30",
+      "events": []
+    },
+    {
+      "date": "2026-09-29",
+      "events": []
+    },
+    {
+      "date": "2026-09-28",
+      "events": [
+        {
+          "date": "2026-09-28",
+          "id": "cev-regime_flip-94eb72732cfd",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-28#regime_china",
+          "tickers": [],
+          "title": "CHINA regime: Q4 Growth-scare → Q3 Stagflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "events": [
+        {
+          "date": "2026-09-25",
+          "id": "cev-regime_flip-13cfc7dee5af",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-25#regime_us",
+          "tickers": [],
+          "title": "US regime: Q3 Stagflation → Q2 Reflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-24",
+      "events": []
+    },
+    {
+      "date": "2026-09-23",
+      "events": [
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-4097e88c98cf",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-nmuie7j0as1-4f0c24",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Asia Pacific Equity Derivs",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-22",
+      "events": []
+    },
+    {
+      "date": "2026-09-21",
+      "events": []
+    },
+    {
+      "date": "2026-09-20",
+      "events": []
+    },
+    {
+      "date": "2026-09-19",
+      "events": [
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-a998a82c550c",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-o8rze9rq7rc-9def93",
+          "tickers": [],
+          "title": "UBS: Emerging markets bonds for all investors",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-ac45d0b9b057",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-rff9ysonlha-7c366d",
+          "tickers": [],
+          "title": "UBS: Listed real estate",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-b4b979673c1f",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-wxscncdv00q-d14faa",
+          "tickers": [],
+          "title": "UBS: Opportunities emerging in fixed income",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-b6927a7d88e0",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-rmr6otor5t1-6a4076",
+          "tickers": [],
+          "title": "UBS: Chinese government bonds",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-b7cf64f3b130",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-xeganueolpu-b1b69d",
+          "tickers": [],
+          "title": "UBS: Weekly - Regional View Italian",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-bd878e0042f8",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-jtewlvpnwsc-fb278b",
+          "tickers": [],
+          "title": "UBS: China A-shares",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-c0855ecb49c0",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-yhuefzqqomd-51dec6",
+          "tickers": [],
+          "title": "UBS: High grade",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-c8413e5896a3",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-34j7wqdxwcn-3fae93",
+          "tickers": [],
+          "title": "UBS: At a Glance",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-d9c48ef812f1",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-wqqqu8shu3u-cd8796",
+          "tickers": [],
+          "title": "UBS: Position for a commodity upcycle",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-dbe4c01e2324",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-wrczpkxknwa-d33fee",
+          "tickers": [],
+          "title": "UBS: Investing in China (onshore)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-e264bac9c764",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-hv77u8vrz6v-192585",
+          "tickers": [],
+          "title": "UBS: Private debt",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-e436965c2a1d",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-tqf3g8jusrd-f2b69d",
+          "tickers": [],
+          "title": "UBS: Asia Pacific equities",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-e4fc43ccbf8b",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-g8bwnwzqplk-c4eb26",
+          "tickers": [],
+          "title": "UBS: Transformational Innovation Opportunities (TRIO)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-edcf3684122d",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-fdbolpd0jhx-1b9510",
+          "tickers": [],
+          "title": "Nordea: Macro & Markets forecast edition",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-f038b74ad4cd",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ljicgz8fa0m-3ce64c",
+          "tickers": [],
+          "title": "UBS: Put cash to work",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-f0878a0f24b4",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-oq6xctrd633-ec2fd7",
+          "tickers": [],
+          "title": "UBS: Silver",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-f421fadd7d80",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ao7xgvlrtqg-89fe4a",
+          "tickers": [],
+          "title": "UBS: Bond markets",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-f4fdd84df5cc",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-3h88sk9mtku-b95e4a",
+          "tickers": [],
+          "title": "UBS: Senior loans",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-fc1212021412",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-encjyakps8i-b1273c",
+          "tickers": [],
+          "title": "Raymond James: Weekly economics thoughts of the week",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

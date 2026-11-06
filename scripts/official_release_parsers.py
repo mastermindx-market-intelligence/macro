@@ -272,7 +272,9 @@ def _extract_dol_claims_listing(
         or "initial claims was" not in text.lower()
     ):
         return None
-    source_url = urljoin("https://www.dol.gov/", parser.source_path)
+    # The first-party ``index.php`` route serves this exact release while
+    # DOL's shorter CDN path rejects the watcher service identity.
+    source_url = f"https://www.dol.gov/index.php{target_path}"
     return _entry_packet(
         title=title,
         content=text,

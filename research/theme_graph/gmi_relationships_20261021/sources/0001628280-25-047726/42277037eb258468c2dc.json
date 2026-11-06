@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-10-31T15:52:20Z",
+ "accession": "0001628280-25-047726",
+ "cik": "0001023514",
+ "doc_byte_length": 6782173,
+ "doc_sha256": "b87518e50882b63c397591fc1fa194737d1b417c106b3a13c6725a0240422028",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-10-31",
+ "form": "20-F",
+ "period_of_report": "2025-06-30",
+ "primary_document": "hmy-20250630_d2.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4142163,
+  "byte_start": 4142041,
+  "normalized": "The contract is a streaming agreement that commenced on 17 December 2008 for which Franco-Nevada paid US$125 million",
+  "normalized_sha256": "78a3d150a3d78860e33122ce92e25f94cb9dd4aac4ed4f70f7aed6f0f32b696b",
+  "raw": "The contract is a streaming agreement that commenced on 17 December 2008 for which Franco-Nevada paid US$125&#160;million ",
+  "raw_sha256": "42277037eb258468c2dced93d6b6d885e722eaf247fe6b3afcbfd616622f70fa"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1023514/000162828025047726/hmy-20250630_d2.htm",
+ "xbrl_contexts": []
+}

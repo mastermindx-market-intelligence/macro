@@ -1,0 +1,34 @@
+{
+  "bounded_independent_cluster_hoeffding_formula": "ceil(R**2 * log(2*m/alpha)/(2*h**2))",
+  "bounded_sensitivity_n": {
+    "stage_brier": 112696,
+    "workflow_minutes": 3652
+  },
+  "co_primary_test_n": 7,
+  "empirical_paired_cluster_sd_available": false,
+  "family_alpha": 0.05,
+  "financial_and_equity_n": null,
+  "full_vs_baseline_primary": true,
+  "kind": "planning_sensitivity_not_an_accepted_study",
+  "normal_power_formula": "ceil(((z_(1-alpha/7)+z_.8)*s_c/gap)**2), gap=delta",
+  "power": 0.8,
+  "precision_half_widths": {
+    "equity_error_return_units": 0.005,
+    "financial_error_percentage_points": 0.5,
+    "stage_brier": 0.01,
+    "workflow_minutes": 2.5
+  },
+  "qualification_power_planning_alternative": "effect = 2*delta; design assumption, not observed efficacy",
+  "qualification_power_planning_null": "effect <= delta",
+  "reason": "paired loss differences unbounded; no development SD; no unreviewed clipping permitted",
+  "three_ablations_per_family_diagnostic_only": true,
+  "utility_thresholds_design_judgment_not_empirical": {
+    "equity_error_return_units": 0.01,
+    "financial_error_percentage_points": 1.0,
+    "stage_brier": 0.02,
+    "workflow_accuracy_noninferiority_margin": 0.01,
+    "workflow_minutes": 5.0,
+    "workflow_omitted_risk_noninferiority_margin": 0.01
+  },
+  "workflow_noninferiority_planning_gap": 0.01
+}

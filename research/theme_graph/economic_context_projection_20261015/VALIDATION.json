@@ -1,0 +1,65 @@
+{
+  "scope": "source implementation and native synthetic-store integration, not live API/admission",
+  "base": "05ea40d5557939bf557d7ce3b74f7f5c2a74aa50",
+  "native_tests": {
+    "tests": 524,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "new_projection_cases": 50,
+  "ci_scope_checks": 2,
+  "mutations": [
+    {
+      "mutation": "removed_field_permission_gate",
+      "control": "passed",
+      "fault": "detected"
+    },
+    {
+      "mutation": "removed_admission_pin",
+      "control": "passed",
+      "fault": "detected"
+    },
+    {
+      "mutation": "collapsed_fact_known_clock",
+      "control": "passed",
+      "fault": "detected"
+    },
+    {
+      "mutation": "invented_graph_edge",
+      "control": "passed",
+      "fault": "detected"
+    }
+  ],
+  "only_ci_owner_changed": "company-relationship-candidates",
+  "other_jobs_unchanged": true,
+  "new_store_registry_api_publication": false,
+  "source_sha256": {
+    "engine/theme_graph/economic_context.py": "e82a79060b93093e224338ff3d0fccd1c022747f97605ecf38eb28a70cc3e351",
+    "tests/test_gmi_native_economic_context.py": "8a3593980d540421707a6f8e35ad2904bc0fd66761cbe4920fa8e35acb1f588b",
+    "research/theme_graph/economic_context_projection_20261015/verify_mutations.py": "261bd05a58e6be9b47017210ed3aeaaa5c5e167cdd4ed407dfbeca2f699df8eb",
+    "engine/company_intelligence/issuer_disclosures.py": "5628369c513b041f534a38dcf99d61d1bd40d5fd39414bce90bf9bb75db5dd84",
+    "tests/test_company_issuer_disclosures.py": "eb2540e52c4f4cd964791e1c9f4a30516a4945a5fe0fe2b327fe060428aaf232",
+    "research/theme_graph/issuer_disclosures_20261011/C01_NATIVE_OWNER.json": "39c0e86c4bcb649eac2534806a5a20d6c88c44d410d5db82038430d189d04ccc",
+    "engine/company_intelligence/issuer_disclosure_owner.py": "8b62a375cbb783a116dbc2e3202de31885b0eaf8d7741b3f7eba8001e396c8c0"
+  },
+  "evidence_sha256": {
+    "frozen-native-tests.xml": "7870967dbb12d4e14a79b6bdde67a44dcf2c296ca3b0e862a15282fefcf43444",
+    "frozen-native-tests.log": "bd0bf181f66e5387fceaf44b06b6a59eb6693499a70af3b6eaec5e61ea009011",
+    "ci-scope-tests.xml": "e6e01edba39f7d625d0f0bc8e4d3bbab9910c66e8d8191ffb3233261d4753dcb",
+    "frozen-mutation-results.json": "d6aa03a04f66ca8760bd62555bc2ba749241a1b6ac2938fb60f851af6066b9b3",
+    "actual-owner-native-tests.xml": "6212509cd2a8f002ccb953385496f1ca20c090ca0724a08275ddbf274f9830f6",
+    "actual-owner-native-tests.log": "383f12e13aa896b6d236b33463a0984764d3bdc05a23003ffb4828c69bf481b4"
+  },
+  "new_asserted_commercial_magnitude": null,
+  "runtime_installed": false,
+  "authenticated_product_proof": false,
+  "earlier_scope_native_tests": {
+    "tests": 521,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "actual_native_owner_and_readonly_local_store_tested": true,
+  "production_store_and_permission_grant_used": false
+}

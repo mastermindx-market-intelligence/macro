@@ -1,0 +1,87 @@
+{
+  "n_in": 2812,
+  "n_short": 225,
+  "n_gaps": 1,
+  "n_used": 2586,
+  "n_events": 1406344,
+  "n_confirm_rows": 1483185,
+  "by_variant_count": {
+    "1D": 296637,
+    "1D.M2": 151084,
+    "1D.M3": 101575,
+    "2D.p0": 148790,
+    "2D.p1": 148652,
+    "3D.K1": 260327,
+    "3D.p0": 99912,
+    "3D.p1": 99665,
+    "3D.p2": 99702
+  },
+  "drops_per_variant": {
+    "1D": {
+      "warmup": 41705,
+      "horizon21": 2579,
+      "no_entry": 99,
+      "outcomes_none": 0
+    },
+    "2D.p0": {
+      "warmup": 16129,
+      "horizon21": 1025,
+      "no_entry": 1,
+      "outcomes_none": 0
+    },
+    "2D.p1": {
+      "warmup": 15885,
+      "horizon21": 973,
+      "no_entry": 62,
+      "outcomes_none": 0
+    },
+    "3D.p0": {
+      "warmup": 7234,
+      "horizon21": 486,
+      "no_entry": 0,
+      "outcomes_none": 0
+    },
+    "3D.p1": {
+      "warmup": 7094,
+      "horizon21": 474,
+      "no_entry": 0,
+      "outcomes_none": 0
+    },
+    "3D.p2": {
+      "warmup": 7316,
+      "horizon21": 478,
+      "no_entry": 47,
+      "outcomes_none": 0
+    },
+    "1D.M2": {
+      "warmup": 21434,
+      "horizon21": 1019,
+      "no_entry": 25,
+      "outcomes_none": 0
+    },
+    "1D.M3": {
+      "warmup": 14379,
+      "horizon21": 498,
+      "no_entry": 19,
+      "outcomes_none": 0
+    },
+    "3D.K1": {
+      "warmup": 19613,
+      "horizon21": 2200,
+      "no_entry": 2,
+      "outcomes_none": 0
+    }
+  },
+  "pre_warmup_counts": {
+    "1D": 341020,
+    "2D.p0": 165945,
+    "2D.p1": 165572,
+    "3D.p0": 107632,
+    "3D.p1": 107233,
+    "3D.p2": 107543,
+    "1D.M2": 173562,
+    "1D.M3": 116471,
+    "3D.K1": 282142
+  },
+  "warmup_sessions": 400
+}

@@ -1,0 +1,25 @@
+{
+  "state": "SITE_ONLY_REBUILD_UNCHANGED_CANONICAL_GENERATION",
+  "source_head": "b70d6d5f16d80f15ada55642bc8d8d0e1b0ebb99",
+  "started_at": "2026-10-16T01:51:08.896246+00:00",
+  "old_ledger_sha256": "ebb8434c6019d925021c98949b615a3d75a70b41e424e87d173652dabd1b4f2f",
+  "old_ledger_lines": 655,
+  "runtime_correction": "Uses the incumbent provisioned R2 stored-object reader qualified in v2; no new source acquisition.",
+  "generated_at": "2026-10-16T01:52:43.571710+00:00",
+  "research_state": {
+    "status": "ok",
+    "state": "not_started",
+    "content_id": "grrs1-7fb16e7726654a00430a311c8912d91f63b3f2aa6dae2201b91f78a8a078be30",
+    "issuance_append_count": 0,
+    "requires_new_final_generation_proof": true
+  },
+  "new_ledger_lines": 655,
+  "new_ledger_sha256": "ebb8434c6019d925021c98949b615a3d75a70b41e424e87d173652dabd1b4f2f",
+  "original_ledger_preserved": true,
+  "html_bytes": 189130,
+  "financial_sha256": "744ce137a1254060508b760c3fce415b4434e2de80da6c05ccedfa331519e988",
+  "theme_sha256": "d5cf73a7535177d9dc82478cbb6dd20a607b3f4edced8b14eb33de1ded558412",
+  "shared_theme_sha256": "46939917d2e233cb0d8af828d97b1e3b7d18886fd829f88d0bc08c9f3b643455",
+  "finished_at": "2026-10-16T01:54:32.106893+00:00",
+  "canonical_generation_preserved": true
+}

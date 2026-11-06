@@ -1,0 +1,23 @@
+# TURN WATCH full-universe runtime repair
+
+Mission: reduce the actual 1047.53-second full-universe computation below its existing 600-second warning budget without changing discovery scope, indicator definitions, dates, ranks, triggers, null states, or immutable history. Current Chairman direction continues the end-to-end recovery; this is the already-identified runtime dependency, not a new product thesis.
+
+Procedure: Mastermind eec5324c5205e8bad206512e0a936898e50b2408, compatible 1.0.1. Source base: macro 3daf739affa12a43a6b3a0feb3b4c57154587756. Prior phase's engine/confluence, engine/TURN WATCH and governing AGENTS/CLAUDE blobs are unchanged. Direct work reason: PRINCIPAL_JUDGMENT — selecting a computational shortcut requires distinguishing redundant work from temporal/signal semantics. Reassess if the work becomes routine. Existing source writers #7200/#7206/#7187/#7180/#7227/#7235 are not replaced.
+
+The measured diagnostic profile (120 alphabetically selected names, diagnostic only) spends 17.2 of 52.9 profiled seconds in per-bucket Python aggregation and executes 128362 callbacks. The callback merely finds the last non-null observed timestamp in a calendar bucket. Replace that callback in the existing canonical completed-resample helper with the native maximum of masked observed timestamps. Keep the same value resampling, completed-tail test, output normalization, and absolute-fortnight path. No new cache, worker pool, provider call, resampling policy or data plane.
+
+Acceptance: exact legacy-reference parity across calendar rules, missing/empty/duplicate/unsorted/timezone data; no input mutation; real full-universe output comparison on the same preserved refreshed inputs excluding only truthful runtime measurements; existing confluence, anchor, TURN WATCH and candidate-intake tests; no universe cap in the full proof. A runtime claim requires measured whole-run evidence; diagnostic subsets never establish production latency. Other existing peer validation and release gates remain binding.
+
+No production protocol activation, workflow rerun or publication is authorized by this source candidate. All modified files stay in this isolated runtime branch; actual old source-data artifacts remain unmodified.
+
+## Measured full-run boundary and discarded-detail repair
+
+The first native-resample-only candidate b5c0fc2e1e234eefa6e6eb8e9c1a0e129d5a9a22 completed the full unchanged universe in 889.146 wall seconds / 811.754 CPU seconds: all 2,901 uncapped observation rows and all public fields except runtime were identical to the preserved baseline. It is an improvement, NOT a pass of the 600-second warning budget. The diagnostic profile overstated whole-universe savings; its scope is explicitly diagnostic.
+
+The remaining measured hot path builds full slow-tier/washout/detail data for every graded name, even though compute_deck_with_candidates immediately discards rows without any trigger. Add an internal bulk-only early return AFTER the complete trigger union (including basket) and BEFORE explanatory details for only those discarded rows. Keep every graded name in the cross-sectional inputs and every trigger computation. Keep standalone evaluate complete by default. Keep all triggered private rows complete even when excluded by the public display cap. This changes no indicator, source, rank, timing or rule; it removes computations whose output was never consumed.
+
+Two new real-bulk tests with zero/three basket-only triggered names fail on the old code; a standalone untriggered control stays complete. Require exact real-input parity again, and a full-universe measured runtime before any budget claim.
+
+## Final remaining measured hotspot
+
+The native resampling plus skipped discarded-context candidate completed the full exact universe in 629.373 wall seconds / 588.002 CPU seconds. All public semantic fields and all 2901 uncapped rows were still identical, but it missed the 600-second budget by 29.373 seconds. The remaining leader-state loop repeatedly computes six finite-value checks on every warm history row. Compute the same six per-date masks once, then retain the original missing-leg diagnostic and complete state transition body for the exceptional rows. No state, thresholds, output columns or ordering change. The original performance regression used 14126 scalar calls on its fixed 1522-row fixture; it failed before this candidate. The proposed function passes the 52-test direct owner plus 48 exact state-frame comparisons covering four seeds, three history depths, missing relative strength and absent volume. Final full-universe verification remains required after adoption of this last equivalent optimization.

@@ -1,0 +1,30 @@
+{
+  "schema": "paper.im04.macro-leaf.evidence.v1",
+  "status": "SCOPED_SOURCE_ACCEPTED",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_hashes": {
+    "lib/intl_workspace_macro.py": "4b01e053111e57f2c4d21ec1acc61377ee7f989785fded1d01c3029d0d00c37f",
+    "tests/test_intl_workspace_macro.py": "a52063ccd611112bb8d4e68d60bebc4338130452b031122fb0bd69658213e5cb"
+  },
+  "review": {
+    "run": "paper-01a1101f-im04-macro-leaf-review-r2",
+    "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM04_MACRO_LEAF_REVIEW_R2.json",
+    "sha256": "1067f7f9809d566e258a28526eea0f5d0b136e53c31975dcc26721bb17082053",
+    "verdict": "PASS_SCOPED",
+    "author": 50,
+    "immutable_parent": 11,
+    "independent_unmasked": 29,
+    "frozen_r2_new_author": "15FAIL35PASS; independently reproduced against exactfrozen source"
+  },
+  "parent": {
+    "green": "61PASS onfinalcandidate",
+    "earlier_local_red_invalid": "The alleged16caseRED remained an import-shadow failure (16ModuleNotFoundError), not productcounterproof. Excluded fromacceptance. Independentreviewer reproduces15 genuinefailures in50caseauthor suite.",
+    "r1_diagnostic": "9PASS,1excluded test expected unsafeInf output and subsequentjsonfailure; repairedbuildcorrectlyrefusesInf. IndependentGrok ranit andreporteddiagnosticfail."
+  },
+  "before_after": "Pure Macro projection retains all configured markets, per-field admission and dated values, supports native timestamp precision and safe native destinations, and uses one economic-heading predicate without converting mixed-composite states into economic diagnoses.",
+  "limits": [
+    "Trustedcaller must supply admittedfields and public destinations; helperdoesnotauthenticateissuers orgrantdisclosure.",
+    "Pure sourceonly; newUI/buildcomposition and realpublication remain separate.",
+    "Dates, values, financial thresholds andsource clocks notderived bythisprojection."
+  ]
+}

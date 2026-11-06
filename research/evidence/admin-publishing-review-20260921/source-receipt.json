@@ -1,0 +1,21 @@
+{
+  "scope": "Content Studio read/review workflow; no publication mutations",
+  "source_sha256": {
+    "admin/marketing.py": "0c525d96e793c8024b49a8f66a6bc39d1a318d2bed87c7cea206fcf706cd8a8b",
+    "admin/server.py": "053a737b55682a2f9b0b0032627f7a512bd1cf44b482ea2d670c8b527e11aab4",
+    "admin/static/app.js": "9968875edc16f212cf0280214d4cf93250e52e06ffb519416b75dd365f4c8854",
+    "admin/static/styles.css": "4f00138d90edbfc8e6f170daf05ccb07018f067a698885266721d694cf7c1cc6"
+  },
+  "tests": {
+    "admin": 1416,
+    "browser": 21,
+    "browser_errors": 0,
+    "writes_attempted": 0,
+    "workspace_browser": 17,
+    "workspace_degraded_routes": 54,
+    "acknowledgement_tests": "simulated JavaScript adapter results; no real writes"
+  },
+  "visual_scope": "existing dark/English admin; desktop1440x960 mobile390x844",
+  "skillpack_commit": "74b475545e179a3256bfebe6b5226f54231cf1cb",
+  "base_commit": "91d0269481fef77e82dc0ba6f9469bd2585ad7e7"
+}

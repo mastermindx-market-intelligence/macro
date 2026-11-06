@@ -1,0 +1,17 @@
+{
+  "protocol_sha256": "7a06c1ceb7efba955ce6b1d4e454c574f5c1abfde782057625de3c53fd4f463f",
+  "config_sha256": "d120fcdf0b05e17462e4316423b383f5286f80e38e94b0b9bb03352006d6cd90",
+  "executed_analyze_sha256": "91d7b9d2bdb52c186346dddcd099a55869eff756945f4ff9b1e9d58e979b1930",
+  "verification_source_sha256": "69b6d26fa2535b3dfef5ad54e9f8a46710e5b694dc12a39230e9ca1f36a8e1f5",
+  "input_manifest_sha256": "7e53cbf4c14c1e6d9df3ea6b8744e5d152865b4b53fe5f34f35e13bf1e5c0842",
+  "sessions": 1701,
+  "months": 82,
+  "signal_nominations": 108,
+  "signal_execution_dates": 60,
+  "source_final_unexecutable": 0,
+  "price_files_verified": 31,
+  "accounts": 36,
+  "all_account_lot_terminal_identities": true,
+  "all_attribution_identities": true,
+  "history_status": "exposed exploratory; no untouched holdout"
+}

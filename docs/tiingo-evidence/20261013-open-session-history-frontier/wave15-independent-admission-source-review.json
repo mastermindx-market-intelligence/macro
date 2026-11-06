@@ -1,0 +1,22 @@
+{
+  "schema": "tiingo.wave15_specific_quality_and_transport_hold_source_adjudication/v1",
+  "recorded_at_utc": "2026-10-13T00:51:36.094266+00:00",
+  "reviewer": "/root/tiingo_contract_adjudication",
+  "conclusion": "PASS",
+  "method_sha256": "ae045dcd41ea78e6e5e9d5b7da59d917c59d7c94c250d3b5aacfbac6c431e051",
+  "accepted_predecessor_method_sha256": "3659f6416ead8b84ac60b85b20f097a6d50a3d31157372f8ab233cc7cad9506d",
+  "required_actual_accounting_method_sha256": "116e3826b712ecd7262f62aa4cf2696e41c8e3221dd1523d68d24177a3728cea",
+  "new_partition_only": {
+    "captured_successes": 4999,
+    "qualified_successes": 4998,
+    "whole_receipt_quality_quarantine": 1,
+    "held_transport_failures": 1
+  },
+  "unchanged_plan_sha256": "d120cc13ecbb675fa45a67b32697f7f43fa506a9406e62de29f5edafe57abbe9",
+  "selected_requests": 4392,
+  "held_symbols_excluded": 24,
+  "actual_parent_return_and_accounting_required_before_effect": true,
+  "original_local_admission_source_and_storage_and_quota_gates_retained": true,
+  "provider_requests_by_review": 0,
+  "execution_by_review": false
+}

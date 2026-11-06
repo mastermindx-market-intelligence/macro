@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-25T21:30:50Z",
+ "accession": "0001628280-26-011709",
+ "cik": "0000717423",
+ "doc_byte_length": 4704356,
+ "doc_sha256": "68919b820a9786e5d6fdaa76b2aeadaf7588d8bfc9840a12d7e1fb3ef5af0b0f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mur-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3244525,
+  "byte_start": 3244127,
+  "normalized": "ExxonMobil Corporation12",
+  "normalized_sha256": "88ba21d811fa4e2453c9471ec4105fe6df6e656c867537144e55e5f18c2fc9cc",
+  "raw": "ExxonMobil Corporation</span></td><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Avenir Next LT Pro',sans-serif;font-size:10pt;font-weight:700;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-495\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1708\">12",
+  "raw_sha256": "5f24a723accb47ce31fd4156ffd1877c2c073a94bfaea01fe8b958e51ef28529"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/717423/000162828026011709/mur-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 252150,
+   "byte_start": 251488,
+   "context_ref": "c-495",
+   "raw": "<xbrli:context id=\"c-495\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000717423</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mur:ExxonMobileMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "445c402c2520652de9c1a8cc983bfe17926b7506628ce641760ecd26c24aaf02"
+  }
+ ]
+}

@@ -1315,6 +1315,16 @@ class TestOutboxPanel:
         assert posted_h["receipt"] is not None
         assert posted_h["receipt"].get("tweet_id") == "1234567890"
 
+    def test_seeded_terminal_item_is_not_duplicated_in_account_working_set(self, tmp_path):
+        """Closed posts stay in totals/history but do not bloat the live review payload."""
+        id1, id2, id3 = self._seed_outbox(tmp_path)
+        r = marketing.outbox(tmp_path)
+        research = next(a for a in r["accounts"] if a["id"] == "research_a")
+        assert research["counts"]["posted"] == 1
+        assert all(i["id"] != id3 for i in research["items"])
+        assert any(h["id"] == id3 for h in r["history"])
+        assert r["summary"]["posted"] == 1
+
     def test_seeded_accounts_grouped_and_ordered(self, tmp_path):
         id1, id2, id3 = self._seed_outbox(tmp_path)
         r = marketing.outbox(tmp_path)
@@ -1810,6 +1820,10 @@ class TestOutboxHistoryHonesty:
         assert len(r["history"]) == 50          # the window is unchanged
         assert r["history_total"] == 55         # the truth is now reported
         assert r["history"][0]["note"] == "operator batch rejection"
+        # Terminal archive rows belong to the bounded history window, not the
+        # account review working set.  This is the payload-size performance law.
+        assert sum(len(a["items"]) for a in r["accounts"]) == 0
+        assert sum(a["counts"]["quarantined"] for a in r["accounts"]) == 55
 
 
 class TestOutboxActivityPayload:
@@ -4314,3 +4328,80 @@ class TestContentFunnelAndChartPayload:
             f = marketing.content(root)["funnel"]
             assert f["planned"] == 3
             assert f["drop_reasons"] == {} and f["dropped"] == {}
+
+
+class TestContentReviewReads:
+    """The review transport is lighter without losing posts or mixing revisions."""
+
+    def test_metadata_preserves_plan_and_defers_only_chart_bodies(self, seeded_content_root):
+        path = seeded_content_root / "data/marketing/content_plan.json"
+        plan = json.loads(path.read_text())
+        plan["featured_charts"][0]["svg"] = "<svg>" + " " * 400_000 + "</svg>"
+        path.write_text(json.dumps(plan))
+        before = path.read_bytes()
+        legacy = marketing.content(seeded_content_root)
+        light = marketing.content(seeded_content_root, chart_mode="metadata")
+        assert light["ok"] and legacy["ok"]
+        for key in ["accounts", "content_types", "funnel", "summary", "intelligence", "content_revision"]:
+            assert light[key] == legacy[key]
+        assert len(light["featured_charts"]) == len(legacy["featured_charts"])
+        assert light["featured_charts"][0]["preview_available"] is True
+        assert "svg" not in light["featured_charts"][0]
+        assert len(json.dumps(light)) < len(json.dumps(legacy)) / 10
+        assert path.read_bytes() == before
+
+    def test_preview_joins_only_the_exact_referenced_chart(self, seeded_content_root):
+        plan = marketing.content(seeded_content_root, chart_mode="metadata")
+        revision = plan["content_revision"]
+        result = marketing.content_chart("chart-001", revision, seeded_content_root)
+        assert result["ok"] is True and result["content_revision"] == revision
+        assert result["chart"]["id"] == "chart-001"
+        assert result["chart"]["svg"] == MINIMAL_CONTENT_PLAN["featured_charts"][0]["svg"]
+        for chart_id in ["not-a-chart", "../../config.yml"]:
+            assert marketing.content_chart(chart_id, revision, seeded_content_root)["reason"] == "chart_not_found"
+
+    def test_same_day_correction_invalidates_old_preview(self, seeded_content_root):
+        path = seeded_content_root / "data/marketing/content_plan.json"
+        revision = marketing.content(seeded_content_root, chart_mode="metadata")["content_revision"]
+        plan = json.loads(path.read_text())
+        plan["featured_charts"][0]["svg"] += "<!-- corrected chart -->"
+        path.write_text(json.dumps(plan))
+        assert marketing.content_chart("chart-001", revision, seeded_content_root)["reason"] == "plan_changed"
+        updated = marketing.content(seeded_content_root, chart_mode="metadata")
+        assert updated["content_revision"] != revision
+        assert updated["as_of"] == plan["as_of"]
+        assert marketing.content_chart("chart-001", updated["content_revision"], seeded_content_root)["ok"]
+
+    def test_unreferenced_and_duplicate_charts_fail_closed(self, seeded_content_root):
+        path = seeded_content_root / "data/marketing/content_plan.json"
+        plan = json.loads(path.read_text())
+        plan["featured_charts"].append({"id": "unused", "svg": "<svg/>"})
+        path.write_text(json.dumps(plan))
+        revision = marketing._content_revision(plan)
+        assert marketing.content_chart("unused", revision, seeded_content_root)["reason"] == "chart_not_found"
+        plan["featured_charts"].append(dict(plan["featured_charts"][0]))
+        path.write_text(json.dumps(plan))
+        assert marketing.content_chart("chart-001", marketing._content_revision(plan), seeded_content_root)["reason"] == "chart_ambiguous"
+
+    @pytest.mark.parametrize("svg", [None, "", "   ", 42, "x" * 2_000_001])
+    def test_absent_malformed_or_oversized_preview_is_explicit(self, seeded_content_root, svg):
+        path = seeded_content_root / "data/marketing/content_plan.json"
+        plan = json.loads(path.read_text()); plan["featured_charts"][0]["svg"] = svg
+        path.write_text(json.dumps(plan))
+        light = marketing.content(seeded_content_root, chart_mode="metadata")
+        assert light["featured_charts"][0]["preview_available"] is False
+        assert marketing.content_chart("chart-001", light["content_revision"], seeded_content_root)["reason"] == "chart_unavailable"
+
+    @pytest.mark.parametrize("chart_id,revision", [(None, None), ("x", ""), ("x", "g" * 64), ("x" * 257, "a" * 64)])
+    def test_invalid_preview_request_is_rejected(self, empty_root, chart_id, revision):
+        assert marketing.content_chart(chart_id, revision, empty_root)["reason"] == "invalid_request"
+
+    def test_missing_plan_and_invalid_mode_are_distinct(self, empty_root):
+        assert marketing.content_chart("chart-001", "a" * 64, empty_root)["reason"] == "plan_unavailable"
+        assert marketing.content(empty_root, chart_mode="metadata")["content_revision"] is None
+        assert marketing.content(empty_root, chart_mode="other")["reason"] == "invalid_request"
+
+    def test_revision_is_stable_under_key_order_but_not_corrections(self):
+        assert marketing._content_revision({"a": 1, "b": 2}) == marketing._content_revision({"b": 2, "a": 1})
+        assert marketing._content_revision({"a": 1}) != marketing._content_revision({"a": 2})
+        assert marketing._content_chart_metadata({"id": 42, "svg": "<svg/>"})["preview_available"] is False

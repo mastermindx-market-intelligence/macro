@@ -1,0 +1,56 @@
+{
+  "schema": "eval_os.agentos_finding_draft_qualification.v1",
+  "observed_at": "2026-10-14T02:47:53.496859+00:00",
+  "source_hashes": {
+    "scripts/agentos.py": "11dcf8d06976cff11041ff012af3dcb335e3f10e961edcf9e913bbef65120d6a",
+    "agentos/schema/discovery.schema.yml": "a50c54880e446858d7faf0659ba7a40ce5ad9e8eecae139e15b499f9469a4749",
+    "tests/test_agentos_schema.py": "37a9d83aff7a4bf852f88cb9f44c33b76bfdfb62e4cae012895590c9d3303945",
+    "research/MASTERMIND_AGENT_OS_STATE_SCHEMA.md": "a9e33961e2a8d6ac01c8bd759f87d4e70e6099eadc987fba8631019fd4018ec2"
+  },
+  "scope": "Optional typed Evaluation OS finding through existing AgentOS discovery draft and validator; no inferred admission or automatic publication",
+  "tests": {
+    "initial_red": {
+      "failed": 14,
+      "passed": 1
+    },
+    "first_focused": {
+      "passed": 15
+    },
+    "full_schema_before_final_isolated_repair": {
+      "passed": 129,
+      "seconds": 414.65
+    },
+    "review_red": {
+      "failed": 6,
+      "passed": 3,
+      "causes": [
+        "Lone surrogate text raised unexpectedly",
+        "Qualitative owner snapshot unsupported"
+      ]
+    },
+    "final_focused": {
+      "passed": 31,
+      "seconds": 3.68,
+      "includes": [
+        "actual CLI YAML validate roundtrip",
+        "legacy discovery roundtrip",
+        "malformed Unicode",
+        "qualitative snapshot",
+        "zero/null/finite bounds",
+        "unchanged admission and control-field refusals"
+      ]
+    }
+  },
+  "unchanged_declarations": "All prior declarations except check_discovery and draft_discovery; one new pure validator",
+  "existing_ci_owner": "agentos-knowledge-contracts",
+  "remaining": [
+    "Protected publication/current-base CI",
+    "Named producer from source-bound evaluation finding",
+    "Programme production and operator acceptance"
+  ],
+  "independent_review": {
+    "verdict": "accepted",
+    "sha256": "3865f4d4644aaa22fd119d5a4584072862e4bb0c9db43fa273eedb72214e7cf8",
+    "path": "t12-dsc-finding-final-review.json"
+  }
+}

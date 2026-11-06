@@ -307,3 +307,56 @@ class TestTemplate:
             "display-tier disclosure: the board must not be able to read its own "
             "forward record, and the panel has to say so"
         )
+
+    def test_the_pending_split_reaches_the_html(self, tmp_path, monkeypatch):
+        """Spec 1: the committed h5 record splits 115 pending into 67 still
+        maturing and 48 that cannot be priced — the card must show both
+        populations, not just the pile as a lone pending fact."""
+        track = _track(n_graded=548)
+        track["per_horizon"]["h5"].update(n_pending=115, n_immature=67,
+                                          n_unpriceable=48)
+        p = tmp_path / "etf_board_track.json"
+        p.write_text(json.dumps(track))
+        monkeypatch.setattr(bm, "ETF_BOARD_TRACK_PATH", p)
+        html = _render(etf_board_windows=bm.build_etf_board_windows())
+        block = html.split('id="efw-section"', 1)[1].split("</section>", 1)[0]
+        assert "115" in block, "the pending count stays visible"
+        assert "67 still maturing" in block
+        assert "48 cannot be priced" in block
+        assert "仍在成熟" in block and "无法定价" in block, (
+            "the split is bilingual or it is not shipped")
+
+    def test_absent_split_fields_render_no_label_and_no_none(
+            self, tmp_path, monkeypatch):
+        """A horizon record that predates the split carries neither count. The
+        card must render nothing for it — never the label, never a None."""
+        p = tmp_path / "etf_board_track.json"
+        p.write_text(json.dumps(_track()))
+        monkeypatch.setattr(bm, "ETF_BOARD_TRACK_PATH", p)
+        out = bm.build_etf_board_windows()
+        for h in out["horizons"]:
+            h.pop("n_immature")
+            h.pop("n_unpriceable")
+        html = _render(etf_board_windows=out)
+        block = html.split('id="efw-section"', 1)[1].split("</section>", 1)[0]
+        assert "still maturing" not in block
+        assert "cannot be priced" not in block
+        assert "仍在成熟" not in block and "无法定价" not in block
+        assert "None" not in block
+
+    def test_the_split_reaches_a_collecting_horizon_card(
+            self, tmp_path, monkeypatch):
+        """h21/h63 have no graded window yet, so they render through the
+        collecting branch — the split must show there too, not only on h5."""
+        track = _track(n_graded=548)
+        track["per_horizon"]["h21"].update(n_pending=66, n_immature=59,
+                                           n_unpriceable=7)
+        p = tmp_path / "etf_board_track.json"
+        p.write_text(json.dumps(track))
+        monkeypatch.setattr(bm, "ETF_BOARD_TRACK_PATH", p)
+        html = _render(etf_board_windows=bm.build_etf_board_windows())
+        block = html.split('id="efw-section"', 1)[1].split("</section>", 1)[0]
+        assert "collecting — 66 windows still open" in block
+        assert "59 still maturing" in block
+        assert "7 cannot be priced" in block
+        assert "59 仍在成熟" in block and "7 无法定价" in block

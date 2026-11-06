@@ -1,0 +1,12 @@
+{
+  "carrier": "mastermindx-market-intelligence/macro#7604",
+  "reviewed_head": "abcf15fad369534eae73207e338913f2da96e8b4",
+  "source_modified": false,
+  "method": "Detached exact-head checkout; existing subtheme funnel and miss-audit suites",
+  "test_result": {"passed": 81, "failed": 1, "skipped": 0},
+  "failed_test": "tests/test_prophet_miss_audit.py::test_no_module_outside_the_runner_imports_the_audit",
+  "finding": "The deliberately broad static mention guard flags SCHEMA='prophet_miss_audit.subtheme_funnel/v1' in engine/prophet_subtheme_funnel.py. Inspected reference is a schema literal, not an import or evidence of live decision authority.",
+  "other_hosted_blocker": "contract-delta check 106291485792: tests/test_prophet_subtheme_funnel.py is not named by a workflow run step",
+  "recommended_owner_action": "Keep the zero-authority guard; explicitly qualify the intended schema-only reader boundary and register the new suite under the existing miss-audit CI owner. Do not disable guards or add a parallel runner.",
+  "boundaries": "Independent test/diagnostic return only; no source-writer transfer, independent merge, deployment or live ranking promotion. Full semantic acceptance remains separate."
+}

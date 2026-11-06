@@ -1,0 +1,11 @@
+# account.js sha256 647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be
+# S1-04 sign-out-everywhere outcome browser acceptance — variant=main page=site/alerts.html (local-only, fictional fixtures)
+# result: 2 pass / 6 fail
+FAIL M 500 {}: message shown, NO local sign-out, dialog open, one request :: (None, 1, False, 1)
+FAIL M 500 non-JSON: message shown, NO local sign-out, dialog open, one request :: (None, 1, False, 1)
+FAIL M transport abort: message shown, NO local sign-out, dialog open, one request :: (None, 1, False, 1)
+FAIL M 500 {} ZH: message shown, NO local sign-out, dialog open, one request :: (None, 1, False, 1)
+FAIL M 429 EN: message shown, NO local sign-out, dialog open, one request :: (None, 0, True, 1)
+FAIL M 429 ZH: message shown, NO local sign-out, dialog open, one request :: (None, 0, True, 1)
+PASS M local and all-device sign-out are separately labelled :: ('Sign out', 'Sign out everywhere')
+PASS M 200 {ok:true}: local sign-out follows, dialog closes :: (1, False, 1)

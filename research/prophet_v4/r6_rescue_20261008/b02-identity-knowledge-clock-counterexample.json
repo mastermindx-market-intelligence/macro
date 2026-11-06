@@ -1,0 +1,24 @@
+{
+  "fixture_only": true,
+  "source_base": "94a20f53cdb2d866d07089df50567f059bf1073e",
+  "identity_ingested_at": "2026-10-09T00:00:00Z",
+  "observation": {
+    "security_id": "SEC:US-XNYS-FIXTURE",
+    "company_id": "ISS:US-XNYS-FIXTURE",
+    "ticker_at_observation": "FIXTURE",
+    "identity_epoch": "epoch_0",
+    "identity_epoch_state": "provisional",
+    "identity_spec_schema": "stock_identity.fingerprint_spec.v1",
+    "identity_spec_hash": "0e3457b11f41452e1c3efac3858196f5f42b573d1961b798ea581e1590b33187",
+    "anchor": null,
+    "intake_class": "technical_emergence",
+    "occurred_at": "2026-10-05T20:00:00Z",
+    "known_at": "2026-10-05T20:00:00Z",
+    "source_system": "candidate",
+    "source_schema": "us_prophet_rank.candidates/v1",
+    "source_event_id": "fixture-old-candidate",
+    "source_receipt": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "suppression_reason": null,
+  "interpretation": "Current membership resolver and IssuerMaster omit ingestion knowledge time; a fresh identity snapshot can attach canonical IDs to older source clocks. No production mutation or historical replay executed."
+}

@@ -1,0 +1,90 @@
+{
+  "started_at": "2026-10-20T00:29:02.459995+00:00",
+  "source_operation": "Original shared-shell-r27 merge only; no renderer or host action",
+  "head_before": "e22e1c33c810da99f7389f5069dd2ee045270c85",
+  "incoming": "6397b97031640de2a0bdd850bfebc520e7458b41",
+  "candidate_receipt_sha256": "cc4f82a7b9d1838230121e149d8bb8d8717b650df1e566f007ac52c20fbcbcc3",
+  "previously_reviewed_incoming": "a3817230e8bc849159b06d81c87ffb4a072ca86b",
+  "remote_main_observed_at": "2026-10-20T00:29:06.173968+00:00",
+  "immutable_fetch": {
+    "args": [
+      "git",
+      "fetch",
+      "--no-tags",
+      "--no-write-fetch-head",
+      "origin",
+      "6397b97031640de2a0bdd850bfebc520e7458b41"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "critical_source_blobs_stable": {
+    "AGENTS.md": true,
+    "CLAUDE.md": true,
+    "docs/agent_guides/CODEX_WORKSPACE.md": true,
+    "docs/agent_guides/CODEX_DELIVERY.md": true,
+    "scripts/run_ci_pack.py": true,
+    "scripts/capture_page_evidence.py": true,
+    ".github/workflows/ci-authority.yml": true,
+    ".github/workflows/engine-render.yml": true,
+    ".github/workflows/render.yml": true
+  },
+  "incoming_delta_paths": "M\tagentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-10-19-THROUGHPUT.md\nM\tagentos/workstreams/WS-CI-MERGE-CONTROL-PLANE.md\nM\tresearch/ci_pack_throughput_20261019/README.md\nA\tresearch/ci_pack_throughput_20261019/ancestry-natural-comparison.json\nA\tresearch/ci_pack_throughput_20261019/ancestry-success-result.json\nM\tresearch/ci_pack_throughput_20261019/natural-comparison-method.md\nM\ttemplates/am_edition.html.j2\nM\ttests/test_am_edition_page.py",
+  "fresh_preview": {
+    "args": [
+      "git",
+      "merge-tree",
+      "--write-tree",
+      "--messages",
+      "e22e1c33c810da99f7389f5069dd2ee045270c85",
+      "6397b97031640de2a0bdd850bfebc520e7458b41"
+    ],
+    "exit": 1,
+    "stdout": "a6b7594079171dcf76d0b6179da3e754a34d43b5\n100644 3a4cf83d05ced9b974d7a3b4bec99ca0b7128c13 1\t.github/ci/legacy-jobs.yml\n100644 880ab70cc0e2093b1b42bc944f90350e0b9e312b 2\t.github/ci/legacy-jobs.yml\n100644 883b92777d236c81dc60b82915429d289bf9bf49 3\t.github/ci/legacy-jobs.yml\n100644 2db815f91be506a7744aec17eedcf43b1717c9d1 1\tapp/deploy/Caddyfile\n100644 873b40f8742cd8b22528a01cd51132023fb53f78 2\tapp/deploy/Caddyfile\n100644 4a4dc3902fb44ceceecc6df5e54f6d30d4bab89d 3\tapp/deploy/Caddyfile\n100755 e882221ee481467e1645aa295ea391549fc22e3d 1\tapp/deploy/update.sh\n100755 3fa8a0b1043b52fcdba5fa869adb540ccefb12bf 2\tapp/deploy/update.sh\n100755 d168d6c4c5906387cc58ac49ce0ed8cedfdd30a6 3\tapp/deploy/update.sh\n100644 fbe7561c17c773b04128b59c4534e7d16a855267 1\tsite/etfs.html\n100644 16a0e41725b2d0dfeefd7642749094423c01b3c0 2\tsite/etfs.html\n100644 b8d1809081df4e7006760544e77f96ceccb1bff4 3\tsite/etfs.html\n100644 c51d59bc0b3e5a1b3feb001e82bb8b916f3c44d7 1\tsite/us_stocks.html\n100644 5556125a618429abb40e6be61fe4292d914b7aa3 2\tsite/us_stocks.html\n100644 2a7633efd420607c9db2f8f263f2f9257ac08847 3\tsite/us_stocks.html\n\nAuto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAuto-merging app/deploy/Caddyfile\nCONFLICT (content): Merge conflict in app/deploy/Caddyfile\nAuto-merging app/deploy/update.sh\nCONFLICT (content): Merge conflict in app/deploy/update.sh\nAuto-merging config/site_access.yml\nAuto-merging site/canada.html\nAuto-merging site/canada_stock.html\nAuto-merging site/china.html\nAuto-merging site/china_lookup.html\nwarning: Cannot merge binary files: site/etfs.html (e22e1c33c810da99f7389f5069dd2ee045270c85 vs. 6397b97031640de2a0bdd850bfebc520e7458b41)\nAuto-merging site/etfs.html\nCONFLICT (content): Merge conflict in site/etfs.html\nAuto-merging site/factors.html\nAuto-merging site/finance_intelligence.js\nAuto-merging site/fundamental_forensics.js\nAuto-merging site/hk_stocks.html\nAuto-merging site/intl_stock.html\nAuto-merging site/macro.html\nAuto-merging site/news.html\nAuto-merging site/reference.html\nAuto-merging site/sector_central.html\nAuto-merging site/signal_lab.html\nAuto-merging site/stock.html\nAuto-merging site/stocks/index.html\nAuto-merging site/tech_lab.html\nwarning: Cannot merge binary files: site/us_stocks.html (e22e1c33c810da99f7389f5069dd2ee045270c85 vs. 6397b97031640de2a0bdd850bfebc520e7458b41)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\nAuto-merging templates/finance_intelligence.js\nAuto-merging templates/fundamental_forensics.js\nAuto-merging templates/tech_lab.html.j2\nAuto-merging tests/test_regwall_json_gate.py\n",
+    "stderr": ""
+  },
+  "preview_tree": "a6b7594079171dcf76d0b6179da3e754a34d43b5",
+  "candidate_incoming_blobs_rebound": true,
+  "pr_head_before": "e22e1c33c810da99f7389f5069dd2ee045270c85",
+  "armed": false,
+  "sparse_config": {
+    "args": [
+      "git",
+      "config",
+      "--worktree",
+      "--get",
+      "core.sparseCheckout"
+    ],
+    "exit": 0,
+    "stdout": "true\n",
+    "stderr": ""
+  },
+  "sparse_policy": {
+    "_comment": "Sparse session-worktree profile (research/WORKTREE_GC_POLICY.md \u00a70 R8). Read by .claude/hooks/worktree_create_sparse.py when minting a Claude worktree; by Codex (.codex/environments/environment.toml + .codex/hooks.json), Cursor IDE (.cursor/hooks.json sessionStart/workspaceOpen), Cursor CLI (.cursor/worktrees.json), Grok (.grok/hooks/session_start_sparse.py via sparse-worktree.json, plus the always-trusted ~/.grok/hooks copy that AionUi sessions load), and Warp/Oz (.warp/hooks/session_start_sparse.py plus .agents/skills/macro-sparse-worktree \u2014 Warp has no SessionStart event) through scripts/worktree_sparse.py auto/mint; and by the operator CLI (status/full/sparse/add/clean). JSON (not yml) so the lifecycle hooks run on a bare system python3 with no pyyaml \u2014 same constraint as config/worktree_gc.json. enabled:false disables automatic sparse creation/conversion; that and any change to exclude_dirs are one-line acts. Excluding a directory here NEVER hides it from git: the paths stay tracked, `git status` stays clean (skip-worktree), and any session opts back in with `python3 scripts/worktree_sparse.py full`.",
+    "_measured_2026_08_13": "Full session worktree = 3.8 GiB: data/ 2.3 + site/ 0.73 + mockups/ 0.23 + verify_shots/ 0.05 = 3.31 GiB (87%) of generated artifacts a typical session never reads. Sparse tree measures ~0.35-0.57 GiB, an ~7-11x cut. R8's own 2026-08-05 figures (3.27 GiB, data 2.10 + site 0.67 = 85%) are the same finding one week earlier; the tree has grown since.",
+    "_exclude_rationale": "R8 names data/ + site/. mockups/ and verify_shots/ are the same CLASS \u2014 committed rendered artifacts and screenshot evidence, not code \u2014 and cost another 0.28 GiB/tree, so they ship excluded too and this line is the audit trail for that widening. Trimming back to exactly R8's two is a one-line edit here; the cost is ~0.28 GiB x ~40 trees/day = ~11 GiB/day of standing set. Design work that needs the specimen (mockups/design_system/specimen.html) or shot evidence runs `python3 scripts/worktree_sparse.py add mockups`.",
+    "enabled": true,
+    "exclude_dirs": [
+      "data",
+      "site",
+      "mockups",
+      "verify_shots"
+    ]
+  },
+  "available_bytes": 262554763264,
+  "merge": {
+    "args": [
+      "git",
+      "merge",
+      "--no-ff",
+      "--no-commit",
+      "6397b97031640de2a0bdd850bfebc520e7458b41"
+    ],
+    "exit": 1,
+    "stdout": "Auto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAuto-merging app/deploy/Caddyfile\nCONFLICT (content): Merge conflict in app/deploy/Caddyfile\nAuto-merging app/deploy/update.sh\nCONFLICT (content): Merge conflict in app/deploy/update.sh\nAuto-merging config/site_access.yml\nAuto-merging site/canada.html\nAuto-merging site/canada_stock.html\nAuto-merging site/china.html\nAuto-merging site/china_lookup.html\nwarning: Cannot merge binary files: site/etfs.html (HEAD vs. 6397b97031640de2a0bdd850bfebc520e7458b41)\nAuto-merging site/etfs.html\nCONFLICT (content): Merge conflict in site/etfs.html\nAuto-merging site/factors.html\nAuto-merging site/finance_intelligence.js\nAuto-merging site/fundamental_forensics.js\nAuto-merging site/hk_stocks.html\nAuto-merging site/intl_stock.html\nAuto-merging site/macro.html\nAuto-merging site/news.html\nAuto-merging site/reference.html\nAuto-merging site/sector_central.html\nAuto-merging site/signal_lab.html\nAuto-merging site/stock.html\nAuto-merging site/stocks/index.html\nAuto-merging site/tech_lab.html\nwarning: Cannot merge binary files: site/us_stocks.html (HEAD vs. 6397b97031640de2a0bdd850bfebc520e7458b41)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\nAuto-merging templates/finance_intelligence.js\nAuto-merging templates/fundamental_forensics.js\nAuto-merging templates/tech_lab.html.j2\nAuto-merging tests/test_regwall_json_gate.py\nAutomatic merge failed; fix conflicts and then commit the result.\n",
+    "stderr": ""
+  },
+  "error": "{'args': ['git', 'add', '--', '.github/ci/legacy-jobs.yml', 'app/deploy/Caddyfile', 'app/deploy/update.sh', 'site/etfs.html', 'site/us_stocks.html'], 'exit': 1, 'stdout': '', 'stderr': 'The following paths and/or pathspecs matched paths that exist\\noutside of your sparse-checkout definition, so will not be\\nupdated in the index:\\nsite/etfs.html\\nsite/us_stocks.html\\nhint: If you intend to update such entries, try one of the following:\\nhint: * Use the --sparse option.\\nhint: * Disable or modify the sparsity rules.\\nhint: Disable this message with \"git config advice.updateSparsePath false\"\\n'}",
+  "finished_at": "2026-10-20T00:29:55.382287+00:00"
+}

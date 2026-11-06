@@ -1,0 +1,11 @@
+{
+  "empty_id": "e3",
+  "section": "inflation",
+  "workspace_id": "inflation_system",
+  "region": "US",
+  "source": "site/macrodata/workspaces/inflation_system/US/latest.json",
+  "path_through": "scripts/build_macro_suite_pages.py --data-root <fixture-data> --out-dir <tmp-site>",
+  "trigger": "Contract-legal mutation of the live inflation_system/US snapshot: headline.effective_date kept (2026-09-06), changes.deltas=[], changes.comparability=NO_PRIOR, changes.status=ABSENT, changes.null_reason=INSUFFICIENT_HISTORY. A dated workspace with nothing comparable is E3, not E1.",
+  "selector": "#inflation [data-mc-empty='e3']",
+  "expected_title_en": "We can't show the change yet"
+}

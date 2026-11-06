@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-14T23:42:43Z",
+ "accession": "0001193125-26-352872",
+ "cik": "0001078271",
+ "doc_byte_length": 4467003,
+ "doc_sha256": "d050741aeba7f096fdadadf3705d146475cb50d91a1db5fe56a2821d12f9bbca",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "extr-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 422084,
+  "byte_start": 421393,
+  "normalized": "The distributors enhance our ability to sell and provide support to resellers who may benefit from the broad service and product fulfillment capabilities offered by these distributors. Extreme maintains distribution agreements with our largest distributors, Westcon Group Inc., TD Synnex Corporation and Jenne Inc. on substantially the same material terms as we generally enter into with each of our distribution partners. Distributors are generally given the right to return a portion of inventory to us for the purpose of stock rotation, to claim rebates for competitive discounts and participate in various cooperative marketing programs to promote the sale of our products and services.",
+  "normalized_sha256": "a930237a2158c36498b37e61d0ddca574826bd937ec1df8d0d94325fd6d017b8",
+  "raw": " The distributors enhance our ability to sell and provide support to resellers who may benefit from the broad service and product fulfillment capabilities offered by these distributors. Extreme maintains distribution agreements with our largest distributors, Westcon Group Inc., TD Synnex Corporation and Jenne Inc. on substantially the same material terms as we generally enter into with each of our distribution partners. Distributors are generally given the right to return a portion of inventory to us for the purpose of stock rotation, to claim rebates for competitive discounts and participate in various cooperative marketing programs to promote the sale of our products and services.",
+  "raw_sha256": "ddb6de5ea1c818c579702ccd796311e31d85dfff60b81c8676275adc70fd8930"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1078271/000119312526352872/extr-20260630.htm",
+ "xbrl_contexts": []
+}

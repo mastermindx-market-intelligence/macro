@@ -1,0 +1,383 @@
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   .ud-hero — Unified Macro Dashboard hero (UD-B1, spec §1 / §3 / §5 / §7)
+
+   Verdict hero + score + progress bar + verdict rows + arc gauge (#3/#4/#5/#9/#10)
+   plus the regime spine (#11 quad map subsumed per spec §3) plus spec §6
+   "What changed" / "Drivers" / "Watching" / "Go deeper" blocks. Dark and light
+   are TWO art directions (per CLAUDE.md §Theme art direction): dark = command
+   center with luminance depth and restrained glow; light = research workspace
+   with cool canvas, hairline discipline, shadow instead of glow. Token swap
+   alone is never proof of a light design — the bloom→ring on the subject
+   marker is one of three intentionally differing mechanisms (see spec §5).
+   ════════════════════════════════════════════════════════════════════════════════ */
+body.page-intl #ud-hero{ margin-top:0; }
+body.page-intl .ud-hero-panel{
+  display:flex; flex-direction:column; gap:var(--sp-5,20px);
+}
+body.page-intl .ud-hero-head{
+  display:flex; align-items:center; gap:var(--sp-3,12px);
+  font-family:var(--num,var(--font-mono));
+}
+body.page-intl .ud-eyebrow{
+  font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ink-2,var(--muted));
+}
+html[data-lang="zh"] body.page-intl .ud-eyebrow{ letter-spacing:0; text-transform:none; }
+/* 390 floor — the EN uppercase + tracking still shreds the small eyebrow;
+   drop the tracking and uppercase so both locales render at the same weight. */
+@media (max-width:390px){
+  body.page-intl .ud-eyebrow{ letter-spacing:.04em; text-transform:none; font-size:10.5px; }
+}
+body.page-intl .ud-live{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; font-weight:700; letter-spacing:.04em;
+  color:var(--ink-2,var(--muted));
+}
+body.page-intl .ud-live i{
+  width:7px; height:7px; border-radius:var(--r-pill,999px);
+  background:var(--ink-3,var(--muted));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--ink-3,var(--muted)) 18%, transparent);
+}
+/* R-D: live dot uses HEALTH tokens (ok/warn) — never direction tokens
+   (up/down), so it cannot flip red under the ZH 红涨绿跌 convention. */
+body.page-intl .ud-live--ok i{
+  background:var(--ink-ok,var(--up));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--ink-ok,var(--up)) 22%, transparent);
+}
+body.page-intl .ud-live--warn i{
+  background:var(--ink-warn,var(--warn));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--ink-warn,var(--warn)) 22%, transparent);
+}
+body.page-intl .ud-asof{
+  margin-left:auto;
+  font-size:11px; letter-spacing:.04em; color:var(--ink-3,var(--muted));
+  font-variant-numeric:tabular-nums;
+}
+
+/* ── §1 grid: 660 copy + 316 gauge, space-between ────────────────────── */
+body.page-intl .ud-hero-grid{
+  display:grid; grid-template-columns:660px 316px;
+  justify-content:space-between;
+  gap:var(--sp-5,20px) 36px; align-items:start;
+}
+@media (max-width:1280px){ body.page-intl .ud-hero-grid{ grid-template-columns:minmax(0,1fr) 316px; } }
+@media (max-width:860px){ body.page-intl .ud-hero-grid{ grid-template-columns:1fr; } }
+
+body.page-intl .ud-verdict{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:0 10px;
+  font-size:var(--fs-display,46px); font-weight:800; line-height:.95;
+  letter-spacing:-.03em;
+  margin:4px 0 8px;
+}
+body.page-intl .ud-verdict > .l-en,
+body.page-intl .ud-verdict > .l-zh{
+  /* Per-locale phrase is its own flex item; the comma + qualifier are inline
+     within it so the gap can never strand the comma on its own line. The
+     inline-flex gap stays >0 so the comma hugs the verdict word with a real
+     word-space, never glued onto the next qualifier. */
+  display:inline-flex; align-items:baseline; flex-wrap:wrap;
+  row-gap:0; column-gap:0;
+}
+body.page-intl .ud-verdict > .l-en .ud-verdict-comma{ margin-right:.25em; }
+body.page-intl .ud-verdict > .l-en .ud-verdict-qualifier{ margin-left:.25em; }
+body.page-intl .ud-verdict-comma{ font-weight:800; color:var(--ink-1,var(--text)); }
+html[data-lang="zh"] body.page-intl .ud-verdict-comma{ display:none; }
+html[data-lang="zh"] body.page-intl .ud-verdict{ letter-spacing:0; }
+@media (max-width:390px){
+  /* Spec §7 390: two-tone pair wraps to 2 lines at 36px, gauge below. */
+  body.page-intl .ud-verdict{ font-size:36px; }
+  body.page-intl .ud-verdict > .l-en, body.page-intl .ud-verdict > .l-zh{
+    flex-basis:100%;
+  }
+}
+body.page-intl .ud-verdict-word--up{ color:var(--ink-up,var(--up)); }
+body.page-intl .ud-verdict-word--down{ color:var(--ink-down,var(--down)); }
+body.page-intl .ud-verdict-word--warn{ color:var(--ink-warn,var(--warn)); }
+body.page-intl .ud-verdict-comma{ font-size:var(--fs-display,46px); font-weight:800; color:var(--ink-1,var(--text)); }
+body.page-intl .ud-verdict-qualifier--warn{ color:var(--ink-warn,var(--warn)); }
+body.page-intl .ud-verdict-qualifier--down{ color:var(--ink-down,var(--down)); }
+body.page-intl .ud-verdict-qualifier--muted{ color:var(--ink-3,var(--muted)); }
+
+body.page-intl .ud-clause,
+body.page-intl .ud-flip{
+  margin:4px 0 0; max-width:62ch;
+  font-size:var(--fs-md,15px); color:var(--text);
+}
+body.page-intl .ud-flip{ color:var(--ink-2,var(--muted)); font-size:var(--fs-sm,12.5px); }
+
+body.page-intl .ud-meta{
+  display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;
+}
+body.page-intl .ud-fired-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:var(--fs-label,11px); font-weight:700;
+  padding:4px 11px; border-radius:var(--r-pill,999px);
+  background:color-mix(in srgb, var(--act,var(--down)) 12%, var(--panel));
+  border:1px solid color-mix(in srgb, var(--act,var(--down)) 28%, var(--line));
+  color:color-mix(in srgb, var(--act,var(--down)) 78%, var(--text));
+}
+
+/* ── Gauge column ─────────────────────────────────────────────────────── */
+body.page-intl .ud-hero-gauge{
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  padding:8px 6px 0;
+  border-left:1px solid var(--line);
+  padding-left:var(--sp-4,16px);
+}
+@media (max-width:860px){ body.page-intl .ud-hero-gauge{ border-left:0; padding-left:0; } }
+body.page-intl .ud-score{
+  display:flex; align-items:baseline; gap:6px;
+  font-family:var(--num,var(--font-mono));
+}
+body.page-intl .ud-score-num{ font-size:var(--fs-num-xl,38px); font-weight:800; color:var(--ink-1,var(--text)); line-height:1; font-variant-numeric:tabular-nums; }
+body.page-intl .ud-score-out{ font-size:18px; font-weight:500; color:var(--muted); }
+body.page-intl .ud-score-label{ font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+html[data-lang="zh"] body.page-intl .ud-score-label{ letter-spacing:0; text-transform:none; }
+
+body.page-intl .ud-prog-wrap{ width:100%; margin-top:10px; }
+body.page-intl .ud-prog{
+  position:relative; height:8px; border-radius:var(--r-ctl,8px);
+  background:var(--tile,var(--panel2));
+}
+body.page-intl .ud-prog-fill{
+  position:absolute; top:0; left:0; height:100%;
+  background:var(--up); border-radius:var(--r-ctl,8px);
+}
+body.page-intl .ud-prog-tick{
+  position:absolute; top:-3px; width:1px; height:14px;
+  background:var(--ink-3,var(--muted)); opacity:.55;
+}
+body.page-intl .ud-prog-pin{
+  position:absolute; top:50%; transform:translate(-50%,-50%);
+  width:3px; height:16px; background:var(--ink-1,var(--text)); border-radius:var(--r-ctl,8px);
+}
+body.page-intl .ud-prog-anchors{
+  display:flex; justify-content:space-between;
+  margin-top:6px; font-size:var(--fs-micro,10px);
+  font-weight:600; color:var(--ink-3,var(--muted));
+  font-family:var(--num,var(--font-mono));
+}
+body.page-intl .ud-prog-mid{ margin:0 auto; }
+html[data-lang="zh"] body.page-intl .ud-prog-anchors{ letter-spacing:0; }
+
+body.page-intl .ud-arc{ width:100%; max-width:220px; height:auto; margin-top:6px; }
+body.page-intl .ud-arc-solid{ transition:stroke-dasharray .35s var(--ease-std,ease); }
+body.page-intl .ud-arc-track{ stroke:var(--line); }
+body.page-intl .ud-arc-stroke{ stroke:var(--up); }
+
+/* ── §3 spine host — namespaced, governed in theme.css ────────────────── */
+body.page-intl .ud-spine-wrap{ margin-top:6px; }
+body.page-intl .ud-spine-foot{
+  margin:8px 0 0;
+  font-size:var(--fs-micro,10px); color:var(--ink-3,var(--muted));
+  font-weight:400; line-height:1.5;
+}
+
+/* ── §6 What changed ──────────────────────────────────────────────────── */
+body.page-intl .ud-changed{ margin-top:4px; }
+body.page-intl .ud-changed .mx-chg-row{ padding:9px 0; }
+
+/* ── §6 Drivers 2×2 ───────────────────────────────────────────────────── */
+body.page-intl .ud-drivers{ margin-top:8px; }
+body.page-intl .ud-driver-grid{
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--gap-grid,18px);
+}
+@media (max-width:860px){ body.page-intl .ud-driver-grid{ grid-template-columns:1fr; } }
+body.page-intl .ud-driver{
+  padding:14px 16px;
+  display:flex; flex-direction:column; gap:8px;
+}
+body.page-intl .ud-driver-head{ font-size:var(--fs-h3,14px); font-weight:800; color:var(--ink-1,var(--text)); margin:0; }
+body.page-intl .ud-driver-body{ margin:0; font-size:var(--fs-sm,12.5px); color:var(--ink-2,var(--muted)); }
+body.page-intl .ud-driver--locked{ position:relative; padding:0; min-height:90px; overflow:hidden; }
+body.page-intl .ud-driver--locked .mx-tier-blurred--spec{ padding:14px 16px; }
+body.page-intl .ud-driver-lock{
+  position:absolute; inset:auto 0 0 0;
+  padding:6px 16px; font-size:11px; font-weight:700;
+  background:color-mix(in srgb, var(--panel) 88%, transparent);
+  text-align:center; color:var(--ink-2,var(--muted));
+}
+
+/* ── §6 Watching list — three if→what rows ───────────────────────────── */
+body.page-intl .ud-watching{ margin-top:6px; }
+body.page-intl .ud-watch-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+body.page-intl .ud-watch-item{
+  padding:10px 14px;
+  border:1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  border-radius:var(--r-ctl,8px);
+  background:var(--panel2);
+  font-size:var(--fs-sm,12.5px); color:var(--ink-2,var(--muted));
+  line-height:1.5;
+}
+/* Per-cell locale display law: BOTH head AND body cells paint in each locale.
+   EN locale hides ZH spans (global .l-zh{display:none}); ZH locale hides EN.
+   Pre-fix only unhide one head + one body, leaving the other two blank. */
+body.page-intl .ud-watch-item-head{ display:none; font-weight:700; color:var(--ink-1,var(--text)); margin-bottom:4px; }
+body.page-intl .ud-watch-item-body{ display:none; font-weight:400; line-height:1.5; color:var(--ink-2,var(--muted)); }
+html:not([data-lang="zh"]) body.page-intl .ud-watch-item-head.l-en{ display:block; }
+html:not([data-lang="zh"]) body.page-intl .ud-watch-item-body.l-en{ display:block; }
+html[data-lang="zh"] body.page-intl .ud-watch-item-head.l-zh{ display:block; }
+html[data-lang="zh"] body.page-intl .ud-watch-item-body.l-zh{ display:block; }
+/* Each .ud-watch-item is a flex row carrying head + body cells. */
+body.page-intl .ud-watch-item{ display:flex; flex-direction:column; gap:2px; }
+/* Desktop: full list visible (force-open via specificity that beats the UA
+   `details:not([open]) > :not(summary) { display: none }` rule — this selector
+   has (0,3,3) vs the UA's (0,2,2)), summary row hidden, <details> marker
+   hidden so the summary doesn't render its disclosure triangle at 1440. R-J
+   round 7 — the wrapper is now <details><summary>…</summary><ul>…</ul></details>
+   for tap-open semantics at 390, but desktop forces the list open via CSS. */
+body.page-intl .ud-watch-details:not([open]) .ud-watch-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+body.page-intl .ud-watch-summary{ display:none; }
+body.page-intl .ud-watch-details > summary::-webkit-details-marker{ display:none; }
+body.page-intl .ud-watch-details > summary{ list-style:none; }
+body.page-intl .ud-driver-count{ display:none; }
+
+/* ── §6 Go deeper chip rail ──────────────────────────────────────────── */
+body.page-intl .ud-deeper{ margin-top:6px; }
+body.page-intl .ud-deeper-rail{
+  display:flex; flex-wrap:wrap; gap:8px;
+}
+body.page-intl .ud-depth{
+  display:inline-flex; align-items:center;
+  padding:6px 12px;
+  font-size:var(--fs-sm,12.5px); font-weight:600;
+  background:var(--panel2); border:1px solid var(--line);
+  border-radius:var(--r-pill,999px); color:var(--text);
+  text-decoration:none;
+  transition:border-color .14s var(--ease-std,ease), background .14s var(--ease-std,ease);
+}
+body.page-intl .ud-depth:hover{
+  border-color:color-mix(in srgb, var(--link) 50%, var(--line));
+  background:color-mix(in srgb, var(--link) 6%, var(--panel2));
+}
+
+/* ── Page footer (spec §6) ────────────────────────────────────────────── */
+body.page-intl .ud-foot{
+  margin-top:8px; padding-top:14px;
+  border-top:1px solid var(--line);
+  font-size:var(--fs-micro,10px); color:var(--ink-3,var(--muted));
+  text-align:center;
+}
+
+/* ── Light theme: depth + bloom→ring + ink rungs (spec §5 row 2/3/8) ──
+   Three mechanisms intentionally differ:
+     • panel surface switches from panel2-tinted to pure panel-white with
+       a 1px ring + soft cast shadow (the canvas stays perceptibly cooler).
+     • the subject marker bloom becomes a 2px ring (a pastel stain on white).
+     • the arc stroke darkens to --up-light for 4.5:1 on white. */
+html[data-theme="light"] body.page-intl .ud-hero-panel{
+  background:var(--panel);
+  box-shadow:0 1px 3px color-mix(in srgb, var(--text) 7%, transparent),
+             0 0 0 1px color-mix(in srgb, var(--text) 6%, transparent);
+}
+html[data-theme="light"] body.page-intl .ud-arc-stroke{ stroke:var(--up); }
+
+/* ── Mobile 390 reduction (spec §7) — declarative re-composition ────── */
+@media (max-width:390px){
+  body.page-intl .ud-hero-grid{ grid-template-columns:1fr; gap:var(--sp-4,16px); }
+  body.page-intl .ud-verdict{ font-size:36px; }
+  body.page-intl .ud-driver-grid{ gap:var(--sp-3,12px); }
+}
+/* ── Mobile 640 reduction — spine as stacked cards (spec §7 row 1) ────
+   Stance chip joins the name on row 1; the rail + travel form row 2;
+   column heads hide. The .mockup-spine-390 wrapper class also forces the
+   640 layout at any viewport so the specimen page previews the floor. */
+@media (max-width:640px){
+  body.page-intl .mx-spine-head{ display:none; }
+  body.page-intl .mx-spine-row{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "name stance"
+      "rail  rail"
+      "travel travel";
+    gap:6px 10px;
+    padding:12px 4px;
+  }
+  body.page-intl .mx-spine-row[data-null="1"]{ grid-template-areas:"name stance" "rail rail"; }
+  body.page-intl .mx-spine-name{ grid-area:name; }
+  body.page-intl .mx-spine-rail-wrap{ grid-area:rail; }
+  body.page-intl .mx-spine-travel{ grid-area:travel; justify-content:flex-end; }
+  body.page-intl .mx-spine-stance{ grid-area:stance; justify-content:flex-end; }
+  /* Display the same in the specimen via .mockup-spine-390 wrapper class. */
+  .mockup-spine-390 .mx-spine-head{ display:none; }
+  .mockup-spine-390 .mx-spine-row{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "name stance"
+      "rail  rail"
+      "travel travel";
+    gap:6px 10px;
+    padding:12px 4px;
+  }
+  .mockup-spine-390 .mx-spine-row[data-null="1"]{ grid-template-areas:"name stance" "rail rail"; }
+  .mockup-spine-390 .mx-spine-name{ grid-area:name; }
+  .mockup-spine-390 .mx-spine-rail-wrap{ grid-area:rail; }
+  .mockup-spine-390 .mx-spine-travel{ grid-area:travel; justify-content:flex-end; }
+  .mockup-spine-390 .mx-spine-stance{ grid-area:stance; justify-content:flex-end; }
+}
+
+/* ── Mobile 390 reduction (spec §7) — declarative re-composition ──────
+   1. Verdict two-tone pair wraps to 2 lines at 36px (no mid-word hyphen).
+   2. Drivers become a horizontal SWIPE STRIP — cards at ~86% width, with a
+      `1 / 3` counter overlay; the clipped second card is the affordance.
+      Locked (#4) hidden — same demotion rule as the desktop locked content.
+   3. Watching collapses to ONE DISCLOSURE ROW — title, count `3`, chevron,
+      plus a one-line preview of the first condition. Windows footnote stays. */
+@media (max-width:390px){
+  body.page-intl .ud-hero-grid{ grid-template-columns:1fr; gap:var(--sp-4,16px); }
+  body.page-intl .ud-verdict{ font-size:36px; }
+
+  /* Drivers → swipe strip. */
+  body.page-intl .ud-driver-grid{
+    display:flex; flex-wrap:nowrap; gap:12px; overflow-x:auto;
+    grid-template-columns:none;
+    scroll-snap-type:x mandatory;
+    padding-bottom:4px;
+    margin:0 -8px; padding-left:8px; padding-right:8px;
+  }
+  body.page-intl .ud-driver{
+    flex:0 0 86%; scroll-snap-align:start; min-width:0;
+  }
+  body.page-intl .ud-driver--locked{ display:none; }
+
+  /* Driver counter chip — `1 / 3` badge that floats over the strip's right
+     edge. Hidden at desktop; the swipe strip at 390 is the affordance. */
+  body.page-intl .ud-driver-count{ display:inline-flex; }
+}
+/* end .ud-hero — UD-B1 §1/§3/§6 */
+
+/* ── Mobile ≤640px watching disclosure (R-L BLOCKER-1 fix) ─────────────
+   At ≤640px the inline state JS in templates/dashboard.html.j2 removes the
+   `open` attribute on .ud-watch-details so the <summary> disclosure row takes
+   over. The summary chrome shows by default; the list is hidden until the
+   user taps the disclosure row (the UA `:not([open])` rule handles that —
+   CSS cannot override it, which is why the DOM state is the lawful fix). */
+@media (max-width:640px){
+  body.page-intl .ud-watch-item{ display:none; }
+  body.page-intl .ud-watch-details[open] .ud-watch-item{ display:flex; }
+  body.page-intl .ud-watch-summary{
+    display:flex; flex-direction:column; align-items:stretch; gap:6px;
+    padding:10px 14px;
+    border:1px solid color-mix(in srgb, var(--line) 60%, transparent);
+    border-radius:var(--r-ctl,8px);
+    background:var(--panel2);
+    cursor:pointer;
+  }
+  body.page-intl .ud-watch-summary-row{
+    display:flex; align-items:center; gap:10px;
+  }
+  body.page-intl .ud-watch-summary-h{ flex:1; font-weight:700; color:var(--ink-1,var(--text)); }
+  body.page-intl .ud-watch-summary-ct{
+    font-size:var(--fs-sm,12.5px); font-weight:600;
+    color:var(--ink-2,var(--muted));
+  }
+  body.page-intl .ud-watch-summary-chev{
+    color:var(--ink-2,var(--muted)); font-size:18px;
+  }
+  body.page-intl .ud-watch-summary-preview{
+    font-size:var(--fs-sm,12.5px); line-height:1.5;
+    color:var(--ink-2,var(--muted));
+  }
+}

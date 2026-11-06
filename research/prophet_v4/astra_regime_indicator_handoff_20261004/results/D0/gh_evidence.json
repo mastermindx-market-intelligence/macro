@@ -1,0 +1,124 @@
+{
+  "repo_head": "052e02d085b01f29baf499357e224c836d8eb224",
+  "until_repo_head_committer_date": "2026-10-02T07:02:07Z",
+  "queries": {
+    "tree_history": {
+      "key": "tree_history",
+      "path": "data/themes_heatmap/tree_history.jsonl",
+      "endpoint": "repos/mastermindx-market-intelligence/macro/commits?path=data/themes_heatmap/tree_history.jsonl&per_page=5&until=2026-10-02T07:02:07Z",
+      "per_page": 5,
+      "until": "2026-10-02T07:02:07Z",
+      "ok": true,
+      "rc": 0,
+      "stderr": "",
+      "commits": [
+        {
+          "sha": "00c715478175",
+          "sha_full": "00c71547817536d4d3b4506353157de0705400d4",
+          "date": "2026-08-15T08:49:20Z",
+          "msg": "GMI Theme Graph W3A \u2014 dual-market Local Theme Plane (CEO directive 2026-08-14; refresh contract + finviz/THS local nodes + capability sidecar + rights plane; 2 "
+        },
+        {
+          "sha": "b35bac058e9d",
+          "sha_full": "b35bac058e9d33e8ef90a59cc9a7060c0ccd8a95",
+          "date": "2026-07-05T06:50:58Z",
+          "msg": "data: daily collection 2026-07-05"
+        }
+      ],
+      "n_commits": 2
+    },
+    "membership_history": {
+      "key": "membership_history",
+      "path": "data/baskets/membership_history.parquet",
+      "endpoint": "repos/mastermindx-market-intelligence/macro/commits?path=data/baskets/membership_history.parquet&per_page=5&until=2026-10-02T07:02:07Z",
+      "per_page": 5,
+      "until": "2026-10-02T07:02:07Z",
+      "ok": true,
+      "rc": 0,
+      "stderr": "",
+      "commits": [
+        {
+          "sha": "297b3e6f16a2",
+          "sha_full": "297b3e6f16a20fb9ec090847de4ba53bbeda80be",
+          "date": "2026-09-04T13:00:49Z",
+          "msg": "engine: regime update 2026-09-04"
+        },
+        {
+          "sha": "f960202b482a",
+          "sha_full": "f960202b482af2899d79c17f0ec110578a6ec580",
+          "date": "2026-08-18T08:25:41Z",
+          "msg": "engine: regime update 2026-08-18"
+        },
+        {
+          "sha": "44c90f8f547c",
+          "sha_full": "44c90f8f547c4ace4ff666191fbad8be92167548",
+          "date": "2026-08-13T14:23:42Z",
+          "msg": "engine: regime update 2026-08-13"
+        }
+      ],
+      "n_commits": 3
+    },
+    "context_history_latest5": {
+      "key": "context_history_latest5",
+      "path": "data/themes/context_history.jsonl",
+      "endpoint": "repos/mastermindx-market-intelligence/macro/commits?path=data/themes/context_history.jsonl&per_page=5&until=2026-10-02T07:02:07Z",
+      "per_page": 5,
+      "until": "2026-10-02T07:02:07Z",
+      "ok": true,
+      "rc": 0,
+      "stderr": "",
+      "commits": [
+        {
+          "sha": "887b2647956e",
+          "sha_full": "887b2647956ec92787f4c008eb103d39d60869c9",
+          "date": "2026-10-01T19:24:40Z",
+          "msg": "engine: regime update 2026-10-01"
+        },
+        {
+          "sha": "76e3251268b6",
+          "sha_full": "76e3251268b65c382f47001ae1413bf259633cfb",
+          "date": "2026-09-30T12:25:28Z",
+          "msg": "engine: regime update 2026-09-30"
+        },
+        {
+          "sha": "071b703f2ef5",
+          "sha_full": "071b703f2ef58e0f8a0c444a76af75e1591ec662",
+          "date": "2026-09-28T09:14:33Z",
+          "msg": "engine: regime update 2026-09-28"
+        },
+        {
+          "sha": "5e921b1c54f0",
+          "sha_full": "5e921b1c54f0742f7bc377b29f76114e48ed96c0",
+          "date": "2026-09-26T19:28:26Z",
+          "msg": "engine: regime update 2026-09-26"
+        },
+        {
+          "sha": "49b379eed634",
+          "sha_full": "49b379eed634895cd1031532856f21de526b2ca0",
+          "date": "2026-09-26T09:01:16Z",
+          "msg": "engine: regime update 2026-09-26"
+        }
+      ],
+      "n_commits": 5
+    },
+    "context_history_first": {
+      "key": "context_history_first",
+      "path": "data/themes/context_history.jsonl",
+      "endpoint": "repos/mastermindx-market-intelligence/macro/commits?path=data/themes/context_history.jsonl&per_page=5&until=2026-07-20T00:00:00Z",
+      "per_page": 5,
+      "until": "2026-07-20T00:00:00Z",
+      "ok": true,
+      "rc": 0,
+      "stderr": "",
+      "commits": [
+        {
+          "sha": "15c39ef87650",
+          "sha_full": "15c39ef876509b485496231eec089b8ad5e7474d",
+          "date": "2026-07-19T03:22:13Z",
+          "msg": "engine: regime update 2026-07-19"
+        }
+      ],
+      "n_commits": 1
+    }
+  }
+}

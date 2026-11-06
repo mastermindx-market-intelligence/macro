@@ -38,6 +38,9 @@ high/low), so this gate runs on every market's close-only price store and self-d
 degrades too — the gate still never crashes — but it degrades to "engine error", so a
 broken input can never be read as a market fact about the name.
 
+The verdict is CLOSE-ONLY: it is computed on completed daily bars. Under
+``signal_gate.validity/v1``, it is valid for exactly the next session.
+
 REASONS vs REASON. Every verdict carries BOTH `reason` (the single first-match label, unchanged
 and back-compatible) and `reasons` (the ordered, exhaustive account, `reasons[0] == reason`
 always). They differ only where a verdict is over-determined — today, a buy that more than one
@@ -55,12 +58,15 @@ SURFACERS of imminent base3d buys on the 110 held-out US names. (a) dominated (b
 """
 from __future__ import annotations
 
+from datetime import date, datetime
+
 import pandas as pd
 
 from engine import signal_quality     # the §7 marker master (its own bucketing era, R-SQ3)
 from engine.signal_quality import analyze
 from engine import confluence_tiers   # owner's weighted T1->T4 cascade (TIERED_CASCADE.md)
 from engine import session_anchor     # absolute session-calendar anchor (per-market, R3)
+from lib import nyse_calendar as calendar
 
 TAKE = "take"
 ANTICIPATION = "anticipation"
@@ -688,3 +694,46 @@ def buy_signal(v: dict | None) -> dict:
                 "young_history": False, "anchor_era": confluence_tiers.ANCHOR_ERA,
                 "sq_anchor_era": signal_quality.ANCHOR_ERA}
     return {k: v.get(k) for k in _BUY_KEYS}
+
+
+def validity_block(as_of: str | None, emitted_at: str, pair_id: str) -> dict:
+    """Build the versioned next-session validity contract for a confluence receipt.
+
+    The block states the receipt honestly instead of enforcing freshness: stale and
+    ahead/unsettled sources remain visible, and an unusable source emits nulls rather than
+    crashing the gate writer. Session arithmetic is owned by ``lib.nyse_calendar``.
+    """
+    block = {
+        "schema": "signal_gate.validity/v1",
+        "source_session": None,
+        "emitted_at": emitted_at,
+        "expected_last_session": None,
+        "lag_sessions": None,
+        "settled": None,
+        "valid_for_decision_sessions": [],
+        "expiry_session": None,
+        "lineage_token": pair_id,
+    }
+    try:
+        source = date.fromisoformat(as_of)
+        if len(as_of) != 10 or source.isoformat() != as_of or not calendar.is_session(source):
+            return block
+        emission = datetime.fromisoformat(emitted_at.replace("Z", "+00:00"))
+        expected = calendar.expected_last_session(emission)
+    except (TypeError, ValueError, OverflowError):
+        return block
+    block["source_session"] = as_of
+
+    if expected >= source:
+        lag_sessions = calendar.sessions_apart(source, expected)
+    else:
+        lag_sessions = -calendar.sessions_apart(expected, source)
+    expiry = calendar.session_n_forward(source, 1)
+    block.update({
+        "expected_last_session": expected.isoformat(),
+        "lag_sessions": lag_sessions,
+        "settled": source <= expected,
+        "valid_for_decision_sessions": [] if expiry is None else [expiry.isoformat()],
+        "expiry_session": None if expiry is None else expiry.isoformat(),
+    })
+    return block

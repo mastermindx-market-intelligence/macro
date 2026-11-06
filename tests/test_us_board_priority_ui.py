@@ -39,6 +39,7 @@ Recently-fired `pbr` lane, the theme tape) and remain valid.
 from __future__ import annotations
 
 import re
+from html.parser import HTMLParser
 from zlib import crc32
 
 import jinja2
@@ -382,13 +383,13 @@ def test_stage_headings_carry_label_count_and_stance():
     """Tier-1 budget: the bucket name IS the stance, the count is a pill, and the
     tail sentence stays under the 14-word subtitle cap."""
     html = _priority_html()
-    assert '<span class="l-en">Live now</span><span class="l-zh">现在可操作</span>' in html
+    assert '<span class="l-en">Active setups</span><span class="l-zh">活跃形态</span>' in html
     # The ZH separator is the em-dash the EN label uses, not a middot: the two halves
     # are a state and a stance, and every sibling ZH label on this surface
     # (`尚未触发 — 做好准备`) already joins them that way.
     assert '<span class="l-en">Ran — don’t chase</span><span class="l-zh">已启动 — 勿追</span>' in html
     assert "已启动 · 勿追" not in html
-    assert '<span class="l-en">entry window is open</span>' in html
+    assert '<span class="l-en">Check each card’s dated entry read</span>' in html
     assert '<span class="l-en">stand aside for now</span>' in html
     assert '<span class="sh-n">' in html
 
@@ -1218,13 +1219,71 @@ def test_both_shapes_render_in_both_modes_without_raising():
 # helpers
 # --------------------------------------------------------------------------- #
 
+@pytest.mark.parametrize("tag", ["article", "a"])
+def test_card_markup_isolates_current_and_historical_card_roots(tag):
+    inner = '<a href="stock.html#MSCI">MSCI</a>' if tag == "article" else '<span>MSCI</span>'
+    wanted = f'<{tag} class="pvcard pv-near" data-ticker="MSCI">{inner}<span>Near</span></{tag}>'
+    sibling = '<article class="pvcard pv-buy" data-ticker="ADSK"><span>Buy</span></article>'
+    html = '<div data-ticker="MSCI">outside card</div>' + wanted + sibling
+    assert _card_markup(html, "MSCI") == wanted
+    assert _card_markup(html, "ADSK") == sibling
+    with pytest.raises(AssertionError, match="card for MISSING not found"):
+        _card_markup(html, "MISSING")
+
+
 def _card_markup(html: str, ticker: str) -> str:
-    """The one card's markup, from its opening <a> to the next card boundary — so a
-    per-row assertion can never be satisfied by a different row's markup."""
-    start = html.rfind("<a class=\"pvcard", 0, html.find(f'data-ticker="{ticker}"'))
-    assert start != -1, f"card for {ticker} not found"
-    end = html.find("<a class=\"pvcard", start + 10)
-    return html[start:end if end != -1 else len(html)]
+    """Return one complete current article or historical anchor card only."""
+    class CardParser(HTMLParser):
+        def __init__(self):
+            super().__init__(convert_charrefs=False)
+            self.root_tag = None
+            self.depth = 0
+            self.found = False
+            self.parts = []
+
+        def handle_starttag(self, tag, attrs):
+            attributes = dict(attrs)
+            if not self.depth and not self.found:
+                if (tag in {"article", "a"}
+                        and "pvcard" in attributes.get("class", "").split()
+                        and attributes.get("data-ticker") == ticker):
+                    self.root_tag = tag
+                else:
+                    return
+            if not self.found:
+                if tag == self.root_tag:
+                    self.depth += 1
+                if self.depth:
+                    self.parts.append(self.get_starttag_text())
+
+        def handle_startendtag(self, tag, attrs):
+            if self.depth:
+                self.parts.append(self.get_starttag_text())
+
+        def handle_endtag(self, tag):
+            if self.depth:
+                self.parts.append(f"</{tag}>")
+                if tag == self.root_tag:
+                    self.depth -= 1
+                    self.found = not self.depth
+
+        def handle_data(self, data):
+            if self.depth:
+                self.parts.append(data)
+
+        def handle_entityref(self, name):
+            self.handle_data(f"&{name};")
+
+        def handle_charref(self, name):
+            self.handle_data(f"&#{name};")
+
+        def handle_comment(self, data):
+            self.handle_data(f"<!--{data}-->")
+
+    parser = CardParser()
+    parser.feed(html)
+    assert parser.found, f"card for {ticker} not found"
+    return "".join(parser.parts)
 
 
 @pytest.mark.skip(reason="P-MP1-SHELL central act (MP-1-prophet-board.md §6 row 4, §12 item 4): the candidate-board priority-engine card rendering this test asserts on (stage/lane headings, filter chips, featured chip, marks row) was RETIRED from the Setups grid, which now re-sources from the plan book (site/prophet/index.json.plans) per the packet's central act. us_standouts still carries this data (Recently-fired/footnote sections read it independently) but it is no longer rendered as cards on this page. Retirement is proven in tests/test_dashboard_template_render.py::test_candidate_stage_rail_absent_from_setups_grid. This suite (G0.1-G0.7, research/PROPHET_BOARD_PRIORITY_ENGINE_MASTERPLAN_BY_FABLE.md) is disclosed test debt owed a dedicated follow-up, not silently deleted.")

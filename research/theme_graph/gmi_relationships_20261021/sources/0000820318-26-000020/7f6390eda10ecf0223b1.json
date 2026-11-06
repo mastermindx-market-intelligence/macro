@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-14T12:10:05Z",
+ "accession": "0000820318-26-000020",
+ "cik": "0000820318",
+ "doc_byte_length": 2679044,
+ "doc_sha256": "c4a5db6385dc9af4db2370b88953515e9e8f00162ed60b0f30d10331a453f087",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-14",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "iivi-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 590780,
+  "byte_start": 590162,
+  "normalized": "On March 2, 2026, the Company entered into a multi-year strategic agreement with NVIDIA to advance the development of advanced optics technologies, including manufacturing capacity and research and development, to enable next-generation AI infrastructure. The non-exclusive agreement includes a multi-billion-dollar purchase commitment with NVIDIA, as well as future access and capacity rights for advanced laser and optical networking products. Separately, on March 2, 2026, NVIDIA made a $2 billion investment in the Company, through the purchase of shares of the Company’s Common Stock in a private placement.",
+  "normalized_sha256": "40f7c019bf965bc855b36a5442cad4f17781602ebc65345bac8acc6a60199172",
+  "raw": "On March 2, 2026, the Company entered into a multi-year strategic agreement with NVIDIA to advance the development of advanced optics technologies, including manufacturing capacity and research and development, to enable next-generation AI infrastructure. The non-exclusive agreement includes a multi-billion-dollar purchase commitment with NVIDIA, as well as future access and capacity rights for advanced laser and optical networking products. Separately, on March 2, 2026, NVIDIA made a $2 billion investment in the Company, through the purchase of shares of the Company&#8217;s Common Stock in a private placement.",
+  "raw_sha256": "7f6390eda10ecf0223b1b0eaeb311e667fb186677931aeac47a5929266c53dec"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/820318/000082031826000020/iivi-20260630.htm",
+ "xbrl_contexts": []
+}

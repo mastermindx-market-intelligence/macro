@@ -1,0 +1,14 @@
+{
+  "source_pin": "310a23dcd3e5fb8fdb95169a489b94487b091777",
+  "market_as_of": "2026-09-18",
+  "same_bake": false,
+  "note": "PIT 1614-name snapshot is not the public artifact 1601-name bake. Component proof excludes sector/cycle inputs; no deployment proof.",
+  "sha256": {
+    "china_stocks.html": "2cc9e13a100df80c50c4147c90ba134d5e92469d9be76f3b852eec4e21ef017a",
+    "site_factordata_china_standouts.json": "1eef9d4b73950536a5351d8b98e7c0af0f85b38a72b3201ae049c2023bc93760",
+    "candidates.parquet": "70f6b36130dcd88fc833ce41dff197d286983e6bd6d7e976fba42f9270322df9",
+    "baskets.json": "551432db1b27466a45d681e893b053ff6092a439ed9c427263add9a6d7766d1e",
+    "baskets_ths.json": "47dcefc07e4e32494836de2d005359eb859574a6fbf9be9a4bdfabbfb7aa36fc",
+    "basket_turn_cn.json": "8011af6d60ce07176455e90604f778af9edb471609af4d9d13b1fc4c6aa0e9cb"
+  }
+}
