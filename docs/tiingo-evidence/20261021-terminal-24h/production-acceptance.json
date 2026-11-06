@@ -1,0 +1,261 @@
+{
+  "kind": "tiingo-24h-production-verification",
+  "recorded_at_utc": "2026-10-21T07:30:36.765Z",
+  "status": "consumer_deployed_and_live_verified_producers_held",
+  "consumer": {
+    "pr": 1093,
+    "reviewed_head": "19d75a2fac0f623b9eee239ceb58310a35bd363d",
+    "reviewed_tree": "04e74b641f53a6b34e683a71af2507036f4b6255",
+    "ci_run": 39553727716,
+    "ci_conclusion": "success",
+    "ci_jobs_passed": 16,
+    "merged_revision": "ea7b20286ffeda9194597245b147719d6ed515fd",
+    "merged_at_utc": "2026-10-21T06:54:53Z",
+    "merged_tree_matches_reviewed": true,
+    "deployment_owner": "/opt/terminal/terminal-build.sh",
+    "deployment_local_pid": 15557,
+    "deployment_remote_pid": 3897594,
+    "preflight_receipt": "/var/lib/mastermind-terminal/release-preflight/20261021T065650Z-e3ca39a82d9713061e5e27ac0cd3ac1d249af127-4ef77f64a245c42280684c8c18a39e12be2b94f5628e35ad44aad552703e58de.json",
+    "deployment_status": "deployed",
+    "build_id": "build-TfctsWXpff2fKS",
+    "deployment_exit_code": 0,
+    "deployment_runtime_seconds": 1440.37,
+    "installed_source_hashes_match_reviewed": true
+  },
+  "producer": {
+    "checked_on": "2026-10-21",
+    "release": "21ff4afc1e87de2e6832e2ad1d84548aebdcb2e3",
+    "schedules_loaded": false,
+    "labels": [
+      {
+        "label": "com.macro.extquotes",
+        "launchctl_returncode": 113,
+        "installed_plist": false
+      },
+      {
+        "label": "com.macro.boats-live-history",
+        "launchctl_returncode": 113,
+        "installed_plist": false
+      },
+      {
+        "label": "com.macro.boats-history",
+        "launchctl_returncode": 113,
+        "installed_plist": false
+      }
+    ],
+    "actual_refusal": "Retained automatic approval review rejection of untested persistent publication, relaunch and overlap",
+    "later_quote_evidence": "Merged Macro PR 9805 records settled 600-second quote and history captures on 2026-10-20; underlying publication/access-resolution receipt is not verified here",
+    "current_private_history": {
+      "requests": 8,
+      "raw_bytes": 172921,
+      "deliveries": 8,
+      "finished_at_utc": "2026-10-21T05:55:26.731224+00:00",
+      "complete_history": false,
+      "latest_source_minute_utc": "2026-10-21T03:46:00Z"
+    }
+  },
+  "production_api_observations": [
+    {
+      "id": "R1",
+      "request_started_at_utc": "2026-10-21T07:21:10.128Z",
+      "dom_observed_complete_at_utc": "2026-10-21T07:21:21.631Z",
+      "response": {
+        "bars": 20000,
+        "boats_status": "available",
+        "daytime_cache": {
+          "assembled_at": "2026-10-21T07:21:18.665Z",
+          "cache_state": "new_assembly",
+          "meaning": "daytime_assembly_not_market_data_freshness",
+          "refresh_checked_at": null,
+          "refresh_error": null,
+          "refresh_pending": true
+        },
+        "last_display_epoch": 1792539960,
+        "live_history": {
+          "content_sha256": "d1011cedd78c18f1439da501241286b153a2dfd7d9bc6738bc16942130ff14a7",
+          "observed_at_utc": "2026-10-21T05:50:30.061368+00:00",
+          "receipt_ids": [
+            "f09a99cbe308a130b9d8bd68ff658698cc86ea9eac5b75e3baea1d7a2fc2a5f8"
+          ],
+          "session_date": "2026-10-21",
+          "status": "applied"
+        },
+        "source_evidence_keys": [
+          "schema",
+          "authority",
+          "symbol",
+          "requested_timeframe",
+          "session",
+          "timestamp_basis",
+          "response_scope",
+          "construction",
+          "source_counts",
+          "assembly_store_reads",
+          "store_read_scope",
+          "assembly_clock",
+          "instrument_identity",
+          "price_adjustment",
+          "volume_adjustment",
+          "completeness",
+          "point_in_time_availability",
+          "research_admission",
+          "warnings"
+        ],
+        "symbol": "SPY",
+        "tf": "1m"
+      }
+    },
+    {
+      "id": "R2",
+      "request_started_at_utc": "2026-10-21T07:21:38.377Z",
+      "dom_observed_complete_at_utc": "2026-10-21T07:21:40.990Z",
+      "response": {
+        "bars": 20000,
+        "boats_status": "available",
+        "daytime_cache": {
+          "assembled_at": "2026-10-21T07:21:21.518Z",
+          "cache_state": "cache",
+          "meaning": "daytime_assembly_not_market_data_freshness",
+          "refresh_checked_at": "2026-10-21T07:21:21.518Z",
+          "refresh_error": null,
+          "refresh_pending": false
+        },
+        "last_display_epoch": 1792539960,
+        "live_history": {
+          "content_sha256": "d1011cedd78c18f1439da501241286b153a2dfd7d9bc6738bc16942130ff14a7",
+          "observed_at_utc": "2026-10-21T05:50:30.061368+00:00",
+          "receipt_ids": [
+            "f09a99cbe308a130b9d8bd68ff658698cc86ea9eac5b75e3baea1d7a2fc2a5f8"
+          ],
+          "session_date": "2026-10-21",
+          "status": "applied"
+        },
+        "symbol": "SPY",
+        "tf": "1m"
+      }
+    },
+    {
+      "id": "R3",
+      "request_started_at_utc": "2026-10-21T07:22:41.282Z",
+      "navigation_resolved_at_utc": "2026-10-21T07:22:43.890Z",
+      "dom_observed_complete_at_utc": "2026-10-21T07:22:44.364Z",
+      "response": {
+        "bars": 20000,
+        "boats_status": "available",
+        "daytime_cache": {
+          "assembled_at": "2026-10-21T07:21:21.518Z",
+          "cache_state": "stale_cache",
+          "meaning": "daytime_assembly_not_market_data_freshness",
+          "refresh_checked_at": "2026-10-21T07:21:21.518Z",
+          "refresh_error": null,
+          "refresh_pending": true
+        },
+        "last_display_epoch": 1792539960,
+        "live_history": {
+          "content_sha256": "d1011cedd78c18f1439da501241286b153a2dfd7d9bc6738bc16942130ff14a7",
+          "observed_at_utc": "2026-10-21T05:50:30.061368+00:00",
+          "receipt_ids": [
+            "f09a99cbe308a130b9d8bd68ff658698cc86ea9eac5b75e3baea1d7a2fc2a5f8"
+          ],
+          "session_date": "2026-10-21",
+          "status": "applied"
+        },
+        "symbol": "SPY",
+        "tf": "1m"
+      }
+    },
+    {
+      "id": "R4",
+      "request_started_at_utc": "2026-10-21T07:22:56.808Z",
+      "navigation_resolved_at_utc": "2026-10-21T07:22:58.887Z",
+      "dom_observed_complete_at_utc": "2026-10-21T07:22:59.285Z",
+      "response": {
+        "bars": 20000,
+        "boats_status": "available",
+        "daytime_cache": {
+          "assembled_at": "2026-10-21T07:22:43.859Z",
+          "cache_state": "cache",
+          "meaning": "daytime_assembly_not_market_data_freshness",
+          "refresh_checked_at": "2026-10-21T07:22:43.859Z",
+          "refresh_error": null,
+          "refresh_pending": false
+        },
+        "last_display_epoch": 1792539960,
+        "live_history": {
+          "content_sha256": "d1011cedd78c18f1439da501241286b153a2dfd7d9bc6738bc16942130ff14a7",
+          "observed_at_utc": "2026-10-21T05:50:30.061368+00:00",
+          "receipt_ids": [
+            "f09a99cbe308a130b9d8bd68ff658698cc86ea9eac5b75e3baea1d7a2fc2a5f8"
+          ],
+          "session_date": "2026-10-21",
+          "status": "applied"
+        },
+        "symbol": "SPY",
+        "tf": "1m"
+      }
+    }
+  ],
+  "production_chart": {
+    "url": "https://app.mastermind-x.com/terminal?symbol=AMD",
+    "observed_at_utc": "2026-10-21T07:24:43Z",
+    "symbol": "AMD",
+    "timeframe": "1m",
+    "chart_type": "Line",
+    "extended_hours": true,
+    "overnight_hours": true,
+    "status": "BOATS overnight · Captured history available; venue-only volume. Gaps remain.",
+    "drawings_count": 2,
+    "visible_studies": [
+      "Golden Oracle Confluence",
+      "Moving Averages",
+      "Volume",
+      "TW · Mastermind Candles",
+      "RSI",
+      "Stochastic RSI"
+    ],
+    "pixel_screenshot_status": "captured",
+    "screenshot": "production-amd-24h.jpg",
+    "screenshot_sha256": "d08870f624830a04c79cc3d43390745918614f105ca018ba5083f33cf9ce3290",
+    "screenshot_bytes": 234791,
+    "screenshot_format": "jpeg",
+    "browser_recovery": "Two CDP focus timeouts were resolved by reacquiring the same observed tab; the screenshot and deliverable marking then succeeded."
+  },
+  "interpretation": [
+    "A daytime-cache assembly timestamp is not a market-data freshness timestamp.",
+    "Successful private-history delivery does not establish current-session completeness.",
+    "Persistent producer activation remains held; this evidence does not grant execution authority."
+  ],
+  "sources": {
+    "consumer_pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1093",
+    "original_ci": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/39553727716",
+    "boats_rest": "https://www.tiingo.com/documentation/boats",
+    "boats_websocket": "https://www.tiingo.com/documentation/websockets/boats"
+  },
+  "production_metadata": {
+    "observed_at_utc": "2026-10-21T07:20:48.999135+00:00",
+    "deployment_marker": "ea7b20286ffeda9194597245b147719d6ed515fd",
+    "build_id": "build-TfctsWXpff2fKS",
+    "shared_build_owner": null,
+    "canonical_head": "ea7b20286ffeda9194597245b147719d6ed515fd",
+    "canonical_dirty": "",
+    "builder_sha256": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+    "services": {
+      "terminal.service": "MainPID=3918610\nActiveState=active",
+      "terminal-beta.service": "MainPID=3306695\nActiveState=active",
+      "quote-hub.service": "MainPID=2227318\nActiveState=active"
+    },
+    "source_hashes": {
+      "lib/intradayDaytimeCache.ts": "67f84865299c0f05aae222bb1810b2906c08b0bdd6369c2564ad3a2b821df610",
+      "app/api/intraday/route.ts": "e4b1ca9f797bf75913797df3ec88d94fb094ca528a8d0ec59d694212e49b3e96",
+      "lib/tiingoBoatsLiveHistory.ts": "6645fbf55a04d93ec23a9bbfcc94f591ba5c60a105624f0ca2fc8be6fadbacee"
+    }
+  },
+  "cache_verification": {
+    "cold_pending_then_successful_cache": true,
+    "expired_pending_then_successful_cache": true,
+    "refresh_error": null,
+    "unchanged_overnight_snapshot_keeps_original_capture_clock": true,
+    "strict_post_response_settlement_proven": false,
+    "limitation": "Refresh settlement preceded the recorded DOM-read completion in both observed cycles. The pending-to-settled transition is verified, but these browser timings do not independently prove settlement after the HTTP response completed or execution of the after() callback. Browser control/navigation times are not network-latency benchmarks."
+  }
+}

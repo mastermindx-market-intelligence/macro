@@ -1,0 +1,51 @@
+{
+  "scope": "IM00-T2 unknown-safe Overview projection, source only",
+  "source_reference": "a15bcf4def597cdace29517824db0ad9a66cf21b",
+  "implementation": {
+    "engine/intl_workspace_overview.py": "c0c4a5c714ccda8f328ff4f613da296691d9ea3f6fdfafff5767e3b33772b367",
+    "tests/test_intl_workspace_overview.py": "d0f91cce4c983aab883726cb2e1560caa76d8424f1323318f8487ca3a5fe6e05"
+  },
+  "review": {
+    "verdict": "APPROVE_SCOPED",
+    "reviewer_session": "01a11057-3134-76d2-bcd1-784d69cc17d3",
+    "artifact_sha256": "9ae26f566f2d15dc8130e9df0d0746635bd78f2c79439906976a3a8138ee8636"
+  },
+  "tests": {
+    "committed_cases": 20,
+    "runtimes": [
+      "Python3.14.7",
+      "Python3.12"
+    ],
+    "independent_precision_assertions": 45,
+    "other_parent_assertions": [
+      20,
+      21
+    ],
+    "sol_final_additional_assertions": 12
+  },
+  "behavior": [
+    "Per-leg provenance bindings and independent metadata/value withholding; no owner qualification invented",
+    "Unknown selected metadata withholds secondary values; denied selected metadata leaves public slot only",
+    "Exact unrounded stable ranking only across equal calculation windows",
+    "Exact submicrosecond chronology and fractional timezone compatibility preserve original strings"
+  ],
+  "limits": [
+    "Unmounted source: no product/UI/browser/release acceptance",
+    "Positive qualification receipts are synthetic; actual live qualification owner not proven",
+    "Parent repaired returned derivatives; original incomplete worker returns remain unaccepted as full commissions"
+  ],
+  "worker_runs": [
+    "rs_20261006T204703Z_23944",
+    "rs_20261006T205642Z_47176",
+    "rs_20261006T211859Z_97566"
+  ],
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/overview-projection",
+  "later_composition_integration": {
+    "source_sha256": "979fe0ada31f876febd65f7361a856d74bf9f634155c3a13da71411d209bef2e",
+    "scope": "Unchanged projection core; moved existing35-line supplied-frame page composition helper into same projection module with imports confined to helper call. No new financial/freshness/rights authority.",
+    "review": "DEPENDENCY_REPAIR_REVIEW.json independentlyapproved",
+    "proof": "29focused tests and byte-identical actual rendered HTML",
+    "receipt": "IM01_OVERVIEW_MOUNT_EVIDENCE.json"
+  }
+}

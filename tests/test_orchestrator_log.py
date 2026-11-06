@@ -421,17 +421,33 @@ class TestSettings:
         assert cfg["review_every_n_runs"] == 5
         assert cfg["site_rows"] == 60
         assert cfg["ingest_bot_feedback"] is True
+        assert cfg["brief_attention_nudges"] is True
 
     def test_valid_overrides_applied(self, tmp_path):
         _make_config(tmp_path,
                      "orchestrator:\n"
                      "  review_every_n_runs: 2\n"
                      "  site_rows: 30\n"
-                     "  ingest_bot_feedback: false\n")
+                     "  ingest_bot_feedback: false\n"
+                     "  brief_attention_nudges: false\n")
         cfg = _settings(tmp_path)
         assert cfg["review_every_n_runs"] == 2
         assert cfg["site_rows"] == 30
         assert cfg["ingest_bot_feedback"] is False
+        assert cfg["brief_attention_nudges"] is False
+
+    def test_c_loader_path_does_not_depend_on_yaml_safe_load(self, tmp_path, monkeypatch):
+        import yaml
+
+        _make_config(tmp_path, "orchestrator:\n  review_every_n_runs: 2\n")
+        monkeypatch.setattr(
+            yaml,
+            "safe_load",
+            lambda *_a, **_kw: (_ for _ in ()).throw(
+                AssertionError("pure-Python safe_load should not be on this hot path")
+            ),
+        )
+        assert _settings(tmp_path)["review_every_n_runs"] == 2
 
     def test_out_of_bounds_review_n_rejected(self, tmp_path):
         _make_config(tmp_path, "orchestrator:\n  review_every_n_runs: 1\n")
