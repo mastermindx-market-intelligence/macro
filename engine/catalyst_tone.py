@@ -620,7 +620,7 @@ def _fabric_cache_value(state, logical_source):
 def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
                             system, user, input_context, validate,
                             load_cache=None, store_cache=None, cache_root=None,
-                            allow_truncated=False):
+                            allow_truncated=False, local_mutex=None):
     """One caller-owned document operation in its existing cache envelope.
 
     The caller supplies the source key, cache path, task, prompt and validator.
@@ -637,6 +637,12 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
                 or load_cache is not None and (not callable(load_cache) or not callable(store_cache))):
             raise ValueError("fabric_cache_owner_invalid")
         lock_root = root if cache_root is None else cache_root
+        @contextmanager
+        def locked_cache():
+            from contextlib import nullcontext
+            with (local_mutex if local_mutex is not None else nullcontext()):
+                with _cache_lock(path, lock_root):
+                    yield
         def read_state():
             return (_fabric_cache_state(path, logical_source) if load_cache is None
                     else _fabric_cache_value(load_cache(), logical_source))
@@ -649,7 +655,7 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
         exists = os.path.lexists(path)
         if not exists and llm_auth.application_mode_id(cfg) is None:
             return None
-        with _cache_lock(path, lock_root):
+        with locked_cache():
             state = read_state()
             held = next((r for r in state["entries"] if r["state"] != "terminal"), None)
             if held is not None:
@@ -676,7 +682,7 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
         if allow_truncated:
             commitment["output_policy"] = "preserve_valid_truncation"
         digest = _cache_hash(commitment)
-        with _cache_lock(path, lock_root):
+        with locked_cache():
             state = read_state()
             if any(r["state"] != "terminal" for r in state["entries"]):
                 return {"result": None, "receipt": None, "error": "fabric_original_held"}
@@ -788,7 +794,7 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
         row.update(state="held" if unknown else "terminal", text=text, result=result,
                    result_digest=_cache_hash(result) if result is not None else None,
                    receipt=receipt, error=error or ("fabric_close_unknown" if unknown else None))
-        with _cache_lock(path, lock_root):
+        with locked_cache():
             state = read_state()
             original = next(r for r in state["entries"] if r["operation_id"] == row["operation_id"])
             if original["state"] != "pending" or original["input_digest"] != digest:

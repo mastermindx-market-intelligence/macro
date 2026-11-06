@@ -431,6 +431,8 @@ def _run_panel(state: dict, cfg: dict, call=None) -> dict:
             return key, None
 
     keys = list(_PANEL_SYSTEMS)
+    if isinstance(fn, _ledger_law._FabricDeskReplay):
+        return dict(_one(k) for k in keys)
     try:
         from concurrent.futures import ThreadPoolExecutor
         with ThreadPoolExecutor(max_workers=len(keys)) as ex:
@@ -450,7 +452,69 @@ def _adjudicate(state: dict, panel: dict, cfg: dict, call=None):
     return fn(_ADJ_SYSTEM, user, cfg)
 
 
-def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
+def _fabric_systems():
+    return {"single": _SYSTEM, "adjudicator": _ADJ_SYSTEM,
+            **{"panel:" + name: value for name, value in _PANEL_SYSTEMS.items()}}
+
+
+def _fabric_render(state, cfg, call, context):
+    return _synthesize_legacy(state, cfg, call, _frozen=context)
+
+
+def _fabric_prepare(brief, context, root):
+    asof = brief["state_asof"]
+    rows = [{**thesis, "market": brief["market"], "logged_at": brief["generated_at"],
+             "state_asof": asof,
+             "entry_levels": _entry_levels((thesis.get("falsifier") or {}).get("check") or {}, asof, root)}
+            for thesis in brief["theses"]]
+    return [{"kind": "jsonl", "path": "data/thematic_desk/theses.jsonl", "rows": rows,
+             "key": "id", "guard": None, "keep_first": False, "eligible": True},
+            {"kind": "handoff", "name": "thematic-qledger"},
+            {"kind": "json", "path": "site/allocationdata/ai_desk_" + brief["market"] + ".json",
+             "value": brief}]
+
+
+def _fabric_synthesize(state, cfg, root, persist=False):
+    try:
+        region = state.get("region")
+        if region not in REGION:
+            return _ledger_law.fabric_held("application_fabric_region_invalid")
+        key = "thematic-" + region
+        result = _ledger_law.fabric_synthesize(key, root, state, cfg,
+            _fabric_systems(), _fabric_render, publication_requested=persist,
+            context={"passport": _ad._desk_passport("thematic_" + region)})
+        if result is None:
+            return _ledger_law.fabric_held("application_fabric_selection_changed")
+        if result["held"] or not persist or result["result"] is None:
+            return result["result"]
+        return _ledger_law.fabric_publish(key, root, result["run_id"],
+            lambda brief, context: _fabric_prepare(brief, context, root),
+            handoff=lambda rows: _register_qledger_claims(rows, root))
+    except Exception:
+        return _ledger_law.fabric_held("application_fabric_owner_refused")
+
+
+def synthesize(state: dict, cfg: dict | None = None, call=None, *, root=None) -> dict:
+    cfg, root = cfg or _cfg(), Path(root) if root is not None else config.ROOT
+    region = state.get("region")
+    if region not in REGION:
+        if _ledger_law.fabric_selected(cfg):
+            return _ledger_law.fabric_held("application_fabric_region_invalid")
+        return _synthesize_legacy(state, cfg, call)
+    key = "thematic-" + region
+    held = _ledger_law.fabric_pending(key, root)
+    if held is not None:
+        return held
+    if _ledger_law.fabric_selected(cfg):
+        return _fabric_synthesize(state, cfg, root)
+    snapshot = _ledger_law.fabric_snapshot(key, root)
+    brief = _synthesize_legacy(state, cfg, call)
+    if not _ledger_law.fabric_legacy_publish(key, root, snapshot, cfg, lambda: None):
+        return _ledger_law.fabric_held("application_fabric_selection_changed")
+    return brief
+
+
+def _synthesize_legacy(state: dict, cfg: dict | None = None, call=None, *, _frozen=None) -> dict:
     """Run the analyst over a gathered state → a brief record. Never raises. `call` is
     injectable (defaults to master_brain._call_model) so tests run without an API key."""
     cfg = cfg or _cfg()
@@ -459,7 +523,7 @@ def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
     ranks = (state.get("narrative_rotation") or {}).get("ranks") or []
     brief = {
         "schema": SCHEMA, "is_context_only": True, "market": region,
-        "generated_at": _now_iso(), "state_asof": asof,
+        "generated_at": _frozen["created_at"] if _frozen else _now_iso(), "state_asof": asof,
         "model": cfg.get("llm_model", "deepseek-v4-pro"),
         "regime_context": None, "emerging_watch": None, "theses": [],
         "track_record": state.get("track_record"), "confidence": "low",
@@ -468,7 +532,7 @@ def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
         # #41 badge honesty: the desk's conviction badge carries an honest provenance passport
         # (measured·n / accruing·n=0), derived from the outcome spine, so a cold lean can't read
         # as an earned edge. Set here so every return path (incl. degraded) carries it.
-        "passport": _ad._desk_passport(f"thematic_{region}"),
+        "passport": _frozen["passport"] if _frozen else _ad._desk_passport(f"thematic_{region}"),
     }
     # adversarial panel (default on) → desk-head adjudication; analyst-only fallback.
     # A SUB-QUORUM panel (fewer than panel.min_quorum roles survived) takes the same
@@ -568,7 +632,7 @@ def _append_ledger(brief: dict, root) -> list:
     if not theses:
         return []
     try:
-        d = Path(root).joinpath(*_LEDGER_DIR)
+        d = Path(root).resolve(strict=True).joinpath(*_LEDGER_DIR)
         d.mkdir(parents=True, exist_ok=True)
         asof = brief.get("state_asof")
         lp = d / "theses.jsonl"
@@ -579,10 +643,11 @@ def _append_ledger(brief: dict, root) -> list:
                          "state_asof": asof, "entry_levels": _entry_levels(check, asof, root)})
         # First-wins as before, but LOUD (engine.desk_ledger): with run-scoped ids a
         # rejection here means id minting regressed, never a routine re-run.
-        rows = _ledger_law.reject_existing_ids(lp, rows, "thematic_desk")
-        with open(lp, "a") as fh:
-            for row in rows:
-                fh.write(json.dumps(row, default=str) + "\n")
+        with _ledger_law._fabric_ledger_lock(lp, Path(root).resolve(strict=True)):
+            rows = _ledger_law.reject_existing_ids(lp, rows, "thematic_desk")
+            with open(lp, "a") as fh:
+                for row in rows:
+                    fh.write(json.dumps(row, default=str) + "\n")
         return rows
     except Exception as e:  # noqa: BLE001
         log.warning("thematic_desk ledger append failed: %s", e)
@@ -609,31 +674,42 @@ def _register_qledger_claims(written: list, root) -> dict | None:
 
 
 def run(market: str = "us", persist: bool = True, root=None, call=None) -> dict | None:
-    """Gather → synthesize → persist the public brief + ledger for one market. Additive:
-    returns None (and writes nothing) when disabled / no key / no state. Never raises."""
+    """Publish one regional brief while keeping the incumbent shared ledger."""
     region = (market or "us").lower()
     if region not in REGION:
         return None
-    if call is None and not enabled():
-        log.info("thematic_desk[%s]: disabled (ai_desk.enabled=false) — skipping", region)
-        return None
-    root = Path(root) if root else config.ROOT
+    cfg, root = _cfg(), Path(root) if root is not None else config.ROOT
+    key = "thematic-" + region
     try:
+        held = _ledger_law.fabric_pending(key, root)
+        if held is not None:
+            return held
+        selected = _ledger_law.fabric_selected(cfg)
+        if (call is None or selected) and not enabled():
+            return None
+        snapshot = None if selected else _ledger_law.fabric_snapshot(key, root)
         state = gather_thematic_state(region, root)
         if state is None:
             return None
-        brief = synthesize(state, _cfg(), call)
-        if persist:
-            site = Path(root) / "site" / "allocationdata"
-            site.mkdir(parents=True, exist_ok=True)
-            (site / f"ai_desk_{region}.json").write_text(json.dumps(brief, default=str))
-            written = _append_ledger(brief, root)
-            if written:
-                _register_qledger_claims(written, root)
+        if _ledger_law.fabric_selected(cfg) != selected:
+            return _ledger_law.fabric_held("application_fabric_selection_changed")
+        if selected:
+            return _fabric_synthesize(state, cfg, root, persist)
+        brief = _synthesize_legacy(state, cfg, call)
+        def publish():
+            if persist:
+                site = Path(root) / "site/allocationdata"
+                site.mkdir(parents=True, exist_ok=True)
+                (site / ("ai_desk_" + region + ".json")).write_text(json.dumps(brief, default=str))
+                written = _append_ledger(brief, root)
+                if written:
+                    _register_qledger_claims(written, root)
+        if not _ledger_law.fabric_legacy_publish(key, root, snapshot, cfg, publish):
+            return _ledger_law.fabric_held("application_fabric_selection_changed")
         return brief
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("thematic_desk run[%s] failed: %s", region, e)
-        return None
+    except Exception as exc:
+        log.error("thematic_desk run[%s] failed: %s", region, exc)
+        return _ledger_law.fabric_held("application_fabric_owner_refused") if _ledger_law.fabric_selected(cfg) else None
 
 
 # --------------------------------------------------------------------------- #
