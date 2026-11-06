@@ -1,0 +1,122 @@
+{
+  "schema": "bottom_pivot_engineering_verification.v1",
+  "operation": "bottom-pivot-delivery-20261105",
+  "pr": 10785,
+  "recorded_at": "2026-11-06T02:37:33.667584+00:00",
+  "scope": "CI dependency/selection and canonical radius/evidence repair; not a new signal implementation",
+  "prior_checkpoint": "3795f2b88e3bfebcfcdec07f836c6b38723113a7",
+  "procedure_pin": "Mastermind@5c3b2121bd75e30be1341a2f1048df9119cd8218",
+  "original_verification_sha256": "d3fe9cba9d85f6fe5ffaad5c969b5c4de25d3c0262d4a29da06e07336538aeac",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "be48c2e50e5f1809bdc26c9bcba2c0c6294fc747fa5c44fae049c529a44ecb3c",
+    "tests/test_ci_pack.py": "ecadb9960c3d6273afb92aee5fc3afd89067ddfbc977c6566920808f3efbd0c7",
+    "templates/qa_bottom_sensors.html.j2": "2f49f19c2e100a1c572cb87c1052f494909cde194dde17bc44511844aa569051"
+  },
+  "unchanged_original_source": [
+    "engine/neuralweb/pivot_context.py",
+    "engine/neuralweb/pivot_source_adapter.py",
+    "engine/neuralweb/bottom_sensors.py",
+    "engine/neuralweb/bottom_sensors_shadow.py",
+    "engine/neuralweb/mastermind_context.py",
+    "scripts/build_bottom_sensors.py",
+    "scripts/build_qa_bottom_sensors.py",
+    "research/signal_engine/pivot_replay.py",
+    "tests/test_mastermind_context.py",
+    "tests/test_pivot_capture.py",
+    "tests/test_pivot_context.py",
+    "tests/test_pivot_context_ui.py",
+    "tests/test_pivot_mastermind_bridge.py",
+    "tests/test_pivot_producer_integration.py",
+    "tests/test_pivot_replay.py",
+    "tests/test_pivot_source_adapter.py"
+  ],
+  "repair": {
+    "exclusive_job": "signal-gate-pair-coherence",
+    "declared_paths": 212,
+    "transitive_consumers": [
+      "regime-outlook-mapping",
+      "transmission-chains"
+    ],
+    "all_original_tests_retained": true,
+    "packing_ceilings_changed": false,
+    "removed_tests": 0,
+    "radius_tokens": [
+      "var(--r-ctl,8px)",
+      "var(--r-card,12px)"
+    ]
+  },
+  "checks": {
+    "focused_tests": {
+      "passed": 25,
+      "exit_code": 0,
+      "log_sha256": "58ae771ff95901c892e4d60769056c11e2b353dfff995a2ab4594db50b26b995",
+      "includes": "13 new selection regression cases, existing curation/closure/packing checks and pivot UI tests"
+    },
+    "exact_tracked_tree_affected_closure": {
+      "exit_code": 0,
+      "jobs": 3,
+      "uncovered_dependencies": 0,
+      "log_sha256": "5fe817b1780ba5eb13e777b868d0853db4d66be1d0c11153e5c1831d05a3627c"
+    },
+    "design_added_ratchet": {
+      "exit_code": 0,
+      "blocking": 0,
+      "log_sha256": "7edc94c130501eb9e71a59cec9292ed280f95869dc91b807f7ba0775a0178d49"
+    },
+    "canonical_visual_guard": {
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "full_delta": {
+      "status": "RUNNING",
+      "pid": 46185,
+      "base": "96633a798efda34d899e1b135487c89b596215fc",
+      "log": ".cache/bottom-pivot-resume-20261105/contract-delta-fixed.log"
+    }
+  },
+  "packing_probe_measurements": [
+    "contract-delta: probe templates/index.html: head 136 jobs / 5,904 s / 10 packs; base 137 jobs / 5,912 s / 10 packs; ceilings 137 / 5,912 / 10",
+    "contract-delta: probe scripts/build_free_content.py: head 137 jobs / 5,927 s / 10 packs; base 137 jobs / 5,927 s / 10 packs; ceilings 138 / 5,927 / 10",
+    "contract-delta: probe engine/prophet/plan_book.py: head 131 jobs / 5,668 s / 10 packs; base 131 jobs / 5,668 s / 10 packs; ceilings 131 / 5,668 / 10"
+  ],
+  "visual": {
+    "rest_and_keyboard_focus_states": 16,
+    "expanded_fixture_states": 8,
+    "manifest": "mockups/evidence/bottom-pivot-delivery-20261105/manifest.json",
+    "expanded_manifest": "mockups/evidence/bottom-pivot-delivery-20261105/expanded/manifest.json",
+    "fixture": true,
+    "production": false,
+    "capture_owner": "scripts/capture_page_evidence.py",
+    "browser": "installed Chrome, clean ephemeral contexts",
+    "self_reviewed": [
+      "desktop light rest",
+      "mobile light zh rest",
+      "desktop dark expanded",
+      "desktop light expanded"
+    ],
+    "unaffected_original_sort_filter_keyboard_evidence_preserved": true
+  },
+  "release": {
+    "self_reviewed": true,
+    "native_main_rules": [],
+    "native_main_protected": false,
+    "formal_non_author_approval_required_by_observed_rules": false,
+    "controller": "existing Macro merge-on-green only; not armed",
+    "hosted_checks_on_repaired_head": "not yet published"
+  },
+  "preserved": {
+    "original_453_test_receipt": true,
+    "original_bp1_result": true,
+    "bp2_bp3_retried": false,
+    "production_auth_boundary": true,
+    "adjacent_holds": true
+  },
+  "mission_complete": false,
+  "remaining": [
+    "qualified protected-controller release",
+    "authenticated natural production proof",
+    "market/group/intraday source-qualified integration",
+    "Terminal UX",
+    "prospective scientific validation"
+  ]
+}

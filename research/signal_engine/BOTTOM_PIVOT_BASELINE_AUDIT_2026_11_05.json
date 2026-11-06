@@ -1,0 +1,48 @@
+{
+  "schema": "bottom_pivot_baseline_audit.v1",
+  "source_owner": "existing bottom ledger; no regrading",
+  "ledger_sha256": "7154cde333f68c989e38e4edecb7edf208cbb06ab4ef1f040cc84023acc7c486",
+  "rows": 3571,
+  "graded": 344,
+  "ungraded": 3227,
+  "all_signal_dates": 66,
+  "graded_signal_dates": 11,
+  "signal_date_min": "2026-06-30",
+  "signal_date_max": "2026-10-14",
+  "grade_asof_max": "2026-10-16",
+  "cohorts": [
+    {
+      "source": "board_buy",
+      "n": 344,
+      "prox_med": 0.11776658731711631,
+      "pin5": 0.11337209302325581,
+      "held_pct": 0.47093023255813954,
+      "broke_pct": 0.2558139534883721,
+      "mfe60_med": 0.08542679993582314,
+      "fwd60_med": -0.046937008271748126,
+      "undercut_med": 0.01441750947280851,
+      "n_signal_dates": 11,
+      "n_symbols": 217,
+      "mae60_median": -0.09806860293759911,
+      "median_t_off": 29.5,
+      "positive_fwd60_fraction": 0.36046511627906974,
+      "price_basis_counts": {
+        "close_only": 259,
+        "ohlc": 85
+      }
+    }
+  ],
+  "limitations": [
+    "No original issuance timestamp in this ledger",
+    "No complete event census: event recall unknown",
+    "Current local snapshot, not verified newest production",
+    "Correlated stock calls are not independent market-bottom episodes",
+    "Grades describe legacy calls, not this new context projection",
+    "Maximum favorable excursion is a ceiling, not realized trade profit",
+    "No prospective superiority or calibration claim",
+    "No data collection or ledger writes performed",
+    "Matured rows are generic board_buy observations, not a purified cohort of COILED or market-bottom calls",
+    "Matured slice spans only 11 signal dates and is not representative of all regimes"
+  ],
+  "interpretation": "Qualification evidence only. These grades cannot be used to attribute failure or success to the new pivot context or an unisolated existing bottom detector."
+}

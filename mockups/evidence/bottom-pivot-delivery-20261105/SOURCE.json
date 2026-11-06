@@ -1,0 +1,19 @@
+{
+  "kind": "synthetic_local_design_fixture",
+  "production_proof": false,
+  "nav": "omitted in isolated fixture, unchanged from prior proof scope",
+  "capture_owner": "scripts/capture_page_evidence.py",
+  "browser": "installed Chrome, clean ephemeral context",
+  "source_sha256": {
+    "templates/qa_bottom_sensors.html.j2": "2f49f19c2e100a1c572cb87c1052f494909cde194dde17bc44511844aa569051",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "scripts/capture_page_evidence.py": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+  },
+  "html_sha256": "628151ae53e9634ce988e9ff108123de3c38c9ecc941efc4f04c97c3302fa775",
+  "expanded_fixture": {
+    "state": "first native details element initially open in synthetic HTML, not a claimed user interaction",
+    "html_sha256": "933e7875cd780bbc8d96fa57f9231f91d401af448e1de334ae9a7cb7cda1b489",
+    "manifest": "mockups/evidence/bottom-pivot-delivery-20261105/expanded/manifest.json"
+  }
+}
