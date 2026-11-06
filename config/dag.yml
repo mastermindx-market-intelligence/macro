@@ -132,6 +132,9 @@ lanes:
           (`if: always() && steps.collectors.outcome != 'success'`), so it is a
           recovery path, not part of the happy nightly. Declared post-hoc for the
           same reason as audit_reused_tickers above.
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
       - id: publish_r2_attention
         module: scripts.publish_r2
         args: [--dirs, attention]
@@ -325,6 +328,10 @@ lanes:
   # needs: collect → a fresh checkout+pull reads tonight's committed stores.
   # Engine does NOT wait on this job; every same-night reader of these outputs
   # tolerates ≤1-run-stale data (the factor_series sibling contract).
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+
   - workflow: .github/workflows/daily.yml
     job: collect_tail
     steps:
@@ -601,6 +608,10 @@ lanes:
           CCW-R15. Display-tier; authority all-false. Non-fatal (CCW-R16).
 
   # ── daily.yml / engine ──────────────────────────────────────────────────
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+
   - workflow: .github/workflows/daily.yml
     job: engine
     steps:
@@ -705,6 +716,12 @@ lanes:
           DISPLAY TIER, ZERO AUTHORITY. A run-wide data failure publishes nothing and keeps the
           previous artifact rather than overwriting real coverage with a board of nulls.
           Measured 2026-08-09: ~39s over 680 graded names (budget 600s).
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+      - id: native_scripts_ci_native_checkpoint
+        module: scripts.ci.native_checkpoint
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
       - id: engine_run
         module: engine.run
       - id: build_shock_deescalation
@@ -1120,9 +1137,19 @@ lanes:
       - id: checkpoint_core_precommit_check_template_site_sync
         module: scripts.check_template_site_sync
         args: [--fix]
+      - id: checkpoint_core_precommit_conflict_scan
+        module: scripts.check_conflict_markers
+      - id: checkpoint_core_precommit_start_runtime
+        module: scripts.check_start_runtime
       - id: checkpoint_core_gold_render_audit
         module: scripts.audit_china_gold_premium
         args: [--strict-render]
+      - id: checkpoint_core_commodity_preseal
+        module: scripts.check_commodity_publication
+        args: [--heal-from, "$COMMODITY_ACCEPTED"]
+      - id: checkpoint_core_commodity_native_candidate
+        module: scripts.check_commodity_publication
+        args: [--accepted-ref, origin/main, --candidate-ref, "$native_candidate"]
       - id: checkpoint_core_commodity_recovery
         module: scripts.check_commodity_publication
         args: [--heal-from, "$COMMODITY_ACCEPTED"]
@@ -1135,6 +1162,10 @@ lanes:
       - id: checkpoint_core_postrebase_check_template_site_sync
         module: scripts.check_template_site_sync
         args: [--fix]
+      - id: checkpoint_core_postrebase_conflict_scan
+        module: scripts.check_conflict_markers
+      - id: checkpoint_core_postrebase_start_runtime
+        module: scripts.check_start_runtime
       - id: checkpoint_core_commodity_candidate
         module: scripts.check_commodity_publication
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$qledger_push_candidate"]
@@ -1866,9 +1897,19 @@ lanes:
       - id: publish_final_precommit_check_template_site_sync
         module: scripts.check_template_site_sync
         args: [--fix]
+      - id: publish_final_precommit_conflict_scan
+        module: scripts.check_conflict_markers
+      - id: publish_final_precommit_start_runtime
+        module: scripts.check_start_runtime
       - id: publish_final_gold_render_audit
         module: scripts.audit_china_gold_premium
         args: [--strict-render]
+      - id: publish_final_commodity_preseal
+        module: scripts.check_commodity_publication
+        args: [--heal-from, "$COMMODITY_ACCEPTED"]
+      - id: publish_final_commodity_native_candidate
+        module: scripts.check_commodity_publication
+        args: [--accepted-ref, origin/main, --candidate-ref, "$native_candidate"]
       - id: publish_final_commodity_recovery
         module: scripts.check_commodity_publication
         args: [--heal-from, "$COMMODITY_ACCEPTED"]
@@ -1881,6 +1922,10 @@ lanes:
       - id: publish_final_postrebase_check_template_site_sync
         module: scripts.check_template_site_sync
         args: [--fix]
+      - id: publish_final_postrebase_conflict_scan
+        module: scripts.check_conflict_markers
+      - id: publish_final_postrebase_start_runtime
+        module: scripts.check_start_runtime
       - id: publish_final_commodity_candidate
         module: scripts.check_commodity_publication
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$qledger_push_candidate"]
@@ -1954,6 +1999,10 @@ lanes:
                     data/factordata/fire_coordinates.jsonl]
 
   # ── daily.yml / factor_series ───────────────────────────────────────────
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+
   - workflow: .github/workflows/daily.yml
     job: factor_series
     steps:
@@ -1965,6 +2014,10 @@ lanes:
   # of the engine lane 2026-08-06 (see the job's comment in daily.yml). Every input is
   # read from the COMMITTED tree that `engine` and `us_scan_tier` push, so the job
   # needs BOTH; nothing here gates the dashboard deploy (`publish` needs only engine).
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+
   - workflow: .github/workflows/daily.yml
     job: us_prophet_ledgers
     steps:
@@ -2020,6 +2073,9 @@ lanes:
           (tests/test_prophet_miss_audit.py pins that nothing else imports it and pins the
           scorecard against a live name_score_grader.grade() run, so the caching adapter can
           never become a second opinion).
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
 
   - workflow: .github/workflows/daily.yml
     job: stock_briefs
@@ -2033,6 +2089,9 @@ lanes:
           publication, or trade authority originates here.
       - id: build_stock_briefs
         module: scripts.build_stock_briefs
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
       - id: publish_r2_stockdata
         module: scripts.publish_r2
         note: non-fatal; syncs stockdata store to R2
@@ -2070,6 +2129,10 @@ lanes:
   # SA-W1: US two-axis attribution organ. Off-render, reads committed
   # retro_grades.parquet from the engine job. Writes evidence packs, scoreboard,
   # fitness card. Non-fatal; always exits 0.
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+
   - workflow: .github/workflows/daily.yml
     job: standout_audit_us
     steps:
@@ -2213,6 +2276,10 @@ lanes:
   # Lane declared 2026-08-11 (fetch_r2 census): the job shipped without a
   # dag.yml entry, so its whole 3-module spine — including a fetch_r2 restore —
   # was invisible to dag-conformance (the checker only diffs DECLARED lanes).
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+
   - workflow: .github/workflows/daily.yml
     job: us_scan_tier
     steps:
@@ -2251,6 +2318,10 @@ lanes:
   # ── daily.yml / oracle_offrender ────────────────────────────────────────
   # Oracle off-render job: panel rebuild + episodes + Time Machine + Ratio Lens.
   # Declared here to satisfy DAG conformance; non-fatal throughout.
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+
   - workflow: .github/workflows/daily.yml
     job: oracle_offrender
     steps:
@@ -2337,6 +2408,10 @@ lanes:
           outputs: [data/theme_graph/activity_membership_state.v1.json]
 
   # ── daily.yml / cortex ───────────────────────────────────────────────────
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+
   - workflow: .github/workflows/daily.yml
     job: cortex
     steps:
@@ -2523,6 +2598,10 @@ lanes:
                     site/neuralwebdata/orchestrator_runlog.json]
 
   # ── daily.yml / active_build_map ─────────────────────────────────────────
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+
   - workflow: .github/workflows/daily.yml
     job: active_build_map
     steps:
@@ -2536,6 +2615,10 @@ lanes:
           ADVISORY ONLY — gates nothing in CI or the pipeline.
 
   # ── asia-close.yml / asia ───────────────────────────────────────────────
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+
   - workflow: .github/workflows/asia-close.yml
     job: asia
     steps:
@@ -2546,6 +2629,12 @@ lanes:
       # china regime gate + regime_history, china_standouts.json and the risk_radar_intl
       # CN forward log/calibration — inputs read by nearly every builder in band A. Its
       # in-process build_china_library ProcessPool also gets the box to itself here.
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+      - id: native_scripts_ci_native_checkpoint
+        module: scripts.ci.native_checkpoint
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
       - id: build_china
         module: scripts.build_china
       - id: publish_china_heatmap
@@ -3019,6 +3108,13 @@ lanes:
 
   # ── render.yml / render ─────────────────────────────────────────────────
   # NOTE: scope=all path.
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+      - id: native_scripts_ci_native_checkpoint
+        module: scripts.ci.native_checkpoint
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+
   - workflow: .github/workflows/render.yml
     job: render
     steps:
@@ -3636,6 +3732,10 @@ lanes:
           (|| echo) so a sweep failure can never cost an alert its publish.
 
   # ── whitehouse-sentinel.yml / monitor ───────────────────────────────────
+      - id: native_scripts_ci_native_queue_push
+        module: scripts.ci.native_queue_push
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+
   - workflow: .github/workflows/whitehouse-sentinel.yml
     job: monitor
     steps:
@@ -3661,6 +3761,9 @@ lanes:
   - workflow: .github/workflows/government-revenue-live.yml
     job: refresh
     steps:
+      - id: native_scripts_ci_govrev_source_binding
+        module: scripts.ci.govrev_source_binding
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
       - id: collect_sam_opportunities
         module: scripts.collect
         args: [--only, sam_gov_opportunities, --skip-quality, --skip-shadow-importance]
@@ -3670,6 +3773,9 @@ lanes:
           collect byproducts remain unstaged. Every complete source receipt is
           published to keep current-state health live; a normalized semantic
           fingerprint separates quiet heartbeat folds from alert-worthy evidence.
+      - id: native_scripts_ci_validate_government_revenue_award_event_bundle
+        module: scripts.ci.validate_government_revenue_award_event_bundle
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
       - id: restore_defense_market_owner
         module: scripts.restore_defense_market_owner
         args: [--root, .]
@@ -3683,6 +3789,19 @@ lanes:
           Restore the existing financial-owner generation and require the reviewed
           defense issuer set. This reads the owner; it does not create a financial
           publication or grant new acquisition authority.
+      - id: prove_government_revenue_candidates
+        module: scripts.ci.govrev_candidate_proof
+        args: [prove, --root, .]
+        note: >
+          The mandatory sealed helper runs the three complete candidate suites,
+          records collection and JUnit evidence, and binds immutable pre/post
+          source, runtime and output bytes. Missing pytest refuses; missing xdist
+          uses serial proof. Rebuilds after rebase must match the accepted receipt
+          exactly or run a new proof. Publication verifies committed generation
+          identity; no direct pytest exit can substitute for this gate.
+
+  # ── filing-forensics-sec.yml / acquire_project_sync ──────────────────────
+
       - id: build_government_revenue_research_state
         module: scripts.build_government_revenue_research_state
         args: [--root, .]
@@ -3714,18 +3833,13 @@ lanes:
         module: pip
         args: [install, "fastapi>=0.115,<1.0", httpx]
         note: Install the API dependencies required by the complete candidate proof.
-      - id: prove_government_revenue_candidates
-        module: scripts.ci.govrev_candidate_proof
-        args: [prove, --root, .]
-        note: >
-          The mandatory sealed helper runs the three complete candidate suites,
-          records collection and JUnit evidence, and binds immutable pre/post
-          source, runtime and output bytes. Missing pytest refuses; missing xdist
-          uses serial proof. Rebuilds after rebase must match the accepted receipt
-          exactly or run a new proof. Publication verifies committed generation
-          identity; no direct pytest exit can substitute for this gate.
+      - id: native_scripts_check_fms_bundle
+        module: scripts.check_fms_bundle
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
+      - id: native_scripts_ci_govrev_native_settle
+        module: scripts.ci.govrev_native_settle
+        note: Exact original-source publisher verification/settlement; no acquisition or publication authority is added.
 
-  # ── filing-forensics-sec.yml / acquire_project_sync ──────────────────────
   - workflow: .github/workflows/filing-forensics-sec.yml
     job: acquire_project_sync
     steps:

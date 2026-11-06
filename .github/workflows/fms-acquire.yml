@@ -109,10 +109,10 @@ jobs:
             data/government_revenue/fms_observations.jsonl \
             data/government_revenue/fms_projection_state.json \
             data/government_revenue/fms_case_graph.json
-          git commit -m "fms-acquire: official 36(b) notification acquisition $(date -u +%FT%H:%MZ)"
           # Preserve this acquisition across unrelated branch movement. Never
           # rerun source effects or blindly replay an uncertain Git push.
           native_args=()
+          native_mint=0
           export PYTHONPATH="${GITHUB_WORKSPACE:-$PWD}" PYTHONDONTWRITEBYTECODE=1
           if [ "$FMS_TARGET_REF" = main ] && [ "${GITHUB_REF:-}" = refs/heads/main ] && [ "${GITHUB_REPOSITORY:-}" = mastermindx-market-intelligence/macro ]; then
             umask 077
@@ -129,9 +129,15 @@ jobs:
             . "$native_code_root/scripts/ci/native_publication_source.sh"
             native_publication_capture_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"
             export PYTHONPATH="$native_code_root" PYTHONDONTWRITEBYTECODE=1
+            native_mint=1
+          fi
+          if [ "$native_mint" = 1 ]; then
+            python3 -P -m scripts.ci.native_commit_clock --root "$GITHUB_WORKSPACE" -- -m "fms-acquire: official 36(b) notification acquisition $(date -u +%FT%H:%MZ)"
             # Bound the queue settlement inside the original three 45-second
             # push-attempt allowance; upload consumes this SAME deadline.
             native_args=(--native-deadline "$(python3 -c 'import time; print(time.time()+135)')")
+          else
+            git commit -m "fms-acquire: official 36(b) notification acquisition $(date -u +%FT%H:%MZ)"
           fi
           persist_rc=0
           python3 -P -B -m scripts.ci.fms_persist \

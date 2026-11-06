@@ -23,6 +23,7 @@ The assertions that matter here:
 """
 
 from __future__ import annotations
+from scripts.workflow_run_source import pinned_workflow_shell
 
 import os
 import re
@@ -542,7 +543,7 @@ def test_daily_engine_checkpoints_core_outputs_before_tail_desks():
     assert checkpoint["if"] == "always()"
     assert checkpoint["timeout-minutes"] == 25
     assert checkpoint["continue-on-error"] is True
-    assert checkpoint["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh"
+    assert checkpoint["run"] == pinned_workflow_shell("scripts/ci/daily_engine_commit_outputs.sh", "native_publication_core_stage")
 
 
 def test_daily_engine_keeps_final_commit_after_core_checkpoint():
@@ -550,7 +551,7 @@ def test_daily_engine_keeps_final_commit_after_core_checkpoint():
     publisher_steps = [
         step
         for step in steps
-        if step.get("run") == "bash scripts/ci/daily_engine_commit_outputs.sh"
+        if step.get("run") in (pinned_workflow_shell("scripts/ci/daily_engine_commit_outputs.sh", "native_publication_core_stage"), pinned_workflow_shell("scripts/ci/daily_engine_commit_outputs.sh", "native_publication_stage"))
     ]
 
     assert [step.get("name") for step in publisher_steps] == [
@@ -581,11 +582,15 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
             "scripts.check_template_site_sync",
             ["--fix"],
         ),
+        ("checkpoint_core_precommit_conflict_scan", "scripts.check_conflict_markers", None),
+        ("checkpoint_core_precommit_start_runtime", "scripts.check_start_runtime", None),
         (
             "checkpoint_core_gold_render_audit",
             "scripts.audit_china_gold_premium",
             ["--strict-render"],
         ),
+        ("checkpoint_core_commodity_preseal", "scripts.check_commodity_publication", ["--heal-from", "$COMMODITY_ACCEPTED"]),
+        ("checkpoint_core_commodity_native_candidate", "scripts.check_commodity_publication", ["--accepted-ref", "origin/main", "--candidate-ref", "$native_candidate"]),
         (
             "checkpoint_core_commodity_recovery",
             "scripts.check_commodity_publication",
@@ -599,6 +604,8 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
             "scripts.check_template_site_sync",
             ["--fix"],
         ),
+        ("checkpoint_core_postrebase_conflict_scan", "scripts.check_conflict_markers", None),
+        ("checkpoint_core_postrebase_start_runtime", "scripts.check_start_runtime", None),
         (
             "checkpoint_core_commodity_candidate",
             "scripts.check_commodity_publication",
@@ -626,7 +633,7 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
 @pytest.mark.parametrize(
     ("workflow", "job", "expected_count"),
     [
-        ("daily.yml", "engine", 4),
+        ("daily.yml", "engine", 8),
         ("engine-render.yml", "engine-render", 2),
         ("render.yml", "render", 3),
     ],
@@ -681,7 +688,10 @@ def test_daily_engine_push_loss_is_red_without_suppressing_delivery_tail():
     steps = doc["jobs"]["engine"]["steps"]
     commit_index = steps.index(step)
     for delivery_step in steps[commit_index + 1 :]:
-        assert delivery_step.get("if") == "always()", delivery_step.get("name")
+        if delivery_step.get('id') in ('native_publication_stage_origin','native_publication'):
+            assert "always()" in delivery_step['if'] and "native_publication_stage.outcome == 'success'" in delivery_step['if']
+            if delivery_step['id']=='native_publication':assert "native_publication_stage_origin.outcome == 'success'" in delivery_step['if']
+        else:assert delivery_step.get("if") == "always()", delivery_step.get("name")
 
     for job_name, job in doc["jobs"].items():
         needs = job.get("needs", [])
@@ -2270,8 +2280,9 @@ def test_a_raised_time_budget_is_never_decorative():
 
 
 def test_every_lane_loop_sources_the_shared_policy():
+    from scripts.workflow_run_source import resolved_workflow_text
     for lane in LANES:
-        text = (REPO_ROOT / ".github" / "workflows" / lane).read_text()
+        text = resolved_workflow_text(REPO_ROOT / ".github" / "workflows" / lane, REPO_ROOT)
         n_loops = text.count("while push_attempt")
         assert n_loops, f"{lane} carries no push_attempt loop"
         assert text.count("push_retry_init") == n_loops, f"{lane}: init/loop count mismatch"

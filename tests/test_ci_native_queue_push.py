@@ -146,7 +146,7 @@ def test_changed_attempt_does_not_adopt_existing_intent(candidate, monkeypatch):
 def test_unqualified_producer_is_not_generic_origin(candidate, monkeypatch):
     api = ExistingIntent(candidate)
     root, head, _ = candidate
-    monkeypatch.setenv('GITHUB_JOB', 'refresh')
+    monkeypatch.setenv('GITHUB_JOB', 'unregistered_publication_job')
     with pytest.raises(m.PublicationHeld, match='not_allowlisted'):
         m.stage(api, root, 'main', head, 1)
     assert api.events == []
@@ -461,7 +461,14 @@ def test_active_app_producer_graph_refuses_unsettled_publication(tmp_path,workfl
     assert upload['uses']=='actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02'
     assert all('continue-on-error' not in s for s in (stage,upload,final))
     output=tmp_path/'outputs'
-    result=subprocess.run(['bash','-eo','pipefail','-c',f'python3() {{ return {unsettled}; }}\n'+final['run']],
+    # This test isolates final status propagation; original-Git frame execution
+    # and altered-code refusals are exercised by the real private-frame cases.
+    from scripts.workflow_run_source import resolve_run_source
+    body=resolve_run_source(final['run'],base)
+    if workflow=='engine-render':
+        assert 'native_publication_prepare_source' in body
+        body='set -euo pipefail\nnative_code_root="$NATIVE_ORIGINAL_CODE"\n'+body[body.index('args=(--root'):]
+    result=subprocess.run(['bash','-eo','pipefail','-c',f'python3() {{ return {unsettled}; }}\n'+body],
         env={**os.environ,'NATIVE_ORIGINAL_RECORD':'original','NATIVE_ORIGINAL_CODE':str(tmp_path),
              'NATIVE_ORIGINAL_DEADLINE':'123','GITHUB_WORKSPACE':str(tmp_path),'GITHUB_OUTPUT':str(output)},
         capture_output=True,text=True)

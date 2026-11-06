@@ -73,6 +73,7 @@ MARKER = "EXTRACTED-VERBATIM-FROM: .github/workflows/daily.yml"
 #: How many leading lines of a script are scanned for :data:`MARKER`.
 MARKER_SCAN_LINES = 5
 EXTRACTION_MARKERS = (MARKER,
+    "EXTRACTED-VERBATIM-FROM: .github/workflows/engine-render.yml",
     'EXTRACTED-VERBATIM-FROM: .github/workflows/government-revenue-live.yml',
     'EXTRACTED-VERBATIM-FROM: .github/workflows/asia-close.yml')
 

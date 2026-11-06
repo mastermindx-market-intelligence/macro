@@ -102,7 +102,7 @@ _BRUN_VAR_RE = re.compile(
 )
 _MODULE_VAR_RE = re.compile(r'^\s*(\w+)=["\']([\w.]+)["\']\s*$', re.MULTILINE)
 _PYTHON_M_RE = re.compile(
-    r'python(?:3)?\s+-m\s+([\w.]+)',
+    r'python(?:3)?\s+(?:-P\s+)?-m\s+([\w.]+)',
 )
 _CLUSTER_FUNC_RE = re.compile(
     r'(cl_\w+)\s*\(\s*\)\s*\{([^}]+)\}',

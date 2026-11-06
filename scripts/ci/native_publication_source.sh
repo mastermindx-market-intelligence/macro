@@ -47,9 +47,12 @@ _native_publication_source_paths() {
     scripts/ci/govrev_candidate_proof.py \
     scripts/ci/govrev_publisher_preflight.py \
     scripts/ci/govrev_guard_stage.sh \
+    scripts/ci/govrev_native_publish.sh \
     scripts/ci/govrev_native_settle.py \
+    scripts/ci/govrev_native_settle.sh \
     scripts/ci/validate_government_revenue_award_event_bundle.py \
     scripts/ci/native_checkpoint.py \
+    scripts/ci/native_commit_clock.py \
     scripts/ci/native_publication.py \
     scripts/ci/native_publication_origin.py \
     scripts/ci/native_queue_push.py \

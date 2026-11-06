@@ -150,7 +150,7 @@ if ! push_staged_clean; then
   echo "::error title=Prophet checkpoint refused::conflict-marker guard rejected the narrow checkpoint"
   exit 1
 fi
-git commit -m "prophet-us: durable nightly checkpoint $(date -u +%F)"
+push_native_commit -m "prophet-us: durable nightly checkpoint $(date -u +%F)"
 CHECKPOINT_PARENT="$(git rev-parse HEAD^)"
 
 # The checkpoint worktree is clean, so no --autostash is necessary.

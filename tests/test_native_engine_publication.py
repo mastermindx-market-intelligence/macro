@@ -13,8 +13,9 @@ def git(root,*args):
     return subprocess.run(['git','-C',str(root),*args],capture_output=True,check=True).stdout.decode().strip()
 
 
+@pytest.mark.parametrize('script',['daily_engine_commit_outputs.sh','asia_native_engine.sh'])
 @pytest.mark.parametrize('prior_landed',[False,True])
-def test_actual_metadata_preparation_conserves_prior_local_checkpoint_without_dirty_checkout_rebase(tmp_path,prior_landed):
+def test_actual_metadata_preparation_conserves_prior_local_checkpoint_without_dirty_checkout_rebase(tmp_path,prior_landed,script):
     remote=tmp_path/'remote';remote.mkdir();git(remote,'init','-q','--bare')
     repo=tmp_path/'repo';repo.mkdir();git(repo,'init','-q','-b','main')
     git(repo,'config','user.name','fixture');git(repo,'config','user.email','fixture@example.invalid')
@@ -29,7 +30,7 @@ def test_actual_metadata_preparation_conserves_prior_local_checkpoint_without_di
     head=git(repo,'rev-parse','HEAD');(repo/'dirty-later-data').write_text('must remain untouched')
     # Only the existing commodity page check and HTTP publication are test-owned
     # fakes. The ORIGINAL metadata replay and actual candidate Git tree execute.
-    source=(ROOT/'scripts/ci/daily_engine_commit_outputs.sh').read_text()
+    source=(ROOT/'scripts/ci'/script).read_text()
     body=source.split('native_candidate=""\n',1)[1].split('while push_attempt; do',1)[0]
     body='native_candidate=""\n'+body
     shim=tmp_path/'bin';shim.mkdir();python=shim/'python3';python.write_text('#!/bin/sh\nexit 0\n');python.chmod(0o755)

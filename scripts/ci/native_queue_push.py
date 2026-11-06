@@ -9,6 +9,8 @@ after protected landing and complete original projection readback.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
+from contextvars import ContextVar
 import hashlib
 import json
 import math
@@ -77,10 +79,43 @@ def positive(value):
     return value
 
 
-def git(root, *args):
+# A domain settlement may bind its nested native client reads to the SAME
+# original allowance. Context-local state cannot leak to another publisher.
+_ORIGINAL_READ_BUDGET = ContextVar('native_publication_original_read_budget', default=None)
+
+
+def _read_timeout(maximum):
+    budget=_ORIGINAL_READ_BUDGET.get()
+    if budget is None:return maximum
+    remaining=min(maximum,budget[0]-time.time(),budget[1]-time.monotonic())
+    if remaining<=0:raise PublicationHeld('original_publication_budget_expired')
+    return remaining
+
+
+@contextmanager
+def original_read_budget(deadline,monotonic_deadline):
+    if any(type(v) not in (int,float) or not math.isfinite(v) for v in (deadline,monotonic_deadline)):
+        raise PublicationHeld('original_publication_budget_invalid')
+    parent=_ORIGINAL_READ_BUDGET.get()
+    budget=(deadline,monotonic_deadline) if parent is None else (min(deadline,parent[0]),min(monotonic_deadline,parent[1]))
+    token=_ORIGINAL_READ_BUDGET.set(budget)
+    try:
+        _read_timeout(30)
+        yield
+    finally:
+        _ORIGINAL_READ_BUDGET.reset(token)
+
+
+def _git_result(root,*args):
     result = subprocess.run(['git', '-C', str(root), *args], capture_output=True,
-                            timeout=30, env={**os.environ, 'GIT_TERMINAL_PROMPT': '0',
+                            timeout=_read_timeout(30), env={**os.environ, 'GIT_TERMINAL_PROMPT': '0',
                                 'GIT_NO_REPLACE_OBJECTS': '1', 'GIT_NO_LAZY_FETCH': '1'})
+    _read_timeout(30)
+    return result
+
+
+def git(root, *args):
+    result = _git_result(root,*args)
     if result.returncode:
         raise PublicationHeld('bounded_git_operation_failed')
     return result.stdout
@@ -151,8 +186,7 @@ class GitHub:
                 raise PublicationHeld('configured_app_rest_token_missing')
             self.authorization = 'Bearer ' + token
             return
-        result = subprocess.run(['git', '-C', str(root), 'config', '--get',
-                                 'http.https://github.com/.extraheader'], capture_output=True)
+        result = _git_result(root, 'config', '--get', 'http.https://github.com/.extraheader')
         header = result.stdout.decode().strip() if result.returncode == 0 else ''
         if header:
             key, separator, value = header.partition(':')
@@ -186,14 +220,18 @@ class GitHub:
             def redirect_request(self, *args, **kwargs):
                 raise PublicationHeld('unexpected_api_redirect')
         try:
-            timeout = min(20, self.deadline - time.time()) if self.deadline else 20
+            timeout = min(_read_timeout(20), self.deadline - time.time()) if self.deadline else _read_timeout(20)
             if timeout <= 0:
                 raise PublicationHeld('original_publication_budget_expired')
             with urllib.request.build_opener(NoRedirect).open(request, timeout=timeout) as response:
                 raw = response.read(8 * 1024 * 1024 + 1)
                 if len(raw) > 8 * 1024 * 1024:
                     raise PublicationHeld('bounded_api_response_exceeded')
-                return json.loads(raw)
+                value=json.loads(raw)
+                _read_timeout(20)
+                return value
+        except PublicationHeld:
+            raise
         except urllib.error.HTTPError as error:
             if error.code in (401, 403):
                 raise AuthorizationRefused(f'http_{error.code}_{method}_' + path.partition('?')[0]) from None
@@ -434,6 +472,8 @@ def producer_identity(head, digest, *, require_staging_step=True,publishing_step
                      'collect': '.github/workflows/daily.yml',
                      'causal': '.github/workflows/daily.yml',
                      'engine': '.github/workflows/daily.yml',
+                     'asia': '.github/workflows/asia-close.yml',
+                     'ths_rescrape': '.github/workflows/asia-close.yml',
                      'capital_structure': '.github/workflows/daily.yml',
                      'collect_tail': '.github/workflows/daily.yml',
                      'factor_series': '.github/workflows/daily.yml',

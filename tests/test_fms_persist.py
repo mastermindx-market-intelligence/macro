@@ -301,3 +301,89 @@ def test_group_reader_requires_actual_original_deadline_before_any_read(fixture)
   m.validate_native_group(root,candidate,base,candidate,git_read=never)
  with pytest.raises(m.Refusal,match='original_group_deadline_expired'):
   m.validate_native_group(root,candidate,base,candidate,git_read=never,deadline=m.time.monotonic()-1)
+
+
+@pytest.mark.parametrize('expiry',['initial-local','confirmed-ls-remote','confirmed-local'])
+def test_native_settlement_every_original_read_expires_without_next_launch_or_receipt_change(fixture,monkeypatch,expiry):
+ root,origin,peer,out=fixture;candidate,native=staged_native(fixture,monkeypatch)
+ # Actual protected local fixture landing; no second acquisition or publication.
+ run(root,'push','origin',candidate+':refs/heads/main')
+ original=out.read_bytes();deadline=json.loads(original)['native_deadline']
+ clock={'wall':deadline-10,'monotonic':100.0};calls=[];state={'confirmed':False,'expired':False}
+ real=m.git
+ def read(where,*args,**kw):
+  assert not state['expired'],'another Git read launched after original deadline'
+  assert 0<kw['timeout']<=10
+  assert args[0] not in ('push','commit','commit-tree','update-ref')
+  calls.append(args)
+  result=real(where,*args,**kw)
+  boundary=(expiry=='initial-local' and not state['confirmed'] and args[0]=='ls-tree'
+      or expiry=='confirmed-ls-remote' and state['confirmed'] and args[0]=='ls-remote'
+      or expiry=='confirmed-local' and state['confirmed'] and args[0]=='ls-tree')
+  if boundary:
+   state['expired']=True;clock.update(wall=deadline,monotonic=110.0)
+  return result
+ def settle(api,where,path,limit,*,on_published):
+  assert expiry!='initial-local'
+  assert limit==deadline
+  state['confirmed']=True
+  on_published({'source_head':candidate,'merge_sha':candidate,'observed_target_sha':candidate,
+                'projection_sha256':'a'*64,'pr_number':7})
+  pytest.fail('an expired original budget cannot finish publication')
+ monkeypatch.setattr(m.time,'time',lambda:clock['wall'])
+ monkeypatch.setattr(m.time,'monotonic',lambda:clock['monotonic'])
+ monkeypatch.setattr(m,'git',read)
+ monkeypatch.setattr(native,'GitHub',lambda *args:None)
+ monkeypatch.setattr(native,'settle',settle)
+ monkeypatch.setattr(native,'prepare_publication',lambda *a:pytest.fail('second intent'))
+ if expiry=='initial-local':
+  with pytest.raises(m.Refusal,match='original_fms_publication_budget_expired'):m.settle_native(root,out)
+ else:assert m.settle_native(root,out)==76
+ assert state['expired'] and out.read_bytes()==original
+ if expiry=='confirmed-ls-remote':assert calls[-1][0]=='ls-remote' and not any(a[0]=='fetch' for a in calls)
+ else:assert calls[-1][0]=='ls-tree'
+
+
+def test_native_expired_original_budget_refuses_before_first_git_or_provider_read(fixture,monkeypatch):
+ root,origin,peer,out=fixture;candidate,native=staged_native(fixture,monkeypatch)
+ original=out.read_bytes();deadline=json.loads(original)['native_deadline']
+ monkeypatch.setattr(m.time,'time',lambda:deadline)
+ monkeypatch.setattr(m,'git',lambda *a,**k:pytest.fail('expired Git read'))
+ monkeypatch.setattr(native,'GitHub',lambda *a:pytest.fail('expired provider read'))
+ with pytest.raises(m.Refusal,match='original_fms_publication_budget_expired'):m.settle_native(root,out)
+ assert out.read_bytes()==original
+
+
+def test_nested_native_client_constructor_uses_the_same_original_budget_and_resets_context(tmp_path,monkeypatch):
+ from scripts.ci import native_queue_push as native
+ clock={'wall':1000.0,'monotonic':100.0};calls=[]
+ monkeypatch.setattr(native.time,'time',lambda:clock['wall'])
+ monkeypatch.setattr(native.time,'monotonic',lambda:clock['monotonic'])
+ def read(argv,**kw):
+  calls.append(argv);assert kw['timeout']==1
+  clock.update(wall=1001.0,monotonic=101.0)
+  return subprocess.CompletedProcess(argv,0,b'https://github.com/mastermindx-market-intelligence/macro.git\n',b'')
+ monkeypatch.setattr(native.subprocess,'run',read)
+ with pytest.raises(native.PublicationHeld,match='original_publication_budget_expired'):
+  with native.original_read_budget(1001.0,101.0):native.GitHub(tmp_path,1001.0)
+ assert len(calls)==1 and calls[0][-4:]==['remote','get-url','--all','origin']
+ assert native._read_timeout(30)==30,'one original producer must not leak its budget into another'
+
+
+def test_nested_native_provider_read_cannot_escape_original_monotonic_budget(monkeypatch):
+ from scripts.ci import native_queue_push as native
+ clock={'wall':1000.0,'monotonic':100.0};calls=[]
+ monkeypatch.setattr(native.time,'time',lambda:clock['wall'])
+ monkeypatch.setattr(native.time,'monotonic',lambda:clock['monotonic'])
+ class Response:
+  def __enter__(self):return self
+  def __exit__(self,*args):pass
+  def read(self,limit):clock['monotonic']=101.0;return b'{}'
+ class Opener:
+  def open(self,request,timeout):calls.append(request.full_url);assert timeout==1;return Response()
+ monkeypatch.setattr(native.urllib.request,'build_opener',lambda *a:Opener())
+ api=object.__new__(native.GitHub);api.repo=native.REPOSITORY;api.deadline=1001.0;api.authorization='Bearer test-owned-fake-token'
+ with native.original_read_budget(1001.0,101.0):
+  with pytest.raises(native.PublicationHeld,match='original_publication_budget_expired'):api.request('GET','/')
+  with pytest.raises(native.PublicationHeld,match='original_publication_budget_expired'):api.request('GET','/')
+ assert len(calls)==1

@@ -1,6 +1,7 @@
 """GovRev original stage/receipt/witness wire; syntax is not admission."""
 import json
 import os
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -100,3 +101,20 @@ def test_original_source_proof_and_origin_upload_before_settlement_final_witness
     assert stage.index('publication=pending')<stage.index('while push_attempt')
     assert 'PUSH_BUDGET_SECS=2700' in stage and 'PUSH_MAX_ATTEMPTS=2' in stage
     assert 'continue-on-error' not in byid['native_publication']
+
+
+def test_same_original_stage_and_final_bootstrap_names_cannot_collide(tmp_path):
+    # Both phases keep publishing_step=native_publication_stage for the origin.
+    # Their exclusive original bootstrap files must nevertheless be distinct.
+    stage=(ROOT/'scripts/ci/govrev_native_publish.sh').read_text()
+    final=(ROOT/'scripts/ci/govrev_native_settle.sh').read_text()
+    stage_assignment=next(line.strip() for line in stage.splitlines() if line.strip().startswith('native_bootstrap='))
+    final_assignment=next(line.strip() for line in final.splitlines() if line.strip().startswith('native_bootstrap='))
+    program=stage_assignment+'\n(set -o noclobber; printf original > "$native_bootstrap")\n'
+    program+=final_assignment+'\n(set -o noclobber; printf final > "$native_bootstrap")\n'
+    result=subprocess.run(['bash','-eo','pipefail','-c',program],capture_output=True,text=True,
+        env={**os.environ,'RUNNER_TEMP':str(tmp_path),'GITHUB_RUN_ID':'123','GITHUB_RUN_ATTEMPT':'1',
+             'GITHUB_JOB':'refresh','GOVREV_NATIVE_SOURCE_STEP':'native_publication_stage',
+             'NATIVE_PUBLICATION_PUBLISHING_STEP':'native_publication_stage'})
+    assert result.returncode==0,result.stderr
+    assert sorted(p.read_text() for p in tmp_path.iterdir())==['final','original']

@@ -618,13 +618,15 @@ class TestLiveConformance:
             "cancel-in-progress": False,
         }
         steps = doc["jobs"]["refresh"]["steps"]
+        for step in steps:
+            if 'run' in step:step['run']=resolve_run_source(step['run'],REPO_ROOT)
         checkouts = [step for step in steps if step.get("uses") == "actions/checkout@v4"]
         assert [step["with"] for step in checkouts] == [
             {"ref": "${{ github.sha }}", "fetch-depth": 1},
             {"ref": "${{ steps.source_binding.outputs.source_sha }}", "fetch-depth": 1},
         ]
         binding = next(step for step in steps if step.get("id") == "source_binding")
-        preflight = next(step for step in steps if "govrev_publisher_preflight.py" in step.get("run", ""))
+        preflight = next(step for step in steps if step.get("name")=="reconcile retained GovRev publication outcomes")
         assert steps.index(checkouts[0]) < steps.index(binding) < steps.index(checkouts[1]) < steps.index(preflight)
         assert binding["env"]["GOVREV_CALL_SOURCE_SHA"] == "${{ inputs.source_sha }}"
         assert preflight["env"]["GOVREV_CALL_SOURCE_SHA"] == "${{ inputs.source_sha }}"
@@ -698,8 +700,8 @@ class TestLiveConformance:
 
         build = next(step for step in steps if step.get("name") == "build Government Revenue projection")
         commit = next(step for step in steps if step.get("name") == "commit complete evidence projection")
-        assert build["if"] == "${{ steps.gate.outputs.publish == 'yes' }}"
-        assert commit["if"] == "${{ steps.gate.outputs.publish == 'yes' }}"
+        assert build["if"] == "${{ steps.gate.outputs.publish == 'yes' && steps.govrev_checkout.outcome == 'success' }}"
+        assert commit["if"] == "${{ steps.gate.outputs.publish == 'yes' && steps.govrev_checkout.outcome == 'success' }}"
         for path in (
             "data/government_revenue/opportunities.parquet",
             "data/government_revenue/opportunity_revisions.parquet",
@@ -725,7 +727,7 @@ class TestLiveConformance:
         assert steps.index(guards) < steps.index(commit)
         assert 'cat > "$RUNNER_TEMP/govrev-reviewed-source-guards.sh"' in guards["run"]
         assert '. "$RUNNER_TEMP/govrev-reviewed-source-guards.sh"' in commit["run"]
-        assert "scripts/ci/validate_government_revenue_award_event_bundle.py" in guards["run"]
+        assert "-m scripts.ci.validate_government_revenue_award_event_bundle" in guards["run"]
         assert "assert_award_event_source_clean" in commit["run"]
         assert "assert_subaward_bundle" in commit["run"]
         assert "assert_subaward_source_clean" in commit["run"]
@@ -780,9 +782,7 @@ class TestLiveConformance:
         # rebuild the embedded procurement bundle both before normalization and
         # after every successful rebase, while refusing a site/canonical split.
         for lane in ("render.yml", "engine-render.yml"):
-            lane_text = (REPO_ROOT / ".github" / "workflows" / lane).read_text(
-                encoding="utf-8"
-            )
+            lane_text = resolved_workflow_text(REPO_ROOT / ".github" / "workflows" / lane, REPO_ROOT)
             site_only_command = "python -m scripts.build_government_revenue --site-only"
             assert lane_text.count(site_only_command) >= 2
             if lane == "render.yml":
@@ -814,7 +814,9 @@ class TestLiveConformance:
         daily = yaml.safe_load(daily_text)
         collect_steps = daily["jobs"]["collect"]["steps"]
         push_data = next(step for step in collect_steps if step.get("id") == "pushdata")
-        assert 'published=true" >> "$GITHUB_OUTPUT"' in push_data["run"]
+        assert "published=true\\n' \"$LEGACY_SOURCE_SHA\"" in push_data["run"]
+        assert 'scripts.ci.native_queue_push settle' in push_data['run'] and '--write-output' in push_data['run']
+        assert 'else\n  exit 77\nfi' in push_data['run']
         collect_outputs = daily["jobs"]["collect"]["outputs"]
         assert collect_outputs["government_revenue_projection_needed"] == (
             "${{ steps.pushdata.outputs.published }}"
@@ -1184,3 +1186,9 @@ jobs:
             '(check_theme_graph_contracts)" scripts.check_theme_graph_contracts'
             in helper
         )
+
+
+def test_private_interpreter_safe_path_module_invocations_remain_visible_to_dag():
+    body='PYTHONPATH="$publisher_source_root" python3 -P -m scripts.check_commodity_publication --heal-from "$COMMODITY_ACCEPTED"'
+    assert [step.module for step in _extract_steps_from_run(body)]==['scripts.check_commodity_publication']
+    assert [step.module for step in _extract_steps_from_run('python -m scripts.check_commodity_publication')]==['scripts.check_commodity_publication']

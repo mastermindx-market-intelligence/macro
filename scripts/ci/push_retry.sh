@@ -1182,3 +1182,18 @@ push_append_only_fence() {
   fi
   return 0
 }
+
+
+# Four enrolled producer mint boundaries only. This creates the original commit
+# once; it never rewrites an existing candidate or changes a data/builder clock.
+push_native_commit() {
+  local library_root py
+  if [ "${GITHUB_REPOSITORY:-}" != mastermindx-market-intelligence/macro ]; then
+    git commit "$@"
+    return $?
+  fi
+  library_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P) || return 76
+  py="${PYTHON_BIN:-python3}"
+  PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$library_root" "$py" -P \
+    -m scripts.ci.native_commit_clock --root "$(pwd -P)" -- "$@"
+}

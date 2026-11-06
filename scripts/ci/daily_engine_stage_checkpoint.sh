@@ -107,7 +107,7 @@ if git diff --cached --quiet; then
   exit 0
 fi
 push_staged_clean || exit 1
-git commit -m "prophet-stage: durable nightly accrual $(date -u +%F)"
+push_native_commit -m "prophet-stage: durable nightly accrual $(date -u +%F)"
 STAGE_CHECKPOINT_PARENT="$(git rev-parse HEAD^)"
 PUSH_ALARM=120
 PUSH_BUDGET_SECS=420

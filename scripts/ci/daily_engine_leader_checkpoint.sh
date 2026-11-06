@@ -99,7 +99,7 @@ if ! push_staged_clean "$LEADER_PATH"; then
   echo "::error title=Leader checkpoint refused::conflict-marker guard rejected source artifact"
   exit 1
 fi
-git commit -m "prophet-us: durable leader source checkpoint $(date -u +%F)"
+push_native_commit -m "prophet-us: durable leader source checkpoint $(date -u +%F)"
 CHECKPOINT_PARENT="$(git rev-parse HEAD^)"
 
 PUSH_ALARM=120

@@ -45,21 +45,21 @@ def save(path, value, *, create=False):
     try:os.fsync(fd)
     finally:os.close(fd)
 
-def origin(root):
-    fetch=need(root,'remote','get-url','--all','origin').splitlines()
-    push=need(root,'remote','get-url','--push','--all','origin').splitlines()
+def origin(root,*,reader=None):
+    fetch=need(root,'remote','get-url','--all','origin',reader=reader).splitlines()
+    push=need(root,'remote','get-url','--push','--all','origin',reader=reader).splitlines()
     if len(fetch)!=1 or fetch!=push:raise Refusal('origin_binding_changed_or_ambiguous')
     return hashlib.sha256(fetch[0]).hexdigest()
 
-def remote_head(root,ref,binding):
-    if origin(root)!=binding:raise Refusal('origin_binding_changed')
-    rows=need(root,'ls-remote','--refs','origin',ref).decode().splitlines()
+def remote_head(root,ref,binding,*,reader=None):
+    if (origin(root) if reader is None else origin(root,reader=reader))!=binding:raise Refusal('origin_binding_changed')
+    rows=need(root,'ls-remote','--refs','origin',ref,reader=reader).decode().splitlines()
     if len(rows)!=1:raise Refusal('selected_remote_branch_missing_or_ambiguous')
     sha,name=rows[0].split()
     if name!=ref or not re.fullmatch('[0-9a-f]{40}',sha):raise Refusal('remote_branch_identity_invalid')
-    need(root,'fetch','--no-tags','--no-write-fetch-head','origin',ref)
+    need(root,'fetch','--no-tags','--no-write-fetch-head','origin',ref,reader=reader)
     # The named object must now exist; a concurrent move may leave it absent.
-    need(root,'cat-file','-e',sha+'^{commit}')
+    need(root,'cat-file','-e',sha+'^{commit}',reader=reader)
     return sha
 
 def ancestor(root,older,newer,*,reader=None):
@@ -147,9 +147,9 @@ def validate_native_group(root,candidate,group_base,group_commit,*,git_read=None
             'group_commit':group_commit,'projection_sha256':hashlib.sha256(
                 json.dumps(projection,sort_keys=True,separators=(',',':')).encode()).hexdigest()}
 
-def validate_acquisition(root):
-    if need(root,'status','--porcelain','--untracked-files=all').strip():raise Refusal('acquisition_commit_not_clean')
-    return validate_acquisition_commit(root,need(root,'rev-parse','HEAD').decode().strip())
+def validate_acquisition(root,*,reader=None):
+    if need(root,'status','--porcelain','--untracked-files=all',reader=reader).strip():raise Refusal('acquisition_commit_not_clean')
+    return validate_acquisition_commit(root,need(root,'rev-parse','HEAD',reader=reader).decode().strip(),reader=reader)
 
 def prepare(root,base,candidate,remote,out):
     validate_source_movement(root,base,remote)
@@ -248,31 +248,46 @@ def settle_native(root,out):
             or rec.get('target_ref')!='refs/heads/main'
             or rec.get('attempts')!=[{'expected_commit':rec.get('candidate'),'state':'native_pending'}]):
         raise Refusal('original_pending_fms_receipt_required')
-    candidate,base=validate_acquisition(root)
-    if candidate!=rec.get('candidate') or base!=rec.get('base') or origin(root)!=rec.get('origin_sha256'):
-        raise Refusal('original_acquisition_identity_changed')
+    # Load and qualify the ORIGINAL budget before any repository/network read.
+    # Both clocks fence every launch and return; a wall-clock adjustment cannot
+    # create another original allowance. Legacy persistence keeps its old API.
     deadline=rec['native_deadline']
-    if type(deadline) not in (float,int) or deadline<=0:raise Refusal('original_fms_deadline_required')
+    if type(deadline) not in (float,int) or not math.isfinite(deadline) or deadline<=0:
+        raise Refusal('original_fms_deadline_required')
+    remaining=deadline-time.time()
+    if not 0<remaining<=135:raise Refusal('original_fms_publication_budget_expired')
+    monotonic_deadline=time.monotonic()+remaining
+    def bounded_read(where,*args,timeout=30):
+        remaining=min(timeout,30,deadline-time.time(),monotonic_deadline-time.monotonic())
+        if remaining<=0:raise Refusal('original_fms_publication_budget_expired')
+        result=git(where,*args,timeout=remaining)
+        if time.time()>=deadline or time.monotonic()>=monotonic_deadline:
+            raise Refusal('original_fms_publication_budget_expired')
+        return result
+    candidate,base=validate_acquisition(root,reader=bounded_read)
+    if candidate!=rec.get('candidate') or base!=rec.get('base') or origin(root,reader=bounded_read)!=rec.get('origin_sha256'):
+        raise Refusal('original_acquisition_identity_changed')
     def confirmed(receipt):
-        if time.time()>=deadline:raise Refusal('original_fms_publication_budget_expired')
+        if time.time()>=deadline or time.monotonic()>=monotonic_deadline:raise Refusal('original_fms_publication_budget_expired')
         if receipt.get('source_head')!=candidate:raise Refusal('original_fms_source_head_changed')
-        observed=remote_head(root,rec['target_ref'],rec['origin_sha256'])
+        observed=remote_head(root,rec['target_ref'],rec['origin_sha256'],reader=bounded_read)
         merge=receipt['merge_sha']
-        if not ancestor(root,merge,observed):raise Refusal('protected_fms_merge_not_observed')
-        line=need(root,'rev-list','--parents','-n','1',merge).decode().split()
+        if not ancestor(root,merge,observed,reader=bounded_read):raise Refusal('protected_fms_merge_not_observed')
+        line=need(root,'rev-list','--parents','-n','1',merge,reader=bounded_read).decode().split()
         if len(line)!=2:raise Refusal('protected_fms_squash_parent_required')
         validate_native_group(root,candidate,line[1],merge,
-            deadline=time.monotonic()+max(0,deadline-time.time()))
-        if any(artifact_entry(root,candidate,name)!=artifact_entry(root,observed,name) for name in FMS_FILES):
+            git_read=bounded_read,deadline=monotonic_deadline)
+        if any(artifact_entry(root,candidate,name,reader=bounded_read)!=artifact_entry(root,observed,name,reader=bounded_read) for name in FMS_FILES):
             raise Refusal('protected_fms_generation_superseded')
-        if origin(root)!=rec['origin_sha256']:raise Refusal('origin_binding_changed')
-        if time.time()>=deadline:raise Refusal('original_fms_publication_budget_expired')
+        if origin(root,reader=bounded_read)!=rec['origin_sha256']:raise Refusal('origin_binding_changed')
+        if time.time()>=deadline or time.monotonic()>=monotonic_deadline:raise Refusal('original_fms_publication_budget_expired')
         rec['attempts'][-1].update(state='native_published',observed_commit=observed)
         rec.update(state='ORIGINAL_EFFECT_CONFIRMED',native_publication=receipt)
         save(out,rec)
     try:
-        return native.settle(native.GitHub(root,deadline),root,rec['native_origin_path'],deadline,
-                             on_published=confirmed)
+        with native.original_read_budget(deadline,monotonic_deadline):
+            return native.settle(native.GitHub(root,deadline),root,rec['native_origin_path'],deadline,
+                                 on_published=confirmed)
     except native.EffectUnknown:return UNKNOWN
     except (native.PublicationHeld,Refusal,OSError,ValueError,subprocess.SubprocessError):return REFUSED
 

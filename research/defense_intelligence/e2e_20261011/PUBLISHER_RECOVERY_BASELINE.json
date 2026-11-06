@@ -10,10 +10,10 @@
     "scripts/ci/govrev_publisher_preflight.py": "1f95dc4af4d86d7f050ddea88e5aded873c0115ad524fc4ece673e79007b198a",
     "scripts/ci/govrev_candidate_proof.py": "9fe914f0d1fd11744a26b5d0d4ae420c3ce5320658e724cbc767fcce78fe918f",
     "scripts/ci/govrev_source_binding.py": "d0b58a3237f6c764b79657d74ef3db519e61e2594cc505d4404dd0df469efd4c",
-    "scripts/ci/fms_persist.py": "859b4ab687aa1aa97d6b219efa337e701b262687824f4c5c998a0bf321ae13b5",
+    "scripts/ci/fms_persist.py": "c0a952adad4e179889f5d76654e0b95b2fe4f9de6a961fbd05dc81538cc58b9a",
     ".github/workflows/government-revenue-live.yml": "6bffc14f2b5a4e658613179913ea5cc24fc9765f676e51490c6805dc1fbd594d",
     ".github/workflows/daily.yml": "df081f29d64bf2b96e4287ad85123c7355c484d971216ce2b36e5bd35484fe5c",
-    ".github/workflows/fms-acquire.yml": "c35f148038a9e268027b079cc44b37537ee2b43bd493540ae215c12f05c6ad95"
+    ".github/workflows/fms-acquire.yml": "e688dbde59a8d1a5782cfa342b3df2fc2e7cc02a4d9829ca62e29ddfdff7fdb2"
   },
   "scan_created_after": "2026-10-10T17:26:49Z",
   "legacy_effects_reconciled_at": "2026-10-13T06:55:59.489033+00:00",
