@@ -432,7 +432,13 @@ OBSERVED_COMMAND_SECONDS = {
     "fif-kernel-guards": 537,
     "fif-kernel-guards-b": 555,
     "fif-kernel-guards-c": 538,
-    "earnings-economic-dossier": 1070,
+    # 2026-11-06 (S7): the 1070 s dossier job is two siblings carrying the same
+    # closure; it was the second-longest job after the S6 FIF split and alone set
+    # the floor of its pack above the 600 s target. Per-sibling seconds are the
+    # local per-suite measurement (M2, sequential, 2026-11-06: 681 s total)
+    # scaled so the two sum to the hosted 1070 s median.
+    "earnings-economic-dossier": 537,
+    "earnings-economic-dossier-b": 533,
     "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,

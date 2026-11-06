@@ -38,6 +38,8 @@ WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
 MANIFEST = ROOT / ".github" / "ci" / "legacy-jobs.yml"
 # S6 (2026-11-05): the FIF kernel job is three measured siblings with one closure.
 FIF_KERNEL_SIBLINGS = frozenset({"fif-kernel-guards", "fif-kernel-guards-b", "fif-kernel-guards-c"})
+# S7 (2026-11-06): the 1,070 s dossier job is two measured siblings with one closure.
+DOSSIER_SIBLINGS = frozenset({"earnings-economic-dossier", "earnings-economic-dossier-b"})
 FENCES = ROOT / ".github" / "workflows" / "fences.yml"
 
 # A `ci-trigger-closure: data` marker on a path in this file flags a NAME that a test
@@ -1595,6 +1597,42 @@ def test_fif_kernel_siblings_share_one_closure_and_partition_the_suite_once(
         assert job.job_id in PACK.OBSERVED_COMMAND_SECONDS, job.job_id
 
 
+def test_dossier_siblings_share_one_closure_and_partition_the_suite_once(
+    real_manifest_scopes,
+) -> None:
+    """S7 (2026-11-06): the 28-suite dossier step was one 1,070 s job, the
+    second-longest after the S6 FIF split and alone the floor of its pack above
+    the 600 s target. It is now two measured siblings. Splitting must not change
+    WHAT runs: the two steps partition the original suite list exactly once, and
+    both siblings carry the identical curated closure so an edit that selected
+    the dossier before selects both now (``scope: exclusive`` REPLACES inference;
+    the merge driver ``scripts/ci_pack_fragments.py`` is a line scanner, so the
+    list is copied rather than anchored)."""
+    jobs, _ = real_manifest_scopes
+    by_id = {job.job_id: job for job in jobs}
+    siblings = [by_id[job_id] for job_id in sorted(DOSSIER_SIBLINGS)]
+    closures = {tuple(job.paths) for job in siblings}
+    assert len(closures) == 1, "sibling closures diverged"
+    assert all(job.exclusive and job.gate == "code" for job in siblings)
+    step_name = "PG source-scoped economic observations"
+    slices = []
+    for job in siblings:
+        step = next(
+            step for step in job.definition["steps"] if step.get("name") == step_name
+        )
+        suites = [tok for tok in str(step["run"]).split() if tok.startswith("tests/")]
+        assert suites, job.job_id
+        slices.append(suites)
+    flat = [suite for suites in slices for suite in suites]
+    assert len(flat) == len(set(flat)) == 28, (len(flat), len(set(flat)))
+    for suite in flat:
+        assert (ROOT / suite).is_file(), suite
+    # Every sibling is measured: an unmeasured sibling would fall back to the
+    # generic estimator (~90 for 40 files) and the balancer would stack it.
+    for job in siblings:
+        assert job.job_id in PACK.OBSERVED_COMMAND_SECONDS, job.job_id
+
+
 def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """D5's hermetic real-reader chain suite must run before a PR can merge.
 
@@ -3067,7 +3105,7 @@ def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
 ) -> None:
     """Calibration changes the attested assignment, never the work it proves."""
     calibrated = _full_plan()
-    for job_id in (*FIF_KERNEL_SIBLINGS, "earnings-economic-dossier"):
+    for job_id in (*FIF_KERNEL_SIBLINGS, *DOSSIER_SIBLINGS):
         monkeypatch.delitem(PACK.OBSERVED_COMMAND_SECONDS, job_id, raising=False)
     heuristic = _full_plan()
 
@@ -3083,10 +3121,10 @@ def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
     flattened = [job_id for pack in calibrated.pack_jobs for job_id in pack]
     assert len(flattened) == len(set(flattened)) == len(calibrated.eligible_job_ids)
     assert set(flattened) == set(calibrated.eligible_job_ids)
-    # 2026-11-05 (S6): the FIF kernel is three measured siblings, so five heavy
-    # jobs must land in five distinct packs instead of three.
-    heavy = {"ci-control-plane-contracts", *FIF_KERNEL_SIBLINGS, "earnings-economic-dossier"}
-    assert len({job.pack_index for job in calibrated.semantic_jobs if job.logical_job_id in heavy}) == len(heavy) == 5
+    # 2026-11-05 (S6) / 2026-11-06 (S7): the FIF kernel is three measured siblings
+    # and the dossier two, so six heavy jobs must land in six distinct packs.
+    heavy = {"ci-control-plane-contracts", *FIF_KERNEL_SIBLINGS, *DOSSIER_SIBLINGS}
+    assert len({job.pack_index for job in calibrated.semantic_jobs if job.logical_job_id in heavy}) == len(heavy) == 6
 
 
 def test_plan_hash_covers_job_assignment_but_not_prose() -> None:
@@ -4562,6 +4600,9 @@ CURATED_EXCLUSIVE = {
     # store + the prose registration, nothing else.
     "prophet-us-b4-prereg-registration",
     "earnings-economic-dossier",
+    # 2026-11-06 (S7): split into two measured siblings carrying the same closure;
+    # see test_dossier_siblings_share_one_closure_and_partition_the_suite_once.
+    "earnings-economic-dossier-b",
     # 2026-09-30: CDV-1 Task 2 owns truthful private PG acquisition currentness.
     "earnings-economic-source-selection",
     # 2026-09-30: CDV-1 Task 4 owns the v2 private generation.
