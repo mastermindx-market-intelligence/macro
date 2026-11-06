@@ -1,0 +1,142 @@
+{
+  "acceptance_cases": {
+    "holiday_matching_checksum_intake_malformed_source": true,
+    "holiday_producer_nonmutation": true,
+    "later_real_session_transition_2026_11_30": true,
+    "real_early_close_2026_11_27_known_at_18_00_00Z": true,
+    "weekend_matching_checksum_intake_malformed_source": true,
+    "weekend_producer_nonmutation": true
+  },
+  "carrier": {
+    "branch": "claude/prophet-turn-watch-row-evidence-v2-20260916",
+    "pull_request": 7227,
+    "repository": "mastermindx-market-intelligence/macro",
+    "semantic_parent_head": "0e57dc01e494475802c62fc664924236544abb90",
+    "state": "DRAFT_HOLD_PREPARATION_ONLY"
+  },
+  "ci_owner_reconciliation": {
+    "finding": "candidate registered intake and reconciler suites under a second CI-pack job even though prophet-us-context-and-grades already owned all four B1 suites",
+    "green": {
+      "owners": {
+        "tests/test_us_candidate_episode.py": [
+          "prophet-us-context-and-grades"
+        ],
+        "tests/test_us_candidate_episode_intake.py": [
+          "prophet-us-context-and-grades"
+        ],
+        "tests/test_us_candidate_episode_reconciler.py": [
+          "prophet-us-context-and-grades"
+        ],
+        "tests/test_us_candidate_episode_wiring.py": [
+          "prophet-us-context-and-grades"
+        ]
+      },
+      "result": "1 passed"
+    },
+    "new_control_plane": false,
+    "red": {
+      "command": "python3.12 -m pytest -q tests/test_us_candidate_episode_wiring.py::test_each_b1_suite_has_one_existing_ci_owner",
+      "failure": {
+        "tests/test_us_candidate_episode_intake.py": [
+          "prophet-turn-watch-row-evidence-v2",
+          "prophet-us-context-and-grades"
+        ],
+        "tests/test_us_candidate_episode_reconciler.py": [
+          "prophet-turn-watch-row-evidence-v2",
+          "prophet-us-context-and-grades"
+        ]
+      },
+      "result": "1 failed"
+    },
+    "repair": "removed only the redundant prophet-turn-watch-row-evidence-v2 manifest job; retained the established prophet-us-context-and-grades owner unchanged"
+  },
+  "current_base_composition": {
+    "b1_suite_owner_count": 1,
+    "candidate_semantic_blobs_preserved_exactly": true,
+    "integrated_legacy_manifest_equals_current_main": true,
+    "integrated_tree": "7e9482f6bde1bea0e5532225f7a72bbe36135ac2",
+    "logical_ci_jobs": 216,
+    "main": "53efe6f47e9efcdde45a12bce483d7ec33f0bb8d",
+    "merge_base": "ec44523d17eedeea35bdf4513a0d4843a4e81a64",
+    "merge_tree_result": "conflict_free",
+    "overlapping_changed_paths": [],
+    "production_proof": false,
+    "temporary_candidate_tree": "d615bcf42cd3efb228dfc37e68058881f9f9e1c2"
+  },
+  "generated_at": "2026-09-19T12:09:48Z",
+  "green": {
+    "calendar_authority_battery": {
+      "command": "python3.12 -m pytest -q tests/test_nyse_calendar.py tests/test_session_digest.py",
+      "elapsed_seconds": 45.93,
+      "result": "172 passed, 1 skipped",
+      "skip": "unchanged environment-dependent case"
+    },
+    "ci_pack_manifest_battery": {
+      "command": "python3.12 -m pytest -q tests/test_ci_pack.py",
+      "state": "RUNNING"
+    },
+    "compile": {
+      "command": "python3.12 -m py_compile scripts/build_turn_watch.py engine/us_candidate_episode_intake.py tests/test_us_candidate_episode_intake.py",
+      "result": "exit 0"
+    },
+    "five_suite_owner_battery": {
+      "command": "python3.12 -m pytest -q tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py tests/test_us_turn_watch.py",
+      "elapsed_seconds": 33.45,
+      "result": "210 passed"
+    },
+    "focused": {
+      "elapsed_seconds": 5.29,
+      "result": "5 passed, 40 deselected"
+    },
+    "repository_wide_suite": {
+      "state": "NOT_YET_RESTARTED_AFTER_CI_OWNER_REPAIR"
+    }
+  },
+  "procedure": {
+    "bootstrap_major": 1,
+    "commit": "ac6180d0ca9107daae54f9eea6bd4b8aef92d630",
+    "protected_ref": "master",
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "skillpack_version": "1.0.1"
+  },
+  "production": false,
+  "red": {
+    "command": "python3.12 -m pytest -q tests/test_us_candidate_episode_intake.py -k 'v2_non_session_transition_keeps_public_and_private_artifacts_unchanged or v2_intake_rejects_non_session_even_with_matching_document_hash or v2_real_early_close_session_remains_accepted'",
+    "expected_failures": [
+      "Thanksgiving holiday v2 producer transition returned success instead of refusing before mutation",
+      "Saturday v2 producer transition returned success instead of refusing before mutation",
+      "matching-checksum Thanksgiving holiday v2 envelope emitted an observation",
+      "matching-checksum Saturday v2 envelope emitted an observation"
+    ],
+    "passing_control": "real 2026-11-27 NYSE early-close session remained accepted",
+    "result": "4 failed, 1 passed, 40 deselected"
+  },
+  "release_boundary": {
+    "current_data_and_served_browser_proof_required": true,
+    "independent_rereview_required": true,
+    "merge_authorized": false,
+    "production_write": false,
+    "registry_activation": false,
+    "workflow_dispatch": false
+  },
+  "repair": {
+    "authority": "lib.nyse_calendar.is_session",
+    "intake_boundary": "engine.us_candidate_episode_intake._valid_turn_watch_v2_document",
+    "new_planes": false,
+    "producer_boundary": "scripts.build_turn_watch._candidate_episode_input_path",
+    "scope": "v2 only; v1 default and historical behavior unchanged"
+  },
+  "review_blocker": {
+    "disposition_before_repair": "CHANGES_REQUESTED",
+    "finding": "v2 accepted ISO dates that were not actual NYSE sessions at producer and intake boundaries",
+    "reviewer": "mastermindx-2"
+  },
+  "schema": "prophet.turn_watch_v2.session_calendar_proof/v1",
+  "source_digests_sha256": {
+    ".github/ci/legacy-jobs.yml": "0c58d3e8d563d469358239208a221b4a9732d83923fa215f2d42bb019d22a5b5",
+    "engine/us_candidate_episode_intake.py": "501e0f5d06addd369149f62182af01074ecf5b990c19fe748d4e637122656799",
+    "scripts/build_turn_watch.py": "b7aadca4b7f69b0a5627835596e1c06058933b06a52c74fb8c1ffae92f77c9ac",
+    "tests/test_us_candidate_episode_intake.py": "b60135075412714d4e217857909238196d8f817aa3f3c7f7855f74544efe9f1f",
+    "tests/test_us_candidate_episode_wiring.py": "60d0e1edd039044fb23ae57ae26fdc3d4dc8702d15a45ceebe60a38d4f2c3f34"
+  }
+}
