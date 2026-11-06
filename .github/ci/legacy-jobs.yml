@@ -22973,6 +22973,7 @@ jobs:
       - "site/basket_china/**"
       - "site/basket_hk/**"
       - "site/basket_intl/**"
+      - "site/allocation.html"
       - "templates/allocation.html.j2"
       - "templates/basket_detail.html.j2"
       - "templates/sector_central.html.j2"
@@ -36343,6 +36344,7 @@ jobs:
       - "tests/test_prophet_postmortem.py"
       - "tests/test_prophet_r7_wave_a_plan_cards.py"
       - "tests/test_prophet_strategy_definition.py"
+      - "tests/test_prophet_whynot_receipts.py"
       - "tests/test_stock_events.py"
       - "tests/test_us_basket_turn.py"
       - "tests/test_us_board_priority_ui.py"
@@ -36481,6 +36483,18 @@ jobs:
         run: python -m pytest tests/test_prophet_card_shared.py tests/test_us_prophet_original_card_layout.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
       - name: Prophet R7 Wave A watchlist save outcomes and saved/tonight columns (A2)
         run: python -m pytest tests/test_prophet_r7_wave_a_watchlist.py -q
+      # §6.9 R5 PR-time copy contract. The complete why-not suite stays in its
+      # existing data-gated job during this bootstrap: as of 2026-09-10 current main
+      # carried four known harness failures that #7059 repairs, so moving the whole
+      # file first would have made the prerequisite red on its own base. These four
+      # hermetic copy laws are the source-change contract that must execute before
+      # #7059 can merge. As of 2026-11-05 the first two names exist on frozen main
+      # 7241e9b; #7059 adds the latter two, so this selector bootstraps green and
+      # expands automatically on that exact head.
+      - name: Prophet intake receipt copy contract (PR-time hermetic subset)
+        run: >-
+          python -m pytest tests/test_prophet_whynot_receipts.py -q
+          -k "every_order_code_has_non_empty_bilingual_copy or template_copy_mirrors_the_engine_copy_exactly or plan_not_built_copy_never_claims_every_check_passed or validated_word_is_confined_to_the_exact_negative_disclaimer"
       - name: Prophet detector, organ and disposition contracts (one native process)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
       - name: Prophet R7 Wave A refusal receipts and design guards (A3)
@@ -51850,3 +51864,28 @@ jobs:
         run: node --version
       - name: Intelligence OS API renderer source and finite measurement contracts
         run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py -q
+
+  earnings-worker-systemd:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - ops/bootstrap_earnings_worker_linux.sh
+      - ops/systemd/mastermind-earnings-worker.service
+      - ops/systemd/mastermind-earnings-worker.timer
+      - ops/launchd/run_earnings_worker.sh
+      - ops/launchd/run_with_env.sh
+      - ops/earnings_worker_requirements.txt
+      - tests/test_earnings_worker_systemd.py
+      - tests/__init__.py
+    timeout-minutes: 4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install test dependency
+        run: pip install pytest
+      - name: earnings worker service and simulated bootstrap contracts
+        run: python -m pytest tests/test_earnings_worker_systemd.py -q
