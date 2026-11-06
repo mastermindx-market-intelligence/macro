@@ -3769,7 +3769,8 @@ def test_hold_lineage_pulls_in_the_sibling_group_and_a_split_ref_is_kept_not_sup
     assert _git_output(repo, "diff", "--cached", "--name-only") == ""
 
 
-def test_us_board_unreadable_state_cannot_hide_an_unreconciled_ref(tmp_path):
+@pytest.mark.parametrize("blocked_state", ["directory", "empty_marker"])
+def test_us_board_unreadable_state_cannot_hide_an_unreconciled_ref(tmp_path, blocked_state):
     bare, repo = _us_board_clone(tmp_path)
     held = b"old\n" + b"R" * 60
     (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
@@ -3781,7 +3782,8 @@ def test_us_board_unreadable_state_cannot_hide_an_unreconciled_ref(tmp_path):
     env = _hold_env(tmp_path, "1302")
     state = Path(env["RUNNER_TEMP"]) / "push_hold.1302.us_board_ledgers"
     state.mkdir()
-    (state / "unreconciled").write_text(refs[0] + "\n")
+    marker = state / "unreconciled"
+    marker.write_text(refs[0] + "\n" if blocked_state == "directory" else "")
     board = lane / "data/us_board_ledger/snapshots.jsonl"
     rotation = lane / "data/us_sector_rotation/latest.json"
     board.write_text("small later source\n")
@@ -3789,9 +3791,15 @@ def test_us_board_unreadable_state_cannot_hide_an_unreconciled_ref(tmp_path):
     _git_output(lane, "add", "data/us_board_ledger/snapshots.jsonl")
     index_before = _git_output(lane, "write-tree")
     before = _git_output(bare, "rev-parse", "main")
-    state.chmod(0)
+    if blocked_state == "directory":
+        state.chmod(0)
+    else:
+        marker.chmod(0o400)
     try:
-        assert not os.access(state, os.R_OK | os.W_OK | os.X_OK)
+        if blocked_state == "directory":
+            assert not os.access(state, os.R_OK | os.W_OK | os.X_OK)
+        else:
+            assert not os.access(marker, os.W_OK)
         recovery = _run_us_board_commit(lane, "--recover", **env)
         assert recovery.returncode == 1, recovery.stdout + recovery.stderr
         result = _run_us_board_commit(lane, **env)
@@ -3805,3 +3813,139 @@ def test_us_board_unreadable_state_cannot_hide_an_unreconciled_ref(tmp_path):
         assert _rebuild(bare, refs[0], entries[0]) == held
     finally:
         state.chmod(0o700)
+        marker.chmod(0o600)
+
+
+def test_us_board_failed_held_record_keeps_custody_and_blocks_publication(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    held = b"old\n" + b"R" * 60
+    board = repo / "data/us_board_ledger/snapshots.jsonl"
+    rotation = repo / "data/us_sector_rotation/latest.json"
+    board.write_bytes(held)
+    rotation.write_text("small later projection\n")
+    _git_output(repo, "add", "data/us_board_ledger", "data/us_sector_rotation")
+    before_index = _git_output(repo, "write-tree")
+    before_main = _git_output(bare, "rev-parse", "main")
+    env = _hold_env(tmp_path, "1303")
+    state = Path(env["RUNNER_TEMP"]) / "push_hold.1303.us_board_ledgers"
+    real_git = subprocess.run(["which", "git"], capture_output=True, text=True, check=True).stdout.strip()
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    calls = tmp_path / "push-calls"
+    wrapper = fake_bin / "git"
+    wrapper.write_text(
+        "#!/bin/bash\n"
+        'if [ "${1:-}" = "push" ]; then printf "%s\\n" push >> "$PUSH_CALLS"; fi\n'
+        'if [ "${1:-}" = "ls-remote" ] && [ "${2:-}" = "--refs" ]; then\n'
+        '  "$REAL_GIT" "$@" || exit "$?"\n'
+        '  : > "$FAULT_STATE/held"\n'
+        '  chmod 400 "$FAULT_STATE/held"\n'
+        '  exit 0\n'
+        'fi\n'
+        'exec "$REAL_GIT" "$@"\n'
+    )
+    wrapper.chmod(0o755)
+    env.update({
+        "PATH": f"{fake_bin}:{os.environ['PATH']}", "REAL_GIT": real_git,
+        "PUSH_CALLS": str(calls), "FAULT_STATE": str(state),
+    })
+    try:
+        result = _run_us_board_commit(repo, **env)
+        assert result.returncode == 1, result.stdout + result.stderr
+        assert "could not record verified hold" in result.stdout
+        assert not os.access(state / "held", os.W_OK)
+        [ref] = _hold_refs(bare)
+        entries, _ = _manifest(bare, ref)
+        assert _rebuild(bare, ref, entries[0]) == held
+        assert _git_output(bare, "rev-parse", "main") == before_main
+        assert _git_output(repo, "write-tree") == before_index
+        assert board.read_bytes() == held
+        assert rotation.read_text() == "small later projection\n"
+        assert ref in (state / "unreconciled").read_text()
+        assert calls.read_text().splitlines() == ["push"]
+
+        (state / "held").chmod(0o600)
+        board.write_text("short\n")
+        _git_output(repo, "add", "data/us_board_ledger")
+        later_index = _git_output(repo, "write-tree")
+        second = _run_us_board_commit(repo, **env)
+        assert second.returncode == 1, second.stdout + second.stderr
+        assert "unreconciled recovery state blocks" in second.stdout
+        assert _git_output(repo, "write-tree") == later_index
+        assert _git_output(bare, "rev-parse", "main") == before_main
+        assert _hold_refs(bare) == [ref]
+        assert calls.read_text().splitlines() == ["push"]
+    finally:
+        if state.exists():
+            state.chmod(0o700)
+            for name in ("held", "unreconciled"):
+                if (state / name).exists():
+                    (state / name).chmod(0o600)
+
+
+def test_us_board_manifest_read_failure_preserves_index_and_creates_no_custody(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    _git_output(repo, "config", "user.name", "fixture")
+    _git_output(repo, "config", "user.email", "fixture@example.invalid")
+    held = b"old\n" + b"R" * 60
+    board = repo / "data/us_board_ledger/snapshots.jsonl"
+    board.write_bytes(held)
+    projection = repo / "data/us_board_ledger/projection.json"
+    projection.write_text("{}\n")
+    _git_output(repo, "add", "data/us_board_ledger")
+    before_index = _git_output(repo, "write-tree")
+    before_main = _git_output(bare, "rev-parse", "main")
+    env = _hold_env(tmp_path, "1304")
+    result = subprocess.run(
+        ["bash", "-c",
+         '. "$GITHUB_WORKSPACE/scripts/ci/push_hold.sh"\n'
+         'cat() { case "${1:-}" in */work/entries) command head -n 1 "$1"; return 61 ;; esac; command cat "$@"; }\n'
+         'rc=0\npush_hold_oversize_staged "data/us_board_ledger" || rc=$?\nexit "$rc"\n'],
+        cwd=repo, env={**os.environ, "GITHUB_WORKSPACE": str(REPO_ROOT), **env},
+        capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 2, result.stdout + result.stderr
+    assert _hold_refs(bare) == []
+    assert _git_output(repo, "write-tree") == before_index
+    assert _git_output(bare, "rev-parse", "main") == before_main
+    assert board.read_bytes() == held
+    assert projection.read_text() == "{}\n"
+
+
+def test_us_board_settlement_cannot_delete_custody_using_stale_unwriteable_evidence(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    held = b"old\n" + b"R" * 60
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+    first = _run_us_board_commit(repo, **_hold_env(tmp_path, "1305"))
+    assert first.returncode == 1, first.stdout + first.stderr
+    [ref] = _hold_refs(bare)
+    lane = _clone_of(bare, tmp_path / "next-lane")
+    env = _hold_env(tmp_path, "1306")
+    recovery = _run_us_board_commit(lane, "--recover", **env)
+    assert recovery.returncode == 0, recovery.stdout + recovery.stderr
+    state = Path(env["RUNNER_TEMP"]) / "push_hold.1306.us_board_ledgers"
+    stale = state / "pushed_names"
+    stale.write_text("data/us_board_ledger/snapshots.jsonl\n")
+    stale.chmod(0o400)
+    before_main = _git_output(bare, "rev-parse", "main")
+    before_index = _git_output(lane, "write-tree")
+    try:
+        assert not os.access(stale, os.W_OK)
+        result = subprocess.run(
+            ["bash", "-c",
+             '. "$GITHUB_WORKSPACE/scripts/ci/push_hold.sh"\n'
+             'rc=0\npush_hold_settle || rc=$?\nexit "$rc"\n'],
+            cwd=lane, env={**os.environ, "GITHUB_WORKSPACE": str(REPO_ROOT), **env},
+            capture_output=True, text=True, timeout=30,
+        )
+        assert result.returncode == 2, result.stdout + result.stderr
+        assert "fresh custody retirement evidence" in result.stdout
+        assert _hold_refs(bare) == [ref]
+        entries, _ = _manifest(bare, ref)
+        assert _rebuild(bare, ref, entries[0]) == held
+        assert _git_output(bare, "rev-parse", "main") == before_main
+        assert _git_output(lane, "write-tree") == before_index
+        assert (lane / "data/us_board_ledger/snapshots.jsonl").read_bytes() == held
+        assert "settlement" in (state / "unreconciled").read_text()
+    finally:
+        stale.chmod(0o600)

@@ -614,6 +614,7 @@ _push_hold_apply_ref() {
 
 # Admission is distinct from red: verified held/recovered rows may continue.
 push_hold_recovery_ok() {
+  local record
   _push_hold_prepare_state || {
     echo "::error title=held rows not restored::could not prepare recovery state"
     return 1
@@ -622,11 +623,17 @@ push_hold_recovery_ok() {
     echo "::error title=held rows not restored::recovery state cannot be inspected and updated"
     return 1
   fi
-  if [ -e "$PUSH_HOLD_STATE/unreconciled" ] || [ -L "$PUSH_HOLD_STATE/unreconciled" ]; then
-    if [ ! -f "$PUSH_HOLD_STATE/unreconciled" ] || [ ! -r "$PUSH_HOLD_STATE/unreconciled" ] || [ -s "$PUSH_HOLD_STATE/unreconciled" ]; then
-      echo "::error title=held rows not restored::unreconciled recovery state blocks new source publication"
-      return 1
+  for record in unreconciled held recovered; do
+    if [ -e "$PUSH_HOLD_STATE/$record" ] || [ -L "$PUSH_HOLD_STATE/$record" ]; then
+      if [ ! -f "$PUSH_HOLD_STATE/$record" ] || [ ! -r "$PUSH_HOLD_STATE/$record" ] || [ ! -w "$PUSH_HOLD_STATE/$record" ]; then
+        echo "::error title=held rows not restored::$record state cannot be inspected and updated"
+        return 1
+      fi
     fi
+  done
+  if [ -s "$PUSH_HOLD_STATE/unreconciled" ]; then
+    echo "::error title=held rows not restored::unreconciled recovery state blocks new source publication"
+    return 1
   fi
   return 0
 }
@@ -770,26 +777,26 @@ push_hold_recover() {
 # Delete each recovered ref whose every path is either in the pushed range or
 # held again in this run. With $1, the pushed range is $1..HEAD; without it,
 # the files of HEAD's own commit when HEAD moved since the hold check.
-push_hold_settle() {
+_push_hold_settle_impl() {
   local base="${1:-}" before now b ref ok
-  _push_hold_state_var || return 0
+  push_hold_recovery_ok || return 2
   [ -s "$PUSH_HOLD_STATE/recovered" ] || return 0
-  : > "$PUSH_HOLD_STATE/pushed_names"
-  now=$(git rev-parse HEAD 2>/dev/null) || now=""
+  : > "$PUSH_HOLD_STATE/pushed_names" || return 2
+  now=$(git rev-parse HEAD 2>/dev/null) || return 2
   if [ -n "$base" ]; then
-    b=$(git rev-parse --verify -q "${base}^{commit}" 2>/dev/null) || b=""
+    b=$(git rev-parse --verify -q "${base}^{commit}" 2>/dev/null) || return 2
     if [ -n "$b" ] && [ -n "$now" ] && [ "$b" != "$now" ]; then
-      git diff --name-only -z --no-renames "$b" "$now" 2>/dev/null | tr '\0' '\n' > "$PUSH_HOLD_STATE/pushed_names" \
-        || : > "$PUSH_HOLD_STATE/pushed_names"
+      git diff --name-only -z --no-renames "$b" "$now" 2>/dev/null > "$PUSH_HOLD_STATE/pushed_names.z" || return 2
+      tr '\0' '\n' < "$PUSH_HOLD_STATE/pushed_names.z" > "$PUSH_HOLD_STATE/pushed_names" || return 2
     fi
   elif [ -f "$PUSH_HOLD_STATE/head_before" ]; then
-    before=$(cat "$PUSH_HOLD_STATE/head_before") || before=""
+    before=$(cat "$PUSH_HOLD_STATE/head_before") || return 2
     if [ -n "$before" ] && [ -n "$now" ] && [ "$now" != "$before" ]; then
-      git diff-tree --no-commit-id --name-only -z -r HEAD 2>/dev/null | tr '\0' '\n' > "$PUSH_HOLD_STATE/pushed_names" \
-        || : > "$PUSH_HOLD_STATE/pushed_names"
+      git diff-tree --no-commit-id --name-only -z -r HEAD 2>/dev/null > "$PUSH_HOLD_STATE/pushed_names.z" || return 2
+      tr '\0' '\n' < "$PUSH_HOLD_STATE/pushed_names.z" > "$PUSH_HOLD_STATE/pushed_names" || return 2
     fi
   fi
-  [ -f "$PUSH_HOLD_STATE/held" ] || : > "$PUSH_HOLD_STATE/held"
+  [ -f "$PUSH_HOLD_STATE/held" ] || : > "$PUSH_HOLD_STATE/held" || return 2
   awk -F'\t' '
     FILENAME == ARGV[1] { pushed[$0] = 1; next }
     FILENAME == ARGV[2] { held[$2] = 1; next }
@@ -799,7 +806,7 @@ push_hold_settle() {
     }
     END { for (i = 1; i <= n; i++) print order[i] "\t" ok[order[i]] }
   ' "$PUSH_HOLD_STATE/pushed_names" "$PUSH_HOLD_STATE/held" "$PUSH_HOLD_STATE/recovered" \
-    > "$PUSH_HOLD_STATE/settle_refs" || return 0
+    > "$PUSH_HOLD_STATE/settle_refs" || return 2
   while IFS=$'\t' read -r ref ok <&3; do
     [ -n "$ref" ] || continue
     if [ "$ok" != "1" ]; then
@@ -811,7 +818,17 @@ push_hold_settle() {
     else
       echo "::warning title=hold ref remains::${ref} delete did not verify"
     fi
-  done 3< "$PUSH_HOLD_STATE/settle_refs"
+  done 3< "$PUSH_HOLD_STATE/settle_refs" || return 2
+  return 0
+}
+
+push_hold_settle() {
+  local rc=0
+  _push_hold_settle_impl "$@" || rc=$?
+  if [ "$rc" -ne 0 ]; then
+    _push_hold_mark_unreconciled "settlement" "could not establish fresh custody retirement evidence" || true
+    return 2
+  fi
   return 0
 }
 
@@ -830,7 +847,7 @@ push_hold_red() {
 # origin and unstaged; 2 when custody could not be secured (nothing reverted).
 push_hold_oversize_staged() {
   local W i sha size head path layout head_size pfx_hash headsha tree commit ref
-  local blob total alarm bad nheld reset_failed=0
+  local blob total alarm bad nheld has_over has_payload still_held reset_failed=0
   push_hold_recovery_ok || return 2
   _push_hold_work_reset || {
     echo "::error title=hold custody failed::could not create the hold state dir"
@@ -845,18 +862,19 @@ push_hold_oversize_staged() {
     echo "::error title=hold custody failed::could not read the staged paths (a path with a tab or newline, an unreadable index, or a git error)"
     return 2
   fi
-  [ -f "$PUSH_HOLD_STATE/held" ] || : > "$PUSH_HOLD_STATE/held"
-  [ -f "$PUSH_HOLD_STATE/recovered" ] || : > "$PUSH_HOLD_STATE/recovered"
-  if ! awk -F'\t' '$5 == "1" { f = 1 } END { exit f ? 0 : 1 }' "$W/meta" && [ ! -s "$PUSH_HOLD_STATE/held" ]; then
+  [ -f "$PUSH_HOLD_STATE/held" ] || : > "$PUSH_HOLD_STATE/held" || return 2
+  [ -f "$PUSH_HOLD_STATE/recovered" ] || : > "$PUSH_HOLD_STATE/recovered" || return 2
+  has_over=$(awk -F'\t' '$5 == "1" { f = 1 } END { print f ? 1 : 0 }' "$W/meta") || return 2
+  if [ "$has_over" -eq 0 ] && [ ! -s "$PUSH_HOLD_STATE/held" ]; then
     if [ -s "$PUSH_HOLD_STATE/recovered" ]; then
       git rev-parse HEAD > "$PUSH_HOLD_STATE/head_before" || return 2
     fi
     return 0
   fi
   {
-    awk -F'\t' '$1 != "" && $1 != "-" { print "r\t" $1 "\t" $2 }' "$PUSH_HOLD_STATE/recovered"
-    awk -F'\t' '$1 != "" && $1 != "-" { print "h\t" $1 "\t" $2 }' "$PUSH_HOLD_STATE/held"
-  } > "$W/lineage"
+    awk -F'\t' '$1 != "" && $1 != "-" { print "r\t" $1 "\t" $2 }' "$PUSH_HOLD_STATE/recovered" || return 2
+    awk -F'\t' '$1 != "" && $1 != "-" { print "h\t" $1 "\t" $2 }' "$PUSH_HOLD_STATE/held" || return 2
+  } > "$W/lineage" || return 2
 
   # One pass picks the held set. take: i, status, blob, size, head, over,
   # mode, cause, path (i is "-" for a deletion, which has no custody entry).
@@ -947,11 +965,11 @@ push_hold_oversize_staged() {
     echo "::error title=hold custody failed::could not pick the held set"
     return 2
   }
-  [ -f "$W/take" ] || : > "$W/take"
-  [ -f "$W/from_refs" ] || : > "$W/from_refs"
+  [ -f "$W/take" ] || : > "$W/take" || return 2
+  [ -f "$W/from_refs" ] || : > "$W/from_refs" || return 2
   [ -f "$W/premsg" ] && cat "$W/premsg"
   if [ ! -s "$W/take" ]; then
-    if awk -F'\t' '$5 == "1" { f = 1 } END { exit f ? 0 : 1 }' "$W/meta"; then
+    if [ "$has_over" -eq 1 ]; then
       echo "::error title=hold custody failed::an over-limit path produced an empty hold set"
       return 2
     fi
@@ -969,28 +987,29 @@ push_hold_oversize_staged() {
     $4 == "?" { print "could not read the staged blob for " $9; exit }
     $7 != "100644" && $7 != "100755" { print "cannot keep " $9 ": mode " $7; exit }
     $6 == "1" && $7 != "100644" { print "cannot keep " $9 ": mode " $7; exit }
-  ' "$W/take")
+  ' "$W/take") || return 2
   if [ -n "$bad" ]; then
     echo "::error title=hold custody failed::${bad}"
     return 2
   fi
 
   ref="-"
-  if awk -F'\t' '$2 != "D" { f = 1 } END { exit f ? 0 : 1 }' "$W/take"; then
-    rm -f "$PUSH_HOLD_INDEX"
+  has_payload=$(awk -F'\t' '$2 != "D" { f = 1 } END { print f ? 1 : 0 }' "$W/take") || return 2
+  if [ "$has_payload" -eq 1 ]; then
+    rm -f "$PUSH_HOLD_INDEX" || return 2
     GIT_INDEX_FILE="$PUSH_HOLD_INDEX" git read-tree --empty || {
       echo "::error title=hold custody failed::could not start a private index"
       return 2
     }
-    awk -F'\t' '$2 != "D" && $6 != "1" { print $7 " " $3 "\tblobs/" $1 }' "$W/take" > "$W/blobinfo"
+    awk -F'\t' '$2 != "D" && $6 != "1" { print $7 " " $3 "\tblobs/" $1 }' "$W/take" > "$W/blobinfo" || return 2
     if [ -s "$W/blobinfo" ]; then
       GIT_INDEX_FILE="$PUSH_HOLD_INDEX" git update-index --index-info < "$W/blobinfo" || {
         echo "::error title=hold custody failed::could not index the held blobs"
         return 2
       }
     fi
-    awk -F'\t' '$2 != "D" && $6 == "1" { print $1 "\t" $3 "\t" $4 "\t" $5 "\t" $9 }' "$W/take" > "$W/overs"
-    : > "$W/layouts"
+    awk -F'\t' '$2 != "D" && $6 == "1" { print $1 "\t" $3 "\t" $4 "\t" $5 "\t" $9 }' "$W/take" > "$W/overs" || return 2
+    : > "$W/layouts" || return 2
     while IFS=$'\t' read -r i sha size head path <&3; do
       git cat-file blob "$sha" > "$W/staged_bytes" || {
         echo "::error title=hold custody failed::could not read staged bytes for ${path}"
@@ -1022,24 +1041,24 @@ push_hold_oversize_staged() {
         }
       fi
       rm -f "$W/staged_bytes" "$W/suffix" "$W/pfx"
-      printf '%s\t%s\n' "$i" "$layout" >> "$W/layouts"
-    done 3< "$W/overs"
+      printf '%s\t%s\n' "$i" "$layout" >> "$W/layouts" || return 2
+    done 3< "$W/overs" || return 2
     awk -F'\t' '
       FILENAME == ARGV[1] { lay[$1] = $2; next }
       $2 != "D" { l = ($1 in lay) ? lay[$1] : "blob"; print "entry\t" $1 "\t" $9 "\t" $3 "\t" $4 "\t" $5 "\t" l }
-    ' "$W/layouts" "$W/take" > "$W/entries"
+    ' "$W/layouts" "$W/take" > "$W/entries" || return 2
     headsha=$(git rev-parse HEAD) || {
       echo "::error title=hold custody failed::could not read HEAD"
       return 2
     }
     {
-      printf '%s\n' "push-hold/v1"
-      printf 'run\t%s-%s\n' "${GITHUB_RUN_ID:-0}" "${GITHUB_RUN_ATTEMPT:-1}"
-      printf 'scope\t%s\n' "$PUSH_HOLD_SCOPE"
-      printf 'head\t%s\n' "$headsha"
-      cat "$W/entries"
-      awk '$0 != "" { print "from\t" $0 }' "$W/from_refs"
-    } > "$W/MANIFEST"
+      printf '%s\n' "push-hold/v1" || return 2
+      printf 'run\t%s-%s\n' "${GITHUB_RUN_ID:-0}" "${GITHUB_RUN_ATTEMPT:-1}" || return 2
+      printf 'scope\t%s\n' "$PUSH_HOLD_SCOPE" || return 2
+      printf 'head\t%s\n' "$headsha" || return 2
+      cat "$W/entries" || return 2
+      awk '$0 != "" { print "from\t" $0 }' "$W/from_refs" || return 2
+    } > "$W/MANIFEST" || return 2
     blob=$(git hash-object -w "$W/MANIFEST") || {
       echo "::error title=hold custody failed::could not hash MANIFEST"
       return 2
@@ -1073,14 +1092,14 @@ push_hold_oversize_staged() {
         ok++
       }
       END { if (ok != nw && !printed) print "custody tree has " ok " of " nw " held blobs" }
-    ' "$W/take" "$W/tree.ls")
+    ' "$W/take" "$W/tree.ls") || return 2
     if [ -n "$bad" ]; then
       echo "::error title=hold verify failed::${bad}"
       return 2
     fi
     while IFS=$'\t' read -r i layout <&3; do
-      sha=$(awk -F'\t' -v i="$i" '$1 == i { print $3; exit }' "$W/take")
-      path=$(awk -F'\t' -v i="$i" '$1 == i { print $9; exit }' "$W/take")
+      sha=$(awk -F'\t' -v i="$i" '$1 == i { print $3; exit }' "$W/take") || return 2
+      path=$(awk -F'\t' -v i="$i" '$1 == i { print $9; exit }' "$W/take") || return 2
       if ! _push_hold_rebuild_to "$commit" "$i" "$layout" "$W/rebuild"; then
         echo "::error title=hold verify failed::could not rebuild ${path} from ${commit}"
         return 2
@@ -1091,34 +1110,43 @@ push_hold_oversize_staged() {
         echo "::error title=hold verify failed::${path} custody bytes hash ${blob}, staged blob ${sha}"
         return 2
       fi
-    done 3< "$W/layouts"
-    total=$(awk -F'\t' '$2 != "D" { t += $4 } END { printf "%.0f", t }' "$W/take")
+    done 3< "$W/layouts" || return 2
+    total=$(awk -F'\t' '$2 != "D" { t += $4 } END { printf "%.0f", t }' "$W/take") || return 2
     alarm=${PUSH_HOLD_PUSH_ALARM:-$((120 + total / 4194304))}
     ref="${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}/${GITHUB_RUN_ID:-0}-${GITHUB_RUN_ATTEMPT:-1}-${commit:0:12}"
     _push_hold_push_ref "$commit" "$ref" "$alarm" || return 2
   fi
 
+  # The next checkpoint relies on this ledger even if a held file shrinks.
+  # Persist it before changing the real index or worktree.
+  if ! awk -F'\t' -v ref="$ref" '{ print ref "\t" $9 }' "$W/take" >> "$PUSH_HOLD_STATE/held"; then
+    _push_hold_mark_unreconciled "$ref" "could not record verified hold" || true
+    return 2
+  fi
+
   # Custody is on origin (or nothing but deletions is held). Unstage every
   # held path; put HEAD's bytes back unless the caller keeps the worktree.
-  awk -F'\t' '{ print $9 }' "$W/take" | tr '\n' '\0' > "$W/all.nul"
+  awk -F'\t' '{ print $9 }' "$W/take" > "$W/all" || return 2
+  tr '\n' '\0' < "$W/all" > "$W/all.nul" || return 2
   if ! git --literal-pathspecs reset -q --pathspec-from-file="$W/all.nul" --pathspec-file-nul; then
     reset_failed=1
   fi
   if [ "$PUSH_HOLD_KEEP_WORKTREE" != "1" ]; then
-    awk -F'\t' '$5 != "-" { print $9 }' "$W/take" | tr '\n' '\0' > "$W/tracked.nul"
+    awk -F'\t' '$5 != "-" { print $9 }' "$W/take" > "$W/tracked" || return 2
+    tr '\n' '\0' < "$W/tracked" > "$W/tracked.nul" || return 2
     if [ -s "$W/tracked.nul" ]; then
       git --literal-pathspecs checkout -q HEAD --pathspec-from-file="$W/tracked.nul" --pathspec-file-nul || reset_failed=1
     fi
   fi
   if git diff --cached --name-only -z --no-renames > "$W/still.z"; then
-    tr '\0' '\n' < "$W/still.z" > "$W/still"
-    if awk -F'\t' 'FILENAME == ARGV[1] { s[$0] = 1; next } ($9 in s) { f = 1 } END { exit f ? 0 : 1 }' "$W/still" "$W/take"; then
+    tr '\0' '\n' < "$W/still.z" > "$W/still" || return 2
+    still_held=$(awk -F'\t' 'FILENAME == ARGV[1] { s[$0] = 1; next } ($9 in s) { f = 1 } END { print f ? 1 : 0 }' "$W/still" "$W/take") || return 2
+    if [ "$still_held" -eq 1 ]; then
       reset_failed=1
     fi
   else
     reset_failed=1
   fi
-  awk -F'\t' -v ref="$ref" '{ print ref "\t" $9 }' "$W/take" >> "$PUSH_HOLD_STATE/held"
 
   nheld=$(awk 'END { print NR }' "$W/take")
   PUSH_BLOB_LIMIT="$PUSH_BLOB_LIMIT" PUSH_HOLD_LIST_MAX="$PUSH_HOLD_LIST_MAX" PH_REF="$ref" awk -F'\t' '

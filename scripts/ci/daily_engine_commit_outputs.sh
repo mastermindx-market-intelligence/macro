@@ -10,12 +10,14 @@ set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declare
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_hold.sh"
 # Refuse before normalizers or staging, including direct invocations.
-push_hold_recovery_ok || exit 1
+push_hold_recovery_ok || exit 2
 if [ "${1:-}" = "--checkpoint" ]; then
   checkpoint_rc=0
   # The normal committer runs once; its existing EXIT cleanup finishes first.
   bash "${BASH_SOURCE[0]}" || checkpoint_rc=$?
-  if [ "$checkpoint_rc" -ge 128 ]; then
+  if [ "$checkpoint_rc" -eq 2 ]; then
+    _push_hold_mark_unreconciled "checkpoint" "custody operation did not qualify" || true
+  elif [ "$checkpoint_rc" -ge 128 ]; then
     _push_hold_mark_unreconciled "checkpoint" "committer interrupted before custody qualification" || true
   elif push_hold_recovery_ok && [ -n "${GITHUB_OUTPUT:-}" ]; then
     printf '%s\n' "admitted=true" >> "$GITHUB_OUTPUT"
@@ -34,9 +36,9 @@ ENGINE_GROUP="data site reports templates"
 PUSH_HOLD_KEEP_WORKTREE=1
 engine_hold() {
   local rc=0
-  push_hold_recovery_ok || exit 1
+  push_hold_recovery_ok || exit 2
   push_hold_oversize_staged "$ENGINE_GROUP" || rc=$?
-  if [ "$rc" -ne 0 ]; then exit 1; fi
+  if [ "$rc" -ne 0 ]; then exit "$rc"; fi
   if push_hold_held; then
     echo "::error title=engine outputs withheld::an engine output is over GitHub's blob limit, so none of this run's engine outputs is published; the held bytes are on origin and the next run restores them"
     push_hold_settle HEAD

@@ -1128,6 +1128,11 @@ def test_engine_core_admission_barrier_covers_implicit_and_always_writers(tmp_pa
         ("unknown", 1, False),
         ("interrupted", 143, False),
         ("unreadable", 1, False),
+        ("custody_failure", 2, False),
+        ("lineage_failure", 2, False),
+        ("selector_failure", 2, False),
+        ("unrecordable_unknown", 2, False),
+        ("held_record_failure", 2, False),
     ],
 )
 def test_engine_checkpoint_qualifies_after_one_inner_commit_and_cleanup(tmp_path, case, expected_rc, admitted):
@@ -1136,8 +1141,10 @@ def test_engine_checkpoint_qualifies_after_one_inner_commit_and_cleanup(tmp_path
     env = _hold_env(tmp_path)
     repo, bare = _pair_seed(tmp_path, env)
     main_before = _git(bare, "rev-parse", "main", env=env)
-    if case == "held":
+    custody_cases = {"held", "unrecordable_unknown", "held_record_failure"}
+    if case in custody_cases or case in {"lineage_failure", "selector_failure"}:
         _stage_pair(repo, env)
+    before_index = _git(repo, "write-tree", env=env)
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
     fake_bash = fake_bin / "bash"
@@ -1152,7 +1159,8 @@ def test_engine_checkpoint_qualifies_after_one_inner_commit_and_cleanup(tmp_path
         "trap 'test ! -s \"$GITHUB_OUTPUT\" && printf done > \"$CHECKPOINT_CLEANUP\"' EXIT\n"
         'case "$CHECKPOINT_CASE" in\n'
         "  clean) exit 0 ;;\n"
-        "  held) engine_hold ;;\n"
+        "  held|lineage_failure|selector_failure|unrecordable_unknown|held_record_failure) engine_hold ;;\n"
+        "  custody_failure) _push_hold_scan() { return 1; }; engine_hold ;;\n"
         "  ordinary_failure) exit 1 ;;\n"
         '  unknown) _push_hold_prepare_state; _push_hold_mark_unreconciled exact-ref "readback unavailable"; exit 1 ;;\n'
         '  interrupted) kill -TERM "$$" ;;\n'
@@ -1170,31 +1178,87 @@ def test_engine_checkpoint_qualifies_after_one_inner_commit_and_cleanup(tmp_path
         "CHECKPOINT_CALLS": str(calls),
         "CHECKPOINT_CLEANUP": str(cleanup),
     })
+    if case in {"lineage_failure", "selector_failure"}:
+        real_awk = subprocess.run(["which", "awk"], capture_output=True, text=True, check=True).stdout.strip()
+        wrapper = fake_bin / "awk"
+        wrapper.write_text(
+            "#!/bin/bash\n"
+            'for arg in "$@"; do\n'
+            '  if [ "$CHECKPOINT_CASE" = "lineage_failure" ]; then\n'
+            '    case "$arg" in */push_hold.501.engine/recovered) exit 61 ;; esac\n'
+            '  else\n'
+            '    case "$arg" in */work/meta) exit 61 ;; esac\n'
+            '  fi\n'
+            'done\n'
+            'exec "$REAL_AWK" "$@"\n'
+        )
+        wrapper.chmod(0o755)
+        env["REAL_AWK"] = real_awk
+    if case in {"unrecordable_unknown", "held_record_failure"}:
+        real_git = subprocess.run(["which", "git"], capture_output=True, text=True, check=True).stdout.strip()
+        wrapper = fake_bin / "git"
+        wrapper.write_text(
+            "#!/bin/bash\n"
+            'if [ "${1:-}" = "push" ]; then printf "%s\\n" push >> "$PUSH_CALLS"; fi\n'
+            'if [ "${1:-}" = "ls-remote" ] && [ "${2:-}" = "--refs" ]; then\n'
+            '  if [ "$CHECKPOINT_CASE" = "unrecordable_unknown" ]; then\n'
+            '    : > "$FAULT_STATE/unreconciled"\n'
+            '    chmod 400 "$FAULT_STATE/unreconciled"\n'
+            '    exit 61\n'
+            '  fi\n'
+            '  "$REAL_GIT" "$@" || exit "$?"\n'
+            '  : > "$FAULT_STATE/held"\n'
+            '  chmod 400 "$FAULT_STATE/held"\n'
+            '  exit 0\n'
+            'fi\n'
+            'exec "$REAL_GIT" "$@"\n'
+        )
+        wrapper.chmod(0o755)
+        env.update({
+            "REAL_GIT": real_git, "PUSH_CALLS": str(tmp_path / "push-calls"),
+            "FAULT_STATE": str(Path(env["RUNNER_TEMP"]) / "push_hold.501.engine"),
+        })
     try:
         done = subprocess.run(
             ["/bin/bash", str(ENGINE), "--checkpoint"], cwd=repo, env=env,
             capture_output=True, text=True, timeout=60,
         )
+        rows = output.read_text().splitlines() if output.exists() else []
+        assert rows == (["admitted=true"] if admitted else []), done.stdout + done.stderr
         assert done.returncode == expected_rc, done.stdout + done.stderr
         assert calls.read_text().splitlines() == [str(ENGINE)]
         assert cleanup.read_text() == "done", "admission must wait for the inner EXIT cleanup"
-        rows = output.read_text().splitlines() if output.exists() else []
-        assert rows == (["admitted=true"] if admitted else [])
         if case == "unreadable":
             state = next(Path(env["RUNNER_TEMP"]).glob("push_hold.*"))
             assert not os.access(state, os.R_OK | os.W_OK | os.X_OK)
         assert _git(bare, "rev-parse", "main", env=env) == main_before
-        if case == "held":
+        if case in custody_cases:
             [ref] = _custody_refs(bare, env)
             held, _ = _custody(bare, ref, env)
             assert held == {"data/x.jsonl": SOURCE_BYTES, "site/x.json": DERIVED_BYTES}
-            assert _staged(repo, env) == []
+            if case == "held":
+                assert _staged(repo, env) == []
+            else:
+                assert _git(repo, "write-tree", env=env) == before_index
+                assert Path(env["PUSH_CALLS"]).read_text().splitlines() == ["push"]
+                if case == "unrecordable_unknown":
+                    marker = Path(env["FAULT_STATE"]) / "unreconciled"
+                    assert marker.read_text() == ""
+                    assert not os.access(marker, os.W_OK)
+                    assert "EFFECT_UNKNOWN" in done.stdout
+                else:
+                    assert not os.access(Path(env["FAULT_STATE"]) / "held", os.W_OK)
+                    assert "could not record verified hold" in done.stdout
+                    assert ref in (Path(env["FAULT_STATE"]) / "unreconciled").read_text()
             assert (repo / "data/x.jsonl").read_bytes() == SOURCE_BYTES
         else:
             assert _custody_refs(bare, env) == []
     finally:
         for state in Path(env["RUNNER_TEMP"]).glob("push_hold.*"):
             state.chmod(0o700)
+            for name in ("held", "unreconciled"):
+                if (state / name).exists():
+                    (state / name).chmod(0o600)
 
 
 @pytest.mark.parametrize("checkpoint", [False, True])
@@ -1229,7 +1293,7 @@ def test_engine_direct_committer_refuses_before_normalizers_or_staging(tmp_path,
         ["/bin/bash", str(ENGINE), *(["--checkpoint"] if checkpoint else [])],
         cwd=repo, env=env, capture_output=True, text=True, timeout=20,
     )
-    assert done.returncode == 1, done.stdout + done.stderr
+    assert done.returncode == 2, done.stdout + done.stderr
     assert "unreconciled recovery state blocks" in done.stdout
     assert not calls.exists(), "a blocked direct invocation must not start a normalizer"
     assert _git(repo, "write-tree", env=env) == before_index
@@ -1258,7 +1322,7 @@ def test_engine_unknown_first_custody_cannot_mint_a_second_checkpoint_ref(tmp_pa
     wrapper.chmod(0o755)
     env.update({"PATH": f"{fake_bin}:{env['PATH']}", "REAL_GIT": real_git, "PUSH_CALLS": str(calls)})
     first = _bash(repo, _hold_script("engine_hold"), env)
-    assert first.returncode == 1, first.stdout + first.stderr
+    assert first.returncode == 2, first.stdout + first.stderr
     assert "EFFECT_UNKNOWN" in first.stdout
     [ref] = _custody_refs(bare, env)
     assert calls.read_text().splitlines() == ["push"]
@@ -1267,7 +1331,7 @@ def test_engine_unknown_first_custody_cannot_mint_a_second_checkpoint_ref(tmp_pa
     _git(repo, "add", "data", "site", env=env)
     before_index = _git(repo, "write-tree", env=env)
     second = _bash(repo, _hold_script("engine_hold"), env)
-    assert second.returncode == 1, second.stdout + second.stderr
+    assert second.returncode == 2, second.stdout + second.stderr
     assert "unreconciled recovery state blocks" in second.stdout
     assert calls.read_text().splitlines() == ["push"]
     assert _git(repo, "write-tree", env=env) == before_index
