@@ -601,7 +601,9 @@ def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
 
 # Native activation is closed to these existing owners and their original
 # TOTAL grants. Each setup still shares that total and its finite setup bound.
-NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 10
+# The exact native installer remains capped to 10 min by its separate phase.
+# The full ontology tests need 15 min after setup; do not extend installer.
+NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 15
 NATIVE_BROWSER_LOGICAL_JOB_ID = "ontology-explorer"
 NATIVE_BRAIN_LOGICAL_JOB_ID = "unrun-brain-gateway"
 NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES = 15

@@ -4406,6 +4406,9 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # Installer simulations own their concrete source/read closure without
+    # adding weight to unrelated ordinary-code packing probes.
+    "earnings-worker-systemd",
     # Actual page-query import/read closure; no unrelated fallback ownership.
     "admin-analytics-pages",
     # Paid Fabric source-only guidance and deterministic attribution tests are
@@ -5404,6 +5407,27 @@ def test_unrun_picks_boards_owns_macro_risk_dialog_locale_token_source() -> None
     'tests/fixtures/evidence_foundation/new_native_event.json',  # ci-trigger-closure: data — a changed path name, not a read
     'tests/ontology_company_controller.test.mjs',  # ci-trigger-closure: data — a changed path name, not a read
 ])
+def test_ontology_browser_total_budget_retains_ten_minute_installer():
+    """Protected installer resource cap survives a larger end-to-end test job."""
+    from dataclasses import replace
+    ontology = next(j for j in PACK.load_legacy_jobs(MANIFEST)
+                    if j.job_id == "ontology-explorer")
+    assert ontology.definition["timeout-minutes"] == 15
+    assert PACK.NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES == 15
+    contract = PACK._browser_setup_contract(ontology)
+    assert len(contract) == 1
+    assert contract[0]["timeout_minutes"] == 10
+    assert contract[0]["logical_job_timeout_minutes"] == 15
+    assert contract[0]["activation_job_id"] == "ontology-explorer"
+    assert contract[0]["acquisition"] == "native_parallel"
+    bad = dict(ontology.definition)
+    bad["steps"] = [dict(step) for step in ontology.definition["steps"]]
+    setup = next(step for step in bad["steps"] if step.get("phase") == "browser_setup")
+    setup["timeout-minutes"] = 11
+    with pytest.raises(PACK.ManifestError, match="finite <=10 minute bound"):
+        PACK._browser_setup_contract(replace(ontology, definition=bad))
+
+
 def test_ontology_explorer_exclusive_scope_keeps_runtime_inputs(dependency: str) -> None:
     """Dynamic browser, native data and Jinja reads remain explicit CI owners.
 
