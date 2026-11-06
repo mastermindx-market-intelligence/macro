@@ -1,7 +1,7 @@
 # Always-on Macro and Shared Shell migration
 
 Date: 2026-11-05.
-Status: IMPLEMENTATION IN PROGRESS; Macro #10780 and Terminal #1311 published; producer transfer and production acceptance remain open.
+Status: IMPLEMENTATION IN PROGRESS; bounded Terminal #1285 beta release runtime-accepted; Macro #10780 and Terminal #1311 remain separate source carriers; producer transfer and authenticated generation acceptance remain open.
 Tracking issue: https://github.com/mastermindx-market-intelligence/macro/issues/10779
 Operation: `macro-always-on-shared-shell-20261105-c3`.
 Source carrier: `sol/web-macro-always-on-shared-shell-20261105-c3`.
@@ -463,3 +463,35 @@ Central input, distinct theme/allocation projections and deferred effects. Compl
 amalgam/holdings/auxiliary capture through their established owners. Sole-writer
 transfer, updater barrier, hosted/protected release, API/BFF/native integration,
 authenticated open-tab refresh and all remaining estate families remain open.
+
+## Timing/setup source and bounded beta release — 2026-11-06
+
+The existing board owner now computes sector timing, notable stocks and setup/display
+values from captured inputs. Legacy pages delegate to the same calculation owner.
+Actual source parity retains fund-context analysis, optional stock high, the original
+300-frame-row floor, historical member clocks, tactical base rates and two-read chips.
+The affected suite passed **397**, with four skips and five exact missing-generated-file
+preconditions deselected. The newly observed absent `site/us_stocks.html` failure was
+reproduced using byte-identical published test source. [Contract](SECTOR_TIMING_SETUP_INPUTS_2026-11-06.md)
+and [qualification receipts](SECTOR_TIMING_SETUP_SOURCE_REVIEW_2026-11-06.json) record
+proof and limits. No live acquisition or Macro runtime activation is implied.
+
+The existing beta release owner also completed one ordinary upgrade of merged Terminal
+#1285 to **334980ac7339a6edfa2ebf357a3b235732ad5419**. The original attempt
+`c23390bc536c4f3ab570d0f5328714f5` committed at 12:20 UTC, with a CLEAN source
+preflight and runtime-accepted record. Independent readback agrees across Git, deployment
+marker, local status and public HTTPS status; the service is active/running/enabled.
+Pending and shared build holds are absent. The credential-free Sector route returns
+401/access_denied/data:null with private/no-store.
+[Full bounded live proof](BETA_TERMINAL_1285_RELEASE_PROOF_2026-11-06.json).
+
+That release installs the existing static-feed BFF/heatmap repair. It does not install
+the five-artifact native transport, move the Macro data owner or prove authenticated
+current data. PR #1311's original queue carrier remains untouched.
+
+Next: finish the thin fixed-five composer and remaining captured-source projections,
+complete the sole-writer source barrier, then integrate the private API and actual
+shared-shell consumer through their existing owners. The original CI capability
+denial, unresolved holdings commission and browser capability failure remain local
+fences; none has been bypassed or silently retried. Authenticated two-generation
+open-tab refresh and remaining estate family migrations are still required.

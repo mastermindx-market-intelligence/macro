@@ -1,8 +1,18 @@
 """Canonical action-board value transformations; builders retain acquisition/publication."""
 from __future__ import annotations
 from copy import deepcopy
-from datetime import datetime
+from datetime import date, datetime
+from dataclasses import dataclass, fields as dataclass_fields
+from collections.abc import Mapping
+import math
 import hashlib
+import calendar
+import logging
+
+import pandas as pd
+from engine.i18n import t as T
+
+log = logging.getLogger(__name__)
 import json
 from typing import Any
 
@@ -688,3 +698,577 @@ def assemble_action_board_from_inputs(*, sector_timing: dict, notable: list[dict
     attach_two_reads(board, two_reads)
     return board
 
+
+
+STATE_STYLES = {
+    "FRESH BUY": ("#1d4a2c", "#7fe0a0"), "TURN SIGNALED": ("#1d3a4a", "#8fd0f0"),
+    "RALLY ON": ("#1d3326", "#6fce8f"), "BOTTOM WATCH": ("#2b3340", "#9fc0e8"),
+    "TOP WATCH": ("#38301a", "#d8b75a"), "ROLLING OVER": ("#4a2c1a", "#e0a070"),
+    "DECLINE": ("#3a2020", "#e08080"),
+    "COUNTERTREND BOUNCE": ("#3a2e1a", "#e0b070"),
+}
+
+
+BUY_ZONE_STATES = ("FRESH BUY", "TURN SIGNALED")
+
+
+def _compact_season(line: str | None) -> tuple[str, str]:
+    """'Jun: -0.4% avg, up 46% of years (n=28)' -> ('-0.4% (46%)', full)"""
+    if not line:
+        return "—", T("Not enough history for a seasonal read.", "历史数据不足，无法做季节性判断。")
+    try:
+        avg = line.split(":")[1].split("avg")[0].strip()
+        hit = line.split("up ")[1].split("%")[0]
+        return f"{avg} ({hit}%)", line
+    except (IndexError, ValueError):
+        return line, line
+
+
+def _b(en: str, zh: str) -> str:
+    """Inline bilingual span (raw markup) for use inside composed tooltip HTML."""
+    return f'<span class="l-en">{en}</span><span class="l-zh">{zh}</span>'
+
+
+def _season_tooltip(seas: dict | None, month: int | None):
+    """Rich seasonality hover: a 12-month bar chart of average returns + a two-column
+    table (avg / % positive / years), with the current calendar month highlighted.
+    Colours use the theme's --up/--down vars so they follow the Asia red/green swap.
+    Falls back to a short note when there isn't enough history."""
+    from markupsafe import Markup
+    if not seas:
+        return T("Not enough history for a seasonal read.", "历史数据不足，无法做季节性判断。")
+    # latest.json is a JSON round-trip, which stringifies the int month keys
+    seas = {int(k): v for k, v in seas.items()}
+    month = int(month) if month is not None else None
+    months = range(1, 13)
+    vmax = max((abs(seas[m]["avg_pct"]) for m in months if m in seas), default=1.0) or 1.0
+
+    # --- bar chart: positive bars up (green), negative down (red) -------------
+    W, H = 320, 86
+    padL, padR, base_y, span, label_y = 8, 8, 40, 26, 80
+    slot = (W - padL - padR) / 12
+    bw = slot * 0.56
+    svg = [f'<line x1="{padL}" y1="{base_y}" x2="{W - padR}" y2="{base_y}" '
+           f'style="stroke:var(--line);stroke-width:1"/>']
+    for i, m in enumerate(months):
+        cx = padL + slot * (i + 0.5)
+        cur = (m == month)
+        if cur:                                    # faint full-height column tint
+            svg.append(f'<rect x="{cx - slot / 2:.1f}" y="6" width="{slot:.1f}" '
+                       f'height="{base_y + span:.1f}" rx="2" '
+                       f'style="fill:var(--text);opacity:.07"/>')
+        s = seas.get(m)
+        if s:
+            up = s["avg_pct"] >= 0
+            h = max(abs(s["avg_pct"]) / vmax * span, 1.0)
+            y = base_y - h if up else base_y
+            col = "var(--up)" if up else "var(--down)"
+            svg.append(f'<rect x="{cx - bw / 2:.1f}" y="{y:.1f}" width="{bw:.1f}" '
+                       f'height="{h:.1f}" rx="1.5" '
+                       f'style="fill:{col};opacity:{1 if cur else .55}"/>')
+        svg.append(                                    # numeric labels read in both languages
+            f'<text x="{cx:.1f}" y="{label_y}" text-anchor="middle" '
+            f'style="font-size:9px;fill:{"var(--text)" if cur else "var(--muted)"};'
+            f'font-weight:{700 if cur else 400}">{m}</text>')
+    chart = (f'<svg viewBox="0 0 {W} {H}" width="100%" style="display:block;'
+             f'margin:4px 0 6px;overflow:visible">{"".join(svg)}</svg>')
+
+    # --- two stacked 6-month tables, current month row highlighted ------------
+    def _col(rng) -> str:
+        rows = ['<colgroup><col style="width:28%"><col style="width:28%">'
+                '<col style="width:23%"><col style="width:21%"></colgroup>',
+                f'<tr><th style="text-align:left">{_b("Month", "月份")}</th>'
+                f'<th>{_b("Avg", "均值")}</th><th>{_b("Up", "收涨")}</th>'
+                f'<th>{_b("Yrs", "年数")}</th></tr>']
+        for m in rng:
+            s, cur = seas.get(m), (m == month)
+            tr = ' style="background:var(--panel2);font-weight:700"' if cur else ''
+            name = _b(calendar.month_abbr[m], f"{m}月")
+            if s:
+                cls = "pos" if s["avg_pct"] >= 0 else "neg"
+                rows.append(
+                    f'<tr{tr}><td style="text-align:left">{name}</td>'
+                    f'<td class="{cls}">{s["avg_pct"]:+.1f}%</td>'
+                    f'<td>{s["hit_pct"]:.0f}%</td>'
+                    f'<td class="muted">{s["n"]}</td></tr>')
+            else:
+                rows.append(f'<tr{tr}><td style="text-align:left">{name}</td>'
+                            f'<td class="muted">—</td><td class="muted">—</td>'
+                            f'<td class="muted">—</td></tr>')
+        return ('<table style="margin:0;flex:1 1 0;min-width:0">'
+                + "".join(rows) + "</table>")
+
+    tables = (f'<div style="display:flex;gap:10px">'
+              f'{_col(range(1, 7))}{_col(range(7, 13))}</div>')
+    title = ('<b style="font-size:12px;display:block;margin-bottom:1px">'
+             + _b("Seasonality — average return by month",
+                  "季节性 — 各月平均回报") + '</b>')
+    foot = ('<div class="muted" style="font-size:10.5px;margin-top:6px;line-height:1.4">'
+            + _b("Each month’s average return across this instrument’s full history, and "
+                 "how often it closed up. Weak evidence — background colour only, never a "
+                 "signal on its own (and left out of the heat score).",
+                 "该标的全部历史中每个月的平均回报及收涨频率。属于弱证据 — 仅作背景参考，"
+                 "绝不单独作为信号（且已排除在热度分数之外）。") + '</div>')
+    return Markup(f"{title}{chart}{tables}{foot}")
+
+
+def _mini_svg(vals, color: str = "var(--link)", w: int = 260, h: int = 54,
+              baseline=None, dot: bool = True,
+              zone_lo: float | None = None, zone_hi: float | None = None,
+              zone_state: str | None = None) -> str:
+    """A tiny theme-aware inline sparkline (area + line + last-point marker),
+    used both for the nowcast hover charts and the standout-stock cards. Pure
+    SVG so it needs no client JS and works offline. `vals` should already be a
+    clean numeric list. `baseline` draws a dashed reference line (0 = stall,
+    2 = the Fed's inflation target, …). zone_lo/zone_hi/zone_state (all
+    optional): the prophet-card buy-zone band, drawn on the same lo/hi/pad
+    scale as the polyline — args absent -> output identical to before."""
+    vals = [float(v) for v in vals if v is not None and v == v]
+    if len(vals) < 2:
+        return ""
+    lo, hi = min(vals), max(vals)
+    if baseline is not None:
+        lo, hi = min(lo, float(baseline)), max(hi, float(baseline))
+    rng = (hi - lo) or 1.0
+    n = len(vals)
+    pad = h * 0.10  # keep the line off the top/bottom edges
+
+    def xy(i, v):
+        return (i / (n - 1) * w, (h - pad) - ((v - lo) / rng) * (h - 2 * pad) + pad)
+
+    pts = " ".join(f"{x:.1f},{y:.1f}" for x, y in (xy(i, v) for i, v in enumerate(vals)))
+    out = [f'<svg class="nch" viewBox="0 0 {w} {h}" preserveAspectRatio="none" '
+           f'width="100%" height="{h}">']
+    if baseline is not None:
+        by = (h - pad) - ((float(baseline) - lo) / rng) * (h - 2 * pad) + pad
+        out.append(f'<line x1="0" y1="{by:.1f}" x2="{w}" y2="{by:.1f}" '
+                   f'stroke="var(--muted)" stroke-width="0.8" stroke-dasharray="3 3" '
+                   f'opacity="0.55"/>')
+    if zone_hi is not None or zone_lo is not None:
+        # Buy-zone band (prophet-card E1): a horizontal price band over the right
+        # 40% of the plot — filled low-opacity rect when the zone is ACTIVE, dashed
+        # edge lines only when PENDING. Price-clamped into the plotted window; a
+        # zone wholly outside it draws nothing. The edge lines carry no fill
+        # attribute and the rect keeps fill-opacity, so the prophet-card hue
+        # override (stroke on *, fill on [fill]:not([fill="none"])) recolors both
+        # without flattening the band.
+        try:
+            zh = float(zone_hi if zone_hi is not None else zone_lo)
+            zl = float(zone_lo if zone_lo is not None else zone_hi)
+            zl, zh = min(zl, zh), max(zl, zh)
+            if zh > 0 and zh >= lo and zl <= hi:
+                yt = (h - pad) - ((min(zh, hi) - lo) / rng) * (h - 2 * pad) + pad
+                yb = (h - pad) - ((max(zl, lo) - lo) / rng) * (h - 2 * pad) + pad
+                x0 = w * 0.60
+                if zone_state == "active":
+                    out.append(f'<rect x="{x0:.1f}" y="{yt:.1f}" width="{w - x0:.1f}" '
+                               f'height="{max(yb - yt, 0.0):.1f}" fill="{color}" '
+                               f'fill-opacity="0.09" stroke="none"/>')
+                out.append(f'<line x1="{x0:.1f}" y1="{yt:.1f}" x2="{w}" y2="{yt:.1f}" '
+                           f'stroke="{color}" stroke-width="1" stroke-dasharray="4 3" '
+                           f'stroke-opacity="0.65"/>'
+                           f'<line x1="{x0:.1f}" y1="{yb:.1f}" x2="{w}" y2="{yb:.1f}" '
+                           f'stroke="{color}" stroke-width="1" stroke-dasharray="4 3" '
+                           f'stroke-opacity="0.65"/>')
+        except (TypeError, ValueError):
+            pass  # malformed zone — never a broken spark
+    out.append(f'<polyline points="0,{h} {pts} {w},{h}" fill="{color}" '
+               f'opacity="0.12" stroke="none"/>')
+    out.append(f'<polyline points="{pts}" fill="none" stroke="{color}" '
+               f'stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>')
+    if dot:
+        lx, ly = xy(n - 1, vals[-1])
+        out.append(f'<circle cx="{lx:.1f}" cy="{ly:.1f}" r="2.6" fill="{color}"/>')
+    out.append("</svg>")
+    return "".join(out)
+
+
+def notable_stock_from_inputs(fund, h, r, df, *, alpha_pt, insider_map, factor_z, sue_z):
+    """The incumbent standout-stock projection over one analyzed holding."""
+    from engine.playbook import SECTOR_NAMES
+    from engine.setups import US_ALPHA_WEIGHT, sue_confirmer, timing_tilt
+    tick = str(r["ticker"]).replace(".", "-")
+    urg = h["ladder"]["entry"]["urgency"]
+    if urg in ("now", "imminent", "exit"):
+        lad = h["ladder"]
+        closes = df["close"].dropna()
+        px = float(closes.iloc[-1]) if len(closes) else None
+        hi52 = float(closes.iloc[-252:].max()) if len(closes) else None
+        off_high = (round((px / hi52 - 1) * 100, 1)
+                    if px and hi52 else None)
+        # ~3 months of daily closes, thinned for a compact card sparkline
+        tail = closes.iloc[-66:]
+        spark = list(tail.iloc[::2].round(3)) if len(tail) > 4 else []
+        sdir = lad.get("dir")
+        scolor = ("var(--up)" if sdir == "up"
+                  else "var(--down)" if sdir == "down" else "var(--warn)")
+        # alpha-aware setup score: selection (sector-neutral residual
+        # momentum) × timing (cycle entry + reversal overlay). Falls back
+        # to timing-only when the name has no residual, so EVERY card has
+        # a setup_score on the same scale for ranking. NOT a new edge —
+        # see engine/setups.py + research/US_STANDOUT_SETUP_SCORE.md.
+        apt = alpha_pt.get(tick)
+        az = apt.get("alpha") if apt else None
+        a_entry = apt.get("entry") if apt else None
+        tilt = timing_tilt(urg, lad.get("eq_dir"), a_entry)
+        setup = round((US_ALPHA_WEIGHT * az + tilt) if az is not None
+                      else tilt, 2)
+        # confirmers: an insider BUY cluster (>=2 distinct insiders net
+        # buying, Form-4 6mo) + the factor composite (light tiebreaker) +
+        # the SUE earnings-momentum z (gated to a real positive tailwind).
+        # All DISPLAY context — none touch the setup score above.
+        ins = insider_map.get(tick) or {}
+        ins_buy = ins.get("buyers", 0) >= 2 and (ins.get("net_mn") or 0) > 0
+        return {"ticker": tick, "name": str(r.get("name", "")).title(),
+                        "sector": SECTOR_NAMES.get(fund, fund),
+                        "label": lad["label"], "action": lad.get("action"),
+                        "tag": lad["entry"]["tag"], "urgency": urg,
+                        "days": lad["entry"].get("days_hi"),
+                        "dir": sdir,
+                        "price": round(px, 2) if px is not None else None,
+                        "off_high": off_high,
+                        "eq_score": lad.get("eq_score"),
+                        "eq_grade": lad.get("eq_grade"),
+                        "eq_grade_zh": lad.get("eq_grade_zh"),
+                        "score": lad.get("score"),
+                        "setup_score": setup,
+                        "alpha_z": az,
+                        "alpha_sector_rank": apt.get("sector_rank") if apt else None,
+                        "alpha_sector_n": apt.get("sector_n") if apt else None,
+                        "alpha_entry": a_entry,
+                        "factor_z": factor_z.get(tick),
+                        "insider_buyers": ins.get("buyers") if ins_buy else None,
+                        "insider_bps": ins.get("bps") if ins_buy else None,
+                        "insider_net_mn": ins.get("net_mn") if ins_buy else None,
+                        "sue_z": sue_confirmer(sue_z.get(tick)),
+                        "signal_date": lad.get("signal_date"),
+                        "age_days": lad.get("age_days"),
+                        "spark_svg": _mini_svg(spark, color=scolor, w=240, h=42,
+                                               dot=True),
+                        "age_short": lad.get("age_short"),
+                        "age_short_zh": lad.get("age_short_zh"),
+                        "eq_badge": lad.get("eq_badge"),
+                        "eq_dir": lad.get("eq_dir"),
+                        "eq_tip": lad.get("eq_tip")}
+    return None
+
+
+def sector_timing_summary_from_inputs(fund, res, holdings):
+    """The original fund timing/count projection, shared with the page adapter."""
+    from engine.playbook import SECTOR_NAMES
+    buy_zone = sum(1 for h in holdings if h["ladder"]["state"] in BUY_ZONE_STATES)
+    return {"state": res["ladder"]["state"],
+                       "label": res["ladder"]["label"],
+                       "action": res["ladder"]["action"],
+                       "entry": res["ladder"]["entry"],
+                       "state_style": STATE_STYLES.get(res["ladder"]["state"]),
+                       "dc_day": res["cycle"]["dc_day"],
+                       "age_short": res["ladder"].get("age_short"),
+                       "age_short_zh": res["ladder"].get("age_short_zh"),
+                       "age_days": res["ladder"].get("age_days"),
+                       "eq_badge": res["ladder"].get("eq_badge"),
+                       "eq_dir": res["ladder"].get("eq_dir"),
+                       "eq_tip": res["ladder"].get("eq_tip"),
+                       "buy_zone": buy_zone, "n_holdings": len(holdings)}
+
+
+def sector_setup_from_inputs(*, latest: dict, closes, sectors, timing: dict | None = None) -> dict | None:
+    """Original setup/base-rate/display calculation over captured values only."""
+    from engine import sector_signals as ssig
+    from engine.playbook import SECTOR_NAMES
+    try:
+        latest, timing = deepcopy(latest), deepcopy(timing)
+        sectors = list(sectors)
+        if closes is None or "SPY" not in closes:
+            return None
+        closes = closes.copy(deep=True).sort_index()
+        disl = latest.get("dislocation") or {}
+        put_absent = disl.get("put_state") == "put-absent"
+        bd = ssig.board(closes, SECTOR_NAMES, sectors, spy=closes["SPY"], put_absent=put_absent)
+        if not bd.get("sectors"):
+            return None
+        # live-measured base rates (overrides the static defaults so the displayed
+        # numbers always match the live rule); fall back to the engine's documented
+        # rates on any shortfall.
+        try:
+            cal = ssig.calibrate(closes, sectors, closes["SPY"])
+        except Exception:  # noqa: BLE001 — calibration is the honesty extra, never fatal
+            cal = {}
+        stages = {s["ticker"]: s for s in ((latest.get("playbook") or {}).get("stages") or [])}
+        month = pd.Timestamp(latest["date"]).month if latest.get("date") else None
+        for r in bd["sectors"]:
+            r["href"] = US_SECTOR_PAGE.get(r["ticker"], "sectors/" + r["ticker"] + ".html")
+            st = stages.get(r["ticker"], {})
+            r["verdict"] = T(r["label"], r["label_zh"])
+            r["action_txt"] = T(r["action"], r["action_zh"])
+            r["signal_txt"] = T(ssig.signal_line(r), ssig.signal_line(r, zh=True))
+            r["conv_dots"] = ("●" * max(1, min(r["conviction"], 3))) if r["side"] != "neutral" else "·"
+            r["conv_txt"] = T(r["conviction_label"], r["conviction_label_zh"])
+            r["tech_str"] = f"{'✓' if r['above200'] else '✗'}200d {'✓' if r['above50'] else '✗'}50d"
+            r["tech_ok"] = bool(r["above200"] and r["above50"])
+            r["osc_str"] = (f"RSI {r['rsi_3d']:.0f} · Stoch {r['stoch_3d']:.0f}"
+                            if r.get("rsi_3d") is not None and r.get("stoch_3d") is not None else "—")
+            r["rs_str"] = f"{r['rs_60d']:+.1f}%" if r.get("rs_60d") is not None else "—"
+            br = cal.get(r["state"]) or r.get("base_rate") or {}
+            if br and r["side"] == "tactical" and br.get("abs63") is not None:
+                # tactical oversold-bounce: lead with the ABSOLUTE bounce (the reason
+                # it's surfaced), show excess-vs-SPY beside it as the honest cost.
+                n = br.get("n"); nbit = f" · n={n}" if n else ""
+                r["rate_str"] = T(f"{br['abs63']:+.1f}% abs · {br['abs_hit']}% up | {br['exc63']:+.1f}% vs SPY{nbit}",
+                                  f"绝对 {br['abs63']:+.1f}% · {br['abs_hit']}% 上涨 | 对SPY {br['exc63']:+.1f}%{nbit}")
+                r["rate_pos"] = None     # mixed read — keep the cell neutral, not green
+            elif br:
+                n = br.get("n")
+                nbit = f" · n={n}" if n else ""
+                r["rate_str"] = T(f"{br['exc63']:+.1f}% vs SPY · {br['hit']}% up{nbit}",
+                                  f"对SPY {br['exc63']:+.1f}% · {br['hit']}% 上涨{nbit}")
+                r["rate_pos"] = br["exc63"] >= 0
+            else:
+                r["rate_str"], r["rate_pos"] = T("—", "—"), None
+            r["rate_hit"] = br.get("hit") if br else None
+            r["rate_n"] = br.get("n") if br else None
+            r["rate_exc"] = br.get("exc63") if br else None
+            r["season_str"], _ = _compact_season(st.get("season_this"))
+            _sm = r["season_str"]
+            r["season_magnitude"] = _sm.split(" (", 1)[0] if _sm and " (" in _sm else _sm
+            r["season_tip"] = _season_tooltip(st.get("season_all"), st.get("season_month") or month)
+            # TS-R6 two-reads reconciliation chip: when this ETF's setup-side verdict
+            # (3D tactical) conflicts with the cycle timing action (slow, cap-weighted).
+            # Fired when: setup side = BUY/SETUP/BUY_PARTIAL (entry-ready) AND cycle
+            # timing maps to take_profits or avoid (TAKE PROFITS / exit urgency).
+            r["two_reads_chip"] = None
+            if timing and r.get("side") == "buy":
+                tm = timing.get(r["ticker"]) or {}
+                e = tm.get("entry") or {}
+                u = e.get("urgency", "")
+                tag = e.get("tag", "")
+                cycle_label = tm.get("label", "")
+                # Cycle is on the reduce side when urgency=exit, OR when caution routes
+                # to take_profits (any caution tag except DON'T CHASE / UNCONFIRMED —
+                # HIGH RISK, which route to on_the_run / avoid respectively).
+                # Mirrors action_board routing exactly (A3 fix).
+                _CAUTION_NON_REDUCE = {"DON'T CHASE", "UNCONFIRMED — HIGH RISK"}
+                cycle_is_reduce = (u == "exit") or (
+                    u == "caution" and tag not in _CAUTION_NON_REDUCE
+                )
+                if cycle_is_reduce:
+                    from engine.cycles import STATE_DISPLAY as _SD
+                    # ZH map mirrors ENTRY_STATUS_ZH in templates/dashboard.html.j2 ~6891-6896
+                    # plus 'setup' and 'partial' keys used by the setup-side vocab.
+                    _SETUP_ZH = {
+                        "buy_now": "立即买入", "partial": "半仓",
+                        "buy_soon": "即将买入", "setup": "构筑中",
+                        "extended": "过热", "watch": "观察",
+                        "avoid": "回避", "topping": "做顶",
+                        "blocked": "封锁", "exit": "退出",
+                    }
+                    setup_label = r.get("label") or r.get("label_zh") or r["state"]
+                    state_key = r.get("state", "")
+                    cycle_label_zh = _SD.get(
+                        tm.get("state", ""), {}
+                    ).get("label_zh", cycle_label)
+                    setup_label_zh = _SETUP_ZH.get(r.get("state", ""), setup_label)
+                    r["two_reads_chip"] = {
+                        "cycle_label_en": cycle_label,
+                        "setup_label_en": setup_label,
+                        "setup_state": state_key,
+                        "cycle_label_zh": cycle_label_zh,
+                        "setup_label_zh": setup_label_zh,
+                    }
+        return bd
+    except Exception as e:  # noqa: BLE001 — preserve the additive view contract
+        log.error("sector setup view failed: %s", e)
+        return None
+
+
+@dataclass(frozen=True)
+class SectorTimingInputs:
+    """Captured price/context values; acquisition and publication remain upstream."""
+    source_session: str
+    funds: tuple[str, ...]
+    etf_frames: Mapping
+    top_holdings: Mapping
+    stock_frames: Mapping
+    liquidity: str | None
+    macro_drag: float | None
+    macro_beta: Mapping
+    alpha_per_ticker: dict
+    insider_map: dict
+    factor_z: dict
+    sue_z: dict
+    calculation_inputs: Any
+    auxiliary_evidence: dict
+
+
+@dataclass(frozen=True)
+class SectorTimingResult:
+    timing: dict
+    notable: list[dict]
+    input_evidence: dict
+
+
+def sector_timing_and_notable_from_inputs(inputs: SectorTimingInputs) -> SectorTimingResult:
+    """Run the existing fund/holding analysis without a builder, store or clock.
+
+    The supplied source session is the upstream admitted price-cohort ceiling.
+    Historical members retain their actual observation dates in input evidence;
+    this calculator does not declare every member current or publish a generation.
+    Cold import of cycles retains its incumbent initialization; bound calculations
+    use only the explicitly captured cycle values.
+    """
+    from engine import basket_index, cycles
+    from lib.adjusted_price_capture import MAX_ROWS, MAX_COLUMNS, MAX_PANEL_CELLS
+    if not isinstance(inputs, SectorTimingInputs):
+        raise TypeError("Explicit SectorTimingInputs are required")
+    try:
+        if (not isinstance(inputs.source_session, str)
+                or date.fromisoformat(inputs.source_session).isoformat() != inputs.source_session):
+            raise ValueError
+        target = pd.Timestamp(inputs.source_session)
+    except (TypeError, ValueError):
+        raise ValueError("Invalid timing source session") from None
+    if (not isinstance(inputs.funds, tuple) or len(inputs.funds) > MAX_COLUMNS
+            or any(not isinstance(fund, str) or not fund or len(fund) > 24 for fund in inputs.funds)
+            or len(set(inputs.funds)) != len(inputs.funds)
+            or inputs.liquidity not in (None, "expanding", "contracting", "neutral")
+            or not isinstance(inputs.calculation_inputs, cycles.CycleCalculationInputs)):
+        raise ValueError("Invalid explicit sector timing scope")
+    calculation = cycles.CycleCalculationInputs(**{
+        field.name: getattr(inputs.calculation_inputs, field.name)
+        for field in dataclass_fields(inputs.calculation_inputs)})
+    reference = calculation.reference_sessions.get("US")
+    if (reference is None or target not in reference
+            or pd.Timestamp(calculation.evaluation_date) < target):
+        raise ValueError("Timing price cohort is outside the captured US evaluation context")
+    def finite_number(value):
+        return type(value) in (int, float) and math.isfinite(value)
+    if inputs.macro_drag is not None and not finite_number(inputs.macro_drag):
+        raise ValueError("Invalid captured macro drag")
+    if (not isinstance(inputs.macro_beta, Mapping)
+            or not set(inputs.macro_beta).issubset(inputs.funds)
+            or any(not finite_number(value) for value in inputs.macro_beta.values())):
+        raise ValueError("Invalid captured fund macro beta")
+    beta_by_fund = dict(inputs.macro_beta)
+    def json_value(value):
+        if not isinstance(value, dict):
+            raise ValueError("Explicit auxiliary timing mappings are required")
+        try:
+            raw = json.dumps(value, allow_nan=False)
+        except (TypeError, ValueError):
+            raise ValueError("Invalid captured timing auxiliary values") from None
+        if len(raw.encode("utf-8")) > 8 * 1024 * 1024:
+            raise ValueError("Timing auxiliary value bound")
+        return json.loads(raw)
+    alpha_pt, insiders, factors, sue, auxiliary = (
+        json_value(getattr(inputs, name)) for name in
+        ("alpha_per_ticker", "insider_map", "factor_z", "sue_z", "auxiliary_evidence"))
+    for mapping in (factors, sue):
+        if any(value is not None and not finite_number(value) for value in mapping.values()):
+            raise ValueError("Invalid captured factor/SUE value")
+    def price_frames(values, *, etf):
+        if not isinstance(values, Mapping) or len(values) > MAX_COLUMNS:
+            raise ValueError("Invalid captured timing price mapping")
+        if etf and not set(values).issubset(inputs.funds):
+            raise ValueError("Unexpected timing ETF identity")
+        total_cells, output, evidence = 0, {}, {}
+        for ticker, frame in values.items():
+            if not isinstance(ticker, str) or not ticker or len(ticker) > 24:
+                raise ValueError("Invalid timing price identity")
+            if frame is None:
+                output[ticker] = None
+                evidence[ticker] = {"observed_at": None, "close_observed_at": None,
+                                    "close_current": False, "current": False,
+                                    "field_observed_at": {}, "frame_rows": 0}
+                continue
+            if (not isinstance(frame, pd.DataFrame) or len(frame) > MAX_ROWS
+                    or frame.columns.has_duplicates or "close" not in frame):
+                raise ValueError("Invalid timing price frame")
+            fields = ["close"] + (["high"] if not etf and "high" in frame else [])
+            total_cells += len(frame) * len(fields)
+            if total_cells > MAX_PANEL_CELLS * (1 if etf else 2):
+                raise ValueError("Timing price allocation bound")
+            captured = basket_index._capture_index_panel(frame[fields])
+            if (not captured.index.isin(reference).all()
+                    or (len(captured) and captured.index[-1] > target)):
+                raise ValueError("Timing prices extend beyond the admitted cohort/reference")
+            observed = captured["close"].dropna()
+            tip = observed.index[-1].date().isoformat() if len(observed) else None
+            field_tips = {}
+            for field in fields:
+                values = captured[field].dropna()
+                field_tips[field] = values.index[-1].date().isoformat() if len(values) else None
+            evidence[ticker] = {"observed_at": tip, "close_observed_at": tip,
+                               "close_current": tip == inputs.source_session,
+                               "current": all(value == inputs.source_session for value in field_tips.values()),
+                               "field_observed_at": field_tips, "frame_rows": len(captured),
+                               "observations": len(observed), "fields": list(fields)}
+            output[ticker] = captured
+        return output, evidence
+    etfs, etf_evidence = price_frames(inputs.etf_frames, etf=True)
+    stocks, stock_evidence = price_frames(inputs.stock_frames, etf=False)
+    if any(fund not in beta_by_fund for fund, frame in etfs.items() if frame is not None):
+        raise ValueError("Every captured ETF requires its explicit effective macro beta")
+    if (not isinstance(inputs.top_holdings, Mapping)
+            or not set(inputs.top_holdings).issubset(inputs.funds)):
+        raise ValueError("Unexpected captured holdings fund")
+    top_holdings = {}
+    for fund, frame in inputs.top_holdings.items():
+        if frame is None:
+            top_holdings[fund] = None
+            continue
+        if (not isinstance(frame, pd.DataFrame) or len(frame) > MAX_COLUMNS
+                or len(frame.columns) > 32 or frame.columns.has_duplicates
+                or not {"ticker", "weight_pct"}.issubset(frame.columns)):
+            raise ValueError("Invalid captured holdings rows")
+        top_holdings[fund] = frame.copy(deep=True)
+    timing, notable, fund_evidence = {}, [], {}
+    with cycles.bind_calculation_inputs(calculation):
+        for fund in inputs.funds:
+            etf = etfs.get(fund)
+            info = {"etf": deepcopy(etf_evidence.get(fund)), "included": False,
+                    "holdings_input_present": top_holdings.get(fund) is not None,
+                    "holdings": []}
+            fund_evidence[fund] = info
+            if etf is None:
+                info["reason"] = "etf_frame_absent"
+                continue
+            beta = beta_by_fund[fund]
+            # ETF high and other analyze options remain absent, exactly as in the page owner.
+            res = cycles.analyze(etf["close"], liquidity=inputs.liquidity,
+                                 macro_drag=inputs.macro_drag, macro_beta=beta)
+            if not res.get("ladder"):
+                info["reason"] = "etf_ladder_unavailable"
+                continue
+            holdings = []
+            top = top_holdings.get(fund)
+            if top is not None:
+                for _, row in top.iterrows():
+                    ticker = str(row["ticker"]).replace(".", "-")
+                    frame = stocks.get(ticker)
+                    holding_info = {"ticker": ticker, "price": deepcopy(stock_evidence.get(ticker)),
+                                    "included": False}
+                    info["holdings"].append(holding_info)
+                    if frame is None or len(frame) < 300:
+                        holding_info["reason"] = "stock_frame_absent_or_under_300_rows"
+                        continue
+                    # No ticker-only memoization: the containing fund's beta is part of this read.
+                    h = cycles.analyze(frame["close"], frame.get("high"), liquidity=inputs.liquidity,
+                                       macro_drag=inputs.macro_drag, macro_beta=beta)
+                    if not h.get("ladder"):
+                        holding_info["reason"] = "stock_ladder_unavailable"
+                        continue
+                    holdings.append({"ticker": ticker, "name": str(row.get("name", "")).title(),
+                                     "weight_pct": row["weight_pct"], **h})
+                    candidate = notable_stock_from_inputs(
+                        fund, h, row, frame, alpha_pt=alpha_pt, insider_map=insiders,
+                        factor_z=factors, sue_z=sue)
+                    holding_info["included"] = True
+                    holding_info["notable"] = candidate is not None
+                    if candidate is not None:
+                        notable.append(candidate)
+            timing[fund] = sector_timing_summary_from_inputs(fund, res, holdings)
+            info["included"] = True
+    return SectorTimingResult(timing, notable, {
+        "source_session": inputs.source_session, "cycle_evaluation_date": calculation.evaluation_date,
+        "funds": fund_evidence, "auxiliary": auxiliary,
+        "qualification_owner": "upstream captured cohort; individual actual clocks retained"})

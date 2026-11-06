@@ -3,7 +3,7 @@
   "root_id": "macro-always-on-shared-shell-20261105-c3",
   "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
   "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
-  "recorded_at": "2026-11-06T11:42:41.475832+00:00",
+  "recorded_at": "2026-11-06T12:25:08.286355+00:00",
   "authority": "Chairman authorized end-to-end implementation. This file retains source-linked worker briefs and observations; it is not a new execution/state owner.",
   "entries": [
     {
@@ -1376,6 +1376,36 @@
         "weekly_reset": "2026-11-09T00:00:00Z",
         "meaning": "Capacity observation authorized a distinct planned leaf admission attempt; did not establish worker admission/start or clear old failed runs."
       }
+    },
+    "sector_timing_setup": {
+      "base_sha": "c18e840debddfb838074ac32e102f2cd53d89911",
+      "state": "PARENT_SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/SECTOR_TIMING_SETUP_INPUTS_2026-11-06.md",
+      "proof": "research/market_os/SECTOR_TIMING_SETUP_SOURCE_REVIEW_2026-11-06.json",
+      "qualification": {
+        "passed": 397,
+        "skipped": 4,
+        "deselected": 5,
+        "log_sha256": "bfa0f4d56e4fa929934919c1c77570c3f02aee0242a0ab2b5a1c731bed60760d"
+      },
+      "next": "fixed-five data-only composition; retain original cohorts, prior Central, separately acquired setup list and deferred effects"
+    },
+    "beta_terminal_1285_release": {
+      "state": "RUNTIME_ACCEPTED_BOUNDED_STATIC_FEED_REPAIR",
+      "target_sha": "334980ac7339a6edfa2ebf357a3b235732ad5419",
+      "operation": "beta-bff-upgrade-334980-20261106",
+      "original_process": 87020,
+      "attempt_id": "c23390bc536c4f3ab570d0f5328714f5",
+      "accepted_record_id": "bd1c7a00324653cd9bca13df033b7380e8da64014db68529aec33086428fe4db",
+      "accepted_at": "2026-11-06T12:20:14.728813Z",
+      "preflight_receipt_id": "026e21368fd18cc052f8e93a64771d8b3f3bc215611d45858526b592cab901d7",
+      "proof": "research/market_os/BETA_TERMINAL_1285_RELEASE_PROOF_2026-11-06.json",
+      "proof_sha256": "413d4da427666aa43b0cfe3f66eabc92c2cab7e62a4cf0645a109166a5fac7de",
+      "local_and_public_exact_tuple": true,
+      "credential_free_denial_verified": true,
+      "authenticated_consumer_proven": false,
+      "macro_generation_migration_proven": false,
+      "prior_terminal_1311_carrier_mutation": "none"
     }
   }
 }
