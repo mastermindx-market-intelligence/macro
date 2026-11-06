@@ -548,6 +548,34 @@ def _coalesce_nbbo_microstructure(
 
 # ── DTE / moneyness for a coalesced row ──────────────────────────────────────
 
+def _classify_expiry(exp: Any, session_date: str) -> tuple[int | None, str]:
+    """Return (dte, dte_bucket) for one expiration value.
+
+    Readable means pd.Timestamp(str(exp)) parses to a real timestamp (not NaT)
+    and the whole-day difference to the session date is >= 0. Unreadable or
+    past expiries return (None, "unknown"); they are never 0DTE.
+    """
+    try:
+        exp_ts = pd.Timestamp(str(exp))
+        sess_ts = pd.Timestamp(session_date)
+    except Exception:  # noqa: BLE001
+        return None, "unknown"
+
+    if pd.isna(exp_ts) or pd.isna(sess_ts):
+        return None, "unknown"
+
+    if exp_ts.tzinfo is not None:
+        exp_ts = exp_ts.tz_localize(None)
+    if sess_ts.tzinfo is not None:
+        sess_ts = sess_ts.tz_localize(None)
+
+    dte_int = int((exp_ts - sess_ts).days)
+    if dte_int < 0:
+        return None, "unknown"
+    bucket = str(_dte_bucket(pd.Series([dte_int])).iloc[0])
+    return dte_int, bucket
+
+
 def _enrich_contract_row(row: pd.Series, session_date: str,
                          oi_prev: pd.DataFrame | None,
                          contract_vol: dict | None = None,
@@ -561,14 +589,7 @@ def _enrich_contract_row(row: pd.Series, session_date: str,
                    bucketing (FIX 3).  None → 'unknown'.
     """
     exp_str = str(row.get("expiration", ""))
-    try:
-        exp_dt = pd.Timestamp(exp_str)
-        sess_dt = pd.Timestamp(session_date)
-        dte_val = max(int((exp_dt - sess_dt).days), 0)
-    except Exception:  # noqa: BLE001
-        dte_val = 0
-
-    dte_bucket_val = str(_dte_bucket(pd.Series([dte_val])).iloc[0])
+    dte_val, dte_bucket_val = _classify_expiry(row.get("expiration", ""), session_date)
     zerodte = dte_bucket_val == "0d"
 
     # FIX 3 — honest moneyness via prior-session close
@@ -666,6 +687,7 @@ def process_batch(
     names_sectors: dict[str, tuple[str, str]] | None = None,
     prev_close: float | None = None,
     oi_vintage: str | None = None,
+    statistics_root: str | None = None,
 ) -> dict:
     """Process one poll batch → events, unusual_names, heat, updated state.
 
@@ -723,6 +745,7 @@ def process_batch(
     root_gross_today: dict[str, float] = dict(ps.get("root_gross_today", {}))
     # FIX 2 — per-contract max sequence seen (row-level dedup for overlapping windows)
     seen_sequences: dict             = dict(ps.get("seen_sequences", {}))
+    options_statistics = ps.get("options_statistics")
 
     # ── Tide accumulator state (persisted across cycles for day-cumulative values) ──
     # market_tide_minutes: {HH:MM → {ncp, npp, gross, vol}}
@@ -751,11 +774,13 @@ def process_batch(
     # ── 1. Combine + sign ─────────────────────────────────────────────────────
     session_open_et, session_close_et = session_window_et(session_date)
     frames = []
+    statistics_source_rejected = 0
     sequence_notes: list[str] = []
     for df, right_label in ((calls_df, "C"), (puts_df, "P")):
         if df is None or (isinstance(df, pd.DataFrame) and df.empty):
             continue
         dfc = df.copy()
+        statistics_source_rows = len(dfc)
         if "right" not in dfc.columns:
             dfc["right"] = right_label
         # Validate source identity and RTH membership before calls/puts
@@ -824,9 +849,17 @@ def process_batch(
             dfc["size"] = canonical_sizes.map(int).astype("int64")
             dfc["price"] = canonical_prices.astype(float)
             dfc["strike"] = canonical_strikes.astype(float)
+        statistics_source_rejected += statistics_source_rows - len(dfc)
         frames.append(dfc)
 
     if not frames:
+        if statistics_root is not None:
+            from engine.options_statistics_state import advance_statistics
+            options_statistics = advance_statistics(
+                options_statistics, [], session_date=session_date,
+                root=statistics_root, observed_at=batch_ts,
+                source_rejected_row_count=statistics_source_rejected,
+            )
         return {
             "events": [],
             "unusual_names": [],
@@ -837,6 +870,7 @@ def process_batch(
                 "notability_history": notability_hist,
                 "root_gross_today": root_gross_today,
                 "seen_sequences": seen_sequences,
+                **({"options_statistics": options_statistics} if options_statistics is not None else {}),
                 "market_tide_minutes": market_tide_minutes,
                 "sector_tide": sector_tide,
                 "dte_tide": dte_tide,
@@ -850,6 +884,7 @@ def process_batch(
         }
 
     combined = pd.concat(frames, ignore_index=True)
+    statistics_valid_source_rows = len(combined)
     if not combined.empty:
         roots = set(combined["root"].tolist())
         if len(roots) != 1:
@@ -900,6 +935,24 @@ def process_batch(
     # every print that has no usable NBBO and report a false 100% coverage.
     microstructure_by_contract = _coalesce_nbbo_microstructure(combined)
 
+    if statistics_root is not None:
+        from engine.options_statistics_state import advance_statistics
+        statistics_frame = combined.copy()
+        # Use the incumbent Theta-local/aware timestamp normalization. No new
+        # timezone assumption, multiplier or exchange-name mapping is introduced.
+        for column in ("trade_timestamp", "quote_timestamp"):
+            if column in statistics_frame:
+                clocks = _source_times_et(statistics_frame[column])
+                statistics_frame[column] = clocks.map(
+                    lambda value: value.isoformat() if pd.notna(value) else None
+                )
+        options_statistics = advance_statistics(
+            options_statistics, statistics_frame.to_dict("records"),
+            session_date=session_date, root=statistics_root, observed_at=batch_ts,
+            source_rejected_row_count=statistics_source_rejected,
+            source_non_novel_row_count=statistics_valid_source_rows - len(combined),
+        )
+
     combined = _sign_batch(combined)
     if combined.empty:
         return {
@@ -912,6 +965,7 @@ def process_batch(
                 "notability_history": notability_hist,
                 "root_gross_today": root_gross_today,
                 "seen_sequences": seen_sequences,
+                **({"options_statistics": options_statistics} if options_statistics is not None else {}),
                 "market_tide_minutes": market_tide_minutes,
                 "sector_tide": sector_tide,
                 "dte_tide": dte_tide,
@@ -969,6 +1023,7 @@ def process_batch(
                 "notability_history": notability_hist,
                 "root_gross_today": root_gross_today,
                 "seen_sequences": seen_sequences,
+                **({"options_statistics": options_statistics} if options_statistics is not None else {}),
                 "market_tide_minutes": market_tide_minutes,
                 "sector_tide": sector_tide,
                 "dte_tide": dte_tide,
@@ -1137,6 +1192,7 @@ def process_batch(
             "notability_history": notability_hist,
             "root_gross_today": root_gross_today,
             "seen_sequences": seen_sequences,
+            **({"options_statistics": options_statistics} if options_statistics is not None else {}),
             "market_tide_minutes": market_tide_minutes,
             "sector_tide": sector_tide,
             "dte_tide": dte_tide,
@@ -1429,22 +1485,15 @@ def _accumulate_tide(
 
         # DTE tide — split by DTE bucket
         if "expiration" in grp.columns:
-            try:
-                sess_dt = pd.Timestamp(session_date)
-                for dte_bkt, bkt_grp in grp.groupby(
-                    grp["expiration"].apply(
-                        lambda e: str(_dte_bucket(
-                            pd.Series([max(int((pd.Timestamp(e) - sess_dt).days), 0)])
-                        ).iloc[0])
-                    )
-                ):
-                    bkt_str = str(dte_bkt)
-                    db = dte_tide.setdefault(bkt_str, {})
-                    dm = db.setdefault(mkey, {"ncp": 0.0, "npp": 0.0})
-                    dm["ncp"] += float(bkt_grp.loc[bkt_grp["_right_norm"] == "C", "_signed_prem"].sum())
-                    dm["npp"] += float(bkt_grp.loc[bkt_grp["_right_norm"] == "P", "_signed_prem"].sum())
-            except Exception:  # noqa: BLE001
-                pass
+            buckets = grp["expiration"].map(
+                lambda exp: _classify_expiry(exp, session_date)[1]
+            )
+            for dte_bkt, bkt_grp in grp.groupby(buckets):
+                bkt_str = str(dte_bkt)
+                db = dte_tide.setdefault(bkt_str, {})
+                dm = db.setdefault(mkey, {"ncp": 0.0, "npp": 0.0})
+                dm["ncp"] += float(bkt_grp.loc[bkt_grp["_right_norm"] == "C", "_signed_prem"].sum())
+                dm["npp"] += float(bkt_grp.loc[bkt_grp["_right_norm"] == "P", "_signed_prem"].sum())
 
     # ── per-root minute series ────────────────────────────────────────────────
     rm = root_minutes.setdefault(root, {})
@@ -1502,21 +1551,46 @@ def _accumulate_tide(
 
 
 def _detect_sweeps(combined: pd.DataFrame, sweep_clusters: dict) -> dict:
-    """Return {contract_key: True} for contracts qualifying as sweep-like.
+    """Return {(exp, strike, right): True} for sweep-like contracts in this batch.
 
-    A contract is sweep-like in this batch if, across all recorded prints
-    (current batch + sweep_clusters state):
-      - >= 3 prints
-      - >= 2 distinct exchanges
-      - all prints within a 2-second window
+    Reads ``combined`` only. ``sweep_clusters`` is not read. Prints from earlier
+    batches are not included, so cross-batch sweeps are not detected (GAP).
 
-    Returns a mapping from (exp, strike, right) tuples (as str keys matching
-    the format used in process_batch) to True.
+    A qualifying print has a parseable ``trade_timestamp``
+    (``pd.to_datetime(..., errors="coerce")`` is not NaT) and a non-missing
+    exchange. Missing is None, NaN/NA, or a string that is empty or whitespace
+    after ``strip()``. Venues are compared by that stripped string. The code
+    ``0`` (int or ``"0"``) is not treated as missing.
+
+    A contract is sweep-like iff its qualifying prints have all of:
+      - at least 3 qualifying prints
+      - at least 2 distinct exchanges
+      - a timestamp span of at most 2.0 seconds
+
+    The flag key is ``(exp_str, float(strike), right)``. ``exp_str`` is the
+    grouped expiration parsed with ``pd.to_datetime`` and formatted
+    ``%Y-%m-%d``, or the raw grouped string if that parse fails. ``right`` is
+    the uppercased first character. ``process_batch`` looks the flag up with
+    ``str(expiration)`` on the coalesced row. Frames that reach that lookup
+    already carry canonical ``YYYY-MM-DD`` expiration strings, and
+    ``_coalesce_batch`` writes the same ``%Y-%m-%d`` form back.
 
     This is a LABELED HEURISTIC — not a directional indicator or edge claim.
     """
     if combined.empty or "exchange" not in combined.columns:
         return {}
+
+    def _sweep_venue_token(value: Any) -> str | None:
+        """Stripped exchange, or None when the venue is missing."""
+        if value is None:
+            return None
+        try:
+            if value is pd.NA or bool(pd.isna(value)):
+                return None
+        except (TypeError, ValueError):
+            return None
+        token = value.strip() if isinstance(value, str) else str(value).strip()
+        return token or None
 
     flags: dict = {}
 
@@ -1536,25 +1610,30 @@ def _detect_sweeps(combined: pd.DataFrame, sweep_clusters: dict) -> dict:
         except Exception:  # noqa: BLE001
             exp_str = exp_raw
 
-        n_prints = len(grp)
-        if n_prints < 3:
+        if "trade_timestamp" not in grp.columns:
             continue
-
-        exchanges = set(grp["exchange"].astype(str).tolist())
-        if len(exchanges) < 2:
-            continue
-
-        # Check timestamp span <= 2s
-        if "trade_timestamp" in grp.columns:
-            try:
-                ts_vals = pd.to_datetime(grp["trade_timestamp"], errors="coerce").dropna()
-                if len(ts_vals) >= 3:
-                    span = (ts_vals.max() - ts_vals.min()).total_seconds()
-                    if span <= 2.0:
-                        ckey = (exp_str, strike_v, right_v)
-                        flags[ckey] = True
-            except Exception:  # noqa: BLE001
-                pass
+        try:
+            ts_vals = pd.to_datetime(grp["trade_timestamp"], errors="coerce")
+            venues = grp["exchange"].map(_sweep_venue_token)
+            qualified = ts_vals.notna() & venues.map(
+                lambda token: isinstance(token, str) and bool(token)
+            )
+            if int(qualified.sum()) < 3:
+                continue
+            venue_set = {
+                token for token in venues.loc[qualified].tolist()
+                if isinstance(token, str) and token
+            }
+            if len(venue_set) < 2:
+                continue
+            span = (
+                ts_vals.loc[qualified].max() - ts_vals.loc[qualified].min()
+            ).total_seconds()
+            if span <= 2.0:
+                ckey = (exp_str, strike_v, right_v)
+                flags[ckey] = True
+        except Exception:  # noqa: BLE001
+            pass
 
     return flags
 
@@ -1721,8 +1800,14 @@ def build_dte_tide_current(session_date: str, asof: str, day_state: dict) -> dic
         "8_30d": [...],
         "31_90d":[...],
         "90p":   [...],
-      }
+      },
+      "unclassified": {"ncp": <cumulative>, "npp": <cumulative>},
     }
+
+    ``buckets`` stays the five published labels and never includes "unknown".
+    ``unclassified`` sums ``dte_tide.get("unknown", {})`` across minutes and
+    rounds each total with ``round(x, 0)``. It is ``{"ncp": 0.0, "npp": 0.0}``
+    when there is no unknown premium. The schema string is unchanged.
     """
     dte_tide = day_state.get("dte_tide", {})
     buckets_out: dict = {}
@@ -1738,10 +1823,16 @@ def build_dte_tide_current(session_date: str, asof: str, day_state: dict) -> dic
             cum_npp += float(dm.get("npp", 0.0))
             series.append({"t": t, "ncp": round(cum_ncp, 0), "npp": round(cum_npp, 0)})
         buckets_out[bkt] = series
+    unk_ncp = 0.0
+    unk_npp = 0.0
+    for dm in dte_tide.get("unknown", {}).values():
+        unk_ncp += float(dm.get("ncp", 0.0))
+        unk_npp += float(dm.get("npp", 0.0))
     return {
         "schema":  "live_flow.dte_tide/v1",
         "asof":    asof,
         "buckets": buckets_out,
+        "unclassified": {"ncp": round(unk_ncp, 0), "npp": round(unk_npp, 0)},
     }
 
 

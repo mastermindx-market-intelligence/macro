@@ -1,0 +1,287 @@
+OBJECTIVE: Independently review one bounded Press Research intake repair. Return PASS or specific blockers, with scope and tested/reasoned limits. Do not implement anything.
+SCOPE: New operation mmx-press-research-pool-review-20261014-001. This is unrelated to deferred issuer-context review, whose failure must not be retried or replaced.
+CONSTRAINTS: (1) Read only supplied source/diff. (2) Do not call providers, touch production or expand scope. (3) Preserve candidate_pool=8, Research cadence=1/day, note cadence=0, rights/freshness/lexicon/dedupe/publication gates. (4) Do not promote fixture proof to publication. (5) Return here to original root/parent; no delegation.
+ROOT/PARENT: 01a12a2a-d7e1-77b1-9262-ab593179dd13. Author provider codex; independent review requested.
+PROBLEM: Installed pure planner saw161 eligible reports, its first8 were held/explicitly excluded, returned0slots although rank9 onward contained unblocked reports. Code slices the ranked eligible list before checking held refs. Existing test/comment expects blocked ranked reports to fall through to the tail. Proposed fix filters already-blocked refs before slicing; keeps later dynamic blocked check.
+VALIDATION: Six regressions (published/staged/explicit x triage/fallback) failed [] versus expected ninth report before fix. After fix218tests passed; one existing test failed solely because sparse data/ is absent. That same unedited test separately passed using actual preserved original input root with every source hash unchanged. Added negative control confirms8unsafe unblocked reports exhaust pool; ninth is not inspected. No provider/runtime writes.
+ACCEPTANCE: Check unintended priority/cap/freshness/rights/dedupe changes, rank metadata preservation, duplicate IDs, and fixture discrimination. Small source repair only; no claim other reviewed source/issuer prototype was reviewed.
+engine/press/desk_planner.py SHA256 e366e6bccd93ac9bc73e38aa8c66bcf8fef2f487e63f3bede380bd173479c3f7
+tests/test_press_research_triage.py SHA256 3731990f193043a36bea1f14f146cc70f506323c109aee72060eb81c0e70aebc
+
+EXACT DIFF
+diff --git a/engine/press/desk_planner.py b/engine/press/desk_planner.py
+index c7db0a00641f..60d421acd8db 100644
+--- a/engine/press/desk_planner.py
++++ b/engine/press/desk_planner.py
+@@ -1224,8 +1224,13 @@ def _plan_research(cfg: dict, desk_cfg: dict, as_of: date, root,
+         return []
+     stats = engine_stat_facts(root, as_of=as_of)
+ 
++    # Already-covered or explicitly held reports are not candidates to inspect.
++    # Exclude them before the finite work budget, preserving the ranked order.
++    # Otherwise eight held reports can permanently hide the entire ranked tail.
++    candidates = [it for it in eligible
++                  if f"research_vault:{it.get('id')}" not in blocked_refs]
+     slots: list[dict] = []
+-    for it in eligible[: int(desk_cfg.get("candidate_pool") or 8)]:
++    for it in candidates[: int(desk_cfg.get("candidate_pool") or 8)]:
+         if len(slots) >= cap:
+             break
+         ref = f"research_vault:{it.get('id')}"
+diff --git a/tests/test_press_research_triage.py b/tests/test_press_research_triage.py
+index b1b34ad0eef4..0f2d2267190b 100644
+--- a/tests/test_press_research_triage.py
++++ b/tests/test_press_research_triage.py
+@@ -1102,6 +1102,64 @@ class TestPlannerIntake:
+         assert slots[0]["triage"]["rank"] is None, (
+             "an unranked report must not borrow another report's rank")
+ 
++    @pytest.mark.parametrize("blocked_by", ["published", "staged", "explicit"])
++    @pytest.mark.parametrize("ranked", [True, False])
++    def test_held_research_does_not_consume_the_candidate_pool(self, tmp_path, blocked_by, ranked):
++        """Coverage refusal must happen before the finite candidate work budget.
++
++        Nine ranked reports with the first eight held must expose the ninth,
++        while retaining the one-per-day cadence and original held records.
++        """
++        root = F.fixture_root(tmp_path)
++        cfg = P.load_config(root)
++        if not ranked:
++            cfg.pop("research_triage")
++            cfg["desks"]["research_desk"].pop("triage_tier")
++        path = root / "data" / "research_vault" / "catalog.json"
++        items = [_item(f"pool-{i:02d}") for i in range(10)]
++        path.write_text(json.dumps({"items": items}), encoding="utf-8")
++        order, _meta = P._triage_order(cfg, date(2026, 7, 26), root, items)
++        ids = order or sorted(it["id"] for it in items)
++        pool = cfg["desks"]["research_desk"]["candidate_pool"]
++        assert pool == 8
++        held = ["research_vault:" + rid for rid in ids[:pool]]
++        extra = []
++        if blocked_by == "published":
++            ledger = root / cfg["paths"]["ledger"]
++            ledger.write_text(json.dumps({"sources": held}) + "\n", encoding="utf-8")
++        elif blocked_by == "staged":
++            stage = root / cfg["paths"]["staging_dir"] / "held-pool.json"
++            stage.write_text(json.dumps({"id": "held-pool", "status": "approval_required",
++                                         "sources": held}), encoding="utf-8")
++        else:
++            extra = held
++        tracked = [p for p in (root / "data" / "press").rglob("*") if p.is_file()]
++        before = {str(p): p.read_bytes() for p in [path, *tracked]}
++        slots = P.plan(["research_desk", "research_note"], as_of="2026-07-26", root=root,
++                       cfg=cfg, extra_blocked_refs=extra)
++        assert [s["sources"] for s in slots] == [["research_vault:" + ids[pool]]]
++        assert slots[0]["desk"] == "research_desk"
++        assert cfg["desks"]["research_desk"]["cadence_per_day"] == 1
++        assert cfg["desks"]["research_note"]["cadence_per_day"] == 0
++        assert before == {name: Path(name).read_bytes() for name in before}
++
++    def test_research_pool_stays_bounded_after_coverage_filter(self, tmp_path):
++        """Skipping held refs does not remove the configured inspection budget."""
++        root = F.fixture_root(tmp_path)
++        cfg = P.load_config(root)
++        cfg.pop("research_triage")
++        cfg["desks"]["research_desk"].pop("triage_tier")
++        path = root / "data" / "research_vault" / "catalog.json"
++        items = [_item(f"pool-{i:02d}") for i in range(10)]
++        for item in items[1:9]:
++            item["summary_points"] = ["The current regime is a front-end signal."]
++            assert not P._press_safe(item["summary_points"][0])
++        path.write_text(json.dumps({"items": items}), encoding="utf-8")
++        slots = P.plan(["research_desk"], as_of="2026-07-26", root=root, cfg=cfg,
++                       extra_blocked_refs=["research_vault:pool-00"])
++        assert slots == []  # the ninth unblocked report is outside the pool of eight
++        assert cfg["desks"]["research_desk"]["candidate_pool"] == 8
++
+     def test_the_fixture_prose_clears_the_house_lexicon(self):
+         """This suite's own tripwire.
+ 
+
+CURRENT RESEARCH PLANNER
+def _plan_research(cfg: dict, desk_cfg: dict, as_of: date, root,
+                   blocked_refs: set[str], *, name: str = "research_desk") -> list[dict]:
+    catalog = _read_json(repo_root(root) / "data" / "research_vault" / "catalog.json")
+    items = (catalog or {}).get("items") or []
+    if not isinstance(items, list) or not items:
+        return []
+
+    window = int(desk_cfg.get("window_days") or 21)
+    lo = as_of - timedelta(days=window)
+
+    eligible: list[dict] = []
+    for it in items:
+        if not isinstance(it, dict):
+            continue
+        pub = _as_date(it.get("published_at"))
+        # `as_of` is a hard right edge: a report published after the run date
+        # cannot be covered by that run.
+        if pub is None or pub > as_of or pub < lo:
+            continue
+        if not (it.get("summary_points") or []):
+            continue
+        eligible.append(it)
+
+    # W2R (XG-W8): the ranked shortlist replaces the W1 recency sort when the
+    # triage layer is configured and healthy. The tier only sets the CAP — the
+    # desk walks the WHOLE ranked order, so a top-ranked report the planner
+    # cannot legally cover (already published, already staged, banned vocabulary
+    # in every summary point) falls through to the next one instead of costing
+    # the desk its day.
+    order, triage_meta = _triage_order(cfg, as_of, root, eligible)
+    if order:
+        by_id = {str(it.get("id") or ""): it for it in eligible}
+        ranked = [by_id[rid] for rid in order if rid in by_id]
+        # A report the triage did not rank must fall to the BACK of the queue,
+        # never off it. The two windows are independent config keys
+        # (desks.*.window_days vs research_triage.ledger.window_days), so a desk
+        # widened past the triage window would otherwise lose its extra
+        # candidates silently — an intake seam that quietly shrinks the pool is
+        # worse than one that does not exist.
+        seen = {str(it.get("id") or "") for it in ranked}
+        tail = [it for it in eligible if str(it.get("id") or "") not in seen]
+        if tail:
+            log.info("press.desk_planner: %d eligible report(s) fell outside the "
+                     "triage window and were appended unranked", len(tail))
+        eligible = ranked + tail
+    else:
+        # W1 fallback: tier first (top_pick), then recency, then id.
+        eligible.sort(key=lambda it: (
+            0 if it.get("top_pick") else 1,
+            -(_as_date(it.get("published_at")) or date.min).toordinal(),
+            str(it.get("id") or ""),
+        ))
+
+    publication = str(desk_cfg.get("publication") or "flagship")
+    cap = _triage_cap(cfg, desk_cfg, name=name)
+    if cap <= 0:
+        # A dark tier is a NORMAL outcome, not a failure: the cold-start volume
+        # knob holds desk_notes_per_day at 0 until the GSC evidence opens it.
+        log.info("press.desk_planner: desk %s is capped at 0 slots "
+                 "(triage_tier=%s) — nothing planned",
+                 desk_cfg.get("byline") or "research", desk_cfg.get("triage_tier"))
+        return []
+    stats = engine_stat_facts(root, as_of=as_of)
+
+    # Already-covered or explicitly held reports are not candidates to inspect.
+    # Exclude them before the finite work budget, preserving the ranked order.
+    # Otherwise eight held reports can permanently hide the entire ranked tail.
+    candidates = [it for it in eligible
+                  if f"research_vault:{it.get('id')}" not in blocked_refs]
+    slots: list[dict] = []
+    for it in candidates[: int(desk_cfg.get("candidate_pool") or 8)]:
+        if len(slots) >= cap:
+            break
+        ref = f"research_vault:{it.get('id')}"
+        if ref in blocked_refs:
+            continue
+
+        slug = vault_slug(it, items)
+        url = _absolute(f"/research/{slug}.html") if slug else f"{_SITE_BASE}/research/"
+        inst = str(it.get("institution") or "the desk")
+
+        # The vault summary is OUR analyst summary of the report, so it is a
+        # first-party ref — but the report itself is somebody else's document,
+        # which is exactly why close-paraphrase scores against these points.
+        facts = [
+            f for f in (
+                _fact(
+                    f"vault_point_{i}",
+                    _strip_md(str(pt)),
+                    ref=ref, tier="first_party",
+                    dated=str(it.get("published_at") or "")[:10],
+                    url=url, source_name=f"Mastermind Research coverage of {inst}",
+                )
+                for i, pt in enumerate(it.get("summary_points") or [])
+            )
+            # A summary point written in banned house vocabulary is one the
+            # desk cannot quote. It stays in raw_documents (so paraphrase is
+            # still scored against it) but leaves the writer's fact list.
+            if _press_safe(f["text"])
+        ]
+        if not facts:
+            log.info("press.desk_planner: research candidate %s skipped — every "
+                     "summary point trips the press lexicon", ref)
+            continue
+        facts.append(_fact(
+            "vault_meta",
+            f"The report is {inst} research published {str(it.get('published_at'))[:10]}"
+            + (f", {it.get('pages')} pages" if it.get("pages") else "") + ".",
+            ref=ref, tier="first_party",
+            dated=str(it.get("published_at") or "")[:10],
+            values=[it.get("pages")], url=url,
+            source_name="Mastermind Research vault",
+        ))
+        facts.extend(stats)
+
+        ctx = chronicle_context(as_of, topics=[inst], root=root)
+        # W2R audit trail. Carried on the slot so the staging record, the
+        # validator report and the published ledger all state WHY this report
+        # was the one covered — including its score, its rank, and any veto the
+        # nightly recorded against it.
+        triage_row = triage_meta.get(str(it.get("id") or "")) or {}
+        slots.append({
+            "id": f"press-{name}-{as_of.isoformat()}-{story_key(name, ref)}",
+            "desk": name,
+            "publication": publication,
+            "byline": str(desk_cfg.get("byline") or "Research Desk"),
+            "cluster": str(desk_cfg.get("cluster") or "research-desk"),
+            "as_of": as_of.isoformat(),
+            "model_key": str(desk_cfg.get("model_key") or "press_research"),
+            "min_words": int(desk_cfg.get("min_words") or 500),
+            "max_words": int(desk_cfg.get("max_words") or 900),
+            "min_anchored_receipts": int(desk_cfg.get("min_anchored_receipts") or 0),
+            # /research/<slug>.html is our own PUBLIC coverage page (verified
+            # 200 logged-out), so it is on the allowlist and may be linked.
+            "allowed_links": _allowed_links(cfg, [url]),
+            "story": {
+                "kind": "research_report",
+                "title_hint": it.get("title"),
+                "institution": inst,
+                "side": it.get("side"),
+                "published_at": it.get("published_at"),
+                "tickers": [],
+                "themes": [],
+            },
+            # First-party too: /research/<slug>.html is OUR coverage page and it
+            # is PUBLIC (verified 200 logged-out), so it is on the config
+            # allowlist and the piece may link it.
+            "primary_source": {
+                "kind": "first_party",
+                "name": f"Mastermind Research: {it.get('title')}",
+                "url": url,
+                "ref": ref,
+            },
+            "sources": [ref],
+            "seed_refs": sorted({f["ref"] for f in facts}),
+            "facts": facts,
+            "raw_documents": [{
+                "ref": ref,
+                "text": " ".join(_strip_md(str(p)) for p in (it.get("summary_points") or [])),
+            }],
+            "chronicle_context": ctx,
+            "slug_hint": slugify(str(it.get("title") or "research note")),
+            "triage": {
+                "tier": str(desk_cfg.get("triage_tier") or ""),
+                "rank": triage_row.get("rank"),
+                "w_score": triage_row.get("w_score"),
+                "w_score_pre_veto": triage_row.get("w_score_pre_veto"),
+                "components": triage_row.get("components") or {},
+                "veto": triage_row.get("veto"),
+                "scoring_version": triage_row.get("scoring_version"),
+                # Which number this is, and what it was computed with. The
+                # nightly ledger's score for the same report on the same day can
+                # differ when the two hosts disagree about the optional
+                # near-dup backend — see _triage_order.
+                "score_source": triage_row.get("score_source"),
+                "datasketch_present": triage_row.get("datasketch_present"),
+                # `ordered` is false when the triage layer was unavailable and
+                # the desk fell back to the W1 recency sort — a state the
+                # staging record must show rather than imply.
+                "ordered": bool(order),
+            },
+        })
+        blocked_refs.add(ref)
+    return slots
+
+

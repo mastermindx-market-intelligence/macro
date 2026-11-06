@@ -1,0 +1,780 @@
+{
+  "schema": "portfolio.ohlc-current-base-validation.v1",
+  "started_at": "2026-10-23T16:38:03.652546+00:00",
+  "composition": {
+    "schema": "portfolio.ohlc-three-way-composition.v1",
+    "head_before": "2e677fb637f926e0e604af9e88b57056e78975e1",
+    "base": "9436212b2a5a17183ddae0d11444df77db6bed41",
+    "common_base": "f4c0634e561eaa423d2ca0c3e8060d5dc2e3597d",
+    "all_manifest_fields_verified": true,
+    "nodes_verified": 408,
+    "combined_paths": [
+      {
+        "path": "manifest.jobs.intelligence-registry.paths",
+        "candidate_added": [
+          "app/deploy/ohlc_origin_known_hosts",
+          "scripts/publish_ohlc.py"
+        ],
+        "incoming_added": [
+          "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+          "scripts/probe_theme_exposure_axes.py",
+          "scripts/calibrate_rate_inflation.py"
+        ],
+        "incoming_removed_preserved": [
+          "collectors/flow_signals.py",
+          "lib/live_flow_event_stage.py"
+        ],
+        "inherited_duplicate_multiplicities_preserved": {}
+      },
+      {
+        "path": "manifest.jobs.biocatalyst-serving.paths",
+        "candidate_added": [
+          "app/deploy/ohlc_origin_known_hosts",
+          "scripts/publish_ohlc.py"
+        ],
+        "incoming_added": [
+          "engine/entry_radar/candidate_provenance.py",
+          "engine/entry_radar/catalyst_adapters.py",
+          "engine/entry_radar/catalyst_context.py",
+          "engine/entry_radar/catalyst_edgar_live.py",
+          "engine/entry_radar/catalyst_edgar_store.py",
+          "engine/entry_radar/live_eval.py",
+          "engine/entry_radar/research_priority.py",
+          "engine/foresight_divergence.py",
+          "engine/foresight_grader.py",
+          "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+          "scripts/probe_theme_exposure_axes.py",
+          "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json",
+          "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json",
+          "engine/entry_radar/replay/__init__.py",
+          "engine/price_pressure/__init__.py",
+          "research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json",
+          "research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json",
+          "engine/entry_radar/research_read.py",
+          "engine/entry_radar/replay/identity_observation_snapshot.py",
+          "engine/entry_radar/readings.py",
+          "engine/entry_radar/quote_context.py",
+          "engine/entry_radar/pack_spool.py",
+          "engine/entry_radar/live_pack.py",
+          "engine/entry_radar/live_ledger.py",
+          "engine/entry_radar/indicator_ingest.py",
+          "engine/entry_radar/indicator_core.py",
+          "engine/entry_radar/g0_adapter.py",
+          "engine/entry_radar/four_hour.py",
+          "engine/entry_radar/entry_events.py",
+          "engine/entry_radar/earnings_context.py",
+          "engine/entry_radar/detectors.py",
+          "engine/entry_radar/challengers.py",
+          "engine/entry_radar/c5_adapter.py",
+          "engine/price_pressure/research.py",
+          "engine/ontology_theme.py",
+          "engine/transmission_chains.py",
+          "scripts/calibrate_rate_inflation.py",
+          "engine/ontology_portfolio.py",
+          "engine/ontology_scenario.py",
+          "engine/ontology_scenario_runtime.py",
+          "engine/transmission_company_continuation.py"
+        ],
+        "incoming_removed_preserved": [
+          "engine/options_signal_episode.py",
+          "engine/options_signal_episode_contract.py",
+          "engine/theme_graph/__init__.py"
+        ],
+        "inherited_duplicate_multiplicities_preserved": {}
+      },
+      {
+        "path": "manifest.jobs.dashboard-render-contract.paths",
+        "candidate_added": [
+          "app/__init__.py",
+          "app/deploy/ohlc_origin_known_hosts",
+          "scripts/publish_ohlc.py"
+        ],
+        "incoming_added": [
+          "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+          "scripts/probe_theme_exposure_axes.py",
+          "scripts/calibrate_rate_inflation.py"
+        ],
+        "incoming_removed_preserved": [],
+        "inherited_duplicate_multiplicities_preserved": {
+          "engine/sector_intelligence/__init__.py": 2
+        }
+      },
+      {
+        "path": "manifest.jobs.crypto-vector-r2-organs.paths",
+        "candidate_added": [
+          "app/__init__.py",
+          "app/deploy/ohlc_origin_known_hosts",
+          "scripts/publish_ohlc.py"
+        ],
+        "incoming_added": [
+          "scripts/calibrate_rate_inflation.py"
+        ],
+        "incoming_removed_preserved": [
+          "engine/crypto_market_state.py",
+          "engine/crypto_universe.py",
+          "engine/eth_state.py",
+          "scripts/build_crypto.py"
+        ],
+        "inherited_duplicate_multiplicities_preserved": {}
+      },
+      {
+        "path": "manifest.jobs.unrun-picks-boards.paths",
+        "candidate_added": [
+          "app/deploy/ohlc_origin_known_hosts",
+          "scripts/publish_ohlc.py"
+        ],
+        "incoming_added": [
+          "engine/foresight_divergence.py",
+          "engine/foresight_grader.py",
+          "engine/theme_graph/theme_state_gap.py",
+          "engine/theme_graph/theme_state_w2_qualification.py",
+          "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+          "scripts/probe_theme_exposure_axes.py",
+          "engine/theme_graph/theme_state_owner_readers.py",
+          "scripts/calibrate_rate_inflation.py"
+        ],
+        "incoming_removed_preserved": [
+          "engine/options_signal_episode.py",
+          "engine/options_signal_episode_contract.py",
+          "engine/session_digest.py",
+          "engine/company_intelligence/qa_exchange.py",
+          "engine/company_intelligence/qa_reconstruction.py",
+          "engine/theme_graph/__init__.py",
+          "engine/sector_intelligence/__init__.py"
+        ],
+        "inherited_duplicate_multiplicities_preserved": {}
+      },
+      {
+        "path": "manifest.jobs.nw-lobe-unfreeze.paths",
+        "candidate_added": [
+          "app/__init__.py",
+          "app/deploy/ohlc_origin_known_hosts",
+          "scripts/publish_ohlc.py"
+        ],
+        "incoming_added": [
+          "tests/test_theme_state_bundle_encoding.py",
+          "tests/test_theme_state_bundle_codec.py",
+          "engine/foresight_divergence.py",
+          "engine/foresight_grader.py",
+          "engine/theme_graph/theme_state_gap.py",
+          "tests/test_theme_state_divergence_gap.py",
+          "engine/theme_graph/theme_state_w2_qualification.py",
+          "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+          "scripts/probe_theme_exposure_axes.py",
+          "engine/fundamental_forensics/__init__.py",
+          "engine/fundamental_forensics/pipeline.py",
+          "engine/fundamental_forensics/sec_companyfacts.py",
+          "engine/research_vault/__init__.py",
+          "research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json",
+          "research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json",
+          "collectors/symbol_directory.py",
+          "tests/test_symbol_directory_completion_receipts.py",
+          "tests/test_theme_graph_hierarchy_paths.py",
+          "scripts/calibrate_rate_inflation.py",
+          "engine/company_intelligence/sec_supplier_adoption.py",
+          "tests/test_theme_state_native_capture.py"
+        ],
+        "incoming_removed_preserved": [
+          "collectors/flow_signals.py",
+          "config/flow_detector.yml",
+          "engine/options_signal_episode.py",
+          "engine/options_signal_episode_contract.py",
+          "engine/session_digest.py",
+          "lib/live_flow_event_stage.py",
+          "engine/theme_graph/__init__.py",
+          "engine/sector_intelligence/__init__.py"
+        ],
+        "inherited_duplicate_multiplicities_preserved": {}
+      },
+      {
+        "path": "manifest.jobs.washout-turn-organ.paths",
+        "candidate_added": [
+          "app/deploy/ohlc_origin_known_hosts",
+          "scripts/publish_ohlc.py"
+        ],
+        "incoming_added": [
+          "engine/foresight_divergence.py",
+          "engine/foresight_grader.py",
+          "engine/theme_graph/theme_state_gap.py",
+          "engine/theme_graph/theme_state_w2_qualification.py",
+          "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+          "scripts/probe_theme_exposure_axes.py",
+          "engine/theme_graph/theme_state_owner_readers.py",
+          "lib/quote_native_metadata.py",
+          "scripts/calibrate_rate_inflation.py"
+        ],
+        "incoming_removed_preserved": [
+          "lib/intl_eod_publication.py",
+          "engine/theme_graph/__init__.py",
+          "engine/sector_intelligence/__init__.py"
+        ],
+        "inherited_duplicate_multiplicities_preserved": {}
+      },
+      {
+        "path": "manifest.jobs.conviction-profile.paths",
+        "candidate_added": [
+          "app/__init__.py",
+          "app/deploy/ohlc_origin_known_hosts",
+          "scripts/publish_ohlc.py"
+        ],
+        "incoming_added": [
+          "engine/foresight_divergence.py",
+          "engine/foresight_grader.py",
+          "engine/theme_graph/theme_state_gap.py",
+          "engine/theme_graph/theme_state_w2_qualification.py",
+          "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+          "scripts/probe_theme_exposure_axes.py",
+          "engine/theme_graph/theme_state_owner_readers.py",
+          "config/issuer_group_allowlist.yml",
+          "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json",
+          "lib/symbol_directory_receipts.py",
+          "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md",
+          "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md",
+          "scripts/build_security_master.py",
+          "scripts/calibrate_rate_inflation.py"
+        ],
+        "incoming_removed_preserved": [
+          "engine/company_intelligence/qa_exchange.py",
+          "engine/company_intelligence/qa_reconstruction.py"
+        ],
+        "inherited_duplicate_multiplicities_preserved": {}
+      }
+    ],
+    "jobs": {
+      "common": 351,
+      "candidate": 352,
+      "incoming": 352,
+      "composed": 353
+    },
+    "manifest_blob": "b34fb2f4821c898112f0f806e0936809166475f4",
+    "manifest_sha256": "9324ff76492ff24468f2f13051e41a959b415d3a68f9a6bd59c7347f550264ad",
+    "composition_tree": "2bfa9922a1bb2aa3ecaac800e1b6be60a5de4bce",
+    "unchanged_owned_blobs": {
+      "scripts/publish_ohlc.py": "d1bb2cbd37d4197ec97a88c5bb0a0fbef5d061d3",
+      "scripts/build_chart_data.py": "4939ea4c27bcef35e378b4b6498bc460078e732b",
+      "tests/test_publish_ohlc.py": "3cf32e1401113f74ff7e83a42772996d8b5e875e",
+      "app/deploy/ohlc_origin_known_hosts": "3473aac1ff3790b559695a11ad4c24ce24d599bf"
+    },
+    "independent_three_way_blobs": {
+      "app/deploy/update.sh": "8014918bf3356eb34a88cff0b47317a448d8f590",
+      ".github/workflows/daily.yml": "c2c908c6317dffdcb8eb230a6ddd2abce13a3150",
+      "tests/test_deploy_update_self_heal.py": "bd82916798cea8ad95db156b4cb6e96c11dc096a",
+      "tests/test_ci_pack.py": "df1b6de8d2b0f2adbaf226eb18ec939e7d8922b2"
+    },
+    "owned_delta": " .github/ci/legacy-jobs.yml            |  73 ++++++++++++++++++++++\n .github/workflows/daily.yml           |  24 ++++++++\n app/deploy/update.sh                  |  31 +++++++++-\n tests/test_ci_pack.py                 |   3 +\n tests/test_deploy_update_self_heal.py | 112 +++++++++++++++++++++++++++++++++-\n 5 files changed, 241 insertions(+), 2 deletions(-)\n",
+    "verification_note": "Existing path multiplicities and current-main removals are preserved; no generic duplicate-free or add-only premise is imposed on accepted main."
+  },
+  "source_hashes_before": {
+    ".github/ci/legacy-jobs.yml": "9324ff76492ff24468f2f13051e41a959b415d3a68f9a6bd59c7347f550264ad",
+    ".github/workflows/daily.yml": "cae59088905935cad9a9473678b53cb94b3fee4fc337fa2773348ca98ea01775",
+    "app/deploy/update.sh": "af044e13f5f7cf0a7a56a467dc1ef31d009cfce1161fb3b795709358cccaf0c3",
+    "tests/test_deploy_update_self_heal.py": "104006017269385091a59475cd46cd584574ee100ae4d2d429229db41841c7a4",
+    "tests/test_ci_pack.py": "1c0b78e50d79576d9e4ec6a814e72f31d26ab100b8e0449f90752bbb78f9e92c",
+    "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+    "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+    "scripts/run_ci_pack.py": "2a6d8f49d72fd7f917c708bbd2bb1545af80ee3c3457a3437928c5d41ff6d72b",
+    "scripts/ci_semantic_proof.py": "c3a36f7fafa5e2158c5e105d147553f026b9fc7002fab315df00165643e70a60",
+    "tests/test_ci_pack_semantic.py": "925cc30afbe3f3b9d256661c8eef61183a5de810d35311735dc57f39bc02e977"
+  },
+  "initial_validation": {
+    "schema": "portfolio.ohlc-current-base-validation.v1",
+    "started_at": "2026-10-23T16:36:23.859755+00:00",
+    "composition": {
+      "schema": "portfolio.ohlc-three-way-composition.v1",
+      "head_before": "2e677fb637f926e0e604af9e88b57056e78975e1",
+      "base": "9436212b2a5a17183ddae0d11444df77db6bed41",
+      "common_base": "f4c0634e561eaa423d2ca0c3e8060d5dc2e3597d",
+      "all_manifest_fields_verified": true,
+      "nodes_verified": 408,
+      "combined_paths": [
+        {
+          "path": "manifest.jobs.intelligence-registry.paths",
+          "candidate_added": [
+            "app/deploy/ohlc_origin_known_hosts",
+            "scripts/publish_ohlc.py"
+          ],
+          "incoming_added": [
+            "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+            "scripts/probe_theme_exposure_axes.py",
+            "scripts/calibrate_rate_inflation.py"
+          ],
+          "incoming_removed_preserved": [
+            "collectors/flow_signals.py",
+            "lib/live_flow_event_stage.py"
+          ],
+          "inherited_duplicate_multiplicities_preserved": {}
+        },
+        {
+          "path": "manifest.jobs.biocatalyst-serving.paths",
+          "candidate_added": [
+            "app/deploy/ohlc_origin_known_hosts",
+            "scripts/publish_ohlc.py"
+          ],
+          "incoming_added": [
+            "engine/entry_radar/candidate_provenance.py",
+            "engine/entry_radar/catalyst_adapters.py",
+            "engine/entry_radar/catalyst_context.py",
+            "engine/entry_radar/catalyst_edgar_live.py",
+            "engine/entry_radar/catalyst_edgar_store.py",
+            "engine/entry_radar/live_eval.py",
+            "engine/entry_radar/research_priority.py",
+            "engine/foresight_divergence.py",
+            "engine/foresight_grader.py",
+            "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+            "scripts/probe_theme_exposure_axes.py",
+            "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json",
+            "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json",
+            "engine/entry_radar/replay/__init__.py",
+            "engine/price_pressure/__init__.py",
+            "research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json",
+            "research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json",
+            "engine/entry_radar/research_read.py",
+            "engine/entry_radar/replay/identity_observation_snapshot.py",
+            "engine/entry_radar/readings.py",
+            "engine/entry_radar/quote_context.py",
+            "engine/entry_radar/pack_spool.py",
+            "engine/entry_radar/live_pack.py",
+            "engine/entry_radar/live_ledger.py",
+            "engine/entry_radar/indicator_ingest.py",
+            "engine/entry_radar/indicator_core.py",
+            "engine/entry_radar/g0_adapter.py",
+            "engine/entry_radar/four_hour.py",
+            "engine/entry_radar/entry_events.py",
+            "engine/entry_radar/earnings_context.py",
+            "engine/entry_radar/detectors.py",
+            "engine/entry_radar/challengers.py",
+            "engine/entry_radar/c5_adapter.py",
+            "engine/price_pressure/research.py",
+            "engine/ontology_theme.py",
+            "engine/transmission_chains.py",
+            "scripts/calibrate_rate_inflation.py",
+            "engine/ontology_portfolio.py",
+            "engine/ontology_scenario.py",
+            "engine/ontology_scenario_runtime.py",
+            "engine/transmission_company_continuation.py"
+          ],
+          "incoming_removed_preserved": [
+            "engine/options_signal_episode.py",
+            "engine/options_signal_episode_contract.py",
+            "engine/theme_graph/__init__.py"
+          ],
+          "inherited_duplicate_multiplicities_preserved": {}
+        },
+        {
+          "path": "manifest.jobs.dashboard-render-contract.paths",
+          "candidate_added": [
+            "app/__init__.py",
+            "app/deploy/ohlc_origin_known_hosts",
+            "scripts/publish_ohlc.py"
+          ],
+          "incoming_added": [
+            "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+            "scripts/probe_theme_exposure_axes.py",
+            "scripts/calibrate_rate_inflation.py"
+          ],
+          "incoming_removed_preserved": [],
+          "inherited_duplicate_multiplicities_preserved": {
+            "engine/sector_intelligence/__init__.py": 2
+          }
+        },
+        {
+          "path": "manifest.jobs.crypto-vector-r2-organs.paths",
+          "candidate_added": [
+            "app/__init__.py",
+            "app/deploy/ohlc_origin_known_hosts",
+            "scripts/publish_ohlc.py"
+          ],
+          "incoming_added": [
+            "scripts/calibrate_rate_inflation.py"
+          ],
+          "incoming_removed_preserved": [
+            "engine/crypto_market_state.py",
+            "engine/crypto_universe.py",
+            "engine/eth_state.py",
+            "scripts/build_crypto.py"
+          ],
+          "inherited_duplicate_multiplicities_preserved": {}
+        },
+        {
+          "path": "manifest.jobs.unrun-picks-boards.paths",
+          "candidate_added": [
+            "app/deploy/ohlc_origin_known_hosts",
+            "scripts/publish_ohlc.py"
+          ],
+          "incoming_added": [
+            "engine/foresight_divergence.py",
+            "engine/foresight_grader.py",
+            "engine/theme_graph/theme_state_gap.py",
+            "engine/theme_graph/theme_state_w2_qualification.py",
+            "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+            "scripts/probe_theme_exposure_axes.py",
+            "engine/theme_graph/theme_state_owner_readers.py",
+            "scripts/calibrate_rate_inflation.py"
+          ],
+          "incoming_removed_preserved": [
+            "engine/options_signal_episode.py",
+            "engine/options_signal_episode_contract.py",
+            "engine/session_digest.py",
+            "engine/company_intelligence/qa_exchange.py",
+            "engine/company_intelligence/qa_reconstruction.py",
+            "engine/theme_graph/__init__.py",
+            "engine/sector_intelligence/__init__.py"
+          ],
+          "inherited_duplicate_multiplicities_preserved": {}
+        },
+        {
+          "path": "manifest.jobs.nw-lobe-unfreeze.paths",
+          "candidate_added": [
+            "app/__init__.py",
+            "app/deploy/ohlc_origin_known_hosts",
+            "scripts/publish_ohlc.py"
+          ],
+          "incoming_added": [
+            "tests/test_theme_state_bundle_encoding.py",
+            "tests/test_theme_state_bundle_codec.py",
+            "engine/foresight_divergence.py",
+            "engine/foresight_grader.py",
+            "engine/theme_graph/theme_state_gap.py",
+            "tests/test_theme_state_divergence_gap.py",
+            "engine/theme_graph/theme_state_w2_qualification.py",
+            "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+            "scripts/probe_theme_exposure_axes.py",
+            "engine/fundamental_forensics/__init__.py",
+            "engine/fundamental_forensics/pipeline.py",
+            "engine/fundamental_forensics/sec_companyfacts.py",
+            "engine/research_vault/__init__.py",
+            "research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json",
+            "research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json",
+            "collectors/symbol_directory.py",
+            "tests/test_symbol_directory_completion_receipts.py",
+            "tests/test_theme_graph_hierarchy_paths.py",
+            "scripts/calibrate_rate_inflation.py",
+            "engine/company_intelligence/sec_supplier_adoption.py",
+            "tests/test_theme_state_native_capture.py"
+          ],
+          "incoming_removed_preserved": [
+            "collectors/flow_signals.py",
+            "config/flow_detector.yml",
+            "engine/options_signal_episode.py",
+            "engine/options_signal_episode_contract.py",
+            "engine/session_digest.py",
+            "lib/live_flow_event_stage.py",
+            "engine/theme_graph/__init__.py",
+            "engine/sector_intelligence/__init__.py"
+          ],
+          "inherited_duplicate_multiplicities_preserved": {}
+        },
+        {
+          "path": "manifest.jobs.washout-turn-organ.paths",
+          "candidate_added": [
+            "app/deploy/ohlc_origin_known_hosts",
+            "scripts/publish_ohlc.py"
+          ],
+          "incoming_added": [
+            "engine/foresight_divergence.py",
+            "engine/foresight_grader.py",
+            "engine/theme_graph/theme_state_gap.py",
+            "engine/theme_graph/theme_state_w2_qualification.py",
+            "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+            "scripts/probe_theme_exposure_axes.py",
+            "engine/theme_graph/theme_state_owner_readers.py",
+            "lib/quote_native_metadata.py",
+            "scripts/calibrate_rate_inflation.py"
+          ],
+          "incoming_removed_preserved": [
+            "lib/intl_eod_publication.py",
+            "engine/theme_graph/__init__.py",
+            "engine/sector_intelligence/__init__.py"
+          ],
+          "inherited_duplicate_multiplicities_preserved": {}
+        },
+        {
+          "path": "manifest.jobs.conviction-profile.paths",
+          "candidate_added": [
+            "app/__init__.py",
+            "app/deploy/ohlc_origin_known_hosts",
+            "scripts/publish_ohlc.py"
+          ],
+          "incoming_added": [
+            "engine/foresight_divergence.py",
+            "engine/foresight_grader.py",
+            "engine/theme_graph/theme_state_gap.py",
+            "engine/theme_graph/theme_state_w2_qualification.py",
+            "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md",
+            "scripts/probe_theme_exposure_axes.py",
+            "engine/theme_graph/theme_state_owner_readers.py",
+            "config/issuer_group_allowlist.yml",
+            "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json",
+            "lib/symbol_directory_receipts.py",
+            "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md",
+            "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md",
+            "scripts/build_security_master.py",
+            "scripts/calibrate_rate_inflation.py"
+          ],
+          "incoming_removed_preserved": [
+            "engine/company_intelligence/qa_exchange.py",
+            "engine/company_intelligence/qa_reconstruction.py"
+          ],
+          "inherited_duplicate_multiplicities_preserved": {}
+        }
+      ],
+      "jobs": {
+        "common": 351,
+        "candidate": 352,
+        "incoming": 352,
+        "composed": 353
+      },
+      "manifest_blob": "b34fb2f4821c898112f0f806e0936809166475f4",
+      "manifest_sha256": "9324ff76492ff24468f2f13051e41a959b415d3a68f9a6bd59c7347f550264ad",
+      "composition_tree": "2bfa9922a1bb2aa3ecaac800e1b6be60a5de4bce",
+      "unchanged_owned_blobs": {
+        "scripts/publish_ohlc.py": "d1bb2cbd37d4197ec97a88c5bb0a0fbef5d061d3",
+        "scripts/build_chart_data.py": "4939ea4c27bcef35e378b4b6498bc460078e732b",
+        "tests/test_publish_ohlc.py": "3cf32e1401113f74ff7e83a42772996d8b5e875e",
+        "app/deploy/ohlc_origin_known_hosts": "3473aac1ff3790b559695a11ad4c24ce24d599bf"
+      },
+      "independent_three_way_blobs": {
+        "app/deploy/update.sh": "8014918bf3356eb34a88cff0b47317a448d8f590",
+        ".github/workflows/daily.yml": "c2c908c6317dffdcb8eb230a6ddd2abce13a3150",
+        "tests/test_deploy_update_self_heal.py": "bd82916798cea8ad95db156b4cb6e96c11dc096a",
+        "tests/test_ci_pack.py": "df1b6de8d2b0f2adbaf226eb18ec939e7d8922b2"
+      },
+      "owned_delta": " .github/ci/legacy-jobs.yml            |  73 ++++++++++++++++++++++\n .github/workflows/daily.yml           |  24 ++++++++\n app/deploy/update.sh                  |  31 +++++++++-\n tests/test_ci_pack.py                 |   3 +\n tests/test_deploy_update_self_heal.py | 112 +++++++++++++++++++++++++++++++++-\n 5 files changed, 241 insertions(+), 2 deletions(-)\n",
+      "verification_note": "Existing path multiplicities and current-main removals are preserved; no generic duplicate-free or add-only premise is imposed on accepted main."
+    },
+    "source_hashes_before": {
+      ".github/ci/legacy-jobs.yml": "9324ff76492ff24468f2f13051e41a959b415d3a68f9a6bd59c7347f550264ad",
+      ".github/workflows/daily.yml": "cae59088905935cad9a9473678b53cb94b3fee4fc337fa2773348ca98ea01775",
+      "app/deploy/update.sh": "af044e13f5f7cf0a7a56a467dc1ef31d009cfce1161fb3b795709358cccaf0c3",
+      "tests/test_deploy_update_self_heal.py": "104006017269385091a59475cd46cd584574ee100ae4d2d429229db41841c7a4",
+      "tests/test_ci_pack.py": "1c0b78e50d79576d9e4ec6a814e72f31d26ab100b8e0449f90752bbb78f9e92c",
+      "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+      "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+      "scripts/run_ci_pack.py": "2a6d8f49d72fd7f917c708bbd2bb1545af80ee3c3457a3437928c5d41ff6d72b",
+      "scripts/ci_semantic_proof.py": "c3a36f7fafa5e2158c5e105d147553f026b9fc7002fab315df00165643e70a60",
+      "tests/test_ci_pack_semantic.py": "925cc30afbe3f3b9d256661c8eef61183a5de810d35311735dc57f39bc02e977"
+    },
+    "groups": [
+      {
+        "name": "deployment",
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "tests/test_deploy_update_self_heal.py",
+          "tests/test_caddy_autosave_driver.py",
+          "tests/test_macro_caddy_overlay.py",
+          "tests/test_macro_caddy_publication.py",
+          "-q",
+          "--tb=short",
+          "--basetemp",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/portfolio-ohlc-delivery-20261022/.pytest_cache/portfolio-ohlc-main943-20261023/deployment"
+        ],
+        "exit": 0,
+        "seconds": 32.52,
+        "log_sha256": "a2bd73798984b3d22a00a351a9e70c8041c9ff1148ad726d0bfcdf35462edc63",
+        "tail": [
+          "........................................................................ [ 15%]",
+          "........................................................................ [ 30%]",
+          "........................................................................ [ 46%]",
+          "........................................................................ [ 61%]",
+          "........................................................................ [ 77%]",
+          "........................................................................ [ 92%]",
+          "..................................                                       [100%]",
+          "466 passed in 31.99s"
+        ]
+      },
+      {
+        "name": "ohlc",
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "tests/test_publish_ohlc.py",
+          "tests/test_build_chart_data.py",
+          "-q",
+          "--tb=short",
+          "--basetemp",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/portfolio-ohlc-delivery-20261022/.pytest_cache/portfolio-ohlc-main943-20261023/ohlc"
+        ],
+        "exit": 1,
+        "seconds": 2.09,
+        "log_sha256": "61df8f6e5c2c87ddefb4e95f34066afc90d3a6a87f173d280e9c43b0175512b3",
+        "tail": [
+          "    assert _run_chart_resample(rows, \"3D\", rec[\"anchor\"]) == want",
+          "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "tests/test_build_chart_data.py:197: in _run_chart_resample",
+          "    js = (Path(__file__).resolve().parents[1] / \"site\" / \"chart.js\").read_text()",
+          "         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py:787: in read_text",
+          "    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:",
+          "         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py:771: in open",
+          "    return io.open(self, mode, buffering, encoding, errors, newline)",
+          "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "E   FileNotFoundError: [Errno 2] No such file or directory: '/Volumes/Mastermind/agent-workspaces/macro/web/portfolio-ohlc-delivery-20261022/site/chart.js'",
+          "------------------------------- Sparse worktree --------------------------------",
+          "This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree \u2014 site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full",
+          "",
+          "NOTE: sparse worktree \u2014 data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full",
+          "=========================== short test summary info ============================",
+          "FAILED tests/test_build_chart_data.py::test_chart_js_buckets_3d_by_the_shipped_boundaries",
+          "FAILED tests/test_build_chart_data.py::test_a_trimmed_gapless_window_agrees_with_row_arithmetic",
+          "2 failed, 76 passed in 1.67s"
+        ]
+      }
+    ],
+    "prior_hosted_proof": {
+      "run": 39947225492,
+      "conclusion": "success",
+      "head": "2e677fb637f926e0e604af9e88b57056e78975e1",
+      "base": "0955f19c8e474b0f65da479c42a02ac91824cd21",
+      "tested_merge": "d0687c1cdbb1e78e8893199614db923a3d3556a0",
+      "tested_tree": "13da4afff390ae3c422209d6a4c1abac3c1bbcb0",
+      "jobs": 281,
+      "passed_steps": 600,
+      "infrastructure": 0,
+      "plan_sha256": "fec2678fd0d0fe5a073ad126d644ebece6491b0c7d5535dd8db7fe62720e6271",
+      "evidence_sha256": "9319a990ce6d32997636a10ad21e8858912456340b2c7e30bf9b233c71a8160d"
+    },
+    "limits": "This local composition needs its own published hosted CI; prior green proof remains bound to2e+0955. No runtime install, receiver or consumer acceptance is claimed."
+  },
+  "prior_hosted_proof": {
+    "run": 39947225492,
+    "conclusion": "success",
+    "head": "2e677fb637f926e0e604af9e88b57056e78975e1",
+    "base": "0955f19c8e474b0f65da479c42a02ac91824cd21",
+    "tested_merge": "d0687c1cdbb1e78e8893199614db923a3d3556a0",
+    "tested_tree": "13da4afff390ae3c422209d6a4c1abac3c1bbcb0",
+    "jobs": 281,
+    "passed_steps": 600,
+    "infrastructure": 0,
+    "plan_sha256": "fec2678fd0d0fe5a073ad126d644ebece6491b0c7d5535dd8db7fe62720e6271",
+    "evidence_sha256": "9319a990ce6d32997636a10ad21e8858912456340b2c7e30bf9b233c71a8160d"
+  },
+  "limits": "This local composition needs its own published hosted CI; prior green proof remains bound to2e+0955. No runtime install, receiver or consumer acceptance is claimed.",
+  "environment_correction": {
+    "restored_sparse_fixture": "site/chart.js",
+    "git_blob": "3e3f538f9ca7fbeba24cd6f4ff2a8943f720ad1e",
+    "sha256": "a31b8e5aa13fafc13605047c05fc0bfb3656f70a9a56dc0e5b2f0bfa78858099",
+    "index_exact": true,
+    "change": "Restore only the exact tracked sparse fixture omitted by the base merge; no source, assertion or permission change."
+  },
+  "groups": [
+    {
+      "name": "deployment",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "tests/test_deploy_update_self_heal.py",
+        "tests/test_caddy_autosave_driver.py",
+        "tests/test_macro_caddy_overlay.py",
+        "tests/test_macro_caddy_publication.py",
+        "-q",
+        "--tb=short",
+        "--basetemp",
+        "/Volumes/Mastermind/agent-workspaces/macro/web/portfolio-ohlc-delivery-20261022/.pytest_cache/portfolio-ohlc-main943-20261023/deployment"
+      ],
+      "exit": 0,
+      "seconds": 32.52,
+      "log_sha256": "a2bd73798984b3d22a00a351a9e70c8041c9ff1148ad726d0bfcdf35462edc63",
+      "tail": [
+        "........................................................................ [ 15%]",
+        "........................................................................ [ 30%]",
+        "........................................................................ [ 46%]",
+        "........................................................................ [ 61%]",
+        "........................................................................ [ 77%]",
+        "........................................................................ [ 92%]",
+        "..................................                                       [100%]",
+        "466 passed in 31.99s"
+      ]
+    },
+    {
+      "name": "ohlc-restored",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "tests/test_publish_ohlc.py",
+        "tests/test_build_chart_data.py",
+        "-q",
+        "--tb=short",
+        "--basetemp",
+        "/Volumes/Mastermind/agent-workspaces/macro/web/portfolio-ohlc-delivery-20261022/.pytest_cache/portfolio-ohlc-main943-20261023/ohlc-complete"
+      ],
+      "exit": 0,
+      "seconds": 2.46,
+      "log_sha256": "06cb6fa05e0ff550a62044994c640d90073875dc5e2dacbaf9354150da5e0b58",
+      "tail": [
+        "........................................................................ [ 92%]",
+        "......                                                                   [100%]",
+        "78 passed in 1.92s"
+      ]
+    },
+    {
+      "name": "ci-coverage-packing",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered",
+        "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier",
+        "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+        "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+        "tests/test_ci_pack.py::test_autosave_adoption_contracts_execute_in_existing_code_job",
+        "tests/test_ci_pack.py::test_every_real_legacy_job_declares_its_gate",
+        "-q",
+        "--tb=short",
+        "--basetemp",
+        "/Volumes/Mastermind/agent-workspaces/macro/web/portfolio-ohlc-delivery-20261022/.pytest_cache/portfolio-ohlc-main943-20261023/ci-coverage-packing-complete"
+      ],
+      "exit": 0,
+      "seconds": 184.73,
+      "log_sha256": "1f8cd4714804cfba31ba3df71a7eebe394e4591ff2b0a0a729fd6f8e42530977",
+      "tail": [
+        "........                                                                 [100%]",
+        "8 passed in 184.19s (0:03:04)"
+      ]
+    }
+  ],
+  "new_source_diff_check": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "source_hashes_after": {
+    ".github/ci/legacy-jobs.yml": "9324ff76492ff24468f2f13051e41a959b415d3a68f9a6bd59c7347f550264ad",
+    ".github/workflows/daily.yml": "cae59088905935cad9a9473678b53cb94b3fee4fc337fa2773348ca98ea01775",
+    "app/deploy/update.sh": "af044e13f5f7cf0a7a56a467dc1ef31d009cfce1161fb3b795709358cccaf0c3",
+    "tests/test_deploy_update_self_heal.py": "104006017269385091a59475cd46cd584574ee100ae4d2d429229db41841c7a4",
+    "tests/test_ci_pack.py": "1c0b78e50d79576d9e4ec6a814e72f31d26ab100b8e0449f90752bbb78f9e92c",
+    "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+    "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+    "scripts/run_ci_pack.py": "2a6d8f49d72fd7f917c708bbd2bb1545af80ee3c3457a3437928c5d41ff6d72b",
+    "scripts/ci_semantic_proof.py": "c3a36f7fafa5e2158c5e105d147553f026b9fc7002fab315df00165643e70a60",
+    "tests/test_ci_pack_semantic.py": "925cc30afbe3f3b9d256661c8eef61183a5de810d35311735dc57f39bc02e977"
+  },
+  "finished_at": "2026-10-23T16:41:11.014765+00:00",
+  "state": "PASSED",
+  "logs": {
+    "current-base-943-20261023-deployment.log.gz": {
+      "raw_sha256": "a2bd73798984b3d22a00a351a9e70c8041c9ff1148ad726d0bfcdf35462edc63",
+      "gzip_sha256": "8e8cceb019d1f47ed808478eabda02bb38b734a6dff10b8316060e8d7d50f937"
+    },
+    "current-base-943-20261023-ohlc.log.gz": {
+      "raw_sha256": "61df8f6e5c2c87ddefb4e95f34066afc90d3a6a87f173d280e9c43b0175512b3",
+      "gzip_sha256": "409e5a3b42a36c04f19a65170dc846138ac8083b2ada9a80ee183d9c1492718c"
+    },
+    "current-base-943-20261023-ohlc-restored.log.gz": {
+      "raw_sha256": "06cb6fa05e0ff550a62044994c640d90073875dc5e2dacbaf9354150da5e0b58",
+      "gzip_sha256": "8232031ef52237475865eb581dc54a994ae50656d641d3cade4173ae1faa1320"
+    },
+    "current-base-943-20261023-ci-coverage-packing.log.gz": {
+      "raw_sha256": "1f8cd4714804cfba31ba3df71a7eebe394e4591ff2b0a0a729fd6f8e42530977",
+      "gzip_sha256": "71e8ea4b3854ce6aa639ddb04f07b5d20cb017a03bc92a0bcc38ca3a60de8fae"
+    }
+  }
+}

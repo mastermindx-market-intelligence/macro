@@ -69,6 +69,61 @@ def _beta_corr(da: pd.Series, du: pd.Series, w: int) -> tuple[float | None, floa
             float(c.iloc[-1]) if len(c) else None)
 
 
+def _plain_read(usd_dir: str, headwind: list[str], tailwind: list[str],
+                unstable: list[str], zh_of: dict[str, str]) -> tuple[str, str]:
+    """Direction-aware one-line EN/ZH read.
+
+    ``headwind`` / ``tailwind`` are signed vs a STRENGTHENING dollar (corr sign).
+    Presentation follows the current-direction truth table (ripple-table contract:
+    templates/forex.html.j2 "If USD rises" column; correlation is symmetric):
+
+        USD strengthening / firm: headwind_for leaned on, tailwind_for lifted
+        USD weakening / soft:     headwind_for lifted,     tailwind_for leaned on
+    """
+    verb = {"strengthening": "stronger", "weakening": "weaker", "flat": "flat"}[usd_dir]
+    verb_zh = {"strengthening": "走强", "weakening": "走软", "flat": "横盘"}[usd_dir]
+    if usd_dir == "flat":
+        return ("The dollar is broadly flat — cross-asset transmission is muted right now.",
+                "美元大体横盘 — 当前跨资产传导较弱。")
+
+    # Current-direction roles: a FIRM dollar leans on headwind_for and lifts
+    # tailwind_for; a SOFT dollar is the symmetric swap.
+    if usd_dir == "strengthening":
+        leaned_on, lifted = headwind, tailwind
+    else:
+        leaned_on, lifted = tailwind, headwind
+
+    def _zh(names: list[str]) -> str:
+        return "、".join(zh_of.get(n, n) for n in names)
+
+    clauses_en, clauses_zh = [], []
+    if leaned_on:
+        names = leaned_on[:3]
+        clauses_en.append(f"a headwind for {', '.join(names)}")
+        clauses_zh.append(f"对{_zh(names)}构成逆风")
+    if lifted:
+        names = lifted[:3]
+        clauses_en.append(f"a tailwind for {', '.join(names)}")
+        clauses_zh.append(f"对{_zh(names)}构成顺风")
+    parts_en, parts_zh = [], []
+    if clauses_en:
+        parts_en.append(f"a {verb} dollar is " + " and ".join(clauses_en))
+    if clauses_zh:
+        parts_zh.extend(clauses_zh)
+    if unstable:
+        u = unstable[:2]
+        be = "is" if len(u) == 1 else "are"
+        parts_en.append(f"{', '.join(u)} {be} sign-unstable (read with caution)")
+        parts_zh.append(f"{_zh(u)}符号不稳定（谨慎解读）")
+    read = ("Today: " + "; ".join(parts_en) + ".") if parts_en else \
+           f"The dollar is {verb}; transmission is mixed."
+    if parts_zh:
+        read_zh = f"当前美元{verb_zh}；" + "，".join(parts_zh) + "（同步关系，非预测）。"
+    else:
+        read_zh = f"当前美元{verb_zh}；详见下表（同步关系，非预测）。"
+    return read, read_zh
+
+
 def _regime_split(da: pd.Series, du: pd.Series, risk_off: pd.Series) -> dict | None:
     """Correlation of asset vs USD returns conditioned on the risk-off regime
     (risk_off > 0 = stress, else calm). The sign flip across regimes is the headline."""
@@ -159,23 +214,8 @@ def transmission(broad: pd.Series | None, assets: dict, real: pd.Series | None,
             return {}
         rows.sort(key=lambda r: -(abs(r["corr_fast"]) if r["corr_fast"] is not None else 0))
 
-        # one-line plain read, no point estimates
-        verb = {"strengthening": "stronger", "weakening": "weaker", "flat": "flat"}[usd_dir]
-        verb_zh = {"strengthening": "走强", "weakening": "走软", "flat": "横盘"}[usd_dir]
-        if usd_dir == "flat":
-            read = "The dollar is broadly flat — cross-asset transmission is muted right now."
-            read_zh = "美元大体横盘 — 当前跨资产传导较弱。"
-        else:
-            hp = ", ".join(headwind[:3]) if usd_dir == "strengthening" else ", ".join(tailwind[:3])
-            other = tailwind if usd_dir == "strengthening" else headwind
-            parts = []
-            if hp:
-                parts.append(f"a {verb} dollar is a {'headwind' if usd_dir=='strengthening' else 'tailwind'} for {hp}")
-            if unstable:
-                parts.append(f"{', '.join(unstable[:2])} {'is' if len(unstable)==1 else 'are'} sign-unstable (read with caution)")
-            read = "Today: " + "; ".join(parts) + "." if parts else \
-                   f"The dollar is {verb}; transmission is mixed."
-            read_zh = f"当前美元{verb_zh}；详见下表（同步关系，非预测）。"
+        zh_of = {r["label"]: r["label_zh"] for r in rows}
+        read, read_zh = _plain_read(usd_dir, headwind, tailwind, unstable, zh_of)
 
         return {"usd_dir": usd_dir, "usd_roc_pct": round(100 * roc, 1),
                 "rows": rows, "headwind_for": headwind, "tailwind_for": tailwind,

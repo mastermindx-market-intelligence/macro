@@ -1,0 +1,103 @@
+Loading leading_signals() ... (may take a moment)
+  Signals shape: (8467, 13)  (1993-01-29 .. 2026-09-18)
+Computing subscore_series() and context_gate_series() ...
+Running detect_events() ...
+  Found 48 onsets (depth >= 8%)
+Analysing episodes ...
+
+  Episode: 2018Q4 selloff  fixed_anchor=2018-09-20
+    credit_oas_roc: EARLY  first_elev=2018-07-02  left_censored=False  T-1=0.2421
+    credit_hyg_tlt: EARLY  first_elev=2018-07-05  left_censored=False  T-1=0.0873
+    rates_move: SILENT  first_elev=None  left_censored=False  T-1=0.1726
+    rates_realrate: EARLY  first_elev=2018-07-23  left_censored=False  T-1=0.87
+    bubble_ext: SILENT  first_elev=None  left_censored=False  T-1=0.506
+    bubble_leadership: SILENT  first_elev=None  left_censored=False  T-1=0.0258
+    growth_defensives: EARLY  first_elev=2018-06-27  left_censored=False  T-1=0.256
+    growth_cyc_def: EARLY  first_elev=2018-07-03  left_censored=False  T-1=0.3373
+    vol_term: EARLY  first_elev=2018-06-25  left_censored=False  T-1=0.6111
+    jpy_carry: SILENT  first_elev=None  left_censored=False  T-1=0.375
+    nh_contraction: SILENT  first_elev=None  left_censored=False  T-1=0.3175
+    corr_floor_break: SILENT  first_elev=None  left_censored=False  T-1=0.0
+    ai_breadth_divergence: NO DATA (no non-NaN in T-63..T+5)
+
+  Episode: COVID-2020  fixed_anchor=2020-02-19
+    credit_oas_roc: EARLY  first_elev=2020-01-27  left_censored=False  T-1=0.7579
+    credit_hyg_tlt: EARLY  first_elev=2020-01-27  left_censored=False  T-1=0.9028
+    rates_move: LATE  first_elev=2020-02-24  left_censored=False  T-1=0.8294
+    rates_realrate: SILENT  first_elev=None  left_censored=False  T-1=0.5526
+    bubble_ext: EARLY  first_elev=2019-12-16  left_censored=False  T-1=0.9921
+    bubble_leadership: EARLY  first_elev=2019-11-25  left_censored=False  T-1=0.5675
+    growth_defensives: EARLY  first_elev=2020-01-31  left_censored=False  T-1=0.8274
+    growth_cyc_def: SILENT  first_elev=None  left_censored=False  T-1=0.3333
+    vol_term: EARLY  first_elev=2020-01-27  left_censored=False  T-1=0.371
+    jpy_carry: EARLY  first_elev=2020-01-03  left_censored=False  T-1=0.4226
+    nh_contraction: SILENT  first_elev=None  left_censored=False  T-1=0.0089
+    corr_floor_break: SILENT  first_elev=None  left_censored=False  T-1=0.0
+    ai_breadth_divergence: NO DATA (no non-NaN in T-63..T+5)
+
+  Episode: 2022 bear market  fixed_anchor=2022-01-03
+    credit_oas_roc: EARLY  first_elev=2021-11-26  left_censored=False  T-1=0.1766
+    credit_hyg_tlt: EARLY  first_elev=2021-12-01  left_censored=False  T-1=0.1667
+    rates_move: EARLY  first_elev=2021-10-18  left_censored=False  T-1=0.8909
+    rates_realrate: EARLY  first_elev=2021-11-01  left_censored=False  T-1=0.2123
+    bubble_ext: SILENT  first_elev=None  left_censored=False  T-1=0.3671
+    bubble_leadership: EARLY  first_elev=2021-11-18  left_censored=False  T-1=0.8175
+    growth_defensives: EARLY  first_elev=2021-12-13  left_censored=False  T-1=0.8571
+    growth_cyc_def: EARLY  first_elev=2021-12-13  left_censored=False  T-1=0.9643
+    vol_term: EARLY  first_elev=2021-12-01  left_censored=False  T-1=0.0516
+    jpy_carry: EARLY  first_elev=2021-12-01  left_censored=False  T-1=0.4038
+    nh_contraction: SILENT  first_elev=None  left_censored=False  T-1=0.4762
+    corr_floor_break: SILENT  first_elev=None  left_censored=False  T-1=0.0
+    ai_breadth_divergence: NO DATA (no non-NaN in T-63..T+5)
+
+  Episode: SVB March-2023  fixed_anchor=2023-02-02
+    credit_oas_roc: SILENT  first_elev=None  left_censored=False  T-1=0.1131
+    credit_hyg_tlt: EARLY  first_elev=2022-11-18  left_censored=False  T-1=0.8095
+    rates_move: EARLY  first_elev=2022-11-01  left_censored=True  T-1=0.5377
+    rates_realrate: EARLY  first_elev=2022-11-03  left_censored=False  T-1=0.3254
+    bubble_ext: SILENT  first_elev=None  left_censored=False  T-1=0.5238
+    bubble_leadership: EARLY  first_elev=2023-01-10  left_censored=False  T-1=1.0
+    growth_defensives: EARLY  first_elev=2022-12-12  left_censored=False  T-1=0.0298
+    growth_cyc_def: EARLY  first_elev=2022-11-01  left_censored=True  T-1=0.004
+    vol_term: EARLY  first_elev=2022-11-01  left_censored=True  T-1=0.7063
+    jpy_carry: EARLY  first_elev=2022-11-10  left_censored=False  T-1=0.0179
+    nh_contraction: NO DATA (no non-NaN in T-63..T+5)
+    corr_floor_break: SILENT  first_elev=None  left_censored=False  T-1=0.0
+    ai_breadth_divergence: NO DATA (no non-NaN in T-63..T+5)
+
+  Episode: Aug-2024 yen-carry  fixed_anchor=2024-07-16
+    credit_oas_roc: SILENT  first_elev=None  left_censored=False  T-1=0.4623
+    credit_hyg_tlt: SILENT  first_elev=None  left_censored=False  T-1=0.4385
+    rates_move: SILENT  first_elev=None  left_censored=False  T-1=0.0685
+    rates_realrate: EARLY  first_elev=2024-04-16  left_censored=False  T-1=0.3105
+    bubble_ext: EARLY  first_elev=2024-05-15  left_censored=False  T-1=0.998
+    bubble_leadership: EARLY  first_elev=2024-04-15  left_censored=True  T-1=0.7361
+    growth_defensives: EARLY  first_elev=2024-04-19  left_censored=False  T-1=0.2877
+    growth_cyc_def: SILENT  first_elev=None  left_censored=False  T-1=0.1905
+    vol_term: EARLY  first_elev=2024-04-15  left_censored=True  T-1=0.4206
+    jpy_carry: LATE  first_elev=2024-07-17  left_censored=False  T-1=0.4286
+    nh_contraction: SILENT  first_elev=None  left_censored=False  T-1=0.0764
+    corr_floor_break: EARLY  first_elev=2024-04-15  left_censored=True  T-1=0.0
+    ai_breadth_divergence: NO DATA (no non-NaN in T-63..T+5)
+
+Building lead/lag summary ...
+
+JSON written: /Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-parity-rerun-20260921/reports/risk_radar_episode_atlas.json
+MD written:   /Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-parity-rerun-20260921/reports/risk-radar-episode-atlas.md
+
+[SELF-CHECK 1] COVID-2020 early/JIT legs: ['credit_oas_roc', 'credit_hyg_tlt', 'bubble_ext', 'bubble_leadership', 'growth_defensives', 'vol_term', 'jpy_carry']
+               COVID-2020 late/silent legs: ['rates_move', 'rates_realrate', 'growth_cyc_def', 'nh_contraction', 'corr_floor_break']
+               COVID-2020 no-data legs: ['ai_breadth_divergence']
+  OK: At least some legs fired EARLY or JIT for COVID.
+
+[SELF-CHECK 2] Episode onset verification:
+  2018Q4 selloff                  onset=2018-09-20 src=fixed_named_anchor SPY_close=259.29 max_dd_63d=-15.4%
+  COVID-2020                      onset=2020-02-19 src=fixed_named_anchor SPY_close=307.64 max_dd_63d=-33.7%
+  2022 bear market                onset=2022-01-03 src=fixed_named_anchor SPY_close=448.37 max_dd_63d=-12.9%
+  SVB March-2023                  onset=2023-02-02 src=fixed_named_anchor SPY_close=397.53 max_dd_63d=-7.5%
+  Aug-2024 yen-carry              onset=2024-07-16 src=fixed_named_anchor SPY_close=550.43 max_dd_63d=-8.4%
+
+[SELF-CHECK 3] Causal percentile spot-check: pass
+  bubble_ext at T-5 of COVID: recomputed=0.998016 precomputed=0.998016 diff=0.0
+
+Done.
