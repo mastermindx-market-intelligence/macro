@@ -657,3 +657,130 @@ def test_a1b_badge_refresh_follows_authoritative_rows_and_keeps_shipping_pairs()
     assert "refreshModeCounts: refreshModeCounts" in watchlist
     assert (ROOT / "site" / "watchlist.js").read_bytes() == (ROOT / "templates" / "watchlist.js").read_bytes()
     assert (ROOT / "site" / "portfolio.js").read_bytes() == (ROOT / "templates" / "portfolio.js").read_bytes()
+
+
+# #6510: actual complete controllers, with explicit DOM/store boundary doubles.
+# Retain source-clock, identity, generation and persistence owners unchanged.
+BADGE_AUTH_HARNESS = r"""
+'use strict';
+const vm = require('node:vm');
+const fs = require('node:fs');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+const markup = fs.readFileSync(path.join(ROOT,'templates/watchlist.html.j2'),'utf8');
+const actualIds = new Set([...markup.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]));
+for(const id of ['ws_modes','ws_sec_hold','tbl_pf','pf_rowcount','pf_scope','pf_readbanner','pf_err_inline']) assert(actualIds.has(id), 'actual template is missing '+id);
+for(const count of ['pf','wl']) assert(markup.includes('data-count="'+count+'"'), 'actual template count span is missing');
+// Assert controller order, not a hard-coded version that blocks later asset stamps.
+const scripts=[...markup.matchAll(/<script\s+src="([^"?]+)(?:\?[^"\s]*)?"/g)].map(m=>m[1]);
+const ordered=['market_books.js','portfolio_state.js','watchlist.js','portfolio.js'].map(s=>scripts.indexOf(s));
+assert(ordered.every((n,i)=>n>=0&&(!i||n>ordered[i-1])), 'actual controller order changed');
+
+function deferred() { let resolve, reject; const promise=new Promise((a,b)=>{resolve=a;reject=b;}); return {promise,resolve,reject}; }
+function setup({ portfolioSource, lang='en', reversed=false, ps=true }={}) {
+  const nodes={}, listeners={}, windowListeners={}, reads=[], events=[], network=[];
+  const allowed=new Set(['ws_modes','ws_sec_hold','tbl_pf','pf_rowcount','pf_scope','pf_readbanner','pf_err_inline','pf_add','pf_import'].filter(id=>actualIds.has(id)).concat(['__count_pf','__count_wl']));
+  function node(id) {
+    if (!allowed.has(id)) return null;
+    return nodes[id] ||= { id,innerHTML:'',textContent:'',style:{},value:'',className:'',_attrs:{},
+      classList:{contains(){return false},add(){},remove(){},toggle(){}},
+      setAttribute(k,v){this._attrs[k]=String(v)},getAttribute(k){return this._attrs[k]??null},
+      querySelector(sel){const m=/\[data-count="([a-z]+)"\]/.exec(sel);return m?node('__count_'+m[1]):null},
+      querySelectorAll(){return []},addEventListener(){},focus(){} };
+  }
+  const doc={ readyState:'loading',hidden:false,
+    documentElement:{_attrs:{'data-lang':lang},getAttribute(k){return this._attrs[k]??null},setAttribute(k,v){this._attrs[k]=v},classList:{add(){},remove(){}}},
+    getElementById:node,querySelector(){return null},querySelectorAll(){return []},
+    addEventListener(k,fn){(listeners[k] ||= []).push(fn)},removeEventListener(){},
+    dispatchEvent(e){events.push({type:e.type,detail:e.detail});for(const fn of [...(listeners[e.type]||[])])fn(e);return true},
+    createElement(){return {style:{},classList:{add(){}},setAttribute(){}}},
+  };
+  let uid='A', state={authority:'cloud',state:'ready',last_good_at:null,warning:null};
+  const storage=new Map();
+  const ctx={console,Promise,Date,Intl,URL,Map,Set,Number,String,Math,JSON,Error,document:doc,
+    localStorage:{getItem(k){return storage.get(k)??null},setItem(k,v){storage.set(k,String(v))},removeItem(k){storage.delete(k)}},
+    CustomEvent:function(type,o){this.type=type;this.detail=o?.detail},
+    location:{hash:'',pathname:'/watchlist.html',search:'',origin:'https://fixture.invalid'},
+    setTimeout,clearTimeout,
+    fetch(...args){network.push(args);return Promise.reject(new Error('network forbidden'))},
+    addEventListener(k,fn){(windowListeners[k] ||= []).push(fn)},
+    MDXAuth:{user(){return uid?{id:uid}:null}},
+    WatchStore:{user(){return uid?{id:uid}:null},portfolio:{list(){const d=deferred();reads.push(d);return d.promise},readState(){return state}},lists:{all(){return [{id:'L1'},{id:'L2'},{id:'L3'},{id:'L4'},{id:'L5'},{id:'L6'},{id:'L7'}]}}}
+  };
+  ctx.window=ctx;vm.createContext(ctx);
+  const source=f=>fs.readFileSync(path.join(ROOT,'templates',f),'utf8');
+  for (const f of ['market_books.js',...(ps?['portfolio_state.js']:[]),...(reversed?['portfolio.js','watchlist.js']:['watchlist.js','portfolio.js'])])
+    vm.runInContext(f==='portfolio.js'&&portfolioSource?portfolioSource:source(f),ctx,{filename:f});
+  doc.readyState='interactive'; doc.dispatchEvent(new ctx.CustomEvent('DOMContentLoaded'));
+  const snap=()=>({count:ctx.PF.count(),badge:node('__count_pf').textContent,watchBadge:node('__count_wl').textContent,
+    rows:(node('tbl_pf').innerHTML.match(/class="pfx-row(?:[ "])/g)||[]).length,rowcount:node('pf_rowcount').innerHTML,
+    readState:ctx.PF.readState().state,table:node('tbl_pf').innerHTML,banner:node('pf_readbanner').textContent,error:node('pf_err_inline').textContent,network:network.length});
+  return {ctx,doc,reads,events,snap,setState(x){state=x},auth(id){uid=id;doc.dispatchEvent(new ctx.CustomEvent('wl-auth',{detail:{user:uid?{id:uid}:null}}))},
+    event(type,detail){doc.dispatchEvent(new ctx.CustomEvent(type,{detail}))}, async flush(){for(let i=0;i<12;i++)await Promise.resolve()},
+    resolve(i,rows,nextState){if(nextState)state=nextState;reads[i].resolve(rows)},reject(i){reads[i].reject(new Error('synthetic read failure'))} };
+}
+function rows(n,prefix='T') { return Array.from({length:n},(_,i)=>({id:prefix+i,ticker:prefix+String(i).padStart(2,'0'),shares:1,entry_price:10,status:'open'})); }
+const GOOD={authority:'cloud',state:'ready',last_good_at:'2026-11-05T00:00:00Z',warning:null};
+const ERROR={authority:'cloud',state:'error',last_good_at:null,warning:'read-failed'};
+const DEGRADED={authority:'cloud',state:'degraded',last_good_at:'2026-11-05T00:00:00Z',warning:'cloud-unavailable'};
+function eq(h,n){const s=h.snap();assert.equal(s.count,n,'canonical count');assert.equal(s.badge,n===null?'—':String(n),'mode badge');assert.equal(s.watchBadge,'7','watchlist count remains separate');assert.equal(s.network,0,'no network');}
+async function known(h,n=13){h.resolve(0,rows(n),GOOD);await h.flush();h.ctx.WS.render();eq(h,n);}
+const cases={
+ async initial_read(h){eq(h,null);h.resolve(0,rows(13),GOOD);await h.flush();eq(h,13);assert.equal(h.snap().rows,13);},
+ async confirmed_import_reread(h){await known(h);h.event('pf-import-state',{state:'saved'});h.resolve(1,rows(16),GOOD);await h.flush();eq(h,16);assert.equal(h.snap().rows,16);},
+ async cleanup_reread(h){await known(h);h.event('pf-import-state',{state:'saved'});h.resolve(1,rows(16),GOOD);await h.flush();h.event('pf-folded');h.resolve(2,rows(13),GOOD);await h.flush();eq(h,13);assert.equal(h.snap().rows,13);},
+ async identity_loading(h){await known(h);h.auth('B');eq(h,null);assert.equal(h.snap().table,'');assert.equal(h.snap().readState,'loading');},
+ async identity_success(h){await known(h);h.auth('B');h.resolve(1,rows(2,'B'),GOOD);await h.flush();eq(h,2);assert.equal(h.snap().rows,2);assert(!h.snap().table.includes('T12'));},
+ async identity_empty(h){await known(h);h.auth('B');h.resolve(1,[],GOOD);await h.flush();eq(h,0);assert.equal(h.snap().rows,0);},
+ async identity_null_error(h){await known(h);h.auth('B');h.resolve(1,null,ERROR);await h.flush();eq(h,null);assert.equal(h.snap().readState,'error');assert.equal(h.snap().table,'');},
+ async identity_rejected_read(h){await known(h);h.auth('B');h.reject(1);await h.flush();eq(h,null);assert.equal(h.snap().readState,'error');},
+ async initial_null_error(h){h.resolve(0,null,ERROR);await h.flush();eq(h,null);assert.equal(h.snap().readState,'error');},
+ async delayed_old_identity(h){await known(h);h.auth('B');h.auth('C');h.resolve(2,rows(3,'C'),GOOD);await h.flush();h.resolve(1,rows(99,'B'),GOOD);await h.flush();eq(h,3);assert.equal(h.snap().rows,3);},
+ async same_identity_double_event(h){await known(h);h.auth('A');h.auth('A');h.resolve(2,rows(4),GOOD);await h.flush();h.resolve(1,rows(88),GOOD);await h.flush();eq(h,4);},
+ async closed_and_blank_filtered(h){h.resolve(0,[...rows(3),{id:'closed',ticker:'CLOSED',status:'closed'},{id:'empty',ticker:'',status:'open'}],GOOD);await h.flush();eq(h,3);assert.equal(h.snap().rows,3);},
+ async older_reload_cannot_overwrite(h){await known(h);h.event('pf-import-state',{state:'saved'});h.event('pf-import-state',{state:'saved'});h.resolve(2,rows(16),GOOD);await h.flush();h.resolve(1,rows(14),GOOD);await h.flush();eq(h,16);assert.equal(h.snap().rows,16);},
+ async degraded_last_good_preserved(h){await known(h);h.event('pf-folded');h.resolve(1,rows(13),DEGRADED);await h.flush();eq(h,13);assert.equal(h.snap().readState,'degraded');assert(h.snap().banner.length>0);},
+ async failed_reread_keeps_last_good(h){await known(h);h.event('pf-folded');h.reject(1);await h.flush();eq(h,13);assert.equal(h.snap().readState,'error');assert(h.snap().banner.length>0);},
+ async import_failed_does_not_read(h){await known(h);h.event('pf-import-state',{state:'failed'});await h.flush();eq(h,13);assert.equal(h.reads.length,1);},
+ async later_ws_render_cannot_restore_old_count(h){await known(h);h.auth('B');h.resolve(1,rows(2,'B'),GOOD);await h.flush();h.ctx.WS.render();eq(h,2);assert.equal(h.snap().rows,2);},
+};
+
+cases.sign_out_and_in = async function(h) {
+  await known(h);
+  h.setState({...GOOD,authority:'local',state:'loading'}); h.auth(null);
+  assert.equal(h.snap().count,null); assert.equal(h.snap().badge,'—'); assert.equal(h.snap().watchBadge,'');
+  h.resolve(1,rows(5,'LOCAL'),{...GOOD,authority:'local'}); await h.flush();
+  assert.equal(h.snap().count,5); assert.equal(h.snap().badge,'5'); assert.equal(h.snap().watchBadge,'');
+  h.auth('B'); eq(h,null); h.resolve(2,rows(2,'B'),GOOD); await h.flush(); eq(h,2);
+};
+cases.optional_painter_absent = async function(h) {
+  delete h.ctx.WS.refreshModeCounts;
+  h.resolve(0,rows(3),GOOD); await h.flush(); assert.equal(h.snap().count,3);
+  h.auth('B'); h.resolve(1,rows(2),GOOD); await h.flush(); assert.equal(h.snap().count,2);
+  assert.equal(h.snap().network,0);
+};
+
+"""
+
+BADGE_AUTH_SCENARIOS = ['initial_read', 'confirmed_import_reread', 'cleanup_reread', 'identity_loading', 'identity_success', 'identity_empty', 'identity_null_error', 'identity_rejected_read', 'initial_null_error', 'delayed_old_identity', 'same_identity_double_event', 'closed_and_blank_filtered', 'older_reload_cannot_overwrite', 'degraded_last_good_preserved', 'failed_reread_keeps_last_good', 'import_failed_does_not_read', 'later_ws_render_cannot_restore_old_count', 'sign_out_and_in', 'optional_painter_absent']
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("has_state_module", [True, False])
+@pytest.mark.parametrize("scenario", BADGE_AUTH_SCENARIOS)
+def test_portfolio_badge_lifecycle(scenario, lang, has_state_module):
+    script = "const ROOT = " + json.dumps(str(ROOT)) + ";\n" + BADGE_AUTH_HARNESS
+    script += "\nconst options = " + json.dumps({"lang": lang, "ps": has_state_module}) + ";\n"
+    script += "const scenario = " + json.dumps(scenario) + ";\n"
+    script += "(async () => { await cases[scenario](setup(options)); })().catch(e => { console.error(e); process.exitCode = 1; });"
+    proc = subprocess.run(["node", "-e", script], capture_output=True, text=True, timeout=30)
+    assert proc.returncode == 0, f"{scenario}:\n{proc.stderr}\n{proc.stdout}"
+
+
+def test_portfolio_badge_auth_shipping_pair_and_version():
+    import re
+    assert (ROOT / "templates/portfolio.js").read_bytes() == (ROOT / "site/portfolio.js").read_bytes()
+    for path in ("templates/watchlist.html.j2", "site/watchlist.html"):
+        markup = (ROOT / path).read_text(encoding="utf-8")
+        stamp = re.search(r'portfolio\.js\?v=(\d+)', markup)
+        assert stamp and int(stamp.group(1)) >= 13

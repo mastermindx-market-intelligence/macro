@@ -1889,6 +1889,7 @@
     }
     lastAuthIdentity = uidNow;
     rows = null;
+    if (window.WS && window.WS.refreshModeCounts) window.WS.refreshModeCounts();
     readState = authedNow
       ? { authority: 'cloud', state: 'loading', last_good_at: null, warning: null }
       : { authority: 'local', state: 'loading', last_good_at: null, warning: null };
@@ -1909,6 +1910,7 @@
       showEl('pf_import');
       if (newRows === null) { render(); return; }   // genuinely unknown — never []
       rows = newRows;
+      if (window.WS && window.WS.refreshModeCounts) window.WS.refreshModeCounts();
       ensureIndex().then(render);
     }).catch(function () {
       if (gen !== loadGen) return;
