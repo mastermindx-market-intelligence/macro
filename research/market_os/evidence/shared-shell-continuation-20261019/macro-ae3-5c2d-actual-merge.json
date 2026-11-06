@@ -1,0 +1,59 @@
+{
+  "started_at": "2026-10-20T11:16:11.219127+00:00",
+  "head": "ae3e6bc547361b632223e7e9bde73128b399035e",
+  "incoming": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "base": "42c859546ececa797b400db0adeb8c5a22f96832",
+  "preview_tree": "1a008b73af0ef56634ce89bb07c62b7a5e0a5988",
+  "remote_pr": {
+    "autoMergeRequest": null,
+    "headRefOid": "e2d10f933587f58be8716505529a37f8839901f7",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokucA",
+        "name": "merge-blocked",
+        "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+        "color": "d93f0b"
+      }
+    ],
+    "state": "OPEN"
+  },
+  "protected_before": {
+    "app/deploy/Caddyfile": "cb8adb3ce636e956fdb58831b960495f6cfba4dc75c578c62bfae39a3b64af3a",
+    "app/deploy/update.sh": "337664e579503b69d3bd11d4aeba817c9393f90d165a6a7821b07a52ef905394",
+    "tests/test_ci_pack.py": "96e6548805d3b33f5d42aec9b8a66fa8813bed108edf439ef00213878b23f352",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+    "lib/site_assets.py": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+    "scripts/render_stock_dashboard_fixture.py": "8f46fc24b9582ee85bc8e612b907f7cf23d02ed151cf3d15f0607a766fe10332",
+    "scripts/verify_stock_dashboard_mobile_layout.cjs": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774",
+    "templates/hk.html.j2": "71153c38db5e79b2a3dd458d21678b02a08951c1d4786d19833d87dee5ed3eac",
+    "templates/canada.html.j2": "b98d20bf1994d32b617493ec86ffbcf984cdcafc513afdf4d523535b054b67c9",
+    "templates/sector_central.html.j2": "2c1728c368f99ad5dd75bd2638f1ffeb54006ef5c85671912eb599e5df09779b",
+    "templates/si_workspace.js": "e6c4db9fc2fed7b76228b4621f887f0eb87536377424e82177cbcf090ce454ca",
+    "site/sector_central.html": "60a9d08240b02a87c437e737d61bf78a82ee879935847f7419725425e2446b91",
+    "site/theme.js": "c27f65318a3877e154e11f4f43fc7545e9fb67aa52cdd15cda2aaba9ebd21c29",
+    "site/mm_brain.js": "5eedc2cee65e3a3e08e9554984441ce308cb8a04a8f1b01e7c3d5b56147f9011",
+    "site/shared_shell_bridge.js": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+    "site/shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": "14f79d2a743a267eca2f20e6f6029339b3fccdd7957eabed65898528482a84c0",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": "d8c5ae26d3b2d733dc5a2bc55664152cbc7f091707c115fb09ccfd57991c138c",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": "34b07d01d0a5333485fce08023cfaae451844725e3f18b4ba5fe180272435b70",
+    "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+  },
+  "merge_attempted": true,
+  "merge_exit": 0,
+  "merge_finished_at": "2026-10-20T11:16:33.833727+00:00",
+  "log": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-actual-merge.log",
+    "sha256": "1351ad5aef56dbfce6da7de0e7739e0dae0d5131458ce6f6820ae1ec5310f4ca",
+    "bytes": 106
+  },
+  "index": "1a008b73af0ef56634ce89bb07c62b7a5e0a5988",
+  "protected_inputs_unchanged": true,
+  "manifest_three_way_all_fields_and_ids_pass": true,
+  "manifest_jobs": 330,
+  "manifest_sha256": "56cb2d04614a615da4ae76e34026655c7d0d60d5aacb9fbd4e5a3602f2e84755",
+  "owned_whitespace_exit": 0,
+  "owned_whitespace_output": "",
+  "changed_paths_vs_incoming": 610,
+  "finished_at": "2026-10-20T11:16:42.313232+00:00"
+}

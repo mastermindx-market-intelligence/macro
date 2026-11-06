@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from engine import theme_scoring as ts
 
@@ -34,7 +35,73 @@ def test_breadth_leg_all_above_ma_and_new_highs():
     leg, d = ts._breadth_leg(mc, len(idx) - 1, {"broadening_z": 0.0})
     assert d["pct50"] == 1.0 and d["pct200"] == 1.0
     assert d["nh"] == 3 and d["nl"] == 0
-    assert leg > 0.5                              # broad + new highs → strong positive leg
+    assert d["n"] == d["n50"] == d["n200"] == 3
+    assert leg == pytest.approx(0.9)             # full-history baseline keeps fixed weights
+
+
+@pytest.mark.parametrize("count,n50,n200", [(24, 0, 0), (25, 1, 0), (99, 1, 0), (100, 1, 1)])
+def test_breadth_leg_ma_observation_boundaries(count, n50, n200):
+    prices = pd.DataFrame({"A": np.linspace(1.0, 2.0, count)})
+    leg, d = ts._breadth_leg(prices, count - 1, {})
+    assert (d["n"], d["n50"], d["n200"]) == (1, n50, n200)
+    assert d["pct50"] == (1.0 if n50 else None)
+    assert d["pct200"] == (1.0 if n200 else None)
+    assert (d["nh"], d["nl"]) == (1, 0)
+    assert leg == pytest.approx(0.45 * n50 + 0.25 * n200 + 0.20)
+
+
+def test_breadth_leg_mixed_histories_and_fixed_i_ignore_future_append():
+    ramp = np.linspace(1.0, 2.0, 260)
+    prices = pd.DataFrame({"long_up": ramp, "long_down": ramp[::-1],
+                           "short25": np.r_[np.full(235, np.nan), ramp[-25:]],
+                           "short24": np.r_[np.full(236, np.nan), ramp[-24:]]})
+    i = len(prices) - 1
+    leg, d = ts._breadth_leg(prices, i, {})
+    assert (d["n"], d["n50"], d["n200"]) == (4, 3, 2)
+    assert (d["pct50"], d["pct200"]) == (0.667, 0.5)
+    assert (d["nh"], d["nl"]) == (3, 1)
+    assert leg == pytest.approx(0.25)            # score uses unrounded eligible proportions
+    future = pd.DataFrame(1000.0, index=range(260, 280), columns=prices.columns)
+    assert ts._breadth_leg(pd.concat([prices, future]), i, {}) == (leg, d)
+
+
+def test_breadth_leg_200ma_can_be_eligible_without_50ma():
+    prices = pd.DataFrame({"A": np.linspace(1.0, 2.0, 200)})
+    prices.iloc[-50:-1] = np.nan                 # 151 observations in 200d, only 1 in 50d
+    leg, d = ts._breadth_leg(prices, 199, {})
+    assert (d["n"], d["n50"], d["n200"]) == (1, 0, 1)
+    assert d["pct50"] is None and d["pct200"] == 1.0
+    assert (d["nh"], d["nl"]) == (1, 0)
+    assert leg == pytest.approx(0.45)            # unavailable 50d term is neutral, not reweighted
+
+
+@pytest.mark.parametrize("missing_all", [False, True])
+def test_breadth_leg_missing_latest_price_excludes_member(missing_all):
+    ramp = np.linspace(1.0, 2.0, 260)
+    prices = pd.DataFrame({"priced": ramp, "missing": ramp, "unobserved": np.nan})
+    prices.loc[259, "missing"] = np.nan
+    if missing_all:
+        prices.loc[259, "priced"] = np.nan
+    leg, d = ts._breadth_leg(prices, 259, {})
+    n = 0 if missing_all else 1
+    assert (d["n"], d["n50"], d["n200"]) == (n, n, n)
+    assert d["pct50"] == d["pct200"] == (1.0 if n else None)
+    assert (d["nh"], d["nl"]) == (n, 0)
+    assert leg == pytest.approx(0.9 if n else 0.0)
+
+
+def test_breadth_leg_measured_zero_is_distinct_from_unavailable():
+    prices = pd.DataFrame({"A": np.linspace(2.0, 1.0, 100)})
+    leg, d = ts._breadth_leg(prices, 99, {})
+    assert d["pct50"] == d["pct200"] == 0.0
+    assert (d["n"], d["n50"], d["n200"]) == (1, 1, 1)
+    assert leg == pytest.approx(-0.9)
+    prices.iloc[:-1] = np.nan                   # still priced, neither MA observable
+    leg, d = ts._breadth_leg(prices, 99, {"broadening_z": 1.0})
+    assert d["pct50"] is None and d["pct200"] is None
+    assert (d["n"], d["n50"], d["n200"]) == (1, 0, 0)
+    assert (d["nh"], d["nl"]) == (1, 1)
+    assert leg == pytest.approx(0.10 * np.tanh(0.8))
 
 
 def test_trend_leg_positive_with_outperformance():

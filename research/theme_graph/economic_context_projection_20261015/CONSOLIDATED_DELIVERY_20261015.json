@@ -1,0 +1,115 @@
+{
+  "observed_utc": "2026-10-15T07:50:16.591977+00:00",
+  "parent_pr": 9423,
+  "child_pr": 9439,
+  "parent": "a474d289db007117d12e32f421ae7c46bcc163e8",
+  "child": "c035ca0cc5e947c065aefcf43dbead292db70218",
+  "current_main": "dfbd940e16f0fc80caf027e760946cbf5c1584e8",
+  "source_hold_reestablished": true,
+  "controller_label_removed": true,
+  "child_review": 6185706301,
+  "decision": "Consolidate reviewed complete source into original main-target carrier; fresh main-target CI and native release remain mandatory; no merge of failed child, rule/filter change or source-capture action.",
+  "source_files": [
+    ".github/ci/legacy-jobs.yml",
+    "app/company_disclosures.py",
+    "engine/company_intelligence/issuer_disclosure_selection.py",
+    "engine/theme_graph/economic_context.py",
+    "engine/theme_graph/issuer_economic_context.py",
+    "research/theme_graph/economic_context_projection_20261015/README.md",
+    "research/theme_graph/economic_context_projection_20261015/VALIDATION.json",
+    "research/theme_graph/economic_context_projection_20261015/verify_mutations.py",
+    "research/theme_graph/issuer_economic_context_20261015/HTTP_VALIDATION.json",
+    "research/theme_graph/issuer_economic_context_20261015/README.md",
+    "research/theme_graph/issuer_economic_context_20261015/VALIDATION.json",
+    "research/theme_graph/issuer_economic_context_20261015/verify_http_mutations.py",
+    "research/theme_graph/issuer_economic_context_20261015/verify_mutations.py",
+    "tests/test_gmi_issuer_economic_context.py",
+    "tests/test_gmi_issuer_economic_context_api.py",
+    "tests/test_gmi_native_economic_context.py"
+  ],
+  "stage": "EXACT_TESTED_SOURCE_RESTORED_WITHOUT_CHILD_MERGE",
+  "preflight_comment": 6187224148,
+  "conflicts": [
+    ".github/ci/legacy-jobs.yml"
+  ],
+  "child_ci_changed_jobs": [
+    "fif-kernel-guards",
+    "prelaunch-hardening",
+    "crypto-assistant-context",
+    "research-price-panel",
+    "ticker-news-qbus",
+    "company-relationship-candidates"
+  ],
+  "all15_child_non_ci_files_byte_identical": true,
+  "jobs_preserved": 319,
+  "ci_additions": [
+    {
+      "job": "fif-kernel-guards",
+      "added_paths": [
+        "engine/theme_graph/economic_context.py",
+        "engine/theme_graph/issuer_economic_context.py"
+      ]
+    },
+    {
+      "job": "prelaunch-hardening",
+      "extended_steps": [
+        "collect beacon throttle + growth-event registry + tape per-IP cap + generic billing/auth errors + dossier quote honesty"
+      ]
+    },
+    {
+      "job": "crypto-assistant-context",
+      "added_paths": [
+        "engine/theme_graph/economic_context.py",
+        "engine/theme_graph/issuer_economic_context.py"
+      ]
+    },
+    {
+      "job": "research-price-panel",
+      "added_paths": [
+        "engine/theme_graph/economic_context.py",
+        "engine/theme_graph/issuer_economic_context.py"
+      ]
+    },
+    {
+      "job": "ticker-news-qbus",
+      "added_paths": [
+        "engine/theme_graph/economic_context.py",
+        "engine/theme_graph/issuer_economic_context.py"
+      ]
+    },
+    {
+      "job": "company-relationship-candidates",
+      "added_paths": [
+        "engine/theme_graph/issuer_economic_context.py",
+        "tests/test_gmi_issuer_economic_context.py",
+        "engine/theme_graph/__init__.py",
+        "engine/theme_graph/economic_context.py",
+        "tests/test_gmi_native_economic_context.py"
+      ],
+      "extended_steps": [
+        "File, pinned-source, observation and native disclosure contracts"
+      ]
+    }
+  ],
+  "all15_reviewed_non_ci_files_unchanged": true,
+  "manifest_sha256": "d5dc81b2eaea6d947bd8eb5d876b139d032173c7e0b8f90b7dfd64417375e6df",
+  "full_tested_tree_preserved": true,
+  "application_tests": {
+    "tests": 709,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "ci_scope_tests": {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "tests": {
+    "consolidated-native.xml": "ddb72d4e8c0a8a11d3d2222f9a7322f896b771c7cc0f08def6f3fee4fa4d18c4",
+    "consolidated-ci.xml": "90d239b74bfc798733230db1fc2eece90df50ebd169fe0c65c907c3acad09097"
+  },
+  "child_history": "original remote child commit preserved; no child commit made ancestor of parent; no child PR merge or failed-check waiver",
+  "remote_parent_before": "a474d289db007117d12e32f421ae7c46bcc163e8"
+}

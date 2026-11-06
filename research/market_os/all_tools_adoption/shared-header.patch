@@ -1,0 +1,7 @@
+--- a/templates/_site_nav.html.j2
++++ b/templates/_site_nav.html.j2
+@@ -54,3 +54,4 @@
+     </div>
+   </div>
+ </nav>
++{% include "_all_tools_menu.html.j2" %}

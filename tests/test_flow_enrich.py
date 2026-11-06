@@ -5,9 +5,9 @@ All tests are network-free: no clock reads, no R2, no Theta Terminal.
 Coverage:
   1.  q_score parity — 3 hand-computed events match the formula exactly
   2.  q_score tier boundaries — ELITE/STRONG/HIGH/MEDIUM/LOW at exact thresholds
-  3.  MULTI_LEG detector — fires on swept=True (live poller field)
-  4.  MULTI_LEG detector — near-miss on swept=False/absent
-  5.  MULTI_LEG detector — direction_discounted True when swept fires
+  3.  package semantics — swept=True does NOT prove MULTI_LEG
+  4.  package semantics — swept=False/absent also remain unresolved
+  5.  package semantics — swept urgency is preserved without package direction discount
   6.  LADDER detector — fires on >= 3 distinct strikes; near-miss on 2
   7.  REPEAT_HITTER detector — fires on >= 3 events for same root; near-miss on 2
   8.  SIZE_VS_OI detector — fires on vol_gt_oi=True + prem >= $500k; near-miss on prem < $500k
@@ -19,7 +19,7 @@ Coverage:
   14. FRESH detector — near-miss on mny=far_otm (correct vol/dte)
   15. FRESH detector — near-miss on dte=0 (0DTE)
   16. Z_OUTLIER detector — fires on premium_z >= 3.0; near-miss on 2.9
-  17. direction_discounted flag — True when MULTI_LEG fires; False otherwise
+  17. direction_discounted flag — remains False without qualified package evidence
   18. threshold computation — percentile ordering (elite >= strong >= high >= medium)
   19. threshold bootstrap flag — True when pool has one session_date
   20. threshold bootstrap flag — False when pool spans multiple session_dates
@@ -194,39 +194,40 @@ def test_tier_boundaries(score, expected_tier):
 
 
 # ════════════════════════════════════════════════════════════════════════════════
-# 3–5. MULTI_LEG detector
-# The live poller (engine/live_flow.py) emits `swept` (bool) — not has_multileg,
-# spread_type, or cluster_type. The detector keys off `swept` only.
+# 3–5. Package semantics: sweep urgency is not package identity
+# The live poller emits one exact-contract event and a `swept` urgency flag.
+# No current event field proves common-order legs or customer package intent.
 # ════════════════════════════════════════════════════════════════════════════════
 
-def test_multi_leg_fires_on_swept_true():
-    """MULTI_LEG fires when the poller's swept flag is True."""
+def test_multi_leg_does_not_fire_on_swept_true():
+    """A swept single-contract event must not be relabeled as MULTI_LEG."""
     ev = _mk_event(swept=True)
-    assert fe.detect_multi_leg(ev, [ev]) is True
+    assert fe.detect_multi_leg(ev, [ev]) is False
 
 
-def test_multi_leg_near_miss_swept_false():
-    """MULTI_LEG does not fire when swept=False (the default)."""
+def test_multi_leg_stays_unresolved_on_swept_false():
+    """Absence of sweep urgency is not evidence for or against package structure."""
     ev = _mk_event(swept=False)
     assert fe.detect_multi_leg(ev, [ev]) is False
 
 
-def test_multi_leg_near_miss_swept_absent():
-    """MULTI_LEG does not fire when swept key is absent."""
+def test_multi_leg_stays_unresolved_when_swept_absent():
+    """Missing sweep evidence cannot manufacture package identity."""
     ev = {k: v for k, v in _mk_event().items() if k != "swept"}
     assert fe.detect_multi_leg(ev, [ev]) is False
 
 
-def test_multi_leg_direction_discounted_via_swept():
-    """direction_discounted=True in the envelope when swept=True fires MULTI_LEG."""
+def test_swept_urgency_is_preserved_without_multi_leg_or_direction_discount():
+    """Keep raw urgency evidence while withholding unsupported package semantics."""
     ev = _mk_event(swept=True)
     envelope = fe.build_enrich_envelope(
         [ev], SESSION_DATE, ASOF,
         thresholds=fe.compute_thresholds([ev]),
     )
     enriched = envelope["events"][0]
-    assert "MULTI_LEG" in enriched["badges"]
-    assert enriched["direction_discounted"] is True
+    assert enriched["swept"] is True
+    assert "MULTI_LEG" not in enriched["badges"]
+    assert enriched["direction_discounted"] is False
 
 
 # ════════════════════════════════════════════════════════════════════════════════
@@ -389,8 +390,8 @@ def test_z_outlier_near_miss_none():
 # 17. direction_discounted flag
 # ════════════════════════════════════════════════════════════════════════════════
 
-def test_direction_discounted_true_when_multi_leg():
-    """direction_discounted=True when MULTI_LEG fires (swept=True)."""
+def test_direction_discounted_false_for_sweep_urgency():
+    """Sweep urgency alone must not trigger the package-specific caveat."""
     ev = _mk_event(swept=True)
     envelope = fe.build_enrich_envelope(
         [ev], SESSION_DATE, ASOF,
@@ -398,12 +399,12 @@ def test_direction_discounted_true_when_multi_leg():
     )
     assert len(envelope["events"]) == 1
     enriched = envelope["events"][0]
-    assert "MULTI_LEG" in enriched["badges"]
-    assert enriched["direction_discounted"] is True
+    assert "MULTI_LEG" not in enriched["badges"]
+    assert enriched["direction_discounted"] is False
 
 
-def test_direction_discounted_false_without_multi_leg():
-    """direction_discounted=False when swept=False (default)."""
+def test_direction_discounted_false_without_package_evidence():
+    """direction_discounted remains false when no qualified package evidence exists."""
     ev = _mk_event(swept=False)
     envelope = fe.build_enrich_envelope(
         [ev], SESSION_DATE, ASOF,
@@ -734,7 +735,7 @@ def test_elite_floor_passes_high_premium_high_q():
 def test_bilingual_why_strings_present_on_all_events():
     """Every event in the envelope must carry non-empty why and why_zh strings."""
     events = [
-        _mk_event(root="AAPL", swept=True),        # will have MULTI_LEG badge
+        _mk_event(root="AAPL", swept=True),        # urgency only; no package badge
         _mk_event(root="TSLA", premium=4_000_000),  # will have WHALE badge
         _mk_event(root="NVDA"),                     # no badges expected
     ]
@@ -765,3 +766,104 @@ def test_bilingual_why_zh_is_chinese_for_whale():
     # Chinese characters have codepoints in the CJK Unified Ideographs range
     has_chinese = any("一" <= ch <= "鿿" for ch in enriched["why_zh"])
     assert has_chinese, f"why_zh contains no Chinese characters: {enriched['why_zh']!r}"
+
+
+def _package_field_names(payload: dict) -> list[str]:
+    """Keys that would be package identity rather than single-contract urgency."""
+    return [
+        key for key in payload
+        if key.startswith("package_") or key.startswith("multi_leg")
+    ]
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+# 29. swept stays urgency-only on the enriched event
+# Existing pins (do not duplicate their narrower claims):
+#   test_multi_leg_does_not_fire_on_swept_true
+#   test_multi_leg_stays_unresolved_on_swept_false
+#   test_multi_leg_stays_unresolved_when_swept_absent
+#   test_swept_urgency_is_preserved_without_multi_leg_or_direction_discount
+#   test_direction_discounted_false_for_sweep_urgency
+#   test_direction_discounted_false_without_package_evidence
+# ════════════════════════════════════════════════════════════════════════════════
+
+def test_swept_true_changes_urgency_only():
+    """swept=True passes through as urgency and changes no other enriched field.
+
+    No MULTI_LEG badge, no package/multi-leg field, and direction_discounted
+    stays False. An otherwise identical swept=False event enriches to the
+    same payload except the swept flag itself.
+    """
+    swept = _mk_event(swept=True)
+    quiet = _mk_event(swept=False)
+    thresholds = fe.compute_thresholds([swept, quiet])
+    swept_env = fe.build_enrich_envelope([swept], SESSION_DATE, ASOF, thresholds=thresholds)
+    quiet_env = fe.build_enrich_envelope([quiet], SESSION_DATE, ASOF, thresholds=thresholds)
+    swept_row = swept_env["events"][0]
+    quiet_row = quiet_env["events"][0]
+
+    assert swept_row["swept"] is True
+    assert quiet_row["swept"] is False
+    assert "MULTI_LEG" not in swept_row["badges"]
+    assert swept_row["direction_discounted"] is False
+    assert _package_field_names(swept_row) == []
+
+    swept_rest = {k: v for k, v in swept_row.items() if k != "swept"}
+    quiet_rest = {k: v for k, v in quiet_row.items() if k != "swept"}
+    assert swept_rest == quiet_rest
+
+
+def test_enriched_event_carries_no_new_package_or_multi_leg_field():
+    """Enrichment does not invent package_* or multi_leg* fields.
+
+    The input carries neither prefix. The enriched event may only carry such
+    a field when the input already did.
+    """
+    ev = _mk_event(swept=True)
+    assert _package_field_names(ev) == []
+    envelope = fe.build_enrich_envelope(
+        [ev], SESSION_DATE, ASOF,
+        thresholds=fe.compute_thresholds([ev]),
+    )
+    enriched = envelope["events"][0]
+    fabricated = [key for key in _package_field_names(enriched) if key not in ev]
+    assert fabricated == []
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+# 30. F02-Q2 — unknown expiry enriches; DTE factor matches 0DTE on purpose
+# Existing pins of the 0.20 factor (not repeated here):
+#   test_q_score_matches_hand_computation — case B is dte=0, dte_bucket="0d"
+#   test_fresh_near_miss_0dte — FRESH does not fire at dte 0; not the factor
+# Nothing pins dte=None or dte_bucket="unknown".
+# ════════════════════════════════════════════════════════════════════════════════
+
+def test_unknown_expiry_dte_factor_matches_0dte():
+    """An unknown-expiry event enriches, scores like 0DTE, and stays unknown.
+
+    ``compute_q_score`` coerces ``dte: None`` with ``int(event.get("dte", 0) or 0)``,
+    so the factor is the 0DTE factor 0.20. That parity with the Terminal scorer
+    is intentional. The enriched row must still say ``zerodte`` False and
+    ``dte_bucket`` "unknown" — the score does not relabel the event.
+    """
+    unknown = _mk_event(dte=None, dte_bucket="unknown", zerodte=False)
+    zero = _mk_event(dte=0, dte_bucket="0d", zerodte=True)
+    coerced = int(unknown.get("dte", 0) or 0)
+    assert fe._dte_factor(coerced, str(unknown.get("dte_bucket", "") or "")) == 0.20
+    assert fe._dte_factor(coerced, "unknown") == fe._dte_factor(0, "0d")
+
+    q_unknown = fe.compute_q_score(unknown)
+    q_zero = fe.compute_q_score(zero)
+    unknown_dte = next(c for c in q_unknown["components"] if c["key"] == "dteRelevance")
+    zero_dte = next(c for c in q_zero["components"] if c["key"] == "dteRelevance")
+    assert unknown_dte["value"] == zero_dte["value"]
+
+    thresholds = fe.compute_thresholds([unknown])
+    envelope = fe.build_enrich_envelope(
+        [unknown], SESSION_DATE, ASOF, thresholds=thresholds,
+    )
+    assert envelope["n_events"] == 1
+    row = envelope["events"][0]
+    assert row["dte"] is None
+    assert row["dte_bucket"] == "unknown"
+    assert row["zerodte"] is False

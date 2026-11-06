@@ -1,0 +1,47 @@
+{
+ "auditor": "seat model (claude-opus-5-5), 2026-10-14",
+ "classes": {
+  "MATCH": "The headline reports an event of the routed template family at the resolved issuer, and at least one attached filing reports that event.",
+  "NO_EVENT": "The headline reports no issuer event of the template family (market report, commentary, list, quote page, solicitation).",
+  "OTHER_EVENT": "The headline event is real and the resolved issuer is its subject, but no attached filing reports it.",
+  "WRONG_ISSUER": "The resolved issuer is not the subject of the headline."
+ },
+ "verdicts": [
+  {
+   "case_id": "ff01143b36f81cd2",
+   "class": "OTHER_EVENT",
+   "kind": "event_filing_absent",
+   "note": "Partnership headline that also cites a results beat; the attached results release never mentions the partnership or the partner."
+  },
+  {
+   "case_id": "654ecf963004e4a5",
+   "class": "NO_EVENT",
+   "kind": "template_family_mismatch",
+   "note": "Acquisition headline routed to the capital family by a product-line use of the offering word; no capital-markets event."
+  },
+  {
+   "case_id": "8c8a90edb5d53304",
+   "class": "OTHER_EVENT",
+   "kind": "event_filing_absent",
+   "note": "Partnership-expansion headline; the attached results release never mentions the partnership or the partner."
+  },
+  {
+   "case_id": "57414fa726736332",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Forecast given at the results event; the attached filing reports the same results."
+  },
+  {
+   "case_id": "7d848e2e29478686",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Income-explainer piece on a standing monthly payout; the headline reports no new issuer event and the attached filing reports a loan amendment."
+  },
+  {
+   "case_id": "c1a7999059739af4",
+   "class": "NO_EVENT",
+   "kind": "template_family_mismatch",
+   "note": "Product-launch headline routed to the capital family by a product use of the offering word; the attached filing furnishes credit statistics."
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+{
+  "state": "ACCEPTED_SOURCE_LINEAGE_ONLY",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "worker_id": "paper-01a1101f-im06-history-lineage-r1",
+  "requested_tier": "GLM Flash / C1 census",
+  "files_sha256": {
+    "CONFIG_EXTRACT.json": "501fa041025c5b6115f4a9db3d33770ad7272510ef8e76dd696f11557011154a",
+    "PARENT_SAMPLE_PARITY.json": "2016ee00349ea66b4a4ba813aaa8b3d0e62d3092a91abb9eec8c4cc4c54180b3",
+    "collectors/intl_macro.py": "2eecd0e22215d01459fec95e659e0ab97599c5eb7a3f20f6e2901792d6483c71",
+    "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md": "ef46d431053f6a856e7bd49c66e159d7c0cb01d5d470f00390a0c5ab212e8c24",
+    "engine/indicators.py": "edb47847dba4e3ae011341e17c9c914b58639b0ae42a09969800044b4cd4a5b5",
+    "engine/intl_inputs.py": "bbb2a634bbe0ae06c8e8b21f5bf9882a8697bf4eb5a57252e7593759a1ba11ae",
+    "engine/intl_regime.py": "d7d4cb5af6a71e9381045297d807bb6db76af592aca34b0fd1b64f4c0a74949b",
+    "engine/intl_run.py": "8db309d67394247a1a7569fd92eb2e0ccaa7539aa4f466f7148c78eb864d4730",
+    "engine/regime.py": "9a1ad0d2857584cf3c807292759a1741493a0501fa19da036d4136fee7a4cd54"
+  },
+  "return_sha256": "ad7bd2fdbdde7b9644c829728522ad5b2af654d867616c9f2d1dd4ae68cf4822",
+  "parent_verified": [
+    "All nine frozen input hashes agree.",
+    "The writer recomputes full history from currently retained stores.",
+    "country_frame reindexes to business days, forward fills with limits and does not backfill leading gaps.",
+    "Weighted score axes use only available components; ECB deposit level is not a growth/inflation component.",
+    "The five copied-input counts sum to 45,873; immutable method/universe/vintage identities are absent in these receipts."
+  ],
+  "not_granted": [
+    "provider reuse or derived-output disclosure",
+    "live source health",
+    "historical first-known/revision identity",
+    "source-bound snapshot comparability"
+  ],
+  "next_step": "Use exact existing artifact and provenance witnesses for one source component, preserving all unknown source/rights states. The census alone cannot enable production values.",
+  "full_return": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/im06-history-lineage-r1/return/HISTORY_LINEAGE.json"
+}

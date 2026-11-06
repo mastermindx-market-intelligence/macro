@@ -1189,5 +1189,7 @@ def adapt_hincl2_event_study(root: Path) -> dict[str, Any]:
 
 def build_research_implication_cards(root: Path) -> dict[str, Any]:
     """Return the deterministic envelope in configured, non-ranking method order."""
-    cards = [adapt_synthetic_control(root), adapt_hincl2_event_study(root)]
+    from engine.local_projection_research_card import adapt_local_projections
+
+    cards = [adapt_synthetic_control(root), adapt_hincl2_event_study(root), adapt_local_projections(root)]
     return {"schema": ENVELOPE_SCHEMA, "cards": cards}

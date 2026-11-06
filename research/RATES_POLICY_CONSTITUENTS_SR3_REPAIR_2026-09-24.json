@@ -1,0 +1,59 @@
+{
+  "schema": "ric.policy_constituents.sr3_contract_identity_repair.v1",
+  "operation": "rates-policy-constituents-20260924-sol-002",
+  "pr": 7923,
+  "pre_repair_head": "dbf8d03ed4f2a29ea349bb37a23b9048f18bc2db",
+  "independent_review_comment": 5824269359,
+  "finding": "Quarterly SR3 generation used the civil as-of month and could omit the still-live contract whose named month begins the current reference quarter.",
+  "repair": {
+    "owner_preserved": "collectors/rate_futures.py::gen_contracts",
+    "reference_period_owner_reused": "engine/rate_futures_repricing.py::reference_period",
+    "monthly_zq_semantics_changed": false,
+    "quarterly_rule": "Select the quarterly named contract whose third-Wednesday reference interval contains asof, then enumerate subsequent quarterly contracts.",
+    "capture_clock": "UTC capture timestamps remain separate; contract calendar date remains America/New_York."
+  },
+  "discriminating_dates": {
+    "2026-03-17": "2025-12",
+    "2026-03-18": "2026-03",
+    "2026-04-01": "2026-03",
+    "2026-05-15": "2026-03",
+    "2026-06-16": "2026-03",
+    "2026-06-17": "2026-06",
+    "2026-07-01": "2026-06",
+    "2026-08-15": "2026-06",
+    "2026-09-15": "2026-06",
+    "2026-09-16": "2026-09"
+  },
+  "real_consumer_test": {
+    "path": "collector -> shared adapter/store -> RIC policy_path_repricing",
+    "asof": "2026-04-02",
+    "first_requested_symbol_prefix": "SR3H26.",
+    "family_status": "partial",
+    "m1": "unavailable/unbracketed_horizon",
+    "m3": "available",
+    "m6": "available",
+    "m12": "available",
+    "stored_active_contract": "2026-03",
+    "stored_reference_period": ["2026-03-18", "2026-06-17"],
+    "strict_json_serialization": true
+  },
+  "verification": {
+    "command": "python3 -m pytest tests/test_rates_command.py tests/test_fed_path.py tests/test_yield_momentum.py -q --disable-warnings --tb=short",
+    "passed": 158,
+    "warnings": 301,
+    "agentos_errors": 0,
+    "new_vendor_requests": 0,
+    "production_store_modified": false,
+    "model_trials": 0
+  },
+  "authority": {
+    "display_only": true,
+    "forecast_authority": false,
+    "rank": false,
+    "size": false,
+    "gate": false,
+    "trade": false
+  },
+  "review_state": "AUTHOR_REPAIR_COMPLETE_PENDING_INDEPENDENT_REREVIEW",
+  "production_proof": false
+}

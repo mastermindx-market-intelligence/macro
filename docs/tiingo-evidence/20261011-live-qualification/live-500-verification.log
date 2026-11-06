@@ -1,0 +1,35 @@
+{
+  "observed_at_utc": "2026-10-11T18:17:12.448330+00:00",
+  "source_head": "bddd8da1f5c5225b258ff4d6d35ce72fca5a09fb",
+  "receipt_counts": {
+    "boats-bars": 2,
+    "boats-firehose": 2,
+    "eod-bars": 556,
+    "fund-daily": 1,
+    "fund-definitions": 1,
+    "fund-meta": 1,
+    "fund-statements": 2
+  },
+  "distinct_eod_histories": 553,
+  "distinct_eod_bars": 1233237,
+  "all_eod_raw_and_projection_lineage_verified": true,
+  "archive_bytes": 84029233,
+  "free_gib": 273.525,
+  "free_reserve_gib": 35
+}
+{
+  "boats_ack": [
+    {
+      "message_type": "H",
+      "response_code": 200,
+      "subscription_id_present": false,
+      "market_frames": 0
+    },
+    {
+      "message_type": "I",
+      "response_code": 200,
+      "subscription_id_present": true,
+      "market_frames": 0
+    }
+  ]
+}

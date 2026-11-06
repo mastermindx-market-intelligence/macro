@@ -537,3 +537,97 @@ def test_identity_still_flags_issuer_name_residue(tmp_path):
     pats = {v["pattern"] for v in check_identity(page, html, ctx)}
     assert "issuer-name-residue" in pats
     assert "jsonld-name-residue" in pats
+
+
+def _infinity_company_page():
+    # Reconstruct the nine exact contexts in failed render35709199694, not a
+    # copied whole live page. Canonical identity still comes from the same hub.
+    return '''<html><head><title>INR — Infinity Natural Resources Inc: signals</title>
+<meta name="description" content="INR (Infinity Natural Resources Inc) — Neutral">
+<meta name="mm:ticker" content="INR"><meta name="mm:issuer" content="Infinity Natural Resources Inc">
+<meta property="og:title" content="INR — Infinity Natural Resources Inc: signals">
+<meta property="og:description" content="INR (Infinity Natural Resources Inc) — Neutral">
+<script type="application/ld+json">{"@graph":[
+{"@type":"WebPage","name":"INR — Infinity Natural Resources Inc company dossier"},
+{"@type":"Corporation","name":"Infinity Natural Resources Inc","tickerSymbol":"INR"}]}</script>
+</head><body><span class="sname">Infinity Natural Resources Inc</span>
+<div class="eyebrow">Infinity Natural Resources Inc · Energy</div></body></html>'''
+
+
+def _issuer_context(name='Infinity Natural Resources Inc', ticker='INR'):
+    return {'universe': {ticker: {'name': name, 'sector': 'Energy'}}}
+
+
+def test_canonical_issuer_name_is_not_a_nonfinite_number():
+    text = prepare_checkable_text(_infinity_company_page())
+    assert check_machine_sentinel(Path('INR.html'), text, _issuer_context()) == []
+
+
+def test_company_identity_cannot_whitelist_a_real_infinite_price_on_same_page():
+    page = _infinity_company_page().replace('</body>', '<p>Price: Infinity</p></body>')
+    findings = check_machine_sentinel(Path('INR.html'), prepare_checkable_text(page), _issuer_context())
+    assert len(findings) == 1 and findings[0]['pattern'] == 'Infinity'
+
+
+def test_company_identity_cannot_hide_nonstandard_numeric_json():
+    page = _infinity_company_page().replace('"tickerSymbol":"INR"', '"tickerSymbol":"INR","marketCap":Infinity')
+    findings = check_machine_sentinel(Path('INR.html'), prepare_checkable_text(page), _issuer_context())
+    assert len(findings) == 1 and 'marketCap' in findings[0]['snippet']
+
+
+def test_name_exception_requires_same_ticker_canonical_hub_identity():
+    text = prepare_checkable_text(_infinity_company_page())
+    for ctx in ({}, _issuer_context(ticker='OTHER'), _issuer_context(name='Different Issuer')):
+        assert len(check_machine_sentinel(Path('INR.html'), text, ctx)) == 9
+
+
+def test_bare_or_numeric_looking_canonical_name_cannot_disable_sentinel():
+    for name in ('Infinity', '-Infinity', '$Infinity', 'Infinity 123'):
+        assert check_machine_sentinel(Path('X.html'), '<p>'+name+'</p>', _issuer_context(name, 'X'))
+
+
+def test_unquoted_name_in_json_is_still_not_a_valid_number():
+    text = '{"value":Infinity Natural Resources Inc}'
+    assert check_machine_sentinel(Path('INR.html'), text, _issuer_context())
+
+
+def test_signed_or_currency_prefixed_identity_remains_a_sentinel():
+    for prefix in ('$', '-', '+'):
+        text = '<span>'+prefix+'Infinity Natural Resources Inc</span>'
+        assert check_machine_sentinel(Path('INR.html'), text, _issuer_context())
+
+
+def test_longer_near_match_is_not_the_canonical_company():
+    text = '<p>Infinity Natural Resources Incorporated</p>'
+    assert check_machine_sentinel(Path('INR.html'), text, _issuer_context())
+
+
+def test_full_guard_still_runs_identity_and_sentinel_for_named_issuer(tmp_path):
+    # Hub uses the native data-row contract; no ticker/name is hard-coded in guard.
+    _write_page(tmp_path, 'index.html', '<script>const rows=[["INR","Infinity Natural Resources Inc","Energy"]];</script>')
+    _write_page(tmp_path, 'INR.html', _infinity_company_page())
+    scanned, violations = scan(tmp_path)
+    assert scanned == 2 and violations == []
+    _write_page(tmp_path, 'INR.html', _infinity_company_page().replace('</body>', '<p>$nanM</p></body>'))
+    _, violations = scan(tmp_path)
+    assert any(v['pattern'] == '$nan' for v in violations)
+
+
+def test_named_issuer_does_not_suppress_other_machine_sentinel_classes():
+    text = '<p>Infinity Natural Resources Inc</p><p>$nanM NaN inf Infinity -Infinity</p>'
+    findings = check_machine_sentinel(Path('INR.html'), text, _issuer_context())
+    assert sorted(v['pattern'] for v in findings) == ['$nan', 'Infinity', 'Infinity', 'NaN', 'inf']
+
+
+def test_issuer_identity_is_general_not_a_ticker_or_company_allowlist():
+    from html import escape
+    name = 'Infinity & Partners Incorporated'
+    text = '<meta content="' + escape(name) + '"><p>' + escape(name) + '</p>'
+    assert check_machine_sentinel(Path('EXAMPLE.html'), text, _issuer_context(name, 'EXAMPLE')) == []
+    assert check_machine_sentinel(Path('OTHER.html'), text, _issuer_context(name, 'EXAMPLE'))
+
+
+def test_a_nearby_canonical_name_cannot_hide_quoted_numeric_sentinel():
+    text = '{"issuer":"Infinity Natural Resources Inc","value":"Infinity"}'
+    findings = check_machine_sentinel(Path('INR.html'), text, _issuer_context())
+    assert len(findings) == 1 and findings[0]['pattern'] == 'Infinity'

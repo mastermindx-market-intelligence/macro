@@ -22,7 +22,7 @@ sys.path.insert(0, str(_ROOT))
 from lib import config  # noqa: E402
 from lib.chat_allowance import chat_allowance_view_model  # noqa: E402
 from lib.glossary import glossary_view_model  # noqa: E402
-from lib.help_directory import help_page_view_model  # noqa: E402
+from lib.help_directory import help_page_view_model, refresh_disclosure  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -124,6 +124,7 @@ def build(site=None) -> None:
             site / "help.html",
             env.get_template("help.html.j2").render(
                 generated_utc=generated,
+                refresh=refresh_disclosure(config.ROOT, generated),
                 **help_vm,
             ),
         )

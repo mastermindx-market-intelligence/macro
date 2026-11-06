@@ -1,0 +1,58 @@
+{
+  "schema": "mastermind.press.conflict_resolution.v1",
+  "original_pr": 8786,
+  "old_head": "9019a29c2e35da499fb5c822e515be9ce9c21027",
+  "protected_base": "2853362cf71d95669c96ddd1b8f33a50509d59eb",
+  "conflicted_path": ".github/ci/legacy-jobs.yml",
+  "conflicted_job": "ticker-news-qbus",
+  "resolution": "Exact union of required paths from both sides; all non-path job fields retain protected main",
+  "main_jobs_preserved": 285,
+  "main_paths_removed": 0,
+  "source_bindings_unchanged": [
+    "scripts/inspect_press_staging.py",
+    "scripts/run_press.py",
+    "engine/press/validators.py",
+    "engine/press/desk_planner.py",
+    "config/press.yml",
+    "engine/press/earnings_adapter.py",
+    "engine/earnings_narrative/story_packets.py",
+    "engine/earnings_narrative/story_store.py",
+    "engine/earnings_narrative/admission.py",
+    "scripts/stage_earnings_story_press.py",
+    "engine/press/writer.py",
+    "scripts/publish_earnings_story_packets_r2.py",
+    ".github/workflows/earnings-story-packets.yml",
+    "engine/press/external_candidate.py",
+    "engine/press/adjusted_baseline.py",
+    "engine/whitehouse_feed.py",
+    "engine/close_pass/massive_close.py",
+    "scripts/build_whitehouse.py",
+    "scripts/qualify_press_nvda_baseline.py",
+    ".github/workflows/press-source-qualification.yml",
+    "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+  ],
+  "release_was_disarmed": true,
+  "refresh_lease_census_empty": true,
+  "publication_approved": false,
+  "note": "This resolves a real branch conflict. It does not bypass the main baseline or controller capacity.",
+  "tests": {
+    "command": "python3 -m pytest tests/test_ci_pack.py -q --tb=short",
+    "passed": 166,
+    "skipped": 2,
+    "elapsed_seconds": 320.33,
+    "exit_code": 0,
+    "skip_reason": "Two existing tests require omitted mockups; no changed Press or manifest test was waived"
+  },
+  "generated_pages": {
+    "command": "python3 -m scripts.build_free_content --check",
+    "result": "69 byte-identical files; zero orphans; three hand-authored exemptions",
+    "exit_code": 0
+  },
+  "contract_delta": {
+    "command": "python3 scripts/check_contract_delta.py --base 2853362cf71d95669c96ddd1b8f33a50509d59eb",
+    "introduced": 0,
+    "inherited": 0,
+    "wall_seconds": 252.1,
+    "exit_code": 0
+  }
+}

@@ -1,0 +1,680 @@
+{
+  "scope": "isolated real-input component/pager proof and synthetic visual fixture; not production",
+  "source_base": "4f37209719d2ca5caf9fd3a37aca29fa363f351c",
+  "source_state": "uncommitted worktree; bind by exact source hashes",
+  "real_input_sha256": "a5dbea6169468d6cacd7aa2153209cddd67b0b9e9494ee7b910ba05c972a41c2",
+  "declared_rows": 400,
+  "attached_names_verified_without_candidates": 400,
+  "newer_links": 10,
+  "inputs_unchanged": true,
+  "external_requests_allowed": false,
+  "pager_section_sha256": "896c0c5fa3f6aaf090b8bcd00946c0e130cec7b7c9f06ebc98383d225bbb4aea",
+  "lifecycle_script_sha256": "092cfb63946a6ef1500056e6246998974a34f33b3b5c7f0f7f226a40ff26331a",
+  "lifecycle_filter_css_sha256": "df79c297ff2b761e11631e513d0e74fb488b948061b3333ab445d0413e385a24",
+  "cases": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "geometry": {
+        "overflow": false,
+        "background": "rgb(15, 17, 21)",
+        "chip": "rgb(139, 147, 161)",
+        "created": [
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Creation date unavailable",
+            "clipped": false
+          }
+        ],
+        "metadata": [
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Episode 1 · opened Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Newer plan on this name →",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Screen date unavailable",
+            "clipped": false
+          }
+        ]
+      },
+      "stock_link": true,
+      "newer_link": true,
+      "keyboard_link": true,
+      "page_errors": [],
+      "image": "record-dark-en-1440.png",
+      "image_sha256": "2e76b48284dcbf48f405fe20e9767c6e623e43c52dcb945df4804ba22ff52176"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "geometry": {
+        "overflow": false,
+        "background": "rgb(15, 17, 21)",
+        "chip": "rgb(139, 147, 161)",
+        "created": [
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立日期暂缺",
+            "clipped": false
+          }
+        ],
+        "metadata": [
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "第 1 轮 · 8月12日启动",
+            "clipped": false
+          },
+          {
+            "text": "该股最新计划 →",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "筛查日期暂缺",
+            "clipped": false
+          }
+        ]
+      },
+      "stock_link": true,
+      "newer_link": true,
+      "keyboard_link": true,
+      "page_errors": [],
+      "image": "record-dark-zh-1440.png",
+      "image_sha256": "1cfd48edf97717e48e60da2c873c3bf3f7655ea8fc076342e0eabba6c490c471"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "geometry": {
+        "overflow": false,
+        "background": "rgb(247, 248, 250)",
+        "chip": "rgb(93, 107, 126)",
+        "created": [
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Creation date unavailable",
+            "clipped": false
+          }
+        ],
+        "metadata": [
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Episode 1 · opened Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Newer plan on this name →",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Screen date unavailable",
+            "clipped": false
+          }
+        ]
+      },
+      "stock_link": true,
+      "newer_link": true,
+      "keyboard_link": true,
+      "page_errors": [],
+      "image": "record-light-en-1440.png",
+      "image_sha256": "407cf628a21344868a3bf435c61b453af13d9e3717ca7787924a369e4c6c2d06"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "geometry": {
+        "overflow": false,
+        "background": "rgb(247, 248, 250)",
+        "chip": "rgb(93, 107, 126)",
+        "created": [
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立日期暂缺",
+            "clipped": false
+          }
+        ],
+        "metadata": [
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "第 1 轮 · 8月12日启动",
+            "clipped": false
+          },
+          {
+            "text": "该股最新计划 →",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "筛查日期暂缺",
+            "clipped": false
+          }
+        ]
+      },
+      "stock_link": true,
+      "newer_link": true,
+      "keyboard_link": true,
+      "page_errors": [],
+      "image": "record-light-zh-1440.png",
+      "image_sha256": "7022a8a7a03d193bd49a16b9b8fd0024f93db4413a177f1879ee0a0407c27a48"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "geometry": {
+        "overflow": false,
+        "background": "rgb(15, 17, 21)",
+        "chip": "rgb(139, 147, 161)",
+        "created": [
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Creation date unavailable",
+            "clipped": false
+          }
+        ],
+        "metadata": [
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Episode 1 · opened Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Newer plan on this name →",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Screen date unavailable",
+            "clipped": false
+          }
+        ]
+      },
+      "stock_link": true,
+      "newer_link": true,
+      "keyboard_link": true,
+      "page_errors": [],
+      "image": "record-dark-en-390.png",
+      "image_sha256": "580ea80b0d54d17ade6894c16cfd83f9ef6114e5020dad1f1c0bc34eb8c8b263"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "geometry": {
+        "overflow": false,
+        "background": "rgb(15, 17, 21)",
+        "chip": "rgb(139, 147, 161)",
+        "created": [
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立日期暂缺",
+            "clipped": false
+          }
+        ],
+        "metadata": [
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "第 1 轮 · 8月12日启动",
+            "clipped": false
+          },
+          {
+            "text": "该股最新计划 →",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "筛查日期暂缺",
+            "clipped": false
+          }
+        ]
+      },
+      "stock_link": true,
+      "newer_link": true,
+      "keyboard_link": true,
+      "page_errors": [],
+      "image": "record-dark-zh-390.png",
+      "image_sha256": "935026083c2dd1d76b8a33173bd35d8c447b0275d2de3eafa2576a30729b69b3"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "geometry": {
+        "overflow": false,
+        "background": "rgb(247, 248, 250)",
+        "chip": "rgb(93, 107, 126)",
+        "created": [
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Created Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Creation date unavailable",
+            "clipped": false
+          }
+        ],
+        "metadata": [
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Episode 1 · opened Aug 12",
+            "clipped": false
+          },
+          {
+            "text": "Newer plan on this name →",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Last screen 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "Screen date unavailable",
+            "clipped": false
+          }
+        ]
+      },
+      "stock_link": true,
+      "newer_link": true,
+      "keyboard_link": true,
+      "page_errors": [],
+      "image": "record-light-en-390.png",
+      "image_sha256": "5e6e05ade6eea7e76fb6d9fc56080adca86fd2002100158cf2e3cf83a02434e5"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "geometry": {
+        "overflow": false,
+        "background": "rgb(247, 248, 250)",
+        "chip": "rgb(93, 107, 126)",
+        "created": [
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立 08-12",
+            "clipped": false
+          },
+          {
+            "text": "建立日期暂缺",
+            "clipped": false
+          }
+        ],
+        "metadata": [
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "第 1 轮 · 8月12日启动",
+            "clipped": false
+          },
+          {
+            "text": "该股最新计划 →",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "上次筛查 2026-09-15",
+            "clipped": false
+          },
+          {
+            "text": "筛查日期暂缺",
+            "clipped": false
+          }
+        ]
+      },
+      "stock_link": true,
+      "newer_link": true,
+      "keyboard_link": true,
+      "page_errors": [],
+      "image": "record-light-zh-390.png",
+      "image_sha256": "461ce9cd8282baf232274b856e825769adadac886801df6b2b9877555b52cbb3"
+    }
+  ],
+  "navigation_cases": [
+    {
+      "case": "filtered_beyond_first_page",
+      "target_visible": true,
+      "query_preserved": true,
+      "native_fragment": true,
+      "target_was_sm_hidden": true,
+      "page_errors": []
+    },
+    {
+      "case": "hydrated_keyboard_target",
+      "target_visible": true,
+      "query_preserved": true,
+      "native_fragment": true,
+      "delegated_after_grid_replacement": true,
+      "page_errors": []
+    }
+  ],
+  "pager_cases": [
+    {
+      "case": "real_input_default_live_population",
+      "dom_records_preserved": 400,
+      "default_population": 266,
+      "resolved_history": 134,
+      "initial_visible": 15,
+      "show_all_visible": 266,
+      "resolved_filter_visible": 134,
+      "page_errors": []
+    }
+  ],
+  "source_sha256": {
+    "templates/_prophet_card.html.j2": "d40b422f716b29eaa5698fddd0d36336ed4092e6f222d7ad75ace415237a4e8e",
+    "templates/_us_prophet_plan_cards.html.j2": "4835d85e7a5ac2a7f6a7225d9e9cf377304bc80630a8152dbd20ab8001eb3828",
+    "templates/theme.css": "63df1679c57976ef2130022690fd31bbb23bf41982658b87a6117457fb02bdab",
+    "templates/theme.js": "d4ef9d80813724242b7fa9d56b75d235930e658dbc418fe430331425249d74ee",
+    "templates/dashboard.html.j2": "15823ed544dab8a0da18f426a38dc231ed93142c03138f7abf603264d386f883",
+    "scripts/build_site.py": "f588bc6a2ead5eb3db04cb1cbe879b199cd5f57ae265591059cc3c250af891b2",
+    "engine/i18n.py": "486116b2c2640bf164724a03d9a8871efef7977fb3b5bd7e8d5956e8d3675b44"
+  },
+  "browser_version": "151.0.7922.34",
+  "real_dom": {
+    "cards": 400,
+    "unique_ids": 400,
+    "grid_children": 400,
+    "record_markers": 400,
+    "action_badges": 0,
+    "resolved_records": 134,
+    "default_population": 266,
+    "visible_unresolved": 15,
+    "hidden_resolved": 134,
+    "pagination": "Showing 15 of 266"
+  },
+  "real_pager_show_all": true,
+  "status": "PASS_COMPONENT_NOT_PRODUCTION",
+  "capture_script_sha256": "8e88f32cd13930d8032e80d04589fc0da23d702fa7cd246f4bf076f44ec36ab0",
+  "synthetic_fixture_sha256": "8cbf9a5c9e3eef73a6dfd0d03c5f84efa06aeea95002b0d27cd2bef32e6422dd"
+}

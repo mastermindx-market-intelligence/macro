@@ -21,17 +21,24 @@ Pro-only HOST (bot.mastermind-x.com).  It shares this module's auth and
 entitlement machinery and nothing else: no path classification, no
 ``PAYWALL_ENABLED`` staging.  Its one non-entitlement admission is the operator
 email allowlist that ``/api/me`` already honours (BRAIN_UNLIMITED_ALLOWLIST), so
-the two agree about who a person is.  See the section at the bottom of this file.
+the two agree about who a person is. Bot's expired shared-access-token
+cookie is not a paid-tier verdict: its 401 recovery document reuses the main
+site's existing GoTrue browser client to refresh the parent-domain session,
+then only a NEW verified request can pass the 2xx Caddy gate. Confirmed free
+and anonymous visitors get 403; temporary vendor errors 503; broken application
+config 500. None of these denied responses grants access. See the section below.
 """
 from __future__ import annotations
 
 import base64
 import hashlib
 import hmac
+import http.client
 import json
 import logging
 import math
 import os
+import ssl
 import threading
 import time
 import urllib.error
@@ -70,6 +77,13 @@ _AUTH_LOCK = threading.Lock()
 _AUTH_UPSTREAM_LIMIT = 8
 _AUTH_UPSTREAM_SEM = threading.BoundedSemaphore(_AUTH_UPSTREAM_LIMIT)
 _TOKEN_REJECT_HTTP = frozenset({400, 401, 403})
+
+#: Entitlement reads: the statuses that genuinely mean "the service is failing
+#: right now", so the pre-existing outage contract -- and its positive-only
+#: grace -- still applies unchanged. Any OTHER answered status is a verdict about
+#: OUR request (a bad service role 401/403, a moved table 404, a rejected query
+#: 4xx): a configuration fault, never a vendor blip.
+_TRANSIENT_ENTITLEMENT_HTTP = frozenset({408, 429, 500, 502, 503, 504})
 
 
 @dataclass(frozen=True)
@@ -209,16 +223,29 @@ def _cache_get(key: str) -> _Identity | None:
     return _Identity(None, "", None, "invalid")
 
 
-def _positive_token_ttl(token: str, configured_ttl: float) -> float:
-    """Clamp a reusable positive identity to the JWT's own wall-clock expiry."""
+def _jwt_exp(token: str) -> float | None:
+    """Read *untrusted* exp for TTL/presentation only, never for admission.
+
+    Only Supabase's /auth/v1/user is an identity verdict. The JWT's exp claim
+    may choose a CLOSED session-renewal page instead of a misleading upgrade
+    pitch; a forged exp can never grant access or identity.
+    """
     try:
         payload_part = token.split(".")[1]
         payload_part += "=" * (-len(payload_part) % 4)
         payload = json.loads(base64.urlsafe_b64decode(payload_part.encode("ascii")))
         expires_at = float(payload["exp"])
-        if not math.isfinite(expires_at):
-            return 0.0
+        if math.isfinite(expires_at):
+            return expires_at
     except (IndexError, KeyError, TypeError, ValueError, json.JSONDecodeError, UnicodeError):
+        pass
+    return None
+
+
+def _positive_token_ttl(token: str, configured_ttl: float) -> float:
+    """Clamp a reusable positive identity to the JWT's own wall-clock expiry."""
+    expires_at = _jwt_exp(token)
+    if expires_at is None:
         return 0.0
     return max(0.0, min(configured_ttl, expires_at - time.time()))
 
@@ -328,7 +355,15 @@ def _fresh_uid(token: str) -> str | None:
 
 
 def _store_entitlement(user_id: str) -> tuple[dict[str, Any] | None, bool]:
-    """Return (row, store_reachable). Empty row is reachable and unentitled."""
+    """Return (row, store_reachable). Empty row is reachable and unentitled.
+
+    Only REAL I/O trouble is an outage -- a transport failure or a transient
+    HTTP status -- so the (None, False) path, its positive-only grace and its
+    503 stay exactly as they were. A missing service role, a body the SELECT
+    could not have produced, or a bug in the read itself is a configuration or
+    protocol fault: it raises _EntitlementStoreInvalid, which no caller may
+    mistake for a reachable absence, cache, or autoretry around.
+    """
     from app import billing  # noqa: PLC0415
 
     quoted = urllib.parse.quote(user_id)
@@ -338,16 +373,93 @@ def _store_entitlement(user_id: str) -> tuple[dict[str, Any] | None, bool]:
             f"user_entitlements?user_id=eq.{quoted}&select=tier,features,status",
             timeout=4,
         )
-    except Exception as exc:  # noqa: BLE001
+    except urllib.error.HTTPError as exc:
+        # PostgREST ANSWERED. 408/429/5xx is the service failing; every other
+        # status is a verdict about our own request (bad service role, moved
+        # table, rejected query), so it is OUR fault and not an outage.
+        if exc.code in _TRANSIENT_ENTITLEMENT_HTTP:
+            log.warning("paywall: entitlement store unavailable (HTTP %s)", exc.code)
+            return None, False
+        raise _EntitlementStoreInvalid(
+            f"entitlement store rejected the read (HTTP {exc.code})"
+        ) from exc
+    except http.client.InvalidURL as exc:  # our own base URL cannot be requested
+        raise _EntitlementStoreInvalid("entitlement store URL is unusable") from exc
+    except (FileNotFoundError, PermissionError, ssl.SSLCertVerificationError) as exc:
+        # Missing cert/config files, denied local resources or a rejected trust
+        # chain cannot be fixed by retrying the same user request.
+        raise _EntitlementStoreInvalid(
+            f"entitlement store configuration failed ({type(exc).__name__})"
+        ) from exc
+    except urllib.error.URLError as exc:
+        # urllib wraps both actual socket failures and local configuration
+        # defects. Inspect its structured reason before enabling outage grace.
+        if isinstance(exc.reason, (
+            ValueError, FileNotFoundError, PermissionError,
+            ssl.SSLCertVerificationError,
+        )):
+            raise _EntitlementStoreInvalid(
+                f"entitlement store configuration failed ({type(exc.reason).__name__})"
+            ) from exc
         log.warning("paywall: entitlement store unavailable (%s)", exc)
         return None, False
-    if isinstance(rows, list) and rows and isinstance(rows[0], dict):
-        return rows[0], True
-    return None, True
+    except (http.client.HTTPException, OSError) as exc:
+        # Genuine I/O: read/connect timeout, reset, truncated response.
+        # TimeoutError and ConnectionError are OSError subclasses.
+        log.warning("paywall: entitlement store unavailable (%s)", exc)
+        return None, False
+    except _EntitlementStoreInvalid:
+        raise  # already classified; never double-wrap
+    except Exception as exc:  # noqa: BLE001 — a bug is not a vendor blip
+        raise _EntitlementStoreInvalid(
+            f"entitlement store read failed ({type(exc).__name__})"
+        ) from exc
+
+    # The user_id is a primary key and all three selected columns are NOT NULL
+    # (0005_user_entitlements.sql). Only [] proves a missing entitlement.
+    if isinstance(rows, list) and not rows:
+        return None, True
+    if isinstance(rows, list) and len(rows) == 1 and isinstance(rows[0], dict):
+        row = rows[0]
+        if (isinstance(row.get("tier"), str)
+                and isinstance(row.get("status"), str)
+                and isinstance(row.get("features"), list)
+                # PostgreSQL text[] allows NULL elements. Legacy Stripe rows
+                # may contain them; they never match a required feature.
+                and all(feature is None or isinstance(feature, str)
+                        for feature in row["features"])):
+            return row, True
+    raise _EntitlementStoreInvalid("entitlement store returned an invalid row envelope")
 
 
-def _entitled(user_id: str, required_feature: str) -> tuple[bool, str]:
-    """Resolve entitlement with short cache and positive-only outage grace."""
+class _EntitlementStoreUnavailable(RuntimeError):
+    """No usable store verdict or previously verified positive grace."""
+
+
+class _EntitlementStoreInvalid(RuntimeError):
+    """The store cannot produce a verdict at all: configuration or protocol.
+
+    Deliberately NOT a subclass of _EntitlementStoreUnavailable. A missing
+    service role or an unreadable body is not a vendor blip, so it must never
+    reach the 503 autoretry, must never consume outage grace, and must never be
+    recorded as a "free" verdict for anyone.
+    """
+
+
+def _entitled(
+    user_id: str, required_feature: str, *, unavailable_as_error: bool = False,
+) -> tuple[bool, str]:
+    """Resolve entitlement with shared cache and positive-only outage grace.
+
+    Site paths keep their existing fail-closed false verdict on store outage.
+    The Pro host can instead distinguish an outage from a genuine unpaid row,
+    WITHOUT changing the underlying entitlement/grace authority.
+
+    A configuration/protocol fault is neither of those: nothing is learned
+    about this user, so it is not cached, not answered as "free", and not
+    granted grace. Site paths fail closed on it exactly as on an outage; the
+    Pro host, which opts in with unavailable_as_error, sees the exception.
+    """
     now = time.monotonic()
     fresh_ttl = _seconds("PAYWALL_ENTITLEMENT_CACHE_SECONDS", 60.0, 5.0, 120.0)
     grace = _seconds("PAYWALL_GRACE_SECONDS", 86400.0, 0.0, 86400.0)
@@ -356,7 +468,19 @@ def _entitled(user_id: str, required_feature: str) -> tuple[bool, str]:
         if cached and cached.fetched_at + fresh_ttl > now:
             return cached.allowed, cached.tier
 
-    row, reachable = _store_entitlement(user_id)
+    try:
+        row, reachable = _store_entitlement(user_id)
+    except _EntitlementStoreInvalid as exc:
+        # A configuration/protocol fault says NOTHING about this user's tier: it
+        # is not cached, it is not answered as "free", and -- unlike a real
+        # outage -- it never reaches the grace window below. Site callers keep
+        # their documented fail-closed verdict; only the Pro host, which opts in
+        # with unavailable_as_error, is allowed to see an exception.
+        if unavailable_as_error:
+            raise
+        log.warning("paywall: entitlement store unusable, denying (%s)", exc)
+        return False, "free"
+
     if reachable:
         tier = str((row or {}).get("tier") or "free").strip().lower()
         status = str((row or {}).get("status") or "none").strip().lower()
@@ -380,6 +504,8 @@ def _entitled(user_id: str, required_feature: str) -> tuple[bool, str]:
     # the positive before a webhook-triggered downgrade can receive grace.
     if cached and cached.allowed and cached.status in _ACTIVE and cached.grace_until > now:
         return True, cached.tier
+    if unavailable_as_error:
+        raise _EntitlementStoreUnavailable("entitlement backend did not answer")
     return False, "free"
 
 
@@ -543,6 +669,8 @@ def paywall_check(request: Request) -> Response:
 # first would deny an operator the account card says is uncapped.
 
 PRO_INTERSTITIAL = Path(__file__).with_name("paywall_pro_interstitial.html")
+PRO_UNAVAILABLE = Path(__file__).with_name("paywall_pro_unavailable.html")
+PRO_SESSION_RENEW = Path(__file__).with_name("paywall_pro_session_refresh.html")
 PLANS_CONFIG = REPO / "config" / "plans.yml"
 
 #: Where a denied visitor is sent. Deliberately RELATIVE, matching ``_locked``'s
@@ -660,9 +788,30 @@ def _operator_unlimited(email: str) -> bool:
         return False
 
 
+def _is_bot_document(request: Request, path: str) -> bool:
+    """Recognize legacy browser navigations without changing the Macro site wall.
+
+    A missing Sec-Fetch-Dest on a Bot deep link should not strand a real browser
+    on raw 401 JSON; explicit fetch/asset/API semantics still win.
+    """
+    destination = (request.headers.get("sec-fetch-dest") or "").strip().lower()
+    kind = (request.headers.get("x-original-kind") or "").strip().lower()
+    if (destination and destination != "document") or (kind and kind != "document"):
+        return False
+    if destination == "document" or kind == "document":
+        return True
+    if _is_document(request, path):
+        return True
+    if path.startswith(("/api/", "/ws/")) or path.lower().endswith(
+        (".js", ".css", ".json", ".svg", ".ico", ".png", ".jpg", ".woff2")
+    ):
+        return False
+    return "text/html" in (request.headers.get("accept") or "").lower()
+
+
 def _locked_pro(request: Request, path: str, tier: str) -> Response:
     """403 for the Pro host: the interstitial for a document, JSON for anything else."""
-    if _is_document(request, path):
+    if _is_bot_document(request, path):
         try:
             body = PRO_INTERSTITIAL.read_text(encoding="utf-8")
         except Exception:  # noqa: BLE001 — still deny, with a self-contained fallback
@@ -680,36 +829,175 @@ def _locked_pro(request: Request, path: str, tier: str) -> Response:
     )
 
 
+def _unavailable_pro(request: Request, path: str, *, busy: bool = False) -> Response:
+    """Vendor outage: deny with a recoverable response, never an upgrade offer.
+
+    Load-shedding on the shared eight-call Auth semaphore must not drive more
+    automatic attempts. Vendor outages use two jittered/slow retries at most.
+    """
+    headers = _headers("unavailable")
+    headers["Retry-After"] = "5"
+    if _is_bot_document(request, path):
+        try:
+            body = PRO_UNAVAILABLE.read_text(encoding="utf-8")
+            if busy:
+                marker = 'name="mm-bot-service-retry" content="enabled"'
+                if body.count(marker) != 1:
+                    raise ValueError("missing Bot busy-mode retry control")
+                body = body.replace(marker,
+                                    'name="mm-bot-service-retry" content="disabled"')
+        except Exception:  # noqa: BLE001
+            body = (
+                "<!doctype html><title>Membership check temporarily unavailable</title>"
+                "<h1>Membership check temporarily unavailable</h1>"
+                "<p>Please retry. Your subscription has not been evaluated.</p>"
+            )
+        return HTMLResponse(body, status_code=503, headers=headers)
+    return JSONResponse(
+        {"error": "membership_check_unavailable", "retryable": not busy},
+        status_code=503,
+        headers=headers,
+    )
+
+
+def _pro_renewal_csp(nonce: str) -> str:
+    """Allow the existing first-party Supabase broker, never third-party scripts.
+
+    The loaded Macro theme script also offers third-party analytics; on a Bot
+    renewal page that holds shared, non-HttpOnly login cookies, those scripts
+    must not execute. No new auth client is created here.
+    """
+    from app.main import SUPABASE_URL  # noqa: PLC0415
+
+    auth = urllib.parse.urlsplit(SUPABASE_URL)
+    if auth.scheme != "https" or not auth.hostname or auth.username or auth.password:
+        raise ValueError("unusable Supabase origin for Bot recovery CSP")
+    auth_origin = f"https://{auth.netloc}"
+    return (
+        "default-src 'none'; "
+        f"script-src 'nonce-{nonce}' https://www.mastermind-x.com; "
+        f"connect-src {auth_origin} https://www.mastermind-x.com; "
+        "style-src 'unsafe-inline'; "
+        "base-uri https://www.mastermind-x.com; "
+        "form-action 'none'; object-src 'none'; frame-ancestors 'none'"
+    )
+
+
+def _reverify_pro_session(request: Request, path: str, *, expired: bool) -> Response:
+    """An unverified token is not proof that a signed-in subscriber is unpaid.
+
+    Expiry is read from UNTRUSTED JWT claims solely to choose the denied renewal
+    experience. Existing GoTrue browser SDK can rotate the cookie; only a new
+    request verified by this server can enter the Bot. All branches deny.
+    """
+    headers = _headers("session-refresh")
+    headers["Referrer-Policy"] = "no-referrer"
+    if _is_bot_document(request, path):
+        try:
+            body = PRO_SESSION_RENEW.read_text(encoding="utf-8")
+            nonce = uuid.uuid4().hex
+            if body.count("__MM_BOT_CSP_NONCE__") != 1:
+                raise ValueError("missing or ambiguous Bot recovery nonce slot")
+            csp = _pro_renewal_csp(nonce)
+            body = body.replace("__MM_BOT_CSP_NONCE__", nonce)
+            if not expired:
+                marker = 'name="mm-bot-renew" content="yes"'
+                if body.count(marker) != 1:
+                    raise ValueError("missing Bot rejected-session renewal control")
+                body = body.replace(marker, 'name="mm-bot-renew" content="no"')
+            headers["Content-Security-Policy"] = csp
+        except Exception:  # noqa: BLE001 — still refuse with no script
+            log.exception("paywall: Bot renewal template/CSP unavailable")
+            body = (
+                "<!doctype html><title>Sign in to verify membership</title>"
+                "<h1>We could not verify this session</h1>"
+                '<p><a href="https://www.mastermind-x.com/?signin=1">Sign in again</a></p>'
+            )
+            headers["Content-Security-Policy"] = (
+                "default-src 'none'; style-src 'unsafe-inline'; "
+                "base-uri 'none'; frame-ancestors 'none'"
+            )
+        return HTMLResponse(body, status_code=401, headers=headers)
+    return JSONResponse(
+        {"error": "session_reverification_required",
+         "sign_in_url": "https://www.mastermind-x.com/?signin=1"},
+        status_code=401, headers=headers,
+    )
+
+
+def _internal_pro_failure(request: Request, path: str) -> Response:
+    """Permanent application/config fault: closed, observable, NOT retry noise."""
+    headers = _headers("error")
+    if _is_bot_document(request, path):
+        return HTMLResponse(
+            "<!doctype html><title>Membership check unavailable</title>"
+            "<h1>Membership verification is unavailable</h1>"
+            '<p>Please contact support. No change to your subscription is implied.</p>',
+            status_code=500, headers=headers,
+        )
+    return JSONResponse({"error": "membership_verification_error"},
+                        status_code=500, headers=headers)
+
+
 @router.get("/api/paywall/check_pro")
 def paywall_check_pro(request: Request) -> Response:
-    """Caddy auth subrequest for a Pro-only HOST. Any unhandled failure denies.
+    """Caddy subrequest: only verified Pro gets a 2xx; no accidental paywall on outage.
 
-    Identity rides the shared Supabase session cookie, which is scoped to
-    ``.mastermind-x.com`` (templates/theme.js), so a request to a ``bot.`` URL carries
-    it unchanged. 204 lets Caddy's ``@status 2xx`` matcher continue to the origin;
-    anything else is streamed back to the visitor and the origin is never reached.
+    The shared Supabase cookie authenticates on this host without a new auth plane.
+    Invalid or missing identity stays denied. A vendor/cache overload is NEVER
+    translated into a statement that the caller is unpaid.
     """
     path = "/"
     try:
         path = _normalized_path(request.headers.get("x-original-uri"))
+    except ValueError:
+        return _locked_pro(request, path, "anon")
 
+    try:
         from app.main import _mm_supabase_access_token  # noqa: PLC0415
 
         token = _mm_supabase_access_token(request)
-        uid, email = _fresh_identity(token) if token else (None, "")
-        if not uid:
+        if not token:
             return _locked_pro(request, path, "anon")
-        # The operator bypass, before any entitlement read: /api/me grants `unlimited`
-        # off this same allowlist WITHOUT touching the row, so gating the operator on
-        # his row would make the account pill and this door disagree.
-        if email and _operator_unlimited(email):
+        # Supabase access JWTs expire long before the persisted 390-day shared
+        # cookie. Bot has no JS session renewal on its initial server-gated GET.
+        # The exp claim is NOT trusted for authorization: it selects a 401
+        # browser renewal document that grants nothing until we verify again.
+        expires_at = _jwt_exp(token)
+        if expires_at is not None and expires_at <= time.time() + 5:
+            return _reverify_pro_session(request, path, expired=True)
+        identity = _resolve_identity(token)
+        if identity.status in {"outage", "busy"}:
+            try:
+                from lib.commercial_path import emit as _commercial_emit
+                _commercial_emit("auth.502", reason=identity.status)
+            except Exception:  # noqa: BLE001 — alerting must never change a gate
+                pass
+            return _unavailable_pro(request, path, busy=identity.status == "busy")
+        if identity.status != "ok" or not identity.uid:
+            # A rejected session says NOTHING about this user's paid tier.
+            # Do not show a subscription sales wall to an account with stale
+            # or revoked credentials; offer signed-in re-verification instead.
+            return _reverify_pro_session(request, path, expired=False)
+        # Preserve the same operator bypass as /api/me.
+        if identity.email and _operator_unlimited(identity.email):
             return Response(status_code=204, headers=_headers("allow-unlimited"))
-        # Same authority, cache and positive-only outage grace as the macro wall; it
-        # already requires status in {active, trialing}. The tier gate is the extra half.
-        allowed, tier = _entitled(uid, _PRO_FEATURE)
+        # Share the incumbent entitlement/cache/grace authority. On store outage
+        # without a prior positive verdict, return 503 instead of pretending Free.
+        allowed, tier = _entitled(
+            identity.uid, _PRO_FEATURE, unavailable_as_error=True,
+        )
         if not allowed or not _ranks_at_least(tier, _PRO_MIN_TIER):
             return _locked_pro(request, path, normalize_tier(tier) or "free")
         return Response(status_code=204, headers=_headers(f"allow-{normalize_tier(tier)}"))
-    except Exception as exc:  # noqa: BLE001 — fail CLOSED under every error
-        log.warning("paywall: pro host gate failed closed (%s)", exc)
-        return _locked_pro(request, path, "anon")
+    except _EntitlementStoreUnavailable:
+        return _unavailable_pro(request, path)
+    except _EntitlementStoreInvalid as exc:
+        # Missing service role, an unusable body, or a bug in the read: the store
+        # cannot answer at all. Permanent, so NO autoretry -- and never a
+        # statement that this caller is unpaid.
+        log.error("paywall: entitlement store unusable (%s)", exc)
+        return _internal_pro_failure(request, path)
+    except Exception:  # noqa: BLE001 — unexpected/config faults are not vendor blips
+        log.exception("paywall: unexpected Pro host verification failure")
+        return _internal_pro_failure(request, path)

@@ -311,6 +311,8 @@ def _compute_tech(ticker: str, panel: pd.DataFrame, root: Path) -> dict:
 def _mc_bucket(mc_musd: Any) -> str | None:
     try:
         mc = float(mc_musd)
+        if not math.isfinite(mc):
+            return None
         if mc < 300:
             return "micro"
         if mc < 2000:
@@ -697,7 +699,8 @@ def _compute_setup(s: dict, tech: dict, ident: dict, favor: dict) -> dict:
 
     mc_musd = s.get("mc_musd")
     try:
-        float(mc_musd)
+        if not math.isfinite(float(mc_musd)):
+            raw *= 0.9
     except (TypeError, ValueError):
         raw *= 0.9
 

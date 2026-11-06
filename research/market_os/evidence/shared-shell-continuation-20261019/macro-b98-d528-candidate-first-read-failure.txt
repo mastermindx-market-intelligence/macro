@@ -1,0 +1,17 @@
+[Reading 14 new lines (total: 14 lines)]
+
+fatal: path 'lib/shared_shell.py' exists on disk, but not in '6397b97031640de2a0bdd850bfebc520e7458b41'
+Traceback (most recent call last):
+  File "<stdin>", line 53, in <module>
+  File "<stdin>", line 5, in g
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 473, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               **kwargs).stdout
+               ^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['git', 'rev-parse', '6397b97031640de2a0bdd850bfebc520e7458b41:lib/shared_shell.py']' returned non-zero exit status 128.
+
+✅ Process completed with exit code 1 (runtime: 14.52s)

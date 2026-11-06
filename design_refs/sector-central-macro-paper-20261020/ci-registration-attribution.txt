@@ -1,0 +1,37 @@
+HEAD-manifest inference completed on candidate source tree.
+Candidate-manifest inference completed on the same source tree.
+{
+  "weight_deltas": [
+    {
+      "job": "public-render-fastlane",
+      "before": 24,
+      "after": 30,
+      "delta": 6
+    }
+  ],
+  "probes": [
+    {
+      "path": "templates/index.html",
+      "jobs": 135,
+      "before": 5789,
+      "after": 5795,
+      "packs": 10
+    },
+    {
+      "path": "scripts/build_free_content.py",
+      "jobs": 134,
+      "before": 5664,
+      "after": 5670,
+      "packs": 10
+    },
+    {
+      "path": "engine/prophet/plan_book.py",
+      "jobs": 128,
+      "before": 5538,
+      "after": 5544,
+      "packs": 10
+    }
+  ],
+  "all_probe_job_ids_equal": true,
+  "representative_selection_passed": true
+}

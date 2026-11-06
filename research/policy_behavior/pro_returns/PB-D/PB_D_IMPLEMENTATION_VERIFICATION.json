@@ -1,0 +1,1100 @@
+{
+  "archive_absence_check": {
+    "file": "PB_D_ARCHIVE_ABSENCE_CHECK.json",
+    "q": "UNKNOWN",
+    "scope": "hypothetical earlier read cut using actual archived metadata, not a historical relabel",
+    "sha256": "0695d9bd7882674c45ad377cd1ba2dece326188a5ebcf86253b28a169fda2ede"
+  },
+  "ci_repair": {
+    "classification": "two candidate integration defects; no infrastructure waiver or baseline expansion",
+    "native_control_plane": {
+      "completed_at_utc": "2026-10-07T06:43:10Z",
+      "dependency_check": {
+        "pytest": "9.1.1",
+        "pyyaml": "6.0.3",
+        "result": "already installed in isolated venv"
+      },
+      "files": {
+        "scripts/query_pb_d_event_quality.py": "d52f415a800773c6a67a23dcfda2a8e66ee014fd25fb01ff95f70560371df22a",
+        "tests/test_ci_pack.py": "beba7a9b25c4fe09a07cd4ddcab45a4e34fd122479332ee17c04605adc8300b9",
+        "tests/test_pb_d_consumer.py": "70e939e1feaa840dbc8573834f130fbf87a7e0d2a4c1ee6938aec6c41fac9afa"
+      },
+      "integrated_main": "36f61afb71657279fb6b85f9ea64f99f7e09093a",
+      "repair_commit": "e8ea7846905be85872780521c1b175778485f367",
+      "semantic_steps_passed": 16,
+      "source_commit": "7a8e8c5999935a886d4a13b9f1f53a953612f17e",
+      "source_tree": "4a19e26a410d762ddc714ff9ff9d5afb48114211",
+      "status": "PASS",
+      "steps": [
+        {
+          "elapsed_seconds": 33.455,
+          "exit_codes": [
+            0
+          ],
+          "index": 1,
+          "name": "ci-plan/ci-pack/ci-gate workflow structure contract",
+          "run": "python -m pytest tests/test_ci_plan_workflow.py tests/test_ci_semantic_proof.py tests/test_ci_pack_semantic.py -q",
+          "summary": [
+            "........................................................................ [ 50%]",
+            "......................................................................   [100%]",
+            "142 passed in 32.98s"
+          ]
+        },
+        {
+          "elapsed_seconds": 403.833,
+          "exit_codes": [
+            0
+          ],
+          "index": 2,
+          "name": "hosted-runner packing contract",
+          "run": "python -m pytest tests/test_ci_pack.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q",
+          "summary": [
+            "........................................................................ [ 60%]",
+            "........................................................................ [ 72%]",
+            "........................................................................ [ 85%]",
+            "........................................................................ [ 97%]",
+            "................                                                         [100%]",
+            "590 passed, 2 skipped in 403.22s (0:06:43)"
+          ]
+        },
+        {
+          "elapsed_seconds": 9.851,
+          "exit_codes": [
+            0
+          ],
+          "index": 3,
+          "name": "merge-gate reliability report contract",
+          "run": "python -m pytest tests/test_ci_gate_reliability_report.py -q",
+          "summary": [
+            "..............                                                           [100%]",
+            "14 passed in 9.13s"
+          ]
+        },
+        {
+          "elapsed_seconds": 47.884,
+          "exit_codes": [
+            0,
+            0
+          ],
+          "index": 4,
+          "name": "transitional self-hosted runner policy and canary contracts",
+          "run": "python scripts/check_runner_policy.py && python -m pytest tests/test_runner_policy.py tests/test_ci_canary_tools.py tests/test_ci_canary_workflows.py tests/test_trusted_ci_executor_workflow.py tests/test_trusted_ci_production_route.py -q",
+          "summary": [
+            "........................................................................ [ 23%]",
+            "........................................................................ [ 46%]",
+            "........................................................................ [ 70%]",
+            "........................................................................ [ 93%]",
+            "....................                                                     [100%]",
+            "308 passed in 46.26s"
+          ]
+        },
+        {
+          "elapsed_seconds": 0.111,
+          "exit_codes": [
+            0
+          ],
+          "index": 5,
+          "name": "nightly backstop selftest (scripts/nightly_backstop.py)",
+          "run": "python3 scripts/nightly_backstop.py --selftest",
+          "summary": [
+            "nightly-backstop selftest: PASS"
+          ]
+        },
+        {
+          "elapsed_seconds": 3.443,
+          "exit_codes": [
+            0
+          ],
+          "index": 6,
+          "name": "nightly backstop dispatch rule (must never fire over a live run)",
+          "run": "python -m pytest tests/test_nightly_backstop.py -q",
+          "summary": [
+            "..............................                                           [100%]",
+            "30 passed in 2.63s"
+          ]
+        },
+        {
+          "elapsed_seconds": 0.164,
+          "exit_codes": [
+            0
+          ],
+          "index": 7,
+          "name": "audit_unrun_tests selftest",
+          "run": "python scripts/audit_unrun_tests.py --selftest",
+          "summary": [
+            "SELFTEST OK \u2014 discovery reaches outside tests/, instruments classified out, gate reds only the unbaselined and unwaived."
+          ]
+        },
+        {
+          "elapsed_seconds": 25.156,
+          "exit_codes": [
+            0
+          ],
+          "index": 8,
+          "name": "no suite may be named by zero run: steps (baseline-gated)",
+          "run": "python scripts/audit_unrun_tests.py",
+          "summary": [
+            "::warning title=stale-unrun-baseline::tests/test_options_structure.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+            "::warning title=stale-unrun-baseline::tests/test_price_ladder.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+            "::warning title=stale-unrun-baseline::tests/test_sector_pulse.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+            "::warning title=stale-unrun-baseline::tests/test_us_standouts_cascade_gate.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+            "::warning title=stale-unrun-baseline::tests/test_worktree_gc.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+            "NOTE: verdict produced in a sparse checkout \u2014 sparse worktree \u2014 data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full"
+          ]
+        },
+        {
+          "elapsed_seconds": 76.426,
+          "exit_codes": [
+            0
+          ],
+          "index": 9,
+          "name": "unrun-census discovery unit tests",
+          "run": "python -m pytest tests/test_audit_unrun_tests.py -q",
+          "summary": [
+            "......................................................                   [100%]",
+            "54 passed in 75.78s (0:01:15)"
+          ]
+        },
+        {
+          "elapsed_seconds": 7.661,
+          "exit_codes": [
+            0
+          ],
+          "index": 10,
+          "name": "differential contract-delta gate contract",
+          "run": "python -m pytest tests/test_contract_delta.py -q",
+          "summary": [
+            "........................................................................ [ 86%]",
+            "...........                                                              [100%]",
+            "83 passed in 6.97s"
+          ]
+        },
+        {
+          "elapsed_seconds": 0.127,
+          "exit_codes": [
+            0
+          ],
+          "index": 11,
+          "name": "check_skip_only_suites selftest",
+          "run": "python scripts/check_skip_only_suites.py --selftest",
+          "summary": [
+            "SELFTEST OK \u2014 both gate forms detected, install closure behaves."
+          ]
+        },
+        {
+          "elapsed_seconds": 127.364,
+          "exit_codes": [
+            0
+          ],
+          "index": 12,
+          "name": "no suite may skip in every job that names it",
+          "run": "python scripts/check_skip_only_suites.py",
+          "summary": [
+            "skip gates examined       : 174",
+            "  satisfied by some job   : 165",
+            "  suite named by no job   : 9  (UNRUN \u2014 not this gate's class)",
+            "  SKIP-ONLY               : 0",
+            "",
+            "OK \u2014 every skip gate is satisfied by a job that names its suite."
+          ]
+        },
+        {
+          "elapsed_seconds": 181.865,
+          "exit_codes": [
+            0
+          ],
+          "index": 13,
+          "name": "skip-only detector unit tests",
+          "run": "python -m pytest tests/test_check_skip_only_suites.py -q",
+          "summary": [
+            ".............................                                            [100%]",
+            "29 passed in 180.25s (0:03:00)"
+          ]
+        },
+        {
+          "elapsed_seconds": 13.595,
+          "exit_codes": [
+            0
+          ],
+          "index": 14,
+          "name": "check_ci_trigger_closure selftest",
+          "run": "python scripts/check_ci_trigger_closure.py --selftest",
+          "summary": [
+            "SELFTEST OK \u2014 reads resolved, glob semantics hold, seeded defect flagged, marked data excused and re-found when the marker is stripped."
+          ]
+        },
+        {
+          "elapsed_seconds": 38.472,
+          "exit_codes": [
+            0
+          ],
+          "index": 15,
+          "name": "every guarded suite's subjects must reach its own trigger paths",
+          "run": "python scripts/check_ci_trigger_closure.py",
+          "summary": [
+            "  closure fully reachable             : 2170",
+            "  TRIGGER GAP                         : 0",
+            "  (test half unreachable, not gated)  : 0",
+            "  marked `data`, excluded from closure: 101 in 6 suite(s)",
+            "",
+            "OK \u2014 every module a gated suite reads can start the job that runs it."
+          ]
+        },
+        {
+          "elapsed_seconds": 72.93,
+          "exit_codes": [
+            0
+          ],
+          "index": 16,
+          "name": "trigger-closure guard unit tests",
+          "run": "python -m pytest tests/test_ci_trigger_closure.py -q",
+          "summary": [
+            "..............................................                           [100%]",
+            "46 passed in 72.18s (0:01:12)"
+          ]
+        }
+      ],
+      "upstream_shared_manifest_diff": "diff --git a/.github/ci/legacy-jobs.yml b/.github/ci/legacy-jobs.yml\nindex 2802ca9751a..5bcbc0a8e95 100644\n--- a/.github/ci/legacy-jobs.yml\n+++ b/.github/ci/legacy-jobs.yml\n@@ -10486,7 +10486,7 @@ jobs:\n         # one member, so extending it costs no extra ci-pack venv.\n         run: pip install pytest jinja2 pyyaml pypdf boto3\n       - name: research vault ingestion-spine + page unit tests\n-        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py -q\n+        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py -q\n \n \n   research-vault-source-lineage:\n@@ -18009,8 +18009,8 @@ jobs:\n         run: pip install pytest pandas numpy pyarrow pyyaml\n       # RS Pullback Phase 1 adds synthetic first-seen/PIT input admission here:\n       # gate: code makes it a PR check; signal-contract is data-plane only.\n-      - name: frozen price panel + RS pullback input admission and temporal conformance\n-        run: python -m pytest tests/test_research_price_panel.py tests/test_entry_radar_rs_pullback_phase1.py -q\n+      - name: frozen price panel + RS pullback admission, retained observations and temporal conformance\n+        run: python -m pytest tests/test_research_price_panel.py tests/test_entry_radar_rs_pullback_phase1.py tests/test_entry_radar_terminal_minute_observations.py -q\n \n   zh-filing-term:\n     # ui.zh_filing_term PR gate: \u7533\u62a5 must never reach user-facing Chinese copy."
+    },
+    "native_import_pin": {
+      "base_candidate": "8b7d4367a847c2d991511f4067e3ca9f01bdf5ac",
+      "direct_file_cli": {
+        "equal_date_mean_increment_pp": 4.0,
+        "exit_code": 0,
+        "foreign_cwd": "/tmp/PB-D-EVENT-QUALITY-IMPLEMENTATION-20261007",
+        "output_sha256": "0d98a85d9932323e30975e2540a758b7f0ebd3898e3fcdbf43ee265e6049a593",
+        "state": "FROZEN_DESIGN_NOT_ENROLLED"
+      },
+      "files": {
+        "scripts/query_pb_d_event_quality.py": "d52f415a800773c6a67a23dcfda2a8e66ee014fd25fb01ff95f70560371df22a",
+        "tests/test_pb_d_consumer.py": "70e939e1feaa840dbc8573834f130fbf87a7e0d2a4c1ee6938aec6c41fac9afa"
+      },
+      "native_tests": [
+        {
+          "command": [
+            "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-event-quality-implementation-20261007/.venv/bin/python",
+            "-m",
+            "pytest",
+            "tests/test_no_module_level_logging_disable.py",
+            "-q",
+            "--junitxml",
+            "/tmp/PB-D-EVENT-QUALITY-IMPLEMENTATION-20261007/pb-d-import-logging-repair.xml"
+          ],
+          "elapsed_seconds": 43.27,
+          "exit_code": 0,
+          "name": "pb-d-import-logging-repair",
+          "summary": [
+            "....                                                                     [100%]",
+            "4 passed in 42.70s"
+          ]
+        },
+        {
+          "command": [
+            "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-event-quality-implementation-20261007/.venv/bin/python",
+            "-m",
+            "pytest",
+            "tests/test_check_script_import_pinning.py",
+            "-q",
+            "--junitxml",
+            "/tmp/PB-D-EVENT-QUALITY-IMPLEMENTATION-20261007/pb-d-import-pinning-repair.xml"
+          ],
+          "elapsed_seconds": 33.66,
+          "exit_code": 0,
+          "name": "pb-d-import-pinning-repair",
+          "summary": [
+            "...........                                                              [100%]",
+            "11 passed in 21.19s"
+          ]
+        },
+        {
+          "command": [
+            "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-event-quality-implementation-20261007/.venv/bin/python",
+            "-m",
+            "pytest",
+            "tests/test_pb_d_quality.py",
+            "tests/test_pb_d_cohort.py",
+            "tests/test_pb_d_evaluation.py",
+            "tests/test_pb_d_consumer.py",
+            "-q",
+            "--junitxml",
+            "/tmp/PB-D-EVENT-QUALITY-IMPLEMENTATION-20261007/pb-d-tests-import-pin-repair.xml"
+          ],
+          "elapsed_seconds": 6.41,
+          "exit_code": 0,
+          "name": "pb-d-tests-import-pin-repair",
+          "summary": [
+            "............................... [ 19%]",
+            "........................................................................ [ 64%]",
+            "........................................................                 [100%]",
+            "159 passed, 41 subtests passed in 5.95s"
+          ]
+        }
+      ]
+    },
+    "native_packing_result": "590 passed, 2 skipped; native skips are retained, not converted into execution claims",
+    "original_candidate_ci": {
+      "base_sha": "bb7847a33c5fcaa3d2963e3c6be18d3628493966",
+      "findings": [
+        {
+          "artifact_id": 11464826399,
+          "artifact_zip_sha256": "b7a969248dbf0582dc223d38746a1f5b29b96f2812e52990b7ba1e507feb9538",
+          "failed_step": {
+            "base_replay": {
+              "detail": "exact-base replay budget exhausted",
+              "outcome": "timed_out",
+              "tested_tree_sha": "bb7847a33c5fcaa3d2963e3c6be18d3628493966"
+            },
+            "detail": "exited 1",
+            "failure_signature": {
+              "atoms": [
+                "pytest:failed:tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared:reason=749c73a6a68c20e942186eb7875a1f1fd9855491423be38c545703015c9a435c"
+              ],
+              "sha256": "9e41503879b42f850f5a9121fa397f2b1f8810feb200839d45674a32feb531cd"
+            },
+            "outcome": "failed",
+            "proof_id": "hosted-runner packing contract",
+            "step_spec_sha256": "43ff60b1039d5b1d668f9c7a9e2f34bcfcab122d52d2bcd5ebedaa0a0ae7421e"
+          },
+          "job_exec_sha256": "e0f4ff62b4b06c89a449561d0a967c09fba6798285bc91492b97fed0cf3e64a9",
+          "logical_job_id": "ci-control-plane-contracts",
+          "not_run_prior_failure_count": 14,
+          "pack_index": 0
+        },
+        {
+          "artifact_id": 11463734578,
+          "artifact_zip_sha256": "be0773b1e1283869ff58bd33d23bb5dbfffa70f3ae8b254dafde37a0ffd1faa4",
+          "failed_step": {
+            "base_replay": {
+              "infrastructure": {
+                "outcome": "passed"
+              },
+              "job_exec_sha256": "64ddbec44ffc21477fda0b7ae057b8b215ba50748fe898ea5f2f7446344b000b",
+              "job_present": true,
+              "logical_job_id": "unrun-import-hygiene",
+              "steps": [
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "import-time logging.disable + warnings-filter ratchet over engine, lib, scripts, research",
+                  "step_spec_sha256": "c33e90943b6f47fd0ef0f04fecd58cb919c0fc9018f1e05a7d000548ec879de6"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "file-path entry scripts pin this repository before importing it",
+                  "step_spec_sha256": "8812c73d7a9e9f8831a58b33602325557c8c9971adc08481e73bfe490208d024"
+                }
+              ],
+              "tested_tree_sha": "bb7847a33c5fcaa3d2963e3c6be18d3628493966"
+            },
+            "detail": "exited 1",
+            "failure_signature": {
+              "atoms": [
+                "pytest:failed:tests/test_check_script_import_pinning.py::test_unpinned_entry_scripts_only_shrink:reason=263cef441dc63bf14ec0682147abe5dda5a5eea61c1df3ee2d1fd7d0b2b3b460"
+              ],
+              "sha256": "a40cb949e4158b5ec583af52ec11c21f6d3aaed1cf9c8068230b8a3a07df8aa5"
+            },
+            "outcome": "failed",
+            "proof_id": "file-path entry scripts pin this repository before importing it",
+            "step_spec_sha256": "8812c73d7a9e9f8831a58b33602325557c8c9971adc08481e73bfe490208d024"
+          },
+          "job_exec_sha256": "64ddbec44ffc21477fda0b7ae057b8b215ba50748fe898ea5f2f7446344b000b",
+          "logical_job_id": "unrun-import-hygiene",
+          "not_run_prior_failure_count": 0,
+          "pack_index": 6
+        }
+      ],
+      "plan_sha256": "6bbb6d3850e496119ab9019278b4a3715929dbc048b3a27cfcad18077bf532d4",
+      "subject_head_sha": "8b7d4367a847c2d991511f4067e3ca9f01bdf5ac",
+      "tested_tree_sha": "12146830cd8903d2c7c378ec1c618b19541c6db2",
+      "workflow_run_id": 37577805771
+    },
+    "original_pb_d_ci_job": {
+      "artifact_id": 11464420088,
+      "artifact_zip_sha256": "d3e9d34b693d63805a2024cc51dcb512e61c8f643bf18a6a5bab90bc0b408a75",
+      "base_sha": "bb7847a33c5fcaa3d2963e3c6be18d3628493966",
+      "job": {
+        "infrastructure": {
+          "outcome": "passed"
+        },
+        "job_exec_sha256": "e7bbccffcba02283ba153619354b1e412aa55da68ac2613586c624657614e728",
+        "logical_job_id": "pb-d-event-quality",
+        "steps": [
+          {
+            "failure_signature": null,
+            "outcome": "passed",
+            "proof_id": "PB-D quality, cohort, evaluation and executable consumer",
+            "step_spec_sha256": "4730f41b583fe34e0a4ae5e187c4922cf866081d3aa50f3440bbaabf54d63138"
+          }
+        ]
+      },
+      "pack_index": 10,
+      "plan_identity_matches": true,
+      "plan_sha256": "6bbb6d3850e496119ab9019278b4a3715929dbc048b3a27cfcad18077bf532d4",
+      "subject_head_sha": "8b7d4367a847c2d991511f4067e3ca9f01bdf5ac",
+      "tested_tree_sha": "12146830cd8903d2c7c378ec1c618b19541c6db2",
+      "workflow_run_id": "37577805771"
+    },
+    "publication_state": "REPAIRED_NATIVE_VERIFIED_CANDIDATE_CI_PENDING",
+    "repair_commit": "e8ea7846905be85872780521c1b175778485f367",
+    "repairs": [
+      "unconditional repository-root pin before owner imports plus a fresh-process foreign-cwd/hostile-PYTHONPATH regression",
+      "register the declared exclusive PB-D job in the existing curated set without changing assertions or packing ceilings"
+    ]
+  },
+  "ci_wiring": {
+    "concrete_paths": [
+      "config/earnings_story_promotion.yml",
+      "config/fundamental_forensics_disclosure_diff.v1.json",
+      "config/theme_graph_identity_breaks.yml",
+      "contracts/evidence_foundation/block.v1.schema.json",
+      "contracts/evidence_foundation/recipe.v1.schema.json",
+      "contracts/evidence_foundation/reference.v1.schema.json",
+      "contracts/evidence_foundation/vocabulary.v1.json",
+      "engine/__init__.py",
+      "engine/company_intelligence/__init__.py",
+      "engine/company_intelligence/contracts.py",
+      "engine/company_intelligence/documents.py",
+      "engine/company_intelligence/event_id_adapter.py",
+      "engine/company_intelligence/event_workspace.py",
+      "engine/company_intelligence/event_workspace_build.py",
+      "engine/company_intelligence/events.py",
+      "engine/company_intelligence/health.py",
+      "engine/company_intelligence/identity.py",
+      "engine/company_intelligence/issuer_profiles.py",
+      "engine/company_intelligence/pb_d_quality.py",
+      "engine/company_intelligence/pg_envelope.py",
+      "engine/company_intelligence/pg_profile.py",
+      "engine/company_intelligence/qa_exchange.py",
+      "engine/company_intelligence/qa_reconstruction.py",
+      "engine/company_intelligence/views.py",
+      "engine/earnings_narrative/contracts.py",
+      "engine/earnings_narrative/digest.py",
+      "engine/earnings_narrative/promotion.py",
+      "engine/earnings_narrative/public_wire.py",
+      "engine/earnings_narrative/story.py",
+      "engine/earnings_narrative/story_packets.py",
+      "engine/earnings_release/binding.py",
+      "engine/earnings_release/figures.py",
+      "engine/earnings_release/filing_key.py",
+      "engine/earnings_release/receipts.py",
+      "engine/fundamental_forensics/disclosure_diff.py",
+      "engine/fundamental_forensics/models.py",
+      "engine/pb_d_cohort.py",
+      "engine/pb_d_evaluation.py",
+      "engine/press/earnings_adapter.py",
+      "engine/theme_graph/__init__.py",
+      "engine/theme_graph/identity.py",
+      "lib/__init__.py",
+      "lib/dataos/identity.py",
+      "lib/evidence_foundation.py",
+      "scripts/__init__.py",
+      "scripts/query_pb_d_event_quality.py",
+      "tests/test_pb_d_cohort.py",
+      "tests/test_pb_d_consumer.py",
+      "tests/test_pb_d_evaluation.py",
+      "tests/test_pb_d_quality.py"
+    ],
+    "curated_registry": "tests/test_ci_pack.py::CURATED_EXCLUSIVE",
+    "curated_registry_test_sha256": "beba7a9b25c4fe09a07cd4ddcab45a4e34fd122479332ee17c04605adc8300b9",
+    "direct_and_transitive_closure_paths": 50,
+    "elapsed_seconds": 13.562,
+    "full_control_plane_native_steps_passed": 16,
+    "job": "pb-d-event-quality",
+    "manifest": ".github/ci/legacy-jobs.yml",
+    "manifest_sha256": "e8aecbc002afb8e7dbcebd1fdf8277dd8009449b36337a1e087d5ca2a7f0c426",
+    "method": "canonical infer_job_scopes plus curated_exclusive_closure_findings match predicate; all unchanged curated jobs had zero findings in prior complete scan",
+    "scope": "exclusive",
+    "source_commit": "7a8e8c5999935a886d4a13b9f1f53a953612f17e",
+    "suite_census": {
+      "current_full_logical_job_exit_code": 0,
+      "current_source_commit": "7a8e8c5999935a886d4a13b9f1f53a953612f17e",
+      "elapsed_seconds": 19.955,
+      "missing_suites": [],
+      "unrun_pb_d_suites": []
+    },
+    "uncovered_paths": []
+  },
+  "current_main_verification": {
+    "changed_dependencies": {
+      "scripts/query_pb_d_event_quality.py": {
+        "after": "7512b97323cbee04f9a6d8473594be2e3c8fc780",
+        "before": "66309ca943ddc1e266bd36c9528b10e37c4f2d26"
+      },
+      "tests/test_pb_d_consumer.py": {
+        "after": "e20e56a7fdb30ff6c6cc56314f60d351cdf4e27e",
+        "before": "25630d44eacf4303b2329bca01e7d676f5f9a878"
+      }
+    },
+    "ci_closure_measurement": {
+      "count": 50,
+      "elapsed_seconds": 13.562,
+      "method": "canonical infer_job_scopes with exclusive=False and canonical _matches_any",
+      "paths": [
+        "config/earnings_story_promotion.yml",
+        "config/fundamental_forensics_disclosure_diff.v1.json",
+        "config/theme_graph_identity_breaks.yml",
+        "contracts/evidence_foundation/block.v1.schema.json",
+        "contracts/evidence_foundation/recipe.v1.schema.json",
+        "contracts/evidence_foundation/reference.v1.schema.json",
+        "contracts/evidence_foundation/vocabulary.v1.json",
+        "engine/__init__.py",
+        "engine/company_intelligence/__init__.py",
+        "engine/company_intelligence/contracts.py",
+        "engine/company_intelligence/documents.py",
+        "engine/company_intelligence/event_id_adapter.py",
+        "engine/company_intelligence/event_workspace.py",
+        "engine/company_intelligence/event_workspace_build.py",
+        "engine/company_intelligence/events.py",
+        "engine/company_intelligence/health.py",
+        "engine/company_intelligence/identity.py",
+        "engine/company_intelligence/issuer_profiles.py",
+        "engine/company_intelligence/pb_d_quality.py",
+        "engine/company_intelligence/pg_envelope.py",
+        "engine/company_intelligence/pg_profile.py",
+        "engine/company_intelligence/qa_exchange.py",
+        "engine/company_intelligence/qa_reconstruction.py",
+        "engine/company_intelligence/views.py",
+        "engine/earnings_narrative/contracts.py",
+        "engine/earnings_narrative/digest.py",
+        "engine/earnings_narrative/promotion.py",
+        "engine/earnings_narrative/public_wire.py",
+        "engine/earnings_narrative/story.py",
+        "engine/earnings_narrative/story_packets.py",
+        "engine/earnings_release/binding.py",
+        "engine/earnings_release/figures.py",
+        "engine/earnings_release/filing_key.py",
+        "engine/earnings_release/receipts.py",
+        "engine/fundamental_forensics/disclosure_diff.py",
+        "engine/fundamental_forensics/models.py",
+        "engine/pb_d_cohort.py",
+        "engine/pb_d_evaluation.py",
+        "engine/press/earnings_adapter.py",
+        "engine/theme_graph/__init__.py",
+        "engine/theme_graph/identity.py",
+        "lib/__init__.py",
+        "lib/dataos/identity.py",
+        "lib/evidence_foundation.py",
+        "scripts/__init__.py",
+        "scripts/query_pb_d_event_quality.py",
+        "tests/test_pb_d_cohort.py",
+        "tests/test_pb_d_consumer.py",
+        "tests/test_pb_d_evaluation.py",
+        "tests/test_pb_d_quality.py"
+      ],
+      "source_commit": "7a8e8c5999935a886d4a13b9f1f53a953612f17e",
+      "source_tree": "4a19e26a410d762ddc714ff9ff9d5afb48114211",
+      "uncovered_paths": []
+    },
+    "ci_closure_paths": 50,
+    "ci_manifest_sha256": "e8aecbc002afb8e7dbcebd1fdf8277dd8009449b36337a1e087d5ca2a7f0c426",
+    "ci_registry_test_sha256": "beba7a9b25c4fe09a07cd4ddcab45a4e34fd122479332ee17c04605adc8300b9",
+    "dependency_git_blobs": {
+      "config/earnings_story_promotion.yml": "9e469ed72f0d7822869f0479469be5d0d5408b13",
+      "config/fundamental_forensics_disclosure_diff.v1.json": "90e1119bd8ef484542787473456ceadbfd785e95",
+      "config/theme_graph_identity_breaks.yml": "dd3cd18ffa3be659a8cb0c758e1effcc8f029f62",
+      "contracts/evidence_foundation/block.v1.schema.json": "612ef49154f20c6c8008663a9e5b2add7ef58107",
+      "contracts/evidence_foundation/recipe.v1.schema.json": "6199773b531853c44a8a843b93a5d81d3f83ae86",
+      "contracts/evidence_foundation/reference.v1.schema.json": "2758c8027f8d51d9cef9fe40d3952848e2864a4f",
+      "contracts/evidence_foundation/vocabulary.v1.json": "441c573dff1f04fca42ffe3d3170eb035e1b17a2",
+      "engine/__init__.py": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "engine/company_intelligence/__init__.py": "92b1475e48f8ed483e4d093e8b65e002b4a44857",
+      "engine/company_intelligence/contracts.py": "750cf16e481e98222e6f078eb6a28ef3e8e45d7f",
+      "engine/company_intelligence/documents.py": "eda8651bdac1a4bc01c24565cb35f5a13848d179",
+      "engine/company_intelligence/event_id_adapter.py": "068e3186af91d708f49c4ef924ca207efebaa0bf",
+      "engine/company_intelligence/event_workspace.py": "4ab75d478fdec9aafcd7af8c6601aab697d3a705",
+      "engine/company_intelligence/event_workspace_build.py": "69d39a58ecc9cfd6143192f29eb2e0f62016aeb5",
+      "engine/company_intelligence/events.py": "9d839a468ba0de2b2ea090bfe7d3ae698d303c44",
+      "engine/company_intelligence/health.py": "9faa6e5e4dfe0e6cf4235c33bcff3708c7aee843",
+      "engine/company_intelligence/identity.py": "0e3daabeeebad2482e938f4a3949018dac663a29",
+      "engine/company_intelligence/issuer_profiles.py": "110177b42f749a6e6781f7b8846a8541a8c553f1",
+      "engine/company_intelligence/pb_d_quality.py": "48591126242862635014aadbfb7ed0dd52f64b35",
+      "engine/company_intelligence/pg_envelope.py": "e9c5c57fbce9f383ede1c48a71611ab2a4f5c568",
+      "engine/company_intelligence/pg_profile.py": "ada7b1e45ebadae7a99e0d95862e7cc547a9280e",
+      "engine/company_intelligence/qa_exchange.py": "41f8d1f215120dd71c29d706cff1561fe91c8c8f",
+      "engine/company_intelligence/qa_reconstruction.py": "e7437570c5d2b14308bf54c4d72dfb9b2d8f2c11",
+      "engine/company_intelligence/views.py": "bfd142ad45d68d28f0e7eaa8f10dc18dbef80151",
+      "engine/earnings_narrative/contracts.py": "74a22f0b3cec5f0ecd5cbb5149eb07aacce268e4",
+      "engine/earnings_narrative/digest.py": "f991d7fe8cba072adb162f9afcff6d79d5d72fea",
+      "engine/earnings_narrative/promotion.py": "ec9238950fb00b12e2d868b1803de6ad0a701d22",
+      "engine/earnings_narrative/public_wire.py": "d2ed6d41344b72d793335164d73cd78422da6098",
+      "engine/earnings_narrative/story.py": "bd7e8bd3ea14ce1b835c19fb57699a39a84d8a0d",
+      "engine/earnings_narrative/story_packets.py": "44ba90b48ec89596a52d83756dd57f4a7f73169f",
+      "engine/earnings_release/binding.py": "54290bc7373aa1db8a127b8a9e000633efc72d7b",
+      "engine/earnings_release/figures.py": "d5d312b5b48ce50c1dad01e3810b73d10de50487",
+      "engine/earnings_release/filing_key.py": "c1bf8319f3b24eae5661603c17bc4dc829c975b4",
+      "engine/earnings_release/receipts.py": "296255a45c0ca297298287b4af759cb0f96afbc0",
+      "engine/fundamental_forensics/disclosure_diff.py": "7f54b9f14b4becf2aac72f4e81fb1b0eeddc9944",
+      "engine/fundamental_forensics/models.py": "3fd60a7baf995317ee32808a2b6b9b5c91de4215",
+      "engine/pb_d_cohort.py": "12b4d15eb4aeaab6ca891b862a164c39e75fab71",
+      "engine/pb_d_evaluation.py": "0efbd2b0c2428885c2fdbee55e2bc04f884a0c55",
+      "engine/press/earnings_adapter.py": "c82838ebb180cc1665dffa109c619b066a90c5ba",
+      "engine/theme_graph/__init__.py": "c0c3e2bdb3d4b5baedb4956a84277f6ec617a76a",
+      "engine/theme_graph/identity.py": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+      "lib/__init__.py": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "lib/dataos/identity.py": "d9d5018aac47910bf2c802b1a74114a99511f74f",
+      "lib/evidence_foundation.py": "2f4a7cdd297e40146521a5d1fd1e0358b563a3d6",
+      "scripts/__init__.py": "dafbbd0c3a49c56a2635c0d3d8918302d10689a6",
+      "scripts/query_pb_d_event_quality.py": "7512b97323cbee04f9a6d8473594be2e3c8fc780",
+      "tests/test_pb_d_cohort.py": "dcded98fcacbf0b48c80c6d1b350fb54bf0dc2d9",
+      "tests/test_pb_d_consumer.py": "e20e56a7fdb30ff6c6cc56314f60d351cdf4e27e",
+      "tests/test_pb_d_evaluation.py": "f294c55192b56e0c1b179cf31d8627d20538469e",
+      "tests/test_pb_d_quality.py": "77bbb3514efbda9fd4f1a013ea92b8dd2b63c6d8"
+    },
+    "integrated_main": "36f61afb71657279fb6b85f9ea64f99f7e09093a",
+    "main_identity_method": "immutable second parent of the integrated source commit; the shared origin/main ref may advance independently",
+    "native_test_command": [
+      "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-event-quality-implementation-20261007/.venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_pb_d_quality.py",
+      "tests/test_pb_d_cohort.py",
+      "tests/test_pb_d_evaluation.py",
+      "tests/test_pb_d_consumer.py",
+      "-q",
+      "--junitxml",
+      "/tmp/PB-D-EVENT-QUALITY-IMPLEMENTATION-20261007/pb-d-tests-current-main-repaired.xml"
+    ],
+    "native_test_elapsed_seconds": 6.906,
+    "native_test_exit_code": 0,
+    "native_test_summary": "159 passed, 41 subtests passed in 6.27s",
+    "observed_remote_main_after_native_run": "2d3ae11c898616dc8cf115d99fa5581d2316c373",
+    "source_commit": "7a8e8c5999935a886d4a13b9f1f53a953612f17e",
+    "source_tree": "4a19e26a410d762ddc714ff9ff9d5afb48114211",
+    "uncovered_paths": []
+  },
+  "evidence_recorded_utc": "2026-10-07T06:44:23Z",
+  "files": {
+    "engine/company_intelligence/pb_d_quality.py": {
+      "bytes": 67119,
+      "sha256": "efd4b236c8c760809048b475c672b888a55341be8aba8f57b48abb95493d5c63"
+    },
+    "engine/pb_d_cohort.py": {
+      "bytes": 44750,
+      "sha256": "9aa8f64017e48544f5b7de1d956e7008e5e09856d77c0f86302ca11dcd55289d"
+    },
+    "engine/pb_d_evaluation.py": {
+      "bytes": 61755,
+      "sha256": "d42697ac8d111fe3aca123063d5e89bef77b7df2311bd5426cfb8416b2c924af"
+    },
+    "scripts/query_pb_d_event_quality.py": {
+      "bytes": 21515,
+      "sha256": "d52f415a800773c6a67a23dcfda2a8e66ee014fd25fb01ff95f70560371df22a"
+    },
+    "tests/fixtures/pb_d/research_packet.json": {
+      "bytes": 79310,
+      "sha256": "4a7b897ed14d1ee4fe279d439ce4450027203a16fd3ea79226a2eec54c5fcb0f"
+    },
+    "tests/test_ci_pack.py": {
+      "bytes": 299115,
+      "sha256": "beba7a9b25c4fe09a07cd4ddcab45a4e34fd122479332ee17c04605adc8300b9"
+    },
+    "tests/test_pb_d_cohort.py": {
+      "bytes": 27709,
+      "sha256": "613ea688874fd7d6842aad420d06368fd8989bea151b0aed2c76236807b14440"
+    },
+    "tests/test_pb_d_consumer.py": {
+      "bytes": 10578,
+      "sha256": "70e939e1feaa840dbc8573834f130fbf87a7e0d2a4c1ee6938aec6c41fac9afa"
+    },
+    "tests/test_pb_d_evaluation.py": {
+      "bytes": 33110,
+      "sha256": "f5c68029e8ce9d8d630add62e229ae201e93d732c8b5028c76361e836ecdfcf5"
+    },
+    "tests/test_pb_d_quality.py": {
+      "bytes": 41130,
+      "sha256": "bc627ebfecd77cba18743bcc56a1ed7abc045d16242564778fbc82aa00ce79e3"
+    }
+  },
+  "implementation_base_commit": "a146de40a8b3ba0475f17ddd87519187f17449a7",
+  "implementation_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/8576",
+  "independent_review": [
+    {
+      "disposition": "PASS",
+      "method": "independent source/contract tracing; author harness counts are separate from reviewer execution",
+      "reviewer": "cohort_implementation",
+      "source_sha256": "efd4b236c8c760809048b475c672b888a55341be8aba8f57b48abb95493d5c63",
+      "subject": "final quality packet, verifier, window/missingness and source-map repair"
+    },
+    {
+      "disposition": "PASS_AFTER_REPAIRS",
+      "method": "source tracing and bounded synthetic mechanical probe with isolated quality wire; root owns native execution",
+      "reviewer": "methods_implementation",
+      "source_sha256": "96c9d92b5ba58c6965d85a08bdc3a8f96f3d436167f73a8815b09fe3f70c97d4",
+      "subject": "full-pool omission/outcome joins, correction chain, output preservation, INTC, all-first-T2 coverage denominators"
+    },
+    {
+      "disposition": "PASS",
+      "method": "independent source/contract tracing",
+      "reviewer": "cohort_implementation",
+      "source_sha256": "96c9d92b5ba58c6965d85a08bdc3a8f96f3d436167f73a8815b09fe3f70c97d4",
+      "subject": "DATE and SECTOR omissions select both original eligible pools, including unused controls"
+    },
+    {
+      "disposition": "PASS_AFTER_REPAIRS",
+      "method": "source review plus actual native combined test run",
+      "reviewer": "root",
+      "source_sha256": "d42697ac8d111fe3aca123063d5e89bef77b7df2311bd5426cfb8416b2c924af",
+      "subject": "primary bootstrap, secondary context gates, pre-cut OHLC calendar positions, cost scenarios and responder maturity"
+    },
+    {
+      "disposition": "THREE_WORDING_FINDINGS_REPAIRED_BY_ROOT",
+      "findings": [
+        "run state is command-specific",
+        "price adjustment authenticity is caller-owned",
+        "release evidence must remain pending until observed"
+      ],
+      "reviewer": "methods_implementation",
+      "subject": "implementation documentation"
+    },
+    {
+      "disposition": "PASS",
+      "method": "read-only source/delta review; no reviewer test execution",
+      "reviewer": "methods_implementation",
+      "source_sha256": "d52f415a800773c6a67a23dcfda2a8e66ee014fd25fb01ff95f70560371df22a",
+      "subject": "unconditional CLI root precedence and hostile-PYTHONPATH foreign-cwd regression",
+      "test_sha256": "70e939e1feaa840dbc8573834f130fbf87a7e0d2a4c1ee6938aec6c41fac9afa"
+    },
+    {
+      "base_git_blob": "0b16d06300e23a9da479336737e8c36611fdc176",
+      "disposition": "PASS",
+      "method": "read-only exact-base source tracing and review of the four-line delta; final patched hash verified by root",
+      "preserved": [
+        "exact registry equality assertion",
+        "manifest-driven independent closure audit",
+        "all existing registry members",
+        "all packing ceilings"
+      ],
+      "reviewer": "implementation_census",
+      "source_sha256": "beba7a9b25c4fe09a07cd4ddcab45a4e34fd122479332ee17c04605adc8300b9",
+      "subject": "one-member PB-D curated exclusive CI registration"
+    },
+    {
+      "disposition": "PASS",
+      "method": "read-only source review and AST parsing; template not executed during review",
+      "preconditions": [
+        "final candidate assignment pinned",
+        "committed current_main_verification dependency receipt",
+        "concluded candidate CI and observed normal merge"
+      ],
+      "reviewer": "methods_implementation",
+      "subject": "release-verification execution template",
+      "template_sha256": "8ea516e86826bc4925a06d56f991cba5ea4996053c1e7e02feef79696dd521ec"
+    }
+  ],
+  "integration": {
+    "authority_flags": {
+      "enroll": false,
+      "entry": false,
+      "promote": false,
+      "rank": false,
+      "size": false
+    },
+    "cohort_manifest_sha256": "1f2c762f67504a917cf5532d8ded162db25d6bc0d05f68535188aaf9831f07cf",
+    "command_exit_code": 0,
+    "cost_bps": [
+      10,
+      25,
+      50
+    ],
+    "elapsed_seconds": 0.456,
+    "fixture_sha256": "4a7b897ed14d1ee4fe279d439ce4450027203a16fd3ea79226a2eec54c5fcb0f",
+    "gate_statuses": {
+      "all_four_fixed_enrollment_quarters": "FAIL",
+      "complete_distinct_q1_q0_pairs": "FAIL",
+      "complete_pair_decision_dates": "FAIL",
+      "enrollment_complete": "FAIL",
+      "final_21_session_maturity_wait_complete": "UNKNOWN",
+      "fixed_252_session_exchange_calendar": "UNKNOWN",
+      "frozen_pre_outcome_matching": "PASS",
+      "h5_complete_pair_outcomes": "PASS",
+      "matched_support": "PASS",
+      "primary_exposure_coverage": "FAIL",
+      "prospective_activation": "UNKNOWN",
+      "timing_root_price_version_integrity": "UNKNOWN",
+      "valid_bootstrap_all_lengths": "FAIL"
+    },
+    "omission_kinds": [
+      "ISSUER",
+      "ISSUER",
+      "ISSUER",
+      "INTC",
+      "DATE",
+      "SECTOR"
+    ],
+    "primary": {
+      "bootstrap": {
+        "10": {
+          "block_length": 10,
+          "draw_count": 10000,
+          "inference_valid": false,
+          "interval_95_pp": [
+            4.0,
+            4.0
+          ],
+          "lower_bound_above_zero": true,
+          "no_active_date_draw_count": 3613,
+          "nonfinite_draw_count": 0,
+          "valid_draw_count": 6387
+        },
+        "21": {
+          "block_length": 21,
+          "draw_count": 10000,
+          "inference_valid": false,
+          "interval_95_pp": [
+            4.0,
+            4.0
+          ],
+          "lower_bound_above_zero": true,
+          "no_active_date_draw_count": 3557,
+          "nonfinite_draw_count": 0,
+          "valid_draw_count": 6443
+        },
+        "42": {
+          "block_length": 42,
+          "draw_count": 10000,
+          "inference_valid": false,
+          "interval_95_pp": [
+            4.0,
+            4.0
+          ],
+          "lower_bound_above_zero": true,
+          "no_active_date_draw_count": 3322,
+          "nonfinite_draw_count": 0,
+          "valid_draw_count": 6678
+        }
+      },
+      "complete_pair_count": 1,
+      "equal_date_mean_increment_pp": 4.0
+    },
+    "quality_q": {
+      "synthetic-observation/cik:0000000002": "FALSE",
+      "synthetic-observation/cik:0000000003": "FALSE",
+      "synthetic-observation/cik:0000000004": "UNKNOWN",
+      "synthetic-observation/cik:0000320193": "TRUE"
+    },
+    "report_sha256": "0d98a85d9932323e30975e2540a758b7f0ebd3898e3fcdbf43ee265e6049a593",
+    "state": "FROZEN_DESIGN_NOT_ENROLLED",
+    "status": "NOT_ENROLLED"
+  },
+  "native_tests": [
+    {
+      "command": "python -m pytest tests/test_pb_d_quality.py tests/test_pb_d_cohort.py tests/test_pb_d_evaluation.py tests/test_pb_d_consumer.py -q",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "junit_checks": 200,
+      "passed": 159,
+      "proof_scope": "actual repository and native owner imports; cohort unit tests intentionally isolate quality wire, while integrated consumer tests use actual quality builder",
+      "pytest_reported_seconds": 6.27,
+      "rerun_reason": "Unconditional CLI repository-root pin and hostile-PYTHONPATH subprocess regression; repeated after current-main integration.",
+      "skipped": 0,
+      "source_commit": "7a8e8c5999935a886d4a13b9f1f53a953612f17e",
+      "subtests_passed": 41
+    },
+    {
+      "command": "python -m pytest tests/test_company_intelligence_spine.py tests/test_company_intelligence_event_workspace.py tests/test_company_intelligence_workspace_chain.py tests/test_evidence_foundation_contract.py tests/test_k3e_expectation_surface.py tests/test_qledger_horizon_clock.py -q",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "passed": 491,
+      "proof_scope": "unchanged existing owner regressions",
+      "pytest_reported_seconds": 21.86,
+      "skipped": 0
+    }
+  ],
+  "not_claimed": [
+    "prospective enrollment",
+    "authentic human review or outcome blindness from self-asserted clocks",
+    "independently verified exchange calendar or price receipts",
+    "reconstructed historical materiality labels",
+    "cross-issuer frozen root graph",
+    "first-T1 comparator or repeated-episode analysis",
+    "measured execution costs",
+    "automatic promotion or changed rank/size/entry authority"
+  ],
+  "operation_id": "PB-D-EVENT-QUALITY-IMPLEMENTATION-20261007",
+  "prior_ci_wiring": [
+    {
+      "direct_and_transitive_closure_paths": 50,
+      "elapsed_seconds": 12.404,
+      "job": "pb-d-event-quality",
+      "manifest": ".github/ci/legacy-jobs.yml",
+      "manifest_sha256": "8f41bb050dc1bed92b77375e2be3ce26f5abd2bb7795919823a8a738d82a03b9",
+      "method": "canonical infer_job_scopes plus curated_exclusive_closure_findings match predicate; all unchanged curated jobs had zero findings in prior complete scan",
+      "scope": "exclusive",
+      "suite_census": {
+        "elapsed_seconds": 19.955,
+        "missing_suites": [],
+        "unrun_pb_d_suites": []
+      },
+      "uncovered_paths": []
+    }
+  ],
+  "prior_current_main_verification": [
+    {
+      "ci_closure_paths": 50,
+      "ci_manifest_sha256": "b281b07738d4f9a9375744fc16afa7f6e85b7cb2609644c915cbcab6f98bf524",
+      "dependency_git_blobs": {
+        "config/earnings_story_promotion.yml": "9e469ed72f0d7822869f0479469be5d0d5408b13",
+        "config/fundamental_forensics_disclosure_diff.v1.json": "90e1119bd8ef484542787473456ceadbfd785e95",
+        "config/theme_graph_identity_breaks.yml": "dd3cd18ffa3be659a8cb0c758e1effcc8f029f62",
+        "contracts/evidence_foundation/block.v1.schema.json": "612ef49154f20c6c8008663a9e5b2add7ef58107",
+        "contracts/evidence_foundation/recipe.v1.schema.json": "6199773b531853c44a8a843b93a5d81d3f83ae86",
+        "contracts/evidence_foundation/reference.v1.schema.json": "2758c8027f8d51d9cef9fe40d3952848e2864a4f",
+        "contracts/evidence_foundation/vocabulary.v1.json": "441c573dff1f04fca42ffe3d3170eb035e1b17a2",
+        "engine/__init__.py": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "engine/company_intelligence/__init__.py": "92b1475e48f8ed483e4d093e8b65e002b4a44857",
+        "engine/company_intelligence/contracts.py": "750cf16e481e98222e6f078eb6a28ef3e8e45d7f",
+        "engine/company_intelligence/documents.py": "eda8651bdac1a4bc01c24565cb35f5a13848d179",
+        "engine/company_intelligence/event_id_adapter.py": "068e3186af91d708f49c4ef924ca207efebaa0bf",
+        "engine/company_intelligence/event_workspace.py": "4ab75d478fdec9aafcd7af8c6601aab697d3a705",
+        "engine/company_intelligence/event_workspace_build.py": "69d39a58ecc9cfd6143192f29eb2e0f62016aeb5",
+        "engine/company_intelligence/events.py": "9d839a468ba0de2b2ea090bfe7d3ae698d303c44",
+        "engine/company_intelligence/health.py": "9faa6e5e4dfe0e6cf4235c33bcff3708c7aee843",
+        "engine/company_intelligence/identity.py": "0e3daabeeebad2482e938f4a3949018dac663a29",
+        "engine/company_intelligence/issuer_profiles.py": "110177b42f749a6e6781f7b8846a8541a8c553f1",
+        "engine/company_intelligence/pb_d_quality.py": "48591126242862635014aadbfb7ed0dd52f64b35",
+        "engine/company_intelligence/pg_envelope.py": "e9c5c57fbce9f383ede1c48a71611ab2a4f5c568",
+        "engine/company_intelligence/pg_profile.py": "ada7b1e45ebadae7a99e0d95862e7cc547a9280e",
+        "engine/company_intelligence/qa_exchange.py": "41f8d1f215120dd71c29d706cff1561fe91c8c8f",
+        "engine/company_intelligence/qa_reconstruction.py": "e7437570c5d2b14308bf54c4d72dfb9b2d8f2c11",
+        "engine/company_intelligence/views.py": "bfd142ad45d68d28f0e7eaa8f10dc18dbef80151",
+        "engine/earnings_narrative/contracts.py": "74a22f0b3cec5f0ecd5cbb5149eb07aacce268e4",
+        "engine/earnings_narrative/digest.py": "f991d7fe8cba072adb162f9afcff6d79d5d72fea",
+        "engine/earnings_narrative/promotion.py": "ec9238950fb00b12e2d868b1803de6ad0a701d22",
+        "engine/earnings_narrative/public_wire.py": "d2ed6d41344b72d793335164d73cd78422da6098",
+        "engine/earnings_narrative/story.py": "bd7e8bd3ea14ce1b835c19fb57699a39a84d8a0d",
+        "engine/earnings_narrative/story_packets.py": "44ba90b48ec89596a52d83756dd57f4a7f73169f",
+        "engine/earnings_release/binding.py": "54290bc7373aa1db8a127b8a9e000633efc72d7b",
+        "engine/earnings_release/figures.py": "d5d312b5b48ce50c1dad01e3810b73d10de50487",
+        "engine/earnings_release/filing_key.py": "c1bf8319f3b24eae5661603c17bc4dc829c975b4",
+        "engine/earnings_release/receipts.py": "296255a45c0ca297298287b4af759cb0f96afbc0",
+        "engine/fundamental_forensics/disclosure_diff.py": "7f54b9f14b4becf2aac72f4e81fb1b0eeddc9944",
+        "engine/fundamental_forensics/models.py": "3fd60a7baf995317ee32808a2b6b9b5c91de4215",
+        "engine/pb_d_cohort.py": "12b4d15eb4aeaab6ca891b862a164c39e75fab71",
+        "engine/pb_d_evaluation.py": "0efbd2b0c2428885c2fdbee55e2bc04f884a0c55",
+        "engine/press/earnings_adapter.py": "c82838ebb180cc1665dffa109c619b066a90c5ba",
+        "engine/theme_graph/__init__.py": "c0c3e2bdb3d4b5baedb4956a84277f6ec617a76a",
+        "engine/theme_graph/identity.py": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+        "lib/__init__.py": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "lib/dataos/identity.py": "d9d5018aac47910bf2c802b1a74114a99511f74f",
+        "lib/evidence_foundation.py": "2f4a7cdd297e40146521a5d1fd1e0358b563a3d6",
+        "scripts/__init__.py": "dafbbd0c3a49c56a2635c0d3d8918302d10689a6",
+        "scripts/query_pb_d_event_quality.py": "66309ca943ddc1e266bd36c9528b10e37c4f2d26",
+        "tests/test_pb_d_cohort.py": "dcded98fcacbf0b48c80c6d1b350fb54bf0dc2d9",
+        "tests/test_pb_d_consumer.py": "25630d44eacf4303b2329bca01e7d676f5f9a878",
+        "tests/test_pb_d_evaluation.py": "f294c55192b56e0c1b179cf31d8627d20538469e",
+        "tests/test_pb_d_quality.py": "77bbb3514efbda9fd4f1a013ea92b8dd2b63c6d8"
+      },
+      "integrated_main": "bb7847a33c5fcaa3d2963e3c6be18d3628493966",
+      "native_test_elapsed_seconds": 6.991,
+      "native_test_exit_code": 0,
+      "native_test_summary": "158 passed, 41 subtests passed in 6.33s",
+      "reviewed_file_hashes_unchanged": true,
+      "source_commit": "2421a8b062147d89d0ab35cd80e2dfbeff0755ad",
+      "source_tree": "7cb4106137434522f71d963a907bc2e682e637d1",
+      "uncovered_paths": []
+    }
+  ],
+  "prior_pb_d_native_tests": [
+    {
+      "command": "python -m pytest tests/test_pb_d_quality.py tests/test_pb_d_cohort.py tests/test_pb_d_evaluation.py tests/test_pb_d_consumer.py -q",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "junit_checks": 199,
+      "passed": 158,
+      "proof_scope": "actual repository and native owner imports; cohort unit tests intentionally isolate quality wire, while integrated consumer tests use actual quality builder",
+      "pytest_reported_seconds": 6.44,
+      "rerun_reason": "Test class renamed to the Test* convention required by the repository CI census; no test body or quality module changed.",
+      "skipped": 0,
+      "subtests_passed": 41
+    }
+  ],
+  "prior_upstream_preflight": [
+    {
+      "changes_to_new_owned_code_or_native_owners": [],
+      "fresh_main": "bb7847a33c5fcaa3d2963e3c6be18d3628493966",
+      "integration": "completed by normal merge commit 2421a8b062147d89d0ab35cd80e2dfbeff0755ad",
+      "shared_ci_manifest_change": "Research Vault F3 adds its own test to the existing unrelated job; nonoverlapping with the appended PB-D job"
+    }
+  ],
+  "prospective_state": "FROZEN_DESIGN_NOT_ENROLLED",
+  "publication_preflight": {
+    "changed_owned_dependencies_or_shared_ci": [
+      ".github/ci/legacy-jobs.yml"
+    ],
+    "control_plane_job_unchanged": true,
+    "head": "7a8e8c5999935a886d4a13b9f1f53a953612f17e",
+    "integrated_main": "36f61afb71657279fb6b85f9ea64f99f7e09093a",
+    "latest_main_snapshot": "aa1ab61ee655e3750061258e7d77488e443c12c1",
+    "pr": {
+      "headRefOid": "8b7d4367a847c2d991511f4067e3ca9f01bdf5ac",
+      "labels": [
+        {
+          "color": "d93f0b",
+          "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+          "id": "LA_kwDOS4LjIs8AAAACtokucA",
+          "name": "merge-blocked"
+        }
+      ],
+      "state": "OPEN"
+    },
+    "publication_disposition": "Publish the natively verified integrated source; hosted CI validates its PR merge tree with current main.",
+    "shared_manifest_delta_review": "MI-S2 theme-relative intraday registration appends a test step to an existing unrelated job. No PB-D runtime/read dependency or curated registry file changed.",
+    "upstream_changed_path_count": 20,
+    "upstream_code_changes": [
+      ".github/ci/legacy-jobs.yml",
+      "engine/prophet_entry_policy.py",
+      "scripts/research/freeze_mi_s2_theme_relative_intraday_registration.py",
+      "tests/test_mi_s2_theme_relative_intraday_registration.py",
+      "tests/test_prophet_strategy_definition.py"
+    ],
+    "worktree_changed_paths": [
+      "research/policy_behavior/pro_returns/PB-D/PB_D_IMPLEMENTATION.md",
+      "research/policy_behavior/pro_returns/PB-D/PB_D_IMPLEMENTATION_CHECKPOINT.md",
+      "research/policy_behavior/pro_returns/PB-D/PB_D_IMPLEMENTATION_VERIFICATION.json"
+    ]
+  },
+  "research_design_commit": "df2091915159dab94f316718caa9b2662098eae4",
+  "runtime": {
+    "host": "m2studio",
+    "isolation": "operation-owned Python virtual environment",
+    "jsonschema": "4.26.0",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "pyarrow": "21.0.0",
+    "pytest": "9.1.1",
+    "python": "3.12.13"
+  },
+  "schema": "pb_d_implementation_verification.v1",
+  "setup_findings": [
+    {
+      "disposition": "installed existing owner test dependencies in isolated venv; full six-suite run then passed; no owner edits",
+      "finding": "isolated native owner regression imports lacked FastAPI"
+    },
+    {
+      "disposition": "new files staged explicitly before repeat",
+      "finding": "first CI scope inference preceded git tracking of new files"
+    },
+    {
+      "disposition": "CI path scope extended with the 13 exact uncovered dependency/config paths; final closure receipt follows",
+      "finding": "native Company Intelligence package imports extend beyond direct quality imports"
+    },
+    {
+      "disposition": "Renamed to TestQualityReceipts, repeated all four native PB-D suites, and verified all four are discovered and none are unrun.",
+      "finding": "CI census recognizes Test* class names; the executable unittest class was initially QualityReceiptTests"
+    }
+  ],
+  "state_at_publication": "REPAIRED_NATIVE_VERIFIED_CANDIDATE_CI_PENDING",
+  "subsequent_release_receipt_location": "Implementation PR #8576 body plus GitHub concluded candidate checks and merge identity",
+  "upstream_preflight": {
+    "changes_to_native_owners": [],
+    "identity_method": "immutable second parent of the integrated source commit; the shared origin/main ref may advance independently",
+    "integrated_main": "36f61afb71657279fb6b85f9ea64f99f7e09093a",
+    "integration_commit": "7a8e8c5999935a886d4a13b9f1f53a953612f17e",
+    "shared_ci_manifest_change": "Unrelated Research Vault F9 and Entry Radar test additions were preserved by the normal merge.",
+    "source_tree": "4a19e26a410d762ddc714ff9ff9d5afb48114211"
+  }
+}

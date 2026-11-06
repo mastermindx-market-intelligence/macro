@@ -1,0 +1,65 @@
+{
+  "asof": "2026-09-21",
+  "authority_ceiling": "research_internal_only",
+  "availability": {
+    "reason": null,
+    "state": "OK"
+  },
+  "canonical_mapping": {
+    "state": "UNMAPPED",
+    "theme_node_ids": []
+  },
+  "counts": {
+    "future_beliefs_excluded": 0,
+    "proposals": 0,
+    "relations": 0
+  },
+  "curation": {
+    "counts": {
+      "proposed": 0,
+      "ratified": 0,
+      "rejected": 0
+    },
+    "proposal_ids": [],
+    "state": "NONE"
+  },
+  "knowledge_cutoff": "2026-09-21",
+  "limitations": [
+    "exact node_id only; labels are never fuzzy-matched",
+    "probation proposals have zero graph authority",
+    "internal research projection; public display still requires the cited rights receipts",
+    "no ranking, scoring, selection, trade, or ThemeState authority"
+  ],
+  "node_id": "ltheme:ths:300733",
+  "ordering": "type,direction,peer_node_id,edge_id; never score",
+  "proposals": [],
+  "relations": [],
+  "schema": "gmi.theme_ontology_neighborhood/v1",
+  "subject": {
+    "external_ids": {
+      "ths_code": "300733"
+    },
+    "kind": "local_theme",
+    "market_scope": "cn",
+    "merged_into": null,
+    "name_en": null,
+    "name_zh": "锂电池概念",
+    "node_id": "ltheme:ths:300733",
+    "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+    "source_meta": {
+      "grain": "ths_concept",
+      "key_aliases": [],
+      "market": "cn",
+      "parent_source_key": null,
+      "parent_source_label": null,
+      "rights_family": "ths_concepts",
+      "source_description": null,
+      "source_family": "ths_concepts",
+      "source_label": "锂电池概念",
+      "source_local_id": "300733",
+      "supergroup_index": null
+    },
+    "status": "canonical",
+    "tier": null
+  }
+}

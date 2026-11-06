@@ -1,0 +1,33 @@
+{
+  "schema": "market_memory.history_real_verification.v1",
+  "request_sha256": "7a7f92d6f7dee828e42ac39f7c0783e4b236c17cdd8721a59daff66c0a9e7f1a",
+  "manifest_sha256": "fb9165f7c91b544f94504ebc7d897db86ad4ccda87beacfe5317e617f9a1a92f",
+  "artifact_id": "mmhist_5967eae333a95ee1947ff156e8282c0e84ab9b5d7c684611dbb45e17387a0ab7",
+  "pandas_oracle_cells_compared": 729360,
+  "maximum_absolute_error": 8.526512829121202e-14,
+  "state_rows": 72936,
+  "local_restore_files_verified": 24,
+  "local_restore_date_packet_identical": true,
+  "independent_offsite_backup_proven": false,
+  "installed_data_lab_revision": "0b204cde017b88a9fec03ddb583f6b5e02ea4886",
+  "installed_data_lab_query_receipt_sha256": "cff8e2a3c634e9108a611d43c48678522f0d8395fb5f583fced67bb27e18b416",
+  "installed_data_lab_exact_match_rows": 25,
+  "coverage": {
+    "absence_interpretation": "not an exchange-calendar or listing-inception proof",
+    "benchmark_observed_dates": 2960,
+    "first_observed_date": "2015-01-02",
+    "last_observed_date": "2026-10-09",
+    "market_session_completeness_proven": false,
+    "observed_dates": 2960,
+    "requested_end_after_last_observation": true,
+    "selected_proxy_count": 25,
+    "state_rows": 72936
+  },
+  "output_path": "/Volumes/Mastermind/data/web-lab-runs/market-time-machine-20261015-initial",
+  "storage": {
+    "compression": "zstd",
+    "data_bytes": 10846930,
+    "format": "parquet",
+    "partition": "kind/year"
+  }
+}

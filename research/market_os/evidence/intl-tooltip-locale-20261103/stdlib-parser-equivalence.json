@@ -1,0 +1,54 @@
+{
+  "scanner-coverage.html": {
+    "script[src=\"theme.js\"]": {
+      "count": 1,
+      "exact_names_attributes_and_order_equal": true
+    },
+    ".intl-gs__view--scanner [data-abstain][data-tip-en]": {
+      "count": 40,
+      "exact_names_attributes_and_order_equal": true
+    },
+    ".intl-gs__view--coverage [data-col][data-tip-en]": {
+      "count": 3840,
+      "exact_names_attributes_and_order_equal": true
+    },
+    "[title]": {
+      "count": 3200,
+      "exact_names_attributes_and_order_equal": true
+    }
+  },
+  "dislocations-disabled-fixed.html": {
+    "script[src=\"theme.js\"]": {
+      "count": 1,
+      "exact_names_attributes_and_order_equal": true
+    },
+    ".intl-dislocations__notplotted [data-tip-en]": {
+      "count": 7,
+      "exact_names_attributes_and_order_equal": true
+    },
+    ".intl-dislocations__btnrow": {
+      "count": 4,
+      "exact_names_attributes_and_order_equal": true
+    },
+    "[title]": {
+      "count": 3224,
+      "exact_names_attributes_and_order_equal": true
+    }
+  },
+  "transmission.html": {
+    "script[src=\"theme.js\"]": {
+      "count": 1,
+      "exact_names_attributes_and_order_equal": true
+    },
+    ".intl-transmission__mech [data-tip-en]": {
+      "count": 13,
+      "exact_names_attributes_and_order_equal": true
+    },
+    "[title]": {
+      "count": 3200,
+      "exact_names_attributes_and_order_equal": true
+    }
+  },
+  "unsupported_selector_fails_closed": true,
+  "escaped_copy_and_boolean_disabled_equal": true
+}

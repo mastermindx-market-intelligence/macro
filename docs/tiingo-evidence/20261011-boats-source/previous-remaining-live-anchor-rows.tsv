@@ -1,0 +1,20 @@
+engine/fundamental_forensics/attested_history_store.py	1	"""Read-only store for the DEDICATED attested-history bucket.
+engine/research_vault/ingest.py	59	INBOX_PREFIX = "research_inbox/"
+engine/research_vault/ingest.py	61	PROCESSED_PREFIX = "research_inbox/_processed/"
+engine/research_vault/ingest.py	62	VAULT_PREFIX = "research_vault/"
+engine/research_vault/ingest.py	63	CORPUS_KEY = "research_vault/corpus.sqlite"
+engine/research_vault/ingest.py	149	def _receipt_key(item_id: str) -> str:
+engine/research_vault/r2_store.py	1	"""research_vault.r2_store — object store for the PRIVATE research bucket.
+scripts/build_options_hub_nightly.py	70	R2_PREFIX = "options_hub/"
+scripts/build_options_hub_nightly.py	345	_upload_r2(s3, bucket, oi_path,  f"{R2_PREFIX}oi_movers.json")
+scripts/build_options_hub_nightly.py	592	I/O per root is the prior OI year(s) needed for the 18-month oi_time window
+scripts/build_stock_library.py	3951	dchread = dchain.hiring_read(headcount_by_ticker[ticker], rec.get("revisions"))
+scripts/build_stock_library.py	4396	# amended at FS-5.
+scripts/build_stock_library.py	4773	_calls = _collect_potential_calls(to_write)
+scripts/live_flow_poller.py	30	New R2 objects emitted each cycle (live_flow/ prefix):
+scripts/live_flow_poller.py	2089	R2_PREFIX + f"events/{candidate}.jsonl",
+scripts/live_flow_poller.py	2171	kw: dict = {"Bucket": bucket, "Prefix": R2_PREFIX + "archive/"}
+scripts/live_flow_poller.py	3490	_upload_r2(s3, bucket, feed_path, R2_PREFIX + "feed_current.json")
+scripts/live_flow_poller.py	3492	_upload_r2(s3, bucket, meta_path, R2_PREFIX + "meta.json")
+scripts/ops_train_flow_score.py	1259	enabled_env = r2_cfg.get("enabled_env", "R2_ENDPOINT")
+templates/theme.js	667	{ key: 'us',   lib: 'stockdata/index.json',       target: 'stock.html',        flag: '🇺🇸', mkt: 'US',     mktZh: '美国',   examples: ['NVDA', 'AAPL', 'MSFT'] },

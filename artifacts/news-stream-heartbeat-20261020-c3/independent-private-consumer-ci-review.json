@@ -1,0 +1,185 @@
+{
+  "schema": "mastermind.bounded_ci_source_review.v1",
+  "reviewer": "/root/news_delivery_ruling",
+  "recorded_at_utc": "2026-10-20T18:55:00Z",
+  "disposition": "APPROVE",
+  "source_only": true,
+  "repository": "mastermindx-market-intelligence/macro",
+  "pull_request": 9888,
+  "head": "f9270eadd1013a1c1cf69dc6bdf3f04e3c46c74e",
+  "base": "1aed18a0f066ecd82ece1473fbe7aca172696f54",
+  "merge_base": "1aed18a0f066ecd82ece1473fbe7aca172696f54",
+  "reviewed_files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha256": "b660a85a3dcb3d2389b0672b512660a296b95b948ce79e949d1199cf9ba44dd8",
+      "git_blob": "6fede589b7b1fa6239e40f3baf916f35ee16a8dc"
+    },
+    {
+      "path": "tests/test_ci_pack.py",
+      "sha256": "929978eea728dc987d839f20e17a22bf68db2a9ba878f7fda0eda6ae380bc43b",
+      "git_blob": "dfde0d623be6ffee1912866094f20819e977d951"
+    }
+  ],
+  "supporting_source": [
+    {
+      "path": "scripts/run_ci_pack.py",
+      "sha256": "0c9813ff5d312bcfff9734b712b317ca5cc9ef7722a5a8cba812964e18bf2aa5",
+      "git_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "1b637a2ddf19cce16a93dcdf21b8a255ff3c4244f4ce0c324808e266336512a0",
+      "git_blob": "12b2275ab88bafddd97feacfb2f03b406bee6cb2"
+    }
+  ],
+  "source_findings": [
+    "No blocking defect found in the bounded two-file CI delta.",
+    "Actual main is an ancestor: GitHub compare base and merge-base both equal 1aed18a0f066ecd82ece1473fbe7aca172696f54.",
+    "All 341 named manifest job blocks are preserved; only ticker-news-qbus differs. No other job block, selector implementation or production CI workflow changed.",
+    "ticker-news-qbus remains gate: code and scope: exclusive. The incumbent press-lane remains gate: data.",
+    "Both Press suites occur once in the actual folded pytest command, which now contains 47 suites. No prior suite or command option was removed, and no skip, deselection or failure masking was added.",
+    "80 literal paths were added: 2 suite paths, 74 supporting closure paths and 4 canonical data dependencies. No paths were removed and no wildcard root or fallback was introduced.",
+    "The only added pip requirements are jinja2 and beautifulsoup4.",
+    "The packing test changes only the build_free_content probe from 134 jobs / 5697 weight to 135 / 5795 and adds its dated measurement explanation. Other probes, the 10-pack cap and assertions are unchanged.",
+    "The +1 job / +98 estimator-unit rebase faithfully records intended code-gated Press coverage. These units are planning weights, not elapsed seconds. Dropping the suite or its real build_free_content closure merely to preserve the prior census would remove relevant coverage.",
+    "The existing runner validates and consumes the legacy false-if marker, filters by gate at load time, and all three production plan/execution paths explicitly use --gate code."
+  ],
+  "structural_proof": {
+    "jobCountBase": 341,
+    "jobCountCandidate": 341,
+    "changedJobs": [
+      "ticker-news-qbus"
+    ],
+    "addedJobNames": [],
+    "removedJobNames": [],
+    "addedPathsCount": 80,
+    "removedPaths": [],
+    "addedPathsLiteralOnly": true,
+    "suiteCount": 47,
+    "pressRunCount": 1,
+    "pressWriterCount": 1,
+    "addedPaths": [
+      "tests/test_press_run.py",
+      "tests/test_press_writer.py",
+      "config/marketing_competitor_cadence.yml",
+      "config/press.yml",
+      "engine/chronicle/context_pack.py",
+      "engine/marketing/__init__.py",
+      "engine/marketing/accounts.py",
+      "engine/marketing/attention_source.py",
+      "engine/marketing/authority.py",
+      "engine/marketing/breaking_summary.py",
+      "engine/marketing/cadence_resolver.py",
+      "engine/marketing/campaign_compiler.py",
+      "engine/marketing/chart_director.py",
+      "engine/marketing/chart_facts.py",
+      "engine/marketing/chart_followups.py",
+      "engine/marketing/charter.py",
+      "engine/marketing/claims.py",
+      "engine/marketing/cmo.py",
+      "engine/marketing/congress_feed.py",
+      "engine/marketing/content_studio.py",
+      "engine/marketing/copy_auditor.py",
+      "engine/marketing/copy_critic.py",
+      "engine/marketing/copywriter.py",
+      "engine/marketing/departments.py",
+      "engine/marketing/economics.py",
+      "engine/marketing/events.py",
+      "engine/marketing/exemplar_store.py",
+      "engine/marketing/expression_dial.py",
+      "engine/marketing/garbage_gate.py",
+      "engine/marketing/hot_tape_llm.py",
+      "engine/marketing/house_picks.py",
+      "engine/marketing/insider_feed.py",
+      "engine/marketing/learned_rules.py",
+      "engine/marketing/ledgers.py",
+      "engine/marketing/links.py",
+      "engine/marketing/market_clock.py",
+      "engine/marketing/market_facts.py",
+      "engine/marketing/media_publish.py",
+      "engine/marketing/movers_source.py",
+      "engine/marketing/opportunity_bus.py",
+      "engine/marketing/outbox.py",
+      "engine/marketing/persona_memory.py",
+      "engine/marketing/personas.py",
+      "engine/marketing/publication.py",
+      "engine/marketing/radar_internal.py",
+      "engine/marketing/receipt_source.py",
+      "engine/marketing/relay_hygiene.py",
+      "engine/marketing/sentinel.py",
+      "engine/marketing/signal_features.py",
+      "engine/marketing/social_publisher.py",
+      "engine/marketing/state.py",
+      "engine/marketing/story_spine.py",
+      "engine/marketing/ticker_allocator.py",
+      "engine/marketing/value_gate.py",
+      "engine/marketing/wire_format.py",
+      "engine/marketing/wire_voice.py",
+      "engine/marketing/x_intel.py",
+      "engine/press/__init__.py",
+      "engine/press/desk_planner.py",
+      "engine/press/external_candidate.py",
+      "engine/press/properties.py",
+      "engine/press/qbus_news.py",
+      "engine/press/research_triage.py",
+      "engine/press/validators.py",
+      "engine/press/writer.py",
+      "engine/whitehouse_feed.py",
+      "lib/seo.py",
+      "lib/site_assets.py",
+      "scripts/build_free_content.py",
+      "scripts/check_template_site_sync.py",
+      "scripts/externalize_css.py",
+      "scripts/inject_data_base.py",
+      "scripts/optimize_assets.py",
+      "scripts/run_press.py",
+      "tests/__init__.py",
+      "tests/press_fixtures.py",
+      "site/basketdata/breadth_split.json",
+      "site/factordata/attention.json",
+      "site/factordata/tech_confluence.json",
+      "site/marketdata/sp500_heatmap.json"
+    ]
+  },
+  "parent_owned_verification": {
+    "independently_executed_by_reviewer": false,
+    "canonical_contract_delta": {
+      "head": "f9270eadd1013a1c1cf69dc6bdf3f04e3c46c74e",
+      "base": "1aed18a0f066ecd82ece1473fbe7aca172696f54",
+      "result": "PASS",
+      "introduced": 0,
+      "inherited": 0,
+      "completed_at_utc": "2026-10-20T18:06:21Z",
+      "log_sha256": "f78f4b0cebba9160b5ccabdd3c2d9f811539c264dc0ec86bb5361bedce30eea5"
+    },
+    "ci_guards": {
+      "result": "PASS",
+      "passed": 6,
+      "completed_at_utc": "2026-10-20T18:04:56Z",
+      "log_sha256": "427397724a75a52604b112bc21385010976f1b3ac94d03c23e89f7b1e368bba2"
+    },
+    "hosted_ci": {
+      "run_id": 39471764135,
+      "result": "all 12 packs and ci-gate SUCCESS",
+      "reported_by_parent_at_utc": "2026-10-20T18:52:00Z"
+    },
+    "private_product_qualification": {
+      "passed": 252,
+      "skipped": 1,
+      "existing_skip": true,
+      "live_provider_used": false
+    }
+  },
+  "residuals": [
+    "No independent re-execution of full closure derivation, CI guards, product tests or hosted CI occurred in this review; their passing results are attributed to the parent.",
+    "No live-provider, deployment or runtime capability claim is made.",
+    "The prior independent private-product source APPROVE remains unchanged; this is a separate CI-manifest review.",
+    "The earlier Studio read-only start_process call was interrupted after 4086.8 seconds without a returned PID or result; its completion is unknown and it is not evidence for this verdict.",
+    "This local receipt becomes durable when the parent commits or otherwise retains it in the project carrier."
+  ],
+  "remote_mutations_by_reviewer": false,
+  "release_authorized_by_this_receipt": false,
+  "parent_mission_complete": false
+}
+

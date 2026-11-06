@@ -311,8 +311,10 @@ def main(argv: "list[str] | None" = None) -> int:
                         help="decide and print, never fire")
     parser.add_argument("--repo", default=DEFAULT_REPO)
     parser.add_argument("--runs-json", type=Path, help="offline: read runs from a file")
+    # The index default below is the live store, read only on a real run: --selftest
+    # returns before it, and the suites pass decide() an explicit index.
     parser.add_argument("--index-json", type=Path,
-                        default=REPO_ROOT / "site" / "prophet" / "index.json",
+                        default=REPO_ROOT / "site" / "prophet" / "index.json",  # ci-trigger-closure: data — live-store default, read on a real run only (see above)
                         help="the store's own word — outranks a red run-level "
                              "conclusion in the SKIP direction only")
     args = parser.parse_args(argv)

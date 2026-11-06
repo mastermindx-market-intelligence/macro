@@ -1,0 +1,38 @@
+{
+  "incumbent": "engine/neuralweb/covariance_spine.py::_build_factors_block",
+  "incumbent_on_real_input": "not runnable: staging copy is sparse (site/ absent) \u2014 site/factordata/factor_series.json does not exist; the seam was exercised on files written into --workdir instead",
+  "input_sha256": {
+    "510300": "604ad25485220ea33728fdbf42cd1f807a5f950117418e6f56a36429170a7579",
+    "SPY": "6c785d556c22e20f85f89f55597b10469f0fc4c40a577b8efb04bc11964a3152"
+  },
+  "kind": "baseline_reproduction",
+  "real_training": {
+    "descriptive_same_window": {
+      "hy_corr": 0.3833,
+      "hy_pairs": 569,
+      "lag1_uncentered": 0.1746,
+      "naive_same_label_uncentered": 0.2362
+    },
+    "incumbent_implied_abs_rho": 0.2564,
+    "incumbent_missing_inputs": [],
+    "incumbent_share": 0.6282,
+    "independent_pearson_complete_case_trailing252": 0.2564,
+    "n_obs_used": 252,
+    "pair": "510300.SS (SSE 15:00 Asia/Shanghai) vs SPY (NYSE 16:00 America/New_York)",
+    "reproduced": true,
+    "window": [
+      "2018-11-06",
+      "2019-12-31"
+    ]
+  },
+  "study": "Q18",
+  "synthetic": {
+    "hy_corr_full": 0.4477,
+    "incumbent_implied_abs_rho": 0.1826,
+    "incumbent_share": 0.5913,
+    "independent_pearson_trailing252": 0.1826,
+    "n_obs_used": 252,
+    "reproduced": true,
+    "true_rho": 0.6
+  }
+}

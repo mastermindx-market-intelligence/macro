@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-08-14T23:42:43Z",
+ "accession": "0001193125-26-352872",
+ "cik": "0001078271",
+ "doc_byte_length": 4467003,
+ "doc_sha256": "d050741aeba7f096fdadadf3705d146475cb50d91a1db5fe56a2821d12f9bbca",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "extr-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2400962,
+  "byte_start": 2399952,
+  "normalized": "Westcon Group, Inc. 18%",
+  "normalized_sha256": "d635645d0048b5259d6761af91049d447a2cddd73c04885299ec0ade11d1806e",
+  "raw": "Westcon Group, Inc.</span></p></td>\n         <td style=\"padding-top:0.01in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:left;\"><span style=\"white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n         <td style=\"padding-top:0.01in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_ba2c42c1-143e-4030-8e89-775934589503\" contextRef=\"C_37600bff-11a8-4a8b-83fc-848a56ca325f\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">18</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">%",
+  "raw_sha256": "bddae958805825b7c2b12b9915029384a8e2c25e96f20750586a20b51393ffcc"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1078271/000119312526352872/extr-20260630.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 121939,
+   "byte_start": 121247,
+   "context_ref": "C_37600bff-11a8-4a8b-83fc-848a56ca325f",
+   "raw": "<xbrli:context id=\"C_37600bff-11a8-4a8b-83fc-848a56ca325f\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001078271</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">extr:WestconMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-07-01</xbrli:startDate><xbrli:endDate>2026-06-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "e90d9407e4bd43938e62846dc06575f98eb7abc9450d1d3d9dd2b9f8c119da43"
+  }
+ ]
+}

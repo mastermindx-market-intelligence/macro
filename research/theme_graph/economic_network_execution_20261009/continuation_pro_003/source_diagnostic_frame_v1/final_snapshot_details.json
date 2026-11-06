@@ -1,0 +1,115 @@
+{
+  "canada_search": {
+    "bytes": 10874,
+    "fields": {
+      "name": "large_string",
+      "sector": "large_string",
+      "ticker": "large_string",
+      "volume": "double",
+      "weight": "double"
+    },
+    "nulls": {
+      "name": 0,
+      "sector": 0,
+      "ticker": 0,
+      "volume": 0,
+      "weight": 0
+    },
+    "path": "data/canada_search/members.parquet",
+    "rows": 216,
+    "sector_counts": {
+      "Communication": 5,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 10,
+      "Energy": 36,
+      "Financials": 23,
+      "Health Care": 5,
+      "Industrials": 30,
+      "Information Technology": 9,
+      "Materials": 60,
+      "Real Estate": 17,
+      "Utilities": 13
+    },
+    "sha256": "ffa08819a6fa3bc64f62eedf9eb26f3091f3d0cf9fb0d00e4b4051fb75825878",
+    "worktree_exists": false
+  },
+  "china_sector_details": {
+    "active_rows": 5220,
+    "collected_at": {
+      "2026-09-03": 5211,
+      "2026-09-08": 2,
+      "2026-09-09": 1,
+      "2026-09-14": 1,
+      "2026-09-16": 1,
+      "2026-09-18": 2,
+      "2026-09-23": 1,
+      "2026-09-24": 1,
+      "2026-09-28": 2,
+      "2026-09-30": 1
+    },
+    "distinct_tickers": 5221,
+    "l1_name_counts": {
+      "Agriculture": 104,
+      "Automobiles": 290,
+      "Banks": 42,
+      "Beauty & Care": 28,
+      "Building Materials": 72,
+      "Chemicals": 412,
+      "Coal": 33,
+      "Computers": 334,
+      "Conglomerates": 20,
+      "Construction": 147,
+      "Consumer Services": 82,
+      "Defense & Military": 137,
+      "Electronics": 495,
+      "Environmental": 130,
+      "Food & Beverage": 122,
+      "Home Appliances": 93,
+      "Light Manufacturing": 156,
+      "Machinery": 542,
+      "Media": 130,
+      "Non-bank Financials": 79,
+      "Nonferrous Metals": 140,
+      "Oil & Petrochem": 47,
+      "Pharma & Biotech": 480,
+      "Power Equipment": 379,
+      "Real Estate": 95,
+      "Retail & Commerce": 99,
+      "Steel": 44,
+      "Telecoms": 122,
+      "Textiles & Apparel": 106,
+      "Transportation": 126,
+      "Utilities": 137
+    },
+    "sha256": "f749e669b8cb7c844e7f28923e8d792a6e7ddd3542984d1dce9cca0a449bcb19"
+  },
+  "identity_details": {
+    "active_resolved_duplicate_security_rows_over_unique_issuers": 3,
+    "active_row_state_counts": {
+      "DEFERRED_IDENTITY_EXCEPTION": 1,
+      "NO_ISSUER_EVIDENCE": 1168,
+      "RESOLVED": 1214
+    },
+    "resolved_active_issuer_country_counts": {
+      "CN": 0,
+      "HK": 0,
+      "US": 1211
+    },
+    "sha256": "23b92f9cdd672425bceeece8709185fdfcc8014967408be50874d5e106fce22e",
+    "superseded_row_state_counts": {
+      "NO_ISSUER_EVIDENCE": 1
+    }
+  },
+  "market_cap_details": {
+    "capitalization_thresholds_applied": false,
+    "nonfinite": 0,
+    "nonnull": 504,
+    "nonpositive_finite": 0,
+    "positive_finite": 504,
+    "rows": 509,
+    "sha256": "b69738dd48d6b4cc8aa0c27cc69e08b69074596a903aafb79cc501ffb6e8edfc",
+    "values_published": false
+  },
+  "observed_at_utc": "2026-10-09T10:36:22.826197+00:00",
+  "source_ref": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b"
+}

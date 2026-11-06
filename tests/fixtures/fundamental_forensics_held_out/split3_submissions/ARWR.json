@@ -1,0 +1,40 @@
+{
+  "cik": "0000879407",
+  "filings_10k": [
+    {
+      "accessionNumber": "0001564590-21-057888",
+      "filingDate": "2021-11-22",
+      "form": "10-K",
+      "primaryDocument": "arwr-10k_20210930.htm",
+      "reportDate": "2021-09-30"
+    },
+    {
+      "accessionNumber": "0001628280-22-030869",
+      "filingDate": "2022-11-28",
+      "form": "10-K",
+      "primaryDocument": "arwr-20220930.htm",
+      "reportDate": "2022-09-30"
+    },
+    {
+      "accessionNumber": "0001628280-23-040219",
+      "filingDate": "2023-11-29",
+      "form": "10-K",
+      "primaryDocument": "arwr-20230930.htm",
+      "reportDate": "2023-09-30"
+    }
+  ],
+  "fiscalYearEnd": "0930",
+  "name": "ARROWHEAD PHARMACEUTICALS, INC.",
+  "response_sha256": {
+    "https://data.sec.gov/submissions/CIK0000879407.json": "a4549b37aa9abfe4ddce4cdf9025a65b061f3bfe814b340e82b4cd99c915ebd0"
+  },
+  "retrieved_at": "2026-11-01T20:23:12Z",
+  "sic": "2834",
+  "sicDescription": "Pharmaceutical Preparations",
+  "source_urls": [
+    "https://data.sec.gov/submissions/CIK0000879407.json"
+  ],
+  "tickers": [
+    "ARWR"
+  ]
+}

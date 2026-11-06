@@ -1,0 +1,32 @@
+{
+  "schema": "tiingo.bounded_quota_plan_rebinding_source_review/v1",
+  "recorded_at_utc": "2026-10-13T02:58:30.673362+00:00",
+  "decision": "PASS",
+  "method_sha256": "da2d96f1ff5ecba2647da1b2642cc40b33521aedc296da4d3eddd8a8b42870c9",
+  "plan_sha256": "23499857c88ec5e32996db7d2aa566ee96ee96a264f1ea4c488741e0ae581418",
+  "quota_sha256": "a5abf941da6e6b779727a94b309482c8b847df91d62336aca022acc1cc470e05",
+  "reused_accepted_method_sha256": "c34984167bad9bdb5eccee7a3bba9a9b826d032a78d0ee83dd24de3f236c5aaa",
+  "findings": [
+    "Exact executable bytes differ from acceptedc349 only by expected plan hash and plan filename.",
+    "Plan differences restricted to preparation timestamp,quota filename/hash,normalized-template hash and retained prior unexecuted plan hash.1893selected rows,30holds,24513266301byte budget,source pins and all controls unchanged.",
+    "Explicit template normalization reproducesf40f33b9c178db77a890195e798673820dc3cc1b3e97c8300db1872984b0da31. Prior unexecuted plan is retained and pinned toe61.",
+    "Quota receipt matchesa5ab, intended account/origin and19265hourly113952daily79GBremaining; observed2026-10-13T02:57:25.150776+00:00.",
+    "Original read-only preflight actual-parent4a298f16992a0c7c245c26119aee152156ef682446a7c25955b7354d25dc49e2 binds original88284exit0 consumed,c349/e61,1893selections30holds0collisions and no effects. This receipt is preserved as original-version evidence, not relabeled a refreshed execution.",
+    "Stable RUN unchanged and scope/result absent during review."
+  ],
+  "conditions": [
+    "Fresh exact refreshed-candidate launch gates must pass source/collision/storage/canonical-module/one-raw-writer custody checks.",
+    "Quota age must remain0..900seconds at admission; expires2026-10-13T03:12:25.150776+00:00. Refresh and rebind again if expired.",
+    "Reuse accepted raw-only architecture; do not claim qualification or capture completion from this rebind review.",
+    "Retain all actual capture/qualification/accounting returns; no failed-request retry or automatic successor."
+  ],
+  "review_actions": {
+    "candidate_executed": false,
+    "provider_calls": 0,
+    "credential_access": false,
+    "archive_writes": 0,
+    "source_edits": 0,
+    "offline_exact_delta_hash_template_checks": true,
+    "review_artifact_only_write": true
+  }
+}

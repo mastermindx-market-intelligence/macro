@@ -74,7 +74,7 @@
   {% endif -%}
 
   {% if capital_need %}
-    {% set _validated_scenario = capital_need.derived.get('scenario_runway') if _cn_valid else none %}
+    {% set _runway_scenario = capital_need.derived.get('scenario_runway') if _cn_valid else none %}
     {% set _cash_fact = capital_need.reported.get('cash') if _cn_valid else none %}
     {% set _cash_inputs = namespace(valid=_cn_valid) %}
     {% if _cn_valid %}
@@ -84,16 +84,16 @@
         {% endif %}
       {% endfor %}
     {% endif %}
-    {% if _cash_inputs.valid and capital_need.status in ['complete', 'partial'] and _validated_scenario is mapping and _validated_scenario.period is mapping and _validated_scenario.state in ['scenario', 'stale'] and _cash_fact is mapping and _cash_fact.state == 'observed' and _cash_fact.value is number and 0 <= _cash_fact.value <= 1.7976931348623157e308 %}
+    {% if _cash_inputs.valid and capital_need.status in ['complete', 'partial'] and _runway_scenario is mapping and _runway_scenario.period is mapping and _runway_scenario.state in ['scenario', 'stale'] and _cash_fact is mapping and _cash_fact.state == 'observed' and _cash_fact.value is number and 0 <= _cash_fact.value <= 1.7976931348623157e308 %}
     <div class="dmw-runway" data-panel="cash_runway.v1">
       <p class="dmw-lede">{{ t('Cash reported at ' ~ _cash_fact.period.end ~ ': $' ~ ('%.0f'|format(_cash_fact.value)) ~ '.',
                               '截至 ' ~ _cash_fact.period.end ~ ' 披露的现金：$' ~ ('%.0f'|format(_cash_fact.value)) ~ '。') }}
-      {% if _validated_scenario.display == 'self_funding' %}
-        {{ t('Operating cash flow exceeded or equaled equipment spending over ' ~ _validated_scenario.period.start ~ ' to ' ~ _validated_scenario.period.end ~ '; no cash burn to measure.',
-             '在 ' ~ _validated_scenario.period.start ~ ' 至 ' ~ _validated_scenario.period.end ~ ' 期间，经营现金流不低于设备支出，无可衡量的现金消耗。') }}
-      {% elif _validated_scenario.value_months is number and _validated_scenario.value_months is not sameas true and _validated_scenario.value_months is not sameas false and 0 <= _validated_scenario.value_months <= 1.7976931348623157e308 %}
-        {{ t('At the cash-burn pace reported over ' ~ _validated_scenario.period.start ~ ' to ' ~ _validated_scenario.period.end ~ ', that cash represented about ' ~ _validated_scenario.value_months ~ ' months. This scenario excludes debt payments and future financing.',
-             '按 ' ~ _validated_scenario.period.start ~ ' 至 ' ~ _validated_scenario.period.end ~ ' 期间披露的现金消耗速度，该现金约对应 ' ~ _validated_scenario.value_months ~ ' 个月。此情景不包括债务偿还与未来融资。') }}
+      {% if _runway_scenario.display == 'self_funding' %}
+        {{ t('Operating cash flow exceeded or equaled equipment spending over ' ~ _runway_scenario.period.start ~ ' to ' ~ _runway_scenario.period.end ~ '; no cash burn to measure.',
+             '在 ' ~ _runway_scenario.period.start ~ ' 至 ' ~ _runway_scenario.period.end ~ ' 期间，经营现金流不低于设备支出，无可衡量的现金消耗。') }}
+      {% elif _runway_scenario.value_months is number and _runway_scenario.value_months is not sameas true and _runway_scenario.value_months is not sameas false and 0 <= _runway_scenario.value_months <= 1.7976931348623157e308 %}
+        {{ t('At the cash-burn pace reported over ' ~ _runway_scenario.period.start ~ ' to ' ~ _runway_scenario.period.end ~ ', that cash represented about ' ~ _runway_scenario.value_months ~ ' months. This scenario excludes debt payments and future financing.',
+             '按 ' ~ _runway_scenario.period.start ~ ' 至 ' ~ _runway_scenario.period.end ~ ' 期间披露的现金消耗速度，该现金约对应 ' ~ _runway_scenario.value_months ~ ' 个月。此情景不包括债务偿还与未来融资。') }}
       {% endif %}
       </p>
 
@@ -192,7 +192,7 @@
   </div><!-- .dmw-capital-need -->
   {% endif -%}
 
-  {% if debt_maturity.status == 'reported' and (not capital_need or (_cn_valid and capital_need.reported.debt_due)) or (_cn_valid and _cash_inputs.valid and _validated_scenario is mapping and _validated_scenario.period is mapping and _cash_fact is mapping and _cash_fact.period is mapping and _cash_fact.state == 'observed') %}
+  {% if debt_maturity.status == 'reported' and (not capital_need or (_cn_valid and capital_need.reported.debt_due)) or (_cn_valid and _cash_inputs.valid and _runway_scenario is mapping and _runway_scenario.period is mapping and _cash_fact is mapping and _cash_fact.period is mapping and _cash_fact.state == 'observed') %}
   <details class="dmw-detail">
     <summary>{{ t('Sources and cash-flow calculation', '来源与现金流计算') }}</summary>
     {% if debt_maturity.status == 'reported' and (not capital_need or (_cn_valid and capital_need.reported.debt_due)) %}
@@ -203,8 +203,8 @@
       <ul>{% for b in debt_maturity.buckets %}<li><code>{{ b.tag }}</code>{% if not b.reported %} — {{ b.drop_reason }}{% endif %}</li>{% endfor %}</ul>
 
     {% endif %}
-    {% if _cn_valid and _cash_inputs.valid and _validated_scenario is mapping and _validated_scenario.period is mapping and _cash_fact is mapping and _cash_fact.period is mapping and _cash_fact.state == 'observed' %}
-        <p>{{ t('Annual period', '年度区间') }} {{ _validated_scenario.period.start }} — {{ _validated_scenario.period.end }} · USD · {{ _validated_scenario.period.form }} · <code>{{ _validated_scenario.period.accn }}</code> · {{ t('Filed', '提交日期') }} {{ _validated_scenario.period.filed }}.</p>
+    {% if _cn_valid and _cash_inputs.valid and _runway_scenario is mapping and _runway_scenario.period is mapping and _cash_fact is mapping and _cash_fact.period is mapping and _cash_fact.state == 'observed' %}
+        <p>{{ t('Annual period', '年度区间') }} {{ _runway_scenario.period.start }} — {{ _runway_scenario.period.end }} · USD · {{ _runway_scenario.period.form }} · <code>{{ _runway_scenario.period.accn }}</code> · {{ t('Filed', '提交日期') }} {{ _runway_scenario.period.filed }}.</p>
         <p>{{ t('Cache acquired', '缓存获取时间') }}: {% if _cash_fact.acquisition is mapping and _cash_fact.acquisition.state == 'observed' %}{{ _cash_fact.acquisition.fetched_at }}{% else %}{{ t('unknown', '未知') }}{% endif %} · {{ t('Evaluated as of', '评估截至') }} {{ capital_need.as_of }}.</p>
         <ul>
           <li>{{ t('Reported operating cash flow', '已披露经营活动现金流') }}: ${{ '%.0f'|format(capital_need.reported.operating_cash_flow.value) }}</li>
