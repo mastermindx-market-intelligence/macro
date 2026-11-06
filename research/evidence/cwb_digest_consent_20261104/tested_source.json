@@ -1,0 +1,23 @@
+{
+  "base": "b0f3e4183170a2590950bbf7d85ff6f9e7ef542c",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence",
+  "tree": "c690a735fb7cea3180688c15f9ad801d56490e33",
+  "paths": [
+    ".github/ci/legacy-jobs.yml",
+    "app/account_prefs.py",
+    "scripts/deploy/portfolio_digest_consent_v1.sql",
+    "scripts/deploy/portfolio_digest_consent_v1_rollback.sql",
+    "tests/test_deliver_portfolio_digest.py",
+    "tests/test_portfolio_digest_consent.py",
+    "tests/test_portfolio_digest_consent_postgres.py"
+  ],
+  "source_hashes": {
+    ".github/ci/legacy-jobs.yml": "e006b1e2218f4edc64298b77000337d5f905bb89dc076cc24b2a1dfabec82613",
+    "app/account_prefs.py": "185194ceb95cfe8a50cd646ba73067bd7cab381d54624717a24b2d3db3399383",
+    "scripts/deploy/portfolio_digest_consent_v1.sql": "a330a0fcbcde0669487fd327ad22cdd5acbb8b08de9fca3f575066acfd50569b",
+    "scripts/deploy/portfolio_digest_consent_v1_rollback.sql": "2683a10b4d84d981a7fc5b3ab5ecb6831c69cca0029357ea1d0f223c60b6b7c7",
+    "tests/test_portfolio_digest_consent.py": "2bbee6477987dd2c83ccd4c068a5bc80fd6796ede1a5b3b1746edf29fa1f4b1c",
+    "tests/test_portfolio_digest_consent_postgres.py": "bb62534282e29830d5e54bb0debb6b07b1d2f001e5785707be3343b2f38f9573",
+    "tests/test_deliver_portfolio_digest.py": "87b8fa1b949d4a883ab953b4e87a3e5966b9d8cfd0dd569d18f9d683cf0e2c43"
+  }
+}
