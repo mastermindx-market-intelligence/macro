@@ -45,8 +45,10 @@
 {% set seo_title = 'Signals Lining Up — Free Daily Setup Screener | MastermindX' %}
 {% set seo_desc = 'Free daily screener: the technical buy-signal combinations firing across large US stocks right now, with honest recent and older-era win rates printed side by side.' %}
 {% set seo_path = 'confluence_screener.html' %}
+{% if combos %}
 {% set seo_image = 'og/confluence_screener.png' %}
 {% set seo_card = 'summary_large_image' %}
+{% endif %}
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
 <style>
