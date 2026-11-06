@@ -3068,3 +3068,230 @@ def test_c0c_form_not_in_member_policy_is_typed_before_fetches(tmp_path) -> None
     # Refused before ANY fetch for it: exactly one index fetch in the whole
     # run (the second, lawful accession's).
     assert lane["collector"].fetched.count("index.json") == 1
+
+
+# ---------------------------------------------------------------------------
+# DEC:FIF-TAXONOMY-STEM-FROM-INDEX-20261102 (npc1): the deep route names the
+# five XBRL role members by the taxonomy stem the ARCHIVE INDEX lists.
+# ---------------------------------------------------------------------------
+
+
+def _npc1_rename_members(
+    served: dict[str, bytes],
+    renames: dict[str, str],
+    extra: dict[str, bytes] | None = None,
+) -> None:
+    """Rename taxonomy members in one accession's served dict, keeping its
+    served ``index.json`` consistent: renamed item names, each changed item's
+    ``size`` set to its true (new) byte length, and one new index row per
+    extra served member (cloned from the schema's row shape)."""
+
+    def _schema_row(items: list[dict]) -> dict:
+        donor = next(
+            (item for item in items if str(item.get("name") or "").endswith(".xsd")),
+            items[0],
+        )
+        return dict(donor)
+
+    payload = json.loads(served["index.json"].decode("utf-8"))
+    items = payload["directory"]["item"]
+    for item in items:
+        name = item.get("name")
+        if isinstance(name, str) and name in renames:
+            item["name"] = renames[name]
+            item["size"] = str(len(served[name]))
+    for name, member_bytes in (extra or {}).items():
+        row = _schema_row(items)
+        row["name"] = name
+        row["size"] = str(len(member_bytes))
+        items.append(row)
+        served[name] = member_bytes
+    served["index.json"] = (json.dumps(payload, sort_keys=True) + "\n").encode("utf-8")
+    for old_name, new_name in renames.items():
+        served[new_name] = served.pop(old_name)
+
+
+def _npc1_primary_stem(identity: dict, accession: str) -> str:
+    return str(identity["manifests"][accession]["primary_document"]).rsplit(".", 1)[0]
+
+
+def _npc1_row_for(report: dict, accession: str) -> dict:
+    for issuer in report["issuers"]:
+        for row in issuer["accessions"]:
+            if row["accession"] == accession:
+                return row
+    raise AssertionError(f"accession row is absent from the report: {accession}")
+
+
+def test_npc1_helper_resolves_index_stem() -> None:
+    resolve = getattr(CAP, "_resolve_taxonomy_stem")
+    primary = "ball-20251231x10k"
+    taxonomy = "ball-20251231"
+    cases = [
+        (
+            "same-stem index keeps the primary stem",
+            [f"{primary}.xsd", f"{primary}_pre.xml", f"{primary}_lab.xml", f"{primary}.htm"],
+            primary,
+        ),
+        (
+            "exactly one other schema resolves its stem",
+            [
+                f"{taxonomy}.xsd",
+                f"{taxonomy}_pre.xml",
+                f"{taxonomy}_cal.xml",
+                f"{taxonomy}_def.xml",
+                f"{taxonomy}_lab.xml",
+                f"{primary}.htm",
+            ],
+            taxonomy,
+        ),
+        ("no schema keeps the primary stem", [f"{primary}.htm", f"{primary}_pre.xml"], primary),
+        (
+            "two schemas keep the primary stem",
+            [f"{taxonomy}.xsd", "u-20251231.xsd", f"{taxonomy}_pre.xml"],
+            primary,
+        ),
+        ("one upper-case schema keeps the primary stem", ["T-20251231.XSD", f"{primary}.htm"], primary),
+    ]
+    for label, names, expected in cases:
+        items = [{"name": name} for name in names]
+        assert resolve(items, primary) == expected, label
+    # Items whose name is not a string are ignored by the resolver.
+    mixed = [{"name": f"{taxonomy}.xsd"}, {"name": 17}, {"name": None}, {"name": f"{primary}.htm"}]
+    assert resolve(mixed, primary) == taxonomy
+
+
+def test_npc1_helper_is_identity_on_golden_indexes() -> None:
+    resolve = getattr(CAP, "_resolve_taxonomy_stem")
+    identity = _fixture_identity()
+    for accession, relative in sorted(GOLDEN_AAPL_FIXTURES.items()):
+        index_bytes = (ROOT / relative / "index.json").read_bytes()
+        items = CAP._parse_archive_index(index_bytes)
+        primary_stem = _npc1_primary_stem(identity, accession)
+        assert resolve(items, primary_stem) == primary_stem
+
+
+def test_npc1_stem_mismatch_captures_and_admits(tmp_path) -> None:
+    """The STEM_MISMATCH_ONE_XSD_FULL shape: the primary keeps its own name
+    while the index lists all five taxonomy members under a different stem —
+    captured, inventory-role-complete, statement-roles minted, and admitted
+    by D1 without any D1 edit."""
+    from engine.fundamental_forensics.admitted_filing_package import (
+        admit_retained_filing_package,
+    )
+
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    accession = identity["accessions"][0]
+    stem = _npc1_primary_stem(identity, accession)
+    served = lane["collector"]._served[accession.replace("-", "")]
+    original_schema = served[f"{stem}.xsd"]
+    # Rename the five taxonomy members; the schema's own linkbaseRef hrefs
+    # follow so the renamed filing stays self-consistent.
+    renames = {}
+    for suffix, _role in CAP.MEMBER_SUFFIX_ROLES:
+        renames[f"{stem}{suffix}"] = f"{stem}tax{suffix}"
+    schema = original_schema
+    for linkbase_suffix, _lb_role in CAP.MEMBER_SUFFIX_ROLES[1:]:
+        schema = schema.replace(
+            f"{stem}{linkbase_suffix}".encode(), f"{stem}tax{linkbase_suffix}".encode()
+        )
+    served[f"{stem}.xsd"] = schema
+    _npc1_rename_members(served, renames)
+
+    report = _capture_report(lane)
+    row = _npc1_row_for(report, accession)
+    assert row["outcome"] == "captured", row
+
+    package_dir = package_dir_for(lane["archive_root"], identity["cik"], accession)
+    manifest = json.loads((package_dir / "package_manifest.json").read_text("utf-8"))
+    role_by_name = {
+        item["name"]: item["role"]
+        for item in manifest["members"]
+        if item.get("state") == "stored"
+    }
+    for suffix, role in CAP.MEMBER_SUFFIX_ROLES:
+        assert role_by_name[f"{stem}tax{suffix}"] == role
+    primary_name = str(identity["manifests"][accession]["primary_document"])
+    assert role_by_name[primary_name] == "primary"
+    # Statement roles mint exactly as for the unrenamed lane (same schema
+    # modulo the linkbaseRef href renames, which name no statement role).
+    assert manifest["statement_roles"] == CAP.mint_statement_roles(original_schema)
+    assert manifest["statement_roles"]
+
+    retained = read_retained_fif_packages(
+        lane["archive_root"], cik=identity["cik"], accessions=[accession]
+    )
+    assert len(retained) == 1
+    package = retained[0]
+    admit_retained_filing_package(
+        index_bytes=package.index_bytes,
+        manifest=dict(package.manifest),
+        members=dict(package.members),
+        witness_bytes=package.witness_bytes,
+        capture_recorded_at=package.capture_recorded_at,
+    )
+
+
+def test_npc1_guard_no_schema_refuses_as_base(tmp_path) -> None:
+    """No `.xsd` in the index at all -> the base refusal fires unchanged."""
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    accession = identity["accessions"][0]
+    stem = _npc1_primary_stem(identity, accession)
+    served = lane["collector"]._served[accession.replace("-", "")]
+    _npc1_rename_members(served, {f"{stem}.xsd": f"{stem}.txt"})
+    report = _capture_report(lane)
+    row = _npc1_row_for(report, accession)
+    assert row["outcome"] == "member_capture_failed:member_missing_from_index", row
+    assert row["error"].endswith(f"{stem}.xsd")
+
+
+def test_npc1_guard_two_schemas_refuse_as_base(tmp_path) -> None:
+    """Two `.xsd` members under other stems -> ambiguity keeps the primary
+    stem, so the base refusal fires unchanged."""
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    accession = identity["accessions"][0]
+    stem = _npc1_primary_stem(identity, accession)
+    served = lane["collector"]._served[accession.replace("-", "")]
+    _npc1_rename_members(
+        served,
+        {f"{stem}.xsd": f"{stem}a.xsd"},
+        extra={f"{stem}b.xsd": served[f"{stem}.xsd"]},
+    )
+    report = _capture_report(lane)
+    row = _npc1_row_for(report, accession)
+    assert row["outcome"] == "member_capture_failed:member_missing_from_index", row
+    assert row["error"].endswith(f"{stem}.xsd")
+
+
+def test_npc1_guard_same_stem_member_names_unchanged(tmp_path) -> None:
+    """The standard lane keeps naming members by the primary stem."""
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    accession = identity["accessions"][0]
+    stem = _npc1_primary_stem(identity, accession)
+    report = _capture_report(lane)
+    assert _npc1_row_for(report, accession)["outcome"] == "captured"
+    package_dir = package_dir_for(lane["archive_root"], identity["cik"], accession)
+    manifest = json.loads((package_dir / "package_manifest.json").read_text("utf-8"))
+    stored_names = {
+        item["name"]
+        for item in manifest["members"]
+        if item.get("state") == "stored" and item["role"] != "primary"
+    }
+    assert stored_names == {f"{stem}{suffix}" for suffix, _role in CAP.MEMBER_SUFFIX_ROLES}
+
+
+def test_npc1_guard_eight_k_keeps_primary_stem(tmp_path) -> None:
+    """R3: an 8-K never resolves the index stem, so a renamed schema member
+    refuses exactly as at base (never captures through the new stem rule)."""
+    lane = _eight_k_lane(tmp_path)
+    stem = str(lane["primary_name"]).rsplit(".", 1)[0]
+    served = lane["collector"]._served[lane["eight_k"].replace("-", "")]
+    _npc1_rename_members(served, {f"{stem}.xsd": f"{stem}tax.xsd"})
+    report = _capture_eight_k(lane)
+    row = report["issuers"][0]["accessions"][0]
+    assert row["outcome"] == "member_capture_failed:member_missing_from_index", row
+    assert row["error"].endswith(f"{stem}.xsd")

@@ -1,15 +1,13 @@
 {
-  "cash": 0.5,
+  "cash": 0.75,
   "crash": false,
   "eligible": [
-    "cn_banks",
-    "cn_coal"
+    "cn_banks"
   ],
   "held": [
-    "cn_banks",
-    "cn_coal"
+    "cn_banks"
   ],
-  "leader": "cn_banks",
+  "leader": "cn_coal",
   "names": {
     "cn_ai_compute": "AI Compute & Optics",
     "cn_appliances": "Home Appliances",
