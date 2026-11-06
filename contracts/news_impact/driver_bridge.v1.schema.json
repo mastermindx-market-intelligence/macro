@@ -1,0 +1,537 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/news_impact/driver_bridge.v1.schema.json",
+  "title": "driver_bridge.v1",
+  "description": "Sourced-term driver bridge. Product is null unless all six terms are sourced point or interval. Unlabelled assumption is schema-invalid. Labelled assumption withholds product. No confidence, probability, score, price_target or fair_value fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "authority",
+    "fact_id",
+    "company_id",
+    "channel",
+    "product_status",
+    "product"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "driver_bridge.v1"
+    },
+    "authority": {
+      "type": "string",
+      "const": "context_only"
+    },
+    "fact_id": {
+      "type": "string",
+      "minLength": 29,
+      "maxLength": 29,
+      "pattern": "^fact_[0-9a-f]{24}$"
+    },
+    "company_id": {
+      "type": "string",
+      "minLength": 14,
+      "maxLength": 14,
+      "pattern": "^cik:(?!0{10}$)[0-9]{10}$"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "revenue_demand",
+        "margin_cost",
+        "capital_allocation",
+        "moat_duration",
+        "strategic_option",
+        "financial_incentives_survival",
+        "market_only"
+      ]
+    },
+    "product_status": {
+      "type": "string",
+      "enum": [
+        "computed",
+        "withheld_unlabelled_assumption",
+        "withheld_labelled_assumption",
+        "withheld_term_absent",
+        "not_applicable_channel"
+      ]
+    },
+    "product": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "low",
+            "high",
+            "unit",
+            "currency"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "net"
+            },
+            "low": {
+              "type": "number",
+              "minimum": -1000000000000000.0,
+              "maximum": 1000000000000000.0
+            },
+            "high": {
+              "type": "number",
+              "minimum": -1000000000000000.0,
+              "maximum": 1000000000000000.0
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^([A-Z]{3}|NA)$",
+              "maxLength": 3
+            }
+          }
+        }
+      ]
+    },
+    "terms": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "eligible_units": {
+          "$ref": "#/$defs/term"
+        },
+        "realized_revenue_per_unit": {
+          "$ref": "#/$defs/term"
+        },
+        "incremental_margin": {
+          "$ref": "#/$defs/term"
+        },
+        "operating_costs": {
+          "$ref": "#/$defs/term"
+        },
+        "cash_taxes": {
+          "$ref": "#/$defs/term"
+        },
+        "required_capital": {
+          "$ref": "#/$defs/term"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "product_status": {
+            "const": "computed"
+          }
+        },
+        "required": [
+          "product_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "product": {
+            "type": "object"
+          },
+          "terms": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "terms"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "product_status": {
+            "const": "not_applicable_channel"
+          }
+        },
+        "required": [
+          "product_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "product": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "field_absence_v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "authority",
+        "reason",
+        "subject",
+        "detail",
+        "missing_fields"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "field_absence.v1"
+        },
+        "authority": {
+          "type": "string",
+          "const": "context_only"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "not_stated",
+            "stated_without_number",
+            "range_only",
+            "redacted_rights",
+            "parse_failed"
+          ]
+        },
+        "owner_reason": {
+          "type": "string",
+          "enum": [
+            "no_source_document",
+            "no_transcript",
+            "no_primary_release",
+            "no_span_addressable_evidence",
+            "document_bytes_not_held",
+            "scanned_image_no_text_layer",
+            "unjoinable_filing_identity",
+            "speaker_unresolvable",
+            "slide_family_discontinued",
+            "superseded_by_duplicate",
+            "missing_basis",
+            "missing_units",
+            "unit_mismatch",
+            "cross_check_conflict",
+            "missing_period",
+            "missing_source"
+          ]
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "detail": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "missing_fields": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        }
+      }
+    },
+    "evidence_span": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "claimed_quote",
+        "span"
+      ],
+      "properties": {
+        "claimed_quote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "span": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "schema",
+            "authority",
+            "span_id",
+            "document_id",
+            "document_version",
+            "locator",
+            "receipt_state"
+          ],
+          "properties": {
+            "schema": {
+              "type": "string",
+              "const": "source_span.v1"
+            },
+            "authority": {
+              "type": "string",
+              "const": "context_only"
+            }
+          }
+        }
+      }
+    },
+    "sourced_point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "value",
+        "bound",
+        "unit",
+        "currency",
+        "basis",
+        "source_contract_path",
+        "evidence"
+      ],
+      "properties": {
+        "form": {
+          "type": "string",
+          "const": "point"
+        },
+        "value": {
+          "type": "number",
+          "minimum": -1000000000000000.0,
+          "maximum": 1000000000000000.0
+        },
+        "bound": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "approximately",
+            "up_to",
+            "at_least"
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^([A-Z]{3}|NA)$",
+          "maxLength": 3
+        },
+        "basis": {
+          "type": "string",
+          "enum": [
+            "total",
+            "incremental",
+            "run_rate",
+            "per_share",
+            "percent"
+          ]
+        },
+        "source_contract_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^/"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence_span"
+        },
+        "period": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "sourced_interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "low",
+        "high",
+        "unit",
+        "currency",
+        "basis",
+        "source_contract_path",
+        "evidence"
+      ],
+      "properties": {
+        "form": {
+          "type": "string",
+          "const": "interval"
+        },
+        "low": {
+          "type": "number",
+          "minimum": -1000000000000000.0,
+          "maximum": 1000000000000000.0
+        },
+        "high": {
+          "type": "number",
+          "minimum": -1000000000000000.0,
+          "maximum": 1000000000000000.0
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^([A-Z]{3}|NA)$",
+          "maxLength": 3
+        },
+        "basis": {
+          "type": "string",
+          "enum": [
+            "total",
+            "incremental",
+            "run_rate",
+            "per_share",
+            "percent"
+          ]
+        },
+        "source_contract_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^/"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence_span"
+        },
+        "period": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "term_absent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "absence"
+      ],
+      "properties": {
+        "form": {
+          "type": "string",
+          "const": "absent"
+        },
+        "absence": {
+          "$ref": "#/$defs/field_absence_v1"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence_span"
+        }
+      }
+    },
+    "labelled_assumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "label",
+        "review_id",
+        "stated_by"
+      ],
+      "properties": {
+        "form": {
+          "type": "string",
+          "const": "assumption"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "review_id": {
+          "type": "string",
+          "pattern": "^DEC:[A-Z0-9-]{3,64}$"
+        },
+        "stated_by": {
+          "type": "string",
+          "enum": [
+            "seat_dec",
+            "issuer_stated_unquantified"
+          ]
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "point_or_interval": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "form",
+                "value"
+              ],
+              "properties": {
+                "form": {
+                  "const": "point"
+                },
+                "value": {
+                  "type": "number",
+                  "minimum": -1000000000000000.0,
+                  "maximum": 1000000000000000.0
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "form",
+                "low",
+                "high"
+              ],
+              "properties": {
+                "form": {
+                  "const": "interval"
+                },
+                "low": {
+                  "type": "number",
+                  "minimum": -1000000000000000.0,
+                  "maximum": 1000000000000000.0
+                },
+                "high": {
+                  "type": "number",
+                  "minimum": -1000000000000000.0,
+                  "maximum": 1000000000000000.0
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "term": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/sourced_point"
+        },
+        {
+          "$ref": "#/$defs/sourced_interval"
+        },
+        {
+          "$ref": "#/$defs/term_absent"
+        },
+        {
+          "$ref": "#/$defs/labelled_assumption"
+        }
+      ]
+    }
+  }
+}

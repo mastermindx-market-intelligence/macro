@@ -1,0 +1,17 @@
+{
+  "merged_vs_prior_head": {
+    "exit": 2,
+    "stdout": "site/us_stocks.html:550: trailing whitespace.\n+          \nsite/us_stocks.html:4337: trailing whitespace.\n+  \nsite/us_stocks.html:4338: trailing whitespace.\n+  \nsite/us_stocks.html:4342: trailing whitespace.\n+    \n",
+    "stderr": ""
+  },
+  "incoming_vs_prior_head": {
+    "exit": 2,
+    "stdout": "site/us_stocks.html:550: trailing whitespace.\n+          \nsite/us_stocks.html:4337: trailing whitespace.\n+  \nsite/us_stocks.html:4338: trailing whitespace.\n+  \nsite/us_stocks.html:4342: trailing whitespace.\n+    \n",
+    "stderr": ""
+  },
+  "owned_delta_vs_incoming": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+}

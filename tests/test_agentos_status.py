@@ -33,6 +33,7 @@ import threading
 from pathlib import Path
 
 import pytest
+import yaml
 
 from scripts import agentos
 
@@ -618,6 +619,17 @@ def test_readiness_states_explain_graph_and_authored_progress(
         parent.read_text(encoding="utf-8"),
         count=1,
     )
+    # 2026-10-05 regold: the D2C wave itself is now authored in_progress (delivered on
+    # PR #8432, Sol-held), and an in_progress wave outranks a blocked parent in
+    # _reason_for_wave — so the wave status is synthesized back to todo in the same
+    # fixture copy. The blocked-parent exemplar rides neither live status any more.
+    parent_text, synthesized = re.subn(
+        r"(?m)^(  - id: D2C\n    title: [^\n]*\n    status: )\S+",
+        r"\1todo",
+        parent_text,
+        count=1,
+    )
+    assert synthesized == 1, "D2C wave block not found in the fixture copy"
     parent.write_text(parent_text, encoding="utf-8")
 
     out = tmp_path / "state.json"
@@ -641,9 +653,10 @@ def test_readiness_states_explain_graph_and_authored_progress(
     assert waiting["reason_code"] == "unmet_dependencies"
     assert waiting["unmet_dependencies"] == ["WS:PROPHET-US-ENTRY-TIMING#W1"]
 
-    # D2C is the current unfinished authored wave; the former TRANSMISSION wave no
-    # longer exists by design (folded to the completed TRANSMISSION-FOLD), so the
-    # blocked-parent exemplar rides D2C rather than resurrecting a dead wave id.
+    # D2C (no declared wave dependencies) carries the blocked-parent exemplar; the
+    # former TRANSMISSION wave no longer exists by design (folded to the completed
+    # TRANSMISSION-FOLD), and both the parent and the wave status are synthesized
+    # above, so this assertion rides no live authored status.
     parent_blocked = records[("GMI-THEME-GRAPH", "D2C")]
     assert parent_blocked["state"] == "blocked"
     assert parent_blocked["reason_code"] == "workstream_blocked"
@@ -751,19 +764,27 @@ def test_readiness_maps_every_authored_status_and_keeps_unknown_fail_soft() -> N
         )
 
 
-def test_phase2b_closeout_makes_w4_eligible_without_starting_it(
+def test_frozen_phase2b_closeout_makes_w4_eligible_without_starting_it(
     store: Path, builds: Path, tmp_path: Path
 ) -> None:
-    """The deployed E2E closes W2B; it does not silently begin the hook wave."""
+    """A frozen Phase 2b fixture makes unstarted W4 eligible without authoring it."""
     agentos = _load_cli()
-    authored, _ = agentos.parse_record(
-        store / "workstreams" / "WS-AGENT-OS.md"
-    )
+    path = store / "workstreams" / "WS-AGENT-OS.md"
+    authored, body = agentos.parse_record(path)
     waves = {wave["id"]: wave for wave in authored["waves"]}
     assert waves["W2B"]["status"] == "done"
     assert waves["W2B"]["pr"] == 5649
-    assert waves["W4"]["status"] == "todo"
     assert waves["W4"]["depends_on"] == ["W1", "W2", "W2B"]
+    # The live program may advance through W4 and close. Freeze only this test's
+    # pre-W4 state, retaining the accepted dependency graph and W2B receipt.
+    authored["status"] = "active"
+    authored.pop("claim", None)
+    waves["W4"]["status"] = "todo"
+    waves["W4"].pop("pr", None)
+    waves["W4"].pop("next_action", None)
+    path.write_text("---\n" + yaml.safe_dump(authored, sort_keys=False)
+                    + "---\n" + body, encoding="utf-8")
+    before = path.read_bytes()
 
     output = tmp_path / "closed.json"
     assert _status(
@@ -782,6 +803,7 @@ def test_phase2b_closeout_makes_w4_eligible_without_starting_it(
         readiness[("AGENT-OS", "W4")]["reason_code"],
         readiness[("AGENT-OS", "W4")]["unmet_dependencies"],
     ) == ("ready", "dependencies_satisfied", [])
+    assert path.read_bytes() == before
 
 
 def test_terminal_records_keep_dependencies_but_report_no_unmet_dependencies() -> None:

@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       runner:
-        description: "Runner label (render-linux primary; macstudio recovery)"
+        description: "Runner label (macstudio active; render-linux explicit recovery after re-enrollment)"
         type: choice
-        default: render-linux
-        options: [render-linux, macstudio]
+        default: macstudio
+        options: [macstudio, render-linux]
   schedule:
     - cron: "15 3,12,17,22 * * 1-5"
   push:
@@ -50,7 +50,7 @@ jobs:
     if: >-
       github.event_name != 'push' ||
       !startsWith(github.event.head_commit.message, 'sector-intelligence: publish')
-    runs-on: ${{ github.event.inputs.runner || 'render-linux' }}
+    runs-on: ${{ github.event.inputs.runner || 'macstudio' }}
     timeout-minutes: 90
     steps:
       # Self-hosted runners reuse workspaces. A sibling sparse checkout can leave

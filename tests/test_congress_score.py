@@ -919,3 +919,169 @@ def test_sort_three_way_ordering():
     assert tickers[2] == "UNC", f"Unconfirmed must be last; order={tickers}"
     assert tickers[0] == "FL",  f"front_line must be first; order={tickers}"
     assert tickers[1] == "NFL", f"Non-front-line covered second; order={tickers}"
+
+
+# ===========================================================================
+# W19-B — T0 over the full window (spec 1), member hits/buys (spec 2),
+#         disclosed buy $ in Net (spec 3), gate ticks freshness (spec 4)
+# ===========================================================================
+
+import inspect as _w19b_inspect
+import re as _w19b_re
+
+
+def _w19b_render(**over):
+    """Render congress_trades.html.j2 with the seat-verified minimal context recipe."""
+    from jinja2 import Environment, FileSystemLoader
+    root = Path(__file__).resolve().parent.parent
+    env = Environment(loader=FileSystemLoader(str(root / "templates")), autoescape=True)
+    ctx = dict(
+        summary={"as_of": "2026-10-14", "n_total": 100282, "n_tickers": 686,
+                 "n_important": 233, "n_bipartisan": 62, "n_act_now": 69,
+                 "n_front_line": 258},
+        items=[], n_shown=0, feed=[], window_days=182, generated_utc="2026-10-19 00:00 UTC",
+        weights={"cluster": 0.3, "technical": 0.25, "zone": 0.15, "entry": 0.3},
+        member_leaderboard=[], desk_grader={}, t0_rows=[], t0_meta={"present": False},
+        active_section="research", active_page="congress_trades")
+    ctx.update(over)
+    return env.get_template("congress_trades.html.j2").render(**ctx)
+
+
+def _w19b_item(**over):
+    """Minimal watchlist row carrying at least the fields the template reads."""
+    it = {"ticker": "TEST", "n_buys": 1, "n_sells": 1, "n_distinct_members": 1,
+          "composite": 50.0, "cluster_score": 50.0, "technical_score": None,
+          "zone_score": None, "latest_tx_age": 10, "median_lag_days": 20,
+          "timing": None, "member_detail": [],
+          "entry": {"covered": False, "score": 0, "front_line": False,
+                    "wash_2w": {}, "wash_1m": {}, "w_macd": {}, "w_stoch": {}}}
+    it.update(over)
+    return it
+
+
+def _w19b_slice(html, table_id):
+    """Slice one rendered table (id= ... next </table>) out of the full page."""
+    i = html.index(f'id="{table_id}"')
+    return html[i:html.index("</table>", i)]
+
+
+def _w19b_nth(tbl):
+    """Count real <th> cells (regex so the <thead> tag itself never counts)."""
+    return len(_w19b_re.findall(r"<th[\s>]", tbl))
+
+
+def test_w19b_t0_rows_include_in_window_outside_watch_cap():
+    """Spec 1: _t0_rows filters on the FULL in-window set — T150 (beyond the
+    WATCH_TABLE_CAP=150 table) is kept, ZZZ (out of window) is dropped, and
+    artifact order is preserved (T150 before T3)."""
+    from scripts.build_congress import _t0_rows
+    items = [{"ticker": f"T{i}"} for i in range(151)]
+    matches = [{"ticker": "T150", "d3_k": 5.6742}, {"ticker": "ZZZ", "d3_k": 1.0},
+               {"ticker": "T3", "d3_k": 2.4}]
+    rows = _t0_rows(matches, items)
+    assert [r["ticker"] for r in rows] == ["T150", "T3"], f"got {[r['ticker'] for r in rows]}"
+
+
+def test_w19b_main_passes_full_window_to_t0_rows():
+    """Spec 1: main() must pass the whole `items` list to _t0_rows, not the cap slice."""
+    from scripts import build_congress as _bc
+    src = _w19b_inspect.getsource(_bc.main)
+    assert '_t0_rows(t0_art.get("matches") or [], items)' in src
+    assert "for it in items[:WATCH_TABLE_CAP]}" not in src
+
+
+def test_w19b_t0_card_renders_committed_d3_k():
+    """Spec 1: the T0 table gains a Slow K column printing d3_k (one decimal)."""
+    row = {"ticker": "BMY", "d3_k": 5.6742, "d1_k": 22.346565657311373,
+           "close": 59.279998779296875, "sector": "Health Care",
+           "dollar_adv_20d": 859479082.0}
+    html = _w19b_render(t0_meta={"present": True, "as_of": "2026-10-14"}, t0_rows=[row])
+    tbl = _w19b_slice(html, "cgTurnTable")
+    assert _w19b_nth(tbl) == 5, f"expected 5 th; got {_w19b_nth(tbl)}"
+    assert "Slow K" in tbl and "慢线K值" in tbl
+    assert '<td class="num">5.7</td>' in tbl, "committed d3_k=5.6742 must render 5.7"
+    assert "22.3" not in tbl, "d1_k must never be printed in place of d3_k"
+    html2 = _w19b_render(t0_meta={"present": True}, t0_rows=[{**row, "d3_k": None}])
+    assert '<td class="num">—</td>' in _w19b_slice(html2, "cgTurnTable"), "None d3_k -> —"
+
+
+def test_w19b_leaderboard_includes_n_hits_and_n_buys():
+    """Spec 2: leaderboard() rows must carry n_hits and n_buys from MemberStats."""
+    from engine.congress_members import MemberStats, leaderboard
+    ms = MemberStats(bio_guide_id="A000372", representative="Jamie Auchincloss",
+                     party="D", chamber="House", n_trades=8, n_buys=0, n_eff_valid=8,
+                     n_hits=8, shrunk_hit_rate=0.697, raw_hit_rate=1.0,
+                     er_median=43.76, er_mean=51.2, total_notional=150000,
+                     median_lag_days=38.0, days_since_last=10, tier="proven",
+                     member_quality=0.8)
+    rows = leaderboard({"A000372": ms})
+    assert len(rows) == 1
+    assert rows[0]["n_hits"] == 8, "leaderboard row must carry n_hits"
+    assert rows[0]["n_buys"] == 0, "leaderboard row must carry n_buys including zero"
+
+
+def test_w19b_member_table_renders_hits_and_zero_buys():
+    """Spec 2: member table gains Hits and Buys columns; n_buys=0 prints 0, not —."""
+    auch = {"representative": "Jamie Auchincloss", "party": "D", "chamber": "House",
+            "tier": "proven", "n_trades": 8, "n_eff_valid": 8, "n_hits": 8, "n_buys": 0,
+            "shrunk_hit_rate": 0.697, "raw_hit_rate": 1.0, "er_median": 43.76,
+            "days_since_last": 10, "member_quality": 0.8}
+    green = {"representative": "Mark Green", "party": "R", "chamber": "House",
+             "tier": "proven", "n_trades": 610, "n_eff_valid": 610, "n_hits": 452,
+             "n_buys": 441, "shrunk_hit_rate": 0.736, "raw_hit_rate": 0.741,
+             "er_median": 5.0, "days_since_last": 3, "member_quality": 0.6}
+    html = _w19b_render(member_leaderboard=[auch, green])
+    tbl = _w19b_slice(html, "cgMemberTable")
+    assert _w19b_nth(tbl) == 10, f"expected 10 th; got {_w19b_nth(tbl)}"
+    assert "Hits" in tbl and "命中" in tbl and "Buys" in tbl and "买入" in tbl
+    assert '<td class="num">452</td>' in tbl, "Green n_hits=452 must render"
+    assert '<td class="num">441</td>' in tbl, "Green n_buys=441 must render"
+    assert '<td class="num">0</td>' in tbl, "Auchincloss n_buys=0 must render 0 not dash"
+
+
+def test_w19b_watchlist_renders_committed_buy_notional():
+    """Spec 3: Net cell gains the disclosed buy $ under the B/S counts; 0 prints nothing."""
+    biib = _w19b_item(ticker="BIIB", buy_notional=107002, n_buys=5, n_sells=4,
+                      n_distinct_members=4, composite=1, cluster_score=1)
+    html = _w19b_render(items=[biib], n_shown=1)
+    tbl = _w19b_slice(html, "cgWatchTable")
+    assert _w19b_nth(tbl) == 11, f"column count must stay 11; got {_w19b_nth(tbl)}"
+    assert "$107,002" in tbl, "committed BIIB buy_notional must render"
+    assert "5B" in tbl and "4S" in tbl, "B/S counts must remain"
+    assert "buy $" in tbl and "买入额" in tbl, "Net header gains the buy $ label"
+    html0 = _w19b_render(items=[_w19b_item(buy_notional=0)], n_shown=1)
+    assert "$0" not in _w19b_slice(html0, "cgWatchTable"), "zero notional prints nothing"
+
+
+def test_w19b_score_copies_gate_ticks_and_tier_sub():
+    """Spec 4: _score copies ticks/tier_sub only when a T1/T2/T3 gate_tier fired."""
+    row = _score(_agg(60.0), _eng_covered(),
+                 gate_verdict={"tier_cascade": "T1", "ticks": 2, "tier_sub": "shallow"})
+    assert row["gate_ticks"] == 2, "T1 verdict ticks must copy onto the row"
+    assert row["gate_tier_sub"] == "shallow", "tier_sub must copy onto the row"
+    off = _score(_agg(60.0), _eng_covered(),
+                 gate_verdict={"tier_cascade": None, "ticks": 5, "tier_sub": "deep"})
+    assert off["gate_ticks"] is None and off["gate_tier_sub"] is None
+    no = _score(_agg(60.0), _eng_covered(), gate_verdict=None)
+    assert no["gate_ticks"] is None and no["gate_tier_sub"] is None
+
+
+def test_w19b_gate_chip_renders_committed_biib_ticks():
+    """Spec 4: the ⚡ chip tips carry ticks-since-cross and the deep/shallow modifier."""
+    biib = _w19b_item(ticker="BIIB", gate_tier="T1", gate_ticks=2, gate_tier_sub="shallow")
+    html = _w19b_render(items=[biib], n_shown=1)
+    chip = _w19b_re.search(r'<span class="cg-flag gate-t1"[^>]*>', html)
+    assert chip is not None, "gate chip missing"
+    tag = chip.group(0)
+    en = _w19b_re.search(r'data-tip-en="([^"]*)"', tag).group(1)
+    zh = _w19b_re.search(r'data-tip-zh="([^"]*)"', tag).group(1)
+    assert "2 bars since the cross" in en, f"chip en tip: {en!r}"
+    assert "shallow" in en, f"chip en tip: {en!r}"
+    assert "交叉后 2 个周期" in zh, f"chip zh tip: {zh!r}"
+    assert "浅" in zh, f"chip zh tip: {zh!r}"
+    plain = _w19b_item(ticker="UNH", gate_tier="T1", gate_ticks=None, gate_tier_sub=None)
+    html2 = _w19b_render(items=[plain], n_shown=1)
+    tag2 = _w19b_re.search(r'<span class="cg-flag gate-t1"[^>]*>', html2).group(0)
+    en2 = _w19b_re.search(r'data-tip-en="([^"]*)"', tag2).group(1)
+    assert en2 == "⚡ Prime entry — signal gate T1", f"seed tip changed: {en2!r}"
+    assert "bars since" not in tag2 and "None" not in tag2

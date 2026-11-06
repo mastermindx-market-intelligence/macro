@@ -1,0 +1,4 @@
+design-system-check.txt: exit 0
+runtime-style-check.txt: exit 0
+whitespace-check.txt: exit 0
+Paired router and stocktable assets are byte-identical; all candidate source checks passed.

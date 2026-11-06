@@ -1,0 +1,55 @@
+{
+  "schema": "paper.fabric.difficulty-repair.evidence.v1",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "status": "SCOPED_SOURCE_APPROVED_INSTALLED_HASH_VERIFIED",
+  "problem": "Complexity reached economic guard but did not change model selection; forced full GLM alias still selected Flash for build.",
+  "behavior": "Explicit registered full GLM model plus C2 and concrete escalation witness preserves build class and applies exact-model quality, capability, broker capacity, peak holds and launch-policy checks before transport. C2 or pool alias alone does not upgrade.",
+  "installation": {
+    "installed_at_epoch": 1791352437.731883,
+    "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "status": "INSTALLED_HASH_VERIFIED",
+    "files": {
+      "ext/tests/test_pick_policy.py": {
+        "before": "552d7173a72855c9efb6d32d614561f3eaa73e2c1ac3c85355d8f56178f7ffb3",
+        "after": "72c51f2c38943fa250512ec35e46ac05f6e462a1696bcbd6b5ed5cef07f4ae45"
+      },
+      "ext/tests/test_fabric_task.py": {
+        "before": "47787a33e2449a30207f11b86a99ec6ef23d43e6bfdaa6e88159ef7193f009b0",
+        "after": "c1a6ca55e075fe491e44d362abf8168f4427f408266cd656cf66fa893184c0ea"
+      },
+      "ext/pick.py": {
+        "before": "68e163425f5b109638a88072afb5b4729c8dc3e02109fc7fb4478fd59b154068",
+        "after": "408b23f47806532b21b135ac76fcae51f5b87f5fd1c53d97ce47134a164f3bd3"
+      },
+      "ext/fabric_task.py": {
+        "before": "eca52d434795a38303b1c9497e177bf30da74d7763d0dddfd2e69bf20e3afc83",
+        "after": "7b9fb35db1a8983f80ba3e4eda0b59aeaae1b091e5123f356c26a314029651f4"
+      }
+    },
+    "order": [
+      "ext/tests/test_pick_policy.py",
+      "ext/tests/test_fabric_task.py",
+      "ext/pick.py",
+      "ext/fabric_task.py"
+    ],
+    "compatibility": "Tests first, backward-compatible picker extension before adapter consumer. No new adapter can observe old picker. Each replacement atomic; no fleet multi-file transaction claimed. Prior immutable support releases unchanged.",
+    "review": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/fabric-stable-id/difficulty-repair/SOL_FINAL_REVIEW.json",
+    "source_tests": "174 focused tests passed before install; no provider-start claim."
+  },
+  "independent_review": {
+    "requested_model": "gpt-6.1-sol",
+    "served_model": "UNKNOWN",
+    "session": "01a11057-3134-76d2-bcd1-784d69cc17d3",
+    "verdict": "ACCEPT_SCOPED",
+    "findings": [],
+    "artifact_sha256": "e9d1596a428ce1a6f301581b7dc2afbe01a65deaadd8e0439d47d8470672ee47"
+  },
+  "validation": "174 focused tests passed. Installed read-only picker selects MODEL=glm-5.3 for exact explicit C2 build witness. Host eligibility remains a separate actual admission gate.",
+  "limits": [
+    "No provider/account/host caps or quality history reset",
+    "No new hierarchy/depth grant",
+    "No immutable support release mutated",
+    "Existing domain_orchestration model-tier mapping test fails identically in captured preimage; no full-suite-green claim",
+    "Original repair worker timed out after returning partial code; six concrete defects repaired by parent before review. Transport status remains SETTLING following shell syntax error, despite saved terminal cleanup and released broker lease. No transport acceptance fabricated."
+  ]
+}

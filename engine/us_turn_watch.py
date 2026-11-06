@@ -57,8 +57,10 @@ every artifact stamps ``anchor_era`` (confluence_tiers.ANCHOR_ERA) and
 
 RUNTIME
 -------
-The nightly budget is law.  `compute_deck` measures its own wall clock and publishes it
-as ``runtime_seconds``; a run that exceeds `RUNTIME_WARN_SECONDS` prints a bare
+The nightly budget is law.  `compute_deck` measures its own wall clock and returns it
+as ``runtime_seconds`` for operational logs/CLI output. It is excluded from the persisted
+decision artifact so identical decisions retain identical provenance receipts. A run
+that exceeds `RUNTIME_WARN_SECONDS` prints a bare
 line-start ``::warning`` (this module runs inside an Actions step via
 `scripts/build_turn_watch.py`, so it is NOT annotation-exempt).  `universe_limit` gives
 the caller a DETERMINISTIC subset lever (alphabetical by ticker, disclosed in the
@@ -1329,10 +1331,12 @@ def compute_deck_with_candidates(
     ``coverage``  {universe, graded, skipped_short_history, deck, beyond_cap, universe_limit,
                    basket_states_read, benchmark, leader_pullback_sources,
                    leader_rs_cross_section}
-    ``runtime_seconds``
     ``deck``      the capped, context-score-sorted rows (schema per :func:`evaluate`)
     ``beyond_cap`` the triggered names that did not make the cap, in sort order, each
                    ``{ticker, triggers_fired, basket}`` — never a bare ticker
+
+    The returned in-memory dictionary also includes ``runtime_seconds`` for operational
+    diagnostics. :func:`artifact_bytes` excludes only that field from persisted JSON.
     """
     t0 = time.time()
     from lib import config as _cfg  # noqa: PLC0415
@@ -1496,8 +1500,14 @@ def write_artifact(artifact: dict[str, Any], site_root: Path | None = None) -> P
 
 
 def artifact_bytes(artifact: dict[str, Any]) -> bytes:
-    """Exact public artifact bytes, shared with sidecar provenance receipts."""
-    return (json.dumps(artifact, separators=(",", ":"), default=str) + "\n").encode("utf-8")
+    """Exact public decision bytes, shared with sidecar provenance receipts.
+
+    Wall-clock runtime is operational telemetry, not source evidence. Keep it in the
+    caller's dictionary for logs and budget warnings without changing the receipt of an
+    otherwise identical publication. All decision and provenance fields remain hashed.
+    """
+    public_artifact = {key: value for key, value in artifact.items() if key != "runtime_seconds"}
+    return (json.dumps(public_artifact, separators=(",", ":"), default=str) + "\n").encode("utf-8")
 
 
 # ---------------------------------------------------------------------------

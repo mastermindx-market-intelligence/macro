@@ -1,0 +1,24 @@
+{
+  "observed_at": "2026-10-19T11:41:30.903Z",
+  "project": "fsldfzlxyavsuwqbceod",
+  "url": "https://supabase.com/dashboard/project/fsldfzlxyavsuwqbceod/auth/url-configuration",
+  "site_url": "https://www.mastermind-x.com",
+  "redirect_urls": [
+    "http://localhost:8741",
+    "http://localhost:8741/**",
+    "http://127.0.0.1:8741",
+    "http://127.0.0.1:8741/**",
+    "https://chriswong6031-creator.github.io/macro",
+    "https://chriswong6031-creator.github.io/macro/**",
+    "https://www.mastermind-x.com",
+    "https://app.mastermind-x.com",
+    "https://bot.mastermind-x.com",
+    "https://app.mastermind-x.com/auth/callback",
+    "https://app.mastermind-x.com/auth/callback?next=%2Fterminal%3Fonboard%3Dresume",
+    "https://beta.mastermind-x.com/auth/callback",
+    "https://beta.mastermind-x.com/auth/callback?next=**"
+  ],
+  "dom_excerpt": "    - heading \"Site URL\" [level=2]\n    - textbox \"Site URL\": https://www.mastermind-x.com\n    - generic: Site URL\n    - generic: Configure the default redirect URL used when a redirect URL is not specified or doesn't match one from the allow list. This value is also exposed as a template variable in the email templates section. Wildcards cannot be used here.\n    - button \"Save changes\" [disabled]:\n      - generic: Save changes\n    - heading \"Redirect URLs\" [level=2]\n    - generic: URLs that auth providers are permitted to redirect to post authentication. Wildcards are allowed, for example, https://*.domain.com\n    - link \"Docs\":\n      - /url: https://supabase.com/docs/guides/auth/concepts/redirect-urls\n      - generic: Docs\n    - button \"Add URL\":\n      - generic: Add URL\n    - checkbox\n    - generic: http://localhost:8741\n    - checkbox\n    - generic: http://localhost:8741/**\n    - checkbox\n    - generic: http://127.0.0.1:8741\n    - checkbox\n    - generic: http://127.0.0.1:8741/**\n    - checkbox\n    - generic: https://chriswong6031-creator.github.io/macro\n    - checkbox\n    - generic: https://chriswong6031-creator.github.io/macro/**\n    - checkbox\n    - generic: https://www.mastermind-x.com\n    - checkbox\n    - generic: https://app.mastermind-x.com\n    - checkbox\n    - generic: https://bot.mastermind-x.com\n    - checkbox\n    - generic: https://app.mastermind-x.com/auth/callback\n    - checkbox\n    - generic: https://app.mastermind-x.com/auth/callback?next=%2Fterminal%3Fonboard%3Dresume\n    - checkbox\n    - generic: https://beta.mastermind-x.com/auth/callback\n    - checkbox\n    - generic: https://beta.mastermind-x.com/auth/callback?next=**\n    - paragraph: \"Total URLs: 13\"\n",
+  "settings_changed": false,
+  "live_auth_flow_executed": false
+}

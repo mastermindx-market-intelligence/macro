@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000070858-23-000142",
+    "expected_period_end": "2023-03-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": null,
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_absent",
+    "pack_id": "PK04",
+    "polarity": "negative",
+    "reason": "bac-20230331.htm | untagged | Searched the whole primary document (tagged facts and prose): the strings 'contract liability' and 'deferred revenue' do not occur anywhere, the consolidated statement of income and balance sheet carry no contract-liability or deferred revenue line, and no us-gaap:ContractWithCustomer* ix fact exists in the filing. | Contract liability not disclosed: no ASC 606 contract-liability balance is presented anywhere in the filing.",
+    "section_family": "contract_liability",
+    "split": "held_out",
+    "target_id": "contract_liability_current",
+    "target_kind": "extract",
+    "trial_id": "PK04|0000070858-23-000142|extract|contract_liability_current"
+  },
+  {
+    "accession": "0000070858-23-000142",
+    "expected_period_end": "2023-03-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "26258000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK04",
+    "polarity": "positive",
+    "reason": "bac-20230331.htm | us-gaap:Revenues @ i5f7d01749b7c443996379458b23dc9c8_D20230101-20230331 | 'Total revenue, net of interest expense 26,258 23,228' | Total revenue, net of interest expense for the three months ended 2023-03-31; consolidated statement of income, in millions.",
+    "section_family": "revenue",
+    "split": "held_out",
+    "target_id": "revenue",
+    "target_kind": "extract",
+    "trial_id": "PK04|0000070858-23-000142|extract|revenue"
+  }
+]

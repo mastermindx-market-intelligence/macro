@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-30T22:10:25Z",
+ "accession": "0001628280-26-022120",
+ "cik": "0001756607",
+ "doc_byte_length": 338355,
+ "doc_sha256": "a20c32c7f517443f4082a015cbc06b478496043065cb1550b2410186fdde9623",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "eqxaif2026-final.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 169235,
+  "byte_start": 168520,
+  "normalized": "On May 13, 2024, Equinox Gold announced that the Company had completed its acquisition of the remaining 40% of GGM from Orion, resulting in Equinox Gold holding 100% ownership of GGM and the Greenstone Mine (the Greenstone Acquisition). As part of the Greenstone Acquisition, the Company assumed obligations under a stream agreement with Nomad Royalty Company Ltd, dated October 28, 2021, as amended (the GGM Stream Agreement). Under the GGM Stream Agreement, the Company is required to deliver an amount of refined gold equal to 2.375% of the gold produced from Greenstone, until the Company has delivered a cumulative total of 120,333 ounces, and 1.583% of the gold production from Greenstone thereafter.",
+  "normalized_sha256": "d0dd9cf6567c70b3b615332d7882a86ba2731acf0951d589d553877798d12bd1",
+  "raw": "  On May 13, 2024, Equinox Gold announced that the Company had completed its acquisition of the remaining 40%  of GGM from Orion, resulting in Equinox Gold holding 100% ownership of GGM and the Greenstone Mine (the  Greenstone Acquisition).  As part of the Greenstone Acquisition, the Company assumed obligations under a stream agreement with Nomad  Royalty Company Ltd, dated October 28, 2021, as amended (the GGM Stream Agreement). Under the GGM Stream  Agreement, the Company is required to deliver an amount of refined gold equal to 2.375% of the gold produced  from Greenstone, until the Company has delivered a cumulative total of 120,333 ounces, and 1.583% of the gold  production from Greenstone thereafter.",
+  "raw_sha256": "c244d4b1988bb8d36d72ed2fb04cec66f00e8103b288e8b419a6c586dc3376e9"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1756607/000162828026022120/eqxaif2026-final.htm",
+ "xbrl_contexts": []
+}

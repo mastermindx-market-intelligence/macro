@@ -1,0 +1,24 @@
+{
+  "schema": "mastermind.tiingo.offline_plan.v1",
+  "network": false,
+  "execution_authorized": false,
+  "execution_progress": "NOT_OBSERVED",
+  "plan_sha256": "4fccfc737e56e95d6c58817168aba0e6a7eeca3fde4dad9ff485eb19fb08cb93",
+  "tasks": 1,
+  "total_tasks": 1,
+  "source_counts": {
+    "forex-top": 1
+  },
+  "offset": 0,
+  "items": [
+    {
+      "ordinal": 0,
+      "source": "forex-top",
+      "symbol": "usdbrl",
+      "request_path": "/tiingo/fx/usdbrl/top"
+    }
+  ],
+  "next_offset": null,
+  "complete_history_proven": false,
+  "symbols": 1
+}

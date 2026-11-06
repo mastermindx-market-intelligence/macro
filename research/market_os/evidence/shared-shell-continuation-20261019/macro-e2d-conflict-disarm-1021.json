@@ -1,0 +1,115 @@
+{
+  "started_at": "2026-10-20T10:19:16.903033+00:00",
+  "session": "shared-shell-production-20261018-c1",
+  "reason": "Original owner resumes controller-reported REAL content conflict; disarm before same-branch repair, preserving merge-blocked marker and ownership to merge/publication",
+  "label_write_attempted": true,
+  "reads_and_action": [
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "e2d10f933587f58be8716505529a37f8839901f7\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "status",
+        "--porcelain=v1"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "pr",
+        "view",
+        "7949",
+        "--repo",
+        "mastermindx-market-intelligence/macro",
+        "--json",
+        "state,headRefOid,labels,mergeStateStatus,mergedAt,autoMergeRequest"
+      ],
+      "exit": 0,
+      "stdout": "{\"autoMergeRequest\":null,\"headRefOid\":\"e2d10f933587f58be8716505529a37f8839901f7\",\"labels\":[{\"id\":\"LA_kwDOS4LjIs8AAAACtokuPQ\",\"name\":\"merge-on-green\",\"description\":\"Sweeper squash-merges this PR when its checks conclude with no genuine red\",\"color\":\"0e8a16\"},{\"id\":\"LA_kwDOS4LjIs8AAAACtokucA\",\"name\":\"merge-blocked\",\"description\":\"Sweeper found a genuine red or merge conflict \u2014 needs a session/operator\",\"color\":\"d93f0b\"}],\"mergeStateStatus\":\"DIRTY\",\"mergedAt\":null,\"state\":\"OPEN\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "pr",
+        "edit",
+        "7949",
+        "--repo",
+        "mastermindx-market-intelligence/macro",
+        "--remove-label",
+        "merge-on-green",
+        "--add-label",
+        "merge-blocked"
+      ],
+      "exit": 0,
+      "stdout": "https://github.com/mastermindx-market-intelligence/macro/pull/7949\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "pr",
+        "view",
+        "7949",
+        "--repo",
+        "mastermindx-market-intelligence/macro",
+        "--json",
+        "state,headRefOid,labels,mergeStateStatus,mergedAt,autoMergeRequest"
+      ],
+      "exit": 0,
+      "stdout": "{\"autoMergeRequest\":null,\"headRefOid\":\"e2d10f933587f58be8716505529a37f8839901f7\",\"labels\":[{\"id\":\"LA_kwDOS4LjIs8AAAACtokucA\",\"name\":\"merge-blocked\",\"description\":\"Sweeper found a genuine red or merge conflict \u2014 needs a session/operator\",\"color\":\"d93f0b\"}],\"mergeStateStatus\":\"DIRTY\",\"mergedAt\":null,\"state\":\"OPEN\"}\n",
+      "stderr": ""
+    }
+  ],
+  "before": {
+    "autoMergeRequest": null,
+    "headRefOid": "e2d10f933587f58be8716505529a37f8839901f7",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokuPQ",
+        "name": "merge-on-green",
+        "description": "Sweeper squash-merges this PR when its checks conclude with no genuine red",
+        "color": "0e8a16"
+      },
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokucA",
+        "name": "merge-blocked",
+        "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+        "color": "d93f0b"
+      }
+    ],
+    "mergeStateStatus": "DIRTY",
+    "mergedAt": null,
+    "state": "OPEN"
+  },
+  "after": {
+    "autoMergeRequest": null,
+    "headRefOid": "e2d10f933587f58be8716505529a37f8839901f7",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokucA",
+        "name": "merge-blocked",
+        "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+        "color": "d93f0b"
+      }
+    ],
+    "mergeStateStatus": "DIRTY",
+    "mergedAt": null,
+    "state": "OPEN"
+  },
+  "disposition": "DISARMED_WITH_VISIBLE_MARKER_ORIGINAL_OWNER_REPAIR",
+  "finished_at": "2026-10-20T10:19:21.520121+00:00"
+}

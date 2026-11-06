@@ -1,0 +1,497 @@
+{
+  "task": "P12.T38",
+  "kind": "four-family shipping source composition; protected proof/landing/serving remain separate",
+  "original_root": "01a15e6c-42f8-7941-ac2b-296021932fbb",
+  "parent": "01a15e87-3f2b-7411-8ad9-39933bb6bb32",
+  "protected_base": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+  "evidence_policy": "Original snapshots/reviews retain exact historical head/input identities; no restamp. Reuse requires exact imported source blobs and qualified unchanged dependencies; current data/served/auth state not inferred.",
+  "original_five_input_frozen_head": "5b6767613a0ba6bb3c4dc3b79d62ff62d02cdd5d",
+  "original_five_input_manifest_sha256": "4ffcb8d843e95d376d9c5bc89e77458a810d1e0c2b3e08019c31c536f6427468",
+  "inputs": [
+    {
+      "task": "P12.T15",
+      "source_head": "fc9957cd57a6678035a14fde7793af927f86f5b9",
+      "source_base": "90e0644f9f08ab37115dfffedce2ba7939b0835d",
+      "source_tree": "6e0323cb838ae3ec2d63fb2f5d8ef65cc9065946",
+      "writer": "/Volumes/Mastermind 2/agent-workspaces/claude/cd8f6fc4b43f4cb4/learning-reader-p12t15-1ba9feb7b9b56f53",
+      "custody": "exact clean retained source on read; original carrier remains",
+      "proof": {
+        "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/learning-20261102/qualification.json",
+        "sha256": "995f7baaaed4007884a63ef71f2101f6015a3c39081a10dbba2b432c61758b80"
+      },
+      "files": [
+        {
+          "path": "scripts/build_free_content.py",
+          "mode": "100644",
+          "blob": "0a4c62997132fad695b09ece309cc10dce5efb40",
+          "sha256": "bad21ba87caf3847c9b5b193da53c15ab104b0e877a6b2ffd296f34dddf0e4ad",
+          "base_blob": "2214848d9b6410c8cda45d894211c65fec6345ef",
+          "protected_blob": "2214848d9b6410c8cda45d894211c65fec6345ef"
+        },
+        {
+          "path": "templates/seo_article.html.j2",
+          "mode": "100644",
+          "blob": "7318f1db288c7b7d425a06ce673823f4cdcb3a11",
+          "sha256": "53eea78a3df500717023fd6bdc18a5e60fad57dd254ad1113cefd64740d7bf03",
+          "base_blob": "ff3dc93f9ae9f605da26cf2301df8462f5f75655",
+          "protected_blob": "ff3dc93f9ae9f605da26cf2301df8462f5f75655"
+        },
+        {
+          "path": "templates/seo_base.html.j2",
+          "mode": "100644",
+          "blob": "9a61ddc8cadb0f2404cfd4e04129d13fd22e66ae",
+          "sha256": "b68cdfa9e13f72ab9e611479e75ca1553dd3ebe213b811739e5db26e62b72f51",
+          "base_blob": "59a41daf363b3194f267043f8a6e951aa0089421",
+          "protected_blob": "59a41daf363b3194f267043f8a6e951aa0089421"
+        },
+        {
+          "path": "templates/seo_learn_index.html.j2",
+          "mode": "100644",
+          "blob": "732f746c8a01e8d389907f92fc79569824478187",
+          "sha256": "5830dbb4f28abf73fe3d27da99b03c44584c9e1e4d23ad0035ec131ba5fd83af",
+          "base_blob": "1d8a9c56c4cc7ac64164de84285f8291b7bf5d3c",
+          "protected_blob": "1d8a9c56c4cc7ac64164de84285f8291b7bf5d3c"
+        },
+        {
+          "path": "tests/test_free_content.py",
+          "mode": "100644",
+          "blob": "60064ba27f0f86a51cb95855738940d9627302dd",
+          "sha256": "aebc0b361396a89fcc676a4267f8070beb1684bcbccc2875cc06454e9668c4e4",
+          "base_blob": "a95b49bb67fca999fc07e554aa4c6cc496992a0a",
+          "protected_blob": "a95b49bb67fca999fc07e554aa4c6cc496992a0a"
+        }
+      ]
+    },
+    {
+      "task": "P12.T31",
+      "source_head": "2f466ccc442710ea6515c837114b917d3599788e",
+      "source_base": "e8d2d1d3f88d2a8fb2d31cf37ff48a34ef132939",
+      "source_tree": "0ddf69433ef41858b0e2e2c719d13ed001b1a92c",
+      "writer": "/Volumes/Mastermind 2/agent-workspaces/claude/cd8f6fc4b43f4cb4/forex-history-p12t31-bce8ca767302cc6e",
+      "custody": "exact clean retained source on read; original carrier remains",
+      "proof": {
+        "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/forex-history-20261103/qualification.json",
+        "sha256": "383931d0b74fdca750a8a7e613d76583bbe93e9b41340f9870f08514fb292223"
+      },
+      "files": [
+        {
+          "path": "templates/forex_r26.js",
+          "mode": "100644",
+          "blob": "eec643c7bb3ce9727d156939d33a0f1a20443ede",
+          "sha256": "714f65a55b7e9b10f31e410f2efbeedd5fa1c8f1fab341231e7271c55a6be9e6",
+          "base_blob": "159447bbb581c5666571fe18d7abf9279a2228fb",
+          "protected_blob": "159447bbb581c5666571fe18d7abf9279a2228fb"
+        },
+        {
+          "path": "site/forex_r26.js",
+          "mode": "100644",
+          "blob": "eec643c7bb3ce9727d156939d33a0f1a20443ede",
+          "sha256": "714f65a55b7e9b10f31e410f2efbeedd5fa1c8f1fab341231e7271c55a6be9e6",
+          "base_blob": "159447bbb581c5666571fe18d7abf9279a2228fb",
+          "protected_blob": "159447bbb581c5666571fe18d7abf9279a2228fb"
+        },
+        {
+          "path": "tests/test_forex_watch_workspace_browser.py",
+          "mode": "100644",
+          "blob": "0b4bbc1eb09bbf5c8a3d2f14d5cf9d623c10063c",
+          "sha256": "164f43bc4d8f578c7fbe49254cd6a7480c1afd8469a81d0fbaf2a8184417152d",
+          "base_blob": "1f4aae807ec9aa39534d6bab4164648175222224",
+          "protected_blob": "1f4aae807ec9aa39534d6bab4164648175222224"
+        }
+      ]
+    },
+    {
+      "task": "P12.T33",
+      "source_head": "4f656d37d037ce3333557b21a65b1da121d78bb0",
+      "source_base": "b6760d0aa7d4173457ace5a160dad750899e281d",
+      "source_tree": "7156f4c69ffcb6703788edfc167166be930a9a36",
+      "writer": "/Volumes/Mastermind 2/agent-workspaces/claude/cd8f6fc4b43f4cb4/commodity-gold-cohort-p12t33-93980cab5c7c05bb",
+      "custody": "exact clean retained source on read; original carrier remains",
+      "proof": {
+        "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/commodities-20261103/qualification.json",
+        "sha256": "1206f79cf0fbab46222350d16caa613649d327902659bac4592b21309d2ecf2c"
+      },
+      "files": [
+        {
+          "path": "engine/commodity_decision_workspace.py",
+          "mode": "100644",
+          "blob": "a43e6cc7fa2dfb2f6ed289b118b002d6520c6c15",
+          "sha256": "1e42506edfc861ab7d32feced5f79a6cae507c520993ea56755e4fe07e5febcc",
+          "base_blob": "39df2d995d799f97416a04e4412927189655f471",
+          "protected_blob": "39df2d995d799f97416a04e4412927189655f471"
+        },
+        {
+          "path": "engine/commodity_workspace_adapter.py",
+          "mode": "100644",
+          "blob": "b1616df3d3d913fe9286b6a4df043b79f746d82d",
+          "sha256": "8dd63ca8332cb3c7613e80534efd633b9ec4b3578f09bc17e620687a2ff1c5be",
+          "base_blob": "217395f92f973ae11f4b97185f609181ab4e72df",
+          "protected_blob": "217395f92f973ae11f4b97185f609181ab4e72df"
+        },
+        {
+          "path": "scripts/build_commodities.py",
+          "mode": "100644",
+          "blob": "287109a81cba10d19fcf8a89adc3bd6123d4ee05",
+          "sha256": "ad2fc8e6d14e844974406dc8ce2aab7460d546ed86d8cf7e8390fd10dc79d8d1",
+          "base_blob": "8c51ffb8884f814f78e757dfb85308b30986deb4",
+          "protected_blob": "8c51ffb8884f814f78e757dfb85308b30986deb4"
+        },
+        {
+          "path": "tests/test_commodity_decision_workspace.py",
+          "mode": "100644",
+          "blob": "e6aafedd15cda0691855d057ac3ee0994745b84d",
+          "sha256": "b1f09957b238aaacb52bb21e915e86771a221631634220d7b50fabf187bb39ff",
+          "base_blob": "d767119aceb2284974d4c2bd3949d324429667a9",
+          "protected_blob": "d767119aceb2284974d4c2bd3949d324429667a9"
+        }
+      ]
+    },
+    {
+      "task": "P12.T36",
+      "source_head": "7048645a97d65d88c48a4d4a2295d1c5c0cb666d",
+      "source_base": "26a1478b9d369df28ae42e018aef1feb620270f6",
+      "source_tree": "29e9a0145ac7ab82fad47eee5ac16ed412faafce",
+      "writer": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/shared-shell-bio-last-verified-20261103-d1241bc7310c8546",
+      "custody": "exact clean retained source on read; original carrier remains",
+      "proof": {
+        "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/bio-t36-review-20261103/review.json",
+        "sha256": "19006130d75faa245be1886f691663ccfb8e929de4e0e03ed9ea4f9073d75645"
+      },
+      "files": [
+        {
+          "path": "docs/verification/shared-shell-biocatalyst-retained-source-20261103.md",
+          "mode": "100644",
+          "blob": "cbdbf6477f33bbb8f652e05bad0b96f9ce22fca5",
+          "sha256": "495a6a4f6651d254217cfb608b27bf184b5e0fb580c0455302f012b732cfce6f",
+          "base_blob": null,
+          "protected_blob": null
+        },
+        {
+          "path": "docs/verification/shared-shell-biocatalyst-source-review-20261103.json",
+          "mode": "100644",
+          "blob": "f825a44e7265734d86955bada53096deb99c1cb0",
+          "sha256": "e9c45abc88da563f90664a836bb15c613f5b475ca127ce78b5cf46302a0432ee",
+          "base_blob": null,
+          "protected_blob": null
+        },
+        {
+          "path": "site/biocatalyst.js",
+          "mode": "100644",
+          "blob": "ba5e4b2356012cc429cd3600ceff44b5b3d7ddea",
+          "sha256": "f0c7d9256cd57afc9b7ea2d343366f5c9ee895a139f7883543900cae120b99a0",
+          "base_blob": "565ab98b440f95895e5e4477df2c60a00f38d110",
+          "protected_blob": "565ab98b440f95895e5e4477df2c60a00f38d110"
+        },
+        {
+          "path": "templates/biocatalyst.js",
+          "mode": "100644",
+          "blob": "ba5e4b2356012cc429cd3600ceff44b5b3d7ddea",
+          "sha256": "f0c7d9256cd57afc9b7ea2d343366f5c9ee895a139f7883543900cae120b99a0",
+          "base_blob": "565ab98b440f95895e5e4477df2c60a00f38d110",
+          "protected_blob": "565ab98b440f95895e5e4477df2c60a00f38d110"
+        },
+        {
+          "path": "tests/biocatalyst_hydration_harness.js",
+          "mode": "100644",
+          "blob": "2c3613db3b1da23cd898ac296748887c730f23df",
+          "sha256": "f056961fdc91c845ffb1a980bc284f5417867473654d2b982d93656565567bfc",
+          "base_blob": "5e034cc0a65ff6e3a4cb6398e3ae05da846e3fa4",
+          "protected_blob": "5e034cc0a65ff6e3a4cb6398e3ae05da846e3fa4"
+        },
+        {
+          "path": "tests/test_biocatalyst_hydration.py",
+          "mode": "100644",
+          "blob": "f692fc9a7ec6e22e410c9fb0f35ef1945837f6cb",
+          "sha256": "64e559f7d7ab37cd51f6bad0f34160c168fd5ca9019a81e317c1b2eaa6c31a68",
+          "base_blob": "d4bc50aecc7dc47bcee6503dc8ac58d4d48443bb",
+          "protected_blob": "d4bc50aecc7dc47bcee6503dc8ac58d4d48443bb"
+        },
+        {
+          "path": "tests/test_biocatalyst_page.py",
+          "mode": "100644",
+          "blob": "be0e664f2f57c65a51333da8ef77bc9d56062e87",
+          "sha256": "0a762f5fdf945c0a3d177692cd507c7aecc710680b38cdc6768e6fe77ddb81be",
+          "base_blob": "d6b5a9b63d3c8ae4f09aa4239a69c7714bc1dcfd",
+          "protected_blob": "d6b5a9b63d3c8ae4f09aa4239a69c7714bc1dcfd"
+        }
+      ]
+    }
+  ],
+  "dependency_bindings": {
+    "P12.T15": [
+      {
+        "path": "lib/pages.py",
+        "binding": "100644 blob db175c463a31828263b57a3287afba661439a765\tlib/pages.py"
+      },
+      {
+        "path": "lib/seo.py",
+        "binding": "100644 blob 152c9ff3a3a857ae23df2cfe70e00c1e808d7423\tlib/seo.py"
+      },
+      {
+        "path": "templates/_public_nav.html.j2",
+        "binding": "100644 blob 8dae1801aecfdfecb5260e791ec3201a9b684999\ttemplates/_public_nav.html.j2"
+      },
+      {
+        "path": "templates/_public_chrome_css.html.j2",
+        "binding": "100644 blob 168839af83c351ef66f46ec551006bc2f54f9aca\ttemplates/_public_chrome_css.html.j2"
+      },
+      {
+        "path": "templates/_public_chrome_js.html.j2",
+        "binding": "100644 blob 3887524d70d8ce81c04292f192d2d2f6a3317652\ttemplates/_public_chrome_js.html.j2"
+      },
+      {
+        "path": "templates/_public_footer.html.j2",
+        "binding": "100644 blob 13c8207bfa8b94ac819ed28b3b58ea0bc92f20f0\ttemplates/_public_footer.html.j2"
+      },
+      {
+        "path": "requirements.txt",
+        "binding": "100644 blob bdb554b5a46f8f717ab0e1db3c7ed9c27e57a67a\trequirements.txt"
+      }
+    ],
+    "P12.T31": [
+      {
+        "path": "scripts/build_forex.py",
+        "binding": "100644 blob e93a196de98c2e88d7b7054e20fad302a894ff56\tscripts/build_forex.py"
+      },
+      {
+        "path": "templates/forex.html.j2",
+        "binding": "100644 blob 1b214959bd2927a18d565addc86bf903a82cae50\ttemplates/forex.html.j2"
+      },
+      {
+        "path": "templates/forex_r26.css",
+        "binding": "100644 blob 6f5bfc52fed0e4616ab111777357cdd4cead1557\ttemplates/forex_r26.css"
+      },
+      {
+        "path": "templates/theme.css",
+        "binding": "100644 blob 619436f58d37a222d1db7021ba9d52bb3a05a7fa\ttemplates/theme.css"
+      },
+      {
+        "path": "templates/theme.js",
+        "binding": "100644 blob 21a1fb1627ac34badc6078cff486f98486e9b773\ttemplates/theme.js"
+      },
+      {
+        "path": "tests/fixtures/forex_account_owner.js",
+        "binding": "100644 blob 12a2fe85453dcf251652d4790d625f2d487ecbd0\ttests/fixtures/forex_account_owner.js"
+      },
+      {
+        "path": "lib/pages.py",
+        "binding": "100644 blob db175c463a31828263b57a3287afba661439a765\tlib/pages.py"
+      },
+      {
+        "path": "templates/forex_r26_workspace.html.j2",
+        "binding": "100644 blob f4674707662fe8f6ca087a41490ce6a8ba39d6f8\ttemplates/forex_r26_workspace.html.j2"
+      },
+      {
+        "path": "templates/_forex_movement_evidence.html.j2",
+        "binding": "100644 blob 129f35949359a5fb5583b5c2f9e9c89a59ec16e9\ttemplates/_forex_movement_evidence.html.j2"
+      },
+      {
+        "path": "templates/_site_nav.html.j2",
+        "binding": "100644 blob d5c449e9ec498c49007c2de0ced1757a7f36b12d\ttemplates/_site_nav.html.j2"
+      },
+      {
+        "path": "templates/_navlinks.html.j2",
+        "binding": "100644 blob 70fee6eabeb2cfe6d92590da42aa8c3e3733e837\ttemplates/_navlinks.html.j2"
+      }
+    ],
+    "P12.T33": [
+      {
+        "path": "templates/commodities.html.j2",
+        "binding": "100644 blob c03357ee92d7520b0f36193a0dc75012395819e9\ttemplates/commodities.html.j2"
+      },
+      {
+        "path": "engine/china_gold_premium.py",
+        "binding": "100644 blob c7a0c97157a423b89c06179f77416da6e94372f0\tengine/china_gold_premium.py"
+      },
+      {
+        "path": "engine/commodity_signals.py",
+        "binding": "100644 blob c8736e3f46fe547e7237bf0f6f2f7d946f2c2c13\tengine/commodity_signals.py"
+      },
+      {
+        "path": "engine/commodity_inputs.py",
+        "binding": "100644 blob cffe8eba6435a7e4549f7bd55a7c27cfcb5cd4f6\tengine/commodity_inputs.py"
+      },
+      {
+        "path": "engine/commodity_conviction.py",
+        "binding": "100644 blob 764c9e1bc85f793db46030d0875590c2901753aa\tengine/commodity_conviction.py"
+      },
+      {
+        "path": "engine/commodity_alerts.py",
+        "binding": "100644 blob 2f44098eba053417a59e4d4a43e8b1db7aa4823e\tengine/commodity_alerts.py"
+      },
+      {
+        "path": "engine/commodity_index.py",
+        "binding": "100644 blob 0515d2ea2b7b6582310096411a0b2c4855636406\tengine/commodity_index.py"
+      },
+      {
+        "path": "engine/commodity_cycle_state.py",
+        "binding": "100644 blob d306db84cbde280585e405772a7498a5a3b40ff6\tengine/commodity_cycle_state.py"
+      },
+      {
+        "path": "engine/commodity_confluence.py",
+        "binding": "100644 blob fd0bcba33e607dd4987eea328f5193663f7d0ff6\tengine/commodity_confluence.py"
+      },
+      {
+        "path": "engine/commodity_news.py",
+        "binding": "100644 blob 7154de61e8f409b779d81b45873edc6725c9bf8a\tengine/commodity_news.py"
+      },
+      {
+        "path": "lib/pages.py",
+        "binding": "100644 blob db175c463a31828263b57a3287afba661439a765\tlib/pages.py"
+      },
+      {
+        "path": "lib/store.py",
+        "binding": "100644 blob 3a0985944f534be7d771c926d73eb49f53aba140\tlib/store.py"
+      },
+      {
+        "path": "lib/config.py",
+        "binding": "100644 blob b6fc888269876242597da354aaa726c20ed95802\tlib/config.py"
+      },
+      {
+        "path": "config.yml",
+        "binding": "100644 blob 5be75249c98033d7ee0fbe55928713b1f50af627\tconfig.yml"
+      },
+      {
+        "path": "templates/_commodity_decision_workspace.html.j2",
+        "binding": "100644 blob 49f843b43ab79c72a4073a2c81a7491e9986a4cc\ttemplates/_commodity_decision_workspace.html.j2"
+      },
+      {
+        "path": "templates/_china_gold_premium.html.j2",
+        "binding": "100644 blob df106e0beac2c4623574931219e336d0a0ddb8a9\ttemplates/_china_gold_premium.html.j2"
+      },
+      {
+        "path": "templates/commodity-workspace.css",
+        "binding": "100644 blob 05dcb4f2833167a00335352925b4b10b9e57ef89\ttemplates/commodity-workspace.css"
+      },
+      {
+        "path": "templates/commodity-workspace.js",
+        "binding": "100644 blob e1e7f6bfb7c19917251c38e144946c8e4cf39cf7\ttemplates/commodity-workspace.js"
+      },
+      {
+        "path": "templates/theme.css",
+        "binding": "100644 blob 619436f58d37a222d1db7021ba9d52bb3a05a7fa\ttemplates/theme.css"
+      },
+      {
+        "path": "templates/theme.js",
+        "binding": "100644 blob 21a1fb1627ac34badc6078cff486f98486e9b773\ttemplates/theme.js"
+      },
+      {
+        "path": "templates/_site_nav.html.j2",
+        "binding": "100644 blob d5c449e9ec498c49007c2de0ced1757a7f36b12d\ttemplates/_site_nav.html.j2"
+      },
+      {
+        "path": "templates/_navlinks.html.j2",
+        "binding": "100644 blob 70fee6eabeb2cfe6d92590da42aa8c3e3733e837\ttemplates/_navlinks.html.j2"
+      }
+    ],
+    "P12.T36": [
+      {
+        "path": "templates/theme.js",
+        "binding": "100644 blob 21a1fb1627ac34badc6078cff486f98486e9b773\ttemplates/theme.js"
+      },
+      {
+        "path": "site/theme.js",
+        "binding": "100644 blob 78536be83653c850685894eba7d0bf60f0b30305\tsite/theme.js"
+      },
+      {
+        "path": "templates/biocatalyst.html.j2",
+        "binding": "100644 blob 1aa725115a959f0de0f7f0ac288c976497c4e0ca\ttemplates/biocatalyst.html.j2"
+      },
+      {
+        "path": "templates/biocatalyst.css",
+        "binding": "100644 blob 054dee2262ecbbe5f2e40db4e7de647c9159a64e\ttemplates/biocatalyst.css"
+      },
+      {
+        "path": "scripts/build_biocatalyst.py",
+        "binding": "100644 blob 072df6e1fef255c7a7f7df927d8d7dafb77e8aa6\tscripts/build_biocatalyst.py"
+      },
+      {
+        "path": "templates/_site_nav.html.j2",
+        "binding": "100644 blob d5c449e9ec498c49007c2de0ced1757a7f36b12d\ttemplates/_site_nav.html.j2"
+      },
+      {
+        "path": "templates/_navlinks.html.j2",
+        "binding": "100644 blob 70fee6eabeb2cfe6d92590da42aa8c3e3733e837\ttemplates/_navlinks.html.j2"
+      },
+      {
+        "path": "lib/pages.py",
+        "binding": "100644 blob db175c463a31828263b57a3287afba661439a765\tlib/pages.py"
+      }
+    ]
+  },
+  "source_overlays": [
+    {
+      "path": "templates/seo_base.html.j2",
+      "original_reviewed_blob": "9a61ddc8cadb0f2404cfd4e04129d13fd22e66ae",
+      "original_reviewed_sha256": "b68cdfa9e13f72ab9e611479e75ca1553dd3ebe213b811739e5db26e62b72f51",
+      "current_blob": "a65fa473ec5408f9a7946bcd4b9f824e882557fc",
+      "current_sha256": "1102f8a0e0afda73b5fb12cc4bbc14f45b0104eb63a25e22e956fd52d7905336",
+      "reason": "P12.T38.S1 StrictUndefined optional-family backward compatibility; actualcaller causalRED\u2192GREEN; all71 free-estate output bytes unchanged; no capture/restamp/newvisualclaim"
+    },
+    {
+      "path": "tests/test_free_content.py",
+      "original_reviewed_blob": "60064ba27f0f86a51cb95855738940d9627302dd",
+      "original_reviewed_sha256": "aebc0b361396a89fcc676a4267f8070beb1684bcbccc2875cc06454e9668c4e4",
+      "current_blob": "ae64aaa6fea4ae2071cc33e994b6761b35a10301",
+      "current_sha256": "40bb49a0d9a4fe5d23dd0e7e0e8734f8dc013f3b3f7c3ac7951a69e08ce7c925",
+      "reason": "P12.T38.S1 StrictUndefined optional-family backward compatibility; actualcaller causalRED\u2192GREEN; all71 free-estate output bytes unchanged; no capture/restamp/newvisualclaim"
+    }
+  ],
+  "release_partition": {
+    "authority": "originalroot01a15e6c current source-release disposition2026-11-03",
+    "scope": [
+      "Learning",
+      "Forex",
+      "Gold",
+      "Bio"
+    ],
+    "excluded_entire_family": "WhiteHouse T34+T35 source, packet, evidence and generated output",
+    "held_source": "e05aa9473a99842daae65eb3d76bc9b027ca152a",
+    "held_frozen_runtime": "349e12c9b7f64c7e5452215db15a9d1ffb292b22",
+    "genuine_rig_verdict": "REVISE, case1d04617423229e37871b1615a7fb05433b35a3b3; no approval or receipt",
+    "revision_owner": "ProductIntegration separate actualSSDtree; originalprogramme obligation remains",
+    "programme": "https://github.com/mastermindx-market-intelligence/macro/pull/7949#issuecomment-6589273748",
+    "no_packet_only_hide_or_runtime_completion_claim": true
+  },
+  "current_base_integration": {
+    "base": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+    "parents_before_merge": [
+      "537a7d01669e2806e30918f2cd7901f548fac39e",
+      "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a"
+    ],
+    "accepted_input_source_files": 19,
+    "exact_original_input_files": 17,
+    "explicit_source_overlays": 2,
+    "source_dependency_records_unchanged": 48,
+    "incoming_pipeline_paths_preserved": true,
+    "only_content_conflict": "site/whitehouse.html; currentmain output retained as wholeWhiteHousebundle is excluded",
+    "incoming_nonpipeline_changes": [
+      "scripts/agentos.py",
+      "tests/test_agentos_schema.py"
+    ],
+    "no_old_data_or_site_snapshot_transplant": true
+  },
+  "required_scope_repair": {
+    "path": ".github/ci/legacy-jobs.yml",
+    "only_job": "commodities-research-workspace",
+    "only_three_paths": [
+      "scripts/audit_china_gold_premium.py",
+      "templates/_china_gold_premium.html.j2",
+      "tests/test_china_gold_premium.py"
+    ],
+    "root_custody_ruling": "https://github.com/mastermindx-market-intelligence/macro/pull/10607#issuecomment-6617221218",
+    "patch_sha256": "925701a3c59efb1d3cb0adc894e245f9b1ced6971e01b00817108cb626d8d7ce",
+    "preserved": "Every other row/field/step/budget; no admission/timeout/packing change",
+    "actual_incumbent_infer_and_select": "RED3missing\u2192GREEN3selected"
+  },
+  "qualification": {
+    "causal_optional_family": "oldminimalRED1/controlPASS1; actualexistingPrivatePublicationRED1; fixedbreadcrumb10PASS and private5module169PASS; overlapnotdoublesummed",
+    "output_parity": "Final four-family current-base build_free_content --check:71 byte-identical/no-orphans",
+    "original_ci": "41702898407 attempt1NOTPASS:342pass2failed3notrun; actualtested8f927treeDDC; notproof of source corrections",
+    "source_reviews": "Unchanged source/visual reviews retained at original identities; explicit byte-equivalent output correction overlay, no retrospective RIG claim",
+    "next": "Finalsource/output/scope/RIGguards\u2192one normalcorrective authoredproof\u2192qualifiedprotectedbotrelease\u2192ordinarypublication/servedqualification underholds",
+    "rig_gate": "Current four-family tree reference-integrity clean; T35 entire bundle excluded, REVISE preserved separately"
+  },
+  "effect_limits": "No originalCI replay/cancel/manualdispatch, selfmerge/approval, provider/acquisition/account/SQL/host/runtimeactivation, Person1/refused-browser bypass or UNKNOWN clearance.",
+  "original_composition_base": "fbe228fb24810ad6fc5a3c6c1c4e814ad50c8e33"
+}

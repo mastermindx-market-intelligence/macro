@@ -1,0 +1,49 @@
+{
+  "attrition": {
+    "close_vs_close_price_rows_agreeing_rel_1e-6": 9235,
+    "close_vs_close_price_rows_compared": 9235,
+    "cohort_rows": 9235,
+    "dropped_har_nan": 0,
+    "dropped_label_incomplete": 21,
+    "dropped_trailing_incomplete": 0,
+    "dropped_vix_missing": 4,
+    "gspc_days_from_1990": 9260
+  },
+  "authority": "none",
+  "cohort_first": "1990-01-02",
+  "cohort_last": "2026-09-08",
+  "decision_bearing": false,
+  "incumbent_cone_vs_forward_vol_21_r2": {
+    "n_rows": 9235,
+    "note": "squared Pearson corr, full cohort, descriptive",
+    "r2": 0.45616287448970566
+  },
+  "incumbent_vrp_vol_points": {
+    "definition": "VIX - cone_vol_ann*100 (engine/vol_regime.py), volatility points",
+    "frac_positive": 0.9593936112615051,
+    "mean": 6.261010544230044,
+    "median": 6.127081951672194,
+    "n_rows": 9235
+  },
+  "inputs_sha256": {
+    "PREREG.md": "97ec3b0439a46cd9de225a993730114e196c916918c89818a7db70fc32c4ff56",
+    "engine/vol_forecast.py": "bcd6ec2cc8c116b469173ab475dc495be7e024b4ea452b9d1cf6de58301e06c0",
+    "engine/vol_horizon_variance_premium.py": "149d83b67615e2566c8abc2da8bfb5a8079e139507d14ee8571493007737cb68",
+    "evaluate.py": "6b65b3b61131e7d6d0b5fc7ca31a96a539585e1cf00d80bacb02ea6dcd953164",
+    "fred/VIXCLS.parquet": "9c2cf59813a9415be7c657f1a312f5e86673a82de6e99dab65d882946b85a25a",
+    "yahoo/_GSPC.parquet": "35570905ff8d16c2284cd02cc32ebcfa7f67f025638e00783a7390ecb0358ac1",
+    "yahoo/_VIX.parquet": "cc85989435aecf3c24fd4ca24fac8979e771577543a4a73c609e4e903b57228e"
+  },
+  "mode": "baseline",
+  "unit_mismatch_receipt": {
+    "corr_volpts_vs_horizon_variance_premium": 0.846979517737522,
+    "rate_volpts_negative_and_hv_premium_positive": 0.0,
+    "rate_volpts_positive_and_hv_premium_negative": 0.0,
+    "sign_disagreement_rate": 0.0
+  },
+  "vixcls_vs_yahoo_vix": {
+    "max_abs_diff": 2.610000839233397,
+    "rows_abs_diff_gt_0p05": 9,
+    "rows_compared": 9235
+  }
+}

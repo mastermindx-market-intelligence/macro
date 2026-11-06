@@ -1,0 +1,113 @@
+{
+  "observed_at": "2026-10-20T15:01:14Z",
+  "pr_head": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f",
+  "runs": [
+    {
+      "id": 39443973732,
+      "name": "fences",
+      "event": "pull_request",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+    },
+    {
+      "id": 39443974109,
+      "name": "ci",
+      "event": "pull_request",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+    },
+    {
+      "id": 39443965273,
+      "name": "ci-authority",
+      "event": "pull_request_target",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+    }
+  ],
+  "first_checks": [
+    {
+      "id": 118701006866,
+      "name": "ci-authority/main",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+    },
+    {
+      "id": 118701000994,
+      "name": "ci-authority/codex/merge-queue-pilot",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+    },
+    {
+      "id": 118700870245,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+    },
+    {
+      "id": 118700869885,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+    },
+    {
+      "id": 118700869678,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+    },
+    {
+      "id": 118700868857,
+      "name": "contract-delta",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+    },
+    {
+      "id": 118700868520,
+      "name": "ci-plan",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+    },
+    {
+      "id": 118700868252,
+      "name": "fence-pack",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+    },
+    {
+      "id": 118700839017,
+      "name": "ci-authority",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+    }
+  ],
+  "host_ancestry": {
+    "base": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+    "host": "4b6e6ea52676308d0f239bb8e9c74af230e61039",
+    "ahead": 1,
+    "behind": 0,
+    "sole_changed_path": "site/stocks/earnings/route-catalog.json",
+    "source": "https://api.github.com/repos/mastermindx-market-intelligence/macro/compare/3b49d6a5c8a6330652a926a8e5061e0dbb3d0387...4b6e6ea52676308d0f239bb8e9c74af230e61039"
+  },
+  "provider_handoff": {
+    "browser": "existing connected Chrome0",
+    "tab": "1065717081",
+    "entry": "https://console.dnspod.cn/",
+    "observed_title": "Sign in - Tencent Cloud",
+    "authenticated": false,
+    "record_mutation": false,
+    "local_network_permission_granted": false
+  },
+  "scope": "Timestamped first hosted observation only. Later ci-plan and fence-pack success observed15:01. Remaining checks pending; no hosted admission, arm or publication claimed."
+}

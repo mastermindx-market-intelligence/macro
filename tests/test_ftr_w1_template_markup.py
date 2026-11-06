@@ -11,6 +11,7 @@ These are display-tier / de-escalation additions (FT-R2, PS-R3, PS-W2-F, FT-R11)
 """
 from __future__ import annotations
 
+import html as html_lib
 import re
 from pathlib import Path
 
@@ -102,14 +103,14 @@ class TestFtrStaticSource:
         """
         src = _src("allocation.html.j2")
         assert "FT-R11 horizon label" in src
-        # the horizon, and that it is slow by construction
-        assert "A slow book" in src
+        # the horizon stays explicit while the Tier-1 wording remains plain.
+        assert "Slow-moving view" in src
         assert "3–12 month trends" in src
-        assert "most recent month deliberately excluded" in src
-        # the consequence the label exists to state: it is not an intraday read
-        assert "reacts over months, not days" in src
-        # Law 5 — honesty survives translation (the ZH twin carries the same claim)
-        assert "慢速账本" in src
+        assert "deliberately ignores the most recent month" in src
+        # Law 5 — honesty survives translation (the ZH twin carries the same claim).
+        assert "慢速视角" in src
+        assert "3–12个月趋势" in src
+        assert "刻意忽略最近一个月" in src
 
     def test_basket_detail_nb_chg_spans(self):
         """basket_detail must emit nb-chg spans for member live-price wiring."""
@@ -149,3 +150,100 @@ class TestFtrBasketsRender:
         """Registry div must NOT be emitted when basket_member_syms is empty."""
         html = _render_baskets([])
         assert "ftr-member-sym-registry" not in html
+
+
+# Allocation primary-copy and progressive-disclosure contracts.
+ROOT = Path(__file__).resolve().parents[1]
+TEMPLATE = ROOT / "templates" / "allocation.html.j2"
+SITE = ROOT / "site" / "allocation.html"
+
+
+def _glance_text(path: Path) -> str:
+    text = path.read_text(encoding="utf-8")
+    text = re.sub(r"<script\b.*?</script>", " ", text, flags=re.I | re.S)
+    text = re.sub(r"<style\b.*?</style>", " ", text, flags=re.I | re.S)
+    text = re.sub(r"<details\b.*?</details>", " ", text, flags=re.I | re.S)
+    text = re.sub(r"<[^>]+>", " ", text)
+    return " ".join(html_lib.unescape(text).split())
+
+
+def test_template_uses_plain_primary_section_names() -> None:
+    src = TEMPLATE.read_text(encoding="utf-8")
+    for phrase in (
+        "Lower-risk option",
+        "What to add or trim",
+        "Theme leadership",
+        "Leadership handoff",
+        "Long-history check",
+        "How Mastermind AI uses this page",
+        "Emerging themes",
+    ):
+        assert phrase in src
+    for old in (
+        "Optional de-risk overlay",
+        "Buy & sell entries — the playbook",
+        "Narrative lifecycle board",
+        "What is actually validated — sector backtest",
+        "AI desk guardrails",
+        "Candidate themes — discovery radar",
+    ):
+        assert old not in src
+
+
+def test_theme_table_keeps_quant_receipts_off_the_glance_columns() -> None:
+    src = TEMPLATE.read_text(encoding="utf-8")
+    start = src.index("<!-- ============ 02")
+    end = src.index("<!-- ============ 03", start)
+    board = src[start:end]
+    assert ">Hurst<" not in board
+    assert "{{ t('Score', '评分') }}" not in board
+    assert "zfmt(cr.crowding_z)" in board  # retained only as a tooltip receipt
+    assert "t('Crowded','拥挤')" in board
+    assert "t('Normal','正常')" in board
+
+
+def test_long_history_details_keep_machine_statistics_behind_click() -> None:
+    src = TEMPLATE.read_text(encoding="utf-8")
+    start = src.index("<!-- ============ 04")
+    end = src.index("<!-- ============ 05", start)
+    history = src[start:end]
+    assert '<details class="study-details">' in history
+    assert "See long-history evidence" in history
+    assert "Test strength" in history
+    assert "DSR" in history  # exact receipt still exists inside disclosure
+    assert "B.verdict[k]" not in history
+    for raw in ("validated_risk_control", "display_only", "modest_or_none", "no_basket_drawdown_edge"):
+        assert raw not in history
+
+
+def test_ai_rules_are_human_copy_not_raw_contract_fields() -> None:
+    src = TEMPLATE.read_text(encoding="utf-8")
+    start = src.index("<!-- ============ 05")
+    end = src.index("<!-- live desk", start)
+    ai = src[start:end]
+    for raw_expr in ("A.overall_verdict", "A.reader_contract", "A.do_not_conclude", "A.ai_directive"):
+        assert raw_expr not in ai
+    assert '<details class="panel study-details ai-use">' in ai
+
+
+def test_committed_allocation_glance_has_no_machine_language() -> None:
+    text = _glance_text(SITE)
+    for required in (
+        "Lower-risk option",
+        "Theme leadership",
+        "Leadership handoff",
+        "Long-history check",
+        "Emerging themes",
+    ):
+        assert required in text
+    for banned in (
+        "DSR",
+        "Hurst",
+        "validated_risk_control",
+        "display_only",
+        "discipline_not_prediction",
+        "rank-IC",
+        "z 1.91",
+        "What is actually validated",
+    ):
+        assert banned not in text

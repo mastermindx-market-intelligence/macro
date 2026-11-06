@@ -1,0 +1,80 @@
+{
+  "started_at": "2026-10-20T18:47:16.850453+00:00",
+  "source_head": "6d56650ea21395e7ffb0412bde73881b58dd1a66",
+  "source_tree": "b0f7a0741674509745401aded2c112434e9b4130",
+  "scope": "Existing source-bound About fixture replay after merged theme changed; same capture owner, no Terminal/public beta/auth proof",
+  "sources": {
+    "/tmp/shared-shell-local-browser-r7-20261019/kit/fixture_manifest.py": "de0e099766a8a6e3e0867b76ca5d7887886e48d3a7401a451aa4f7062ab049eb",
+    "/tmp/shared-shell-local-browser-r7-20261019/kit/serve-readonly-macro.py": "b97d97aab8a9a1aa90babd83ee5cc4bacd99f8f6d937804debcaff1dac1d47e6",
+    "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-about-replay.py": "b581a66aaea7aa0b85d8c0154d43932fadbf8324458c96efa86741bdd53b7840",
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/scripts/capture_page_evidence.py": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16"
+  },
+  "commands": [
+    {
+      "name": "manifest",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "/tmp/shared-shell-local-browser-r7-20261019/kit/fixture_manifest.py",
+        "--macro-root",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "--macro-head",
+        "6d56650ea21395e7ffb0412bde73881b58dd1a66",
+        "--out",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-about-manifest.json"
+      ],
+      "started_at": "2026-10-20T18:47:16.851539+00:00",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:47:42.608789+00:00",
+      "log_bytes": 274,
+      "log_sha256": "14d4f58a321d32318a6fc5ef11c690dd7ddf8f9cb9dcdeee2e05e140b0fecff9"
+    },
+    {
+      "name": "capture",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-about-replay.py",
+        "--head",
+        "6d56650ea21395e7ffb0412bde73881b58dd1a66"
+      ],
+      "started_at": "2026-10-20T18:47:42.843546+00:00",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:48:04.459423+00:00",
+      "log_bytes": 3198,
+      "log_sha256": "f37f3abd7b52b44b926ee9528d38e3dffa6bae6f5ee28e9a215fe2a4a0b96aff"
+    }
+  ],
+  "manifest": {
+    "sha256": "612bd886456c76f00fcfd83ecdf542d6720be5891c8ea521b5309333dc5587f3",
+    "files": 53,
+    "total_bytes": 3549758
+  },
+  "server": {
+    "pid": 69153,
+    "args": [
+      "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+      "-B",
+      "/tmp/shared-shell-local-browser-r7-20261019/kit/serve-readonly-macro.py",
+      "--site-dir",
+      "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/site",
+      "--manifest",
+      "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-about-manifest.json"
+    ],
+    "started_at": "2026-10-20T18:47:42.611793+00:00",
+    "exit": -15,
+    "closed_at": "2026-10-20T18:48:04.467119+00:00"
+  },
+  "capture": {
+    "sha256": "18ee49b23fe4fb69675942c289d0799dd1a1d154d2efabccdcf455634498796d",
+    "cells": 8,
+    "ordered_tabs_per_cell": 18,
+    "browser": "151.0.7922.34",
+    "pass": true
+  },
+  "pass": true,
+  "source_unchanged": true,
+  "head_unchanged": true,
+  "worktree_clean": true,
+  "finished_at": "2026-10-20T18:48:05.398789+00:00"
+}

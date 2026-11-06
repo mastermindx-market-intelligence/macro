@@ -114,6 +114,20 @@ html[data-theme="dark"] .theme-switch .knob::before{content:"🌙"}
 .sec-sub{font-size:13px;color:var(--muted);margin:0 2px 14px}
 .card{background:var(--card);border:1px solid var(--grid);border-radius:18px;padding:22px}
 .grid{display:grid;gap:16px}.cols-2{grid-template-columns:1fr 1fr}
+.deal-terms{margin-bottom:16px;scroll-margin-top:100px}
+.deal-terms h3{margin:0 0 8px;color:var(--ink);font-size:20px}
+.deal-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:20px 0}
+.deal-facts dt,.deal-clock{font-size:12px;color:var(--muted);line-height:1.6}
+.deal-facts dd{margin:4px 0 0;font-size:20px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.deal-terms p{line-height:1.65}.deal-terms details{border-top:1px solid var(--grid);padding-top:12px}
+.deal-terms summary{cursor:pointer;color:var(--acc);font-weight:600}.deal-terms a{overflow-wrap:anywhere;color:var(--acc)}
+.deal-path{width:100%;height:auto;display:block;border-bottom:1px solid var(--grid)}
+.deal-price-line{fill:none;stroke:var(--acc);stroke-width:2;vector-effect:non-scaling-stroke}
+.deal-offer-line{stroke:var(--muted);stroke-width:1;stroke-dasharray:5 5}
+.deal-path-labels{display:flex;justify-content:space-between;gap:16px;color:var(--muted);font-size:12px;line-height:1.6}
+html[data-theme="light"] .deal-terms{box-shadow:var(--card-shadow)}
+html[data-theme="dark"] .deal-terms{background:linear-gradient(180deg,var(--panel2),var(--card) 65%)}
+@media(max-width:500px){.deal-facts{grid-template-columns:1fr 1fr;gap:14px}.deal-facts dd{font-size:18px}.deal-path{height:170px}.deal-path-labels{flex-direction:column;gap:4px}}
 @media(max-width:900px){.cols-2{grid-template-columns:1fr}}
 
 /* ---------- AVOID panel — the honest deliverable ---------- */
@@ -429,6 +443,9 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
         <span class="stance {{ 'warn' if pipeline.froth_flags and 'spac' in pipeline.froth_flags else 'acc' }}">{{ t(pipeline.stance_en or 'Normal issuance', pipeline.stance_zh or '发行正常') }}</span>
         <span class="asof" style="font-size:11px">{{ pipeline.priced_90d }} {{ t('priced · 90d','定价 · 90天') }}</span>
       </div>
+      {% if pipeline.median_op_size_disp %}<div class="mini">
+      {{ t('Median operating-company deal size · 90d','90天经营公司交易规模中位数') }}:
+      {{ pipeline.median_op_size_disp }}</div>{% endif %}
     </div>
   </div>
 
@@ -491,18 +508,25 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
   <!-- ============ LOCK-UP CLIFF — the most actionable leg ============ -->
   {% if lockup_timeline and lockup_timeline.markers %}
   <div class="sec">{{ t('Lock-up cliff','解禁悬崖') }} <span class="sec-hint">{{ t('the one thing worth watching','唯一值得关注的一环') }}</span></div>
-  <div class="sec-sub">{{ t('~180 days after listing, insider / VC / PE shares un-lock into a thin float — a documented one-sided supply push. The date is free and deterministic. It is a “don’t add into the cliff” flag, not a short.','上市约180天后，内部人／风投／私募股份解禁冲击稀薄流通盘 —— 有据可查的单边供给压力。日期免费且确定。这是“临近解禁勿加仓”的提示，而非做空。') }}</div>
+  <div class="sec-sub">{{ t('~180 days after listing, insider / VC / PE shares un-lock into a thin float — a documented one-sided supply push. The dates below are modeled estimates, not verified release events. It is a “don’t add into the cliff” flag, not a short.','上市约180天后，内部人／风投／私募股份解禁冲击稀薄流通盘 —— 有据可查的单边供给压力。以下日期是模型估算，并非已核实的实际解禁事件。这是“临近解禁勿加仓”的提示，而非做空。') }}</div>
   <div class="card">
     <div class="cliff-lead">
-      {% if lockup_timeline.next %}{% set nd = lockup_timeline.next.days_to %}<div class="cliff-next">{{ t('Next un-lock','下一解禁') }}: <b>{{ lockup_timeline.next.ticker }}</b> · {{ lockup_timeline.next.date }}{% if lockup_timeline.next.size_disp %} · {{ lockup_timeline.next.size_disp }}{% endif %} <span class="cliff-meta">({% if nd == 0 %}{{ t('today','今天') }}{% elif nd is not none and nd > 0 %}{{ t('in ' ~ nd ~ 'd','' ~ nd ~ '天后') }}{% elif nd is not none %}{{ t((-nd) ~ 'd ago','' ~ (-nd) ~ '天前') }}{% endif %})</span></div>{% endif %}
+      {% if lockup_timeline.next %}{% set nd = lockup_timeline.next.days_to %}<div class="cliff-next">{{ t('Next modeled expiry','下一个估算到期日') }}: <b>{{ lockup_timeline.next.ticker }}</b> · {{ lockup_timeline.next.date }}{% if lockup_timeline.next.size_disp %} · {{ lockup_timeline.next.size_disp }}{% endif %} <span class="cliff-meta">({% if nd == 0 %}{{ t('today','今天') }}{% elif nd is not none and nd > 0 %}{{ t('in ' ~ nd ~ 'd','' ~ nd ~ '天后') }}{% elif nd is not none %}{{ t((-nd) ~ 'd ago','' ~ (-nd) ~ '天前') }}{% endif %})</span></div>{% endif %}
       <div class="cliff-meta">{{ lockup_timeline.approaching }} {{ t('approaching ≤45d','临近 ≤45天') }} · {{ lockup_timeline.just_expired }} {{ t('just un-locked','刚解禁') }}</div>
+      {% if lockup_summary and lockup_summary.n is number and lockup_summary.n > 0 %}
+      <div class="cliff-meta">{{ t(lockup_timeline.confirmed ~ ' of ' ~ lockup_summary.n
+      ~ ' modeled dates use a prospectus-derived day count;'
+      ~ ' the rest assume 180 days. Actual releases can depend on conditions and waivers.','在跟踪的' ~ lockup_summary.n
+      ~ '个估算日期中，' ~ lockup_timeline.confirmed
+      ~ '个采用招股书中的期限；其余假设180天。实际解禁可能附带条件或获豁免。')
+      }}</div>{% endif %}
     </div>
     <div class="timeline">
       <div class="tl-axis"></div>
       <div class="tl-today" style="left:20%"><span class="tl-lbl">{{ t('TODAY','今天') }}</span></div>
       {% for m in lockup_timeline.markers %}
       <div class="tl-mark {{ m.size_bucket }} {{ m.status }}" tabindex="0" style="left:{{ (m.pos_frac*100)|round(1) }}%">
-        <span class="tl-tip"><b>{{ m.ticker }}</b> · {{ m.company }}<br>{{ t('un-locks','解禁') }} {{ m.expiry_date }}{% if m.size_disp %} · {{ m.size_disp }}{% endif %}<br>{{ t('lock-up','禁售') }} {{ m.lockup_days or 180 }}d{% if not m.confirmed %} <span style="color:var(--faint)">({{ t('est','估') }})</span>{% endif %}</span>
+        <span class="tl-tip"><b>{{ m.ticker }}</b> · {{ m.company }}<br>{{ t('modeled expiry','估算到期日') }} {{ m.expiry_date }}{% if m.size_disp %} · {{ m.size_disp }}{% endif %}<br>{{ t('lock-up','禁售') }} {{ m.lockup_days or 180 }}d{% if not m.confirmed %} <span style="color:var(--faint)">({{ t('est','估') }})</span>{% endif %}</span>
       </div>
       {% endfor %}
       <div class="tl-scale"><span>{{ t('30d ago','30天前') }}</span><span>{{ t('+45d','+45天') }}</span><span>{{ t('+120d','+120天') }}</span></div>
@@ -514,10 +538,52 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
       <span class="k" style="margin-left:auto">{{ t('dot size = deal size','点大小＝交易规模') }}</span>
     </div>
     <div class="note warn">{{ t('Don’t add into the cliff. This is a supply-date calendar, not a forecast — history shows no reliable tradeable edge here.','临近解禁勿加仓。这是供给日历，而非预测 —— 历史上此处没有可靠、可交易的优势。') }}{{ qtip(lockup_receipt_en or 'Field & Hanka document a small one-sided drift (~−1.5%, ~−3% for VC-backed names) with ~+40% volume around unlock. Our own event study of recent unlocks finds no measurable, tradeable edge on a small, survivorship-biased sample. Lock-up length is prospectus-confirmed where available, else the 180-day market standard.', lockup_receipt_zh or 'Field & Hanka 记录到解禁前后约 −1.5%（风投支持约 −3%）的小幅单边漂移，成交量约 +40%。我们对近期解禁的事件研究在小样本（含幸存者偏差）上未发现可测量、可交易的优势。禁售期长度在可得时取自招股书，否则取 180 天市场标准。') }}</div>
+    {% if lockup_p0 %}<div class="mini">{{ t(
+      'Our event study of ' ~ lockup_p0.n_names ~ ' recent un-locks (to ' ~ lockup_p0.as_of
+      ~ '): the average return vs the S&P 500 ' ~ lockup_p0.window_en
+      ~ ' was ' ~ lockup_p0.mean_disp ~ '; ' ~ lockup_p0.pct_negative
+      ~ '% of names fell behind it. Verdict: ' ~ lockup_p0.verdict_en ~ '.','我们对截至'
+      ~ lockup_p0.as_of ~ '的' ~ lockup_p0.n_names ~ '次近期解禁的事件研究：'
+      ~ lockup_p0.window_zh ~ '相对标普500的平均回报为' ~ lockup_p0.mean_disp
+      ~ '；' ~ lockup_p0.pct_negative ~ '%的标的跑输。结论：'
+      ~ lockup_p0.verdict_zh ~ '。'
+    ) }}</div>{% endif %}
   </div>
   {% endif %}
 
   <!-- ============ AFTERMARKET chart ============ -->
+  {% if prospectus_deals %}
+  <div class="sec">{{ t('Inside one IPO','一宗新股的发行细节') }} <span class="sec-hint">{{ t('Filed terms + actual price history','披露条款与实际价格历史') }}</span></div>
+  <p class="sec-sub">{{ t('A source-qualified deal example. Broader pricing precedents and allocation data are not covered.','经原始来源核实的个案；尚不涵盖更广泛的定价先例或配售数据。') }}</p>
+  {% for deal in prospectus_deals %}
+  <article class="card deal-terms" id="deal-{{ deal.ticker }}">
+    <h3>{{ deal.ticker }} · {{ deal.company }}</h3>
+    <p class="deal-clock">{{ t('Prospectus','招股书日期') }} {{ deal.prospectus_date }} · {{ t('First trade','首个交易日') }} {{ deal.first_trade_date }} · {{ t('Class A common stock','A类普通股') }}</p>
+    <dl class="deal-facts">
+      <div><dt>{{ t('Offering price','发行价') }}</dt><dd>${{ deal.offer_price }}</dd></div>
+      <div><dt>{{ t('Issuer shares','公司新发股数') }}</dt><dd>{{ deal.primary_shares_disp }}</dd></div>
+      <div><dt>{{ t('Selling-holder shares','股东出售股数') }}</dt><dd>{{ deal.secondary_shares_disp }}</dd></div>
+    </dl>
+    <p><strong>{{ t('Greenshoe option','超额配售选择权') }}</strong> · {{ t('Up to','最多') }} {{ deal.option_max_shares_disp }} {{ t('additional shares within','额外股份，期限') }} {{ deal.option_days }} {{ t('days. This is the option limit; exercise is not established here.','天。这是选择权上限，本页没有核实实际行权情况。') }}</p>
+    <p><strong>{{ t('Conditional lockup','附条件禁售期') }}</strong> · {{ t('Ends at the earlier of the second trading day after earnings for the quarter ending','以下两者中较早者：截至') }} {{ deal.lockup_earnings_quarter }} {{ t('or','季度业绩公布后的第二个交易日，或招股书日期后') }} {{ deal.lockup_max_days }} {{ t('days after the prospectus date. No actual release date or freely tradable float is established here.','天。本页没有核实实际解禁日期或自由流通股数。') }}</p>
+    <p class="deal-clock">{{ t('Limited exceptions apply. Eligible employees who are neither selling holders nor Section 16 officers may have','条款有例外：并非售股股东或第16条高管的合资格员工，其') }} {{ deal.employee_release_percent }}{{ t('% of then-held shares and vested equity released on the second trading day following','%当时持有的股份及已归属股权可在截至') }} {{ deal.employee_earnings_quarter }} {{ t('quarter earnings. J.P. Morgan may waive restrictions; transfer exceptions also apply.','季度业绩公布后的第二个交易日解禁。摩根大通可豁免限制，另有转让例外。') }}</p>
+    {% if deal.path_points %}
+    <h4>{{ t('Aftermarket price path','上市后价格路径') }}</h4>
+    <p class="deal-clock">{{ t('Daily close · dashed line: offering price','每日收盘价 · 虚线：发行价') }} ${{ deal.offer_price }} · {{ t('highest observed close','最高已观察收盘价') }} ${{ deal.high_close }}</p>
+    <svg class="deal-path" viewBox="0 0 880 185" preserveAspectRatio="none" role="img" aria-label="{{ deal.ticker }} unadjusted daily closes / 每日未复权收盘价">
+      <line class="deal-offer-line" x1="20" x2="860" y1="{{ deal.offer_y }}" y2="{{ deal.offer_y }}"/>
+      <polyline class="deal-price-line" points="{{ deal.path_points }}"/>
+    </svg>
+    <div class="deal-path-labels"><span>{{ deal.first_close_date }} · {{ t('first available close','首个可用收盘价') }} ${{ deal.first_close }}</span><span>{{ deal.latest_date }} · ${{ deal.latest_close }}</span></div>
+    <p class="deal-clock">{{ t('Native daily unadjusted closes, read retrospectively. The offering price was available to allocated buyers; buying at the first close is a different entry. This is not an investable return or causal claim.','原生每日未复权收盘价的回顾性展示。发行价属于获配买方，以首日收盘价买入是不同的入场点；本页不表示可投资回报或因果结论。') }}</p>
+    {% else %}<p>{{ t('Daily price history unavailable.','每日价格历史暂不可用。') }}</p>{% endif %}
+    <details><summary>{{ t('Source and timing','原始来源与时间') }}</summary>
+      <p><a href="{{ deal.source_url }}" target="_blank" rel="noopener noreferrer">{{ t('SEC final prospectus · 424B4','SEC最终招股书 · 424B4') }}</a> · {{ deal.accession }}</p>
+      <p class="deal-clock">{{ t('Filed','披露时间') }} {{ deal.filed_at }} · {{ t('Retrieved','本系统读取时间') }} {{ deal.retrieved_at }}. {{ t('The later retrieval does not make this a new announcement. Read the prospectus for all exceptions.','较晚的读取时间不代表这是新公告。完整例外请查阅招股书。') }}</p>
+    </details>
+  </article>
+  {% endfor %}
+  {% endif %}
   <div class="sec">{{ t('The aftermarket trade','二级市场交易') }} <span class="sec-hint">{{ t('IPO & IPOX vs the S&P · 5y, rebased','新股与IPOX对比标普 · 5年，归一') }}</span></div>
   <div class="card">
     {% if chart_aftermarket %}<div class="after-chart">{{ chart_aftermarket|safe }}</div>{% endif %}
@@ -549,7 +615,9 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
     {% endfor %}
   </div>
   {% else %}
-  <div class="empty">{{ t('No new deals on the near-term calendar right now — the pipeline is quiet.','近期日历上暂无新交易 —— 发行管道清淡。') }}</div>
+  <div class="empty">{{ t('No deals are expected to price in the near term.','近期暂无预计定价的交易。')
+  }}{% if pipeline.filed_n is number %} {{ t(pipeline.filed_n ~ ' more filed but have no price'
+  ~ ' date yet.','另有' ~ pipeline.filed_n ~ '家已披露未定价。') }}{% endif %}</div>
   {% endif %}
 
   <!-- ============ STUDY SHELVES — progressive disclosure ============ -->
@@ -605,7 +673,7 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
         {% elif rev_total %}
         <div class="mini" style="opacity:.85">{{ t('“Demand vs range” (final offer price vs the marketed prospectus range) is the strongest day-1 pop predictor in the literature, but a marketed range accrues only for deals captured before they price — covers','“需求对比区间”（最终发行价对比招股书营销区间）是文献中首日涨幅最强的预测因子，但营销区间仅对定价前已捕获的交易累积 —— 目前覆盖') }} {{ rev_coverage }}/{{ rev_total }} {{ t('recent deals so far, so the column is held back until coverage builds. Display-only, never scored.','近期交易，故在覆盖累积前暂不显示该列。仅供展示，从不计分。') }}</div>
         {% endif %}
-        <div class="mini">{{ t('SPACs are flagged, never dropped: they price at $10, rarely pop, and distort IPO base rates. Per-name price return vs the offer is shown only where we already hold the series — most fresh IPOs are outside our coverage, so we don’t fabricate it.','SPAC 被标记而非剔除：它们以 $10 定价、极少爆涨，会扭曲新股基准比率。相对发行价的个股回报仅在我们已持有序列时显示 —— 多数新上市公司不在覆盖范围内，故不会虚构。') }}</div>
+        <div class="mini">{{ t('SPACs are flagged, never dropped: they price at $10, rarely pop, and distort IPO base rates.','SPAC 被标记而非剔除：它们以 $10 定价、极少爆涨，会扭曲新股基准比率。') }}</div>
       </div>
     </details>
     {% endif %}

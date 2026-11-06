@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-15T07:26:16.446229+00:00",
+  "source": "634750adc150165d5d336c2c5df5a414b6e266e4",
+  "main": "aafbe3bc722319358b296aac78137f13a198df4f",
+  "returncode": 0,
+  "stdout": "651be6249d125e2a1efd8300ffad66bdb312cfad\n",
+  "stderr": "",
+  "scope": "Read-only merge preview; no branch/base integration."
+}

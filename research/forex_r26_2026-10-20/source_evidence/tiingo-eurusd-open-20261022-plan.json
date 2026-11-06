@@ -1,0 +1,29 @@
+{
+  "complete_history_proven": false,
+  "execution_authorized": false,
+  "execution_progress": "NOT_OBSERVED",
+  "items": [
+    {
+      "ordinal": 0,
+      "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-22&resampleFreq=1min&startDate=2026-10-22",
+      "source": "forex-bars",
+      "symbol": "eurusd"
+    },
+    {
+      "ordinal": 1,
+      "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-22&resampleFreq=4hour&startDate=2026-10-22",
+      "source": "forex-bars",
+      "symbol": "eurusd"
+    }
+  ],
+  "network": false,
+  "next_offset": null,
+  "offset": 0,
+  "plan_sha256": "96353712a898d1a4e3b7846763e00794cb558c70ed62471a509e1f9debf2a1bc",
+  "schema": "mastermind.tiingo.offline_plan.v1",
+  "source_counts": {
+    "forex-bars": 2
+  },
+  "tasks": 2,
+  "total_tasks": 2
+}

@@ -9,7 +9,7 @@
 {% include "_seo_head.html.j2" %}
 <title>The Options Desk Moved — MastermindX</title>
 <meta name="robots" content="noindex,follow">
-<meta http-equiv="refresh" content="0;url=options.html#ticker">
+<noscript><meta http-equiv="refresh" content="0;url=options.html#ticker"></noscript>
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0c0f16;color:#edf0f7;font:15px/1.5 system-ui,sans-serif}main{width:min(560px,calc(100% - 40px));padding:32px;border:1px solid #2a3040}h1{margin:0 0 10px;font-size:25px}h1 .zh{display:block;font-size:19px;font-weight:600;margin-top:4px}p{color:#aab1c1}a{color:#8e97c8}</style>
 </head>
 <body>
@@ -34,7 +34,7 @@
     var m = document.querySelector('meta[http-equiv="refresh"]');
     if (m) m.setAttribute('content', '0;url=' + dest);
   }
-  location.replace(dest);
+  var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(dest, 'replace'); return; } location.replace(dest);
 })();
 </script>
 </body>

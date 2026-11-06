@@ -1,0 +1,126 @@
+{
+  "schema": "tiingo.terminal955_canonical972_integration_ruling/v1",
+  "recorded_at_utc": "2026-10-13T21:27:18.346512+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "reviewer": "01a13462-0222-7131-a4c7-4442ae8e62bd",
+  "carrier": {
+    "pr": 955,
+    "branch": "claude/ssd-tiingo-boats-quotehub-b2b25c10fd296613",
+    "reviewed_head": "f72127ba65d5f6a464d12acea2cf657796b01737",
+    "integrated_base": "06a49a6104f63e27d80c13292436f4549a6f7725",
+    "proposed_canonical_master": "34e3902571f26f16efb93b17058d1b85f1832199"
+  },
+  "verdict": "PASS_BOUNDED_CANONICAL_SOURCE_INTEGRATION_WITH_RESULTING_TREE_REVIEW; HOLD_RELEASE_AND_OLD_APPROVAL_EFFECT",
+  "material_invalidator": {
+    "merged_pr": 972,
+    "merged_at": "2026-10-13T12:00:18Z",
+    "squash": "f7bce8dcc4d7a7ba8f987edfa075ea6a7caa58cb",
+    "squash_parents": [
+      "06a49a6104f63e27d80c13292436f4549a6f7725"
+    ],
+    "master_ancestry": {
+      "status": "ahead",
+      "ahead_by": 8,
+      "behind_by": 0
+    },
+    "tested_head": "c2730bc302ee28a00a0a43bdf7b23025b429c4c9",
+    "run": {
+      "id": 38388310336,
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 2
+    },
+    "jobs": 12,
+    "all_jobs_success": true,
+    "all_57_merged_changed_files_match_tested_head": true
+  },
+  "actual_source_facts": [
+    "Worker emits ready only after module evaluation. Host delays finite per-request budget until ready; ChartPanel run cap remains 2000ms.",
+    "Host separately bounds boot at 30000ms per generation; one internal retry reposts pending original payloads; second timeout settles truthful startup failure. Retired-generation callbacks are fenced.",
+    "T01 now awaits first matching replied run with 120000ms bound before unchanged 45000ms two-signature chart-settlement proof. No replied flag or chart-equality assertion is forged.",
+    "Eight added host tests cover delayed boot, bounded failure, retained runaway budget, retry, exactly-once settlement, superseded request exclusion, disposal, retried-generation runaway.",
+    "Later master ChartPanel includes accepted chart-engine migration and data-origin work. It preserves sessionAnchor plumbing, cache-key inclusion and the 2000ms Pine cap. Exact resulting-carrier T01 validation remains necessary."
+  ],
+  "preservation": {
+    "candidate_count": 82,
+    "972_candidate_path_overlap": [],
+    "current_master_164_delta_candidate_overlap": [],
+    "current_master_delta_CI_overlap": [],
+    "critical_blobs_unchanged_since972": {
+      "terminal/e2e/pine-htf-temporal.spec.ts": {
+        "sha": "92e188b15ecd11a74dc151bf6e26d2b28a665978",
+        "current_master_equal": true,
+        "tested_head_equal": true
+      },
+      "terminal/lib/pine-engine/host.ts": {
+        "sha": "e29018a09a0354db39eb43d10f33a60dc0142698",
+        "current_master_equal": true,
+        "tested_head_equal": true
+      },
+      "terminal/lib/pine-engine/worker.ts": {
+        "sha": "5c66c0879eb853ce244b8533b674e490c511d135",
+        "current_master_equal": true,
+        "tested_head_equal": true
+      },
+      "terminal/lib/__tests__/pineHost.test.ts": {
+        "sha": "f8f5fce54b154a64f3d65a3641b70bb00be273e3",
+        "current_master_equal": true,
+        "tested_head_equal": true
+      }
+    },
+    "upstream_overlap_exception_needed": false,
+    "required_resulting_tree": "All 82 BOATS candidate blobs and modes remain exactly f721/accepted65a1. Noncandidate files derive from chosen canonical master; no manual patch to Pine or another owners PR."
+  },
+  "judgment": "The actual merged repair supersedes the prior requirement to invent a separate pre-integration diagnostic probe. Integrating existing accepted canonical source is now justified by a concrete source invalidator. It is not proof that f721 root cause was uniquely established or that resulting955 is green. No bespoke Pine fix or PR973 takeover is justified.",
+  "next_steps_for_original_owner": [
+    "Fresh-read exact955 head and canonical master, visible disarm of existing controller, and confirm no active controller refresh or pending source effect. Reuse original owned carrier and custody protocol.",
+    "Integrate chosen current canonical master through normal same-carrier merge. Stop for new unexpected overlap/conflict; preserve all82 BOATS blobs/modes and upstream source. Review exact resolved tree before commit/push.",
+    "Run affected Pine host tests and targeted T01 tablet check on resulting tree; retain exact source/test proof. If T01 still fails, use discriminating retained trace/host outcome probe rather than extending budgets or faking replies.",
+    "Only after actual preservation review and affected validation, original owner may continue its already authorized ordinary same-carrier commit/push protocol. No rerun, new dispatch, approval POST, protection change, force push, alternate carrier or deployment is authorized by this ruling.",
+    "Consume required CI bound to the resulting955 head and normal protection/controller state; accepted972 CI is dependency evidence only. Existing original workflow approval refusal remains held."
+  ],
+  "falsifiers": [
+    "Carrier head moves or another writer/refresh remains active before integration.",
+    "Master moves without renewed delta/overlap check.",
+    "Any of82 preserved candidate blob/mode changes unexpectedly.",
+    "Resulting Pine worker/host/test differs from authoritative upstream without independently admitted need.",
+    "Affected tests or T01 fail on resulting tree.",
+    "Approval/protection/release gate is treated as cleared by this ruling."
+  ],
+  "prior_ruling_superseded_only": "fa2504edb0bdc9fb048fffbf4644be3b5df0d7593dcb4807bde107bf196b4fd4: no justified source repair yet / new local causal probe before selecting repair. Prior f721 red facts, preservation facts and approval holds retained.",
+  "review_effects": {
+    "source_mutation": false,
+    "git_ref_mutation": false,
+    "ci_or_pr_mutation": false,
+    "tests_executed": false,
+    "remote_reads_and_local_evidence_only": true
+  },
+  "evidence": {
+    "terminal955-972-adjudication-ancestry.json": "600a0d6ccd5d233e40f606c589556c7b98e42ceea4abf688b35517d16f0b87ba",
+    "terminal955-972-adjudication-commit972.json": "ac59cc0e98bc6a99189d76397769dd5e3da2c39cd867ec6c375713c98745259c",
+    "terminal955-972-adjudication-delta.json": "4e79c99b0bfcaed2309a100418d6bed56aa12cda164ceb6bdbbd6654770c7796",
+    "terminal955-972-adjudication-master-tree.json": "5feeefb1cc3def5049f53bbc7ca3ca4046cc02046d3f34d3e0ed13a4205fbf8a",
+    "terminal955-972-adjudication-master.json": "32a0d34757415dcbf84f07c5224d37bc1def74a835730d1ca108e1a7c0e635b0",
+    "terminal955-972-adjudication-pr972.json": "7f61cacd19788f707dcd064d03e345bbed31f575bec2872dba3671315782eb10",
+    "terminal955-972-adjudication-run972.json": "f28bf422e81522e2c386579c8dc0d9ee601862d87d5f18f76348296a56fe3663",
+    "terminal955-972-adjudication-runmeta.json": "06c0279b1d395d5dd873614c0276903aa01c9988d32de25d36f3be4a8cb5e77f",
+    "terminal955-972-adjudication-tested-tree.json": "6ab0178808f1f6069c8db7ee0a3c5bfa154e9328944e46c94cc4bb77d8c7bd00",
+    "terminal955-972-hosttests.patch": "97b5e53957c0afc1c817430b5c41ce0fb18089fa2773b2ee42f102a52add2d69",
+    "terminal955-972-postmerge-ChartPanel.diff": "45e704eb4967bf409602f882f089c970038f94edb4d8d73d29479cbe35cd5b48",
+    "terminal955-972-source-ChartPanel-972.tsx": "b4fc3baed095c974875cbc0db82cba058a78ee1eb48aa1dfdcec9f024ae47574",
+    "terminal955-972-source-ChartPanel-master.tsx": "2c0cf9d465cf7314c220642fb38e033327e0395519d4a46001e4513ed3fd5af5",
+    "terminal955-972-source-host.ts": "46790c6bc6b841219ac0385cadd928bf4a8a1138ac5b4814ccdfe22d9a2b11b9",
+    "terminal955-972-source-pine-htf-temporal.spec.ts": "b048fb4522bb299a71404a042816650dce642eafc96095d9c10f9d1b47945784",
+    "terminal955-972-source-pineHost.test.ts": "38d1cae46f581e77174114fff74240d0cc3675169b89a3136edf155e44320567",
+    "terminal955-972-source-worker.ts": "8c8cb7f852da7237e22056b1393ae45ea506190ef569d597244b103093e5acd0"
+  },
+  "tool_chunks": [
+    "59c2da",
+    "a3b8ee",
+    "294735",
+    "91c9a1",
+    "29775a",
+    "bbaee2"
+  ]
+}

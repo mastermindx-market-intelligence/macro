@@ -1,0 +1,25 @@
+{
+  "after_test_sha256": "9a5d27355a40fae7c021d2c0c92a7de4cc0b5e3ba0292583013e8fa8dad1a5cf",
+  "before_test_sha256": "349e76533bb56332ac8331bd87304ba42e266a1de86490b2abfeed6c7a8312a4",
+  "expected_inventory_added": [
+    "tests/test_caddy_autosave_driver.py",
+    "tests/test_macro_caddy_overlay.py",
+    "tests/test_macro_caddy_publication.py"
+  ],
+  "failed_job": 120025103535,
+  "failure_on_candidate_and_exact_base": true,
+  "freshness_expired_at_utc": "2026-10-22T20:00:00Z",
+  "introducing_caddy_commit": "8fda9075961737aab7539f585f40bc4bb4ca4bef",
+  "local_parent": "92f6ff5131adc96bc85f3075a2239f2d109f449a",
+  "merge_parent": "7f57e913a5fa17e11001564a31c4c70a425cb102",
+  "no_gate_or_assertion_relaxation": true,
+  "other_packs_passed": 11,
+  "owner": "biocatalyst-deploy-integration",
+  "recorded_at_utc": "2026-10-23T05:12:52.958637+00:00",
+  "release": false,
+  "remote_head": "0a71e8cac5620593975b741abdf8d798900452fd",
+  "retained_ci_run": 39835608703,
+  "schema": "forex.r26.upstream_ci_ownership_repair.v1",
+  "source_admission": false,
+  "state": "SOURCE_REPAIRED_QUALIFICATION_PENDING"
+}

@@ -26,6 +26,7 @@ Pure-read + additive: any failure on one sector is logged and skipped, never fat
 """
 from __future__ import annotations
 
+import copy
 import json
 import logging
 
@@ -34,6 +35,12 @@ import pandas as pd
 
 from engine import basket_index, cycles
 from engine import cycle_ontology as onto
+
+# SIC-ADJ-01: doctrine-stance fields the producer stamps beside the engine stance.
+_DOCTRINE_KEYS = ("doctrine_stance", "doctrine_stance_en", "doctrine_stance_zh", "doctrine_ink")
+
+from engine import cycle_phase_age
+from engine.cycle_rhythm import RHYTHM_SCHEMA, estimate_kinds, rhythm_window
 from engine.inputs import yahoo_closes
 from lib import config
 
@@ -129,6 +136,62 @@ PHASES = {
     "Expansion": {"label": "Expansion", "short": "Trending",     "hue": "#45b873"},
     "Peak":      {"label": "Peak",      "short": "Topping",      "hue": "#e0a030"},
     "Downturn":  {"label": "Downturn",  "short": "Rolling over", "hue": "#e0556b"},
+}
+
+# B05: declare which `now`-block family every field belongs to — the legacy
+# range-stochastic vocabulary vs the ontology z/CDF one vs the reads that
+# depend on neither — so receivers never mix them (e.g. render `pos` and
+# `pos_v2` on one axis).  Deliberately picks NO primary family: that is a
+# product decision recorded as a GAP, not settled here.
+#
+# B05-r2 R4: v2 is COMPLETE — every key of a stamped `now` record appears in
+# exactly one of the three lists (tests/test_cycle_phase_age.py asserts
+# disjointness and full coverage on a fully stamped synthetic record).  Each
+# group is assigned from its writer, cited inline.
+SEMANTIC_FAMILIES: dict = {
+    "schema": "sector_cycles.semantic_families.v2",
+    # Legacy range-stochastic vocabulary (cites are engine/sector_cycles.py):
+    # `pos` is the tip of `_detrended_osc` (:760) and `osc_slope` its 22-bar
+    # momentum (:817); `phase`/`phaseLabel` come from
+    # `_classify_phase(pos_now, ...)` (:823); `signal` thresholds `pos_now`
+    # (:831); `timing_state`/`action` are the legacy `cycles.analyze` timing
+    # ladder read (:927).  `read`/`read_zh` are text reads written by
+    # `_set_engine_read` (:1063) from `_engine_read(phase=..., pos=...)`
+    # (:73) — they depend on the legacy vocabulary, not on neither method.
+    "legacy": [
+        "phase", "phaseLabel", "pos", "signal", "osc_slope",
+        "timing_state", "action", "read", "read_zh",
+    ],
+    # Canonical-zcdf/ontology chain (same file): `pos_v2` is
+    # `onto.canonical_position` (:838); `phase_v2`/`phase_v2_source`/
+    # `phase_v2_position_input` from `onto.classify_phase(pos_for_v2, ...)`
+    # (:863); `stance`…`clocks` from
+    # `onto.resolve_state(pos=pos_for_v2, phase=phase_v2, ...)` (:894);
+    # `phase_v2_age*` written by `_stamp_phase_age` (:1397), which replays
+    # the forward log for `phase_v2`.
+    "ontology": [
+        "pos_v2", "phase_v2", "phase_v2_age_bars", "phase_v2_source",
+        "phase_v2_position_input", "phase_v2_age_sessions", "phase_v2_age",
+        "phase_v2_age_status", "stance", "divergence", "tone", "stance_zh",
+        "divergence_note", "divergence_note_zh", "clocks",
+        "doctrine_stance", "doctrine_stance_en", "doctrine_stance_zh", "doctrine_ink",
+    ],
+    # Reads that depend on NEITHER position method (same file): weekly/3-day
+    # MACD (:928), ZigZag swing dates (:825), 200-bar trend + window return
+    # (:818), the `cycles.analyze` DCL sub-read (:885), the structure basis
+    # mirror (:955), the W3.1 freq/hazard-feature stamps (:961-:962), the
+    # hazard-pillar score (:1162), and RS/leadership (:1070, :1345).
+    # `hazard`/`hazard_features` mix inputs from both vocabularies (features
+    # embed the legacy `pos`; direction prefers the legacy `phase`) — they are
+    # pillar outputs, not a position semantic (B05-r2 GAPS).
+    "method_independent": [
+        "w_macd_up", "t3_macd_up", "lastTrough", "lastPeak", "above200d",
+        "ret_win_pct", "dc_phase", "basis", "freq", "hazard_features",
+        "hazard", "rs_21d", "rs_63d", "rs_126d", "rs_above_trend",
+        "thin_history", "rs_rank", "rs_21d_rank",
+    ],
+    "legacy_position_method": "range_stochastic",
+    "ontology_position_method": "canonical_zcdf",
 }
 
 WINDOW_YEARS = 15          # full history window: surfaces ~15y of cycles (where the tape exists)
@@ -404,9 +467,59 @@ def _taper_points(s: pd.Series, recent_start: pd.Timestamp, value_fn=None) -> li
     return out
 
 
+RS_HISTORY_MAX_POINTS = 252
+_RS_MIN_ROWS = 210
+# Sessions a missing benchmark close may be carried forward inside the shared RS
+# formula.  Unbounded, one stale holiday row silently prices every later session
+# against a benchmark that never traded; bounded, the ratio simply drops out.
+RS_BENCH_FFILL_LIMIT = 5
+
+
+def _relative_strength_series_counted(
+    close_full: pd.DataFrame,
+    ticker: str,
+    bench: str = "SPY",
+    asof: pd.Timestamp | None = None,
+) -> tuple[pd.Series, int]:
+    """The incumbent sector/benchmark relative-strength ratio, plus a count of the
+    non-finite ratio rows it had to exclude.
+
+    This is the one source for both the current 21/63-session coordinates and
+    the reconstructed history projection.  Keeping the formula shared prevents
+    the Terminal history trail from drifting away from the current snapshot.
+
+    A zero or negative benchmark close divides into ±inf, which ``json.dumps``
+    would emit as the non-standard ``Infinity`` token — so those rows are dropped
+    here, once, for every consumer of the formula, and counted.  Rows whose ratio
+    is NaN are dropped exactly as before and are NOT counted: an absent price is
+    unmeasured, not excluded.
+    """
+    if ticker not in close_full or bench not in close_full:
+        return pd.Series(dtype=float), 0
+    t = close_full[ticker].dropna()
+    b = close_full[bench].dropna()
+    if asof is not None:
+        t = t[t.index <= asof]
+        b = b[b.index <= asof]
+    ratio = t / b.reindex(t.index).ffill(limit=RS_BENCH_FFILL_LIMIT)
+    bad = ratio.notna() & (~np.isfinite(ratio) | (ratio <= 0))
+    return ratio[ratio.notna() & ~bad], int(bad.sum())
+
+
+def _relative_strength_series(
+    close_full: pd.DataFrame,
+    ticker: str,
+    bench: str = "SPY",
+    asof: pd.Timestamp | None = None,
+) -> pd.Series:
+    """The incumbent sector/benchmark relative-strength ratio (count discarded)."""
+    return _relative_strength_series_counted(
+        close_full, ticker, bench=bench, asof=asof)[0]
+
+
 def _leadership(close_full: pd.DataFrame, ticker: str, bench: str = "SPY",
                 asof: pd.Timestamp | None = None) -> dict:
-    """RS vs SPY: 63d & 126d relative momentum + above-200d-trend of the ratio.
+    """RS vs SPY: 21d/63d/126d relative momentum + above-200d ratio trend.
 
     Parameters
     ----------
@@ -415,17 +528,12 @@ def _leadership(close_full: pd.DataFrame, ticker: str, bench: str = "SPY",
         verifiable.  In the live path `closes` is already sliced by compute(),
         so asof is not strictly required there, but can be passed for clarity.
     """
-    if ticker not in close_full or bench not in close_full:
+    rs = _relative_strength_series(close_full, ticker, bench=bench, asof=asof)
+    if rs.empty and (ticker not in close_full or bench not in close_full):
         return {"thin_history": False}
-    t = close_full[ticker].dropna()
-    b = close_full[bench].dropna()
-    if asof is not None:
-        t = t[t.index <= asof]
-        b = b[b.index <= asof]
-    rs = (t / b.reindex(t.index).ffill()).dropna()
-    if len(rs) < 210:
-        log.warning("_leadership: %s has only %d RS rows (< 210 min) — thin_history flagged",
-                    ticker, len(rs))
+    if len(rs) < _RS_MIN_ROWS:
+        log.warning("_leadership: %s has only %d RS rows (< %d min) — thin_history flagged",
+                    ticker, len(rs), _RS_MIN_ROWS)
         return {"thin_history": True, "rs_rows": len(rs)}
     m21 = float(rs.pct_change(21).iloc[-1] * 100)
     m63 = float(rs.pct_change(63).iloc[-1] * 100)
@@ -436,6 +544,63 @@ def _leadership(close_full: pd.DataFrame, ticker: str, bench: str = "SPY",
     # own rollover). 63d stays the quarter lens; 21d is the month lens.
     return {"rs_21d": round(m21, 1), "rs_63d": round(m63, 1), "rs_126d": round(m126, 1),
             "rs_above_trend": bool(rs.iloc[-1] > ma200), "thin_history": False}
+
+
+def _leadership_history_counted(
+    close_full: pd.DataFrame,
+    ticker: str,
+    bench: str = "SPY",
+    asof: pd.Timestamp | None = None,
+    max_points: int = RS_HISTORY_MAX_POINTS,
+) -> tuple[list[dict], int]:
+    """Bounded daily reconstruction of the exact current 21d/63d RS coordinates,
+    plus a count of the rows excluded for being non-finite.
+
+    A point is eligible only once the live owner itself would have had the
+    required 210-row history.  The trail is therefore historical reconstruction
+    from the committed price owner, not a claim that these snapshots were
+    naturally observed at the time.
+
+    The count covers both exclusion sites: ratio rows dropped by the shared
+    formula, and horizon rows whose 21/63-session change is still non-finite
+    after that (an independent guard on the ``Infinity`` token).
+    """
+    rs, ratio_excluded = _relative_strength_series_counted(
+        close_full, ticker, bench=bench, asof=asof)
+    if len(rs) < _RS_MIN_ROWS:
+        return [], ratio_excluded
+    frame = pd.DataFrame({
+        "rs_21d": rs.pct_change(21) * 100,
+        "rs_63d": rs.pct_change(63) * 100,
+    }).iloc[_RS_MIN_ROWS - 1:]
+    inf_rows = (frame.replace([np.inf, -np.inf], np.nan).isna().any(axis=1)
+                & frame.notna().all(axis=1))
+    frame = frame.replace([np.inf, -np.inf], np.nan).dropna()
+    if frame.empty:
+        return [], ratio_excluded
+    if max_points > 0:
+        frame = frame.tail(max_points)
+    rows = [
+        {
+            "date": pd.Timestamp(ts).date().isoformat(),
+            "rs_21d": round(float(row.rs_21d), 1),
+            "rs_63d": round(float(row.rs_63d), 1),
+        }
+        for ts, row in frame.iterrows()
+    ]
+    return rows, ratio_excluded + int(inf_rows.sum())
+
+
+def _leadership_history(
+    close_full: pd.DataFrame,
+    ticker: str,
+    bench: str = "SPY",
+    asof: pd.Timestamp | None = None,
+    max_points: int = RS_HISTORY_MAX_POINTS,
+) -> list[dict]:
+    """Bounded daily reconstruction of the exact current 21d/63d RS coordinates."""
+    return _leadership_history_counted(
+        close_full, ticker, bench=bench, asof=asof, max_points=max_points)[0]
 
 
 def _zz_pct_for(full: pd.Series) -> float:
@@ -697,7 +862,8 @@ def record_series(full: pd.Series, *, win_start: pd.Timestamp, last_ts: pd.Times
     # triple is internally coherent.  The LEGACY `phase`/`pos`/`signal` fields above stay
     # driven by `pos_now` and are byte-identical.
     pos_for_v2 = pos_v2 if pos_v2 is not None else pos_now
-    pending = _phase_pending if _phase_pending is not None else {}
+    phase_v2_source = "ontology"   # B05: provenance of phase_v2, stamped below —
+    pending = _phase_pending if _phase_pending is not None else {}  # never silent again
     ph_read: dict = {}
     try:
         ph_read = onto.classify_phase(
@@ -706,15 +872,17 @@ def record_series(full: pd.Series, *, win_start: pd.Timestamp, last_ts: pd.Times
             confirm_persist=0, pending=pending,
         )
         phase_v2 = ph_read["phase"]
-        # phase_v2_age_bars: 0 here (single-bar call); W2.3 backfill wave computes this
-        # properly by replaying the series bar-by-bar. Placeholder value shipped as 0.
-        phase_v2_age_bars = 0
+        # phase_v2_age_bars: a single-bar call cannot measure age — ship None and
+        # let compute()'s _stamp_phase_age fill the measured value by replaying
+        # the retained forward-log history (engine/cycle_phase_age.py, B05).
+        phase_v2_age_bars = None
         if _phase_pending is not None:
             _phase_pending.clear()
             _phase_pending.update(ph_read.get("pending") or {})
     except Exception:  # noqa: BLE001
-        phase_v2 = phase  # fall back to legacy phase
-        phase_v2_age_bars = 0
+        phase_v2 = phase  # fall back to legacy phase (stamped legacy_fallback below)
+        phase_v2_age_bars = None
+        phase_v2_source = "legacy_fallback"
 
     # resolve_state: full stance/divergence/tone from the 5×8 crosswalk.
     # W3.6: pos-qualified crosswalk cells (Downturn × buy signals, §2.3) key off the SAME
@@ -727,6 +895,9 @@ def record_series(full: pd.Series, *, win_start: pd.Timestamp, last_ts: pd.Times
     # (D1 doctrine: "JS renders resolved fields the Python kernel stamped").
     stance = divergence = tone = None
     stance_zh = divergence_note = divergence_note_zh = clocks = None
+    # SIC-ADJ-01: the producer stamps the doctrine stance the face shows; None when
+    # the engine stamped no stance (the face then shows "Stance unavailable").
+    doctrine = {k: None for k in _DOCTRINE_KEYS}
     try:
         if ladder_state in onto.LADDER:
             rs_out = onto.resolve_state(
@@ -747,9 +918,11 @@ def record_series(full: pd.Series, *, win_start: pd.Timestamp, last_ts: pd.Times
             divergence_note = rs_out.get("divergence_note")
             divergence_note_zh = rs_out.get("divergence_note_zh")
             clocks = rs_out.get("clocks")
+            doctrine = {k: rs_out.get(k) for k in _DOCTRINE_KEYS}
     except Exception:  # noqa: BLE001
         stance = divergence = tone = None
         stance_zh = divergence_note = divergence_note_zh = clocks = None
+        doctrine = {k: None for k in _DOCTRINE_KEYS}
 
     rec = {
         "price": price_pts, "osc": osc_pts, "turns": swings, "proj": proj,
@@ -775,6 +948,12 @@ def record_series(full: pd.Series, *, win_start: pd.Timestamp, last_ts: pd.Times
             "pos_v2":          pos_v2,
             "phase_v2":        phase_v2,
             "phase_v2_age_bars": phase_v2_age_bars,
+            # B05: v2 provenance, explicit — which classifier produced phase_v2 and
+            # which position semantic it read (the W3.6 pos_v2→pos_now fallback and
+            # the legacy phase fallback were previously silent).
+            "phase_v2_source": phase_v2_source,
+            "phase_v2_position_input": ("pos_v2" if pos_v2 is not None
+                                        else "legacy_pos_fallback"),
             "stance":          stance,
             "divergence":      divergence,
             "tone":            tone,
@@ -783,6 +962,10 @@ def record_series(full: pd.Series, *, win_start: pd.Timestamp, last_ts: pd.Times
             "divergence_note":   divergence_note,
             "divergence_note_zh": divergence_note_zh,
             "clocks":            clocks,
+            # SIC-ADJ-01: producer-stamped doctrine stance (engine/cycle_ontology.py
+            # DOCTRINE_STANCE). The face shows doctrine_stance_*; the engine stance
+            # above is provenance-drawer content. No renderer maps stance→doctrine.
+            **doctrine,
             # W2.2: structure basis (mirrored here for the forward-log writer)
             "basis":           basis,
         },
@@ -916,22 +1099,17 @@ def _apply_leadership(rec: dict, lead: dict) -> None:
         rec["proj"]["tilt"] = tilt
 
 
-def _stamp_hazard(rec: dict, family: str = "sector") -> None:
-    """W4.3 — stamp rec['now']['hazard'] with P(turn ≤ 1m/3m/6m) from hazard_score.
+def _live_hazard_inputs(rec: dict, family: str = "sector") -> tuple[dict, str, object, object]:
+    """B12 — pure extraction of the exact inputs `_stamp_hazard` hands to
+    `hazard_score.score`: (hazard_features, direction, quad, liq_expanding).
 
-    Works ADDITIVELY on the assembled record after _apply_leadership/_set_engine_read
-    so it never touches record_series byte-identity.  Derives a hazard_features dict
-    from the record's own turns/proj/now fields and calls hazard_score.score().
-
-    Stamped into now['hazard'] (a sub-dict), not now['hazard_features'] — the test
-    at test_cycle_proxies.py:236 checks 'hazard_features' is absent for sector; the
-    new 'hazard' key is separate.  Never raises — any failure is a warning + no stamp.
+    Lifted VERBATIM out of `_stamp_hazard`'s inline assembly (SIC-D-B12) so the
+    parity harness (engine/hazard_parity.py) can read the live inputs without
+    re-implementing them; `_stamp_hazard` now calls this helper.  Behavior is
+    byte-identical — same hf keys in the same order, same direction rule
+    (phase/phase_v2 in hazard_score._UP_PHASES), same quad/liq_expanding reads.
     """
-    try:
-        from engine.hazard_score import score as _hz_score, _UP_PHASES
-    except Exception as exc:  # noqa: BLE001
-        log.debug("hazard_score unavailable: %s", exc)
-        return
+    from engine.hazard_score import _UP_PHASES
 
     nw = rec.get("now") or {}
     turns = rec.get("turns") or []
@@ -987,6 +1165,31 @@ def _stamp_hazard(rec: dict, family: str = "sector") -> None:
     direction = "up" if phase in _UP_PHASES else "down"
     quad = nw.get("quad")
     liq_expanding = nw.get("liq_expanding")
+    return hf, direction, quad, liq_expanding
+
+
+def _stamp_hazard(rec: dict, family: str = "sector") -> None:
+    """W4.3 — stamp rec['now']['hazard'] with P(turn ≤ 1m/3m/6m) from hazard_score.
+
+    Works ADDITIVELY on the assembled record after _apply_leadership/_set_engine_read
+    so it never touches record_series byte-identity.  Derives a hazard_features dict
+    from the record's own turns/proj/now fields and calls hazard_score.score().
+
+    Stamped into now['hazard'] (a sub-dict), not now['hazard_features'] — the test
+    at test_cycle_proxies.py:236 checks 'hazard_features' is absent for sector; the
+    new 'hazard' key is separate.  Never raises — any failure is a warning + no stamp.
+
+    B12: the feature/direction/quad/liq assembly lives in `_live_hazard_inputs`
+    (pure, shared with the parity harness); this stamp is unchanged behavior.
+    """
+    try:
+        from engine.hazard_score import score as _hz_score
+    except Exception as exc:  # noqa: BLE001
+        log.debug("hazard_score unavailable: %s", exc)
+        return
+
+    nw = rec.get("now") or {}
+    hf, direction, quad, liq_expanding = _live_hazard_inputs(rec, family)
 
     try:
         hz = _hz_score(hf, direction, family, quad, liq_expanding)
@@ -1020,6 +1223,9 @@ def build_sector(ticker: str, meta: dict, closes: pd.DataFrame,
                 "group": meta["group"], "group_zh": GROUP_ZH.get(meta["group"], meta["group"]),
                 "accent": meta["accent"]})
     _apply_leadership(rec, _leadership(closes, ticker))
+    rec["rs_history"], _n_ex = _leadership_history_counted(closes, ticker)
+    if _n_ex:
+        rec["rs_history_rows_excluded_nonfinite"] = _n_ex
     _set_engine_read(rec)    # W0.3: populate engine-owned read after RS is available
     _stamp_hazard(rec, family="sector")   # W4.3: now['hazard'] P(turn ≤ 1m/3m/6m)
     return rec
@@ -1194,6 +1400,110 @@ def _latest_cycle_session(
     return pd.Timestamp(observed.index[-1])
 
 
+def _stamp_phase_age(records, *, asof, history, history_status, sessions=None):
+    """Stamp measured phase age (B05) into each record's `now` block.
+
+    `history`/`history_status` come from ONE `cycle_phase_age.load_phase_history`
+    call per build.  `history_status="not_logged"` stamps the not-logged outcome
+    for records the forward log never captures (amalgam families) instead of
+    letting them read as missing evidence.  `phase_v2_age_bars` carries the
+    session count only for a MEASURED daily record — a monthly record's bar is a
+    month, and a lower bound is a minimum, not a measurement.  `sessions` (B05-r2
+    R1) is the benchmark's real-session ISO dates, passed through to the reader
+    so weekend restamps never count.  Never raises: a record that cannot be
+    stamped is logged and left unchanged.
+    """
+    for rec in records:
+        try:
+            nw = rec.get("now") if isinstance(rec, dict) else None
+            if nw is None:
+                continue
+            if history_status == "not_logged":
+                age = {"sessions": None, "status": "not_logged",
+                       "method": cycle_phase_age.PHASE_AGE_METHOD,
+                       "run_start": None, "observed_from": None,
+                       "basis": nw.get("basis") or "tr", "history_rows": 0}
+            else:
+                age = cycle_phase_age.measure_phase_age(
+                    history, entity_id=rec.get("id"),
+                    current_phase=nw.get("phase_v2"), current_asof=asof,
+                    basis=nw.get("basis") or rec.get("basis") or "tr",
+                    sessions=sessions)
+            nw["phase_v2_age"] = age
+            nw["phase_v2_age_sessions"] = age.get("sessions")
+            nw["phase_v2_age_status"] = age.get("status")
+            daily = nw.get("freq") in (None, "D")
+            nw["phase_v2_age_bars"] = (age.get("sessions")
+                                       if age.get("status") == "measured" and daily
+                                       else None)
+        except Exception as e:  # noqa: BLE001 — additive stamp, never fatal
+            rid = rec.get("id") if isinstance(rec, dict) else None
+            log.warning("sector_cycles: phase-age stamp failed for %s: %s", rid, e)
+
+
+def _series_provenance_for(rec: dict, sector_benchmark) -> dict:
+    """B06 — reconstruction facts of the series THIS one record was built on.
+
+    Every value comes from the code path that built the record: sectors are a
+    single instrument RS'd to the configured benchmark with a bounded benchmark
+    ffill (RS_BENCH_FFILL_LIMIT); thematic baskets are current-membership
+    (pit=False) equal-weight member candles RS'd to SPY with an UNBOUNDED
+    benchmark ffill; amalgam complexes are the same basket machinery RS'd to the
+    family ETF (QQQ / IWM).  A field the stamp cannot attribute reads "unknown",
+    never a guess — the labels describe the actual reconstruction, they do not
+    relabel the series as exact-session or point-in-time.
+    """
+    kind = rec.get("kind")
+    prov = {
+        "schema": "sector_cycles.series_provenance.v1",
+        "structure_basis": rec.get("basis") or "unknown",
+        "rs_basis": "tr",
+        "membership": "unknown",
+        "point_in_time": None,
+        "benchmark": "unknown",
+        "benchmark_ffill_limit_sessions": None,
+        "history_mode": "reconstructed_price_history",
+    }
+    if kind == "sector":
+        prov.update(membership="single_instrument", point_in_time=True,
+                    benchmark=sector_benchmark,
+                    benchmark_ffill_limit_sessions=RS_BENCH_FFILL_LIMIT)
+    elif kind == "basket":
+        prov.update(membership="current_membership", point_in_time=False,
+                    benchmark="SPY")
+    elif kind in _AMALGAM_FAMILIES:
+        prov.update(membership="current_membership", point_in_time=False,
+                    benchmark=_AMALGAM_FAMILIES[kind]["benchmark"])
+    return prov
+
+
+def _stamp_rhythm_disclosure(records, *, today_x):
+    """B06 — stamp each record's rhythm window, estimate kinds and series provenance.
+
+    ADDITIVE and per-record fault-isolated: reads rec['turns'] / rec['now'] /
+    rec['basis'] / rec['kind'] and writes three NEW keys (rhythm, estimate_kinds,
+    series_provenance).  proj, now (incl. now.hazard), turns, osc, rs_history and
+    the record_series output are untouched.  A failure on one record stamps an
+    unavailable rhythm (reason 'stamp_error') and the build continues.
+    """
+    try:
+        sector_benchmark = config.load()["engine"]["rs_ranking"]["benchmark"]
+    except Exception as e:  # noqa: BLE001 — provenance must never break the build
+        log.warning("sector_cycles: sector benchmark unreadable — stamping 'unknown': %s", e)
+        sector_benchmark = "unknown"
+    for rec in records:
+        try:
+            rhythm = rhythm_window(rec.get("turns") or [], today_x)
+            rec["rhythm"] = rhythm
+            rec["estimate_kinds"] = estimate_kinds(rec.get("now") or {}, rhythm)
+            rec["series_provenance"] = _series_provenance_for(rec, sector_benchmark)
+        except Exception as e:  # noqa: BLE001 — additive stamp, never fatal
+            log.warning("sector_cycles: rhythm disclosure failed for %s: %s",
+                        rec.get("id", "?"), e)
+            rec["rhythm"] = {"schema": RHYTHM_SCHEMA, "status": "unavailable",
+                             "reason": "stamp_error"}
+
+
 def compute(asof: str | None = None) -> dict | None:
     """Top-level: build every sector's cycle record + page meta. Returns None if the
     close panel can't be loaded (build script then no-ops).
@@ -1284,9 +1594,54 @@ def compute(asof: str | None = None) -> dict | None:
         if fam_recs:
             amalgam_families[ns] = fam_recs
 
+    # ── B05: measured phase age from the retained forward-log history ──────────
+    # One load for the whole build; sectors + baskets are logged nightly by
+    # cycle_forward_log so their age is measured; amalgam family records are NOT
+    # logged (nothing to replay) and read not_logged rather than a guess.
+    # B05-r2 R1: only the benchmark's REAL sessions count.  `_latest_cycle_session`
+    # (engine/sector_cycles.py:1348-1365) resolves `last_ts` from the observed
+    # benchmark panel `closes[benchmark].dropna().index[-1]`; the SAME panel index
+    # (already bounded by `closes = closes.loc[:last_ts]` above, so up to and
+    # including `last_ts`) supplies the session dates.  A list that cannot be
+    # built degrades to None — the reader's weekday rule, never an error.
+    _history, _history_status = cycle_phase_age.load_phase_history("sector_cycles")
+    try:
+        _sessions = [str(pd.Timestamp(t).date())
+                     for t in closes[benchmark].dropna().index]
+    except Exception:  # noqa: BLE001 — session list unbuildable → weekday rule
+        _sessions = None
+    _stamp_phase_age(sectors + baskets, asof=str(last_ts.date()),
+                     history=_history, history_status=_history_status,
+                     sessions=_sessions)
+    _stamp_phase_age([r for fam in amalgam_families.values() for r in fam],
+                     asof=str(last_ts.date()), history=None,
+                     history_status="not_logged", sessions=_sessions)
+
+    # ── B06: honest rhythm/overdue state, estimate kinds, series provenance ────
+    # One additive stamp over EVERY record the build produced (sectors, thematic
+    # baskets, every amalgam family): the dated anchored rhythm window with its
+    # explicit state (never rolled forward), the per-horizon estimate kind, and
+    # the reconstruction facts of the series each record was actually built on.
+    _stamp_rhythm_disclosure(
+        sectors + baskets + [r for fam in amalgam_families.values() for r in fam],
+        today_x=_yf(last_ts))
+
     x_lo = round(_yf(win_start), 3)
     x_hi = round(_yf(last_ts) + _TODAY_PAD, 3)
     x_lo_default = round(_yf(last_ts - pd.DateOffset(years=DEFAULT_WINDOW_YEARS)), 3)
+
+    # ── B12r2 (RB12 repair): the full live-feature parity report, exactly once ──
+    # Records carry only the {verdict, failing, report_ref} pointer (cycle_rhythm
+    # .estimate_kinds); the ~10 KiB report itself is published here, one copy per
+    # payload.  Read inside a try — meta disclosure never breaks the build.
+    try:
+        from engine.hazard_parity import LIVE_HAZARD_PARITY as _live_parity
+        # RB12b: deep copy — a shallow dict() shared the nested report with the
+        # module constant, so an in-process consumer could mutate LIVE_HAZARD_PARITY.
+        live_hazard_parity = copy.deepcopy(_live_parity)
+    except Exception:  # noqa: BLE001 — additive disclosure, never fatal
+        live_hazard_parity = None
+
     return {
         "meta": {
             "asOf": str(last_ts.date()),
@@ -1297,6 +1652,48 @@ def compute(asof: str | None = None) -> dict | None:
             "default_window_years": DEFAULT_WINDOW_YEARS,
             "rebaseDate": str(win_start.date()),
             "benchmark": benchmark,
+            # B05: phase-age + semantic-family declarations.  No primary family
+            # is chosen — that is a product decision recorded as a GAP.
+            # B05-r2: version 2 — only real benchmark sessions count and a
+            # bridged (unobserved-session) pair reads lower_bound, not measured.
+            "phase_age_version": 2,
+            "semantic_families": SEMANTIC_FAMILIES,
+            # B06: rhythm-disclosure version + the correction-contract
+            # disposition.  The Cycles inputs (yahoo close/close_price panels,
+            # basket + amalgam membership, the SECTORS registry, the B05
+            # forward log) carry no native correction / revision / supersession
+            # field — capability row R3A-92 — so none is invented here.
+            "rhythm_version": 1,
+            "correction_contract": {
+                "status": "none_native",
+                "basis": "no native correction or revision field in Cycles "
+                         "inputs (capability row R3A-92)",
+            },
+            # B12r2: the full recorded live-feature parity report, published
+            # ONCE per payload (records carry only the report_ref pointer).
+            "live_hazard_parity": live_hazard_parity,
+            "rs_history": {
+                "schema": "sector_cycles.rs_history.v1",
+                "mode": "reconstructed_price_history",
+                "naturally_observed": False,
+                "basis": "tr",
+                "benchmark": benchmark,
+                "horizons_sessions": [21, 63],
+                "max_points_per_sector": RS_HISTORY_MAX_POINTS,
+                "as_of": str(last_ts.date()),
+                "min_history_sessions": _RS_MIN_ROWS,
+                "rows_excluded_nonfinite": sum(
+                    int(rec.get("rs_history_rows_excluded_nonfinite", 0))
+                    for rec in sectors
+                ),
+                "benchmark_ffill_limit_sessions": RS_BENCH_FFILL_LIMIT,
+                "source_cohort": {
+                    "registry": "engine.sector_cycles.SECTORS",
+                    "tickers": sorted(
+                        rec["ticker"] for rec in sectors if rec.get("rs_history")
+                    ),
+                },
+            },
             "n_sectors": len(sectors),
             "n_baskets": len(baskets),
             "families": [{"key": ns, "label": _AMALGAM_FAMILIES[ns]["label"],

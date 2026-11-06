@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-25T11:06:02Z",
+ "accession": "0001628280-26-011378",
+ "cik": "0000937966",
+ "doc_byte_length": 24864730,
+ "doc_sha256": "0941dbd1acd13e954e0bbf74361475eb1c0e178b5a25cb07b41628af85729721",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "asml-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 24825098,
+  "byte_start": 24825003,
+  "normalized": "Settlement and Cross License Agreement, dated February 18, 2019, among Nikon Corporation, ASML",
+  "normalized_sha256": "a30bb9a4b429258d95fa5366e2624c7b7fc3dc13bd3d921f61d804ba22e416e0",
+  "raw": "Settlement and Cross License Agreement, dated February 18, 2019, among Nikon Corporation, ASML ",
+  "raw_sha256": "f13586ac862355c4f9e6a73299199b833da63d7de6744a88f2f39d39689256eb"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/937966/000162828026011378/asml-20251231.htm",
+ "xbrl_contexts": []
+}

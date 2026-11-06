@@ -1,0 +1,994 @@
+{
+  "schema": "prophet.trade_plan/v1",
+  "id": "BWXT-BULL-20261005",
+  "asof": "2026-10-08",
+  "recorded_at": "2026-10-08",
+  "asset": "BWXT",
+  "direction": "BULL",
+  "thesis": "BWXT \u2014 conviction 14/100 (neutral) Entry grade: minimal. Cautions: Accounting quality looks weak.; Its Power & Grid Buildout basket is below its long-term trend. Size down: the tape is rewarding leaders, and this basket is not one.. Trust tier: Event edge: insider buying (lone FDR survivor) + earnings-surprise PEAD context + revisions \u2014 a confluence read, not a standalone alpha. Options positioning (as of 2026-10-07): the heaviest call open interest sat at $150.00, about 6.0% above the entry \u2014 dealer hedging tends to add friction into that level, which is a place price stalls, not a target. DISPLAY-ONLY: machine-generated from factor scores; no forward return guarantee; display-tier artifact.",
+  "thesis_zh": "BWXT \u2014 \u786e\u4fe1\u5ea6 14/100\uff08\u4e2d\u6027\uff09 \u5165\u573a\u8bc4\u7ea7: minimal\u3002 \u6ce8\u610f\u4e8b\u9879: \u8d22\u52a1\u8d28\u91cf\u504f\u5f31\u3002; \u6240\u5c5e \u7535\u529b\u4e0e\u7535\u7f51 \u7bee\u5b50\u5df2\u8dcc\u7834\u957f\u671f\u8d8b\u52bf\u3002\u51cf\u5c0f\u4ed3\u4f4d\uff1a\u5f53\u524d\u884c\u60c5\u5956\u52b1\u9886\u5148\u677f\u5757\uff0c\u8be5\u7bee\u5b50\u5e76\u4e0d\u5728\u5176\u4e2d\u3002\u3002 \u53ef\u4fe1\u5ea6: \u4e8b\u4ef6\u9a71\u52a8\u4f18\u52bf\uff1a\u5185\u90e8\u4eba\u4e70\u5165\uff08\u552f\u4e00\u901a\u8fc7 FDR \u7684\u56e0\u5b50\uff09\uff0b\u76c8\u5229\u8d85\u9884\u671f PEAD \u80cc\u666f\uff0b\u8bc4\u7ea7\u8c03\u6574 \u2014 \u7efc\u5408\u53c2\u8003\uff0c\u975e\u72ec\u7acb\u8d85\u989d\u6536\u76ca\u3002 \u671f\u6743\u6301\u4ed3\uff08\u622a\u81f32026-10-07\uff09\uff1a\u6700\u91cd\u7684\u770b\u6da8\u6301\u4ed3\u4f4d\u4e8e $150.00\uff0c\u7ea6\u5728\u5165\u573a\u4ef7\u4e0a\u65b96.0% \u2014 \u505a\u5e02\u5546\u5bf9\u51b2\u901a\u5e38\u5728\u8be5\u4ef7\u4f4d\u5f62\u6210\u963b\u529b\uff1b\u90a3\u662f\u4ef7\u683c\u5bb9\u6613\u505c\u6ede\u4e4b\u5904\uff0c\u5e76\u975e\u76ee\u6807\u4ef7\u3002 \u4ec5\u4f9b\u5c55\u793a\uff1a\u7531\u56e0\u5b50\u5206\u6570\u673a\u5668\u751f\u6210\uff1b\u65e0\u524d\u77bb\u6536\u76ca\u4fdd\u8bc1\uff1b\u5c55\u793a\u5c42\u7ea7\u8f93\u51fa\u3002",
+  "source_engines": [
+    "us_standouts_buy_lane",
+    "neural_web"
+  ],
+  "trigger": 141.5,
+  "entry": 141.5,
+  "invalidation": 130.32,
+  "targets": [
+    158.27,
+    175.04
+  ],
+  "horizon_days": 45,
+  "min_hold_days": 10,
+  "tranche": 1,
+  "option_contract": null,
+  "stage_tilt": {
+    "leash": 1.0,
+    "eligible": false,
+    "stage_at_entry": 4,
+    "ec_sent": 28.0,
+    "ec_call_date": "2026-05-05",
+    "ec_source_state": "available",
+    "ec_source_path": "data/earnings_calls/history.parquet",
+    "ec_source_tier": "r2_history",
+    "ec_source_generation": {
+      "generation_id": "8f241c0783d42e215cf6fdb0",
+      "published_at": "2026-10-08T06:45:15.161826+00:00",
+      "rows": 50982
+    },
+    "ec_source_reason": null,
+    "bear_gate": false,
+    "provisional": true,
+    "demoted": false,
+    "basis": "PSQ 2026-07-20 quality re-grade; provisional \u2014 forward-shadow checked (~2026-12)"
+  },
+  "management_ref": "prophet/state/BWXT-BULL-20261005.json",
+  "authority_tier": "display",
+  "reliability": {
+    "plan": "display \u2014 us_standouts buy-lane originated; display-only until forward ledger gate passes",
+    "option_premium": "null \u2014 symbol not in ThetaData store"
+  },
+  "formation_date": "2026-10-05",
+  "signal_date": "2026-10-07",
+  "confirmed_date": null,
+  "observed_date": "2026-10-07",
+  "signal_tier": "T2",
+  "signal_date_basis": "tier_event_date",
+  "signal_provisional": false,
+  "source_marker_date": "2026-10-05",
+  "price_basis_date": "2026-10-07",
+  "entry_date": "2026-10-07",
+  "what_to_do_now": [
+    "Wait for a pullback into the $138.10\u2013$138.10 zone before starting. No entry above $141.50; the plan waits at the band rather than paying the last print.",
+    "Starter size only \u2014 this is a window, not a certainty. Exit on a close below $130.32.",
+    "If the zone fills, scale in gradually toward T1 ($158.27)."
+  ],
+  "what_to_do_now_zh": [
+    "\u7b49\u5f85\u4ef7\u683c\u56de\u843d\u81f3 $138.10\u2013$138.10 \u533a\u95f4\u518d\u5efa\u4ed3\u3002\u4e0d\u8981\u5728 $141.50 \u4e4b\u4e0a\u4e70\u5165\uff1b\u8ba1\u5212\u5728\u533a\u95f4\u7b49\u5f85\uff0c\u800c\u975e\u6309\u6700\u65b0\u4ef7\u8ffd\u5165\u3002",
+    "\u4ec5\u8bd5\u63a2\u6027\u5c0f\u4ed3\u4f4d\u2014\u2014\u8fd9\u662f\u4e00\u4e2a\u89c2\u5bdf\u7a97\u53e3\uff0c\u800c\u975e\u786e\u5b9a\u6027\u7ed3\u8bba\u3002\u6536\u76d8\u8dcc\u7834 $130.32 \u5373\u79bb\u573a\u3002",
+    "\u82e5\u533a\u95f4\u88ab\u89e6\u53ca\uff0c\u53ef\u9010\u6b65\u52a0\u4ed3\u81f3 T1\uff08$158.27\uff09\u3002"
+  ],
+  "profit_plan": [
+    {
+      "level": 158.27,
+      "label": "T1",
+      "action": "Scale out 40%, trail stop to entry",
+      "status": "ACTIVE"
+    },
+    {
+      "level": 175.04,
+      "label": "T2",
+      "action": "Close remaining 60%, exit full position",
+      "status": "PENDING"
+    }
+  ],
+  "profit_plan_zh": [
+    {
+      "level": 158.27,
+      "label": "T1",
+      "action": "\u51cf\u4ed3 40%\uff0c\u5c06\u6b62\u635f\u4e0a\u79fb\u81f3\u5165\u573a\u4f4d",
+      "status": "ACTIVE"
+    },
+    {
+      "level": 175.04,
+      "label": "T2",
+      "action": "\u5e73\u4ed3\u5269\u4f59 60%\uff0c\u5168\u90e8\u79bb\u573a",
+      "status": "PENDING"
+    }
+  ],
+  "_signal_date": "2026-10-07",
+  "_priority_score": 48.6,
+  "_conviction_score": 14,
+  "_act_level": 0,
+  "_r_unit": 11.18,
+  "_gate_go": false,
+  "admission_class": "early_turn_starter",
+  "entry_status": "bounce_wait",
+  "selection_era": "anticipation-v1-2026-08-08",
+  "entry_basis": {
+    "basis_date": "2026-10-07",
+    "basis_source": "staleness_price_through",
+    "run_asof": "2026-10-08",
+    "lag": 0,
+    "lag_basis": "sessions",
+    "max_lag": 3,
+    "state": "current",
+    "signal_basis_date": "2026-10-05",
+    "signal_lag_sessions": 2,
+    "era": "anticipation-v1-2026-08-08"
+  },
+  "entry_zone": {
+    "schema": "prophet.entry_zone/v1",
+    "low": 138.1,
+    "high": 138.1,
+    "chase_above": 141.5,
+    "pct_from_entry": -2.4,
+    "zone_class": "reset_band",
+    "stance": "starter",
+    "basis": "the 10- and 20-day average band under the last price, from the entry ladder",
+    "basis_zh": "\u6700\u65b0\u4ef7\u4e0b\u65b9\u7684 10 \u65e5\u4e0e 20 \u65e5\u5747\u7ebf\u533a\u95f4\uff0c\u6765\u81ea\u5165\u573a\u9636\u68af",
+    "price_basis_date": "2026-10-07",
+    "expiry_sessions": 13,
+    "expiry_date": "2026-10-26",
+    "conversion_class": "washout",
+    "conversion_evidence": "its group has already sold off hard and is starting to turn",
+    "conversion_evidence_zh": "\u6240\u5c5e\u677f\u5757\u5df2\u7ecf\u6df1\u5ea6\u56de\u843d\uff0c\u5e76\u5f00\u59cb\u8f6c\u5411",
+    "converts_on_expiry": true,
+    "extension": {
+      "daily_stoch_k": 74.06,
+      "htf_stoch_k": 17.93,
+      "daily_extended": false,
+      "htf_extended": false,
+      "both_extended": false,
+      "threshold": 80.0,
+      "htf_timeframe": 3,
+      "source": "price_store_stoch_rsi",
+      "reason": null,
+      "asof": "2026-10-07"
+    },
+    "leader_pullback": {
+      "leader_pullback": false,
+      "state": "NONE",
+      "pullback_high": null,
+      "days_in_state": 126.0,
+      "construction_era": "leader-pullback-v0-2026-08-08",
+      "state_asof": "2026-10-07",
+      "context_states": [
+        "PULLBACK",
+        "RESET_TURN"
+      ],
+      "source": "us_leader_pullback",
+      "reason": "organ state NONE is not an open controlled pullback"
+    },
+    "era": "anticipation-v1-2026-08-08"
+  },
+  "early_turn": {
+    "fired": true,
+    "reason": "signature + washout-mature basket",
+    "timeframes": [
+      1,
+      2
+    ],
+    "washout_state": "TURNING",
+    "leader_pullback_source": "us_leader_pullback",
+    "union_fired": true,
+    "union_legs": [
+      "relaxed_cross"
+    ],
+    "union_texture": {
+      "chip": {
+        "en": "Early turn \u2014 watch, don't chase",
+        "zh": "\u65e9\u671f\u8f6c\u5411 \u2014 \u89c2\u5bdf\uff0c\u4e0d\u8981\u8ffd\u9ad8"
+      },
+      "context_chips": [
+        {
+          "en": "Washed to the floor",
+          "zh": "\u6d17\u81f3\u5e95\u90e8"
+        },
+        {
+          "en": "Below its 200-day line",
+          "zh": "\u4f4d\u4e8e200\u65e5\u7ebf\u4e0b\u65b9"
+        },
+        {
+          "en": "Well off its 6-month high",
+          "zh": "\u8fdc\u4f4e\u4e8e\u534a\u5e74\u9ad8\u70b9"
+        }
+      ],
+      "note": {
+        "en": "Windows, not certainties \u2014 re-drawn nightly.",
+        "zh": "\u8fd9\u662f\u7a97\u53e3\uff0c\u4e0d\u662f\u5b9a\u8bba \u2014 \u6bcf\u665a\u91cd\u65b0\u7ed8\u5236\u3002"
+      },
+      "cost_note": {
+        "en": "Early fires that come before the low mostly stop out; the stop under the low is what caps the cost.",
+        "zh": "\u5148\u4e8e\u4f4e\u70b9\u51fa\u73b0\u7684\u65e9\u671f\u4fe1\u53f7\u591a\u6570\u4f1a\u88ab\u6b62\u635f\uff1b\u4f4e\u70b9\u4e0b\u65b9\u7684\u6b62\u635f\u7528\u6765\u9650\u5236\u6210\u672c\u3002"
+      }
+    },
+    "basket_context_chip": "TURNING",
+    "admission_era": "union-admission-v1-2026-08-11",
+    "context_badges": {
+      "era": "union-admission-v1-2026-08-11",
+      "k_at_cross": 17.93,
+      "zero_bound": true,
+      "decline_depth": -0.4046,
+      "above_200": false,
+      "rs_63": null
+    },
+    "setup_geometry": {
+      "score": 56.2,
+      "risk_pct": 0.0777,
+      "stop": 130.5414,
+      "reference_low": 131.86,
+      "stop_confirmed": true,
+      "chase_pct": 0.0,
+      "age_bars": 0,
+      "basis": "distance to the structural stop, how clean that stop is, and how far price has travelled since the fire",
+      "reason": null,
+      "confirmed_pivot_low": 131.86
+    },
+    "geometry_score": 56.2,
+    "stage": "EARLY",
+    "geometry_texture": {
+      "label": {
+        "en": "Setup geometry",
+        "zh": "\u5165\u573a\u7ed3\u6784"
+      },
+      "hover": {
+        "en": "Distance to the structural stop and how clean that stop is \u2014 geometry, not a probability. Early entries mostly stop out; the stop is what caps the cost.",
+        "zh": "\u5230\u7ed3\u6784\u6027\u6b62\u635f\u7684\u8ddd\u79bb\uff0c\u4ee5\u53ca\u8be5\u6b62\u635f\u662f\u5426\u5e72\u51c0 \u2014 \u8fd9\u662f\u7ed3\u6784\uff0c\u4e0d\u662f\u6982\u7387\u3002\u65e9\u671f\u5165\u573a\u591a\u6570\u4f1a\u88ab\u6b62\u635f\uff1b\u6b62\u635f\u7528\u6765\u9650\u5236\u6210\u672c\u3002"
+      },
+      "chips": [
+        {
+          "en": "Stop sits under a low the tape has defended",
+          "zh": "\u6b62\u635f\u4f4d\u4e8e\u5df2\u88ab\u786e\u8ba4\u7684\u4f4e\u70b9\u4e0b\u65b9"
+        },
+        {
+          "en": "Still near where it turned",
+          "zh": "\u4ecd\u63a5\u8fd1\u8f6c\u5411\u4f4d\u7f6e"
+        }
+      ],
+      "sizing": {
+        "en": "Starter size \u2014 add only if it confirms",
+        "zh": "\u8bd5\u4ed3 \u2014 \u786e\u8ba4\u540e\u518d\u52a0"
+      }
+    },
+    "deck_admitted": true,
+    "plan_licensed": true,
+    "licensing": {
+      "licensed": true,
+      "reason": "signature + washout-mature basket"
+    },
+    "licensing_chip": {
+      "licensed": true,
+      "chip": {
+        "en": "Licensed for a starter plan",
+        "zh": "\u53ef\u5f00\u7acb\u8bd5\u4ed3\u8ba1\u5212"
+      }
+    }
+  },
+  "government_revenue_annotation": {
+    "contract": "government_revenue.prophet_annotation.v1",
+    "schema_version": "1.0.0",
+    "label": {
+      "en": "shadow context",
+      "zh": "\u5f71\u5b50\u80cc\u666f"
+    },
+    "allowed_behavior": "annotate_only",
+    "authority": {
+      "tier": "display",
+      "context_only": true,
+      "can_rank": false,
+      "can_size": false,
+      "can_gate": false,
+      "can_originate_signal": false,
+      "can_add_candidates": false,
+      "can_escalate": false
+    },
+    "annotations": [
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-9c2785c168efe1ac7813616b",
+        "observation_id": "gro1-b6eb8c5672d153b54dc65f2f",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "BWXT",
+        "issuer": {
+          "company_name": "BWX Technologies",
+          "ticker": "BWXT",
+          "issuer_company_id": "central:BWXT",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-c43a67f2cf9a67d1f9c903fc",
+          "record_id": "award:generated:CONT_AWD_89233123FNA400535_8900_89233120DNA000025_8900",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-08-24T00:00:00+00:00",
+          "known_at": "2026-08-27T02:39:58.581371+00:00",
+          "amount_id": null,
+          "amount_value": 15985145.23,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0378b7a06645ded2ea894945a608815df087e533a79d94462caeebbe3512062f",
+            "2ac570e88e6c6530540dc41f202c1e6cc05c9403563b4011ac783f35ea07ebfe",
+            "8a09861c7069f167844999220c024bdf3eb810513f3de942b6d65a729fe9c3e0",
+            "ad045bbe00f3a01a8c5636ebe130bc19a564005f22831755fdf3a8dab368145c",
+            "c073a65d4a609f27215fd376aeb861244f19f0a62f39286399654b2349f520c0",
+            "d1cef084462b3c5ecb198257f21b4e116911a29e07037170a703c81d6ab3507d",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_89233123FNA400535_8900_89233120DNA000025_8900",
+            "govws-c43a67f2cf9a67d1f9c903fc"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:bwxt:bwx-technologies-inc",
+            "ownership:bwxt:bwxt-nuclear-operations-group-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:bwxt-sec-10k",
+            "evidence:bwxt-sec-ex21",
+            "evidence:bwxt-usaspending-children-cmt4s6g76qb5",
+            "evidence:bwxt-usaspending-wjyvcpd5hkk7",
+            "https://api.usaspending.gov/api/v2/transactions/",
+            "usaspending:usaspending-2954b87c837263e2ec835416:actions:f026fa57d5397454:ad045bbe00f3a01a",
+            "usaspending:usaspending-2954b87c837263e2ec835416:award_detail:f186b2676a2c2946:2ac570e88e6c6530"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-2954b87c837263e2ec835416:actions:f026fa57d5397454:ad045bbe00f3a01a",
+            "usaspending:usaspending-2954b87c837263e2ec835416:award_detail:f186b2676a2c2946:2ac570e88e6c6530"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-27T02:39:58.581371+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-27T02:39:58.581371+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-ba09af779704dc7c15b09e07",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-fc5bd36776a18640502afb91",
+        "observation_id": "gro1-9fff932b5c08f50b78e1b8f1",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "BWXT",
+        "issuer": {
+          "company_name": "BWX Technologies",
+          "ticker": "BWXT",
+          "issuer_company_id": "central:BWXT",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-aa2e062463e692ae3219c2a8",
+          "record_id": "award:generated:CONT_AWD_89233123FNA400535_8900_89233120DNA000025_8900",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-08-24T00:00:00+00:00",
+          "known_at": "2026-08-27T02:39:58.581371+00:00",
+          "amount_id": null,
+          "amount_value": 15985145.230000004,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0378b7a06645ded2ea894945a608815df087e533a79d94462caeebbe3512062f",
+            "2ac570e88e6c6530540dc41f202c1e6cc05c9403563b4011ac783f35ea07ebfe",
+            "89f2a8019e68fcf9c1c82df102d46d900e3789e9086b5e767040d75d3a8051f9",
+            "8a09861c7069f167844999220c024bdf3eb810513f3de942b6d65a729fe9c3e0",
+            "c073a65d4a609f27215fd376aeb861244f19f0a62f39286399654b2349f520c0",
+            "d1cef084462b3c5ecb198257f21b4e116911a29e07037170a703c81d6ab3507d",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_89233123FNA400535_8900_89233120DNA000025_8900",
+            "govws-aa2e062463e692ae3219c2a8"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:bwxt:bwx-technologies-inc",
+            "ownership:bwxt:bwxt-nuclear-operations-group-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:bwxt-sec-10k",
+            "evidence:bwxt-sec-ex21",
+            "evidence:bwxt-usaspending-children-cmt4s6g76qb5",
+            "evidence:bwxt-usaspending-wjyvcpd5hkk7",
+            "https://api.usaspending.gov/api/v2/awards/CONT_AWD_89233123FNA400535_8900_89233120DNA000025_8900/",
+            "usaspending:usaspending-130d7fa25e9a0b31e84b6087:award_detail:f186b2676a2c2946:89f2a8019e68fcf9",
+            "usaspending:usaspending-2954b87c837263e2ec835416:award_detail:f186b2676a2c2946:2ac570e88e6c6530"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-130d7fa25e9a0b31e84b6087:award_detail:f186b2676a2c2946:89f2a8019e68fcf9",
+            "usaspending:usaspending-2954b87c837263e2ec835416:award_detail:f186b2676a2c2946:2ac570e88e6c6530"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-27T02:39:58.581371+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-27T02:39:58.581371+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-e39689cd29a2ec08e531f2b9",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-8415958b18564c8c7e3179b6",
+        "observation_id": "gro1-fcfe99b5145d48756ec1c8a5",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "BWXT",
+        "issuer": {
+          "company_name": "BWX Technologies",
+          "ticker": "BWXT",
+          "issuer_company_id": "central:BWXT",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-99390d56b6b92648f24941e7",
+          "record_id": "award:generated:CONT_AWD_89233123CNA000308_8900_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-07-23T00:00:00+00:00",
+          "known_at": "2026-08-22T23:18:03.375950+00:00",
+          "amount_id": null,
+          "amount_value": 42991621.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0378b7a06645ded2ea894945a608815df087e533a79d94462caeebbe3512062f",
+            "0b52bafd724ff69ccb1cf1c5b7255447530fa8998175481ac9bc8dab59cf97ac",
+            "8a09861c7069f167844999220c024bdf3eb810513f3de942b6d65a729fe9c3e0",
+            "ad00ed54b78f35b5ee2e7d7608f825cabb241f7a736a15ff40e0bf64ae8c5661",
+            "c073a65d4a609f27215fd376aeb861244f19f0a62f39286399654b2349f520c0",
+            "eb9c9e9f736ebebc6abc0dbf9cdd655c8a3aa09f472bd2826a1222cebf897a8b",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_89233123CNA000308_8900_-NONE-_-NONE-",
+            "govws-99390d56b6b92648f24941e7"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:bwxt:bwx-technologies-inc",
+            "ownership:bwxt:nuclear-fuel-services-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:bwxt-sec-10k",
+            "evidence:bwxt-sec-ex21",
+            "evidence:bwxt-usaspending-children-cmt4s6g76qb5",
+            "evidence:bwxt-usaspending-smjqjgd5jej3",
+            "https://api.usaspending.gov/api/v2/transactions/",
+            "usaspending:usaspending-2c31488783b1917259106aab:actions:b05dc13f98fad1d3:eb9c9e9f736ebebc",
+            "usaspending:usaspending-2c31488783b1917259106aab:award_detail:5b99380d6d413a36:ad00ed54b78f35b5"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-2c31488783b1917259106aab:actions:b05dc13f98fad1d3:eb9c9e9f736ebebc",
+            "usaspending:usaspending-2c31488783b1917259106aab:award_detail:5b99380d6d413a36:ad00ed54b78f35b5"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-22T23:18:03.375950+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-22T23:18:03.375950+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-a0e016e5260caf871f22f68f",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-e4d404956af42f12685bda13",
+        "observation_id": "gro1-e0c2c599063ddcf28ebb9bc9",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "BWXT",
+        "issuer": {
+          "company_name": "BWX Technologies",
+          "ticker": "BWXT",
+          "issuer_company_id": "central:BWXT",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-595968ddf2893e5515cfb3e2",
+          "record_id": "award:generated:CONT_AWD_89233123CNA000308_8900_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-08-11T00:00:00+00:00",
+          "known_at": "2026-08-22T23:18:03.375950+00:00",
+          "amount_id": null,
+          "amount_value": 42991621.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0378b7a06645ded2ea894945a608815df087e533a79d94462caeebbe3512062f",
+            "0b52bafd724ff69ccb1cf1c5b7255447530fa8998175481ac9bc8dab59cf97ac",
+            "604cbb0fbc16d86c2545d42e80a20cb51451739e8a1386a3c3112fa0170d4059",
+            "8a09861c7069f167844999220c024bdf3eb810513f3de942b6d65a729fe9c3e0",
+            "ad00ed54b78f35b5ee2e7d7608f825cabb241f7a736a15ff40e0bf64ae8c5661",
+            "c073a65d4a609f27215fd376aeb861244f19f0a62f39286399654b2349f520c0",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_89233123CNA000308_8900_-NONE-_-NONE-",
+            "govws-595968ddf2893e5515cfb3e2"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:bwxt:bwx-technologies-inc",
+            "ownership:bwxt:nuclear-fuel-services-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:bwxt-sec-10k",
+            "evidence:bwxt-sec-ex21",
+            "evidence:bwxt-usaspending-children-cmt4s6g76qb5",
+            "evidence:bwxt-usaspending-smjqjgd5jej3",
+            "https://api.usaspending.gov/api/v2/awards/CONT_AWD_89233123CNA000308_8900_-NONE-_-NONE-/",
+            "usaspending:usaspending-2c31488783b1917259106aab:award_detail:5b99380d6d413a36:ad00ed54b78f35b5",
+            "usaspending:usaspending-464e1c02c64370f43f845afc:award_detail:5b99380d6d413a36:604cbb0fbc16d86c"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-2c31488783b1917259106aab:award_detail:5b99380d6d413a36:ad00ed54b78f35b5",
+            "usaspending:usaspending-464e1c02c64370f43f845afc:award_detail:5b99380d6d413a36:604cbb0fbc16d86c"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-22T23:18:03.375950+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-22T23:18:03.375950+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-28576ed035ea4248a21fb8ea",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-2431cef9fbca1f209edb0f45",
+        "observation_id": "gro1-5ef2e11a4f2a6139eab14692",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "BWXT",
+        "issuer": {
+          "company_name": "BWX Technologies",
+          "ticker": "BWXT",
+          "issuer_company_id": "central:BWXT",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-ca1ce5158fbc0e8e7c026b9d",
+          "record_id": "award:generated:CONT_AWD_89233123CNA000308_8900_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-08-11T00:00:00+00:00",
+          "known_at": "2026-08-13T07:06:54.417967+00:00",
+          "amount_id": null,
+          "amount_value": 3000000.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0378b7a06645ded2ea894945a608815df087e533a79d94462caeebbe3512062f",
+            "0b52bafd724ff69ccb1cf1c5b7255447530fa8998175481ac9bc8dab59cf97ac",
+            "604cbb0fbc16d86c2545d42e80a20cb51451739e8a1386a3c3112fa0170d4059",
+            "8a09861c7069f167844999220c024bdf3eb810513f3de942b6d65a729fe9c3e0",
+            "ae61c812d72d28390918d60c853d6fbb6a22c6a2531a243bda50c6601232145b",
+            "c073a65d4a609f27215fd376aeb861244f19f0a62f39286399654b2349f520c0",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_89233123CNA000308_8900_-NONE-_-NONE-",
+            "govws-ca1ce5158fbc0e8e7c026b9d"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:bwxt:bwx-technologies-inc",
+            "ownership:bwxt:nuclear-fuel-services-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:bwxt-sec-10k",
+            "evidence:bwxt-sec-ex21",
+            "evidence:bwxt-usaspending-children-cmt4s6g76qb5",
+            "evidence:bwxt-usaspending-smjqjgd5jej3",
+            "https://api.usaspending.gov/api/v2/transactions/",
+            "usaspending:usaspending-464e1c02c64370f43f845afc:actions:b05dc13f98fad1d3:ae61c812d72d2839",
+            "usaspending:usaspending-464e1c02c64370f43f845afc:award_detail:5b99380d6d413a36:604cbb0fbc16d86c"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-464e1c02c64370f43f845afc:actions:b05dc13f98fad1d3:ae61c812d72d2839",
+            "usaspending:usaspending-464e1c02c64370f43f845afc:award_detail:5b99380d6d413a36:604cbb0fbc16d86c"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-19T05:44:34.128190+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-13T07:06:54.417967+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-7839ed82f7d57671b6fbcd96",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-81a1a8df4bdb97de3b1cdfa8",
+        "observation_id": "gro1-e1e79d098673ba2feed7a029",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "BWXT",
+        "issuer": {
+          "company_name": "BWX Technologies",
+          "ticker": "BWXT",
+          "issuer_company_id": "central:BWXT",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-81e3ef72648fa8e2256e0c31",
+          "record_id": "award:generated:CONT_AWD_89233123CNA000308_8900_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-08-11T00:00:00+00:00",
+          "known_at": "2026-08-13T07:06:54.417967+00:00",
+          "amount_id": null,
+          "amount_value": 3000000.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0378b7a06645ded2ea894945a608815df087e533a79d94462caeebbe3512062f",
+            "0b52bafd724ff69ccb1cf1c5b7255447530fa8998175481ac9bc8dab59cf97ac",
+            "604cbb0fbc16d86c2545d42e80a20cb51451739e8a1386a3c3112fa0170d4059",
+            "8a09861c7069f167844999220c024bdf3eb810513f3de942b6d65a729fe9c3e0",
+            "962792074074c7e11b0f9e7bfa739cc9eb4a46fcdc4219bf9b4c5cf7b98cbceb",
+            "c073a65d4a609f27215fd376aeb861244f19f0a62f39286399654b2349f520c0",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_89233123CNA000308_8900_-NONE-_-NONE-",
+            "govws-81e3ef72648fa8e2256e0c31"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:bwxt:bwx-technologies-inc",
+            "ownership:bwxt:nuclear-fuel-services-inc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:bwxt-sec-10k",
+            "evidence:bwxt-sec-ex21",
+            "evidence:bwxt-usaspending-children-cmt4s6g76qb5",
+            "evidence:bwxt-usaspending-smjqjgd5jej3",
+            "https://api.usaspending.gov/api/v2/awards/CONT_AWD_89233123CNA000308_8900_-NONE-_-NONE-/",
+            "usaspending:usaspending-130d7fa25e9a0b31e84b6087:award_detail:5b99380d6d413a36:962792074074c7e1",
+            "usaspending:usaspending-464e1c02c64370f43f845afc:award_detail:5b99380d6d413a36:604cbb0fbc16d86c"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-130d7fa25e9a0b31e84b6087:award_detail:5b99380d6d413a36:962792074074c7e1",
+            "usaspending:usaspending-464e1c02c64370f43f845afc:award_detail:5b99380d6d413a36:604cbb0fbc16d86c"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-19T05:44:34.128190+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-13T07:06:54.417967+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-54c4b58ba527f49be85905e9",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      }
+    ]
+  },
+  "context_engines": [
+    "government_revenue_foresight"
+  ]
+}

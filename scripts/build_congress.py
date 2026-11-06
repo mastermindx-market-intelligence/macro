@@ -651,6 +651,8 @@ def _score(agg: dict, eng: dict, gate_verdict: dict | None = None,
         t = gate_verdict.get("tier_cascade")
         if t in ("T1", "T2", "T3"):
             gate_tier = t
+    gate_ticks = gate_verdict.get("ticks") if gate_tier else None
+    gate_tier_sub = gate_verdict.get("tier_sub") if gate_tier else None
 
     # Resolve entry leg (may be pre-computed or None)
     if entry is None:
@@ -702,8 +704,14 @@ def _score(agg: dict, eng: dict, gate_verdict: dict | None = None,
             "downtrend": eng.get("downtrend"), "blocked": eng.get("blocked"), "price": eng.get("price"),
             # T5 entry badge + full entry leg
             "gate_tier": gate_tier,
+            "gate_ticks": gate_ticks, "gate_tier_sub": gate_tier_sub,
             "entry": entry,
             }
+
+
+def _t0_rows(matches: list, items: list) -> list:
+    """T0 card rows: matches on the in-window set (not the table cap), artifact order kept."""
+    return [m for m in matches if m.get("ticker") in {it["ticker"] for it in items}]
 
 
 # ---------------------------------------------------------------------------
@@ -871,9 +879,9 @@ def main() -> int:
         except Exception as e:  # noqa: BLE001
             log.warning("desk_grader (congress) step failed: %s", e)
 
-        # Build T0 card data: rows from the artifact that are on the watchlist, preserving artifact order
-        watchlist_tickers = {it["ticker"] for it in items[:WATCH_TABLE_CAP]}
-        t0_rows = [m for m in (t0_art.get("matches") or []) if m.get("ticker") in watchlist_tickers]
+        # Build T0 card data: rows from the artifact that are on the in-window watchlist
+        # (not just the table cap), preserving artifact order
+        t0_rows = _t0_rows(t0_art.get("matches") or [], items)
         t0_meta = {
             "present": bool(t0_art),
             "as_of": t0_art.get("as_of"),

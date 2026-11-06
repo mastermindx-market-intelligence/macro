@@ -1,0 +1,188 @@
+{
+  "state": "CANONICAL_COMPLETE10_IDENTITY_VERIFIED",
+  "observed_at": "2026-10-16T02:26:03.719158+00:00",
+  "generation": "5a5bc26d8f2c10a2931c0350",
+  "manifest_sha256": "88b7e7ff8cb07be848a99b7ada0e0c12deb5caf6c444ab35978b2473dd9565d2",
+  "marker_etag": "\"a7ce1cd1bea0198e316465dcb49cf6bd\"",
+  "every10_file_exact_bytes_hash_length_schema_clocks_aliases_verified": true,
+  "restore_receipt": {
+    "owner_contract": "event_workspace_manifest.v3",
+    "generation_id": "5a5bc26d8f2c10a2931c0350",
+    "manifest_sha256": "88b7e7ff8cb07be848a99b7ada0e0c12deb5caf6c444ab35978b2473dd9565d2",
+    "source_clock": "2026-10-13T05:47:02Z",
+    "owner_generated_at": "2026-10-15T04:44:02Z",
+    "restored_event_ids": [
+      "evt_cik0000040533_2026q2_results",
+      "evt_cik0000101829_2026q2_results",
+      "evt_cik0000202058_2026q2_results",
+      "evt_cik0000320193_2026q3_results",
+      "evt_cik0000794170_2026q3_results",
+      "evt_cik0000795266_2026q3_results",
+      "evt_cik0000822416_2026q2_results",
+      "evt_cik0000882184_2026q3_results",
+      "evt_cik0000936468_2026q2_results",
+      "evt_cik0001133421_2026q2_results"
+    ],
+    "event_count": 10,
+    "source_bindings": {
+      "workspaces/evt_cik0000040533_2026q2_results.json": {
+        "sha256": "d05dd4bd6b78a12fe048d74a51c685549fa4d6c84caa1f0156002dbe216387e3",
+        "bytes": 14781
+      },
+      "workspaces/evt_cik0000101829_2026q2_results.json": {
+        "sha256": "fb081892328d2d2419b146133f48de9c4f23d5aab6eee4b2feb67eddb8fc6ae2",
+        "bytes": 24350
+      },
+      "workspaces/evt_cik0000202058_2026q2_results.json": {
+        "sha256": "c6ee17ac99a00792c17ebe270eaa094964cc11e81c6df2a30d42a94de3d9f265",
+        "bytes": 57115
+      },
+      "workspaces/evt_cik0000320193_2026q3_results.json": {
+        "sha256": "a6ad8551f38f413935dc59dfa1514409c8578283dafc9c39bcae408e96108734",
+        "bytes": 111562
+      },
+      "workspaces/evt_cik0000794170_2026q3_results.json": {
+        "sha256": "9e9de8b220e54b3e6e22bbd298e0bcb75387830bbd21a3fc4444e5a71cf58c52",
+        "bytes": 13754
+      },
+      "workspaces/evt_cik0000795266_2026q3_results.json": {
+        "sha256": "60aa1f652b4c9a8c342b259f709c82b8fbf90820454149bcff5e874586c0d8b1",
+        "bytes": 11441
+      },
+      "workspaces/evt_cik0000822416_2026q2_results.json": {
+        "sha256": "bb11e739a641b74a2379145a7929f84ebd87e5f402d3a59ceac5ba5c105e2362",
+        "bytes": 9178
+      },
+      "workspaces/evt_cik0000882184_2026q3_results.json": {
+        "sha256": "e111da99aba068b102a42107258deba30ad6ec07e12946f5dfe466e3a16f21e8",
+        "bytes": 11297
+      },
+      "workspaces/evt_cik0000936468_2026q2_results.json": {
+        "sha256": "44c7b8b584b7f79970a6f959973353954ff2fca37add443cbfe24586798c2322",
+        "bytes": 36752
+      },
+      "workspaces/evt_cik0001133421_2026q2_results.json": {
+        "sha256": "7b4f6f7a7f33cdc19a709a4f40dbeea6654846c2cd45008240fa4c7257c842a0",
+        "bytes": 37898
+      }
+    },
+    "required_tickers": [],
+    "restored_at": "2026-10-16T02:26:03.592480+00:00",
+    "upstream_effect": "read_only",
+    "preserved_owner_bytes_and_clocks": true
+  },
+  "reads": [
+    {
+      "key": "company_intelligence/event_workspaces/manifest.json",
+      "bytes": 4273,
+      "sha256": "88b7e7ff8cb07be848a99b7ada0e0c12deb5caf6c444ab35978b2473dd9565d2",
+      "etag": "\"a7ce1cd1bea0198e316465dcb49cf6bd\"",
+      "last_modified": "2026-10-16 02:26:00+00:00",
+      "observed_at": "2026-10-16T02:26:00.968315+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/5a5bc26d8f2c10a2931c0350/manifest.json",
+      "bytes": 4273,
+      "sha256": "88b7e7ff8cb07be848a99b7ada0e0c12deb5caf6c444ab35978b2473dd9565d2",
+      "etag": "\"a7ce1cd1bea0198e316465dcb49cf6bd\"",
+      "last_modified": "2026-10-16 02:26:00+00:00",
+      "observed_at": "2026-10-16T02:26:01.179573+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/5a5bc26d8f2c10a2931c0350/workspaces/evt_cik0000040533_2026q2_results.json",
+      "bytes": 14781,
+      "sha256": "d05dd4bd6b78a12fe048d74a51c685549fa4d6c84caa1f0156002dbe216387e3",
+      "etag": "\"802138da72d61e4a0a6236b802a2dbc4\"",
+      "last_modified": "2026-10-16 02:25:59+00:00",
+      "observed_at": "2026-10-16T02:26:01.401932+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/5a5bc26d8f2c10a2931c0350/workspaces/evt_cik0000101829_2026q2_results.json",
+      "bytes": 24350,
+      "sha256": "fb081892328d2d2419b146133f48de9c4f23d5aab6eee4b2feb67eddb8fc6ae2",
+      "etag": "\"c42087d0d7df3ac6d0f54986d4729ae5\"",
+      "last_modified": "2026-10-16 02:25:59+00:00",
+      "observed_at": "2026-10-16T02:26:01.617147+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/5a5bc26d8f2c10a2931c0350/workspaces/evt_cik0000202058_2026q2_results.json",
+      "bytes": 57115,
+      "sha256": "c6ee17ac99a00792c17ebe270eaa094964cc11e81c6df2a30d42a94de3d9f265",
+      "etag": "\"158dfae11fc7627836b689fad2f785ac\"",
+      "last_modified": "2026-10-16 02:25:59+00:00",
+      "observed_at": "2026-10-16T02:26:01.839646+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/5a5bc26d8f2c10a2931c0350/workspaces/evt_cik0000320193_2026q3_results.json",
+      "bytes": 111562,
+      "sha256": "a6ad8551f38f413935dc59dfa1514409c8578283dafc9c39bcae408e96108734",
+      "etag": "\"a02e2fbd7652bf9d70d5a64c5165e018\"",
+      "last_modified": "2026-10-16 02:25:59+00:00",
+      "observed_at": "2026-10-16T02:26:02.055077+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/5a5bc26d8f2c10a2931c0350/workspaces/evt_cik0000794170_2026q3_results.json",
+      "bytes": 13754,
+      "sha256": "9e9de8b220e54b3e6e22bbd298e0bcb75387830bbd21a3fc4444e5a71cf58c52",
+      "etag": "\"0a5061cc49aa7c3bd3bc86d783c80dbe\"",
+      "last_modified": "2026-10-16 02:25:59+00:00",
+      "observed_at": "2026-10-16T02:26:02.218869+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/5a5bc26d8f2c10a2931c0350/workspaces/evt_cik0000795266_2026q3_results.json",
+      "bytes": 11441,
+      "sha256": "60aa1f652b4c9a8c342b259f709c82b8fbf90820454149bcff5e874586c0d8b1",
+      "etag": "\"67fc388aa0949b2d7b6430655adc1f5a\"",
+      "last_modified": "2026-10-16 02:25:59+00:00",
+      "observed_at": "2026-10-16T02:26:02.435054+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/5a5bc26d8f2c10a2931c0350/workspaces/evt_cik0000822416_2026q2_results.json",
+      "bytes": 9178,
+      "sha256": "bb11e739a641b74a2379145a7929f84ebd87e5f402d3a59ceac5ba5c105e2362",
+      "etag": "\"14e98075cfed920b83786031f56a9290\"",
+      "last_modified": "2026-10-16 02:25:59+00:00",
+      "observed_at": "2026-10-16T02:26:02.617492+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/5a5bc26d8f2c10a2931c0350/workspaces/evt_cik0000882184_2026q3_results.json",
+      "bytes": 11297,
+      "sha256": "e111da99aba068b102a42107258deba30ad6ec07e12946f5dfe466e3a16f21e8",
+      "etag": "\"dc16d4261a28aac6f1180395117de555\"",
+      "last_modified": "2026-10-16 02:25:59+00:00",
+      "observed_at": "2026-10-16T02:26:02.832651+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/5a5bc26d8f2c10a2931c0350/workspaces/evt_cik0000936468_2026q2_results.json",
+      "bytes": 36752,
+      "sha256": "44c7b8b584b7f79970a6f959973353954ff2fca37add443cbfe24586798c2322",
+      "etag": "\"ff92a24795723893a408aff2194a2dd7\"",
+      "last_modified": "2026-10-16 02:25:59+00:00",
+      "observed_at": "2026-10-16T02:26:03.046556+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/5a5bc26d8f2c10a2931c0350/workspaces/evt_cik0001133421_2026q2_results.json",
+      "bytes": 37898,
+      "sha256": "7b4f6f7a7f33cdc19a709a4f40dbeea6654846c2cd45008240fa4c7257c842a0",
+      "etag": "\"7cff77d9f4fd51000ed0bf90d3ad4353\"",
+      "last_modified": "2026-10-16 02:25:59+00:00",
+      "observed_at": "2026-10-16T02:26:03.281964+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/manifest.json",
+      "bytes": 4273,
+      "sha256": "88b7e7ff8cb07be848a99b7ada0e0c12deb5caf6c444ab35978b2473dd9565d2",
+      "etag": "\"a7ce1cd1bea0198e316465dcb49cf6bd\"",
+      "last_modified": "2026-10-16 02:26:00+00:00",
+      "observed_at": "2026-10-16T02:26:03.583355+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/manifest.json",
+      "bytes": 4273,
+      "sha256": "88b7e7ff8cb07be848a99b7ada0e0c12deb5caf6c444ab35978b2473dd9565d2",
+      "etag": "\"a7ce1cd1bea0198e316465dcb49cf6bd\"",
+      "last_modified": "2026-10-16 02:26:00+00:00",
+      "observed_at": "2026-10-16T02:26:03.717959+00:00"
+    }
+  ]
+}

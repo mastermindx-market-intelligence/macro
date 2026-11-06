@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta name="mm-bot-renew" content="yes">
+  <!-- Only asset URLs inherit this base. This document still runs on bot.* and
+       retains bot.*'s shared parent-domain Supabase session cookie. -->
+  <base href="https://www.mastermind-x.com/">
+  <title>Mastermind Bot · Reconnecting</title>
+  <style>
+    :root{color-scheme:light;--ink:#111827;--muted:#667085;--line:#dfe4ea;--blue:#2463eb}
+    *{box-sizing:border-box}
+    /* Keep this single-purpose recovery document uncluttered. */
+    body > :not(main):not(script){display:none!important}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;font:15px/1.55
+      ui-sans-serif,system-ui,-apple-system,sans-serif;color:var(--ink);
+      background:radial-gradient(circle at 25% 10%,#eaf1ff 0,transparent 34%),#f7f8fa}
+    main{width:min(92vw,620px);padding:42px;border:1px solid var(--line);
+      border-radius:22px;background:#fff;box-shadow:0 22px 70px rgba(16,24,40,.12)}
+    h1{margin:.6rem 0 .7rem;font-size:clamp(28px,5vw,40px);line-height:1.12;letter-spacing:-.03em}
+    p{color:var(--muted)}.eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;
+      text-transform:uppercase;color:var(--blue)}
+    nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+    a,button{padding:11px 16px;border-radius:10px;text-decoration:none;font:inherit;
+      font-weight:700;border:1px solid var(--line);color:var(--ink);background:white;cursor:pointer}
+    button{color:white;background:var(--blue);border-color:var(--blue)}
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Mastermind Bot · Account verification</div>
+  <h1>Checking your signed-in session.</h1>
+  <p id="mm-bot-renew-status" role="status">Your membership hasn't been classified as unpaid.
+     We're reconnecting through Mastermind's existing secure sign-in.</p>
+  <p lang="zh">我们正在通过 Mastermind 的现有登录系统验证您的会话，这不代表您需要升级会员。</p>
+  <nav>
+    <button type="button" id="mm-bot-renew-retry">Try Bot again · 重试</button>
+    <a href="https://www.mastermind-x.com/?signin=1">Sign in · 登录</a>
+  </nav>
+</main>
+<!-- Reuse the EXISTING main-site Supabase client and parent-domain cookie
+     storage. A second token refresh/auth plane must never live on the Bot host.
+     The fixed base sends the lazy SDK load to www, not the gated Bot origin. -->
+<script src="https://www.mastermind-x.com/theme.js?bot-recovery=1" defer></script>
+<!-- The server replaces the opaque nonce per response; this is the only
+     inline recovery script permitted by the response CSP. -->
+<script nonce="__MM_BOT_CSP_NONCE__">
+(function () {
+  'use strict';
+  // Existing theme bundles already honor a truthy config override. Keep stale
+  // bundles disabled BEFORE they execute; the guarded broker alone may opt in.
+  window.SUPABASE_CFG = {botRecoveryDisabled:true};
+  var status = document.getElementById('mm-bot-renew-status');
+  var retry = document.getElementById('mm-bot-renew-retry');
+  if (retry) retry.addEventListener('click', function (event) {
+    // The replay fence blocks automatic loops, not a real user's explicit retry.
+    if (!event.isTrusted) return;
+    try { sessionStorage.removeItem('mm.bot.session-renew.v1'); } catch (e) {}
+    location.reload();
+  });
+  function showUnavailable() {
+    if (status) status.textContent =
+      'We could not renew your session. Please sign in again. Your subscription has not been changed.';
+  }
+  // Admission precedes the deferred theme, including its SDK initialization.
+  // Every broker effect checks this absolute deadline, even if timers run late.
+  var deadline = Date.now() + 12000, settled = false;
+  var abort = typeof AbortController === 'function' ? new AbortController() : null;
+  var timeout = setTimeout(failClosed, 12000);
+  function close() {
+    if (settled) return;
+    settled = true;
+    clearTimeout(timeout);
+    if (abort) abort.abort();
+  }
+  function failClosed() {
+    if (settled) return;
+    close();
+    showUnavailable();
+  }
+  function isOpen() {
+    if (!settled && Date.now() >= deadline) failClosed();
+    return !settled;
+  }
+  window.__MMBotSessionRecovery = {
+    version: 1, isOpen: isOpen, fail: failClosed,
+    signal: abort && abort.signal
+  };
+  window.addEventListener('pagehide', failClosed, {once:true});
+  var mode = document.querySelector('meta[name="mm-bot-renew"]');
+  if (!abort || !mode || mode.content !== 'yes') { failClosed(); return; }
+  // No tab-scoped replay fence means no automatic attempt. All later script and
+  // SDK continuations see the same permanently closed controller.
+  try {
+    var key = 'mm.bot.session-renew.v1', now = Date.now();
+    var previous = Number(sessionStorage.getItem(key) || 0);
+    if (previous > 0 && previous <= now && now - previous < 30000) {
+      failClosed();
+      return;
+    }
+    sessionStorage.setItem(key, String(now));
+  } catch (e) {
+    failClosed();
+    return;
+  }
+  function refresh() {
+    if (!isOpen()) return;
+    var broker = window.getSupabaseClient;
+    // Only the guarded broker can renew. Old bundles remain auth-disabled.
+    if (!broker || broker.botRecoveryVersion !== 1 ||
+        typeof broker.acceptRecoverySession !== 'function') {
+      failClosed();
+      return;
+    }
+    broker().then(function (sb) {
+      if (!isOpen()) return null;
+      return sb.auth.getSession();
+    }).then(function (result) {
+      if (!isOpen()) return;
+      var session = result && result.data && result.data.session;
+      if (result && !result.error && broker.acceptRecoverySession(session)) {
+        close();
+        // Keep the original path/query. The server verifies identity AND Pro
+        // entitlement again; browser session data never grants Bot admission.
+        location.reload();
+      } else {
+        failClosed();
+      }
+    }).catch(failClosed);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', refresh, {once:true});
+  } else {
+    refresh();
+  }
+}());
+</script>
+</body>
+</html>

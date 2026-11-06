@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T21:02:23Z",
+ "accession": "0001032975-26-000021",
+ "cik": "0001032975",
+ "doc_byte_length": 2478904,
+ "doc_sha256": "831eb4d383cf493b8a27c8d4067b830b3976d8a5cdfb91200aa8235588c71f93",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-31",
+ "primary_document": "logi-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 345051,
+  "byte_start": 344702,
+  "normalized": "Personal voice assistants and other devices that offer music, such as Sonos Inc., Amazon's Echo, Google Home (owned by Alphabet, Inc.) and Apple HomePod, also compete with our products. Amazon is also a significant customer of our products. For PC speakers, our competitors include Bose, Cyber Acoustics LLC, and Creative Labs, Inc., among others.",
+  "normalized_sha256": "20a4b25d714859643616e67f8189fffd1cd58beaa68d173f270bac4fd0c961be",
+  "raw": " Personal voice assistants and other devices that offer music, such as Sonos Inc., Amazon's Echo, Google Home (owned by Alphabet, Inc.) and Apple HomePod, also compete with our products. Amazon is also a significant customer of our products. For PC speakers, our competitors include Bose, Cyber Acoustics LLC, and Creative Labs, Inc., among others. ",
+  "raw_sha256": "f9096b3864326f6b983af9c7cec5388824fbf2690c5c1f14e359d447a62906d2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1032975/000103297526000021/logi-20260331.htm",
+ "xbrl_contexts": []
+}

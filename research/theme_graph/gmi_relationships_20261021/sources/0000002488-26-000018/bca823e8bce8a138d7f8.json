@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-03T23:14:52Z",
+ "accession": "0000002488-26-000018",
+ "cik": "0000002488",
+ "doc_byte_length": 2174707,
+ "doc_sha256": "38bc381563ff1c70d8f75186075eeb4b4f215b0b6cdd8000737bce06870910c8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-04",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "amd-20251227.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 455263,
+  "byte_start": 454556,
+  "normalized": "If Microsoft does not continue to design and develop its operating systems so that they work with our x86 instruction sets or does not continue to develop and maintain their operating systems to support our graphics products, independent software providers may forego designing their software applications to take advantage of our innovations and customers may not purchase PCs with our x86 products. In addition, some software drivers licensed for use with our x86 products are certified by Microsoft. If Microsoft did not certify a driver, or if we otherwise fail to retain the support of Microsoft or other software vendors, our ability to market our x86 products would be materially adversely affected.",
+  "normalized_sha256": "16f473cb9f8bb4dcac2b6fab65dd4aa0851587cf7fc06370371a71cba5c411e7",
+  "raw": " If Microsoft does not continue to design and develop its operating systems so that they work with our x86 instruction sets or does not continue to develop and maintain their operating systems to support our graphics products, independent software providers may forego designing their software applications to take advantage of our innovations and customers may not purchase PCs with our x86 products. In addition, some software drivers licensed for use with our x86 products are certified by Microsoft. If Microsoft did not certify a driver, or if we otherwise fail to retain the support of Microsoft or other software vendors, our ability to market our x86 products would be materially adversely affected.",
+  "raw_sha256": "bca823e8bce8a138d7f88de6e167bda9756d7f55abac7885dd05739bc50c53c3"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+ "xbrl_contexts": []
+}

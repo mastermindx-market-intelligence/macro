@@ -78,6 +78,9 @@ jobs:
           # which no lane publishes (the nightly stages neither, deliberately), and any
           # future grader writing outside data/+site/qledger/ would re-open the hole.
           git add data/ site/qledger/
+          # GH001 carve (scripts/ci/qledger_carve.sh): a staged ledger at GitHub's blob limit
+          # rejects the whole backfill commit. A carved ledger is not published here.
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 1
           if git diff --cached --quiet; then echo "no backfill changes to commit"; exit 0; fi
           git commit -m "data: backfill $(date -u +%F)"
           # best-effort push: daily now runs in its own lane and may push concurrently,

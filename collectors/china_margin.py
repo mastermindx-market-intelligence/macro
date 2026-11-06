@@ -55,6 +55,7 @@ _REPORTS = {
 class ChinaMarginAdapter(Adapter):
     name = "china_margin"
     group = "china_margin"
+    session_calendar = "CN"  # observation dates follow the cash/Connect session
     stale_after_days = 6   # daily T+0 evening release; allow a long weekend
 
     def __init__(self) -> None:

@@ -1,0 +1,22 @@
+{
+  "observed_at": "2026-10-16T02:14:35.413879+00:00",
+  "origin": "https://www.mastermind-x.com",
+  "surface": "Government Revenue actual signed-in browser",
+  "view_name": "Defense QA GD 2026-10-16",
+  "storage_label": "this device",
+  "mode": "Changes",
+  "filter": "N0002418C2305",
+  "selected_record": "New obligation observed \u2014 N0002418C2305; took effect Jul13,2026; GD; Department of the Navy",
+  "save_status": "View saved on this device.",
+  "reload": "saved named option retained; current unsaved view default until explicit selection",
+  "restore_status": "Saved view applied \u00b7 Defense QA GD 2026-10-16",
+  "restored_filter": true,
+  "restored_selected_record": true,
+  "new_alert_enabled": false,
+  "private_test_view_retained": true,
+  "limitations": [
+    "No cross-device persistence or tenant-isolation claim",
+    "No monitor email or scheduler registration occurred",
+    "No new-event/correction/outage production injection occurred"
+  ]
+}

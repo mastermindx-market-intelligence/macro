@@ -265,7 +265,7 @@
     });
   });
 
-  window.addEventListener('hashchange', function () {
+  function mcApplyLocation() {
     /* A hash that names a real non-panel id (e.g. the skip link's
        `#mc-content`) is a native anchor jump, not section routing --
        let the browser's own scroll-and-focus stand instead of
@@ -283,7 +283,9 @@
     }
     var parsed = parseHash();
     activateSection(parsed.section, parsed.subtab);
-  });
+  }
+  window.addEventListener('hashchange', mcApplyLocation);
+  window.addEventListener('mmx:shell-location', mcApplyLocation);
 
   panels.forEach(wireSubtabKeyboard);
 

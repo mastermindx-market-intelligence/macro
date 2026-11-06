@@ -1,0 +1,37 @@
+[
+  {
+    "start": 40,
+    "end": 46,
+    "text": "    scope: exclusive\n    # Full hosted-checkout import/literal-read closure plus package initializers.\n    # Keep generated-site identities even when absent from a local sparse checkout.\n    # Canonical closure and ancestor tests enforce this exact curated scope.\n    paths:\n<<<<<<< HEAD\n      - \"lib/shared_shell.py\"\n      - \"lib/site_assets.py\"\n=======\n      - app/ticker_news_stream.py\n      - engine/qbus_news_quality.py\n>>>>>>> df3cba80e5ff43e3411209381b32d9d4df06bd1f\n      - \"research/licenses/MASSIVE_ENTITLEMENT_RECORD.md\"\n      - \"engine/liquidity_profile.py\"\n      - \"scripts/stock_liquidity_profile.py\"\n      - \"lib/massive_ticker.py\"\n      - \"engine/guidance_source_evidence.py\""
+  },
+  {
+    "start": 1895,
+    "end": 1901,
+    "text": "    gate: code\n    scope: exclusive\n    # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).\n    timeout-minutes: 10\n    paths:\n<<<<<<< HEAD\n      - \"lib/shared_shell.py\"\n      - \"lib/site_assets.py\"\n=======\n      - app/ticker_news_stream.py\n      - engine/qbus_news_quality.py\n>>>>>>> df3cba80e5ff43e3411209381b32d9d4df06bd1f\n      - \"research/licenses/MASSIVE_ENTITLEMENT_RECORD.md\"\n      - \"engine/liquidity_profile.py\"\n      - \"scripts/stock_liquidity_profile.py\"\n      - \"lib/massive_ticker.py\"\n      - \"engine/guidance_source_evidence.py\""
+  },
+  {
+    "start": 2809,
+    "end": 2815,
+    "text": "    gate: code\n    scope: exclusive\n    # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).\n    timeout-minutes: 10\n    paths:\n<<<<<<< HEAD\n      - \"lib/shared_shell.py\"\n      - \"lib/site_assets.py\"\n=======\n      - app/ticker_news_stream.py\n      - engine/qbus_news_quality.py\n>>>>>>> df3cba80e5ff43e3411209381b32d9d4df06bd1f\n      - \"research/licenses/MASSIVE_ENTITLEMENT_RECORD.md\"\n      - \"engine/liquidity_profile.py\"\n      - \"scripts/stock_liquidity_profile.py\"\n      - \"lib/massive_ticker.py\"\n      - \"engine/guidance_source_evidence.py\""
+  },
+  {
+    "start": 8941,
+    "end": 8947,
+    "text": "    # TestClient suites import app.main) and select this job on every ordinary code\n    # PR, breaching all three PACKING_PROBES. The list below is the FIF globs plus\n    # every concrete static import-closure path (curated_exclusive_closure_findings\n    # gates it) plus the measured runtime in-tree reads of every class-A suite.\n    paths:\n<<<<<<< HEAD\n      - \"lib/shared_shell.py\"\n      - \"lib/site_assets.py\"\n=======\n      - app/ticker_news_stream.py\n      - engine/qbus_news_quality.py\n>>>>>>> df3cba80e5ff43e3411209381b32d9d4df06bd1f\n      - \"research/licenses/MASSIVE_ENTITLEMENT_RECORD.md\"\n      - \"engine/liquidity_profile.py\"\n      - \"scripts/stock_liquidity_profile.py\"\n      - \"lib/massive_ticker.py\"\n      - \"engine/guidance_source_evidence.py\""
+  },
+  {
+    "start": 22428,
+    "end": 22434,
+    "text": "    # every pull request (DSC:A-DATA-GATED-JOB-IS-DARK-ON-EVERY-PULL-REQUEST).\n    if: ${{ false }}  # executed inside ci-pack, not a disabled gate\n    gate: code\n    scope: exclusive\n    paths:\n<<<<<<< HEAD\n      - \"lib/shared_shell.py\"\n      - \"lib/site_assets.py\"\n=======\n      - app/ticker_news_stream.py\n      - engine/qbus_news_quality.py\n>>>>>>> df3cba80e5ff43e3411209381b32d9d4df06bd1f\n      - \"research/licenses/MASSIVE_ENTITLEMENT_RECORD.md\"\n      - \"engine/liquidity_profile.py\"\n      - \"scripts/stock_liquidity_profile.py\"\n      - \"lib/massive_ticker.py\"\n      - \"engine/guidance_source_evidence.py\""
+  },
+  {
+    "start": 30898,
+    "end": 30904,
+    "text": "    # until it does.\n    # The site/ and ops/launchd literals were added from CI's full-checkout\n    # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).\n    scope: exclusive\n    paths:\n<<<<<<< HEAD\n      - \"lib/shared_shell.py\"\n      - \"lib/site_assets.py\"\n=======\n      - app/ticker_news_stream.py\n      - engine/qbus_news_quality.py\n>>>>>>> df3cba80e5ff43e3411209381b32d9d4df06bd1f\n      - \"engine/liquidity_profile.py\"\n      - \"scripts/stock_liquidity_profile.py\"\n      - \"engine/guidance_source_evidence.py\"\n      - \"engine/guidance_source_context.py\"\n      - \"app/institutional_research.py\""
+  },
+  {
+    "start": 33894,
+    "end": 33908,
+    "text": "    # test_dataos_security_master.py had legacy-jobs wiring before this job.\n    if: ${{ false }}  # executed inside ci-pack \u2014 NOT a disabled gate.\n    gate: code\n    scope: exclusive\n    paths:\n<<<<<<< HEAD\n      - \"lib/shared_shell.py\"\n      - \"lib/site_assets.py\"\n=======\n      - app/ticker_news_stream.py\n      - engine/massive_news.py\n      - engine/qbus_news_intake.py\n      - engine/qbus_news_quality.py\n      - engine/qbus_news_context.py\n      - scripts/benchmark_ticker_news.py\n      - scripts/verify_ticker_news_ui.py\n      - tests/test_massive_news.py\n      - tests/test_qbus_news_intake.py\n      - tests/test_shared_news_intelligence.py\n>>>>>>> df3cba80e5ff43e3411209381b32d9d4df06bd1f\n      - \"research/licenses/MASSIVE_ENTITLEMENT_RECORD.md\"\n      - \"engine/liquidity_profile.py\"\n      - \"scripts/stock_liquidity_profile.py\"\n      - \"lib/massive_ticker.py\"\n      - \"engine/guidance_source_evidence.py\""
+  }
+]

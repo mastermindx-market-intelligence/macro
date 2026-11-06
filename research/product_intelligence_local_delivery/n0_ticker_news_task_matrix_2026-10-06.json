@@ -1,0 +1,190 @@
+{
+  "pins": {
+    "main": "892157418ec6b8664d3a0d4ead12011826fc82b4",
+    "pr8454_head": "66ff33ac507bb2eb7c18443a0cd27e79b20933ad",
+    "pr8454_merge_base_main": "dbd6968899acd773287f41add5c18f6848c27e07",
+    "task4_commit": {
+      "sha": "80dec0eeefaf02017506a11c6d1f91f473857626",
+      "reachability": {
+        "ancestor_of_pr8454_head": true,
+        "commits_on_pr_head_after_task4": 17,
+        "commits_on_task4_not_in_pr_head": 0,
+        "github_compare_status": "behind",
+        "github_compare_behind_by": 17,
+        "github_compare_merge_base": "80dec0eeefaf02017506a11c6d1f91f473857626",
+        "named_remote_ref_grep_count": 0,
+        "fetch_by_sha": "success"
+      },
+      "n1_may_rely_on_task4_store": true,
+      "comment_head_stale_vs_pr_tip": true
+    },
+    "terminal": "e17622b1a05fc8891e44bc3bac2d2a178c1820d7",
+    "mastermind_package": "d1a8e672464d9a90dfe5b3608e071f8a730f3c95"
+  },
+  "tasks": [
+    {
+      "id": 1,
+      "name": "Provider-neutral revision normalization",
+      "state": "SOURCE-BUILT-NOT-PROVEN",
+      "source": ["engine/qbus_news_contract.py:274"],
+      "tests": ["tests/test_qbus_news_contract.py"],
+      "ci_enrollment": "NOT ENROLLED",
+      "evidence": "66ff33ac:docs/superpowers/plans/2026-10-04-terminal-ticker-news-end-to-end.md:53"
+    },
+    {
+      "id": 2,
+      "name": "Deterministic current-state reduction and withdrawals",
+      "state": "SOURCE-BUILT-NOT-PROVEN",
+      "source": ["engine/qbus_news_reducer.py:1"],
+      "tests": ["tests/test_qbus_news_reducer.py"],
+      "ci_enrollment": "NOT ENROLLED",
+      "evidence": "66ff33ac:docs/superpowers/plans/2026-10-04-terminal-ticker-news-end-to-end.md:69"
+    },
+    {
+      "id": 3,
+      "name": "Exact universe and conservative incremental clustering",
+      "state": "SOURCE-BUILT-NOT-PROVEN",
+      "source": ["engine/qbus_news_universe.py:1", "engine/qbus_news_cluster.py:1"],
+      "tests": ["tests/test_qbus_news_universe.py", "tests/test_qbus_news_cluster.py"],
+      "ci_enrollment": "NOT ENROLLED",
+      "evidence": "66ff33ac:research/ticker_news/IMPLEMENTATION_FRONTIER_2026-10-04.md:58"
+    },
+    {
+      "id": 4,
+      "name": "Qualify and migrate the qbus persistence path",
+      "state": "SOURCE-BUILT-NOT-PROVEN",
+      "source": ["engine/qbus_news_store.py:1044", "scripts/migrate_qbus_news.py:1"],
+      "tests": ["tests/test_qbus_news_store.py", "tests/test_qbus_news_migration.py", "tests/test_qbus_news_store_api_reads.py", "tests/test_qbus_news_store_clusters.py"],
+      "ci_enrollment": "NOT ENROLLED",
+      "evidence": "PR #8454 comment IC_kwDOS4LjIs8AAAABZOhn5g (5987919846)"
+    },
+    {
+      "id": 5,
+      "name": "Global Benzinga stream plus correction-safe catch-up",
+      "state": "SOURCE-BUILT-NOT-PROVEN",
+      "source": ["collectors/benzinga_news.py:93", "collectors/massive_benzinga_news.py:89", "scripts/run_qbus_news.py:73"],
+      "tests": ["tests/test_benzinga_news.py", "tests/test_massive_benzinga_news.py", "tests/test_run_qbus_news.py", "tests/test_qbus_news_task5_repairs.py"],
+      "ci_enrollment": "NOT ENROLLED",
+      "evidence": "66ff33ac merge-base diff 27 files; plan :111"
+    },
+    {
+      "id": 6,
+      "name": "Existing Macro API read/stream composition",
+      "state": "SOURCE-BUILT-NOT-PROVEN",
+      "source": ["app/ticker_news.py:345", "app/ticker_news.py:445", "app/main.py:2287"],
+      "tests": ["tests/test_ticker_news_api.py"],
+      "ci_enrollment": "NOT ENROLLED",
+      "evidence": "66ff33ac commit message; plan :124"
+    },
+    {
+      "id": 7,
+      "name": "Terminal server contract and proxy",
+      "state": "NOT STARTED",
+      "source": [],
+      "tests": [],
+      "ci_enrollment": "N/A",
+      "evidence": "Mastermind 03_WORK_PACKAGES.md N1; TERMINAL_PIN paths FREE"
+    },
+    {
+      "id": 8,
+      "name": "Ticker story panel and symbol navigation",
+      "state": "NOT STARTED",
+      "source": [],
+      "tests": [],
+      "ci_enrollment": "N/A",
+      "evidence": "plan :152; TERMINAL_PIN components FREE"
+    },
+    {
+      "id": 9,
+      "name": "End-to-end fault, load, coverage and security qualification",
+      "state": "RELEASE-GATED",
+      "source": [],
+      "tests": [],
+      "ci_enrollment": "N/A",
+      "evidence": "plan :163; tests/test_ticker_news_end_to_end.py absent on 66ff33ac"
+    },
+    {
+      "id": 10,
+      "name": "Licensing and source-quality gate",
+      "state": "RELEASE-GATED",
+      "source": [],
+      "tests": [],
+      "ci_enrollment": "N/A",
+      "evidence": "plan :177"
+    },
+    {
+      "id": 11,
+      "name": "Release, canary and natural soak",
+      "state": "RELEASE-GATED",
+      "source": [],
+      "tests": [],
+      "ci_enrollment": "N/A",
+      "evidence": "plan :183"
+    },
+    {
+      "id": 12,
+      "name": "Acceptance, expansion and deferred consumers",
+      "state": "RELEASE-GATED",
+      "source": [],
+      "tests": [],
+      "ci_enrollment": "N/A",
+      "evidence": "plan :191"
+    }
+  ],
+  "coverage": [
+    {"case": "late response (prior symbol)", "verdict": "NOT_COVERED", "side": "UI", "evidence": "no terminal/e2e/ticker-news.spec.ts on TERMINAL_PIN"},
+    {"case": "snapshot/stream race", "verdict": "NOT_COVERED", "side": "UI", "evidence": "no dedicated test on 66ff33ac; grep tests/test_ticker_news_api.py race"},
+    {"case": "duplicate delivery", "verdict": "COVERED", "side": "SERVER", "evidence": "tests/test_qbus_news_reducer.py::test_exact_current_revision_is_duplicate_and_keeps_state"},
+    {"case": "correction/withdrawal", "verdict": "COVERED", "side": "SERVER", "evidence": "tests/test_qbus_news_reducer.py withdrawal tests; test_ticker_news_api.py SSE removal"},
+    {"case": "expired cursor", "verdict": "NOT_COVERED", "side": "SERVER", "evidence": "gap tests only; no expired cursor test name"},
+    {"case": "aborted client", "verdict": "NOT_COVERED", "side": "UI", "evidence": "plan Task 7; no Terminal tests"},
+    {"case": "rights (source vs account)", "verdict": "COVERED", "side": "SERVER", "evidence": "tests/test_ticker_news_api.py::test_unknown_source_rights_fail_closed_before_store_open"},
+    {"case": "cache isolation", "verdict": "NOT_COVERED", "side": "SERVER", "evidence": "private no-store headers only; no isolation test"},
+    {"case": "unavailable store", "verdict": "COVERED", "side": "SERVER", "evidence": "tests/test_ticker_news_api.py::test_store_unavailable_is_503_not_empty_200"},
+    {"case": "quiet vs disconnected", "verdict": "NOT_COVERED", "side": "SERVER", "evidence": "quiet state test only; no disconnected market test"},
+    {"case": "oversize payload", "verdict": "COVERED", "side": "SERVER", "evidence": "tests/test_qbus_news_contract.py::test_oversized_title_and_body_are_rejected_with_stable_codes"},
+    {"case": "a11y", "verdict": "NOT_COVERED", "side": "UI", "evidence": "plan Task 8; no components"},
+    {"case": "EN/ZH x dark/light", "verdict": "NOT_COVERED", "side": "UI", "evidence": "plan Task 8; Terminal not built"}
+  ],
+  "contract": {
+    "normalize": "engine/qbus_news_contract.py:274",
+    "store_commit": "engine/qbus_news_store.py:1044",
+    "snapshot_api_schema": "ticker_news.snapshot.v1 app/ticker_news.py:259",
+    "story_api_schema": "ticker_news.story.v1 app/ticker_news.py:303",
+    "changes_api": "app/ticker_news.py:310",
+    "stream_api": "app/ticker_news.py:445",
+    "read_rights": "engine/qbus_news_store.py:93",
+    "do_not_switch_qbus_writers": [
+      "engine/financial_news.py:242",
+      "engine/news_vector.py:588",
+      "engine/china_news_intel.py:806",
+      "engine/europe_news_intel.py:617",
+      "engine/communique_diff.py:408",
+      "collectors/china_official_corpora.py:391",
+      "scripts/recrawl_official_tape.py:215"
+    ]
+  },
+  "terminal_collisions": [],
+  "terminal_incumbent_route": "terminal/app/api/company-theme-context/[symbol]/route.ts:44",
+  "do_not_call_paths": [
+    "collectors/benzinga_news.py:93",
+    "collectors/benzinga_news.py:392",
+    "collectors/massive_benzinga_news.py:89",
+    "scripts/run_qbus_news.py:156"
+  ],
+  "provider_env_names": ["BENZINGA_API_KEY"],
+  "holds": [
+    {"text": "DRAFT / DO NOT MERGE until the exact candidate is reviewed and its applicable source/CI gates pass.", "source": "PR #8454 body"},
+    {"text": "Do not arm merge-on-green or auto-merge during implementation.", "source": "PR #8454 body"},
+    {"text": "No paid feed, new subscription, production service or background worker has been started.", "source": "PR #8454 body"},
+    {"text": "Existing qbus writers and Parquet cannot be switched by the UI worker.", "source": "Mastermind 03_WORK_PACKAGES.md N Release"},
+    {"text": "Migration utility defaults to check-only", "source": "PR comment 5987919846"}
+  ],
+  "gaps": [
+    "pytest not installed on N0 lane host; news suites not executed at MAIN_PIN worktree",
+    "CI legacy-jobs.yml on 66ff33ac does not list test_qbus_news* or test_ticker_news_api.py",
+    "tests/test_qbus_news_recovery.py in plan but absent on PR head",
+    "No Terminal ticker-news files at TERMINAL_PIN",
+    "git ls-remote origin | grep -c 80dec0ee returned 0 (SHA fetch still succeeds)"
+  ]
+}

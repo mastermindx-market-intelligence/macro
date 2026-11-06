@@ -49,6 +49,7 @@ from engine.entry_radar.contracts import Nomination, NominationError, ProducerRe
 from engine.entry_radar.producers.base import (
     AdapterResult,
     clamp_asof,
+    finite_or_none,
     grade_staleness,
     read_json,
     stale_after,
@@ -145,7 +146,7 @@ def read_flow_pulse(path: Path, *, now: datetime | None = None,
                 reason_text=text,
                 observed_at=stamp,
                 source_asof=safe_asof if safe_asof is not None else stamp,
-                source_value=rvol, source_horizon="intraday", ttl_until=ttl,
+                source_value=finite_or_none(rvol), source_horizon="intraday", ttl_until=ttl,
                 evidence_ref=f"flow_pulse.json#{sym}", data_quality=quality,
             ))
         except NominationError as exc:
