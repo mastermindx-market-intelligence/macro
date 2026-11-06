@@ -1,0 +1,8 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/policy_watch.html.j2
+  - templates/_policy_watch_current.html.j2
+  - scripts/build_policy_watch.py
+  - engine/policy_watch_current.py
+  - engine/macro_news.py
+manifest: mockups/evidence/policy-watch-r1/manifest.json

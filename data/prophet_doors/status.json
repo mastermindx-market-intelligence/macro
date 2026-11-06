@@ -1,15 +1,15 @@
 {
-  "appended": 3,
-  "asof": "2026-09-02",
+  "appended": 0,
+  "asof": "2026-11-04",
   "candidates": {
-    "R": 3,
-    "T": 1,
-    "W": 11
+    "R": 0,
+    "T": 21,
+    "W": 38
   },
   "deduped": {
     "R": 0,
-    "T": 1,
-    "W": 11
+    "T": 21,
+    "W": 38
   },
   "dry_run": false,
   "feature_source": {
@@ -19,15 +19,15 @@
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": true,
+      "consulted": false,
       "null_reasons": {},
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {},
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 3,
-      "tickers_read": 3
+      "tickers_ok": 0,
+      "tickers_read": 0
     },
     "keys": [
       "relay_count_3d",
@@ -48,13 +48,7 @@
       "consulted": false
     },
     "turnover": {
-      "consulted": true,
-      "last_session": "2026-09-02",
-      "n_tickers": 1544,
-      "ok": true,
-      "reason": null,
-      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
-      "window_max": 60
+      "consulted": false
     }
   },
   "feature_source_w": {
@@ -82,55 +76,51 @@
     ]
   },
   "flag_tickers": {
-    "R": [
-      "DUOL",
-      "HRMY",
-      "JXN"
-    ],
+    "R": [],
     "T": [],
     "W": []
   },
-  "n_universe": 1496,
+  "n_universe": 1489,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-03 10:33:46",
-  "runtime_s": 114.3,
+  "run_utc": "2026-11-05 15:48:58",
+  "runtime_s": 105.5,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 2,
-    "asof": "2026-08-31",
-    "n_members": 132,
+    "age_days": -1,
+    "asof": "2026-11-05",
+    "n_members": 152,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.744,
+        "emerging_score": 2.862,
         "rank": 1,
-        "theme": "Cybersecurity"
+        "theme": "Consumer Goods"
       },
       {
-        "emerging_score": 1.795,
+        "emerging_score": 2.237,
         "rank": 2,
-        "theme": "Big Data"
+        "theme": "Aging Population & Longevity"
       },
       {
-        "emerging_score": 1.569,
+        "emerging_score": 2.227,
         "rank": 3,
-        "theme": "Software"
+        "theme": "Real Estate & REITs"
       },
       {
-        "emerging_score": 1.527,
+        "emerging_score": 2.032,
         "rank": 4,
-        "theme": "Artificial Intelligence"
+        "theme": "Healthy Food & Nutrition"
       },
       {
-        "emerging_score": 1.343,
+        "emerging_score": 1.92,
         "rank": 5,
-        "theme": "Biometrics"
+        "theme": "Smart Home"
       }
     ]
   },
@@ -139,19 +129,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 11,
-    "asof_max": "2026-09-02",
+    "aligned": 38,
+    "asof_max": "2026-11-04",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-02",
+    "asof_run": "2026-11-04",
     "evaluated": 713,
-    "fresh": 12,
+    "fresh": 39,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 21.8,
+    "runtime_s": 18.7,
     "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 89,
+    "state_turn": 56,
     "universe_n": 717
   }
 }

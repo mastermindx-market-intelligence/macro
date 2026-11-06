@@ -1,33 +1,56 @@
 {
   "snap": false,
   "relief_magnitude": null,
-  "roro": 0.851,
-  "cap_recent": false,
-  "fear_built": 0.186,
-  "roro_velocity": -0.137,
-  "vel_pctile": 0.218,
-  "legs_up": 1,
+  "roro": -0.424,
+  "cap_recent": true,
+  "fear_built": 0.65,
+  "roro_velocity": 0.463,
+  "vel_pctile": 0.962,
+  "legs_up": 2,
   "legs_total": 7,
   "flipped_legs": [
-    "copper_gold"
+    "vix",
+    "vix_term"
   ],
-  "days_since_last_snap": 56,
-  "fear_rebuilding": true,
-  "vix_term": 0.851,
-  "status": "dormant",
+  "days_since_last_snap": 10,
+  "fear_rebuilding": false,
+  "vix_term": 0.884,
+  "status": "building",
   "gates": {
-    "velocity": false,
+    "velocity": true,
     "legs": false,
-    "fear": false,
-    "washout": false
+    "fear": true,
+    "washout": true
   },
   "min_legs": 4,
   "flipped_legs_named": [
     {
-      "key": "copper_gold",
-      "en": "Copper/Gold",
-      "zh": "\u94dc\uff0f\u91d1 \u6bd4"
+      "key": "vix",
+      "en": "VIX",
+      "zh": "\u6ce2\u52a8\u7387 VIX"
+    },
+    {
+      "key": "vix_term",
+      "en": "VIX term structure",
+      "zh": "VIX \u671f\u9650\u7ed3\u6784"
     }
   ],
-  "magnitude_band": null
+  "magnitude_band": null,
+  "veto": {
+    "schema": "regime_snap_veto.v1",
+    "is_context_only": true,
+    "lean": "unclear",
+    "confidence": "low",
+    "checks": {
+      "catalyst": "Catalyst is not legible: the headlines mention an FOMC statement and post-midterm easing but reveal no actual policy shift, signed deal, or hard-data surprise.",
+      "premium": "Only part of the fear premium appears unwound; VIX and its term structure have flipped, but just 2 of 7 legs confirm and the snap is still building.",
+      "washout": "A real washout is plausible because recent capitulation is flagged and fear built reached 0.65, although it was not extreme.",
+      "follow_through": "Next-session confirmation is doubtful because breadth is narrow and mixed AI/semiconductor and oil pressures remain; more cross-asset legs must flip before durability is credible."
+    },
+    "read": "The move comes from a credible but moderate washout, yet its catalyst is unclear and confirmation is confined to volatility. Treat durability as unresolved until broader risk assets validate the reversal.",
+    "model": "deepseek-v4-pro",
+    "generated_at": "2026-11-05T10:04:12.743520+00:00",
+    "degraded_reason": null,
+    "disclaimer": "AI durability read \u2014 context only, never scored or sized. The snap detector is coincident; this is a fallible judgement on whether the relief is structural or a dead-cat, not a trade recommendation."
+  }
 }

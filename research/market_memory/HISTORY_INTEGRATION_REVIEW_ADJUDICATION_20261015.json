@@ -1,0 +1,36 @@
+{
+  "disposition": {
+    "calculation_vintage": "REPRODUCED_FIXED: required contract fields and explicit stored feature/code vintage plus reader-version comparison",
+    "encoded_vs_decoded_budget": "CLARIFIED: both existing ceilings advertised; no peak-process-memory guarantee and no ceiling weakened",
+    "exhausted_row_budget": "REPRODUCED_FIXED: refusal before a max_rows=0 reader call; no artificial minimum clamping",
+    "local_path_race": "NOT_PROMOTED_TO_CONFIRMED_TRANSPORT_DEFECT: Data & Lab never uses this local reader; existing descriptor owner remains unchanged; optional local-CLI hardening is not an attested guarantee",
+    "macro_outcome_partition": "PROMOTED_TO_CONTRACT_DEFECT_REPRODUCED_FIXED: JSON-only first-print reference refused before opening historical Parquet outcomes",
+    "missing_sources_key": "REPRODUCED_FIXED: typed contract refusal",
+    "nonfinite_request": "REPRODUCED_FIXED: typed INVALID_REQUEST; unrelated optional-loader behavior not masked",
+    "oversized_provenance": "REPRODUCED_FIXED: compact bounded day projection; exact full provenance retained in original manifest",
+    "reader_dependency_export": "OBSERVED_SEPARATELY_FIXED_IN_CANDIDATE_PACKAGE: exact source closure, no production selection yet",
+    "source_order": "NOT_A_DEFECT: canonical read_research_history returns rows sorted by date (lib/dataos/tiingo_reader.py448-456); no sorting patch or duplicate test required"
+  },
+  "implementation_release_accepted": false,
+  "next": "Independent targeted review of exact hardening diff and matching CI; consume original semantic-review result without replay.",
+  "parent_reproduction": {
+    "combined_affected_regressions_passed": 415,
+    "failed_before": 14,
+    "negative_tests": 14,
+    "passed_after": 14
+  },
+  "parent_run_id": "market-time-machine-20261015",
+  "retained_response_bytes": 17590,
+  "retained_response_sha256": "2ace134662dbe3be7ead730c656b660b19c13ae409eac441838ef0bbdacf6393",
+  "returned_verdict": "PASS_WITH_FINDINGS; no worker tests claimed",
+  "reviewed_source_sha256": {
+    "engine/neuralweb/market_memory_history_archive.py": "6f5154f5feda0703a1f3815576a641fcf6e0e8426078bd4c4891c44f6428f46f",
+    "lib/dataos/web_api.py": "6592205e9a4b805ecd7ef84db7583b29807d45fc3940e45ad611daa23080a82d",
+    "lib/dataos/web_history.py": "d8c468d31cc963c1abd8eb6e671898880e39e1bc2091c27c9f5fb5d5dd9cc998",
+    "lib/dataos/web_workspace.py": "a3fff923d2ab71e1bd2084ce1fdd329d03511542fea1998abf84e3aa480bc9a6",
+    "tests/test_dataos_web_history.py": "d84bd0ebc43cd3fbdf308af9f2126bb1dd0e37f598f63ef96b5c4664f089869d"
+  },
+  "root_id": "market-time-machine-20261015",
+  "run_id": "market-time-machine-20261015-integration-review-02",
+  "schema": "market_memory.history_review_adjudication.v1"
+}
