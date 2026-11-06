@@ -26711,6 +26711,7 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - engine/rate_futures_repricing.py
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "config/dataset_registry.yml"
@@ -35353,6 +35354,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - collectors/rate_futures.py
+      - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -36853,6 +36856,7 @@ jobs:
       - "templates/options_compare.css"
       - "site/options_compare.css"
       - "site/assets/css/04f9b05b.css"
+      - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
