@@ -1,0 +1,9 @@
+{
+  "command": "SSH /opt/macro/.venv/bin/python -B - with context probe",
+  "result": "ImportError: cannot import name _reviewed_context from engine.press.external_candidate",
+  "exit_code": 1,
+  "local_code_is_not_installed": true,
+  "provider_calls": 0,
+  "staging_writes": 0,
+  "reason": "PR 9209 is unmerged; retained failure is not an application regression or installed acceptance. No local source was uploaded into the installed runtime."
+}

@@ -147,8 +147,22 @@ def _compose_hero(breadth: float | None, corr_verdict: str | None) -> dict:
 
     key = (breadth_regime, concentration)
     if key not in _M:
-        # unknown concentration: use breadth-only row (rows 1/4/7 adjusted)
-        key = (breadth_regime, "diversified")
+        # CA-W3-R6: retain the breadth read, but do not borrow correlation
+        # claims from the diversified rows when that evidence is unavailable.
+        hl_en, hl_zh = {
+            "risk_on": ("Upward trends are broader", "上涨趋势更广泛"),
+            "mixed": ("Trends remain mixed", "趋势仍然分化"),
+            "risk_off": ("Downward trends are broader", "下跌趋势更广泛"),
+        }[breadth_regime]
+        return {
+            "tone": _M[(breadth_regime, "diversified")][0],
+            "headline_en": hl_en,
+            "headline_zh": hl_zh,
+            "sub_en": "Correlation data is unavailable; we can't tell whether markets are moving independently.",
+            "sub_zh": "暂无相关性数据，无法判断各市场是否独立运行。",
+            "stance_en": "Watch — diversification is unverified.",
+            "stance_zh": "留意——分散化效果尚不明确。",
+        }
 
     tone, hl_en, hl_zh, sub_en, sub_zh, st_en, st_zh = _M[key]
     return {
