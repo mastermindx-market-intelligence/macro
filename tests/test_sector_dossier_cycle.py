@@ -541,3 +541,17 @@ def test_zh_dossier_face_has_no_latin_leak(tmp_path):
     dom.write_text('<html lang="zh" data-lang="zh"><body>' + body + "</body></html>", encoding="utf-8")
     proc = subprocess.run(["python3", "-I", str(ZHGREP), str(dom), str(ALLOW)], capture_output=True, text=True)
     assert proc.returncode == 0 and "zh-latin=0" in proc.stdout, proc.stdout[-1500:]
+
+
+def test_identity_header_sits_above_the_tablist():
+    """L6.19: the page title persists across tabs, so the h1 lives in the identity header above the
+    tablist and never inside a tabpanel."""
+    head = PAGE_SRC.index('<header class="panel scd-head">')
+    h1 = PAGE_SRC.index('<h1>')
+    end = PAGE_SRC.index('</header>', head)
+    tabs = PAGE_SRC.index('<div class="scd-tabs"')
+    assert head < h1 < end < tabs
+    assert PAGE_SRC.count('<h1>') == 1
+    for m in re.finditer(r'<section[^>]*role="tabpanel"', PAGE_SRC):
+        close = PAGE_SRC.find('</section>', m.end())
+        assert '<h1>' not in PAGE_SRC[m.end():close]

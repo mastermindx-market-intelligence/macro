@@ -140,6 +140,21 @@
   .scd-nm { color:var(--muted); font-size:12.5px; margin-left:8px; }
   .scd-nc { margin-left:8px; font-size:11px; font-weight:700; padding:1px 7px; border-radius:var(--r-pill,999px);
             color:var(--muted); border:1px solid var(--line); background:var(--panel2); white-space:nowrap; }
+  /* L6.19: the identity header persists across tabs; the Cycle tab's breadth block reads as one section
+     with neutral type only (no direction ink, no edge accents); an empty or loading mount keeps its height
+     until the data paints. */
+  .scd-head { margin-bottom:0; }
+  .scd-mount:empty, .scd-mount:has(> .sc-state--loading) { min-height:480px; }
+  .scd-trend { margin:0; font-size:13px; color:var(--muted); }
+  .scd-breadth { display:flex; flex-direction:column; gap:6px; }
+  .scd-breadth-copy { margin:0; font-size:13px; line-height:1.5; color:var(--text); max-width:72ch; }
+  .scd-legs { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:6px 16px;
+              list-style:none; padding:0; margin:4px 0 0; }
+  .scd-leg { display:flex; justify-content:space-between; align-items:baseline; gap:8px; font-size:13px;
+             padding:6px 10px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel2); min-width:0; }
+  .scd-num { font-family:var(--font-mono,inherit); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .scd-meta, .scd-breadth-nc { margin:0; font-size:12px; color:var(--muted); }
+  .scd-open { margin:14px 0 0; font-size:13px; }
 </style>
 </head>
 <body>
@@ -155,20 +170,11 @@
 {% if shock_state is defined and shock_state and shock_state.get('active') %}
 <div class="shock-deesc-banner">⚠ <span class="l-en">SHOCK — ranks computed on pre-shock data; discount until {{ shock_state.get('expires', '') }}.</span><span class="l-zh">冲击 — 排名依据冲击前数据计算；有效期至 {{ shock_state.get('expires', '') }}，届前请酌情折扣。</span></div>
 {% endif %}
-{# ---- Sector dossier (L5): Overview keeps the whole legacy body unchanged and in order; the other
-     tabs are fed by the Cycles family (sector_cycles_states/_face + sector_dossier.js). ---- #}
+{# ---- Sector dossier (L5): the identity header (name, state, entry badge, as-of, alerts) sits above the
+     tablist so every tab keeps the page title; Overview keeps the rest of the legacy body in order, and the
+     other tabs are fed by the Cycles family (sector_cycles_states/_face + sector_dossier.js). ---- #}
 <div id="scd" class="scd" data-fund="{{ s.fund }}">
-  <div class="scd-tabs" role="tablist" aria-label="{{ s.fund }}">
-    <button type="button" role="tab" id="scd-t-overview" data-tab="overview" aria-controls="scd-p-overview" aria-selected="true" tabindex="0">{{ t('Overview', '概览') }}</button>
-    <button type="button" role="tab" id="scd-t-cycle" data-tab="cycle" aria-controls="scd-p-cycle" aria-selected="false" tabindex="-1">{{ t('Cycle', '周期') }}</button>
-    <button type="button" role="tab" id="scd-t-signals" data-tab="signals" aria-controls="scd-p-signals" aria-selected="false" tabindex="-1">{{ t('Signals', '信号') }}</button>
-    <button type="button" role="tab" id="scd-t-drivers" data-tab="drivers" aria-controls="scd-p-drivers" aria-selected="false" tabindex="-1">{{ t('Drivers', '驱动因素') }}</button>
-    <button type="button" role="tab" id="scd-t-companies" data-tab="companies" aria-controls="scd-p-companies" aria-selected="false" tabindex="-1">{{ t('Companies', '公司') }}</button>
-    <button type="button" role="tab" id="scd-t-evidence" data-tab="evidence" aria-controls="scd-p-evidence" aria-selected="false" tabindex="-1">{{ t('Evidence', '证据') }}</button>
-    <button type="button" role="tab" id="scd-t-record" data-tab="record" aria-controls="scd-p-record" aria-selected="false" tabindex="-1">{{ t('Track record', '跟踪记录') }}</button>
-  </div>
-  <section role="tabpanel" id="scd-p-overview" class="scd-panel" aria-labelledby="scd-t-overview" tabindex="0">
-  <div class="panel">
+  <header class="panel scd-head">
     <div class="topline">
       <h1>{{ td(s.name) }} <span class="muted">({{ s.fund }})</span></h1>
       <span class="state st-{{ s.ladder.state | replace(" ", "_") }}">{{ td(s.ladder.label) }}</span>
@@ -219,6 +225,18 @@
         </div>
       </span>
     </div>
+  </header>
+  <div class="scd-tabs" role="tablist" aria-label="{{ s.fund }}">
+    <button type="button" role="tab" id="scd-t-overview" data-tab="overview" aria-controls="scd-p-overview" aria-selected="true" tabindex="0">{{ t('Overview', '概览') }}</button>
+    <button type="button" role="tab" id="scd-t-cycle" data-tab="cycle" aria-controls="scd-p-cycle" aria-selected="false" tabindex="-1">{{ t('Cycle', '周期') }}</button>
+    <button type="button" role="tab" id="scd-t-signals" data-tab="signals" aria-controls="scd-p-signals" aria-selected="false" tabindex="-1">{{ t('Signals', '信号') }}</button>
+    <button type="button" role="tab" id="scd-t-drivers" data-tab="drivers" aria-controls="scd-p-drivers" aria-selected="false" tabindex="-1">{{ t('Drivers', '驱动因素') }}</button>
+    <button type="button" role="tab" id="scd-t-companies" data-tab="companies" aria-controls="scd-p-companies" aria-selected="false" tabindex="-1">{{ t('Companies', '公司') }}</button>
+    <button type="button" role="tab" id="scd-t-evidence" data-tab="evidence" aria-controls="scd-p-evidence" aria-selected="false" tabindex="-1">{{ t('Evidence', '证据') }}</button>
+    <button type="button" role="tab" id="scd-t-record" data-tab="record" aria-controls="scd-p-record" aria-selected="false" tabindex="-1">{{ t('Track record', '跟踪记录') }}</button>
+  </div>
+  <section role="tabpanel" id="scd-p-overview" class="scd-panel" aria-labelledby="scd-t-overview" tabindex="0">
+  <div class="panel">
     {% set e = s.ladder.entry %}
     {# ---- bold VERDICT: the action verb + tag + call, read in a glance ---- #}
     <div class="verdict urg-{{ e.urgency }}">

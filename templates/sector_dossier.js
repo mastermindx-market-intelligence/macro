@@ -105,7 +105,7 @@
     x = Object.assign({}, rec, { turns_tail: turnsOf(rec) });
     return '<div class="scd-cycle" data-sector="' + esc(rec.id || sid(fund)) + '">'
       + F.card(x, ctx) + F.timing(x, ctx) + F.rsTrail(x, ctx) + F.turnInspector(x, ctx) + F.trendRisk(x, ctx, null)
-      + '<section class="scd-sub scd-breadth-sec" aria-label="' + esc(pairOf('cycles.fragmentation_chip')[ctx.lang === 'zh' ? 1 : 0]) + '"><h3>' + D('cycles.fragmentation_chip') + '</h3>'
+      + '<section class="scf scf-sec scd-sub scd-breadth-sec" aria-label="' + esc(pairOf('cycles.fragmentation_chip')[ctx.lang === 'zh' ? 1 : 0]) + '"><div class="scf-sec-ttl"><h3>' + D('cycles.fragmentation_chip') + '</h3></div>'
       + etfTrend(rec) + breadth(payload, fund) + '</section>'
       + '<p class="scd-open"><a href="' + esc(centralHref(fund)) + '">' + D('dossier.open_central_link') + '</a></p></div>';
   }

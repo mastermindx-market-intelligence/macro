@@ -154,9 +154,8 @@ def test_failed_cycle_ladder_why_names_the_low_without_a_rate() -> None:
     _assert_failed_cycle_why(lived)
 
     src = (Path(__file__).resolve().parent.parent / "templates" / "sector.html.j2").read_text()
-    block = next(line for line in src.splitlines() if "s.cycle.failed_cycle" in line)
-    assert "{% if s.cycle.failed_cycle %}" in block
-    assert '<p class="neg" style="margin:6px 0 0">⚠ ' in block
+    block = next(line for line in src.splitlines() if "{% if s.cycle.failed_cycle %}<p" in line)
+    assert '<p class="fail-note">⚠ ' in block
     assert "80%" not in block and "约 80" not in block
     assert ("Failed cycle: price is below the low that started this cycle. "
             "How often the larger trend then rolls over has not been measured here.") in block

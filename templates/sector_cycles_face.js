@@ -293,8 +293,9 @@ SC_FACE.hazardPass = function (cell, ek, key) { return !!cell && cell.p != null 
     if (hi === lo) hi = lo + 1;
     zy = (H - ((0 - lo) / (hi - lo)) * H).toFixed(1);
     return sec('scf-rs', BP('leadership', bench + ' (21d · 63d)', bench + '(21日 · 63日)'),
-      '<svg class="scf-rs-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(T('dossier.recon_label', ctx)) + '"><line class="scf-rs-zero" x1="0" x2="' + W + '" y1="' + zy + '" y2="' + zy + '"/>' +
+      '<svg class="scf-rs-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="' + esc(T('dossier.recon_label', ctx)) + '"><line class="scf-rs-zero" x1="0" x2="' + W + '" y1="' + zy + '" y2="' + zy + '"/>' +
       '<path class="scf-rs-21" d="' + rsPath(rows, 'rs_21d', x0, x1, W, H, lo, hi) + '"/><path class="scf-rs-63" d="' + rsPath(rows, 'rs_63d', x0, x1, W, H, lo, hi) + '"/></svg>' +
+      '<p class="scf-rs-key"><span class="scf-rs-k"><svg class="scf-rs-sw" viewBox="0 0 18 6" aria-hidden="true"><line class="scf-rs-21" x1="0" x2="18" y1="3" y2="3"/></svg>' + P('21d', '21日') + '</span><span class="scf-rs-k"><svg class="scf-rs-sw" viewBox="0 0 18 6" aria-hidden="true"><line class="scf-rs-63" x1="0" x2="18" y1="3" y2="3"/></svg>' + P('63d', '63日') + '</span></p>' +
       '<p class="scf-foot">' + D('dossier.recon_label') + ' · ' + mono(d0 + ' – ' + d1) + '</p>' +
       drawer([[D('dossier.recon_label'), D('dossier.recon_body')], [code('rs_history'), mono(rows.length + ' · rs_history_rows_excluded_nonfinite ' + (rec.rs_history_rows_excluded_nonfinite || 0)) + ' ' + code('engine/sector_cycles.py:549 _leadership_history_counted')]], false));
   };

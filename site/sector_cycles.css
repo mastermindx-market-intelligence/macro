@@ -701,6 +701,9 @@ html[data-lang="zh"] .scf .scf-kv > div.l-en, html:not([data-lang="zh"]) .scf .s
 .scf .scf-rs-zero { stroke:var(--line); stroke-width:1; stroke-dasharray:2 3; vector-effect:non-scaling-stroke; }
 .scf .scf-rs-21 { fill:none; stroke:var(--esurf-ser1); stroke-width:1.5; vector-effect:non-scaling-stroke; }
 .scf .scf-rs-63 { fill:none; stroke:var(--esurf-ser2); stroke-width:1.5; stroke-dasharray:5 3; vector-effect:non-scaling-stroke; }
+.scf .scf-rs-key { display:flex; flex-wrap:wrap; gap:4px 14px; margin:0; font-size:var(--fs-micro); color:var(--muted); }
+.scf .scf-rs-k { display:inline-flex; align-items:center; gap:6px; }
+.scf .scf-rs-sw { width:18px; height:6px; flex:0 0 auto; overflow:visible; }
 .scf .scf-grader-caption { font:400 var(--fs-label)/1.55 var(--font-ui); color:var(--muted); font-variant-numeric:tabular-nums; }
 .scf .scf-grader-body { margin:10px 0 0; font-size:var(--fs-sm); line-height:1.55; color:var(--text); }
 .scf .scf-grades { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:12px; }
