@@ -221,14 +221,46 @@ def _resolve_case_collisions(df: pd.DataFrame) -> pd.DataFrame:
     return df.drop(columns=["_upper"]).reset_index(drop=True)
 
 
+def _sp500_plan(start: date, end: date) -> tuple[dict[date, set[str]], set[date]]:
+    """Fill coverage holes, not merely missing dates, using existing membership owners.
+
+    Other universes keep their original behavior. A date is complete here only
+    when at least 99% of its historical members are already represented. The
+    residual missing names remain exclusions, never synthetic zero-volume rows.
+    """
+    from engine.darkflow_index import canonical_symbol, members_on
+    from engine.darkflow_publish import load_membership
+    from lib.nyse_calendar import sessions_between
+    membership, _, _ = load_membership(config.data_dir())
+    wanted = {d: members_on(membership, pd.Timestamp(d)) for d in sessions_between(start, end)}
+    if any(len(names) < 400 or len(names) > 650 for names in wanted.values()):
+        raise ValueError("Incomplete or unexpected historical S&P 500 membership")
+    seen: dict[date, set[str]] = {}
+    for path in (_panel_path(), _sealed_panel_path()):
+        if not path.exists():
+            continue
+        frame = pd.read_parquet(path, columns=["date", "ticker"])
+        frame["ticker"] = frame.ticker.map(canonical_symbol)
+        for day, group in frame.groupby("date"):
+            seen.setdefault(pd.Timestamp(day).date(), set()).update(group.ticker)
+    have = {day for day, names in wanted.items()
+            if len(names & seen.get(day, set())) / len(names) >= .99}
+    return wanted, have
+
+
 def run(start: date = START_DEFAULT, end: date | None = None, dry_run: bool = False,
         universe_mode: str = "display") -> None:
     end = end or date.today()
-    universe = _display_universe(universe_mode)
+    daily_universe = None
+    if universe_mode == "sp500":
+        daily_universe, have = _sp500_plan(start, end)
+        universe = set().union(*daily_universe.values()) if daily_universe else set()
+        wanted = [d for d in daily_universe if d not in have]
+    else:
+        universe = _display_universe(universe_mode)
+        have = _have_dates()
+        wanted = [d for d in _all_business_days(start, end) if d not in have]
     log.info("backfill universe: %d tickers (mode=%s)", len(universe), universe_mode)
-
-    have = _have_dates()
-    wanted = [d for d in _all_business_days(start, end) if d not in have]
     log.info("dates in range: %d total, %d already fetched, %d to fetch",
              len(_all_business_days(start, end)), len(have), len(wanted))
 
@@ -271,7 +303,11 @@ def run(start: date = START_DEFAULT, end: date | None = None, dry_run: bool = Fa
             time.sleep(SLEEP_BETWEEN)
             continue
 
-        if universe:
+        if daily_universe is not None:
+            from engine.darkflow_index import canonical_symbol
+            df["ticker"] = df.ticker.map(canonical_symbol)
+            df = df[df.ticker.isin(daily_universe[d])]
+        elif universe:
             df = df[df["ticker"].isin(universe)]
         new_frames.append(df)
         fetched += 1
@@ -322,9 +358,9 @@ def main() -> None:
     p.add_argument("--start", default=str(START_DEFAULT), help="Start date YYYY-MM-DD")
     p.add_argument("--end", default=str(date.today()), help="End date YYYY-MM-DD")
     p.add_argument("--dry-run", action="store_true")
-    p.add_argument("--universe", choices=("display", "union"), default="display",
+    p.add_argument("--universe", choices=("display", "union", "sp500"), default="display",
                    help="display = gex_symbols only (size-lawful, default); "
-                        "union = + existing panel tickers (off-git analysis only)")
+                        "union = + existing panel tickers (off-git analysis only); sp500 = historical index coverage repair")
     args = p.parse_args()
     run(
         start=date.fromisoformat(args.start),

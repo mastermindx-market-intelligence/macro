@@ -1,0 +1,396 @@
+{
+  "scope": "Four introduced DarkFlow gate failures plus source-backed anonymous component styling; no production/authentication acceptance",
+  "subject_head_before": "f91c4dfbafd26ccaf32f0672271261c3153b1699",
+  "comparison_base": "52d3350bb78740f465e0b7e7c8c5bfc502c109cf",
+  "source_repair": {
+    "phase": "darkflow_four_gate_repair",
+    "head_before": "f91c4dfbafd26ccaf32f0672271261c3153b1699",
+    "source_paths": [
+      "templates/darkflow.css",
+      "templates/darkflow.js",
+      "config/dag.yml",
+      ".github/workflows/render.yml",
+      "tests/darkflow_browser.py"
+    ],
+    "before_blobs": {
+      "templates/darkflow.css": "a92df5068bdaa8baf60e6015cb0eb69420ee1d84",
+      "templates/darkflow.js": "7b2620115e7fa5f47c39320ccceac5d5bc49dec8",
+      ".github/workflows/render.yml": "07d6118f3c62f0f6922e4f8a6f322021557544d8",
+      "config/dag.yml": "a9b08ce95599e66da2f61cc9d6c49e81ec576ffc",
+      "tests/darkflow_browser.py": "a2e525c8effadefc20266e8e3dcd9d7fc6b38409"
+    },
+    "after_blobs": {
+      "templates/darkflow.css": "ab1258f86808769e62f381e5a2dd527e75c47582",
+      "templates/darkflow.js": "3f4f1f827013ac11ad11a8f3fdd8b0e0f63f39b2",
+      "config/dag.yml": "5eb46cd000292d82dd8da8506f93537d96364169",
+      ".github/workflows/render.yml": "c322985db1a4fac95bce39c55756ab673efd8861",
+      "tests/darkflow_browser.py": "293770f8537698289fbe94b6b6fc78c85ef3ebbb"
+    },
+    "run_chars_before": 20714,
+    "run_chars_after": 20405,
+    "noncomment_run_lines_identical": true,
+    "other_workflow_semantics_identical": true,
+    "browser_theme_source": "templates/theme.css",
+    "browser_theme_sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "tests_run": false,
+    "browser_matrix": {
+      "variants": [
+        "component",
+        "compact"
+      ],
+      "widths": [
+        390,
+        1440
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "languages": [
+        "en",
+        "zh"
+      ],
+      "cells": 16
+    }
+  },
+  "local_qualification": {
+    "head_before": "f91c4dfbafd26ccaf32f0672271261c3153b1699",
+    "comparison_base": "52d3350bb78740f465e0b7e7c8c5bfc502c109cf",
+    "source_blobs": {
+      "templates/darkflow.css": "ab1258f86808769e62f381e5a2dd527e75c47582",
+      "templates/darkflow.js": "3f4f1f827013ac11ad11a8f3fdd8b0e0f63f39b2",
+      "config/dag.yml": "5eb46cd000292d82dd8da8506f93537d96364169",
+      ".github/workflows/render.yml": "c322985db1a4fac95bce39c55756ab673efd8861",
+      "tests/darkflow_browser.py": "293770f8537698289fbe94b6b6fc78c85ef3ebbb"
+    },
+    "commands": [
+      {
+        "name": "validated_selftest",
+        "command": [
+          "python3",
+          "scripts/check_validated_claims.py",
+          "--selftest"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 0.08,
+        "log_sha256": "6cfb20cb5ae91c27955df424b4884a15d10d6665ada51ab9022c76c751264810",
+        "log_tail": "OUR hero lead above the feed STILL FAILS: fired=True expected=True\n  [PASS] china tape: OUR zh disclaimer below the feed STILL FAILS: fired=True expected=True\n  [PASS] china tape WITHOUT the feed attestation gets no exemption: fired=True expected=True\n  [PASS] same page shape in templates/ is never exempt: fired=True expected=True\n  [PASS] same page shape on another site page is never exempt: fired=True expected=True\n  [PASS] china tape: unclosed .tp-title fails CLOSED (nothing masked): fired=True expected=True\n  [PASS] #3765 read_en: token on a bare continuation line FIRES: fired=True expected=True\n  [PASS] zh \u5df2\u9a8c\u8bc1 in a label_zh FIRES: fired=True expected=True\n  [PASS] dataclass/profile keyword copy FIRES: fired=True expected=True\n  [PASS] f-string literal part FIRES: fired=True expected=True\n  [PASS] zh \u7ecf\u9a8c\u8bc1 in a note_zh FIRES: fired=True expected=True\n  [PASS] negated engine copy is NOT a claim: fired=False expected=False\n  [PASS] allowlisted engine copy on a listed surface does not fire: fired=False expected=False\n  [PASS] SAME allowlisted copy on an unlisted surface FIRES: fired=True expected=True\n  [PASS] dislocation zh note (\u7ecf\u9a8c\u8bc1\u7684\u4e00\u9053\u95f8) is backed on its own surface: fired=False expected=False\n  [PASS] data field `\"validated\": True` is not copy: fired=False expected=False\n  [PASS] code identifiers are not copy: fired=False expected=False\n  [PASS] research-registry `notes` bookkeeping is out of scope: fired=False expected=False\n  [PASS] LLM tool `description` is out of scope: fired=False expected=False\n  [PASS] unparseable engine file FAILS CLOSED: fired=True expected=True\n"
+      },
+      {
+        "name": "validated_source",
+        "command": [
+          "python3",
+          "scripts/check_validated_claims.py",
+          "--scope",
+          "source"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 18.44,
+        "log_sha256": "b68abaa8622383e451c7bc5d9aea75115eb94b4d99e701f96c265c8f9d8ab23f",
+        "log_tail": "check_validated_claims: OK [scope=source: engine/, lib/, scripts/build_*.py, scripts/render_*.py, templates/] \u2014 every affirmative 'validated' claim is backed.\n"
+      },
+      {
+        "name": "dag_conformance",
+        "command": [
+          "python3",
+          "scripts/check_dag_conformance.py",
+          "--verbose"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 2.59,
+        "log_sha256": "1608486e9e4ee7aced8d10577703ffdfa7066a17d700dbb67312cdc69802a428",
+        "log_tail": "ub/workflows/intraday.yml / bars (1 declared steps)\n  [OK] .github/workflows/intraday-fastpath.yml / fastpath (9 declared steps)\n  [OK] .github/workflows/weekly.yml / weekly-report (41 declared steps)\n  [OK] .github/workflows/sentinel.yml / flash-crash (5 declared steps)\n  [OK] .github/workflows/commodity-sentinel.yml / shock (5 declared steps)\n  [OK] .github/workflows/whitehouse-sentinel.yml / monitor (4 declared steps)\n  [OK] .github/workflows/government-revenue-live.yml / refresh (7 declared steps)\n  [OK] .github/workflows/filing-forensics-sec.yml / acquire_project_sync (10 declared steps)\n  [OK] .github/workflows/filing-forensics-broad-sec.yml / poll_broad_sec (1 declared steps)\n  [OK] .github/workflows/close-pass.yml / publish (2 declared steps)\n\nSUSPECT drift (2) \u2014 undocumented, needs owner review:\n  [render, engine-render] cl_misc order differs from daily cl_misc: render has sectorcyc\u2192countrycyc\u2192cycle\u2192 measurement\u2192markets vs daily cycle\u2192sect\n    note: UNDOCUMENTED drift inherited at W5a adoption \u2014 needs owner review (residual cosmetic order difference only; the build_markets half was resolved by #2728). Either document why the two lanes sequence cy\n  [engine-render] cl_misc omits build_sector_cycles, build_country_cycles, build_cycle, and build_markets vs both daily.yml and render.yml\n    note: UNDOCUMENTED drift inherited at W5a adoption \u2014 needs owner review. engine-render.yml cl_misc (lines 241-244) contains only: build_seasonality, build_reports, build_policy_watch, build_index_changes. T\n\nDAG conformance OK \u2014 27 lane(s) checked, 2 suspect drift(s) visible above.\n"
+      },
+      {
+        "name": "dag_contracts",
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "tests/test_dag_conformance.py",
+          "tests/test_tech_lab_offrender_budget.py",
+          "tests/test_nightly_timings.py",
+          "tests/test_daily_et_gate.py",
+          "tests/test_workflow_file_size.py",
+          "tests/test_daily_graph_shadow_state_step.py",
+          "tests/test_nightly_liveness.py",
+          "tests/test_runner_queue_hostage.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 27.19,
+        "log_sha256": "3c027def7a63ac54f2dff093b2a740ca84f9a136e72b9229bdb804dbbbfecd1b",
+        "log_tail": "........................................................................ [ 29%]\n........................................................................ [ 59%]\n........................................................................ [ 89%]\n.........................                                                [100%]\n241 passed in 24.37s\n"
+      },
+      {
+        "name": "nightly_liveness_selftest",
+        "command": [
+          "python3",
+          "scripts/check_nightly_liveness.py",
+          "--selftest"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 0.1,
+        "log_sha256": "e38ac5009846df85a9a21f4a5039720134315d679639be8ed2f3d1f544814b9f",
+        "log_tail": "nightly-liveness selftest: PASS\n"
+      },
+      {
+        "name": "runner_hostage_selftest",
+        "command": [
+          "python3",
+          "scripts/check_runner_queue_hostage.py",
+          "--selftest"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 0.08,
+        "log_sha256": "95557a966db27fee0081eee75a6be917055017456ba46b4120db5ed3e0eaa6c7",
+        "log_tail": "::notice title=runner-queue-hostage::selftest ok\n"
+      },
+      {
+        "name": "public_render",
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "tests/test_public_render_fastlane.py",
+          "tests/test_help_directory.py",
+          "tests/test_help_directory_contract.py",
+          "tests/test_workflow_publish_chains.py",
+          "tests/test_build_market_memory_page.py",
+          "tests/test_glossary.py",
+          "tests/test_glossary_contract.py",
+          "tests/test_glossary_letter_rail_js.py",
+          "tests/test_finance_intelligence_site_wiring.py",
+          "tests/test_consumer_cyclical_plnt_site_wiring.py",
+          "tests/test_sector_central_paper.py",
+          "tests/test_si_workspace_shell.py",
+          "tests/test_sector_central_data_is_sync.py",
+          "-q",
+          "-rs",
+          "--deselect",
+          "tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 21.79,
+        "log_sha256": "6008a771dc13063d180f101fdbb30e3fdcfc7677a2d2f4e223a1a18b665891af",
+        "log_tail": "........................................................................ [ 21%]\n........................................................................ [ 43%]\n........................................................................ [ 64%]\n........................................................................ [ 86%]\n.............................................                            [100%]\n333 passed, 1 deselected in 20.40s\n"
+      },
+      {
+        "name": "regime_history",
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "tests/test_regime_history_us_site_wiring.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 3.47,
+        "log_sha256": "98b819a06bf72c79f1f58a43184d01ee6f551479b497bed319d89ef7b168a98c",
+        "log_tail": ".                                                                        [100%]\n1 passed in 2.20s\n"
+      },
+      {
+        "name": "design_contracts",
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "tests/test_check_design_system.py",
+          "tests/test_check_runtime_style_injection.py",
+          "tests/test_check_ui_visual_evidence.py",
+          "tests/test_freshness_chips_language_invariant.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 10.74,
+        "log_sha256": "364127f904ef07454ceb76aef60d13cbc5b6355351a72a89e5d202455f709076",
+        "log_tail": "........................................................................ [ 35%]\n........................................................................ [ 71%]\n........................s..........s......................               [100%]\n200 passed, 2 skipped in 9.58s\n"
+      },
+      {
+        "name": "design_selftest",
+        "command": [
+          "python3",
+          "scripts/check_design_system.py",
+          "--self-check"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 0.06,
+        "log_sha256": "ab3f735778b24ffffd7b305181eab72e6a8aa15e01ea2ffd2a45d516df7f7103",
+        "log_tail": "self-check OK: 8 rule fixtures + clean fixture + traversal\n"
+      },
+      {
+        "name": "runtime_style_selftest",
+        "command": [
+          "python3",
+          "scripts/check_runtime_style_injection.py",
+          "--selftest"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 0.06,
+        "log_sha256": "13f20be150b9fa6b244db3ff5f665ca88373ac6226a05a018fccd87d10b2c4bf",
+        "log_tail": "selftest PASS: new-injecting-file reds, over-budget reds, exact-budget passes, under-budget is classified stale (R2: main() hard-fails a stale budget, not an ignorable notice), and --emit-baseline reproduces the current tree's counts under the caller-supplied sha.\n"
+      },
+      {
+        "name": "visual_guard_selftest",
+        "command": [
+          "python3",
+          "scripts/check_ui_visual_evidence.py",
+          "--selftest"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 0.23,
+        "log_sha256": "f173b6e463843482fcab502a96897f020e50d33da940e435f411b0058589e0b3",
+        "log_tail": "running check_ui_visual_evidence selftest...\ncheck_ui_visual_evidence selftest OK\n"
+      },
+      {
+        "name": "runtime_style",
+        "command": [
+          "python3",
+          "scripts/check_runtime_style_injection.py"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 1.02,
+        "log_sha256": "5fd4660b86d15843d5f2152563f5bc7188b012b10fdc15c694eeac7e16105df0",
+        "log_tail": "runtime style injection guard OK (276 .js files scanned, 44 injecting, 88 total hits \u2014 all within frozen allowances)\n"
+      },
+      {
+        "name": "design_added",
+        "command": [
+          "python3",
+          "scripts/check_design_system.py",
+          "--mode",
+          "enforce-added",
+          "--diff-file",
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/dark-flow-dix-20261017/.proof_runtime/c4-recovery-20261106/gate-repair/design.diff"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 3.65,
+        "log_sha256": "fcf4886745b8b9140b7b189854431ee4c82b7fb41cc4f307b8ae4c1809d45a7a",
+        "log_tail": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25307 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25307)\n"
+      },
+      {
+        "name": "visual_evidence",
+        "command": [
+          "python3",
+          "scripts/check_ui_visual_evidence.py",
+          "--diff-file",
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/dark-flow-dix-20261017/.proof_runtime/c4-recovery-20261106/gate-repair/ui.diff"
+        ],
+        "exit_code": 1,
+        "runtime_seconds": 0.69,
+        "log_sha256": "1ff14c42bdeba2c1b81f87355c8ff482f50ee88fe1198d5e205d3888a11760fb",
+        "log_tail": "::error title=ui-visual-evidence::ui-visual-evidence guard REFUSED: sparse worktree \u2014 mockups not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n"
+      },
+      {
+        "name": "browser",
+        "command": [
+          "python3",
+          "tests/darkflow_browser.py",
+          "--source",
+          "site",
+          "--output",
+          "/tmp/darkflow-c4-gate-repair-20261106"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 10.52,
+        "log_sha256": "6b331f7ff8f681342e37d3ea51ea97039ae0adf6a704f83c11b5ebdc5042df76",
+        "log_tail": "{\"state\": \"PASS\", \"checks\": 134, \"page_errors\": [], \"receipt\": \"/tmp/darkflow-c4-gate-repair-20261106/browser-result.json\"}\n"
+      },
+      {
+        "name": "diff_check",
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit_code": 0,
+        "runtime_seconds": 0.88,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "log_tail": ""
+      }
+    ],
+    "all_commands_passed": false,
+    "final_source_blobs": {
+      "templates/darkflow.css": "ab1258f86808769e62f381e5a2dd527e75c47582",
+      "templates/darkflow.js": "3f4f1f827013ac11ad11a8f3fdd8b0e0f63f39b2",
+      "config/dag.yml": "5eb46cd000292d82dd8da8506f93537d96364169",
+      ".github/workflows/render.yml": "c322985db1a4fac95bce39c55756ab673efd8861",
+      "tests/darkflow_browser.py": "293770f8537698289fbe94b6b6fc78c85ef3ebbb"
+    }
+  },
+  "visual_evidence_after_materializing_canonical_mockups": {
+    "command": [
+      "python3",
+      "scripts/check_ui_visual_evidence.py",
+      "--diff-file",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/dark-flow-dix-20261017/.proof_runtime/c4-recovery-20261106/gate-repair/ui.diff"
+    ],
+    "exit_code": 0,
+    "runtime_seconds": 1.13,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "log": ""
+  },
+  "browser_checks": 134,
+  "browser_cells": 16,
+  "browser_page_errors": [],
+  "canonical_capture_schema": "mastermind.p0_evidence.v2",
+  "canonical_capture_totals": {
+    "pages": 1,
+    "states_attempted": 24,
+    "states_captured": 24
+  },
+  "canonical_manifest_sha256": "f2e54418636c719930823e8576eff7a555d7582ebf07ff394f985d5506587af7",
+  "historical_hosted_darkflow": {
+    "run": 42215622403,
+    "job": 127886791350,
+    "head": "f91c4dfbafd26ccaf32f0672271261c3153b1699",
+    "python_passed": 43,
+    "browser_checks": 78,
+    "scope": "original pre-token-repair source; not relabeled as current styling proof"
+  },
+  "shared_business_activity": "Original head/base source failures are separate; no inherited_base waiver is claimed.",
+  "design_contracts_after_materialization": {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "tests/test_check_design_system.py",
+      "tests/test_check_runtime_style_injection.py",
+      "tests/test_check_ui_visual_evidence.py",
+      "tests/test_freshness_chips_language_invariant.py",
+      "-q",
+      "-rs"
+    ],
+    "exit_code": 0,
+    "runtime_seconds": 19.13,
+    "log_sha256": "7bd625b61a7583632c6c5b85de8bdd8b4e5c1c88f399fa1e27225a35f32c0522",
+    "log_tail": "........................................................................ [ 35%]\n........................................................................ [ 71%]\n..........................................................               [100%]\n202 passed in 14.62s\n",
+    "purpose": "resolve two original sparse-input skips after canonical mockups materialization"
+  },
+  "theme_input_closure": {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "-q",
+      "-rs"
+    ],
+    "exit_code": 0,
+    "runtime_seconds": 163.2,
+    "log_sha256": "761495b7c7a0b7b6f60d1734211c6e7fc0445910fb754f81a963c16826ef9a50",
+    "log_tail": ".                                                                        [100%]\n1 passed in 161.02s (0:02:41)\n",
+    "manifest_before_blob": "bd6fc5300087f2f424ce2564ac57fadd3839ac88",
+    "manifest_after_blob": "95260e6b6ffccdf69280d0feddfc84407cb7d774",
+    "jobs_preserved": 389,
+    "only_semantic_change": "darkflow-index paths adds templates/theme.css"
+  },
+  "current_source_blobs": {
+    "templates/darkflow.css": "ab1258f86808769e62f381e5a2dd527e75c47582",
+    "templates/darkflow.js": "3f4f1f827013ac11ad11a8f3fdd8b0e0f63f39b2",
+    "config/dag.yml": "5eb46cd000292d82dd8da8506f93537d96364169",
+    ".github/workflows/render.yml": "c322985db1a4fac95bce39c55756ab673efd8861",
+    "tests/darkflow_browser.py": "293770f8537698289fbe94b6b6fc78c85ef3ebbb",
+    ".github/ci/legacy-jobs.yml": "95260e6b6ffccdf69280d0feddfc84407cb7d774"
+  }
+}

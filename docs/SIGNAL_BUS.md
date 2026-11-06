@@ -16,7 +16,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | biopharma-seasonality-intelligence | 7 |
 | blocked-entry-override | 2 |
 | btc-vector | 6 |
-| capital-structure-intelligence | 20 |
+| capital-structure-intelligence | 21 |
 | causal-hypothesis-factory | 10 |
 | cbf | 2 |
 | ccw | 10 |
@@ -96,7 +96,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | sector-pulse | 3 |
 | setup-species | 6 |
 | short-side | 1 |
-| signal-commons | 12 |
+| signal-commons | 15 |
 | signal-foundry | 4 |
 | standout-accountability | 8 |
 | stock-personality | 5 |
@@ -117,8 +117,8 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 
 | tier | count |
 |---|---|
-| display | 379 |
-| infrastructure | 163 |
+| display | 382 |
+| infrastructure | 164 |
 | scored | 5 |
 | shadow | 103 |
 
@@ -126,7 +126,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 
 | storage | count |
 |---|---|
-| git | 610 |
+| git | 614 |
 | git+r2 | 3 |
 | gitignored-local | 19 |
 | r2 | 18 |
@@ -207,6 +207,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | capital-structure-review-queue | `data/capital_structure/review_queue.parquet` | parquet | collect | infrastructure | 1 | 0 |
 | capital-structure-telemetry | `data/capital_structure/telemetry.json` | json | collect | infrastructure | 1 | 0 |
 | capital-structure-document-term-observations | `data/capital_structure/document_term_observations.parquet` | parquet | collect | infrastructure | 0 | 0 |
+| capital-structure-document-term-parse-receipts | `data/capital_structure/document_term_parse_receipts.jsonl` | jsonl | collect | infrastructure | 0 | 0 |
 | site-capital-structure-projection | `site/capital-structure-data/latest.json` | json | collect | display | 0 | 0 |
 
 ### causal-hypothesis-factory
@@ -1165,8 +1166,11 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | event-priors-ipo-lockup | `data/special_situations/event_priors/ipo_lockup.json` | json | weekly | display | 2 | 0 |
 | event-priors-openfda | `data/special_situations/event_priors/openfda.json` | json | weekly | display | 2 | 0 |
 | event-priors-sp-index-changes | `data/special_situations/event_priors/sp_index_changes.json` | json | weekly | display | 2 | 0 |
+| darkflow-index-history | `site/darkflow_history.json` | json | daily-engine | display | 1 | 0 |
+| darkflow-index-latest | `site/darkflow_latest.json` | json | daily-engine | display | 1 | 0 |
 | kernel-half-lives | `data/neuralweb/half_life.json` | json | daily-engine | infrastructure | 1 | 0 |
 | site-kernel-half-lives | `site/neuralwebdata/half_life.json` | json | daily-engine | display | 1 | 0 |
+| darkflow-index-observations | `data/darkpool/ledger/index_observations.jsonl` | jsonl | daily-engine | display | 0 | 0 |
 | event-priors-gov-contract | `data/special_situations/event_priors/gov_contract.json` | json | weekly | display | 0 | 0 |
 | reflexivity-n-eff-history | `data/reflexivity/n_eff_history.json` | json | daily-engine | infrastructure | 0 | 0 |
 
