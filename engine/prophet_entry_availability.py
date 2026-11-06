@@ -393,8 +393,12 @@ def evaluate_entry_availability(
                 unavailable.append(f"{key.upper()}_UNKNOWN")
         if gate_values["event_status"] == "UNKNOWN":
             unavailable.append("EVENT_STATUS_UNKNOWN")
-        if gate_values["structural_invalidation"] == "UNKNOWN":
-            unavailable.append("STRUCTURAL_INVALIDATION_UNKNOWN")
+        # The Early Leadership tactical policy already requires the incumbent
+        # entry owner's numeric invalidation_price and hard-invalidates at or
+        # below it above.  ``structural_invalidation`` is a separate optional
+        # owner extension for a future entry-compatible thesis/falsifier fact:
+        # BREACHED is non-waivable, but UNKNOWN must not deadlock the strategy
+        # merely because no such additional owner contract exists yet.
 
         if unavailable:
             state = "UNAVAILABLE_DATA"

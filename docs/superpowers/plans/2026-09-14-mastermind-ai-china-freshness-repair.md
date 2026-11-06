@@ -10,6 +10,8 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-14-mastermind-ai-china-freshness-repair-design.md`
 
+**Status:** `PROVEN_LIVE` — production accepted 2026-09-15. Delivered by Macro PR `#7156` (accepted head `81a01a8c681aeb4f81e16c65e1736bb86437e49b`; squash merge `4ec24e0f474522f5398b813ed14ae738a4361b77`). Canonical production receipt: PR comment `5689018917`.
+
 ## Global Constraints
 
 - Work only in the isolated Warp worktree on a fresh `origin/main` base.
@@ -69,9 +71,46 @@
 - [x] Run red-then-green incident batteries.
 - [x] Run complete affected pytest suites, `py_compile`, annotation, unrun-test, and contract-delta gates.
 - [x] Obtain two independent reviews on the frozen diff and close all critical/important findings, including workflow propagation, Shanghai-midnight, undated-content, strict-cache, and raw-date-alias proofs.
-- [ ] Fetch/reconcile latest `origin/main`; rerun affected tests.
-- [ ] Commit explicit paths, push, open PR, arm `merge-on-green`, and own CI through conclusion.
-- [ ] Squash-merge only after binding checks conclude green.
-- [ ] Verify the VPS checkout/process has the merged code and `macro-api` restarted through the normal deploy gate.
-- [ ] Run/observe the next Asia close path and prove `china_search` reaches the expected mainland session.
-- [ ] Probe the live gateway and confirm a 9/9 component can no longer be described as the last trading day.
+- [x] Fetch/reconcile latest `origin/main`; rerun affected tests.
+- [x] Commit explicit paths, push, open PR, arm `merge-on-green`, and own CI through conclusion.
+- [x] Squash-merge only after binding checks conclude green.
+- [x] Verify the VPS checkout/process has the merged code and `macro-api` restarted through the normal deploy gate.
+- [x] Run/observe the next Asia close path and prove `china_search` reaches the expected mainland session.
+- [x] Probe the live gateway and confirm a 9/9 component can no longer be described as the last trading day.
+
+## Production acceptance — 2026-09-15
+
+Closeout was adjudicated under Sol Skillpack `1.0.1` from protected Mastermind
+`master` SHA `8e25bb32601ef5f40a689da6d6f24149e79e31fa`.
+
+- Exact-head required workflows passed: `ci` run `34924268885` and `fences` run
+  `34924268555`. PR `#7156` merged at `2026-09-15T20:24:45Z` as
+  `4ec24e0f474522f5398b813ed14ae738a4361b77`.
+- Production `/api/health` reports `commit=4ec24e0f47`; the running API therefore
+  imported the accepted merge. The checkout later advanced to
+  `142c8f6123b2a5da50e1ec95b6d0f7cb2167a009`; comparison from the merge through
+  that checkout shows zero changes to the six material collector/calendar/packet/gateway paths.
+- Canonical `asia-close` run `35021696056` completed successfully. Its binding
+  freshness receipt placed `data/china_search/closes.parquet` at the expected
+  mainland session `2026-09-15`; canonical collection commit
+  `bbc5b9c9377fb1925afbc4a6bcc06702700981d4` contains that recovery.
+- Fresh production inspection reports 1,277 close rows, latest session
+  `2026-09-15`, both incident-era sessions `2026-09-10` and `2026-09-11` present,
+  and `check_china_search_core()` return code `0`.
+- Public Brain replays `204ceaad3b7d43e38e5ce1847603f40b` and
+  `701ec273818340c4a55f482bde8b6cb7` were non-degraded. Both identified
+  `2026-09-15` as the latest completed mainland session and explicitly treated
+  `2026-09-09` only as a lagged component vintage, never as the market session.
+- The repair extends the existing membership cache, close store, mainland
+  calendar, freshness module, Asia collection path, market packet, and Brain
+  gateway. It creates no second calendar, store, freshness/control/retry plane,
+  deployment path, signal, rank, sizing, portfolio, or trading authority.
+
+### Do not redo
+
+Do not reopen or replace PR `#7156`, repeat the incident archaeology, fabricate
+backfill rows, or create another freshness/calendar/store path. Resume repair work
+only if a later canonical Asia run, production core-freshness check, or real Brain
+replay falsifies this acceptance. Otherwise this capability remains `PROVEN_LIVE`
+and returns to normal scheduled monitoring.
+

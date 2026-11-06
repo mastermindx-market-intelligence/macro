@@ -1,0 +1,48 @@
+{
+  "source_head": "b70d6d5f16d80f15ada55642bc8d8d0e1b0ebb99",
+  "scope": "Actual browser against exact local generated page and source ASGI router with explicit test-principal dependency. Not production entitlement or installed acceptance. No page/runtime injection.",
+  "tab_id": "1925923425",
+  "origin": "http://127.0.0.1:58753",
+  "query": {
+    "maxlength": 120,
+    "entered_length": 130,
+    "observed_length": 120,
+    "multiword_trailing_space_preserved": true
+  },
+  "history": {
+    "input": "N0002418C2305",
+    "changes_record": "govws-22d50d4091f7d85a89e44ec2",
+    "back_restored_same_record_and_query": true,
+    "forward_restored_companies_and_query": true,
+    "query_absent_from_urls": true
+  },
+  "filtered_candidate": {
+    "id": "grc1-021cfe0d00790f938fca9831",
+    "issuer": "GD",
+    "conflicting_ticker_filter": "LMT",
+    "panel": "Candidate excluded by your filters",
+    "no_substitute_selected": true,
+    "clear_filter_restored_same_candidate": true,
+    "source_url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_N0002418C2305_9700_-NONE-_-NONE-/",
+    "link_rel": "noopener"
+  },
+  "responsive": {
+    "width": 390,
+    "scroll_width": 390,
+    "body_scroll_width": 390,
+    "checked_presentations": [
+      "dark EN",
+      "light ZH"
+    ],
+    "baseline": "LMT 2026Q2 sales4101 USDmillions,margin14.5%,profit594 USDmillions",
+    "visual": "Local mobile lightZH screenshot visually inspected; unobstructed hierarchy, no horizontal overflow. Prior32capture baseline unchanged styling reused, not relabeled a fresh matrix."
+  },
+  "limitations": [
+    "Local saved-view/export UI remains signed-out; actual downloads must be verified on the installed signed-in product after release.",
+    "No performance benchmark during concurrent native proof.",
+    "CSV null/string/bool/date edge cases verified in native module tests, not fabricated browser data."
+  ],
+  "cleanup": "Diagnostic tab closed, appearance restored darkEN, viewport cleared; exact local serverSIGINT returned0 and requestjournal retained.",
+  "server_exit": 0,
+  "request_journal_exists": true
+}

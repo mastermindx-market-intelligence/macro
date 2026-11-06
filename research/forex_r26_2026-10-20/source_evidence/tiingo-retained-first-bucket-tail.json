@@ -1,0 +1,28 @@
+{
+  "first_native_label": "2026-10-19T20:00:00.000Z",
+  "tail_aggregation_match_count": 1,
+  "matching_tail_windows": [
+    {
+      "first_minute": "2026-10-19T21:56:00.000Z",
+      "last_minute": "2026-10-19T23:59:00.000Z",
+      "minute_rows": 123
+    }
+  ],
+  "inference": "Tested tail-window equality only; cause of omission not established.",
+  "schema": "forex_r26.retained_first_bucket_tail_comparison.v1",
+  "source_receipts": {
+    "minute": {
+      "receipt_id": "ab3276b37deb0e5fc9d70717dedc80aaa8fdcf2dae4f9862d7507436bbd5e9bd",
+      "raw_sha256": "143f4ae027787150539667ba057147e474d8f725bd1e9719095d54f6fd58d989",
+      "capture_at": "2026-10-21T13:23:36.315793+00:00",
+      "rows": 2159
+    },
+    "native": {
+      "receipt_id": "148ee86d4fec717d8d5c4e4214cbbb8cdd4703ac8260ef42ca31c2efaba524ba",
+      "raw_sha256": "7c58219d4866e1d7aef2ab0da9c8f52e3ba9d4ca9a1ca1e6896b4fbb31c7e934",
+      "capture_at": "2026-10-21T22:45:21.025233+00:00",
+      "rows": 7
+    }
+  },
+  "scope": "OFFLINE_EXISTING_RAW_RECEIPTS_ONLY; equality observation, not causal/finality/admission proof"
+}

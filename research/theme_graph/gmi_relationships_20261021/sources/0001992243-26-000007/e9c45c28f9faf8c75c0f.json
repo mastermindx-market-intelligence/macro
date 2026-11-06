@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T20:44:53Z",
+ "accession": "0001992243-26-000007",
+ "cik": "0001992243",
+ "doc_byte_length": 2064981,
+ "doc_sha256": "9dcda3888df8da599a4743038ec3357e066ef76f5e6ccb1af7d29cc45123870f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "t1-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 245963,
+  "byte_start": 245645,
+  "normalized": "On December 23, 2024, we signed an IP license agreement (the “IP License Agreement”) with Trina Solar Co., Ltd., a company incorporated in China (“TCZ”). Pursuant to the IP License Agreement, we received a non-exclusive license under the Licensed IP (as defined in the IP License Agreement) to:",
+  "normalized_sha256": "68fbb304aebace4590e694dc7fa646cbe49065612bbdbb21ad4099c3311cc4df",
+  "raw": "On December 23, 2024, we signed an IP license agreement (the &#8220;IP License Agreement&#8221;) with Trina Solar Co., Ltd., a company incorporated in China (&#8220;TCZ&#8221;). Pursuant to the IP License Agreement, we received a non-exclusive license under the Licensed IP (as defined in the IP License Agreement) to:",
+  "raw_sha256": "e9c45c28f9faf8c75c0f5f35f7fc4db6eb31430345136e72b107778ed456cb28"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1992243/000199224326000007/t1-20251231.htm",
+ "xbrl_contexts": []
+}

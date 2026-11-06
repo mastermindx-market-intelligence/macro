@@ -1,0 +1,28 @@
+{
+  "schema": "mastermind.execution_ci_contract_verification.v1",
+  "operation_id": "execution-ci-fixture-contract-20261015-c3-9e1c",
+  "base_sha": "7b61e274a4392584fcf3dff6fe9d9bf361eda2ed",
+  "tests": 240,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "elapsed_seconds": "16.150",
+  "source_sha256": {
+    "tests/test_gh_quota_guard.py": "c3cbd02ac5d2480f940f6f97e37c4a7a78522baf930ca636965616c5eb98cab4",
+    "tests/test_prophet_rescue.py": "f2ad87239bdd485ef72e72accf337bf935c4da9b8c49db57c66d0b882677afeb"
+  },
+  "native_review_thread": "01a13e09-8360-7110-9c5f-850ae9687ed7",
+  "initial_review_sha256": "152603b102dab58c42ae0c4cc00400665f09675ca91913f62c619fab554503bc",
+  "review_finding": "resolved; same independent native reviewer found no remaining substantive defect in the reviewed repair",
+  "contract_delta": "prepublication local census: 0 introduced, 0 inherited, exit 0; began before final parser repair, not exact-head hosted qualification",
+  "exact_8413_hook_static_contract": "PASS against 7c541a2dc416bb9c56ffb4efa7c2e4aecf4d7562, production hook not executed",
+  "release_qualified": false,
+  "final_review_sha256": "c1f570d261adfd0f52d90a477f525844bae20342b66441b1fa70bdfe02cad82b",
+  "review_checks": {
+    "focused_origin_cases": 11,
+    "additional_in_memory_cases": 8,
+    "source_unchanged_before_after": true,
+    "hosted_ci_claimed": false,
+    "formal_github_approval_claimed": false
+  }
+}

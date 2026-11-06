@@ -1,0 +1,116 @@
+import copy, hashlib, json, math, unittest
+from dataclasses import replace
+from pathlib import Path
+from unittest.mock import patch
+import collectors.tiingo_archive as archive
+from lib.dataos.tiingo_reader import TiingoView, TiingoViewRefusal
+from lib.dataos.tiingo_views import research_rows
+import lib.dataos.tiingo_forex as bridge
+
+ROOT=Path(__file__).parent
+def make(data=None):
+    if data is None:
+        data=[dict(ticker='usdjpy',date=t,open=149,high=150,low=148,close=c) for t,c in [('2026-10-19T00:00:00Z',149.1),('2026-10-19T00:01:00Z',149.2)]]
+    raw=json.dumps(data).encode()
+    receipt=dict(schema='mastermind.tiingo.raw_receipt.v1',source='forex-bars',symbol='usdjpy',vendor='tiingo',raw_sha256=hashlib.sha256(raw).hexdigest(),observed_at_utc='2026-10-21T13:00:00Z',request_path=archive.request_path('forex-bars','usdjpy',{'resampleFreq':'1min'}))
+    ident=archive.receipt_identity(receipt)
+    v=TiingoView(source='forex-bars',source_sha256=receipt['raw_sha256'],source_observed_at_utc=receipt['observed_at_utc'],purpose='INSPECTION',pit_backtest_eligible=False,redistribution_admitted=False,rows=tuple(research_rows(raw,receipt)),source_request_path=receipt['request_path'])
+    return v,ident
+def project(v,i): return bridge.diagnose_forex_view(v,expected_pair='USDJPY',receipt_id=i)
+
+class Checks(unittest.TestCase):
+    def test_no_promotion_or_mutation(self):
+        v,i=make(); before=copy.deepcopy(v)
+        for row in v.rows: row.update(status='final',feed='claimed',revision=1,calendar='fx-utc-4h/v1')
+        supplied=copy.deepcopy(v)
+        out=project(v,i)
+        self.assertEqual(v,supplied)
+        self.assertEqual(out['eligible_observations'],[])
+        self.assertFalse(out['monitoring_admitted'])
+        for row in out['candidate_observations']:
+            self.assertFalse(set(row)&{'status','feed','revision','calendar','bar_end','available_at','bar_sequence','expires_at','observation_id'})
+        self.assertFalse(out['diagnostics']['timestamp_spacing_proves_missing_data'])
+        json.dumps(out,allow_nan=False)
+
+    def test_empty_and_failure_are_distinct(self):
+        v,i=make([]); out=project(v,i)
+        self.assertEqual(out['source_state'],'empty'); self.assertEqual(out['eligible_observations'],[])
+        with patch.object(bridge,'read_research_view',side_effect=TiingoViewRefusal('missing manifest')):
+            with self.assertRaisesRegex(TiingoViewRefusal,'missing manifest'):
+                bridge.read_forex_watch_source('2026-10-21',i,expected_pair='USDJPY')
+
+    def test_equivalent_instants_conflicts_and_nanoseconds(self):
+        for close,conflicts in [(149.1,0),(149.2,1)]:
+            with self.subTest(close=close):
+                v,i=make(); v.rows[1].update(bar_at_vendor='2026-10-19T01:00:00+01:00',vendor_close=close)
+                out=project(v,i); d=out['diagnostics']
+                self.assertEqual(d['duplicate_instant_rows'],1); self.assertEqual(d['conflicting_ohlc_instants'],conflicts)
+                self.assertEqual(out['candidate_observations'][1]['bar_at_vendor'],'2026-10-19T01:00:00+01:00')
+        v,i=make()
+        for n,row in enumerate(v.rows,1): row['bar_at_vendor']=f'2026-10-19T00:00:00.00000000{n}Z'
+        out=project(v,i)
+        self.assertEqual(out['diagnostics']['unique_valid_timestamp_instants'],2)
+        self.assertEqual(out['diagnostics']['value_issue_counts']['subminute_timestamp'],2)
+
+    def test_disorder_and_spacing_do_not_repair_source(self):
+        v,i=make(); rows=[v.rows[0],{**v.rows[0],'bar_at_vendor':'2026-10-19T04:00:00Z'},v.rows[1]]
+        v=replace(v,rows=tuple(rows)); out=project(v,i)
+        self.assertEqual([r['bar_at_vendor'] for r in out['candidate_observations']],[r['bar_at_vendor'] for r in rows])
+        self.assertEqual(out['diagnostics']['out_of_order_valid_timestamp_steps'],1)
+        self.assertEqual(out['diagnostics']['maximum_observed_timestamp_step_seconds'],14340)
+        self.assertEqual(out['diagnostics']['observed_timestamp_steps_gt_reference'],1)
+
+    def test_invalid_values_are_diagnostic_and_json_safe(self):
+        for value,reason in [(None,'missing'),(True,'boolean'),(0,'nonpositive'),(-1,'nonpositive'),(float('nan'),'nonfinite'),(float('inf'),'nonfinite'),('149.1','not_numeric')]:
+            with self.subTest(value=repr(value)):
+                v,i=make(); v.rows[0]['vendor_close']=value; out=project(v,i)
+                self.assertEqual(out['candidate_observations'][0]['issues']['close'],reason)
+                self.assertEqual(out['eligible_observations'],[]); json.dumps(out,allow_nan=False)
+        for stamp in [None,'not-a-clock','2026-10-19T00:00:00']:
+            with self.subTest(stamp=stamp):
+                v,i=make();v.rows[0]['bar_at_vendor']=stamp;out=project(v,i)
+                self.assertEqual(out['candidate_observations'][0]['bar_at_vendor'],stamp)
+                self.assertEqual(out['diagnostics']['value_issue_counts']['invalid_timestamp'],1)
+
+    def test_lineage_and_authority_refusals(self):
+        changes={'ticker_vendor':'eurusd','source_receipt_id':'0'*64,'source_sha256':'0'*64,'source_observed_at_utc':'2026-10-20T13:00:00Z','source_rights_admitted':True,'dataos_identity_admitted':True,'pit_backtest_eligible':True,'canonical_price_basis_admitted':True}
+        for key,value in changes.items():
+            with self.subTest(key=key):
+                v,i=make();v.rows[0][key]=value
+                with self.assertRaises(TiingoViewRefusal):project(v,i)
+        for change in [{'source':'boats-bars'},{'purpose':'PIT_BACKTEST'},{'pit_backtest_eligible':True},{'redistribution_admitted':True},{'authority':'PROVEN_LIVE'}]:
+            with self.subTest(change=change):
+                v,i=make()
+                with self.assertRaises(TiingoViewRefusal):project(replace(v,**change),i)
+
+    def test_caps_and_existing_reader_dispatch(self):
+        v,i=make()
+        with self.assertRaises(TiingoViewRefusal): project(replace(v,rows=v.rows*10001),i)
+        for cap in [True,0,20001]:
+            with self.subTest(cap=cap):
+                with self.assertRaises(TiingoViewRefusal):bridge.read_forex_watch_source('2026-10-21',i,expected_pair='USDJPY',max_rows=cap)
+        with patch.object(bridge,'read_research_view',return_value=v) as read:
+            out=bridge.read_forex_watch_source('2026-10-21',i,expected_pair='USDJPY')
+            self.assertEqual(out['source']['source_receipt_id'],i)
+            self.assertEqual(read.call_args.args,('forex-bars','2026-10-21',i))
+            self.assertEqual(read.call_args.kwargs['purpose'],'INSPECTION')
+
+    def test_committed_evidence_and_source_hashes_agree(self):
+        receipts=json.loads((ROOT/'evidence/tiingo-nine-pair-receipts.json').read_text())
+        d=json.loads((ROOT/'evidence/tiingo-forex-source-diagnostics.json').read_text())
+        self.assertEqual(receipts['plan_sha256'],d['plan_sha256'])
+        self.assertEqual(sum(p['vendor_row_count'] for p in receipts['pairs']),17011)
+        self.assertEqual(len(receipts['pairs']),9)
+        self.assertEqual(sum(p['status']=='EMPTY_CAPTURED' for p in receipts['pairs']),1)
+        self.assertEqual(d['total_diagnostic_rows'],17011);self.assertEqual(d['eligible_observation_count'],0)
+        bypair={p['pair_candidate']:p for p in receipts['pairs']}
+        for p in d['pairs']:
+            self.assertEqual(p['eligible_observations'],[])
+            rid=p.get('source',{}).get('source_receipt_id',p.get('receipt_id'))
+            self.assertEqual(rid,bypair[p['pair_candidate']]['receipt_id'])
+        for name in ['lib/dataos/tiingo_forex.py','tests/test_tiingo_forex_source.py']:
+            self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),d['source_sha256'][name])
+        top=json.loads((ROOT/'evidence/tiingo-usdbrl-top-receipt.json').read_text())
+        self.assertEqual(top['raw_sha256'],hashlib.sha256(b'[]').hexdigest());self.assertEqual(top['raw_bytes'],2)
+
+if __name__=='__main__':unittest.main(verbosity=2)

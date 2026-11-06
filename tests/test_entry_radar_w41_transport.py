@@ -23,7 +23,9 @@ producers emit again.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -32,7 +34,9 @@ from engine.entry_radar import live_ledger as ll
 from engine.entry_radar import live_pack as lp
 from engine.entry_radar.entry_events import build_radar_native_event
 from engine.entry_radar.replay import prereg
+from engine.entry_radar.pack_spool import ParquetSpoolSink
 from scripts import reconcile_entry_radar as rec
+from tests.test_entry_radar_w4_pack import build
 
 C1_DETECTOR = "C1_1D_LIVE_WASHOUT@1"
 C1_SPEC_HASH = prereg.EXPECTED_SPEC_HASHES[C1_DETECTOR]
@@ -342,14 +346,14 @@ def test_a_v1_pack_with_no_confirmed_lanes_field_reads_unavailable_not_a_crash()
     assert row["g0"]["reason"] == "slice_store_unconfigured"
 
 
-def test_load_pack_normalizes_a_hand_repaired_manifest_row(tmp_path):
+def test_load_pack_normalizes_a_hand_repaired_manifest_row_v1_pack(tmp_path):
     """S1: the PRODUCTION read path (`load_pack`), not just `build_pack`, must
-    route `confirmed_lanes` through the normalizer.  A torn or hand-repaired
-    manifest on disk — e.g. an operator edit, a partial restore, a manual
-    correction — with an unrecognised `availability` value must not reach the
-    live reader verbatim; the module's own firewall claim (the null law
-    applied AT THE PACK BOUNDARY) is only true if every entry point
-    normalizes, not just the write path."""
+    route `confirmed_lanes` through the normalizer on legacy v1 manifests.  A
+    torn or hand-repaired manifest on disk — e.g. an operator edit, a partial
+    restore, a manual correction — with an unrecognised `availability` value
+    must not reach the live reader verbatim; the module's own firewall claim
+    (the null law applied AT THE PACK BOUNDARY) is only true if every entry
+    point normalizes, not just the write path."""
     pack = _minimal_pack({"AAPL": {"g0": {"availability": "available",
                                           "grey_events": 1},
                                    "c5": {"availability": "available",
@@ -358,18 +362,52 @@ def test_load_pack_normalizes_a_hand_repaired_manifest_row(tmp_path):
 
     manifest_path = lp.pack_root(tmp_path) / pack.as_of / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    # hand-corrupt exactly one lane's availability to an unrecognised value
+    manifest.pop("substrate_fingerprint_version", None)
     manifest["confirmed_lanes"]["AAPL"]["g0"]["availability"] = "maybe"
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
     reloaded = lp.load_pack(tmp_path)
     assert reloaded.confirmed_lanes["AAPL"]["g0"] == {
         "availability": "unavailable", "reason": "slice_store_unconfigured"}
-    # the sound sibling lane is untouched (per-lane granularity, unchanged)
     assert reloaded.confirmed_lanes["AAPL"]["c5"]["availability"] == "available"
-    # the RTH reader sees the normalized row, never the torn one
     row = le._nightly_lanes(reloaded, "AAPL")
     assert row["g0"]["availability"] == "unavailable"
+
+
+def test_load_pack_normalizes_a_hand_repaired_manifest_row_v2_pack_is_refused(
+        tmp_path):
+    """A v2 substrate fingerprint generation hashes ``confirmed_lanes`` in their
+    normalised form.  A hand-torn ``availability`` row is tampering, never
+    repair — the pack must be regenerated, not patched at load time."""
+    pack = _minimal_pack({"AAPL": {"g0": {"availability": "available",
+                                          "grey_events": 1},
+                                   "c5": {"availability": "available",
+                                          "candidates": 1}}})
+    lp.save_pack(pack, tmp_path)
+
+    manifest_path = lp.pack_root(tmp_path) / pack.as_of / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest.get("substrate_fingerprint_version") == lp.SUBSTRATE_FINGERPRINT_VERSION
+    manifest["confirmed_lanes"]["AAPL"]["g0"]["availability"] = "maybe"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(lp.LivePackError) as excinfo:
+        lp.load_pack(tmp_path)
+    assert str(excinfo.value).startswith("confirmed_lanes_not_normalized")
+
+
+def test_load_pack_legacy_substrate_index_is_datetime64_ns(tmp_path):
+    """Legacy v1 packs without a sidecar must load with ns-normalized session index."""
+    pack = build(sink=ParquetSpoolSink(tmp_path / "build.parquet"))
+    state_dir = tmp_path / "state"
+    session_dir = lp.save_pack(pack, state_dir)
+    Path(f"{session_dir / 'substrate.parquet'}.sidecar.json").unlink()
+    loaded = lp.load_pack(state_dir)
+    assert loaded is not None
+    for row in loaded.names:
+        frame = loaded.substrate[row.ticker]
+        assert frame.index.dtype == np.dtype("datetime64[ns]")
+        assert lp.substrate_fingerprint(frame) == row.substrate_fingerprint
 
 
 def test_load_pack_labels_a_schema_missing_manifest_as_v1_not_v2(tmp_path):

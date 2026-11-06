@@ -1,0 +1,26 @@
+{
+  "kind": "local_candidate_navigation",
+  "source_head": "b8a4805af5233872705d7ba8012294eeb98d1e37",
+  "width": 390,
+  "height": 844,
+  "en_zh_research_links_verified": true,
+  "chinese_glossary_final_url": "http://127.0.0.1:8876/glossary.html",
+  "post_release_live": false,
+  "theme_matrix_verified": false,
+  "theme_note": "Public settings expose language only; screenshots prove the actual rendered state, not both art directions.",
+  "viewport_and_language_restored": true,
+  "screenshots": [
+    {
+      "file": "local-blog-mobile-en.jpg",
+      "observed_at": "2026-10-11T21:58:50.826Z",
+      "bytes": 47954,
+      "sha256": "3ff59930e61a205ef983b0eb1700de2e5ad79cf9100d97d90c08e19d5993c5d8"
+    },
+    {
+      "file": "local-blog-mobile-zh.jpg",
+      "observed_at": "2026-10-11T21:59:06.160Z",
+      "bytes": 40906,
+      "sha256": "950aed17e7f4f44665d2328ca12a6419b04aa2bca8f55b12867096dddb41e785"
+    }
+  ]
+}

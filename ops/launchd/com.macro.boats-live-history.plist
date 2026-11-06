@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Prepared finite current-night private history job. Install only from the
+     protected runtime after producer/reader integration and live qualification.
+     Two Vancouver clock candidates cover permanent UTC-7 and older timezone data;
+     the scheduled entry guard admits only the first 15 minutes after 20:00 ET.
+     No automatic restart, backfill retry, credential copying or public endpoint. -->
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.macro.boats-live-history</string>
+  <key>ProgramArguments</key><array>
+    <string>/usr/bin/caffeinate</string><string>-i</string><string>-s</string>
+    <string>/opt/homebrew/Caskroom/miniconda/base/bin/python</string>
+    <string>-m</string><string>scripts.refresh_boats_live_history</string>
+    <string>--root</string><string>/Volumes/Mastermind/market-data/tiingo</string>
+    <string>--symbols</string><string>/Volumes/Mastermind/market-data/tiingo-runtime/config/symbols.txt</string>
+    <string>--held</string><string>/Volumes/Mastermind/market-data/tiingo-runtime/config/held.txt</string>
+    <string>--ssh-host</string><string>root@146.190.142.17</string>
+    <string>--ssh-identity</string><string>/Users/chriswong/.ssh/macro_dashboard_deploy_v2</string>
+    <string>--remote-script</string><string>/mnt/terminal_storage/boats-history-runtime/current/boats_history_bridge.py</string>
+    <string>--remote-root</string><string>/mnt/terminal_storage/boats-live-history</string>
+    <string>--max-requests</string><string>12000</string>
+    <string>--max-bytes</string><string>1073741824</string>
+    <string>--max-seconds</string><string>28800</string>
+    <string>--capture</string><string>--scheduled</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Volumes/Mastermind/market-data/tiingo-runtime/current</string>
+  <key>StartCalendarInterval</key><array>
+    <dict><key>Weekday</key><integer>0</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>0</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
+  </array>
+  <key>KeepAlive</key><false/>
+  <key>RunAtLoad</key><false/>
+  <key>StandardOutPath</key><string>/Volumes/Mastermind/market-data/tiingo-runtime/logs/live-history.stdout.log</string>
+  <key>StandardErrorPath</key><string>/Volumes/Mastermind/market-data/tiingo-runtime/logs/live-history.stderr.log</string>
+</dict></plist>

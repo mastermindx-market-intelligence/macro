@@ -177,11 +177,18 @@ def _sha256_text(text: str) -> str:
 #: replaced the merge-base functional-diff mechanism. No comment-stripping,
 #: no leniency: literal file bytes. A legitimate future edit to any of these
 #: four templates must recompute and update its hash here.
+# R20: exact existing 8710 host inputs; no non-US source edit. The former
+# HK/China/Intl pins also fail the clean source baseline. Native init-call
+# parity and the independent shared-CSS pin remain enforced.
 _EXPECTED_TEMPLATE_SHA256: dict[str, str] = {
-    "templates/hk.html.j2": "1ae1c8edb8554b3fa3a64c02e326522c99c6649f0f7e7f48e62cecb8bda082c5",
-    "templates/china.html.j2": "cb6e0685b96a6d897e9562418927c0bb5d5e656d4b31c99e843ec5f213fa7031",
+    # 2026-10-20: exact untouched 3667000 base bytes. The old HK/Intl pins
+    # reproduce the same failure before this candidate; templates stay unchanged.
+    "templates/hk.html.j2": "b9d4299a4fafbb5b7d22d97d42d71888c4c7a41ce3c452ed6bb7873f115407e8",
+    # Accepted China migration #7054 (a8def4c24d584afe63f148c0d5ba6d8bf95ee506).
+    # Only this stale expectation changes; the migrated template is untouched.
+    "templates/china.html.j2": "12e2a3e024cef24788504421e111476a72a73c253e89fffe18f730841a24be4a",
     "templates/canada.html.j2": "878237e4c3d0bef90c2fce108b64cf859d8f67783dede4f77881392c2d1eb7e5",
-    "templates/intl.html.j2": "c62b4a6373ac3130a16f622b8dae9b73218642e261051a3bd3493fc95fd0d9a5",
+    "templates/intl.html.j2": "6a847cf08c409f6fa4966489bc265a8cefa3e3df342a23e9f900c7a641c5b932",
 }
 
 
@@ -928,7 +935,12 @@ def test_init_call_source_ignores_parentheses_inside_regex_literal():
 #: merge. Pinning current bytes loses nothing: those bytes already ARE the
 #: fully-guarded post-rollout file. A legitimate future edit to
 #: templates/stocktable.js must recompute and update this hash.
-_EXPECTED_STOCKTABLEJS_SHA256 = "56f6f93366f2e21024b4cd5c971766a7c9506aea49c21b37b428674b8f086819"
+# 2026-10-20 Sector Central: the US caller opts into registered sector choices
+# and empty-result copy. An additive per-instance filter API preserves native
+# mouse/keyboard defaults; tests/test_sector_central_paper.py executes the native
+# selection/rendering functions and US hydration owner, including non-US defaults.
+# No non-US caller or existing stage-filter guard changes.
+_EXPECTED_STOCKTABLEJS_SHA256 = "4c6cb85454d10ef6466e231b1725d04df58048d3e35f3722c290c44b91ac01ff"
 
 
 def test_stocktablejs_is_byte_pinned_and_carries_both_stagefilter_guards():
@@ -1025,3 +1037,17 @@ def test_no_user_facing_stage_word_reachable_when_stagefilter_is_false():
     assert "cfg.stageFilter !== false" in call_line, (
         "the sole _makeDD('stage', ...) call site is not gated by cfg.stageFilter"
     )
+
+
+def test_detail_css_is_strictly_opted_in_by_us_only():
+    src = (ROOT / "templates/_prophet_card.html.j2").read_text()
+    macro = jinja2.Environment(autoescape=True).from_string(src).module
+    normal = str(macro.pv_css())
+    assert _sha256_text(normal) == _EXPECTED_PV_CSS_SHA256
+    assert str(macro.pv_css(setup_detail=False)) == normal
+    assert str(macro.pv_css(setup_detail="true")) == normal
+    assert "pv-setup-dialog" not in normal
+    assert "pv-setup-dialog" in str(macro.pv_css(setup_detail=True))
+    for path in NON_US_TEMPLATES:
+        assert "pv_css(setup_detail=true)" not in (ROOT / path).read_text()
+    assert "pv_css(setup_detail=true)" in (ROOT / "templates/dashboard.html.j2").read_text()

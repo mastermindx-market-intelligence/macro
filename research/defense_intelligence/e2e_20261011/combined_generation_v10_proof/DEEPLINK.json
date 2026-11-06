@@ -1,0 +1,27 @@
+{
+  "scope": "Actual source ASGI local test-principal, unmodified normal publisher bytes; functional deep-link checks, no per-URL performance acceptance claim",
+  "stage_receipt_sha256": "13e164fd1efc95f8df389ade245109fde84179036bdd10d6b16f681d0a7035a3",
+  "server_receipt_sha256": "5cb43cc7e62231b4f6fee431acc799917ef64845c133f0bf59770a11fd086b24",
+  "cases": [
+    {
+      "case": "Actual company RTX deep link with qualified reported numeric finance",
+      "observation": {
+        "url": "http://127.0.0.1:58753/government_revenue.html?mode=companies&ticker=RTX&item=company%3ARTX",
+        "issuer": "RTX",
+        "value": "8269 USD millions",
+        "period": "Reported segment sales \u00b7 2026Q2",
+        "company": "RTX",
+        "ticker_filter": "RTX",
+        "failed_modules": []
+      },
+      "passed": true
+    },
+    {
+      "case": "Investor selection then browser back preserves issuer URL state",
+      "passed": true,
+      "url": "http://127.0.0.1:58753/government_revenue.html?mode=companies&ticker=RTX&item=company%3ARTX"
+    }
+  ],
+  "http_errors": [],
+  "page_errors": []
+}

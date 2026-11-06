@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-10-14T13:22:20.834998+00:00",
+  "prior_proof_identity": "991b1aa511ec0e9d4479cc1a3bad4c83507159cc22ed13981df69568d734b80a",
+  "outputs_checked": 109,
+  "missing": [],
+  "changed": [],
+  "exact_output_parity": true,
+  "source_proof_reused": false,
+  "scope": "Byte comparison only, preserves existing local rendering/timing evidence and original input generation. New source proof still required."
+}

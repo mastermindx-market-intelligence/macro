@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-19T19:13:00Z",
+ "accession": "0000886986-26-000004",
+ "cik": "0000886986",
+ "doc_byte_length": 1056527,
+ "doc_sha256": "912aedf410add9b3752d652219e36235d63a11ba22d53f66e1b72ab9060a3224",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-19",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "teck-20251231xexx993mda.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 127409,
+  "byte_start": 127091,
+  "normalized": "Pursuant to a long-term streaming agreement made in 2015, Teck delivers an equivalent of 22.5% of payable silver sold by Antamina to a subsidiary of Franco-Nevada Corporation (FNC). FNC pays a cash price of 5% of the spot price at the time of each delivery, in addition to an upfront acquisition price previously paid.",
+  "normalized_sha256": "49f03d3cc0d34ac0e933b849b58db7290d9cb3e5cb43e6eff038e7697196a555",
+  "raw": "Pursuant to a long-term streaming agreement made in 2015, Teck delivers an equivalent of 22.5% of payable silver sold by Antamina to a subsidiary of Franco-Nevada Corporation (FNC). FNC pays a cash price of 5% of the spot price at the time of each delivery, in addition to an upfront acquisition price previously paid.",
+  "raw_sha256": "49f03d3cc0d34ac0e933b849b58db7290d9cb3e5cb43e6eff038e7697196a555"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/886986/000088698626000004/teck-20251231xexx993mda.htm",
+ "xbrl_contexts": []
+}

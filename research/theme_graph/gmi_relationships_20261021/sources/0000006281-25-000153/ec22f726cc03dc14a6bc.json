@@ -1,0 +1,45 @@
+{
+ "accepted_at": "2025-11-25T21:02:50Z",
+ "accession": "0000006281-25-000153",
+ "cik": "0000006281",
+ "doc_byte_length": 2363627,
+ "doc_sha256": "4e312f689cc55d7ec170389b1cc7810ff0bee8e651a0ed7dcaabe5f08c68627a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-25",
+ "form": "10-K",
+ "period_of_report": "2025-11-01",
+ "primary_document": "adi-20251101.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1414151,
+  "byte_start": 1412481,
+  "normalized": "Distributor 124%24%25%",
+  "normalized_sha256": "dbe840c3a47f179e54460ad548b7681b23eb22c7bb99e4df59c430213c5faa78",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:left;vertical-align:bottom\"><div><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">Distributor 1</span></div></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#cceeff;border-top:1pt solid #000;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-130\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-657\">24</ix:nonFraction>%</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#cceeff;border-top:1pt solid #000;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-131\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-658\">24</ix:nonFraction>%</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#cceeff;border-top:1pt solid #000;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-132\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-659\">25</ix:nonFraction>%</span></td></tr>",
+  "raw_sha256": "ec22f726cc03dc14a6bc80245416633226bbc53e1a61b1423ccb8474dff41f16"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/6281/000000628125000153/adi-20251101.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 64261,
+   "byte_start": 63582,
+   "context_ref": "c-130",
+   "raw": "<xbrli:context id=\"c-130\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000006281</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">adi:Distributor1Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-11-03</xbrli:startDate><xbrli:endDate>2025-11-01</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "cecda2fefde930e838c2bf1bd0af3c17bd81ae1bfcbbe5ec778fd5392e3758fa"
+  },
+  {
+   "byte_end": 64940,
+   "byte_start": 64261,
+   "context_ref": "c-131",
+   "raw": "<xbrli:context id=\"c-131\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000006281</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">adi:Distributor1Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-10-29</xbrli:startDate><xbrli:endDate>2024-11-02</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "ab6d0f7a3675f7d7db732df36efe5c29eda98aa0de1d59a747bbd4cb0423df31"
+  },
+  {
+   "byte_end": 65619,
+   "byte_start": 64940,
+   "context_ref": "c-132",
+   "raw": "<xbrli:context id=\"c-132\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000006281</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">adi:Distributor1Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2022-10-30</xbrli:startDate><xbrli:endDate>2023-10-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "ff15bf5868825e865f40b8bfcb19a3deca4b94a850740c76a35373cc9ca14916"
+  }
+ ]
+}

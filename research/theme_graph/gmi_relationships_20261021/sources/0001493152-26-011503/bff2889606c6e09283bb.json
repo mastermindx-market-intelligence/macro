@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T10:59:08Z",
+ "accession": "0001493152-26-011503",
+ "cik": "0001670061",
+ "doc_byte_length": 1300610,
+ "doc_sha256": "f2d9ee8e4e95d2481a96adb68c2b45cd3d1bf3eebda95a9259a561b20130822e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ex99-1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 222249,
+  "byte_start": 221941,
+  "normalized": "The Company has entered into the Amended and Restated Supply Agreement with GTP and Plansee for the tungsten concentrate to be mined and processed at the Sangdong Mine. See “Material Contracts—Amended and Restated Supply Agreement” for additional information on this contract.",
+  "normalized_sha256": "19070b0d4fdc6403f41be84126733e381638ad29cce5ecc057caad38bf04cef3",
+  "raw": "The\nCompany has entered into the Amended and Restated Supply Agreement with GTP and Plansee for the tungsten concentrate to be mined and\nprocessed at the Sangdong Mine. See &ldquo;<I>Material Contracts</I>&mdash;<I>Amended and Restated Supply Agreement</I>&rdquo; for additional\ninformation on this contract.",
+  "raw_sha256": "bff2889606c6e09283bb828e27d8ac39752e63dc8c4ae514d24ddf340cd3d389"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1670061/000149315226011503/ex99-1.htm",
+ "xbrl_contexts": []
+}

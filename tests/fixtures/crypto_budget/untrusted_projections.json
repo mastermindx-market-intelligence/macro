@@ -1,0 +1,90 @@
+{
+  "string_bool_integrity": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-07-29",
+    "integrity": {"ok": "false", "checks": {}, "errors": []},
+    "final": {"exposure_pct": 60, "exposure": 0.6},
+    "authority": {"allocation_source": "signals.alloc_optimal"}
+  },
+  "string_bool_true": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-07-29",
+    "integrity": {"ok": "true", "checks": {}, "errors": []},
+    "final": {"exposure_pct": 60, "exposure": 0.6},
+    "authority": {"allocation_source": "signals.alloc_optimal"}
+  },
+  "mapping_flag": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-07-29",
+    "integrity": {"ok": {"nested": true}, "checks": {}, "errors": []},
+    "final": {"exposure_pct": 60, "exposure": 0.6},
+    "authority": {"allocation_source": "signals.alloc_optimal"}
+  },
+  "fractional_pct": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-07-29",
+    "integrity": {"ok": true, "checks": {}, "errors": []},
+    "final": {"exposure_pct": 0.4, "exposure": 0.4},
+    "authority": {"allocation_source": "signals.alloc_optimal"}
+  },
+  "unit_fraction_collision": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-07-29",
+    "integrity": {"ok": true, "checks": {}, "errors": []},
+    "final": {"exposure_pct": 1.0, "exposure": 1.0},
+    "authority": {"allocation_source": "signals.alloc_optimal"}
+  },
+  "string_pct": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-07-29",
+    "integrity": {"ok": true, "checks": {}, "errors": []},
+    "final": {"exposure_pct": "60", "exposure": 0.6},
+    "authority": {"allocation_source": "signals.alloc_optimal"}
+  },
+  "out_of_range_low": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-07-29",
+    "integrity": {"ok": true, "checks": {}, "errors": []},
+    "final": {"exposure_pct": -5},
+    "authority": {"allocation_source": "signals.alloc_optimal"}
+  },
+  "out_of_range_high": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-07-29",
+    "integrity": {"ok": true, "checks": {}, "errors": []},
+    "final": {"exposure_pct": 150},
+    "authority": {"allocation_source": "signals.alloc_optimal"}
+  },
+  "foreign_source": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-07-29",
+    "integrity": {"ok": true, "checks": {}, "errors": []},
+    "final": {"exposure_pct": 60, "exposure": 0.6},
+    "authority": {"allocation_source": "master.score"}
+  },
+  "foreign_schema": {
+    "schema": "btc.decision/v2",
+    "status": "ok",
+    "as_of": "2026-07-29",
+    "integrity": {"ok": true, "checks": {}, "errors": []},
+    "final": {"exposure_pct": 60},
+    "authority": {"allocation_source": "signals.alloc_optimal"}
+  },
+  "exposure_fraction_only": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-07-29",
+    "integrity": {"ok": true, "checks": {}, "errors": []},
+    "final": {"exposure": 0.4},
+    "authority": {"allocation_source": "signals.alloc_optimal"}
+  }
+}

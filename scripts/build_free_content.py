@@ -502,7 +502,10 @@ def _breadcrumbs(fm: dict[str, Any], url_path: str) -> list[dict[str, str | None
         track = fm["track"]
         crumbs.append({"label": "Learn", "href": "/learn/index.html"})
         crumbs.append(
-            {"label": _TRACK_LABELS.get(track, track.title()), "href": f"/learn/{track}/"}
+            {
+                "label": _TRACK_LABELS.get(track, track.title()),
+                "href": f"/learn/index.html#track-{track}",
+            }
         )
         crumbs.append({"label": fm["title"], "href": None})
     elif family == "page":

@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/intl_workspace_risk.css
+- templates/intl_workspace/risk.html.j2
+- templates/intl_workspace/shell.html.j2
+- templates/intl_workspace.js
+manifest: mockups/evidence/paper-international-risk/states/manifest.json

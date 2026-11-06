@@ -1,0 +1,32 @@
+{
+  "schema": "eval_os.fomc_source_adjudication.v1",
+  "observed_at": "2026-10-14T12:27:16.274445+00:00",
+  "base": "3a690add963954bec95ade6c8a47ba01e06ac075",
+  "head": "e2d740be441b7671ba1fd060a9cc6e5b1e8a32b6",
+  "changed_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "engine/neuralweb/eval/benchmark_fomc_qt_clock_2024-05-01.json",
+    "engine/neuralweb/response_eval.py",
+    "research/FOMC_QT_CLOCK_CASE_2024_05_01.md",
+    "tests/test_response_eval.py"
+  ],
+  "all_evaluator_function_and_class_asts_preserved": true,
+  "old_fixture_bytes_preserved": true,
+  "response_eval_tests": {
+    "tests": 119,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "new_case_count": 1,
+  "total_registered_supplied_text_cases": 13,
+  "independent_review": false,
+  "review_owner": "original root",
+  "source_review": "Official statement, implementation note and linked PDF agree on announced cap, policy range and effective dates. PDF Last-Modified is 2024 but current HTML Last-Modified is 2026. Neither is a contemporaneous byte-custody witness.",
+  "interpretation_review": "Future effective dates were public announcements; no realized later observation is supplied. The reduction is 35/60 = 58.333 percent, a ceiling change only.",
+  "repair_during_review": "Appended the new case to the existing test list so tests referring to index0 retain their original fixture and discriminating mutations; reran119 tests after this correction.",
+  "model_observation": false,
+  "point_in_time_byte_identity_proven": false,
+  "production_proven": false,
+  "delegation": "No new remote request; existing prelaunch capacity refusal preserved. Principal performed bounded source work."
+}

@@ -378,12 +378,24 @@
     return '<span class="cc-eng-chip cc-eng-opinion">' + t("position: analyst estimate (no engine record)", "位置：分析师估算（无引擎记录）") + '</span>';
   }
 
+  function ageDaysOf(asOf) {
+    if (typeof asOf !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(asOf)) return null;
+    var stamp = Date.parse(asOf + "T00:00:00Z");
+    if (!Number.isFinite(stamp) || new Date(stamp).toISOString().slice(0, 10) !== asOf) return null;
+    var age = Math.floor((Date.now() - stamp) / 86400000);
+    return age >= 0 ? age : null;
+  }
+  function curatedDateLabel() {
+    return ageDaysOf(META.asOf) == null
+      ? t("Curation date unverified", "精选日期待核实")
+      : t("Curated as of ", "精选截至 ") + META.asOf;
+  }
+
   /* W3.5: valuation staleness chip — curated valuations carry an as-of date. */
   function valStaleChip(c) {
-    var asOf = (c.valuation || {}).asOf || c.now.asOf || META.asOf || "";
-    if (!asOf) return "";
-    var asOfYear = yf(asOf);
-    var ageDays = Math.round((TODAY - asOfYear) * 365.25);
+    var asOf = (c.valuation || {}).asOf;
+    var ageDays = ageDaysOf(asOf);
+    if (ageDays == null) return '<span class="cc-val-age cc-val-stale-amber">' + t("Valuation date unverified", "估值日期待核实") + '</span>';
     if (ageDays < 14) return '<span class="cc-val-age">' + t("valuations as of " + asOf, "估值截至 " + asOf) + '</span>';
     var cls = ageDays >= 60 ? "cc-val-stale-red" : "cc-val-stale-amber";
     return '<span class="cc-val-age ' + cls + '">' + t("valuations as of " + asOf + " (" + ageDays + "d old)", "估值截至 " + asOf + "（已 " + ageDays + " 天）") + '</span>';
@@ -533,11 +545,12 @@
         "。这里展示的是分布，不是融合后的全球风险评分。"
     );
 
-    var asof = ((window.MARKETS_ENGINE || {}).as_of || META.asOf || "");
+    var asof = (window.MARKETS_ENGINE || {}).as_of;
     document.getElementById("global-regime-pulse-label").textContent = label;
     document.getElementById("global-regime-pulse-summary").textContent = summary;
     document.getElementById("global-regime-pulse-asof").textContent =
-      t("through ", "截至 ") + asof;
+      (ageDaysOf(asof) == null ? t("Engine date unverified", "引擎日期待核实") : t("Engine through ", "引擎截至 ") + asof) +
+      " · " + curatedDateLabel();
 
     var metrics = document.getElementById("global-regime-pulse-metrics");
     metrics.innerHTML =
@@ -712,12 +725,18 @@
         '<p class="cyc-arche">' + arche(c) + '</p>' +
       '</div>' +
       '<div class="cyc-grp cyc-grp-3 mkt-col-data">' +
-        '<div class="cyc-lbl">' + t("Curated snapshot · ", "精选快照 · ") + (c.now.asOf || META.asOf) + '</div>' +
+        '<div class="cyc-lbl">' + t("Price observations · ", "价格观测 · ") + (ageDaysOf(c.now.asOf) == null ? t("date unverified", "日期待核实") : c.now.asOf) + '</div>' +
         '<div class="cyc-facts">' +
           fact(t("Level", "点位"), c.now.level != null ? num(c.now.level) : null) +
           fact(t("All-time high", "历史高点"), c.now.ath != null ? num(c.now.ath) + (c.now.athDate ? " · " + fmtMon(c.now.athDate) : "") : null) +
           fact(t("% off ATH", "距高点"), c.now.pctFromATH != null ? pct(c.now.pctFromATH) + ' <span class="fv-note">' + t("(stat only, not plotted pos)", "（统计项，非图中位置）") + '</span>' : null) +
+        '</div>' +
+        '<div class="cyc-lbl cyc-lbl-mt">' + curatedDateLabel() + '</div>' +
+        '<div class="cyc-facts">' +
           fact(t("1-yr return", "一年回报"), c.now.ret1y != null ? pct(c.now.ret1y) : (c.now.ytd != null ? pct(c.now.ytd) + t(" YTD", " 年初至今") : null)) +
+        '</div>' +
+        '<div class="cyc-lbl cyc-lbl-mt">' + valStaleChip(c) + '</div>' +
+        '<div class="cyc-facts">' +
           fact(t("Fwd P/E", "预期市盈率"), v.forwardPE != null ? v.forwardPE.toFixed(1) + "×" : (v.trailingPE != null ? v.trailingPE.toFixed(1) + "× (ttm)" : null)) +
           fact(v.cape != null ? "CAPE" : t("Div yield", "股息率"), v.cape != null ? v.cape.toFixed(0) + (v.divYield != null ? "  ·  " + v.divYield.toFixed(1) + "% " + t("yld", "股息") : "") : (v.divYield != null ? v.divYield.toFixed(1) + "%" : null)) +
         '</div>' +
@@ -746,14 +765,37 @@
   function lastTurn(c, k) { for (var i = c.turns.length - 1; i >= 0; i--) if (c.turns[i].k === k) return c.turns[i].t; return ""; }
 
   /* ---- default panel content --------------------------------------------- */
-  function regField(f) { var RZ = (LANG() === "zh" && I18N.regime) ? I18N.regime : null; return RZ && RZ[f] != null ? RZ[f] : META.regime[f]; }
+  /* Curated regime narrative under zh. The zh regime block in markets_i18n.js is
+     hand-curated and is the ONLY lawful zh source for this card: when it is absent
+     (or a prose field is), the card says so in Chinese — it never shows the English
+     META.regime prose under data-lang="zh" and never machine-translates. Numeric stat
+     values and their ticker-style keys are data labels shared by both languages and
+     stay; every prose slot goes to the null copy. */
+  var REG_NULL_ZH = {
+    label: "中文精选叙事待更新",
+    sub: "全球股市格局的中文版尚未同步",
+    headline: "这段全球股市格局的精选叙事目前只有英文版。我们不用机器翻译代替人工编写——切换到英文可阅读原文；中文版更新后会显示在这里。",
+    tilt: "倾向与仓位提示同样待中文更新，请切换到英文阅读。",
+    asOfNote: "",
+    statNote: "中文注释待更新"
+  };
+  function zhRegime() { return LANG() === "zh" && I18N.regime ? I18N.regime : null; }
+  function regIsNullZh() { var RZ = zhRegime(); return LANG() === "zh" && !(RZ && RZ.label != null && RZ.headline != null); }
+  function regField(f) {
+    if (LANG() !== "zh") return META.regime[f];
+    var RZ = zhRegime();
+    if (RZ && RZ[f] != null) return RZ[f];
+    return REG_NULL_ZH[f] != null ? REG_NULL_ZH[f] : "";
+  }
   function buildDefaultPanel() {
     var def = document.getElementById("cyc-panel-default");
     if (!def) return;
-    var R = META.regime, RZ = (LANG() === "zh" && I18N.regime) ? I18N.regime : null;
+    var R = META.regime, RZ = zhRegime(), zh = LANG() === "zh";
     var stats = R.stats.map(function (s, i) {
       var zs = RZ && RZ.stats && RZ.stats[i] ? RZ.stats[i] : null;
-      return '<div class="rg-stat"><div class="rg-k">' + (zs ? zs.k : s.k) + '</div><div class="rg-v">' + s.v + '</div><div class="rg-n">' + (zs ? zs.note : s.note) + '</div></div>';
+      var k = zs && zs.k != null ? zs.k : s.k;
+      var note = zs && zs.note != null ? zs.note : (zh ? REG_NULL_ZH.statNote : s.note);
+      return '<div class="rg-stat"><div class="rg-k">' + k + '</div><div class="rg-v">' + s.v + '</div><div class="rg-n">' + note + '</div></div>';
     }).join("");
     var buckets = { Peak: [], Expansion: [], Downturn: [], Recovery: [], Trough: [] };
     CYCLES.forEach(function (c) { (buckets[c.now.phase] || (buckets[c.now.phase] = [])).push(c); });
@@ -763,12 +805,14 @@
       return '<div class="xc-row"><div class="xc-rh">' + title + '<span>' + note + '</span></div><div class="xc-chips">' + chips + '</div></div>';
     }
     def.innerHTML = '' +
-      '<div class="cyc-grp cyc-grp-3">' +
-        '<div class="cyc-lbl">' + t("Macro context · curated", "宏观背景 · 精选") + '</div>' +
-        (regField("asOfNote") ? '<p class="rg-context-note">' + regField("asOfNote") + '</p>' : '') +
+      '<details class="cyc-grp cyc-grp-3 rg-context">' +
+        '<summary class="cyc-lbl">' + t("Macro context · curated", "宏观背景 · 精选") + (regIsNullZh() ? '<span class="rg-null-chip">中文版待更新</span>' : '') + '</summary>' +
+        '<p class="rg-context-note">' + curatedDateLabel() + (regField("asOfNote") ? ' · ' + regField("asOfNote") : '') + '</p>' +
+        '<div class="rg-head' + (regIsNullZh() ? ' is-null' : '') + '"><div class="rg-label">' + regField("label") + '</div><div class="rg-sub">' + regField("sub") + '</div></div>' +
+        '<p class="rg-headline">' + regField("headline") + '</p>' +
         '<div class="rg-stats">' + stats + '</div>' +
         '<p class="rg-tilt">' + regField("tilt") + '</p>' +
-      '</div>' +
+      '</details>' +
       '<div class="cyc-grp cyc-grp-3">' +
         '<div class="cyc-lbl">' + t("Where the markets stand", "各市场所处位置") + '</div>' +
         '<div class="xc-map">' +
@@ -789,11 +833,28 @@
         '</ul>' +
       '</div>';
     def.querySelectorAll(".mini-chip").forEach(function (b) { b.addEventListener("click", function () { setFocus(b.getAttribute("data-id")); }); });
+    def.classList.toggle("rg-null", regIsNullZh());
     def.classList.add("show");
   }
 
-  /* ---- mobile bottom sheet ----------------------------------------------- */
-  function expandSheet(on) { var sheet = document.getElementById("cyc-detail"); if (sheet) sheet.classList.toggle("expanded", on !== false); }
+  /* ---- mobile detail reveal ---------------------------------------------
+     markets.css keeps .cyc-detail IN FLOW under the chart at ≤880px (no fixed sheet:
+     measured 2026-09-23 at 390×844 the 126px peek sat on the chip row and the expanded
+     sheet covered the whole chart). Focusing a market glides the page so the chart and
+     the card's head share the screen — nothing is covered and the reader scrolls
+     freely. Should some stylesheet ever make the detail fixed again, the legacy
+     .expanded toggle still applies, so the panel can never be stranded off-screen. */
+  function revealDetail() {
+    var sheet = document.getElementById("cyc-detail"); if (!sheet) return;
+    if (getComputedStyle(sheet).position === "fixed") { sheet.classList.add("expanded"); return; }
+    var top = sheet.getBoundingClientRect().top + (window.pageYOffset || 0) - Math.round(window.innerHeight * 0.48);
+    var reduce = false; try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+    try { window.scrollTo({ top: Math.max(0, top), behavior: reduce ? "auto" : "smooth" }); } catch (e2) { window.scrollTo(0, Math.max(0, top)); }
+  }
+  function expandSheet(on) {
+    if (on === false) { var s = document.getElementById("cyc-detail"); if (s) s.classList.remove("expanded"); return; }
+    revealDetail();
+  }
   function initSheet() {
     var sheet = document.getElementById("cyc-detail"), handle = document.getElementById("cyc-handle");
     if (!sheet || !handle) return;
@@ -804,23 +865,33 @@
     handle.addEventListener("touchend", function () { dragging = false; });
   }
 
-  /* ---- staleness banner (W0.1) -------------------------------------------
-     When more than 14 days have passed since the dataset was last curated,
-     show an amber (14–59 d) or red (≥ 60 d) banner near the page header.
-     Uses dual-span t() so no translated text appears in HTML attributes. */
+  /* Price observations use each market's own date. Re-renders share this
+     one host; a fresh market cannot erase another market's stale/unknown date. */
   function renderStalenessBanner() {
     var host = document.getElementById("mkt-stale-banner");
     if (!host) return;
-    var asOf = META.asOf || "";
-    var asOfYear = asOf ? yf(asOf) : TODAY;
-    var days = Math.round((TODAY - asOfYear) * 365.25);
-    if (days < 14) { host.innerHTML = ""; return; }
-    var cls = days >= 60 ? "stale-red" : "stale-amber";
-    // Plain-text content only — no translated text in attributes (house rule).
-    host.innerHTML = '<div class="stale-banner ' + cls + '">' +
-      t("Curated dataset as of " + asOf + " — " + days + " days old",
-        "精选数据截至 " + asOf + " — 已 " + days + " 天未更新") +
-      '</div>';
+    var dated = [], stale = [], unknown = [];
+    CYCLES.forEach(function (c) {
+      var asOf = (c.now || {}).asOf, age = ageDaysOf(asOf);
+      if (age == null) unknown.push(c);
+      else { dated.push(asOf); if (age > 5) stale.push(c); }
+    });
+    dated.sort();
+    var header = document.getElementById("cyc-asof");
+    if (header) header.textContent = dated.length
+      ? dated[0] + (dated[0] !== dated[dated.length - 1] ? " – " + dated[dated.length - 1] : "") +
+        (unknown.length ? t(" · some dates unverified", " · 部分日期待核实") : "")
+      : t("dates unverified", "日期待核实");
+    if (!stale.length && !unknown.length && CYCLES.length) { host.innerHTML = ""; return; }
+    var messages = [];
+    if (stale.length) messages.push(t(
+      stale.length + " of " + CYCLES.length + " market price observations are more than 5 days old (oldest " + dated[0] + ").",
+      CYCLES.length + " 个市场中有 " + stale.length + " 个价格观测已超过 5 天（最早 " + dated[0] + "）。"));
+    if (unknown.length || !CYCLES.length) messages.push(t(
+      "Some market price observation dates are unverified.", "部分市场价格观测日期待核实。"));
+    host.innerHTML = '<div class="stale-banner stale-amber">' + messages.join(" ") + ' ' +
+      t("These dates cover prices and distance from highs; curated returns, narrative and valuations have separate dates.",
+        "这些日期仅对应价格与距高点幅度；精选回报、叙事及估值另有日期。") + '</div>';
   }
 
   /* ---- language re-render ------------------------------------------------- */

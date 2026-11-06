@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/ontology_overlap_evidence.v1.schema.json",
+  "title": "GMI exact proposal member evidence v1",
+  "description": "Pure research-internal observed-set comparison, not mapping approval, complete coverage, security normalization or investment authority.",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema", "authority_ceiling", "proposal_id", "asof", "knowledge_cutoff", "source_node_id", "target_node_id", "proposal_status", "reported_created", "reported_evidence", "mapping_relation_state", "availability", "counts", "ratios", "shared", "source_only", "target_only", "metadata_unavailable_ids", "input_digest", "limitations"],
+  "properties": {
+    "schema": {"const": "gmi.theme_ontology_overlap_evidence/v1"},
+    "authority_ceiling": {"const": "research_internal_only"},
+    "proposal_id": {"type": "string", "pattern": "^prop:[0-9a-f]{16}$"},
+    "asof": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/date"},
+    "knowledge_cutoff": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/date"},
+    "source_node_id": {"type": ["string", "null"]},
+    "target_node_id": {"type": ["string", "null"]},
+    "proposal_status": {"enum": [null, "proposed", "ratified", "rejected"]},
+    "reported_created": {"type": ["string", "null"]},
+    "reported_evidence": {"type": ["object", "null"]},
+    "reported_count_comparison": {"type": "object", "additionalProperties": false, "required": ["state", "reason", "same_vintage_verified", "fields", "missing_fields", "invalid_fields"], "properties": {"state": {"enum": ["NOT_EVALUATED", "REPORTED_COUNTS_EQUAL", "REPORTED_COUNTS_DIFFER", "REPORTED_COUNTS_PARTIAL"]}, "reason": {"type": ["string", "null"]}, "same_vintage_verified": {"const": false}, "fields": {"type": "array", "maxItems": 3, "items": {"type": "object", "additionalProperties": false, "required": ["field", "reported", "observed", "delta"], "properties": {"field": {"enum": ["basket_size", "subtheme_size", "overlap"]}, "reported": {"type": "integer", "minimum": 0}, "observed": {"type": "integer", "minimum": 0}, "delta": {"type": "integer"}}}}, "missing_fields": {"type": "array", "uniqueItems": true, "items": {"enum": ["basket_size", "subtheme_size", "overlap"]}}, "invalid_fields": {"type": "array", "uniqueItems": true, "items": {"enum": ["basket_size", "subtheme_size", "overlap"]}}}},
+    "mapping_relation_state": {"enum": ["NOT_EVALUATED", "UNSUPPORTED_SUBJECT", "ENDPOINT_UNAVAILABLE", "RELATION_ABSENT", "RELATION_PRESENT"]},
+    "availability": {
+      "type": "object", "additionalProperties": false, "required": ["state", "reason"],
+      "properties": {
+        "state": {"enum": ["OK", "PROPOSAL_UNAVAILABLE", "UNSUPPORTED_SUBJECT", "ENDPOINT_UNAVAILABLE", "INSUFFICIENT_MEMBERSHIP_EVIDENCE"]},
+        "reason": {"type": ["string", "null"]}
+      }
+    },
+    "counts": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/counts"}]},
+    "ratios": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/ratios"}]},
+    "shared": {"type": "array", "items": {"$ref": "#/$defs/member"}},
+    "source_only": {"type": "array", "items": {"$ref": "#/$defs/member"}},
+    "target_only": {"type": "array", "items": {"$ref": "#/$defs/member"}},
+    "metadata_unavailable_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^co:"}},
+    "input_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "allOf": [{
+    "if": {"properties": {"availability": {"properties": {"state": {"const": "OK"}}}}},
+    "then": {"properties": {"counts": {"type": "object"}, "ratios": {"type": "object"}}},
+    "else": {"properties": {"ratios": {"type": "null"}}}
+  }],
+  "$defs": {
+    "counts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source", "target", "shared", "source_only", "target_only", "union"],
+      "properties": {
+        "source": {"type": "integer", "minimum": 0}, "target": {"type": "integer", "minimum": 0},
+        "shared": {"type": "integer", "minimum": 0}, "source_only": {"type": "integer", "minimum": 0},
+        "target_only": {"type": "integer", "minimum": 0}, "union": {"type": "integer", "minimum": 0}
+      }
+    },
+    "ratios": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_containment", "target_containment", "jaccard"],
+      "properties": {
+        "source_containment": {"type": "number", "minimum": 0, "maximum": 1},
+        "target_containment": {"type": "number", "minimum": 0, "maximum": 1},
+        "jaccard": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "member": {
+      "type": "object", "additionalProperties": false,
+      "required": ["node_id", "source_memberships", "target_memberships"],
+      "properties": {
+        "node_id": {"type": "string", "pattern": "^co:"},
+        "source_memberships": {"type": "array", "items": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/relation"}},
+        "target_memberships": {"type": "array", "items": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/relation"}}
+      }
+    }
+  }
+}

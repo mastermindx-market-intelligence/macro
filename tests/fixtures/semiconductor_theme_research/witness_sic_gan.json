@@ -1,0 +1,758 @@
+{
+  "ai_assumption": false,
+  "anchor_theme_id": "ai_semiconductors",
+  "bundle": {
+    "revision_tuple": [
+      [
+        "assertion",
+        "gmirca_6eeb34381150100ffe98899b7c124757"
+      ],
+      [
+        "assertion",
+        "gmirca_b235570b862ca28c6011bc616338e33d"
+      ],
+      [
+        "assertion",
+        "gmirca_c181cf623c9f79e29e78c8871c1ce6d0"
+      ],
+      [
+        "assertion",
+        "gmirca_f6a383f81ee0cf7e642c2d09a794ca74"
+      ],
+      [
+        "event",
+        "evt_0000000002_2026q1_results"
+      ],
+      [
+        "event",
+        "evt_0000000002_2026q2_results"
+      ],
+      [
+        "identity",
+        "identity-vintage-019"
+      ],
+      [
+        "identity",
+        "identity-vintage-020"
+      ],
+      [
+        "identity",
+        "identity-vintage-021"
+      ],
+      [
+        "interpretation",
+        "interp-sic-current"
+      ],
+      [
+        "packet",
+        "syn-fip-beta-2026q2"
+      ]
+    ],
+    "rights_revision": "synthetic-rights-0",
+    "assertions": [
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_f6a383f81ee0cf7e642c2d09a794ca74",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Power Semiconductor Beta",
+              "model": null,
+              "selector": "fac:beta-fab",
+              "source_label": "Beta SiC fab"
+            },
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic Power Semiconductor Beta",
+              "model": null,
+              "selector": "prd:sic-wafer",
+              "source_label": "SiC epitaxial wafer"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "quarterly sic wafer output",
+            "wafer_diameter_mm": 200
+          },
+          "relation": {
+            "dst_selector": "prd:sic-wafer",
+            "kind": "contains",
+            "src_selector": "fac:beta-fab"
+          },
+          "stage": "reported_output",
+          "stage_source_language": "the fab produced through the quarter"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "customer allocations"
+          ],
+          "establishes": [
+            "fab output at the stated level"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Beta SiC wafer line"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_wafer_per_quarter",
+          "value": 30,
+          "value_high": null
+        },
+        "predicate": "REPORTED_DEPLOYMENT",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "power electronics",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q1",
+          "region": "TW",
+          "technology_facet": "sic wafer production"
+        },
+        "source": {
+          "available_at": "2026-04-08T09:00:00Z",
+          "locator": "para-1",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-04-09T08:00:00Z",
+          "published_at": "2026-04-08",
+          "published_at_grain": "date",
+          "publisher": "Example Power Wire",
+          "retained_at": "2026-04-09T08:05:00Z",
+          "retention_ref": "retention:witness/beta-fab-output",
+          "source_uri": "https://example.invalid/witness/beta-fab-output"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Power Semiconductor Beta",
+          "source_platform_label": null,
+          "source_product_label": "Beta SiC wafer line"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_6eeb34381150100ffe98899b7c124757",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "material",
+              "manufacturer": "Synthetic Wafer Substrate Vendor Zeta",
+              "model": null,
+              "selector": "mat:zeta-substrate",
+              "source_label": "SiC conductive substrate"
+            },
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic Power Semiconductor Beta",
+              "model": null,
+              "selector": "prd:sic-wafer",
+              "source_label": "SiC epitaxial wafer"
+            }
+          ],
+          "measure_scope": null,
+          "relation": {
+            "dst_selector": "prd:sic-wafer",
+            "kind": "documented_supply",
+            "src_selector": "mat:zeta-substrate"
+          },
+          "stage": "qualified",
+          "stage_source_language": "the substrate is qualified for volume epitaxy"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "substrate shipment volumes"
+          ],
+          "establishes": [
+            "substrate qualification into the epitaxy process"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Zeta SiC substrate"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "flow",
+          "unit": null,
+          "value": null,
+          "value_high": null
+        },
+        "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "power electronics",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q1",
+          "region": "TW",
+          "technology_facet": "sic substrates"
+        },
+        "source": {
+          "available_at": "2026-03-09T09:00:00Z",
+          "locator": "para-2",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-03-10T08:00:00Z",
+          "published_at": "2026-03-09",
+          "published_at_grain": "date",
+          "publisher": "Example Materials Wire",
+          "retained_at": "2026-03-10T08:05:00Z",
+          "retention_ref": "retention:witness/zeta-substrate-qualified",
+          "source_uri": "https://example.invalid/witness/zeta-substrate-qualified"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Wafer Substrate Vendor Zeta",
+          "source_platform_label": null,
+          "source_product_label": "Zeta SiC substrate"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_c181cf623c9f79e29e78c8871c1ce6d0",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "equipment",
+              "manufacturer": "Synthetic Equipment Vendor Eta",
+              "model": null,
+              "selector": "eqp:eta-reactor",
+              "source_label": "Eta epitaxy reactor"
+            },
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic Power Semiconductor Beta",
+              "model": null,
+              "selector": "prd:sic-wafer",
+              "source_label": "SiC epitaxial wafer"
+            }
+          ],
+          "measure_scope": null,
+          "relation": {
+            "dst_selector": "prd:sic-wafer",
+            "kind": "catalog_compatible",
+            "src_selector": "eqp:eta-reactor"
+          },
+          "stage": "qualified",
+          "stage_source_language": "the reactor is catalog-compatible with the wafer process"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "equipment orders"
+          ],
+          "establishes": [
+            "equipment compatibility with the wafer process"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Eta epitaxy reactor"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "flow",
+          "unit": null,
+          "value": null,
+          "value_high": null
+        },
+        "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "power electronics",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026",
+          "region": "TW",
+          "technology_facet": "epitaxy equipment"
+        },
+        "source": {
+          "available_at": "2026-02-26T09:00:00Z",
+          "locator": "para-4",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-02-27T08:00:00Z",
+          "published_at": "2026-02-26",
+          "published_at_grain": "date",
+          "publisher": "Example Equipment Wire",
+          "retained_at": "2026-02-27T08:05:00Z",
+          "retention_ref": "retention:witness/eta-reactor-catalog",
+          "source_uri": "https://example.invalid/witness/eta-reactor-catalog"
+        },
+        "statement_mode": "CATALOG_DESCRIPTION",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Equipment Vendor Eta",
+          "source_platform_label": null,
+          "source_product_label": "Eta epitaxy reactor"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_b235570b862ca28c6011bc616338e33d",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Power Semiconductor Beta",
+              "model": null,
+              "selector": "fac:beta-fab",
+              "source_label": "Beta SiC fab"
+            }
+          ],
+          "measure_scope": {
+            "currency": "USD",
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "capital expenditure",
+            "wafer_diameter_mm": null
+          },
+          "relation": null,
+          "stage": null,
+          "stage_source_language": null
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "purchase totals across boundaries"
+          ],
+          "establishes": [
+            "the stated capital expenditure"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Beta SiC capex programme"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "USD_m",
+          "value": 90,
+          "value_high": null
+        },
+        "predicate": "REPORTED_FINANCIAL_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "power electronics",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q1",
+          "region": "TW",
+          "technology_facet": "capital expenditure"
+        },
+        "source": {
+          "available_at": "2026-04-22T09:00:00Z",
+          "locator": "table-3",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-04-23T08:00:00Z",
+          "published_at": "2026-04-22",
+          "published_at_grain": "date",
+          "publisher": "Example Power Wire",
+          "retained_at": "2026-04-23T08:05:00Z",
+          "retention_ref": "retention:witness/beta-capex",
+          "source_uri": "https://example.invalid/witness/beta-capex"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Power Semiconductor Beta",
+          "source_platform_label": null,
+          "source_product_label": "Beta SiC capex programme"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      }
+    ],
+    "identity_results": [
+      {
+        "company_node_id": "co:synth_power_beta",
+        "source_business_label": "Synthetic Power Semiconductor Beta",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-05-15T00:00:00Z"
+      },
+      {
+        "company_node_id": "co:synth_substrate_zeta",
+        "source_business_label": "Synthetic Wafer Substrate Vendor Zeta",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-01T00:00:00Z"
+      },
+      {
+        "company_node_id": "co:synth_equipment_eta",
+        "source_business_label": "Synthetic Equipment Vendor Eta",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-02T00:00:00Z"
+      }
+    ],
+    "event_workspaces": [
+      {
+        "event_id": "evt_0000000002_2026q1_results",
+        "cik": "0000000002",
+        "company_node_id": "co:synth_power_beta",
+        "fiscal_period": {
+          "year": 2026,
+          "quarter": 1
+        },
+        "guidance": [
+          {
+            "schema": "guidance_item.v1",
+            "metric": "revenue_usd_bn",
+            "low": 4.0,
+            "high": 4.6,
+            "unit": "USD_bn",
+            "horizon": "2026Q2",
+            "status": "introduced",
+            "basis": "reported_gaap",
+            "currency": "USD",
+            "perimeter": "as_reported",
+            "definition": "revenue_net_of_returns",
+            "source_span": {
+              "synthetic": true,
+              "document_id": "syn-q1-release",
+              "locator": "paragraph 3"
+            }
+          }
+        ],
+        "reported": [],
+        "lifecycle": {
+          "source_available_at": "2026-04-20T12:00:00Z",
+          "observed_at": "2026-04-20T12:00:00Z",
+          "recorded_at": "2026-04-20T12:00:00Z"
+        }
+      },
+      {
+        "event_id": "evt_0000000002_2026q2_results",
+        "cik": "0000000002",
+        "company_node_id": "co:synth_power_beta",
+        "fiscal_period": {
+          "year": 2026,
+          "quarter": 2
+        },
+        "guidance": [
+          {
+            "schema": "guidance_item.v1",
+            "metric": "revenue_usd_bn",
+            "low": 5.0,
+            "high": 5.6,
+            "unit": "USD_bn",
+            "horizon": "2026Q3",
+            "status": "introduced",
+            "basis": "reported_gaap",
+            "currency": "USD",
+            "perimeter": "as_reported",
+            "definition": "revenue_net_of_returns",
+            "source_span": {
+              "synthetic": true,
+              "document_id": "syn-q2-release",
+              "locator": "paragraph 5"
+            }
+          }
+        ],
+        "reported": [
+          {
+            "metric": "revenue_usd_bn",
+            "value": 4.8,
+            "unit": "USD_bn",
+            "fiscal_period": "2026Q2",
+            "basis": "reported_gaap",
+            "currency": "USD",
+            "perimeter": "as_reported",
+            "definition": "revenue_net_of_returns",
+            "source_span": {
+              "synthetic": true,
+              "document_id": "syn-q2-release",
+              "locator": "table 1 row 2"
+            }
+          }
+        ],
+        "lifecycle": {
+          "source_available_at": "2026-07-20T12:00:00Z",
+          "observed_at": "2026-07-20T12:00:00Z",
+          "recorded_at": "2026-07-20T12:00:00Z"
+        }
+      }
+    ],
+    "financial_packets": [
+      {
+        "schema": "financial_intelligence_packet.v1",
+        "entity": {
+          "cik": "0000000002"
+        },
+        "derivations": {
+          "prior_midpoint": {
+            "value": 4.3,
+            "receipt": {
+              "store": "synthetic-derivations",
+              "method": "owner_midpoint_receipt"
+            },
+            "inputs": [
+              "evt_0000000002_2026q1_results"
+            ],
+            "owner": "financial-owner"
+          }
+        },
+        "status": "ready",
+        "recorded_at": "2026-07-21T00:00:00Z"
+      }
+    ],
+    "interpretation_blocks": [
+      {
+        "interpretation_id": "interp-sic-current",
+        "mechanism": "wafer output rose while the substrate stayed qualified and the reactor remained compatible",
+        "offset": "a substrate requalification would interrupt epitaxy",
+        "missing_measurement": "monthly substrate shipment volumes",
+        "falsifier": "wafer output falls while the substrate stays qualified",
+        "input_revisions": [
+          "gmirca_f6a383f81ee0cf7e642c2d09a794ca74",
+          "gmirca_6eeb34381150100ffe98899b7c124757"
+        ],
+        "freshness": "current",
+        "reviewed_at": "2026-07-25T00:00:00Z"
+      }
+    ],
+    "native_refs": [
+      {
+        "owner_store": "synthetic-native-store",
+        "native_identity": {
+          "cik": "0000000002"
+        },
+        "reference_id": "syn-native-beta-1"
+      }
+    ],
+    "omissions": []
+  },
+  "case_key": "witness_sic_gan",
+  "comparability": {
+    "actual_vs_new_outlook": "different_period_not_comparable",
+    "prior_vs_actual": "same_period_same_basis"
+  },
+  "expected_regression": "Same positive sequence without AI-only assumptions",
+  "issuer": {
+    "cik": null,
+    "company_node_id": null,
+    "identity_note": "real issuer identity is resolved only through the Data OS/Earnings owners at admission (T05); fixtures never carry real company identities",
+    "synthetic_label": "Synthetic Power Semiconductor Beta"
+  },
+  "management_roles": [
+    "prior_outlook",
+    "actual",
+    "new_outlook"
+  ],
+  "management_sequence": {
+    "actual": {
+      "basis": "reported_gaap",
+      "fiscal_period": "2026Q2",
+      "metric": "revenue_usd_bn",
+      "stated_in": "2026Q2 results release",
+      "statement_mode": "REPORTED_FACT",
+      "value": 4.8
+    },
+    "new_outlook": {
+      "basis": "reported_gaap",
+      "fiscal_period": "2026Q3",
+      "high": 5.6,
+      "low": 5.0,
+      "metric": "revenue_usd_bn",
+      "stated_in": "2026Q2 results release",
+      "statement_mode": "FORWARD_TARGET"
+    },
+    "prior_outlook": {
+      "basis": "reported_gaap",
+      "fiscal_period": "2026Q2",
+      "high": 4.6,
+      "low": 4.0,
+      "metric": "revenue_usd_bn",
+      "stated_in": "2026Q1 results release",
+      "statement_mode": "FORWARD_TARGET"
+    }
+  },
+  "optional_external_consensus": "unavailable",
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "expected_generation": null,
+    "limit": 50,
+    "offset": 0,
+    "recorded_cutoff": null,
+    "slice_key": "sic_gan_specialty",
+    "source_cutoff": null,
+    "time_mode": "latest",
+    "view": "economics"
+  },
+  "required_company_link": true,
+  "slice_key": "sic_gan_specialty",
+  "source_roles": [
+    {
+      "relation_kind": "contains",
+      "role": "manufacturing",
+      "stage": "reported_output",
+      "synthetic_label": "Synthetic Power Semiconductor Beta"
+    },
+    {
+      "relation_kind": "documented_supply",
+      "role": "material",
+      "stage": "qualified",
+      "synthetic_label": "Synthetic Wafer Substrate Vendor Zeta"
+    },
+    {
+      "relation_kind": "catalog_compatible",
+      "role": "equipment",
+      "stage": "qualified",
+      "synthetic_label": "Synthetic Equipment Vendor Eta"
+    }
+  ],
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T01",
+    "T05",
+    "T08",
+    "T11"
+  ],
+  "witness": "W-B"
+}

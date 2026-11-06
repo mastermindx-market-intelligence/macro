@@ -1,0 +1,20 @@
+←
+Overview
+RISK RADAR / EVIDENCE
+Pullback probability
+Chance of a SPY pullback of at least 5% over the next 5, 10 or 21 trading days. This does not estimate the depth of a future drop.
+Next 5 trading days
+5%
+Typical 4%
+Limited history · 66 observations
+Next 10 trading days
+12%
+Typical 9%
+Limited history · 90 observations
+Next 21 trading days
+22%
+Typical 18%
+Limited history · 66 observations
+How to compare
+
+The bars share a 0–100% scale. Typical is the historical baseline for that same horizon. Observations can overlap; a displayed rate is not a guarantee.

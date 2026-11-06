@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-25T21:30:50Z",
+ "accession": "0001628280-26-011709",
+ "cik": "0000717423",
+ "doc_byte_length": 4704356,
+ "doc_sha256": "68919b820a9786e5d6fdaa76b2aeadaf7588d8bfc9840a12d7e1fb3ef5af0b0f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mur-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3246040,
+  "byte_start": 3244127,
+  "normalized": "ExxonMobil Corporation12 %20 %27",
+  "normalized_sha256": "c3e14cfb9e1f3b05d2c0c993f577058739b5dfabecae84771546299291b97c66",
+  "raw": "ExxonMobil Corporation</span></td><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Avenir Next LT Pro',sans-serif;font-size:10pt;font-weight:700;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-495\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1708\">12</ix:nonFraction></span><span style=\"color:#000000;font-family:'Avenir Next LT Pro',sans-serif;font-size:10pt;font-weight:400;line-height:100%\">&#160;</span></td><td style=\"background-color:#ffffff;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Avenir Next LT Pro',sans-serif;font-size:10pt;font-weight:700;line-height:100%\">%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Avenir Next LT Pro',sans-serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-496\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1709\">20</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Avenir Next LT Pro',sans-serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Avenir Next LT Pro',sans-serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-497\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1710\">27",
+  "raw_sha256": "030cc84db9359ef463236cde4e8853a7784fd5969671f5118d7e14f437b52bf3"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/717423/000162828026011709/mur-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 253474,
+   "byte_start": 252812,
+   "context_ref": "c-497",
+   "raw": "<xbrli:context id=\"c-497\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000717423</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mur:ExxonMobileMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "e2e77a11bc45d566ae98c2d0bde2c1bf476a43735733c7d394376fbcd46d7efd"
+  }
+ ]
+}

@@ -1,0 +1,132 @@
+{
+  "schema": "eval_os.source_evidence_manifest.v1",
+  "records": [
+    {
+      "original": "retrieval.json",
+      "stored": "retrieval.json",
+      "original_sha256": "2458a8c2ce78112b86d44a39ac1407513c4a19aab74df76086d2f18fadf9f0bf",
+      "stored_sha256": "2458a8c2ce78112b86d44a39ac1407513c4a19aab74df76086d2f18fadf9f0bf",
+      "original_bytes": 1430
+    },
+    {
+      "original": "source-0.html",
+      "stored": "source-0.html.gz",
+      "original_sha256": "c452fa230f7f9fab71a8646813ab2c9b7bbac0de9b49906de7290ce5c5fc8ba6",
+      "stored_sha256": "7df0bb2ccefcd6f7ca31d1d6317e37eaba938fb83e529b55c2a92bd4567c8e81",
+      "original_bytes": 82833
+    },
+    {
+      "original": "source-1.html",
+      "stored": "source-1.html.gz",
+      "original_sha256": "fc712f62b425182bd674a9bac02241c599a8039c412bfe7943b740e915a40a0b",
+      "stored_sha256": "a86edfab010f1f4328f16cafb1d89678719961bd43a8b3a993634d99bdcfce69",
+      "original_bytes": 80419
+    },
+    {
+      "original": "source-2.pdf",
+      "stored": "source-2.pdf.gz",
+      "original_sha256": "fe6646ecc5c520330abf695c0011b6cf10d3e9c7502e48c4accb6d2b3e6a6a3e",
+      "stored_sha256": "1892fb651da41d7df6e0c1161e28b590b959ea7c5811276736794be5a8b69055",
+      "original_bytes": 134792
+    },
+    {
+      "original": "registration-red.log",
+      "stored": "registration-red.log.gz",
+      "original_sha256": "84aae3ace8d050a55f1b1185c08f4d355d11e09d5f196aaac8fc34894b3ab56c",
+      "stored_sha256": "a8d708b73fff9ca9d1a25ad49b5e949f6ba94efa9daabcaf6e836afa2dc2a466",
+      "original_bytes": 12307
+    },
+    {
+      "original": "green.log",
+      "stored": "green.log.gz",
+      "original_sha256": "686db50d7f5d42f576e33b51e51f74576e3eed80cfdcfada0fb15cf8bbda9150",
+      "stored_sha256": "bffe9ca389b16f242143ec0560f2f87111f743358320dead44590acada34b646",
+      "original_bytes": 180
+    },
+    {
+      "original": "green.xml",
+      "stored": "green.xml",
+      "original_sha256": "03ba56f7357f0ee15baf5f1c77e8cbe5db7d477287ce975ece53409c6cc7730c",
+      "stored_sha256": "03ba56f7357f0ee15baf5f1c77e8cbe5db7d477287ce975ece53409c6cc7730c",
+      "original_bytes": 16605
+    },
+    {
+      "original": "final-green.log",
+      "stored": "final-green.log.gz",
+      "original_sha256": "bd503c904838afe9c6e82a120930bf5699bf6d2205dfec44f1d9f310671ee15b",
+      "stored_sha256": "50223e79b4e4b95d0c4390663bd9f7ec5c1535ca7a9e598248fd76d8249c5ea2",
+      "original_bytes": 181
+    },
+    {
+      "original": "final-green.xml",
+      "stored": "final-green.xml",
+      "original_sha256": "3a40e3d7f956eacd88165c133b8c37ad6cb376cd84f3882c7ae7be856203fd4a",
+      "stored_sha256": "3a40e3d7f956eacd88165c133b8c37ad6cb376cd84f3882c7ae7be856203fd4a",
+      "original_bytes": 16606
+    },
+    {
+      "original": "ci-source-delta.json",
+      "stored": "ci-source-delta.json",
+      "original_sha256": "79186e962a6f88b401648656357deb52c12e098ccbfecebff24bb2d557ea8198",
+      "stored_sha256": "79186e962a6f88b401648656357deb52c12e098ccbfecebff24bb2d557ea8198",
+      "original_bytes": 1183
+    },
+    {
+      "original": "source-adjudication.json",
+      "stored": "source-adjudication.json",
+      "original_sha256": "dd1183811c49172be0dc9a9b7962a32bc5193125feb2a448bd2dc948a075d508",
+      "stored_sha256": "dd1183811c49172be0dc9a9b7962a32bc5193125feb2a448bd2dc948a075d508",
+      "original_bytes": 1684
+    },
+    {
+      "original": "oracle-isolation-correction.json",
+      "stored": "oracle-isolation-correction.json",
+      "original_sha256": "6f9f1a9c2295591dd5b3267a73ee4bfe3da782c890d16896a8b9ca05f4370ddc",
+      "stored_sha256": "6f9f1a9c2295591dd5b3267a73ee4bfe3da782c890d16896a8b9ca05f4370ddc",
+      "original_bytes": 449
+    },
+    {
+      "original": "scope.log",
+      "stored": "scope.log.gz",
+      "original_sha256": "8bf0cb6b776cd44eb9462f512bdfb72cb39500e60633e8a6372aad92e22107d3",
+      "stored_sha256": "7801bdf091946b4f045825da944017b85d0919910d918cbddec60769ca091b15",
+      "original_bytes": 935
+    },
+    {
+      "original": "scope-tests.xml",
+      "stored": "scope-tests.xml",
+      "original_sha256": "5e1ccc9666550bc3d8949ffb58f71a9fb1e4658a4351512fbb68d9c96fffdf94",
+      "stored_sha256": "5e1ccc9666550bc3d8949ffb58f71a9fb1e4658a4351512fbb68d9c96fffdf94",
+      "original_bytes": 607
+    },
+    {
+      "original": "scope-validation.json",
+      "stored": "scope-validation.json",
+      "original_sha256": "81dd41ba27fbbe2326952884d4561135a5af3a5847cbdcb8090b3d4519ac80da",
+      "stored_sha256": "81dd41ba27fbbe2326952884d4561135a5af3a5847cbdcb8090b3d4519ac80da",
+      "original_bytes": 14073
+    },
+    {
+      "original": "oracle-isolation-green.log",
+      "stored": "oracle-isolation-green.log.gz",
+      "original_sha256": "962a258316ef2c5fff61fe286918451038df7183bab21231818df7dde3d7a7dc",
+      "stored_sha256": "c2168138bd8282c0bf5a01b8fa369727fb5d10eb611103b082a2b1ee846e7c0a",
+      "original_bytes": 180
+    },
+    {
+      "original": "oracle-isolation-green.xml",
+      "stored": "oracle-isolation-green.xml",
+      "original_sha256": "a066619956f09f19779240aa8208cc2e45a4b141ed016c9496af689aef53e99a",
+      "stored_sha256": "a066619956f09f19779240aa8208cc2e45a4b141ed016c9496af689aef53e99a",
+      "original_bytes": 16605
+    },
+    {
+      "original": "final-qualification.json",
+      "stored": "final-qualification.json",
+      "original_sha256": "07930a67b5719ceb8c3f73fbfbc1f0f570cc2eb288bdf5c95a7cdaf7d603e8a4",
+      "stored_sha256": "07930a67b5719ceb8c3f73fbfbc1f0f570cc2eb288bdf5c95a7cdaf7d603e8a4",
+      "original_bytes": 1742
+    }
+  ],
+  "qualification": "Final local source qualification in final-qualification.json; intermediate RED/repair records retained. Not hosted CI, model or production proof."
+}

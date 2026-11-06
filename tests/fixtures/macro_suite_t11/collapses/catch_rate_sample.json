@@ -1,0 +1,17 @@
+{
+  "why": "The catch-rate card now states its small sample, which the golden page does not.",
+  "pairs": [
+    [
+      "<p class=\"mq-metric-direction mq-metric-sample\">",
+      ""
+    ],
+    [
+      "<span class=\"l-en\">About 3 modern recessions, leave-one-out. The sample is small.</span>",
+      ""
+    ],
+    [
+      "<span class=\"l-zh\">约 3 次现代衰退，留一法。样本很小。</span></p>",
+      ""
+    ]
+  ]
+}

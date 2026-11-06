@@ -1,0 +1,200 @@
+{
+  "acceptance": {
+    "book_policy_prompt_parity": "NOT_TESTED",
+    "exact_selected_function_bodies": "EXECUTED_IN_ISOLATION",
+    "full_module_or_runtime": "NOT_EXECUTED",
+    "independent_code_review": "NOT_ESTABLISHED; conceptual qualifications accepted, parent code/readback review performed",
+    "production_or_cutover": false
+  },
+  "functions": {
+    "brain__market_view.py": [
+      {
+        "end_line": 178,
+        "line": 171,
+        "name": "_stale_after_td",
+        "source_segment_sha256": "9a02db14f43a5cdc95e230868f81e508949cb4266ca3fe1df6756daec4403e61"
+      },
+      {
+        "end_line": 211,
+        "line": 195,
+        "name": "_freshness",
+        "source_segment_sha256": "87e6b48ad3b7563c6233af7fdeacb94bd3b967b7f96b7be77d08b1b48db60683"
+      },
+      {
+        "end_line": 253,
+        "line": 214,
+        "name": "_plane_record",
+        "source_segment_sha256": "7ab710afd0bb7dbd5709e9baaad74beeeec7343faa840326fb079d020c52ce70"
+      },
+      {
+        "end_line": 279,
+        "line": 256,
+        "name": "_absent_record",
+        "source_segment_sha256": "e343899d86012eb44934bcd78be5f5efaa635b4d07ff0534639f0ca24f65b326"
+      },
+      {
+        "end_line": 290,
+        "line": 288,
+        "name": "_block",
+        "source_segment_sha256": "d11a814d6d9eafc7d6e637c25541a98006b4394aeeb80932f1a10fa2668077dd"
+      },
+      {
+        "end_line": 326,
+        "line": 293,
+        "name": "_adapt_risk_radar",
+        "source_segment_sha256": "b93cff70a4bd030e2b04b67e59c655cdbb1663d49afa6224cbe19c1a3764addb"
+      },
+      {
+        "end_line": 1070,
+        "line": 1009,
+        "name": "_adapt_neural_web",
+        "source_segment_sha256": "893691193be530738d740b9e3cfe60f374732d1b474c1f88acf5ae25d6c96da4"
+      },
+      {
+        "end_line": 1224,
+        "line": 1218,
+        "name": "_tilt_score",
+        "source_segment_sha256": "cf5ff765d22618364cc2dc5aa23522fda8605717b2ab3387d4f0cb7c63b7007c"
+      },
+      {
+        "end_line": 1264,
+        "line": 1227,
+        "name": "_net_posture_tilt",
+        "source_segment_sha256": "baf8e6a673903db8cf8fbba7b22bbba454b9c5c7df0f5b873ef12cf7e58be52c"
+      }
+    ],
+    "brain__neural_web_context.py": [
+      {
+        "end_line": 358,
+        "line": 353,
+        "name": "_risk_date",
+        "source_segment_sha256": "d4ff3320fb26bb5e6313961117b9cbd1977f7f26e3d6b2a5e523f7667d6192ad"
+      },
+      {
+        "end_line": 366,
+        "line": 361,
+        "name": "_risk_timestamp",
+        "source_segment_sha256": "e7826eebf8ab35e694d43ab3ad4bb214c4c3b1c4bfdbd456bc6c05a26ce64b50"
+      },
+      {
+        "end_line": 539,
+        "line": 381,
+        "name": "_qualify_risk_envelope_context",
+        "source_segment_sha256": "827b5c88803dd12d71cf869475dc0111adf72eccedcad49acd3646fac52767b7"
+      }
+    ],
+    "brain__regime_frame.py": [
+      {
+        "end_line": 194,
+        "line": 162,
+        "name": "_trading_days_since",
+        "source_segment_sha256": "b25ede6cd8d36ffdadd11120086a00306511f57d940fd979d40bcbb398525415"
+      },
+      {
+        "end_line": 446,
+        "line": 439,
+        "name": "_as_float",
+        "source_segment_sha256": "2a0f029cd7759377724055f9c93eb48735d1c551853d826273b510c377a8c89d"
+      },
+      {
+        "end_line": 618,
+        "line": 603,
+        "name": "_read_radar_forward_log_state",
+        "source_segment_sha256": "9a0bc7b29b1d1d761f88c0a78f140c79d5933db38e362d4b6226c76faac47b6f"
+      }
+    ],
+    "portfolio__context_gate.py": [
+      {
+        "end_line": 126,
+        "line": 107,
+        "name": "_default_risk",
+        "source_segment_sha256": "0ffa313b83447747e9119fa3eb3a827a8c68d276e9069c984c474abbe659e5e1"
+      }
+    ],
+    "portfolio__held_risk.py": [
+      {
+        "end_line": 164,
+        "line": 153,
+        "name": "_lane",
+        "source_segment_sha256": "58bd159260153b41eb81bddda0a881c0ed159e420db06c96baf58b4522231387"
+      },
+      {
+        "end_line": 1379,
+        "line": 1337,
+        "name": "_lane_market_regime",
+        "source_segment_sha256": "79df4316e5417a1790cbbd772f184b87d12e28b746a8019887d0cf92f3eb273f"
+      }
+    ]
+  },
+  "future_consumed_field": {
+    "fixture": "2099-01-01",
+    "interpretation": "Exact helper clamps same-day and future dates to zero; caller tests for a negative age that this helper does not return. This is a source guard defect under the fixture, not a claim of observed production harm.",
+    "native_call_path": [
+      "_adapt_risk_radar",
+      "_plane_record",
+      "_freshness",
+      "regime_frame._trading_days_since"
+    ],
+    "path": "risk_radar.asof",
+    "returned_freshness_asof": "2099-01-01"
+  },
+  "native_us_vocabulary_source": {
+    "alert_from": "elevated",
+    "lines": "224-226,950-957",
+    "macro_pin": "3ab3382af89242c7b7fe8c65360bd883a7dd3504",
+    "path": "engine/risk_radar.py",
+    "states": [
+      "calm",
+      "watch",
+      "caution",
+      "elevated",
+      "risk-off"
+    ]
+  },
+  "original_receipt_sha256": "b97f8950faaed8b7772b5228ea6defe4a9bb62b327f756ef60928284079e718e",
+  "original_runner_sha256": "c18ff6b7b5807f3b4c32b35474d1e52c377ecbc794fe8ceced0932935181d9b2",
+  "paired_elevated_alert": {
+    "false": {
+      "alert": false,
+      "held_lane": {
+        "asof": "2026-10-16",
+        "flags": [],
+        "reasons": [],
+        "state": "ok"
+      },
+      "market_view_direction": "neutral",
+      "market_view_status": "validated",
+      "state": "elevated",
+      "tilt": {
+        "contributors": [
+          "risk_radar"
+        ],
+        "direction": "neutral",
+        "n_validated": 1,
+        "tilt": 0.0
+      }
+    },
+    "true": {
+      "alert": true,
+      "held_lane": {
+        "asof": "2026-10-16",
+        "flags": [],
+        "reasons": [],
+        "state": "ok"
+      },
+      "market_view_direction": "risk_off",
+      "market_view_status": "validated",
+      "state": "elevated",
+      "tilt": {
+        "contributors": [
+          "risk_radar"
+        ],
+        "direction": "risk_off",
+        "n_validated": 1,
+        "tilt": -1.0
+      }
+    }
+  },
+  "recorded_at": "2026-10-17T07:43:51.463374+00:00",
+  "schema": "risk-radar-consumer-method-addendum/v1"
+}

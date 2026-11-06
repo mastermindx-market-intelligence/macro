@@ -5,8 +5,11 @@
    (workflow market-cycles-REAL), as of ~2026-06-25. */
 (function(){
   "use strict";
+  // The old global date was advanced by price-only refreshes. The original
+  // research is approximate, so its exact curation date is unverified.
+  // now.asOf dates prices only; valuation.asOf must date valuations themselves.
   window.MARKET_META = {
-  "asOf": "2026-09-18",
+  "asOf": null,
   "today": 2026.48,
   "xDomain": [
     2000,
@@ -209,11 +212,11 @@
       }
     ],
     "now": {
-      "level": 7637.76,
-      "asOf": "2026-09-17",
-      "ath": 7798.99,
-      "athDate": "2026-08",
-      "pctFromATH": -2.1,
+      "level": 7568.92,
+      "asOf": "2026-11-03",
+      "ath": 7818.93,
+      "athDate": "2026-10",
+      "pctFromATH": -3.2,
       "ytd": 10.9,
       "ret1y": 25,
       "pos": 82,
@@ -388,11 +391,11 @@
       }
     ],
     "now": {
-      "level": 60.41,
-      "asOf": "2026-09-17",
+      "level": 60.21,
+      "asOf": "2026-11-03",
       "ath": 62.64,
       "athDate": "2026-08",
-      "pctFromATH": -3.6,
+      "pctFromATH": -3.9,
       "ytd": 9.9,
       "ret1y": 22.5,
       "pos": 82,
@@ -541,11 +544,11 @@
       }
     ],
     "now": {
-      "level": 10685.73,
-      "asOf": "2026-09-18",
+      "level": 10638.4,
+      "asOf": "2026-11-03",
       "ath": 10910.6,
       "athDate": "2026-02",
-      "pctFromATH": -2.1,
+      "pctFromATH": -2.5,
       "ytd": 6,
       "ret1y": 20.5,
       "pos": 68,
@@ -736,11 +739,11 @@
       }
     ],
     "now": {
-      "level": 636.04,
-      "asOf": "2026-09-18",
+      "level": 645.66,
+      "asOf": "2026-11-03",
       "ath": 660.51,
       "athDate": "2026-08",
-      "pctFromATH": -3.7,
+      "pctFromATH": -2.2,
       "ytd": 7.4,
       "ret1y": 13,
       "pos": 78,
@@ -891,11 +894,11 @@
       }
     ],
     "now": {
-      "level": 65018.95,
-      "asOf": "2026-09-18",
+      "level": 60409.69,
+      "asOf": "2026-11-04",
       "ath": 72366.34,
       "athDate": "2026-06",
-      "pctFromATH": -10.2,
+      "pctFromATH": -16.5,
       "ytd": 43.8,
       "ret1y": 85,
       "pos": 93,
@@ -1075,11 +1078,11 @@
       }
     ],
     "now": {
-      "level": 8731.2,
-      "asOf": "2026-09-18",
+      "level": 8817.9,
+      "asOf": "2026-11-04",
       "ath": 9271.6,
       "athDate": "2026-08",
-      "pctFromATH": -5.8,
+      "pctFromATH": -4.9,
       "ytd": 1.3,
       "ret1y": 3.1,
       "pos": 80,
@@ -1220,11 +1223,11 @@
       }
     ],
     "now": {
-      "level": 47180.75,
-      "asOf": "2026-09-18",
-      "ath": 47741.51,
-      "athDate": "2026-06",
-      "pctFromATH": -1.2,
+      "level": 41932.2,
+      "asOf": "2026-11-04",
+      "ath": 49822.55,
+      "athDate": "2026-10",
+      "pctFromATH": -15.8,
       "ytd": 54.8,
       "ret1y": 98.5,
       "pos": 88,
@@ -1397,11 +1400,11 @@
       }
     ],
     "now": {
-      "level": 6894.23,
-      "asOf": "2026-09-18",
+      "level": 5426.71,
+      "asOf": "2026-11-04",
       "ath": 9114.55,
       "athDate": "2026-06",
-      "pctFromATH": -24.4,
+      "pctFromATH": -40.5,
       "ytd": 62.5,
       "ret1y": 124.2,
       "pos": 97,
@@ -1590,11 +1593,11 @@
       }
     ],
     "now": {
-      "level": 23346.4,
-      "asOf": "2026-09-18",
+      "level": 23910.95,
+      "asOf": "2026-11-04",
       "ath": 26328.55,
       "athDate": "2026-01",
-      "pctFromATH": -11.3,
+      "pctFromATH": -9.2,
       "ytd": -7.9,
       "ret1y": -4.4,
       "pos": 48,
@@ -1754,11 +1757,11 @@
       }
     ],
     "now": {
-      "level": 22.52,
-      "asOf": "2026-09-17",
+      "level": 22.44,
+      "asOf": "2026-11-03",
       "ath": 24.16,
       "athDate": "2026-05",
-      "pctFromATH": -6.8,
+      "pctFromATH": -7.1,
       "ytd": -6.9,
       "ret1y": 4,
       "pos": 44,

@@ -1,0 +1,24 @@
+8339adc5846d5e81dac67533ac4828e226f87e3a
+100644 b8d1809081df4e7006760544e77f96ceccb1bff4 1	site/etfs.html
+100644 ed26ef5dac1e269dc8bb60fd12763a798990ff08 2	site/etfs.html
+100644 8dcc165e4f4e25f6ec83ff36f4a6501703f79c46 3	site/etfs.html
+100644 2a7633efd420607c9db2f8f263f2f9257ac08847 1	site/us_stocks.html
+100644 dde7d648a1f66cec7d85ee161c5f1935f578b2d9 2	site/us_stocks.html
+100644 cd0a6595626e3045a7bd7433fcf2c299cc0d6a47 3	site/us_stocks.html
+
+Auto-merging .github/ci/legacy-jobs.yml
+Auto-merging site/canada.html
+Auto-merging site/canada_stock.html
+warning: Cannot merge binary files: site/etfs.html (b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0 vs. d52827f26b062f67d594350a65becf406710d4d1)
+Auto-merging site/etfs.html
+CONFLICT (content): Merge conflict in site/etfs.html
+Auto-merging site/factors.html
+Auto-merging site/intl_stock.html
+Auto-merging site/macro.html
+Auto-merging site/news.html
+Auto-merging site/reference.html
+Auto-merging site/signal_lab.html
+Auto-merging site/stock.html
+warning: Cannot merge binary files: site/us_stocks.html (b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0 vs. d52827f26b062f67d594350a65becf406710d4d1)
+Auto-merging site/us_stocks.html
+CONFLICT (content): Merge conflict in site/us_stocks.html

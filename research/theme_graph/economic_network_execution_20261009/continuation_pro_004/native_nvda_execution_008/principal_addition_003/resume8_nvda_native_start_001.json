@@ -1,0 +1,13 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Process started with PID 28236 (shell: /bin/zsh)\nInitial output:\n{\"stage\": \"EXECUTING_REVIEWED_OWNER_BOOTSTRAP\", \"script_path\": \"/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-owner-bootstrap-runner-001.py\", \"script_bytes\": 29119, \"script_sha256\": \"92298f53a839bea81b16556ff71277f461d44f732df88a044a990785c620f0a3\", \"bytecode_disabled\": true}\n\n⏳ Process is running. Use read_process_output to get more output."
+    },
+    {
+      "type": "text",
+      "text": "\n[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]"
+    }
+  ],
+  "isError": false
+}

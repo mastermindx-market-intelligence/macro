@@ -57,6 +57,7 @@ file, reads an env var, touches the network, or holds a cache.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
@@ -165,6 +166,178 @@ def atr14_prior_confirmed(high: Any, low: Any, close: Any) -> pd.Series:
     session D while it is still open cannot normalise by today's eventual range.
     """
     return atr14(high, low, close).shift(ATR_PIT_SHIFT)
+
+
+_MIN_STOCH_RSI_APPEND_BARS = (
+    canon.RSI_LEN + canon.STOCH_LEN + canon.SMOOTH_K + canon.SMOOTH_D
+)
+
+
+@dataclass(frozen=True, slots=True)
+class StochRsiAppendState:
+    """O(1) append-one-bar state for canonical StochRSI — tails are oldest-first."""
+
+    last_close: float
+    up_prev: float
+    dn_prev: float
+    rsi_tail: tuple[float, ...]
+    rawk_tail: tuple[float, ...]
+    k_tail: tuple[float, ...]
+
+
+def _stoch_rawk_series(rsi_series: pd.Series) -> pd.Series:
+    lo = rsi_series.rolling(canon.STOCH_LEN).min()
+    hi = rsi_series.rolling(canon.STOCH_LEN).max()
+    return (rsi_series - lo) / (hi - lo).replace(0, np.nan) * 100
+
+
+def stoch_rsi_append_state(close: Any) -> StochRsiAppendState | None:
+    """Build append state from confirmed closes, or None if the slow path is required."""
+    s = _series(close)
+    if len(s) < _MIN_STOCH_RSI_APPEND_BARS:
+        return None
+    last_close = float(s.iloc[-1])
+    if not np.isfinite(last_close):
+        return None
+
+    d = s.diff()
+    up = canon.rma(d.clip(lower=0), canon.RSI_LEN)
+    dn = canon.rma((-d).clip(lower=0), canon.RSI_LEN)
+    up_prev = float(up.iloc[-1])
+    dn_prev = float(dn.iloc[-1])
+    if not (np.isfinite(up_prev) and np.isfinite(dn_prev)):
+        return None
+
+    r = canon.rsi(s, canon.RSI_LEN)
+    rawk = _stoch_rawk_series(r)
+    k_series = rawk.rolling(canon.SMOOTH_K).mean()
+
+    rsi_tail = tuple(float(v) for v in r.iloc[-(canon.STOCH_LEN - 1) :].to_numpy())
+    rawk_tail = tuple(float(v) for v in rawk.iloc[-(canon.SMOOTH_K - 1) :].to_numpy())
+    k_tail = tuple(float(v) for v in k_series.iloc[-(canon.SMOOTH_D - 1) :].to_numpy())
+
+    return StochRsiAppendState(
+        last_close=last_close,
+        up_prev=up_prev,
+        dn_prev=dn_prev,
+        rsi_tail=rsi_tail,
+        rawk_tail=rawk_tail,
+        k_tail=k_tail,
+    )
+
+
+def stoch_rsi_kd_appended(
+    state: StochRsiAppendState, price: float
+) -> tuple[float | None, float | None]:
+    """StochRSI (%K, %D) after appending one bar at ``price`` without rescanning history.
+
+    For a finite ``price``, matches :func:`stoch_rsi_kd` on ``closes + [price]`` to about
+    ``1e-12``, not bit-for-bit (pandas ``rolling().mean()`` uses a running sum).
+    A non-finite ``price`` returns ``(None, None)``; the canonical series carries the last
+    finite value forward — callers must not pass a non-finite price.
+    A caller that makes a strict comparison on K or D must re-answer from the canonical
+    calculator near the decision boundary (see ``live_pack.ORACLE_TIE_BAND``).
+    """
+    alpha = 1.0 / canon.RSI_LEN
+    d = price - state.last_close
+    up_new = alpha * max(d, 0.0) + (1.0 - alpha) * state.up_prev
+    dn_new = alpha * max(-d, 0.0) + (1.0 - alpha) * state.dn_prev
+    if not np.isfinite(price):
+        return (None, None)
+
+    rsi_new = float("nan") if dn_new == 0.0 else 100.0 - 100.0 / (1.0 + up_new / dn_new)
+    rsi_window = state.rsi_tail + (rsi_new,)
+    if any(not np.isfinite(v) for v in rsi_window):
+        rawk_new = float("nan")
+    else:
+        lo = min(rsi_window)
+        hi = max(rsi_window)
+        rawk_new = float("nan") if hi == lo else (rsi_new - lo) / (hi - lo) * 100.0
+
+    rawk_window = state.rawk_tail + (rawk_new,)
+    if all(np.isfinite(v) for v in rawk_window):
+        k_new: float | None = sum(rawk_window) / len(rawk_window)
+    else:
+        k_new = None
+
+    if k_new is not None:
+        k_window = state.k_tail + (k_new,)
+        if all(np.isfinite(v) for v in k_window):
+            d_new: float | None = sum(k_window) / len(k_window)
+        else:
+            d_new = None
+    else:
+        d_new = None
+
+    return (k_new, d_new)
+
+
+@dataclass(frozen=True, slots=True)
+class RsiMacdHistAppendState:
+    """O(1) append-one-bar state for the canonical RSI-MACD histogram.
+
+    The three running ``ewm(adjust=False)`` averages at the last confirmed bar: EMA(RSI, fast),
+    EMA(RSI, base) and the signal EMA of their difference.
+    """
+
+    fast: float
+    base: float
+    sig: float
+
+
+def _ewm_step(value: float, x: float, span: int) -> float:
+    """One pandas ``ewm(span, adjust=False)`` step from an observed bar; a missing input carries."""
+    if not np.isfinite(x) or value == x:
+        return value
+    alpha = 2.0 / (span + 1.0)
+    weight = 1.0 - alpha
+    return (weight * value + alpha * x) / (weight + alpha)
+
+
+def rsi_macd_hist_append_state(close: Any) -> RsiMacdHistAppendState | None:
+    """Build histogram append state from confirmed closes, or None if the slow path is required.
+
+    None unless, at the last confirmed bar, the close and the RSI are finite and all three EMAs
+    are past their own warm-up.  The appended value therefore never decides a warm-up and never
+    has to resume an average across a missing RSI.
+    """
+    s = _series(close)
+    if len(s) == 0 or not np.isfinite(float(s.iloc[-1])):
+        return None
+    r = canon.rsi(s, canon.RSI_LEN)
+    fast = canon.ema(r, canon.FAST_LEN)
+    base = canon.ema(r, canon.BASE_LEN)
+    sig = canon.ema(fast - base, canon.SIG_LEN)
+    values = (float(r.iloc[-1]), float(fast.iloc[-1]), float(base.iloc[-1]), float(sig.iloc[-1]))
+    if not all(np.isfinite(v) for v in values):
+        return None
+    return RsiMacdHistAppendState(fast=values[1], base=values[2], sig=values[3])
+
+
+def rsi_macd_hist_appended(
+    kd_state: StochRsiAppendState, hist_state: RsiMacdHistAppendState, price: float
+) -> float | None:
+    """RSI-MACD histogram after appending one bar at ``price`` without rescanning history.
+
+    ``kd_state`` and ``hist_state`` must come from the same confirmed closes.  For a finite
+    ``price`` this matches ``last_finite(rsi_macd_hist(closes + [price]))`` to about ``1e-12``,
+    not bit-for-bit.  A non-finite ``price`` returns None; the canonical series carries the last
+    finite value forward — callers must not pass a non-finite price.  A caller that makes a
+    strict comparison on the histogram must re-answer from the canonical calculator near the
+    decision boundary (see ``live_pack.ORACLE_TIE_BAND``).
+    """
+    if not np.isfinite(price):
+        return None
+    alpha = 1.0 / canon.RSI_LEN
+    d = price - kd_state.last_close
+    up_new = alpha * max(d, 0.0) + (1.0 - alpha) * kd_state.up_prev
+    dn_new = alpha * max(-d, 0.0) + (1.0 - alpha) * kd_state.dn_prev
+    rsi_new = float("nan") if dn_new == 0.0 else 100.0 - 100.0 / (1.0 + up_new / dn_new)
+    fast = _ewm_step(hist_state.fast, rsi_new, canon.FAST_LEN)
+    base = _ewm_step(hist_state.base, rsi_new, canon.BASE_LEN)
+    line = fast - base
+    value = line - _ewm_step(hist_state.sig, line, canon.SIG_LEN)
+    return float(value) if np.isfinite(value) else None
 
 
 def last_finite(series: pd.Series | None) -> float | None:

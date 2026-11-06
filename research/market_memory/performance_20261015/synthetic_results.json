@@ -1,0 +1,998 @@
+{
+  "schema": "b0.synthetic_scale.benchmark.v1",
+  "run_id": "mm-b0-synthetic-scale-20261015-01a1333c-v1",
+  "kind": "SYNTHETIC_SOFTWARE_CAPACITY_ONLY",
+  "generated_at_utc": "2026-10-15T18:31:02Z",
+  "repo": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/market-memory-capacity-01a1333c-07952b3595e1cfc4",
+  "source_head_git_best_effort": "7f5395b7b95b89c19bc1bb15809745cfb6c6a6af",
+  "harness_sha256": "e7585997e72cf09794d7faf0661a70ad2d3ee302abf2d1a32a7e8463a28fc77a",
+  "python": "3.14.7",
+  "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+  "protocol": {
+    "sizes": [
+      16,
+      64,
+      128,
+      256
+    ],
+    "trials_per_size": 5,
+    "fresh_process_each_trial": true,
+    "warm_cache_policy": "OS page cache not cleared; corpus build time reported separately from fresh-process query time",
+    "date_end": "2026-08-19",
+    "query_cutoff": "2026-08-20T12:00:00Z",
+    "k": 8,
+    "method": "historical_hypothetical purge=0 embargo=0 fixed L1",
+    "method_spec": {
+      "purge_calendar_days": 0,
+      "embargo_calendar_days": 0,
+      "mode": "historical_hypothetical"
+    },
+    "policy": "existing tests Policy fake authorizer; not production authorization cost",
+    "per_process_limit_seconds": 300.0
+  },
+  "source_hashes_sha256": {
+    "<harness>/benchmark.py": "e7585997e72cf09794d7faf0661a70ad2d3ee302abf2d1a32a7e8463a28fc77a",
+    "engine/neuralweb/market_memory.py": "d8ce8b664fa546225a2901f7145d0efd0f8f8c371e599038d94f2608b678b606",
+    "engine/neuralweb/market_memory_episode_comparison.py": "b8f210124ecc0a6f8a8a4f222fb3053d7a6cf88f5c73210b7b5be34285b81a95",
+    "engine/neuralweb/market_memory_episode_features.py": "c80ba0a39e42b62e3bd687301fdc974d18f935b584b7f0b462b753ccf044530a",
+    "engine/neuralweb/market_memory_episode_retrieval.py": "bcadfe8587eb5892dea6c48aea38fc4612399ffcc3eb701ef3ad3513e37968cd",
+    "engine/neuralweb/market_memory_identity.py": "8d9ffe00c0c464773946fd84b7f91afb43cee77f6b4aba785af6bd2b8a30b2a7",
+    "engine/neuralweb/market_memory_pit.py": "fe9c053680f2b8769f1466d1d8c800278ba231b627a3daf602fd559eda06c013",
+    "engine/neuralweb/market_memory_projection.py": "5a447be4eb00af9117d3183280206133902e3caf3cfa7799232a9d851cf18ebc",
+    "engine/neuralweb/market_memory_retained_context_cohort.py": "1e8ab60c8ffed3b9c69bd5940269245efb6e9a57fb6153e18b8b2f92c8a5d74d",
+    "engine/neuralweb/market_memory_trusted.py": "b5df1cef2f4ecf3811800776a20dafe0c6eb38f6cfc9fb597e3098dfd802c669",
+    "tests/test_market_memory_episode_features.py": "bc4607d33b282920a12d89a6e73b25f66e9318144d8b662f266c0b5cf380aae8",
+    "tests/test_market_memory_episode_retrieval.py": "e231088dcdde7cc2d271956a39e29247e8ce96e91bdcd6c93cd1948f7ca92558",
+    "tests/test_market_memory_retained_context_cohort.py": "b19a24ff58b14fdaa0904250d820c61d883de2fe6c324fe74235b990f69b5f88",
+    "tests/test_market_memory_trusted.py": "e8c6346e4607ede4a31de2702d45f3b90d0a38aad664949e830501cdd28de84a"
+  },
+  "source_hashes_unchanged_after_run": true,
+  "observed_constants": {
+    "cohort_MAX_CAPTURES": 256,
+    "cohort_MAX_OWNER_BYTES": 67108864,
+    "cohort_MAX_MANIFEST_BYTES": 2097152,
+    "retrieval_MAX_K": 32,
+    "retrieval_MAX_RESULT_BYTES": 2097152,
+    "cohort_schema": "market_memory.retained_context_cohort.v1",
+    "retrieval_schema": "market_memory.episode_retrieval.v1"
+  },
+  "sizes": [
+    {
+      "size": 16,
+      "status": "ok",
+      "corpus_dir": "/Volumes/Mastermind/evidence/market-memory-20261012-01a1333c/integration/B0_PARENT_SCALE_20261015/corpora/size_16",
+      "build_seconds": 0.377353,
+      "build_mean_seconds_per_capture": 0.023585,
+      "source_fixture_writes": 16,
+      "corpus": {
+        "source_fixture": {
+          "files": 1,
+          "logical_bytes": 1092
+        },
+        "retained_artifacts": {
+          "files": 147,
+          "logical_bytes": 620334
+        },
+        "harness_metadata": {
+          "files": 1,
+          "logical_bytes": 296
+        },
+        "total": {
+          "files": 149,
+          "logical_bytes": 621722
+        }
+      },
+      "query_identity": {
+        "query_id": "mmquery_0ee4c32841f25e3a4c41884d09e4af55d4061a49260d3dd9498052e9228cd279",
+        "subject_id": "mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c",
+        "query_is_final_capture": true
+      },
+      "build_process_wall_seconds": 1.337022,
+      "trials": [
+        {
+          "trial": 1,
+          "ok": true,
+          "process_wall_seconds": 1.040568,
+          "phases": {
+            "owner_pin": 0.005466,
+            "cohort_read": 0.091565,
+            "cohort_disclose": 0.000333,
+            "query_feature_read": 0.002824,
+            "retrieve": 0.00525,
+            "retrieve_disclose": 0.000982
+          },
+          "total_measured_seconds": 0.10642,
+          "peak_rss": {
+            "raw": 177553408,
+            "platform": "darwin",
+            "bytes": 177553408,
+            "mib": 169.328
+          },
+          "selection_sha256": "58e40c299943fdf4bb0faccf4b2e57a0f0fc497561f92b1eb6b9f5d51a348a4e",
+          "membership_sha256": "a4d73fe0dd436c739cc0690c45f93c38938b15a5445bb83db4496917eea54540",
+          "denominator": {
+            "accounted_captures": 16,
+            "eligible_representatives": 15,
+            "expected_captures": 16,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 2,
+          "ok": true,
+          "process_wall_seconds": 0.985586,
+          "phases": {
+            "owner_pin": 0.005425,
+            "cohort_read": 0.094989,
+            "cohort_disclose": 0.000356,
+            "query_feature_read": 0.002825,
+            "retrieve": 0.005808,
+            "retrieve_disclose": 0.001043
+          },
+          "total_measured_seconds": 0.110446,
+          "peak_rss": {
+            "raw": 177143808,
+            "platform": "darwin",
+            "bytes": 177143808,
+            "mib": 168.938
+          },
+          "selection_sha256": "58e40c299943fdf4bb0faccf4b2e57a0f0fc497561f92b1eb6b9f5d51a348a4e",
+          "membership_sha256": "a4d73fe0dd436c739cc0690c45f93c38938b15a5445bb83db4496917eea54540",
+          "denominator": {
+            "accounted_captures": 16,
+            "eligible_representatives": 15,
+            "expected_captures": 16,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 3,
+          "ok": true,
+          "process_wall_seconds": 1.006808,
+          "phases": {
+            "owner_pin": 0.00643,
+            "cohort_read": 0.09437,
+            "cohort_disclose": 0.000407,
+            "query_feature_read": 0.003317,
+            "retrieve": 0.005346,
+            "retrieve_disclose": 0.000977
+          },
+          "total_measured_seconds": 0.110847,
+          "peak_rss": {
+            "raw": 176422912,
+            "platform": "darwin",
+            "bytes": 176422912,
+            "mib": 168.25
+          },
+          "selection_sha256": "58e40c299943fdf4bb0faccf4b2e57a0f0fc497561f92b1eb6b9f5d51a348a4e",
+          "membership_sha256": "a4d73fe0dd436c739cc0690c45f93c38938b15a5445bb83db4496917eea54540",
+          "denominator": {
+            "accounted_captures": 16,
+            "eligible_representatives": 15,
+            "expected_captures": 16,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 4,
+          "ok": true,
+          "process_wall_seconds": 1.056172,
+          "phases": {
+            "owner_pin": 0.005871,
+            "cohort_read": 0.098314,
+            "cohort_disclose": 0.000356,
+            "query_feature_read": 0.003151,
+            "retrieve": 0.006078,
+            "retrieve_disclose": 0.001111
+          },
+          "total_measured_seconds": 0.114881,
+          "peak_rss": {
+            "raw": 179011584,
+            "platform": "darwin",
+            "bytes": 179011584,
+            "mib": 170.719
+          },
+          "selection_sha256": "58e40c299943fdf4bb0faccf4b2e57a0f0fc497561f92b1eb6b9f5d51a348a4e",
+          "membership_sha256": "a4d73fe0dd436c739cc0690c45f93c38938b15a5445bb83db4496917eea54540",
+          "denominator": {
+            "accounted_captures": 16,
+            "eligible_representatives": 15,
+            "expected_captures": 16,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 5,
+          "ok": true,
+          "process_wall_seconds": 1.066213,
+          "phases": {
+            "owner_pin": 0.007282,
+            "cohort_read": 0.098466,
+            "cohort_disclose": 0.000359,
+            "query_feature_read": 0.002962,
+            "retrieve": 0.005858,
+            "retrieve_disclose": 0.001072
+          },
+          "total_measured_seconds": 0.115999,
+          "peak_rss": {
+            "raw": 179503104,
+            "platform": "darwin",
+            "bytes": 179503104,
+            "mib": 171.188
+          },
+          "selection_sha256": "58e40c299943fdf4bb0faccf4b2e57a0f0fc497561f92b1eb6b9f5d51a348a4e",
+          "membership_sha256": "a4d73fe0dd436c739cc0690c45f93c38938b15a5445bb83db4496917eea54540",
+          "denominator": {
+            "accounted_captures": 16,
+            "eligible_representatives": 15,
+            "expected_captures": 16,
+            "returned": 8
+          }
+        }
+      ],
+      "determinism": {
+        "single_selection_across_trials": true,
+        "single_membership_across_trials": true,
+        "selection_sha256": "58e40c299943fdf4bb0faccf4b2e57a0f0fc497561f92b1eb6b9f5d51a348a4e",
+        "membership_sha256": "a4d73fe0dd436c739cc0690c45f93c38938b15a5445bb83db4496917eea54540"
+      },
+      "percentiles": {
+        "cohort_disclose": {
+          "n": 5,
+          "p50_s": 0.000356,
+          "p95_s": 0.000407
+        },
+        "cohort_read": {
+          "n": 5,
+          "p50_s": 0.094989,
+          "p95_s": 0.098466
+        },
+        "owner_pin": {
+          "n": 5,
+          "p50_s": 0.005871,
+          "p95_s": 0.007282
+        },
+        "query_feature_read": {
+          "n": 5,
+          "p50_s": 0.002962,
+          "p95_s": 0.003317
+        },
+        "retrieve": {
+          "n": 5,
+          "p50_s": 0.005808,
+          "p95_s": 0.006078
+        },
+        "retrieve_disclose": {
+          "n": 5,
+          "p50_s": 0.001043,
+          "p95_s": 0.001111
+        },
+        "total_measured_seconds": {
+          "n": 5,
+          "p50_s": 0.110847,
+          "p95_s": 0.115999
+        },
+        "peak_rss": {
+          "n": 5,
+          "platform_corrected_unit": "bytes",
+          "p50_bytes": 177553408,
+          "p95_bytes": 179503104,
+          "p50_mib": 169.328,
+          "p95_mib": 171.188
+        }
+      }
+    },
+    {
+      "size": 64,
+      "status": "ok",
+      "corpus_dir": "/Volumes/Mastermind/evidence/market-memory-20261012-01a1333c/integration/B0_PARENT_SCALE_20261015/corpora/size_64",
+      "build_seconds": 2.47472,
+      "build_mean_seconds_per_capture": 0.038667,
+      "source_fixture_writes": 64,
+      "corpus": {
+        "source_fixture": {
+          "files": 1,
+          "logical_bytes": 1092
+        },
+        "retained_artifacts": {
+          "files": 579,
+          "logical_bytes": 3008972
+        },
+        "harness_metadata": {
+          "files": 1,
+          "logical_bytes": 296
+        },
+        "total": {
+          "files": 581,
+          "logical_bytes": 3010360
+        }
+      },
+      "query_identity": {
+        "query_id": "mmquery_0ee4c32841f25e3a4c41884d09e4af55d4061a49260d3dd9498052e9228cd279",
+        "subject_id": "mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c",
+        "query_is_final_capture": true
+      },
+      "build_process_wall_seconds": 3.407138,
+      "trials": [
+        {
+          "trial": 1,
+          "ok": true,
+          "process_wall_seconds": 1.301417,
+          "phases": {
+            "owner_pin": 0.033902,
+            "cohort_read": 0.363886,
+            "cohort_disclose": 0.001467,
+            "query_feature_read": 0.003082,
+            "retrieve": 0.020901,
+            "retrieve_disclose": 0.00392
+          },
+          "total_measured_seconds": 0.427158,
+          "peak_rss": {
+            "raw": 178241536,
+            "platform": "darwin",
+            "bytes": 178241536,
+            "mib": 169.984
+          },
+          "selection_sha256": "9792b2bd8e95f15d5c36ff50706d7312e41b683f7bfb98036d95c691762c8e34",
+          "membership_sha256": "bea4ad35d0cf1d254317794330f6266dd9bbd1e4b81b8b488d593c13b30a206a",
+          "denominator": {
+            "accounted_captures": 64,
+            "eligible_representatives": 63,
+            "expected_captures": 64,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 2,
+          "ok": true,
+          "process_wall_seconds": 1.263842,
+          "phases": {
+            "owner_pin": 0.032242,
+            "cohort_read": 0.354922,
+            "cohort_disclose": 0.001273,
+            "query_feature_read": 0.00278,
+            "retrieve": 0.020102,
+            "retrieve_disclose": 0.003688
+          },
+          "total_measured_seconds": 0.415007,
+          "peak_rss": {
+            "raw": 178946048,
+            "platform": "darwin",
+            "bytes": 178946048,
+            "mib": 170.656
+          },
+          "selection_sha256": "9792b2bd8e95f15d5c36ff50706d7312e41b683f7bfb98036d95c691762c8e34",
+          "membership_sha256": "bea4ad35d0cf1d254317794330f6266dd9bbd1e4b81b8b488d593c13b30a206a",
+          "denominator": {
+            "accounted_captures": 64,
+            "eligible_representatives": 63,
+            "expected_captures": 64,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 3,
+          "ok": true,
+          "process_wall_seconds": 1.273917,
+          "phases": {
+            "owner_pin": 0.033593,
+            "cohort_read": 0.368939,
+            "cohort_disclose": 0.001516,
+            "query_feature_read": 0.003073,
+            "retrieve": 0.020964,
+            "retrieve_disclose": 0.00364
+          },
+          "total_measured_seconds": 0.431725,
+          "peak_rss": {
+            "raw": 179093504,
+            "platform": "darwin",
+            "bytes": 179093504,
+            "mib": 170.797
+          },
+          "selection_sha256": "9792b2bd8e95f15d5c36ff50706d7312e41b683f7bfb98036d95c691762c8e34",
+          "membership_sha256": "bea4ad35d0cf1d254317794330f6266dd9bbd1e4b81b8b488d593c13b30a206a",
+          "denominator": {
+            "accounted_captures": 64,
+            "eligible_representatives": 63,
+            "expected_captures": 64,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 4,
+          "ok": true,
+          "process_wall_seconds": 1.338857,
+          "phases": {
+            "owner_pin": 0.033737,
+            "cohort_read": 0.370417,
+            "cohort_disclose": 0.001351,
+            "query_feature_read": 0.00342,
+            "retrieve": 0.020579,
+            "retrieve_disclose": 0.003708
+          },
+          "total_measured_seconds": 0.433212,
+          "peak_rss": {
+            "raw": 180060160,
+            "platform": "darwin",
+            "bytes": 180060160,
+            "mib": 171.719
+          },
+          "selection_sha256": "9792b2bd8e95f15d5c36ff50706d7312e41b683f7bfb98036d95c691762c8e34",
+          "membership_sha256": "bea4ad35d0cf1d254317794330f6266dd9bbd1e4b81b8b488d593c13b30a206a",
+          "denominator": {
+            "accounted_captures": 64,
+            "eligible_representatives": 63,
+            "expected_captures": 64,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 5,
+          "ok": true,
+          "process_wall_seconds": 1.36893,
+          "phases": {
+            "owner_pin": 0.034709,
+            "cohort_read": 0.379401,
+            "cohort_disclose": 0.001403,
+            "query_feature_read": 0.003111,
+            "retrieve": 0.020935,
+            "retrieve_disclose": 0.003915
+          },
+          "total_measured_seconds": 0.443474,
+          "peak_rss": {
+            "raw": 178388992,
+            "platform": "darwin",
+            "bytes": 178388992,
+            "mib": 170.125
+          },
+          "selection_sha256": "9792b2bd8e95f15d5c36ff50706d7312e41b683f7bfb98036d95c691762c8e34",
+          "membership_sha256": "bea4ad35d0cf1d254317794330f6266dd9bbd1e4b81b8b488d593c13b30a206a",
+          "denominator": {
+            "accounted_captures": 64,
+            "eligible_representatives": 63,
+            "expected_captures": 64,
+            "returned": 8
+          }
+        }
+      ],
+      "determinism": {
+        "single_selection_across_trials": true,
+        "single_membership_across_trials": true,
+        "selection_sha256": "9792b2bd8e95f15d5c36ff50706d7312e41b683f7bfb98036d95c691762c8e34",
+        "membership_sha256": "bea4ad35d0cf1d254317794330f6266dd9bbd1e4b81b8b488d593c13b30a206a"
+      },
+      "percentiles": {
+        "cohort_disclose": {
+          "n": 5,
+          "p50_s": 0.001403,
+          "p95_s": 0.001516
+        },
+        "cohort_read": {
+          "n": 5,
+          "p50_s": 0.368939,
+          "p95_s": 0.379401
+        },
+        "owner_pin": {
+          "n": 5,
+          "p50_s": 0.033737,
+          "p95_s": 0.034709
+        },
+        "query_feature_read": {
+          "n": 5,
+          "p50_s": 0.003082,
+          "p95_s": 0.00342
+        },
+        "retrieve": {
+          "n": 5,
+          "p50_s": 0.020901,
+          "p95_s": 0.020964
+        },
+        "retrieve_disclose": {
+          "n": 5,
+          "p50_s": 0.003708,
+          "p95_s": 0.00392
+        },
+        "total_measured_seconds": {
+          "n": 5,
+          "p50_s": 0.431725,
+          "p95_s": 0.443474
+        },
+        "peak_rss": {
+          "n": 5,
+          "platform_corrected_unit": "bytes",
+          "p50_bytes": 178946048,
+          "p95_bytes": 180060160,
+          "p50_mib": 170.656,
+          "p95_mib": 171.719
+        }
+      }
+    },
+    {
+      "size": 128,
+      "status": "ok",
+      "corpus_dir": "/Volumes/Mastermind/evidence/market-memory-20261012-01a1333c/integration/B0_PARENT_SCALE_20261015/corpora/size_128",
+      "build_seconds": 9.28027,
+      "build_mean_seconds_per_capture": 0.072502,
+      "source_fixture_writes": 128,
+      "corpus": {
+        "source_fixture": {
+          "files": 1,
+          "logical_bytes": 1092
+        },
+        "retained_artifacts": {
+          "files": 1155,
+          "logical_bytes": 7437466
+        },
+        "harness_metadata": {
+          "files": 1,
+          "logical_bytes": 297
+        },
+        "total": {
+          "files": 1157,
+          "logical_bytes": 7438855
+        }
+      },
+      "query_identity": {
+        "query_id": "mmquery_0ee4c32841f25e3a4c41884d09e4af55d4061a49260d3dd9498052e9228cd279",
+        "subject_id": "mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c",
+        "query_is_final_capture": true
+      },
+      "build_process_wall_seconds": 10.283974,
+      "trials": [
+        {
+          "trial": 1,
+          "ok": true,
+          "process_wall_seconds": 2.318704,
+          "phases": {
+            "owner_pin": 0.136993,
+            "cohort_read": 0.842993,
+            "cohort_disclose": 0.002779,
+            "query_feature_read": 0.003533,
+            "retrieve": 0.072776,
+            "retrieve_disclose": 0.007664
+          },
+          "total_measured_seconds": 1.066738,
+          "peak_rss": {
+            "raw": 183877632,
+            "platform": "darwin",
+            "bytes": 183877632,
+            "mib": 175.359
+          },
+          "selection_sha256": "a426f592451f0277b820428da4527aef21b6cc86e7dbcdaa7dc1df054d74bfbc",
+          "membership_sha256": "7a5800723dc773ddc78c088ff2b6a8fc974605685cf4dd2abb526abafa69e007",
+          "denominator": {
+            "accounted_captures": 128,
+            "eligible_representatives": 127,
+            "expected_captures": 128,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 2,
+          "ok": true,
+          "process_wall_seconds": 2.199493,
+          "phases": {
+            "owner_pin": 0.107728,
+            "cohort_read": 0.899455,
+            "cohort_disclose": 0.002634,
+            "query_feature_read": 0.007243,
+            "retrieve": 0.124144,
+            "retrieve_disclose": 0.01119
+          },
+          "total_measured_seconds": 1.152394,
+          "peak_rss": {
+            "raw": 186761216,
+            "platform": "darwin",
+            "bytes": 186761216,
+            "mib": 178.109
+          },
+          "selection_sha256": "a426f592451f0277b820428da4527aef21b6cc86e7dbcdaa7dc1df054d74bfbc",
+          "membership_sha256": "7a5800723dc773ddc78c088ff2b6a8fc974605685cf4dd2abb526abafa69e007",
+          "denominator": {
+            "accounted_captures": 128,
+            "eligible_representatives": 127,
+            "expected_captures": 128,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 3,
+          "ok": true,
+          "process_wall_seconds": 2.260412,
+          "phases": {
+            "owner_pin": 0.103907,
+            "cohort_read": 0.971366,
+            "cohort_disclose": 0.002513,
+            "query_feature_read": 0.002867,
+            "retrieve": 0.090558,
+            "retrieve_disclose": 0.010772
+          },
+          "total_measured_seconds": 1.181983,
+          "peak_rss": {
+            "raw": 187416576,
+            "platform": "darwin",
+            "bytes": 187416576,
+            "mib": 178.734
+          },
+          "selection_sha256": "a426f592451f0277b820428da4527aef21b6cc86e7dbcdaa7dc1df054d74bfbc",
+          "membership_sha256": "7a5800723dc773ddc78c088ff2b6a8fc974605685cf4dd2abb526abafa69e007",
+          "denominator": {
+            "accounted_captures": 128,
+            "eligible_representatives": 127,
+            "expected_captures": 128,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 4,
+          "ok": true,
+          "process_wall_seconds": 2.142062,
+          "phases": {
+            "owner_pin": 0.139406,
+            "cohort_read": 0.782996,
+            "cohort_disclose": 0.002563,
+            "query_feature_read": 0.002913,
+            "retrieve": 0.071365,
+            "retrieve_disclose": 0.00756
+          },
+          "total_measured_seconds": 1.006803,
+          "peak_rss": {
+            "raw": 183533568,
+            "platform": "darwin",
+            "bytes": 183533568,
+            "mib": 175.031
+          },
+          "selection_sha256": "a426f592451f0277b820428da4527aef21b6cc86e7dbcdaa7dc1df054d74bfbc",
+          "membership_sha256": "7a5800723dc773ddc78c088ff2b6a8fc974605685cf4dd2abb526abafa69e007",
+          "denominator": {
+            "accounted_captures": 128,
+            "eligible_representatives": 127,
+            "expected_captures": 128,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 5,
+          "ok": true,
+          "process_wall_seconds": 1.797725,
+          "phases": {
+            "owner_pin": 0.099859,
+            "cohort_read": 0.731292,
+            "cohort_disclose": 0.002546,
+            "query_feature_read": 0.003315,
+            "retrieve": 0.066996,
+            "retrieve_disclose": 0.007569
+          },
+          "total_measured_seconds": 0.911577,
+          "peak_rss": {
+            "raw": 184401920,
+            "platform": "darwin",
+            "bytes": 184401920,
+            "mib": 175.859
+          },
+          "selection_sha256": "a426f592451f0277b820428da4527aef21b6cc86e7dbcdaa7dc1df054d74bfbc",
+          "membership_sha256": "7a5800723dc773ddc78c088ff2b6a8fc974605685cf4dd2abb526abafa69e007",
+          "denominator": {
+            "accounted_captures": 128,
+            "eligible_representatives": 127,
+            "expected_captures": 128,
+            "returned": 8
+          }
+        }
+      ],
+      "determinism": {
+        "single_selection_across_trials": true,
+        "single_membership_across_trials": true,
+        "selection_sha256": "a426f592451f0277b820428da4527aef21b6cc86e7dbcdaa7dc1df054d74bfbc",
+        "membership_sha256": "7a5800723dc773ddc78c088ff2b6a8fc974605685cf4dd2abb526abafa69e007"
+      },
+      "percentiles": {
+        "cohort_disclose": {
+          "n": 5,
+          "p50_s": 0.002563,
+          "p95_s": 0.002779
+        },
+        "cohort_read": {
+          "n": 5,
+          "p50_s": 0.842993,
+          "p95_s": 0.971366
+        },
+        "owner_pin": {
+          "n": 5,
+          "p50_s": 0.107728,
+          "p95_s": 0.139406
+        },
+        "query_feature_read": {
+          "n": 5,
+          "p50_s": 0.003315,
+          "p95_s": 0.007243
+        },
+        "retrieve": {
+          "n": 5,
+          "p50_s": 0.072776,
+          "p95_s": 0.124144
+        },
+        "retrieve_disclose": {
+          "n": 5,
+          "p50_s": 0.007664,
+          "p95_s": 0.01119
+        },
+        "total_measured_seconds": {
+          "n": 5,
+          "p50_s": 1.066738,
+          "p95_s": 1.181983
+        },
+        "peak_rss": {
+          "n": 5,
+          "platform_corrected_unit": "bytes",
+          "p50_bytes": 184401920,
+          "p95_bytes": 187416576,
+          "p50_mib": 175.859,
+          "p95_mib": 178.734
+        }
+      }
+    },
+    {
+      "size": 256,
+      "status": "ok",
+      "corpus_dir": "/Volumes/Mastermind/evidence/market-memory-20261012-01a1333c/integration/B0_PARENT_SCALE_20261015/corpora/size_256",
+      "build_seconds": 23.263992,
+      "build_mean_seconds_per_capture": 0.090875,
+      "source_fixture_writes": 256,
+      "corpus": {
+        "source_fixture": {
+          "files": 1,
+          "logical_bytes": 1092
+        },
+        "retained_artifacts": {
+          "files": 2307,
+          "logical_bytes": 20558394
+        },
+        "harness_metadata": {
+          "files": 1,
+          "logical_bytes": 297
+        },
+        "total": {
+          "files": 2309,
+          "logical_bytes": 20559783
+        }
+      },
+      "query_identity": {
+        "query_id": "mmquery_0ee4c32841f25e3a4c41884d09e4af55d4061a49260d3dd9498052e9228cd279",
+        "subject_id": "mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c",
+        "query_is_final_capture": true
+      },
+      "build_process_wall_seconds": 24.238875,
+      "trials": [
+        {
+          "trial": 1,
+          "ok": true,
+          "process_wall_seconds": 2.96509,
+          "phases": {
+            "owner_pin": 0.357483,
+            "cohort_read": 1.571664,
+            "cohort_disclose": 0.005883,
+            "query_feature_read": 0.003006,
+            "retrieve": 0.083831,
+            "retrieve_disclose": 0.014474
+          },
+          "total_measured_seconds": 2.036341,
+          "peak_rss": {
+            "raw": 196034560,
+            "platform": "darwin",
+            "bytes": 196034560,
+            "mib": 186.953
+          },
+          "selection_sha256": "3979143d36762575f0e89466584cba8cfb89f61a8f582349e21e28d6782a347a",
+          "membership_sha256": "a378f257199c3c83f5702391c441d446aff3c1c73428f1dde35722ebc9e692e4",
+          "denominator": {
+            "accounted_captures": 256,
+            "eligible_representatives": 255,
+            "expected_captures": 256,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 2,
+          "ok": true,
+          "process_wall_seconds": 2.996467,
+          "phases": {
+            "owner_pin": 0.374538,
+            "cohort_read": 1.585672,
+            "cohort_disclose": 0.005654,
+            "query_feature_read": 0.002944,
+            "retrieve": 0.085316,
+            "retrieve_disclose": 0.014791
+          },
+          "total_measured_seconds": 2.068915,
+          "peak_rss": {
+            "raw": 195559424,
+            "platform": "darwin",
+            "bytes": 195559424,
+            "mib": 186.5
+          },
+          "selection_sha256": "3979143d36762575f0e89466584cba8cfb89f61a8f582349e21e28d6782a347a",
+          "membership_sha256": "a378f257199c3c83f5702391c441d446aff3c1c73428f1dde35722ebc9e692e4",
+          "denominator": {
+            "accounted_captures": 256,
+            "eligible_representatives": 255,
+            "expected_captures": 256,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 3,
+          "ok": true,
+          "process_wall_seconds": 2.988495,
+          "phases": {
+            "owner_pin": 0.369173,
+            "cohort_read": 1.617076,
+            "cohort_disclose": 0.005698,
+            "query_feature_read": 0.003406,
+            "retrieve": 0.083002,
+            "retrieve_disclose": 0.014525
+          },
+          "total_measured_seconds": 2.09288,
+          "peak_rss": {
+            "raw": 195870720,
+            "platform": "darwin",
+            "bytes": 195870720,
+            "mib": 186.797
+          },
+          "selection_sha256": "3979143d36762575f0e89466584cba8cfb89f61a8f582349e21e28d6782a347a",
+          "membership_sha256": "a378f257199c3c83f5702391c441d446aff3c1c73428f1dde35722ebc9e692e4",
+          "denominator": {
+            "accounted_captures": 256,
+            "eligible_representatives": 255,
+            "expected_captures": 256,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 4,
+          "ok": true,
+          "process_wall_seconds": 2.952919,
+          "phases": {
+            "owner_pin": 0.370838,
+            "cohort_read": 1.560028,
+            "cohort_disclose": 0.0053,
+            "query_feature_read": 0.003034,
+            "retrieve": 0.081084,
+            "retrieve_disclose": 0.013516
+          },
+          "total_measured_seconds": 2.0338,
+          "peak_rss": {
+            "raw": 197132288,
+            "platform": "darwin",
+            "bytes": 197132288,
+            "mib": 188.0
+          },
+          "selection_sha256": "3979143d36762575f0e89466584cba8cfb89f61a8f582349e21e28d6782a347a",
+          "membership_sha256": "a378f257199c3c83f5702391c441d446aff3c1c73428f1dde35722ebc9e692e4",
+          "denominator": {
+            "accounted_captures": 256,
+            "eligible_representatives": 255,
+            "expected_captures": 256,
+            "returned": 8
+          }
+        },
+        {
+          "trial": 5,
+          "ok": true,
+          "process_wall_seconds": 2.893755,
+          "phases": {
+            "owner_pin": 0.365867,
+            "cohort_read": 1.507868,
+            "cohort_disclose": 0.005502,
+            "query_feature_read": 0.003171,
+            "retrieve": 0.080235,
+            "retrieve_disclose": 0.014508
+          },
+          "total_measured_seconds": 1.977151,
+          "peak_rss": {
+            "raw": 198197248,
+            "platform": "darwin",
+            "bytes": 198197248,
+            "mib": 189.016
+          },
+          "selection_sha256": "3979143d36762575f0e89466584cba8cfb89f61a8f582349e21e28d6782a347a",
+          "membership_sha256": "a378f257199c3c83f5702391c441d446aff3c1c73428f1dde35722ebc9e692e4",
+          "denominator": {
+            "accounted_captures": 256,
+            "eligible_representatives": 255,
+            "expected_captures": 256,
+            "returned": 8
+          }
+        }
+      ],
+      "determinism": {
+        "single_selection_across_trials": true,
+        "single_membership_across_trials": true,
+        "selection_sha256": "3979143d36762575f0e89466584cba8cfb89f61a8f582349e21e28d6782a347a",
+        "membership_sha256": "a378f257199c3c83f5702391c441d446aff3c1c73428f1dde35722ebc9e692e4"
+      },
+      "percentiles": {
+        "cohort_disclose": {
+          "n": 5,
+          "p50_s": 0.005654,
+          "p95_s": 0.005883
+        },
+        "cohort_read": {
+          "n": 5,
+          "p50_s": 1.571664,
+          "p95_s": 1.617076
+        },
+        "owner_pin": {
+          "n": 5,
+          "p50_s": 0.369173,
+          "p95_s": 0.374538
+        },
+        "query_feature_read": {
+          "n": 5,
+          "p50_s": 0.003034,
+          "p95_s": 0.003406
+        },
+        "retrieve": {
+          "n": 5,
+          "p50_s": 0.083002,
+          "p95_s": 0.085316
+        },
+        "retrieve_disclose": {
+          "n": 5,
+          "p50_s": 0.014508,
+          "p95_s": 0.014791
+        },
+        "total_measured_seconds": {
+          "n": 5,
+          "p50_s": 2.036341,
+          "p95_s": 2.09288
+        },
+        "peak_rss": {
+          "n": 5,
+          "platform_corrected_unit": "bytes",
+          "p50_bytes": 196034560,
+          "p95_bytes": 198197248,
+          "p50_mib": 186.953,
+          "p95_mib": 189.016
+        }
+      }
+    }
+  ],
+  "negative_check_257": {
+    "status": "refused",
+    "corpus_dir": "/Volumes/Mastermind/evidence/market-memory-20261012-01a1333c/integration/B0_PARENT_SCALE_20261015/corpora/size_256",
+    "append_seconds": 0.145354,
+    "appended_capture": {
+      "query_id": "mmquery_cd90af185c04b6c1776427562437f8230c70b866547f94fc806a6ca2d227142d",
+      "subject_id": "mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c"
+    },
+    "note": "appended once after all size-256 trials; measured state had 256 captures",
+    "process_wall_seconds": 1.222464,
+    "child_result": {
+      "ok": true,
+      "mode": "refusal_257",
+      "captures_in_generation": 257,
+      "MAX_CAPTURES_observed": 256,
+      "refusal": {
+        "error_type": "RetainedContextCohortError",
+        "raised_in_module": "engine.neuralweb.market_memory_retained_context_cohort",
+        "message": "whole_generation_capture_bound_exceeded",
+        "matches_whole_generation": true
+      },
+      "retrieval_attempted": false,
+      "capability_returned": false,
+      "no_false_acceptance": true
+    }
+  },
+  "gaps": [],
+  "measurement_scope": {
+    "synthetic_fixtures_not_real_evidence": true,
+    "no_production_data_or_service_reads": true,
+    "no_repository_or_source_mutation": true,
+    "no_network_or_provider_calls": true,
+    "no_limit_guard_or_policy_monkeypatch": true,
+    "no_extrapolation_beyond_measured_runs": true,
+    "policy_is_test_fake_authorizer": true
+  },
+  "status": "complete"
+}

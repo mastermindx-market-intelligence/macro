@@ -1,0 +1,47 @@
+{
+  "STOP": true,
+  "adoption_manifest_sha256": "82839b3edfb68baf03ebbc8e435d9c9b63dd7bea50e0c8eb3b17bd52e9194e7e",
+  "adoption_sha256": "645a20a39842d9c5a03b4ff39a37280d1aa02c32ef545c061d0aa959f06e0016",
+  "base_policy_sha256": "d41422d76219b1c5d3a3c9cbb19a1bc3124433031200b09499033bd4dc30d522",
+  "files": [
+    {
+      "byte_length": 3733,
+      "path": "DELTA_CHECK.json",
+      "sha256": "39139d810d542192932c71d0e7499d8ce837436d8fbcfae929539a7457d4f728"
+    },
+    {
+      "byte_length": 7967,
+      "path": "DELTA_CHECK.py",
+      "sha256": "9611ad78c96e374749855b707892df0225eb27c99c5c347488ebd2d00bde38e4"
+    },
+    {
+      "byte_length": 0,
+      "path": "DELTA_CHECK.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 1224,
+      "path": "EXECUTION_RECEIPT.json",
+      "sha256": "313360eeb5add78837f8189e60d91984dfe5b470f521ef311fe4f71869c813b9"
+    },
+    {
+      "byte_length": 3678,
+      "path": "FINDINGS.json",
+      "sha256": "9a2d502c0290e71dd08046f12339bd27376fd2e9df37bd75bdc7d547b6674383"
+    },
+    {
+      "byte_length": 7551,
+      "path": "NARROW_DELTA_REVIEW.md",
+      "sha256": "2c779256072e15e68637b7db6304212842064626b9e96f0a0ebf39a6122a4b38"
+    }
+  ],
+  "frozen_at_utc": "2026-10-09T12:11:30.243316+00:00",
+  "input_bindings_unchanged_at_freeze": true,
+  "manifest_self_excluded": true,
+  "member_bytes_excluding_manifest": 24153,
+  "no_source_native_Git_app_provider_effects": true,
+  "reviewer": "/root/native_adoption_frontier",
+  "schema": "research.gmi.wp02.independent_adoption_review_manifest/v1",
+  "source_or_rights_or_history_or_production_admission": false,
+  "verdict": "PASS_R3_RESOLVED_FOR_EXACT_COMPOSITE_CONTRACT"
+}

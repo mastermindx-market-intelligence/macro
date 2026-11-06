@@ -127,6 +127,8 @@ html[data-lang="zh"] .lose{color:var(--ink-ok, var(--green))}
   <div class="section-title">{{ t('Allocation Strategy · in depth','仓位策略 · 深度') }}</div>
   <div class="h1">{{ t('How much S&P 500 — vs T-bills — to hold right now','当前应持有多少标普500 — 相对短期国债') }}</div>
   <div class="sub" style="margin-bottom:6px">{{ t('As of','截至') }} {{ as_of }} · SPY {{ '$%s'|format('{:,.2f}'.format(price)) }}</div>
+  {% if bench_start %}<div class="sub faint">{{ t('Backtest window','回测窗口') }}
+    {{ bench_start }} → {{ as_of }} ({{ sc.years }}y)</div>{% endif %}
   <div class="tag">{{ t('A drawdown / Sharpe engine — not a CAGR-beater','回撤 / 夏普引擎 — 并非跑赢年化收益的工具') }}</div>
 
   <!-- ===== recommended split + posture ===== -->
@@ -155,9 +157,19 @@ html[data-lang="zh"] .lose{color:var(--ink-ok, var(--green))}
       </div>
       <div class="chips">
         <span class="chip" style="border-color:{{ '#cfa' if not disloc.put_absent else '#f6b' }}">{{ t('Fed-put','美联储看跌') }}: <b>{{ t('present','在场') if not disloc.put_absent else t('absent (knife)','缺席（落刀）') }}</b></span>
-        <span class="chip">{{ t('Dislocation','错位') }}: <b>{{ t(disloc.verdict, disloc.verdict_zh) }}</b></span>
+        <span class="chip">{{ t('Re-deploy gate','再部署闸门') }}: <b>{{
+            t(disloc.verdict, disloc.verdict_zh) }}</b></span>
         <span class="chip">{{ t('Capitulation','投降') }}: <b>{{ disloc.capitulation }}/3</b></span>
       </div>
+      {% if disloc.put_legs %}<div class="sub faint">{{
+        t('Fed-put inputs','美联储看跌条件') }}: {{
+        t('Sahm recession signal quiet','萨姆衰退信号未触发')
+        if not disloc.put_legs.recession else
+        t('Sahm recession signal firing','萨姆衰退信号已触发') }} · {{
+        t('inflation expectations low enough for the Fed to ease',
+          '通胀预期低到足以让美联储宽松') if not disloc.put_legs.fedput_off
+        else t('inflation expectations too high for the Fed to ease',
+          '通胀预期过高，美联储难以宽松') }}</div>{% endif %}
     </div>
   </div>
 
@@ -174,6 +186,15 @@ html[data-lang="zh"] .lose{color:var(--ink-ok, var(--green))}
     <div class="sub" style="margin-bottom:6px">{{ overlay.note }}</div>
     <div class="sub faint">{{ t('No veto — the mechanical recommendation stands.','无否决 —— 以机械建议为准。') }} {{ overlay.disclaimer }}</div>
     {% endif %}
+    {% if overlay_log %}<div class="sub faint">{{ t('Forward log','向前记录') }}:
+      {{ overlay_log.days }} {{ t('trading days logged','个交易日已记录') }}
+      ({{ overlay_log.first }} → {{ overlay_log.last }}; {{ overlay_log.rows }}
+      {{ t('builds','次构建') }}) —
+      {% if overlay_log.vetoes %}
+      {{ t('the veto fired on {v} of them.','其中 {v} 天触发否决。')
+        |replace('{v}', overlay_log.vetoes|string) }}{% else %}
+      {{ t('no veto has fired yet.','尚未触发否决。') }}
+      {% endif %}</div>{% endif %}
   </div>
   {% endif %}
 
@@ -217,10 +238,17 @@ html[data-lang="zh"] .lose{color:var(--ink-ok, var(--green))}
   <div class="section-title">{{ t('Backtest scorecard · {y} years vs buy & hold'|replace('{y}', sc.years|string), '回测记分卡 · {y} 年对比买入持有'|replace('{y}', sc.years|string)) }}</div>
   <div class="grid cols-4">
     <div class="card score"><div class="k">CAGR</div><div class="v {{ 'win' if sc.cagr >= sc.hodl_cagr else 'lose' }}">{{ sc.cagr }}%</div><div class="sub">{{ t('buy & hold','买入持有') }} {{ sc.hodl_cagr }}% · {{ t('ex-carry','扣息') }} {{ sc.cagr_nocarry }}%</div></div>
-    <div class="card score"><div class="k">Sharpe</div><div class="v {{ 'win' if sc.sharpe >= sc.hodl_sharpe else 'lose' }}">{{ sc.sharpe }}</div><div class="sub">{{ t('buy & hold','买入持有') }} {{ sc.hodl_sharpe }}{% if sc.bootstrap %} · CI {{ sc.boot_sharpe_lo }}–{{ sc.boot_sharpe_hi }}{% endif %}</div></div>
-    <div class="card score"><div class="k">{{ t('Max drawdown','最大回撤') }}</div><div class="v {{ 'win' if sc.maxdd >= sc.hodl_maxdd else 'lose' }}">{{ sc.maxdd }}%</div><div class="sub">{{ t('buy & hold','买入持有') }} {{ sc.hodl_maxdd }}%</div></div>
+    <div class="card score"><div class="k">Sharpe</div><div class="v {{ 'win' if sc.sharpe >= sc.hodl_sharpe else 'lose' }}">{{ sc.sharpe }}</div><div class="sub">{{ t('buy & hold','买入持有') }} {{ sc.hodl_sharpe }}{% if sc.bootstrap %} · CI {{ sc.boot_sharpe_lo }}–{{ sc.boot_sharpe_hi }}{% endif %}{% if sc.bootstrap and sc.bootstrap.sharpe_gt0_prob is number %} · {{ t('above 0 in {p}% of resamples','{p}% 的重抽样高于 0')|replace('{p}', '%g'|format(sc.bootstrap.sharpe_gt0_prob * 100)) }}{% endif %}</div></div>
+    <div class="card score"><div class="k">{{ t('Max drawdown','最大回撤') }}</div><div class="v {{ 'win' if sc.maxdd >= sc.hodl_maxdd else 'lose' }}">{{ sc.maxdd }}%</div><div class="sub">{{ t('buy & hold','买入持有') }} {{ sc.hodl_maxdd }}%{% if sc.bootstrap and sc.bootstrap.maxdd_ci_pct %} · {{ t('CI','置信区间') }} {{ sc.bootstrap.maxdd_ci_pct[0] }}% {{ t('to','至') }} {{ sc.bootstrap.maxdd_ci_pct[2] }}%{% endif %}</div></div>
     <div class="card score"><div class="k">{{ t('Time invested','在场时间') }}</div><div class="v">{{ sc.time_in_market }}%</div><div class="sub">{{ sc.turnover_annual }}x {{ t('turnover/yr','换手/年') }}</div></div>
   </div>
+  {% if sc.bootstrap and sc.bootstrap.B is number and sc.bootstrap.n is number
+  and sc.bootstrap.block is number %}<div class="sub faint">{{ t(
+  'CI = the middle 95% of {B} resamples of the {n} daily returns, drawn in {k}-session blocks.',
+  '置信区间（CI）为 {n} 个日收益以 {k} 个交易日为一块重抽样 {B} 次后的中间 95%。')
+  |replace('{B}', "{:,}".format(sc.bootstrap.B))
+  |replace('{n}', "{:,}".format(sc.bootstrap.n))|replace('{k}', sc.bootstrap.block|string)
+  }}</div>{% endif %}
   <div class="grid cols-3" style="margin-top:18px">
     <div class="card score"><div class="k">Sortino</div><div class="v {{ 'win' if sc.sortino >= sc.hodl_sortino else 'lose' }}">{{ sc.sortino }}</div><div class="sub">{{ t('buy & hold','买入持有') }} {{ sc.hodl_sortino }}</div></div>
     <div class="card score"><div class="k">{{ t('After-tax CAGR (taxable, 35%)','税后年化（应税，35%）') }}</div><div class="v">{{ at.after_tax_cagr }}%</div><div class="sub">{{ t('buy & hold','买入持有') }} {{ at.hodl_cagr }}% · {{ t('cum. tax','累计税') }} {{ at.cumulative_tax_paid_x }}×</div></div>
@@ -252,7 +280,7 @@ html[data-lang="zh"] .lose{color:var(--ink-ok, var(--green))}
     <div class="sub faint" style="margin-top:8px;font-size:12px">{{ t('Only ~4 independent ≥20% bears govern a get-out / get-back-in switch — effective-N, not the day count, bounds confidence. The edge is validated by leave-one-crisis-out + an AQR-style permutation null (real Sharpe & drawdown beat every random-timing shuffle, p=0.0), and holds under point-in-time (ALFRED) macro vintages.','只有约 4 次独立的 ≥20% 熊市决定一次离场/再入场切换 — 决定置信度的是有效样本量，而非天数。该优势通过留一危机检验 + AQR 式置换零假设验证（真实夏普与回撤击败每一次随机择时洗牌，p=0.0），并在时点（ALFRED）宏观数据下依然成立。') }}</div>
   </div>
 
-  <div class="note r">{{ t('Taxable-account warning: switching realises short-term capital gains that buy & hold defers — best run in a tax-advantaged account. The low ~1.5×/yr turnover keeps this manageable.','应税账户提示：切换会实现买入持有可递延的短期资本利得 — 最好在税收优惠账户中运行。约 1.5×/年 的低换手使其可控。') }}</div>
+  <div class="note r">{{ t('Taxable-account warning: switching realises short-term capital gains that buy & hold defers — best run in a tax-advantaged account. The low {x}×/yr turnover keeps this manageable.','应税账户提示：切换会实现买入持有可递延的短期资本利得 — 最好在税收优惠账户中运行。{x}×/年 的低换手使其可控。')|replace('{x}', sc.turnover_annual|string) }}</div>
 
   <div class="foot">
     {{ t('Built', '生成于') }} {{ built }}<br>

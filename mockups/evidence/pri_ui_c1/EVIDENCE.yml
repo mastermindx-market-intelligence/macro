@@ -1,0 +1,8 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_prophet_setup_detail.html.j2
+  - templates/_us_board_cards.html.j2
+  - templates/_us_candidate_pool_rows.html.j2
+  - templates/dashboard.html.j2
+  - templates/_us_prophet_plan_cards.html.j2
+manifest: mockups/evidence/pri_ui_c1/manifest.json
