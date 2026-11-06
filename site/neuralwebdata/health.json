@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.health.v1",
-  "produced_at": "2026-11-06T13:22:06.235003+00:00",
+  "produced_at": "2026-11-06T13:44:22.733563+00:00",
   "as_of": "2026-11-05",
   "overall_status": "degraded",
   "lobes": [
@@ -3892,7 +3892,7 @@
   ],
   "cortex": {
     "cortex_source": "current_run",
-    "memo_as_of": "2026-11-06T13:21:47+00:00",
+    "memo_as_of": "2026-11-06T13:43:57+00:00",
     "run_status": {
       "status": "degraded",
       "degraded": true,
@@ -3905,7 +3905,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "transient",
-          "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b105-ccbf-7c33-ba04-ad483f2f09db\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
+          "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b11a-1b8b-7592-abd5-8bcf746f9438\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
         },
         {
           "provider": "codex",
@@ -3913,7 +3913,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "transient",
-          "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b105-de69-7393-a29e-770b7d169686\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
+          "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b11a-2ecc-76d1-8a17-2ea5f0ade815\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
         },
         {
           "provider": "oauth",
@@ -3921,7 +3921,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "auth",
-          "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgmkA3ue9GjZHb5P6iaBZ'}"
+          "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgmmrMEfwse14E75rsijT'}"
         },
         {
           "provider": "codex",
@@ -3929,7 +3929,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "transient",
-          "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b105-ec2c-72e3-af42-6e58bf29be13\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
+          "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b11a-45c5-7830-9ae1-37feb7797763\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
         },
         {
           "provider": "codex",
@@ -3937,7 +3937,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "transient",
-          "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b105-fc1f-7371-9958-2f090062b2a4\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
+          "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b11a-57aa-7c62-b55f-742c09e8bebd\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
         }
       ],
       "tool_call_batches": 0,
