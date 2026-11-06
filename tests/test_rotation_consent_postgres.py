@@ -412,3 +412,78 @@ def test_rollback_retains_marker_and_removes_rpc_authority(db, user):
         db.update(user, YES | {"lang":"zh"})
     finally:
         db.apply()
+
+
+@pytest.fixture
+def fresh_acl_db():
+    """An independent uninitialized fixture, never the installed Auth database."""
+    with tempfile.TemporaryDirectory(prefix="rot-consent-acl-", dir="/tmp") as root:
+        fresh = LocalPG(root)
+        try:
+            fresh.start()
+            fresh.sql("""
+              CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN;
+              CREATE ROLE service_role NOLOGIN; CREATE ROLE authenticator LOGIN NOINHERIT;
+              CREATE ROLE supabase_auth_admin LOGIN NOSUPERUSER NOCREATEROLE;
+              GRANT anon,authenticated,service_role TO authenticator;
+              GRANT USAGE ON SCHEMA public TO anon,authenticated,service_role;
+              CREATE SCHEMA auth;
+              GRANT USAGE ON SCHEMA auth TO supabase_auth_admin;
+              CREATE TABLE auth.users(id uuid PRIMARY KEY,
+                raw_user_meta_data jsonb,raw_app_meta_data jsonb,unrelated text);
+              ALTER TABLE auth.users OWNER TO supabase_auth_admin;
+            """)
+            yield fresh
+        finally:
+            fresh.stop()
+
+
+def test_first_apply_refuses_unapproved_default_rpc_grants(fresh_acl_db):
+    fresh = fresh_acl_db
+    fresh.sql("CREATE ROLE rotation_fixture_extra NOLOGIN; "
+              "GRANT USAGE ON SCHEMA public TO rotation_fixture_extra; "
+              "ALTER DEFAULT PRIVILEGES IN SCHEMA public "
+              "GRANT EXECUTE ON FUNCTIONS TO rotation_fixture_extra;")
+    fresh.apply(denied="rotation consent RPC execution grants mismatch")
+    assert fresh.sql(
+        "SELECT to_regprocedure('public.rotation_consent_read_v1(uuid)') IS NULL "
+        "AND to_regprocedure('public.rotation_consent_set_v1(uuid,boolean,uuid)') IS NULL "
+        "AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname=" + quote(OWNER) + ");") == "t"
+    # Only the fixture's unrelated default is removed; valid installation works.
+    fresh.sql("ALTER DEFAULT PRIVILEGES IN SCHEMA public "
+              "REVOKE EXECUTE ON FUNCTIONS FROM rotation_fixture_extra;")
+    fresh.apply()
+    uid = str(uuid.uuid4())
+    fresh.sql(f"INSERT INTO auth.users VALUES({quote(uid)},{jsql(YES)},"
+              "'{}'::jsonb,'keep');", "supabase_auth_admin")
+    assert fresh.transition(uid, True)["state"]["active"] is True
+    fresh.sql(f"SELECT public.rotation_consent_read_v1({quote(uid)});",
+              "rotation_fixture_extra", denied="permission denied")
+    fresh.sql(fresh.transition_sql(uid, False), "rotation_fixture_extra",
+              denied="permission denied")
+
+
+@pytest.mark.parametrize("signature", [
+    "public.rotation_consent_read_v1(uuid)",
+    "public.rotation_consent_set_v1(uuid,boolean,uuid)",
+], ids=["read-rpc", "set-rpc"])
+def test_reapply_refuses_unexpected_direct_rpc_grants(db, user, signature):
+    before = db.transition(user, True)["state"]
+    db.sql("CREATE ROLE rotation_fixture_extra NOLOGIN; "
+           "GRANT USAGE ON SCHEMA public TO rotation_fixture_extra; "
+           f"GRANT EXECUTE ON FUNCTION {signature} TO rotation_fixture_extra;")
+    try:
+        assert db.sql("SELECT has_function_privilege('rotation_fixture_extra',"
+                      + quote(signature) + ",'EXECUTE');") == "t"
+        db.apply(denied="rotation consent RPC execution grants mismatch")
+        assert db.read(user)["state"] == before
+        # Rejection rolls back the migration; it does not silently repair a
+        # pre-existing grant. Installed-owner remediation remains explicit.
+        assert db.sql("SELECT has_function_privilege('rotation_fixture_extra',"
+                      + quote(signature) + ",'EXECUTE');") == "t"
+    finally:
+        db.sql(f"REVOKE EXECUTE ON FUNCTION {signature} FROM rotation_fixture_extra; "
+               "REVOKE USAGE ON SCHEMA public FROM rotation_fixture_extra; "
+               "DROP ROLE rotation_fixture_extra;")
+        db.apply()
+    assert db.read(user)["state"] == before

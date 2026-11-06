@@ -119,3 +119,23 @@ def test_explicit_authorization_denial_has_no_retry_or_alternate_credential(code
     assert result["effect"] == "NOT_APPLIED"
     assert result["status"] == "authorization_denied"
     assert send.call_count == 1
+
+
+@pytest.mark.parametrize("writing", [False, True], ids=["read", "write"])
+@pytest.mark.parametrize("location", ["envelope", "state"])
+@pytest.mark.parametrize("bad", [[], {}], ids=["list", "object"])
+def test_structured_status_receipt_is_invalid_without_retry(writing, location, bad):
+    body = {"status": "applied" if writing else "ok", "state": state(writing)}
+    if location == "envelope":
+        body["status"] = bad
+    else:
+        body["state"]["status"] = bad
+    with patch.object(P.urllib.request, "urlopen", return_value=reply(body)) as send:
+        if writing:
+            result = P.write_rotation_consent(USER, True, expected_revision=REV,
+                                               supabase=CREDS)
+        else:
+            result = P.read_rotation_consent(USER, supabase=CREDS)
+    assert result == dict(effect="EFFECT_UNKNOWN" if writing else "NOT_APPLIED",
+                          status="invalid_receipt", state=None)
+    assert send.call_count == 1

@@ -406,7 +406,8 @@ def _rotation_consent_state(value: Any, user_id: str) -> dict | None:
         return None
     if value["schema"] != "macro.rotation_consent.v1" or value["user_id"] != user_id:
         return None
-    if value["status"] not in {"active", "inactive", "corrupt", "preferences_not_enabled"}:
+    if not isinstance(value["status"], str) or value["status"] not in {
+            "active", "inactive", "corrupt", "preferences_not_enabled"}:
         return None
     active = value["active"]
     if type(active) is not bool or active != (value["status"] == "active"):
@@ -481,7 +482,8 @@ def _rotation_consent_rpc(user_id: str, *, enabled: bool | None,
                     action, type(exc).__name__)
         return {"effect": "EFFECT_UNKNOWN" if writing else "NOT_APPLIED",
                 "status": "receipt_unavailable", "state": None}
-    if not isinstance(body, dict) or set(body)-{"status", "state"}:
+    if (not isinstance(body, dict) or set(body)-{"status", "state"}
+            or not isinstance(body.get("status"), str)):
         body = {}
     status = body.get("status")
     state = _rotation_consent_state(body.get("state"), user_id)

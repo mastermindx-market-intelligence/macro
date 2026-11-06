@@ -275,6 +275,32 @@ GRANT EXECUTE ON FUNCTION public.rotation_consent_read_v1(uuid),
   public.rotation_consent_set_v1(uuid,boolean,uuid) TO service_role;
 REVOKE CREATE ON SCHEMA auth,public FROM macro_rotation_consent_owner;
 
+-- Named revokes do not remove independent/default grants to other roles.
+-- Refuse that installed shape atomically instead of changing unrelated ACLs.
+DO $rpc_acl$
+DECLARE
+  rpc oid;
+  owner_oid oid := 'macro_rotation_consent_owner'::regrole;
+  service_oid oid := 'service_role'::regrole;
+BEGIN
+  FOREACH rpc IN ARRAY ARRAY[
+    'public.rotation_consent_read_v1(uuid)'::regprocedure::oid,
+    'public.rotation_consent_set_v1(uuid,boolean,uuid)'::regprocedure::oid
+  ] LOOP
+    IF EXISTS (
+      SELECT FROM pg_catalog.pg_proc p
+      CROSS JOIN LATERAL pg_catalog.aclexplode(
+        coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) AS acl
+      WHERE p.oid=rpc AND acl.privilege_type='EXECUTE'
+        AND (acl.grantee NOT IN (owner_oid,service_oid)
+          OR (acl.grantee=service_oid AND acl.is_grantable))
+    ) THEN
+      RAISE EXCEPTION 'rotation consent RPC execution grants mismatch';
+    END IF;
+  END LOOP;
+END
+$rpc_acl$;
+
 -- Idempotent source candidate; no user backfill and no automatic opt-in.
 DROP TRIGGER IF EXISTS mmx_rotation_consent_guard_v1 ON auth.users;
 CREATE TRIGGER mmx_rotation_consent_guard_v1
