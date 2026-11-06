@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-06T12:57:46.097455+00:00",
+  "generated_utc": "2026-11-06T17:45:31.705305+00:00",
   "as_of": "2026-11-06",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -15928,6 +15928,14 @@
         "activist": false,
         "filer": null,
         "detail": "Strategic Reviews"
+      },
+      {
+        "ticker": "KHC",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
       },
       {
         "ticker": "MLCO",
