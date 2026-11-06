@@ -3673,6 +3673,9 @@ def prepare_canonical_main(
     )
 
 
+_PROVIDED_ACTIONS_TESTED_TREE_DEPTHS = (2, 8, 32, 128, 512, 2048, 8192)
+
+
 def _prepare_provided_actions(
     job: LegacyJob,
     *,
@@ -3682,18 +3685,16 @@ def _prepare_provided_actions(
     """Materialize the action semantics the pack workflow shares.
 
     setup-python 3.12 and setup-node 20 are supplied by the pack job itself.
-    The ordinary checkout is represented by the exact-tree reset. A manifest
-    checkout requesting fetch-depth 0 first deepens only the authoritative
-    tested tree, in bounded steps, until the synthetic merge parents have a
-    usable merge base. That is the actual history contract of every current
-    fetch-depth-0 consumer: each fetches its canonical base itself, none reads
-    tags/unrelated remote refs, and self-mod-fence needs the PR-commit ancestry
-    only through the branch point.
+    A fetch-depth-0 checkout needs visible tested parents and their merge
+    base; current consumers bind their own comparison subjects. Acquire only
+    the authoritative tested commit through a finite ladder. A successful
+    transfer alone is not proof of the required ancestry.
 
-    If exact-tree ancestry cannot be established within the bounded ladder, or
-    any exact fetch fails, preserve the established all-branches -> main-only
-    -> 30-day recovery ladder. Exact-base replay points ``origin`` at its
-    isolated base-only remote, so the same fail-closed recovery remains intact.
+    An exact-target transport failure or exhausted ladder fails closed.
+    Broad branch/tag, moving-main and time-window fallbacks can exhaust the
+    runner disk without establishing this exact subject's history. Exact-base
+    replay retains its isolated origin and the same readiness predicate.
+    This ladder is separate from canonical-main comparison acquisition.
     """
     contracts = _job_action_contract(job)
     if not any(
@@ -3710,8 +3711,7 @@ def _prepare_provided_actions(
         )
 
     git_env = _trusted_git_environment(root)
-    # Recheck this exact repository/tree before fetching: a later consumer must
-    # not re-shallow history already established by an earlier consumer.
+    # A later consumer must not re-shallow history already proved here.
     if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
         print(
             "::notice title=run-ci-pack::exact tested-tree ancestry already "
@@ -3719,126 +3719,36 @@ def _prepare_provided_actions(
             flush=True,
         )
         return
-    exact_fetch_failed = False
-    for index, depth in enumerate(_EXACT_TESTED_TREE_DEPTHS):
-        try:
-            subprocess.run(
-                [
-                    "git",
-                    "fetch",
-                    "--no-recurse-submodules",
-                    "--no-tags",
-                    f"--depth={depth}",
-                    "origin",
-                    tested_tree_sha,
-                ],
-                cwd=root,
-                env=git_env,
-                check=True,
-            )
-        except subprocess.CalledProcessError:
-            exact_fetch_failed = True
-            print(
-                "::warning title=run-ci-pack::exact tested-tree ancestry fetch failed "
-                f"at depth {depth}; retrying legacy all-branches deepen",
-                flush=True,
-            )
-            break
-
-        if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
-            return
-
-        if index + 1 < len(_EXACT_TESTED_TREE_DEPTHS):
-            print(
-                "::notice title=run-ci-pack::exact tested-tree ancestry incomplete "
-                f"at depth {depth}; deepening to "
-                f"{_EXACT_TESTED_TREE_DEPTHS[index + 1]}",
-                flush=True,
-            )
-
-    if not exact_fetch_failed:
-        print(
-            "::warning title=run-ci-pack::exact tested-tree ancestry remained "
-            f"incomplete through depth {_EXACT_TESTED_TREE_DEPTHS[-1]}; "
-            "retrying legacy all-branches deepen",
-            flush=True,
-        )
-
-    try:
+    for index, depth in enumerate(_PROVIDED_ACTIONS_TESTED_TREE_DEPTHS):
+        # Transport failure propagates immediately. Only a completed fetch
+        # with insufficient ancestry permits the next, deeper exact request.
         subprocess.run(
             [
                 "git",
                 "fetch",
                 "--no-recurse-submodules",
-                "--prune",
-                "--tags",
-                "--depth=2147483647",
+                "--no-tags",
+                f"--depth={depth}",
                 "origin",
-                "+refs/heads/*:refs/remotes/origin/*",
+                tested_tree_sha,
             ],
             cwd=root,
             env=git_env,
             check=True,
         )
-    except subprocess.CalledProcessError:
-        # One broken sibling ref must not fail every fetch-depth-0 job. On
-        # 2026-09-21 an all-branches deepen died fleet-wide with "fatal:
-        # missing blob object ..." / "error: remote did not send all
-        # necessary objects" — a ref whose objects the server could not
-        # serve — and every design-governance run after it red as
-        # "infrastructure unknown". The checks behind this contract diff
-        # against main and the PR's own refs (already present in the
-        # workspace), so full main history is the part that must succeed.
-        print(
-            "::warning title=run-ci-pack::all-branches deepen failed; "
-            "retrying with refs/heads/main only",
-            flush=True,
-        )
-        try:
-            subprocess.run(
-                [
-                    "git",
-                    "fetch",
-                    "--no-recurse-submodules",
-                    "--tags",
-                    "--depth=2147483647",
-                    "origin",
-                    "+refs/heads/main:refs/remotes/origin/main",
-                ],
-                cwd=root,
-                env=git_env,
-                check=True,
-            )
-        except subprocess.CalledProcessError:
-            # 2026-09-21 16:08Z: even the main-only full deepen died the same
-            # way ("fatal: missing blob object 9cd3bb31..."), while the
-            # all-branches fetch had SUCCEEDED on sibling runs minutes
-            # earlier — the failures are intermittent server-side pack
-            # assembly on these enormous full-history fetches, not one
-            # broken ref. The checks behind this contract only ever diff
-            # against a merge base that is hours-to-days old, so a bounded
-            # window is always sufficient in practice and is orders of
-            # magnitude smaller to assemble. Tags are dropped on this rung:
-            # none of the gated checks read tags, and a tag pinning
-            # unreachable history would re-break the fetch.
+        if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
+            return
+        if index + 1 < len(_PROVIDED_ACTIONS_TESTED_TREE_DEPTHS):
             print(
-                "::warning title=run-ci-pack::main-only deepen failed; "
-                "retrying refs/heads/main with --shallow-since=30 days",
+                "::notice title=run-ci-pack::exact tested-tree ancestry incomplete "
+                f"at depth {depth}; deepening to "
+                f"{_PROVIDED_ACTIONS_TESTED_TREE_DEPTHS[index + 1]}",
                 flush=True,
             )
-            subprocess.run(
-                [
-                    "git",
-                    "fetch",
-                    "--no-recurse-submodules",
-                    "--shallow-since=30 days ago",
-                    "origin",
-                    "+refs/heads/main:refs/remotes/origin/main",
-                ],
-                cwd=root,
-                env=git_env,
-                check=True,
-            )
+    raise RuntimeError(
+        f"job {job.job_id!r}: exact tested-tree ancestry {tested_tree_sha} "
+        f"remained unavailable through depth {_PROVIDED_ACTIONS_TESTED_TREE_DEPTHS[-1]}"
+    )
 
 
 def _run_job(
