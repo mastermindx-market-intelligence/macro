@@ -1,0 +1,65 @@
+{
+  "schema": "press.reviewed_context_installed_consumer.v1",
+  "observed_at": "2026-10-14T00:14:53.170791+00:00",
+  "head": "bc0a4182568b3a055bc9cc1f516d22fabfd4e175",
+  "head_after": "bc0a4182568b3a055bc9cc1f516d22fabfd4e175",
+  "source_sha256": "0bd43e347e1ccf12b362add33360491c4d56501fc40154bb6bd9c5fb7764d497",
+  "positive_historical_fixture_routes": [
+    "fact-sheets",
+    "research",
+    "explicit-no-share",
+    "reviewed-context"
+  ],
+  "negative_controls": [
+    {
+      "control": "unknown-route",
+      "error": "source is not its canonical White House document"
+    },
+    {
+      "control": "expired-event",
+      "error": "event is outside the current Brief publication window"
+    },
+    {
+      "control": "rights",
+      "error": "source-specific candidate rights qualification required"
+    },
+    {
+      "control": "feed",
+      "error": "source feed identity mismatch"
+    },
+    {
+      "control": "body",
+      "error": "source body hash mismatch"
+    },
+    {
+      "control": "hash",
+      "error": "evidence hash mismatch"
+    },
+    {
+      "control": "identity",
+      "error": "reviewed context fact is not an existing engine measurement"
+    },
+    {
+      "control": "relevance",
+      "error": "reviewed context identity or relevance invalid"
+    },
+    {
+      "control": "duplicate",
+      "error": "reviewed context identity or relevance invalid"
+    },
+    {
+      "control": "malformed-extractor",
+      "error": "reviewed context artifact is malformed"
+    },
+    {
+      "control": "null-context",
+      "error": "bounded reviewed first-party context required"
+    }
+  ],
+  "runtime_inputs_unchanged": true,
+  "staging_writes": 0,
+  "provider_calls": 0,
+  "publication_approved": false,
+  "qualification_scope": "Synthetic historical consumer controls only, not admission of a current story",
+  "accepted": true
+}

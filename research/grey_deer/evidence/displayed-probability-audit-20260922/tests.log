@@ -1,0 +1,31 @@
+........................................................................ [ 34%]
+........................................................................ [ 68%]
+.................................................................        [100%]
+=============================== warnings summary ===============================
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-ddc3348f-0d40-4b6c-9635-758bc7d8ec38/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-ddc3348f-0d40-4b6c-9635-758bc7d8ec38/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-2139a9fd-eccf-434c-be75-7397fd233a94/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-2139a9fd-eccf-434c-be75-7397fd233a94/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-10055657-a54b-42c6-9731-99541dd84b0e/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-10055657-a54b-42c6-9731-99541dd84b0e/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-39b75f91-3018-42d2-9f88-5192212334f0/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-39b75f91-3018-42d2-9f88-5192212334f0/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-36ec2679-e38e-475d-b3c3-baf88e81746d/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-36ec2679-e38e-475d-b3c3-baf88e81746d/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+209 passed, 5 warnings in 23.51s

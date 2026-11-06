@@ -695,9 +695,15 @@ def load_earnings_events(closes: pd.DataFrame | None = None,
     if closes is None or closes.empty:
         return []
 
+    from engine.earnings_release.announcement_days import (
+        _acceptance_sort_key,
+        announcement_days,
+    )
+
     cal = closes.index
     events: list[tuple[str, str, str]] = []
     df = df[df["ticker"].notna() & df["filing_date"].notna()]
+    df = announcement_days(df)
 
     for tkr, grp in df.groupby("ticker"):
         tkr = str(tkr).upper().strip()
@@ -712,6 +718,13 @@ def load_earnings_events(closes: pd.DataFrame | None = None,
                 else pd.Series(0.0, index=s.index))
         exret = ret - sret.fillna(0.0)
 
+        acc_key = _acceptance_sort_key(grp) if "acceptance_datetime" in grp.columns else None
+        if acc_key is not None:
+            grp = grp.assign(_acceptance_sort_key=acc_key).sort_values(
+                "_acceptance_sort_key", kind="mergesort"
+            ).drop(columns=["_acceptance_sort_key"])
+
+        seen: set[tuple[str, object]] = set()
         for _, r in grp.iterrows():
             try:
                 fd = pd.Timestamp(r["filing_date"]).normalize()
@@ -721,6 +734,10 @@ def load_earnings_events(closes: pd.DataFrame | None = None,
             d0 = earnings_day0(fd, r.get("acceptance_datetime"), cal)
             if d0 is None or rule is None:
                 continue
+            dedupe_key = (tkr, d0.date())
+            if dedupe_key in seen:
+                continue
+            seen.add(dedupe_key)
             # r0z needs the name to actually have printed on day0 and to have a
             # trailing vol ending the session BEFORE it.
             if d0 not in exret.index:

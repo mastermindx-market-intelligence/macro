@@ -1,0 +1,40 @@
+{
+  "cik": "0001434316",
+  "filings_10k": [
+    {
+      "accessionNumber": "0000950170-22-002293",
+      "filingDate": "2022-02-28",
+      "form": "10-K",
+      "primaryDocument": "fate-20211231.htm",
+      "reportDate": "2021-12-31"
+    },
+    {
+      "accessionNumber": "0000950170-23-005067",
+      "filingDate": "2023-02-28",
+      "form": "10-K",
+      "primaryDocument": "fate-20221231.htm",
+      "reportDate": "2022-12-31"
+    },
+    {
+      "accessionNumber": "0000950170-24-020158",
+      "filingDate": "2024-02-26",
+      "form": "10-K",
+      "primaryDocument": "fate-20231231.htm",
+      "reportDate": "2023-12-31"
+    }
+  ],
+  "fiscalYearEnd": "1231",
+  "name": "FATE THERAPEUTICS INC",
+  "response_sha256": {
+    "https://data.sec.gov/submissions/CIK0001434316.json": "34da55e199e79008c56abac91a2d77450faf4dc5ded30303786f893a1afb8fe6"
+  },
+  "retrieved_at": "2026-11-01T20:23:09Z",
+  "sic": "2836",
+  "sicDescription": "Biological Products, (No Diagnostic Substances)",
+  "source_urls": [
+    "https://data.sec.gov/submissions/CIK0001434316.json"
+  ],
+  "tickers": [
+    "FATE"
+  ]
+}

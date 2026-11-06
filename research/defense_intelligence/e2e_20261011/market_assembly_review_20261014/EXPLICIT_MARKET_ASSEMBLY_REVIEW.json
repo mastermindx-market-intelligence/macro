@@ -1,0 +1,78 @@
+{
+  "schema": "defense.explicit_market_assembly_leaf_review.v1",
+  "state": "QUALIFIED_EXPLICIT_REVIEW_CANDIDATE_NOT_PROMOTED",
+  "source_head": "7c8069a604c77a63ef4c048263cef45f262d0bdc",
+  "approved_financial_sha256": "9d80423c7de3ad9a7c0c3b93b714bc6559c101467b2e3795d18c91452cb5e2e0",
+  "current_financial_sha256": "2f10c93138d8de92c47fd33a8ca92fddd5b9d4f5023022b1dbfa7b903fc9a3b2",
+  "original_review_sha256": "87b6c402074eb28765fb6e75dadcbca9e4d311f5178e0be1593bf98a20ce2758",
+  "reviewed_at": "2026-10-14T02:58:52.513457+00:00",
+  "old_pulse_sha256": "0f408c1a8d0c45e7a1500572cc890021ea6fe702e63b502df0928f778369cfe0",
+  "new_pulse_sha256": "0954b65485a3679affd5a07d471ae652a6b2e514b9c9a51c8a1365cd9574d25d",
+  "native_defense_changed_fields": [
+    "generated_at"
+  ],
+  "native_input_inventory_count": 26,
+  "changed_native_input_paths": [
+    "site/basketdata/pulse.json"
+  ],
+  "selected_leaf_changed_fields": [
+    "evidence_refs",
+    "owner_ref",
+    "observed_at",
+    "summary_en",
+    "summary_zh"
+  ],
+  "material_market_semantics_unchanged": true,
+  "source_identity_rights_subject_basis_unchanged": true,
+  "old_market_as_of": "2026-10-08",
+  "current_market_as_of": "2026-10-08",
+  "no_freshness_promotion": true,
+  "six_changed_tokens": [
+    {
+      "token": "golden_dome/market_context/0",
+      "old_fingerprint": "29c90b910b96ff17a6165f9252081fa49a262d7c43933250cc609c9341eb44e7",
+      "new_fingerprint": "898113423f84b9babd7291540037d882ff69ac97b8c1af216e28392212e2b484",
+      "state_preserved": "stale",
+      "reason_preserved": "shared_defense_basket_not_theme_portfolio"
+    },
+    {
+      "token": "munitions_replenishment/market_context/0",
+      "old_fingerprint": "29c90b910b96ff17a6165f9252081fa49a262d7c43933250cc609c9341eb44e7",
+      "new_fingerprint": "898113423f84b9babd7291540037d882ff69ac97b8c1af216e28392212e2b484",
+      "state_preserved": "stale",
+      "reason_preserved": "shared_defense_basket_not_theme_portfolio"
+    },
+    {
+      "token": "space/market_context/0",
+      "old_fingerprint": "29c90b910b96ff17a6165f9252081fa49a262d7c43933250cc609c9341eb44e7",
+      "new_fingerprint": "898113423f84b9babd7291540037d882ff69ac97b8c1af216e28392212e2b484",
+      "state_preserved": "stale",
+      "reason_preserved": "shared_defense_basket_not_theme_portfolio"
+    },
+    {
+      "token": "nato_fms_demand/market_context/0",
+      "old_fingerprint": "29c90b910b96ff17a6165f9252081fa49a262d7c43933250cc609c9341eb44e7",
+      "new_fingerprint": "898113423f84b9babd7291540037d882ff69ac97b8c1af216e28392212e2b484",
+      "state_preserved": "stale",
+      "reason_preserved": "shared_defense_basket_not_theme_portfolio"
+    },
+    {
+      "token": "fleet_sustainment_upgrades/market_context/0",
+      "old_fingerprint": "29c90b910b96ff17a6165f9252081fa49a262d7c43933250cc609c9341eb44e7",
+      "new_fingerprint": "898113423f84b9babd7291540037d882ff69ac97b8c1af216e28392212e2b484",
+      "state_preserved": "stale",
+      "reason_preserved": "shared_defense_basket_not_theme_portfolio"
+    },
+    {
+      "token": "shipbuilding/market_context/0",
+      "old_fingerprint": "29c90b910b96ff17a6165f9252081fa49a262d7c43933250cc609c9341eb44e7",
+      "new_fingerprint": "898113423f84b9babd7291540037d882ff69ac97b8c1af216e28392212e2b484",
+      "state_preserved": "stale",
+      "reason_preserved": "shared_defense_basket_not_theme_portfolio"
+    }
+  ],
+  "unrelated_fingerprints_preserved": 37,
+  "old_review_history_preserved": true,
+  "code_normalizer_changed": false,
+  "root_integration_review_required": true
+}

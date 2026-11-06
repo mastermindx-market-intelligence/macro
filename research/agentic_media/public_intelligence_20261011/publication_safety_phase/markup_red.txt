@@ -1,0 +1,1552 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                             [100%]
+=================================== FAILURES ===================================
+__________ test_full_suite_refuses_script_in_otherwise_passing_draft ___________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1619/test_full_suite_refuses_script0')
+
+    def test_full_suite_refuses_script_in_otherwise_passing_draft(tmp_path):
+        root = F.fixture_root(tmp_path)
+        cfg = P.load_config(root)
+        slot = P.plan(["brief"], as_of="2026-07-26", root=root, cfg=cfg)[0]
+        draft = F.draft_from_slot(slot)
+        assert V.validate(draft, slot, cfg, root=root)["ok"]
+        draft["body_html"] += "<script>unsafe()</script>"
+        report = V.validate(draft, slot, cfg, root=root)
+>       assert not report["ok"]
+E       assert not True
+
+tests/test_press_markup_safety.py:17: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  engine.press.desk_planner:desk_planner.py:507 press.desk_planner: engine artifacts — 1 fact(s) dropped as of 2026-07-26 (artifact postdates the run date or carries no date): gex_spx@2026-08-05
+_ test_safe_fragments_remain_accepted[<p class="press-byline">Desk</p><h2>A dated question</h2><p data-claim-ids="revenue-1 margin_2">A &amp; B: 2 &lt; 3.</p><ul><li><strong>Fact</strong> <em>scope</em></li></ul><p><a href="https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html">OCC</a></p><p class="press-footer">Footer</p>] _
+
+body = '<p class="press-byline">Desk</p><h2>A dated question</h2><p data-claim-ids="revenue-1 margin_2">A &amp; B: 2 &lt; 3.<...tps://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html">OCC</a></p><p class="press-footer">Footer</p>'
+
+    @pytest.mark.parametrize("body", [
+        '<p class="press-byline">Desk</p><h2>A dated question</h2>'
+        '<p data-claim-ids="revenue-1 margin_2">A &amp; B: 2 &lt; 3.</p>'
+        '<ul><li><strong>Fact</strong> <em>scope</em></li></ul>'
+        '<p><a href="https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html">OCC</a></p>'
+        '<p class="press-footer">Footer</p>',
+        '<h3>Context</h3><blockquote>Attributed prose</blockquote><p>Line<br>break</p>',
+        '<p><a href=/stocks/BAC.html>BAC</a></p>',
+        "<p>Less than 3 &gt; 2; an apostrophe's fine.</p>",
+    ])
+    def test_safe_fragments_remain_accepted(body):
+>       assert V.check_markup_safety({"body_html": body}, {}, {})["ok"]
+               ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:32: AttributeError
+_ test_safe_fragments_remain_accepted[<h3>Context</h3><blockquote>Attributed prose</blockquote><p>Line<br>break</p>] _
+
+body = '<h3>Context</h3><blockquote>Attributed prose</blockquote><p>Line<br>break</p>'
+
+    @pytest.mark.parametrize("body", [
+        '<p class="press-byline">Desk</p><h2>A dated question</h2>'
+        '<p data-claim-ids="revenue-1 margin_2">A &amp; B: 2 &lt; 3.</p>'
+        '<ul><li><strong>Fact</strong> <em>scope</em></li></ul>'
+        '<p><a href="https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html">OCC</a></p>'
+        '<p class="press-footer">Footer</p>',
+        '<h3>Context</h3><blockquote>Attributed prose</blockquote><p>Line<br>break</p>',
+        '<p><a href=/stocks/BAC.html>BAC</a></p>',
+        "<p>Less than 3 &gt; 2; an apostrophe's fine.</p>",
+    ])
+    def test_safe_fragments_remain_accepted(body):
+>       assert V.check_markup_safety({"body_html": body}, {}, {})["ok"]
+               ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:32: AttributeError
+_ test_safe_fragments_remain_accepted[<p><a href=/stocks/BAC.html>BAC</a></p>] _
+
+body = '<p><a href=/stocks/BAC.html>BAC</a></p>'
+
+    @pytest.mark.parametrize("body", [
+        '<p class="press-byline">Desk</p><h2>A dated question</h2>'
+        '<p data-claim-ids="revenue-1 margin_2">A &amp; B: 2 &lt; 3.</p>'
+        '<ul><li><strong>Fact</strong> <em>scope</em></li></ul>'
+        '<p><a href="https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html">OCC</a></p>'
+        '<p class="press-footer">Footer</p>',
+        '<h3>Context</h3><blockquote>Attributed prose</blockquote><p>Line<br>break</p>',
+        '<p><a href=/stocks/BAC.html>BAC</a></p>',
+        "<p>Less than 3 &gt; 2; an apostrophe's fine.</p>",
+    ])
+    def test_safe_fragments_remain_accepted(body):
+>       assert V.check_markup_safety({"body_html": body}, {}, {})["ok"]
+               ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:32: AttributeError
+_ test_safe_fragments_remain_accepted[<p>Less than 3 &gt; 2; an apostrophe's fine.</p>] _
+
+body = "<p>Less than 3 &gt; 2; an apostrophe's fine.</p>"
+
+    @pytest.mark.parametrize("body", [
+        '<p class="press-byline">Desk</p><h2>A dated question</h2>'
+        '<p data-claim-ids="revenue-1 margin_2">A &amp; B: 2 &lt; 3.</p>'
+        '<ul><li><strong>Fact</strong> <em>scope</em></li></ul>'
+        '<p><a href="https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html">OCC</a></p>'
+        '<p class="press-footer">Footer</p>',
+        '<h3>Context</h3><blockquote>Attributed prose</blockquote><p>Line<br>break</p>',
+        '<p><a href=/stocks/BAC.html>BAC</a></p>',
+        "<p>Less than 3 &gt; 2; an apostrophe's fine.</p>",
+    ])
+    def test_safe_fragments_remain_accepted(body):
+>       assert V.check_markup_safety({"body_html": body}, {}, {})["ok"]
+               ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:32: AttributeError
+__ test_unsafe_or_ambiguous_fragments_are_refused[<script>alert(1)</script>] ___
+
+body = '<script>alert(1)</script>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<ScRiPt src='https://bad.example/x'></ScRiPt>] _
+
+body = "<ScRiPt src='https://bad.example/x'></ScRiPt>"
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<p onclick='unsafe()'>x</p>] __
+
+body = "<p onclick='unsafe()'>x</p>"
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<p ONMOUSEOVER="unsafe()">x</p>] _
+
+body = '<p ONMOUSEOVER="unsafe()">x</p>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<p style="display:none">hidden claims</p>] _
+
+body = '<p style="display:none">hidden claims</p>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<a href="javascript:unsafe()">x</a>] _
+
+body = '<a href="javascript:unsafe()">x</a>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<a href="JaVaScRiPt:unsafe()">x</a>] _
+
+body = '<a href="JaVaScRiPt:unsafe()">x</a>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<a href="java&#x73;cript:unsafe()">x</a>] _
+
+body = '<a href="java&#x73;cript:unsafe()">x</a>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<a href="java&#10;script:unsafe()">x</a>] _
+
+body = '<a href="java&#10;script:unsafe()">x</a>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<a href="data:text/html,bad">x</a>] _
+
+body = '<a href="data:text/html,bad">x</a>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<a href="//bad.example">x</a>] _
+
+body = '<a href="//bad.example">x</a>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<a href="/\\bad.example">x</a>] _
+
+body = '<a href="/\\bad.example">x</a>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<iframe src="https://bad.example"></iframe>] _
+
+body = '<iframe src="https://bad.example"></iframe>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<svg><a href="javascript:unsafe()">x</a></svg>] _
+
+body = '<svg><a href="javascript:unsafe()">x</a></svg>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<math><mtext>x</mtext></math>] _
+
+body = '<math><mtext>x</mtext></math>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<form action="https://bad.example"><input name="password"></form>] _
+
+body = '<form action="https://bad.example"><input name="password"></form>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<object data="bad"></object>] _
+
+body = '<object data="bad"></object>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+______ test_unsafe_or_ambiguous_fragments_are_refused[<embed src="bad">] _______
+
+body = '<embed src="bad">'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<style>p{display:none}</style>] _
+
+body = '<style>p{display:none}</style>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<link rel="stylesheet" href="bad">] _
+
+body = '<link rel="stylesheet" href="bad">'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<meta http-equiv="refresh" content="0;url=https://bad.example">] _
+
+body = '<meta http-equiv="refresh" content="0;url=https://bad.example">'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<base href="https://bad.example">] _
+
+body = '<base href="https://bad.example">'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<img src=x onerror=unsafe()>] _
+
+body = '<img src=x onerror=unsafe()>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<a href="/blog/" href="javascript:unsafe()">x</a>] _
+
+body = '<a href="/blog/" href="javascript:unsafe()">x</a>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<a href="/blog/" HREF="/learn/">x</a>] _
+
+body = '<a href="/blog/" HREF="/learn/">x</a>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_____ test_unsafe_or_ambiguous_fragments_are_refused[<p hidden>hidden</p>] _____
+
+body = '<p hidden>hidden</p>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<p class="hidden">hidden</p>] _
+
+body = '<p class="hidden">hidden</p>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<p xmlns="http://www.w3.org/2000/svg">x</p>] _
+
+body = '<p xmlns="http://www.w3.org/2000/svg">x</p>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<p><strong>mismatched</p></strong>] _
+
+body = '<p><strong>mismatched</p></strong>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_________ test_unsafe_or_ambiguous_fragments_are_refused[<p>unclosed] __________
+
+body = '<p>unclosed'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_____ test_unsafe_or_ambiguous_fragments_are_refused[<p title="unfinished] _____
+
+body = '<p title="unfinished'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<p /onmouseover="unsafe()">x</p>] _
+
+body = '<p /onmouseover="unsafe()">x</p>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+______ test_unsafe_or_ambiguous_fragments_are_refused[<p>text</p bogus>] _______
+
+body = '<p>text</p bogus>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+____ test_unsafe_or_ambiguous_fragments_are_refused[<!-- hidden markup -->] ____
+
+body = '<!-- hidden markup -->'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_______ test_unsafe_or_ambiguous_fragments_are_refused[<!DOCTYPE html>] ________
+
+body = '<!DOCTYPE html>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+____ test_unsafe_or_ambiguous_fragments_are_refused[<?xml version="1.0"?>] _____
+
+body = '<?xml version="1.0"?>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<![CDATA[<script>unsafe()</script>]]>] _
+
+body = '<![CDATA[<script>unsafe()</script>]]>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+______ test_unsafe_or_ambiguous_fragments_are_refused[<p>nul\x00text</p>] ______
+
+body = '<p>nul\x00text</p>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+_ test_unsafe_or_ambiguous_fragments_are_refused[<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>] _
+
+body = '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>'
+
+    @pytest.mark.parametrize("body", [
+        "<script>alert(1)</script>", "<ScRiPt src='https://bad.example/x'></ScRiPt>",
+        "<p onclick='unsafe()'>x</p>", '<p ONMOUSEOVER="unsafe()">x</p>',
+        '<p style="display:none">hidden claims</p>',
+        '<a href="javascript:unsafe()">x</a>', '<a href="JaVaScRiPt:unsafe()">x</a>',
+        '<a href="java&#x73;cript:unsafe()">x</a>',
+        '<a href="java&#10;script:unsafe()">x</a>',
+        '<a href="data:text/html,bad">x</a>', '<a href="//bad.example">x</a>',
+        '<a href="/\\bad.example">x</a>',
+        '<iframe src="https://bad.example"></iframe>',
+        '<svg><a href="javascript:unsafe()">x</a></svg>', '<math><mtext>x</mtext></math>',
+        '<form action="https://bad.example"><input name="password"></form>',
+        '<object data="bad"></object>', '<embed src="bad">',
+        '<style>p{display:none}</style>', '<link rel="stylesheet" href="bad">',
+        '<meta http-equiv="refresh" content="0;url=https://bad.example">',
+        '<base href="https://bad.example">', '<img src=x onerror=unsafe()>',
+        '<a href="/blog/" href="javascript:unsafe()">x</a>',
+        '<a href="/blog/" HREF="/learn/">x</a>',
+        '<p hidden>hidden</p>', '<p class="hidden">hidden</p>',
+        '<p xmlns="http://www.w3.org/2000/svg">x</p>',
+        '<p><strong>mismatched</p></strong>', '<p>unclosed',
+        '<p title="unfinished', '<p /onmouseover="unsafe()">x</p>',
+        '<p>text</p bogus>', '<!-- hidden markup -->', '<!DOCTYPE html>',
+        '<?xml version="1.0"?>', '<![CDATA[<script>unsafe()</script>]]>',
+        '<p>nul\x00text</p>', '<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>',
+    ])
+    def test_unsafe_or_ambiguous_fragments_are_refused(body):
+>       row = V.check_markup_safety({"body_html": body}, {}, {})
+              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'engine.press.validators' has no attribute 'check_markup_safety'
+
+tests/test_press_markup_safety.py:62: AttributeError
+
+NOTE: sparse worktree — mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_markup_safety.py::test_full_suite_refuses_script_in_otherwise_passing_draft
+FAILED tests/test_press_markup_safety.py::test_safe_fragments_remain_accepted[<p class="press-byline">Desk</p><h2>A dated question</h2><p data-claim-ids="revenue-1 margin_2">A &amp; B: 2 &lt; 3.</p><ul><li><strong>Fact</strong> <em>scope</em></li></ul><p><a href="https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html">OCC</a></p><p class="press-footer">Footer</p>]
+FAILED tests/test_press_markup_safety.py::test_safe_fragments_remain_accepted[<h3>Context</h3><blockquote>Attributed prose</blockquote><p>Line<br>break</p>]
+FAILED tests/test_press_markup_safety.py::test_safe_fragments_remain_accepted[<p><a href=/stocks/BAC.html>BAC</a></p>]
+FAILED tests/test_press_markup_safety.py::test_safe_fragments_remain_accepted[<p>Less than 3 &gt; 2; an apostrophe's fine.</p>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<script>alert(1)</script>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<ScRiPt src='https://bad.example/x'></ScRiPt>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p onclick='unsafe()'>x</p>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p ONMOUSEOVER="unsafe()">x</p>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p style="display:none">hidden claims</p>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<a href="javascript:unsafe()">x</a>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<a href="JaVaScRiPt:unsafe()">x</a>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<a href="java&#x73;cript:unsafe()">x</a>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<a href="java&#10;script:unsafe()">x</a>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<a href="data:text/html,bad">x</a>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<a href="//bad.example">x</a>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<a href="/\\bad.example">x</a>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<iframe src="https://bad.example"></iframe>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<svg><a href="javascript:unsafe()">x</a></svg>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<math><mtext>x</mtext></math>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<form action="https://bad.example"><input name="password"></form>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<object data="bad"></object>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<embed src="bad">]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<style>p{display:none}</style>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<link rel="stylesheet" href="bad">]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<meta http-equiv="refresh" content="0;url=https://bad.example">]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<base href="https://bad.example">]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<img src=x onerror=unsafe()>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<a href="/blog/" href="javascript:unsafe()">x</a>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<a href="/blog/" HREF="/learn/">x</a>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p hidden>hidden</p>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p class="hidden">hidden</p>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p xmlns="http://www.w3.org/2000/svg">x</p>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p><strong>mismatched</p></strong>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p>unclosed]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p title="unfinished]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p /onmouseover="unsafe()">x</p>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p>text</p bogus>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<!-- hidden markup -->]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<!DOCTYPE html>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<?xml version="1.0"?>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<![CDATA[<script>unsafe()</script>]]>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p>nul\x00text</p>]
+FAILED tests/test_press_markup_safety.py::test_unsafe_or_ambiguous_fragments_are_refused[<p><a href="/blog/">nested<a href="/learn/">a</a></a></p>]
+44 failed in 14.40s
