@@ -148,9 +148,22 @@ def test_mobile_switcher_is_not_a_hamburger() -> None:
     assert len(mob) == 2, "no <768px breakpoint — the mobile switcher is missing"
     block = mob[1][:900]
     assert "flex-direction:row" in block, "mobile rail must lay out as a tab row"
-    assert "border-bottom-color:var(--link)" in block, \
-        "on mobile the .on accent moves to border-bottom"
     assert "hamburger" not in block
+
+
+def test_rail_selection_has_no_colored_edge() -> None:
+    """DESIGN_DOCTRINE §3: a selected navigation item is a quiet fill with stronger ink,
+    never a coloured edge on any side — desktop rail or the mobile switcher."""
+    s = _page()
+    on_rules = re.findall(r"\.si-view-btn\.on\s*\{([^}]*)\}", s)
+    assert on_rules, "no .si-view-btn.on rule — the selected view lost its state"
+    for body in on_rules:
+        assert "border" not in body, f"selected view carries an edge: {body.strip()}"
+        assert "inset" not in body, f"selected view carries an inset stripe: {body.strip()}"
+    assert any("background:" in b and "font-weight:700" in b for b in on_rules)
+    assert not re.search(r"\.si-view-btn[^{]*\{[^}]*border-(left|bottom|right|top):\s*\d+px", s)
+    assert ".si-view-btn.on::before" not in s and ".si-view-btn.on::after" not in s
+    assert ".si-view-btn:focus-visible { outline:2px solid var(--link)" in s
 
 
 def test_board_universe_toggle_survives_on_mobile() -> None:
