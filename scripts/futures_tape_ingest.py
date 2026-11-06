@@ -385,7 +385,9 @@ def _normalize_lse_frame(df, source_symbol: str):
             f"LSE raw export needs timestamp and price columns; got {list(df.columns)}"
         )
     out = pd.DataFrame({
-        "timestamp_utc": pd.to_datetime(df[ts_col], utc=True, errors="coerce"),
+        "timestamp_utc": pd.to_datetime(df[ts_col], utc=True, errors="coerce").astype(
+            "datetime64[ns, UTC]"
+        ),
         "price_raw": pd.to_numeric(df[price_col], errors="coerce"),
         "source_symbol": source_symbol,
     })

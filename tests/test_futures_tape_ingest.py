@@ -150,6 +150,28 @@ def test_lse_normalization_has_canonical_columns_and_dedupes() -> None:
     assert out["source_symbol"].unique().tolist() == ["ES.F"]
 
 
+@pytest.mark.parametrize("unit", ["s", "ms", "us", "ns"])
+def test_lse_normalization_preserves_instants_across_timestamp_units(unit: str) -> None:
+    """Already-typed provider frames must obey the same canonical ns contract."""
+    timestamps = pd.Series(pd.to_datetime([
+        "2026-10-02T13:30:01Z", "2026-10-02T13:30:00Z",
+        "2026-10-02T13:30:00Z", None,
+    ], utc=True)).dt.tz_convert("America/New_York").astype(
+        f"datetime64[{unit}, America/New_York]"
+    )
+    raw = pd.DataFrame({
+        "timestamp": timestamps, "price": [2.0, 1.0, 1.0, 3.0],
+        "volume": [1, 1, 1, 1],
+    })
+    out = fti._normalize_lse_frame(raw, "ES.F")
+    assert str(out["timestamp_utc"].dtype) == "datetime64[ns, UTC]"
+    assert out["timestamp_utc"].tolist() == [
+        pd.Timestamp("2026-10-02T13:30:00Z"),
+        pd.Timestamp("2026-10-02T13:30:01Z"),
+    ]
+    assert out["price_raw"].tolist() == [1.0, 2.0]
+
+
 def test_row_bounds_are_utc_and_ignore_bad_rows() -> None:
     df = pd.DataFrame({
         "timestamp": ["bad", "2026-10-02T13:30:00Z", "2026-10-02T14:00:00Z"],
