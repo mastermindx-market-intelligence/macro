@@ -521,9 +521,9 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-06T07:20:24Z",
+    "built_at": "2026-11-06T09:38:53Z",
     "calculation_as_of": "2026-10-16",
-    "code_version": "3fc4cc0570d00df1d8bcdfd16c5390597b660f8f",
+    "code_version": "2012464520f1da80764b2211ce2637e597e4966a",
     "content_sha256": "172ffe8ce5e401a401aa87b1262d53cba211afcf62b750d88511ad39cb6b5cf5",
     "generation_id": "inflation_system-US-172ffe8ce5e401a4",
     "producer": "engine.market_os.macro_workspaces.inflation",

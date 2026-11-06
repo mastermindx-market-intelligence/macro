@@ -226,7 +226,7 @@
       "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 0.693, 'jpy2y': 0.164, 'gbp2y': 0.143}.",
       "gaps": [],
       "display_only": true,
-      "built": "2026-11-06T09:58:09.688821+00:00"
+      "built": "2026-11-06T12:23:04.328599+00:00"
     }
   },
   "transmission": {
@@ -3195,7 +3195,7 @@
       }
     },
     "snapshot_id": "43618f481f3334f2658c63482f760f332e4450f1aa24d86bc7acb02d7412151b",
-    "assembled_at": "2026-11-06T09:58:18.620832+00:00",
+    "assembled_at": "2026-11-06T12:23:13.029350+00:00",
     "readiness": "stale"
   },
   "regime_radar": {
@@ -6168,7 +6168,7 @@
         "current_read_asof_before_reference_date"
       ],
       "snapshot_id": "43618f481f3334f2658c63482f760f332e4450f1aa24d86bc7acb02d7412151b",
-      "assembled_at": "2026-11-06T09:58:18.620832+00:00",
+      "assembled_at": "2026-11-06T12:23:13.029350+00:00",
       "source_revision": null,
       "asof": "2026-11-05",
       "asof_age_days": 1,

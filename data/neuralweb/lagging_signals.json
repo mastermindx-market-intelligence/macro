@@ -6343,7 +6343,7 @@
       ]
     },
     "stock_personality": {
-      "n_recent_fires": 1720,
+      "n_recent_fires": 2948,
       "n_hostile_regime": 0,
       "n_breadth_unconfirmed": 0,
       "n_repeat_fire": 0,
@@ -9036,7 +9036,7 @@
   "gaps": [],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/lagging.py",
-  "produced_at": "2026-11-06T10:39:28Z",
-  "inputs_hash": "sha256:1d1fdfee0135618c3dada38c7800a31e613a42cb3c76d1885eb72cdf68b47fee",
+  "produced_at": "2026-11-06T13:01:03Z",
+  "inputs_hash": "sha256:768c32fb38a76770c63e274429c5f7bff5f923de4b8e5f1bcb2af1bed4d62329",
   "tier": "infrastructure"
 }
