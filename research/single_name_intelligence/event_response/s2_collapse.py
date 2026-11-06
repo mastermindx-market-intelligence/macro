@@ -302,6 +302,9 @@ def run_collapse(rows: list[dict], programmes: list[dict],
     for h in horizons:
         eps, absorbed = step4_overlap(events, h, session_dates_us, session_dates_hk)
         per_h[h] = {"episodes": eps, "absorbed": absorbed}
+    # Deterministic exclusion order (A7-F5): sort by (step, issuer_key, id)
+    # so a permutation of input rows yields identical exclusions.
+    excluded.sort(key=lambda e: (e.step, e.issuer_key, e.id))
     counts = {
         "literal_row_count_pre_step0": len(rows),
         "kept_after_step0": len(kept),

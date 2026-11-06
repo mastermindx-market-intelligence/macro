@@ -74,7 +74,7 @@ def test_q_step_inside_window_fires_and_logs_retirement(tmp_path: Path) -> None:
     rec = maybe_log_retirement(ledger, "P04", engine, state,
                                dt.date(2026, 6, 5), "2026-10-11T21:59:47+00:00")
     assert rec["contamination_class"] == INFO_LEAK_CLASS
-    assert rec["successor"] == "P04 v2 — not drafted; owner = seat/S0"
+    assert rec["successor"] == "— (none registered); owner = seat/S0"
     rows = [json.loads(l) for l in
             (tmp_path / "trial_ledger.jsonl").read_text().splitlines() if l.strip()]
     assert len(rows) == 1

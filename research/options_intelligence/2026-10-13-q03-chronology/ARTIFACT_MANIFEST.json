@@ -1,0 +1,58 @@
+{
+  "schema": "options.q03.source_evidence.v1",
+  "source_ref": "ce1da9761ae0cfcdd2cf2c7ae5a641b260bc1092",
+  "original_adapter_blob": "088f5a3f1086147ebc89a66cb86b35d612f69c16",
+  "changed_functions": [
+    "_aware_utc",
+    "_mature_after_cutoff",
+    "_reaches_validation",
+    "_refuse_non_session_boundary",
+    "_validated_sessions",
+    "_validation_boundary",
+    "label_interval",
+    "purge_training_rows"
+  ],
+  "new_tests": 28,
+  "existing_plus_new_tests": 68,
+  "empirical_acceptance": false,
+  "independent_review": "NOT_STARTED_DISPATCH_REFUSED",
+  "artifacts": [
+    {
+      "path": "scripts/options_pilot_study_adapter.py",
+      "bytes": 37613,
+      "sha256": "9ceb0bdeb6352b0ea195375e164bb60e0dec86ec86ab1519bc9b60ddf9212832",
+      "git_blob_sha": "b4b8613621eeabe1db7054cb0941928e02a3902b"
+    },
+    {
+      "path": "tests/test_options_pilot_chronology.py",
+      "bytes": 7585,
+      "sha256": "6630ef16ff93c01d3c4150b116f47fceddf7d4fc3726bf2eb1a5dfd6ce11a95a",
+      "git_blob_sha": "0b44f7a615ae6fef8ca823130f8928cfee0dda4f"
+    },
+    {
+      "path": "research/options_intelligence/2026-10-13-q03-chronology/Q03_CHRONOLOGY_REPAIR.md",
+      "bytes": 9206,
+      "sha256": "d6341ce7dcd5f31c1433dd7a9f4983f99440e94cdbd452857e6ab81133f44d27",
+      "git_blob_sha": "feeec35f215387ffce8797e9eb69736472eabd9c"
+    },
+    {
+      "path": "research/options_intelligence/2026-10-13-q03-chronology/baseline-counterexamples.json",
+      "bytes": 1264,
+      "sha256": "2a127cbe5c12ca0ed2aedf8c21f732a7b07022b67543c6693553cd159e2b49cd",
+      "git_blob_sha": "8817dd0e7b97d51199c314b9bd14e257fadc61af"
+    },
+    {
+      "path": "research/options_intelligence/2026-10-13-q03-chronology/validation-results.json",
+      "bytes": 1422,
+      "sha256": "ea1739515bef4deff5877f382f14d730edf48f3b1ec2380aeb2a134054180534",
+      "git_blob_sha": "057495bfa623eced06df89527cf3322825d3b352"
+    },
+    {
+      "path": "research/options_intelligence/2026-10-13-q03-chronology/verify_chronology.py",
+      "bytes": 4941,
+      "sha256": "3c65b20847bf0e129a13c68f5aed52c33fc793da39ddb7d840a42399a3d96948",
+      "git_blob_sha": "f8d35b6bdfec633853b98cec97592f5e5c50eec6"
+    }
+  ],
+  "self_exclusion": "This manifest excludes itself. Its identity is checked via the publication tree."
+}

@@ -62,6 +62,22 @@ class GuardTests(unittest.TestCase):
         release_patch.start()
         self.addCleanup(release_patch.stop)
         self.gc, self.cfg = guard.load_pinned_gc()
+        # Process inventories belong to the host, not to these temporary Git
+        # fixtures. Keep Git and the removal guard real; supply an explicit
+        # empty host inventory that the refusal cases below can replace.
+        processes = patch.object(self.gc, "proc_cwd_map", return_value={})
+        processes.start()
+        self.addCleanup(processes.stop)
+        self.process_listing = subprocess.CompletedProcess(
+            ("ps", "-axo", "command"), 0, "", "")
+        real_command = guard._cmd
+        def fixture_command(*args, **kwargs):
+            if args == ("ps", "-axo", "command"):
+                return self.process_listing
+            return real_command(*args, **kwargs)
+        commands = patch.object(guard, "_cmd", side_effect=fixture_command)
+        commands.start()
+        self.addCleanup(commands.stop)
         self.cfg = dict(self.cfg)
         # A hermetic fixture simulates a 3+-day-old landed tree with known origin.
         self.cfg["min_age_days"] = 3
@@ -173,6 +189,33 @@ class GuardTests(unittest.TestCase):
         out = self.remove(w, check_volume=denied)
         self.assertIn("SSD identity", out.get("skipped", ""))
         self.assertTrue(self.worktree.exists())
+
+    def test_unavailable_process_census_never_deleted(self):
+        w = self.candidate()
+        with patch.object(self.gc, "proc_cwd_map", return_value=None):
+            out = self.remove(w)
+        self.assertIn("process scan unavailable", out.get("skipped", ""))
+        self.assertTrue(self.worktree.exists())
+        self.assertFalse(self.audit.exists())
+
+    def test_process_command_reference_never_deleted(self):
+        w = self.candidate()
+        self.process_listing = subprocess.CompletedProcess(
+            ("ps", "-axo", "command"), 0,
+            "worker --repo " + str(self.worktree) + "\n", "")
+        out = self.remove(w)
+        self.assertIn("process command may reference worktree", out.get("skipped", ""))
+        self.assertTrue(self.worktree.exists())
+        self.assertFalse(self.audit.exists())
+
+    def test_failed_process_listing_never_deleted(self):
+        w = self.candidate()
+        self.process_listing = subprocess.CompletedProcess(
+            ("ps", "-axo", "command"), 1, "", "process inventory unavailable")
+        out = self.remove(w)
+        self.assertIn("process command may reference worktree", out.get("skipped", ""))
+        self.assertTrue(self.worktree.exists())
+        self.assertFalse(self.audit.exists())
 
     def test_unresolved_effect_blocks_new_removal(self):
         w = self.candidate()

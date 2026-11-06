@@ -124,7 +124,11 @@ waves:
     title: Shared read_runtime composition root (zero-arg build_read_service in production)
     status: todo
     depends_on: [F5-M]
-    next_action: "Merges only at >= 95% F5-M coverage (ruling F12-Q-L4-2 (f))."
+    next_action: >
+      Guarded dedicated-reader backend libraries may follow normal protected source
+      delivery under DEC:RESEARCH-VAULT-GUARDED-BACKEND-SOURCE-ORDERING. Ordinary
+      Brain F11 wiring and activation remain held until >=95% common-generation
+      coverage; preserve selected-reader/writer/auth and original-operation guards.
   - id: F12
     title: ChatGPT MCP read surface (Mastermind) - L1 contracts, L1.1 v1.1, L2 entitlement, L3 SDK app, L4 port adapter + runtime, L5 ops
     status: in_progress
@@ -143,12 +147,18 @@ waves:
       existing source/runtime and client prerequisites, then prove actual authenticated
       ChatGPT and Deep Research discovery, exact citations, correction and denial behavior.
 next_action: >
-  Continue the current #8438 completion frontier from comment 6136837584. Finish source-digest,
-  publication-time and visible-cohort retrieval repairs; qualify and finish existing #8622;
-  prove >=95% qualified materialization before F11 merges. Recover L3/L4 and actual Brain/MCP
-  composition, then prove real ChatGPT and Deep Research consumption under the cleared H-00.
-  Current execution uses Sol coordinators and the installed M2 shell Fabric adapter; historical
-  owner labels are not live writer evidence. Preserve exact active carriers and uncertain effects.
+  Continue #8438 checkpoint comment 6199947153. Mastermind launcher repair #1546 is
+  protected merged; Macro producer #9486 and workflow #9476 retain their normal
+  release carriers. Compose full-body/cache/intelligence source in #9646 with the
+  hermetic Vault suite in the PR code gate. Retain actual failed resource probes;
+  measure the repaired source on M2, then install the exact protected source pair
+  and qualify known writers plus >=95% common generation before ordinary Brain F11
+  wiring/activation. The guarded backend source exception is recorded in
+  DEC:RESEARCH-VAULT-GUARDED-BACKEND-SOURCE-ORDERING; source delivery is not runtime admission.
+  Preserve original uncertain/refused operations and the pending Auth0/C4 human
+  authentication steps. Finish installed reader and actual ChatGPT/Deep Research
+  ingestion, read, citation reopen, correction and denial acceptance.
+
 ---
 
 # Research Vault AI Intelligence Fabric
@@ -158,5 +168,13 @@ holds the masterplan chapters, the 2026-10-04 Sol handoff and execution checkpoi
 record is the Agent OS pointer so that seat handoffs on main resolve to a workstream; the
 program narrative stays on the carrier.
 
-Seat continuity: `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-07.md` (latest) and
+Seat continuity: `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-13.md` (latest) and
 `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-05.md`.
+
+
+Historical canary record: the October 14 03:20 UTC continuation update records the
+fifth intelligence canary's semantic refusal, all three recovered original Fabric
+results with unresolved controller/lease state, and resumed M1 discovery without
+fresh publication proof. The current execution checkpoint above supersedes that dated activity record;
+neither source progress nor old producer counters satisfies the required
+current-generation 95 percent or live-client gates.

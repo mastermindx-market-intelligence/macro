@@ -652,7 +652,15 @@ def _delivery_root_admission(root: Path) -> tuple[bool, str]:
     Unknown git identity fails closed. This is admission, not completion: the
     existing Stop chain still owns every delivery/CI/merge/live proof after a
     session has been admitted.
+
+    A minted Fabric lane is never a delivery root, whatever branch it is on: the
+    lane identity comes from the launcher's env and the lane path, so a worker
+    that renames its branch to claude/* falls back to quarantine instead of
+    acquiring the ship loop its parent run owns.
     """
+    lane_run_id = _fabric_lane_session_root(root)
+    if lane_run_id:
+        return False, f"Fabric lane checkout for run {lane_run_id} is never a delivery root"
     try:
         branch = _run(root, "git", "branch", "--show-current")
         git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
@@ -670,6 +678,144 @@ def _delivery_root_admission(root: Path) -> tuple[bool, str]:
     if reasons:
         return False, "; ".join(reasons)
     return True, ""
+
+
+# A Mastermind Fabric worker launched with `--new-macro-worktree` runs in a
+# dedicated sparse checkout the launcher minted for that one run:
+# `~/lanes/wt/<run-id>` on `lane/<run-id>`, with FABRIC_WORKSPACE_READY=1 and
+# FABRIC_WORKSPACE_RUN_ID=<run-id> exported only after the mint was verified.
+# That tree is not a shared checkout, so the root quarantine has nothing to
+# protect there -- but it is not a delivery session either: the parent run owns
+# commit/PR/merge/acceptance. Measured 2026-10-15 (run opus-sparse-w1-20261015,
+# glm via Claude CLI): every Bash call in a correctly minted lane was denied with
+# SESSION ROOT QUARANTINE. Admit exactly that shape for tool use only; the
+# session stays `root_admitted=False`, so Stop never runs the delivery chain.
+_FABRIC_LANE_RUN_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}")
+
+
+def _fabric_lane_session_root(root: Path) -> str:
+    """Return the run id when the launcher's env names ``root`` as its lane path.
+
+    Path identity only (no git): the readiness env names a safe run id and
+    ``root`` is ``~/lanes/wt/<run-id>``. Never raises.
+    """
+    if os.environ.get("FABRIC_WORKSPACE_READY") != "1":
+        return ""
+    run_id = os.environ.get("FABRIC_WORKSPACE_RUN_ID") or ""
+    if not _FABRIC_LANE_RUN_ID.fullmatch(run_id):
+        return ""
+    try:
+        if root.resolve() != (Path.home() / "lanes" / "wt" / run_id).resolve():
+            return ""
+    except Exception:
+        return ""
+    return run_id
+
+
+def _fabric_lane_admission(root: Path) -> str:
+    """Return the run id when ``root`` is this process's minted Fabric lane, else "".
+
+    Every condition must hold: the launcher's readiness env names a safe run id,
+    ``root`` is exactly ``~/lanes/wt/<run-id>`` (a real directory, not a symlink,
+    with a regular ``.git`` file) and the worktree's top level, it is a linked
+    worktree (never the primary), and its branch is ``lane/<run-id>``. This
+    mirrors the launcher's own mint postconditions. Never raises; anything
+    unknown is not a lane.
+    """
+    run_id = _fabric_lane_session_root(root)
+    if not run_id:
+        return ""
+    try:
+        lane = Path.home() / "lanes" / "wt" / run_id
+        if lane.is_symlink() or (lane / ".git").is_symlink():
+            return ""
+        if not (lane / ".git").is_file():
+            return ""
+        root = root.resolve()
+        toplevel = _run(root, "git", "rev-parse", "--show-toplevel")
+        if not toplevel or Path(toplevel).resolve() != root:
+            return ""
+        git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
+        common_dir = _resolved_git_path(
+            root, _run(root, "git", "rev-parse", "--git-common-dir")
+        )
+        if git_dir == common_dir:
+            return ""
+        if _run(root, "git", "branch", "--show-current") != "lane/" + run_id:
+            return ""
+    except Exception:
+        return ""
+    return run_id
+
+
+def _fabric_existing_lane_completion(root: Path) -> dict[str, Any] | None:
+    """Recognize a bounded return to the existing native Fabric controller.
+
+    This is completion metadata, NEVER authentication or tool admission. The
+    caller must separately pass the unchanged delivery-root admission. Unlike a
+    newly minted lane, a repair may reuse its parent's linked claude/* worktree;
+    its working-tree name therefore need not equal the new attempt id. Bind the
+    original executor's run, lease, usage/outcome paths and root in this hook's
+    existing session state, rather than inventing a queue or completion receipt.
+    """
+    env = os.environ
+    run_id = env.get("REMOTE_SUB_RUN_ID", "")
+    if not _FABRIC_LANE_RUN_ID.fullmatch(run_id):
+        return None
+    if env.get("POOL_USAGE_RUN_ID") != run_id:
+        return None
+    complexity = env.get("POOL_TASK_COMPLEXITY")
+    task_class = env.get("POOL_TASK_CLASS", "")
+    if complexity not in {"C0_MECHANICAL", "C1_ROUTINE_BOUNDED", "C2_COMPLEX_BOUNDED"}:
+        return None
+    if task_class not in {"", "mechanical", "fix_build", "review", "census",
+                          "audit", "verify", "execute", "build", "fix"}:
+        return None
+    if not task_class and complexity == "C2_COMPLEX_BOUNDED":
+        return None
+    if env.get("FABRIC_OPERATOR_CAPSULE") or env.get("FABRIC_OPERATOR_CAPABILITY"):
+        return None
+    scope: dict[str, Any] = {"version": 1, "run_id": run_id,
+                             "task_class": task_class, "complexity": complexity}
+    for field, variable in (("root_id", "POOL_ORCHESTRATOR_ID"),
+                            ("lease_id", "POOL_LEASE_ID"),
+                            ("host", "LANE_REMOTE_HOST")):
+        value = env.get(variable, "")
+        if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", value) is None:
+            return None
+        scope[field] = value
+    parent = env.get("POOL_PARENT_RUN_ID") or None
+    if parent is not None and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", parent) is None:
+        return None
+    scope["parent_run_id"] = parent  # Legacy direct controllers have no parent id.
+    try:
+        if root.is_symlink() or (root / ".git").is_symlink() or not (root / ".git").is_file():
+            return None
+        resolved = root.resolve()
+        lane_root = (Path.home() / "lanes" / "wt").resolve()
+        if resolved.parent != lane_root or not _FABRIC_LANE_RUN_ID.fullmatch(resolved.name):
+            return None
+        expected = Path.home() / "lanes" / "ext" / "lanes" / (run_id + ".provider.json")
+        output = Path(env.get("POOL_OUTCOME_FILE", ""))
+        if not output.is_absolute() or output.is_symlink() or output.resolve() != expected.resolve():
+            return None
+    except (OSError, RuntimeError, ValueError):
+        return None
+    scope["workspace"] = str(resolved)
+    scope["outcome_path"] = str(expected.resolve())
+    return scope
+
+
+def _fabric_completion_matches(root: Path, state: dict[str, Any]) -> bool:
+    """The guard and its hold adapter share one stop-only scope decision."""
+    recorded = state.get("fabric_completion_scope")
+    return bool(
+        state.get("root_admission_v") == _ROOT_ADMISSION_VERSION
+        and state.get("root_admitted") is True
+        and isinstance(recorded, dict)
+        and recorded == _fabric_existing_lane_completion(root)
+        and _delivery_root_admission(root)[0]
+    )
 
 
 # Claude Code's native worktree flow -- and every copy of the WorktreeCreate hook
@@ -4694,7 +4840,52 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
     state["root_admission_v"] = _ROOT_ADMISSION_VERSION
     state["root_admitted"] = admitted
     state["root_admission_reason"] = admission_reason
+    lane_run_id = "" if admitted else _fabric_lane_admission(root)
+    if lane_run_id:
+        state["fabric_lane_run_id"] = lane_run_id
+    else:
+        state.pop("fabric_lane_run_id", None)
+    completion_scope = _fabric_existing_lane_completion(root) if admitted else None
+    if completion_scope is not None:
+        state["fabric_completion_scope"] = completion_scope
+    else:
+        state.pop("fabric_completion_scope", None)
     _save(path, state)
+
+    if completion_scope is not None:
+        _emit({"hookSpecificOutput": {
+            "hookEventName": "SessionStart",
+            "additionalContext": (
+                "FABRIC BOUNDED WORKER: run " + completion_scope["run_id"]
+                + " is executing a commission in an existing linked lane. "
+                "Do only the assigned work and return its evidence to the existing "
+                "controller. Commit or push only when the commission permits it; "
+                "do not inherit the principal's PR, merge, deployment or waiting "
+                "duties. A worker return is not acceptance, not SHIPPED and not "
+                "permission to retry. Existing tool, source-custody and hold "
+                "controls remain unchanged."
+            ),
+        }})
+        return
+
+    if lane_run_id:
+        _emit(
+            {
+                "hookSpecificOutput": {
+                    "hookEventName": "SessionStart",
+                    "additionalContext": (
+                        "FABRIC LANE WORKER: this session runs in the dedicated Fabric "
+                        "checkout for run " + lane_run_id + " (branch lane/"
+                        + lane_run_id + "), minted by its parent run. Tools are "
+                        "admitted for the bounded packet only. The repository ship "
+                        "loop does not apply here: do exactly what the packet asks, "
+                        "return its result, and leave commit, push, pull request, "
+                        "merge and acceptance to the parent run."
+                    ),
+                }
+            }
+        )
+        return
 
     ship_loop_context = (
         "MANDATORY SHIP LOOP: Repository rules grant standing approval for "
@@ -4763,6 +4954,10 @@ def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
     much later by the Stop hook.
     """
     admitted, reason = _delivery_root_admission(root)
+    if not admitted and _fabric_lane_admission(root):
+        # A minted Fabric lane: allow the tool, but seed no completion record --
+        # the parent run, not this session, owns delivery.
+        return
     if not admitted:
         # Recompute even when this call adopted nothing: a concurrent hook process
         # may have won the rename between the two probes, and its loser must not
@@ -5090,6 +5285,19 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
         state.get("root_admission_v") == _ROOT_ADMISSION_VERSION
         and state.get("root_admitted") is False
     ):
+        return
+
+    # Existing-worktree Fabric repairs are bounded children too. Their source
+    # admission remains independent and is rechecked here. Return to the SAME
+    # controller captured at SessionStart; never infer acceptance, merge proof,
+    # permission to retry, or a new parent from an environment marker alone.
+    if _fabric_completion_matches(root, state):
+        _emit({"systemMessage": (
+            "FABRIC WORKER RETURN: the bounded commission may return its result "
+            "to its existing controller. This is not acceptance, not SHIPPED, "
+            "not merge/deployment proof and not retry authority. The parent "
+            "still owns review, integration and the program's completion."
+        )})
         return
 
     # A session's OWN declared end state is the single continuation fact this guard

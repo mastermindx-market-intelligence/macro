@@ -45,7 +45,7 @@ class TestTagPhaseLogic:
         self.t = ew.tag(self.idx)
 
     def test_fomc_day_phase(self):
-        # Known FOMC dates from _FOMC_ANNOUNCEMENT_DATES
+        # Known FOMC dates from _fomc_announcement_dates()
         for ds in ["2026-01-28", "2026-03-18", "2026-06-17"]:
             d = pd.Timestamp(ds)
             if d in self.t.index:
@@ -490,12 +490,17 @@ class TestNoHistoricalBackProjection:
 
     def test_2026_cpi_dates_still_tagged(self):
         """The 2026 CPI schedule must still tag correctly on a 2026-spanning index."""
+        from engine import event_calendar as ec
+
         idx = pd.bdate_range("2026-01-01", "2026-12-31")
         t = ew.tag(idx)
-        from engine.event_window import _CPI_2026
         # At least some months should produce a cpi_day (those that land on a bday)
         cpi_day_rows = t[t["td_to_cpi"] == 0]
         assert len(cpi_day_rows) > 0, "No CPI days found in 2026 index — schedule broken."
+        for m, d in ec._SCHED_2026["CPI"].items():
+            ts = pd.Timestamp(2026, m, d)
+            if ts in t.index:
+                assert t.loc[ts, "td_to_cpi"] == 0
 
 
 # ---------------------------------------------------------------------------

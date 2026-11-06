@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-25T00:25:18Z",
+ "accession": "0001262039-26-000007",
+ "cik": "0001262039",
+ "doc_byte_length": 2693210,
+ "doc_sha256": "bef9b7bdac3aa28a765d311540862082ccf7ceabb34e60686605c2d814ea3f50",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ftnt-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 348661,
+  "byte_start": 347783,
+  "normalized": "The components included in our products are sourced from various suppliers by us or, more frequently, by our contract manufacturers. Some of the components important to our business, including certain Central Processing Units (“CPUs”) from Intel Corporation (“Intel”) and Advanced Micro Devices, Inc. (“AMD”), network and wireless chips from Broadcom Inc. (“Broadcom”), Marvell Technology Group Ltd. (“Marvell”), Qualcomm Incorporated (“Qualcomm”) and Intel and memory devices from Intel, Micron Technology (“Micron”), ADATA Technology Co., Ltd. (“ADATA”), Toshiba Corporation (“Toshiba”), Samsung Electronics Co., Ltd. (“Samsung”), and Western Digital Technologies, Inc. (“Western Digital”), are available from limited or sole sources of supply.",
+  "normalized_sha256": "2a11003f5b544dc0354df2a3571e916f2a1095f884cc23f9a13ad68df9a72df3",
+  "raw": "The components included in our products are sourced from various suppliers by us or, more frequently, by our contract manufacturers. Some of the components important to our business, including certain Central Processing Units (&#8220;CPUs&#8221;) from Intel Corporation (&#8220;Intel&#8221;) and Advanced Micro Devices, Inc. (&#8220;AMD&#8221;), network and wireless chips from Broadcom Inc. (&#8220;Broadcom&#8221;), Marvell Technology Group Ltd. (&#8220;Marvell&#8221;), Qualcomm Incorporated (&#8220;Qualcomm&#8221;) and Intel and memory devices from Intel, Micron Technology (&#8220;Micron&#8221;), ADATA Technology Co., Ltd. (&#8220;ADATA&#8221;), Toshiba Corporation (&#8220;Toshiba&#8221;), Samsung Electronics Co., Ltd. (&#8220;Samsung&#8221;), and Western Digital Technologies, Inc. (&#8220;Western Digital&#8221;), are available from limited or sole sources of supply.",
+  "raw_sha256": "2f0b2a73c1c9077ff9152e06e36b63c51a4b6c2e05289d51130e25cd76d70bff"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1262039/000126203926000007/ftnt-20251231.htm",
+ "xbrl_contexts": []
+}
