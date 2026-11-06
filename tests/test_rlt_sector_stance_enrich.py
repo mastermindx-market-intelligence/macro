@@ -355,3 +355,125 @@ class TestTemplateChipPresence:
         content = self._template()
         # The .help::before hover-bridge rule must be present (established by #2337)
         assert ".help:hover::before" in content, "scroll-safe .help::before bridge missing"
+
+
+# Source-clock receipt: exercise the actual shared build owner, not the legacy
+# mirrored join above. Unrelated display enrichments are isolated from disk stores.
+@pytest.fixture
+def actual_stance_attach(tmp_path, monkeypatch):
+    from scripts.build_site import _attach_board_display_chips
+    from lib import options_context, board_state
+    from scripts import close_pass_reconcile
+    from engine import prophet_board_since
+
+    monkeypatch.setattr(options_context, "load_gex_walls", lambda site: {})
+    monkeypatch.setattr(options_context, "load_iv_rank", lambda tickers: {})
+    monkeypatch.setattr(board_state, "board_state_view", lambda receipt: None)
+    monkeypatch.setattr(close_pass_reconcile, "board_state_for", lambda doc: None)
+    monkeypatch.setattr(prophet_board_since, "stamp_us_board_since_fail_open",
+                        lambda doc, **kwargs: doc)
+    source = tmp_path / "sectordata" / "sector_central.json"
+    source.parent.mkdir()
+
+    def attach(doc, payload):
+        if payload is None:
+            if source.exists():
+                source.unlink()
+        else:
+            source.write_text(json.dumps(payload))
+        return _attach_board_display_chips(tmp_path, doc)
+
+    return attach
+
+
+def test_actual_attach_retains_sector_snapshot_clock_and_other_row_authority(actual_stance_attach):
+    source = _sc_payload([_sc_sector("XLK", "Cautious", "谨慎", 31)])
+    source["measured_read"] = {"generation": {"history_as_of": "2026-07-14"}}
+    row = dict(_standout_row("ACME", "Information Technology"),
+               signal_date="2026-07-15", score_rank=2,
+               entry_signal={"status": "buy_now", "as_of": "2026-07-15"})
+    doc = {"as_of": "2026-07-16", "buy": [row, _standout_row("OTHER", "Unknown")],
+           "watch": [_standout_row("WATCH", "Information Technology")]}
+    before = copy.deepcopy(doc)
+    out = actual_stance_attach(doc, source)
+    assert out is doc and out["buy"][0] is row
+    assert row["sector_stance_source"] == {
+        "schema": "sector_stance_source/v1", "etf": "XLK",
+        "snapshot_as_of": "2026-07-12",
+    }
+    assert row["sector_stance"] == "Cautious" and row["sector_stance_zh"] == "谨慎"
+    without_attaches = copy.deepcopy(out)
+    for name in ("sector_stance", "sector_stance_zh", "sector_stance_source"):
+        without_attaches["buy"][0].pop(name)
+    assert without_attaches == before
+
+
+@pytest.mark.parametrize("stamp", [
+    None, "", 20260712, False, "2026-02-29", "2026-7-12",
+    "20260712", "2026-07-12T09:00:00Z", "<script>alert(1)</script>",
+])
+def test_actual_attach_invalid_clock_preserves_the_caution(actual_stance_attach, stamp):
+    source = _sc_payload([_sc_sector("XLV", "Reduce", "减配", 25)])
+    source["as_of"] = stamp
+    out = actual_stance_attach({"buy": [_standout_row("ACME", "Health Care")]}, source)
+    row = out["buy"][0]
+    assert row["sector_stance"] == "Reduce" and row["sector_stance_zh"] == "减配"
+    assert row["sector_stance_source"]["etf"] == "XLV"
+    assert row["sector_stance_source"]["snapshot_as_of"] is None
+
+
+def test_actual_attach_refreshes_receipt_and_clears_it_when_sidecar_disappears(actual_stance_attach):
+    source = _sc_payload([_sc_sector("XLK", "Reduce", "减配", 25)])
+    doc = {"buy": [_standout_row("ACME", "Information Technology")]}
+    actual_stance_attach(doc, source)
+    source["as_of"] = "2024-02-29"
+    actual_stance_attach(doc, source)
+    assert doc["buy"][0]["sector_stance_source"]["snapshot_as_of"] == "2024-02-29"
+    actual_stance_attach(doc, None)
+    assert "sector_stance_source" not in doc["buy"][0]
+    assert doc["buy"][0]["sector_stance"] == "Reduce"
+
+
+def _render_stance_board_row(row):
+    from tests.test_dashboard_template_render import _env
+    return _env().get_template("_us_board_cards.html.j2").render(
+        items=[row], sg_any=False, bs_adj=False, xu_allfeat=False,
+        trg_map={}, rw_en="", rw_zh="",
+    )
+
+
+@pytest.mark.parametrize("stamp", ["2026-07-12", None])
+def test_actual_caution_renders_its_own_clock_in_one_bilingual_row(actual_stance_attach, stamp):
+    from tests.test_dashboard_template_render import _board_row
+    source = _sc_payload([_sc_sector("XLK", "Reduce", "减配", 25)])
+    source["as_of"] = stamp
+    row = _board_row(signal_date="2026-07-15")
+    actual_stance_attach({"as_of": "2026-07-16", "buy": [row]}, source)
+    html = _render_stance_board_row(row)
+    assert html.count('class="pv-cau-row"') == 1
+    assert 'aria-label="Caution notes (1)"' in html
+    assert "single-stock trigger, not a sector call" in html
+    assert "个股信号，非板块判断" in html
+    assert f"Sector snapshot date (XLK): {stamp or 'unavailable'}." in html
+    assert f"板块快照日期 (XLK)：{stamp or '不可用'}。" in html
+    assert "Sector snapshot date (XLK): 2026-07-15" not in html
+    assert "Sector snapshot date (XLK): 2026-07-16" not in html
+
+
+def test_non_caution_stance_does_not_add_a_snapshot_flag(actual_stance_attach):
+    from tests.test_dashboard_template_render import _board_row
+    row = _board_row()
+    actual_stance_attach({"buy": [row]},
+                        _sc_payload([_sc_sector("XLK", "Neutral", "中性", 50)]))
+    html = _render_stance_board_row(row)
+    assert 'class="pv-cau-row"' not in html
+    assert "Sector snapshot date" not in html
+
+
+def test_legacy_caution_with_no_receipt_has_explicit_unavailable_date():
+    from tests.test_dashboard_template_render import _board_row
+    html = _render_stance_board_row(
+        _board_row(sector_stance="Cautious", sector_stance_zh="谨慎"))
+    assert html.count('class="pv-cau-row"') == 1
+    assert "Sector snapshot date: unavailable." in html
+    assert "板块快照日期：不可用。" in html
