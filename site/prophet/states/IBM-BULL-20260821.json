@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "IBM-BULL-20260821",
-  "asof": "2026-11-04",
+  "asof": "2026-11-06",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 41.3,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 24.4,
+    "progress": 20.5,
     "pace": 0.0,
-    "retention": 64.9,
-    "overlay": 53.0
+    "retention": 51.6,
+    "overlay": 32.8
   },
   "geometry": {
-    "dist_to_stop_r": 1.382,
-    "dist_to_t1_r": 1.118,
-    "dist_to_t2_r": 2.618,
-    "horizon_pct_used": 166.7,
-    "p1": 0.2548,
-    "p2": 0.1274,
+    "dist_to_stop_r": 1.304,
+    "dist_to_t1_r": 1.196,
+    "dist_to_t2_r": 2.696,
+    "horizon_pct_used": 171.1,
+    "p1": 0.2027,
+    "p2": 0.1014,
     "p3": null,
-    "move_r": 0.382,
+    "move_r": 0.304,
     "mfe_r": 0.589,
     "mae_r": -0.42
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 75,
-  "tau": 1.6667,
+  "days_elapsed": 77,
+  "tau": 1.7111,
   "closed": true,
   "outcome": "EXPIRED"
 }
