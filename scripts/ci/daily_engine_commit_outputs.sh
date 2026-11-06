@@ -4,11 +4,24 @@
 # 2026-08-26 512KB processing-cap headroom diet (tests/test_workflow_file_size.py;
 # PR #6499 left ~36 bytes of headroom). Env comes from the step's `env:` block,
 # which stays in the YAML.
-# Invoked as: bash scripts/ci/daily_engine_commit_outputs.sh
+# Invoked as: bash scripts/ci/daily_engine_commit_outputs.sh [--checkpoint]
 set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declares no shell:
 
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_hold.sh"
+# Refuse before normalizers or staging, including direct invocations.
+push_hold_recovery_ok || exit 1
+if [ "${1:-}" = "--checkpoint" ]; then
+  checkpoint_rc=0
+  # The normal committer runs once; its existing EXIT cleanup finishes first.
+  bash "${BASH_SOURCE[0]}" || checkpoint_rc=$?
+  if [ "$checkpoint_rc" -ge 128 ]; then
+    _push_hold_mark_unreconciled "checkpoint" "committer interrupted before custody qualification" || true
+  elif push_hold_recovery_ok && [ -n "${GITHUB_OUTPUT:-}" ]; then
+    printf '%s\n' "admitted=true" >> "$GITHUB_OUTPUT"
+  fi
+  exit "$checkpoint_rc"
+fi
 # R-33 hold. GitHub decides GH001 per blob, so ONE staged file over the limit
 # rejects this whole commit. The engine stages thousands of outputs and cannot
 # prove which source file and site/ projection belong together, so its staged
@@ -21,6 +34,7 @@ ENGINE_GROUP="data site reports templates"
 PUSH_HOLD_KEEP_WORKTREE=1
 engine_hold() {
   local rc=0
+  push_hold_recovery_ok || exit 1
   push_hold_oversize_staged "$ENGINE_GROUP" || rc=$?
   if [ "$rc" -ne 0 ]; then exit 1; fi
   if push_hold_held; then

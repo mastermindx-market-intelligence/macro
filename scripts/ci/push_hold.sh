@@ -78,7 +78,7 @@ _push_hold_work_reset() {
     *push_hold.*) ;;
     *) return 1 ;;
   esac
-  rm -rf "$PUSH_HOLD_STATE/work"
+  rm -rf "$PUSH_HOLD_STATE/work" || return 1
   mkdir -p "$PUSH_HOLD_STATE/work" || return 1
   PUSH_HOLD_WORK="$PUSH_HOLD_STATE/work"
   PUSH_HOLD_INDEX="$PUSH_HOLD_WORK/index"
@@ -128,11 +128,14 @@ _push_hold_members() {
         esac
       done
       [ -n "$m" ] || continue
-      printf '%s\t%s\n' "$i" "$m" >> "$PUSH_HOLD_WORK/members"
+      if ! printf '%s\t%s\n' "$i" "$m" >> "$PUSH_HOLD_WORK/members"; then
+        [ "$noglob" -eq 1 ] || set +f
+        return 1
+      fi
     done
   done
   [ "$noglob" -eq 1 ] || set +f
-  printf '%s\n' "$i" > "$PUSH_HOLD_WORK/group.count"
+  printf '%s\n' "$i" > "$PUSH_HOLD_WORK/group.count" || return 1
   return 0
 }
 
@@ -260,18 +263,51 @@ _push_hold_add_chunks() {
 
 # $1 commit, $2 ref, $3 alarm seconds.
 _push_hold_push_ref() {
-  local commit="$1" ref="$2" alarm="${3:-120}" try=1 line remote_sha
+  local commit="$1" ref="$2" alarm="${3:-120}" try=1 line remote_sha remote_ref push_output push_rc
   while [ "$try" -le "$PUSH_HOLD_TRIES" ]; do
-    if perl -e 'alarm shift; exec @ARGV or die' "$alarm" git push origin "${commit}:${ref}"; then
-      line=$(git ls-remote origin "$ref" 2>/dev/null) || line=""
+    push_rc=0
+    push_output=$(perl -e 'alarm shift; exec @ARGV or die' "$alarm" git push origin "${commit}:${ref}" 2>&1) || push_rc=$?
+    [ -z "$push_output" ] || printf '%s\n' "$push_output"
+    # A failed client can still have installed the ref. Reconcile this exact
+    # immutable target before deciding whether another attempt is admissible.
+    if ! line=$(perl -e 'alarm 120; exec @ARGV or die' -- git ls-remote --refs origin "$ref" 2>/dev/null); then
+      _push_hold_mark_unreconciled "$ref" "EFFECT_UNKNOWN: could not read back intended commit ${commit}" || true
+      echo "::error title=hold custody failed::EFFECT_UNKNOWN ${ref} -> ${commit}; no retry or local revert"
+      return 2
+    fi
+    if [ "$line" = "${commit}"$'\t'"${ref}" ]; then
+      return 0
+    fi
+    if [ -n "$line" ]; then
       remote_sha=${line%%$'\t'*}
-      if [ -n "$remote_sha" ] && [ "$remote_sha" = "$commit" ]; then
-        return 0
+      remote_ref=${line#*$'\t'}
+      case "$remote_sha" in
+        *[!0-9a-f]*|"") remote_sha="" ;;
+      esac
+      if [ -n "$remote_sha" ] && [ "${#remote_sha}" -eq "${#commit}" ] && [ "$remote_ref" = "$ref" ]; then
+        _push_hold_mark_unreconciled "$ref" "custody collision: observed ${remote_sha}, intended ${commit}" || true
+        echo "::error title=hold custody failed::collision at ${ref}: observed ${remote_sha}, intended ${commit}; no retry or overwrite"
+      else
+        _push_hold_mark_unreconciled "$ref" "EFFECT_UNKNOWN: malformed readback for intended commit ${commit}" || true
+        echo "::error title=hold custody failed::EFFECT_UNKNOWN invalid exact-ref readback for ${ref} -> ${commit}; no retry or local revert"
       fi
+      return 2
+    fi
+    # Only a successful lookup with no matching ref proves absence. Even then,
+    # an explicit authorization/rules rejection is terminal, not contention.
+    if [ "$push_rc" -ne 0 ]; then
+      case "$push_output" in
+        *GH006*|*GH013*|*"Permission denied"*|*"permission denied"*|*"Permission to "*denied*|*"Authentication failed"*|*"authentication failed"*|*"Write access"*|*"write access"*|*"403"*|*"protected branch"*|*"Repository rule violations"*|*"pre-receive hook declined"*)
+          _push_hold_mark_unreconciled "$ref" "terminal push rejection for intended commit ${commit}" || true
+          echo "::error title=hold custody failed::${ref} absent after terminal push rejection; no retry"
+          return 2
+          ;;
+      esac
     fi
     try=$((try + 1))
   done
-  echo "::error title=hold custody failed::${ref} was not verified on origin after ${PUSH_HOLD_TRIES} tries"
+  _push_hold_mark_unreconciled "$ref" "custody not established for ${commit}; confirmed absent after ${PUSH_HOLD_TRIES} tries" || true
+  echo "::error title=hold custody failed::${ref} was confirmed absent after ${PUSH_HOLD_TRIES} tries for ${commit}"
   return 2
 }
 
@@ -288,12 +324,12 @@ _push_hold_file_is_prefix() {
 }
 
 _push_hold_mark_unreconciled() {
-  local ref="$1" reason="$2" msg
-  printf '%s\n' "$ref" >> "$PUSH_HOLD_STATE/unreconciled"
+  local ref="$1" reason="$2" msg rc=0
+  printf '%s\n' "$ref" >> "$PUSH_HOLD_STATE/unreconciled" || rc=1
   msg="${ref}: ${reason}. The ref is kept."
   echo "::error title=held rows not restored::${msg}"
   _push_hold_summary "$msg"
-  return 0
+  return "$rc"
 }
 
 _push_hold_record_recovered() {
@@ -315,9 +351,9 @@ _push_hold_delete_remote() {
 # Checks the MANIFEST of ref $1 into ent.$1 ("i path blob size head layout")
 # and from.$1. On a bad manifest: st.$1 = bad, why.$1 = the reason.
 _push_hold_parse_manifest() {
-  local n="$1" why
-  : > "$PUSH_HOLD_WORK/ent.$n"
-  : > "$PUSH_HOLD_WORK/from.$n"
+  local n="$1" why rc=0
+  : > "$PUSH_HOLD_WORK/ent.$n" || return 1
+  : > "$PUSH_HOLD_WORK/from.$n" || return 1
   why=$(PH_ENT="$PUSH_HOLD_WORK/ent.$n" PH_FROM="$PUSH_HOLD_WORK/from.$n" awk -F'\t' '
     function bad(r) {
       if (!failed) print r
@@ -373,13 +409,14 @@ _push_hold_parse_manifest() {
       if (failed) exit 1
       if (ln == 0) { print "manifest is not push-hold/v1"; exit 1 }
     }
-  ' "$PUSH_HOLD_WORK/members" "$PUSH_HOLD_WORK/man.$n")
-  if [ -n "$why" ]; then
-    printf '%s\n' "$why" > "$PUSH_HOLD_WORK/why.$n"
-    printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n"
+  ' "$PUSH_HOLD_WORK/members" "$PUSH_HOLD_WORK/man.$n") || rc=$?
+  if [ "$rc" -ne 0 ] || [ -n "$why" ]; then
+    [ -n "$why" ] || why="manifest validation failed"
+    printf '%s\n' "$why" > "$PUSH_HOLD_WORK/why.$n" || return 1
+    printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n" || return 1
     return 1
   fi
-  printf '%s\n' "ok" > "$PUSH_HOLD_WORK/st.$n"
+  printf '%s\n' "ok" > "$PUSH_HOLD_WORK/st.$n" || return 1
   return 0
 }
 
@@ -387,22 +424,22 @@ _push_hold_parse_manifest() {
 # worktree there is clean; delete the ref when every row is already on HEAD.
 _push_hold_apply_ref() {
   local n="$1" ref localref W why line i blob layout path dest got
-  ref=$(cat "$PUSH_HOLD_WORK/ref.$n") || return 0
-  localref=$(cat "$PUSH_HOLD_WORK/local.$n") || return 0
+  ref=$(cat "$PUSH_HOLD_WORK/ref.$n") || return 1
+  localref=$(cat "$PUSH_HOLD_WORK/local.$n") || return 1
   W="$PUSH_HOLD_WORK/rb.$n"
   if [ ! -s "$PUSH_HOLD_WORK/ent.$n" ]; then
     _push_hold_mark_unreconciled "$ref" "manifest has no entries"
-    return 0
+    return 1
   fi
   mkdir -p "$W" || {
     _push_hold_mark_unreconciled "$ref" "could not stage rebuilt bytes"
-    return 0
+    return 1
   }
   # 1. Custody bytes. A blob entry is checked against the tree (the tree
   # entry id is the hash of its bytes); a chunked entry is rebuilt and hashed.
   if ! git ls-tree -r "$localref" -- blobs > "$W/tree"; then
     _push_hold_mark_unreconciled "$ref" "could not rebuild $(head -n 1 "$PUSH_HOLD_WORK/ent.$n" | cut -f2)"
-    return 0
+    return 1
   fi
   why=$(awk -F'\t' '
     FILENAME == ARGV[1] { split($1, a, " "); got[$2] = a[3]; mode[$2] = a[1]; next }
@@ -411,22 +448,22 @@ _push_hold_apply_ref() {
       if (!(k in got)) { print "could not rebuild " $2; exit }
       if (got[k] != $3) { print "rebuilt bytes for " $2 " do not match " $3; exit }
     }
-  ' "$W/tree" "$PUSH_HOLD_WORK/ent.$n")
+  ' "$W/tree" "$PUSH_HOLD_WORK/ent.$n") || return 1
   if [ -n "$why" ]; then
     _push_hold_mark_unreconciled "$ref" "$why"
-    return 0
+    return 1
   fi
-  awk -F'\t' '$6 != "blob" { print $1 "\t" $3 "\t" $6 "\t" $2 }' "$PUSH_HOLD_WORK/ent.$n" > "$W/chunked"
+  awk -F'\t' '$6 != "blob" { print $1 "\t" $3 "\t" $6 "\t" $2 }' "$PUSH_HOLD_WORK/ent.$n" > "$W/chunked" || return 1
   while IFS=$'\t' read -r i blob layout path <&3; do
     dest="$W/$i"
     if ! _push_hold_rebuild_to "$localref" "$i" "$layout" "$dest"; then
       _push_hold_mark_unreconciled "$ref" "could not rebuild ${path}"
-      return 0
+      return 1
     fi
     got=$(git hash-object "$dest" 2>/dev/null) || got=""
     if [ "$got" != "$blob" ]; then
       _push_hold_mark_unreconciled "$ref" "rebuilt bytes for ${path} do not match ${blob}"
-      return 0
+      return 1
     fi
   done 3< "$W/chunked"
 
@@ -434,7 +471,7 @@ _push_hold_apply_ref() {
   awk -F'\t' '{ print "HEAD:" $2 }' "$PUSH_HOLD_WORK/ent.$n" \
     | git cat-file --batch-check='%(objectname) %(objecttype) %(objectsize)' > "$W/headinfo" 2>/dev/null || {
     _push_hold_mark_unreconciled "$ref" "HEAD for $(head -n 1 "$PUSH_HOLD_WORK/ent.$n" | cut -f2) does not match the held base"
-    return 0
+    return 1
   }
   awk -F'\t' '
     FILENAME == ARGV[1] { h++; info[h] = $0; next }
@@ -455,12 +492,15 @@ _push_hold_apply_ref() {
     END { if (h != e) exit 1 }
   ' "$W/headinfo" "$PUSH_HOLD_WORK/ent.$n" > "$W/state" || {
     _push_hold_mark_unreconciled "$ref" "HEAD for $(head -n 1 "$PUSH_HOLD_WORK/ent.$n" | cut -f2) does not match the held base"
-    return 0
+    return 1
   }
-  if ! awk -F'\t' '$5 == "no" { f = 1 } END { exit f ? 0 : 1 }' "$W/state"; then
+  local unlanded_rc=0
+  awk -F'\t' '$5 == "no" { f = 1 } END { exit f ? 0 : 1 }' "$W/state" || unlanded_rc=$?
+  [ "$unlanded_rc" -le 1 ] || return 1
+  if [ "$unlanded_rc" -eq 1 ]; then
     # No entry is plainly unlanded: check the extended ones byte for byte.
     local all_landed=1
-    awk -F'\t' '$5 == "maybe" { print $1 "\t" $2 "\t" $3 "\t" $6 }' "$W/state" > "$W/maybe"
+    awk -F'\t' '$5 == "maybe" { print $1 "\t" $2 "\t" $3 "\t" $6 }' "$W/state" > "$W/maybe" || return 1
     while IFS=$'\t' read -r i blob layout path <&3; do
       dest="$W/$i"
       if [ "$layout" = "blob" ]; then
@@ -481,26 +521,27 @@ _push_hold_apply_ref() {
       return 0
     fi
   fi
-  why=$(awk -F'\t' '$4 != "1" { print "HEAD for " $6 " does not match the held base"; exit }' "$W/state")
+  why=$(awk -F'\t' '$4 != "1" { print "HEAD for " $6 " does not match the held base"; exit }' "$W/state") || return 1
   if [ -n "$why" ]; then
     _push_hold_mark_unreconciled "$ref" "$why"
-    return 0
+    return 1
   fi
 
   # 3. Clean worktree and index at every entry: a tracked path holds HEAD's
   # bytes in a regular file, an untracked one is absent.
-  awk -F'\t' '{ print $2 }' "$PUSH_HOLD_WORK/ent.$n" > "$W/paths"
+  awk -F'\t' '{ print $2 }' "$PUSH_HOLD_WORK/ent.$n" > "$W/paths" || return 1
   perl -ne 'chomp; print(((-l $_) ? "L" : (-f $_) ? "F" : (-e $_) ? "O" : "N"), "\n")' "$W/paths" > "$W/kind" || {
     _push_hold_mark_unreconciled "$ref" "worktree is dirty for $(head -n 1 "$W/paths")"
-    return 0
+    return 1
   }
   awk -F'\t' 'FILENAME == ARGV[1] { k++; kind[k] = $0; next } { e++; if ($5 != "-" && kind[e] == "F") print $2 }' \
-    "$W/kind" "$PUSH_HOLD_WORK/ent.$n" > "$W/hashpaths"
-  : > "$W/hashes"
+    "$W/kind" "$PUSH_HOLD_WORK/ent.$n" > "$W/hashpaths" || return 1
+  : > "$W/hashes" || return 1
   if [ -s "$W/hashpaths" ]; then
     git hash-object --no-filters --stdin-paths < "$W/hashpaths" > "$W/hashes" 2>/dev/null || : > "$W/hashes"
   fi
-  git diff-index --cached --name-only -z HEAD 2>/dev/null | tr '\0' '\n' > "$W/indexdirty" || true
+  git diff-index --cached --name-only -z HEAD > "$W/indexdirty.z" 2>/dev/null || return 1
+  tr '\0' '\n' < "$W/indexdirty.z" > "$W/indexdirty" || return 1
   why=$(awk -F'\t' '
     FILENAME == ARGV[1] { k++; kind[k] = $0; next }
     FILENAME == ARGV[2] { hp++; hpath[hp] = $0; next }
@@ -515,10 +556,10 @@ _push_hold_apply_ref() {
       else if (!($2 in hash) || hash[$2] != $5) dirty = 1
       if (dirty) { print "worktree is dirty for " $2; exit }
     }
-  ' "$W/kind" "$W/hashpaths" "$W/hashes" "$W/indexdirty" "$PUSH_HOLD_WORK/ent.$n")
+  ' "$W/kind" "$W/hashpaths" "$W/hashes" "$W/indexdirty" "$PUSH_HOLD_WORK/ent.$n") || return 1
   if [ -n "$why" ]; then
     _push_hold_mark_unreconciled "$ref" "$why"
-    return 0
+    return 1
   fi
 
   # 4. Write. Blob entries through a private index (mode from the custody
@@ -526,10 +567,10 @@ _push_hold_apply_ref() {
   awk -F'\t' '
     FILENAME == ARGV[1] { split($1, a, " "); mode[$2] = a[1]; next }
     $6 == "blob" { m = mode["blobs/" $1]; if (m != "100755") m = "100644"; print m " " $3 "\t" $2 }
-  ' "$W/tree" "$PUSH_HOLD_WORK/ent.$n" > "$W/indexinfo"
+  ' "$W/tree" "$PUSH_HOLD_WORK/ent.$n" > "$W/indexinfo" || return 1
   why=""
   if [ -s "$W/indexinfo" ]; then
-    rm -f "$W/idx"
+    rm -f "$W/idx" || return 1
     if ! GIT_INDEX_FILE="$W/idx" git read-tree --empty \
       || ! GIT_INDEX_FILE="$W/idx" git update-index --index-info < "$W/indexinfo" \
       || ! GIT_INDEX_FILE="$W/idx" git checkout-index -a -f; then
@@ -550,11 +591,11 @@ _push_hold_apply_ref() {
     why=$(awk -F'\t' '
       FILENAME == ARGV[1] { w++; got[w] = $0; next }
       { e++; if (got[e] != $3) { print "wrote " $2 " but bytes do not match " $3; exit } }
-    ' "$W/written" "$PUSH_HOLD_WORK/ent.$n")
+    ' "$W/written" "$PUSH_HOLD_WORK/ent.$n") || why="could not validate restored bytes"
   fi
   if [ -n "$why" ]; then
     # Put back what HEAD had, so a failed restore leaves no half-written rows.
-    awk -F'\t' '$5 != "-" { print $2 }' "$PUSH_HOLD_WORK/ent.$n" | tr '\n' '\0' > "$W/back.nul"
+    awk -F'\t' '$5 != "-" { print $2 }' "$PUSH_HOLD_WORK/ent.$n" | tr '\n' '\0' > "$W/back.nul" || return 1
     if [ -s "$W/back.nul" ]; then
       git --literal-pathspecs checkout -q HEAD --pathspec-from-file="$W/back.nul" --pathspec-file-nul 2>/dev/null || true
     fi
@@ -562,82 +603,108 @@ _push_hold_apply_ref() {
       rm -f -- "$path" || true
     done 3< <(awk -F'\t' '$5 == "-" { print $2 }' "$PUSH_HOLD_WORK/ent.$n")
     _push_hold_mark_unreconciled "$ref" "$why"
-    return 0
+    return 1
   fi
-  _push_hold_record_recovered "$n" || _push_hold_mark_unreconciled "$ref" "could not record recovery"
+  if ! _push_hold_record_recovered "$n"; then
+    _push_hold_mark_unreconciled "$ref" "could not record recovery"
+    return 1
+  fi
+  return 0
+}
+
+# Admission is distinct from red: verified held/recovered rows may continue.
+push_hold_recovery_ok() {
+  _push_hold_prepare_state || {
+    echo "::error title=held rows not restored::could not prepare recovery state"
+    return 1
+  }
+  if [ ! -r "$PUSH_HOLD_STATE" ] || [ ! -w "$PUSH_HOLD_STATE" ] || [ ! -x "$PUSH_HOLD_STATE" ]; then
+    echo "::error title=held rows not restored::recovery state cannot be inspected and updated"
+    return 1
+  fi
+  if [ -e "$PUSH_HOLD_STATE/unreconciled" ] || [ -L "$PUSH_HOLD_STATE/unreconciled" ]; then
+    if [ ! -f "$PUSH_HOLD_STATE/unreconciled" ] || [ ! -r "$PUSH_HOLD_STATE/unreconciled" ] || [ -s "$PUSH_HOLD_STATE/unreconciled" ]; then
+      echo "::error title=held rows not restored::unreconciled recovery state blocks new source publication"
+      return 1
+    fi
+  fi
   return 0
 }
 
 _push_hold_recover_impl() {
-  local ls_out line ref tail localref n i a b st why
-  _push_hold_state_var || return 0
-  ls_out=$(git ls-remote origin "${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}/*" 2>/dev/null) || {
-    _push_hold_prepare_state || return 0
-    printf '%s\n' "ls-remote" >> "$PUSH_HOLD_STATE/unreconciled"
+  local ls_out line ref tail localref n i a b st why failed=0
+  push_hold_recovery_ok || return 1
+  ls_out=$(perl -e 'alarm 120; exec @ARGV or die' -- git ls-remote origin "${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}/*" 2>/dev/null) || {
+    _push_hold_prepare_state || return 1
+    printf '%s\n' "ls-remote" >> "$PUSH_HOLD_STATE/unreconciled" || return 1
     echo "::error title=held rows not restored::ls-remote failed for ${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}. The ref is kept."
     _push_hold_summary "ls-remote failed for ${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}. The ref is kept."
-    return 0
+    return 1
   }
   [ -n "$ls_out" ] || return 0
-  _push_hold_work_reset || return 0
-  _push_hold_members "$@" || return 0
-  printf '%s\n' "$ls_out" > "$PUSH_HOLD_WORK/lsremote"
+  _push_hold_work_reset || return 1
+  _push_hold_members "$@" || return 1
+  printf '%s\n' "$ls_out" > "$PUSH_HOLD_WORK/lsremote" || return 1
   n=0
   while IFS= read -r line <&3; do
     [ -n "$line" ] || continue
     ref=${line#*$'\t'}
     [ -n "$ref" ] || continue
     n=$((n + 1))
-    printf '%s\n' "$ref" > "$PUSH_HOLD_WORK/ref.$n"
-    : > "$PUSH_HOLD_WORK/ent.$n"
-    : > "$PUSH_HOLD_WORK/from.$n"
+    printf '%s\n' "$ref" > "$PUSH_HOLD_WORK/ref.$n" || return 1
+    : > "$PUSH_HOLD_WORK/ent.$n" || return 1
+    : > "$PUSH_HOLD_WORK/from.$n" || return 1
     case "$ref" in
       refs/heads/*) tail=${ref#refs/heads/} ;;
       *) tail=$ref ;;
     esac
     localref="refs/${tail}"
-    printf '%s\n' "$localref" > "$PUSH_HOLD_WORK/local.$n"
+    printf '%s\n' "$localref" > "$PUSH_HOLD_WORK/local.$n" || return 1
     if ! git fetch -q --no-tags origin "+${ref}:${localref}"; then
-      printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n"
-      printf '%s\n' "fetch failed" > "$PUSH_HOLD_WORK/why.$n"
+      printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n" || return 1
+      printf '%s\n' "fetch failed" > "$PUSH_HOLD_WORK/why.$n" || return 1
       continue
     fi
     if ! git cat-file blob "${localref}:MANIFEST" > "$PUSH_HOLD_WORK/man.$n" 2>/dev/null; then
-      printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n"
-      printf '%s\n' "MANIFEST unreadable" > "$PUSH_HOLD_WORK/why.$n"
+      printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n" || return 1
+      printf '%s\n' "MANIFEST unreadable" > "$PUSH_HOLD_WORK/why.$n" || return 1
       continue
     fi
-    _push_hold_parse_manifest "$n" || true
+    if ! _push_hold_parse_manifest "$n"; then
+      why=$(cat "$PUSH_HOLD_WORK/why.$n" 2>/dev/null) || why="manifest validation or state bookkeeping failed"
+      _push_hold_mark_unreconciled "$ref" "$why"
+      return 1
+    fi
   done 3< "$PUSH_HOLD_WORK/lsremote"
-  printf '%s\n' "$n" > "$PUSH_HOLD_WORK/ref.count"
-  [ "$n" -gt 0 ] || return 0
+  printf '%s\n' "$n" > "$PUSH_HOLD_WORK/ref.count" || return 1
+  [ "$n" -gt 0 ] || return 1
 
   # A ref named by another good ref's `from` line is superseded by it.
-  : > "$PUSH_HOLD_WORK/super_names"
+  : > "$PUSH_HOLD_WORK/super_names" || return 1
   i=1
   while [ "$i" -le "$n" ]; do
     if [ "$(cat "$PUSH_HOLD_WORK/st.$i")" = "ok" ]; then
-      cat "$PUSH_HOLD_WORK/from.$i" >> "$PUSH_HOLD_WORK/super_names"
+      cat "$PUSH_HOLD_WORK/from.$i" >> "$PUSH_HOLD_WORK/super_names" || return 1
     fi
     i=$((i + 1))
   done
   i=1
   while [ "$i" -le "$n" ]; do
     if [ "$(cat "$PUSH_HOLD_WORK/st.$i")" = "ok" ]; then
-      ref=$(cat "$PUSH_HOLD_WORK/ref.$i")
+      ref=$(cat "$PUSH_HOLD_WORK/ref.$i") || return 1
       if grep -qxF -- "$ref" "$PUSH_HOLD_WORK/super_names"; then
-        printf '%s\n' "super" > "$PUSH_HOLD_WORK/st.$i"
+        printf '%s\n' "super" > "$PUSH_HOLD_WORK/st.$i" || return 1
       fi
     fi
     i=$((i + 1))
   done
 
   # Two live refs that hold the same path cannot both be restored.
-  : > "$PUSH_HOLD_WORK/allent"
+  : > "$PUSH_HOLD_WORK/allent" || return 1
   i=1
   while [ "$i" -le "$n" ]; do
     if [ "$(cat "$PUSH_HOLD_WORK/st.$i")" = "ok" ]; then
-      awk -F'\t' -v n="$i" '{ print n "\t" $2 }' "$PUSH_HOLD_WORK/ent.$i" >> "$PUSH_HOLD_WORK/allent"
+      awk -F'\t' -v n="$i" '{ print n "\t" $2 }' "$PUSH_HOLD_WORK/ent.$i" >> "$PUSH_HOLD_WORK/allent" || return 1
     fi
     i=$((i + 1))
   done
@@ -648,47 +715,56 @@ _push_hold_recover_impl() {
         if (!(k in seen)) { seen[k] = 1; print k }
       } else if (!($2 in owner)) owner[$2] = $1
     }
-  ' "$PUSH_HOLD_WORK/allent" > "$PUSH_HOLD_WORK/clashes"
+  ' "$PUSH_HOLD_WORK/allent" > "$PUSH_HOLD_WORK/clashes" || return 1
   while IFS=$'\t' read -r a b <&3; do
     [ -n "$a" ] && [ -n "$b" ] || continue
-    printf '%s\n' "clash" > "$PUSH_HOLD_WORK/st.$a"
-    printf '%s\n' "clash" > "$PUSH_HOLD_WORK/st.$b"
-    printf '%s\n' "shares a path with $(cat "$PUSH_HOLD_WORK/ref.$b")" > "$PUSH_HOLD_WORK/why.$a"
-    printf '%s\n' "shares a path with $(cat "$PUSH_HOLD_WORK/ref.$a")" > "$PUSH_HOLD_WORK/why.$b"
+    printf '%s\n' "clash" > "$PUSH_HOLD_WORK/st.$a" || return 1
+    printf '%s\n' "clash" > "$PUSH_HOLD_WORK/st.$b" || return 1
+    printf '%s\n' "shares a path with $(cat "$PUSH_HOLD_WORK/ref.$b")" > "$PUSH_HOLD_WORK/why.$a" || return 1
+    printf '%s\n' "shares a path with $(cat "$PUSH_HOLD_WORK/ref.$a")" > "$PUSH_HOLD_WORK/why.$b" || return 1
   done 3< "$PUSH_HOLD_WORK/clashes"
 
   i=1
   while [ "$i" -le "$n" ]; do
-    st=$(cat "$PUSH_HOLD_WORK/st.$i")
-    ref=$(cat "$PUSH_HOLD_WORK/ref.$i")
+    st=$(cat "$PUSH_HOLD_WORK/st.$i") || return 1
+    ref=$(cat "$PUSH_HOLD_WORK/ref.$i") || return 1
     case "$st" in
       super)
-        _push_hold_record_recovered "$i" || _push_hold_mark_unreconciled "$ref" "could not record a superseded ref"
+        if ! _push_hold_record_recovered "$i"; then
+          _push_hold_mark_unreconciled "$ref" "could not record a superseded ref"
+          failed=1
+        fi
         ;;
       ok)
-        _push_hold_apply_ref "$i"
+        _push_hold_apply_ref "$i" || failed=1
         ;;
       *)
         why=$(cat "$PUSH_HOLD_WORK/why.$i" 2>/dev/null) || why=""
         [ -n "$why" ] || why="unreconciled"
         _push_hold_mark_unreconciled "$ref" "$why"
+        failed=1
         ;;
     esac
     i=$((i + 1))
   done
-  return 0
+  [ "$failed" -eq 0 ] || return 1
+  push_hold_recovery_ok
 }
 
-# Always returns 0. set -e is restored to whatever the caller had.
+# 0 admits source writers; nonzero fences them. Preserve the caller's set -e.
 push_hold_recover() {
-  local flags
+  local flags rc
   flags=$-
   set +e
   _push_hold_recover_impl "$@"
+  rc=$?
+  if [ "$rc" -ne 0 ]; then
+    _push_hold_mark_unreconciled "recovery" "recovery did not establish admission" || true
+  fi
   case "$flags" in
     *e*) set -e ;;
   esac
-  return 0
+  return "$rc"
 }
 
 # Delete each recovered ref whose every path is either in the pushed range or
@@ -755,6 +831,7 @@ push_hold_red() {
 push_hold_oversize_staged() {
   local W i sha size head path layout head_size pfx_hash headsha tree commit ref
   local blob total alarm bad nheld reset_failed=0
+  push_hold_recovery_ok || return 2
   _push_hold_work_reset || {
     echo "::error title=hold custody failed::could not create the hold state dir"
     return 2

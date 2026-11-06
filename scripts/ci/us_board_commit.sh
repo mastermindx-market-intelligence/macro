@@ -17,9 +17,12 @@ git config user.name "dashboard-bot"
 git config user.email "actions@users.noreply.github.com"
 
 if [ "${1:-}" = "--recover" ]; then
-  push_hold_recover "$BOARD" "$ROTATION"
+  push_hold_recover "$BOARD" "$ROTATION" || exit 1
   exit 0
 fi
+
+# A direct committer invocation must not publish past a failed recovery.
+push_hold_recovery_ok || exit 1
 
 git add data/us_board_ledger 2>/dev/null || true
 git add data/us_sector_rotation 2>/dev/null || true

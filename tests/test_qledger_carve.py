@@ -701,7 +701,7 @@ def test_engine_recover_refuses_a_custody_ref_it_cannot_trust_and_reds_the_commi
     subprocess.run(["git", "clone", "-q", str(bare), str(nxt)], check=True, env=env)
     recovered = _recover(nxt, env)
 
-    assert recovered.returncode == 0, recovered.stdout + recovered.stderr
+    assert recovered.returncode != 0, recovered.stdout + recovered.stderr
     assert f"::error title=held rows not restored::{ref}: {reason}. The ref is kept." in recovered.stdout
     assert _custody_refs(bare, env) == [ref]
     assert not (tmp_path / "escape.json").exists()
@@ -739,7 +739,7 @@ def test_engine_recover_writes_nothing_over_a_dirty_second_member_and_keeps_the_
     env2 = _hold_env(tmp_path, run_id="802")
     recovered = _recover(nxt, env2)
 
-    assert recovered.returncode == 0, recovered.stdout + recovered.stderr
+    assert recovered.returncode != 0, recovered.stdout + recovered.stderr
     assert f"::error title=held rows not restored::{ref}: worktree is dirty for site/x.json. The ref is kept." in recovered.stdout
     assert (nxt / "data/x.jsonl").read_bytes() == b"old\n", "the clean first member is not written either"
     assert member.read_bytes() == before
@@ -1063,7 +1063,7 @@ def test_engine_job_restores_after_each_committer_step_even_when_killed():
     names = [s.get("name") or "" for s in steps]
     for committer in ("checkpoint core engine outputs to main", "commit engine outputs"):
         i = next(i for i, n in enumerate(names) if n.startswith(committer))
-        assert steps[i]["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh"
+        assert steps[i]["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh --checkpoint"
         nxt = steps[i + 1]
         assert nxt["name"].startswith("restore carved qledger bytes"), f"no always() restore after {committer!r}"
         assert str(nxt.get("if")).strip() == "always()"
@@ -1076,3 +1076,204 @@ def test_engine_render_sync_readd_keeps_the_carved_planes_out():
     guard = text.index('if [ "${QLEDGER_CARVED:-false}" = true ]; then git reset -q -- site/qledger data/qledger')
     clean = text.index("if push_staged_clean site/ templates/; then")
     assert readd < guard < clean
+
+
+@pytest.mark.parametrize("admission", ["true", "", "false"])
+def test_engine_core_admission_barrier_covers_implicit_and_always_writers(tmp_path, admission):
+    """A failed COE checkpoint alone does not fail the job: make missing custody
+    a real failure before ordinary writers, and fence status-function writers."""
+    steps = _job_steps("engine")
+    core = next(i for i, step in enumerate(steps) if step.get("id") == "core_custody")
+    final = next(i for i, step in enumerate(steps) if step.get("id") == "final_custody")
+    assert steps[core]["continue-on-error"] is True
+    assert steps[core + 1]["run"] == ". scripts/ci/qledger_carve.sh; qledger_carve_restore_from_file"
+    assert steps[core + 1]["if"] == "always()"
+    barrier = steps[core + 2]
+    assert barrier["name"] == "require qualified core custody before tail writers"
+    assert barrier["if"] == "always()"
+    assert not barrier.get("continue-on-error")
+    assert barrier["env"]["CORE_CUSTODY_ADMITTED"] == "${{ steps.core_custody.outputs.admitted }}"
+    done = subprocess.run(
+        ["/bin/bash", "-e", "-c", barrier["run"]],
+        cwd=tmp_path, env={**os.environ, "CORE_CUSTODY_ADMITTED": admission},
+        capture_output=True, text=True,
+    )
+    assert (done.returncode == 0) is (admission == "true")
+    if admission != "true":
+        assert done.stdout.startswith("::error title=engine custody unqualified::")
+    implicit = 0
+    explicit = 0
+    for step in steps[core + 3:final + 1]:
+        condition = str(step.get("if", ""))
+        if "always()" in condition:
+            assert "steps.core_custody.outputs.admitted == 'true'" in condition, step.get("name")
+            explicit += 1
+        else:
+            assert not re.search(r"\b(?:success|failure|cancelled)\s*\(", condition), step.get("name")
+            implicit += 1
+    assert implicit == 68, "ordinary writers must remain behind the non-COE failure barrier"
+    assert explicit >= 30
+    assert steps[final]["if"] == "always() && steps.core_custody.outputs.admitted == 'true'"
+    timing = next(step for step in steps if step.get("name") == "timings ledger + 85% budget tripwire (W2)")
+    assert timing["if"] == "always()"
+    assert timing["env"]["NIGHTLY_TIMINGS_PUBLISH_ALLOWED"] == "${{ steps.final_custody.outputs.admitted == 'true' }}"
+
+
+@pytest.mark.parametrize(
+    "case,expected_rc,admitted",
+    [
+        ("clean", 0, True),
+        ("held", 1, True),
+        ("ordinary_failure", 1, True),
+        ("unknown", 1, False),
+        ("interrupted", 143, False),
+        ("unreadable", 1, False),
+    ],
+)
+def test_engine_checkpoint_qualifies_after_one_inner_commit_and_cleanup(tmp_path, case, expected_rc, admitted):
+    """Exercise the real outer mode with a component fixture for the inner
+    publisher; held state uses the actual grouped Git-custody implementation."""
+    env = _hold_env(tmp_path)
+    repo, bare = _pair_seed(tmp_path, env)
+    main_before = _git(bare, "rev-parse", "main", env=env)
+    if case == "held":
+        _stage_pair(repo, env)
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    fake_bash = fake_bin / "bash"
+    fake_bash.write_text(
+        "#!/bin/bash\nset -e\n"
+        'if [ "${1:-}" != "$GITHUB_WORKSPACE/scripts/ci/daily_engine_commit_outputs.sh" ]; then exec /bin/bash "$@"; fi\n'
+        'test "$#" -eq 1\n'
+        'printf "%s\\n" "$1" >> "$CHECKPOINT_CALLS"\n'
+        '. "$GITHUB_WORKSPACE/scripts/ci/push_retry.sh"\n'
+        '. "$GITHUB_WORKSPACE/scripts/ci/push_hold.sh"\n'
+        + _engine_hold_defs() + "\n"
+        "trap 'test ! -s \"$GITHUB_OUTPUT\" && printf done > \"$CHECKPOINT_CLEANUP\"' EXIT\n"
+        'case "$CHECKPOINT_CASE" in\n'
+        "  clean) exit 0 ;;\n"
+        "  held) engine_hold ;;\n"
+        "  ordinary_failure) exit 1 ;;\n"
+        '  unknown) _push_hold_prepare_state; _push_hold_mark_unreconciled exact-ref "readback unavailable"; exit 1 ;;\n'
+        '  interrupted) kill -TERM "$$" ;;\n'
+        '  unreadable) _push_hold_prepare_state; _push_hold_mark_unreconciled exact-ref "unresolved"; chmod 000 "$PUSH_HOLD_STATE"; exit 1 ;;\n'
+        "esac\n"
+    )
+    fake_bash.chmod(0o755)
+    output = tmp_path / "output"
+    calls = tmp_path / "calls"
+    cleanup = tmp_path / "cleanup"
+    env.update({
+        "PATH": f"{fake_bin}:{env['PATH']}",
+        "GITHUB_OUTPUT": str(output),
+        "CHECKPOINT_CASE": case,
+        "CHECKPOINT_CALLS": str(calls),
+        "CHECKPOINT_CLEANUP": str(cleanup),
+    })
+    try:
+        done = subprocess.run(
+            ["/bin/bash", str(ENGINE), "--checkpoint"], cwd=repo, env=env,
+            capture_output=True, text=True, timeout=60,
+        )
+        assert done.returncode == expected_rc, done.stdout + done.stderr
+        assert calls.read_text().splitlines() == [str(ENGINE)]
+        assert cleanup.read_text() == "done", "admission must wait for the inner EXIT cleanup"
+        rows = output.read_text().splitlines() if output.exists() else []
+        assert rows == (["admitted=true"] if admitted else [])
+        if case == "unreadable":
+            state = next(Path(env["RUNNER_TEMP"]).glob("push_hold.*"))
+            assert not os.access(state, os.R_OK | os.W_OK | os.X_OK)
+        assert _git(bare, "rev-parse", "main", env=env) == main_before
+        if case == "held":
+            [ref] = _custody_refs(bare, env)
+            held, _ = _custody(bare, ref, env)
+            assert held == {"data/x.jsonl": SOURCE_BYTES, "site/x.json": DERIVED_BYTES}
+            assert _staged(repo, env) == []
+            assert (repo / "data/x.jsonl").read_bytes() == SOURCE_BYTES
+        else:
+            assert _custody_refs(bare, env) == []
+    finally:
+        for state in Path(env["RUNNER_TEMP"]).glob("push_hold.*"):
+            state.chmod(0o700)
+
+
+@pytest.mark.parametrize("checkpoint", [False, True])
+def test_engine_direct_committer_refuses_before_normalizers_or_staging(tmp_path, checkpoint):
+    env = _hold_env(tmp_path)
+    repo, bare = _pair_seed(tmp_path, env)
+    _stage_pair(repo, env)
+    assert _bash(repo, _hold_script("engine_hold"), env).returncode == 1
+    [ref] = _custody_refs(bare, env)
+    assert _bash(
+        repo, '. "$GITHUB_WORKSPACE/scripts/ci/push_hold.sh"\n'
+        '_push_hold_prepare_state\n_push_hold_mark_unreconciled exact-ref "unresolved old custody"', env,
+    ).returncode == 0
+    (repo / "data/x.jsonl").write_bytes(b"small new source\n")
+    (repo / "site/x.json").write_bytes(b'{"new":true}\n')
+    _git(repo, "add", "site/x.json", env=env)
+    before_index = _git(repo, "write-tree", env=env)
+    before_main = _git(bare, "rev-parse", "main", env=env)
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    calls = tmp_path / "normalizers"
+    for name in ("python", "python3"):
+        program = fake_bin / name
+        program.write_text(
+            "#!/bin/bash\n"
+            'printf "%s\\n" "$*" >> "$NORMALIZER_CALLS"\n'
+            "exit 79\n"
+        )
+        program.chmod(0o755)
+    env.update({"PATH": f"{fake_bin}:{env['PATH']}", "NORMALIZER_CALLS": str(calls)})
+    done = subprocess.run(
+        ["/bin/bash", str(ENGINE), *(["--checkpoint"] if checkpoint else [])],
+        cwd=repo, env=env, capture_output=True, text=True, timeout=20,
+    )
+    assert done.returncode == 1, done.stdout + done.stderr
+    assert "unreconciled recovery state blocks" in done.stdout
+    assert not calls.exists(), "a blocked direct invocation must not start a normalizer"
+    assert _git(repo, "write-tree", env=env) == before_index
+    assert _git(bare, "rev-parse", "main", env=env) == before_main
+    assert (repo / "data/x.jsonl").read_bytes() == b"small new source\n"
+    assert (repo / "site/x.json").read_bytes() == b'{"new":true}\n'
+    assert _custody_refs(bare, env) == [ref]
+
+
+def test_engine_unknown_first_custody_cannot_mint_a_second_checkpoint_ref(tmp_path):
+    env = _hold_env(tmp_path)
+    repo, bare = _pair_seed(tmp_path, env)
+    _stage_pair(repo, env)
+    main_before = _git(bare, "rev-parse", "main", env=env)
+    real_git = subprocess.run(["which", "git"], capture_output=True, text=True, check=True).stdout.strip()
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    calls = tmp_path / "push-calls"
+    wrapper = fake_bin / "git"
+    wrapper.write_text(
+        "#!/bin/bash\n"
+        'if [ "${1:-}" = "push" ]; then printf push\\\\n >> "$PUSH_CALLS"; fi\n'
+        'if [ "${1:-}" = "ls-remote" ] && [ "${2:-}" = "--refs" ]; then exit 61; fi\n'
+        'exec "$REAL_GIT" "$@"\n'
+    )
+    wrapper.chmod(0o755)
+    env.update({"PATH": f"{fake_bin}:{env['PATH']}", "REAL_GIT": real_git, "PUSH_CALLS": str(calls)})
+    first = _bash(repo, _hold_script("engine_hold"), env)
+    assert first.returncode == 1, first.stdout + first.stderr
+    assert "EFFECT_UNKNOWN" in first.stdout
+    [ref] = _custody_refs(bare, env)
+    assert calls.read_text().splitlines() == ["push"]
+    (repo / "data/x.jsonl").write_bytes(b"short\n")
+    (repo / "site/late.json").write_bytes(b"{}\n")
+    _git(repo, "add", "data", "site", env=env)
+    before_index = _git(repo, "write-tree", env=env)
+    second = _bash(repo, _hold_script("engine_hold"), env)
+    assert second.returncode == 1, second.stdout + second.stderr
+    assert "unreconciled recovery state blocks" in second.stdout
+    assert calls.read_text().splitlines() == ["push"]
+    assert _git(repo, "write-tree", env=env) == before_index
+    assert _git(bare, "rev-parse", "main", env=env) == main_before
+    assert _custody_refs(bare, env) == [ref]
+    held, _ = _custody(bare, ref, env)
+    assert held == {"data/x.jsonl": SOURCE_BYTES, "site/x.json": DERIVED_BYTES}
+    assert (repo / "data/x.jsonl").read_bytes() == b"short\n"
+    assert (repo / "site/late.json").read_bytes() == b"{}\n"
