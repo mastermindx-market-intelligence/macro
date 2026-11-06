@@ -140,11 +140,13 @@ class StateQualificationReader:
     # -- rights -------------------------------------------------------------
     def _rights(self, node_id: str, native: Mapping[str, Any], source_sha256: Mapping[str, Any]):
         adapter = _adapter()
-        from engine.theme_graph import rights
         source = adapter._source(self.root, adapter._input_paths(self.root)["rights_registry"])
         if source["availability"] != "AVAILABLE" or source["sha256"] != source_sha256.get("rights_registry"):
             return None
-        reread = adapter._bound_rights_read(self.root, source, rights.family_for_node_id(node_id))
+        # Canonical price mappings do not establish a semantic member population.
+        # This reader qualifies source-local membership only; no canonical rights
+        # are inferred from the house-authored crosswalk.
+        reread = adapter._bound_rights_read(self.root, source, adapter.rights.family_for_node_id(node_id))
         licensing = native.get("licensing")
         if (adapter._json(reread) != adapter._json(native) or native.get("availability") != "AVAILABLE"
                 or native.get("current_bytes_bound") is not True or not native.get("known_family")

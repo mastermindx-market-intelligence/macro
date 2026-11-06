@@ -20,7 +20,7 @@ def verify(caddyfile: Path, caddy: str) -> list[dict]:
     end = source.index("\n}\n\nwww.mastermind-x.com {", begin)
     headers = source[begin:end]
     redirect_begin = source.index("\t# Consolidated-away page with real Google demand")
-    redirect_end = source.index("\t# Daily Movers is no longer", redirect_begin)
+    redirect_end = source.index("\t# ── Site Access Boundary", redirect_begin)
     redirect = source[redirect_begin:redirect_end]
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
@@ -37,6 +37,14 @@ def verify(caddyfile: Path, caddy: str) -> list[dict]:
             query region=blocked
         }
         handle @baskets_region_denied {
+            header Cache-Control "no-store"
+            respond "existing region gate" 403
+        }
+        @movers_region_denied {
+            path /movers.html
+            query region=blocked
+        }
+        handle @movers_region_denied {
             header Cache-Control "no-store"
             respond "existing region gate" 403
         }
@@ -84,6 +92,18 @@ def verify(caddyfile: Path, caddy: str) -> list[dict]:
         ("/baskets_china.html?filter=a%20b&mmx_shell=1", "https://beta.mastermind-x.com/baskets_china.html", True, 200),
         ("/baskets_china.html?mmx_shell=1&region=blocked", "https://beta.mastermind-x.com/", True, 403),
     ])
+    cases.extend([
+        ("/movers.html", None, False, 301),
+        ("/movers.html?mmx_shell=1", None, False, 301),
+        ("/movers.html?mmx_shell=1", "https://example.test/", False, 301),
+        ("/movers.html?mmx_shell=1", "https://beta.mastermind-x.com.evil.test/", False, 301),
+        ("/movers.html?mmx_shell=1", "http://beta.mastermind-x.com/", False, 301),
+        ("/movers.html?mmx_shell=0", "https://beta.mastermind-x.com/", False, 301),
+        ("/movers.html", "https://beta.mastermind-x.com/", False, 301),
+        ("/movers.html?mmx_shell=1", "https://beta.mastermind-x.com/", True, 200),
+        ("/movers.html?filter=a%20b&mmx_shell=1", "https://beta.mastermind-x.com/movers.html", True, 200),
+        ("/movers.html?mmx_shell=1&region=blocked", "https://beta.mastermind-x.com/", True, 403),
+    ])
     receipts = []
     with tempfile.TemporaryDirectory(prefix="shared-shell-caddy-proof-") as temp:
         root = Path(temp)
@@ -123,6 +143,10 @@ def verify(caddyfile: Path, caddy: str) -> list[dict]:
                     assert actual.get("X-Frame-Options") == (None if embedded else "DENY"), (path, dict(actual))
                     if path.startswith("/baskets_china.html"):
                         assert actual.get("Location") == ("/sector_central_china.html" if status == 301 else None), (path, dict(actual))
+                        if embedded and status == 200:
+                            assert body == b"existing product document"
+                    if path.startswith("/movers.html"):
+                        assert actual.get("Location") == ("/stocks/index.html#today-movers" if status == 301 else None), (path, dict(actual))
                         if embedded and status == 200:
                             assert body == b"existing product document"
                     if path.split("?", 1)[0].endswith(".html") and "mmx_shell=1" in path:

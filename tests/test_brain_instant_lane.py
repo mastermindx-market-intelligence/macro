@@ -2703,3 +2703,136 @@ def test_w1c_deep_route_request_keeps_legacy_context_byte_identical_and_carries_
     assert events[1]["schema"] == "ai_context_receipt.v1"
     assert events[1]["effective_context"]["source"] == "active"
     assert events[1]["effective_context"]["entities"] == [{"type": "security", "id": "AAOI"}]
+
+
+class _NumericQARuntime(_NativeRuntime):
+    """Existing resolver double, with real canonical envelope fingerprints."""
+    class _Registry:
+        digest = "d" * 64
+
+    registry = _Registry()
+
+    def resolve(self, request):
+        from engine.intelligence_workspace.contracts import semantic_fingerprint
+        envelopes = super().resolve(request)
+        for envelope in envelopes:
+            envelope["registry_digest"] = self.registry.digest
+            envelope["fact_fingerprint"] = semantic_fingerprint(envelope)
+        return envelopes
+
+
+def test_t11_native_execution_verifies_ephemeral_sources_without_public_qa(tmp_path):
+    runtime = _NumericQARuntime()
+    plan = nf.plan_native_facts("AAPL Stage")
+    result = nf.execute_native_fact_plan(plan, runtime=runtime, repo_root=tmp_path,
+                                         request_id="request-t11")
+    assert len(runtime.calls) == 1
+    assert runtime.calls[0].audience == "subscriber"
+    assert result.numeric_verification["status"] == "verified"
+    assert result.numeric_verification["checked_count"] == 1
+    assert result.numeric_verification["references"][0]["field_id"] == "stage.current"
+    assert "value" not in json.dumps(result.numeric_verification)
+    assert "numeric_verification" not in result.receipt
+    assert "numeric_response_verified" not in result.answer
+
+
+def test_t11_native_qa_failure_does_not_change_served_answer(tmp_path, monkeypatch):
+    from engine.neuralweb import response_eval
+    plan = nf.plan_native_facts("AAPL Stage")
+    baseline = nf.execute_native_fact_plan(plan, runtime=_NumericQARuntime(), repo_root=tmp_path)
+    def broken(*args, **kwargs):
+        raise RuntimeError("private diagnostic must not escape")
+    monkeypatch.setattr(response_eval, "verify_native_numeric_response", broken)
+    result = nf.execute_native_fact_plan(plan, runtime=_NumericQARuntime(), repo_root=tmp_path,
+                                         request_id="request-t11")
+    assert result.answer == baseline.answer
+    assert result.numeric_verification == {
+        "status": "not_assessed", "reason": "internal_error", "checked_count": 0,
+        "references": [], "internal_qa_only": True,
+    }
+    assert "private diagnostic" not in json.dumps(result.receipt)
+
+
+@pytest.mark.parametrize("streaming", [False, True])
+@pytest.mark.parametrize("status", ["verified", "mismatch"])
+def test_t11_gateway_correlates_internal_log_without_exposing_qa(
+        tmp_path, monkeypatch, streaming, status):
+    from dataclasses import replace
+    plan = nf.plan_native_facts("INOD Stage")
+    verdict = {
+        "status": status,
+        "reason": "numeric_response_verified" if status == "verified" else "answer_mismatch",
+        "checked_count": 1 if status == "verified" else 0,
+        "references": [{"field_id": "stage.current", "fact_fingerprint": "a" * 64}]
+                      if status == "verified" else [],
+        "internal_qa_only": True,
+    }
+    executed, logged = [], []
+    def execute(*args, **kwargs):
+        executed.append(kwargs)
+        return replace(_gateway_native_execution(), numeric_verification=verdict)
+    monkeypatch.setattr(gw, "_brain_quota_dir", lambda: tmp_path)
+    monkeypatch.setattr(gw, "_resolve_tier", lambda *a, **k: {
+        "tier": "pro", "status": "active", "current_period_end": None})
+    monkeypatch.setattr(gw._native_facts, "plan_native_facts", lambda *a, **k: plan)
+    monkeypatch.setattr(gw._native_facts, "execute_native_fact_plan", execute)
+    monkeypatch.setattr(gw, "_ensure_thread", lambda *a, **k: None)
+    monkeypatch.setattr(gw, "_record_token_usage", lambda *a, **k: None)
+    monkeypatch.setattr(gw, "_log_brain_response", lambda **kwargs: logged.append(kwargs))
+    def forbid_provider(*args, **kwargs):
+        raise AssertionError("numeric QA cannot call a provider")
+    monkeypatch.setattr(gw, "_build_lane_providers", forbid_provider)
+    if streaming:
+        public = [json.loads(chunk[5:].strip()) for chunk in gw.chat_stream(
+            "INOD Stage", "t11-user", lane="fast", root=_root()) if chunk.startswith("data:")]
+        context_receipt = next(row for row in public if row.get("type") == "context_receipt")
+        request_id = context_receipt["receipt"]["request_id"] if "receipt" in context_receipt else context_receipt["request_id"]
+    else:
+        public = gw.chat("INOD Stage", "t11-user", lane="fast", root=_root())
+        request_id = public["context_receipt"]["request_id"]
+    assert len(executed) == len(logged) == 1
+    assert executed[0]["request_id"] == logged[0]["row_id"] == request_id
+    assert logged[0]["native_numeric_verification"] == verdict
+    assert "source_envelopes" not in logged[0]
+    assert "numeric_response_verified" not in json.dumps(public)
+    assert "native_numeric_verification" not in json.dumps(public)
+    assert "answer_mismatch" not in json.dumps(public)
+
+
+@pytest.mark.parametrize("streaming", [False, True])
+def test_t11_actual_native_to_internal_log_and_operator_reader(tmp_path, monkeypatch, streaming):
+    from engine.intelligence_workspace import runtime as runtime_module
+    from lib import mastermind_response_log as mm
+    from admin import mastermind_logs
+    captured = []
+    monkeypatch.setattr(runtime_module, "build_runtime", lambda **kw: _NumericQARuntime())
+    monkeypatch.setattr(gw, "_brain_quota_dir", lambda: tmp_path)
+    monkeypatch.setattr(gw, "_resolve_tier", lambda *a, **k: {
+        "tier": "pro", "status": "active", "current_period_end": None})
+    monkeypatch.setattr(gw, "_ensure_thread", lambda *a, **k: None)
+    monkeypatch.setattr(gw, "_record_token_usage", lambda *a, **k: None)
+    monkeypatch.setattr(mm, "enabled", lambda: True)
+    monkeypatch.setattr(mm, "log_response_async", lambda **kw: captured.append(mm.build_row(**kw)))
+    def forbid_provider(*a, **kw):
+        raise AssertionError("native QA has no model dependency")
+    monkeypatch.setattr(gw, "_build_lane_providers", forbid_provider)
+    if streaming:
+        public = [json.loads(chunk[5:].strip()) for chunk in gw.chat_stream(
+            "AAPL Stage", "t11-user", lane="fast", root=_root()) if chunk.startswith("data:")]
+        request_id = next(row["request_id"] for row in public if row.get("type") == "context_receipt")
+    else:
+        public = gw.chat("AAPL Stage", "t11-user", lane="fast", root=_root())
+        request_id = public["context_receipt"]["request_id"]
+    assert len(captured) == 1
+    row = captured[0]
+    assert row["id"] == request_id
+    assert row["native_numeric_verification"]["status"] == "verified"
+    assert "source_envelopes" not in row
+    assert "native_numeric_verification" not in json.dumps(public)
+    corpus = tmp_path / "data/mastermind/response_log.jsonl"
+    corpus.parent.mkdir(parents=True)
+    corpus.write_text(json.dumps(row) + "\n")
+    observed = mastermind_logs.logs(root=tmp_path)["rows"]
+    assert len(observed) == 1
+    assert observed[0]["id"] == request_id
+    assert observed[0]["native_numeric_verification"] == row["native_numeric_verification"]

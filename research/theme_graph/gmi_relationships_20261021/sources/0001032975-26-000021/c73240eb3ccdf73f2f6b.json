@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-05-21T21:02:23Z",
+ "accession": "0001032975-26-000021",
+ "cik": "0001032975",
+ "doc_byte_length": 2478904,
+ "doc_sha256": "831eb4d383cf493b8a27c8d4067b830b3976d8a5cdfb91200aa8235588c71f93",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-31",
+ "primary_document": "logi-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1413712,
+  "byte_start": 1413248,
+  "normalized": "Customer A14",
+  "normalized_sha256": "76bc554bad8843f32223b066e9c75eef5ec4bb88c6a1125d3bfb8034105d7cd0",
+  "raw": "Customer A</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;border-top:1pt solid #000000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-50\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-440\">14",
+  "raw_sha256": "c73240eb3ccdf73f2f6bb5a2b226b5c4381dd3654e3e3cea8b168c1430ebaae9"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1032975/000103297526000021/logi-20260331.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 31417,
+   "byte_start": 30741,
+   "context_ref": "c-50",
+   "raw": "<xbrli:context id=\"c-50\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001032975</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">logi:CustomerAMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-04-01</xbrli:startDate><xbrli:endDate>2026-03-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "56367c6b8ded96507e147a64bdaa0855b8bb2f8b4fc0f50e908bdfde9b03c192"
+  }
+ ]
+}

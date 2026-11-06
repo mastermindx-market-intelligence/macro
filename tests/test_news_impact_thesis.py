@@ -602,9 +602,12 @@ def test_case3_correction_supersedes() -> None:
     assert "source_correction" in view["material_delta_triggers"]
     assert "changed_numeric_terms" in view["material_delta_triggers"]
     armed = {w["code"]: w["armed"] for w in view["weakening_conditions"]}
-    assert armed.get("source_correction_reduces_magnitude") is True
-    assert "restated" in view["display"]["plain_status"]
-    assert "28 September" in view["display"]["what_we_are_watching"] or "earlier" in view["display"]["what_we_are_watching"]
+    # Legacy scalar-only leaves do not establish compatible quantity terms.
+    assert armed.get("source_correction_reduces_magnitude") is False
+    assert "source correction" in view["display"]["plain_status"].lower()
+    assert "28 September" not in json.dumps(view["display"])
+    assert "remaining authorization" not in view["display"]["plain_status"]
+    assert "Review the corrected terms" in view["display"]["what_we_are_watching"]
 
 
 def test_case4_contradiction_absence() -> None:
@@ -991,3 +994,93 @@ def test_default_log_path_is_documentation_only() -> None:
     assert T.DEFAULT_LOG_PATH == "data/news_impact/fact_log.jsonl"
     parsed = T.parse_jsonl(T.serialize_jsonl(case1_log()["records"]), log_path="/no/such/path.jsonl")
     assert len(parsed["records"]) == 3
+
+
+# Catalyst R4: contributions must remain scoped to their Company/proposition.
+def _delta_r4(log, proposition=FACT_AUTH, company=CIK):
+    prior = "2026-10-02T12:00:00Z"
+    now = "2026-10-02T14:00:00Z"
+    known = {**case1_owners().leaf_payloads, **case2_owners().leaf_payloads}
+    current = {**known, FACT_CORR: {
+        **known[FACT_AUTH], "remaining": 210_000_000_000,
+    }}
+    views = T.F(
+        log, T.OwnerSnapshot(leaf_payloads=current, decision_cut=now), now,
+        prior_as_of_utc=prior,
+        prior_owners=T.OwnerSnapshot(leaf_payloads=known, decision_cut=prior),
+        decision_cut=now,
+    )
+    return next(v for v in views if v["company_id"] == company
+                and v["original_proposition_fact_id"] == proposition)
+
+
+def _r4_mirror(log_seq=5, *, novelty="new_reporting_of_old_fact", clock="13:10:00"):
+    row = copy.deepcopy(case1_log()["records"][1])
+    row.update(log_seq=log_seq, fact_id="fact_a11c0e000000000000000012",
+               document_id="doc_r4_mirror", novelty=novelty,
+               observed_at=f"2026-10-02T{clock}Z",
+               source_available_at=f"2026-10-02T{clock}Z",
+               evidence=_span("doc_r4_mirror", "dddddddddddddddddddd"))
+    return row
+
+
+@pytest.mark.parametrize("novelty", ["new_reporting_of_old_fact", "commentary"])
+@pytest.mark.parametrize("clock", ["12:30:00", "13:10:00"])
+def test_material_delta_contributions_survive_known_group_reporting(novelty, clock):
+    changed = T.append_records(case1_log(), [case3_record()])
+    expected = _delta_r4(changed)["material_delta_triggers"]
+    assert {"changed_numeric_terms", "new_independent_source", "source_correction"} <= set(expected)
+    combined = T.append_records(changed, [_r4_mirror(novelty=novelty, clock=clock)])
+    assert _delta_r4(combined)["material_delta_triggers"] == expected
+
+
+def _r4_numeric_milestone_log():
+    log = case2_log()
+    log["records"][1].update(
+        observed_at="2026-10-02T13:00:00Z", source_available_at="2026-10-02T12:55:00Z",
+        quantity_fingerprint={"form": "present", "canonical_sha256": CORR_SHA},
+    )
+    log["records"][2].update(
+        observed_at="2026-10-02T13:00:01Z", source_available_at="2026-10-02T12:55:00Z",
+    )
+    T.validate_log(log)
+    return log
+
+
+@pytest.mark.parametrize("other_company", [False, True])
+def test_material_delta_numeric_terms_cannot_leak_between_propositions(other_company):
+    log = _r4_numeric_milestone_log()
+    before = _delta_r4(log, FACT_NEMO)["material_delta_triggers"]
+    assert "independently_observed_milestone" in before
+    assert "changed_numeric_terms" not in before
+    unrelated = copy.deepcopy(case1_log()["records"][0])
+    unrelated.update(log_seq=4, observed_at="2026-10-02T13:05:00Z")
+    if other_company:
+        unrelated["company_id"] = "cik:0000320193"
+        unrelated["fact_key"]["company_id"] = unrelated["company_id"]
+    combined = T.append_records(log, [unrelated])
+    assert _delta_r4(combined, FACT_NEMO)["material_delta_triggers"] == before
+
+
+@pytest.mark.parametrize("cosmetic", [True, False])
+def test_material_delta_milestone_numeric_support_uses_only_eligible_attached_records(cosmetic):
+    log = _r4_numeric_milestone_log()
+    row = copy.deepcopy(log["records"][0])
+    row.update(log_seq=4, fact_id="fact_b22d1f000000000000000009",
+               observed_at="2026-10-02T12:30:00Z", source_available_at="2026-10-02T12:25:00Z",
+               novelty="new_reporting_of_old_fact" if cosmetic
+                       else "new_magnitude_timing_commitment_counterparty",
+               quantity_fingerprint={"form": "present", "canonical_sha256": EMPTY_SHA})
+    if cosmetic:
+        # Owner schema admits cosmetic reporting as a manifestation, never as
+        # a fact_revision. Preserve that distinction in this public-path case.
+        row.update(record_kind="manifestation", cluster_grain="article_manifestation",
+                   reports_fact_id=FACT_NEMO)
+    out = _delta_r4(T.append_records(log, [row]), FACT_NEMO)
+    assert "independently_observed_milestone" in out["material_delta_triggers"]
+    assert ("changed_numeric_terms" in out["material_delta_triggers"]) is (not cosmetic)
+
+
+def test_material_delta_known_group_reporting_alone_stays_nonmaterial():
+    out = _delta_r4(T.append_records(case1_log(), [_r4_mirror(log_seq=4)]))
+    assert out["material_delta_triggers"] == []

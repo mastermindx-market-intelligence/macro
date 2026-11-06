@@ -40,6 +40,7 @@ def verify(receipt: Path) -> None:
             page.on("pageerror", lambda error: errors.append(str(error)))
             page.goto(f"http://127.0.0.1:{server.server_address[1]}/commodities.html", wait_until="load")
             page.locator("#cw-panel-overview").wait_for(state="visible")
+            data = json.loads(page.locator("#cw-data").text_content())
             page.evaluate("document.fonts.ready")
             style = page.locator(".cw-hero h2").evaluate("(el)=>getComputedStyle(el).fontSize")
             radius = page.locator(".cw-focus").first.evaluate("(el)=>getComputedStyle(el).borderRadius")
@@ -91,17 +92,17 @@ def verify(receipt: Path) -> None:
             checks.append("primary and session returns retain numeric hierarchy instead of caption styling")
             physical = page.locator("#cw-physical-oil")
             assert physical.is_visible()
-            assert "Crude and product stocks below seasonal norms" in page.locator("#cw-physical-title").inner_text()
-            assert "2026-10-09" in physical.locator(".cw-physical-clock").inner_text()
-            assert "release vintage unavailable" in physical.locator(".cw-physical-clock").inner_text()
-            assert "not met" in physical.locator(".cw-physical-consequences").inner_text()
-            assert physical.locator(".cw-stock").count() == 3
+            assert data["physical"]["headline"]["en"] in page.locator("#cw-physical-title").inner_text()
+            assert data["physical"]["clock"]["en"] in physical.locator(".cw-physical-clock").inner_text()
+            assert data["physical"]["downstream"]["en"] in physical.locator(".cw-physical-consequences").inner_text()
+            assert physical.locator(".cw-stock").count() == len(data["physical"]["stocks"]) > 0
             physical.locator("summary").click()
-            assert "2021-09-17" in physical.inner_text()
-            assert "2026-09-11" in physical.inner_text()
-            assert "2026-09-18" in physical.inner_text()
+            for stock in data["physical"]["stocks"]:
+                for date in (stock["anomaly"]["reference"]["start"], stock["change_4w"]["window_start"], stock["change_4w"]["window_end"]):
+                    if date:
+                        assert date in physical.inner_text()
             physical.locator("summary").click()
-            checks.append("dated physical synthesis preserves broad inventory tightness, release uncertainty and independent inflation check")
+            checks.append("exact published physical headline, clocks, dates and downstream context")
             page.locator('[data-cw-hypothesis="oil"] input[value="supply"]').check()
             page.locator("#cw-tab-relationships").click()
             assert "Supply disruption" in page.locator("#cw-investigation-title").inner_text()
@@ -142,6 +143,9 @@ def verify(receipt: Path) -> None:
             page.locator("#cw-tab-research").click()
             form = page.locator("#cw-research-form")
             form.locator('[name="window_sessions"]').select_option("20")
+            assert page.locator("[data-cw-note-window]").inner_text() == "20 trading sessions"
+            assert all(not label.is_visible() for label in page.locator(".cw-step-title .l-zh").all())
+            checks.append("research headings show only the chosen language and context follows the draft lookback")
             form.locator('[name="threshold"]').fill("0")
             form.locator('[name="expires_on"]').fill("2099-01-01")
             with page.expect_download() as download_info:
@@ -152,8 +156,7 @@ def verify(receipt: Path) -> None:
             assert draft["asset"] == "oil" and draft["hypothesis"] == "demand"
             assert draft["threshold"] == 0 and draft["metric_contract"]["field"] == "velocity.r20"
             assert draft["monitoring_active"] is False and draft["effect"] == "export_only"
-            assert draft["as_saved_evidence"]["physical"]["classification"] == "broad_tightness"
-            assert draft["as_saved_evidence"]["physical"]["stocks"][1]["anomaly"]["value"] == -1.2
+            assert draft["as_saved_evidence"]["physical"] == data["physical"]
             assert draft["as_saved_evidence"]["physical"]["point_in_time_verified"] is False
             assert downloaded.stat().st_size <= 131072
             checks.append("real research export retains dated physical evidence and fits its import limit")
@@ -183,13 +186,13 @@ def verify(receipt: Path) -> None:
             result["fresh_document_import"] = {"separate_browser_context": True, "exact_export_round_trip": True,
                                                "threshold": 0, "window_sessions": 20, "monitoring_active": False}
             checks.append("exported research restores in a fresh document with exact condition and complete evidence")
-            expired = dict(draft, expires_on="2026-10-17")
+            expired = dict(draft, expires_on=draft["as_of"])
             expired_file = Path(folder) / "condition-expired.json"
             expired_file.write_text(json.dumps(expired))
             fresh.locator("#cw-import-file").set_input_files(expired_file)
             fresh.wait_for_function("document.querySelector('#cw-export-status').textContent.includes('expiry date has passed')")
             assert "no monitoring is active" in fresh.locator("#cw-export-status").inner_text()
-            assert fresh_form.locator('[name="expires_on"]').input_value() == "2026-10-17"
+            assert fresh_form.locator('[name="expires_on"]').input_value() == draft["as_of"]
             checks.append("an expired historical draft reopens with an explicit inactive expiry disclosure")
             fresh_context.close()
             page.locator("#cw-tab-relationships").click()
@@ -204,11 +207,30 @@ def verify(receipt: Path) -> None:
             gold_physical = page.locator("#cw-gold-physical")
             assert gold_physical.is_visible()
             assert "close-based proxy" in gold_physical.locator(".cw-eyebrow").inner_text().lower()
-            assert gold_physical.locator(".cw-gold-value").inner_text() == "+0.28%"
-            assert "2026-10-14 07:30 UTC" in gold_physical.locator(".cw-physical-clock").inner_text()
+            assert gold_physical.locator(".cw-gold-value").inner_text() == f'{data["gold_physical"]["premium_pct"]:+.2f}%'
+            assert data["gold_physical"]["clock"] in gold_physical.locator(".cw-physical-clock").inner_text()
             assert "Official benchmark unavailable" in gold_physical.locator(".cw-physical-clock").inner_text()
-            assert "Rate readings differ" in page.locator('[data-cw-asset="gold"] .cw-reading').inner_text()
-            checks.append("Gold proxy retains its own timestamp, percentage units and unresolved rate disagreement")
+            gold = next(asset for asset in data["assets"] if asset["id"] == "gold")
+            assert gold["read"]["headline"]["en"] in page.locator('[data-cw-asset="gold"] .cw-reading').inner_text()
+            checks.append("Gold proxy retains its exact published timestamp, percentage units and price interpretation")
+
+            page.locator("#cw-tab-compare").click()
+            page.locator("[data-cw-window]").select_option("60")
+            selected = page.locator("[data-cw-compare]:checked").evaluate_all("els=>els.map(el=>el.value)")
+            values = [asset["returns"]["60"] for asset in data["assets"] if asset["id"] in selected]
+            scale = max(abs(value) for value in values if value is not None)
+            for asset in data["assets"]:
+                if asset["id"] not in selected:
+                    continue
+                row = page.locator(f'[data-cw-compare-plot="{asset["id"]}"]')
+                value = asset["returns"]["60"]
+                mark = row.locator("[data-cw-plot-mark]")
+                if value is None:
+                    assert not mark.is_visible()
+                else:
+                    fraction = mark.bounding_box()["width"] / row.locator(".cw-bar").bounding_box()["width"]
+                    assert abs(fraction - (abs(value) / scale / 2 if scale else 0)) < .002
+            checks.append("comparison window changes actual bar geometry on one shared signed scale")
 
             page.locator("#cw-tab-research").click()
             page.locator("#cw-import-file").set_input_files(downloaded)
@@ -239,7 +261,7 @@ def verify(receipt: Path) -> None:
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1")
             checks.append("light mobile view retains the investigation and layout")
             page.locator("[data-cw-go-physical]").click()
-            assert "原油与成品油库存均低于季节常态" in page.locator("#cw-physical-title").inner_text()
+            assert data["physical"]["headline"]["zh"] in page.locator("#cw-physical-title").inner_text()
             for card in page.locator("#cw-physical-oil .cw-stock").all():
                 card.scroll_into_view_if_needed()
                 assert card.locator(".cw-stock-level").is_visible()
@@ -247,9 +269,23 @@ def verify(receipt: Path) -> None:
             checks.append("Chinese mobile physical evidence retains all stock cards and dates without page overflow")
 
             page.locator("#cw-tab-overview").click()
+            assert page.locator(".cw-hero-metric strong .cw-number").evaluate("el=>parseFloat(getComputedStyle(el).fontSize)") >= 22
             result["unobstructed_mobile_returns"] = check_unobstructed_returns()
             assert not page.locator("#mmb-launch").is_visible()
             checks.append("overview numeric values remain unobstructed at mobile scroll positions")
+            page.goto(f"http://127.0.0.1:{server.server_address[1]}/commodities.html#cw/research/gold", wait_until="load")
+            page.reload(wait_until="load")
+            page.locator("#cw-panel-research").wait_for(state="visible")
+            tab_box = page.locator("#cw-tab-research").bounding_box()
+            strip_box = page.locator("[data-cw-tablist]").bounding_box()
+            assert tab_box["x"] >= strip_box["x"] - 1
+            assert tab_box["x"] + tab_box["width"] <= strip_box["x"] + strip_box["width"] + 1
+            page.locator("#cw-tab-compare").click()
+            picks = page.locator(".cw-compare-picks").bounding_box()
+            for choice in page.locator(".cw-compare-picks label").all():
+                box = choice.bounding_box()
+                assert box["y"] + box["height"] <= picks["y"] + picks["height"] + 1
+            checks.append("mobile direct routes reveal the active tab and comparison choices are not clipped")
             assert not errors, errors
             checks.append("no uncaught browser errors")
             context.close()
@@ -273,10 +309,10 @@ def verify(receipt: Path) -> None:
             fixture_context.route("**/*", serve_fixture)
             fixture = fixture_context.new_page()
             fixture.on("pageerror", lambda error: errors.append(str(error)))
-            initial = "https://www.mastermind-x.com/commodities.html#cw/relationships/oil?window=60&compare=oil%2Cgold&hypothesis=supply"
+            initial = "https://www.mastermind-x.com/commodities.html#cw/relationships/gold?window=60&compare=oil%2Cgold&hypothesis=rates"
             fixture.goto(initial, wait_until="load")
             fixture.locator("#cw-panel-relationships").wait_for(state="visible")
-            company = fixture.locator('[data-cw-chain-asset="oil"] [data-cw-company-href]').first
+            company = fixture.locator('[data-cw-chain-asset="gold"] [data-cw-company-href]').first
             original = parse_qs(urlsplit(company.get_attribute("data-cw-company-href")).query)
             href = company.get_attribute("href")
             params = parse_qs(urlsplit(href).query)
@@ -292,8 +328,9 @@ def verify(receipt: Path) -> None:
             checks.append("first-party company link opens with unchanged identity fields and exact Macro return")
             destination.goto(params["ret"][0], wait_until="load")
             destination.locator("#cw-panel-relationships").wait_for(state="visible")
-            assert "Supply disruption" in destination.locator("#cw-investigation-title").inner_text()
-            assert destination.locator('[data-cw-hypothesis="oil"] input[value="supply"]').is_checked()
+            explanation = next(item for item in data["hypotheses"]["gold"] if item["id"] == "rates")
+            assert explanation["label"]["en"] in destination.locator("#cw-investigation-title").inner_text()
+            assert destination.locator('[data-cw-hypothesis="gold"] input[value="rates"]').is_checked()
             assert destination.locator("[data-cw-window]").input_value() == "60"
             assert destination.locator("[data-cw-compare]:checked").count() == 2
             checks.append("decoded company return restores commodity, tab, window, comparisons and hypothesis")
@@ -321,3 +358,4 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--receipt", type=Path, required=True)
     verify(parser.parse_args().receipt)
+

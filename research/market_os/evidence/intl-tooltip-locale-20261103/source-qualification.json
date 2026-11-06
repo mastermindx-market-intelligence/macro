@@ -1,0 +1,48 @@
+{
+  "task": "P12.T2.S4",
+  "at": "2026-11-03T19:51:37.567396+00:00",
+  "base": "2e17ae66adca54dcecb9cbe9c669f32d8593ff41",
+  "source_sha256": {
+    "templates/intl_workspace/_gs_scanner_macros.html.j2": "62e0909883c72ed61ac30a1e1720e971614b0c951d28d06d14507a059ec7d8d9",
+    "templates/intl_workspace/dislocations.html.j2": "61cfeaa85a1cfc767863ef8cbb7c9637c12b22f44eb2a8d614ad33f33b2228ae",
+    "templates/intl_workspace/transmission.html.j2": "2504a1aa8cce6fa2c62993b2ee2f65402e7a8a054136b2bd0471b82793aa1549",
+    "tests/test_intl_tooltip_locale.py": "57801319ad2cb7ed6fff4992c92a6bfae09f70f70a16a701aa496bfcf25a414e"
+  },
+  "scope": "LOCAL_SOURCE_AND_RETAINED_RENDER_QUALIFIED; NATIVE_BROWSER_UNQUALIFIED_HELD",
+  "diagnosis_sha256": "e573d6c465c6f4de3d90ace6f766e5c4b28fa492e8ff62f619fc3a7e0347287e",
+  "change": "11 initial mixed-language title branches plus2 malformed disabledtitle caller branches and existing row reason wrapper;3templates only; exact copy pairs escaped; tabindex on live trigger spans and existing disabled-action row only",
+  "unchanged": "all other template bytes after inverse attribute projection; all copy arrays/named values/numerics/model/rights/source clocks and source text; no CSS/theme/sharedmacro/engine/lib/scripts modifications",
+  "tests": {
+    "first_delta": "7 passed in49.31s; six original productRED assertions plus one corrected test-region boundary error tracked separately",
+    "disabled_delta": "actual native source fragment RED disabledtitle/no real disabled, then2focused controls PASS1.41s including quote/markup/missing-target reason;7oldtests reused",
+    "network": "all fixture executions deny socket connect/connect_ex/DNS/create_connection"
+  },
+  "renderers": {
+    "scanner_coverage": "existing native render_abstain_page through attach_surveillance + intl renderer",
+    "dislocations": "existing native render_page using retained repository fixture; only affected disabled case re-rendered after correction",
+    "transmission": "existing native render_transmission_page specimen fixture; no economic/model inference",
+    "theme_consumer": "every output includes exact canonical theme.js; build_intl ASSETS includes the same source",
+    "fixture_limits": "Existing synthetic/admitted test inputs, full native templates. No live provider request, full site build/emission or scientific freshness claim."
+  },
+  "guards": {
+    "three_changed_templates": "PASS",
+    "three_final_retained_fixture_pages": "PASS; original dislocation8disabledtitle failure retained and corrected",
+    "design_enforce_added": "PASS with actual source-final.diff supplied; no newmaterial authored",
+    "diff_check": "PASS",
+    "full_estate_title_guard": "NOT RERUN; retained4821FAIL remains actual historical full-guard state until normal actual repair/emission; no waiver/baseline"
+  },
+  "canonical_disabled_pattern": "existing fundamental_forensics export wrapper data-tip-en/zh plus true disabled action; reuse on existing .intl-dislocations__btnrow, no new DOM nodes/handler/style",
+  "native_browser": {
+    "state": "NEW_LAUNCH_HELD",
+    "evidence": "Root reported Coverage first new_page Target crashed before UI request; causeunknown, no security denial inferred",
+    "launches": 0,
+    "not_claimed": [
+      "native tab/hover/Escape/touch behavior",
+      "popup theme/locale legibility",
+      "effective touch target geometry",
+      "full accessibility",
+      "served/production behavior"
+    ]
+  },
+  "release": "No push/PR/hostedCI/host/provider/generator/publisher/serving effect. Bonds93e candidate and published branches preserved."
+}

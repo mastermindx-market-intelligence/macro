@@ -87,7 +87,8 @@ def test_widget_and_restart_contract_are_wired():
     from pathlib import Path
     root=Path(__file__).resolve().parents[1]
     js=(root/'templates/mm_brain.js').read_text()
-    assert 'renderer.mount(host, wire)' in js and 'window.MMBrainVisuals' in js
+    assert 'renderer.mount(host, wire, {' in js and 'window.MMBrainVisuals' in js
+    assert 'window.MMBrain.expand()' in js and 'loadPresentationAssets()' in js
     assert 'm.visuals' in js and 'j.charts' in js
     assert 'mm_brain_visuals.js' in js and 'mm_brain_visuals.css' in js
     assert 'brain_visuals' in (root/'app/deploy/update.sh').read_text()

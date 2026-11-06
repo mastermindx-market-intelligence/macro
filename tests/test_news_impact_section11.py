@@ -6,8 +6,14 @@ which hold ids, enums and counts only, and check the clauses the DEC freezes.
 """
 from __future__ import annotations
 
+import copy
+import hashlib
 import json
+import shutil
+import subprocess
+import sys
 from collections import Counter
+from pathlib import Path
 
 import pytest
 
@@ -217,12 +223,14 @@ def test_pin_inputs_refuses_a_changed_frozen_input(monkeypatch):
 
 @pytest.fixture(scope="module")
 def built():
-    return reg.build_registration()
+    return reg.build_historical_registration_v1()
 
 
-def test_committed_registration_matches_a_rebuild(built):
-    committed = (reg.ROOT / reg.DEFAULT_OUT).read_text(encoding="utf-8")
-    assert committed == reg.render(built)
+def test_committed_registration_matches_explicit_historical_v1(built):
+    committed = (reg.ROOT / reg.DEFAULT_OUT).read_bytes()
+    assert committed == reg.render(built).encode("utf-8")
+    assert hashlib.sha256(committed).hexdigest() == "5637cbea2d44533db77d7c77051996cd27dad5e1bb16ba483fd5b1ffeb02a71a"
+    assert built["code_versions"]["producer_facts"] == "ni-producer-facts-1"
 
 
 def test_registration_freezes_the_a3_pins(built):
@@ -282,3 +290,209 @@ def test_registration_holds_no_forbidden_key_or_word(built):
     _, stripped = er.strip_forbidden_keys(built)
     assert stripped == []
     reg.self_check(built)
+
+# --- historical integrity is separate from current implementation eligibility -------
+
+
+def test_historical_reconstruction_does_not_relabel_current_code(built):
+    assert reg.current_code_versions()["producer_facts"] == "ni-producer-facts-2"
+    assert built["code_versions"]["producer_facts"] == "ni-producer-facts-1"
+
+
+def test_default_builder_refuses_unregistered_current_implementation():
+    with pytest.raises(reg.RegistrationError, match="producer_facts") as exc:
+        reg.build_registration()
+    assert exc.value.code == "REGISTERED_IMPLEMENTATION_MISMATCH"
+    assert "registered=ni-producer-facts-1, current=ni-producer-facts-2" in str(exc.value)
+
+
+def test_historical_result_cannot_qualify_current_implementation(built):
+    with pytest.raises(reg.RegistrationError) as exc:
+        reg.require_registered_implementation(built)
+    assert exc.value.code == "REGISTERED_IMPLEMENTATION_MISMATCH"
+
+
+@pytest.mark.parametrize("change", ["changed_component", "missing_component", "extra_component"])
+def test_eligibility_checks_the_complete_version_profile(built, monkeypatch, change):
+    versions = dict(built["code_versions"])
+    if change == "changed_component":
+        versions["cluster"] = "ni-cluster-next"
+        component = "cluster"
+    elif change == "missing_component":
+        del versions["issuer"]
+        component = "issuer"
+    else:
+        versions["unregistered_component"] = "unregistered-1"
+        component = "unregistered_component"
+    monkeypatch.setattr(reg, "current_code_versions", lambda: versions)
+    with pytest.raises(reg.RegistrationError, match=component) as exc:
+        reg.require_registered_implementation(built)
+    assert exc.value.code == "REGISTERED_IMPLEMENTATION_MISMATCH"
+
+
+def test_matching_profile_passes_only_the_version_guard(built, monkeypatch):
+    # Synthetic identity comparison, not execution of the historical producer.
+    monkeypatch.setattr(reg, "current_code_versions", lambda: dict(built["code_versions"]))
+    assert reg.require_registered_implementation(built) is None
+
+
+@pytest.mark.parametrize("change", ["code_versions", "registration_version", "population"])
+def test_changed_historical_identity_cannot_qualify(built, change):
+    forged = copy.deepcopy(built)
+    if change == "code_versions":
+        forged["code_versions"] = reg.current_code_versions()
+    elif change == "registration_version":
+        forged["registration_version"] = "ni-section11-registration-2"
+    else:
+        forged["populations"]["v2_match"]["n"] += 1
+    with pytest.raises(reg.RegistrationError) as exc:
+        reg.require_registered_implementation(forged)
+    assert exc.value.code == "HISTORICAL_REGISTRATION_CHANGED"
+
+
+def test_historical_profile_is_immutable_and_not_selectable(monkeypatch):
+    with pytest.raises(TypeError):
+        reg.HISTORICAL_V1_CODE_VERSIONS["producer_facts"] = "ni-producer-facts-2"
+    changed = dict(reg.HISTORICAL_V1_CODE_VERSIONS, producer_facts="ni-producer-facts-2")
+    monkeypatch.setattr(reg, "HISTORICAL_V1_CODE_VERSIONS", changed)
+    with pytest.raises(reg.RegistrationError) as exc:
+        reg.build_historical_registration_v1()
+    assert exc.value.code == "HISTORICAL_REGISTRATION_CHANGED"
+
+
+def test_historical_rebuild_refuses_changed_pinned_metadata(tmp_path):
+    for rel in reg.PINNED_INPUTS.values():
+        destination = tmp_path / rel
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(reg.ROOT / rel, destination)
+    changed = tmp_path / reg.PINNED_INPUTS["w2_summary"]
+    changed.write_bytes(changed.read_bytes() + b"\n")
+    with pytest.raises(reg.RegistrationError) as exc:
+        reg.build_historical_registration_v1(tmp_path)
+    assert exc.value.code == "HISTORICAL_REGISTRATION_CHANGED"
+
+
+def _cli(*args):
+    return subprocess.run(
+        [sys.executable, "-m", "engine.news_impact.section11_registration", *map(str, args)],
+        cwd=reg.ROOT, capture_output=True, text=True, timeout=45,
+    )
+
+
+@pytest.mark.parametrize("historical", [False, True])
+def test_real_cli_distinguishes_historical_integrity_from_current_eligibility(historical):
+    frozen = reg.ROOT / reg.DEFAULT_OUT
+    before = frozen.read_bytes()
+    result = _cli("--check-historical-v1" if historical else "--check")
+    assert frozen.read_bytes() == before
+    if historical:
+        assert result.returncode == 0, result.stderr
+        assert "historical v1 integrity ok; current eligibility not checked" in result.stdout
+    else:
+        assert result.returncode == 1
+        assert "REGISTERED_IMPLEMENTATION_MISMATCH" in result.stderr
+        assert "registered=ni-producer-facts-1, current=ni-producer-facts-2" in result.stderr
+
+
+def _alias(tmp_path, kind):
+    frozen_copy = tmp_path / "frozen-registration.json"
+    frozen_copy.write_bytes((reg.ROOT / reg.DEFAULT_OUT).read_bytes())
+    target = tmp_path / "alias.json"
+    if kind == "symlink":
+        target.symlink_to(frozen_copy)
+    elif kind == "hardlink":
+        target.hardlink_to(frozen_copy)
+    else:
+        target = frozen_copy
+    return frozen_copy, target
+
+
+@pytest.mark.parametrize("kind", ["exact", "symlink", "hardlink"])
+def test_real_cli_refuses_current_output_without_touching_existing_aliases(tmp_path, kind):
+    frozen_copy, target = _alias(tmp_path, kind)
+    before = frozen_copy.read_bytes()
+    result = _cli("--out", target)
+    assert result.returncode == 1
+    assert "REGISTERED_IMPLEMENTATION_MISMATCH" in result.stderr
+    assert frozen_copy.read_bytes() == target.read_bytes() == before
+
+
+def test_real_cli_cannot_create_unregistered_v1_copy(tmp_path):
+    target = tmp_path / "new-directory" / "unregistered.json"
+    result = _cli("--out", target)
+    assert result.returncode == 1
+    assert "REGISTERED_IMPLEMENTATION_MISMATCH" in result.stderr
+    assert not target.parent.exists()
+
+
+def test_no_argument_default_refuses_and_preserves_an_isolated_frozen_target(tmp_path):
+    # Exercise the actual CLI entry point with only its destination root isolated.
+    # Builder input defaults remain the real committed inputs; no real freeze is writable.
+    frozen = tmp_path / reg.DEFAULT_OUT
+    frozen.parent.mkdir(parents=True)
+    before = (reg.ROOT / reg.DEFAULT_OUT).read_bytes()
+    frozen.write_bytes(before)
+    code = (
+        "import sys; from pathlib import Path; "
+        "from engine.news_impact import section11_registration as reg; "
+        "reg.ROOT = Path(sys.argv[1]); raise SystemExit(reg.main([]))"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", code, str(tmp_path)],
+        cwd=reg.ROOT, capture_output=True, text=True, timeout=45,
+    )
+    assert result.returncode == 1
+    assert "REGISTERED_IMPLEMENTATION_MISMATCH" in result.stderr
+    assert frozen.read_bytes() == before
+
+
+@pytest.mark.parametrize("check", ["--check", "--check-historical-v1"])
+def test_check_and_out_are_mutually_exclusive_and_cannot_write(tmp_path, check):
+    target = tmp_path / "no-output.json"
+    result = _cli(check, "--out", target)
+    assert result.returncode == 2
+    assert not target.exists()
+
+
+def test_cli_check_modes_are_mutually_exclusive():
+    result = _cli("--check", "--check-historical-v1")
+    assert result.returncode == 2
+
+
+def test_historical_check_detects_changed_committed_bytes(tmp_path, monkeypatch, capsys):
+    frozen = tmp_path / reg.DEFAULT_OUT
+    frozen.parent.mkdir(parents=True)
+    tampered = (reg.ROOT / reg.DEFAULT_OUT).read_bytes() + b"\n"
+    frozen.write_bytes(tampered)
+    monkeypatch.setattr(reg, "ROOT", tmp_path)
+    assert reg.main(["--check-historical-v1"]) == 1
+    assert "HISTORICAL_REGISTRATION_CHANGED" in capsys.readouterr().err
+    assert frozen.read_bytes() == tampered
+
+
+@pytest.mark.parametrize("kind", ["exact", "symlink", "hardlink"])
+def test_eligible_write_path_never_overwrites_existing_aliases(tmp_path, kind):
+    frozen_copy, target = _alias(tmp_path, kind)
+    before = frozen_copy.read_bytes()
+    assert reg._write_new_or_identical(target, before) is False
+    with pytest.raises(reg.RegistrationError) as exc:
+        reg._write_new_or_identical(target, b"changed")
+    assert exc.value.code == "REGISTRATION_OVERWRITE_REFUSED"
+    assert frozen_copy.read_bytes() == target.read_bytes() == before
+
+
+def test_exclusive_creation_refuses_a_destination_arriving_during_write(tmp_path, monkeypatch):
+    target = tmp_path / "racing-destination.json"
+    original_open = Path.open
+
+    def race(path, mode="r", *args, **kwargs):
+        if path == target and mode == "xb":
+            with original_open(path, "wb") as stream:
+                stream.write(b"arrived-before-create")
+        return original_open(path, mode, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", race)
+    with pytest.raises(reg.RegistrationError) as exc:
+        reg._write_new_or_identical(target, b"must-not-replace")
+    assert exc.value.code == "REGISTRATION_OVERWRITE_REFUSED"
+    assert target.read_bytes() == b"arrived-before-create"

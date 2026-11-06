@@ -67,7 +67,7 @@ def test_shell_opt_in_cache_policy_is_independent_of_parent_framing_admission():
     assert re.search(r"(?m)^\s*defer\s*$", cache_headers)
     frame_selector = _extract_block(text, "@shared_shell_document")
     assert "query mmx_shell=1" in frame_selector
-    assert "header Referer https://beta.mastermind-x.com/*" in frame_selector
+    assert r"header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/" in frame_selector
 
 
 def test_broad_asset_matcher_protects_paid_json_and_keeps_only_carveouts_public():

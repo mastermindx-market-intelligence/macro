@@ -135,6 +135,21 @@ def test_render_page_escapes_and_links() -> None:
     assert inj._MARKER in html                                       # self-includes banner
 
 
+def test_render_page_ticker_symbols_link_to_stock_page() -> None:
+    # stock.html#TICKER opens the name; us_stocks.html#TICKER only lands on the top of the board
+    html = bw._render_page(config.ROOT, [_rec("wh-link", 0, 5, 80)])
+    assert '<a class="wh-sym" href="stock.html#NVDA">NVDA</a>' in html
+    assert '<a class="wh-sym" href="stock.html#INTC">INTC</a>' in html
+    assert '<span class="wh-sym">' not in html          # no dead-text symbol remains
+    # Touch has no hover, so the link has to read as a link at rest.
+    assert "a.wh-sym { color: inherit; text-decoration: underline dotted;" in html
+    assert "us_stocks.html#" not in html
+    import re
+    # each anchor keeps its direction marker, in its own bucket
+    assert re.search(r'stock\.html#NVDA">NVDA</a>\s*<span class="wh-dir benefit"', html)
+    assert re.search(r'stock\.html#INTC">INTC</a>\s*<span class="wh-dir hurt"', html)
+
+
 def test_render_empty_page_ok() -> None:
     html = bw._render_page(config.ROOT, [])
     assert "White House" in html

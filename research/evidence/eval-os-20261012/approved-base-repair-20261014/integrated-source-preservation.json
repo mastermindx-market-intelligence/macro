@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-14T15:59:05.646965+00:00",
+  "automatic_merge_tree": "3e1f4265437e1d8dd98d376a0cf7374e476ac6da",
+  "base": "50db81266bb88a93d8c0ec318389548c7939d4be",
+  "source_correction_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "tests/test_ci_pack.py"
+  ],
+  "job_count": 318,
+  "all_execution_definitions_and_prior_paths_preserved": true,
+  "prior_evidence_files_copied": 19,
+  "incoming_runtime_changes": [
+    {
+      "path": "app/deploy/update.sh",
+      "old_blob": "998e26d6c9c9cf05b4a8688886f0cf74c3ee1fb8",
+      "integrated_blob": "895adf0c38b2c3193e95a344a1409111a7133eda"
+    }
+  ],
+  "all_acceptance_flags": false
+}

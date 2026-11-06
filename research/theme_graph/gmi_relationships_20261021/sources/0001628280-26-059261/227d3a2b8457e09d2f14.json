@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-27T20:22:52Z",
+ "accession": "0001628280-26-059261",
+ "cik": "0001387467",
+ "doc_byte_length": 2239148,
+ "doc_sha256": "6d4c95e6af58015d107d47bb66895a3cd9fc36f1626e928c225ad7a841ec49a0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-27",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "aosl-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1514959,
+  "byte_start": 1513803,
+  "normalized": "The Company is amortizing intangible assets of patents and technology rights related to a license agreement with STMicroelectronics International N.V. Amortization expense for intangible assets was $1.1 million, $3.2 million and $3.2 million for the years ended June 30, 2026, 2025 and 2024, respectively. The estimated useful lives for patents and technology rights and trade name were five years and ten years, respectively.",
+  "normalized_sha256": "1dda94e3bc519469bb982f7cbc75d00996a582fc3a7c06197fc01a173d56d05c",
+  "raw": "The Company is amortizing intangible assets of patents and technology rights related to a license agreement with STMicroelectronics International N.V.  Amortization expense for intangible assets was $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-1\" decimals=\"-5\" name=\"us-gaap:AmortizationOfIntangibleAssets\" scale=\"6\" id=\"f-710\">1.1</ix:nonFraction> million, $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-5\" decimals=\"-5\" name=\"us-gaap:AmortizationOfIntangibleAssets\" scale=\"6\" id=\"f-711\">3.2</ix:nonFraction> million and $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-12\" decimals=\"-5\" name=\"us-gaap:AmortizationOfIntangibleAssets\" scale=\"6\" id=\"f-712\">3.2</ix:nonFraction>&#160;million for the years ended June&#160;30, 2026, 2025 and 2024, respectively.  The estimated useful lives for patents and technology rights and trade name were <ix:nonNumeric contextRef=\"c-134\" name=\"us-gaap:FiniteLivedIntangibleAssetUsefulLife\" format=\"ixt-sec:durwordsen\" id=\"f-713\">five years</ix:nonNumeric> and <ix:nonNumeric contextRef=\"c-138\" name=\"us-gaap:FiniteLivedIntangibleAssetUsefulLife\" format=\"ixt-sec:durwordsen\" id=\"f-714\">ten years</ix:nonNumeric>, respectively.",
+  "raw_sha256": "227d3a2b8457e09d2f1445120b951e4d27d285252772180a7ba6d8a6d6969863"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1387467/000162828026059261/aosl-20260630.htm",
+ "xbrl_contexts": []
+}

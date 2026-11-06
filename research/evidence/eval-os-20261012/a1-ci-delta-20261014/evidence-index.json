@@ -1,0 +1,116 @@
+{
+  "recorded_at": "2026-10-14T14:31:32.463901+00:00",
+  "root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "source_parent": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "records": [
+    {
+      "file": "tested-merge-scope-measurements.json",
+      "sha256": "af8f2b976c5b8f53e3ddabdb2de1571818c2738bfab92b13530ec3a9c0b90e68",
+      "bytes": 14866,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/tested-merge-scope-measurements.json"
+    },
+    {
+      "file": "qualify_tested_merge_scope.py",
+      "sha256": "aebfd686ea98e52a6303c837c56fce4bd703d4735e3086e8ff3db194dd52eb4e",
+      "bytes": 4247,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/qualify_tested_merge_scope.py"
+    },
+    {
+      "file": "source-five-inputs-repair.json",
+      "sha256": "e06ec6a35a4da7678936745ddddac2fbb313d83a4b514d7b8e0530ef1ce97a61",
+      "bytes": 741,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/source-five-inputs-repair.json"
+    },
+    {
+      "file": "measured-packing-rebase-verdict.json",
+      "sha256": "f17c36e1e017ea62094f05bb9bed9cbf371a918f8bdfb525343a28749a63ca76",
+      "bytes": 1302,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/measured-packing-rebase-verdict.json"
+    },
+    {
+      "file": "rejudge_measured_packing.py",
+      "sha256": "5b9a12ebe242a545997fb3dec335c31dcde24ba1b9f0cd165bc23ca43593370a",
+      "bytes": 2744,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/rejudge_measured_packing.py"
+    },
+    {
+      "file": "build-free-provenance-1b.json",
+      "sha256": "4d2b8bbc6c3ceb3c20d2907cf1b6c19ac3bea2ade48c9b8dcd92ed6ac84d9038",
+      "bytes": 1456,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/build-free-provenance-1b.json"
+    },
+    {
+      "file": "a1-base-head-execution-comparison.json",
+      "sha256": "5f7bece134295697dc5fa7d8dcf81678bc955b8c22547e14da82aab334bba613",
+      "bytes": 667,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/a1-base-head-execution-comparison.json"
+    },
+    {
+      "file": "neural-web-existing-a1-delta.json",
+      "sha256": "d32502791c58de777fa31a2e478dc1e5cecd707624c1505c7f142e6128f9cd25",
+      "bytes": 1754,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/neural-web-existing-a1-delta.json"
+    },
+    {
+      "file": "packing-ruling-parent-adjudication.json",
+      "sha256": "ed66eaded96e46de1bee0407f8411dc3d3fa065376cc37ad800512645ebfecc1",
+      "bytes": 2991,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/packing-ruling-parent-adjudication.json"
+    },
+    {
+      "file": "latest-main-inherited-closure.json",
+      "sha256": "aaf0bc0a0607f81f0a8c60a82aedc481997aa3a4db0e80fa3b455ded21fe0041",
+      "bytes": 412,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/latest-main-inherited-closure.json"
+    },
+    {
+      "file": "final-contract-delta-tests.log",
+      "sha256": "828511e91c42cc76f8d70d5e116be5e7e67c617a3dec6c1bcb77a323181ac89e",
+      "bytes": 11028,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/final-contract-delta-tests.log"
+    },
+    {
+      "file": "final-three-ci-controls.log",
+      "sha256": "75e887af4323cfd782faf96204b4a936c6136fdc6d4667e7afb2b41db6026564",
+      "bytes": 10947,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/final-three-ci-controls.log"
+    },
+    {
+      "file": "constant-alignment-proof.json",
+      "sha256": "4d22b1cf461e8b47fde3c01c03f4e54d841aee945aebf6d5b7c40f1e17160415",
+      "bytes": 1242,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/constant-alignment-proof.json"
+    },
+    {
+      "file": "qualify_constant_alignment.py",
+      "sha256": "9242b40d9c85c3eccab620d1bcc9fe73eb242b73f207adc755b355a8a7422e8d",
+      "bytes": 2711,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/qualify_constant_alignment.py"
+    },
+    {
+      "file": "aligned-spec-controls.log",
+      "sha256": "a55337f71bfeecac8eb14d01b5b60a4dba92c324aec7f6e86255167d27350d5f",
+      "bytes": 10946,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/aligned-spec-controls.log"
+    },
+    {
+      "file": "repaired-a1-current-main-preview.json",
+      "sha256": "b00fb1b875ced1979aa4f19a3b5bd71265c38d2cf57a69fe358c4bb06503bfeb",
+      "bytes": 391,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/repaired-a1-current-main-preview.json"
+    },
+    {
+      "file": "repaired-a1-current-main-preview.log",
+      "sha256": "5cb494009a141a925bf0db2d644c21d5ff70975d07824f7bdb89038476311fd0",
+      "bytes": 478,
+      "source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-conflict-20261014/repaired-a1-current-main-preview.log"
+    }
+  ],
+  "scope": "Exact tested merge with five-path overlay; retained measurement rejudged by canonical verdict after one intended job-count rebase. Final containing head requires hosted CI. Packet review accepted with corrections, not independent source PASS.",
+  "flags": {
+    "merged": false,
+    "production_proven": false,
+    "commission_complete": false
+  },
+  "alignment": "Preserves exactly current-main190311 template136 and plan130 count decisions while retaining A1 sole new free-content135 baseline; no weight/pack/capacity change. Initial local helper compared tuple rows with canonical list rows; corrected the helper representation, not source or measurements."
+}

@@ -1,0 +1,50 @@
+{
+  "observed_at": "2026-10-14T13:47:46.891725+00:00",
+  "head": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "target": "scripts/build_free_content.py",
+  "chain": [
+    "tests/test_admin_server.py",
+    "admin/server.py",
+    "admin/press.py",
+    "engine/press/desk_planner.py",
+    "engine/press/research_triage.py",
+    "engine/press/validators.py",
+    "scripts/build_free_content.py"
+  ],
+  "visited_python_files": 905,
+  "remaining_queue": 143,
+  "elapsed_seconds": 272.76,
+  "scope": "Source diagnostic on published A1 head; does not qualify the containing tested merge.",
+  "direct_read_provenance": [
+    {
+      "source": "tests/test_admin_server.py",
+      "target": "admin/server.py",
+      "reason": "import at line 15"
+    },
+    {
+      "source": "admin/server.py",
+      "target": "admin/press.py",
+      "reason": "selector existing-import analysis"
+    },
+    {
+      "source": "admin/press.py",
+      "target": "engine/press/desk_planner.py",
+      "reason": "import at line 138"
+    },
+    {
+      "source": "engine/press/desk_planner.py",
+      "target": "engine/press/research_triage.py",
+      "reason": "import at line 1067"
+    },
+    {
+      "source": "engine/press/research_triage.py",
+      "target": "engine/press/validators.py",
+      "reason": "import at line 826"
+    },
+    {
+      "source": "engine/press/validators.py",
+      "target": "scripts/build_free_content.py",
+      "reason": "import at line 1281"
+    }
+  ]
+}

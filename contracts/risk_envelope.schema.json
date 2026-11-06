@@ -438,6 +438,9 @@
         },
         "display_only": {
           "const": true
+        },
+        "latest_observation": {
+          "description": "Optional display-only rotation_observation_view/v1 wrapper lifted verbatim from the rotation artifact's early_context.latest_observation. The consumer mirror (V1-V8) validates it; a present non-object renders unreadable. It is never a stage, hazard, confluence or policy input."
         }
       },
       "additionalProperties": false

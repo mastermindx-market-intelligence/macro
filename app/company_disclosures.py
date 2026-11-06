@@ -139,6 +139,26 @@ def product_integration(fact_id: str, request: Request,
     return JSONResponse(value, headers=_HEADERS)
 
 
+@router.get("/supplier-research/{fact_id:path}")
+def supplier_research(fact_id: str, request: Request,
+                      _user: dict = Depends(require_private_user)) -> JSONResponse:
+    """Explicit current research continuation; all source choices are native."""
+    if not _FACT_ID.fullmatch(fact_id) or request.query_params:
+        return _error(400, "REQUEST_INVALID")
+    reader = getattr(request.app.state, "company_disclosure_reader", None)
+    if type(reader) is not PrivateDisclosureReader or reader.selection_owner is None:
+        return _error(503, "SOURCE_RUNTIME_UNAVAILABLE")
+    from app.company_supplier_research import read_supplier_research
+    try:
+        value = read_supplier_research(reader, getattr(request.app.state, "company_context_owner", None),
+            fact_id, purpose=PURPOSE, audience=AUDIENCE)
+    except Exception:
+        return _error(503, "PRIVATE_SOURCE_UNAVAILABLE")
+    if require_private_user(request, authorization=request.headers.get("authorization")) != _user:
+        return _error(401, "AUTHENTICATION_REQUIRED")
+    return JSONResponse(value, headers=_HEADERS)
+
+
 @router.get("/issuers/{issuer_id}/product-integrations")
 def issuer_selections(issuer_id: str, request: Request,
                       _user: dict = Depends(require_private_user)) -> JSONResponse:

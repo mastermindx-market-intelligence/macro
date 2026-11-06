@@ -167,8 +167,8 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
   <div class="honesty-banner">
     <strong>{{ t('Positioning lens — NOT a buy list','定位透镜——非买入清单') }}</strong>
     <br>
-    <span class="l-en">Theme momentum (63d rank) is a <strong>descriptive positioning lens</strong> — one-regime in backtest (#754/#773), <strong>NOT validated alpha</strong>. The global AI-semis arrow is a validated weekly directional confirmer for the CPO basket only (t=3.27, #773); other baskets are partial / 2024+-only / weak — honesty tags shown per card.</span>
-    <span class="l-zh"><strong>定位透镜 positioning lens</strong>：主题动量（63日排名）为描述性定位工具——历史回测仅单一机制（#754/#773），<strong>非经验证的超额收益</strong>。全球AI半导体箭头仅对CPO篮子为经验证的周度方向确认信号（t=3.27，#773）；其他篮子标注为"部分/仅限2024+/弱"，详见各卡片标签。</span>
+    <span class="l-en">Theme momentum (63d rank) is a <strong>descriptive positioning lens</strong>. In backtest it worked in one market regime only, so it is <strong>not a proven source of excess return</strong>. The global AI-semis arrow confirms next-week direction for the CPO basket only: t=3.27 over the full 241-week backtest, but t=1.36 over the 124 weeks from 2024; about 2 is the usual bar. Other baskets are partial, 2024+ only or weak; each card shows its tag.</span>
+    <span class="l-zh"><strong>定位透镜</strong>：主题动量（63日排名）是描述性的定位工具。回测中它只在单一市场阶段有效，因此<strong>不是已被证实的超额收益来源</strong>。全球AI半导体箭头只对CPO篮子确认下周方向：完整回测241周 t=3.27，但2024年以来的124周 t=1.36；通常需要达到约2才算显著。其他篮子标注为“部分”“仅限2024+”或“弱”，详见各卡片标签。</span>
   </div>
 
   {# ─── Headline strip: top-3 baskets by 63d return ─────────────────────── #}
@@ -207,7 +207,7 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
           {{ t('vs 200d','偏离200日') }} {{ p1(b.state.dist_200d_pct) }}</span>
         {# Global AI arrow (AI-mapped baskets only) #}
         {% if ai %}
-          <span class="ai-arrow" title="Global AI-semis (SMH/SOXX/TSM) 4w-momentum · {{ ai.validated_tag }}">
+          <span class="ai-arrow" title="Global AI-semis (SMH/SOXX/TSM) 4w-momentum · {{ 'confirmed' if ai.validated_tag == 'validated' else ai.validated_tag }}">
             {% if ai.direction == 'up' %}↑{% elif ai.direction == 'down' %}↓{% else %}→{% endif %}
             <span class="l-en">AI-semis</span><span class="l-zh">AI半导</span>
           </span>
@@ -302,7 +302,7 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
         {% endif %}
         {% set htag = ai.validated_tag %}
         {% if htag == 'validated' %}
-          <span class="ai-tag validated" title="t=3.27 CPO, pre-2024 survives, horse-race stable (#773)">✓ {{ t('validated','已验证') }}</span>
+          <span class="ai-tag validated" title="t=3.27 over the full backtest (2.27 with market controls), t=3.03 before 2024, t=1.36 from 2024">✓ {{ t('confirmed','已确认') }}</span>
         {% elif htag == 'partial' %}
           <span class="ai-tag partial" title="Survives full sample; weaker pre-2024 split">~ {{ t('partial','部分') }}</span>
         {% elif htag == '2024+-only' %}
@@ -331,7 +331,7 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
   </div>
 
   <div class="foot">
-    {{ t('Source: THS (同花顺) concept-board membership + china_search close cache. EW level = cumprod of mean active-member daily returns (≥3 members required). 63d return = trailing 63 trading-day EW-level return. 200d shield = EW level vs its 200d SMA. Cycle position = own-history percentile of distance-from-200DMA + drawdown-from-1y-high (engine.china_sector_pathway._position, leak-free). Global AI-semis = EW 4-week log-momentum of SMH+SOXX+TSM weekly closes → next-week CPO basket return (validated #773, t=3.27, horse-race stable). Member links → china_lookup.html per-stock signal badges.','来源：同花顺概念板块成员 + china_search 收盘价缓存。等权水平 = 每日活跃成员平均收益的累乘（至少需3名成员）。63日收益 = 近63个交易日等权水平收益。200日盾牌 = 等权水平 vs 200日均线。周期位置 = 偏离200日均线 + 距一年高点回撤的自身历史分位（engine.china_sector_pathway._position，无未来信息泄露）。全球AI半导 = SMH+SOXX+TSM 周线等权4周对数动量 → 下周CPO篮子收益（已验证 #773，t=3.27，对照稳健）。成员链接 → china_lookup.html 个股信号徽章。') }}
+    {{ t('Source: THS (同花顺) concept-board membership + china_search close cache. EW level = cumprod of mean active-member daily returns (≥3 members required). 63d return = trailing 63 trading-day EW-level return. 200d shield = EW level vs its 200d SMA. Cycle position = own-history percentile of distance-from-200DMA + drawdown-from-1y-high (engine.china_sector_pathway._position, leak-free). Global AI-semis = EW 4-week log-momentum of SMH+SOXX+TSM weekly closes → next-week CPO basket return (t=3.27 over the full backtest, 2.27 with market controls). Member links → china_lookup.html per-stock signal badges.','来源：同花顺概念板块成员 + china_search 收盘价缓存。等权水平 = 每日活跃成员平均收益的累乘（至少需3名成员）。63日收益 = 近63个交易日等权水平收益。200日盾牌 = 等权水平 vs 200日均线。周期位置 = 偏离200日均线 + 距一年高点回撤的自身历史分位（engine.china_sector_pathway._position，无未来信息泄露）。全球AI半导 = SMH+SOXX+TSM 周线等权4周对数动量 → 下周CPO篮子收益（完整回测 t=3.27，加入市场对照后 t=2.27）。成员链接 → china_lookup.html 个股信号徽章。') }}
     {%- if data.membership_as_of %}
     <br>{{ t('Basket membership: THS snapshot dated','篮子成分：同花顺快照，日期') }} {#
     #}{{ data.membership_as_of }}{{ t('; closes run to','；收盘价截至') }} {{ data.as_of }}.

@@ -415,12 +415,42 @@ def test_press_lane_covers_estate_and_analytical_dependencies():
         "numpy", "pandas", "requests", "beautifulsoup4"}
 
 
-def test_every_press_suite_is_named_by_the_ci_job():
-    job = _load(_LEGACY)["jobs"]["press-lane"]
-    named = set(re.findall(r"tests/test_press_\w+\.py",
-                           " ".join(str(s.get("run") or "") for s in job["steps"])))
+def test_every_press_suite_is_named_by_an_established_ci_lane():
+    jobs = _load(_LEGACY)["jobs"]
+    # Native plan suites belong to the code gate; duplicating them in the
+    # data lane adds execution cost without providing PR coverage.
+    commands = " ".join(str(step.get("run") or "")
+                        for name in ("press-lane", "ticker-news-qbus")
+                        for step in jobs[name]["steps"])
+    named = set(re.findall(r"tests/test_press_\w+\.py", commands))
     on_disk = {f"tests/{p.name}" for p in (_REPO / "tests").glob("test_press_*.py")}
     assert named == on_disk, f"unrun press suites: {sorted(on_disk - named)}"
+
+
+def test_native_plan_suites_are_registered_once_in_the_code_gate():
+    jobs = _load(_LEGACY)["jobs"]
+    for suite in ("tests/test_press_native_plan_scope.py",
+                  "tests/test_press_native_plan_integration.py"):
+        registrations = [name for name, job in jobs.items()
+                         for step in job["steps"] if suite in str(step.get("run") or "")]
+        assert registrations == ["ticker-news-qbus"]
+
+
+def test_native_plan_suites_reach_existing_code_gate_with_import_closure():
+    from scripts.ci_scope_dependencies import suite_dependency_closure
+    from scripts.run_ci_pack import _matches_any
+
+    job = _load(_LEGACY)["jobs"]["ticker-news-qbus"]
+    assert job["gate"] == "code" and job["scope"] == "exclusive"
+    command = " ".join(str(step.get("run") or "") for step in job["steps"])
+    for suite in ("tests/test_press_native_plan_scope.py",
+                  "tests/test_press_native_plan_integration.py"):
+        assert suite in command
+        assert suite in job["paths"]
+        closure = suite_dependency_closure(suite, pytest_command=command)
+        assert "engine/press/native_plan_scope.py" in closure.files
+        missing = [path for path in closure.files if not _matches_any(job["paths"], path)]
+        assert missing == [], f"native-plan import closure is outside the code gate: {missing}"
 
 
 def test_reviewed_bundle_dispatch_uses_same_run_artifact_without_generation():

@@ -348,6 +348,31 @@ def _fence_section_budget(html: str) -> None:
         )
 
 
+def _fit_section_budget(day, payload: dict, html: str, render_page) -> tuple[dict, str]:
+    """Shed dated steps until the section fits its byte budget. The budget never rises.
+
+    MAX_ROWS rows fit the budget only when each row's copy is short. Measured on
+    main's real data for every build day from 2026-10-24 to 2026-11-09, twelve
+    rows rendered 8199-8378 bytes against 8192 (a collapsed "Comment periods
+    close on N Federal Register documents" row and the "N more" line cost more
+    than the worst case the tests modelled), so the fence withheld the whole
+    page each night. Each pass asks the engine for one row fewer. A window that
+    has rows keeps its first row (the engine's clip guarantees it), so shedding
+    stops at one row per occupied window, and the fence still refuses a section
+    that cannot fit.
+    """
+    from engine.capital_policy_projection import MAX_ROWS, SECTION_BUDGET_BYTES, project
+
+    cap = MAX_ROWS
+    while len(_section_html(html).encode("utf-8")) > SECTION_BUDGET_BYTES and cap > 1:
+        cap -= 1
+        smaller = project(today=day, max_rows=cap)
+        if smaller["row_count"] < payload["row_count"]:
+            payload, html = smaller, render_page(smaller)
+    _fence_section_budget(html)
+    return payload, html
+
+
 def render(root: Path) -> Path:
     """Write a data-free desk shell plus exact CSS/JS companions."""
     root = root.resolve()
@@ -400,7 +425,7 @@ def render(root: Path) -> Path:
     from engine.ma_agreement_context import featured_agreement
     from engine.bond_issue_terms import native_comparison
     premium = _featured_premium(root)
-    html = env.get_template("capital_structure.html.j2").render(
+    context = dict(
         active_section="research",
         active_page="capital_structure",
         premium=premium,
@@ -408,14 +433,26 @@ def render(root: Path) -> Path:
         bond_comparison=native_comparison(root),
         covenant_headroom=_covenant_headroom(root),
         policy_watch=watch,
-        policy_projection=payload,
     )
-    # Shared navigation templates intentionally contain indentation around
-    # conditional blocks. Normalize generated-only blank-line whitespace so the
-    # committed shell remains diff-clean without modifying global nav output.
-    html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
+
+    def _page(projection) -> str:
+        out = env.get_template("capital_structure.html.j2").render(
+            **context, policy_projection=projection,
+        )
+        # Shared navigation templates intentionally contain indentation around
+        # conditional blocks. Normalize generated-only blank-line whitespace so the
+        # committed shell remains diff-clean without modifying global nav output.
+        return "\n".join(line.rstrip() for line in out.splitlines()) + "\n"
+
+    html = _page(payload)
     if payload and 'id="cs-policy-projection"' in html:
-        _fence_section_budget(html)
+        # The shed re-asks the engine for the same day, so the one-day policy
+        # calendar memo goes back in for it: still one calendar result per build.
+        _pc.compute_policy_calendar = _compute_once
+        try:
+            payload, html = _fit_section_budget(day, payload, html, _page)
+        finally:
+            _pc.compute_policy_calendar = _orig_cal
     # The artifact is written only once the section is known to be within
     # budget, so an over-budget build cannot leave a refreshed JSON beside a
     # page that was withheld. A build with no payload leaves the last good

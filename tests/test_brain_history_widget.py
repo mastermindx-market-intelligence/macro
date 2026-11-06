@@ -21,7 +21,7 @@ def page():
             pytest.skip("Chromium unavailable")
         context=browser.new_context(viewport={"width":1440,"height":900},reduced_motion="reduce")
         page=context.new_page()
-        page.route("http://history.test/",lambda route:route.fulfill(content_type="text/html",body="<html data-lang='en'><head></head><body></body></html>"))
+        page.route("http://history.test/",lambda route:route.fulfill(content_type="text/html",body="<!doctype html><html data-lang='en'><head></head><body></body></html>"))
         page.goto("http://history.test/")
         page.evaluate("""() => {
           window.MDXAuth={onChange:fn=>{window.__onAuth=fn;fn({id:'user-A'});}};

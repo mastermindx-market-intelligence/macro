@@ -5,6 +5,14 @@
   const WINDOWS = ["1m", "5", "20", "60", "252"];
   const CONDITION = "mmx.commodities.research_condition.v1";
   const isNumber = value => typeof value === "number" && Number.isFinite(value);
+  function returnScale(values) {
+    return values.reduce((scale, value) => isNumber(value) ? Math.max(scale, Math.abs(value)) : scale, 0);
+  }
+  function returnGeometry(value, scale) {
+    const available = isNumber(value);
+    return {available, direction: available ? (value > 0 ? "positive" : value < 0 ? "negative" : "flat") : "unavailable",
+      width: available && isNumber(scale) && scale > 0 ? Math.min(50, Math.abs(value) / scale * 50) : 0};
+  }
   const clone = value => JSON.parse(JSON.stringify(value));
   function stable(value, depth = 0) {
     if (depth > 64) throw new RangeError("Research draft nesting exceeds its limit");
@@ -107,7 +115,7 @@
       snapshot_fingerprint: data.fingerprint, ...semantics
     }};
   }
-  const api = {normalizeState, readState, stateHash, companyReturnHref, checkDraft, validDate, conditionSemantics};
+  const api = {normalizeState, readState, stateHash, companyReturnHref, checkDraft, validDate, conditionSemantics, returnScale, returnGeometry};
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (typeof document === "undefined") return;
   const root = document.getElementById("commodity-workspace");
@@ -174,12 +182,29 @@
     drafts.set(renderedAsset, {operator: form.elements.operator.value, threshold: form.elements.threshold.value,
       expires_on: form.elements.expires_on.value, window_sessions: form.elements.window_sessions.value, hypothesis:state.hypothesis});
   }
+  function renderNoteWindow() {
+    const window = form ? form.elements.window_sessions.value : "";
+    all("[data-cw-note-window]").forEach(el => {
+      el.textContent = window ? window + text(" trading sessions", "个交易日") : text("Choose a lookback window", "请选择回看窗口");
+    });
+  }
   function displayReturn(cell, value) {
     cell.textContent = isNumber(value) ? (value > 0 ? "+" : "") + value.toFixed(1) + "%" : text("Unavailable", "暂不可用");
     cell.classList.add("cw-number");
     cell.classList.toggle("cw-up", isNumber(value) && value > 0);
     cell.classList.toggle("cw-down", isNumber(value) && value < 0);
   }
+  function revealActiveTab() {
+    const strip = root.querySelector("[data-cw-tablist]");
+    const selected = strip && strip.querySelector('[aria-selected="true"]');
+    if (!selected) return;
+    const box = selected.getBoundingClientRect(), viewport = strip.getBoundingClientRect();
+    if (box.left < viewport.left || box.right > viewport.right) {
+      strip.scrollLeft += box.left - viewport.left - (viewport.width - box.width) / 2;
+    }
+  }
+  window.addEventListener("resize", revealActiveTab);
+  if (document.fonts) document.fonts.ready.then(revealActiveTab);
   function render() {
     all("[data-cw-overview-only]").forEach(el => { el.hidden=state.tab !== "overview"; });
     all("[data-cw-panel]").forEach(el => { el.hidden = el.dataset.cwPanel !== state.tab; });
@@ -187,6 +212,7 @@
       const active = el.dataset.cwTab === state.tab;
       el.setAttribute("aria-selected", String(active)); el.tabIndex = active ? 0 : -1;
     });
+    revealActiveTab();
     all("[data-cw-asset]").forEach(el => { el.hidden = el.dataset.cwAsset !== state.asset; });
     all("[data-cw-select]").forEach(el => el.setAttribute("aria-pressed", String(el.dataset.cwSelect === state.asset)));
     if (state.tab === "explore") {
@@ -231,6 +257,26 @@
       const asset = data.assets.find(a => a.id === cell.dataset.cwReturnCell);
       displayReturn(cell, state.window === "1m" ? asset.change_1m_pct : asset.returns[state.window]);
     });
+    const compareValues = data.assets.filter(a => state.compare.includes(a.id)).map(a => state.window === "1m" ? a.change_1m_pct : a.returns[state.window]);
+    const compareScale = returnScale(compareValues);
+    const windowLabel = state.window === "1m" ? text("One month · publisher comparison", "一个月 · 发布方口径") : state.window + text(" trading sessions", "个交易日");
+    all("[data-cw-compare-plot]").forEach(row => {
+      const asset = data.assets.find(a => a.id === row.dataset.cwComparePlot);
+      row.hidden = !state.compare.includes(asset.id);
+      const value = state.window === "1m" ? asset.change_1m_pct : asset.returns[state.window];
+      const geometry = returnGeometry(value, compareScale);
+      const mark = row.querySelector("[data-cw-plot-mark]");
+      mark.hidden = !geometry.available;
+      mark.className = "cw-bar-mark cw-bar-" + geometry.direction;
+      mark.style.width = geometry.width + "%";
+      displayReturn(row.querySelector("[data-cw-plot-value]"), value);
+    });
+    all("[data-cw-plot-min]").forEach(el => { el.textContent = compareScale ? "−" + compareScale.toFixed(1) + "%" : ""; });
+    all("[data-cw-plot-max]").forEach(el => { el.textContent = compareScale ? "+" + compareScale.toFixed(1) + "%" : ""; });
+    all("[data-cw-plot-window]").forEach(el => { el.textContent = windowLabel; });
+    all("[data-cw-note-asset]").forEach(el => { el.textContent = selectedAsset ? selectedAsset.label[lang()] : ""; });
+    all("[data-cw-compare-empty]").forEach(el => { el.hidden = state.compare.length > 0; });
+    all(".cw-plot-axis").forEach(el => { el.hidden = state.compare.length === 0 || !compareValues.some(isNumber); });
     compareStatus.textContent = state.compare.length ? text("One basis. No return ranking.", "同一口径，不进行回报排名。") : text("Select a commodity to compare.", "请选择需要比较的品种。");
     if (form) {
       form.elements.asset.value = state.asset;
@@ -247,6 +293,7 @@
       form.elements.expires_on.min = validDate(data.as_of) && data.as_of > today ? data.as_of : today;
       const hypothesisLabel = root.querySelector("#cw-research-hypothesis");
       if (hypothesisLabel) hypothesisLabel.textContent = chosen ? chosen.label[lang()] : text("Cause unresolved", "原因未明");
+      renderNoteWindow();
     }
     all("option[data-cw-en]").forEach(el => { el.textContent = el.dataset[lang() === "zh" ? "cwZh" : "cwEn"]; });
     all("a[data-cw-company-href]").forEach(link => {
@@ -335,6 +382,7 @@
   all("[data-cw-window]").forEach(select => select.addEventListener("change", () => update({window:select.value})));
   if (form) {
     form.elements.asset.addEventListener("change", () => update({asset:form.elements.asset.value}));
+    form.elements.window_sessions.addEventListener("change", renderNoteWindow);
     root.querySelector("#cw-import-trigger").addEventListener("click", () => root.querySelector("#cw-import-file").click());
     form.addEventListener("submit", event => {
       event.preventDefault();
@@ -380,6 +428,7 @@
       update({asset:v.asset, tab:"research", hypothesis:v.hypothesis, window:String(v.window_sessions)});
       form.elements.operator.value=v.operator; form.elements.threshold.value=String(v.threshold);
       form.elements.expires_on.value=v.expires_on; form.elements.window_sessions.value=String(v.window_sessions);
+      renderNoteWindow();
       captureForm();
       status.textContent=v.expires_on < new Date().toISOString().slice(0,10) ? text("Draft reopened with its original evidence. Its expiry date has passed; no monitoring is active.", "已按原证据重新打开草稿，其有效期已过，未启用监测。") : text("Draft reopened with the exact metric, window, threshold and evidence. No monitoring is active.", "已恢复精确指标、窗口、阈值与证据，未启用监测。");
       event.target.value="";
@@ -408,3 +457,4 @@
   new MutationObserver(records => { if (records.some(r => r.attributeName === "data-lang")) render(); }).observe(document.documentElement,{attributes:true,attributeFilter:["data-lang"]});
   render(); restore();
 })();
+

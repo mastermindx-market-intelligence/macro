@@ -3,6 +3,10 @@
 
 The registry and site-access policy remain authoritative. This file adds no routes:
 families expand only over git-tracked HTML at the recorded source revision.
+
+By default that inventory is the registry's own Macro pin. `--inventory-ref <commit>`
+opts into enumerating a later immutable commit instead; the binding is proven
+before anything is read from the inventory or written to the output.
 """
 from __future__ import annotations
 
@@ -22,6 +26,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from scripts import build_product_page_registry as registry_owner  # noqa: E402
 SCHEMA = "mastermind.shared_shell_routes.v1"
+# The canonical registry path inside the Macro repo: an opt-in inventory commit
+# must carry the caller's registry bytes at exactly this path.
+CANONICAL_REGISTRY = "data/product_experience/page_registry.json"
+WITHHELD_CONTRACT = "shared_shell:admission_withheld"
 PARAM = re.compile(r"<[^/<>]+>")
 ANCHOR = re.compile(r"<a\b[^>]*\bhref=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>", re.S)
 TRANSLATION = re.compile(r"t\(\s*(['\"])(.*?)\1\s*,\s*(['\"])(.*?)\3\s*\)", re.S)
@@ -58,26 +66,122 @@ def navigation_labels(texts: list[str]) -> dict[str, dict[str, str]]:
     return out
 
 
+class HeadingLocales(HTMLParser):
+    """Read complete locale spans while refusing partial or ambiguous headings."""
+    VOID = frozenset("area base br col embed hr img input link meta param source track wbr".split())
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.values: dict[str, list[str]] = {"en": [], "zh": []}
+        self.stack: list[str] = []
+        self.active: str | None = None
+        self.depth = 0
+        self.parts: list[str] = []
+        self.seen = False
+        self.invalid = False
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "span":
+            classes = [value or "" for key, value in attrs if key == "class"]
+            locales = [locale for locale in self.values
+                       if any("l-" + locale in value.split() for value in classes)]
+            if locales:
+                self.seen = True
+                if len(locales) != 1 or len(classes) != 1 or self.active is not None:
+                    self.invalid = True
+                else:
+                    self.active = locales[0]
+                    self.depth = len(self.stack) + 1
+                    self.parts = []
+        if tag in self.VOID:
+            if tag == "br" and self.active is not None:
+                self.parts.append(" ")
+        else:
+            self.stack.append(tag)
+
+    def handle_endtag(self, tag: str) -> None:
+        if not self.stack or self.stack[-1] != tag:
+            self.invalid = True
+            return
+        if self.active is not None and len(self.stack) == self.depth:
+            self.values[self.active].append("".join(self.parts).strip())
+            self.active = None
+        self.stack.pop()
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.handle_starttag(tag, attrs)
+        if tag not in self.VOID:
+            self.handle_endtag(tag)
+
+    def handle_data(self, data: str) -> None:
+        if self.active is not None:
+            self.parts.append(data)
+        elif data.strip():
+            self.invalid = True
+
+
 def document_heading_label(text: str) -> dict[str, str]:
     """Read the existing bilingual H1; never invent a slug translation."""
-    heading = re.search(r"<h1\b[^>]*>(.*?)</h1>", text, re.S)
-    if heading is None:
+    headings = re.findall(r"<h1\b[^>]*>(.*?)</h1>", text, re.S | re.I)
+    if not headings:
         raise ValueError("directory source has no H1")
-    translated = TRANSLATION.search(heading[1])
+    if (len(headings) != 1 or len(re.findall(r"<h1\b", text, re.I)) != 1
+            or len(re.findall(r"</h1\s*>", text, re.I)) != 1):
+        raise ValueError("directory source has ambiguous bilingual H1s")
+    heading = headings[0]
+    locales = HeadingLocales()
+    locales.feed(heading)
+    locales.close()
+    if locales.seen:
+        if (locales.invalid or locales.stack or locales.active is not None
+                or any(len(values) != 1 or not values[0] for values in locales.values.values())):
+            raise ValueError("directory source H1 is not unambiguous bilingual text")
+        return {locale: values[0] for locale, values in locales.values.items()}
+    translated = TRANSLATION.search(heading)
     if translated:
         return {"en": html.unescape(translated[2].strip()),
                 "zh": html.unescape(translated[4].strip())}
-    plain = html.unescape(re.sub(r"<[^>]+>", "", heading[1])).strip()
+    plain = html.unescape(re.sub(r"<[^>]+>", "", heading)).strip()
     parts = plain.split(" · ", 1)
     if len(parts) != 2 or not all(parts):
         raise ValueError("directory source H1 is not bilingual")
     return {"en": parts[0], "zh": parts[1]}
 
 
+def calculator_directory_titles(text: str) -> dict[str, dict[str, str]]:
+    """Read the existing calculator metadata; do not translate or infer slug labels."""
+    import yaml
+    entries = yaml.safe_load(text)
+    if not isinstance(entries, list) or len(entries) > 128:
+        raise ValueError("invalid canonical calculator metadata")
+    result: dict[str, dict[str, str]] = {}
+    for entry in entries:
+        if not isinstance(entry, dict):
+            raise ValueError("invalid canonical calculator metadata")
+        # Only explicitly authored bilingual metadata enrolls extra directory rows.
+        # An English-only historical manifest retains its sealed old directory.
+        if "title_zh" not in entry:
+            continue
+        slug, title = entry.get("slug"), entry.get("title")
+        translated = entry["title_zh"]
+        if (not isinstance(slug, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug)
+                or not isinstance(title, str) or not title.strip()
+                or not isinstance(translated, str) or not translated.strip()
+                or any(len(value) > 200 or re.search(r"[<>\x00-\x1f]", value)
+                       for value in (title, translated))):
+            raise ValueError("invalid canonical calculator metadata")
+        href = "/tools/calculators/" + slug + ".html"
+        if href in result:
+            raise ValueError("duplicate canonical calculator slug")
+        result[href] = {"en": title.strip(), "zh": translated.strip()}
+    return result
+
+
 def derive_projection(registry: dict[str, Any], tracked_html: list[str],
                       deny: dict[str, Any], labels: dict[str, dict[str, str]],
                       *, registry_digest: str, inventory_ref: str,
-                      document_paths: set[str] | None = None) -> dict[str, Any]:
+                      document_paths: set[str] | None = None,
+                      calculator_titles: dict[str, dict[str, str]] | None = None) -> dict[str, Any]:
     if registry.get("schema") != registry_owner.SCHEMA:
         raise ValueError("unrecognized canonical registry")
     if registry.get("sources", {}).get("macro", {}).get("sha") != inventory_ref:
@@ -121,6 +225,9 @@ def derive_projection(registry: dict[str, Any], tracked_html: list[str],
             reason = "lifecycle_" + row["lifecycle"]
         elif row["access_shell"] != "anonymous" or row["payload_tier"] == "internal":
             reason = "not_a_public_document_shell"
+        elif (isinstance(row.get("known_contracts"), list)
+              and WITHHELD_CONTRACT in row["known_contracts"]):
+            reason = "consumer_admission_withheld"
         if reason:
             excluded.append({"path": path, "reason": reason})
             continue
@@ -169,6 +276,26 @@ def derive_projection(registry: dict[str, Any], tracked_html: list[str],
             "question": row["primary_user_question"],
             "payloadTier": row["payload_tier"],
         })
+    # This is presentation for already-admitted members of one existing family.
+    # Metadata never contributes paths, bypasses exclusion, or enumerates another family.
+    tools_owner = next((row for row in rows if row["repo"] == "macro"
+                        and row["page_id"] == "macro:tools_family"
+                        and row["route_kind"] == "family"
+                        and row["route"] == "/tools/<id>.html"), None)
+    if tools_owner is not None:
+        existing = {item["href"] for item in directory}
+        for href in members.get(tools_owner["page_id"], []):
+            title = (calculator_titles or {}).get(href)
+            if (href in existing or title is None
+                    or not re.fullmatch(r"/tools/calculators/[a-z0-9]+(?:-[a-z0-9]+)*\.html", href)):
+                continue
+            directory.append({
+                "id": tools_owner["page_id"] + ":" + href,
+                "href": href, "kind": "legacy", "title": title,
+                "group": tools_owner["nav_family"],
+                "question": tools_owner["primary_user_question"],
+                "payloadTier": tools_owner["payload_tier"],
+            })
     directory.sort(key=lambda item: (item["title"]["en"].casefold(), item["href"]))
     return {
         "schema": SCHEMA, "generatedAt": registry["generated_at"],
@@ -237,9 +364,66 @@ def document_inventory(root: Path, ref: str, paths: list[str]) -> set[str]:
     return result
 
 
+def bind_inventory_commit(candidate: str, registry_bytes: bytes) -> str:
+    """Prove an opt-in inventory commit before anything is read from it.
+
+    Every refusal happens before any projection exists: the candidate must be an
+    immutable commit contained in protected origin/main and must carry the
+    caller's exact registry bytes at the canonical registry path. All checks are local git operations.
+    """
+    def commit_of(rev: str, what: str) -> str:
+        done = subprocess.run(["git", "rev-parse", "--verify", "--quiet", rev + "^{commit}"],
+                              cwd=ROOT, capture_output=True)
+        if done.returncode:
+            raise ValueError(what + " must be an existing immutable commit: " + rev)
+        return done.stdout.decode().strip()
+
+    if not re.fullmatch(r"[0-9a-f]{40}", candidate):
+        raise ValueError("inventory must be a 40-character lowercase hex commit")
+    commit = commit_of(candidate, "inventory")
+    if commit != candidate:
+        raise ValueError("inventory must identify a commit directly, not a peeled tag")
+    contained = subprocess.run(["git", "merge-base", "--is-ancestor", commit, "origin/main"],
+                               cwd=ROOT, capture_output=True)
+    if contained.returncode:
+        raise ValueError("inventory commit is not contained in protected origin/main")
+    try:
+        published = subprocess.check_output(
+            ["git", "show", commit + ":" + CANONICAL_REGISTRY], cwd=ROOT,
+            stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        raise ValueError("canonical registry blob is missing at the inventory ref") from None
+    if published != registry_bytes:
+        raise ValueError("caller registry bytes differ from the canonical registry at the inventory ref")
+    return commit
+
+
+def validate_publication_sources(registry: dict[str, Any]) -> str:
+    """Validate publication source metadata without I/O; return the Macro SHA.
+
+    Callers retain canonical registry schema validation separately.
+    """
+    # The registry also serves partial diagnostic censuses. Publication needs all
+    # three inputs, while older source records may omit the availability flag.
+    sources = registry.get("sources")
+    for repo in ("macro", "terminal", "mastermind"):
+        source = sources.get(repo) if isinstance(sources, dict) else None
+        if not isinstance(source, dict):
+            raise ValueError(repo.title() + " source must be an immutable commit")
+        if source.get("available", True) is not True:
+            raise ValueError(repo.title() + " source must be available for publication")
+        pin = source.get("sha")
+        if not isinstance(pin, str) or not re.fullmatch(r"[0-9a-f]{40}", pin):
+            raise ValueError(repo.title() + " source must be an immutable commit")
+    return sources["macro"]["sha"]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--registry", type=Path, default=ROOT / "data/product_experience/page_registry.json")
+    parser.add_argument("--inventory-ref", metavar="COMMIT",
+                        help="opt-in: enumerate the concrete HTML inventory at an immutable Macro "
+                             "commit on protected origin/main whose tree carries this exact registry")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
@@ -248,14 +432,16 @@ def main() -> int:
     problems = registry_owner.validate(registry)
     if problems:
         raise ValueError("invalid canonical registry: " + "; ".join(problems[:5]))
-    ref = registry["sources"]["macro"]["sha"]
-    if not re.fullmatch(r"[0-9a-f]{40}", ref):
-        raise ValueError("Macro source must be an immutable commit")
+    source_pin = validate_publication_sources(registry)
+    # Same-revision default, or the proven cross-revision inventory. Everything
+    # below (enumeration, policy, labels, document bytes) reads `ref`.
+    ref = source_pin if args.inventory_ref is None else bind_inventory_commit(
+        args.inventory_ref, raw)
     files = subprocess.check_output(
         ["git", "ls-tree", "-r", "--name-only", ref, "--", "site"], cwd=ROOT, text=True)
     paths = ["/" + f.removeprefix("site/") for f in files.splitlines()
              if f.startswith("site/") and f.endswith(".html")]
-    # Read the deny policy and labels at the same source pin as the inventory.
+    # Read the deny policy and labels at the same revision as the HTML inventory.
     def source(path: str) -> str:
         return subprocess.check_output(["git", "show", ref + ":" + path], cwd=ROOT, text=True)
     import yaml
@@ -270,9 +456,26 @@ def main() -> int:
     for path in ("allocation", "baskets_china"):
         labels.setdefault("/" + path + ".html", document_heading_label(
             source("templates/" + path + ".html.j2")))
+    # Historical inventories without this metadata keep their exact old directory.
+    # Both the presence check and the bytes use the same immutable inventory ref.
+    calculator_path = "content/seo/calculators.yml"
+    calculator_source = subprocess.check_output(
+        ["git", "ls-tree", "--name-only", ref, "--", calculator_path], cwd=ROOT, text=True)
+    calculators = calculator_directory_titles(source(calculator_path)) if calculator_source.strip() else {}
     doc = derive_projection(registry, paths, denied, labels,
-                            registry_digest=hashlib.sha256(raw).hexdigest(), inventory_ref=ref,
-                            document_paths=document_inventory(ROOT, ref, paths))
+                            registry_digest=hashlib.sha256(raw).hexdigest(), inventory_ref=source_pin,
+                            document_paths=document_inventory(ROOT, ref, paths),
+                            calculator_titles=calculators)
+    # These admitted documents own their bilingual names in rendered H1 spans.
+    # Existing navigation labels win; absent, excluded and historical pages need no read.
+    for item in doc["directory"]:
+        if item["href"] in ("/gmi-index.html", "/gmi-coverage.html") and item["href"] not in labels:
+            item["title"] = document_heading_label(source("site" + item["href"]))
+    doc["directory"].sort(key=lambda item: (item["title"]["en"].casefold(), item["href"]))
+    if args.inventory_ref is not None:
+        # Cross-revision provenance: sources.macro keeps the registry's own pin;
+        # the bound inventory is recorded as its own immutable source.
+        doc["sources"]["inventory"] = ref
     encoded = json.dumps(doc, ensure_ascii=False, indent=2) + "\n"
     if args.check:
         if not args.output.is_file() or args.output.read_text() != encoded:

@@ -197,24 +197,68 @@ def _partition(rows: list[Mapping[str, Any]] | None, user_id: str) -> tuple[list
     return kept, len(kept) != len(rows)
 
 
-def read_for_user(user_id: str, *, after_id: str | None = None, limit: int = 50) -> TypedRead:
+def _literal(value: Any) -> str:
+    """One value as a PostgREST logic-tree literal: double-quoted, so the
+    reserved ``,.:()`` inside a timestamp or an id never split the tree."""
+    text = str(value).replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{text}"'
+
+
+def read_for_user(
+    user_id: str,
+    *,
+    issuer_id: str | None = None,
+    after_id: str | None = None,
+    limit: int = 50,
+) -> TypedRead:
     """One user's saved scenarios, newest first, the partition re-checked here.
 
-    ``after_id`` excludes the boundary row the caller already showed; page
-    slicing beyond that stays the route's ``_page_after_id`` concern.
+    The order is the total key ``(saved_at desc, saved_id desc)``; ``issuer_id``
+    narrows the read to one issuer's rows.  ``after_id`` is a keyset cursor:
+    the boundary row is looked up under the same user and issuer scope, and
+    the page holds only the rows strictly after it in that order.  A page
+    therefore never repeats a row, and ties on ``saved_at`` are broken by
+    ``saved_id``.  An unknown, foreign or out-of-scope cursor is
+    ``READ_OK_ZERO`` with ``error_class="cursor_absent"``, never a restart
+    from the first page.
     """
     _require(bool(user_id) and isinstance(user_id, str), "read_for_user: user_id required")
     _require(isinstance(limit, int) and 1 <= limit <= 500, "read_for_user: limit out of range")
-    path = (
-        f"{TABLE}?select={SELECT_COLUMNS}&user_id=eq.{_quote(user_id)}"
-        f"&order=saved_at.desc,saved_id.desc&limit={int(limit)}"
+    _require(
+        issuer_id is None or (bool(issuer_id) and isinstance(issuer_id, str)),
+        "read_for_user: issuer_id must be a non-empty string",
     )
+    _require(
+        after_id is None or (bool(after_id) and isinstance(after_id, str)),
+        "read_for_user: after_id must be a non-empty string",
+    )
+    scope = f"user_id=eq.{_quote(user_id)}"
+    if issuer_id is not None:
+        scope += f"&issuer_id=eq.{_quote(issuer_id)}"
+    path = f"{TABLE}?select={SELECT_COLUMNS}&{scope}&order=saved_at.desc,saved_id.desc&limit={int(limit)}"
     if after_id is not None:
-        path += f"&saved_id=neq.{_quote(after_id)}"
+        boundary = typed_get(f"{TABLE}?select=saved_id,user_id,issuer_id,saved_at&{scope}&saved_id=eq.{_quote(after_id)}")
+        if boundary.state == READ_UNAVAILABLE:
+            return boundary
+        found, _ = _partition(boundary.rows if boundary.state == READ_OK else [], user_id)
+        found = [
+            row for row in found
+            if row.get("saved_id") == after_id
+            and (issuer_id is None or row.get("issuer_id") == issuer_id)
+            and row.get("saved_at")
+        ]
+        if len(found) != 1:
+            return TypedRead(READ_OK_ZERO, [], error_class="cursor_absent")
+        at, sid = _literal(found[0]["saved_at"]), _literal(after_id)
+        path += "&or=" + _quote(f"(saved_at.lt.{at},and(saved_at.eq.{at},saved_id.lt.{sid}))")
     result = typed_get(path)
     if result.state != READ_OK:
         return result
     kept, violated = _partition(result.rows, user_id)
+    if issuer_id is not None:
+        scoped = [row for row in kept if row.get("issuer_id") == issuer_id]
+        violated = violated or len(scoped) != len(kept)
+        kept = scoped
     if not kept:
         return TypedRead(READ_OK_ZERO, [], error_class="partition_violation" if violated else None)
     return TypedRead(READ_OK, kept, error_class="partition_violation" if violated else None)

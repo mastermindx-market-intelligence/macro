@@ -961,6 +961,10 @@ class ProphetTradePlan:
         "plan": "display — NW-originated; Prophet manages; LLM narrates only",
         "option_premium": "display — EOD/delayed, not NBBO-live",
     })
+    # Append-only OPTIONAL, separately evidenced management display base.
+    # The board's uncalibrated ordinal conviction.score MUST NOT populate it.
+    # A missing value retains the incumbent 60-point management reference.
+    confidence: float | None = None
 
 
 def _plan_source_receipt(value: Any) -> str | None:
@@ -1126,6 +1130,17 @@ def validate_trade_plan(d: dict) -> list[str]:
         errors.append(f"tranche {tranche!r} must be 1 or 2")
     if "targets" in d and not isinstance(d["targets"], list):
         errors.append("targets must be a list")
+    # WP04: validate separately provided management reference if present.
+    # This does not license promotion of board ordinal scores or claim
+    # calibration; absence/None preserves the longstanding 60 baseline.
+    conf = d.get("confidence")
+    if conf is not None and (
+        isinstance(conf, bool)
+        or not isinstance(conf, (int, float))
+        or not math.isfinite(conf)
+        or not 0.0 <= conf <= 100.0
+    ):
+        errors.append("confidence must be a finite descriptive score in [0, 100]")
     # Verify LLM-origination guard: source_engines must contain at least one entry
     sources = d.get("source_engines", [])
     if not sources:

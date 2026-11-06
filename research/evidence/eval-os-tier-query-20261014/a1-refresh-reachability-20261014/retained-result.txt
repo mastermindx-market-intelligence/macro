@@ -1,0 +1,31 @@
+**Static control-flow verdict — packet only. No edits, no live calls.**
+
+**(1) Reachable under supplied red semantic CI: NO (for refresh).** `sweep_pull` (line 6440) is entered. With the head advertising v1 and `contract-delta`/`ci-pack-0` red, the semantic gate (lines 6589-6635) yields `verdict="blocked"`, `semantic_mode=True`. At line 6656 the semantic-blocked arm writes `mark_blocked(...semantic proof refusal: detail)` (lines 6668-6683) and `return verdict` at line 6684. The legacy base-inherited-red branch (`bad_names = failing_check_names(runs)` line 6708; `attempt_update_branch` line 6741) is UNREACHED. `reprove` (line 6836) and `live_inherited_red` (line 6769) are also UNREACHED. PR exits with `merge-blocked`, arm stays, no `update-branch` requested.
+
+Full sweep vs failure-marker: full sweep's semantic-blocked arm is line 6656→6684 — the candidate exits here. The mark-only failure pass (line ~7445) is a distinct path (different concurrency group, never merges/refreshes); it writes a marker at line 7705 and explicitly defers any base-inherited-red refresh to the full sweep (lines 7662-7675), and defers any refresh-vs-block decision entirely. Both produce "marker only, refresh skipped" under your red; only the full sweep owns refresh.
+
+**(2) Necessary event/state change for permitted incumbent refresh.**
+Refresh requires reaching line 6741, which requires `semantic_mode=False` when `verdict=="blocked"`. Two paths:
+- Head stops advertising v1 (`_head_can_advertise_semantic_evidence(runs)` False) → gate skipped → legacy base-inherited-red runs under its narrow rule: every failing check green on a main proof POSTDATING the failure, refresh slot under budget, no `merge-blocked` residue.
+- Source correction PUBLISHED and `contract-delta`/`ci-pack-0` re-run green on a new head_sha, so `_semantic_check_verdict` clears on the next sweep.
+
+Malformed v1 does NOT escape: lines 6629-6635 trap `SemanticProofError`/`RuntimeError`/`ValueError` and refuse to downgrade to legacy pack causality, forcing blocked. Authority-touch (line 6611) blocks even a clean semantic gate if PR files touch protected paths. Lease/budget machinery (lines 6497-6583) does not override semantic-blocked. `reconcile_only` (line 6579) returns `baseline-blocked` and forbids refresh outright. `RateLimited` inside the gate (line 6625) re-raises, aborting the sweep — it does not fall through to refresh.
+
+**(3) Capacity alone cannot repair.** The gate verdict is independent of `SweepBudget`, lease age, refresh slots, sweep cadence, or duplicate controllers. The legacy branch is gated on head evidence, not skipped on capacity. Only the head commit's currently-published check runs flip the outcome: v1 advertisement removed, or failing semantic units green on a new head_sha. Publishing the prepared source correction is necessary; capacity changes are no substitute.
+
+**Exact branches/conditions:**
+- A) Line 6497: lease + head advanced + clean/blocked → settle, no refresh.
+- B) Line 6567: lease + unchanged + old → rotate, no refresh.
+- C) Line 6579: reconcile_only → `baseline-blocked`, refresh forbidden.
+- D) Line 6656→6684: semantic_mode + blocked → marker only. **Candidate exits here.**
+- E) Line 6708→6767: base-inherited-red → `attempt_update_branch` returning `updated`/`rebased`/`refresh-deferred`/`head-moved`/`update-retry`/`already-*`/`declined`. **Unreached.**
+- F) Line 6769: `live_inherited_red` main-share-red. **Unreached.**
+- G) Line 6814→6836: `reprove` (clean-but-stale). **Unreached.**
+
+**Missing information (not derivable from the packet):**
+- Live `_head_can_advertise_semantic_evidence(runs)` for this PR's current head_sha. If False, the gate is skipped and Trigger E becomes reachable — the only incumbent refresh path under stated red semantic state. Without it, "semantic CI genuinely red" cannot be distinguished from legacy-pack-only red.
+- Whether the source correction changes `_touches_semantic_authority(freshness.pull_files(number))` (line 6611) — blocks merge even on a clean semantic gate, but irrelevant to the refresh claim.
+- Live `SweepBudget` and lease-generation state — moot under D, dictates `updated` vs. `refresh-deferred` only if E is reached.
+- Live `ProofFreshness` mapping — irrelevant under semantic-blocked, gating only F/G.
+
+One read-only head-checks lookup establishing whether v1 is advertised on this head is the single fact separating current "marker only" behavior from the narrow incumbent refresh path — and is the minimum needed to confirm whether the prepared source correction is the right next action.

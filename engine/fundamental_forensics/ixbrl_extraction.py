@@ -52,7 +52,7 @@ FFXBRL_LIMITS = MappingProxyType(
         "max_units": 2_000,
         "max_continuations": 10_000,
         "max_facts": 12_000,
-        "max_continuation_chain": 32,
+        "max_continuation_chain": 256,
         "max_diagnostics": 15_000,
         "max_parser_output_bytes": HARD_MAX_PARSER_OUTPUT_BYTES,
         "max_artifact_bytes": HARD_MAX_FFXBRL_BYTES,

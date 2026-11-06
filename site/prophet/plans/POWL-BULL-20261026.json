@@ -1,0 +1,546 @@
+{
+  "schema": "prophet.trade_plan/v1",
+  "id": "POWL-BULL-20261026",
+  "asof": "2026-10-30",
+  "recorded_at": "2026-10-30",
+  "asset": "POWL",
+  "direction": "BULL",
+  "thesis": "POWL \u2014 conviction 14/100 (neutral) Entry grade: minimal. Drivers: earnings \u00b7 insider \u00b7 revisions. Cautions: Its Data-Center Power & Cooling basket is below its long-term trend. Size down: the tape is rewarding leaders, and this basket is not one. Power & Grid Buildout turning from washout.. Trust tier: Event edge: insider buying (lone FDR survivor) + earnings-surprise PEAD context + revisions \u2014 a confluence read, not a standalone alpha. Options positioning (as of 2026-10-29): the heaviest call open interest sat at $186.67, about 10.8% above the entry \u2014 dealer hedging tends to add friction into that level, which is a place price stalls, not a target. DISPLAY-ONLY: machine-generated from factor scores; no forward return guarantee; display-tier artifact.",
+  "thesis_zh": "POWL \u2014 \u786e\u4fe1\u5ea6 14/100\uff08\u4e2d\u6027\uff09 \u5165\u573a\u8bc4\u7ea7: minimal\u3002 \u9a71\u52a8\u56e0\u7d20: earnings \u00b7 insider \u00b7 revisions\u3002 \u6ce8\u610f\u4e8b\u9879: \u6240\u5c5e \u6570\u636e\u4e2d\u5fc3\u7535\u529b\u4e0e\u6563\u70ed \u7bee\u5b50\u5df2\u8dcc\u7834\u957f\u671f\u8d8b\u52bf\u3002\u51cf\u5c0f\u4ed3\u4f4d\uff1a\u5f53\u524d\u884c\u60c5\u5956\u52b1\u9886\u5148\u677f\u5757\uff0c\u8be5\u7bee\u5b50\u5e76\u4e0d\u5728\u5176\u4e2d\u3002\u7535\u529b\u4e0e\u7535\u7f51\u6b63\u4ece\u6d17\u76d8\u4e2d\u8f6c\u6298\u3002\u3002 \u53ef\u4fe1\u5ea6: \u4e8b\u4ef6\u9a71\u52a8\u4f18\u52bf\uff1a\u5185\u90e8\u4eba\u4e70\u5165\uff08\u552f\u4e00\u901a\u8fc7 FDR \u7684\u56e0\u5b50\uff09\uff0b\u76c8\u5229\u8d85\u9884\u671f PEAD \u80cc\u666f\uff0b\u8bc4\u7ea7\u8c03\u6574 \u2014 \u7efc\u5408\u53c2\u8003\uff0c\u975e\u72ec\u7acb\u8d85\u989d\u6536\u76ca\u3002 \u671f\u6743\u6301\u4ed3\uff08\u622a\u81f32026-10-29\uff09\uff1a\u6700\u91cd\u7684\u770b\u6da8\u6301\u4ed3\u4f4d\u4e8e $186.67\uff0c\u7ea6\u5728\u5165\u573a\u4ef7\u4e0a\u65b910.8% \u2014 \u505a\u5e02\u5546\u5bf9\u51b2\u901a\u5e38\u5728\u8be5\u4ef7\u4f4d\u5f62\u6210\u963b\u529b\uff1b\u90a3\u662f\u4ef7\u683c\u5bb9\u6613\u505c\u6ede\u4e4b\u5904\uff0c\u5e76\u975e\u76ee\u6807\u4ef7\u3002 \u4ec5\u4f9b\u5c55\u793a\uff1a\u7531\u56e0\u5b50\u5206\u6570\u673a\u5668\u751f\u6210\uff1b\u65e0\u524d\u77bb\u6536\u76ca\u4fdd\u8bc1\uff1b\u5c55\u793a\u5c42\u7ea7\u8f93\u51fa\u3002",
+  "source_engines": [
+    "us_standouts_buy_lane",
+    "neural_web"
+  ],
+  "trigger": 168.5,
+  "entry": 168.5,
+  "invalidation": 146.19,
+  "targets": [
+    201.965,
+    235.43
+  ],
+  "horizon_days": 45,
+  "min_hold_days": 10,
+  "tranche": 1,
+  "option_contract": null,
+  "stage_tilt": {
+    "leash": 1.0,
+    "eligible": false,
+    "stage_at_entry": 3,
+    "ec_sent": 26.0,
+    "ec_call_date": "2026-05-05",
+    "ec_source_state": "available",
+    "ec_source_path": "data/earnings_calls/history.parquet",
+    "ec_source_tier": "r2_history",
+    "ec_source_generation": {
+      "generation_id": "50f4431f335fd24878d2b37c",
+      "published_at": "2026-10-30T06:40:43.575411+00:00",
+      "rows": 50982
+    },
+    "ec_source_reason": null,
+    "bear_gate": false,
+    "provisional": true,
+    "demoted": false,
+    "basis": "PSQ 2026-07-20 quality re-grade; provisional \u2014 forward-shadow checked (~2026-12)"
+  },
+  "management_ref": "prophet/state/POWL-BULL-20261026.json",
+  "authority_tier": "display",
+  "reliability": {
+    "plan": "display \u2014 us_standouts buy-lane originated; display-only until forward ledger gate passes",
+    "option_premium": "null \u2014 symbol not in ThetaData store"
+  },
+  "formation_date": "2026-10-26",
+  "signal_date": "2026-10-28",
+  "confirmed_date": null,
+  "observed_date": "2026-10-29",
+  "signal_tier": "T1",
+  "signal_date_basis": "tier_event_date",
+  "signal_provisional": true,
+  "source_marker_date": "2026-10-26",
+  "price_basis_date": "2026-10-29",
+  "entry_date": "2026-10-29",
+  "what_to_do_now": [
+    "Wait for a pullback into the $162.30\u2013$162.30 zone before starting. No entry above $168.50; the plan waits at the band rather than paying the last print.",
+    "Keep the first tranche small; there is no need to rush. Exit on a close below $146.19.",
+    "If the zone fills, scale in gradually toward T1 ($201.97)."
+  ],
+  "what_to_do_now_zh": [
+    "\u7b49\u5f85\u4ef7\u683c\u56de\u843d\u81f3 $162.30\u2013$162.30 \u533a\u95f4\u518d\u5efa\u4ed3\u3002\u4e0d\u8981\u5728 $168.50 \u4e4b\u4e0a\u4e70\u5165\uff1b\u8ba1\u5212\u5728\u533a\u95f4\u7b49\u5f85\uff0c\u800c\u975e\u6309\u6700\u65b0\u4ef7\u8ffd\u5165\u3002",
+    "\u9996\u7b14\u4fdd\u6301\u5c0f\u4ed3\u4f4d\uff0c\u65e0\u9700\u6025\u4e8e\u5165\u573a\u3002\u6536\u76d8\u8dcc\u7834 $146.19 \u5373\u79bb\u573a\u3002",
+    "\u82e5\u533a\u95f4\u88ab\u89e6\u53ca\uff0c\u53ef\u9010\u6b65\u52a0\u4ed3\u81f3 T1\uff08$201.97\uff09\u3002"
+  ],
+  "profit_plan": [
+    {
+      "level": 201.965,
+      "label": "T1",
+      "action": "Scale out 40%, trail stop to entry",
+      "status": "ACTIVE"
+    },
+    {
+      "level": 235.43,
+      "label": "T2",
+      "action": "Close remaining 60%, exit full position",
+      "status": "PENDING"
+    }
+  ],
+  "profit_plan_zh": [
+    {
+      "level": 201.965,
+      "label": "T1",
+      "action": "\u51cf\u4ed3 40%\uff0c\u5c06\u6b62\u635f\u4e0a\u79fb\u81f3\u5165\u573a\u4f4d",
+      "status": "ACTIVE"
+    },
+    {
+      "level": 235.43,
+      "label": "T2",
+      "action": "\u5e73\u4ed3\u5269\u4f59 60%\uff0c\u5168\u90e8\u79bb\u573a",
+      "status": "PENDING"
+    }
+  ],
+  "_signal_date": "2026-10-28",
+  "_priority_score": 44.1,
+  "_conviction_score": 14,
+  "_act_level": 0,
+  "_r_unit": 22.31,
+  "_gate_go": false,
+  "admission_class": "patience",
+  "entry_status": "bounce_wait",
+  "selection_era": "anticipation-v1-2026-08-08",
+  "entry_basis": {
+    "basis_date": "2026-10-29",
+    "basis_source": "staleness_price_through",
+    "run_asof": "2026-10-30",
+    "lag": 1,
+    "lag_basis": "sessions",
+    "max_lag": 3,
+    "state": "current",
+    "signal_basis_date": "2026-10-29",
+    "signal_lag_sessions": 0,
+    "era": "anticipation-v1-2026-08-08"
+  },
+  "entry_zone": {
+    "schema": "prophet.entry_zone/v1",
+    "low": 162.3,
+    "high": 162.3,
+    "chase_above": 168.5,
+    "pct_from_entry": -3.68,
+    "zone_class": "reset_band",
+    "stance": "wait",
+    "basis": "the 10- and 20-day average band under the last price, from the entry ladder",
+    "basis_zh": "\u6700\u65b0\u4ef7\u4e0b\u65b9\u7684 10 \u65e5\u4e0e 20 \u65e5\u5747\u7ebf\u533a\u95f4\uff0c\u6765\u81ea\u5165\u573a\u9636\u68af",
+    "price_basis_date": "2026-10-29",
+    "expiry_sessions": 10,
+    "expiry_date": "2026-11-12",
+    "conversion_class": "washout",
+    "conversion_evidence": "the board reads this as a name coming off a low",
+    "conversion_evidence_zh": "\u770b\u677f\u628a\u5b83\u5f52\u5165\u4f4e\u4f4d\u56de\u5347\u7684\u4e00\u7c7b",
+    "converts_on_expiry": true,
+    "extension": {
+      "daily_stoch_k": 73.64,
+      "htf_stoch_k": 40.02,
+      "daily_extended": false,
+      "htf_extended": false,
+      "both_extended": false,
+      "threshold": 80.0,
+      "htf_timeframe": 3,
+      "source": "price_store_stoch_rsi",
+      "reason": null,
+      "asof": "2026-10-29"
+    },
+    "leader_pullback": {
+      "leader_pullback": false,
+      "state": "NONE",
+      "pullback_high": null,
+      "days_in_state": 57.0,
+      "construction_era": "leader-pullback-v0-2026-08-08",
+      "state_asof": "2026-10-29",
+      "context_states": [
+        "PULLBACK",
+        "RESET_TURN"
+      ],
+      "source": "us_leader_pullback",
+      "reason": "organ state NONE is not an open controlled pullback"
+    },
+    "era": "anticipation-v1-2026-08-08"
+  },
+  "early_turn": {
+    "fired": false,
+    "reason": "signature fired but no licensing context \u2014 a naked dot is not a starter admission",
+    "timeframes": [
+      1,
+      2
+    ],
+    "washout_state": "FALLING",
+    "leader_pullback_source": "us_leader_pullback",
+    "union_fired": false,
+    "union_legs": [
+      "relaxed_cross"
+    ],
+    "union_texture": {},
+    "basket_context_chip": "FALLING"
+  },
+  "source_origin": {
+    "schema": "prophet.plan_source_origin/v1",
+    "owner_ref": "scripts/build_stock_library.py::main",
+    "receipt_kind": "EXACT_DISPLAYED_SOURCE",
+    "source_binding": {
+      "source_sha256": "sha256:e65cf941e58ff2d84c9a66db6e3b8346fc6a4dc7b649848c7fcc5d2314ad705d",
+      "pair_id": "eab8017a0fa7469dbec6694564edcde0",
+      "market_session": "2026-10-29",
+      "ordered_rows": [
+        {
+          "selection_index": 0,
+          "row_receipt": "sha256:4a968266ca1c245b4d4dea25e752e05e260967e1798b85aea73014c488074ced"
+        },
+        {
+          "selection_index": 1,
+          "row_receipt": "sha256:a14e58220cace1c9a1801c0f84a81c5dbe1e8b9112abb188545a274318734a4e"
+        },
+        {
+          "selection_index": 2,
+          "row_receipt": "sha256:8cb2c890c8b0fe5bf69f3fb39489327c7441d4afd971a500781ca20e079e98cd"
+        },
+        {
+          "selection_index": 3,
+          "row_receipt": "sha256:e0d10eef4389a0b42225b9ca90177b6e4ce2f7c86ae359b026af7dc5f94f4fe2"
+        },
+        {
+          "selection_index": 4,
+          "row_receipt": "sha256:cc2ead6288b040ba12f0022f7e65052ab59403e6a282be9f8ce2bd19f2a1de9d"
+        },
+        {
+          "selection_index": 5,
+          "row_receipt": "sha256:7c2d422dc9d759d8a885972994235d2f29030d108c7dbf1b8c9df236aba81c3d"
+        },
+        {
+          "selection_index": 6,
+          "row_receipt": "sha256:333d289e4338c6949469cc3178929eb45b68ba9aac5503495c42b0e0837004c4"
+        },
+        {
+          "selection_index": 7,
+          "row_receipt": "sha256:b97f31f3db4441e251f14f263365015306ade2894db576f82e52a61212bc6ed0"
+        },
+        {
+          "selection_index": 8,
+          "row_receipt": "sha256:08c065f87e7035bd776ee31c490d13cc4ae1f0c71b1c49ccf9f2a59d682c2518"
+        },
+        {
+          "selection_index": 9,
+          "row_receipt": "sha256:d914a7cf9cc7c4e3c75286b9e2ff7a9152dd3ff43dcac1ffe694651eae509a12"
+        },
+        {
+          "selection_index": 10,
+          "row_receipt": "sha256:fd25cb67570ad7a1680e2337b14d885f6f65a224703eaefbb96bc8fdd8e9ac42"
+        },
+        {
+          "selection_index": 11,
+          "row_receipt": "sha256:a08998516bd391b5ddc66c619e6e25a931ca62c666978757aa1d34297b2d1f18"
+        },
+        {
+          "selection_index": 12,
+          "row_receipt": "sha256:304deb2ef9a56b49231dca9f7d003d9cda09c55fa82722efc1528f085b0045c8"
+        },
+        {
+          "selection_index": 13,
+          "row_receipt": "sha256:a1c34f47ef44642c68b3aa44ffea595b03a0010ee5856528fa0a5c89eb028269"
+        },
+        {
+          "selection_index": 14,
+          "row_receipt": "sha256:a1648975e894093973c904b88ff79c7bf6c304f7026d68c9568889674be54720"
+        },
+        {
+          "selection_index": 15,
+          "row_receipt": "sha256:30076718a81d7224c1dec3901acccc540954a722a3feca822a43c8f4f25ab592"
+        },
+        {
+          "selection_index": 16,
+          "row_receipt": "sha256:72114a3c54dffc8b8d0ecc60a3f4409d497bf353575877d32c93c91a691671f9"
+        },
+        {
+          "selection_index": 17,
+          "row_receipt": "sha256:2a22d80846607edc7ecb4ac93e3688a3a84f6f28f4f8c3860cc5ce8dd71564a7"
+        },
+        {
+          "selection_index": 18,
+          "row_receipt": "sha256:60125952c793e66a3812adc7305c27478a86388aba1209cc8e7c1d9dcd846d75"
+        },
+        {
+          "selection_index": 19,
+          "row_receipt": "sha256:d97f79152c8f0ca7de69c06c66584db62a3470ea8cfcaad57f38b704ba0a5324"
+        },
+        {
+          "selection_index": 20,
+          "row_receipt": "sha256:ae6c3c7e6901eb8bfb19236f06e0264531b083760836fe275008c8797ba8f935"
+        },
+        {
+          "selection_index": 21,
+          "row_receipt": "sha256:fd769a6cd0578d5e1c953579d2f414d6478747856cbc7c7704a29751d59357be"
+        },
+        {
+          "selection_index": 22,
+          "row_receipt": "sha256:c59abe89ff932350be254efe5fe2d9216733f83feb16fb073f01d3059d62c14b"
+        },
+        {
+          "selection_index": 23,
+          "row_receipt": "sha256:5dd0f491af911524ce2c6ccbc87257869156b01d13bc7f3e7194a41e203f64e1"
+        },
+        {
+          "selection_index": 24,
+          "row_receipt": "sha256:2de6de84d08dd2282e5d17a10cabf980581d212875a7c7c4bc9cac9546a49209"
+        },
+        {
+          "selection_index": 25,
+          "row_receipt": "sha256:225799a1e5641bae29cb1d8eb6f3b059bd8023889418283e20e4035b0b4be6c8"
+        },
+        {
+          "selection_index": 26,
+          "row_receipt": "sha256:98e77beee8e8a679b8b0d7eb3e3afdf141e262d27f3bb6dadacd49980b0d1218"
+        },
+        {
+          "selection_index": 27,
+          "row_receipt": "sha256:e5908448880981046c7c0f657be36ea673cdc77d51edd6cb673b68f30c0fd67a"
+        },
+        {
+          "selection_index": 28,
+          "row_receipt": "sha256:fdc9fc34a763077b2ec3080ca764d65bcb96054c33d877df2ad9becea7d9a09d"
+        },
+        {
+          "selection_index": 29,
+          "row_receipt": "sha256:e2d0451c3bc611407af028bb6566309824a4e2e8c4470534e8b41e54d4074bbc"
+        },
+        {
+          "selection_index": 30,
+          "row_receipt": "sha256:e1e873f00b56eb1108db223c561007539b4a9cec0bfdaf90ea2a8aaca54269eb"
+        },
+        {
+          "selection_index": 31,
+          "row_receipt": "sha256:4ec76ecb705e2acb01b361d8455ffe8f6ce96e0c2fa9c2cbb865c8d8fe721e06"
+        },
+        {
+          "selection_index": 32,
+          "row_receipt": "sha256:f3aaf6f4d63b00340719149b51a3a7439aeda0a16e1c389dd40d6cf4b3860f27"
+        },
+        {
+          "selection_index": 33,
+          "row_receipt": "sha256:207cb8483f5002b1a2c5103d910e6dd2a98086196d9a1c1520ecad9e18a0716b"
+        },
+        {
+          "selection_index": 34,
+          "row_receipt": "sha256:70c0bb8e38e492cf307a1865f047f044504f11e0d60e68b8f1699d2d823316f5"
+        },
+        {
+          "selection_index": 35,
+          "row_receipt": "sha256:6a08c35c613a6be3f3486f853714eb114f7af6049b2a759ac7e248c6ccc54d63"
+        },
+        {
+          "selection_index": 36,
+          "row_receipt": "sha256:850b599e61ae8c4e5d30c4f8a048a256f6d67ea173deeee41f251092983ac0c5"
+        },
+        {
+          "selection_index": 37,
+          "row_receipt": "sha256:7d9c1a828d8c2fce7b29c9fcfd0be040c7a6a60efe4128533a4b4e09462cb371"
+        },
+        {
+          "selection_index": 38,
+          "row_receipt": "sha256:e427368f0540d8eaea7a94f75b78fea246799ea2fd85d6d1945d640fe8c8c386"
+        },
+        {
+          "selection_index": 39,
+          "row_receipt": "sha256:669007d3c98648d5ae96f737b31e1578225c7229c052c10f0700e753055915cb"
+        },
+        {
+          "selection_index": 40,
+          "row_receipt": "sha256:84bef8b6025dee6a6f407dac25d7ba6c183a9bbab797700ce74e5b47c9a4dc61"
+        },
+        {
+          "selection_index": 41,
+          "row_receipt": "sha256:f3114922f4c5dce0b73455000a606bbc6ce5d1f22d3cffc59db2298aee8d6c08"
+        },
+        {
+          "selection_index": 42,
+          "row_receipt": "sha256:0d3fb223f2bd983b1aa4d02bcca4b0c1dc9d64a13cf8682b696488710530f6fd"
+        },
+        {
+          "selection_index": 43,
+          "row_receipt": "sha256:269fa4f2303d3ad24c1fa7cd8bd82c363b9cb408208706b56c45d98646214414"
+        },
+        {
+          "selection_index": 44,
+          "row_receipt": "sha256:d321254e7111b2fc21c917a287df45b2c49e4127549c6c333b0aaa0346e1ebd2"
+        },
+        {
+          "selection_index": 45,
+          "row_receipt": "sha256:6cbfca717c75c494c8bf9c977480a7b0837a0a8651c3d134249595b08b3a83d5"
+        },
+        {
+          "selection_index": 46,
+          "row_receipt": "sha256:4885724f3db02b0dda682a0d6572ef89cd6c95c5432dd580b4bb2a65d87d14b0"
+        },
+        {
+          "selection_index": 47,
+          "row_receipt": "sha256:4dfa4153ae55e94d4cc9fa35aa5e804cbcb08b6e5a10bd22731e480b5ffeb840"
+        },
+        {
+          "selection_index": 48,
+          "row_receipt": "sha256:e0176ac5d7c7eb108ef83f01a2d19b47ce007c2c1d773500d056dd6669c64d4c"
+        },
+        {
+          "selection_index": 49,
+          "row_receipt": "sha256:df52ec8b4450c4a098893a182ce85a6ed680b1f433c0d9bf53c912ed2d81a076"
+        },
+        {
+          "selection_index": 50,
+          "row_receipt": "sha256:f7d651235180dd0406f0d5f08726686fa1d05654875527c849e97c263a6c4392"
+        },
+        {
+          "selection_index": 51,
+          "row_receipt": "sha256:03e11377bca07a863a2f34e176a14db45821047186f4ea1f909aa7d0c4655426"
+        },
+        {
+          "selection_index": 52,
+          "row_receipt": "sha256:ea5c82f18abe64a0e9b64c820ef2c540aa1f5792fe5ec6a2c00e23b5e9ba74a0"
+        },
+        {
+          "selection_index": 53,
+          "row_receipt": "sha256:97b9e5a96493421bd8d6114766bd14289186d27c4de3c2dc8486212a9c078e4a"
+        },
+        {
+          "selection_index": 54,
+          "row_receipt": "sha256:01138288fa71833fe2fd668ca34198d6840fc27f048769f8152a6ed9077770d6"
+        },
+        {
+          "selection_index": 55,
+          "row_receipt": "sha256:ddbac7904814172b7bb93f661f367b7bb199950990a4707fe84cf85ce63d3eb5"
+        },
+        {
+          "selection_index": 56,
+          "row_receipt": "sha256:75bc1b46888756faa324bdd2b6ab3f256b3c06eac6c876c751f1129b57a670a5"
+        },
+        {
+          "selection_index": 57,
+          "row_receipt": "sha256:477c34e4916583807178eac2bf66c74b2898b761e0702ee50dc9ee7cb0ee9496"
+        },
+        {
+          "selection_index": 58,
+          "row_receipt": "sha256:20b648b65103fbe06d0b1b3496eaeffb1bff0ed3d11106a8b37e3d8ff4d047d0"
+        },
+        {
+          "selection_index": 59,
+          "row_receipt": "sha256:39bd393e2b7eb1c34ccdc3925c2374d1f74413afacdd35558565b52f440360eb"
+        },
+        {
+          "selection_index": 60,
+          "row_receipt": "sha256:a1f03c0607cee062ded2cb2756c18178b851abb3f499750b1dda1c958842736b"
+        },
+        {
+          "selection_index": 61,
+          "row_receipt": "sha256:428f351d7cc2d14e3965a0412b01d4e268749d537479a3628a6a042df01a4292"
+        },
+        {
+          "selection_index": 62,
+          "row_receipt": "sha256:16f8a6c85e8983d9803724a98393de6727db29c9b28a6099faf16898d25fcfae"
+        },
+        {
+          "selection_index": 63,
+          "row_receipt": "sha256:ff9fa28560136b8c19e34e0a7d139a8b75a456e62aa68b0504d1f5bc0cd592f7"
+        },
+        {
+          "selection_index": 64,
+          "row_receipt": "sha256:6dfb50486bd28fcb79bec77fa10d44219a9dc9b16d732c988e1ebe5f89de7afb"
+        },
+        {
+          "selection_index": 65,
+          "row_receipt": "sha256:1708c03c919e019e359e96303581438e37ebe5501465b496c8ef42f68d9fe8e3"
+        },
+        {
+          "selection_index": 66,
+          "row_receipt": "sha256:c326f5516e7f10439525eaef4d0110cb83d909a124682c6004da89a24a6fd3b2"
+        },
+        {
+          "selection_index": 67,
+          "row_receipt": "sha256:1fac39442f7de29c9f09d449f2c6d6a6bb12d360cb02b1d965dba34ab2af597e"
+        },
+        {
+          "selection_index": 68,
+          "row_receipt": "sha256:0c21a87bc73f498c9661c028728baf04abf77d52e357b438f3240cb4793df3d3"
+        },
+        {
+          "selection_index": 69,
+          "row_receipt": "sha256:af974c74fd906480118ad4490b1525c45dd2ba8bbc0fc35d8763cd4088fd7850"
+        },
+        {
+          "selection_index": 70,
+          "row_receipt": "sha256:5f9f951e2c3abe2d5b61fc6b44de58a2da1d041336afcb81b0d24655abb1e0e4"
+        },
+        {
+          "selection_index": 71,
+          "row_receipt": "sha256:010ffa9e3b6198e9c8ce8803ad96e220f62475ef28a9be47d884e780c442e576"
+        },
+        {
+          "selection_index": 72,
+          "row_receipt": "sha256:3f380afa0caa6a3010a53d6d4518e6731ba9953c81ebfcca49ae69969e57525d"
+        },
+        {
+          "selection_index": 73,
+          "row_receipt": "sha256:f1274ba27ba572cf17e36f4a0844e0a349fe0fddc6c4511e0a9c58469ba82885"
+        },
+        {
+          "selection_index": 74,
+          "row_receipt": "sha256:ccef9505319422b84713207c042fe761d2c6340f9d9ad6ba38b4e42e23d27d3c"
+        },
+        {
+          "selection_index": 75,
+          "row_receipt": "sha256:f8134e8cd34503232feb7a40b57a8b43c2b3070ff6de9b69f051a96f30e50b24"
+        },
+        {
+          "selection_index": 76,
+          "row_receipt": "sha256:a449536aaad66681ae5a55fc6a7517346c1f82638c465b3fa1d60adf4c74e5a2"
+        },
+        {
+          "selection_index": 77,
+          "row_receipt": "sha256:cb7584c377791288223241a3b7ff2bc2600d135a9c4b16eda2efee0b4bd3d4a8"
+        },
+        {
+          "selection_index": 78,
+          "row_receipt": "sha256:5041d05c4326c95ca918be9700984caa0216acb04c657184fe48a62ee340a303"
+        },
+        {
+          "selection_index": 79,
+          "row_receipt": "sha256:eac7ff7a5462d1bb27acda2b89eaf661979989629d456e62081c1b6db8913853"
+        },
+        {
+          "selection_index": 80,
+          "row_receipt": "sha256:ed51290e81599d1f527376c3c308b6b4f5b96288eec86272191fe40db2bb962f"
+        },
+        {
+          "selection_index": 81,
+          "row_receipt": "sha256:19d101f39e9a686c1addb7699c4ce1072da145847f2d567861eabf2f3836b46a"
+        },
+        {
+          "selection_index": 82,
+          "row_receipt": "sha256:457bef10e98de20282c2252caa67135cb11d64ae3aaea69d56cafbdd8a05979c"
+        },
+        {
+          "selection_index": 83,
+          "row_receipt": "sha256:2e48d2487cdcf412e89448e895264071af944b0d93fe5e99448a4f6339f37f62"
+        },
+        {
+          "selection_index": 84,
+          "row_receipt": "sha256:82fa92328c306137e624e1c3619a201608feefa674703528ca72e663ffe3f046"
+        },
+        {
+          "selection_index": 85,
+          "row_receipt": "sha256:604caae89b1577ee9ae1572d46b3bedd6e93dd7121f53f117bfeeb7b4c48adbc"
+        },
+        {
+          "selection_index": 86,
+          "row_receipt": "sha256:c7cc8052d28dde1cb3cd85d77843fef8eaa71039b0161665f244a7a654c118d8"
+        }
+      ],
+      "selection_receipt": "sha256:b9f2aa6842c8c2ff13c07c6b7506ddbb9958ff3e221c0db05a1303554accb8e0",
+      "schema": "prophet.today_selection_source_binding/v1",
+      "receipt_kind": "EXACT_DISPLAYED_SOURCE"
+    },
+    "selection_index": 67,
+    "row_receipt": "sha256:1fac39442f7de29c9f09d449f2c6d6a6bb12d360cb02b1d965dba34ab2af597e"
+  }
+}

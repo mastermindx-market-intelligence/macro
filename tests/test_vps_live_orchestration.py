@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import sys
 from datetime import datetime, timedelta, timezone
+from importlib import import_module, util as importlib_util
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -2434,7 +2435,10 @@ def test_flow_pulse_validator_measures_coverage_against_universe(tmp_path: Path)
 
 def _no_source_clock_failure(failures: list[str]) -> bool:
     return not any(
-        failure.startswith("flow_pulse: source") or failure.startswith("intraday_quotes:")
+        failure.startswith("flow_pulse: source")
+        or failure.startswith("flow_pulse: missing source_asof")
+        or failure.startswith("flow_pulse: invalid source_asof")
+        or failure.startswith("intraday_quotes:")
         for failure in failures
     )
 
@@ -2455,17 +2459,30 @@ def test_deadman_ages_pulse_and_board_quotes_from_source_clocks():
     removed = _healthy_vps_status()
     removed["checks"]["flow_pulse"].pop("source_asof", None)
     removed["checks"].pop("intraday_quotes", None)
-    assert _no_source_clock_failure(evaluate_live_health(removed, now=now))
+    failures = evaluate_live_health(removed, now=now)
+    assert "flow_pulse: missing source_asof" in failures, failures
+    assert "intraday_quotes: missing source_asof" in failures, failures
 
     missing = _healthy_vps_status()
     missing["checks"]["flow_pulse"].pop("source_asof", None)
     missing["checks"]["intraday_quotes"] = {"status": "missing"}
-    assert _no_source_clock_failure(evaluate_live_health(missing, now=now))
+    failures = evaluate_live_health(missing, now=now)
+    assert "flow_pulse: missing source_asof" in failures, failures
+    assert "intraday_quotes: missing source_asof" in failures, failures
 
     absent = _healthy_vps_status()
     absent["checks"]["flow_pulse"]["source_asof"] = None
     absent["checks"]["intraday_quotes"] = {"source_asof": None}
-    assert _no_source_clock_failure(evaluate_live_health(absent, now=now))
+    failures = evaluate_live_health(absent, now=now)
+    assert "flow_pulse: missing source_asof" in failures, failures
+    assert "intraday_quotes: missing source_asof" in failures, failures
+
+    errored = _healthy_vps_status()
+    errored["checks"]["flow_pulse"].pop("source_asof", None)
+    errored["checks"]["intraday_quotes"] = {"error": "unavailable", "age_min": 3}
+    failures = evaluate_live_health(errored, now=now)
+    assert "flow_pulse: missing source_asof" in failures, failures
+    assert "intraday_quotes: missing source_asof" in failures, failures
 
     fresh = _healthy_vps_status()
     fresh["checks"]["flow_pulse"]["source_asof"] = (
@@ -2488,5 +2505,168 @@ def test_deadman_ages_pulse_and_board_quotes_from_source_clocks():
         datetime(2026, 7, 20, 20, 30, tzinfo=timezone.utc),
         datetime(2026, 7, 19, 15, 0, tzinfo=timezone.utc),
     ):
-        failures = evaluate_live_health(stale, now=when)
-        assert _no_source_clock_failure(failures), (when.isoformat(), failures)
+        for variant in (stale, removed):
+            failures = evaluate_live_health(variant, now=when)
+            assert _no_source_clock_failure(failures), (when.isoformat(), variant.get("checks", {}).get("flow_pulse"), failures)
+
+
+def _load_projection() -> "object":
+    """Pull app.live_status_projection in a way that pins the absent-module defect
+    instead of failing collection at PR time (the washout-turn-organ job imports
+    this test file without the serving stack)."""
+    spec = importlib_util.find_spec("app.live_status_projection")
+    assert spec is not None, "projection module absent"
+    return import_module("app.live_status_projection")
+
+
+def test_status_projection_carries_pulse_source_clock_and_universe(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    projection = _load_projection()
+
+    now_et = pd.Timestamp.now(tz="America/New_York").normalize()
+    start_9 = (now_et + pd.Timedelta(hours=9)).tz_convert("UTC")
+    start_10 = (now_et + pd.Timedelta(hours=10)).tz_convert("UTC")
+    index = pd.DatetimeIndex([start_9, start_10], name="ts")
+    frame = pd.DataFrame(
+        {
+            "open": [100.0, 101.0],
+            "high": [102.0, 103.0],
+            "low": [99.0, 100.0],
+            "close": [101.0, 102.0],
+            "volume": [1000.0, 2000.0],
+        },
+        index=index,
+    )
+
+    intraday = tmp_path / "intraday"
+    intraday.mkdir()
+    (intraday / "AAA.parquet").touch()
+    (intraday / "BBB.parquet").touch()
+
+    bars_by_ticker = {"AAA": frame.copy(), "BBB": frame.iloc[0:0].copy()}
+    monkeypatch.setattr(bif.pd, "read_parquet", lambda p: bars_by_ticker[p.name.replace(".parquet", "")].copy())
+    monkeypatch.delenv("MACRO_INTRADAY_DIR", raising=False)
+    monkeypatch.setattr(bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB"])
+
+    today = datetime.now(timezone.utc).date()
+    as_of = datetime(today.year, today.month, today.day, 16, 0, tzinfo=timezone.utc)
+    site = tmp_path / "site"
+    bif._run_fastpath({}, tmp_path, site, as_of_arg=as_of.isoformat())
+    pulse = json.loads((site / "live" / "flow_pulse.json").read_text(encoding="utf-8"))
+
+    expected = {
+        "mode": pulse["mode"],
+        "n_tickers": pulse["n_tickers"],
+        "with_bars": 1,
+        "n_universe": pulse["n_universe"],
+        "source_asof": pulse["source_asof"],
+    }
+    result = projection.flow_pulse_fields(pulse)
+    assert result == expected
+    assert list(result) == [
+        "mode", "n_tickers", "with_bars", "n_universe", "source_asof",
+    ]
+
+    empty = projection.flow_pulse_fields({})
+    assert empty == {"mode": None, "n_tickers": None, "with_bars": 0, "n_universe": None, "source_asof": None}
+
+
+def test_status_projection_carries_board_quote_meta():
+    projection = _load_projection()
+
+    base_iso = "2026-10-13T14:00:00+00:00"
+    leaders = [{"ticker": name} for name in ("AAA", "BBB", "CCC")]
+    priced = {
+        "AAA": {"price": 10.0, "ts": _epoch_ms("2026-10-13T14:00:00+00:00")},
+        "BBB": {"price": 11.0, "ts": _epoch_ms("2026-10-13T14:10:00+00:00")},
+        "CCC": {"price": 12.0, "ts": _epoch_ms("2026-10-13T14:20:00+00:00")},
+    }
+    payload = build_flow_quotes(
+        {"leaders": leaders},
+        {"quotes": priced, "meta": {}},
+    )
+
+    expected = {
+        "requested": payload["meta"]["requested"],
+        "resolved": payload["meta"]["resolved"],
+        "coverage": payload["meta"]["coverage"],
+        "source_asof": payload["meta"]["source_asof"],
+        "built_at": payload["meta"]["built_at"],
+    }
+    result = projection.intraday_quotes_fields(payload)
+    assert result == expected
+    assert list(result) == ["requested", "resolved", "coverage", "source_asof", "built_at"]
+    assert result["source_asof"] == "2026-10-13T14:10:00+00:00"
+
+    assert projection.intraday_quotes_fields({}) == {
+        "requested": None, "resolved": None, "coverage": None, "source_asof": None, "built_at": None,
+    }
+    assert projection.intraday_quotes_fields({"meta": "x"}) == {
+        "requested": None, "resolved": None, "coverage": None, "source_asof": None, "built_at": None,
+    }
+
+
+def test_deadman_composes_real_board_through_status_projection():
+    projection = _load_projection()
+
+    now = _HEALTHY_STATUS_NOW
+    base_iso = (now - timedelta(minutes=20)).isoformat()
+    leaders = [{"ticker": name} for name in ("AAA", "BBB", "CCC")]
+    priced = {
+        "AAA": {"price": 10.0, "ts": _epoch_ms(base_iso)},
+        "BBB": {"price": 11.0, "ts": _epoch_ms(base_iso)},
+        "CCC": {"price": 12.0, "ts": _epoch_ms(base_iso)},
+    }
+    board = build_flow_quotes({"leaders": leaders}, {"quotes": priced, "meta": {}})
+
+    pulse = {
+        "mode": "fastpath",
+        "n_tickers": 116,
+        "n_universe": 116,
+        "source_asof": (now - timedelta(minutes=40)).isoformat().replace("+00:00", "Z"),
+        "tickers": [{"ticker": f"T{i}", "bars_today": 2} for i in range(116)],
+    }
+
+    status = _healthy_vps_status()
+    status["checks"]["intraday_quotes"] = projection.intraday_quotes_fields(board)
+    status["checks"]["flow_pulse"].update(projection.flow_pulse_fields(pulse))
+
+    failures = evaluate_live_health(status, now=now)
+    assert _no_source_clock_failure(failures), failures
+
+    aged_board = build_flow_quotes(
+        {"leaders": leaders},
+        {"quotes": {k: {"price": v["price"], "ts": _epoch_ms((now - timedelta(minutes=120)).isoformat())} for k, v in priced.items()}, "meta": {}},
+    )
+    aged_pulse = dict(pulse, source_asof=(now - timedelta(minutes=180)).isoformat().replace("+00:00", "Z"))
+    status_stale = _healthy_vps_status()
+    status_stale["checks"]["intraday_quotes"] = projection.intraday_quotes_fields(aged_board)
+    status_stale["checks"]["flow_pulse"].update(projection.flow_pulse_fields(aged_pulse))
+    stale_failures = evaluate_live_health(status_stale, now=now)
+    assert any(failure.startswith("flow_pulse: source stale") for failure in stale_failures), stale_failures
+    assert any(failure.startswith("intraday_quotes: source stale") for failure in stale_failures), stale_failures
+
+    clockless_board = build_flow_quotes(
+        {"leaders": [{"ticker": "AAA"}, {"ticker": "BBB"}]},
+        {"quotes": {"AAA": {"price": 10.0}, "BBB": {"price": 11.0}}, "meta": {}},
+    )
+    status_clockless = _healthy_vps_status()
+    status_clockless["checks"]["intraday_quotes"] = projection.intraday_quotes_fields(clockless_board)
+    clockless_failures = evaluate_live_health(status_clockless, now=now)
+    assert "intraday_quotes: missing source_asof" in clockless_failures, clockless_failures
+
+
+def test_projection_module_imports_without_the_serving_stack():
+    """Subprocess import of app.live_status_projection must not pull in fastapi,
+    starlette, or pydantic — the washout-turn-organ job installs none of them."""
+    import subprocess
+
+    completed = subprocess.run(
+        [sys.executable, "-c",
+         "import sys, app.live_status_projection;"
+         "print(sorted(m for m in sys.modules if m.split('.')[0] in ('fastapi','starlette','pydantic')))"],
+        capture_output=True, text=True, cwd=Path(__file__).resolve().parents[1],
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert completed.stdout.strip() == "[]", completed.stdout

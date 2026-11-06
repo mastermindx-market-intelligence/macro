@@ -12,10 +12,13 @@ Rules:
 from __future__ import annotations
 
 import json
+import base64
+import io
 import logging
 import hashlib
 import math
 import numbers
+import re
 import os
 import stat
 import tempfile
@@ -173,6 +176,122 @@ def capture_yahoo_observation(ticker: str, provider_slice: pd.DataFrame,
     expected = {"provider": "yahoo", "field": "Adj Close", "basis": "total_return", "ticker": ticker}
     if type(ticker) is not str or ticker not in YAHOO_CAPTURE_COHORT or lineage != expected:
         raise ValueError("availability Yahoo lineage refused")
+    return _capture_yahoo_images(ticker, provider_slice, merged,
+                                 adapter_return_known_by=adapter_return_known_by)
+
+
+
+def _wti_temporal_receipt(context: dict | None, provider: pd.DataFrame) -> dict | None:
+    """Strict allowlist at the receipt boundary; unknown upstream facts stay null.
+
+    A typed description is not authentication. Bind it to the existing image
+    hashes below; never turn caller metadata or a local clock into vendor facts.
+    """
+    if context is None:
+        return None
+    expected = {"schema", "scope", "index", "request", "parser_versions",
+                "on_disk_source_sha256_not_execution_attestation",
+                "resolved_request_defaults", "vendor_session_metadata",
+                "vendor_daily_label_convention", "provider_available_at",
+                "futures_session_completion"}
+    if not isinstance(context, dict) or set(context) != expected:
+        raise ValueError("WTI temporal context shape refused")
+    if (context["schema"] != "yahoo.wti_adapter_temporal_context.v1" or
+            context["scope"] != "adapter_extracted_index_before_collector_validation_not_vendor_wire"):
+        raise ValueError("WTI temporal context scope refused")
+    for key in ("resolved_request_defaults", "vendor_session_metadata",
+                "vendor_daily_label_convention", "provider_available_at", "futures_session_completion"):
+        if context[key] is not None:
+            raise ValueError("WTI temporal upstream fact unqualified")
+    idx = context["index"]
+    if (not isinstance(idx, dict) or set(idx) != {"kind", "unit", "timezone", "timezone_aware", "labels", "already_midnight"}
+            or idx["kind"] != "datetime" or idx["unit"] not in {"s", "ms", "us", "ns"}
+            or type(idx["timezone_aware"]) is not bool or type(idx["already_midnight"]) is not bool
+            or not isinstance(idx["labels"], list) or not 0 < len(idx["labels"]) <= _CAPTURE_ROW_LIMIT):
+        raise ValueError("WTI temporal index refused")
+    # ISO datetime grammar excludes arbitrary attrs, names, URLs and credentials.
+    for label in idx["labels"]:
+        if (not isinstance(label, str) or not re.fullmatch(
+                r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,9})?(?:[+-][0-9]{2}:[0-9]{2})?", label)):
+            raise ValueError("WTI temporal label refused")
+    if idx["timezone"] is not None:
+        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+        try:
+            ZoneInfo(idx["timezone"])
+        except (TypeError, ValueError, ZoneInfoNotFoundError):
+            raise ValueError("WTI temporal timezone refused") from None
+    # Existing capture only accepts naive frames. Do not convert aware indexes
+    # to force acceptance. Duplicates/order follow the unchanged validate path.
+    try:
+        original = pd.DatetimeIndex([pd.Timestamp(label) for label in idx["labels"]])
+    except (ValueError, TypeError, OverflowError):
+        raise ValueError("WTI temporal label refused") from None
+    if (original.tz is not None or idx["timezone_aware"] or idx["timezone"] is not None
+            or idx["already_midnight"] != bool(original.equals(original.normalize()))):
+        raise ValueError("WTI temporal index disagrees with capture")
+    normalized = original.normalize().drop_duplicates(keep="last").sort_values()
+    if not normalized.equals(provider.index):
+        raise ValueError("WTI temporal/image labels disagree")
+    versions = context["parser_versions"]
+    if not isinstance(versions, dict) or set(versions) != {"yfinance", "pandas"}:
+        raise ValueError("WTI temporal parser fields refused")
+    for value in versions.values():
+        if value is not None and (not isinstance(value, str) or not re.fullmatch(
+                r"[0-9]+(?:\.[0-9]+){1,3}(?:(?:a|b|rc|\.post|\.dev)[0-9]+)?", value)):
+            raise ValueError("WTI temporal parser version refused")
+    code = context["on_disk_source_sha256_not_execution_attestation"]
+    if not isinstance(code, dict) or set(code) != {"collectors/yahoo.py", "collectors/base.py", "lib/store.py"}:
+        raise ValueError("WTI temporal code fields refused")
+    for value in code.values():
+        if value is not None and (not isinstance(value, str) or not re.fullmatch(r"[a-f0-9]{64}", value)):
+            raise ValueError("WTI temporal code digest refused")
+    request = context["request"]
+    if request is not None:
+        if (not isinstance(request, dict) or set(request) != {"target", "period", "auto_adjust", "progress", "group_by", "threads", "batch_symbols_sha256", "batch_size"}
+                or request["target"] != "CL=F" or request["period"] not in {"1mo", "max"}
+                or request["auto_adjust"] is not False or request["progress"] is not False
+                or request["threads"] is not True or request["group_by"] != "ticker"
+                or type(request["batch_size"]) is not int or not 1 <= request["batch_size"] <= 10_000
+                or not isinstance(request["batch_symbols_sha256"], str)
+                or not re.fullmatch(r"[a-f0-9]{64}", request["batch_symbols_sha256"])):
+            raise ValueError("WTI temporal request refused")
+    raw = _availability_json(context)
+    if len(raw) > 1_000_000:
+        raise ValueError("WTI temporal context exceeds bound")
+    return {"sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw),
+            "context": json.loads(raw), "execution_authenticity": "UNQUALIFIED"}
+
+
+def capture_yahoo_wti_observation(provider_slice: pd.DataFrame, merged: pd.DataFrame, *,
+                                  lineage: dict | None,
+                                  adapter_return_known_by: datetime,
+                                   temporal_context: dict | None = None) -> dict:
+    """Capture this ordinary Yahoo CL=F return prospectively, without acquisition.
+
+    Separate opt-in from the fixed nine-sector research cohort. This records the
+    actual vendor field and immutable normalized values; neither CL session-date
+    semantics nor roll policy, settlement basis, source-use adoption, or a past
+    snapshot cutoff is inferred. The incumbent runner supplies current-call
+    metadata and clocks; caller dictionaries are not authentication.
+    """
+    common = {"provider": "yahoo", "ticker": "CL=F",
+              "series_identity": "vendor_continuous_CL=F"}
+    allowed = [{**common, "field": field, "basis": basis} for field, basis in (
+        ("Adj Close", "vendor_continuous_adjusted_close"),
+        ("Close", "vendor_continuous_close_no_adj_close_returned"))]
+    if lineage not in allowed:
+        raise ValueError("availability WTI current-call lineage refused")
+    return _capture_yahoo_images("CL=F", provider_slice, merged,
+                                 adapter_return_known_by=adapter_return_known_by,
+                                 wti_lineage=lineage, temporal_context=temporal_context)
+
+
+def _capture_yahoo_images(ticker: str, provider_slice: pd.DataFrame,
+                           merged: pd.DataFrame, *, adapter_return_known_by: datetime,
+                           wti_lineage: dict | None = None,
+                           temporal_context: dict | None = None) -> dict:
+    temporal = _wti_temporal_receipt(temporal_context, provider_slice) if wti_lineage is not None else None
+    # Shared incumbent content-addressed publication, not another store/registry.
     known_by = _availability_clock(adapter_return_known_by)
     provider_data = _availability_image(provider_slice)
     merged_data = _availability_image(merged)
@@ -218,9 +337,133 @@ def capture_yahoo_observation(ticker: str, provider_slice: pd.DataFrame,
         "historical_original_availability_proven": False,
         "canonical_cache_transaction_durability": "UNQUALIFIED",
     }
+    if wti_lineage is not None:
+        receipt["schema"] = "yahoo.wti_observation_capture.v1"
+        receipt["source_lineage"] = dict(wti_lineage)
+        for image in (receipt["provider_return_image"], receipt["merged_capture_image"]):
+            image["basis"] = wti_lineage["basis"]
+        receipt["provider_return_image"]["scope"] = "validated_adapter_output_not_vendor_wire"
+        receipt.update(
+            collector="collectors.yahoo.YahooAdapter",
+            series_generation="sha256:" + merged_digest,
+            effective_bar_date=merged.index[-1].date().isoformat(),
+            futures_session_date_convention=None,
+            futures_session_completion=None,
+            continuous_contract_roll_policy=None,
+            settlement_price_equivalence=None,
+            scenario_snapshot_binding=None,
+            commercial_rights_attestation={
+                "decision_key": "DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023",
+                "named_route": "Research Factory Yahoo/yfinance data route",
+                "status": "APPROVED_BY_CHAIRMAN_ATTESTATION",
+                "native_collector_purpose_binding": "NOT_ESTABLISHED"},
+            scenario_adoption="UNQUALIFIED_NATIVE_INPUTS")
+    if temporal is not None:
+        temporal["provider_image_sha256"] = provider_digest
+        temporal["merged_image_sha256"] = merged_digest
+        receipt["adapter_temporal_context"] = temporal
     receipt_digest = _availability_publish(receipts, _availability_json(receipt))
     return {"receipt_sha256": receipt_digest,
             "receipt_ref": "receipts/" + receipt_digest + ".json", "receipt": receipt}
+
+
+_WTI_PARQUET_LIMIT = 8 * 1024 * 1024
+_WTI_EXPORT_LIMIT = 2_000_000
+
+
+def _wti_parquet_bytes(path: Path) -> bytes:
+    """Bounded incumbent-file read; never follow a substituted final symlink."""
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    try:
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode) or not 0 < before.st_size <= _WTI_PARQUET_LIMIT:
+            raise ValueError("WTI canonical byte bound refused")
+        with os.fdopen(descriptor, "rb", closefd=False) as stream:
+            raw = stream.read(before.st_size + 1)
+        after = os.fstat(descriptor)
+        if (len(raw) != before.st_size or
+                (before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) !=
+                (after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns)):
+            raise ValueError("WTI canonical changed during read")
+        return raw
+    finally:
+        os.close(descriptor)
+
+
+def export_yahoo_wti_observation(capture: dict, provider_slice: pd.DataFrame,
+                                  merged: pd.DataFrame) -> dict:
+    """Export exact private capture bytes through existing Yahoo data publication.
+
+    Git carries this ONE generation without pretending its files retain private
+    CAS modes. No CAS import, new storage backend, acquisition or positive
+    scenario adoption. A consumer must recheck the parquet hash, all image
+    digests and clocks, then bind a NEW snapshot; old exports are never current
+    merely because a file exists. Validation failure preserves the prior
+    sidecar; a durability failure after replacement remains an uncertain
+    publication, never grounds to replay acquisition or fabricate success.
+    """
+    import pyarrow.parquet as parquet
+
+    receipt = capture["receipt"]
+    if receipt.get("schema") != "yahoo.wti_observation_capture.v1" or receipt.get("ticker") != "CL=F":
+        raise ValueError("WTI capture export schema refused")
+    receipt_raw = _availability_json(receipt)
+    provider_raw, merged_raw = _availability_image(provider_slice), _availability_image(merged)
+    yahoo = config.data_dir() / "yahoo"
+    private = yahoo / ".availability_capture"
+    entries = [(receipt_raw, capture["receipt_sha256"], "receipts"),
+               (provider_raw, receipt["provider_return_image"]["sha256"], "objects"),
+               (merged_raw, receipt["merged_capture_image"]["sha256"], "objects")]
+    for raw, digest, directory in entries:
+        if digest != hashlib.sha256(raw).hexdigest():
+            raise ValueError("WTI capture export digest mismatch")
+        _availability_verify_existing(private / directory / (digest + ".json"), raw)
+    for key, raw in (("provider_return_image", provider_raw), ("merged_capture_image", merged_raw)):
+        if receipt[key]["bytes"] != len(raw):
+            raise ValueError("WTI capture export length mismatch")
+    canonical = yahoo / "CL_F.parquet"
+    parquet_raw = _wti_parquet_bytes(canonical)
+    # Bound decompression before decoding a local canonical parquet generation.
+    table = parquet.ParquetFile(io.BytesIO(parquet_raw))
+    metadata = table.metadata
+    if (metadata.num_rows > _CAPTURE_ROW_LIMIT or metadata.num_columns > 4 or
+            sum(metadata.row_group(i).total_byte_size for i in range(metadata.num_row_groups)) > 32 * 1024 * 1024):
+        raise ValueError("WTI canonical decoded bound refused")
+    if _availability_image(table.read().to_pandas()) != merged_raw:
+        raise ValueError("WTI canonical/capture values differ")
+    exported_at = _availability_now()
+    if exported_at < datetime.fromisoformat(receipt["merged_capture_image"]["immutable_publication_durable_at_utc"]):
+        raise ValueError("WTI export clock regression")
+    def bound(raw):
+        return {"sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw),
+                "content_base64": base64.b64encode(raw).decode("ascii")}
+    export = {"schema": "yahoo.wti_observation_export.v1", "ticker": "CL=F",
+              "exported_known_by_utc": _availability_clock(exported_at),
+              "capture_receipt": bound(receipt_raw),
+              "provider_return_image": bound(provider_raw),
+              "merged_capture_image": bound(merged_raw),
+              "canonical_parquet": {"path": "data/yahoo/CL_F.parquet",
+                                    "sha256": hashlib.sha256(parquet_raw).hexdigest(), "bytes": len(parquet_raw)},
+              "scenario_adoption": "UNQUALIFIED_NATIVE_INPUTS",
+              "historical_original_availability_proven": False}
+    data = _availability_json(export)
+    if len(data) > _WTI_EXPORT_LIMIT:
+        raise ValueError("WTI export byte bound refused")
+    descriptor, temporary = tempfile.mkstemp(prefix=".CL_F.observation-", dir=yahoo)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        if _wti_parquet_bytes(canonical) != parquet_raw:
+            raise ValueError("WTI canonical changed during export")
+        os.replace(temporary, yahoo / "CL_F.observation.json")
+        _availability_fsync_dir(yahoo)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+    return {"path": "data/yahoo/CL_F.observation.json", "sha256": hashlib.sha256(data).hexdigest(),
+            "bytes": len(data)}
 
 
 def _path(group: str, name: str) -> Path:

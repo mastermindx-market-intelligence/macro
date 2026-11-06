@@ -77,7 +77,7 @@ from engine.prophet_bridge import (
     _build_thesis,
     _build_thesis_zh,
 )
-from engine.options_structure import validate_trade_plan
+from engine.options_structure import ProphetTradePlan, validate_trade_plan
 
 
 # ---------------------------------------------------------------------------
@@ -1137,6 +1137,56 @@ def test_originate_plans_passes_validate_trade_plan(tmp_path):
     for plan in plans:
         errs = validate_trade_plan(plan)
         assert errs == [], f"Plan {plan['id']} failed validation: {errs}"
+
+
+@pytest.mark.parametrize("score", [0, 11, 70, 99])
+def test_originated_board_score_never_becomes_management_confidence(
+    tmp_path, score,
+):
+    """Science review: board ordinal is not the separate 60-based management estimand."""
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(_make_standouts(
+        gate_go=False, buys=[_make_buy("AAPL", score=score, act_level=3)],
+    )), encoding="utf-8")
+    [plan] = originate_plans(path, "2026-07-02", set(), None)
+    assert "confidence" not in plan
+    assert plan["_conviction_score"] == score
+    assert plan["authority_tier"] == "display"
+    assert validate_trade_plan(plan) == []
+
+
+def test_optional_plan_confidence_legacy_and_invalid_values():
+    """Missing/None legacy field valid; explicit zero valid; unsafe values refused."""
+    base = {
+        "schema": "prophet.trade_plan/v1", "id": "TEST-PLAN",
+        "asof": "2026-07-02", "asset": "TEST",
+        "direction": "BULL", "tranche": 1,
+        "source_engines": ["neural_web"],
+    }
+    assert validate_trade_plan(base) == []
+    assert validate_trade_plan({**base, "confidence": None}) == []
+    assert validate_trade_plan({**base, "confidence": 0}) == []
+    for invalid in (float("nan"), float("inf"), -0.1, 100.1, True, "70"):
+        errors = validate_trade_plan({**base, "confidence": invalid})
+        assert any("confidence must be" in error for error in errors)
+
+
+def test_optional_management_base_is_append_only_in_plan_constructor():
+    """A new optional field cannot move legacy positional argument slots."""
+    fields = list(ProphetTradePlan.__dataclass_fields__)
+    assert fields[-1] == "confidence"
+    assert fields.index("option_contract") < fields.index("confidence")
+
+
+@pytest.mark.parametrize("score", [101, -1, True, "70"])
+def test_origination_refuses_out_of_range_source_conviction(tmp_path, score):
+    """Invalid, boolean or text board score is not laundered into a plan."""
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(_make_standouts(
+        gate_go=False, buys=[_make_buy("AAPL", score=score, act_level=3)],
+    )), encoding="utf-8")
+    plans = originate_plans(path, "2026-07-02", set(), None)
+    assert plans == []
 
 
 def test_exact_earnings_evidence_only_annotates_after_prophet_selection(tmp_path):

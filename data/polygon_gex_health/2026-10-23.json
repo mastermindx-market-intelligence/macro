@@ -1,0 +1,79 @@
+{
+  "session": "2026-10-23",
+  "attempts": [
+    {
+      "capture_instant": "2026-10-24T03:25:30.221054+00:00",
+      "requested_underlyings": 375,
+      "attempted_underlyings": 5,
+      "successful_underlyings": 0,
+      "coverage_pct": 0.0,
+      "failure_reasons": {
+        "auth_or_entitlement_failure": 5
+      },
+      "failure_examples": {
+        "auth_or_entitlement_failure": [
+          "SPY",
+          "QQQ",
+          "IWM"
+        ]
+      },
+      "aborted_early": true,
+      "decision": "nothing_captured",
+      "health": "failed"
+    },
+    {
+      "capture_instant": "2026-10-24T15:01:43.993474+00:00",
+      "requested_underlyings": 375,
+      "attempted_underlyings": null,
+      "successful_underlyings": null,
+      "coverage_pct": null,
+      "failure_reasons": {},
+      "failure_examples": {},
+      "aborted_early": false,
+      "decision": "skipped_outside_lease",
+      "health": "absent",
+      "lease": {
+        "valid": false,
+        "resolved_session": "2026-10-23",
+        "lease_end_et": "2026-10-24T03:00:00-04:00",
+        "write_kind": "first_write"
+      }
+    },
+    {
+      "capture_instant": "2026-10-25T02:44:11.062206+00:00",
+      "requested_underlyings": 375,
+      "attempted_underlyings": null,
+      "successful_underlyings": null,
+      "coverage_pct": null,
+      "failure_reasons": {},
+      "failure_examples": {},
+      "aborted_early": false,
+      "decision": "skipped_outside_lease",
+      "health": "absent",
+      "lease": {
+        "valid": false,
+        "resolved_session": "2026-10-23",
+        "lease_end_et": "2026-10-24T03:00:00-04:00",
+        "write_kind": "first_write"
+      }
+    },
+    {
+      "capture_instant": "2026-10-26T05:50:51.111295+00:00",
+      "requested_underlyings": 375,
+      "attempted_underlyings": null,
+      "successful_underlyings": null,
+      "coverage_pct": null,
+      "failure_reasons": {},
+      "failure_examples": {},
+      "aborted_early": false,
+      "decision": "skipped_outside_lease",
+      "health": "absent",
+      "lease": {
+        "valid": false,
+        "resolved_session": "2026-10-23",
+        "lease_end_et": "2026-10-24T03:00:00-04:00",
+        "write_kind": "first_write"
+      }
+    }
+  ]
+}

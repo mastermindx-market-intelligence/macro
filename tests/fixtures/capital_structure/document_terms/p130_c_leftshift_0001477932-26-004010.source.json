@@ -1,0 +1,29 @@
+{
+  "accession": "0001477932-26-004010",
+  "form": "S-1",
+  "url": "https://www.sec.gov/Archives/edgar/data/0001477932-26-004010.txt",
+  "canonical_url": "https://www.sec.gov/Archives/edgar/data/1187953/000147793226004010/0001477932-26-004010.txt",
+  "retrieved_at": "2026-11-02T07:35:51Z",
+  "user_agent": "MacroDashboard research longr2512@gmail.com",
+  "full_submission": {
+    "sha256": "074cf71926ce5b5d90a73aee802ea74a0179412dc0c8e3f622979815571b3a2f",
+    "byte_length": 1114171
+  },
+  "fixture": {
+    "sha256": "421ea017fccd476cc9d3d5653e5f53f3749b95516d4f466e4e36f3ffb729b8ca",
+    "byte_length": 54558
+  },
+  "documents": [
+    {
+      "type": "EX-FILING FEES",
+      "sequence": "8",
+      "filename": "celz_ex107.htm",
+      "source_byte_offsets": {
+        "document_block_start": 834148,
+        "document_block_end": 887598
+      },
+      "sliced": false
+    }
+  ],
+  "note": "SEC-DOCUMENT/SEC-HEADER block and each included <DOCUMENT> are verbatim EDGAR bytes except where sliced as recorded above"
+}

@@ -233,7 +233,7 @@ def test_unbaked_theme_js_is_still_valid_javascript() -> None:
     one feature it configures.
     """
     src = (TEMPLATES / "theme.js").read_text()
-    assert f"|| {TOKEN};" in src, "the Supabase token is no longer a valid `|| null` tail"
+    assert f"var _bakedSupabaseCfg = {TOKEN};" in src, "the Supabase token must remain a valid null expression"
     assert f"= {MM_BRAIN_VER_TOKEN};" in src, (
         "the mm_brain version token is no longer a valid empty-string literal"
     )

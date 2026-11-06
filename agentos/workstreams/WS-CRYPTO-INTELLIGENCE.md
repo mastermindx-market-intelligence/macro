@@ -6,7 +6,7 @@ objective: >
   declared authority for every decision-bearing output and advisory evidence
   unable to silently override it. Each wave is complete only at its separately
   authorized acceptance boundary.
-status: active
+status: done
 program: crypto-intelligence
 repos: [macro]
 owner: ceo-sol
@@ -29,7 +29,7 @@ waves:
       not reopened by P0B.
   - id: P0B
     title: Crypto H5 authority closure
-    status: in_progress
+    status: done
     depends_on: [P0A]
     pr: [8901, 9118, 9117, 9123, 9151, 9162, 9164, 9166, 9182]
     next_action: >
@@ -59,9 +59,13 @@ waves:
       repaint) is PR #9182 (lane/cx-p4-terminal-20261013, head 40d72cd8dc8c): Opus two-
       theme review PASS-WITH-NITS (seat-accepted; 2 cosmetic nits → Phase-2) (ruling R39), MERGED 2026-10-13 23:25Z (squash
       0b53c5df4617, 54 paths identical, 0 differing, 0 bad deletes). The Phase-2 design frontier is CLOSED; no further wave is
-      commissioned. P0B closes at
-      its acceptance boundary once the nightly data lane commits again and the live crypto
-      hero shows a current as-of date on the Phase-1 templates.
+      commissioned. (g) P0B ACCEPTED 2026-11-02 06:1xZ: the nightly data lane resumed
+      (`data: daily collection 2026-10-31` = 7799abcf6336 on origin/main) and the live /crypto
+      hero reads "As of 2026-10-31" with crypto.html and vector.html byte-identical to
+      origin/main's site copies (83fd337955b6b063 / dc0b5dd307a4eacc). The OI percentile
+      receipt now composes its rank through i18n.t_pctile (the last recorded one-line
+      follow-up); the crypto-vector-r2-organs `paths:` note is moot — the job no longer
+      exists in ci.yml. P0B is closed; the workstream is complete.
     note: >
       The H5 presentation/evidence head left #8050 and landed on main through PR #8901
       (squash 0918bc8c7c69ba4db36c88bc8874da671c3f0572): canonical cockpit receipt preserved, missing asset breakdown
@@ -90,13 +94,11 @@ next_action: >
   two sign nits) is PR #9166 (head 8f3be876a7d4), review PASS-WITH-NITS (R33), MERGED (squash
   7e16897a6cac); wave 4 (TERMINAL: L' / M' / H'' / N3) is PR #9182 (head 40d72cd8dc8c), review
   PASS-WITH-NITS (seat-accepted; 2 cosmetic nits → Phase-2) (R39), MERGED (squash 0b53c5df4617); the Phase-2 design frontier is
-  CLOSED and the only open boundary is P0B acceptance. P0B's acceptance boundary waits on the nightly data lane
-  committing again so the live crypto hero carries a current as-of date.
-blocked_by:
-  - >
-    Nightly data lane stalled: origin/main carries no `data: daily collection` commit since
-    cdab77c46a9e (2026-10-09); the live crypto page shows 2026-10-09 data on the Phase-1
-    templates until it resumes (runner-broker blocker 38192634426, operator item).
+  CLOSED. P0B ACCEPTED 2026-11-02: the nightly data lane resumed (daily collection 2026-10-31 on
+  origin/main) and the live /crypto hero carries "As of 2026-10-31" on the Phase-1/Phase-2
+  templates (handoff CRYPTO-INTELLIGENCE-2026-11-02-p0b-acceptance.md). No wave is open and no
+  next action remains for this workstream; any future crypto work is a new commission.
+blocked_by: []
 owns_paths:
   - "engine/btc_decision.py"
   - "contracts/btc_decision.schema.json"

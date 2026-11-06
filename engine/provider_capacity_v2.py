@@ -28,16 +28,27 @@ def _normalize(acquired, generated_at_ms):
             or registration['capability_generation'] != observation['capability_generation']
             or registration['source_receipt_digest'] != observation['source_receipt_digest']):
         raise ValueError('NATIVE_CAPACITY_SOURCE_JOIN_REFUSED')
-    # Enrollment/registration/ModelRouter are NOT provider enablement/auth/health.
-    # This first actual reader knows no provider-domain enablement observation.
-    # Its unknowns survive normalization and refuse conservative admission.
+    # Only the existing accepted registration export owns enablement. V1 has no
+    # enablement proof; V2 requires an actual bool. No environment, credentials,
+    # observation payload, ModelRouter or separate metered product supplies it.
+    schema = registration.get('schema')
+    if schema == 'mastermind.provider_native_capability_registration/v1':
+        if 'provider_enabled' in registration:
+            raise ValueError('NATIVE_CAPACITY_ENABLEMENT_REFUSED')
+        enabled = None
+    elif schema == 'mastermind.provider_native_capability_registration/v2':
+        enabled = registration.get('provider_enabled')
+        if type(enabled) is not bool:
+            raise ValueError('NATIVE_CAPACITY_ENABLEMENT_REFUSED')
+    else:
+        raise ValueError('NATIVE_CAPACITY_ENABLEMENT_REFUSED')
     row = {
         'host_ref': observation['host_ref'], 'boot_ref': observation['boot_ref'],
         'capacity_capability_id': registration['capacity_capability_id'],
         'capability_generation': registration['capability_generation'],
         'realm_generation': observation['realm_generation'],
         'enrollment_receipt_digest': observation['enrollment_receipt_digest'],
-        'provider': registration['provider'], 'provider_enabled': None,
+        'provider': registration['provider'], 'provider_enabled': enabled,
         'worker_source_config_digest': acquired['worker_source_config_digest'],
         'observed_at': observation['observed_at'],
         **{key: copy.deepcopy(observation[key]) for key in (

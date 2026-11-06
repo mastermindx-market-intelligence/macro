@@ -3927,7 +3927,9 @@ def test_run_brain_loop_accepts_user_id_kwarg(tmp_path):
     def _spy_dispatch(
         name, params, root_, tdd, thu, user_id="", internals_ok=False,
         chart_client="", chart_origin_id="", chart_context_revision=None,
+        allowed_tool_names=None,
     ):
+        seen["allowed_tools"] = allowed_tool_names
         seen["user_id"] = user_id
         return {"available": False, "note": "stub"}
 
@@ -3937,6 +3939,7 @@ def test_run_brain_loop_accepts_user_id_kwarg(tmp_path):
             client, "deepseek-chat", 2000, 5, user_id="user-77",
         )
     assert seen.get("user_id") == "user-77"
+    assert "get_watchlist" in seen["allowed_tools"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────

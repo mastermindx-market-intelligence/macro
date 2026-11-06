@@ -166,20 +166,20 @@ _OFFICIAL_SOURCE_PREFIX = "official_feed:"
 
 
 def _is_private_official_stage(item: object) -> bool:
-    """Detect a privately staged official-feed candidate — never emittable."""
+    """Detect a private agency/issuer/market candidate — never emittable here."""
     if not isinstance(item, dict):
         return False
     slot = item.get("slot")
     holders = [item] + ([slot] if isinstance(slot, dict) else [])
     for holder in holders:
-        if str(holder.get("id") or "").startswith("press-official-"):
+        if str(holder.get("id") or "").startswith(("press-official-", "press-issuer-", "press-market-")):
             return True
         provenance = holder.get("provenance")
         if not isinstance(provenance, dict):
             continue
         receipt = provenance.get("admission_receipt")
         if (isinstance(receipt, dict)
-                and str(receipt.get("rail") or "") == _OFFICIAL_STAGE_RAIL):
+                and str(receipt.get("rail") or "") in (_OFFICIAL_STAGE_RAIL, "private_issuer_release", "private_market_snapshot")):
             return True
     refs: set[str] = set()
     for holder in holders:
@@ -192,7 +192,7 @@ def _is_private_official_stage(item: object) -> bool:
         revisions = holder.get("source_revisions")
         if isinstance(revisions, dict):
             refs.update(str(r) for r in revisions)
-    return any(ref.startswith(_OFFICIAL_SOURCE_PREFIX) for ref in refs)
+    return any(ref.startswith((_OFFICIAL_SOURCE_PREFIX, "issuer_sec:", "market_snapshot:", "market_snapshot_inputs:")) for ref in refs)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -612,6 +612,8 @@ def _stage_preplanned_slots(
         writer_kwargs: dict = {}
         if single_provider_attempt:
             writer_kwargs["single_provider_attempt"] = True
+            if max_regenerations == 0:
+                writer_kwargs["single_attempt"] = True
         if admitted_token_cap:
             writer_kwargs["admitted_token_cap"] = True
 
@@ -1185,7 +1187,7 @@ def run_emit(root: Path, cfg: dict, *, reviewed_promotion: dict | None = None) -
                 # content/site/ledger write.
                 obj["status"] = "approval_required"
                 obj["quarantine_reason"] = (
-                    "privately staged official-feed candidate: the candidate-only "
+                    "privately staged external candidate (official-feed or issuer): the candidate-only "
                     "qualification conveys no public-article approval"
                 )
                 path.write_text(
@@ -1193,8 +1195,8 @@ def run_emit(root: Path, cfg: dict, *, reviewed_promotion: dict | None = None) -
                     encoding="utf-8",
                 )
                 _annotate(
-                    "warning", "press_emit_official_approval",
-                    f"press emit: official candidate {obj.get('id')} requires "
+                    "warning", "press_emit_external_approval",
+                    f"press emit: private external candidate {obj.get('id')} requires "
                     f"public-article approval — not emitted",
                 )
                 continue
