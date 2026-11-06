@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axis_row.v1",
+  "title": "AxisRow v1",
+  "description": "One display-only composition row for a subject at a caller-supplied as_of: one AxisCell per selected classification axis, assembled in engine/classification_axes/cell.py AXES order. Each value in cells must ALSO validate against contracts/classification_axes/axis_cell.v1.schema.json; that check is deliberately NOT a cross-file $ref here, so plain validators work without a resolver. Key order of cells and per-cell subject_id/as_of agreement with the row are Python-only rules enforced by registry.validate_row in engine/classification_axes/registry.py. The row composes; it never aggregates.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "subject_id",
+    "as_of",
+    "cells",
+    "abstentions",
+    "labels",
+    "quality"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axis_row.v1"
+    },
+    "subject_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "as_of": {
+      "type": "string",
+      "pattern": "^(?:(?:[0-9]{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8])))|(?:(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:[02468][048]|[13579][26])00)-02-29))$"
+    },
+    "cells": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "enum": [
+          "sic_industry",
+          "geography",
+          "macro_sensitivity",
+          "business_model",
+          "lifecycle",
+          "value_chain"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "abstentions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "facet",
+          "status",
+          "labels",
+          "reserved_edge_types",
+          "contract"
+        ],
+        "properties": {
+          "facet": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "const": "not_populated"
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "reserved_edge_types": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "contract": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "labels": {
+      "const": [
+        "read_time_composition"
+      ]
+    },
+    "quality": {
+      "const": "display_only"
+    }
+  }
+}

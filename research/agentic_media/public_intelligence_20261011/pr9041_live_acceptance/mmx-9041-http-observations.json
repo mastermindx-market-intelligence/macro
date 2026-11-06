@@ -1,0 +1,107 @@
+[
+  {
+    "observedAt": "2026-10-13T00:46:27.888654+00:00",
+    "url": "https://www.mastermind-x.com/blog/index.html",
+    "status": 200,
+    "finalUrl": "https://www.mastermind-x.com/blog/index.html",
+    "bytes": 29500,
+    "sha256": "03d2b24abacf5dcbcf10e7249055d97821f763b1f7f58874fa32741b65adf10b",
+    "matchesExpectedBytes": true,
+    "title": "Blog \u2014 MastermindX",
+    "canonical": "https://www.mastermind-x.com/blog/index.html",
+    "navCards": [
+      {
+        "href": "../glossary.html",
+        "resolved": "https://www.mastermind-x.com/glossary.html",
+        "glossary": true,
+        "morning_edition": false,
+        "zh_present": true
+      },
+      {
+        "href": "../am_edition.html",
+        "resolved": "https://www.mastermind-x.com/am_edition.html",
+        "glossary": false,
+        "morning_edition": true,
+        "zh_present": true
+      }
+    ],
+    "headerEvidence": {
+      "Content-Type": "text/html; charset=utf-8",
+      "Server": "TencentEdgeOne",
+      "Last-Modified": "Mon, 12 Oct 2026 23:15:08 GMT",
+      "Cache-Control": "public, must-revalidate, max-age=60",
+      "EO-Cache-Status": "RefreshHit"
+    },
+    "accepted": true
+  },
+  {
+    "observedAt": "2026-10-13T00:46:28.481882+00:00",
+    "url": "https://www.mastermind-x.com/learn/index.html",
+    "status": 200,
+    "finalUrl": "https://www.mastermind-x.com/learn/index.html",
+    "bytes": 35308,
+    "sha256": "0e3eb18609dc7e2fa4e62a7dd23232e1af87c90a233643b7726bf2bc58d4fec9",
+    "matchesExpectedBytes": true,
+    "title": "Learning Center \u2014 MastermindX",
+    "canonical": "https://www.mastermind-x.com/learn/index.html",
+    "navCards": [
+      {
+        "href": "../glossary.html",
+        "resolved": "https://www.mastermind-x.com/glossary.html",
+        "glossary": true,
+        "morning_edition": false,
+        "zh_present": true
+      },
+      {
+        "href": "../am_edition.html",
+        "resolved": "https://www.mastermind-x.com/am_edition.html",
+        "glossary": false,
+        "morning_edition": true,
+        "zh_present": true
+      }
+    ],
+    "headerEvidence": {
+      "Content-Type": "text/html; charset=utf-8",
+      "Server": "TencentEdgeOne",
+      "Last-Modified": "Mon, 12 Oct 2026 23:15:08 GMT",
+      "Cache-Control": "public, must-revalidate, max-age=60",
+      "EO-Cache-Status": "RefreshHit"
+    },
+    "accepted": true
+  },
+  {
+    "observedAt": "2026-10-13T00:46:28.808287+00:00",
+    "url": "https://www.mastermind-x.com/tools/calculators/position-size.html",
+    "status": 200,
+    "finalUrl": "https://www.mastermind-x.com/tools/calculators/position-size.html",
+    "bytes": 45748,
+    "sha256": "2056fc21bab1e571422a4a02be826b9fc1ec37c80d01bf2d3fd9a3fc3e975f58",
+    "matchesExpectedBytes": true,
+    "title": "Position Size Calculator \u2014 MastermindX",
+    "canonical": "https://www.mastermind-x.com/tools/calculators/position-size.html",
+    "navCards": [
+      {
+        "href": "../../glossary.html",
+        "resolved": "https://www.mastermind-x.com/glossary.html",
+        "glossary": true,
+        "morning_edition": false,
+        "zh_present": true
+      },
+      {
+        "href": "../../am_edition.html",
+        "resolved": "https://www.mastermind-x.com/am_edition.html",
+        "glossary": false,
+        "morning_edition": true,
+        "zh_present": true
+      }
+    ],
+    "headerEvidence": {
+      "Last-Modified": "Mon, 12 Oct 2026 23:15:08 GMT",
+      "Content-Type": "text/html; charset=utf-8",
+      "Server": "TencentEdgeOne",
+      "Cache-Control": "public, must-revalidate, max-age=60",
+      "EO-Cache-Status": "RefreshHit"
+    },
+    "accepted": true
+  }
+]

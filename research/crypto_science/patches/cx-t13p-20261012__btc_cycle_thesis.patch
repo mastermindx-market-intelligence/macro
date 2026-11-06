@@ -1,0 +1,18 @@
+--- a/engine/btc_cycle_thesis.py
++++ b/engine/btc_cycle_thesis.py
+@@ -93,7 +93,14 @@
+     if len(close) < 200:
+         return {"schema": "btc_cycle_thesis.v1", "ok": False, "degraded_reason": "short_history"}
+     now = _ts(asof) if asof is not None else close.index[-1]
+-    px = float(close.loc[:now].iloc[-1])
++    # Clock is `now`. `_extreme` reads pivot +/- `_PIVOT_SLACK_D` on whatever
++    # series it is given, so a print dated after asof inside that slack revises
++    # peak price and prior-bear depth. Slice once; later windows stay inside it.
++    close = close.loc[:now]
++    if close.empty:
++        return {"schema": "btc_cycle_thesis.v1", "ok": False,
++                "degraded_reason": "asof_before_history"}
++    px = float(close.iloc[-1])
+ 
+     cc = cfg.get("cycle_clock") or {}
+     cpc = cfg.get("cycle_phase_clock") or {}

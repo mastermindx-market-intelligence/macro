@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-06-05T10:00:46Z",
+ "accession": "0001193125-26-258284",
+ "cik": "0001836833",
+ "doc_byte_length": 231005,
+ "doc_sha256": "e4fa8a65e671bd37d7821e458b72078f1df2b85171321d7cc04d769046d87505",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-06-05",
+ "form": "10-K/A",
+ "period_of_report": "2026-01-31",
+ "primary_document": "pl-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 51301,
+  "byte_start": 50897,
+  "normalized": "Planet Labs PBC (the “Company”) is filing this Amendment No. 1 on Form 10-K/A (this “Amendment”) to its Annual Report on Form 10-K for the year ended January 31, 2026, which was originally filed with the Securities and Exchange Commission (the “SEC”) on March 23, 2026 (the “Original Filing”). This Amendment is being filed to amend Part II “Item 9B.",
+  "normalized_sha256": "94755ef189a7a0435987ca525bcb630f409c9d297d42c5807b3157bce199c214",
+  "raw": "Planet Labs PBC (the &#8220;Company&#8221;) is filing this Amendment No. 1 on Form 10-K/A (this &#8220;Amendment&#8221;) to its Annual Report on Form 10-K for the year ended January 31, 2026, which was originally filed with the Securities and Exchange Commission (the &#8220;SEC&#8221;) on March 23, 2026 (the &#8220;Original Filing&#8221;). This Amendment is being filed to amend Part II &#8220;Item 9B.",
+  "raw_sha256": "314b683fb792ed0cb724bedb7ddb745e4ccc6ab4aa498f9cbe47c7afa71c5762"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1836833/000119312526258284/pl-20260131.htm",
+ "xbrl_contexts": []
+}

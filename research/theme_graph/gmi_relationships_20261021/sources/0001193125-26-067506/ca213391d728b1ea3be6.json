@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-24T22:14:48Z",
+ "accession": "0001193125-26-067506",
+ "cik": "0000851310",
+ "doc_byte_length": 3283293,
+ "doc_sha256": "7a454472c5841f29903ab7796a3b99189e63e83cc86d206c242d4cb4f14ec219",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "hlit-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 275236,
+  "byte_start": 274887,
+  "normalized": "We rely on third-party contract manufacturers to assemble our products and the subassemblies and modules for our products. In 2003, we entered into an agreement with Plexus Services Corp. (“Plexus”) to act as our primary contract manufacturer. Plexus accounts for the majority of the products we purchase from our contract manufacturers.",
+  "normalized_sha256": "c6531cc0e8953d75e9110f38768a9a8f533c47c494d46b76fd7337c17ce43523",
+  "raw": "We rely on third-party contract manufacturers to assemble our products and the subassemblies and modules for our products. In 2003, we entered into an agreement with Plexus Services Corp. (&#8220;Plexus&#8221;) to act as our primary contract manufacturer. Plexus accounts for the majority of the products we purchase from our contract manufacturers.",
+  "raw_sha256": "ca213391d728b1ea3be688f42db978f387cb37947a5988767216a34cf5fa005d"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/851310/000119312526067506/hlit-20251231.htm",
+ "xbrl_contexts": []
+}

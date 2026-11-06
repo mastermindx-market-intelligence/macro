@@ -1,0 +1,40 @@
+{
+  "schema": "forex_r26.release_evidence_validation.v1",
+  "base": "b5daf09b647c9c3d49c0c3050a6243daa4d7f559",
+  "observed_at": "2026-10-21T23:03:03.013615+00:00",
+  "scope": "Principal evidence/continuity record only; no implementation, database, deployment or independent review claim.",
+  "json_files": {
+    "macro-9866-confirmed-merge.json": "62244d2fb09fa6d4e91d81ea23a264670ffabaaa358cc07f974dcd261962a8d8",
+    "macro-final-integration-proof.json": "dbd5075a39b800ce5c70098aeccca63b252386c7178153521a065353b226f169",
+    "macro-forex-public-http.json": "250c324210f56ea7880a3f22ced566ae1fb8456acc6e27ce1fe887ca9275c7a2",
+    "macro-release-final-base.json": "c218206931d954b9cd77426f51b771dafcf3dbbd96f4af91386984caa24d631c",
+    "terminal-1106-repair-review-platform-result.json": "64d28c49209355674925b0edba22bd32630bcfdd30dbb7787f1ef10814aa2911",
+    "tiingo-eurusd-native-4hour-collect.json": "590c99a8086fb04f4a4cc3d7364bb454beec0035b119d03abc087352276b7349",
+    "tiingo-eurusd-native-4hour-plan.json": "729009b45c2b13c18f892e250c0f4e52d9dbb45f79506fffb24bcc2f6598b5e8",
+    "tiingo-eurusd-native-4hour-preflight.json": "c498caa53fc3786fbe768a9e6d2c8590cc7befec6b6bc5e23fcb7facf37c298e",
+    "tiingo-eurusd-native-4hour-receipt.json": "18082c7d4d580c97cccb2232447da5b27159813007e97b63a97da4981b973751"
+  },
+  "checks": {
+    "json_parse": 9,
+    "collection_raw_count_consistent": true,
+    "collection_raw_bytes_consistent": true,
+    "zero_finalized_4h_admission": true,
+    "actual_merge_tree_equals_prequalified_tree": true,
+    "diff_check": "PASS",
+    "agentos_validate": {
+      "command": "python3 scripts/agentos.py validate",
+      "returncode": 0,
+      "records": 1928,
+      "errors": 0,
+      "warnings": 181,
+      "log_sha256": "0f1e8f18352574d42be9dfe0fc968c5956475c451e9aa846496dd03217312b5e"
+    }
+  },
+  "not_rerun": "Accepted unchanged product tests and original source reviews; this candidate changes no product code.",
+  "limits": [
+    "Anonymous HTTP receipt does not prove authentication or browser interactions.",
+    "Native4hour capture has not been independently reviewed and admits zero observations.",
+    "Terminal repair review ended without a verdict; no duplicate or retry is authorized.",
+    "Normal hosted CI for this records-only candidate remains a separate gate."
+  ]
+}

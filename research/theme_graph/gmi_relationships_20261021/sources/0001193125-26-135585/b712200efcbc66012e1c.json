@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-01T10:05:49Z",
+ "accession": "0001193125-26-135585",
+ "cik": "0001122411",
+ "doc_byte_length": 10672453,
+ "doc_sha256": "54e7a8d18f45ee907ceb168aeb47634502dd81e9059e41b4ceb5ffac768280af",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-01",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "d50802d20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1601365,
+  "byte_start": 1600990,
+  "normalized": "One of our license agreements with Infineon Technologies AG will remain in effect until expiration of the patents licensed by the agreement, and the other automatically renews each year unless otherwise agreed between the parties. Our license agreements with TDK Corporation and DECA remain in effect until expiration of their respective patents licensed by the agreements.",
+  "normalized_sha256": "45358e1b6301f9e1b55c8b639e902404b7b639cf18d8bc926e48a564fa2ddf63",
+  "raw": " One of our license agreements with Infineon Technologies AG will remain in effect until expiration of the patents licensed by the agreement, and the other automatically renews each year unless otherwise agreed between the parties. Our license agreements with TDK Corporation and DECA remain in effect until expiration of their respective patents licensed by the agreements. ",
+  "raw_sha256": "b712200efcbc66012e1c353e2df65eb3df2e7921bbc7a99cdeb0ff9e26d7d189"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1122411/000119312526135585/d50802d20f.htm",
+ "xbrl_contexts": []
+}

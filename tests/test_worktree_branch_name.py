@@ -48,10 +48,18 @@ def _git(cwd: Path, *args: str) -> str:
     return p.stdout.strip()
 
 
-def _run_hook(name: str, cwd: Path) -> subprocess.CompletedProcess:
+def _run_hook(name: str, cwd: Path, env_extra: dict | None = None,
+              session_id: str | None = None) -> subprocess.CompletedProcess:
     env = {k: v for k, v in os.environ.items() if k != "MACRO_LOCAL_ROOT"}
-    payload = json.dumps({"name": name, "cwd": str(cwd)})
-    return subprocess.run(["python3", str(HOOK_PATH)], input=payload,
+    # A host with the SSD storage policy installed delegates every mint to the
+    # external volume (2026-10-10); point the hook at a policy that does not exist
+    # so these tests exercise the internal mint hermetically on any host.
+    env["MASTERMIND_WORKTREE_STORAGE_POLICY"] = str(cwd / "no-such-policy.json")
+    env.update(env_extra or {})
+    payload: dict = {"name": name, "cwd": str(cwd)}
+    if session_id is not None:
+        payload["session_id"] = session_id
+    return subprocess.run(["python3", str(HOOK_PATH)], input=json.dumps(payload),
                           capture_output=True, text=True, env=env)
 
 
@@ -130,3 +138,91 @@ def test_name_that_cannot_form_a_branch_fails_cleanly(primary: Path) -> None:
     assert proc.stdout.strip() == ""
     assert "does not form a valid branch" in proc.stderr
     assert not (primary / ".claude" / "worktrees" / "probe.lock").exists()
+
+
+# ── SSD placement: the hook delegates to the host storage helper (2026-10-10) ──
+#
+# THE DEFECT THIS PINS: the user-level WorktreeCreate hook DEFERS to any project
+# hook, and this project hook planted internally, so a Desktop session launched
+# from the macro repo never reached the external SSD the global placement law
+# mandates — and a stale host copy of this hook minted ``worktree-<name>`` trees
+# the guard quarantined. The fix delegates to the same helper the global hook
+# uses whenever the host policy file exists. A helper refusal is FINAL: no
+# internal-disk fallback (DEC:ADMIN-BLOCKERS-ARE-SELF-REMEDIED-NEVER-HANDED-TO-THE-OPERATOR).
+
+_FAKE_HELPER_OK = """\
+import json, sys
+from pathlib import Path
+request = json.loads(sys.stdin.read())
+Path(__file__).with_name("helper-call.json").write_text(
+    json.dumps({"argv": sys.argv[1:], "request": request}), encoding="utf-8")
+print("worktree-storage: minting on the external volume", file=sys.stderr)
+print("/Volumes/fake/claude/0123456789abcdef/" + request["name"] + "-0123456789abcdef")
+"""
+
+_FAKE_HELPER_REFUSE = """\
+import sys
+print("worktree-storage: REFUSED: external volume /Volumes/Mastermind is not mounted",
+      file=sys.stderr)
+sys.exit(1)
+"""
+
+
+def _storage_env(tmp_path: Path, helper_source: str | None) -> dict:
+    policy = tmp_path / "worktree-storage.json"
+    policy.write_text(json.dumps({"root": "/Volumes/fake", "mount": "/Volumes/fake"}),
+                      encoding="utf-8")
+    helper = tmp_path / "fake_worktree_storage.py"
+    if helper_source is not None:
+        helper.write_text(helper_source, encoding="utf-8")
+    return {"MASTERMIND_WORKTREE_STORAGE_POLICY": str(policy),
+            "MASTERMIND_WORKTREE_STORAGE_HELPER": str(helper)}
+
+
+def test_host_storage_policy_delegates_the_mint_to_the_helper(primary: Path,
+                                                              tmp_path: Path) -> None:
+    env = _storage_env(tmp_path, _FAKE_HELPER_OK)
+    proc = _run_hook("ssd-probe", primary, env, session_id="sess-1")
+    assert proc.returncode == 0, proc.stderr
+    # stdout is the helper's path and NOTHING else — the harness contract.
+    assert proc.stdout.strip() == "/Volumes/fake/claude/0123456789abcdef/ssd-probe-0123456789abcdef"
+    assert proc.stdout.strip().count("\n") == 0
+    assert "delegating placement to the host storage helper" in proc.stderr
+    record = json.loads((tmp_path / "helper-call.json").read_text(encoding="utf-8"))
+    assert record["argv"] == ["--config", env["MASTERMIND_WORKTREE_STORAGE_POLICY"], "create"]
+    assert record["request"] == {"cwd": str(primary), "name": "ssd-probe",
+                                 "session_id": "sess-1"}
+    # Nothing was minted internally.
+    assert not (primary / ".claude" / "worktrees" / "ssd-probe").exists()
+    assert _git(primary, "branch", "--list", "claude/ssd-probe") == ""
+
+
+def test_helper_refusal_is_final_with_no_internal_fallback(primary: Path,
+                                                            tmp_path: Path) -> None:
+    env = _storage_env(tmp_path, _FAKE_HELPER_REFUSE)
+    proc = _run_hook("ssd-refused", primary, env)
+    assert proc.returncode != 0
+    assert proc.stdout.strip() == ""
+    assert "REFUSED: external volume" in proc.stderr
+    assert "no internal-disk fallback" in proc.stderr
+    assert not (primary / ".claude" / "worktrees" / "ssd-refused").exists()
+    assert _git(primary, "branch", "--list", "claude/ssd-refused") == ""
+
+
+def test_installed_policy_with_a_missing_helper_refuses(primary: Path,
+                                                        tmp_path: Path) -> None:
+    env = _storage_env(tmp_path, None)
+    proc = _run_hook("ssd-no-helper", primary, env)
+    assert proc.returncode != 0
+    assert proc.stdout.strip() == ""
+    assert "helper" in proc.stderr and "missing" in proc.stderr
+    assert not (primary / ".claude" / "worktrees" / "ssd-no-helper").exists()
+
+
+def test_no_host_policy_means_the_internal_mint(primary: Path, tmp_path: Path) -> None:
+    """The env override already points at a nonexistent policy: the mint is local."""
+    assert hook.storage_policy_path().name == "worktree-storage.json"
+    proc = _run_hook("local-probe", primary)
+    assert proc.returncode == 0, proc.stderr
+    assert "delegating placement" not in proc.stderr
+    assert Path(proc.stdout.strip()) == primary / ".claude" / "worktrees" / "local-probe"

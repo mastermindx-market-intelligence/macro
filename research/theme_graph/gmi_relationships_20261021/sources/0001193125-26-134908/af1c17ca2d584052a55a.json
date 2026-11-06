@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T21:08:15Z",
+ "accession": "0001193125-26-134908",
+ "cik": "0001323404",
+ "doc_byte_length": 2017216,
+ "doc_sha256": "822fb43ef34e6a54b405c8ce42e572648a199b3a213508b5dbca7fff878e1460",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "d56281dex991.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 375336,
+  "byte_start": 374863,
+  "normalized": "On March 21, 2016, Wheaton International entered into an early deposit precious metal purchase agreement with Panoro Minerals Ltd. and its wholly owned subsidiary Cordillera Copper Ltd. (“Panoro”) (the “Cotabambas Early Deposit Agreement”) for the Cotabambas project located in Peru (the “Cotabambas project”). Panoro and its subsidiaries have provided Wheaton with corporate guarantees and certain other security over their assets.",
+  "normalized_sha256": "bd04bab5f4b991d1d641f015f91c7c649c9688a4334093514bab4560c7147960",
+  "raw": "On March&nbsp;21, 2016, Wheaton International entered into an early deposit precious\nmetal purchase agreement with Panoro Minerals Ltd. and its wholly owned subsidiary Cordillera Copper Ltd. (&#8220;Panoro&#8221;) (the &#8220;Cotabambas Early Deposit Agreement&#8221;) for the Cotabambas project located in Peru (the &#8220;Cotabambas\nproject&#8221;). Panoro and its subsidiaries have provided Wheaton with corporate guarantees and certain other security over their assets.",
+  "raw_sha256": "af1c17ca2d584052a55a0580370802f109fedc24d1f602bf0cd50400ef5c77ec"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1323404/000119312526134908/d56281dex991.htm",
+ "xbrl_contexts": []
+}
