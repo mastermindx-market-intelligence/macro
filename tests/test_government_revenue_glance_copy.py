@@ -6,10 +6,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "templates" / "government_revenue.html.j2"
 SITE = ROOT / "site" / "government_revenue.html"
+CONTROLLER = ROOT / "templates" / "government-revenue-page.js.j2"
+SITE_CONTROLLER = ROOT / "site" / "government-revenue-page.js"
 
 
 def _src() -> str:
-    return TEMPLATE.read_text(encoding="utf-8")
+    return TEMPLATE.read_text(encoding="utf-8") + "\n" + CONTROLLER.read_text(encoding="utf-8")
 
 
 def test_primary_workspace_chrome_uses_reader_language() -> None:
@@ -76,6 +78,10 @@ def test_company_link_legend_is_plain() -> None:
 
 def test_committed_page_matches_government_revenue_contract() -> None:
     html = SITE.read_text(encoding="utf-8")
+    assert "government-revenue-investor-start.js" in html
+    starter = (ROOT / "site" / "government-revenue-investor-start.js").read_text(encoding="utf-8")
+    assert "government-revenue-page.js" in starter
+    html += "\n" + SITE_CONTROLLER.read_text(encoding="utf-8")
     for required in (
         "Procurement intelligence",
         "Track procurement changes",

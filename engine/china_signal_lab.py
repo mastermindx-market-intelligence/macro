@@ -186,8 +186,8 @@ CHINA_REGISTRY: list[tuple] = [
      "当月推荐该股的券商家数；离散信心，区别于近97%『买入』评级。"),
     ("forecast_surprise", "Earnings-guidance surprise (业绩预告, Tushare)", "业绩预告", "pending",
      "tushare_forecast → altdata panel + china_validation `guidance`",
-     "业绩预告 direction × guided Δ%; surfaced as a desk panel + validated (forward IC finds a real ~3mo drift, accruing toward proven). Sell-side report_rc revision is separate, still throttle-limited.",
-     "业绩预告方向×预告变动%；已作为台面板展示并验证（前瞻IC发现真实约3个月漂移，正向累积中）。卖方report_rc修正受频次限制，另行处理。"),
+     "业绩预告 direction × guided Δ%; surfaced as a desk panel. Forward IC finds a real ~3mo drift, still accruing toward proven. Sell-side report_rc revision is separate, still throttle-limited.",
+     "业绩预告方向×预告变动%；已作为台面板展示。前瞻IC发现真实约3个月漂移，仍在累积中。卖方report_rc修正受频次限制，另行处理。"),
     # --- NEW US-parity alt-data legs (Stage 3d) — accruing / display ---------- #
     ("comment", "Crowd attention & inst-participation (千股千评)", "千股千评", "pending",
      "china_altdata convergence (0.15)",

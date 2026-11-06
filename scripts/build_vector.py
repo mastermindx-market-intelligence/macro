@@ -91,7 +91,7 @@ COCKPIT_AXIS_PRESENTATION = (
         "label_en": "Cycle & Valuation",
         "label_zh": "周期与估值",
         "primary": "valuation",
-        "spark_source": "signals.mvrv_z",
+        "spark_source": "signals.cycle_position",
         "receipt_members": ("cycle", "reserve_risk", "extreme"),
     },
     {
@@ -99,7 +99,7 @@ COCKPIT_AXIS_PRESENTATION = (
         "label_en": "Liquidity & Flows",
         "label_zh": "流动性与资金流",
         "primary": "etf",
-        "spark_source": "signals.etf_flow_z",
+        "spark_source": "signals.stbl_growth",
         "receipt_members": ("stbl", "premium"),
     },
     {
@@ -107,7 +107,7 @@ COCKPIT_AXIS_PRESENTATION = (
         "label_en": "Leverage & Derivatives",
         "label_zh": "杠杆与衍生品",
         "primary": "leverage_cascade",
-        "spark_source": "signals.oi_mcap_ratio",
+        "spark_source": "signals.leverage_stress",
         "receipt_members": ("funding", "cot"),
     },
     {
@@ -123,10 +123,30 @@ COCKPIT_AXIS_PRESENTATION = (
         "label_en": "Macro Backdrop",
         "label_zh": "宏观背景",
         "primary": "macro",
-        "spark_source": "signals.macro_score",
+        "spark_source": "signals.global_m2_yoy",
         "receipt_members": ("beta",),
     },
 )
+
+# One subject per S3 row (R31): the spark and the micro figure both read the column named by the
+# row's ``spark_source`` (``_axis_source_column``). This table carries only how that column prints
+# and what it is called: (formatter, micro_en, micro_zh, series_en, series_zh). No column literal.
+COCKPIT_AXIS_MICRO = {
+    "trend_momentum": (lambda v: f"{v:+.2f}", "momentum", "动量", "the momentum score", "动量评分"),
+    "cycle_valuation": (lambda v: f"{round(100 * v)}%", "cycle", "周期", "cycle position", "周期位置"),
+    "liquidity_flows": (lambda v: f"{v:+.1f}%", "stablecoin growth", "稳定币增长",
+                        "stablecoin supply growth", "稳定币供应增长"),
+    "leverage_derivatives": (lambda v: f"{round(v)}/100", "pressure", "压力",
+                             "the leverage pressure score", "杠杆压力评分"),
+    "network_miners": (lambda v: f"{round(v)}/100", "BFI", "BFI", "the BFI score", "BFI 评分"),
+    "macro_backdrop": (lambda v: f"{v:+.1f}%", "global M2", "全球 M2",
+                       "global M2 growth, year on year", "全球 M2 同比增速"),
+}
+
+
+def _axis_source_column(spec: dict) -> str:
+    """The signals column one S3 row describes: its spark AND its micro figure."""
+    return spec["spark_source"].split(".", 1)[-1]
 
 
 def _zh_date(ts) -> str:
@@ -524,7 +544,6 @@ def _vector_presentations(
     cycle_thesis: dict,
 ) -> dict:
     """Build Wave-1 display objects from existing engine series only."""
-    last = sig.iloc[-1]
     close = sig["close"]
     cutoff = close.index.max() - pd.Timedelta(days=730)
     price = close.loc[close.index >= cutoff]
@@ -577,57 +596,39 @@ def _vector_presentations(
         }
 
     axes = _cockpit_axis_rows(master, regime)
-    micro = {
-        "trend_momentum": (
-            f"{float(last.get('momentum')):+.2f}" if pd.notna(last.get("momentum")) else "—",
-            "momentum",
-            "动量",
-        ),
-        "cycle_valuation": (
-            f"{round(100 * float(last.get('cycle_position')))}%" if pd.notna(last.get("cycle_position")) else "—",
-            "cycle",
-            "周期",
-        ),
-        "liquidity_flows": (
-            f"{float(last.get('stbl_growth')):+.1f}%" if pd.notna(last.get("stbl_growth")) else "—",
-            "stablecoin growth",
-            "稳定币增长",
-        ),
-        "leverage_derivatives": (
-            f"{round(float(last.get('leverage_stress')))}/100" if pd.notna(last.get("leverage_stress")) else "—",
-            "pressure",
-            "压力",
-        ),
-        "network_miners": (
-            f"{round(float(last.get('bfi')))}/100" if pd.notna(last.get("bfi")) else "—",
-            "BFI",
-            "BFI",
-        ),
-        "macro_backdrop": (
-            f"{float(last.get('global_m2_yoy')):+.1f}%" if pd.notna(last.get("global_m2_yoy")) else "—",
-            "global M2",
-            "全球 M2",
-        ),
-    }
     for row, spec in zip(axes, COCKPIT_AXIS_PRESENTATION):
-        source_col = spec["spark_source"].split(".", 1)[-1]
-        row["spark"] = _spark_points(sig[source_col] if source_col in sig else None)
-        row["micro"], row["micro_en"], row["micro_zh"] = micro[row["id"]]
+        col = _axis_source_column(spec)
+        fmt, row["micro_en"], row["micro_zh"], series_en, series_zh = COCKPIT_AXIS_MICRO[row["id"]]
+        # An absent column still hands _spark_points a Series (empty -> the existing null spark).
+        src = sig[col] if col in sig else pd.Series(dtype="float64", name=col)
+        row["spark"] = _spark_points(src)
+        # The figure follows the series the chart draws: the column's last VALID reading (the newest
+        # point of the dropna'd series _spark_points windows), dated when the newest row has none,
+        # so a live chart never sits beside an unavailable figure. All-NaN/absent keeps the dash.
+        valid = pd.to_numeric(src, errors="coerce").dropna().sort_index()
+        row["micro"] = fmt(float(valid.iloc[-1])) if len(valid) else "—"
+        as_of = pd.Timestamp(valid.index[-1]) if len(valid) and valid.index[-1] < sig.index[-1] else None
         all_receipts = [row["primary"], *row["receipt_members"]]
         row["receipt_en"] = (
             "Primary: "
             + " — ".join((all_receipts[0]["label_en"], all_receipts[0]["state_en"]))
-            + ". Also watching: "
+            + f"; it sets the row state. The chart and figure follow {series_en}. Also watching: "
             + "; ".join(f"{r['label_en']} — {r['state_en']}" for r in all_receipts[1:])
             + ". Display context only; position size comes from the final allocation."
         )
         row["receipt_zh"] = (
             "主读数："
             + " — ".join((all_receipts[0]["label_zh"], all_receipts[0]["state_zh"]))
-            + "。同时观察："
+            + f"，决定本行状态。图表与数字跟随{series_zh}。同时观察："
             + "；".join(f"{r['label_zh']} — {r['state_zh']}" for r in all_receipts[1:])
             + "。仅作展示背景；仓位取自最终配置。"
         )
+        if as_of is not None:
+            mon_d = f"{as_of.strftime('%b')} {as_of.day}"
+            row["micro_en"] += f" · as of {mon_d}"
+            row["micro_zh"] += f" · 截至{as_of.month}月{as_of.day}日"
+            row["receipt_en"] += f" Figure as of {mon_d}; the newest row has no reading."
+            row["receipt_zh"] += f"数字截至{as_of.month}月{as_of.day}日；最新一行无读数。"
 
     def _close_series(group: str, name: str) -> pd.Series | None:
         try:
@@ -2521,6 +2522,7 @@ html[data-lang="zh"] .band h2{letter-spacing:0}
  box-shadow:0 16px 36px -16px color-mix(in srgb,var(--accent) 40%,transparent),inset 0 1px 0 color-mix(in srgb,#fff 6%,transparent)}
 .card:hover.acc::before,.card:focus-within.acc::before{transform:scaleX(1)} .card:hover.acc::after{opacity:1}
 .card-top{display:flex;align-items:center;flex-wrap:wrap;gap:6px 9px;margin-bottom:9px}
+.card-status{margin:-2px 0 10px;font-size:12px;line-height:1.35;color:var(--muted)}
 .ico{width:32px;height:32px;flex:none;display:flex;align-items:center;justify-content:center;font-size:17px;border-radius:9px;
  background:color-mix(in srgb,var(--accent) 15%,var(--panel2));border:1px solid color-mix(in srgb,var(--accent) 24%,var(--line));
  transition:transform .18s cubic-bezier(.2,.7,.3,1)}
@@ -2595,9 +2597,9 @@ html[data-lang="zh"] .sb-tx b{letter-spacing:0}
    face; mono is reserved for ticker codes (.sb-tickers-code). */
 .ha-what ~ .ha-foot,.ha-edge ~ .ha-foot{margin-top:9px;padding-top:8px;border-top:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
 .ha-what ~ .ha-foot .ha-read,.ha-edge ~ .ha-foot .ha-read{font-size:11.5px;color:var(--muted)}
-.al-more{display:block;text-align:center;padding:11px 0 6px;font-size:12.5px;font-weight:700;color:var(--link);text-decoration:none}
+.al-more{display:block;min-height:40px;text-align:center;padding:11px 0 6px;font-size:12.5px;font-weight:700;color:var(--link);text-decoration:none}
 .al-more:hover{text-decoration:underline}
-.ha-toggle{display:block;width:100%;background:none;border:none;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent);padding:9px 0;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--link);cursor:pointer;text-align:center}
+.ha-toggle{display:block;width:100%;min-height:40px;background:none;border:none;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent);padding:9px 0;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--link);cursor:pointer;text-align:center}
 .ha-toggle:hover{text-decoration:underline}
 .ha-toggle .ha-t-less{display:none}
 .ha-toggle.open .ha-t-more{display:none}
@@ -2760,6 +2762,7 @@ html.soft-contrast[data-theme="dark"]{--bg:#0d1018;--panel:#151820;--panel2:#1b1
  background:color-mix(in srgb,var(--panel) 70%,transparent);border:1px solid var(--line);border-radius:999px;padding:3px 9px;
  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .gd-leg:hover{border-color:color-mix(in srgb,var(--accent,var(--info)) 55%,var(--line))}
+@media(max-width:560px){.gd-leg{min-height:40px;box-sizing:border-box}}
 .gd-leg .dot{width:7px;height:7px;border-radius:50%}
 .gd-leg.q1 .dot{background:var(--q1)} .gd-leg.q2 .dot{background:var(--q2)} .gd-leg.q3 .dot{background:var(--q3)} .gd-leg.q4 .dot{background:var(--q4)}
 .gd-leg .l-zh{display:none} html[data-lang="zh"] .gd-leg .l-en{display:none} html[data-lang="zh"] .gd-leg .l-zh{display:inline}
@@ -2924,9 +2927,9 @@ html[data-theme="light"] .gd-scroll{background:color-mix(in srgb,var(--panel) 62
 /* ===== mobile segmented toggle ===== */
 .hub-seg{display:none}
 @media(max-width:560px){
-.hub-seg{position:relative;display:flex;height:40px;margin:2px auto 14px;max-width:340px;background:color-mix(in srgb,var(--panel) 85%,transparent);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:12px;padding:3px;box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 5%,transparent)}
+.hub-seg{position:relative;display:flex;height:48px;margin:2px auto 14px;max-width:340px;background:color-mix(in srgb,var(--panel) 85%,transparent);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:12px;padding:3px;box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 5%,transparent)}
 .hub-seg-ind{position:absolute;top:3px;left:3px;width:calc(50% - 3px);height:calc(100% - 6px);border-radius:9px;background:color-mix(in srgb,var(--info) 15%,var(--panel2));border:1px solid color-mix(in srgb,var(--info) 30%,transparent);box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 8%,transparent),0 0 8px color-mix(in srgb,var(--info) 12%,transparent);transition:transform .22s cubic-bezier(.4,0,.2,1);pointer-events:none}
-.hub-seg-btn{flex:1;background:none;border:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--muted);border-radius:9px;cursor:pointer;position:relative;z-index:1;transition:color .18s}
+.hub-seg-btn{flex:1;min-height:40px;background:none;border:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--muted);border-radius:9px;cursor:pointer;position:relative;z-index:1;transition:color .18s}
 .hub-seg-btn:focus-visible{outline:2px solid var(--link);outline-offset:2px}
 .hub-seg-btn.on{color:var(--info);font-weight:700}
 .hub-views[data-view="vc"] .hub-seg-ind{transform:translateX(100%)}
@@ -3144,13 +3147,15 @@ def _regime_dynamics(cc: str, d: dict) -> dict:
     """Direction (improving/stable/deteriorating) + phase (fresh/stable/aging/turning) +
     drift-target quad, from the growth/inflation TRAJECTORY. Empty (null) when we have no
     history for a market — honest, not guessed."""
-    empty = {"rdir": None, "rphase": None, "rtoward_en": None, "rtoward_zh": None, "rflip": None}
+    empty = {"rdir": None, "rphase": None, "rtoward_en": None, "rtoward_zh": None, "rflip": None,
+             "rdir_asof": None}
     fn = _RTL.get(cc)
     if not fn:
         return empty
     try:
         tl = json.loads((config.site_dir() / fn).read_text())
         g, i, tr = tl.get("g") or [], tl.get("i") or [], tl.get("trans") or []
+        dates = tl.get("dates") or []
     except Exception:  # noqa: BLE001
         return empty
     # A null TIP is not a gap to compact — it is a MISSING CURRENT READING, and the two
@@ -3202,7 +3207,17 @@ def _regime_dynamics(cc: str, d: dict) -> dict:
     flip = d.get("flip_condition") or {}
     m = flip.get("margin")
     rflip = round(m, 2) if isinstance(m, (int, float)) else None
-    return {"rdir": rdir, "rphase": rphase, "rtoward_en": rtoward_en, "rtoward_zh": rtoward_zh, "rflip": rflip}
+    return {
+        "rdir": rdir,
+        "rphase": rphase,
+        "rtoward_en": rtoward_en,
+        "rtoward_zh": rtoward_zh,
+        "rflip": rflip,
+        "flip_axis": flip.get("axis") or "",
+        "flip_component": flip.get("component") or "",
+        # The guard above makes the last index the last paired reading, so this is its date.
+        "rdir_asof": str(dates[-1]) if len(dates) == len(g) else None,
+    }
 
 
 def _globe_markets() -> list:
@@ -3290,6 +3305,51 @@ def _g_legend(blob):
     return "".join(out)
 
 
+def _market_card_status(m):
+    """Turn, its date, the regime date, and the closest check. No element when nothing is known."""
+    en_bits = []
+    zh_bits = []
+    phase = m.get("rphase") or ""
+    toward_en = m.get("rtoward_en") or ""
+    toward_zh = m.get("rtoward_zh") or ""
+    rdir = m.get("rdir") or ""
+    if phase == "turning" and toward_en:
+        en_bits.append("Turning toward " + toward_en)
+        zh_bits.append("正转向" + toward_zh)
+    elif toward_en:
+        en_bits.append("Heading toward " + toward_en)
+        zh_bits.append("正朝" + toward_zh + "移动")
+    elif rdir == "deteriorating":
+        en_bits.append("Worsening")
+        zh_bits.append("正在转差")
+    elif rdir == "improving":
+        en_bits.append("Improving")
+        zh_bits.append("正在改善")
+    elif rdir == "stable":
+        en_bits.append("Holding")
+        zh_bits.append("维持")
+    # The direction reads the timeline file, the label the regime record. Each date goes with its own reading.
+    asof = str(m.get("macro_asof") or "")
+    dir_asof = str(m.get("rdir_asof") or "")
+    apart = bool(en_bits) and dir_asof != asof
+    if apart and dir_asof:
+        en_bits[0] += " as of " + dir_asof
+        zh_bits[0] += "（截至 " + dir_asof + "）"
+    if asof:
+        en_bits.append(("regime as of " if apart else "as of ") + asof)
+        zh_bits.append(("周期截至 " if apart else "截至 ") + asof)
+    axis = m.get("flip_axis") or ""
+    comp = m.get("flip_component") or ""
+    if axis == "growth" and comp == "copper_gold":
+        en_bits.append("closest growth check: copper versus gold")
+        zh_bits.append("最接近的增长检验：铜对黄金")
+    if not en_bits:
+        return ""
+    en = " · ".join(en_bits)
+    zh = " · ".join(zh_bits)
+    return '<p class="card-status">' + _bi(en, zh) + "</p>"
+
+
 def _g_markets(blob, us_n, cn_n, hk_n,
                standout_tickers: "dict[str, list] | None" = None):
     by = {m["cc"]: m for m in blob}
@@ -3349,7 +3409,8 @@ def _g_markets(blob, us_n, cn_n, hk_n,
                      '<div class="card-top"><span class="ico" aria-hidden="true">' + m["flag"] + '</span>'
                      '<h3 class="card-h">' + _bi(*nm[cc]) + '</h3>'
                      '<span class="pill ' + m["quad"] + ' hd">' + _bi(m["quad_name_en"], m["quad_name_zh"]) + '</span></div>'
-                     '<div class="split">' + "".join(btns) + '</div></div>')
+                     + _market_card_status(m)
+                     + '<div class="split">' + "".join(btns) + '</div></div>')
     return ('<div class="band"><h2>' + _bi("Markets", "市场") + '</h2><span class="ln"></span></div>'
             '<div class="nav mk reveal">' + "".join(cards) + '</div>')
 
@@ -3920,9 +3981,9 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
             '<link rel="stylesheet" href="theme.css">\n'
             + _GLOBE_HUB_CSS + _HUB_CRITICAL_CSS + '</head><body class="hub-page">')
 
-    # Snapshot as-of is a civil date from the bake (vm.built, else macro.date).
+    # The page clock is the civil date of the bake (vm.built), never a data date.
     # Never tick the viewer's clock — that would relabel a snapshot as live.
-    _asof_raw = str((vm or {}).get("built") or (macro or {}).get("date") or "").strip()
+    _asof_raw = str((vm or {}).get("built") or "").strip()
     _asof = _asof_raw[:10] if len(_asof_raw) >= 10 else ""
     _MONTH = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
@@ -3978,11 +4039,11 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
                     "一套框架，看清全球主要市场。") + '</p></div></div>'
         '<div class="hub-snapshot-meta"><span class="eyebrow"><span class="snapshot-dot"></span>'
         '<span class="hub-clock-wrap"' + _asof_attr + '>'
-        '<span class="hub-clock-static">' + _bi("Latest market snapshot", "最新市场快照") + '</span>'
+        '<span class="hub-clock-static">' + _bi("Page built", "页面生成于") + '</span>'
         '<span class="hub-clock-skel skel" aria-hidden="true"></span>'
         '<span class="hub-clock-live">'
-        + _bi('Latest market snapshot · <span class="hub-clock" data-loc="en">' + _esc(_asof_en) + '</span>',
-              '最新市场快照 · <span class="hub-clock" data-loc="zh-CN">' + _esc(_asof_zh) + '</span>')
+        + _bi('Page built · <span class="hub-clock" data-loc="en">' + _esc(_asof_en) + '</span>',
+              '页面生成于 · <span class="hub-clock" data-loc="zh-CN">' + _esc(_asof_zh) + '</span>')
         + '</span></span></span></div></header>'
         + globe_deck
         + '<div class="hub-views" id="hub-views" data-view="mk">'

@@ -127,6 +127,8 @@ class AccountState:
     # the driver, and consecutive failed session re-opens.
     driver_dead_ticks: int = 0
     reopen_failures: int = 0
+    browser_start_failed: bool = False
+    silent_relogin_attempted: bool = False
 
     @property
     def name(self) -> str:
@@ -158,9 +160,16 @@ class AccountPlan:
     backfill_pending: int
     cooldown_until: datetime | None = None
     transient_retry_after: datetime | None = None
+    browser_start_failed: bool = False
 
     def describe(self) -> str:
         if not self.authed:
+            if self.browser_start_failed:
+                return (
+                    f"[{self.account}] UNKNOWN — BROWSER_START_FAILED "
+                    "(browser session could not be started; auth state "
+                    "undetermined, account skipped)"
+                )
             return f"[{self.account}] NOT AUTHENTICATED — skipped"
         cd = ""
         if self.cooldown_until is not None:
@@ -239,6 +248,7 @@ def plan_account(
             if state.transient_retry_after is not None
             and now < state.transient_retry_after else None
         ),
+        browser_start_failed=state.browser_start_failed,
     )
 
 
@@ -447,29 +457,51 @@ def run_tick(
 # Session lifecycle
 # ---------------------------------------------------------------------------
 def _open_session(cfg: Config, state: AccountState) -> bool:
-    """Open + auth-probe ONE account's persistent session. Returns whether the
-    account came up authenticated. Non-fatal on failure: a broken/unauthenticated
-    profile is logged, marked not-authed, and skipped by the loop."""
+    """Open one profile and distinguish browser startup from authentication."""
     acct_cfg = _profile_cfg(cfg, state.profile)
+
+    def _release(sess: BrowserSession | None) -> None:
+        if sess is None:
+            return
+        try:
+            sess.__exit__(None, None, None)
+        except Exception as e:  # noqa: BLE001 - preserve the original failure
+            log.warning("[%s] session teardown failed: %s", state.name, e)
+
+    sess: BrowserSession | None = None
     try:
         sess = BrowserSession(acct_cfg)
         sess.__enter__()
-        state.session = sess
+    except Exception as e:  # noqa: BLE001 - only construction/entry is startup
+        log.error("[%s] failed to start browser session: %s", state.name, e)
+        _release(sess)
+        state.session = None
+        state.client = None
+        state.authed = False
+        state.browser_start_failed = True
+        return False
+
+    state.session = sess
+    state.browser_start_failed = False
+    try:
         state.authed = sess.is_authenticated()
         if state.authed:
             state.client = MarketDeskClient(sess.context, acct_cfg)
             log.info("[%s] session ready (%s)", state.name, state.profile.path)
         else:
+            state.client = None
             log.warning(
                 "[%s] NOT authenticated (%s) — skipping this account. "
                 "Run `MARKETDESK_PROFILE_DIR=%s marketdesk auth` to log in.",
                 state.name, state.profile.path, state.profile.path,
             )
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:  # noqa: BLE001 - post-start probe/client failure
         log.error("[%s] failed to open session: %s", state.name, e)
+        _release(sess)
         state.session = None
         state.client = None
         state.authed = False
+        return False
     return state.authed
 
 
@@ -499,10 +531,9 @@ def _close_sessions(states: list[AccountState]) -> None:
 def _record_producer_auth_health(conn, states: list[AccountState], observed_at: datetime) -> None:
     """Project aggregate auth truth into the existing MarketDesk meta table.
 
-    Process presence is not authentication. If at least one configured profile is
-    authenticated the producer is usable; if profiles exist but none are
-    authenticated, operator re-authentication is required. An empty profile set is
-    UNKNOWN rather than healthy.
+    Process presence is not authentication, and positive authentication does not
+    establish successful discovery. A browser startup failure or an empty profile
+    set is UNKNOWN; other unauthenticated fallbacks retain AUTH_REQUIRED.
     """
     stamp = observed_at.isoformat()
     if not states:
@@ -511,6 +542,9 @@ def _record_producer_auth_health(conn, states: list[AccountState], observed_at: 
     elif any(item.authed for item in states):
         state = db.AUTHENTICATED
         reason = ""
+    elif any(item.browser_start_failed for item in states):
+        state = db.AUTH_UNKNOWN
+        reason = "BROWSER_START_FAILED"
     else:
         state = db.AUTH_REQUIRED
         reason = "NO_AUTHENTICATED_PROFILE"
@@ -598,11 +632,17 @@ def _refresh_queue(
         return
     if since_hours is None:
         since_hours = cfg.new_window_hours + 24  # a little older than the new window
-    kwargs = {} if heal_limit is None else {"heal_limit": heal_limit}
+    # Only the explicit wide healing pass opts into bounded optional work.
+    kwargs = {} if heal_limit is None else {
+        "heal_limit": heal_limit, "heal_budget_s": 60.0,
+    }
     if limit is not None:
         kwargs["limit"] = limit
+    def _discover():
+        return discover(cfg, conn, authed.client, since_hours=since_hours, **kwargs)
+
     try:
-        res = discover(cfg, conn, authed.client, since_hours=since_hours, **kwargs)
+        res = _discover()
         log.info(
             "trickle discover (via %s, since=%dh): %s",
             authed.name, since_hours, res.summary(),
@@ -611,6 +651,22 @@ def _refresh_queue(
         # Park the account rather than logging a soft warning: a logged-out
         # discovery returns a clean-looking scanned=0, which is indistinguishable
         # from a quiet news day and is precisely what hid the 2026-08-07 lapse.
+        # One silent Firebase restore is allowed first (no password); a second
+        # SessionExpired still parks.
+        ctx = getattr(authed.session, "context", None) if authed.session else None
+        if ctx is not None and not authed.silent_relogin_attempted:
+            from .auth import try_silent_relogin
+            authed.silent_relogin_attempted = True
+            if try_silent_relogin(ctx, cfg):
+                try:
+                    res = _discover()
+                    log.info(
+                        "trickle discover after silent relogin (via %s, since=%dh): %s",
+                        authed.name, since_hours, res.summary(),
+                    )
+                    return
+                except SessionExpired as retry_exc:
+                    e = retry_exc
         authed.authed = False
         log.error("[%s] SESSION EXPIRED during discovery: %s", authed.name, e)
     except Exception as e:  # noqa: BLE001

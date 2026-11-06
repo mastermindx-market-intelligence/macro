@@ -1,0 +1,65 @@
+{
+  "schema": "grey_deer.release_composition_review.v1",
+  "programme": "MAS-258",
+  "kind": "internal bounded C3 principal source judgments; not formal GitHub approval",
+  "observed_at": "2026-10-21 10:50:45 UTC",
+  "before": "da54885500484235d3ca06b14237e06d6676e654",
+  "queue_candidate": "f8b259e0938db461e964cbd9e3d474d9ed6507f3",
+  "following_candidate": "7d39331b262a81eb6257e1b7d2bbf1ea3c3282bc",
+  "comparison_caveat": "First comparison is divergent; GitHub merge-base diff repeats publisher changes. Reviews used exact endpoint trees/blobs, not that file list as a literal endpoint delta.",
+  "custody_review": {
+    "reviewer": "risk_contract_review",
+    "ruling": "ACCEPTED scoped consumer and custody carry",
+    "evidence": [
+      "Twelve publisher/reader/custody module blobs identical from da548 to f8 and absent from the direct f8 to7d change list.",
+      "Complete api_market_view function source-identical; no-store and cache bypass retained.",
+      "Autonomous _run_brain, _append_decision_log and _regime_brief source-identical; new exception hunk only recovers a locally type/book/role-bound refusal run ID.",
+      "Paper transaction lock, settlement receipt fill/price validation and pending target contract guard unchanged."
+    ],
+    "limits": [
+      "Run identity does not substitute for a retained perception receipt or successful dispatch.",
+      "No independent acceptance of all performance, financial, SDK, fleet or instruction-audit behavior.",
+      "No tests, writes, dispatch or production operations by reviewer."
+    ]
+  },
+  "release_review": {
+    "reviewer": "release_contract_review",
+    "ruling": "ACCEPTED scoped carry; final archive rehearsal required",
+    "evidence": [
+      "Entire brain and bot trees and scheduler identical from da548 to f8.",
+      "Main, config, common, control plane, dependency manifests and both deployment helpers identical across all three candidates.",
+      "Performance reader/projection modules are lazy and require explicit import in the final rehearsal.",
+      "715 changes provider bridges and scheduler outcome handling; startup eligibility guards, lock acquisition, daemon scheduling, cron registration and authority initialization remain unchanged."
+    ],
+    "required_fresh_execution": "One final admitted full archive with added imports only; preserve accepted dispatch, write, network and process fences, ten authority hashes, production identity and complete checksum restoration.",
+    "no_production_authority": true
+  },
+  "root_queue_recreation_readback": {
+    "previous": "7d39331b262a81eb6257e1b7d2bbf1ea3c3282bc",
+    "current": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "previous_tree": "3d523ad22472df889afee065ea62d25c52f6218b",
+    "current_tree": "b329a913d55030e19b038e99a14c9e5ee5bfd998",
+    "exact_root_tree_delta": [
+      "integrations"
+    ],
+    "all_other_root_entries_identical": true,
+    "scope": "Read-only endpoint tree equality; does not claim admission or execution."
+  },
+  "changed_shared_blobs": {
+    "app/web.py": "31572920bb8aec95278e86222c0c8c38696471e7",
+    "app/response_cache.py": "3e54edac36644552d7da1200c021d0a66334cfc9",
+    "portfolio/paper_account.py": "7ac1189bfe23c57af1f334339d7eecbfce0c6d26",
+    "bot/autonomous.py": "967c14f8328d2a7aea001e233d4ae60706cd868f",
+    "app/scheduler.py": "ec2546731d69289b5af4837a6d1eefe59caf9b37",
+    "brain/cli_bridge.py": "82a8b19a858717c94481bccc0796de1463710015",
+    "brain/codex_bridge.py": "cb52f974bf5431fa8569543124102f64cd21a6b8"
+  },
+  "helper_blobs": {
+    "scripts/deploy_code_to_vps.sh": "f871e88815e70338a646008dbe77dfcc1727e978",
+    "scripts/deploy_from_git.sh": "f40e7895e88b0cd755fb7ef9b41a4783a1df4ed9"
+  },
+  "source_links": [
+    "https://github.com/mastermindx-market-intelligence/Mastermind/compare/da54885500484235d3ca06b14237e06d6676e654...f8b259e0938db461e964cbd9e3d474d9ed6507f3",
+    "https://github.com/mastermindx-market-intelligence/Mastermind/compare/f8b259e0938db461e964cbd9e3d474d9ed6507f3...7d39331b262a81eb6257e1b7d2bbf1ea3c3282bc"
+  ]
+}

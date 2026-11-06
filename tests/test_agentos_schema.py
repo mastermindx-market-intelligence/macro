@@ -1795,6 +1795,36 @@ def test_d3_draft_handoff_round_trips(tmp_path: Path) -> None:
     assert "base-sha-reference" not in strict.stdout
 
 
+
+def test_d3_draft_handoff_successor_guidance_without_new_gate(tmp_path: Path) -> None:
+    """Authoring guidance prevents ghost-parent waits without claiming live custody."""
+    payload = _handoff_payload(
+        next_actions=["The original writer must finish the existing PR."],
+    )
+    source = _dump_json(tmp_path, "ghost_parent_handoff.json", payload)
+    result = _agentos("draft-handoff", "--from", str(source))
+    assert result.returncode == 0, result.stderr
+    assert "currently assigned receiver" in result.stdout
+    assert "historical original writer" in result.stdout
+    assert "STARTed" in result.stdout and "EFFECT_UNKNOWN" in result.stdout
+    assert "same original carrier" in result.stdout
+    # A drafter cannot know whether a historical writer retains a live lease.
+    # Preserve original payload as data; avoid manufacturing a gate or transfer.
+    assert "The original writer must finish the existing PR." in result.stdout
+    assert "agentos/handoffs/DRAFT-ROUNDTRIP-2026-10-12.md" in result.stdout
+    protocol = (REPO / "research/MASTERMIND_AGENT_HANDOFF_PROTOCOL.md").read_text()
+    schema = (REPO / "agentos/schema/handoff.schema.yml").read_text()
+    assert "Historical writer references are not current liveness" in protocol
+    assert "current assigned receiver owns recovery" in schema
+    assert "reviewer judgment" in protocol
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": result.stdout,
+    })
+    validated = _agentos("validate", "--root", str(root))
+    assert validated.returncode == 0, validated.stdout + validated.stderr
+
+
 def test_d3_draft_dec_and_decision_round_trip(tmp_path: Path) -> None:
     src = _dump_json(tmp_path, "decision.json", _decision_payload())
     alias = _agentos("draft-dec", "--from", str(src))
@@ -2519,6 +2549,49 @@ def test_d3_partial_paths_report_outbound_unreciprocated_supersession(
     assert "3 records (1 workstreams, 1 decisions, 0 discoveries, 1 handoffs)" in captured.out
 
 
+def test_d3_paths_report_outbound_unreciprocated_on_lone_decision(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """--paths of only the decision that lists supersedes still fails.
+
+    DEC-NEW-DEC lists supersedes DEC:OLD-DEC. DEC-OLD-DEC is on disk, not
+    named, and has no superseded_by. No handoff is named, so the cover
+    predicate is false and the whole store loads. check_references files
+    unreciprocated-supersession on the old file. The named decision must
+    still fail. The outside record stays uncounted.
+    """
+    module = _load_agentos_module()
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "decisions/DEC-OLD-DEC.md": _decision_doc("OLD-DEC"),
+        "decisions/DEC-NEW-DEC.md": _decision_doc(
+            "NEW-DEC", "supersedes:\n  - DEC:OLD-DEC\n",
+        ),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    named = root / "decisions" / "DEC-NEW-DEC.md"
+    args = argparse.Namespace(
+        root=str(root),
+        quiet=False,
+        strict=False,
+        snapshot=None,
+        paths=[str(named)],
+    )
+    assert module._paths_cover_handoff_joins(root, args.paths) is False
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "DEC-NEW-DEC.md: [unreciprocated-supersession]" in captured.out
+    assert "DEC:NEW-DEC supersedes this record" in captured.out
+    assert "DEC-OLD-DEC.md:" not in captured.out
+    assert "one-sided-supersession" not in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "filename-mismatch" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "1 records (0 workstreams, 1 decisions, 0 discoveries, 0 handoffs)" in captured.out
+
+
 def test_d3_partial_paths_report_one_sided_supersession(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -2795,6 +2868,111 @@ def test_d3_paths_report_outside_only_cycle_on_lone_workstream(
     assert "1 records (1 workstreams, 0 decisions, 0 discoveries, 0 handoffs)" in captured.out
 
 
+def test_d3_partial_paths_join_misnamed_workstream_by_content_key(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A workstream stem that is not WS-<key> still joins on the record's own key.
+
+    WS-AAA.md carries key OUT-B and cycles with WS-OUT-C. The conventional
+    WS-OUT-B.md also carries key OUT-B and does not cycle. load_store
+    indexes the alphabetically first file, so the full store reports
+    workstream-cycle plus filename-mismatch and duplicate-key. --paths
+    naming the handoff and WS-REACH must report that cycle on WS-REACH,
+    must not call load_store, and must not count the outside files or
+    judge their schema findings.
+    """
+    module = _load_agentos_module()
+    handoff = _plain_handoff().replace(
+        "workstream: WS:DRAFT-ROUNDTRIP\n",
+        "workstream: WS:REACH\n",
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-REACH.md": _cycle_ws("REACH", "WS:OUT-B"),
+        "workstreams/WS-AAA.md": _cycle_ws("OUT-B", "WS:OUT-C"),
+        "workstreams/WS-OUT-B.md": _D3_WS.replace("key: DRAFT-ROUNDTRIP\n", "key: OUT-B\n"),
+        "workstreams/WS-OUT-C.md": _cycle_ws("OUT-C", "WS:OUT-B"),
+        "handoffs/REACH-2026-10-12.md": handoff,
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    full = module.load_store(root, None)
+    assert any(problem.rule == "workstream-cycle" for problem in full.problems)
+    assert any(
+        problem.rule == "filename-mismatch" and problem.path.name == "WS-AAA.md"
+        for problem in full.problems
+    )
+    assert any(
+        problem.rule == "duplicate-key" and problem.path.name == "WS-OUT-B.md"
+        for problem in full.problems
+    )
+    _boom_on_full_store(module, monkeypatch)
+    paths = [
+        root / "handoffs" / "REACH-2026-10-12.md",
+        root / "workstreams" / "WS-REACH.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "WS-REACH.md: [workstream-cycle]" in captured.out
+    assert "WS:OUT-B" in captured.out
+    assert "WS:OUT-C" in captured.out
+    assert "filename-mismatch" not in captured.out
+    assert "duplicate-key" not in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_partial_paths_report_cycle_when_both_members_are_misnamed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A reached cycle still fails when neither member's stem is WS-<key>.
+
+    WS-AAA.md is key OUT-B and WS-BBB.md is key OUT-C. No conventional
+    WS-OUT-B.md or WS-OUT-C.md exists. The full store reports
+    workstream-cycle on those files. --paths naming the handoff and
+    WS-REACH must report that cycle on WS-REACH and must not call
+    load_store. Filename findings stay off the named summary.
+    """
+    module = _load_agentos_module()
+    handoff = _plain_handoff().replace(
+        "workstream: WS:DRAFT-ROUNDTRIP\n",
+        "workstream: WS:REACH\n",
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-REACH.md": _cycle_ws("REACH", "WS:OUT-B"),
+        "workstreams/WS-AAA.md": _cycle_ws("OUT-B", "WS:OUT-C"),
+        "workstreams/WS-BBB.md": _cycle_ws("OUT-C", "WS:OUT-B"),
+        "handoffs/REACH-2026-10-12.md": handoff,
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    full = module.load_store(root, None)
+    assert any(
+        problem.rule == "workstream-cycle" and problem.path.name == "WS-AAA.md"
+        for problem in full.problems
+    )
+    _boom_on_full_store(module, monkeypatch)
+    paths = [
+        root / "handoffs" / "REACH-2026-10-12.md",
+        root / "workstreams" / "WS-REACH.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "WS-REACH.md: [workstream-cycle]" in captured.out
+    assert "WS:OUT-B" in captured.out
+    assert "WS:OUT-C" in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "filename-mismatch" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
 def test_d3_no_network_or_gh_in_agentos() -> None:
     source = CLI.read_text(encoding="utf-8")
     assert source.count("subprocess.run") == 1
@@ -2808,3 +2986,215 @@ def test_d3_no_network_or_gh_in_agentos() -> None:
     for banned in ("import requests", "import urllib", "import http.client", "import socket"):
         assert banned not in source
 
+
+
+def test_ghost_original_writer_only_handoff_is_advisory_and_action_scoped(tmp_path: Path) -> None:
+    """Ghost-parent sole-action handoffs need a successor; real custody is not revoked."""
+    agentos = _load_agentos_module()
+    path = tmp_path / "synthetic-handoff.md"
+    path.write_text(HANDOFF, encoding="utf-8")
+    record, body = agentos.parse_record(path)
+    record["_body"] = body
+
+    def ghost_findings(actions: list[str]):
+        record["next_actions"] = actions
+        return [p for p in agentos.check_handoff(record, path)
+                if p.rule == "ghost-original-writer-only-action"]
+
+    for only in (
+        ["Only the original writer must act; the previous chat is archived."],
+        ["The original parent must finish CI."],
+        ["Remaining critical path requires original publisher's admitted action."],
+        ["Return this work to the original parent chat."],
+        ["Return    to the original parent"],
+        ["Wait for the original writer"],
+        ["Original writer must publish.", "Only original publisher can finish."],
+    ):
+        findings = ghost_findings(only)
+        assert len(findings) == 1, (only, findings)
+        assert not findings[0].hard, "Agent OS knowledge cannot gate execution"
+        assert "receiver" in findings[0].message
+        assert "ghost-original-writer-only-action" in agentos._ADVISORY_RULES
+
+    for bounded in (
+        ["Current assigned receiver: inspect the original PR/workspace and reconcile effects."],
+        ["Original publisher must finish admitted cutover.",
+         "Current receiver: verify active lease and advance independent test review."],
+        ["The original STARTed runner holds its exact lease and pending EFFECT_UNKNOWN.",
+         "The assigned successor audits independent evidence without replay."],
+        ["Do not wait for the original parent; the present session owns safe recovery."],
+        ["Do not return this work to the original parent"],
+        ["Never hand this work to the original publisher"],
+        ["Original writer must finish admitted cutover; current receiver: inspect source PR, reconcile lease and continue tests"],
+    ):
+        assert not ghost_findings(bounded), bounded
+
+
+def test_drafted_handoff_names_executable_successor_rule(tmp_path: Path) -> None:
+    """Generated continuation should explain recovery without inventing lease transfer."""
+    src = _dump_json(tmp_path, "ghost-draft.json", _handoff_payload())
+    result = _agentos("draft-handoff", "--from", str(src))
+    assert result.returncode == 0, result.stderr
+    assert "currently assigned or next lawfully assigned receiver" in result.stdout
+    assert "STARTed" in result.stdout and "EFFECT_UNKNOWN" in result.stdout
+    assert "original writer" in result.stdout
+
+    # A historical ghost-only instruction is surfaced in the existing validator
+    # even in strict mode, but must never become an Agent OS execution gate.
+    ghost_src = _dump_json(
+        tmp_path, "ghost-only.json",
+        _handoff_payload(next_actions=["Only the original writer must act"]),
+    )
+    drafted = _agentos("draft-handoff", "--from", str(ghost_src))
+    assert drafted.returncode == 0, drafted.stderr
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": drafted.stdout,
+    })
+    strict = _agentos(
+        "validate", "--strict", "--snapshot", str(ghost_src), "--root", str(root),
+        "--paths", str(root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md"),
+    )
+    assert strict.returncode == 0, strict.stdout + strict.stderr
+    assert "ghost-original-writer-only-action" in strict.stdout
+
+
+def test_ghost_handoff_pattern_has_no_ambiguous_whitespace_partition() -> None:
+    """A nonmatching return destination cannot redistribute whitespace repeatedly."""
+    agentos = _load_agentos_module()
+    source = (REPO / "scripts" / "agentos.py").read_text(encoding="utf-8")
+    return_line = next(line for line in source.splitlines()
+                       if 'r"|(?:return|hand)' in line)
+    assert r")?\s*" not in return_line
+    assert not agentos.GHOST_ORIGINAL_WRITER_ACTION_RE.search(
+        "Return " + " " * 3000 + "to a completely unrelated operator"
+    )
+
+
+# Evaluation OS T12: typed findings are evidence, never a priority or grant.
+def _evaluation_finding(**overrides):
+    finding = {
+        "engine": "engine/example.py::EXAMPLE",
+        "metric": "hit_rate",
+        "observed_change": {"baseline": None, "current": 0, "unit": "fraction"},
+        "segment": "synthetic smoke fixture",
+        "evidence_link": "research/evidence/example.json",
+        "suggested_tier": "T1",
+    }
+    finding.update(overrides)
+    return finding
+
+
+def test_evaluation_finding_survives_existing_discovery_draft():
+    module = _load_agentos_module()
+    finding = _evaluation_finding()
+    payload = _discovery_payload(evaluation_finding=finding)
+    text = module.draft_discovery(payload)
+    rec = module.yaml.safe_load(text.split("---", 2)[1])
+    assert rec["evaluation_finding"] == finding
+    assert rec["evaluation_finding"]["observed_change"]["current"] == 0
+    assert rec["evaluation_finding"]["observed_change"]["baseline"] is None
+    assert not [p for p in module.check_discovery(rec, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md")) if p.hard]
+
+
+@pytest.mark.parametrize("finding", [
+    None, [], {},
+    _evaluation_finding(engine=""),
+    _evaluation_finding(metric=3),
+    _evaluation_finding(segment=""),
+    _evaluation_finding(evidence_link=""),
+    _evaluation_finding(suggested_tier="validated"),
+    _evaluation_finding(observed_change=True),
+    _evaluation_finding(observed_change={"current": float("nan"), "baseline": 0, "unit": "fraction"}),
+    _evaluation_finding(observed_change={"current": 1, "baseline": 0}),
+    _evaluation_finding(priority="high"),
+])
+def test_evaluation_finding_invalid_shape_refused_by_draft_and_store(finding):
+    module = _load_agentos_module()
+    payload = _discovery_payload(evaluation_finding=finding)
+    with pytest.raises(SystemExit):
+        module.draft_discovery(payload)
+    problems = module.check_discovery(payload, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md"))
+    assert any(p.hard and p.rule == "bad-evaluation-finding" for p in problems)
+
+
+def test_evaluation_finding_unresolved_is_explicit_not_a_pass():
+    module = _load_agentos_module()
+    finding = _evaluation_finding(observed_change=None, suggested_tier=None)
+    text = module.draft_discovery(_discovery_payload(evaluation_finding=finding))
+    rec = module.yaml.safe_load(text.split("---", 2)[1])
+    assert rec["evaluation_finding"] == finding
+    assert not [p for p in module.check_discovery(rec, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md")) if p.hard]
+
+
+def test_evaluation_finding_does_not_supply_discovery_admission():
+    module = _load_agentos_module()
+    for field in ("falsifier", "verified_by", "confidence", "scope"):
+        payload = _discovery_payload(evaluation_finding=_evaluation_finding())
+        payload.pop(field)
+        with pytest.raises(SystemExit):
+            module.draft_discovery(payload)
+
+
+@pytest.mark.parametrize("tier", ["T1", None])
+def test_evaluation_finding_actual_cli_roundtrip(tmp_path: Path, tier):
+    finding = _evaluation_finding(suggested_tier=tier)
+    payload = _discovery_payload(evaluation_finding=finding)
+    src = _dump_json(tmp_path, "evaluation.json", payload)
+    drafted = _agentos("draft-discovery", "--from", str(src))
+    assert drafted.returncode == 0, drafted.stderr
+    module = _load_agentos_module()
+    rec = module.yaml.safe_load(drafted.stdout.split("---", 2)[1])
+    assert rec["evaluation_finding"] == finding
+    root = _write_tree(tmp_path, {"discoveries/DSC-DRAFT-ROUNDTRIP-DISCOVERY.md": drafted.stdout})
+    validated = _agentos("validate", "--root", str(root))
+    assert validated.returncode == 0, validated.stdout + validated.stderr
+    assert "0 error(s)" in validated.stdout
+    assert not (STORE / "discoveries/DSC-DRAFT-ROUNDTRIP-DISCOVERY.md").exists()
+
+
+@pytest.mark.parametrize("finding", [
+    _evaluation_finding(metric="é" * 1025),
+    _evaluation_finding(observed_change={"baseline": False, "current": 0, "unit": "fraction"}),
+    _evaluation_finding(observed_change={"baseline": 0, "current": float("inf"), "unit": "fraction"}),
+    _evaluation_finding(observed_change={"baseline": 0, "current": {"dispatch": "now"}, "unit": "fraction"}),
+])
+def test_evaluation_finding_bounds_and_control_fields(finding):
+    module = _load_agentos_module()
+    payload = _discovery_payload(evaluation_finding=finding)
+    with pytest.raises(SystemExit):
+        module.draft_discovery(payload)
+    assert any(p.hard and p.rule == "bad-evaluation-finding" for p in module.check_discovery(payload, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md")))
+
+
+@pytest.mark.parametrize("field", ["engine", "metric", "segment", "evidence_link", "unit"])
+def test_evaluation_finding_malformed_unicode_is_a_typed_refusal(field):
+    module = _load_agentos_module()
+    finding = _evaluation_finding()
+    if field == "unit":
+        finding["observed_change"]["unit"] = "\ud800"
+    else:
+        finding[field] = "\ud800"
+    payload = _discovery_payload(evaluation_finding=finding)
+    with pytest.raises(SystemExit):
+        module.draft_discovery(payload)
+    assert any(p.hard and p.rule == "bad-evaluation-finding" for p in module.check_discovery(payload, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md")))
+
+
+def test_evaluation_finding_preserves_qualitative_snapshot_without_inventing_delta():
+    module = _load_agentos_module()
+    detail = "Snapshot metric-validity finding: all claims carry direction zero; hit is undefined."
+    finding = _evaluation_finding(metric="hit_rate", observed_change=detail, suggested_tier="T0")
+    drafted = module.draft_discovery(_discovery_payload(evaluation_finding=finding))
+    rec = module.yaml.safe_load(drafted.split("---", 2)[1])
+    assert rec["evaluation_finding"] == finding
+    assert not [p for p in module.check_discovery(rec, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md")) if p.hard]
+
+
+@pytest.mark.parametrize("observation", ["", "é" * 1025, "\ud800"])
+def test_evaluation_finding_invalid_qualitative_observation_is_refused(observation):
+    module = _load_agentos_module()
+    payload = _discovery_payload(evaluation_finding=_evaluation_finding(observed_change=observation))
+    with pytest.raises(SystemExit):
+        module.draft_discovery(payload)
+    assert any(p.hard and p.rule == "bad-evaluation-finding" for p in module.check_discovery(payload, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md")))
