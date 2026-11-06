@@ -1,6 +1,6 @@
 {
   "schema": "winner_autopsy_panel.v1",
-  "generated_at": "2026-11-06T10:44:14Z",
+  "generated_at": "2026-11-06T13:05:02Z",
   "display_only": true,
   "horizon_role": "hold_thesis",
   "census": {
@@ -11636,14 +11636,14 @@
         }
       },
       {
-        "ticker": "OMAGQ",
+        "ticker": "KOAN",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 51.58,
-        "excess_42d_pp": -49.81,
+        "excess_42d_pp": 0.19,
         "new_high_63d": false,
-        "dollar_vol_z21": 4.15,
+        "dollar_vol_z21": -0.06,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [
@@ -11655,14 +11655,14 @@
         }
       },
       {
-        "ticker": "KOAN",
+        "ticker": "OMAGQ",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 51.58,
-        "excess_42d_pp": 0.19,
+        "excess_42d_pp": -49.81,
         "new_high_63d": false,
-        "dollar_vol_z21": -0.06,
+        "dollar_vol_z21": 4.15,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [
@@ -22440,7 +22440,7 @@
         }
       },
       {
-        "ticker": "BF-A",
+        "ticker": "BF.A",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -22459,7 +22459,7 @@
         }
       },
       {
-        "ticker": "BF.A",
+        "ticker": "BF-A",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -22582,6 +22582,23 @@
         }
       },
       {
+        "ticker": "FLYYQ",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 25.69,
+        "excess_42d_pp": -20.93,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.44,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
         "ticker": "TALN",
         "sector": "",
         "benchmark": "SPY",
@@ -22595,23 +22612,6 @@
         "hazards": [
           "chase_risk_elevated"
         ],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "FLYYQ",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 25.69,
-        "excess_42d_pp": -20.93,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.44,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
         "context": {
           "context_only": true,
           "note": ""
@@ -26923,14 +26923,14 @@
         }
       },
       {
-        "ticker": "TRTX",
+        "ticker": "DSGT",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 21.58,
-        "excess_42d_pp": -7.79,
+        "excess_42d_pp": -14.09,
         "new_high_63d": false,
-        "dollar_vol_z21": 0.66,
+        "dollar_vol_z21": -0.23,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -26940,14 +26940,14 @@
         }
       },
       {
-        "ticker": "DSGT",
+        "ticker": "TRTX",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 21.58,
-        "excess_42d_pp": -14.09,
+        "excess_42d_pp": -7.79,
         "new_high_63d": false,
-        "dollar_vol_z21": -0.23,
+        "dollar_vol_z21": 0.66,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -32870,14 +32870,14 @@
         }
       },
       {
-        "ticker": "CETXP",
+        "ticker": "GLPGF",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 5.69,
-        "excess_42d_pp": 37.26,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.25,
+        "excess_42d_pp": 25.83,
+        "new_high_63d": true,
+        "dollar_vol_z21": null,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -32904,31 +32904,14 @@
         }
       },
       {
-        "ticker": "SELXF",
+        "ticker": "CETXP",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 5.69,
-        "excess_42d_pp": 54.07,
+        "excess_42d_pp": 37.26,
         "new_high_63d": false,
-        "dollar_vol_z21": -0.34,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "GLPGF",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 5.69,
-        "excess_42d_pp": 25.83,
-        "new_high_63d": true,
-        "dollar_vol_z21": null,
+        "dollar_vol_z21": -0.25,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -32946,6 +32929,23 @@
         "excess_42d_pp": 42.96,
         "new_high_63d": false,
         "dollar_vol_z21": -0.24,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "SELXF",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 5.69,
+        "excess_42d_pp": 54.07,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.34,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -34315,23 +34315,6 @@
         }
       },
       {
-        "ticker": "AVNI",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 1.58,
-        "excess_42d_pp": 100.19,
-        "new_high_63d": false,
-        "dollar_vol_z21": 0.0,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
         "ticker": "AMBIQ",
         "sector": "",
         "benchmark": "SPY",
@@ -34349,14 +34332,14 @@
         }
       },
       {
-        "ticker": "SYHO",
+        "ticker": "MOVAA",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 1.58,
-        "excess_42d_pp": 150.19,
+        "excess_42d_pp": 25.19,
         "new_high_63d": true,
-        "dollar_vol_z21": 0.0,
+        "dollar_vol_z21": null,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -34383,14 +34366,31 @@
         }
       },
       {
-        "ticker": "MOVAA",
+        "ticker": "AVNI",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 1.58,
-        "excess_42d_pp": 25.19,
+        "excess_42d_pp": 100.19,
+        "new_high_63d": false,
+        "dollar_vol_z21": 0.0,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "SYHO",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 1.58,
+        "excess_42d_pp": 150.19,
         "new_high_63d": true,
-        "dollar_vol_z21": null,
+        "dollar_vol_z21": 0.0,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -40622,7 +40622,7 @@
         }
       },
       {
-        "ticker": "PBR-A",
+        "ticker": "PBR.A",
         "sector": "",
         "benchmark": "SPY",
         "state": "failed",
@@ -40639,7 +40639,7 @@
         }
       },
       {
-        "ticker": "PBR.A",
+        "ticker": "PBR-A",
         "sector": "",
         "benchmark": "SPY",
         "state": "failed",
