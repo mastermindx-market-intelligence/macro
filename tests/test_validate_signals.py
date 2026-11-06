@@ -8,6 +8,11 @@ the validator agree on the §7 contract.
 from __future__ import annotations
 
 import json
+from copy import deepcopy
+
+import pytest
+
+from engine import marker_integrity as mi
 
 from scripts import validate_signals as vs
 
@@ -385,3 +390,177 @@ def test_run_fails_when_leaf_missing(tmp_path):
     audit = tmp_path / "audit.json"
     rc = vs.run(signals_dir=sigdir, leaf_path=tmp_path / "nope.json", audit_path=audit)
     assert rc == 1
+
+
+# Reason custody must remain valid through the existing persistence merge.
+# No historical record repair or secondary-only refinement is authorized here.
+def _marker(**changes):
+    marker = {
+        "date": "2026-10-08", "type": "buy", "quality": "block",
+        "reason": "veto: bearish divergence",
+        "reasons": ["veto: bearish divergence", "pending confirmation"],
+        "signal_date": "2026-10-08", "confirmed_date": None,
+        "recorded_at": "2026-10-09",
+    }
+    marker.update(changes)
+    return marker
+
+
+def _ticker(marker, asof="2026-10-20"):
+    return {
+        "ticker": "TST", "asof": asof, "tf": "3D", "state": "long-bias",
+        "above200": True, "weekly_bull": True,
+        "trail_stop": None, "trail_breach": False,
+        "risk_flags": [], "early_markers": [], "early_now": False,
+        "markers": [marker],
+    }
+
+
+def _assert_valid(marker):
+    assert vs.validate_ticker_doc(_ticker(marker), SCHEMA, "ticker") == []
+    leaf = {
+        "asof": "2026-10-20", "tf": "3D", "universe": "us_deep",
+        "signals": [{
+            "ticker": "TST", "asof": "2026-10-20", "state": "long-bias",
+            "above200": True, "weekly_bull": True,
+            "trail_stop": None, "trail_breach": False,
+            "early_now": False, "last": marker,
+        }],
+    }
+    assert vs.validate_brain_leaf(leaf, SCHEMA, "brain") == []
+
+
+@pytest.mark.parametrize("kind", ["buy", "rebuy"])
+@pytest.mark.parametrize("quality,reason", [
+    ("take", "held confirmation"), ("block", "failed next-bar hold"),
+])
+def test_fresh_primary_refinement_keeps_both_signal_contracts_valid(kind, quality, reason):
+    previous = _marker(type=kind)
+    new = _marker(type=kind, quality=quality, reason=reason,
+                  confirmed_date="2026-10-19")
+    new.pop("reasons")
+    _assert_valid(previous)
+    _assert_valid(new)
+    before = deepcopy((previous, new))
+
+    (merged,), stats = mi.merge_markers([previous], [new], "2026-10-16",
+                                        run_stamp="2026-10-21")
+
+    assert (previous, new) == before
+    assert merged["quality"] == quality and merged["reason"] == reason
+    assert "reasons" not in merged  # schema singleton representation
+    assert merged["recorded_at"] == "2026-10-09"
+    assert merged["confirmed_date"] == "2026-10-19"
+    assert stats["refined"] == 1
+    _assert_valid(merged)
+
+
+def test_new_companion_is_copied_with_its_admitted_primary_without_aliasing():
+    previous = _marker(quality="pending", reason="pending confirmation")
+    previous.pop("reasons")
+    new = _marker(reasons=["veto: bearish divergence", "failed next-bar hold"],
+                  confirmed_date="2026-10-19")
+    _assert_valid(previous)
+    _assert_valid(new)
+    before = deepcopy((previous, new))
+
+    (merged,), stats = mi.merge_markers([previous], [new], "2026-10-16")
+    assert (previous, new) == before
+    assert merged["reasons"] == new["reasons"]
+    assert stats["refined"] == 1
+    _assert_valid(merged)
+    new["reasons"].append("later caller mutation")
+    assert merged["reasons"] == before[1]["reasons"]
+
+
+@pytest.mark.parametrize("date,refined", [
+    ("2026-09-25", True), ("2026-09-24", False),
+])
+def test_reason_pair_uses_existing_freshness_boundary(date, refined):
+    previous = {"date": date, "type": "buy", "quality": "block",
+                "reason": "veto: bearish divergence",
+                "reasons": ["veto: bearish divergence", "failed next-bar hold"]}
+    new = {"date": date, "type": "buy", "quality": "take",
+           "reason": "held confirmation"}
+    (merged,), stats = mi.merge_markers([previous], [new], "2026-10-16")
+    assert stats["refined"] == int(refined)
+    assert stats["relabel_blocked"] == int(not refined)
+    if refined:
+        assert merged == new
+    else:
+        assert merged == previous
+    _assert_valid(merged)
+
+
+@pytest.mark.parametrize("new_reasons", [
+    ["veto: bearish divergence", "failed reclaim-and-hold"], None,
+])
+def test_secondary_only_change_does_not_expand_refinement_authority(new_reasons):
+    previous = _marker()
+    new = deepcopy(previous)
+    if new_reasons is None:
+        new.pop("reasons")
+    else:
+        new["reasons"] = new_reasons
+    (merged,), stats = mi.merge_markers([previous], [new], "2026-10-16")
+    assert merged == previous
+    assert stats["refined"] == 0
+
+
+def test_unchanged_legacy_primary_does_not_gain_unadmitted_secondary_facts():
+    previous = _marker()
+    previous.pop("reasons")
+    new = _marker()
+    (merged,), stats = mi.merge_markers([previous], [new], "2026-10-16")
+    assert merged == previous
+    assert stats["refined"] == 0
+
+
+def test_missing_new_primary_does_not_replace_its_existing_companion():
+    previous = _marker()
+    new = {"date": previous["date"], "type": "buy", "quality": "pending",
+           "reasons": ["unbound companion", "another unbound companion"]}
+    (merged,), _ = mi.merge_markers([previous], [new], "2026-10-16")
+    assert merged["reason"] == previous["reason"]
+    assert merged["reasons"] == previous["reasons"]
+
+
+def test_frozen_contradiction_stays_visible_for_separate_historical_adjudication():
+    previous = {
+        "date": "2026-07-31", "type": "buy", "quality": "block",
+        "reason": "failed next-bar hold",
+        "reasons": ["veto: bearish divergence", "failed next-bar hold"],
+        "signal_date": "2026-08-04", "confirmed_date": "2026-08-10",
+        "recorded_at": None,
+    }
+    new = deepcopy(previous)
+    new["quality"], new["reason"] = "take", "held confirmation"
+    new.pop("reasons")
+    (merged,), stats = mi.merge_markers([previous], [new], "2026-10-16",
+                                        run_stamp="2026-10-21")
+    assert merged == previous
+    assert stats["relabel_blocked"] == 1
+    assert vs.validate_ticker_doc(_ticker(merged), SCHEMA, "historical")
+
+
+def test_invalid_new_companion_is_still_rejected_by_the_unchanged_validator():
+    previous = _marker()
+    new = _marker(quality="take", reason="held confirmation")
+    (merged,), _ = mi.merge_markers([previous], [new], "2026-10-16")
+    assert vs.validate_ticker_doc(_ticker(merged), SCHEMA, "invalid-new")
+
+
+def test_tolerance_match_preserves_rendered_identity_and_first_publication():
+    previous = _marker(confirmed_date="2026-10-19")
+    new = _marker(date="2026-10-09", quality="take", reason="held confirmation",
+                  signal_date="2026-10-09", confirmed_date="2026-10-20",
+                  recorded_at="2026-10-21")
+    new.pop("reasons")
+    (merged,), _ = mi.merge_markers([previous], [new], "2026-10-16",
+                                   run_stamp="2026-10-21")
+    for field in ("date", "type", "signal_date", "confirmed_date", "recorded_at"):
+        assert merged[field] == previous[field]
+    _assert_valid(merged)
+    (again,), stats = mi.merge_markers([merged], [new], "2026-10-20")
+    assert again == merged
+    assert stats["refined"] == 0
