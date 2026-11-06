@@ -17,7 +17,8 @@ def test_every_owner_generation_carries_all_incumbent_and_quartet_gd_slots_befor
     trigger=_stub_dhi_revision(source_available_at='2026-07-21T00:00:00Z',source_sha256='b'*64)
     def discover(ticker,**kwargs):return [(trigger['event_id'],trigger)] if ticker=='DHI' else []
     assert _refresh(tmp_path,_FakeR2(),homebuilder_carry_forward_loader=carry,homebuilder_discovery=discover)==0
-    assert set(seen)==set(current)
+    # TSM/ON are #7870's T05b discovery tickers; they carry no slot in this fixture.
+    assert set(seen)==set(current)|{'TSM','ON'}
     generations=list((tmp_path/'event_workspaces/generations').iterdir());assert generations
     required={FLAGSHIP_EVENT_ID,*(row['event_id'] for row in current.values())}
     for path in generations:
