@@ -1,0 +1,37 @@
+{
+  "schema": "mastermind.multi_asset_comment_only_qualification/v1",
+  "operation": "multiasset-risk-20261105-sol",
+  "source_before": "62edf12a3fb318926641332fa477f92405cf0d89",
+  "captured_at": "2026-11-06T06:47:36.742769+00:00",
+  "source_file": "templates/risk_envelope/_multi_asset_context.html.j2",
+  "before_sha256": "9993a9ec753b4e689bdad6a76c645a32716d38e38035931acf28e946937db08a",
+  "after_sha256": "8ca61ad02a94a96bf7f2f0ee5a9033a298c81285335004f78584e328a8a82f1e",
+  "historical_browser_receipt_preserved": true,
+  "production_acceptance": false,
+  "cases": [
+    {
+      "case": "observed",
+      "render_sha256": "af34583561062806acc39be32cfdcf34d291eb81b18daaf6be4dd71d57f0a66a",
+      "bytes": 14992,
+      "byte_identical": true
+    },
+    {
+      "case": "stale",
+      "render_sha256": "04104f526ea049190387156b38ae2f47a353c992c7514d5fa16d7a218b4d8978",
+      "bytes": 15235,
+      "byte_identical": true
+    },
+    {
+      "case": "absent",
+      "render_sha256": "5d4198d0c87f58223cbec158d612db3421a2ed06825162592074979146e00fc7",
+      "bytes": 468,
+      "byte_identical": true
+    },
+    {
+      "case": "forbidden_authority",
+      "render_sha256": "5d4198d0c87f58223cbec158d612db3421a2ed06825162592074979146e00fc7",
+      "bytes": 468,
+      "byte_identical": true
+    }
+  ]
+}

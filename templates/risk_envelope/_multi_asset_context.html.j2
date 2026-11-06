@@ -1,4 +1,4 @@
-{# Owner-validated daily snapshot. No risk vote, forecast, rank or portfolio control. #}
+{# Source-qualified daily snapshot. No risk vote, forecast, rank or portfolio control. #}
 {% set ma = multi_asset_context if multi_asset_context is mapping else {} %}
 {% set ma_auth = ma.get('authority') if ma.get('authority') is mapping else {} %}
 {% set ma_ok = ma.get('schema') == 'mastermind.multi_asset_daily_context/v1'
