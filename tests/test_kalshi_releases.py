@@ -119,6 +119,45 @@ class TestMidPrice:
         p, _ = _mid_price(_mkt(0.2, yes_bid=0, yes_ask=0))
         assert abs(p - 0.0) < 1e-9
 
+    def test_current_api_dollar_fields_are_parsed_without_legacy_cents(self):
+        market = _mkt(0.2)
+        market.update({
+            "yes_bid_dollars": "0.4200",
+            "yes_ask_dollars": "0.4600",
+            "last_price_dollars": "0.4500",
+        })
+        p, ptype = _mid_price(market)
+        assert ptype == "mid"
+        assert abs(p - 0.44) < 1e-9
+
+    def test_current_api_dollar_last_price_fallback(self):
+        market = _mkt(0.2)
+        market["last_price_dollars"] = "0.3700"
+        p, ptype = _mid_price(market)
+        assert ptype == "last"
+        assert abs(p - 0.37) < 1e-9
+
+    def test_dollar_representation_wins_when_legacy_fields_also_exist(self):
+        market = _mkt(0.2, yes_bid=10, yes_ask=20)
+        market.update({"yes_bid_dollars": "0.6000", "yes_ask_dollars": "0.7000"})
+        p, ptype = _mid_price(market)
+        assert ptype == "mid"
+        assert abs(p - 0.65) < 1e-9
+
+    def test_invalid_dollar_value_can_fall_back_to_valid_legacy_cents(self):
+        market = _mkt(0.2, yes_bid=30)
+        market["yes_bid_dollars"] = "not-a-number"
+        p, ptype = _mid_price(market)
+        assert ptype == "bid"
+        assert abs(p - 0.30) < 1e-9
+
+    def test_out_of_range_prices_are_missing(self):
+        market = _mkt(0.2, yes_bid=150)
+        market["yes_bid_dollars"] = "1.50"
+        p, ptype = _mid_price(market)
+        assert ptype == "missing"
+        assert p is None
+
 
 # ---------------------------------------------------------------------------
 # _parse_event_period
@@ -400,6 +439,54 @@ class TestUpsertParquet:
         result = pd.read_parquet(store_path)
         assert n_new == 2
         assert len(result) == 2
+
+    def test_summary_rows_on_different_dates_do_not_collapse_on_null_strike(self, store_path):
+        """The intentionally-null summary strike must not erase date identity."""
+        day1 = pd.DataFrame([
+            self._make_row(
+                asof_date="2026-09-23",
+                period="2026-10",
+                strike=float("nan"),
+                is_summary=True,
+            )
+        ])
+        day2 = pd.DataFrame([
+            self._make_row(
+                asof_date="2026-09-24",
+                period="2026-10",
+                strike=float("nan"),
+                is_summary=True,
+            )
+        ])
+        assert _upsert_parquet(store_path, day1) == 1
+        assert _upsert_parquet(store_path, day2) == 1
+        result = pd.read_parquet(store_path)
+        summaries = result[result["is_summary"] == True]  # noqa: E712
+        assert summaries["asof_date"].tolist() == ["2026-09-23", "2026-09-24"]
+
+    def test_multiple_summary_events_on_same_date_remain_distinct(self, store_path):
+        rows = [
+            self._make_row(
+                asof_date="2026-09-24",
+                release_type="cpi",
+                period="2026-10",
+                strike=float("nan"),
+                is_summary=True,
+            ),
+            self._make_row(
+                asof_date="2026-09-24",
+                release_type="nfp",
+                period="2026-09",
+                strike=float("nan"),
+                is_summary=True,
+            ),
+        ]
+        assert _upsert_parquet(store_path, pd.DataFrame(rows)) == 2
+        result = pd.read_parquet(store_path)
+        assert set(zip(result["release_type"], result["period"])) == {
+            ("cpi", "2026-10"),
+            ("nfp", "2026-09"),
+        }
 
     def test_first_seen_wins_on_conflict(self, store_path):
         """If same key appears twice in the same batch, the first row wins."""

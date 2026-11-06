@@ -7,7 +7,7 @@ objective: >
   Forward Path synthesis and learning. Done means real current inputs traverse production into the
   actual user/machine consumers with all authority ceilings, nulls, evidence clocks and failure states
   intact; CI or merged infrastructure alone is not completion.
-status: awaiting_ci
+status: active
 program: rates-inflation-command
 repos: [macro]
 owner: ceo-sol
@@ -32,11 +32,8 @@ depends_on: []
 waves:
   - id: F0
     title: Recovery, capability ledger and architecture freeze
-    status: awaiting_ci
+    status: done
     pr: 6543
-    next_action: >
-      Independently review and accept PR #6543 only after exact-head semantic/fence CI completes
-      green; no product/runtime behavior is changed by F0.
   - id: F1
     title: Release and event truth/intelligence closure
     status: todo
@@ -67,6 +64,9 @@ waves:
     depends_on: [F5, F6]
 decisions:
   - DEC:RIC-CANONICAL-COMPOSITION-BOUNDARIES
+  - DEC:RIC-BASIS-CONTRACT-V1-QUALIFIED-COMPARISON
+  - DEC:RIC-F1-EVALUATION-TARGET-IS-PUBLISHED-FIRST-PRINT
+  - DEC:RIC-E0-RETROSPECTIVE-FALSIFIES-PROSPECTIVE-PROMOTES
 discoveries:
   - DSC:RIC-RECOVERY-FOUND-STATUS-DRIFT-AND-W3-W4-DISCONNECT
 landmines:
@@ -84,10 +84,16 @@ artifacts:
   - research/RATES_INFLATION_COMMAND_MASTERPLAN_BY_FABLE.md
   - research/MACRO_RELEASE_INTEL_MASTERPLAN_BY_FABLE.md
   - research/TRANSMISSION_INTELLIGENCE_MASTERPLAN_BY_FABLE.md
+  - research/rates_inflation_command/seat_20261014/R0_CUSTODY_LEDGER.md
+  - research/rates_inflation_command/seat_20261014/B0_BASIS_CONTRACT_FREEZE.md
+  - research/rates_inflation_command/seat_20261014/F0_COVERAGE.md
 next_action: >
-  Complete PR #6543 F0 independent review/merge, then submit the frozen RIC-F1, RIC-F2 and RIC-F3
-  packets through canonical Executive admission/routing as three disjoint operations and call a lane
-  active only after its concrete Fable/worker carrier/session ACK is proven.
+  E2E completion programme (Chairman masterplan 2026-10-13, Fable Meta-CEO seat fc3dfe4b). Wave 1 is
+  merged: R0/B0 records #9206, E0+P0 #9212, F0 gap #9222, F1 #9232, B0 #9233, D0 #9252, T0 #9253,
+  Y0 #9254. Next: merge M0/X0 #9282 (never re-run M0/X0), one main ci.yml baseline, then ship
+  D1/Y1/I0, then C0 composition, then P1, X1, V0, A0, E1, P2, G0, S0, E2, B1, A1, Z0 per masterplan
+  section 13. Latest handoff: agentos/handoffs/RATES-INFLATION-COMMAND-2026-10-14-e2e-seat-wave1.md.
+  F0 (#6543, #9222) is reused, never redone; held #7909 and the GRI programme (#8317) are preserved.
 ---
 
 ## Why this workstream exists

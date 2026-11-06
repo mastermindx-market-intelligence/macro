@@ -1,0 +1,32 @@
+--- a/templates/crypto.html.j2
++++ b/templates/crypto.html.j2
+@@ -340,11 +340,14 @@
+       <div class="snapshot-summary">
+         <div>{% if universe_snapshot.as_of %}{{ t('Market Board snapshot','市场看板快照') }} <strong>{{ universe_snapshot.as_of }}</strong>{% else %}<strong>{{ t('No ranked snapshot available','暂无可用的排名快照') }}</strong>{% endif %}</div>
+         <div>{{ universe_count }} / {{ universe_snapshot.requested }} {{ t('assets listed','项资产已列出') }}</div>
++        {% if universe_snapshot.coverage and universe_snapshot.coverage.missing_pages %}
++        <p data-coverage-denominator="{{ universe_snapshot.coverage.label }}">{{ t('Coverage','覆盖') }} {{ universe_snapshot.coverage.label }}. {{ t('Missing page','缺失分页') }}: {{ universe_snapshot.coverage.missing_pages | join(', ') }}. {{ t('Missing pages are not backfilled.','缺失分页不会回补。') }}</p>
++        {% endif %}
+       </div>
+       <p>{{ t('Ranks and research use this date. Quote cells may refresh separately. Older observations never fill missing ranks.','排名与研究采用此快照日期，报价可能单独刷新。不会用旧观测补足当前排名。') }}</p>
+       <details class="universe-coverage">
+         <summary>{{ t('Review excluded observations','查看未纳入的观测') }} · {{ universe_snapshot.excluded|length }}</summary>
+-        <div class="breadth-receipt">{% if breadth.available %}<strong>{{ t('Positive 30-day returns','30日回报为正') }}: {{ breadth.positive }} / {{ breadth.eligible }}</strong>{% else %}<strong>{{ t('Insufficient comparable returns','可比回报数据不足') }}</strong> · {{ breadth.eligible }} / {{ breadth.required }} {{ t('minimum','最低所需') }}{% endif %}<p>{{ t('Only assets with sufficient recorded history and a numeric 30-day return enter that count. Missing returns are not losses. Not a Bitcoin-relative or altseason measure.','仅历史记录充分且有数值型30日回报的资产纳入统计。缺失回报不等于下跌；此指标并非相对比特币强弱或山寨季指标。') }}</p><p>{{ breadth.excluded }} {{ t('listed assets excluded from the return count','项已列资产未纳入回报统计') }}</p></div>
++        <div class="breadth-receipt">{% if breadth.available %}<strong>{{ t('Positive 30-day returns','30日回报为正') }}: {{ breadth.positive }} / {{ breadth.denominator if breadth.denominator is defined else breadth.eligible }}</strong>{% else %}<strong>{{ t('Insufficient comparable returns','可比回报数据不足') }}</strong> · {{ breadth.eligible }} / {{ breadth.required }} {{ t('minimum','最低所需') }}{% endif %}<p>{{ t('Only assets with sufficient recorded history and a numeric 30-day return enter that count. Missing returns are not losses. Not a Bitcoin-relative or altseason measure.','仅历史记录充分且有数值型30日回报的资产纳入统计。缺失回报不等于下跌；此指标并非相对比特币强弱或山寨季指标。') }}</p><p>{{ breadth.excluded }} {{ t('listed assets excluded from the return count','项已列资产未纳入回报统计') }}</p></div>
+         {% set reasons = {
+           'OLDER_SNAPSHOT': ['Older snapshot', '较早的快照'],
+           'FUTURE_OBSERVATION': ['Future-dated observation', '观测日期尚未到来'],
+@@ -353,7 +356,12 @@
+           'INVALID_LATEST_PRICE': ['Latest price unavailable or invalid', '最新价格缺失或无效'],
+           'MISSING_ASSET_IDENTITY': ['Asset identity missing', '缺少资产身份'],
+           'EMPTY_HISTORY': ['No observations', '暂无观测'],
+-          'UNREADABLE_HISTORY': ['Source history could not be read', '无法读取来源历史']
++          'UNREADABLE_HISTORY': ['Source history could not be read', '无法读取来源历史'],
++          'STALE_OBSERVATION': ['Older observation', '较早的观测'],
++          'DUPLICATE_ID': ['Duplicate id', '重复身份'],
++          'PAGE_ABSENT': ['Page not in this snapshot', '该分页不在本次快照'],
++          'RANK_NOT_IN_DECLARED_PAGE': ['Rank outside declared pages', '排名不在已声明分页'],
++          'SOURCE_MISMATCH': ['Source does not match the snapshot', '来源与快照不一致']
+         } %}
+         {% for item in universe_snapshot.excluded %}
+         <div class="excluded-observation"><div><strong>{{ item.symbol or item.file }}</strong><small>{{ item.source or '—' }}</small></div><div>{{ item.as_of or '—' }}</div><div>{{ t(*reasons.get(item.reason, ['Not comparable', '不可比较'])) }}</div></div>

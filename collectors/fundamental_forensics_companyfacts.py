@@ -42,6 +42,7 @@ from typing import Any, Callable, Iterable, Iterator, Mapping
 
 import requests
 
+from collectors.sec_request_pacer import SecRequestPacer
 from collectors.fundamental_forensics_acquisition import (
     AcquisitionError,
     AcquisitionTarget,
@@ -444,6 +445,7 @@ class SecCompanyFactsCollector:
         fetcher: Fetcher | None = None,
         sleeper: Callable[[float], None] = time.sleep,
         monotonic: Callable[[], float] = time.monotonic,
+        pacer: SecRequestPacer | None = None,
     ) -> None:
         self.user_agent = _validated_user_agent(user_agent)
         try:
@@ -470,14 +472,23 @@ class SecCompanyFactsCollector:
         self.fetcher = fetcher or _default_fetcher
         self._sleep = sleeper
         self._monotonic = monotonic
+        # One incumbent SEC request pacer per process (A20): inject a shared
+        # ``pacer`` or get a private one bound to this collector's interval and
+        # injected clocks.  ``_sleep``/``_monotonic`` stay for retry backoff.
+        self._pacer = (
+            pacer
+            if pacer is not None
+            else SecRequestPacer(
+                min_interval_seconds=self.min_interval_seconds,
+                sleeper=sleeper,
+                monotonic=monotonic,
+            )
+        )
+        # Truthful post-response mirror only; pacing consults the pacer.
         self._last_request_at: float | None = None
 
     def _pace(self) -> None:
-        if self._last_request_at is None:
-            return
-        wait = self.min_interval_seconds - (self._monotonic() - self._last_request_at)
-        if wait > 0:
-            self._sleep(wait)
+        self._pacer.acquire()
 
     @staticmethod
     def _close_response(response: Any) -> None:

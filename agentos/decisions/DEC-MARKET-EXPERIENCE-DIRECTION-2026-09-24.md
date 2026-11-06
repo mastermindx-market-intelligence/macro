@@ -48,13 +48,25 @@ The Chairman supplies present direction and bounded Meta-CEO assignment. This re
 
 The implementation principle is observe broadly, deepen analysis selectively, train only for a defined task, evaluate independently and promote explicitly. Preserve existing Data OS files/Parquet/R2 and derived-index ownership. Market Memory owns experience; Earnings owns event_workspace; GMI owns semantic memberships; current relationship owners own propagation hypotheses; Research Factory orchestrates existing evaluators rather than becoming one.
 
-## Cumulative continuation checkpoint
+## Records qualification — 2026-11-06
 
-MISSION_COMPLETE: false. Chairman live Meta-CEO assignment plus repeated continuation remains present intent. Mission: make Mastermind a cumulative, time-correct market-experience intelligence that learns through existing owners and earns forward authority through independent evaluation. No new runtime, production, capital, deployment, trading, provider, credential or unlimited-spend grant.
+This amendment qualifies the decision as a durable historical direction record under the Chairman's current Macro backlog assignment, tracked in [Mastermind #2028](https://github.com/mastermindx-market-intelligence/Mastermind/issues/2028). The original 2026-09-24 decision/frontmatter and product objective are preserved. Publication of this record does not establish delivery or acceptance of the market-experience programme: **MISSION_COMPLETE remains false**.
 
-Protected procedure pin for the current continuation: Mastermind protected master `87777e2e4705abe2cc4175738e0f3bd68134b66a`; `docs/sol_skills/INDEX.md` blob `94d1af402598894372858793a5b1931019c5fa77`; Skillpack 1.0.1 / bootstrap major 1. Required ACTIVE_EXECUTION, RECONCILE_STATE, CLOSEOUT and DELIVERY_WORKFLOW were loaded from that same protected revision before modifications.
+The continuation below records September 2026 observations. Its procedure pins, branch heads, CI/test counts, provider coverage, source-rights assessments, requested reviewers, host capabilities and proposed next actions are dated evidence; they are not current operational state or a renewed instruction to execute them. The historical Mastermind #967 architecture proposal is not the current programme plan: the [subsequent source-linked continuation](https://github.com/mastermindx-market-intelligence/macro/pull/7936#issuecomment-5852394899) records its supersession by CORE_INTELLIGENCE_PRODUCTIZATION. Preserve the original direction without reviving that proposal's lifecycle.
 
-### Canonical programme carriers
+Current source, CI, review, custody and acceptance state for [#8024](https://github.com/mastermindx-market-intelligence/macro/pull/8024), [#8076](https://github.com/mastermindx-market-intelligence/macro/pull/8076), [#8183](https://github.com/mastermindx-market-intelligence/macro/pull/8183) and [#8364](https://github.com/mastermindx-market-intelligence/macro/pull/8364) must be established on those existing carriers before their next material action. This records-only amendment neither accepts them nor dispatches work on them. Historical review requests are preserved as history; actual current source law and mandatory GitHub review requirements govern each release.
+
+The current repair used the verified compatible Mastermind protected pin `49c2e1d93e5e080b1671c98087a845e5beb09dd5`. It changes no runtime, dataset, provider, collector, model, evaluation, price/identity ownership or trade authority. No historical test or production result is being reasserted as current-head proof. The previously refused SEC sweep, coverage-metadata mutation, deterministic sample command, branch-script streaming and cross-host comparison remain excluded; this amendment does not retry or re-home any of them. Historical EFFECT_NONE / no-UNKNOWN receipts remain historical receipts, not a fresh capability determination.
+
+The immediate records-carrier action is to qualify this amendment against current main and exact-head required checks, then use Macro's existing individual release workflow if eligible. Any later programme continuation must recover the current canonical owner and material evidence, preserve the DO_NOT_REDO and source-rights boundaries below, and demonstrate the original product journey before declaring completion.
+
+## Historical continuation checkpoint — September 2026 (preserved)
+
+MISSION_COMPLETE: false was the recorded September status. At that checkpoint, the Chairman's live Meta-CEO assignment plus repeated continuation supplied the then-current intent. Mission: make Mastermind a cumulative, time-correct market-experience intelligence that learns through existing owners and earns forward authority through independent evaluation. No new runtime, production, capital, deployment, trading, provider, credential or unlimited-spend grant.
+
+Historical procedure pin used for this September checkpoint: Mastermind protected master `87777e2e4705abe2cc4175738e0f3bd68134b66a`; `docs/sol_skills/INDEX.md` blob `94d1af402598894372858793a5b1931019c5fa77`; Skillpack 1.0.1 / bootstrap major 1. Required ACTIVE_EXECUTION, RECONCILE_STATE, CLOSEOUT and DELIVERY_WORKFLOW were loaded from that same protected revision before modifications.
+
+### Programme carriers observed at the September checkpoint
 
 - Strategy/source carrier: Mastermind #967, current published head `17b496fde020095d566e84f21d9f4af6f1b65bbf`, DRAFT, mission architecture + source-admissibility + SEC-foundation evidence. No merge/acceptance claimed.
 - Records carrier: Macro #7936, this decision, current predecessor head `f82148b050a4f2ac0fd1ffa3d02d9eee330a2af4`. This cumulative checkpoint replaces only the prior cumulative body; original decision/frontmatter remains controlling.
@@ -112,7 +124,7 @@ Leading source candidate: Massive point-in-time stock reference. Official Massiv
 
 Rights posture is promising but feed-admission remains explicit: `research/licenses/MASSIVE_ENTITLEMENT_RECORD.md` records enterprise rights across historical archives, reference data, corporate actions, retention, redistribution, derived materials and AI/ML; it also says written dataset-specific vendor conditions override the general record. Therefore Massive PIT reference/ticker-events is `candidate_source=true`, not admitted truth, until the existing rights owner confirms no adverse feed-specific designation and the actual production credential proves the required historical endpoint depth. No new identity store, source-rights registry or vendor plane is authorized.
 
-### Current architecture / pilot ruling
+### Architecture / pilot ruling recorded at the September checkpoint
 
 Compute is not the critical blocker. A candidate licensed price substrate exists. A broad rights-safe SEC filing-date/availability anchor exists. The missing work is exact source identity, owned metadata coherence, historical universe rights, canonical security→issuer joins, and then frozen evaluation design.
 
@@ -124,8 +136,8 @@ The first trainable slice may be frozen only after: (1) Massive per-security cov
 
 Do not redo broad vision/capacity arithmetic, temporal-contract probe, CPI vintage audit, membership qualification, broad SEC anchor census, five-issuer identity dry-run, AAPL non-publishing workspace proof, or live Massive store-level census unless source/code materially changes. Do not rerun the denied all-legacy sweep or denied coverage-metadata mutation under unchanged conditions. Do not consume sealed E3 Q&A/transcript holdouts. Do not create a duplicate source/event/identity/memory/evaluation/publication/control plane.
 
-### Exact continuation
+### Historical proposed continuation — not a current dispatch
 
 Primary continuation: (1) finish #8024 exact-head CI and obtain a real independent review for the read-only audit; do not merge on the basis of local tests alone. (2) Qualify the already-entitled Massive point-in-time reference/ticker-events family as the leading historical identity source candidate, including feed-specific vendor designation and an account-level read on the runtime that actually holds Massive credentials. This host currently has neither `MASSIVE_API_KEY` nor `POLYGON_API_KEY`, so live account access is UNPROVEN here and no credential was requested or exposed. (3) Extend existing Data OS / Company Intelligence identity owners only after that source qualification; consume `WS:MARKET-OS`'s existing owner-routed ListingAlias→ListingKey renderer seam rather than minting a Market Experience resolver. (4) Keep general merger/spin/bankruptcy successor lineage as a separate typed gap unless a current owner/source proves it. (5) Continue historical-universe rights determination through the existing rights owner and per-security Massive coverage through existing price/Data OS owners; the previously denied deterministic sample command itself remains frozen. #967 strategy/date-test/review remains separate and cannot bypass its own holds.
 
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION. Mission remains incomplete. No watcher/background worker was started; no custody transfer or automatic wake exists. Recommended next mode remains Extra High for bounded source repair/tests/integration if it materially changes available action access; mode never overrides a prior denial or permission gate.
+Historical finalization classification: CHECKPOINTED_CONTINUATION. Mission remains incomplete. No watcher/background worker was started; no custody transfer or automatic wake exists. Recommended next mode remains Extra High for bounded source repair/tests/integration if it materially changes available action access; mode never overrides a prior denial or permission gate.

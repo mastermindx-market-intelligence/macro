@@ -20,6 +20,7 @@ from engine.government_revenue.entity_resolution import (
     build_recipient_resolution_coverage,
     load_recipient_entity_graph,
 )
+from tests.test_build_government_revenue import _render_dependency_assets
 from tests.test_government_revenue_workspace import reviewed_award_event
 
 
@@ -64,6 +65,7 @@ def _generation(
 """,
         encoding="utf-8",
     )
+    _render_dependency_assets(template_dir)
     workspace = build_procurement_workspace(
         {
             "events": [],
@@ -702,3 +704,95 @@ def test_award_event_admission_guard_reads_the_counter_or_fails_closed(
     """
     with pytest.raises(ProjectionDriftError):
         _assert_workspace_admits_its_award_events(workspace)
+
+
+def _dynamic_candidate_bootstrap(root: Path) -> None:
+    """Fixture for the actual deferred module route; preserve source/public twins."""
+    source = root / "templates" / "government_revenue.html.j2"
+    html = root / "site" / "government_revenue.html"
+    legacy = '<script src="government-revenue-candidate-radar.js"></script>'
+    bootstrap = (
+        '<script data-sync src="{{ asset_url(\'government-revenue-investor-start.js\') '
+        'if asset_url is defined else \'government-revenue-investor-start.js\' }}"></script>'
+    )
+    assert legacy in source.read_text()
+    source.write_text(source.read_text().replace(legacy, bootstrap), encoding="utf-8")
+    assert legacy in html.read_text()
+    html.write_text(html.read_text().replace(
+        legacy,
+        '<script data-sync src="government-revenue-investor-start.js?v=0123abcd"></script>'
+    ), encoding="utf-8")
+
+    loader = (
+        "function modules(){"
+        "var names=['government-revenue-candidate-radar.js'];"
+        "names.map(function(name){"
+        "var script=document.createElement('script');"
+        "script.src=name;document.head.appendChild(script);"
+        "});}"
+    )
+    for name, payload in (
+        ("government-revenue-investor-start.js", loader),
+        ("government-revenue-candidate-radar.js", "window.CandidateRadar=true;"),
+    ):
+        for folder in ("site", "templates"):
+            (root / folder / name).write_text(payload, encoding="utf-8")
+
+
+def test_projection_accepts_canonical_deferred_candidate_loader(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _generation(tmp_path)
+    _dynamic_candidate_bootstrap(tmp_path)
+    monkeypatch.setattr(
+        build_government_revenue_candidates,
+        "verify_candidate_artifacts",
+        lambda *_args, **_kwargs: {"status": "verified"},
+    )
+    result = validate_projection(tmp_path)
+    assert result["bundle_id"]
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    (
+        "missing_public_loader",
+        "modified_public_loader",
+        "removed_candidate_module",
+        "modified_public_candidate_module",
+        "wrong_html_loader",
+        "wrong_template_loader",
+    ),
+)
+def test_projection_rejects_unbound_deferred_candidate_loader(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mutation: str
+) -> None:
+    _generation(tmp_path)
+    _dynamic_candidate_bootstrap(tmp_path)
+    monkeypatch.setattr(
+        build_government_revenue_candidates,
+        "verify_candidate_artifacts",
+        lambda *_args, **_kwargs: {"status": "verified"},
+    )
+    site = tmp_path / "site"
+    templates = tmp_path / "templates"
+    starter = "government-revenue-investor-start.js"
+    candidate = "government-revenue-candidate-radar.js"
+    if mutation == "missing_public_loader":
+        (site / starter).unlink()
+    elif mutation == "modified_public_loader":
+        (site / starter).write_text("// swapped module", encoding="utf-8")
+    elif mutation == "removed_candidate_module":
+        for folder in (site, templates):
+            p = folder / starter
+            p.write_text(p.read_text().replace(candidate, "unknown-module.js"), encoding="utf-8")
+    elif mutation == "modified_public_candidate_module":
+        (site / candidate).write_text("// unexpected bytes", encoding="utf-8")
+    elif mutation == "wrong_html_loader":
+        p = site / "government_revenue.html"
+        p.write_text(p.read_text().replace(starter, "wrong-bootstrap.js"), encoding="utf-8")
+    elif mutation == "wrong_template_loader":
+        p = templates / "government_revenue.html.j2"
+        p.write_text(p.read_text().replace(starter, "wrong-bootstrap.js"), encoding="utf-8")
+    with pytest.raises(ProjectionDriftError):
+        validate_projection(tmp_path)
