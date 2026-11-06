@@ -1,0 +1,46 @@
+{
+  "verified_at": "2026-09-16T07:12:46.095326+00:00",
+  "classification": "artifact consistency only; not implementation or production verification",
+  "capability_rows": 100,
+  "required_fields_per_row": 10,
+  "procedure_pins": 13,
+  "protected_source_receipts": 34,
+  "active_candidates": 28,
+  "checks": [
+    {
+      "file": "README.md",
+      "bytes": 1264,
+      "sha256": "4e0008f274f991a291b808c519231a7e297554d2a119307fd876d1897e5c31be"
+    },
+    {
+      "file": "ASTRA_FABRIC_RESEARCH_AND_ARCHITECTURE_2026-09-16.md",
+      "bytes": 90238,
+      "sha256": "d83488629c1717ed0e3976bfb72c06377ee959e745086d8ab7c799a90c753608"
+    },
+    {
+      "file": "FINAL_FABLE_HANDOFF_2026-09-16.md",
+      "bytes": 53993,
+      "sha256": "2a776f6f5daac873692cab5071a659beae03ebadec54e6aa11d2771205f4e71d"
+    },
+    {
+      "file": "CAPABILITY_LEDGER_2026-09-16.md",
+      "bytes": 62830,
+      "sha256": "12b6ee7d365fe9568b4acd2dc60540c0b28d6fdc306fafc2b8adcafddb65a347"
+    },
+    {
+      "file": "CAPABILITY_LEDGER_2026-09-16.json",
+      "bytes": 120322,
+      "sha256": "620674c9595df405af88a4a9c382b7f82811099d40d0f3a419372a3678877d60"
+    },
+    {
+      "file": "SOURCE_MANIFEST_2026-09-16.json",
+      "bytes": 52964,
+      "sha256": "e92bedd2c7864921eb4cebe4a98d430bf953d329206670b71ca96cee3d36d30f"
+    },
+    {
+      "file": "FRONTIER_REVIEW_PACKETS_2026-09-16.md",
+      "bytes": 17744,
+      "sha256": "9ba8727c5f71989f36af232e3bad1f1bf04bc32758fe11521f64ac204f6a1eb7"
+    }
+  ]
+}

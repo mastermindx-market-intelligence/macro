@@ -1,0 +1,8 @@
+{
+  "base_sha": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+  "baseline_exit_code": 1,
+  "baseline_summary": [
+    "9 failed, 51 passed in 2.65s"
+  ],
+  "identical_failure_nodeids": true
+}
