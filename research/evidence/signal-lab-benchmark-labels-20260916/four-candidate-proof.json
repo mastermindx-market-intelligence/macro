@@ -1,0 +1,98 @@
+{
+  "four_candidate_tree": "a029ed8dfa5cbff94d5fe57d0630a9eff31e1ff7",
+  "benchmark_test_probe": "d30d337eb6688ad22cf03c5231d0a34835e91ff6",
+  "predecessor_heads": {
+    "clock": "5f7c01437150d3c56d135c85b0ea308e3e28129b",
+    "identity": "3299cec15ddc6874a5d70eab3647dca81b241dc6",
+    "followup": "8e3f9ae59257027214ac4bea3eed85ad756ab7cb"
+  },
+  "tests": {
+    "tests": 563,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "seconds": 54.97,
+  "pid": 42172,
+  "junit_sha256": "da0e0d11b8d905af3ccbdbff11f4ade274ac637ed55f41d63ad4b843159d0af2",
+  "log_sha256": "9eb0604bbd3686e8abe666a85359fff752dc411237a2f6143cddb56cd794ff02",
+  "functions_and_files": [
+    {
+      "path": "engine/signal_foundry/harness.py",
+      "function": "_nonoverlap_price_windows",
+      "owner": "5f7c01437150d3c56d135c85b0ea308e3e28129b",
+      "body_equal": true
+    },
+    {
+      "path": "engine/signal_foundry/harness.py",
+      "function": "_run_backtest",
+      "owner": "5f7c01437150d3c56d135c85b0ea308e3e28129b",
+      "body_equal": true
+    },
+    {
+      "path": "engine/signal_foundry/harness.py",
+      "function": "_run_backtest_raw",
+      "owner": "5f7c01437150d3c56d135c85b0ea308e3e28129b",
+      "body_equal": true
+    },
+    {
+      "path": "engine/signal_foundry/harness.py",
+      "function": "_compute_verdict",
+      "owner": "5f7c01437150d3c56d135c85b0ea308e3e28129b",
+      "body_equal": true
+    },
+    {
+      "path": "engine/signal_foundry/spec.py",
+      "function": "construction_hash",
+      "owner": "3299cec15ddc6874a5d70eab3647dca81b241dc6",
+      "body_equal": true
+    },
+    {
+      "path": "engine/signal_foundry/spec.py",
+      "function": "_legacy_construction_hash",
+      "owner": "3299cec15ddc6874a5d70eab3647dca81b241dc6",
+      "body_equal": true
+    },
+    {
+      "path": "engine/signal_foundry/spec.py",
+      "function": "excess_return_contract",
+      "owner": "working",
+      "body_equal": true
+    },
+    {
+      "path": "engine/signal_foundry/harness.py",
+      "function": "_build_target",
+      "owner": "working",
+      "body_equal": true
+    },
+    {
+      "path": "engine/signal_foundry/harness.py",
+      "function": "_load_raw_price",
+      "owner": "working",
+      "body_equal": true
+    },
+    {
+      "path": "admin/experiments.py",
+      "owner": "8e3f9ae59257027214ac4bea3eed85ad756ab7cb",
+      "bytes_equal": true
+    },
+    {
+      "path": "admin/static/app.js",
+      "owner": "8e3f9ae59257027214ac4bea3eed85ad756ab7cb",
+      "bytes_equal": true
+    },
+    {
+      "path": "engine/experiment_followup.py",
+      "owner": "8e3f9ae59257027214ac4bea3eed85ad756ab7cb",
+      "bytes_equal": true
+    },
+    {
+      "path": "app/deploy/update.sh",
+      "owner": "8e3f9ae59257027214ac4bea3eed85ad756ab7cb",
+      "bytes_equal": true
+    }
+  ],
+  "fixture_tracked_bytes_unchanged": true,
+  "actual_merge_performed": false,
+  "production_proven": false
+}

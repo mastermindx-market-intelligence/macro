@@ -85,6 +85,68 @@ def _git_tracked(path_str: str, repo_root: Path) -> bool:
 # Public API
 # ---------------------------------------------------------------------------
 
+EXCESS_TARGET_VERSION = "sf-excess-target-2"
+
+
+class TargetContractError(ValueError):
+    """The declared target cannot unambiguously identify the intended labels."""
+
+
+def excess_return_contract(spec: dict, repo_root: Path | None = None) -> dict:
+    """Describe one explicit asset-minus-price-benchmark target; no implicit baseline.
+
+    A construction declaration is not a point-in-time, rights or trading approval.
+    Price-benchmark returns are buy-and-hold simple returns, not strategy returns.
+    """
+    target = spec.get("target")
+    if not isinstance(target, dict) or target.get("kind") != "excess_return":
+        raise TargetContractError("expected an excess_return target")
+    unknown = set(target) - {"path", "column", "kind", "horizon_d", "benchmark"}
+    if unknown:
+        raise TargetContractError("unsupported excess_return target fields: " + str(sorted(unknown)))
+    horizon = target.get("horizon_d")
+    if type(horizon) is not int or horizon not in ALLOWED_HORIZONS:
+        raise TargetContractError("excess_return horizon_d must be an allowed integer target-bar horizon")
+    benchmark = target.get("benchmark")
+    if not isinstance(benchmark, dict) or set(benchmark) != {"path", "column"}:
+        raise TargetContractError("excess_return requires explicit target.benchmark {path, column}; no baseline inference")
+
+    def price_ref(entry: dict, label: str) -> dict:
+        from pathlib import PurePosixPath
+        raw, column = entry.get("path"), entry.get("column")
+        if not isinstance(raw, str) or not raw or raw != raw.strip() or any(c in raw for c in '\\*?[]\n\r\0'):
+            raise TargetContractError(label + " path must be a literal repository-relative file")
+        path = PurePosixPath(raw)
+        if path.is_absolute() or '..' in path.parts or str(path) != raw or raw.startswith(('-', ':')):
+            raise TargetContractError(label + " path must be canonical and repository-relative")
+        if path.suffix.lower() not in {'.parquet', '.csv', '.tsv'}:
+            raise TargetContractError(label + " path has no supported price-file format")
+        if not isinstance(column, str) or not column.strip() or column != column.strip():
+            raise TargetContractError(label + " requires an explicit nonempty column")
+        if repo_root is not None:
+            root = Path(repo_root).resolve()
+            resolved = (root / raw).resolve()
+            if not resolved.is_relative_to(root):
+                raise TargetContractError(label + " resolves outside repository")
+            if resolved.is_dir() or not _git_tracked(raw, root):
+                raise TargetContractError(label + " must be a git-tracked file (SF-R7)")
+        return {"path": raw, "column": column}
+
+    asset = price_ref(target, "asset")
+    comparison = price_ref(benchmark, "benchmark")
+    same = asset['path'] == comparison['path']
+    if repo_root is not None:
+        root = Path(repo_root).resolve()
+        same = (root / asset['path']).resolve() == (root / comparison['path']).resolve()
+    if same and asset['column'] == comparison['column']:
+        raise TargetContractError("asset and benchmark must not name the identical price series")
+    return {"version": EXCESS_TARGET_VERSION, "status": "declared", "kind": "excess_return",
+            "metric": "asset_simple_return_minus_benchmark_simple_return",
+            "clock": "target_price_bars", "horizon_bars": horizon,
+            "asset": asset, "benchmark": comparison, "benchmark_policy": "buy_and_hold",
+            "units": "simple_return_difference", "trading_authority": False}
+
+
 def load_spec(path: str | Path) -> dict:
     """Load a JSON spec file from disk.  Raises FileNotFoundError / json.JSONDecodeError
     on missing/malformed file.  Does NOT validate — call validate_spec() separately."""
@@ -239,6 +301,12 @@ def validate_spec(spec: dict, repo_root: str | Path = ".") -> tuple[bool, list[s
                 f"(stored hash {stored_gates_hash!r} != computed {computed!r}). "
                 "Harness refuses runs on modified gates (SF-R4)."
             )
+
+    if isinstance(target, dict) and target.get("kind") == "excess_return":
+        try:
+            excess_return_contract(spec, repo_root)
+        except (TargetContractError, OSError) as exc:
+            errors.append(str(exc))
 
     ok = len(errors) == 0
     return ok, errors
