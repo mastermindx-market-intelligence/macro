@@ -1,0 +1,67 @@
+# CI registration PROPOSAL — GMI ORCH-REL M1 (REL-M1-BUILD lane, 2026-10-21).
+#
+# Registering these three suites is a CI-authority change owned by the GMI
+# COMPLETION seat, NOT by the lane: this file is a proposal only and touches no
+# .github/ or config/ path.  Until the seat registers them, the three suites
+# read as NEW unrun in scripts/audit_unrun_tests.py.
+#
+# Style follows the `company-intelligence-private-runtime` job in
+# .github/ci/legacy-jobs.yml (its `if: false` gate stub is deliberately NOT
+# copied — this job is meant to actually run).  `paths:` is the FULL
+# import/read closure of the three suites: every repo file they import or open,
+# including lib/dataos/temporal.py, the universe manifest, the four pinned
+# inputs, the four contracts, the engine modules, the producer script, the two
+# committed data files, the suites themselves, and the __init__.py / conftest.py
+# files they need.  Proven by exporting exactly these paths and running the
+# suites inside that export (see the lane return).
+company-intelligence-relationships:
+  gate: code
+  scope: exclusive
+  paths:
+    - "contracts/company_intelligence/relationship_extraction.v1.schema.json"
+    - "contracts/company_intelligence/relationship_source_excerpt.v1.schema.json"
+    - "contracts/company_intelligence/relationship_observation_package.v2.schema.json"
+    - "contracts/company_intelligence/relationship_edges.v1.schema.json"
+    - "engine/__init__.py"
+    - "engine/company_intelligence/__init__.py"
+    - "engine/company_intelligence/contracts.py"
+    - "engine/company_intelligence/health.py"
+    - "engine/company_intelligence/views.py"
+    - "engine/company_intelligence/relationships/__init__.py"
+    - "engine/company_intelligence/relationships/clock.py"
+    - "engine/company_intelligence/relationships/package_v2.py"
+    - "engine/company_intelligence/relationships/replay.py"
+    - "lib/__init__.py"
+    - "lib/dataos/__init__.py"
+    - "lib/dataos/identity.py"
+    - "lib/dataos/nulls.py"
+    - "lib/dataos/price.py"
+    - "lib/dataos/quality.py"
+    - "lib/dataos/registry.py"
+    - "lib/dataos/temporal.py"
+    - "scripts/build_relationship_observations.py"
+    - "research/theme_graph/gmi_relationships_20261021/extraction/swks_aapl_m1.jsonl"
+    - "research/theme_graph/gmi_relationships_20261021/sources/0000004127-24-000131.json"
+    - "research/theme_graph/gmi_relationships_20261021/sources/0000004127-25-000085.json"
+    - "research/theme_graph/gmi_relationships_20261021/sources/0000004127-26-000003.json"
+    - "research/theme_graph/coverage_20261019/UNIVERSE_MANIFEST.json"
+    - "data/company_intelligence/relationships/observation_package.v2.json"
+    - "data/company_intelligence/relationships/relationship_edges.json"
+    - "tests/conftest.py"
+    - "tests/test_relationship_contracts.py"
+    - "tests/test_relationship_m1_swks_aapl.py"
+    - "tests/test_relationship_battery.py"
+  runs-on: ubuntu-latest
+  timeout-minutes: 5
+  steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with: {python-version: "3.12"}
+    - name: Install relationship contract test dependencies
+      run: pip install pytest jsonschema tzdata
+    - name: Relationship contract schemas
+      run: python -m pytest tests/test_relationship_contracts.py -q
+    - name: Relationship M1 SWKS->AAPL primary-source record
+      run: python -m pytest tests/test_relationship_m1_swks_aapl.py -q
+    - name: Relationship derivation battery
+      run: python -m pytest tests/test_relationship_battery.py -q

@@ -239,6 +239,17 @@ def compute(df: pd.DataFrame | None, cfg: dict | None = None) -> dict | None:
     else:
         headline = f"recent coupon demand in-line ({n} of last {recent_n} scored)"
 
+    # Counts above describe only scored rows; do not call that subset the latest
+    # chronological auctions when some recent same-tenor histories are insufficient.
+    if 0 < n < len(rows):
+        coverage = f"{n} of {len(rows)} recent auctions scored"
+        if n_soft >= 2 and n_soft >= n_strong:
+            headline = (f"{n_soft} of {n} scored coupon auctions clearing soft "
+                        f"({coverage}) — watch duration demand")
+        elif n_strong > n_soft:
+            headline = (f"recent scored coupon demand firm "
+                        f"({n_strong} of {n} strong; {coverage})")
+
     asof = scored["auction_date"].max()
     return {
         "asof": None if pd.isna(asof) else asof.strftime("%Y-%m-%d"),

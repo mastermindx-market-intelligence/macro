@@ -176,3 +176,35 @@ def test_note_present_and_marks_display_only():
     out = ts.compute(pd.DataFrame(rows), _CFG)
     assert "never scored" in out["note_en"].lower()
     assert "when-issued" in out["note_en"].lower()   # the tail-omission honesty
+
+
+def _coverage_rows(kind):
+    # Monthly auctions in a supported short-history accrued store. The newest
+    # three 30Y observations cannot meet the unchanged five-prior scoring gate.
+    out = []
+    for i, d in enumerate(pd.date_range("2025-06-12", periods=12, freq=pd.DateOffset(months=1))):
+        x = i if kind == "strong" else -i
+        row = _auction(d.date(), 10, btc=2.5 + .015*x, ind=.65 + .004*x,
+                       dlr=.15 - .002*x)
+        out.append(row)
+    for d in pd.date_range("2026-06-20", periods=3, freq=pd.DateOffset(months=1)):
+        out.append(_auction(d.date(), 30, klass="Bond"))
+    return pd.DataFrame(out)
+
+
+def test_partial_history_firm_headline_names_scored_subset():
+    out = ts.compute(_coverage_rows("strong"), _CFG)
+    n, total = out["n_scored"], len(out["rows"])
+    assert 0 < n < total
+    assert all(r["absorption_z"] is None for r in out["rows"][:3])
+    assert "recent scored coupon demand firm" in out["headline"]
+    assert f"{n} of {total} recent auctions scored" in out["headline"]
+
+
+def test_partial_history_soft_headline_names_scored_subset():
+    out = ts.compute(_coverage_rows("soft"), _CFG)
+    n, total = out["n_scored"], len(out["rows"])
+    assert 0 < n < total and out["n_soft"] >= 2
+    assert all(r["absorption_z"] is None for r in out["rows"][:3])
+    assert f"{out['n_soft']} of {n} scored coupon auctions" in out["headline"]
+    assert f"{n} of {total} recent auctions scored" in out["headline"]

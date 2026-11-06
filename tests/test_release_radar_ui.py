@@ -185,14 +185,27 @@ def test_fixture_cpi_has_shadows():
     assert "cpi_bridge" in shadows, "CPI headline missing shadows.cpi_bridge"
 
 
-def test_fixture_nfp_v3_shadow_has_warning():
-    """NFP v3_factor shadow carries a warning string."""
+def test_fixture_nfp_v3_shadow_claim_withdrawn():
+    """RIC-M0: the NFP v3_factor claim is withdrawn — no point, no interval."""
     d = _fixture()
     nfp = next((i for i in d["upcoming"] if i.get("release_type") == "nfp"), None)
     assert nfp is not None
     v3 = (nfp.get("shadows") or {}).get("v3_factor")
-    assert v3 is not None, "NFP missing shadows.v3_factor"
-    assert v3.get("warning"), "NFP v3_factor shadow missing warning"
+    assert v3 is not None, "NFP missing shadows.v3_factor withdrawal block"
+    assert v3["claim_withdrawn"]["verdict"] == "FALSIFIED_UNDER_COHERENT_TARGET"
+    for key in ("point", "p10", "p25", "p50", "p75", "p90", "confidence"):
+        assert key not in v3, f"withdrawn NFP v3_factor must not carry {key}"
+
+
+def test_dashboard_renders_no_number_for_a_withdrawn_shadow_claim():
+    """The v3 row short-circuits on claim_withdrawn before any point/interval markup."""
+    src = (Path(__file__).resolve().parents[1] / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    start = src.index("function v3FactorRow(v3, isClaims, isNfp){")
+    body = src[start:src.index("/* ---- MRI-R39a", start)]
+    branch = body[body.index("if (v3.claim_withdrawn){"):body.index("var useK")]
+    assert "intervalBar" not in branch and "v3.point" not in branch
+    assert 'class="l-en"' in branch and 'class="l-zh"' in branch
+    assert "falsif" not in branch.lower() and "证伪" not in branch
 
 
 def test_fixture_coverage_flags_present_on_cpi():
@@ -506,8 +519,9 @@ def test_r24_v3_shadow_warning_rendered():
     """v3FactorRow renders the warning field when present."""
     src = _rr_section_src()
     fn_start = src.find("function v3FactorRow(")
-    # Use a large window to cover the full function body
-    fn_body = src[fn_start:fn_start + 1200] if fn_start >= 0 else ""
+    # Bound to the full function body (RIC-M0 added a withdrawal branch at its top)
+    fn_end = src.find("/* ---- MRI-R39a", fn_start) if fn_start >= 0 else -1
+    fn_body = src[fn_start:fn_end] if fn_end > fn_start else ""
     assert "warning" in fn_body, "v3FactorRow must render the warning field"
     assert "rr-shadow-warn" in fn_body, "v3FactorRow must use rr-shadow-warn CSS class"
 
@@ -567,12 +581,12 @@ def test_r24_modal_policy_backdrop_section():
 
 
 def test_r24_modal_scoreboard_in_main_render():
-    """scoreboardBlock is called in main renderRadar (not inside each modal)."""
+    """rrTrackRecordBlock is called in main renderRadar (not inside each modal)."""
     src = _rr_section_src()
     main_start = src.find("function renderRadar(")
     # renderRadar grew with the see-more logic; use a larger window
     main_body = src[main_start:main_start + 8000] if main_start >= 0 else ""
-    assert "scoreboardBlock(" in main_body, "scoreboardBlock not called in renderRadar"
+    assert "rrTrackRecordBlock(" in main_body, "rrTrackRecordBlock not called in renderRadar"
 
 
 # ---------------------------------------------------------------------------
@@ -1369,7 +1383,7 @@ def test_r40_mismatched_context_metrics_are_suppressed():
 def test_w11_no_inline_forward_accrual_in_panel_render():
     """W11: inline 'Forward accrual began' block no longer appended to rr-content.
 
-    The scoreboardBlock() output must NOT be injected into RR_EL.innerHTML.
+    The rrTrackRecordBlock() output must NOT be injected into RR_EL.innerHTML.
     It is now routed to the track-record overlay (rr-tr-body).
     """
     src = _rr_section_src()
@@ -1381,7 +1395,7 @@ def test_w11_no_inline_forward_accrual_in_panel_render():
         "Inline scoreboard block still appended to RR_EL — must be moved to rr-tr-body (W11)"
     )
     assert "RR_TR_BODY" in main_body or "rr-tr-body" in main_body, (
-        "scoreboardBlock output must be routed to rr-tr-body overlay (W11)"
+        "rrTrackRecordBlock output must be routed to rr-tr-body overlay (W11)"
     )
 
 
@@ -1487,3 +1501,193 @@ def test_w11_no_consensus_in_overlay_strings():
     assert "consensus" not in section.lower(), (
         "MRI-R5: 'consensus' found in track-record overlay HTML (W11)"
     )
+
+
+# ---------------------------------------------------------------------------
+# F1 track record — rrTrackRecordBlock / rrTrackRecordLine (RIC-INCLUDED-CORE)
+# ---------------------------------------------------------------------------
+
+def _extract_js_function(src: str, name: str) -> str:
+    marker = f"function {name}("
+    start = src.find(marker)
+    if start < 0:
+        return ""
+    brace = src.find("{", start)
+    depth = 0
+    for i in range(brace, len(src)):
+        ch = src[i]
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return src[start : i + 1]
+    return ""
+
+
+def _run_rr_track_js(src: str, payload: dict) -> str:
+    import json
+    import shutil
+    import subprocess
+    import tempfile
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node not available")
+    script = tempfile.NamedTemporaryFile("w", suffix=".js", delete=False)
+    script.write(
+        r"""
+const vm = require('node:vm');
+const payload = JSON.parse(process.argv[2]);
+const esc = function(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+const relName = function(r){ return String(r); };
+"""
+        + src
+        + "\nconst out = payload.fn === 'block' ? rrTrackRecordBlock(payload.tr) : rrTrackRecordLine(payload.tr, payload.releaseType||'');\nprocess.stdout.write(out);\n"
+    )
+    script.close()
+    result = subprocess.run(
+        [node, script.name, json.dumps(payload)],
+        capture_output=True,
+        text=True,
+        timeout=15,
+    )
+    assert result.returncode == 0, result.stderr
+    return result.stdout
+
+
+def test_track_record_panel_never_prints_fake_zero():
+    src = _rr_section_src()
+    fn_src = "\n".join(
+        _extract_js_function(src, name)
+        for name in ("rrTrackMiss", "rrTrackMissCi", "rrTrackEarly", "rrTrackRecordBlock")
+    )
+    assert fn_src.strip()
+    tr = {
+        "accuracy_claim": "withheld_until_clean_aligned_forward_evidence",
+        "display_min_n": 12,
+        "verdict_min_n": 24,
+        "releases": [
+            {
+                "release": "cpi_headline",
+                "clean_n": 11,
+                "first_print_matched_n": 11,
+                "display_state": "accruing",
+                "mae_ours": None,
+                "mae_naive_prior": None,
+            },
+        ],
+        "score_receipts": {},
+    }
+    html = _run_rr_track_js(fn_src, {"fn": "block", "tr": tr})
+    assert "—" in html
+    assert "0.000" not in html
+    assert ">0.00<" not in html
+
+
+def test_track_record_panel_states_bilingual():
+    src = _rr_section_src()
+    fn_src = "\n".join(
+        _extract_js_function(src, name)
+        for name in ("rrTrackMiss", "rrTrackMissCi", "rrTrackEarly", "rrTrackRecordBlock")
+    )
+    tr = {
+        "accuracy_claim": "withheld_until_clean_aligned_forward_evidence",
+        "display_min_n": 12,
+        "verdict_min_n": 24,
+        "releases": [
+            {"release": "a", "clean_n": 0, "first_print_matched_n": 0, "display_state": "no_clean_scores", "mae_ours": None, "mae_naive_prior": None},
+            {"release": "b", "clean_n": 2, "first_print_matched_n": 2, "display_state": "benchmark_only", "mae_ours": None, "mae_naive_prior": None},
+            {"release": "c", "clean_n": 5, "first_print_matched_n": 3, "display_state": "proxy_or_mixed_target", "mae_ours": None, "mae_naive_prior": None},
+            {"release": "d", "clean_n": 8, "first_print_matched_n": 8, "display_state": "accruing", "mae_ours": None, "mae_naive_prior": None},
+            {"release": "e", "clean_n": 12, "first_print_matched_n": 12, "display_state": "display_only", "mae_ours": 0.04, "mae_ours_ci": [0.03, 0.07], "mae_naive_prior": 0.06, "early": True},
+            {"release": "f", "clean_n": 14, "first_print_matched_n": 14, "display_state": "interval_pending", "mae_ours": None, "mae_naive_prior": None},
+        ],
+        "score_receipts": {},
+    }
+    html = _run_rr_track_js(fn_src, {"fn": "block", "tr": tr})
+    pairs = [
+        ("No clean scores", "暂无有效评分"),
+        ("Benchmark only", "仅基准"),
+        ("Not comparable yet", "尚不可比"),
+        ("Accruing", "积累中"),
+        ("Early, n = 12", "早期，n = 12"),
+        ("Range pending", "误差区间待定"),
+    ]
+    for en, zh in pairs:
+        assert en in html
+        assert zh in html
+    assert "0.04 (0.03–0.07)" in html
+    assert "Reference only" not in html
+    assert "title=" not in html
+
+
+def test_track_record_line_per_release():
+    src = _rr_section_src()
+    fn_src = "\n".join(
+        _extract_js_function(src, name)
+        for name in ("rrTrackMiss", "rrTrackMissCi", "rrTrackEarly", "rrTrackRecordLine")
+    )
+    tr = {
+        "display_min_n": 12,
+        "verdict_min_n": 24,
+        "releases": [
+            {
+                "release": "cpi_headline",
+                "clean_n": 8,
+                "first_print_matched_n": 8,
+                "display_state": "accruing",
+            },
+        ],
+    }
+    html = _run_rr_track_js(fn_src, {"fn": "line", "tr": tr, "releaseType": "cpi_headline"})
+    assert "of 12" in html
+    assert 'class="l-zh"' in html
+    absent = _run_rr_track_js(fn_src, {"fn": "line", "tr": None, "releaseType": "cpi_headline"})
+    assert "No scored history" in absent
+
+    def _shown(n, early):
+        return {
+            "display_min_n": 12,
+            "verdict_min_n": 24,
+            "releases": [
+                {
+                    "release": "cpi_headline",
+                    "clean_n": n,
+                    "first_print_matched_n": n,
+                    "display_state": "display_only",
+                    "mae_ours": 0.04,
+                    "mae_ours_ci": [0.03, 0.07],
+                    "mae_naive_prior": 0.06,
+                    "early": early,
+                },
+            ],
+        }
+
+    early = _run_rr_track_js(fn_src, {"fn": "line", "tr": _shown(13, True), "releaseType": "cpi_headline"})
+    assert "Early, n = 13" in early and "早期，n = 13" in early
+    assert "0.04 (0.03–0.07)" in early
+    mature = _run_rr_track_js(fn_src, {"fn": "line", "tr": _shown(24, False), "releaseType": "cpi_headline"})
+    assert "n = 24, verdict pending" in mature and "n = 24，结论待定" in mature
+    pending = dict(_shown(14, False))
+    pending["releases"] = [{**pending["releases"][0], "display_state": "interval_pending", "mae_ours": None, "mae_ours_ci": None}]
+    held = _run_rr_track_js(fn_src, {"fn": "line", "tr": pending, "releaseType": "cpi_headline"})
+    assert "once its range is computed" in held
+    assert "0.04" not in held
+
+
+def test_track_record_absent_falls_back():
+    src = _rr_section_src()
+    fn_src = "\n".join(
+        _extract_js_function(src, name)
+        for name in ("rrTrackMiss", "rrTrackMissCi", "rrTrackEarly", "rrTrackRecordBlock")
+    )
+    html = _run_rr_track_js(fn_src, {"fn": "block", "tr": None})
+    assert "Scored history isn't in this build yet." in html
+    assert "<table" not in html
+
+
+def test_track_record_old_copy_removed():
+    src = _rr_section_src()
+    assert "Accruing — first scored prints land this month" not in src
+    assert "function scoreboardBlock(" not in src
