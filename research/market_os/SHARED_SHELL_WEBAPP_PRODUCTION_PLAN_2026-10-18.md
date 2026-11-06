@@ -18,26 +18,49 @@ only the current source-delivery checkpoint in the existing task tree. Local
 source, CI, merge, installation, native publication and product acceptance are
 separate facts; task counts do not measure completion.
 
-The same Macro #10674 carrier remains unarmed/merge-blocked at published
-`667e93fa9ab4c136060ad9e5e8caa5b69d202e5f`. Natural run42098955595 is terminal:
-**683 PASS, 6 UNKNOWN, 0 inherited; clear=false** at tested
-`fb69a896323b5495271913c6b0f7cde5c9072e84`, base
-`a20e6437cc8a892b769d549876ebf81ca0e2dcd1`, authoritative plan `31560218`.
-Original observer49747 and its foreground consumer are closed. Exact formal
-5791291941 approves only667; it is not a successor review. Earlier4462/run420652
-619PASS/69UNKNOWN/1PR_REGRESSION,69181 and formal5788443077 remain historical
-facts; historical8c/687PASS/formal5782911631 are not successor proof.
+At this corrective source freeze, the last published Macro #10674 head is
+`0855becf028ae7eb155f53bba7916b4a1e22428b`, unarmed/merge-blocked. Natural run
+42124592659 is terminal: **680 PASS, 7 UNKNOWN, 2 PR_REGRESSION, 0 inherited;
+clear=false**, tested `1730928bc902ca7d2ab4bcc4778d339d5d146757`, base
+`0d1b6e986391824b3f99a8b0f203a29cab1ead7b`, plan `4d7375d5`.
+Original observer26992 and its foreground consumers are closed. Formal5793278764
+approves only0855; the corrective successor needs its own exact-head formal
+non-author review and natural hosted/current-base proof. Older667/run420989
+683PASS/6UNKNOWN,4462/run420652619PASS/69UNKNOWN/1PR_REGRESSION and historical
+8c/687PASS remain distinct facts, never inherited successor clearance.
 
-The sole current failure is a test-selector ownership ambiguity in the existing
-International browser command:203 Node cases,202PASS/1FAIL. The manual-draft
-roundtrip test selected three Scenario actions: the canonical tab and two authored
-manual-Scenario CTAs. Source repair `b57b1866` selects the actual
-`[data-im-history-tabs]` owner, asserts one target, and preserves the original
-force-click plus every draft/result/route assertion. Actual rendered-fixture
-source-DOM proof measures3 broad/1 owned; both CTAs remain. Removing the tab
-container leaves two CTAs and zero eligible tabs; missing/misspelled/duplicate
-owners reject. This is not a new browser, click, layout or hosted PASS. The exact
-base replay timed out and remains UNKNOWN; no inherited credit is assigned.
+The retained head browser command now passes all203 Node cases, including the
+manual-draft roundtrip. The canonical-tab selector repair preserves both authored
+Scenario CTAs and the exact draft/result/route assertions. The original strict
+selector203/202/1 and base timeout remain historical, not silently erased.
+
+Three logical fault families have bounded source repairs. `daab47333dac` declares
+the six actual conditional durable Intl workflow calls in the existing DAG and
+pins the new script's repository root before package imports. The exact hosted
+DAG log matches the local single undeclared addition;49 affected DAG tests and19
+entrypoint/import guards pass, including missing-declaration and hostile-PYTHONPATH
+negatives. No checker, workflow, selector, baseline or execution budget is waived.
+
+`e1b0bca1c5fb` updates only three existing test files to inspect the canonical
+`intl-gs-deferred.v1` carrier and nested market payload before asserting rendered
+Coverage/Dossier content. All original assertion ASTs and fixture/model functions
+are unchanged. Missing, malformed, duplicate or foreign schema/context/basis/
+generation payloads refuse instead of producing an empty-green result; decoded
+visible ISO text and malformed translated attributes still fail. The four reported
+nodes move4RED to4PASS. The full affected run records46PASS/1 tooltip-consumer
+failure; routing that remaining tooltip test through the same decoder passes its
+two cases. Nine additional protocol negatives pass against the actual integrated
+fixture. No single47-green full rerun is claimed. Raw GLM output passed23 own tests
+but failed nine parent negatives and is NOT_ACCEPTED_AS_RETURNED; the assigning
+parent repaired the precise validator differences and owns the integration verdict.
+This is static test inspection, not browser execution, sanitization equivalence,
+visual acceptance, current market proof or a runtime/model change.
+
+The seven terminal UNKNOWNs remain immutable. The original base scanner-browser
+execution is quiescent only by its actual full hosted-VM job completion/cleanup,
+the provider's documented automatic decommission contract and audited local/mock
+side effects. That inference is not a PID/disposal receipt, semantic PASS, base
+clearance, original T55 exclusion removal or permission to replay the old command.
 
 The reviewed product-source boundary is `4f4024c996f663c4786c237df68af4a5cb9f6c5f`.
 The first protected39133 composition preserved all407 prior owned diff entries
@@ -68,6 +91,15 @@ the two canonical checks (2PASS/324.67s, original59794 EXIT0, qualification
 the earlier652 result was not transferred. Same distinct-context reviewer
 `27e202cf` independently preserves both registry contracts. These are scoped
 source checks; final natural exact-head proof and formal release remain owed.
+The genuine corrective source also composes protected96633a79 through b31dd12e:
+429 owned and6,970 incoming mode/blob entries are exact, with zero overlap. This
+preserves protected #10770's actual controller admission behavior without a local
+policy override or claiming machine-enforced formal review. The later action-time
+main684904bf differs in12 disjoint paths, with zero authored-path overlap and no CI
+definition change. No ancestry-only merge or old-green transfer is manufactured;
+the new natural tested merge must bind the actual protected base and all incoming
+postimages before release.
+
 Reviewed Company/T55, Bonds/Forensics/Business/China/Radar/Calendar/HK/
 T52 scope, B2 outline projection, current API/MarketMemory/Options contracts and
 protected quote-board cap640 remain. Source clocks and B2 activation are
@@ -130,9 +162,9 @@ are original held Paper operations; they do not establish a generic source-DOM b
 or clear the distinct1188/29789 Chromium refusals. No new provider, host, SQL,
 browser, financial recomputation or production activation occurred in this source repair.
 
-The latest validated mmtask export is2026-11-05T22:43:04Z:160 verified entries,
+The latest validated mmtask export is2026-11-06T01:06:19Z:164 verified entries,
 0 errors/1 warning, **PREPARED ONLY**. Export SHA256:
-`4b57ec888df6b6f504d70ae2797ca83c425e4d9a229f4200e580318a42a8ad95`.
+`5f6643a8e97e9e94dd49666b16ea16f92f2c971883fbc190f2bbca1ca4f4bdb3`.
 
 | Existing task | Buffered source state | Bounded outcome |
 | --- | --- | --- |
@@ -157,6 +189,9 @@ The latest validated mmtask export is2026-11-05T22:43:04Z:160 verified entries,
 | P12.T2.S14.S8.S9 | reviewed | Compose reviewed durable Risk, advisory diagnostics and actual required source contracts |
 | P12.T2.S14.S8.S9.S1 | reviewed | Adopt exact accepted invocation-local Coverage HTML reuse without changing assertions |
 | P12.T2.S14.S8.S9.S2 | reviewed | Preserve current protected Beta refresh and withdrawal/scanner contracts at the source overlap |
+| P12.T2.S14.S8.S9.S3 | reviewed | Declare actual conditional durable workflow calls without DAG waiver |
+| P12.T2.S14.S8.S9.S4 | reviewed | Pin new durable entrypoint and preserve hostile-import refusal |
+| P12.T2.S14.S8.S9.S5 | reviewed | Inspect canonical deferred payloads while preserving all original evidence and visible-copy assertions |
 
 Next: freeze the actual final source/closure/eligible plan, retain this same
 independent reviewer, then one normal same-branch nonforce

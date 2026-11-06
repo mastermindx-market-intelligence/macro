@@ -246,5 +246,59 @@
       "tests/test_build_product_page_registry.py": "100644 blob 2348c5d5fb9d24ef51f8e31a8d41262e8b44a332"
     },
     "scope": "Metadata successor only beyond483; all previous source components retained. Original10696/washout/9533/GMIatomic/export/SS05/runtime holds remain. No finalhead formal/hostedCI/protected/native/served credit."
+  },
+  "corrective421245_source_join": {
+    "runtime_component_head": "e1b0bca1c5fb63d0858e00da44065ad429c26171",
+    "runtime_component_tree": "a92407afe344773e4a4fff1a77ca870590c85cb5",
+    "composition_base": "96633a798efda34d899e1b135487c89b596215fc",
+    "actiontime_later_main": "684904bf2524b2ef08a36954cf12dd35df840e51",
+    "later_main_disposition": "12disjointpaths/noauthoredoverlap/noCIdefinitiondelta; no ancestry-onlymerge; naturaltestedmerge mustbindactualcurrentbase",
+    "prior_CI": "42124592659/0855/tested1730928/base0d1b/plan4d7375d5:680PASS/7UNKNOWN/2PR_REGRESSION/0inherited/clearfalse. Observer26992 CLOSED. Current0855formal5793278764 notsuccessorreview.",
+    "scope": "Two actual newscript/entrypoint-contract failures repaired via exact6DAGslots+canonicalrootpin; actual4IM13 failures repaired bytest-onlycanonicaldeferredmountinspection. Runtime/model/data/rights/clock/CIcommands/budgets unchanged except newscriptrootpin. Alloldassertion/fixturefunctionASTsexact; rawGLMNOT_ACCEPTED_AS_RETURNED,parentcorrected9/9.",
+    "postimages": {
+      "config/dag.yml": {
+        "mode_blob": "100644 blob e2d039fd0ceced3b40e9a405d9d7b3b3d59c9ab5",
+        "sha256": "15b3ad2c4ec6d2a5bd4b53035df7b41cf23c0909faa7100da03cf3d1daf205c1"
+      },
+      "scripts/render_intl_durable.py": {
+        "mode_blob": "100644 blob 2ee3ffb04ce2ade7fce0850c9f45b12c527ebd71",
+        "sha256": "25dc7c19da832fdc785d2c5e6b5002d37f5483c3b08358bacbf61ce458ce40ec"
+      },
+      "tests/test_dag_conformance.py": {
+        "mode_blob": "100644 blob 32143c81d0559148575f8bee8cb23ae1dc7b1141",
+        "sha256": "210efac0f7c4d6f6d026d72030c98ad5fc0beaddddf674b1cc4d7f3eb057d7ef"
+      },
+      "tests/test_render_intl_durable.py": {
+        "mode_blob": "100644 blob d456823e1a04ea02e68637c259d61ae948ed9436",
+        "sha256": "5120cc5c90e88c07300131527f5ecacec04a0a12e2559f2508eed08f66027c74"
+      },
+      "tests/intl_gs_scanner_fixture.py": {
+        "mode_blob": "100644 blob 3c510a6b6101c5cc1f5eae45df97843675060255",
+        "sha256": "0a499f3f2578ffde348b3c36b694b2a459db6ba431c7eb47ddd1dd8c55de11b2"
+      },
+      "tests/test_intl_gs_scanner.py": {
+        "mode_blob": "100644 blob 8ec6695e470b799aa89047af5d18d01f11fcbdcd",
+        "sha256": "aa1c7029ad3003999137ad24b58062fcb0c6f359904094fa6a4bb47b4d8b91e4"
+      },
+      "tests/test_intl_gs_coverage.py": {
+        "mode_blob": "100644 blob 665ae1f821b5c8f7b3bd3dc797f30dcb714acfaf",
+        "sha256": "b3cef895cec2ee26bf8915457827414cadf56f49baec24f3d3537a39670eaf49"
+      }
+    },
+    "artifacts": {
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/S14_S8_S9_ENTRYPOINT_REPAIR_SOURCE_INPUT.json": "06f40d95f562513e46ce31c5f2267b4c09558c034af371019902d5c9e6aeac58",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/S14_S8_S9_S5_FROZEN_SOURCE_INPUT.json": "5ea6ae25a68b2004441c0a18b34f969c470fc30a339cf05ec01b01155002a0b6",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/native-formal-review/daab-entrypoint-dag-preparation.json": "9d4be52442d59ea1b0f53e3fefccacf510e8f3bf2b03c85fb14075bed2fa5c20",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/native-formal-review/e1b0-s5-deferred-consumer-preparation.json": "e7b96338b40998c0cf6b68063a69a60d78c355e8dba09a5f354f2b2fd337346b",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-current966-merge-preservation.json": "82a9dd05bef0c77a609fb041964bb03c5afe705832ebb820dc31912a3e33d00b",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-corrective-latermain-applicability.json": "28b9e53240d177be0c89258a06d49b00e1b9e120e321ef3ea8352f274177d5e0",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-terminal-final-semantic-consumption.json": "c93e5aa82ee8edfae830df66297011b60ef6daf78e1cec2134101babeec66174",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-hosted-plan-source-binding.json": "87cde3c11ec7081b70835fd00f40e43b5b463c2bd3ca0b2fc37e2ef198a6fd86",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-pack11-execution-settlement-adjudication.json": "0194b186b3bf816ce6df52c3dd83ced6437b37406abc7500cfec82aafb016ef0",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-corrective-export-binding.json": "5e94c81c8d2279842c4f33bbeea9447a88674bc4a0e95eb1dad909a3e7671edc"
+    },
+    "checks": "DAG49+importentrypoint19PASS. OriginalIM134RED\u21924PASS; fullaffected46PASS/1tooltipFAIL\u2192targeted2PASS32.34s, integrated9protocolnegativesPASS. No single47greenrerun claim. Existing current483closure/packing remainsapplicable: no legacyjob/readedge/dependency/budgetchange.",
+    "hold_scope": "Exactheld3registry/PLNTpostimagesunchangeda2/801/234; rootscopedinclusion913512fa, original10696/e5dd/UNKNOWN9533/GMIatomic/export/SS05runtime/SQL/browser/Paper/defaultOFFholds preserved.",
+    "release": "LOCAL_SOURCE_ONLY_NOT_HOSTED; newheadnaturalfullrequiredCI/exactformal/currentfreshness/non-authorcontroller release/native/served owed."
   }
 }
