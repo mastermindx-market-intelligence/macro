@@ -53,6 +53,28 @@ test('full controller huge finite contribution time',()=>{
 for(const r of [0,1e-300,100])test(`unrepresentable positive deposit refuses r${r}`,()=>{
   assert.equal(compute({G:1e-300,P:0,r,n:1e307,mode:'date'}).ok,false);
 });
+// Independent power-of-two scaling avoids the overflowing annuity factor.
+for(const [m,expected] of [[1025,.24],[1026,.115],[1027,.0525]])test('overflowed growth with a positive required deposit m'+m,()=>{
+  const G=2**1023,P=.01,discountedGoal=2**(1023-m);
+  const oracle=(discountedGoal-P)/(1-2**(-m));
+  close(oracle,expected,1e-14);assert(oracle>0);assert(P/discountedGoal<1);
+  assert.equal(compute({G,P,r:1200,n:m/12,mode:'date'}).ok,false);
+});
+test('finite large growth factor retains a positive contribution',()=>{
+  const got=compute({G:2**1023,P:.01,r:1200,n:1023/12,mode:'date'});
+  assert(got.ok);close(got.monthly,.99,1e-10);
+});
+test('overflowed growth withholds actual output and copy, then recovers',()=>{
+  const view=mount();
+  for(const [id,value] of Object.entries({goal:2**1023,current:.01,rate:1200,years:85.5,monthly:750}))view.set(id,value);
+  view.mode('date');
+  for(const id of ['out-main','out-gap','out-contrib','out-growth','out-time'])assert.equal(view.ids[id].textContent,'—',id);
+  assert.match(view.ids['out-plain'].textContent,/doesn't resolve/);
+  const before=view.copied.length;view.copy();assert.equal(view.copied.length,before);
+  for(const [id,value] of Object.entries({goal:50000,current:5000,rate:0,years:5}))view.set(id,value);
+  assert.equal(view.ids['out-main'].textContent,'$750');view.copy();
+  assert(view.copied.at(-1).includes('$750.00/mo'));
+});
 for(const bad of [NaN,Infinity,-Infinity]) for(const key of ['G','P','r','n','c']) test(`nonfinite ${key} ${bad}`,()=>{
   const inp={G:50000,P:5000,r:6,n:5,c:750,mode:key==='c'?'contrib':'date',[key]:bad};assert.equal(compute(inp).ok,false);
 });

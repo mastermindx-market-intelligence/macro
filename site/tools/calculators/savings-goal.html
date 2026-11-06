@@ -411,6 +411,8 @@
       } else {
         var logRate = Math.log1p(i), exponent = m*logRate;
         var growthFactor = Math.expm1(exponent), cashMonthly = (G-P)/m;
+        // Overflow cannot prove that growth alone covers the goal.
+        if(!isFinite(growthFactor)) return {ok:false, msg:"That combination doesn't resolve — check your inputs."};
         // Factored ratios retain fractional horizons even for subnormal rates.
         var correction = exponent === 0 ? 1 : exponent/growthFactor;
         c = isFinite(cashMonthly) && isFinite(exponent) ?
@@ -707,7 +709,7 @@
 })();
 </script>
 
-<script src="../../onboard.js?v=258dd123" defer></script>
+<script src="../../onboard.js?v=617b2faf" defer></script>
 <script defer data-whb data-root="../../" src="../../wh_banner.js?v=b1207f44"></script>
 </body>
 </html>
