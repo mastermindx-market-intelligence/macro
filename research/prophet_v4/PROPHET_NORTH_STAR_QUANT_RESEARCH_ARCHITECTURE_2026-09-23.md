@@ -2,10 +2,12 @@
 
 **Capability state:** `RESEARCH_ONLY / ZERO_LIVE_AUTHORITY`  
 **Workstream:** `WS:PROPHET-US-V4-RECOVERY`  
-**Protected procedure:** `Mastermind@c18ea2ca779f042702a63a78bf1f10f5a1e0c0f6` / `mastermind.sol_skillpack.v1` 1.0.1 / bootstrap-major 1  
-**Macro base:** `6ab90acd848bd19c2eb662e2c2dde0bcede69c4b`  
+**Original freeze procedure:** `Mastermind@c18ea2ca779f042702a63a78bf1f10f5a1e0c0f6` / `mastermind.sol_skillpack.v1` 1.0.1 / bootstrap-major 1  
+**Original Macro base:** `6ab90acd848bd19c2eb662e2c2dde0bcede69c4b`  
 **Parent truth carrier:** Macro issue #6805, especially checkpoint comment `5787277698`  
 **Authority consequence:** this document changes no rank, candidate admission, Availability, plan, sizing, leverage, execution, trade, publication or production behavior.
+
+**Architecture amendment — 2026-11-06:** apply the [October 17 parent acceptance condition and D06 ruling](https://github.com/mastermindx-market-intelligence/macro/pull/7762#issuecomment-6233204864) under current protected procedure `Mastermind@49c2e1d93e5e080b1671c98087a845e5beb09dd5`. This amendment is limited to the corrected RQ0 architecture scope. H1 remains **NOT ADMITTED for an outcome read or predictive promotion**. Existing child [#7772](https://github.com/mastermindx-market-intelligence/macro/pull/7772) retains RQ1 implementation, custody and unresolved acceptance gates.
 
 ## 0. Executive ruling
 
@@ -141,9 +143,16 @@ A more complex model must beat these same-tape baselines after costs and calibra
 
 ## 5. Point-in-time feature law
 
-Every research row must be reconstructible at `decision_at` and retain:
+Every research row must declare its grain and native owner identity and be reconstructible at `decision_at`. Preserve the existing active canonical B1 episode spine and three linked research grains: declared reference-universe membership, native expert observations, and exact nullable B1 relations.
 
-`candidate_episode_id`, `security_id`, `identity_epoch`, `strategy_definition_id`, `decision_at`, completed-session clock, source/effective/observed/computed clocks, content/source receipts, correction/retraction lineage, basis version, rights/coverage state, missingness, and the exact eligible population.
+- **Episode-based rows:** retain the exact canonical `candidate_episode_id`; it is mandatory for this grain.
+- **Universe-membership and native-observation rows:** retain the owner's native identity, source receipt and exact B1 relation when one exists. The B1 relation is nullable. Observations, non-triggers, suppressions and typed unknowns survive without an episode; an absent relation must not filter them out before labels.
+
+Across applicable grains retain `security_id`, `identity_epoch`, `strategy_definition_id`, `decision_at`, completed-session clock, actual source/availability/observed/published/computed clocks and vintages, definition era, feature-evaluation state, content/source receipts, correction/retraction lineage, basis version, rights/coverage state, missingness, and the exact declared population. Unavailable identity or clock facts remain typed unavailable; a logical session close is not actual producer or user availability.
+
+Do not manufacture a B1 relation through ticker, same-security, similar-anchor, event-ID-only or eventual-plan joins. This is an architecture acceptance contract over existing owner records, not a runtime enum/schema edit or permission to create another matrix, store or ledger.
+
+The [accepted structural witness and later source supersession](https://github.com/mastermindx-market-intelligence/macro/pull/7772#issuecomment-6233196009) are separate evidence epochs: the older `40a886…` capture had 18 exact events and 360 suppressions; the later `9f9e71…` capture retained the same 378 observation rows but had 378 unmatched exact receipt pairs. Those pinned counts are neither a current census nor missed-winner evidence. Forward receipt repair does not backfill historical relations or actual availability clocks.
 
 Unknown is never zero. Later revisions, later theme membership, later sector labels, later analyst estimates and later outcomes may not leak backward.
 
@@ -168,14 +177,14 @@ A discovery expert is judged on whether it surfaced a future strong outcome **be
 For each registered sleeve/horizon, record:
 
 - first lawful expert observation time;
-- first candidate-episode visibility time;
-- first B4-evaluable time;
+- first candidate-episode visibility time, only when an exact qualifying episode relation exists; otherwise retain typed absence;
+- first B4-evaluable time, only when the applicable owner facts establish it; an observation without B4 remains in the discovery view;
 - fraction of eventual registered-horizon favorable excursion already consumed at each timestamp;
 - subsequent MFE, MAE and benchmark/sector excess;
 - whether invalidation occurred before favorable excursion;
 - whether the observation was unusable because of stale/missing/rights/basis facts.
 
-No per-name winner audition. Thresholds are fixed before reading the prospective cohort.
+No per-name winner audition. Thresholds are fixed before reading the prospective cohort. Retain earliest-eligible, first-surface and actionability clocks separately, with actual availability/vintage evidence and typed missingness. The labels above describe a future admitted study; they do not authorize an outcome read under the present H1 hold.
 
 ### 6.2 Selection labels
 
@@ -192,9 +201,25 @@ Selection research uses registered fixed horizons plus path-aware labels:
 
 Off-horizon verdicts remain forbidden.
 
+### 6.3 H1 admission — D06 remains held
+
+The governing parent ruling retains **H1 -> incumbent #7772 -> RQ2**: Early Leadership group/industry discovery versus the incumbent technical discovery policy on the same sessions at an owner-supplied fixed attention budget. The initial claim ceiling is discovery/research-attention value. H1 is **NOT ADMITTED for an outcome read or predictive promotion** at the documented evidence cut; parent architecture acceptance does not change that decision.
+
+Admission must preserve all of the following:
+
+1. A decision-time independent reference population, including native observations, non-triggers, suppressions and typed unknowns. Without that qualification, a permitted champion-union-challenger description is `OBSERVED_UNION_DISCOVERY`, with no absolute-recall or missed-leader claim. The pinned 697-member Turn Watch context source is not an all-US-stock universe, and its 40-card presentation cap is not H1's attention K.
+2. The applicable Cell G gates, with stronger existing experiment rules prevailing: default broad-population coverage at least **70%**; cross-issuer promotion at least **50 matured episodes**, with effective date and economic-issuer counts each **at least 20**, plus the claimed theme/species diversity; **zero tolerated degradation** in early-lead, first-surface actionability and chase/unusable endpoints under the stated uncertainty test; and **one fixed adjudicative look** after maturity/estimability by default. These thresholds do not open a held sample.
+3. One primary paired discovery endpoint at the measured, owner-supplied fixed K. `early_actionable_capture_recall` is eligible only when earliest-eligible, first-surface and actionability clocks are actually measurable. Otherwise use a narrower descriptive endpoint or forward collection. The 10/25/50%-consumed landmarks, yield, lead, burden, chase and coverage remain predeclared companions; no after-the-fact metric substitution.
+4. The exact missing admission packet: reference/temporal identity and availability clocks; immutable incumbent-control receipt; group-expert observations and rights; label/horizon/ruler; measured incumbent attention K; data-independent economic loss budget and numerical minimum effect/harm margins; dependence-aware power from permitted evidence; immutable cut, multiplicity family and fixed read schedule. `NOT_SUPPLIED` controls and unbound rights/B4 are not a paired tape. Keep #8759's C2-minus-C1 K5/H10 study separate; its K, margins, read allowance and holdout do not transfer.
+5. Outcome-blind source/clock/coverage feasibility through the existing owners. Protected labels cannot be used to choose margins or power. Unrecoverable historical clocks or identity require `NON-IDENTIFIABLE` historical discovery and existing forward-retention owners. Inadequate effective N or coverage requires narrowing the claim or stopping. A credible no-edge finding retains the control.
+
+The Meta-CEO owns the eventual data-independent economic preference and acceptance judgment once the qualified packet exists. This document creates no additional human threshold-approval ceremony and grants no B4, rank, sizing, capital or customer-alert authority.
+
 ## 7. Evaluation scorecard
 
 ### Discovery
+
+Apply the reference-population and H1 admission limits in §6.3 before making recall claims; observed-union descriptions retain their narrower scope.
 
 - recall of registered future-strong outcomes;
 - recall before 10%, 25% and 50% of eventual favorable excursion is consumed;
@@ -230,7 +255,7 @@ Off-horizon verdicts remain forbidden.
 
 The first discovery study is intentionally finite:
 
-- **H1:** group/industry leadership adds early future-leader recall versus incumbent technical discovery without widening current candidate-admission authority;
+- **H1:** group/industry leadership adds early future-leader recall versus incumbent technical discovery without widening current candidate-admission authority; outcome reads and predictive promotion remain NOT ADMITTED under §6.3;
 - **H2:** 52-week-high / persistent-leadership location adds incremental recall or within-group selection information beyond H1;
 - **H3:** earnings/fundamental momentum adds independent selection information beyond price/group momentum for the Quality Earnings sleeve and as a corroborating Early Leadership expert;
 - **H4:** economic-link/theme propagation adds incremental early recall for newly strengthening groups/members beyond same-name and same-industry momentum;
@@ -247,15 +272,17 @@ Freeze research questions, owner boundaries, labels, scorecard and first hypothe
 
 ### RQ1 — PIT research matrix adapter
 
-Reuse existing B1/evidence/evaluation stores to emit one decision-time research matrix containing current control plus typed expert observations. No new event/replay/outcome store. Authority false.
+Continue the incumbent #7772 research view over existing B1/evidence/evaluation stores. Its original active-episode spine is built/tested; the required lossless membership/observation/nullable-relation extension and input-boundary repairs are not accepted. Retain the current control with its exact owner receipt, typed missingness and all authority bits false. No new event/replay/outcome store.
+
+The original extension task `prophet-meta-rq1-observation-view-20261017-01a14838` is recorded as VERIFIED_TERMINAL / rc1 / NOT_ACCEPTED; its worktree/source/push effects remain UNKNOWN on the incumbent carrier. Process cleanup does not resolve source custody. The child also retains malformed timestamp and digest findings. Parent architecture correction neither retries that task nor authorizes a replacement writer, alternate transport, reset or source-custody transfer.
 
 ### RQ2 — same-tape discovery audit
 
-Measure the expert union on identical date/population tapes. Produce recall-before-move, overlap, burden and missingness receipts. No rank or admission change.
+Outcome-blind feasibility may continue through the incumbents. A paired discovery/outcome read remains downstream of the original RQ1 source-effect reconciliation, repaired input boundaries, accepted lossless view, parent architecture acceptance, current-source proof and the complete §6.3 admission packet. Only then measure identical date/population tapes at the fixed attention budget and produce the admitted recall/lead/overlap/burden/missingness receipts. No rank or candidate-admission change.
 
 ### RQ3 — shadow multi-head baselines
 
-Fit only after RQ2 data law passes. Start with transparent linear/logistic/tree/listwise baselines. Preserve V3 as control. Emit research predictions only.
+Fit only after RQ2 data law and the applicable experiment-admission gates pass. Start with transparent linear/logistic/tree/listwise baselines. Preserve V3 as control. Emit research predictions only.
 
 ### RQ4 — prospective challenger cohort
 
@@ -267,9 +294,9 @@ Only after evidence selects a lawful winner, integrate one sleeve-specific disco
 
 ## 10. Immediate sequencing with the active recovery
 
-This research program does **not** wait for release review, but it also does not bypass it.
+Independent parent-architecture correction can proceed while operational lanes resolve their own gates. It does not release the child or admit a held study.
 
-Current operational critical path remains:
+The original operational owner map remains a boundary, rather than a fresh claim about those PRs' current lifecycle:
 
 `#7180 independent acceptance -> lawful source-bound same-run publication -> current Prophet/leader render -> real user-path proof`.
 
@@ -277,7 +304,7 @@ In parallel:
 
 `#7734 + #7584 + #7738 acceptance -> #7581 sole runtime adapter -> B4 strategy-specific Availability -> merged #7751 prospective calibration`.
 
-RQ1 may begin only as a read-only/research adapter over accepted existing stores and frozen current controls. It cannot consume unaccepted B4 facts as if they were production truth.
+RQ1 already has its incumbent carrier and must continue there after the original source effects are reconciled. It remains a read-only/research view over accepted owner stores and qualified controls; unaccepted B4 facts cannot become production truth. RQ1 mechanics, runtime integration, natural production continuity and predictive value remain separate acceptance outcomes.
 
 ## 11. Acceptance for this research freeze
 
@@ -287,10 +314,12 @@ This document is successful when it prevents the next phase from repeating the k
 - no universal score across incompatible jobs/horizons;
 - no discovery signal waiving deterministic entry truth;
 - no later-data leakage into historical rows;
+- no episode-only censoring of independent observations, suppressions or typed unknowns;
+- no absolute-recall claim from an unqualified observed-union population;
 - no named-ticker winner audition;
 - no broad regime-scorecard resurrection;
 - no duplicate candidate/evidence/outcome/publication stores;
 - no complex model promoted without simpler same-tape baselines;
 - no performance claim without effective N, costs, calibration and prospective evidence.
 
-**Final state of this artifact:** `RESEARCH_ARCHITECTURE_FROZEN / ZERO_LIVE_AUTHORITY / READY_FOR_RQ1_DESIGN`.
+**Final state of this artifact:** `RESEARCH_ARCHITECTURE_FROZEN / ZERO_LIVE_AUTHORITY`, amended for the accepted RQ0 contract. Existing #7772 retains RQ1; H1 remains NOT ADMITTED for outcome reads or predictive promotion until its separate packet and gates qualify. This document's acceptance is not RQ1 completion, research-value acceptance, source-effect reconciliation, deployment or production proof.

@@ -1,0 +1,21 @@
+{
+  "scope": "same-file actual disabledtitle correction and canonical existing wrapper pattern",
+  "before_sha256": "a0c3e026ea27005f89cb14b53f41e7a87ed7ae935371e813f323f3dbef021f62",
+  "after_sha256": "61cfeaa85a1cfc767863ef8cbb7c9637c12b22f44eb2a8d614ad33f33b2228ae",
+  "exact_inverse_projection_equal": true,
+  "changes": [
+    {
+      "before": "<div class=\"intl-dislocations__btnrow\">",
+      "after": "<div class=\"intl-dislocations__btnrow\" data-tip-en=\"{{ c.btn_disabled_title.en|e }}\" data-tip-zh=\"{{ c.btn_disabled_title.zh|e }}\" tabindex=\"0\">",
+      "count": 1
+    },
+    {
+      "before": "'title=\"' ~ c.btn_disabled_title.en ~ ' · ' ~ c.btn_disabled_title.zh ~ '\"'",
+      "after": "' data-tip-en=\"' ~ (c.btn_disabled_title.en|e) ~ '\" data-tip-zh=\"' ~ (c.btn_disabled_title.zh|e) ~ '\"'",
+      "count": 2
+    }
+  ],
+  "native_actions_remain_disabled": true,
+  "new_DOM_nodes": 0,
+  "shared_macro_CSS_JS_changed": false
+}

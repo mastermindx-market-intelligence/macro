@@ -1,0 +1,10 @@
+{
+  "state": "REJECTED_COLD_FIRST_SAMPLE_OVER_3000MS",
+  "checked_at": "2026-10-14T05:19:44.893899+00:00",
+  "timing": "TIMING_V8_COLD10.json",
+  "all_pass": false,
+  "first_ms": 3127.7000000029802,
+  "median_ms": 2783.0000000074506,
+  "source_freeze_released_for": "Consume completed initial session in early loader; retain account-event and page-ownership precedence.",
+  "production_claim": false
+}
