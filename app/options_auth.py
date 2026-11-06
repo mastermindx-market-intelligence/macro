@@ -125,22 +125,40 @@ def fresh_options_entitlement(request: OptionUseRequest, *, access_token: str) -
                 or request.principal_issuer != principal.principal_issuer
                 or request.auth_epoch != principal.auth_epoch):
             return False
-        from app import billing, paywall
-
-        # Same uncached billing read and operator overlay as /api/me. No call to
-        # _entitled (positive outage grace) or _resolve_identity (token cache).
-        entitlement = billing.read_entitlement(principal.principal_id)
-        if type(entitlement) is not dict:
-            return False
-        features = entitlement.get("features")
-        tier = entitlement.get("tier")
-        allowed = ((type(features) is list and "terminal_live_options" in features)
-                   or (type(tier) is str and tier.strip().lower() == "unlimited")
-                   or (type(email) is str and bool(email)
-                       and paywall._operator_unlimited(email) is True))
-        return bool(allowed and time.time() < principal.expires_at)
+        return _fresh_product_allowed(principal, email)
     except Exception:
         return False
+
+
+def _fresh_product_allowed(principal: OptionsPrincipal, email: str) -> bool:
+    """The existing uncached Terminal Options predicate, shared by read consumers."""
+    from app import billing, paywall
+
+    entitlement = billing.read_entitlement(principal.principal_id)
+    if type(entitlement) is not dict:
+        return False
+    features = entitlement.get("features")
+    tier = entitlement.get("tier")
+    allowed = ((type(features) is list and "terminal_live_options" in features)
+               or (type(tier) is str and tier.strip().lower() == "unlimited")
+               or (type(email) is str and bool(email)
+                   and paywall._operator_unlimited(email) is True))
+    return bool(allowed and time.time() < principal.expires_at)
+
+
+def resolve_entitled_options_principal(access_token: str) -> OptionsPrincipal:
+    """Fresh existing Auth + Options product access for a private read.
+
+    This grants no matrix/source-use permission, Save, quote, or trading action.
+    The same product predicate is used by fresh_options_entitlement above.
+    """
+    principal, email = _authenticate(access_token)
+    try:
+        if _fresh_product_allowed(principal, email):
+            return principal
+    except Exception:
+        pass
+    raise OptionUseRefused("entitlement_unavailable") from None
 
 
 def resolve_authenticated_option_selection(

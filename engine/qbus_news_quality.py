@@ -12,7 +12,8 @@ from html import unescape
 from urllib.parse import urlsplit
 
 from engine.news_common import low_value_reason, quality_score, ticker_editorial_reason, ticker_template_reason
-from engine.qkernel import publisher_category, publisher_domain, publisher_tier
+from engine.qkernel import norm_title, publisher_category, publisher_domain, publisher_tier
+from engine.qbus_news_editorial import NewsEditorialView
 
 EDITORIAL_POLICY_VERSION = "ticker_news.curated.v1"
 
@@ -93,6 +94,43 @@ def reporting_state(rows, rights=None) -> str:
     return "no_material_difference"
 
 
+def information_family_count(rows, rights=None) -> int:
+    """Count distinct information origins among one story's current members.
+
+    The publisher identity is the floor: one publisher is one family however many
+    transports or items carry it. Two publishers join one family only when both
+    show the same rights-visible normalized headline, which is how syndicated wire
+    copy appears under two outlets. A withheld or empty title never joins, so the
+    count reveals nothing about hidden text and falls back to the publisher count.
+    An edited syndicated headline is not detected and stays counted per publisher.
+    Cluster identifiers are never read: a shared cluster is not shared origin.
+    The result is 1 <= families <= publishers <= items for a non-empty story.
+    """
+    parent: dict[str, str] = {}
+
+    def root(key: str) -> str:
+        while parent[key] != key:
+            parent[key] = parent[parent[key]]
+            key = parent[key]
+        return key
+
+    first_publisher_for_title: dict[str, str] = {}
+    for row in rows:
+        source = str(row["source"])
+        publisher = publisher_identity(source, str(row["url"]))
+        parent.setdefault(publisher, publisher)
+        if rights is not None and not rights.allows(source, "title"):
+            continue
+        key = norm_title(display_text(row["title"]))
+        if not key:
+            continue
+        other = first_publisher_for_title.setdefault(key, publisher)
+        left, right = root(other), root(publisher)
+        if left != right:
+            parent[max(left, right)] = min(left, right)
+    return len({root(publisher) for publisher in parent})
+
+
 def representatives_in_display_order(rows, rights=None, *, comparison=None):
     """Use quality within compatible reporting; keep material updates visible.
 
@@ -128,23 +166,38 @@ def curated_report(source: str, title: str, url: str = "") -> bool:
     ) is None
 
 
-def curated_sql_clause(allowed_url_sources: Collection[str] = ()) -> tuple[str, tuple[str, ...]]:
-    """One predicate for store/flow queries with aliases s (state), p (projection).
-
-    Bind source identities as values. CASE projects denied URLs to an empty
-    string before classification, so a hidden URL cannot change visible counts,
-    group membership or correction projections.
-    """
-    if isinstance(allowed_url_sources, str):
-        raise TypeError("allowed_url_sources must be a collection of source ids")
-    sources = tuple(sorted(set(allowed_url_sources)))
-    url = "''"
-    if sources:
-        marks = ",".join("?" for _ in sources)
-        url = f"CASE WHEN s.source IN ({marks}) THEN p.url ELSE '' END"
-    return f"AND qbus_news_is_curated(s.source, p.title, {url})=1", sources
+def _projected_field_sql(field: str, allowed_sources: Collection[str]) -> tuple[str, tuple[str, ...]]:
+    if isinstance(allowed_sources, str):
+        raise TypeError("allowed_sources must be a collection of source ids")
+    sources = tuple(sorted(set(allowed_sources)))
+    if not sources:
+        return "''", ()
+    marks = ",".join("?" for _ in sources)
+    return f"CASE WHEN s.source IN ({marks}) THEN p.{field} ELSE '' END", sources
 
 
-def register_curated_reader(connection) -> None:
-    """Pure SELECT predicate, evaluated before grouping and page limits."""
+def curated_sql_clause(
+    allowed_url_sources: Collection[str] = (),
+    allowed_teaser_sources: Collection[str] = (),
+    *, editorial_view: NewsEditorialView | None = None,
+) -> tuple[str, tuple[str, ...]]:
+    """One rights-projected predicate, before grouping, pagination and counts."""
+    url, url_sources = _projected_field_sql("url", allowed_url_sources)
+    clause = f"AND qbus_news_is_curated(s.source, p.title, {url})=1"
+    if editorial_view is None or editorial_view.mode == "all":
+        return clause, url_sources
+    teaser, teaser_sources = _projected_field_sql("teaser", allowed_teaser_sources)
+    clause += f" AND qbus_news_matches_view(s.source, p.title, {url}, {teaser})=1"
+    return clause, (*url_sources, *url_sources, *teaser_sources)
+
+
+def register_curated_reader(connection, editorial_view: NewsEditorialView | None = None) -> None:
+    """Pure SELECT predicates; the optional immutable view is connection-bound."""
     connection.create_function("qbus_news_is_curated", 3, curated_report, deterministic=True)
+    if editorial_view is not None:
+        # Stored title/teaser cross the same raw-to-display boundary as returned
+        # rows. Editorial decisions must not decode already projected text again.
+        def matches_view(source, title, url, teaser):
+            return editorial_view.allows(source, display_text(title), url, display_text(teaser))
+
+        connection.create_function("qbus_news_matches_view", 4, matches_view, deterministic=True)

@@ -743,6 +743,57 @@ def _profiles_names() -> dict[str, tuple[str, str | None]]:
     return out
 
 
+
+@lru_cache(maxsize=2)
+def _profile_reference_names(path: str, stamp: tuple[int, ...]) -> dict[str, str]:
+    """Read only unambiguous display names; failures are not cached as evidence."""
+    import pandas as pd
+    from pathlib import Path
+
+    target = Path(path)
+    df = pd.read_parquet(target)
+    if df.index.name and df.index.name.lower() in ("ticker", "symbol"):
+        df = df.reset_index()
+    tcol = next((c for c in ("ticker", "symbol", "Ticker", "index") if c in df.columns), None)
+    ncol = next((c for c in ("name", "longName", "company", "shortName") if c in df.columns), None)
+    if not tcol or not ncol:
+        return {}
+    grouped: dict[str, dict[str, str]] = {}
+    for _, row in df.iterrows():
+        ticker = str(row.get(tcol, "")).strip().upper()
+        name = str(row.get(ncol, "")).strip()
+        if ticker and name and name.lower() not in {"nan", "none", "<na>"}:
+            grouped.setdefault(ticker, {})[name.casefold()] = name
+    stat = target.stat()
+    if (stat.st_dev, stat.st_ino, stat.st_mtime_ns, stat.st_size) != stamp:
+        raise OSError("profile changed during name read")
+    return {ticker: next(iter(names.values())) for ticker, names in grouped.items() if len(names) == 1}
+
+
+def company_reference_names(ticker: str) -> tuple[str, ...]:
+    """Text-reference candidates, never security identity or materiality authority.
+
+    The caller must first resolve the ticker through its canonical security
+    universe. Reuse reviewed newsroom names/aliases and unambiguous profile names;
+    do not synthesize product, subsidiary, executive, or ownership relationships.
+    The profile file signature invalidates this display-only cache.
+    """
+    ticker = str(ticker).strip().upper()
+    names = {*_MEGACAP_ALIASES.get(ticker, ())}
+    if ticker in _KNOWN_NAMES:
+        names.add(_KNOWN_NAMES[ticker])
+    try:
+        path = config.ROOT / "data" / "profile" / "profiles.parquet"
+        stat = path.stat()
+        stamp = (stat.st_dev, stat.st_ino, stat.st_mtime_ns, stat.st_size)
+        name = _profile_reference_names(str(path), stamp).get(ticker)
+        if name:
+            names.add(name)
+    except Exception as exc:  # unavailable profile names leave explicit limited coverage
+        log.debug("company reference names unavailable (%s)", type(exc).__name__)
+    return tuple(sorted(name for name in names if name.strip()))
+
+
 @lru_cache(maxsize=1)
 def build_entity_map() -> dict:
     """Derive the ticker ⇄ basket ⇄ sector ⇄ mag7 map from repo data. Cached.

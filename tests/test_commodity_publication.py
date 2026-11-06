@@ -293,6 +293,8 @@ def test_production_head_keeps_canonical_theme_through_publication(repo):
     theme = (source / "templates/theme.css").read_bytes()
     for name in ("theme.css", "product-nav-icons.css", "navigation-refresh.css"):
         (site / name).write_bytes((source / "templates" / name).read_bytes())
+    from lib.shared_shell import copy_shared_shell_asset
+    copy_shared_shell_asset(site)
     env = Environment(loader=FileSystemLoader(source / "templates"),
                       autoescape=True, undefined=StrictUndefined)
     # Render the production head, including its actual style partials, without

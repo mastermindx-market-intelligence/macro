@@ -649,7 +649,7 @@ def test_news_flow_as_of_truncated_to_seconds(tmp_path, monkeypatch):
         recorded = {}
         original = store_mod.compute_news_velocity
 
-        def wrapper(conn, *, security_id, now, allowed_sources, curated=False, allowed_url_sources=()):
+        def wrapper(conn, *, security_id, now, allowed_sources, curated=False, allowed_url_sources=(), **reader_options):
             recorded["now"] = now
             return original(
                 conn,
@@ -658,6 +658,7 @@ def test_news_flow_as_of_truncated_to_seconds(tmp_path, monkeypatch):
                 allowed_sources=allowed_sources,
                 curated=curated,
                 allowed_url_sources=allowed_url_sources,
+                **reader_options,
             )
 
         monkeypatch.setattr(store_mod, "compute_news_velocity", wrapper)
