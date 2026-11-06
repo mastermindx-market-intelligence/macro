@@ -7,7 +7,7 @@ Follow the [shared agent review rule](AGENTS.md#session-owned-technical-reviews-
 
 ## Source authoring on M2: GitHub-native versus host-local
 
-When Mastermind #2118 is actually merged to protected `master`, an assigned Claude session with genuine GitHub-native write tools may publish scoped branch commits and PRs entirely through the authorized GitHub API, without acquiring an M2 worktree solely for that remote action. Follow the current protected Mastermind delivery workflow and [Macro's source-surface rules](AGENTS.md#github-native-source-authoring-versus-m2-host-local-custody). Until that merge, the candidate #2118 policy is not installed.
+Mastermind #2118 is merged into protected `master` (2026-11-06, `d5b65649a0a880ea1f8080db777f8ed8b0bc3b98`). An assigned Claude session with genuine GitHub-native write tools may publish scoped branch commits and PRs entirely through the authorized GitHub API, without acquiring an M2 worktree solely for that remote action. Follow the current protected Mastermind delivery workflow and [Macro's source-surface rules](AGENTS.md#github-native-source-authoring-versus-m2-host-local-custody). Protected merge checks and original-carrier denials remain binding.
 
 When editing through a local M2 shell/checkout, continue to use the approved SSD worktree and quarantine helpers. Never bypass local hooks, occupied-checkout restrictions, CAS, existing source writers, unknown/denied effects, Macro's `merge-on-green` controller or actual review/CI/release holds. Source location does not grant merge authority.
 
