@@ -1,0 +1,21 @@
+{
+  "schema": "eval_os.a1_source_repair_equivalence.v1",
+  "source": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+  "proposal": "a8d9f1952dd621a80e30525374145aee71ff3a7f",
+  "single_parent_original_source": true,
+  "jobs_and_order": 309,
+  "complete_yaml_equal_after_only_path_sort": true,
+  "path_counts_and_multisets_equal": true,
+  "selector_source_sha256": "65564916a55eb806d3d9fb0cd4e12726f05fec953f6e47ccd9240f5a141049df",
+  "reviewed_selector_functions": {
+    "_matches_any": "def _matches_any(patterns: Iterable[str], path: str) -> bool:\n    return any(_glob_to_regex(pattern).match(path) for pattern in patterns)",
+    "_validate_scope": "def _validate_scope(prefix: str, raw: Any) -> tuple[tuple[str, ...], list[str]]:\n    if raw is None:\n        return (), []\n    if not isinstance(raw, list) or not raw:\n        return (), [f\"{prefix} paths must be a non-empty list of globs\"]\n    findings: list[str] = []\n    scope: list[str] = []\n    for entry in raw:\n        if not isinstance(entry, str) or not entry.strip():\n            findings.append(f\"{prefix} paths entries must be non-empty strings\")\n            continue\n        if entry.startswith(\"/\") or \"..\" in entry:\n            findings.append(\n                f\"{prefix} path {entry!r} must be repo-relative and contain no '..'\"\n            )\n            continue\n        scope.append(entry)\n    return tuple(scope), findings",
+    "_job_diff_match": "def _job_diff_match(job: LegacyJob, changed: Iterable[str]) -> tuple[str, str] | None:\n    \"\"\"The first (changed path, tier) that selects this job, or None.\n\n    Tier order is deliberate: a NAMED owner (`declared` for exclusive jobs,\n    `owned` for closure/literal evidence) always outranks an opaque `fallback`\n    claim in the explanation, and the fallback tier never fires for a\n    narrative file.\n    \"\"\"\n    for path in changed:\n        if _matches_any(job.paths, path):\n            return path, (\"declared\" if job.exclusive else \"owned\")\n    for path in changed:\n        if _matches_any(PASSIVE_UNOWNED_PATTERNS, path):\n            continue\n        if _matches_any(job.fallback_paths, path):\n            return path, \"fallback\"\n    return None"
+  },
+  "reason": "All declared pattern memberships and counts are unchanged; matching uses any(pattern.match(path)). Reordering cannot change any path selection. All other YAML values and job order are identical. This is a source-only collision repair, not a base refresh.",
+  "merge_tree_main": "a5a5482b1d64b8a064a0355189d90c428660a850",
+  "merge_tree_rc": 0,
+  "hosted_ci": false,
+  "published": false,
+  "independent_model_review": false
+}

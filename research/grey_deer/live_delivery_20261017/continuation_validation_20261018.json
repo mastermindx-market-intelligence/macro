@@ -1,0 +1,230 @@
+{
+  "base_sha": "62a3f9ad070c7583687aef8c30d53fd1764c6aab",
+  "fits": 0,
+  "formatting_repair": {
+    "change": "Remove one extra trailing blank line; findings unchanged.",
+    "original_sha256": "e20f3f36c67efe089ec0c1e3444702fe36d8c5a59dd2662a1a6939898844b9fa",
+    "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/T13_FRED_ALFRED_source_purpose_2026-10-17.md"
+  },
+  "missing_local_links": [],
+  "new_evidence_local_links_checked": 27,
+  "observed_at": "2026-10-18T02:05:37.007887+00:00",
+  "operation_id": "risk-radar-meta-ceo-evidence-20261017-01a14837",
+  "portable_copilot_reader": {
+    "command": "python3 research/grey_deer/live_delivery_20261017/copilot_failure_trace/reproduce_finalization.py --repository <owned successor> --output /tmp/risk-radar-copilot-git-reader-20261018.json",
+    "exit_code": 0,
+    "live_provider_rerun": false,
+    "output_equals_frozen_counterexample": true,
+    "output_sha256": "61c23927d97dbf0eae5cfe006780db01f9dd2111893d9fcff5eeb8ec7ee58151"
+  },
+  "prior_same_workspace_agentos_command": {
+    "command": [
+      "python3",
+      "scripts/agentos.py",
+      "validate"
+    ],
+    "errors": 0,
+    "exit_code": 0,
+    "qualification": "Existing warnings retained; complete result observed in Studio process43672.",
+    "records": 1868,
+    "warnings": 162
+  },
+  "programme_accepted": false,
+  "release_review_repository_copy": "Four relative publication links normalized; all findings unchanged from original364b24db9b7de5f44fd96cf88eee3d62726edffef6782d000ef68d7ddae9923f.",
+  "runtime_deployment": false,
+  "schema": "risk_radar.continuation_pre_freeze_validation.v1",
+  "source_checks": {
+    "git_diff_check": 0,
+    "python_ast_parse": 2
+  },
+  "t13_metadata_diagnostic_executed": false,
+  "transfer_files": [
+    {
+      "bytes": 32918,
+      "path": "agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md",
+      "sha256": "0e091a2f89bfeeda7067e5029393ca7cb9677b6df9cb8bb5d027f774ca472b01"
+    },
+    {
+      "bytes": 38632,
+      "path": "research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md",
+      "sha256": "e9562913520e0678f21abeb9972f6fc85aeb4b3d57f1b2958a50a001161135fd"
+    },
+    {
+      "bytes": 45263,
+      "path": "research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md",
+      "sha256": "aba1202c984a04b6cf4d3bb97e1d2422caa394dbdbf33dbaaf24026e598d564e"
+    },
+    {
+      "bytes": 30861,
+      "path": "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md",
+      "sha256": "14d994c4cc0848127b3dda7bb3246beeb6781a4e476beb8e1b17ae66511bc471"
+    },
+    {
+      "bytes": 2091,
+      "path": "research/grey_deer/all_date_census/T13_SPY_INPUT_IDENTITY_2026-10-17.json",
+      "sha256": "25d60c218767c661bcd6c0c4eb26540d5ef11b8fce1e8f39220c2abaae67bb4a"
+    },
+    {
+      "bytes": 6458,
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/README.md",
+      "sha256": "b806d34209e260ef7dc89b9f4a7be361ca5d908ace6d08eef43aa402cd4a3eb7"
+    },
+    {
+      "bytes": 5919,
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/STAGE1_DEPENDENCY_REVIEW_2026-10-17.md",
+      "sha256": "bb719fcebd397821edfeaed5b13961522936611a093d65e8c3dbd6436419b2e3"
+    },
+    {
+      "bytes": 7203,
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/T12_FROZEN_SAMPLE_REVIEW_2026-10-17.md",
+      "sha256": "869ddaaa9936cb7a1cde0eca2d169dccccf66fd69cf1e7a5afa78c86e6f486e4"
+    },
+    {
+      "bytes": 14350,
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/T13_FRED_ALFRED_source_purpose_2026-10-17.md",
+      "sha256": "fb1e7cb0eab24b0dde6e1072aed7bf2f59a3d6415a7c9ee2762201c6111f7e6f"
+    },
+    {
+      "bytes": 16301,
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/T13_SAMPLE_USE_CONTRACT_2026-10-18.md",
+      "sha256": "4c7a9d2225e9c27d6abd6a5f124b1f7fe6a70844c1adc4e8485b2c1f8c1ec8ce"
+    },
+    {
+      "bytes": 6048,
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/T13_SAMPLE_USE_CONTRACT_REVIEW_2026-10-18.md",
+      "sha256": "d846f7e71b4ee013e937372a0005277c2019f631ce455dbffaf7f0c3b790a718"
+    },
+    {
+      "bytes": 8103,
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/freeze_original_t12_sample.py",
+      "sha256": "2ff9925896add104f069c5cb200031d75d8c0fb56dee38a215d731174cfaff90"
+    },
+    {
+      "bytes": 10563,
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/receipt.json",
+      "sha256": "ad8a1f5fe92fb12690a25794f917619a2e113baaf9a07fc3f446207020340d4f"
+    },
+    {
+      "bytes": 6359,
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/sample.json",
+      "sha256": "944e0054b724aef775a5073ee8a1537779b464454a304acf4a4b396cd818a583"
+    },
+    {
+      "bytes": 5861,
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/spy_input_identity.py",
+      "sha256": "4432e1033297eb58f65f37e5199ba0e87e114f8572e56db8e6fff496e54ec862"
+    },
+    {
+      "bytes": 18757,
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/t13_sample_metadata_admission.py",
+      "sha256": "0d1b6e55aafb58932c5b581ac406c96e242f199f7838c3e8abc723039b6498ff"
+    },
+    {
+      "bytes": 24127,
+      "path": "research/grey_deer/consumer_comparison_20261017/MASTERmind_1567_RELEASE_SCOPE_REVIEW_2026-10-17.md",
+      "sha256": "207cd225781dac87f4595ea2bddf24bfd6380fc061b4451571f1707fd4d58f40"
+    },
+    {
+      "bytes": 14934,
+      "path": "research/grey_deer/consumer_comparison_20261017/source/scripts/deploy_code_to_vps.sh",
+      "sha256": "c158fc903121b8c4ad680049ded16000913393039944c6eec3a23d44ca376204"
+    },
+    {
+      "bytes": 1493,
+      "path": "research/grey_deer/consumer_comparison_20261017/source/scripts/deploy_from_git.sh",
+      "sha256": "b983a9e88f6eddeac00929797d1e05c80e09e3c206bcabf4e26342fdb7dbb42f"
+    },
+    {
+      "bytes": 19715,
+      "path": "research/grey_deer/live_delivery_20261017/9515_source_landing.json",
+      "sha256": "14efdfd7a2297b0b84362886a00822a9377818df80c0f95daf3f9266f200bc7c"
+    },
+    {
+      "bytes": 12801,
+      "path": "research/grey_deer/live_delivery_20261017/CONTINUATION_EVIDENCE_CONSISTENCY_2026-10-17.md",
+      "sha256": "42490ab0d9e42b58f1ba5f24a738c9f7ef9c6a2dbd561d736cc3b43465016328"
+    },
+    {
+      "bytes": 982,
+      "path": "research/grey_deer/live_delivery_20261017/continuation_workspace_acquire.json",
+      "sha256": "c09f102c34414efc355dd106b10ca4f0baf530ecf04a6a6e57b5b48ea92c3a33"
+    },
+    {
+      "bytes": 9630,
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/FINDINGS_2026-10-17.md",
+      "sha256": "f3204c50d7944a5194a759fb5255da7e04d2e8b23748d92043857af18edb0837"
+    },
+    {
+      "bytes": 5473,
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/README.md",
+      "sha256": "5cafaf5e76eb9fb540a07d88efd95da7c7272dfefb8775dd368249e519464448"
+    },
+    {
+      "bytes": 10691,
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/finalization_counterexample.json",
+      "sha256": "61c23927d97dbf0eae5cfe006780db01f9dd2111893d9fcff5eeb8ec7ee58151"
+    },
+    {
+      "bytes": 9909,
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/reproduce_finalization.py",
+      "sha256": "7dfdffd724f075406172eb6367c992daf8a191cc5a66c9fbce6638fdeacd70e7"
+    },
+    {
+      "bytes": 2736,
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/README.md",
+      "sha256": "003730cf6ee6a9580c4fc54789bb78140f78e42ffddb63b7dcbfc4de6e9b0423"
+    },
+    {
+      "bytes": 12388,
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/REVIEW_2026-10-17.md",
+      "sha256": "bc856876d119d51ff22451cae92be5a08af71385cd674e355b84caa3919d9e38"
+    },
+    {
+      "bytes": 2609,
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/capture_manifest.json",
+      "sha256": "a67e4e9a5b3cafa52b3554dbded0483bb1a8175800c7867e0ce03d5d5610738d"
+    },
+    {
+      "bytes": 568,
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/odds-expanded.txt",
+      "sha256": "7bad8bdb57893ed0956235a51a7eb688ddebd46465d8e3c6ac9755a743ec2b40"
+    },
+    {
+      "bytes": 94819,
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/odds.jpg",
+      "sha256": "bf42e89aa27ae712b9fb2e71ba5d0902d078b7a6b8fa04e5aee04c8aa7492f08"
+    },
+    {
+      "bytes": 1300,
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/odds.txt",
+      "sha256": "cfe15816534fcb5cbf44ee6aec3b331e43c1c1062bc85d7136cbd8437468d64c"
+    },
+    {
+      "bytes": 82480,
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/overview.jpg",
+      "sha256": "8c49e4a19fe21a6723cd96100c207aaa9e8a573b187a4c11b34606f14df751f9"
+    },
+    {
+      "bytes": 913,
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/overview.txt",
+      "sha256": "3967eff964947ed07dd2b2a36bc65d93ad8548efb2804e2549fe0e69a0f4a18a"
+    },
+    {
+      "bytes": 93348,
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/sources.jpg",
+      "sha256": "aff97362f1cc178177d4178c361d3a4382842f81860e0c72dcdd67970cf013a5"
+    },
+    {
+      "bytes": 2424,
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/sources.txt",
+      "sha256": "69198ebfe6a97256670b406a507889b7962aec726ce4994d993779faeaa15567"
+    },
+    {
+      "bytes": 40826,
+      "path": "research/grey_deer/risk_radar_source_consumer_audit_20261017.md",
+      "sha256": "b277e2f1051f20b4b9355ef7d09f4b5671b22156dda4c586c41b3c8170eebf48"
+    }
+  ],
+  "transfer_mismatches": [],
+  "trial_writes": 0
+}

@@ -1,0 +1,48 @@
+[
+  {
+    "file": "research/agentic_media/public_intelligence_20261011/official_staging_phase/bac_stage_20261014.json",
+    "record_unchanged": true,
+    "sha256": "444946ab02c0537c539e367cf121ee8efd4d6ab8a6c5f27ae880ff2934053931",
+    "fact_anchor": {
+      "name": "fact_anchor",
+      "ok": true,
+      "detail": "every number and quote resolves to a source fact",
+      "metrics": {
+        "numbers_checked": 13,
+        "unanchored": [],
+        "source_pool_size": 24,
+        "unsourced_quotes": []
+      }
+    },
+    "markup": {
+      "name": "markup_safety",
+      "ok": true,
+      "detail": "static article fragment with allowed tags and attributes",
+      "metrics": {}
+    },
+    "acceptance_credit": 0
+  },
+  {
+    "file": "research/agentic_media/public_intelligence_20261011/current_event_phase/research_stage_20261013.json",
+    "record_unchanged": true,
+    "sha256": "ec140345fab45fa876fceff6884577ebfead9740876d493afed2e477dfb2d971",
+    "fact_anchor": {
+      "name": "fact_anchor",
+      "ok": true,
+      "detail": "every number and quote resolves to a source fact",
+      "metrics": {
+        "numbers_checked": 22,
+        "unanchored": [],
+        "source_pool_size": 98,
+        "unsourced_quotes": []
+      }
+    },
+    "markup": {
+      "name": "markup_safety",
+      "ok": true,
+      "detail": "static article fragment with allowed tags and attributes",
+      "metrics": {}
+    },
+    "acceptance_credit": 0
+  }
+]
