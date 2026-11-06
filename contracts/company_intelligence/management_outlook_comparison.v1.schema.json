@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://macro.local/contracts/company_intelligence/management_outlook_comparison.v1.schema.json",
+  "title": "management_outlook_comparison.v1",
+  "description": "Closed comparison envelope for the MANAGEMENT_REVENUE_REMAINING_YEAR unit. Authority flags are literal false; a refused comparison carries result=null plus a nonempty explanation. No rank, gate, size, veto, originate, open-entry, probability, confidence, consensus, beat or miss field exists anywhere.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "comparison_id", "kind", "subject", "fiscal_partition",
+    "input_roles", "input_vector", "eligibility", "result", "limitations",
+    "correction", "authority"
+  ],
+  "properties": {
+    "schema": {"const": "management_outlook_comparison.v1"},
+    "comparison_id": {"type": "string", "pattern": "^moc_[0-9a-f]{64}$"},
+    "kind": {"const": "MANAGEMENT_REVENUE_REMAINING_YEAR"},
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuer_id", "fiscal_year", "metric_id", "currency", "accounting_basis", "scale"],
+      "properties": {
+        "issuer_id": {"type": "string", "pattern": "^[A-Z0-9][A-Z0-9_.-]{0,63}$"},
+        "fiscal_year": {"type": "integer", "minimum": 2000, "maximum": 2100},
+        "metric_id": {"const": "revenue"},
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "accounting_basis": {"enum": ["GAAP", "IFRS", "NON_GAAP"]},
+        "scale": {"const": "millions"}
+      }
+    },
+    "fiscal_partition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["periods", "completed", "newly_completed", "remaining"],
+      "properties": {
+        "periods": {
+          "type": "array", "minItems": 1, "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["key", "start", "end_exclusive"],
+            "properties": {
+              "key": {"type": "string", "pattern": "^[0-9A-Za-z][0-9A-Za-z_.-]{0,31}$"},
+              "start": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+              "end_exclusive": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}
+            }
+          }
+        },
+        "completed": {"$ref": "#/$defs/keyList"},
+        "newly_completed": {"$ref": "#/$defs/keyList"},
+        "remaining": {"$ref": "#/$defs/keyList"}
+      }
+    },
+    "input_roles": {
+      "type": "array", "minItems": 1, "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "low", "high", "period_keys", "refs_sha256", "definition_sha256"],
+        "properties": {
+          "role": {"enum": ["FY_A", "FY_B", "ACTUAL_C_A", "ACTUAL_C_B", "GUIDE_N_A", "ACTUAL_N_B"]},
+          "low": {"$ref": "#/$defs/inputDecimal"},
+          "high": {"$ref": "#/$defs/inputDecimal"},
+          "period_keys": {"$ref": "#/$defs/keyList"},
+          "refs_sha256": {
+            "type": "array", "minItems": 1, "maxItems": 8,
+            "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          },
+          "definition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "input_vector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_vector_sha256", "definition_receipt_sha256", "perimeter_receipt_sha256", "role_generations"],
+      "properties": {
+        "input_vector_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "definition_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "perimeter_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "role_generations": {
+          "type": "array", "minItems": 1, "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "generation"],
+            "properties": {
+              "role": {"enum": ["FY_A", "FY_B", "ACTUAL_C_A", "ACTUAL_C_B", "GUIDE_N_A", "ACTUAL_N_B"]},
+              "generation": {"type": "string", "pattern": "^[0-9a-f]{16,64}$"}
+            }
+          }
+        }
+      }
+    },
+    "eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eligible", "reasons", "explanation", "checked"],
+      "properties": {
+        "eligible": {"type": "boolean"},
+        "reasons": {
+          "type": "array", "uniqueItems": true,
+          "items": {"enum": [
+            "missing_role", "source_unverified", "identity_unresolved",
+            "source_not_eligible_at_cut", "fiscal_partition_mismatch",
+            "definition_accounting_fx_mismatch", "perimeter_not_comparable",
+            "rights_blocked", "unsupported_metric", "non_additive_metric",
+            "invalid_range", "request_bound_exceeded", "no_remaining_horizon"
+          ]}
+        },
+        "explanation": {"type": "string", "minLength": 1},
+        "checked": {
+          "type": "array", "uniqueItems": true, "minItems": 1,
+          "items": {"enum": [
+            "issuer_identity", "source_verification", "cut_eligibility",
+            "fiscal_partition", "definition_accounting_fx",
+            "perimeter_comparability", "rights", "metric_support",
+            "range_validity", "request_bounds", "remaining_horizon"
+          ]}
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"eligible": {"const": true}}},
+          "then": {"properties": {"reasons": {"maxItems": 0}}}
+        },
+        {
+          "if": {"properties": {"eligible": {"const": false}}},
+          "then": {"properties": {"reasons": {"minItems": 1}, "explanation": {"minLength": 1}}}
+        }
+      ]
+    },
+    "result": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "annual_midpoint_change", "new_period_deviation",
+            "prior_actual_revision", "earlier_remaining", "later_remaining",
+            "remaining_change", "currency", "scale", "formula_revision"
+          ],
+          "properties": {
+            "annual_midpoint_change": {"$ref": "#/$defs/resultDecimal"},
+            "new_period_deviation": {"$ref": "#/$defs/resultDecimal"},
+            "prior_actual_revision": {"$ref": "#/$defs/resultDecimal"},
+            "earlier_remaining": {"$ref": "#/$defs/resultDecimal"},
+            "later_remaining": {"$ref": "#/$defs/resultDecimal"},
+            "remaining_change": {"$ref": "#/$defs/resultDecimal"},
+            "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+            "scale": {"const": "millions"},
+            "formula_revision": {"type": "string", "pattern": "^[a-z][a-z0-9_/]{3,63}$"}
+          }
+        }
+      ]
+    },
+    "limitations": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"enum": [
+        "midpoints are conventions, not expectations",
+        "guidance endpoints are source ranges, not expectations",
+        "values are normalized to the contract scale; native precision and units remain in source receipts",
+        "actuals are point values; guidance rows carry source ranges",
+        "a null result retains input references for explanation only"
+      ]}
+    },
+    "correction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["corrected", "predecessor_id", "reason"],
+      "properties": {
+        "corrected": {"type": "boolean"},
+        "predecessor_id": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "pattern": "^moc_[0-9a-f]{64}$"}
+          ]
+        },
+        "reason": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "minLength": 1}
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"corrected": {"const": true}}},
+          "then": {
+            "properties": {
+              "predecessor_id": {"type": "string", "pattern": "^moc_[0-9a-f]{64}$"},
+              "reason": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"corrected": {"const": false}}},
+          "then": {
+            "properties": {
+              "predecessor_id": {"type": "null"},
+              "reason": {"type": "null"}
+            }
+          }
+        }
+      ]
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rank", "gate", "size", "veto", "originate", "open_entry"],
+      "properties": {
+        "rank": {"const": false},
+        "gate": {"const": false},
+        "size": {"const": false},
+        "veto": {"const": false},
+        "originate": {"const": false},
+        "open_entry": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"eligibility": {"properties": {"eligible": {"const": true}}}}},
+      "then": {"properties": {"result": {"type": "object"}}}
+    },
+    {
+      "if": {"properties": {"eligibility": {"properties": {"eligible": {"const": false}}}}},
+      "then": {"properties": {"result": {"type": "null"}}}
+    }
+  ],
+  "$defs": {
+    "keyList": {
+      "type": "array", "maxItems": 4, "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[0-9A-Za-z][0-9A-Za-z_.-]{0,31}$"}
+    },
+    "inputDecimal": {
+      "type": "string",
+      "pattern": "^-?(?:0|[1-9][0-9]{0,11})(?:\\.[0-9]{1,6})?$"
+    },
+    "resultDecimal": {
+      "type": "string",
+      "pattern": "^-?(?:0|[1-9][0-9]{0,14})(?:\\.[0-9]{1,7})?$"
+    }
+  }
+}

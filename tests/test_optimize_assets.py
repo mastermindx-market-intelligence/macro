@@ -80,6 +80,39 @@ def test_already_queried_ref_left_alone():
     assert optimize_assets_text(tag, _hash_for) == tag
 
 
+def test_vps_runtime_logo_asset_never_gets_git_placeholder_hash() -> None:
+    """The browser-safe logo token is materialized by the VPS, not Git.
+
+    Its static Git placeholder and actual served bytes differ. The generic
+    optimizer intentionally leaves foreign queries alone, so the one shared
+    nav partial must use a non-hash URL and preserve explicit defer. A ?v=hash
+    URL is cached immutable for one year by the actual public edge.
+    """
+    nav = (Path(__file__).resolve().parents[1] / "templates" / "_navlinks.html.j2").read_text()
+    # The P0B browser receipts pin the shared nav.  An unrelated public
+    # Research Screener URL must never modify their construction input.
+    assert ('<script src="{{ NP }}logo_config.js"'
+            '{% if nav_defer_enhancements | default(false) %} defer fetchpriority="low"{% endif %}></script>') in nav
+    assert 'nav_runtime_logo_config' not in nav
+    for runtime_tag in (
+        '<script src="logo_config.js?runtime-config"></script>',
+        '<script src="logo_config.js?runtime-config" defer fetchpriority="low"></script>',
+    ):
+        assert optimize_assets_text(runtime_tag, lambda _: "b37d33d3") == runtime_tag
+        assert "?v=" not in runtime_tag
+
+    # Verify the actual Research Screener producer's Jinja/navigation +
+    # optimize_assets bake path, not just the shared partial string. This
+    # producer must never put a Git placeholder hash on runtime logo config.
+    from scripts.build_research_screener import bake_html, build_payload
+
+    root = Path(__file__).resolve().parents[1]
+    baked = bake_html(root, build_payload(root))
+    assert baked.count('logo_config.js?runtime-config') == 1
+    assert '<script src="logo_config.js?runtime-config" defer></script>' in baked
+    assert re.search(r'logo_config\.js\?v=[0-9a-f]{8}', baked) is None
+
+
 def test_missing_asset_gets_defer_but_no_version():
     out = optimize_assets_text('<script src="unknown.js"></script>', _hash_for)
     assert out == '<script src="unknown.js" defer></script>'  # defer safe; no hash to add
@@ -88,42 +121,6 @@ def test_missing_asset_gets_defer_but_no_version():
 def test_idempotent():
     once = optimize_assets_text('<script src="theme.js"></script>', _hash_for)
     assert optimize_assets_text(once, _hash_for) == once
-
-
-def test_prunes_live_js_only_when_page_has_no_live_consumer():
-    from lib import pages as pages_lib
-
-    page = (
-        '<html><body>'
-        '<script src="../live_config.js?v=12345678" defer></script>'
-        '<script src="../live.js?v=abcdef12" defer></script>'
-        '<script src="../theme.js?v=aaaa1111" defer></script>'
-        '</body></html>'
-    )
-    out = pages_lib.prune_unused_live_js_text(page)
-    assert 'live_config.js?v=12345678' in out
-    assert 'theme.js?v=aaaa1111' in out
-    assert 'live.js' not in out
-    assert pages_lib.prune_unused_live_js_text(out) == out
-
-
-def test_keeps_live_js_for_every_supported_live_consumer_shape():
-    from lib import pages as pages_lib
-
-    live_tag = '<script src="live.js?v=abcdef12" defer></script>'
-    consumers = (
-        '<span class="nb-px" data-sym="SPY"></span>',
-        '<span class="nb-chg" data-sym="SPY"></span>',
-        '<span data-live-label></span>',
-        '<span id="sbx-stamp"></span>',
-        '<script>window.LiveQuotes && window.LiveQuotes.refresh()</script>',
-        '<script>window.LIVE_POLL_SEC = 60</script>',
-        '<script>var p = document.createElement("span"); p.className = "nb-px";</script>',
-        '<script src="heatmap.js"></script>',
-    )
-    for consumer in consumers:
-        page = f'<html><body>{consumer}{live_tag}</body></html>'
-        assert live_tag in pages_lib.prune_unused_live_js_text(page), consumer
 
 
 def test_optimize_sweep_end_to_end(tmp_path):
@@ -147,33 +144,6 @@ def test_optimize_sweep_end_to_end(tmp_path):
     assert "data-dbase" in out and "window.DATA_BASE" in out
     assert "data_base.js" not in out
     # second sweep is a no-op (idempotent)
-    assert optimize(site) == 0
-
-
-def test_optimize_sweep_prunes_live_js_from_nonconsumer_page_only(tmp_path):
-    site = tmp_path / "site"
-    site.mkdir()
-    (site / "live.js").write_bytes(b"window.LiveQuotes = {}")
-    (site / "live_config.js").write_bytes(b"window.LIVE_ENABLED = true")
-
-    scripts = (
-        '<script src="live_config.js"></script>'
-        '<script src="live.js"></script>'
-    )
-    (site / "quiet.html").write_text(f"<html><body>{scripts}<p>research</p></body></html>")
-    (site / "prices.html").write_text(
-        f'<html><body><span class="nb-px" data-sym="SPY"></span>{scripts}</body></html>'
-    )
-
-    assert optimize(site) == 2
-    quiet = (site / "quiet.html").read_text()
-    prices = (site / "prices.html").read_text()
-
-    assert "live_config.js?v=" in quiet
-    assert "live.js" not in quiet
-    assert "live_config.js?v=" in prices
-    assert "live.js?v=" in prices
-    assert 'class="nb-px"' in prices
     assert optimize(site) == 0
 
 
@@ -528,3 +498,95 @@ def test_a_hand_written_query_is_never_judged(tmp_path):
     )
     assert check(tmp_path, fix=True) == ["page.html"]
     assert check.refused == [], "a hand-written query was audited as our stamp"
+
+def test_prunes_live_js_only_when_page_has_no_live_consumer():
+    from lib import pages as pages_lib
+
+    page = (
+        '<html><body>'
+        '<script src="../live_config.js?v=12345678" defer></script>'
+        '<script src="../live.js?v=abcdef12" defer></script>'
+        '<script src="../theme.js?v=aaaa1111" defer></script>'
+        '</body></html>'
+    )
+    out = pages_lib.prune_unused_live_js_text(page)
+    assert 'live_config.js?v=12345678' in out
+    assert 'theme.js?v=aaaa1111' in out
+    assert 'live.js' not in out
+    assert pages_lib.prune_unused_live_js_text(out) == out
+
+
+def test_keeps_live_js_for_every_supported_live_consumer_shape():
+    from lib import pages as pages_lib
+
+    live_tag = '<script src="live.js?v=abcdef12" defer></script>'
+    consumers = (
+        '<span class="nb-px" data-sym="SPY"></span>',
+        '<span class="nb-chg" data-sym="SPY"></span>',
+        '<span data-live-label></span>',
+        '<span id="sbx-stamp"></span>',
+        '<script>window.LiveQuotes && window.LiveQuotes.refresh()</script>',
+        '<script>window.LIVE_POLL_SEC = 60</script>',
+        '<script>var p = document.createElement("span"); p.className = "nb-px";</script>',
+        '<script src="heatmap.js"></script>',
+        '<script src="globe-deck.js"></script>',
+        '<script src="canada-stock-v36.js"></script>',
+    )
+    for consumer in consumers:
+        page = f'<html><body>{consumer}{live_tag}</body></html>'
+        assert live_tag in pages_lib.prune_unused_live_js_text(page), consumer
+
+
+def test_optimize_sweep_prunes_live_js_from_nonconsumer_page_only(tmp_path):
+    site = tmp_path / "site"
+    site.mkdir()
+    (site / "live.js").write_bytes(b"window.LiveQuotes = {}")
+    (site / "live_config.js").write_bytes(b"window.LIVE_ENABLED = true")
+
+    scripts = (
+        '<script src="live_config.js"></script>'
+        '<script src="live.js"></script>'
+    )
+    (site / "quiet.html").write_text(f"<html><body>{scripts}<p>research</p></body></html>")
+    (site / "prices.html").write_text(
+        f'<html><body><span class="nb-px" data-sym="SPY"></span>{scripts}</body></html>'
+    )
+
+    assert optimize(site) == 2
+    quiet = (site / "quiet.html").read_text()
+    prices = (site / "prices.html").read_text()
+
+    assert "live_config.js?v=" in quiet
+    assert "live.js" not in quiet
+    assert "live_config.js?v=" in prices
+    assert "live.js?v=" in prices
+    assert 'class="nb-px"' in prices
+    assert optimize(site) == 0
+
+def test_live_pruning_keeps_external_noncanonical_and_data_src_tags():
+    from lib.pages import prune_unused_live_js_text
+
+    tags = (
+        '<script src="https://cdn.example/live.js"></script>',
+        '<script src=" //cdn.example/live.js"></script>',
+        '<script src="vendor/live.js"></script>',
+        '<script data-src="live.js"></script>',
+        '<script data-src="live.js" src="theme.js"></script>',
+        '<script href="live.js"></script>',
+        '<script src="live.js/"> </script>',
+        '<script src="live.js">window.otherBoot = true;</script>',
+        "<script src='live.js'></script>",
+    )
+    for tag in tags:
+        assert prune_unused_live_js_text(tag) == tag, tag
+
+
+def test_live_pruning_accepts_canonical_relative_paths_only():
+    from lib.pages import prune_unused_live_js_text
+
+    for path in ("live.js", "/live.js", "./live.js", "../live.js", "../../live.js?v=12345678"):
+        tag = f'<script src="{path}" defer></script>'
+        assert prune_unused_live_js_text(tag) == "", path
+
+    assert prune_unused_live_js_text('  <script src="live.js"></script>\n') == "\n"
+    assert prune_unused_live_js_text('lead <script src="live.js"></script>after') == "lead after"

@@ -191,6 +191,7 @@ _OUR_STAMP_RE = re.compile(r"^([^?#]+)\?v=[0-9a-f]{8}$")
 # double-fetch the file instead of deduping it.
 _REL_ATTR_RE = re.compile(r'\brel\s*=\s*"([^"]*)"', re.IGNORECASE)
 
+
 # live.js is included by the global authenticated-navigation partial, so a
 # rendered page historically paid its download/parse/timer cost even when that
 # page had no price, breadth, or runtime-created live surface. The post-render
@@ -207,14 +208,23 @@ _LIVE_JS_CONSUMER_MARKERS = (
     "/ws/tape",
     "live/breadth.json",
     "heatmap.js",
+    "globe-deck.js",
+    "canada-stock-v36.js",
 )
 _EMPTY_EXTERNAL_SCRIPT_TAG_RE = re.compile(
-    r"<script\b([^>]*)>\s*</script\s*>", re.IGNORECASE
+    r"(?m)(^[ \t]*)?<script\b([^>]*)>\s*</script\s*>", re.IGNORECASE
+)
+
+_LIVE_JS_SRC_ATTR_RE = re.compile(
+    r'(?:^|\s)(src)\s*=\s*"([^"]*)"', re.IGNORECASE
+)
+_CANONICAL_LIVE_JS_PATH_RE = re.compile(
+    r"(?:/|(?:\.\./|\./)*)live\.js", re.IGNORECASE
 )
 
 
 def prune_unused_live_js_text(text: str) -> str:
-    """Remove the generic live.js tag when final HTML cannot consume it.
+    """Remove the canonical local live.js tag when final HTML cannot consume it.
 
     live_config.js deliberately stays: risk/news/intraday sibling runtimes read
     that configuration even on pages where the generic quote patcher is
@@ -226,12 +236,15 @@ def prune_unused_live_js_text(text: str) -> str:
         return text
 
     def _rewrite(m: "re.Match[str]") -> str:
-        attrs = m.group(1)
-        am = _SRC_ATTR_RE.search(attrs)
+        attrs = m.group(2)
+        am = _LIVE_JS_SRC_ATTR_RE.search(attrs)
         if not am or am.group(1).lower() != "src":
             return m.group(0)
-        bare = am.group(2).split("#", 1)[0].split("?", 1)[0].rstrip("/")
-        if bare.rsplit("/", 1)[-1].lower() != "live.js":
+        url = am.group(2).strip()
+        if not _is_local_asset(url):
+            return m.group(0)
+        bare = url.split("#", 1)[0].split("?", 1)[0]
+        if _CANONICAL_LIVE_JS_PATH_RE.fullmatch(bare) is None:
             return m.group(0)
         return ""
 
@@ -787,7 +800,33 @@ def write_page(path: Path | str, html: str, *, encoding: str | None = None) -> P
     """Write a site HTML page with the data-base shim injected (depth-aware,
     idempotent). ALL builders must write site/**/*.html through this — a raw
     write_text drops the shim whenever the builder runs standalone."""
+    from lib.shared_shell import inject_shared_shell_text
+
     p = Path(path)
-    p.write_text(inject_text(html, dbase_prefix(p)), encoding=encoding)
+    prefix = dbase_prefix(p)
+    rendered = inject_text(html, prefix)
+    rendered = inject_shared_shell_text(rendered, prefix, site_dir=_site_root(),
+                                        response_kind="coming_soon" if p.name == "coming-soon.html" else "content")
+    p.write_text(rendered, encoding=encoding)
     _ensure_shim_asset()
+    return p
+
+
+_DOCUMENT_RE = re.compile(r"<!doctype\b|<html[\s>]|<head[\s>]", re.IGNORECASE)
+
+
+def write_unshimmed_html(path: Path | str, text: str, *, encoding: str | None = None) -> Path:
+    """Write HTML that must stay byte-for-byte: a detached fragment, or a throwaway
+    page outside the site dir (evidence fixtures, headless render wrappers).
+
+    write_page is wrong for both. It prepends the shim to a fragment, which has no
+    <head> to hold it, and it touches site assets for a page no reader loads. This
+    is not a way round write_page: a whole document under the site dir is refused,
+    so a shipped page still has to go through it."""
+    p = Path(path)
+    resolved = p.resolve()
+    root = _site_root()
+    if (resolved == root or root in resolved.parents) and _DOCUMENT_RE.search(text):
+        raise ValueError(f"{p}: a whole page under the site dir must go through write_page")
+    p.write_text(text, encoding=encoding)
     return p

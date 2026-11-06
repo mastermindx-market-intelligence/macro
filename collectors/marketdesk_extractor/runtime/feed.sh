@@ -38,10 +38,24 @@ if ! PROBE="$(cd "$APP" 2>>"$LOG" &&   ./.venv/bin/python -m marketdesk_extracto
   echo "$(ts) feed: vault-state probe failed — retrying next tick" >>"$LOG"
   exit 0
 fi
-IFS='|' read -r DB NEWEST COUNT <<<"$PROBE"
+IFS='|' read -r DB NEWEST COUNT AUTH_STATE AUTH_OBSERVED AUTH_REQUIRED_AT AUTH_REASON <<<"$PROBE"
 case "$COUNT" in
   ''|*[!0-9]*)
     echo "$(ts) feed: malformed vault-state probe output" >>"$LOG"
+    exit 0
+    ;;
+esac
+case "$AUTH_STATE" in
+  AUTHENTICATED)
+    ;;
+  AUTH_REQUIRED)
+    echo "$(ts) feed: ERROR producer AUTH_REQUIRED observed_at=${AUTH_OBSERVED:-unknown} required_at=${AUTH_REQUIRED_AT:-unknown} reason=${AUTH_REASON:-NO_AUTHENTICATED_PROFILE}; operator must stop the single-writer trickle daemon and run marketdesk auth" >>"$LOG"
+    ;;
+  UNKNOWN)
+    echo "$(ts) feed: WARNING producer auth state UNKNOWN; process presence is not authentication proof" >>"$LOG"
+    ;;
+  *)
+    echo "$(ts) feed: malformed producer auth state: ${AUTH_STATE:-empty}" >>"$LOG"
     exit 0
     ;;
 esac
@@ -59,7 +73,9 @@ else
   echo "$(ts) feed: nothing new" >>"$LOG"
 fi
 
-# Health note: warn (once per tick) if the trickle daemon isn't running.
+# Process presence is a separate signal from producer authentication. The
+# auth state above comes from the producer's own DB metadata; this process check
+# catches a different failure class (daemon absent entirely).
 if ! pgrep -f "marketdesk trickle" >/dev/null 2>&1; then
   echo "$(ts) feed: WARNING trickle daemon not running (launchctl list | grep research-trickle)" >>"$LOG"
 fi
