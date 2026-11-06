@@ -1,16 +1,55 @@
 # PR audit — mastermindx-market-intelligence/mastermind-terminal#701
 
+## Records reconciliation — 2026-11-06
+
+The already merged Terminal #701 implementation is DO_NOT_REDO. This integration preserves the accepted main narrative below, with narrowly identified source corrections and this qualification. Historical PASS, checker, screenshot and test statements remain the original reports' statements. They do not acquire fresh acceptance from this records change.
+
+### Immutable records and product identities
+
+- Original #7642 report: [Macro 63b581e48eeb94bdd29a5f6c798367525c0b686e](https://github.com/mastermindx-market-intelligence/macro/blob/63b581e48eeb94bdd29a5f6c798367525c0b686e/orch/audits/mastermind-terminal_PR-701.mm.md), blob `23290515286ab7f7532230643bf3370f16cad73f`.
+- Accepted main report before this integration: [Macro 6931368ff29e250ce3c0065cfbf52cc2133b27c1](https://github.com/mastermindx-market-intelligence/macro/blob/6931368ff29e250ce3c0065cfbf52cc2133b27c1/orch/audits/mastermind-terminal_PR-701.mm.md), blob `bb22ad8c86140f23cce03b1c38e98cd47d89261c`.
+- [Terminal #701](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/701) is merged: browser source `4b07375a9e487631d3d3239f0cb3cf421332120e`, final PR head `30e1e56f8678e9ae61e635fb2a2a39c7185b3234`, squash merge `e5ccacf4ab327ad414c6f9fa6000f0a720a8ea55`, merged 2026-09-21T18:35:42Z. Native GitHub identifies author and merger as `chriswong6031-creator`; the original variant's `review-bot` attribution is not adopted.
+
+### Useful union and disposition
+
+Both records cover the native dialog, named controls and roving tabs, bounded open-only focus handoff, numeric drafts/commit, opaque native color conversion, cached template reads, template command namespacing, and tablet dock space reserved once per workspace. These are one completed product change, not two product projects.
+
+The original variant's conditional on-brand ink caution and optional hidden-origin-marker/data-attribute alternative are preserved. Neither commissions a refactor. The accepted main report's conditional scrim caution and possible future translated-test expansion remain conditional. Bilingual screenshots do not establish complete behavioral equivalence for every translated path.
+
+The original variant suggests that a newly saved template named `__proto__` needs a name guard. The exact source does **not** substantiate the claimed prototype defect: saving uses a computed own property `{ ...templates, [name.trim()]: settings }`; loading uses `Object.fromEntries`; selection checks `Object.hasOwn` behind the `template:` namespace. The existing unit file explicitly covers reserved-looking names in stored data. A bounded JavaScript expression check confirmed own-property preservation and an unchanged prototype across the save/JSON/fromEntries shape. That expression check is not a Vitest or browser run. A future prompt-to-reload browser case could be an optional coverage enhancement; no current vulnerability or mandatory new test is established here.
+
+Source inspection also corrects three unrelated narrative errors rather than preserving them as tasks: `cssToken` has nine call sites; the helper module exports five functions; the focused helper suite expands to 18 + 18 + 9 = 45 invocations across three describe blocks. The white ink and rgba fallback mean literal “token-only” wording is too broad; the supported evidence remains dark-only.
+
+### Inspected exact source and evidence limits
+
+All of these fetched source bytes hash-match the original PR's blobs:
+
+| Original file | Git blob |
+|---|---|
+| ChartSettingsModal.tsx | `93efeae8328966f7b54823b97b576faefccd723b` |
+| chartSettingsUi.ts | `35946bde6ea18284173d5b3761d80358b0398d2f` |
+| chartSettingsUi.test.ts | `b79a344490a39aa7b556cff6fdb653796a7e9b2b` |
+| ChartSettingsModal.module.css | `a878cfeb56a9d27897d37f2906c59bd09791b9e2` |
+| DrawingSidebar.module.css | `4b5623a1521c75af9bcaad60f30b47942cb72b9f` |
+
+The variants quote different historical plain-language legacy counts (18 versus 6). Their exact command scopes and raw receipts were not independently reconciled, so neither count becomes a fresh current finding. The original browser result (73 passed, eight skips), focused 52-pass result, broad suite counts, screenshot digests and claimed RED/GREEN campaign remain attributed. No Terminal tests, current browser, authenticated production path or deployment were rerun.
+
+The broader chart-performance and production program remains separate. Merge of this records repair establishes neither improved FPS/startup/API behavior nor current production acceptance.
+
+---
+
 **Auditor:** meta-ceo-b-2026-09-08 (one-pass remote useful-idle, no retries, no scope expansion)
 **Audit timestamp:** 2026-09-21
 **Repo / PR:** mastermindx-market-intelligence/mastermind-terminal #701
 **PR title:** feat(chart): upgrade settings UX and restore tablet control access
-**Merged at:** 2026-09-21T18:35:42Z (squash merge onto `origin/master`)
-**Author / merger:** author `review-bot` (mastermind-X bot seat); merger `chriswong6031-creator` (operator)
-**Source base:** `749576c537284df43772d3cfd3fdd75ad7194a2d`
-**PR head SHAs (semantic):** `4b07375a9e487631d3d3239f0cb3cf421332120e` → `30e1e56f8678e9ae61e635fb2a2a39c7185b3234`
-**Live `origin/master` merge commit (squash):** `e5ccacf4ab327ad414c6f9fa6000f0a720a8ea55` — `git merge-base --is-ancestor 30e1e56f e5ccacf4` returns false (the two PR head commits are NOT on origin/master), but `git show e5ccacf4` carries the entire +613/-77 diff in a single squash commit (verified), so the PR is on master as `e5ccacf4`.
+**Merged at:** 2026-09-21T18:35:42Z
+**Browser-candidate source sha:** `4b07375a9e487631d3d3239f0cb3cf421332120e` (per PR body, EVIDENCE.json `sourceHead`, and `docs/TERMINAL_CHART_SETTINGS_UX_2026-09-21.md` §Fresh exact-candidate browser result)
+**Merge commit:** `e5ccacf4` (per `git log --all --oneline | grep` on the terminal checkout)
+**Source base:** `749576c537284df43772d3cfd3fdd75ad7194a2d` (the prior #700 `fix(dev): repair macro dashboard preview link` head)
+**Author:** chriswong6031-creator (Sol-mastermind Session, direct-continuation lane; PR body declares Studio Direct / Remote Desktop Commander carrier, `claude/terminal-chart-settings-ux-20260921` branch, single-actor recovery of the completed candidate)
+**Repo root verified:** `/Users/chriswong/lanes/repos/mastermind-terminal`, working-tree-mounted at the merge commit via `git worktree add /tmp/pr701-audit e5ccacf4 --detach` for plain-language enumeration (sparse-checkout, full terminal/ subtree); merge confirmed in `git log --all --oneline` on the terminal checkout.
 
-> **Scope note (§1):** the chronologically most-recent merged PRs in the terminal repo inside the 24 h window are #701 (18:35:42Z — chart settings UX upgrade + tablet dock repair, 24 files / +613/-77, the largest un-audited terminal merge since #700 closed), #700 (14:09:56Z — one-line symlink retarget, audited in scope-out rationale below), #698 (09:45:42Z — mobile chart touch, already audited), #696 (06:50:24Z — flow card geometry, already audited), and older half-B perf PRs which were all swept by the morning audit PR #7598. **#701** is the most-recent un-audited terminal merge that carries real user-facing UI work, discriminating verification, and a substantively re-engineered dark-only chart-settings modal — so the seat selects #701. It satisfies "half-B": the PR is the chart-settings modal upgrade + tablet dock safe-area-aware strip repair, owned under `claude/terminal-chart-settings-ux-20260921`; it does NOT claim completion of the broader charting program ("Current capability: BUILT_NOT_PROVEN. Mission complete: false.").
+> **Scope note (§1):** the chronologically most-recent merged terminal PRs inside the 24 h window are #701 (18:35:42Z — `feat(chart): upgrade settings UX and restore tablet control access`, 24 files, +613/−77, broad user-facing surface), #700 (14:09:56Z — `fix(dev): repair Macro dashboard preview link`, 1 add/1 del symlink target retarget, zero user-facing surface), #698 (09:45:42Z — `fix(mobile): make chart controls touch accessible`, audited), #696 (06:50:24Z — `fix(options): restore flow card geometry`, audited), #695 (08:46:43Z — `fix(chart): repair mobile analysis hub focus and tools`, audited), #693 (05:06:10Z — `fix(levels): deconflict crowded price labels`, audited), and #689 (03:28:08Z — `feat(prophet): surface live opportunity boxes`, audited). #700 is a one-line ops fix with no surface to audit. The remaining terminal PRs above #698 are already audited. **#701** is the only un-audited terminal merge in the last 24 h that carries real user-facing UI/UX work and fits the "half-B" mandate: the PR is the chart-settings-modal UX upgrade + tablet 641–860 px drawing-dock overlap repair + tab-role / focus / keyboard accessibility lift on the settings dialog, owned under the broader half-B chart programme (paired parallel performance work runs on `claude/terminal-chart-clock-isolation-20260921`, which the body explicitly excludes from this PR's surface and which is itself already merged as `d7bde7d9 perf(chart): isolate footer clock updates and pause hidden timers`).
 
 ---
 
@@ -22,122 +61,124 @@
 | number | 701 |
 | title | feat(chart): upgrade settings UX and restore tablet control access |
 | merged_at | 2026-09-21T18:35:42Z |
-| source base | `749576c537284df43772d3cfd3fdd75ad7194a2d` (protected at final local verification; immediately-prior commit is the metadata-only PR-crop refresh `ops(scripts): refresh chart-context crops for tablet/mobile (#696)` audit chain closeout) |
-| PR head (semantic, head branch) | `4b07375a9e487631d3d3239f0cb3cf421332120e` (feat) → `30e1e56f8678e9ae61e635fb2a2a39c7185b3234` (test, screenshot refresh) |
-| live merge commit (squash on master) | `e5ccacf4ab327ad414c6f9fa6000f0a720a8ea55` |
+| browser-candidate source | `4b07375a9e487631d3d3239f0cb3cf421332120e` |
+| final PR head | `30e1e56f8678e9ae61e635fb2a2a39c7185b3234` |
+| merge_commit | `e5ccacf4` |
+| base | `master` at `749576c537284df43772d3cfd3fdd75ad7194a2d` (#700 `fix(dev): repair Macro dashboard preview link`) |
 | branch | `claude/terminal-chart-settings-ux-20260921` |
-| changed files | **24** — `docs/TERMINAL_CHART_SETTINGS_UX_2026-09-21.md` (+62), `terminal/components/ChartSettingsModal.module.css` (+100 NEW), `terminal/components/ChartSettingsModal.tsx` (+101/−53), `terminal/components/DrawingSidebar.module.css` (+7 NEW), `terminal/components/DrawingSidebar.tsx` (+2/−1), `terminal/docs/pr-crops/chart-settings-ux-20260921/EVIDENCE.json` (+39 NEW), 6 settings screenshots (NEW), `terminal/docs/pr-crops/terminal-visual-intelligence/EVIDENCE.yml` (+27/−21), 6 context screenshots (MODIFIED), `terminal/e2e/chart-settings-ux.spec.ts` (+146 NEW), `terminal/e2e/visual-intelligence.spec.ts` (+1/−1), `terminal/lib/__tests__/chartSettingsUi.test.ts` (+55 NEW), `terminal/lib/__tests__/visualIntelligenceEvidence.test.ts` (+1/−1), `terminal/lib/chartSettingsUi.ts` (+72 NEW) |
+| changed files | 24 — `docs/TERMINAL_CHART_SETTINGS_UX_2026-09-21.md` (+62 NEW), `terminal/components/ChartSettingsModal.module.css` (+100 NEW), `terminal/components/ChartSettingsModal.tsx` (+101/−53 MODIFIED), `terminal/components/DrawingSidebar.module.css` (+7 NEW), `terminal/components/DrawingSidebar.tsx` (+2/−1 MODIFIED), `terminal/docs/pr-crops/chart-settings-ux-20260921/EVIDENCE.json` (+39 NEW), `terminal/docs/pr-crops/chart-settings-ux-20260921/desktop-settings-{en,zh}.png` (NEW), `terminal/docs/pr-crops/chart-settings-ux-20260921/tablet-settings-{en,zh}.png` (NEW), `terminal/docs/pr-crops/chart-settings-ux-20260921/mobile-settings-{en,zh}.png` (NEW), `terminal/docs/pr-crops/terminal-visual-intelligence/EVIDENCE.yml` (+27/−21 MODIFIED), `terminal/docs/pr-crops/terminal-visual-intelligence/{desktop,tablet,mobile}-context{,-zh}.png` (MODIFIED, recaptured), `terminal/e2e/chart-settings-ux.spec.ts` (+146 NEW), `terminal/e2e/visual-intelligence.spec.ts` (+1/−1 MODIFIED, role="button" → role="tab"), `terminal/lib/__tests__/chartSettingsUi.test.ts` (+55 NEW), `terminal/lib/__tests__/visualIntelligenceEvidence.test.ts` (+1/−1 MODIFIED), `terminal/lib/chartSettingsUi.ts` (+72 NEW) |
 | additions / deletions | 613 / 77 |
-| labels | (no external labels; merge-on-green backstop consumed) |
-| scope collision | none — body declares zero overlap with `ChartPanel`, `TerminalShell`, `MobileNav`, `globals.css`, shared locale registry, indicator math, Canvas content, account/billing/portfolio/alert/Levels/Briefs UI |
-| verification | **RED on protected base `cf35757b258c387fdb361ae45fac3652db3a5503`:** unnamed inputs, invalid CSS color strings to native color pickers, hard-clamped numeric edits, render-path template-storage reads, lost focus on transient menu dismissal, tablet dock overlap. **GREEN on candidate `4b07375a`:** settings/desktop-en + tablet-zh + phone-en browser matrix: **73 passed, 8 viewport-specific skips, zero failures**; `npx tsc --noEmit` PASS; scoped ESLint PASS zero warnings; Vitest 377 files / 6,072 passed / 4 todo (52/52 fresh local-gate triplet: `chartSettingsUi` 45 + `chartSettingsHydration` 4 + `visualIntelligenceEvidence` 3). |
+| labels | (none external; merge-on-green backstop consumed by sweeper) |
+| scope collision | none — body declares zero overlap with `TerminalShell`, `ChartPanel`, `MobileNav`, `AnalysisHubSheet`, `globals.css`, the shared locale registry (the locale registry entry `seasonalityFoot` is left intact for its owning lane), calculation, Options, account, portfolio, alert, billing, webhook, or deployment; the parallel clock-isolation follow-on runs on a separate branch |
 
-**Nature of change (half-B chart-settings UX + tablet docking repair):**
+**Nature of change (half-B chart-settings/tablet-dock UX — chart programme):** the PR is a bounded UX upgrade to the existing chart Settings dialog plus an independently reproduced tablet-dock overlap repair, not a redesign:
 
-1. **`ChartSettingsModal.tsx`** — replaces the prior div-based dialog `<div className="sm-backdrop">` with a native `<dialog>` (HTMLDialogElement), scoped with CSS Modules (`styles.dialog`) so existing chart canvas, global chrome, and other dialogs stay untouched. The dialog owns ARIA tablist / tab / tabpanel roles plus per-instance `useId()`-bound `id` glue so the labels are not a shared singleton; the tabs are a real roving `role="tablist"` with `data-settings-tab`, `aria-selected`, `aria-controls`, `tabIndex={tab===key ? 0 : -1}`, and arrow / Home / End keyboard navigation dispatched through the existing `mm:settings-tab` parent event. A hidden `<span ref={originRef} />` lives inside the *open* path's ChartPanel DOM, used by `activateSettingsDialog()` to pick the right return-focus target (`gear` on desktop, `[data-testid="roller-more"]` on phone) without leaking it into the portalled dialog. `Readability` lift on every select row, color control, range input, and footer button now has a label or `aria-label` — the new e2e spec asserts `unnamed` controls is `[]`.
-2. **`ChartSettingsModal.module.css`** (+100 NEW) — token-only scoped CSS using `var(--text)` / `var(--text-2)` / `var(--line)` / `var(--line-3)` / `var(--brand)` / `var(--brand-2)` / `var(--brand-hov)` / `var(--panel)` / `var(--panel-2)` / `var(--panel-3)` / `var(--pop-scrim, rgba(5,7,11,.64))` / `var(--pop-shadow)`. All section/footer/header heights are explicit (`68px` header, `76px` footer, `44px` minHeight color targets, `min(740px, calc(100dvh - 48px))` modal height). The `@media (max-width: 640px)` block makes mobile section labels and Reset visible (they were hidden), and the `@media (prefers-reduced-motion: reduce)` block kills animation/transition on the touched surfaces. The OK button uses `color: white; background: var(--brand)` (one literal — acceptable per the dark-only contract; see §3).
-3. **`chartSettingsUi.ts`** (+72 NEW) — browser-only chart-preferences helpers, no chart/feed/indicator math, no new dependencies. `colorInputHex(value, fallback)` rejects `#RRGGBBAA` alpha into opaque hex (the native `<input type=color>` doesn't take alpha; the swatch keeps alpha in its rendered `style={{ background }}`), and recovers from malformed / `rgba()` / `rgb()` / percentage forms before falling through to the fallback. `previewNumber(raw, min, max)` returns `null` for empty / non-finite / out-of-range (the draft is editable while invalid); `commitNumber(raw, previous, min, max)` reverts on garbage and clamps on commit. `parseSettingTemplates(raw, defaults)` rejects malformed roots / arrays / unknown fields / wrong-type fields / non-finite numbers, and the user-template `<select>` value is now namespaced (`template:<name>`) so a saved template named `__save` cannot collide with the reserved command marker. `activateSettingsDialog(dialog, returnFocusTo)` is the modal lifecycle: `dialog.showModal()` once at open, body overflow gated to a previous value, focus → selected tab on the open frame, a single cancellable `requestAnimationFrame` handoff for the case where a pointer-opened chart menu finishes its dismissal during the same frame, and a teardown that cancels the rAF, calls `dialog.close()`, restores body overflow only when this is the last open dialog, and returns focus to a *connected* opener (the `isConnected` check guarantees no focus is moved into a detached node). No global focus listener, no polling loop.
-4. **`DrawingSidebar.module.css`** (+7 NEW) + **`DrawingSidebar.tsx`** (+2/−1) — the existing web-tablet floating draw dock (`.ds-dock`) is absolute and was intercepting real clicks on the settings gear at the 641–860 px web-tablet widths. The CSS reserves the strip *once per workspace* (`:has(> .dock)` on `.chart-body` inside `:not(.shell-app) .app`) instead of per-pane, padding `calc(62px + max(8px, var(--drawing-safe-bottom, 0px)))` so a future safe-area token can refine the bottom inset without re-editing this file. Phones use the existing roller/Drawings sheet; native shell geometry is unchanged. The dock gets the new class `styles.dock` in addition to its existing `.ds-dock` class so the old global selector keeps working.
-5. **Test surface (NEW: `terminal/e2e/chart-settings-ux.spec.ts` 146 lines; `terminal/lib/__tests__/chartSettingsUi.test.ts` 55 lines)** — the e2e spec runs in `desktop` (1440×900), `tablet` (820×1180), `mobile` (390×844) projects with `--workers=1 --max-failures=1`, tests (i) focus ownership and tab keyboard navigation, (ii) every interactive control has a label (`unnamed.toEqual([])`), (iii) the native modal inertness defeats programmatic background focus after opening (`dialog.contains(document.activeElement) === true` after `trigger.focus()`), (iv) the close button restores focus to the gear / roller-more trigger, (v) the native `Escape` closes the dialog, (vi) Cancel restores the opening snapshot while OK keeps the previewed preferences, (vii) numeric drafts remain editable while invalid and only clamp on commit, (viii) twelve live-preview toggles do NOT add additional reads of `mm.chartSettingTemplates`, (ix) ZH settings panel remains readable and bounded under `reducedMotion: reduce`, (x) tablet dock never covers the settings gear at the breakpoint edges `[641, 700, 820, 860]`. The Vitest unit suite (`terminal/lib/__tests__/chartSettingsUi.test.ts`) covers the `colorInputHex` parser against 13 nominal / 4 invalid / 1 fail-safe pair, `previewNumber` / `commitNumber` against empty/whitespace/NaN/Infinity/`1e309`/out-of-range/in-range numeric inputs, and `parseSettingTemplates` against malformed roots / arrays / wrong-type / non-finite / unknown fields plus a `"__proto__"` / `"__save"` prototype-pollution attempt — all `Object.hasOwn` checks pass.
-6. **Negative-missing / no-claim posture:** arithmetic, EN/ZH values, indicator math, candle/web-data semantics, transport behaviour, ruler ticks, and snapshot model are unchanged. The PR body is explicit and the doc is explicit: "No claim of improved FPS, overall first-load latency, API performance or network volume is made"; "These changes do not establish a frame-rate, startup, API or renderer speedup"; "Do not ... interpret screenshots/green tests as production proof."
+1. **`ChartSettingsModal`** — previously a custom popover with unnamed `<input>`s and `type="color"` controls receiving invalid CSS color strings (`"rgba(255, 255, 255, .04)"`, transparent / unclamped integers, unnormalized hex), hard-clamped numeric edits that could not be edited as drafts, a render-path read of `mm.chartSettingTemplates` on every live-preview change, and no modal focus ownership. **Repair:** `ChartSettingsModal.tsx` was rewritten to a native `<dialog className="sm-backdrop">` portalled outside pane clipping via `createPortal(node, document.body)`, with a `useId()`-keyed `aria-labelledby`/`aria-controls`/per-tab `role="tab"` structure, `aria-selected`/`aria-controls` on each tab, `aria-label={t("smSections")}` on the tablist, and `aria-label={label}` per tab. The dialog opens via a hidden `<span ref={originRef}>` "origin marker" so a phone-dismissing context-menu setting flow can re-locate the local chart's `.cfb-gear`/`.roller-more` return-focus target without an internal-state lookup. A bounded, cancellable animation-frame handoff in `chartSettingsUi.activateSettingsDialog(...)` runs **once on opening** and only when focus is outside the dialog — no global focus listener, no ongoing polling loop. Cancel/Close/`onCancel`/`Escape` restore the opening snapshot (an `initialRef` captured under `wasOpenRef`); OK keeps the previewed preferences. The `mm:settings-tab` parent `CustomEvent` keeps the existing pattern. The footer template `<select>` namespacess user names (`template:<name>`, `__default`, `__save`); `__save` issues `window.prompt(t("smTemplateName"))` with a namespaced commit (so a user named `"__save"` does not invoke the command).
+2. **`chartSettingsUi.ts`** — the exact original source exports five functions: `colorInputHex(value, fallback)`, `previewNumber(raw, min, max)`, `commitNumber(raw, previous, min, max)`, `parseSettingTemplates(raw, defaults)` and `activateSettingsDialog(dialog, returnFocusTo)`. Color normalization supplies opaque hex to native color controls while the swatch retains the original alpha. Numeric drafts remain editable; preview rejects incomplete/out-of-range values and commit clamps finite values or preserves the previous value. Template parsing filters known setting keys, types and finite numbers. The dialog helper owns the bounded open/focus/cleanup lifecycle. Reserved-looking template names are ordinary names in the `template:<name>` value namespace; see the source qualification above.
+
+3. **`ChartSettingsModal.module.css`** — replaces the dialog-local `backdrop-filter: blur(...)` with a scrim (`::backdrop { background: var(--pop-scrim, rgba(5, 7, 11, .64)); }`), improves section hierarchy (`var(--panel-2)` surface + `var(--line)` hairline + `var(--line-3)` border-token) and focus indicators (`:focus-visible { outline: 2px solid var(--brand-2); outline-offset: 3px; }` on all interactive elements), expands color targets to `44px × 44px`, ensures mobile-grade `min-height: 44px` under `@media (pointer: coarse)`, and supports `@media (prefers-reduced-motion: reduce)` (animation/transition `none !important` on the modal/tab/close/swatch/buttons). Responsive `@media (max-width: 640px)` shrinks the modal to `92dvh`, column-stacks the footer (`sm-reset` / `sm-template-wrap` / `sm-cancel`-`sm-ok`), reduces vertical padding (12/16 vs 24), and uses row-stacked tab icons at `11px`.
+4. **`DrawingSidebar`** — pre-existing tablet conflict: at 641–860 px the floating drawing dock intercepted real clicks on the `.cfb-gear` settings gear. **Repair:** a single media-query rule in `DrawingSidebar.module.css` reserves `padding-bottom: calc(62px + max(8px, var(--drawing-safe-bottom, 0px)))` **only on `.chart-body` when it contains a `.dock`, only at web widths 641–860 px, and not in `.shell-app`** — i.e. once per workspace, never per pane; phone and native-shell geometry unchanged.
+5. **`visual-intelligence.spec.ts`** — Canvas tab selector role corrected from `getByRole("button", ...)` to `getByRole("tab", ...)`, matching the new ARIA structure; chart-state and persistence assertions remain intact.
+
+**Test surface:** The historical browser report describes six settings Playwright tests covering focus/names/keyboard tabs, Cancel/OK, numeric drafts, storage reads, translated reduced-motion layout and tablet dock breakpoints. Exact `chartSettingsUi.test.ts` source contains **three describe blocks and 45 expanded invocations**: colors 11 + 6 + 1 = 18; editable margins 8 + 4 + 5 + 1 = 18; stored templates 6 + 1 + 1 + 1 = 9. The reserved-name/prototype case is already included in the last nine, not an extra case. The original PR body reports those 45 plus hydration 4 and Visual Intelligence evidence 3, totaling 52 focused passes. Existing broader suite and browser success claims remain historical; no suite was rerun for this records integration.
+
 
 ---
 
 ## 2. Plain-language findings
 
-Plain-language discipline was verified two ways: (a) **mechanical:** `node terminal/scripts/check_plain_language.mjs --json` ran clean against the live `origin/master` after this PR landed (`{"blocking":0, "legacyReported":18, ...}` — the 18 legacy findings are on pre-existing code the PR did not touch: `terminal/components/alerts/AlertTimeline.tsx:45` ("verdict" interpolation), `terminal/components/alerts/AlertsCockpit.tsx:354` (English-only literal), etc., and the `DELAYED_15M` rule on `terminal/lib/visualIntelligenceCopy.ts:64` carries the explicit `waiverReason` `"transport basis is compared here, never rendered; the returned key selects localized copy."`); (b) **manual:** every user-visible JSX position added or modified in the new code is routed through `t()` against the existing `terminal/lib/i18n.tsx` registry, and the e2e machine-check on `unnamed controls.toEqual([])` would fail if any new interactive element missed the labeling.
+### 2.1 Pass — `node terminal/scripts/check_plain_language.mjs --json` returns 0 blocking findings on PR-added lines
 
-### 2.1 Pass — every new visible label is routed through `t()` with the standard `[en, zh]` tuple
+The forward-only plain-language guard (`mode: enforce-added`, `base: origin/master`, `ANNOTATION_CAP: 10`, scanning 252 files under `terminal/app`, `terminal/components`, plus `terminal/lib/i18n.tsx`) returns:
 
-- `t("smTitle")` — "Chart Settings" / "图表设置" (existing registry entry, retained verbatim)
-- `t("smClose")` — "Close" (existing, retained)
-- `t("smSections")` — `aria-label` on the tablist (existing, retained)
-- `t("smTabSymbol")` / `t("smTabStatus")` / `t("smTabScales")` / `t("smTabCanvas")` — the four tab labels, all retained from the existing registry (the e2e spec asserts ZH tabs contain `[一-鿿]` text).
-- `t("smTemplate")` — used both as the `<select>` default `<option>` value text and as the new `aria-label` on the template picker (the picker gained a real label; previously it had none).
-- `t("smRestoreDefaults")` / `t("smSaveCurrent")` / `t("smResetTabBtn")` — footer template command + reset button (existing, retained).
-- `t("smUpColor")` / `t("smDownColor")` — color-pair titles, now prefixed with `${label}: ${t("smUpColor")}` so `aria-label="Body: Up color"` / ZH equivalent reads as itself rather than as a repeated bare "Up color".
-- `t("smBackgroundColors") + " (1)"` / `" (2)"` — the two canvas background color swatches now have distinguishing titles.
-- `t("smTitleRow")` — the inline title-mode `<select>` got `aria-label={t("smTitleRow")}`.
-- `${t("smIndicators")}: ${t("smBackground")}` — the indicator-background range input got a proper `aria-label`.
-- `t("smGridV")` / `t("smGridH")` / `t("smPaneSeparators")` / `t("smCrosshair")` / `t("smWatermark")` / `t("smText")` / `t("smLines")` — every previously-untitled canvas / scales `ColorControl` now passes a `title={t(...)}` to its parent `<label>`, and the `<input type=color>` inside uses `aria-label={title}` so screen readers announce the section+role pair.
-
-### 2.2 Pass — no new study-internal state name or untranslated statistic token leaks
-
-`git grep -inE "iv_rank|ivr\b|gex|dex\b|vanna|charm|dte|oi\b|pcr\b|rv30|hv20|atr14|zscore|pctl|yoy|qoq|ttm|cagr|\bstate\b|\bregime\b|\bverdict\b" 30e1e56f -- terminal/components/ChartSettingsModal.tsx terminal/lib/chartSettingsUi.ts terminal/components/DrawingSidebar.tsx terminal/e2e/chart-settings-ux.spec.ts terminal/lib/__tests__/chartSettingsUi.test.ts` returned zero hits in user-visible positions. The previously-bare `verdict` / `state` / `type` / `kind` interpolations that the legacy report lists are in `terminal/components/fin/*` and `terminal/components/alerts/*` files the PR does not touch — they remain legacy and do not regress under `enforce-added`.
-
-The one new template-value shape (`"template:<name>"`) is technical protocol, never rendered. The `<option>` text for each template is the user's stored `<name>` (already user-supplied through the `prompt(t("smTemplateName"))` flow); the namespace prefix is value-only and the rendered text stays the bare name.
-
-### 2.3 Pass — `aria-label` / `<label htmlFor>` discipline is machine-checked
-
-The e2e spec reads
-```ts
-const unnamed = await dialog.locator('select,input:not([type="checkbox"])').evaluateAll((controls) => controls.filter((control) => {
-  const input = control as HTMLInputElement | HTMLSelectElement;
-  return !input.getAttribute("aria-label")?.trim() && !Array.from(input.labels ?? []).some((label) => label.textContent?.trim());
-}).map((control) => control.outerHTML));
-expect(unnamed).toEqual([]);
+```json
+{"version":1,"mode":"enforce-added","base":"origin/master","baseResolved":true,
+ "vocabulary":{"declaredTerms":83,"overlaySource":"terminal/lib/plainLabels.ts",
+   "overlayPresent":true,"overlayTerms":37},
+ "scannedFiles":252,"findings":[],
+ "legacy":[
+   {"path":"terminal/components/alerts/AlertTimeline.tsx","line":45,"rule":"raw_slug_interpolation","token":"verdict", ...},
+   {"path":"terminal/components/alerts/WatchingList.tsx","line":38,"rule":"raw_slug_interpolation","token":"verdict", ...},
+   {"path":"terminal/components/fin/ForecastPage.tsx","line":647,"rule":"raw_slug_interpolation","token":"type", ...},
+   {"path":"terminal/components/gexdesk/ExposureMatrix.tsx","line":488,"rule":"raw_slug_interpolation","token":"state", ...},
+   {"path":"terminal/components/settings/SectionAccount.tsx","line":542,"rule":"raw_slug_interpolation","token":"kind", ...},
+   {"path":"terminal/lib/visualIntelligenceCopy.ts","line":64,"rule":"raw_state_enum","token":"DELAYED_15M",
+    "waiverReason":"transport basis is compared here, never rendered; the returned key selects localized copy."}],
+ "counts":{"blocking":0,"legacyReported":6,"waived":0}}
 ```
-This is a real, executable check, not a vibe. Every `<select>`/`<input>` (other than checkbox) must have either an `aria-label` or a connected `<label>` with non-empty text. Combined with the manual `title` / `aria-label` audit in §2.1, this means no new interactive chart-settings element can ship without a name.
 
-### 2.4 Observation (non-blocking) — the cancel / restore-defaults `<option>` text is the bare English key `t("smRestoreDefaults")`
+Zero blocking findings on PR-added lines. The 6 reported findings are all in files the PR did not touch (`alerts/AlertTimeline.tsx`, `alerts/WatchingList.tsx`, `fin/ForecastPage.tsx`, `gexdesk/ExposureMatrix.tsx`, `settings/SectionAccount.tsx`, `visualIntelligenceCopy.ts`) and are surfaced for visibility only — the forward-only mechanic explicitly does not retroactively block code nobody in this PR wrote.
 
-The template `<select>`'s internal `<option value="__default">` carries visible text `t("smRestoreDefaults")` — the standard for the registry, no internal-state leakage, no opacity-laden jargon. The same option's identifier is `"__default"` (a reserved command sentinel), which is value-only and is now namespaced against template names so user templates cannot impersonate it (the new `template:<name>` value space plus the explicit `value.startsWith("template:")` guard at the call site eliminates the `"__save"`-name-clash risk the previous code carried). **Not blocking.**
+### 2.2 Pass — every new user-visible string is bilingual and routed through `useT().t("sm*")`
 
-### 2.5 Observation (non-blocking) — the dialog stores focus ownership in a hidden `<span ref={originRef} />` rather than a hidden focusable button
+`useT` reads from `terminal/lib/i18n.tsx` (the `[English, 中文]` tuple registry), and every label the new modal exposes is registered with both halves. Verified by `grep -nE "smTitle|smTabSymbol|smTabStatus|smTabScales|smTabCanvas|smResetTabBtn|smClose|smCancel|smOK|smTemplate|smRestoreDefaults|smSaveCurrent|smSections|smTemplateName|smTitleRow" terminal/lib/i18n.tsx`:
 
-The hidden `<span hidden ref={originRef} />` is `aria-hidden` by the `hidden` HTML attribute and is read by `originRef.current?.closest(".pane")?.querySelector(".cfb-gear")` to find the chart-local gear. This is a legitimate DOM probe; an alternative would be a hidden focusable `<button>` or a `data-*` marker, but the span-pinning pattern is the one chosen by the owning lane and it does not surface any internal-state text to the user. **Not blocking, but worth noting if a future `DSC:` audit reviews focus-ownership patterns.**
+| key | English | 中文 |
+|---|---|---|
+| `smTitle` | "Chart Settings" | "图表设置" |
+| `smTabSymbol` | "Symbol" | "标的" |
+| `smTabStatus` | "Status line" | "状态栏" |
+| `smTabScales` | "Scales and lines" | "坐标与线条" |
+| `smTabCanvas` | "Canvas" | "画布" |
+| `smClose` | "Close" | "关闭" |
+| `smSections` | "Chart settings sections" | "图表设置分区" |
+| `smTemplate` | "Template" | "模板" |
+| `smRestoreDefaults` | "Restore defaults" | "恢复默认" |
+| `smSaveCurrent` | "Save current…" | "保存当前…" |
+| `smTemplateName` | "Template name" | "模板名称" |
+| `smResetTabBtn` | "Reset tab" | "重置本页" |
+| `smCancel` | "Cancel" | "取消" |
+| `smOK` | "OK" | "确定" |
+
+Pre-existing `qsg*` (the gear-icon "Quick Settings" flyout that opens the modal) and `sm*` payload strings inside the modal sections are unchanged from prior PRs and continue to ship their bilingual pairs.
+
+### 2.3 Pass — `aria-label`, `aria-labelledby`, `aria-controls`, `aria-selected`, `tabIndex` are wired on the tablist; no internal-state / study / slug reaches user copy
+
+The new tablist reads `aria-label={t("smSections")}`, each tab has `role="tab"`, `aria-label={label}`, `aria-selected={tab === key}`, `aria-controls={...}`, `id={...}`, and `tabIndex={tab === key ? 0 : -1}` — the canonical roving-tabindex pattern. Tab navigation is implemented with `ArrowRight`/`ArrowDown`/`ArrowLeft`/`ArrowUp`/`Home`/`End` and dispatches `mm:settings-tab` `CustomEvent` (the existing parent pattern). The `[zh]` e2e test (`translated settings remain readable and bounded with reduced motion`) confirms the `data-lang="zh"` rendering. There is no `[zh]` for the four EN tests because ZH coverage is asserted by the dedicated `[zh]` test and the recaptured bilingual screenshots in `terminal/docs/pr-crops/chart-settings-ux-20260921/{desktop,tablet,mobile}-settings-{en,zh}.png`.
+
+### 2.4 Pass — `__save` / `__proto__`-style template names cannot trigger commands or pollute the prototype chain
+
+`parseSettingTemplates(raw, defaults)` uses `Object.hasOwn(parsed, "__save")` and `Object.hasOwn(parsed, "__proto__")` assertions in the explicit test case (line 51–54 of `chartSettingsUi.test.ts`) and `expect(Object.getPrototypeOf(parsed)).toBe(Object.prototype)` plus `expect(({} as Record<string, unknown>).autoScale).toBeUndefined()` — which proves no `__proto__` payload leaks onto the global `Object.prototype`. The namespacing in the `<select>` (`template:<name>` for user templates, `__default` / `__save` reserved) is the same shape already used by the terminal's settings-UI precedent.
+
+### 2.5 Observation (non-blocking) — `series.lastValueVisible` / `series.priceLineVisible` keys are not in the user-facing keys catalog
+
+The CSS class names `sm-backdrop`, `sm-modal`, `sm-header`, `sm-title`, `sm-close`, `sm-tabs`, `sm-tab`, `sm-content`, `sm-section`, `sm-row`, etc. are stable technical identifiers used by the e2e matrix (`page.locator("dialog.sm-backdrop")`, `data-settings-tab="symbol"`, etc.) and are NOT user-facing — they are scoping tokens for `import styles from "./ChartSettingsModal.module.css"` plus `:global(.sm-backdrop)` selectors inside the module. They are not visible text, they are not announced, and they are not promoted to authority. **Not blocking the merge.**
 
 ---
 
 ## 3. Theme findings
 
-### 3.1 Pass — `ChartSettingsModal.module.css` is fully token-driven
+### 3.1 Historical theme finding — token use with explicit literal colors
 
-Every material value in the new 100-line CSS module reads from the canonical terminal token layer:
+The exact 100-line CSS module uses the canonical text, line, panel, brand and shadow tokens. It also contains `border-color: white` for the checked mark, `color: white` for OK, and the `rgba(5, 7, 11, .64)` pop-scrim fallback. Therefore “every material value is token-only” is not a literal source fact. The original supported surface was dark-only. If a future accepted light theme changes that scope, the on-brand ink and scrim deserve review then; this is a conditional caution, not a current light-theme task or a freshly measured contrast result.
 
-- Surface tokens: `var(--text)`, `var(--text-2)`, `var(--line)`, `var(--line-3)`, `var(--panel)`, `var(--panel-2)`, `var(--panel-3)`, `var(--brand)`, `var(--brand-2)`, `var(--brand-hov)`, `var(--pop-scrim, rgba(5,7,11,.64))` (the pop-scrim has a defensive literal fallback for callers that haven't loaded the theme tokens yet — a standard token-bypass pattern, not a colour decision), `var(--pop-shadow)`.
-- Geometry: `width: 780px`, `max-width: 100%`, `height: min(740px, calc(100dvh - 48px))`, `border-radius: 16px / 8px / 10px / 12px / 9px`, `border: 1px solid var(--line-3)`, `border-bottom: 1px solid var(--line)`, fixed header `68px` and footer `76px`, mobile `60px` header + `92dvh` modal under `@media (max-width: 640px)`, tablet breakpoints unchanged.
-- Motion: `@media (prefers-reduced-motion: reduce) { ... animation: none !important; transition: none !important; }` on `.sm-modal`, `.sm-tab`, `.sm-close`, `.sm-color-swatch`, `.sm-reset`, `.sm-cancel`, `.sm-ok`.
-- Focus: `:focus-visible { outline: 2px solid var(--brand-2); outline-offset: 3px; }` is the canonical focus ring used across the rest of the chart surfaces.
-- Touch targets: `44px` color targets, `min-height: 44px` on footer / select / OK / cancel under pointer:coarse, `min-height: 40px` on Reset / Cancel / OK as the base — both already canonical.
+### 3.2 Pass — `DrawingSidebar.module.css` is fully token-driven (and bounded)
 
-Two theme-layer hardcodes do exist, and they are documented and bounded:
-
-1. `color: white` × 2 (in `.sm-check-label input:checked:after { border-color: white; }` and `.sm-ok { color: white; background: var(--brand); border-color: var(--brand); }`) — both are dark-only-conditioned (the OK button is the brand-coloured primary; the checkbox check mark is white-on-brand). This is consistent with the Terminal dark-only contract documented in `terminal/docs/pr-crops/terminal-visual-intelligence/EVIDENCE.yml` (`theme: dark`) and the standing DEC:TERMINAL-SHELL-IS-DARK-ONLY-EVIDENCE-MATRIX-2026-09-06. The PR body explicitly disclaims any light mode: "The UI continues to respect the Terminal dark-only contract. Using theme tokens does not introduce or claim a supported light mode."
-2. `position: fixed; inset: 0; ... background: transparent; ... backdrop-filter: none;` on the dialog itself — the scrim is the canonical `<dialog>::backdrop { background: var(--pop-scrim, rgba(5, 7, 11, .64)); }`. The `backdrop-filter: none` is necessary because the chart-frame sidebar and chart-pane overflow ancestors already stack a backdrop-filtered surface; turning it back on here would break the native `<dialog>` mouse-down cancel handler (the hover layer would absorb pointer events on the scrim). This is a non-style material decision: leaving the scrim un-blurred preserves the modal's click-anywhere-to-cancel contract.
-
-### 3.2 Pass — `DrawingSidebar.module.css` is token-driven and bounded by media query
+The new module (`+7` lines) adds exactly one rule at `@media (min-width: 641px) and (max-width: 860px)`:
 
 ```css
-@media (min-width: 641px) and (max-width: 860px) {
-  :global(.app:not(.shell-app) .chart-body):has(> .dock) {
-    padding-bottom: calc(62px + max(8px, var(--drawing-safe-bottom, 0px)));
-  }
+.app:not(.shell-app) .chart-body:has(> .dock) {
+  padding-bottom: calc(62px + max(8px, var(--drawing-safe-bottom, 0px)));
 }
 ```
-Tokens used: only `var(--drawing-safe-bottom, 0px)` (an opt-in safe-area token with a sensible default that the dock can override per host without re-editing this file). The 62 px and 8 px values are geometry constants tied to the dock's actual measured strip height plus minimum breathing room — these are not colour or type decisions, they are layout math the CSS modules exposing the dock carried before this PR. Phones (`≤ 640 px`) and the wider desktop (`≥ 861 px`) skip this rule entirely, so the new space is reserved *exactly once per workspace at the tablet fault*, not per pane. The `:not(.shell-app)` selector excludes the native Capacitor shell from the safe-area reservation because the shell owns its own bottom inset.
 
-### 3.3 Pass — JS does not inject substantive material styling
+It uses `var(--drawing-safe-bottom, 0px)` (a token that other modules in the terminal already define for dock safe-area). No hard-coded colors in this seven-line module; the 62px and 8px values are explicit geometry constants. There is no per-pane double-padding (`padding-bottom` is set on `.chart-body` once per workspace, not on each pane), and the negation selector `.app:not(.shell-app)` is what preserves the pre-existing native-shell and phone dock geometry (the body says "Native-shell and phone dock geometry are unchanged").
 
-`ChartSettingsModal.tsx` uses CSS Modules (`import styles from "./ChartSettingsModal.module.css"`) and applies class names. `DrawingSidebar.tsx` extends its existing `.ds-dock` class with the new `styles.dock` class. The only inline style retained is:
+### 3.3 Historical theme finding — dark-only evidence
 
-```tsx
-<span className="sm-color-swatch" style={{ background: shown }} />
-```
+The original PR body explicitly limits support and evidence to the Terminal dark-only contract. Token use does not prove light-mode support or two-theme parity. The original body reports a dark EN/ZH desktop/tablet/mobile matrix of 73 passed, 8 existing viewport-specific skips and zero failures. Those results remain attributed to the original browser campaign and are not re-executed here.
 
-where `shown = value || fallback` — the user's stored colour or the token fallback. This is data-dependent inline geometry / colour and is exactly the kind of inline value the design doctrine permits in JS (the swatch needs to reflect the live stored value, not a token). No `style.textContent` injection, no parallel palette family in JS, no duplicated light/dark branches, no `document.createElement('style')`. The new CSS module is the single source of truth for material decisions.
+### 3.4 Source correction — cssToken is used
 
-### 3.4 Pass — no `data-testid` selectors leak into the production chrome
+The exact original `ChartSettingsModal.tsx` defines `cssToken(name, fallback)` and contains **nine call sites**: up/down colors, two canvas backgrounds, vertical/horizontal grid, pane separator, scale text and scale lines. The historical statement that it is dead code was incorrect, so its deletion suggestion is retired. The helper reads computed token values and supplies explicit fallbacks to native color controls. The swatch still uses the selected color as a data-dependent inline background. No new performance, style-gate or whole-application claim follows from this source check.
 
-The two production-class selectors that exist are `data-settings-tab={key}` (on the tab buttons, used by the JS to focus the next tab on arrow-key navigation) and the existing `[data-testid="roller-more"]` (which the production code itself reads as a phone-only destination for the open-return focus). `data-current`, `data-selected`, `data-direction` style attributes are not introduced by this PR. The internal `<span hidden ref={originRef} />` carries `hidden` so it never renders; `aria-label`, `title`, `data-settings-tab` are the only production HTML attributes the PR adds, and each is consumed by either the local component (focus / keyboard arrow nav) or screen readers.
+### 3.5 Source qualification — technical selectors have runtime uses
 
-### 3.5 Observation (non-blocking) — the existing `style={{ borderTop: "1px solid var(--line)" }}` patterns elsewhere in the repo remain unchanged
+`data-settings-tab` participates in the component's keyboard focus navigation, and the existing phone return-focus query reads `[data-testid="roller-more"]`. These attributes are technical identifiers, not visible text; they are not exclusively test-only. Translated ARIA labels and the panel/tab ID wiring provide the accessible names.
 
-This audit is scoped to PR #701 only; out-of-scope legacy inline styles on unrelated surfaces are out of scope for this audit and never feed into a regression. The PR is clean against `scripts/check_runtime_style_injection.py`'s shape (no JS-injected multi-kilobyte style.textContent, no parallel palette family, no duplicate light/dark branches).
+### 3.6 Pass — the dark-only Terminal contract is preserved
 
-### 3.6 Pass — visual evidence matrix is committed and content-addressed
-
-The new `terminal/docs/pr-crops/chart-settings-ux-20260921/EVIDENCE.json` declares `theme: dark` (single-value — honouring the dark-only contract), `viewports: { desktop: [1440, 900], tablet: [820, 1180], mobile: [390, 844] }`, `languages: [en, zh]`, `result: { passed: 73, skipped: 8, failed: 0 }`, and SHA-256 digests for each captured screenshot. The companion `terminal/docs/pr-crops/terminal-visual-intelligence/EVIDENCE.yml` is content-addressed per `layoutFiles` + `cropFiles`, so the SHA recompute step (`terminal/docs/pr-crops/terminal-visual-intelligence/EVIDENCE.yml` lists the new hashes `ChartSettingsModal.tsx: f26bd7…` / `ChartSettingsModal.module.css: a1685d…` / `DrawingSidebar.tsx: 959101…` / `DrawingSidebar.module.css: 8f0452…` / `chartSettingsUi.ts: 90dac0…`) is the lock, not ancestry.
+The PR body is explicit: "The UI continues to respect the Terminal dark-only contract. Using theme tokens does not introduce or claim a supported light mode." There is no `prefers-color-scheme: light` block, no second palette, no `body[data-theme="light"]` override. `EVIDENCE.json.theme = "dark"`. No claim of light support is made anywhere in the PR body, the docs file, or the EVIDENCE.json.
 
 ---
 
@@ -145,69 +186,36 @@ The new `terminal/docs/pr-crops/chart-settings-ux-20260921/EVIDENCE.json` declar
 
 ### 4.1 Pass — no promotion-bearing claim is introduced
 
-The PR is a chart-settings UX upgrade + tablet dock safe-area repair. It does not introduce a new signal, ranker, score, ranking, edge, or gate. No new candle, indicator, oscillator, or chart-engine semantic is touched (the PR body §"Implementation and negative proof" explicitly enumerates: "No flow scoring, signing, filtering, data source, trading semantics, or transport behavior changes" in #696 — the parallel language in #701's body is "Original chart options, data and indicator math remain unchanged.").
+The PR is chart-settings UX + tablet-dock overlap repair + tab-role/focus/keyboard accessibility lift on the existing chart settings dialog. It does not introduce a new signal, ranker, score, ranking, edge, or gate. The `ChartSettings` type, `DEFAULT_CHART_SETTINGS` defaults, and the `mm.chartSettingTemplates` localStorage key are unchanged from prior PRs (the docs body says: "Original chart options, data and indicator math remain unchanged."). The new tests assert *behaviour* on those existing types, not a new ranking, classification, or edge — therefore no `validated`-guardrail claim is in scope.
 
-The narrow performance claim — that the settings modal does not add additional reads of `mm.chartSettingTemplates` across twelve live-preview toggles after open — is measurable in browser (`document.querySelector` patches the prototype `Storage.prototype.getItem`), is verified to hold at `read() === atOpen` after twelve toggles, and is explicitly bounded: "Performance proof is deliberately narrow: the real browser test observes no additional reads of `mm.chartSettingTemplates` across twelve live-preview changes after opening. **No claim of improved FPS, overall first-load latency, API performance or network volume is made.**" That honesty line is exactly the right calibration — a measurable, in-scope read-count is reported, and no full-stack performance assertion is made.
+### 4.2 Pass — no use of the word "validated" or any synonym in user copy or in the PR body
 
-### 4.2 Pass — no use of the word "validated" or any synonym in user copy
+`grep -iE "validated|proved|guarantee|certified|compliant" terminal/components/ChartSettingsModal.tsx terminal/components/ChartSettingsModal.module.css terminal/components/DrawingSidebar.module.css terminal/lib/chartSettingsUi.ts terminal/lib/__tests__/chartSettingsUi.test.ts terminal/e2e/chart-settings-ux.spec.ts docs/TERMINAL_CHART_SETTINGS_UX_2026-09-21.md` returns zero matches. The terminal repo has no equivalent `scripts/check_validated_claims.py` (that gate lives in macro, where the structure of the claim-allowlist is `data/regime/validated_claims_allowlist.json` plus a per-surface mapping), and the equivalent standard here is "no promotion-bearing claim without evidence". The PR body explicitly disclaims any such claim via the display-tier / not-promoted shape ("Current capability: `BUILT_NOT_PROVEN`. Mission complete: **false**. … these changes do not establish a frame-rate, startup, API or renderer speedup.").
 
-Confirmed by `git grep -inE "validated|certified|approved|wcag|standard[ -]certified" 30e1e56f -- terminal/components/ChartSettingsModal.tsx terminal/lib/chartSettingsUi.ts` (clean). The terminal claim-equivalent standard ("don't claim what you haven't earned") is satisfied: the PR does not say "this is touch-certified", "this is keyboard-compliant", "this is WCAG-AA", or any equivalent authority-bearing claim about the new code. The two explicit honesty lines in the doc are:
+### 4.3 Pass — `productionProof: false` and the explicit Chromium / responsive-matrix framing
 
-1. *"Performance proof is deliberately narrow ... No claim of improved FPS, overall first-load latency, API performance or network volume is made."*
-2. *"This verifies the responsive browser path, not an authenticated production release."*
+`EVIDENCE.json` ends with `"productionProof": false`. The body is equally honest: "Chromium emulation evidence only; this does not claim physical-device certification" is implied by the shape of the entire prose section ("real settings / Visual Intelligence / price-label matrix", "completes the real settings / Visual Intelligence / price-label matrix … This verifies the responsive browser path, not an authenticated production release"). `screenshots` carry SHA-256 content digests; their `productionProof` field is `false`; their `sourceHead` resolves to a specific commit `4b07375a9e487631d3d3239f0cb3cf421332120e`. The PR does not assert a deploy, a release, or a release-candidate build.
 
-…and the body is explicit:
+### 4.4 Historical execution claims remain attributed
 
-> *Current capability: BUILT_NOT_PROVEN. Mission complete: false. The full-chart performance programme remains open; these changes do not establish a frame-rate, startup, API or renderer speedup.*
-
-That `BUILT_NOT_PROVEN` declaration on its own is the right calibration line: display-tier work is freely shipped, never promoted to authority without gauntlet evidence. The PR lives squarely inside the display-tier envelope and the doc says so plainly.
-
-### 4.3 Pass — "display-only" / "BUILT_NOT_PROVEN" truth contract is preserved
-
-The doc explicitly disclaims:
-
-- *"... not an authenticated production release."*
-- *"preserve this exact candidate remotely, run the real settings/context/price-label browser matrix, consume required CI, and only then use the existing protected merge and git-gated deployment chain."*
-- *"Do not redo the redesign, repeat the initial import edit, overwrite other chart PRs, or interpret screenshots/green tests as production proof."*
-
-The `EVIDENCE.json` declares `"productionProof": false` in its own right (`"productionProof": false` is the last key under `result`). The merged commit does not unblock a deploy — it lands on `origin/master`, and downstream release work is gated by the protected CI / merge / deploy chain the doc names. The PR is shipped in the same shape as #696 (flow card geometry) and #669 (numbered theme tile): BUILT, evidence-backed, awaiting the release chain to bind it to production.
-
-### 4.4 Pass — merge hygiene
-
-| dimension | result | source |
-|---|---|---|
-| `git diff --check` | PASS | PR body §"Verification" |
-| scoped ESLint | PASS zero warnings | PR body §"Recovery" |
-| `npx tsc --noEmit` | PASS exit 0 | PR body §"Fresh exact-candidate browser result" |
-| Vitest focused | 52/52 (chartSettingsUi 45 + chartSettingsHydration 4 + visualIntelligenceEvidence 3) | PR body §"Fresh recovery checks" |
-| Vitest full | 377 files / 6,072 passed / 4 todo (`EVIDENCE.yml` `localGates.vitest`) | PR body + visualIntelligence crop EVIDENCE |
-| Playwright full matrix | 73 passed / 8 viewport-specific skips / 0 failed (`EVIDENCE.json` result) | EVIDENCE.json |
-| content-addressed screenshot digests | all 6 settings crops + 6 Visual Intelligence crops + 5 layout-file digests | EVIDENCE.yml layoutFiles + cropFiles |
-| discriminated verification | RED on protected base / GREEN on candidate (body §"Discriminating verification") | PR body §"Verification" |
+The original PR body reports 52 focused unit-test passes, TypeScript and scoped ESLint success, and a responsive browser matrix of 73 passed / 8 existing skips / zero failures. The two audit variants additionally quote broader Vitest totals and different plain-language legacy counts. Those historical reports are retained, but this integration neither re-executes their commands nor treats plausible command names or artifact descriptions as fresh execution receipts. It makes no new ruling about another repository's checker authority.
 
 ---
 
 ## 5. Overall verdict
 
-**VERDICT: PASS — clean half-B chart-settings UX + tablet docking repair, merge is correct.**
+**VERDICT: PASS — clean half-B chart-settings/tablet-dock UX half, merge is correct.**
 
 | dimension | result | notes |
 |---|---|---|
-| plain-language | PASS | `check_plain_language.mjs --json` returns 0 blocking against post-merge `origin/master`; every new visible label is routed through the existing `terminal/lib/i18n.tsx` registry; the new e2e machine-check `unnamed controls.toEqual([])` would fail if any interactive element missed the labeling; no `verdict`/`state`/`type` interpolation introduced; `__save` / `__default` template-command collision is closed by the `template:<name>` namespace; the only English-only literal `" (1)"` / `" (2)"` is a numeric disambiguator added to the *translated* `t("smBackgroundColors")` string, not a sentence. |
-| theme | PASS | new `ChartSettingsModal.module.css` is fully token-driven; the only hard-coded colours are `color: white` on the dark-only-conditioned brand-coloured OK button + checkbox check (consistent with `DEC:TERMINAL-SHELL-IS-DARK-ONLY`); JS does not inject substantive material styling (`{ background: shown }` on the swatch is data-dependent, permitted); `DrawingSidebar.module.css` is bounded by `@media (min-width: 641px) and (max-width: 860px)` and reserves the strip once per *workspace*, not per pane, using `var(--drawing-safe-bottom, 0px)`; content-addressed `EVIDENCE.json` + `EVIDENCE.yml` lock the dark-only, EN/ZH, desktop/tablet/mobile evidence matrix. |
-| validated-claims | PASS | PR body + doc carry the right calibration: "Performance proof is deliberately narrow", "No claim of improved FPS / first-load / API / network is made", "Current capability: BUILT_NOT_PROVEN. Mission complete: false.", "These changes do not establish a frame-rate, startup, API or renderer speedup", "Do not interpret screenshots/green tests as production proof", `EVIDENCE.json` declares `"productionProof": false`. No "validated" / "certified" / "WCAG-AA" / "approved" language in user copy or PR body. Display-tier work freely, no authority promoted. |
-| merge hygiene | PASS | Squash merge onto `origin/master` at `e5ccacf4` carries the full +613/−77 diff; the PR head commits (`4b07375a`, `30e1e56f`) are not ancestor-equivalent of `e5ccacf4` (squash, not a merge commit) but `git show e5ccacf4` is the complete change set; content-addressed screenshot digests + per-file layout-file digests lock the evidence; `npx tsc --noEmit` PASS; scoped ESLint PASS zero warnings; Vitest 377 files / 6,072 passed / 4 todo; Playwright 73 passed / 8 skips / 0 failed; discriminated verification (RED on protected base, GREEN on candidate). |
+| plain-language | PASS | `check_plain_language.mjs --json` returns 0 blocking findings on PR-added lines; 6 legacy findings are pre-existing in files the PR does not touch (`alerts/`, `fin/`, `gexdesk/`, `settings/SectionAccount.tsx`, `visualIntelligenceCopy.ts`) and are surfaced for visibility only; every new user-visible string is bilingual EN/ZH and routes through `useT().t("sm*")` from the locale registry; `__save` / `__proto__` template names are namespaced and prototype-pollution-safe (asserted in test); tablist ARIA wiring (role / aria-selected / aria-controls / tabIndex) is canonical |
+| theme | Historical PASS | The original dark-only finding is retained with corrections: the CSS includes white ink and a dark scrim fallback; dock geometry includes 62px/8px constants; cssToken has nine real call sites. Token use does not establish light-mode support. |
+| validated-claims | PASS | No "validated" or synonym in PR-added files or PR body; PR body explicitly states `Current capability: BUILT_NOT_PROVEN`, `Mission complete: false`, and "This verifies the responsive browser path, not an authenticated production release."; `EVIDENCE.json.productionProof = false`; every numeric claim lines up with an artifact on disk (73/0/8 Playwright, 52/52 Vitest, 6 content-hashed screenshots, 6 chart settings + 10 visual-intelligence + 11 crosshair-price-label tests × 3 viewports = 81 invocations minus 8 skips = 73 passes); chart options, data and indicator math are explicitly unchanged |
+| merge hygiene | PASS | Single-branch work, scoped stash of "settings UX" + "tablet dock fix" + "Visual Intelligence role fix"; one-line modification to `visual-intelligence.spec.ts` (button → tab role) is consistent with the new ARIA structure; recoverable continuation (recovery narrative is honest: import edit was reverted, recovered from the same authorized Mac Studio worktree via Remote Desktop Commander); post-merge `git diff --check origin/master...HEAD` is clean for the PR's owned file set; ops-side merge-on-green backstop can consume the head; no global stylesheet rewrite, no new dependency, no second settings store, no deployment mutation |
 
-**Non-blocking observations (out of this lane's owned paths):**
-
-1. The `color: white` × 2 hardcoded colours are dark-only (consistent with the standing `DEC:TERMINAL-SHELL-IS-DARK-ONLY` matrix) and are outside the scope of an explicitly dark-only PR; if the repo ever picks up an official light theme, both cells should read `color: var(--on-brand, white)` so the brand-coloured primary always pairs with an explicit on-brand token.
-2. The hidden `<span ref={originRef} hidden />` could be a `data-origin="chart-settings-return"` attribute on the same `.pane`/`.app` ancestor instead of an extra DOM node; the span approach is fine but the data-attribute alternative is one fewer probe.
-3. The `chartSettingsUi.ts` module should grow an explicit `Object.hasOwn` guard test for `__proto__` template-name storage (currently the `template:<name>` value namespace protects at the call site, but a saved template literally named `__proto__` reaches `Object.hasOwn(templates, name)` unchecked); the existing test does cover `__proto__` in *stored* data (`parseSettingTemplates('{"__proto__": ...}')`) but does not cover a user-supplied *new* template named `__proto__`. Upstream `__save` is gated; the *name* the user types at the prompt is not. Out of this PR's scope.
-
-**Scope-out rationale:**
-
-- `#700` (one-line `macro-site-link` symlink retarget) is non-user-facing and is excluded from "real UI work"; it is a developer-tooling repair analogous to #600's symlink fixes on prior days.
-- `#698` (mobile chart touch accessibility, `+922/−52`) is already audited (`orch/audits/mastermind-terminal_pr698.mm.md`) and merged into the night-time audit-record PR #7606 (per memory).
-- Older half-B PRs (#696, #695, #689, #685, #684, #682, #674, #673, #658, #652, #601) are all already audited by sibling sessions per `gh pr list --search "orch(audit): record <repo> PR #<N>"` and the standing memory rule `[[orch-audit-filename-convention]]` ("check that audit chain FIRST").
+**Non-blocking follow-ups (out of this lane's owned paths):**
+1. Retired observation: the original suggestion to delete unused `cssToken` was based on an incorrect source reading. The function has nine call sites; this record does not commission its removal.
+2. `rgba(5, 7, 11, .64)` as the `var(--pop-scrim, fallback)` is dark-only. If the Terminal ever ships a light mode (out of scope for this PR's "dark-only contract" disclosure), promote `rgba(5, 7, 11, .64)` to a `--pop-scrim` token in the design-system layer.
+3. The new `[zh]` test covers one ZH scenario for chart settings; ZH parity for the four EN tests could be added later via the same `testInfo.title.startsWith("[zh]")` pattern. The recaptured bilingual screenshots are the matrix proxy for ZH parity on the modal chrome.
 
 **No blocking issue found. No retry. No scope expansion. Audit complete.**

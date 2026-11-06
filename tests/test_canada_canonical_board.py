@@ -484,3 +484,397 @@ def test_main_wires_overlay_none_to_the_persisted_fallback():
     main_body = src.split("\ndef main(", 1)[1].split('\nif __name__', 1)[0]
     assert "if overlay is None:" in main_body
     assert "overlay = _last_rendered_overlay()" in main_body
+
+
+# ---------------------------------------------------------------------------
+# 10. Canada original-source binding (bounded first phase): the writer
+#     serializes the board EXACTLY ONCE with the historical dumps call, binds
+#     the exact written bytes to a closed descriptive receipt at the incumbent
+#     publication seam, and fails CLOSED — any unusable source returns None
+#     while the legacy board still publishes byte-identically. The session /
+#     coverage gates are delegated to the REAL incumbent owner
+#     (lib.market_session -> lib.tsx_calendar), never the host clock.
+# ---------------------------------------------------------------------------
+
+def _binding_board(**overrides):
+    """A minimal BINDING-ELIGIBLE board whose as_of is a genuine Toronto session
+    inside the CA owner's verified coverage (2026-09-30: TMX open — Sept 30 is
+    deliberately NOT a TSX holiday, per tsx_calendar's direction-of-error rule)."""
+    board = {
+        "as_of": "2026-09-30",
+        "buy": [
+            {"ticker": "B.TO", "alpha": 2.0, "lead_zh": "现在可买"},
+            {"ticker": "C.TO", "alpha": 1.0},
+            {"ticker": "A.TO", "alpha": 0.6},
+        ],
+        "watch": [{"ticker": "W.TO", "alpha": 0.9}],
+        "board_definition": bcal.CA_BOARD_DEFINITION,
+        "authority": bcal.CA_BOARD_AUTHORITY,
+        "selection_status": "accruing",
+        "official_pick_authority": False,
+    }
+    board.update(overrides)
+    return board
+
+
+def _binding_bytes(**overrides) -> bytes:
+    """The exact serialized bytes the writer would emit for _binding_board()."""
+    return json.dumps(_binding_board(**overrides),
+                      separators=(",", ":"), default=str).encode("utf-8")
+
+
+def test_canada_source_binding_helper_is_defined_before_the_writer():
+    """The binding helper must sit BEFORE the existing writer in the module (the
+    writer calls it at the publication seam), and must reach the incumbent
+    session owner through lib.market_session — not a re-implementation."""
+    src = Path(bcal.__file__).read_text()
+    assert src.index("def canada_selection_source_binding(") < src.index(
+        "def _write_canada_standouts(")
+    assert "from lib import market_session" in src
+
+
+def test_canada_source_binding_accepts_genuine_toronto_session():
+    """A genuine CA session inside VERIFIED owner coverage produces a receipt
+    whose as_of/market_session are the ORIGINAL date — never the host clock's
+    date relabeled as the source session — and calendar_status VERIFIED."""
+    from datetime import date
+    from lib import market_session
+    as_of = date(2026, 9, 30)
+    assert market_session.is_session_date("CA", as_of) is True
+    assert market_session.calendar_verified("CA", as_of.year) is True
+    receipt = bcal.canada_selection_source_binding(_binding_bytes())
+    assert receipt is not None
+    assert receipt["as_of"] == receipt["market_session"] == "2026-09-30"
+    assert receipt["calendar_status"] == "VERIFIED"
+
+
+def test_canada_source_binding_refuses_toronto_holiday_that_us_trades():
+    """2026-10-12 is CA Thanksgiving: a REAL Toronto holiday the US cash
+    calendar trades. The binding must refuse it through the owner calendar —
+    never substitute the US (or any other) session answer."""
+    from datetime import date
+    from lib import market_session
+    thanksgiving = date(2026, 10, 12)
+    assert market_session.is_session_date("CA", thanksgiving) is False
+    assert market_session.is_session_date("US", thanksgiving) is True
+    assert bcal.canada_selection_source_binding(
+        _binding_bytes(as_of="2026-10-12")) is None
+
+
+def test_canada_source_binding_unverified_year_fail_closed():
+    """An original session in a year the incumbent calendar has NOT verified
+    (2026 is the only CA verified year at this source) returns None — no
+    VERIFIED/session claim is made outside actual measured coverage."""
+    from lib import market_session
+    assert market_session.calendar_verified("CA", 2025) is False
+    assert bcal.canada_selection_source_binding(
+        _binding_bytes(as_of="2025-09-30")) is None
+
+
+def test_canada_source_binding_empty_lanes_are_valid():
+    """Empty buy/watch lists are valid boards: a receipt with no ordered rows."""
+    receipt = bcal.canada_selection_source_binding(_binding_bytes(buy=[], watch=[]))
+    assert receipt is not None
+    assert receipt["ordered_rows"] == []
+
+
+def test_canada_source_binding_preserves_lanes_indices_and_identical_rows():
+    """Both lanes keep their original zero-based positions; identical rows stay
+    DISTINCT entries (same row receipt, different selection_index); buy precedes
+    watch in the descriptive receipt only."""
+    board = _binding_board()
+    board["buy"] = [dict(board["buy"][0]), dict(board["buy"][0]), board["buy"][2]]
+    data = json.dumps(board, separators=(",", ":"), default=str).encode("utf-8")
+    receipt = bcal.canada_selection_source_binding(data)
+    assert receipt is not None
+    assert [(e["lane"], e["selection_index"]) for e in receipt["ordered_rows"]] == [
+        ("buy", 0), ("buy", 1), ("buy", 2), ("watch", 0)]
+    entries = receipt["ordered_rows"]
+    assert entries[0]["row_receipt"] == entries[1]["row_receipt"]   # identical rows
+    assert entries[0]["row_receipt"] != entries[2]["row_receipt"]   # distinct rows
+    assert entries[0]["lane"] == "buy" and entries[-1]["lane"] == "watch"
+
+
+def test_canada_source_binding_same_count_reorder_and_replacement_change_receipt():
+    """Same-count reorder and same-count replacement both change the binding —
+    it discriminates order and membership, it does not normalize them away."""
+    binding = bcal.canada_selection_source_binding
+
+    def as_bytes(board):
+        return json.dumps(board, separators=(",", ":"), default=str).encode("utf-8")
+
+    base = _binding_board()
+    r1 = binding(as_bytes(base))
+    moved = json.loads(json.dumps(base))
+    moved["buy"] = [moved["buy"][2], moved["buy"][1], moved["buy"][0]]
+    r2 = binding(as_bytes(moved))
+    replaced = json.loads(json.dumps(base))
+    replaced["buy"][1] = {"ticker": "Z.TO", "alpha": 1.0}
+    r3 = binding(as_bytes(replaced))
+    assert None not in (r1, r2, r3)
+    assert r1["selection_receipt"] != r2["selection_receipt"]
+    assert r2["selection_receipt"] != r3["selection_receipt"]
+    assert [e["row_receipt"] for e in r1["ordered_rows"][:3]] != \
+        [e["row_receipt"] for e in r2["ordered_rows"][:3]]
+
+
+def test_canada_source_binding_whitespace_only_bytes_change_the_hashes():
+    """Whitespace-only serialization changes bind the EXACT bytes (source hash
+    and selection receipt move) while the decoded row digests stay identical —
+    the receipt is of the source bytes, not of a re-serialization."""
+    compact = json.dumps(_binding_board(), separators=(",", ":"), default=str)
+    spaced = json.dumps(_binding_board(), separators=(", ", ": "), default=str)
+    assert compact != spaced
+    r1 = bcal.canada_selection_source_binding(compact.encode("utf-8"))
+    r2 = bcal.canada_selection_source_binding(spaced.encode("utf-8"))
+    assert None not in (r1, r2)
+    assert r1["source_sha256"] != r2["source_sha256"]
+    assert r1["selection_receipt"] != r2["selection_receipt"]
+    assert r1["ordered_rows"] == r2["ordered_rows"]
+
+
+def test_canada_source_binding_malformed_sources_fail_closed():
+    """Non-bytes, empty, malformed JSON, wrong top shape, duplicate object keys
+    and non-finite JSON (literals AND overflow floats) all return None — no
+    coercion, no best-effort repair."""
+    binding = bcal.canada_selection_source_binding
+    assert binding(None) is None
+    assert binding("") is None
+    assert binding(b"") is None
+    assert binding(b"{not json") is None
+    assert binding(b"[]") is None
+    assert binding(b'"board"') is None
+    duplicate = (b'{"as_of":"2026-09-30","as_of":"2026-09-30","buy":[],"watch":[],'
+                 b'"board_definition":"ca_prophet_branch_b_v1","authority":"screen",'
+                 b'"selection_status":"accruing","official_pick_authority":false}')
+    assert binding(duplicate) is None
+    template = ('{"as_of":"2026-09-30","buy":[{"alpha":%s}],"watch":[],'
+                '"board_definition":"ca_prophet_branch_b_v1","authority":"screen",'
+                '"selection_status":"accruing","official_pick_authority":false}')
+    for literal in ("NaN", "Infinity", "-Infinity", "1e999"):
+        assert binding((template % literal).encode("utf-8")) is None, literal
+
+
+def test_canada_source_binding_dishonest_or_missing_stamps_fail_closed():
+    """Unknown board_definition, dishonest/missing authority stamps and non-list
+    or non-object lanes fail closed. official_pick_authority uses STRICT bool
+    identity: a falsey 0 is NOT False and must be refused, same as True/None."""
+    binding = bcal.canada_selection_source_binding
+
+    def variant_bytes(**overrides):
+        board = json.loads(json.dumps(_binding_board()))
+        for key, value in overrides.items():
+            if value is ...:
+                board.pop(key, None)
+            else:
+                board[key] = value
+        return json.dumps(board, separators=(",", ":"), default=str).encode("utf-8")
+
+    assert binding(variant_bytes(board_definition="us_prophet_v1")) is None
+    assert binding(variant_bytes(authority="official")) is None
+    assert binding(variant_bytes(authority="screen ")) is None   # near-miss label
+    assert binding(variant_bytes(selection_status="validated")) is None
+    assert binding(variant_bytes(official_pick_authority=True)) is None
+    assert binding(variant_bytes(official_pick_authority=0)) is None   # falsey ≠ False
+    assert binding(variant_bytes(official_pick_authority=None)) is None
+    assert binding(variant_bytes(authority=...)) is None
+    assert binding(variant_bytes(buy=...)) is None                 # missing buy lane
+    assert binding(variant_bytes(watch={"ticker": "W.TO"})) is None  # non-list lane
+    assert binding(variant_bytes(buy=["B.TO"])) is None            # non-object row
+
+
+def test_canada_source_binding_non_canonical_as_of_fail_closed():
+    """as_of must be a canonical, real YYYY-MM-DD calendar date. Missing,
+    non-string, basic-format, timestamp-carrying and impossible dates fail."""
+    binding = bcal.canada_selection_source_binding
+    for bad in ("2026-13-40", "2026-02-30", "20260930", "2026-09-30T00:00:00", ...):
+        assert binding(_binding_bytes(as_of=bad)) is None, bad
+    board = json.loads(json.dumps(_binding_board()))
+    board["as_of"] = 20260930
+    assert binding(json.dumps(board, separators=(",", ":"),
+                              default=str).encode("utf-8")) is None
+
+
+def test_canada_source_binding_shape_is_closed():
+    """The receipt is a CLOSED descriptive object — exactly these fields, in
+    this order, with the owner's market/timezone and the source's own honesty
+    stamps copied verbatim. No US pair, no episode/Plan relation, no outcome
+    fields, no board mutation."""
+    receipt = bcal.canada_selection_source_binding(_binding_bytes())
+    assert receipt is not None
+    assert list(receipt.keys()) == [
+        "schema", "receipt_kind", "market", "timezone", "source_sha256", "as_of",
+        "market_session", "calendar_status", "board_definition", "authority",
+        "selection_status", "official_pick_authority", "ordered_rows",
+        "selection_receipt"]
+    assert receipt["schema"] == "prophet.canada_selection_source_binding/v1"
+    assert receipt["receipt_kind"] == "EXACT_SERIALIZED_SOURCE"
+    assert receipt["market"] == "CA"
+    assert receipt["timezone"] == "America/Toronto"
+    assert receipt["board_definition"] == bcal.CA_BOARD_DEFINITION
+    assert receipt["authority"] == "screen"
+    assert receipt["selection_status"] == "accruing"
+    assert receipt["official_pick_authority"] is False
+    assert set(receipt["ordered_rows"][0]) == {"lane", "selection_index", "row_receipt"}
+
+
+def test_canada_source_binding_selection_receipt_recipe_is_pinned():
+    """selection_receipt = sha256 over the canonical closed material (the 13
+    pre-digest fields incl. ordered_rows, sorted keys, compact separators,
+    unescaped Unicode, non-finite refused, UTF-8) — recomputed here from the
+    returned receipt's own fields to pin the recipe and the field set."""
+    import hashlib
+    data = _binding_bytes()
+    receipt = bcal.canada_selection_source_binding(data)
+    assert receipt is not None
+    material = {key: receipt[key] for key in (
+        "schema", "receipt_kind", "market", "timezone", "source_sha256", "as_of",
+        "market_session", "calendar_status", "board_definition", "authority",
+        "selection_status", "official_pick_authority", "ordered_rows")}
+    canonical = json.dumps(material, sort_keys=True, separators=(",", ":"),
+                           ensure_ascii=False, allow_nan=False).encode("utf-8")
+    assert receipt["selection_receipt"] == \
+        "sha256:" + hashlib.sha256(canonical).hexdigest()
+
+
+def test_canada_source_binding_row_receipt_uses_unescaped_unicode():
+    """Row digests hash the canonical decoded row with ensure_ascii=False —
+    pinned against the ensure_ascii=True encoding of the same row, which hashes
+    differently. A non-ASCII card string (lead_zh) is the discriminator."""
+    import hashlib
+    receipt = bcal.canada_selection_source_binding(_binding_bytes())
+    row = json.loads(_binding_bytes().decode("utf-8"))["buy"][0]
+    assert row["lead_zh"] == "现在可买"
+    unescaped = json.dumps(row, sort_keys=True, separators=(",", ":"),
+                           ensure_ascii=False, allow_nan=False).encode("utf-8")
+    escaped = json.dumps(row, sort_keys=True, separators=(",", ":"),
+                         ensure_ascii=True).encode("utf-8")
+    assert escaped != unescaped
+    assert receipt["ordered_rows"][0]["row_receipt"] == \
+        "sha256:" + hashlib.sha256(unescaped).hexdigest()
+
+
+def test_writer_emits_legacy_bytes_and_returns_receipt_binding_them(tmp_path):
+    """The REAL writer still emits byte-identical legacy output (Unicode,
+    default=str values, duplicated identical rows, exact key order) and returns
+    a receipt binding the bytes ACTUALLY on disk. The board object itself is
+    untouched and carries no receipt field."""
+    import hashlib
+    from datetime import date
+    board = {
+        "as_of": "2026-09-30",
+        "buy": [
+            {"ticker": "B.TO", "lead_zh": "现在可买", "stamp": date(2026, 9, 30)},
+            {"ticker": "DUP.TO", "alpha": 1.5},
+            {"ticker": "DUP.TO", "alpha": 1.5},
+        ],
+        "watch": [{"ticker": "W.TO"}],
+        "board_definition": bcal.CA_BOARD_DEFINITION,
+        "authority": bcal.CA_BOARD_AUTHORITY,
+        "selection_status": "accruing",
+        "official_pick_authority": False,
+    }
+    legacy = json.dumps(board, separators=(",", ":"), default=str)
+    receipt = bcal._write_canada_standouts(board, tmp_path)
+    on_disk = (tmp_path / "factordata" / "canada_standouts.json").read_bytes()
+    assert on_disk == legacy.encode("utf-8")
+    assert isinstance(receipt, dict) and receipt is not board
+    assert receipt["source_sha256"] == \
+        "sha256:" + hashlib.sha256(on_disk).hexdigest()
+    written = json.loads(on_disk.decode("utf-8"))
+    assert list(written) == list(board)                       # key order preserved
+    assert [r["ticker"] for r in written["buy"]] == ["B.TO", "DUP.TO", "DUP.TO"]
+    assert [r["ticker"] for r in board["buy"]] == ["B.TO", "DUP.TO", "DUP.TO"]
+    assert "source_sha256" not in board and "selection_receipt" not in board
+    assert [(e["lane"], e["selection_index"]) for e in receipt["ordered_rows"]] == [
+        ("buy", 0), ("buy", 1), ("buy", 2), ("watch", 0)]
+    assert [p.name for p in sorted((tmp_path / "factordata").iterdir())] == [
+        "canada_standouts.json"]                      # no second file written
+
+
+def test_writer_serializes_board_exactly_once_with_legacy_args(tmp_path, monkeypatch):
+    """Exactly ONE json.dumps call carries the historical serialization
+    signature (separators=(",", ":") + default=str, no sort_keys/ensure_ascii/
+    allow_nan overrides), its output is exactly what lands on disk, and the
+    returned receipt's source hash binds those same bytes."""
+    import hashlib
+    real_dumps = json.dumps
+    legacy_calls: list = []
+
+    def counting_dumps(*args, **kwargs):
+        output = real_dumps(*args, **kwargs)
+        if (kwargs.get("separators") == (",", ":") and kwargs.get("default") is str
+                and "sort_keys" not in kwargs and "ensure_ascii" not in kwargs
+                and "allow_nan" not in kwargs):
+            legacy_calls.append((args, kwargs, output))
+        return output
+
+    monkeypatch.setattr(bcal.json, "dumps", counting_dumps)
+    board = _binding_board()
+    receipt = bcal._write_canada_standouts(board, tmp_path)
+    assert receipt is not None
+    assert len(legacy_calls) == 1, "board must be serialized exactly once"
+    args, kwargs, output = legacy_calls[0]
+    assert args == (board,)
+    assert kwargs["default"] is str
+    on_disk = (tmp_path / "factordata" / "canada_standouts.json").read_bytes()
+    assert output.encode("utf-8") == on_disk
+    assert receipt["source_sha256"] == \
+        "sha256:" + hashlib.sha256(on_disk).hexdigest()
+
+
+def test_writer_invalid_receipt_board_still_publishes_exact_legacy_bytes(tmp_path):
+    """A board that cannot earn a receipt (dishonest authority) still publishes
+    its EXACT legacy bytes, yields NO receipt, and produces no second file."""
+    board = _binding_board(authority="official")
+    legacy = json.dumps(board, separators=(",", ":"), default=str).encode("utf-8")
+    receipt = bcal._write_canada_standouts(board, tmp_path)
+    factordata = tmp_path / "factordata"
+    assert receipt is None
+    assert (factordata / "canada_standouts.json").read_bytes() == legacy
+    assert [p.name for p in sorted(factordata.iterdir())] == ["canada_standouts.json"]
+
+
+def test_writer_failed_write_returns_no_receipt(tmp_path):
+    """A failed write raises exactly as before and produces no receipt — and
+    never clobbers whatever blocked it."""
+    blocker = tmp_path / "factordata" / "canada_standouts.json"
+    blocker.mkdir(parents=True)
+    with pytest.raises(OSError):
+        bcal._write_canada_standouts(_binding_board(), tmp_path)
+    assert blocker.is_dir()
+
+
+@pytest.mark.parametrize("calendar_fault", ["ImportError", "ZoneInfoNotFoundError"])
+def test_receipt_calendar_import_unavailable_preserves_real_writer(tmp_path, calendar_fault):
+    """Receipt-only owner failure cannot prevent historical board publication."""
+    import subprocess
+    import sys
+    import json
+    code = r'''import importlib.abc, sys, json
+from zoneinfo import ZoneInfoNotFoundError
+from pathlib import Path
+class BlockCalendar(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == "lib.market_session":
+            fault = {"ImportError": ImportError,
+                     "ZoneInfoNotFoundError": ZoneInfoNotFoundError}[sys.argv[2]]
+            raise fault("explicit receipt-owner fixture")
+sys.meta_path.insert(0, BlockCalendar())
+from scripts import build_canada_library as bcal
+board = {"as_of": "2026-10-08", "board_definition": "ca_prophet_branch_b_v1",
+         "authority": "screen", "selection_status": "accruing",
+         "official_pick_authority": False, "buy": [{"ticker": "B.TO"}], "watch": []}
+expected = json.dumps(board, separators=(",", ":"), default=str).encode("utf-8")
+out = Path(sys.argv[1])
+receipt = bcal._write_canada_standouts(board, out)
+assert bcal.market_session is None
+assert receipt is None
+assert (out / "factordata/canada_standouts.json").read_bytes() == expected
+print("actual writer bytes unchanged; optional calendar receipt unavailable")
+'''
+    run = subprocess.run([sys.executable, "-c", code, str(tmp_path), calendar_fault],
+                         cwd=Path(__file__).resolve().parents[1],
+                         capture_output=True, text=True, timeout=30)
+    assert run.returncode == 0, run.stderr
+    assert "actual writer bytes unchanged" in run.stdout
