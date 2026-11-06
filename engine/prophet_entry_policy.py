@@ -31,8 +31,8 @@ from engine.prophet_strategy_definition import (
 from lib import nyse_calendar
 
 SCHEMA = "prophet.entry_policy_fact/v1"
-SESSION_POLICY_VERSION = "early-leadership-sector-rotation-session-rth-v2"
-SESSION_POLICY_ERA = "NYSE_RTH_2026"
+SESSION_POLICY_VERSION = "early-leadership-sector-rotation-session-rth-v3"
+SESSION_POLICY_ERA = "NYSE_RTH_2026_2027"
 GATE = "session_eligibility"
 
 RISK_POLICY_VERSION = "early-leadership-sector-rotation-risk-atr-v1"
@@ -59,11 +59,21 @@ ET = ZoneInfo("America/New_York")
 _RTH_OPEN_ET = time(9, 30)
 _RTH_REGULAR_CLOSE_ET = time(16, 0)
 _RTH_EARLY_CLOSE_ET = time(13, 0)
-_SUPPORTED_SESSION_YEARS = frozenset({2026})
+_SUPPORTED_SESSION_YEARS = frozenset({2026, 2027})
 # Exact shortened sessions for the bounded execution-policy era.  2026-07-03 is
 # a full closure (Independence Day observed), not an early close, and is therefore
-# intentionally absent.  Extending this set/year is an explicit policy mutation.
-_EARLY_CLOSE_DATES = frozenset({date(2026, 11, 27), date(2026, 12, 24)})
+# intentionally absent.  2027-11-25 (Thanksgiving) and 2027-12-24 are full closures
+# per the NYSE calendar owner, not early closes.  Extending this set/year is an
+# explicit policy mutation.
+_EARLY_CLOSE_DATES = frozenset(
+    {
+        date(2026, 11, 27),
+        date(2026, 12, 24),
+        date(2027, 11, 26),
+    }
+)
+_EXECUTION_SCHEDULE_SOURCE = "NYSE_BETA_HOLIDAYS_AND_TRADING_HOURS_2026_2027"
+_EXECUTION_SCHEDULE_VERIFIED_ON = "2026-10-07"
 
 
 class EntryPolicyContractError(ValueError):
@@ -137,8 +147,8 @@ def _policy_material(strategy_definition_id: str) -> dict[str, object]:
         "session_policy_era": SESSION_POLICY_ERA,
         "calendar_owner": "lib.nyse_calendar.is_session",
         "execution_window_owner": "engine.prophet_entry_policy._execution_session_window_et",
-        "execution_schedule_source": "NYSE_HOLIDAYS_AND_TRADING_HOURS_2026",
-        "execution_schedule_verified_on": "2026-09-22",
+        "execution_schedule_source": _EXECUTION_SCHEDULE_SOURCE,
+        "execution_schedule_verified_on": _EXECUTION_SCHEDULE_VERIFIED_ON,
         "supported_session_years": sorted(_SUPPORTED_SESSION_YEARS),
         "rth_open_et": _RTH_OPEN_ET.isoformat(),
         "regular_close_et": _RTH_REGULAR_CLOSE_ET.isoformat(),
