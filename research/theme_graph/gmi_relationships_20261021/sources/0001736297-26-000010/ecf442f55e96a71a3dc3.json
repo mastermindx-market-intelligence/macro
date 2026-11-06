@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-20T22:26:05Z",
+ "accession": "0001736297-26-000010",
+ "cik": "0001736297",
+ "doc_byte_length": 2244526,
+ "doc_sha256": "df72dc9ec1ea2954a7236c64d661a1635e2133904cea45f58abe678960520f2d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "alab-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 300332,
+  "byte_start": 299592,
+  "normalized": "Unforeseen disruption of the production or distribution of our products could be caused by a number of events, including a maintenance outage, systems outage or other disruption, power or equipment failure, fires, floods, earthquakes or other natural disasters, social unrest or terrorist activity, work stoppages, public health concerns (including pandemics), regulatory measures, or other operational problems. For example, the foundry used by our primary manufacturer, TSMC, as well as our primary distributor, is located in Taiwan. The risk of an earthquake in Taiwan and elsewhere in the Pacific Rim region on our business is significant due to the proximity of major earthquake fault lines to the foundry’s facilities.",
+  "normalized_sha256": "7072b2a9aeb21702152879e9f3a12f689eaebd5f9dfc226de150c19ab3fdf902",
+  "raw": "  Unforeseen  disruption  of  the  production  or  distribution  of  our products could be caused by a number of events, including a maintenance outage, systems outage or other disruption, power or equipment failure, fires, floods, earthquakes or other natural disasters, social unrest or terrorist activity, work stoppages, public health concerns (including pandemics), regulatory measures, or other operational problems. For example, the foundry used by our primary manufacturer, TSMC, as well as our primary distributor, is located in Taiwan. The risk of an earthquake in Taiwan and elsewhere in the Pacific Rim region on our business is significant due to the proximity of major earthquake fault lines to the foundry&#8217;s facilities.",
+  "raw_sha256": "ecf442f55e96a71a3dc3621ae23c764c0d2060ec9bf78b225c54d5c64d424972"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1736297/000173629726000010/alab-20251231.htm",
+ "xbrl_contexts": []
+}

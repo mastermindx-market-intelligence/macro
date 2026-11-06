@@ -1,0 +1,451 @@
+{
+  "base_commit": "ec425df59e5141ee78cb6cedab0b6d5a6306f3ee",
+  "generations": {
+    "g1": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+    "g2": "ffprods_dd71760c3db66c687c84ee1c9de13dd36b00b519a2bc866e0ba1bd761511ae07"
+  },
+  "issuer_id": "mmx.issuer.fip1",
+  "matrix_row": "A47",
+  "network": false,
+  "production_touched": false,
+  "recorded_at": "2026-10-20T21:42:46.836732+00:00",
+  "scenarios": [
+    {
+      "scenario": "publish_g1",
+      "steps": [
+        {
+          "argv": [
+            "PDS.publish_production_dataset",
+            "--local-store",
+            "source"
+          ],
+          "assert": {
+            "generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+            "store": "source"
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": null,
+          "step": "publish_g1",
+          "via": "api"
+        }
+      ]
+    },
+    {
+      "scenario": "restart",
+      "steps": [
+        {
+          "argv": [
+            "PDS.build_production_dataset_store",
+            "--local-store",
+            "source"
+          ],
+          "assert": {
+            "store": "source",
+            "summary": {
+              "admitted_at": "2026-10-01T00:00:00.000000Z",
+              "dataset_generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069"
+            }
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": null,
+          "step": "reopen_store_object",
+          "via": "api"
+        },
+        {
+          "argv": [
+            "scripts/fif_recovery_drill.py",
+            "audit",
+            "--local-store",
+            "source",
+            "--issuer",
+            "mmx.issuer.fip1"
+          ],
+          "assert": {
+            "generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+            "state": "admitted",
+            "summary": {
+              "admitted_at": "2026-10-01T00:00:00.000000Z",
+              "dataset_generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069"
+            }
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": {
+            "generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+            "issuer_id": "mmx.issuer.fip1",
+            "manifest_generation_ids": [],
+            "recovery": null,
+            "state": "admitted"
+          },
+          "step": "audit",
+          "via": "cli"
+        }
+      ]
+    },
+    {
+      "scenario": "backup",
+      "steps": [
+        {
+          "argv": [
+            "scripts/fif_recovery_drill.py",
+            "backup",
+            "--local-store",
+            "source",
+            "--issuer",
+            "mmx.issuer.fip1",
+            "--out",
+            "backup"
+          ],
+          "assert": {
+            "entries": 8,
+            "generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+            "manifest_path": "backup/manifest.json",
+            "manifest_sha256": "e799eca8c858fa84b8117ef67bf37d4146fa5b26aa3f460193b3cb8ac528997e",
+            "objects": 8
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": {
+            "backed_up": "mmx.issuer.fip1",
+            "entries": 8,
+            "generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+            "out": "backup"
+          },
+          "step": "backup",
+          "via": "cli"
+        }
+      ]
+    },
+    {
+      "scenario": "lost_publication",
+      "steps": [
+        {
+          "argv": [
+            "PDS.publish_production_dataset",
+            "--local-store",
+            "lost",
+            "--skip-pointer"
+          ],
+          "assert": {
+            "generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+            "pointer_key_absent": true,
+            "skip_pointer": true
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": null,
+          "step": "publish_skip_pointer",
+          "via": "api"
+        },
+        {
+          "argv": [
+            "scripts/fif_recovery_drill.py",
+            "audit",
+            "--local-store",
+            "lost",
+            "--issuer",
+            "mmx.issuer.fip1"
+          ],
+          "assert": {
+            "generation_id": null,
+            "manifest_generation_ids": [
+              "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069"
+            ],
+            "pointer_key_absent_after_audit": true,
+            "recovery": "publisher_repoint_required",
+            "state": "pointer_absent_generation_present"
+          },
+          "exit_code": 1,
+          "stderr_first_line": null,
+          "stdout": {
+            "generation_id": null,
+            "issuer_id": "mmx.issuer.fip1",
+            "manifest_generation_ids": [
+              "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069"
+            ],
+            "recovery": "publisher_repoint_required",
+            "state": "pointer_absent_generation_present"
+          },
+          "step": "audit",
+          "via": "cli"
+        }
+      ]
+    },
+    {
+      "scenario": "restore",
+      "steps": [
+        {
+          "argv": [
+            "scripts/fif_recovery_drill.py",
+            "restore",
+            "--from",
+            "backup",
+            "--local-store",
+            "target",
+            "--issuer",
+            "mmx.issuer.fip1"
+          ],
+          "assert": {
+            "already_present_count": 0,
+            "entries_written_by_restore": 7,
+            "immutable_entry_count": 7,
+            "pointer": "restored",
+            "verified": true
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": {
+            "already_present": [],
+            "kept_pointer_generation_id": null,
+            "pointer": "restored",
+            "pointer_generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+            "restored": [],
+            "verified": true,
+            "written": [
+              "fundamental_forensics/production-datasets/v1/issuers/mmx.issuer.fip1/generations/ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069.json",
+              "fundamental_forensics/production-datasets/v1/objects/sha256/22/22376a6171015e6efe1857a289edd36a657bf7762bcb37bc08efe14ab548f4d7.bin",
+              "fundamental_forensics/production-datasets/v1/objects/sha256/6e/6e1441b14fbaabe98f92347460f43096f609676d046889edfeca6ab15266285d.bin",
+              "fundamental_forensics/production-datasets/v1/objects/sha256/7a/7a19611e901b61e9ccd1281f58d9f2c531618707580c94ffabf5c960abd736a4.bin",
+              "fundamental_forensics/production-datasets/v1/objects/sha256/a4/a457b002741a8ea0535685e9c5f97806cd61cdedb1d2416859f1871f54e45a90.bin",
+              "fundamental_forensics/production-datasets/v1/objects/sha256/e7/e77a9754bb855b4273c58760bf692ee964a1f24d966cc8f63055af72b5ae2b15.bin",
+              "fundamental_forensics/production-datasets/v1/objects/sha256/f5/f5c084927bb3d4ecfd6fc39e74a44ecac7ee355832a09b6d7213824467a19925.bin"
+            ]
+          },
+          "step": "restore",
+          "via": "cli"
+        },
+        {
+          "argv": [
+            "scripts/fif_recovery_drill.py",
+            "audit",
+            "--local-store",
+            "target",
+            "--issuer",
+            "mmx.issuer.fip1"
+          ],
+          "assert": {
+            "generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+            "state": "admitted"
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": {
+            "generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+            "issuer_id": "mmx.issuer.fip1",
+            "manifest_generation_ids": [],
+            "recovery": null,
+            "state": "admitted"
+          },
+          "step": "audit_restored_target",
+          "via": "cli"
+        },
+        {
+          "argv": [
+            "scripts/fif_recovery_drill.py",
+            "restore",
+            "--from",
+            "backup",
+            "--local-store",
+            "target",
+            "--issuer",
+            "mmx.issuer.fip1"
+          ],
+          "assert": {
+            "already_present_count": 7,
+            "entries_written_by_restore": 0,
+            "immutable_entry_count": 7,
+            "pointer": "kept_existing",
+            "verified": true
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": {
+            "already_present": [
+              "fundamental_forensics/production-datasets/v1/issuers/mmx.issuer.fip1/generations/ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069.json",
+              "fundamental_forensics/production-datasets/v1/objects/sha256/22/22376a6171015e6efe1857a289edd36a657bf7762bcb37bc08efe14ab548f4d7.bin",
+              "fundamental_forensics/production-datasets/v1/objects/sha256/6e/6e1441b14fbaabe98f92347460f43096f609676d046889edfeca6ab15266285d.bin",
+              "fundamental_forensics/production-datasets/v1/objects/sha256/7a/7a19611e901b61e9ccd1281f58d9f2c531618707580c94ffabf5c960abd736a4.bin",
+              "fundamental_forensics/production-datasets/v1/objects/sha256/a4/a457b002741a8ea0535685e9c5f97806cd61cdedb1d2416859f1871f54e45a90.bin",
+              "fundamental_forensics/production-datasets/v1/objects/sha256/e7/e77a9754bb855b4273c58760bf692ee964a1f24d966cc8f63055af72b5ae2b15.bin",
+              "fundamental_forensics/production-datasets/v1/objects/sha256/f5/f5c084927bb3d4ecfd6fc39e74a44ecac7ee355832a09b6d7213824467a19925.bin"
+            ],
+            "kept_pointer_generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+            "pointer": "kept_existing",
+            "pointer_generation_id": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+            "restored": [],
+            "verified": true,
+            "written": []
+          },
+          "step": "restore_again",
+          "via": "cli"
+        }
+      ]
+    },
+    {
+      "scenario": "rollback_refused",
+      "steps": [
+        {
+          "argv": [
+            "PDS.publish_production_dataset",
+            "--local-store",
+            "source"
+          ],
+          "assert": {
+            "generation_id": "ffprods_dd71760c3db66c687c84ee1c9de13dd36b00b519a2bc866e0ba1bd761511ae07",
+            "supersedes": "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069"
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": null,
+          "step": "publish_g2",
+          "via": "api"
+        },
+        {
+          "argv": [
+            "PDS.publish_production_dataset",
+            "--local-store",
+            "source"
+          ],
+          "assert": {
+            "message": "stale production dataset cannot rewind independent latest pointer",
+            "message_contains": "stale production dataset cannot rewind independent latest pointer",
+            "raised": "ProductionDatasetError"
+          },
+          "exit_code": 1,
+          "stderr_first_line": "stale production dataset cannot rewind independent latest pointer",
+          "stdout": null,
+          "step": "rewind_refused",
+          "via": "api"
+        },
+        {
+          "argv": [
+            "scripts/fif_recovery_drill.py",
+            "audit",
+            "--local-store",
+            "source",
+            "--issuer",
+            "mmx.issuer.fip1"
+          ],
+          "assert": {
+            "generation_id": "ffprods_dd71760c3db66c687c84ee1c9de13dd36b00b519a2bc866e0ba1bd761511ae07",
+            "state": "admitted"
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": {
+            "generation_id": "ffprods_dd71760c3db66c687c84ee1c9de13dd36b00b519a2bc866e0ba1bd761511ae07",
+            "issuer_id": "mmx.issuer.fip1",
+            "manifest_generation_ids": [],
+            "recovery": null,
+            "state": "admitted"
+          },
+          "step": "audit_after_rollback",
+          "via": "cli"
+        },
+        {
+          "argv": [
+            "PDS.load_generation",
+            "--local-store",
+            "source",
+            "--issuer",
+            "mmx.issuer.fip1"
+          ],
+          "assert": {
+            "loadable_generation_ids": [
+              "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069",
+              "ffprods_dd71760c3db66c687c84ee1c9de13dd36b00b519a2bc866e0ba1bd761511ae07"
+            ]
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": null,
+          "step": "originals_intact",
+          "via": "api"
+        },
+        {
+          "argv": [
+            "RD.reconcile_effect_unknown",
+            "--local-store",
+            "source",
+            "--expected",
+            "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069"
+          ],
+          "assert": {
+            "outcome": "pointer_names_other_generation"
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": null,
+          "step": "reconcile_g1",
+          "via": "api"
+        },
+        {
+          "argv": [
+            "vars(engine.fundamental_forensics.recovery_drill)"
+          ],
+          "assert": {
+            "rewindish_names": []
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": null,
+          "step": "rewind_surface_absent",
+          "via": "api"
+        }
+      ]
+    },
+    {
+      "scenario": "corrupted_target",
+      "steps": [
+        {
+          "argv": [
+            "shutil.copytree",
+            "--from",
+            "target",
+            "--to",
+            "corrupt"
+          ],
+          "assert": {
+            "byte_offset": 0,
+            "corrupted_file": "corrupt/fundamental_forensics/production-datasets/v1/objects/sha256/22/22376a6171015e6efe1857a289edd36a657bf7762bcb37bc08efe14ab548f4d7.bin",
+            "corrupted_key": "fundamental_forensics/production-datasets/v1/objects/sha256/22/22376a6171015e6efe1857a289edd36a657bf7762bcb37bc08efe14ab548f4d7.bin",
+            "first_byte_xor": 1
+          },
+          "exit_code": 0,
+          "stderr_first_line": null,
+          "stdout": null,
+          "step": "corrupt_one_object",
+          "via": "api"
+        },
+        {
+          "argv": [
+            "scripts/fif_recovery_drill.py",
+            "audit",
+            "--local-store",
+            "corrupt",
+            "--issuer",
+            "mmx.issuer.fip1"
+          ],
+          "assert": {
+            "state": "pointer_unverifiable"
+          },
+          "exit_code": 1,
+          "stderr_first_line": null,
+          "stdout": {
+            "generation_id": null,
+            "issuer_id": "mmx.issuer.fip1",
+            "manifest_generation_ids": [],
+            "recovery": null,
+            "state": "pointer_unverifiable"
+          },
+          "step": "audit",
+          "via": "cli"
+        }
+      ]
+    }
+  ],
+  "schema": "fif.a47_recovery_drill_receipts.v1",
+  "store_kind": "local_directory"
+}

@@ -1476,8 +1476,30 @@ def test_legacy_helper_still_resolves_api_key_env_from_the_environment(monkeypat
 
 
 def test_the_merge_gate_step_still_names_this_suite():
-    ci = (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
-    assert "tests/test_provider_production_modes.py" in ci
+    import shlex
+    import yaml
+
+    ci = yaml.safe_load(
+        (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
+    )
+    owner = ci["jobs"]["attested-history-guards"]
+    assert owner["gate"] == "code"
+    step = next(
+        step for step in owner["steps"]
+        if step.get("name") == "Wave 0A dedicated attested-history serving boundary"
+    )
+    argv = shlex.split(step["run"])
+    assert argv[:3] == ["python", "-m", "pytest"]
+    assert {
+        "tests/test_fundamental_forensics_attested_history_api_store.py",
+        "tests/test_provider_production_modes.py",
+    } <= set(argv[3:])
+    # Other complete suites may join; selectors must not silently skip this one.
+    assert all(
+        arg in {"-q", "-s", "-v", "--verbose", "--tb=short"}
+        or (arg.startswith("tests/") and arg.endswith(".py") and "::" not in arg)
+        for arg in argv[3:]
+    )
 
 def test_minimax_shadow_canary_is_one_call_and_never_activates_source(receipts, monkeypatch):
     monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *_args: 0.00001)

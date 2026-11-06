@@ -1,0 +1,9 @@
+{
+  "checked_at": "2026-10-17T06:23:48.985309+00:00",
+  "cwd": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/risk-radar-meta-ceo-census-20261017-01c18c888a133151",
+  "source_base": "3ab3382af89242c7b7fe8c65360bd883a7dd3504",
+  "check": "curated_exclusive_closure_findings",
+  "prior_invocation": "Failed before commit with inline-js derives no closure because process cwd was /Users/chriswong; two-job rerun from worktree derives both closures. No guard or unrelated job modified.",
+  "findings": {},
+  "completed": true
+}

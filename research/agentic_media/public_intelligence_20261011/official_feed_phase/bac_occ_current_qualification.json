@@ -1,0 +1,80 @@
+{
+  "kind": "official_feed_editorial_qualification",
+  "source_key": "occ_news",
+  "feed_url": "https://www.occ.treas.gov/rss/occ_news.xml",
+  "feed_sha256": "16f504bdb14bc85c9efc16dadaa7ee3bb152cc09b3556bfb4d898396a47831e6",
+  "item_url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html",
+  "published_at": "2026-10-13T20:15:00+00:00",
+  "event_date": "2026-10-13",
+  "observed_at": "2026-10-14T00:22:39.741361+00:00",
+  "rights_basis": {
+    "qualification": "government_authored_factual_reporting",
+    "scope": "Original factual account of the named OCC assessment, with agency attribution and direct source link. No copied release paragraphs, seals, photos, endorsement, third-party expression, or blanket worldwide grant. Agency-authored RSS summary is the retained source scope; it is not the full consent order.",
+    "publication_approval": false,
+    "basis_evidence": [
+      {
+        "purpose": "government_work_basis",
+        "url": "https://uscode.house.gov/view.xhtml?req=%28title%3A17+section%3A105+edition%3Aprelim%29",
+        "response_url": "https://uscode.house.gov/view.xhtml?req=%28title%3A17+section%3A105+edition%3Aprelim%29",
+        "observed_at": "2026-10-14T00:37:37.602024+00:00",
+        "sha256": "bd35cf93375a24c953eb73c37bd621a2ac1c5d29ebd366d10a7964e97e4b494a",
+        "evidence_file": "government_work_basis.html.gz",
+        "encoding": "gzip; sha256 binds decompressed HTTP response bytes"
+      },
+      {
+        "purpose": "issuer_mapping",
+        "url": "https://investor.bankofamerica.com/regulatory-and-other-filings/subsidiary-and-country-disclosures",
+        "response_url": "https://investor.bankofamerica.com/regulatory-and-other-filings/subsidiary-and-country-disclosures",
+        "observed_at": "2026-10-14T00:37:37.602024+00:00",
+        "sha256": "e95813b4afdfe483b4ff86fde878003ff4693243d3c4c13a12fa8ebab6772987",
+        "evidence_file": "issuer_mapping.html.gz",
+        "encoding": "gzip; sha256 binds decompressed HTTP response bytes"
+      }
+    ]
+  },
+  "review_result": "accepted_as_editorial_candidate_only",
+  "reviewed_claims": [
+    {
+      "literal": "$750 million civil money penalty against Bank of America, N.A. (bank), for violations of the Bank Secrecy Act and its implementing regulations",
+      "quantity_literal": "$750 million"
+    }
+  ],
+  "reviewed_tickers": {
+    "BAC": "Bank of America, N.A."
+  },
+  "first_party_context": [
+    {
+      "id": "market_state_score",
+      "artifact": "data/market_state/latest.json",
+      "sha256": "fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+      "relevance": "Dated pre-enforcement broad-market composite distinguishes the existing backdrop from the newly announced bank-specific action. It cannot explain BAC price changes."
+    },
+    {
+      "id": "market_state_risk",
+      "artifact": "data/market_state/latest.json",
+      "sha256": "fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+      "relevance": "Dated broad risk-appetite measurement, used only to describe conditions preceding the agency action, never a bank-specific solvency or credit measure."
+    },
+    {
+      "id": "market_state_vol",
+      "artifact": "data/market_state/latest.json",
+      "sha256": "fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+      "relevance": "Dated normalized volatility component, not a volatility percentage or a prediction of BAC moves; separates broad conditions from the enforcement event."
+    },
+    {
+      "id": "fear_greed",
+      "artifact": "site/basketdata/fear_greed.json",
+      "sha256": "c2e205b1c5739bca90b5702336f8be64275f7f833cb0538d944c4537b43ecdaa",
+      "relevance": "Dated broad sentiment measurement provides a separately computed pre-event baseline. It is not investor reaction to this announcement."
+    },
+    {
+      "id": "risk_radar",
+      "artifact": "data/risk_radar/forward_log.jsonl",
+      "sha256": "86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0",
+      "relevance": "Dated broad risk model identifies rates as the existing macro pressure. It does not quantify BAC regulatory exposure or attribute any price change to the fine."
+    }
+  ],
+  "allow_stage": false,
+  "allow_emit": false,
+  "publication_approved": false
+}

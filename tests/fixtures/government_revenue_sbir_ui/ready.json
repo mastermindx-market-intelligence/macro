@@ -1,0 +1,287 @@
+{
+  "schema_version": "1.0.0",
+  "contract": "government_revenue_sbir_progression.v1",
+  "as_of": "2026-08-08T12:00:00+00:00",
+  "known_at": "2026-08-08T12:00:00+00:00",
+  "first_observed_at": "2026-08-08T12:00:00+00:00",
+  "authority": {
+    "tier": "display",
+    "context_only": true,
+    "can_rank": false,
+    "can_size": false,
+    "can_gate": false,
+    "can_originate_signal": false,
+    "can_add_candidates": false,
+    "can_escalate": false
+  },
+  "source": {
+    "publisher": "U.S. Small Business Administration, SBIR.gov",
+    "official_api_urls": [
+      "https://api.www.sbir.gov/public/api/awards"
+    ],
+    "receipt_ledger": "sbir_collection_receipts.jsonl"
+  },
+  "availability": {
+    "state": "ready",
+    "reason": "sbir_observation_bundle_ready"
+  },
+  "generation": {
+    "projection_generation_id": "sbir-29c3c892700cae044b16252f",
+    "coverage_manifest_id": "sbir-coverage-3affb9aaa98d258724dbc4d0adc7e48a7dde439456398485137946fc6b566d0f",
+    "collector_observed_at": "2026-08-08T12:00:00+00:00",
+    "collector_status": "ok"
+  },
+  "baseline": {
+    "state": "first_baseline",
+    "history_synthesized": false,
+    "emits_forward_events": false,
+    "disclosure": "First baseline: every observation became knowable in one collection, so no forward event has been graded yet. Source-dated award history is shown as the source published it and is never backfilled as prior knowledge."
+  },
+  "candidate_impact": {
+    "emits_candidates": false,
+    "candidate_family_preregistered": false,
+    "authority": {
+      "tier": "display",
+      "context_only": true,
+      "can_rank": false,
+      "can_size": false,
+      "can_gate": false,
+      "can_originate_signal": false,
+      "can_add_candidates": false,
+      "can_escalate": false
+    }
+  },
+  "coverage": {
+    "is_complete": false,
+    "full_sbir_corpus": false,
+    "observations_total": 2,
+    "observations_visible": 2,
+    "progression_pairs": 1,
+    "mapping_backlog_count": 1,
+    "recipient_graph_status": "absent",
+    "coverage_manifest": {
+      "clocks": {
+        "effective_at": "proposal_award_date",
+        "known_at": "collector retrieval instant; knowledge is observation-bound and never backdated",
+        "observed_at": "collector retrieval instant",
+        "source_at": "proposal_award_date (first day of contract performance, per source)",
+        "source_publication_clock_available": false,
+        "source_reporting_lag_note": "SBIR.gov states newly added awards need at least 24 hours to appear and that annual completeness lags; absence of a recent award is not evidence of no award."
+      },
+      "contract": "government_revenue.sbir_coverage_manifest.v1",
+      "coverage_scope": "Bounded offset-paged SBIR.gov award observations for the declared agency/year query cells only; never a complete SBIR/STTR corpus, never issuer attribution, and never a production-conversion claim.",
+      "documentation": [
+        "https://www.sbir.gov/api",
+        "https://www.sbir.gov/data-resources/data-dictionary/award"
+      ],
+      "endpoint": "https://api.www.sbir.gov/public/api/awards",
+      "identity": {
+        "issuer_join": "exact_uei_only_against_reviewed_recipient_graph",
+        "key_definition": "unique across all of TECH-Net per the official Award data dictionary",
+        "name_association_is_attribution": false,
+        "rows_without_key_are_refused": true,
+        "source_native_key": "agency_tracking_number"
+      },
+      "legacy_response_agency_codes": [
+        "DOD"
+      ],
+      "limitations": [
+        "Phase I to Phase II movement is progression evidence only. SBIR.gov publishes no parent/child link between a Phase I and a Phase II award, so phase movement is never production conversion, revenue, backlog, bookings, obligation, or outlay."
+      ],
+      "omissions": {
+        "abstract_persisted": false,
+        "bulk_download_urls": [
+          "https://data.www.sbir.gov/awarddatapublic/award_data.csv",
+          "https://data.www.sbir.gov/mod_awarddatapublic_no_abstract/award_data_no_abstract.csv"
+        ],
+        "bulk_download_used": false,
+        "full_sbir_corpus": false,
+        "pii_source_fields_never_persisted": [
+          "poc_name",
+          "poc_title",
+          "poc_phone",
+          "poc_email",
+          "pi_name",
+          "pi_phone",
+          "pi_email",
+          "ri_poc_name",
+          "ri_poc_phone",
+          "address1",
+          "address2",
+          "city",
+          "zip"
+        ]
+      },
+      "paging": {
+        "kind": "offset_based_start_parameter",
+        "max_pages_per_cell": 2,
+        "page_size": 100,
+        "pagination_metadata_available": false,
+        "sort": "award_date_desc_fixed_by_source",
+        "sort_is_configurable": false,
+        "source_exhaustion_signal": "short_page_only",
+        "total_record_count_available": false
+      },
+      "probed_at": "2026-08-08",
+      "probed_valid_agency_query_codes": [
+        "DOW",
+        "HHS",
+        "NASA",
+        "NSF",
+        "DOE",
+        "USDA",
+        "EPA",
+        "DOC",
+        "ED",
+        "DOT",
+        "DHS"
+      ],
+      "query_cells": [
+        {
+          "agency": "DOW",
+          "year": "2024"
+        }
+      ],
+      "safety_caps": {
+        "max_cells_per_run": 4,
+        "max_requests_per_run": 8,
+        "max_rows_per_run": 800,
+        "published_rate_limit_requests": 10,
+        "published_rate_limit_window_seconds": 600,
+        "request_pacing_seconds": 0.0
+      },
+      "schema_version": "1.0.0"
+    },
+    "bounded_sample_claim": "source exhaustion is provable only by a short page; a fully retrieved declared page cap is a complete bounded sample, not corpus completion",
+    "pagination_metadata_available": false,
+    "progression_rows_capped_at": 500,
+    "mapping_backlog_rows_capped_at": 500
+  },
+  "phase_observations": {
+    "phase_i": 1,
+    "phase_ii": 1,
+    "unrecognized_phase": 0
+  },
+  "progression_evidence": [
+    {
+      "progression_key_sha256": "3a455d899e853e65d067748f7fc4942746487214230975a627367d13a7082651",
+      "progression_key_kind": "uei_agency_program_branch_topic",
+      "key_fields": {
+        "uei": "ABCDEFGHJK12",
+        "agency": "DOW",
+        "program": "SBIR",
+        "branch": "USAF",
+        "topic_code": "AF241-D001"
+      },
+      "firm_name_context": "Acme Defense Labs, Inc.",
+      "agency": "DOW",
+      "branch": "USAF",
+      "program": "SBIR",
+      "topic_code": "AF241-D001",
+      "phase_i": {
+        "sbir_award_key": "PH1-001",
+        "phase": "I",
+        "phase_source_value": "Phase I",
+        "contract": "FA8650-PH1-001",
+        "award_amount": 180000.0,
+        "award_year": "2024",
+        "solicitation_number": "SBIR-24-1",
+        "source_at": "2023-04-01",
+        "effective_at": "2023-04-01",
+        "contract_end_date": "2025-03-01",
+        "observed_at": "2026-08-08T12:00:00+00:00",
+        "known_at": "2026-08-08T12:00:00+00:00",
+        "first_seen_at": "2026-08-08T12:00:00+00:00",
+        "award_link": "https://www.sbir.gov/awards/PH1-001",
+        "source_receipt_id": "sbir-award:9779444fea46a954ed3205d8d651443eb10b14f04a710bcdc1c1460964a51012",
+        "source_response_sha256": "d9e9b73d0cfef35ad909acb1df302e10750856e23305ded85886b44f6272abcd"
+      },
+      "phase_ii": {
+        "sbir_award_key": "PH2-001",
+        "phase": "II",
+        "phase_source_value": "Phase II",
+        "contract": "FA8650-PH2-001",
+        "award_amount": 1200000.0,
+        "award_year": "2024",
+        "solicitation_number": "SBIR-24-1",
+        "source_at": "2024-09-15",
+        "effective_at": "2024-09-15",
+        "contract_end_date": "2025-03-01",
+        "observed_at": "2026-08-08T12:00:00+00:00",
+        "known_at": "2026-08-08T12:00:00+00:00",
+        "first_seen_at": "2026-08-08T12:00:00+00:00",
+        "award_link": "https://www.sbir.gov/awards/PH2-001",
+        "source_receipt_id": "sbir-award:9779444fea46a954ed3205d8d651443eb10b14f04a710bcdc1c1460964a51012",
+        "source_response_sha256": "d9e9b73d0cfef35ad909acb1df302e10750856e23305ded85886b44f6272abcd"
+      },
+      "phase_i_observations_under_key": 1,
+      "phase_ii_observations_under_key": 1,
+      "days_between_award_starts": 533,
+      "known_at": "2026-08-08T12:00:00+00:00",
+      "evidence_kind": "phase_i_to_phase_ii_observed",
+      "source_publishes_phase_lineage": false,
+      "is_production_conversion": false,
+      "production_award_chain": "absent",
+      "issuer_link": {
+        "issuer_attribution": "not_asserted",
+        "issuer_join_rule": "none",
+        "ticker": null,
+        "company_id": null,
+        "recipient_entity_id": null,
+        "economic_share": null,
+        "resolution_state": "unresolved",
+        "resolution_reason_codes": [
+          "recipient_graph_absent"
+        ],
+        "evidence_refs": [],
+        "uei_present": true,
+        "name_association_is_attribution": false
+      },
+      "limitations": [
+        "Phase I to Phase II movement is progression evidence only. SBIR.gov publishes no parent/child link between a Phase I and a Phase II award, so phase movement is never production conversion, revenue, backlog, bookings, obligation, or outlay.",
+        "Phase movement is never production conversion. An exact production award chain is required before any conversion language, and this rail has none.",
+        "Listed-company links come only from an exact UEI match against the reviewed recipient graph; a matching firm name is mapping-backlog context and never attribution.",
+        "SBIR award amounts are program award values and are never revenue, backlog, funded backlog, bookings, obligations, or outlays.",
+        "Coverage is a bounded agency/year sample of SBIR.gov, never the full SBIR/STTR corpus; the absence of an award is not evidence that no award exists.",
+        "This rail cannot originate, rank, size, gate, or escalate a signal, and emits no candidates until a candidate family is preregistered and prospectively gradeable."
+      ],
+      "evidence_id": "grspe1-ad8b9c945d78f741f612a730"
+    }
+  ],
+  "forward_events": [],
+  "forward_events_emitted": 0,
+  "mapping_backlog": [
+    {
+      "company_name": "Acme Defense Labs, Inc.",
+      "uei": "ABCDEFGHJK12",
+      "mapping_state": "mapping_needed",
+      "issuer_attribution": "not_asserted",
+      "source_association_method": "source_published_firm_name",
+      "observation_count": 2,
+      "known_at": "2026-08-08T12:00:00+00:00",
+      "reason_codes": [
+        "recipient_graph_absent"
+      ],
+      "limitations": [
+        "Firm-name association is retained only as mapping backlog and is not issuer attribution.",
+        "An exact UEI plus a time-valid reviewed ownership path is required before a listed-company link is asserted."
+      ],
+      "backlog_id": "grspb1-97291f2649d0962db6a31564"
+    }
+  ],
+  "exact_identity": {
+    "exact_linked": 0,
+    "mapping_needed": 1,
+    "join_rule": "exact_uei",
+    "name_association_is_attribution": false
+  },
+  "limitations": [
+    "Phase I to Phase II movement is progression evidence only. SBIR.gov publishes no parent/child link between a Phase I and a Phase II award, so phase movement is never production conversion, revenue, backlog, bookings, obligation, or outlay.",
+    "Phase movement is never production conversion. An exact production award chain is required before any conversion language, and this rail has none.",
+    "Listed-company links come only from an exact UEI match against the reviewed recipient graph; a matching firm name is mapping-backlog context and never attribution.",
+    "SBIR award amounts are program award values and are never revenue, backlog, funded backlog, bookings, obligations, or outlays.",
+    "Coverage is a bounded agency/year sample of SBIR.gov, never the full SBIR/STTR corpus; the absence of an award is not evidence that no award exists.",
+    "This rail cannot originate, rank, size, gate, or escalate a signal, and emits no candidates until a candidate family is preregistered and prospectively gradeable."
+  ],
+  "content_id": "grsp1-2b4ab7045e299baa60223919"
+}
