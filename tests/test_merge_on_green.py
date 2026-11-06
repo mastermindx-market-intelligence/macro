@@ -14,9 +14,16 @@ list so the four outcomes are provable without a network.
 from __future__ import annotations
 
 import ast
+import atexit
 import base64
 import datetime as dt
+import hashlib
 import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -91,6 +98,13 @@ def _no_unstubbed_http(monkeypatch):
     )
     monkeypatch.setattr(MOG, "ensure_self_wake", lambda *_a, **_k: "stubbed")
     monkeypatch.delenv("CURRENT_RUN_ID", raising=False)
+    # Bounded-manifest verdicts are opt-in per test; an operator shell exporting
+    # the sweep's scope mode must not change what the older tests assert.
+    monkeypatch.delenv(MOG.CI_SCOPE_MODE_ENV, raising=False)
+    # Every manifest the bounded path reads goes to the planner's validator. A test
+    # that hands `ProofFreshness` none meets a planner that is not there and
+    # re-proves, never this checkout's own planner by accident.
+    monkeypatch.setenv(MOG.PLANNER_ROOT_ENV, str(ROOT / ".no-planner-here"))
 
 
 def _workflow() -> dict:
@@ -3863,7 +3877,11 @@ def test_one_source_file_defeats_the_pipeline_bake_exclusion():
 def test_a_commit_changing_the_check_definitions_re_proves_every_pull_request():
     """A legacy-jobs.yml edit changes WHAT would run. No pull request's
     existing green describes those checks, whatever its own footprint is — note the
-    footprint here shares nothing with the commit."""
+    footprint here shares nothing with the commit.
+
+    It re-proves because pull-request CI scoping is inactive by default (the autouse
+    fixture clears MERGE_ON_GREEN_CI_SCOPE_MODE): with every job running, any job
+    edit is one the next proof runs. The bounded case is pinned further down."""
     freshness = _freshness(
         commits=[(MAIN_MOVED_AT_1026, [".github/ci/legacy-jobs.yml"])],
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
@@ -4459,14 +4477,16 @@ def test_a_truncated_pipeline_bake_is_proven_by_complete_root_trees(monkeypatch)
                 "files": [{"filename": f"data/file-{index}.json"} for index in range(300)],
             }
         if url.endswith(f"/git/commits/{parent}"):
-            return 200, {"tree": {"sha": parent_tree}}
+            return 200, {"sha": parent, "tree": {"sha": parent_tree}}
         if url.endswith(f"/git/trees/{current_tree}"):
             return 200, {
+                "sha": current_tree,
                 "truncated": False,
                 "tree": [new_data, stable_site, stable_engine, stable_tests],
             }
         if url.endswith(f"/git/trees/{parent_tree}"):
             return 200, {
+                "sha": parent_tree,
                 "truncated": False,
                 "tree": [old_data, stable_site, stable_engine, stable_tests],
             }
@@ -4529,9 +4549,10 @@ def test_a_large_public_render_proves_only_owned_template_asset_stamps(
                 ],
             }
         if url.endswith(f"/git/commits/{parent}"):
-            return 200, {"tree": {"sha": parent_root}}
+            return 200, {"sha": parent, "tree": {"sha": parent_root}}
         if url.endswith(f"/git/trees/{current_root}"):
             return 200, {
+                "sha": current_root,
                 "truncated": False,
                 "tree": [
                     tree("site", current_site),
@@ -4540,6 +4561,7 @@ def test_a_large_public_render_proves_only_owned_template_asset_stamps(
             }
         if url.endswith(f"/git/trees/{parent_root}"):
             return 200, {
+                "sha": parent_root,
                 "truncated": False,
                 "tree": [
                     tree("site", parent_site),
@@ -4595,14 +4617,16 @@ def test_a_truncated_commit_with_any_changed_source_root_stays_fail_closed(monke
                 "files": [{"filename": f"data/file-{index}.json"} for index in range(300)],
             }
         if url.endswith(f"/git/commits/{parent}"):
-            return 200, {"tree": {"sha": parent_tree}}
+            return 200, {"sha": parent, "tree": {"sha": parent_tree}}
         if url.endswith(f"/git/trees/{current_tree}"):
             return 200, {
+                "sha": current_tree,
                 "truncated": False,
                 "tree": [entry("data", "2" * 40), entry("engine", "4" * 40)],
             }
         if url.endswith(f"/git/trees/{parent_tree}"):
             return 200, {
+                "sha": parent_tree,
                 "truncated": False,
                 "tree": [entry("data", "1" * 40), entry("engine", "3" * 40)],
             }
@@ -9912,12 +9936,12 @@ def test_paging_exact_100_multiple_needs_a_short_terminator_page(monkeypatch):
     assert freshness.commit_file_reads - reads_before == 5  # probe + 4 pages
 
 
-def test_paging_ten_full_pages_cap_exhaustion_stays_truncated(monkeypatch):
-    """1000 rows with no short page by page 10 fails closed to the original
+def test_paging_thirty_full_pages_cap_exhaustion_stays_truncated(monkeypatch):
+    """3000 rows with no short page by page 30 fails closed to the original
     truncated answer — it is cached that way, and the probe listing is kept
     unchanged rather than guessed at."""
-    paths = [f"gen/{i:04d}" for i in range(1000)]
-    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 1000, 100)]
+    paths = [f"gen/{i:04d}" for i in range(3000)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 3000, 100)]
     freshness, urls = _paging_commit(monkeypatch, pages)
     reads_before = freshness.commit_file_reads
     probe_names = _paging_probe_names(pages)
@@ -9926,9 +9950,23 @@ def test_paging_ten_full_pages_cap_exhaustion_stays_truncated(monkeypatch):
 
     assert truncated is True
     assert names == probe_names
-    assert freshness.commit_file_reads - reads_before == 11  # probe + capped 10
-    assert len(urls) == 11
+    assert freshness.commit_file_reads - reads_before == 31  # probe + capped 30
+    assert len(urls) == 31
     assert freshness._commit_files[_PAGING_SHA] == (probe_names, True)
+
+
+def test_paging_a_commit_past_the_old_ten_page_cap_now_completes(monkeypatch):
+    """A 1,450-file commit — past the former ten-page cap, inside thirty — pages
+    to its short last page instead of reading as too many files to list."""
+    paths = [f"gen/{i:04d}" for i in range(1450)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 1450, 100)]
+    freshness, urls = _paging_commit(monkeypatch, pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is False
+    assert sorted(names) == sorted(paths)
+    assert len(urls) == 1 + 15  # probe + 14 full pages + the short 15th
 
 
 def test_paging_cap_exhaustion_keeps_the_commit_stale(monkeypatch):
@@ -9936,7 +9974,7 @@ def test_paging_cap_exhaustion_keeps_the_commit_stale(monkeypatch):
     the commit stale, exactly as today's 300-row truncation does."""
     pages = [
         [_paging_row(f"gen/{i:04d}") for i in range(page * 100, page * 100 + 100)]
-        for page in range(10)
+        for page in range(30)
     ]
     freshness, _ = _paging_commit(monkeypatch, pages)
 
@@ -10466,3 +10504,1478 @@ def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
             + admitted * MOG.MAX_REQUESTS_PER_PULL
             + MOG.MAX_REFRESHES_PER_SWEEP
             + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR
+
+
+# -- bounded legacy-manifest edits (proof-freshness starvation, #10365) --------
+#
+# Measured 2026-11-01/02: 54 of 548 main commits in 34.7 h touched `.github/ci/`,
+# 53 of them a job-local `legacy-jobs.yml` edit, and every one re-proved all 79
+# armed pull requests while the refresh budget had no free slot. A job-local edit
+# whose changed jobs could not select or name a pull request's own files leaves
+# that pull request's green describing exactly the jobs its planner would run.
+# Everything else — a global edit, an unreadable delta, a job that could touch the
+# pull request under its old OR new definition — still re-proves (#4583 ruling).
+
+MANIFEST_COMMIT_SHA = f"{1:040d}"
+MANIFEST_PR_FILE = "engine/quokka/signal.py"
+
+
+MANIFEST_JOB_FRAME = {"if": "${{ false }}", "runs-on": "ubuntu-latest"}
+
+
+def _exclusive_job(name: str, test_file: str, *paths: str) -> dict:
+    """An exclusive code job the planner's loader accepts: frame, paths, one named step."""
+    return {
+        **MANIFEST_JOB_FRAME,
+        "gate": "code",
+        "scope": "exclusive",
+        "paths": [*paths, test_file],
+        "steps": [{"name": name, "run": f"python -m pytest {test_file} -q"}],
+    }
+
+
+def _manifest_base() -> dict:
+    """A small manifest in the real one's shape — two exclusive code jobs, one data
+    job — that `run_ci_pack.load_legacy_jobs` accepts over the planner fixture tree."""
+    return {
+        "defaults": {"timeout-minutes": 20},
+        "jobs": {
+            "widget-suite": _exclusive_job(
+                "widget tests", "tests/test_widgets.py", "engine/widgets/**"
+            ),
+            "gadget-suite": _exclusive_job(
+                "gadget tests", "tests/test_gadgets.py", "engine/gadgets/**"
+            ),
+            "nightly-data": {
+                **MANIFEST_JOB_FRAME,
+                "gate": "data",
+                "steps": [{"name": "nightly widgets", "run": "python scripts/nightly_widgets.py"}],
+            },
+        },
+    }
+
+
+# The real validator, in a checkout holding exactly the planner's sparse list, as the
+# sweep's second checkout does. The paths the fixture manifests name exist only in
+# the seeded commit trees, which is where the validator must look for them. One
+# child answers the whole module, as one answers a sweep.
+PLANNER_CHECKOUT_STEP = "planner checkout (the manifest validator's import closure)"
+PLANNER_FIXTURE_FILES = (
+    "engine/widgets/__init__.py",  # ci-trigger-closure: data — a seeded commit-tree entry, never this repo's file
+    "engine/gadgets/__init__.py",  # ci-trigger-closure: data — a seeded commit-tree entry, never this repo's file
+    "engine/sprockets/__init__.py",  # ci-trigger-closure: data — a seeded commit-tree entry, never this repo's file
+    "tests/test_widgets.py",  # ci-trigger-closure: data — a seeded commit-tree entry, never this repo's file
+    "tests/test_gadgets.py",  # ci-trigger-closure: data — a seeded commit-tree entry, never this repo's file
+    "tests/test_sprockets.py",  # ci-trigger-closure: data — a seeded commit-tree entry, never this repo's file
+    "tests/test_quokka_contract.py",  # ci-trigger-closure: data — a seeded commit-tree entry, never this repo's file
+    "scripts/nightly_widgets.py",  # ci-trigger-closure: data — a seeded commit-tree entry, never this repo's file
+    "scripts/nightly_gadgets.py",  # ci-trigger-closure: data — a seeded commit-tree entry, never this repo's file
+)
+
+
+def _planner_checkout_step() -> dict:
+    for step in _workflow()["jobs"]["sweep"]["steps"]:
+        if step.get("name") == PLANNER_CHECKOUT_STEP:
+            return step
+    raise AssertionError(f"no {PLANNER_CHECKOUT_STEP!r} step in the sweep job")
+
+
+def _planner_sparse_paths() -> list[str]:
+    return str(_planner_checkout_step()["with"]["sparse-checkout"]).split()
+
+
+def _fixture_git(cwd, *args) -> str:
+    """git in a fixture tree, deaf to the outer repository and the user's config."""
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    return subprocess.run(
+        [
+            "git",
+            "-c", "user.name=fixture",
+            "-c", "user.email=fixture@example.invalid",
+            "-c", "commit.gpgsign=false",
+            "-c", "core.hooksPath=/dev/null",
+            *args,
+        ],
+        cwd=cwd,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    ).stdout.strip()
+
+
+def _planner_checkout(*, omit=()) -> Path:
+    """A committed fixture checkout of the planner's sparse list (less ``omit``)."""
+    root = Path(tempfile.mkdtemp(prefix="mog-planner-fixture-"))
+    atexit.register(shutil.rmtree, root, True)
+    for relative in _planner_sparse_paths():
+        if relative in omit:
+            continue
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT / relative, target)
+    _fixture_git(root, "init", "-q")
+    _fixture_git(root, "add", "-A")
+    _fixture_git(root, "commit", "-q", "-m", "fixture")
+    return root
+
+
+_SHARED_PLANNER_VALIDATOR: list = []
+
+
+def _planner_validator() -> MOG.PlannerManifestValidator:
+    """The module's one real validator. Its sweep budget is long enough for the
+    whole module; failure-mode tests build their own, so this one is never spent."""
+    if not _SHARED_PLANNER_VALIDATOR:
+        _SHARED_PLANNER_VALIDATOR.append(
+            MOG.PlannerManifestValidator(_planner_checkout(), total_budget=3600.0)
+        )
+    return _SHARED_PLANNER_VALIDATOR[0]
+
+
+def _edit_job(document: dict, job_id: str, **changes) -> dict:
+    """``document`` with one job's keys replaced — the job-local edit under test."""
+    edited = json.loads(json.dumps(document))
+    edited["jobs"][job_id] = {**edited["jobs"][job_id], **changes}
+    return edited
+
+
+def _object_id(*parts: str) -> str:
+    return hashlib.sha1("\0".join(parts).encode()).hexdigest()
+
+
+EMPTY_BLOB_SHA = hashlib.sha1(b"").hexdigest()
+
+
+def _seed_tree(fresh, files) -> str:
+    """Seed nested listings for ``{path: (mode, blob)}`` and return the root's ID.
+
+    IDs follow content, as git's do, so commits sharing a subtree share its
+    listing and its cache entry."""
+    entries, subtrees = {}, {}
+    for path, (mode, blob) in files.items():
+        head, nested, rest = path.partition("/")
+        if nested:
+            subtrees.setdefault(head, {})[rest] = (mode, blob)
+        else:
+            entries[head] = ("blob", mode, blob)
+    for name, nested_files in subtrees.items():
+        entries[name] = ("tree", "040000", _seed_tree(fresh, nested_files))
+    entries = dict(sorted(entries.items()))
+    tree = _object_id("tree", *(f"{name} {' '.join(entry)}" for name, entry in entries.items()))
+    fresh._root_trees[tree] = entries
+    return tree
+
+
+def _seed_manifest_commit(
+    fresh, commit_sha, document, *, mode="100644", raw=None, paths=PLANNER_FIXTURE_FILES
+):
+    """Seed one commit's root tree: the manifest blob plus an empty file per ``paths``."""
+    content = raw if raw is not None else yaml.safe_dump(document, sort_keys=False).encode()
+    blob = hashlib.sha1(content).hexdigest()
+    files = {path: ("100644", EMPTY_BLOB_SHA) for path in paths}
+    files[MOG.LEGACY_MANIFEST_PATH] = (mode, blob)
+    fresh._commit_tree_shas[commit_sha] = _seed_tree(fresh, files)
+    fresh._blobs[blob] = content
+    return content
+
+
+def _manifest_freshness(
+    after,
+    *,
+    before=None,
+    pull_files=(MANIFEST_PR_FILE,),
+    extra_files=(),
+    parents=(PROOF_BASE_SHA,),
+    scope_active=True,
+    mode="100644",
+    raw_after=None,
+    gates=None,
+    validator=None,
+    raw_before=None,
+    paths_before=PLANNER_FIXTURE_FILES,
+    paths_after=PLANNER_FIXTURE_FILES,
+):
+    """One main commit since the proof, editing the manifest from `before` to `after`,
+    judged with the real planner validator unless the test supplies its own."""
+    fresh = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, [MOG.LEGACY_MANIFEST_PATH, *extra_files])],
+        gates=gates or [{"workflow": "ci.yml", "patterns": ["engine/**"]}],
+        pull_files={4242: list(pull_files)},
+    )
+    fresh.manifest_validator = validator or _planner_validator()
+    fresh.ci_scope_active = scope_active
+    if parents is not None:
+        fresh._commit_parents[MANIFEST_COMMIT_SHA] = tuple(parents)
+    _seed_manifest_commit(
+        fresh, PROOF_BASE_SHA, before or _manifest_base(), raw=raw_before, paths=paths_before
+    )
+    _seed_manifest_commit(
+        fresh, MANIFEST_COMMIT_SHA, after, mode=mode, raw=raw_after, paths=paths_after
+    )
+    return fresh
+
+
+def _manifest_verdict(fresh, number=4242):
+    return fresh.stale_for(
+        _pull(number=number),
+        [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742,
+              pr_numbers=(number,))],
+    )
+
+
+def _assert_held(fresh, fragment):
+    stale, reason = _manifest_verdict(fresh)
+    assert stale is True, reason
+    assert "changed the check definitions" in reason and fragment in reason, reason
+
+
+def test_an_unrelated_job_local_manifest_edit_keeps_the_green_current():
+    """#10365's shape: main tightened a job this pull request's planner never selects."""
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    stale, reason = _manifest_verdict(_manifest_freshness(after))
+    assert stale is False, reason
+    assert "job-local manifest edit" in reason, reason
+
+
+def test_a_bounded_manifest_edit_still_faces_the_manifests_own_path_filter_owner():
+    """The manifest stays in `files`: a gate owning `.github/ci/**` still classifies it."""
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    fresh = _manifest_freshness(
+        after, gates=[{"workflow": "ci.yml", "patterns": ["engine/**", ".github/ci/**"]}]
+    )
+    stale, reason = _manifest_verdict(fresh)
+    assert stale is False, reason
+    assert "none inside this pull request's tested surface" in reason, reason
+    assert "job-local manifest edit" in reason, reason
+
+
+def test_a_changed_job_whose_new_paths_select_the_pull_request_re_proves():
+    after = _edit_job(
+        _manifest_base(),
+        "widget-suite",
+        paths=["engine/widgets/**", "engine/quokka/**", "tests/test_widgets.py"],
+    )
+    _assert_held(_manifest_freshness(after), f"new widget-suite paths select {MANIFEST_PR_FILE}")
+
+
+def test_a_changed_job_whose_old_paths_selected_the_pull_request_re_proves():
+    """Narrowing a job away from the pull request changes what its green ran."""
+    before = _edit_job(
+        _manifest_base(),
+        "widget-suite",
+        paths=["engine/widgets/**", "engine/quokka/**", "tests/test_widgets.py"],
+    )
+    after = _edit_job(before, "widget-suite", paths=["engine/widgets/**", "tests/test_widgets.py"])
+    _assert_held(
+        _manifest_freshness(after, before=before),
+        f"old widget-suite paths select {MANIFEST_PR_FILE}",
+    )
+
+
+def test_a_job_that_stops_being_exclusive_fails_closed():
+    """A non-exclusive code job infers its scope from the tree's import closure."""
+    after = _manifest_base()
+    after["jobs"]["widget-suite"].pop("scope")
+    _assert_held(_manifest_freshness(after), "new widget-suite infers its scope from the tree")
+
+
+def test_an_added_exclusive_job_that_cannot_touch_the_pull_request_keeps_the_green():
+    after = _manifest_base()
+    after["jobs"]["sprocket-suite"] = _exclusive_job(
+        "sprocket tests", "tests/test_sprockets.py", "engine/sprockets/**"
+    )
+    stale, reason = _manifest_verdict(_manifest_freshness(after))
+    assert stale is False, reason
+
+
+def test_a_data_job_edit_that_cannot_touch_the_pull_request_keeps_the_green():
+    after = _edit_job(
+        _manifest_base(),
+        "nightly-data",
+        steps=[{"name": "nightly gadgets", "run": "python scripts/nightly_gadgets.py"}],
+    )
+    stale, reason = _manifest_verdict(_manifest_freshness(after))
+    assert stale is False, reason
+
+
+@pytest.mark.parametrize(
+    "steps, fragment",
+    [
+        (
+            [{"name": "lint", "run": "ruff check engine/quokka"}],
+            "new widget-suite commands reference engine/quokka",
+        ),
+        (
+            [{"name": "by name", "run": "python -m pytest -k signal.py"}],
+            f"new widget-suite commands name {MANIFEST_PR_FILE}",
+        ),
+        (
+            [{"name": "by glob", "run": "python -m pytest engine/quo*"}],
+            "new widget-suite commands glob engine/quo*",
+        ),
+        (
+            [{"name": "suite", "run": "bash scripts/ci/widget_suite.sh"}],
+            "new widget-suite delegates a step body to scripts/ci/widget_suite.sh",
+        ),
+    ],
+)
+def test_a_changed_job_whose_commands_could_reach_the_pull_request_re_proves(steps, fragment):
+    """Owned-scope inference, the closure audit and the unrun census all read commands."""
+    after = _edit_job(_manifest_base(), "widget-suite", steps=steps)
+    _assert_held(_manifest_freshness(after), fragment)
+
+
+@pytest.mark.parametrize(
+    "pull_files",
+    [
+        (MANIFEST_PR_FILE, MOG.LEGACY_MANIFEST_PATH),
+        (MANIFEST_PR_FILE, "pyproject.toml"),
+    ],
+)
+def test_a_pull_request_that_changes_planner_input_re_proves(pull_files):
+    """Its own manifest or a global invalidator plans every job: the delta is moot."""
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    _assert_held(
+        _manifest_freshness(after, pull_files=pull_files),
+        f"the pull request itself changes planner input {pull_files[1]}",
+    )
+
+
+def test_a_global_manifest_edit_re_proves():
+    after = _manifest_base()
+    after["defaults"] = {"timeout-minutes": 30}
+    _assert_held(_manifest_freshness(after), "its edit is not job-local")
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda jobs: jobs.pop("gadget-suite"),
+        lambda jobs: jobs.update({"gadget-suite": jobs.pop("widget-suite")}),
+        lambda jobs: jobs["nightly-data"].update({"gate": "code"}),
+        lambda jobs: jobs.update(
+            {"ci-pack": {**MANIFEST_JOB_FRAME, "steps": [{"name": "true", "run": "true"}]}}
+        ),
+    ],
+    ids=["removed", "reordered", "gate-moved", "added-ci-pack"],
+)
+def test_a_manifest_edit_the_planner_calls_global_re_proves(mutate):
+    after = _manifest_base()
+    mutate(after["jobs"])
+    _assert_held(_manifest_freshness(after), "its edit is not job-local")
+
+
+def test_a_commit_changing_another_check_definition_file_too_re_proves():
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    fresh = _manifest_freshness(after, extra_files=(".github/ci/shard_weights.yml",))
+    _assert_held(fresh, "it changed more than the legacy job manifest")
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        "scripts/run_ci_pack.py",
+        "requirements.txt",
+        "app/requirements.txt",  # ci-trigger-closure: data — a commit file name, never opened
+        ".github/workflows/daily.yml",
+        "config/synapse.yml",  # ci-trigger-closure: data — a commit file name, never opened
+    ],
+)
+def test_a_manifest_commit_that_also_changes_planner_input_re_proves(extra):
+    """The job-delta judgement is the planner's; it cannot vouch for a commit that
+    also rewrites the planner, a non-gate workflow or a dependency pin."""
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    fresh = _manifest_freshness(after, extra_files=(extra,))
+    _assert_held(fresh, f"it also changed planner input {extra}")
+
+
+def test_a_manifest_commit_with_an_ordinary_product_file_stays_bounded():
+    """Only planner input widens the hold: a product edit outside the pull
+    request's surface is judged by the ordinary surface test, as before."""
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    fresh = _manifest_freshness(after, extra_files=("docs/widget.md",))
+    stale, reason = _manifest_verdict(fresh)
+    assert stale is False, reason
+    assert "job-local manifest edit" in reason, reason
+
+
+@pytest.mark.parametrize(
+    "parents, fragment",
+    [
+        ((), "it has 0 parents"),
+        ((PROOF_BASE_SHA, "b" * 40), "it has 2 parents"),
+        (None, "its parent identity was not readable"),
+    ],
+)
+def test_a_manifest_commit_without_exactly_one_parent_re_proves(parents, fragment):
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    _assert_held(_manifest_freshness(after, parents=parents), fragment)
+
+
+def test_a_manifest_that_is_not_a_regular_file_re_proves():
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    _assert_held(_manifest_freshness(after, mode="120000"), "is not a regular file")
+
+
+def test_a_manifest_that_does_not_parse_re_proves():
+    fresh = _manifest_freshness(_manifest_base(), raw_after=b"jobs: [unclosed\n")
+    _assert_held(fresh, "does not parse")
+
+
+def test_a_spent_extra_read_allowance_re_proves():
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    fresh = _manifest_freshness(after)
+    del fresh._commit_tree_shas[PROOF_BASE_SHA]
+    fresh._commit_file_page_reads = MOG.COMMIT_FILE_PAGE_READ_CAP
+    _assert_held(fresh, "the sweep's shared extra-read allowance is spent")
+
+
+def test_a_changed_pack_job_re_proves():
+    before = _manifest_base()
+    before["jobs"]["ci-pack"] = {
+        **MANIFEST_JOB_FRAME,
+        "steps": [{"name": "pack", "run": "python scripts/run_ci_pack.py"}],
+    }
+    after = _edit_job(
+        before, "ci-pack", steps=[{"name": "pack", "run": "python scripts/run_ci_pack.py -v"}]
+    )
+    _assert_held(_manifest_freshness(after, before=before), "it changed the ci-pack job")
+
+
+def test_an_inactive_ci_scope_mode_re_proves_every_job_edit():
+    """With scoping off every pull request runs every job: any edit is one it runs."""
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    _assert_held(
+        _manifest_freshness(after, scope_active=False),
+        "pull-request CI scoping is not active, so every job ran",
+    )
+
+
+def test_a_pull_request_whose_files_cannot_be_read_re_proves():
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    _assert_held(
+        _manifest_freshness(after, pull_files=()),
+        "the pull request's own changed files could not be established",
+    )
+
+
+def test_a_comment_or_key_order_only_manifest_edit_keeps_the_green():
+    """The planner compares parsed documents, so a byte-only edit changes no job."""
+    base = _manifest_base()
+    commented = b"# reflowed\n" + yaml.safe_dump(base, sort_keys=False).encode()
+    stale, reason = _manifest_verdict(_manifest_freshness(base, raw_after=commented))
+    assert stale is False, reason
+
+    reordered = _manifest_base()
+    reordered["jobs"]["widget-suite"] = dict(
+        reversed(list(reordered["jobs"]["widget-suite"].items()))
+    )
+    stale, reason = _manifest_verdict(_manifest_freshness(reordered))
+    assert stale is False, reason
+
+
+def test_a_stale_green_never_lands_on_a_newly_added_pin():
+    """The 2026-08-06 ruling (#4583): a pin added on main that covers this pull
+    request's files must re-prove it, however job-local the edit is."""
+    base = _manifest_base()
+    pinned = _manifest_base()
+    pinned["jobs"]["pin-quokka-contract"] = _exclusive_job(
+        "quokka contract", "tests/test_quokka_contract.py", "engine/quokka/**"
+    )
+    _assert_held(
+        _manifest_freshness(pinned, before=base),
+        f"new pin-quokka-contract paths select {MANIFEST_PR_FILE}",
+    )
+    stale, reason = _manifest_verdict(
+        _manifest_freshness(pinned, before=base, pull_files=("engine/sprockets/cog.py",))
+    )
+    assert stale is False, reason
+
+
+@pytest.mark.parametrize("value, active", [("active", True), ("off", False), (None, False)])
+def test_ci_scope_mode_is_read_from_the_sweep_environment(monkeypatch, value, active):
+    if value is None:
+        monkeypatch.delenv(MOG.CI_SCOPE_MODE_ENV, raising=False)
+    else:
+        monkeypatch.setenv(MOG.CI_SCOPE_MODE_ENV, value)
+    assert MOG.ProofFreshness("acme/widgets", "read", _gates(), []).ci_scope_active is active
+
+
+def test_the_sweep_reads_the_same_scope_mode_expression_ci_plans_with():
+    """A sweeper that believed scoping active while ci.yml ran every job would keep
+    greens that never ran the changed job's new definition."""
+    sweep_values = [
+        step["env"][MOG.CI_SCOPE_MODE_ENV]
+        for job in _workflow()["jobs"].values()
+        for step in job.get("steps", [])
+        if MOG.CI_SCOPE_MODE_ENV in (step.get("env") or {})
+    ]
+    ci = yaml.safe_load((ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8"))
+    plan_values = [
+        step["env"]["CI_SCOPE_MODE"]
+        for job in ci["jobs"].values()
+        for step in job.get("steps", [])
+        if "CI_SCOPE_MODE" in (step.get("env") or {})
+    ]
+    assert sweep_values and plan_values
+    assert set(sweep_values) == set(plan_values), (sweep_values, plan_values)
+
+
+def test_a_rate_limited_manifest_read_is_weather_not_a_verdict(monkeypatch):
+    """A quota refusal must defer the sweep, never cache a hold or a pass."""
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    fresh = _manifest_freshness(after)
+    del fresh._commit_tree_shas[PROOF_BASE_SHA]
+    monkeypatch.setattr(
+        MOG, "_request", lambda *_a, **_k: (403, {"message": "API rate limit exceeded"})
+    )
+    with pytest.raises(MOG.RateLimited):
+        fresh._manifest_job_delta(MANIFEST_COMMIT_SHA)
+    assert MANIFEST_COMMIT_SHA not in fresh._manifest_deltas
+    with pytest.raises(MOG.RateLimited):
+        _manifest_verdict(fresh)
+
+
+def test_manifest_reads_are_charged_once_and_shared_across_pull_requests(monkeypatch):
+    """The real read path: commit identity from `files_of`, three tree levels and
+    one blob per side, every uncached read charged to the shared allowance."""
+    base = _manifest_base()
+    after = _edit_job(base, "widget-suite", **{"timeout-minutes": 45})
+    staging = _freshness()
+    _seed_manifest_commit(staging, PROOF_BASE_SHA, base)
+    _seed_manifest_commit(staging, MANIFEST_COMMIT_SHA, after)
+    objects = {**staging._root_trees}
+    blobs = {**staging._blobs}
+    commit_trees = {**staging._commit_tree_shas}
+
+    validated: list[bytes] = []
+
+    def validator(content, path_exists):
+        validated.append(content)
+        return _planner_validator()(content, path_exists)
+
+    fresh = MOG.ProofFreshness(
+        "acme/widgets",
+        "read",
+        [{"workflow": "ci.yml", "patterns": ["engine/**"]}],
+        [{"sha": MANIFEST_COMMIT_SHA, "message": ""}, {"sha": PROOF_BASE_SHA, "message": ""}],
+        manifest_validator=validator,
+    )
+    fresh._commit_files[PROOF_BASE_SHA] = ([], False)
+    fresh._pr_files[4242] = [MANIFEST_PR_FILE]
+    fresh._pr_files[4243] = ["engine/gadgets/cog.py"]
+    fresh.ci_scope_active = True
+    urls: list[str] = []
+
+    def serve(method, url, *args, **kwargs):
+        urls.append(url)
+        sha = url.rsplit("/", 1)[1]
+        if url.endswith(f"/commits/{MANIFEST_COMMIT_SHA}") and "/git/" not in url:
+            return 200, {
+                "sha": MANIFEST_COMMIT_SHA,
+                "commit": {"tree": {"sha": commit_trees[MANIFEST_COMMIT_SHA]}},
+                "parents": [{"sha": PROOF_BASE_SHA}],
+                "files": [{"filename": MOG.LEGACY_MANIFEST_PATH, "status": "modified"}],
+            }
+        if "/git/commits/" in url:
+            return 200, {"sha": sha, "tree": {"sha": commit_trees[sha]}}
+        if "/git/trees/" in url:
+            return 200, {
+                "sha": sha,
+                "truncated": False,
+                "tree": [
+                    {"path": path, "type": kind, "mode": mode, "sha": object_sha}
+                    for path, (kind, mode, object_sha) in objects[sha].items()
+                ],
+            }
+        if "/git/blobs/" in url:
+            return 200, {"encoding": "base64", "content": base64.b64encode(blobs[sha]).decode()}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", serve)
+    stale, reason = _manifest_verdict(fresh)
+    assert stale is False, reason
+    # files_of (uncharged, as before) + the parent's git commit + 2 x (3 trees + 1 blob).
+    assert len(urls) == 1 + 1 + 2 * 4, urls
+    assert fresh._commit_file_page_reads == 1 + 2 * 4
+    # Both sides, each validated once.
+    assert sorted(validated) == sorted(blobs.values())
+
+    stale, reason = _manifest_verdict(fresh, number=4243)
+    assert stale is False, reason
+    assert len(urls) == 10, urls[10:]
+    assert len(validated) == 2, "the second pull request reuses both verdicts"
+
+
+# -- the planner's own validation, per manifest and per tree (review 5748781548) --
+#
+# A bounded verdict needs BOTH manifests admitted by `run_ci_pack.load_legacy_jobs`
+# itself, each against its own commit's root tree. Every rejection below is one the
+# planner raises and the old YAML-only check called bounded; the sweeper must hold
+# on each, on either side of the edit.
+
+WIDGET_RUN = {"name": "widget tests", "run": "python -m pytest tests/test_widgets.py -q"}
+BROWSER_INSTALL = "python -m playwright install chromium"
+
+
+def _widget(**changes) -> dict:
+    return _edit_job(_manifest_base(), "widget-suite", **changes)
+
+
+def _widget_without_if() -> dict:
+    document = _manifest_base()
+    del document["jobs"]["widget-suite"]["if"]
+    return document
+
+
+def _missing_reference_edit() -> dict:
+    """A valid edit whose command names a path no tree has: the planner asks."""
+    return _widget(
+        steps=[{**WIDGET_RUN, "run": WIDGET_RUN["run"] + " && python scripts/gone_away.py"}]
+    )
+
+
+PLANNER_REJECTIONS = [
+    pytest.param(
+        _widget_without_if,
+        "must declare `if: ${{ false }}` so GitHub does not allocate a duplicate runner",
+        id="if-removed",
+    ),
+    pytest.param(
+        lambda: _widget(**{"runs-on": "macos-latest"}), "must use ubuntu-latest", id="runs-on"
+    ),
+    pytest.param(lambda: _widget(env={"A": "1"}), "has unsupported keys: env", id="env"),
+    pytest.param(
+        lambda: _widget(gate="nightly"),
+        "gate must be one of code/data when present, got 'nightly'",
+        id="gate",
+    ),
+    pytest.param(
+        lambda: _widget(scope="inferred"),
+        "scope must be the literal 'exclusive' when present",
+        id="scope-inferred",
+    ),
+    pytest.param(
+        lambda: _widget(steps=[]), "must contain a non-empty steps list", id="steps-empty"
+    ),
+    pytest.param(
+        lambda: _widget(steps=[{"run": WIDGET_RUN["run"]}]),
+        "step 1 has invalid semantic identity: proof_id must be a non-empty string",
+        id="unnamed-step",
+    ),
+    pytest.param(
+        lambda: _widget(steps=[{**WIDGET_RUN, "uses": "actions/checkout@v4"}]),
+        "step 1 must contain exactly one of run or uses",
+        id="run-and-uses",
+    ),
+    pytest.param(
+        lambda: _widget(steps=[{**WIDGET_RUN, "shell": "bash"}]),
+        "step 1 has unsupported keys: shell",
+        id="shell",
+    ),
+    pytest.param(
+        lambda: _widget(steps=[{**WIDGET_RUN, "with": {"a": 1}}]),
+        "step 1 run step must not declare with",
+        id="with-on-run",
+    ),
+    pytest.param(
+        lambda: _widget(steps=[WIDGET_RUN, dict(WIDGET_RUN)]),
+        "semantic proof_id 'widget tests' is not unique (steps 1 and 2)",
+        id="duplicate-proof-id",
+    ),
+    pytest.param(
+        lambda: _widget(
+            steps=[{"name": "co", "uses": "actions/checkout@v4", "proof_id": "co"}, WIDGET_RUN]
+        ),
+        "step 1 is infrastructure and must not declare proof_id",
+        id="checkout-proof-id",
+    ),
+    pytest.param(
+        lambda: _widget(
+            steps=[WIDGET_RUN, {"name": "browser", "run": BROWSER_INSTALL, "acquisition": "teleport"}]
+        ),
+        "step 2 native acquisition requires its explicit browser setup phase",
+        id="acquisition-without-phase",
+    ),
+    pytest.param(
+        lambda: _widget(
+            steps=[WIDGET_RUN, {"name": "browser", "run": BROWSER_INSTALL, "phase": "whenever"}]
+        ),
+        "step 2 browser setup must be the exact standalone installer with a finite <=10 minute bound",
+        id="unbounded-browser-phase",
+    ),
+    pytest.param(
+        lambda: _widget(steps=[{**WIDGET_RUN, "timeout-minutes": "soon"}]),
+        "step 1 browser setup timeout requires its explicit phase",
+        id="step-timeout",
+    ),
+    pytest.param(
+        lambda: _widget(
+            steps=[
+                {"name": "deps a", "run": "pip install a"},
+                {"name": "deps b", "run": "pip install b"},
+                WIDGET_RUN,
+            ]
+        ),
+        "has more than one dependency-install step",
+        id="two-installs",
+    ),
+    pytest.param(
+        lambda: _widget(steps=[{"name": "deps", "run": "pip install a && echo hi"}, WIDGET_RUN]),
+        "dependency install is not a standalone pip command",
+        id="compound-install",
+    ),
+    pytest.param(
+        lambda: _widget(paths=["engine/widgets/**"]),
+        "declares paths that do not cover 'tests/test_widgets.py', which its own commands read",
+        id="scope-uncovered",
+    ),
+    pytest.param(
+        lambda: _widget(paths="engine/widgets/**"),
+        "paths must be a non-empty list of globs",
+        id="paths-string",
+    ),
+    pytest.param(
+        lambda: _widget(steps=[{"name": "lint", "uses": "acme/lint@v1"}, WIDGET_RUN]),
+        "step 1 uses unsupported action 'acme/lint@v1'",
+        id="foreign-action",
+    ),
+    pytest.param(
+        lambda: _widget(steps=[{"uses": "actions/setup-python@v5"}, WIDGET_RUN]),
+        "step 1 action is not provided by the pack runner with these exact inputs",
+        id="setup-python",
+    ),
+]
+
+
+@pytest.mark.parametrize("make, finding", PLANNER_REJECTIONS)
+def test_a_manifest_the_planner_rejects_after_the_edit_re_proves(make, finding):
+    fresh = _manifest_freshness(make())
+    _assert_held(fresh, "the planner's own validation does not admit")
+    _stale, reason = _manifest_verdict(fresh)
+    assert f"under tree {fresh._commit_tree_shas[MANIFEST_COMMIT_SHA][:12]}" in reason, reason
+    assert finding in reason, reason
+
+
+@pytest.mark.parametrize(
+    "make, finding",
+    [
+        param
+        for param in PLANNER_REJECTIONS
+        if param.id in ("env", "steps-empty", "duplicate-proof-id", "scope-uncovered")
+    ],
+)
+def test_a_manifest_the_planner_rejected_before_the_edit_re_proves(make, finding):
+    """The parent must be admitted too: a delta from a manifest the planner never
+    accepted measures nothing its green ran."""
+    fresh = _manifest_freshness(_manifest_base(), before=make())
+    _assert_held(fresh, "the planner's own validation does not admit")
+    _stale, reason = _manifest_verdict(fresh)
+    assert f"under tree {fresh._commit_tree_shas[PROOF_BASE_SHA][:12]}" in reason, reason
+    assert finding in reason, reason
+
+
+@pytest.mark.parametrize(
+    "make",
+    [
+        pytest.param(
+            lambda: _edit_job(
+                _manifest_base(),
+                "nightly-data",
+                steps=[{"name": "Not A Slug!", "run": "python scripts/nightly_widgets.py"}],
+            ),
+            id="free-form-step-name",
+        ),
+        pytest.param(_missing_reference_edit, id="names-a-path-no-tree-has"),
+        pytest.param(
+            lambda: _widget(steps=[{"uses": "actions/checkout@v4"}, WIDGET_RUN]), id="checkout"
+        ),
+        pytest.param(
+            lambda: _widget(
+                steps=[{"uses": "actions/checkout@v4", "with": {"fetch-depth": 0}}, WIDGET_RUN]
+            ),
+            id="deep-checkout",
+        ),
+        pytest.param(
+            lambda: _edit_job(
+                _manifest_base(),
+                "gadget-suite",
+                steps=[{"name": "widget tests", "run": "python -m pytest tests/test_gadgets.py -q"}],
+            ),
+            id="step-name-shared-across-jobs",
+        ),
+    ],
+)
+def test_an_unrelated_edit_the_planner_admits_keeps_the_green(make):
+    fresh = _manifest_freshness(make())
+    stale, reason = _manifest_verdict(fresh)
+    assert stale is False, reason
+    assert len(fresh._manifest_valid) == 2, "both sides were admitted"
+
+
+WITHOUT_THE_WIDGET_TEST = tuple(
+    path for path in PLANNER_FIXTURE_FILES if path != "tests/test_widgets.py"
+)
+
+
+@pytest.mark.parametrize(
+    "before_has, after_has",
+    [(False, True), (True, False), (False, False)],
+    ids=["after-tree", "before-tree", "neither-tree"],
+)
+def test_one_manifest_blob_is_judged_against_each_commits_own_tree(before_has, after_has):
+    """Identical bytes stop being valid when a path their scope does not cover
+    appears. A verdict belongs to (blob, tree): one kept per blob would carry the
+    after side's pass to a parent tree that fails."""
+    document = _widget(paths=["engine/widgets/**"])
+    validated: list[bytes] = []
+
+    def validator(content, path_exists):
+        validated.append(content)
+        return _planner_validator()(content, path_exists)
+
+    fresh = _manifest_freshness(
+        document,
+        before=document,
+        mode="100755",  # distinct roots even when both trees list the same paths
+        validator=validator,
+        paths_before=PLANNER_FIXTURE_FILES if before_has else WITHOUT_THE_WIDGET_TEST,
+        paths_after=PLANNER_FIXTURE_FILES if after_has else WITHOUT_THE_WIDGET_TEST,
+    )
+    if before_has or after_has:
+        side = PROOF_BASE_SHA if before_has else MANIFEST_COMMIT_SHA
+        _assert_held(fresh, f"under tree {fresh._commit_tree_shas[side][:12]}")
+        return
+    stale, reason = _manifest_verdict(fresh)
+    assert stale is False, reason
+    assert len(validated) == 2
+    blob = hashlib.sha1(yaml.safe_dump(document, sort_keys=False).encode()).hexdigest()
+    for sha in (PROOF_BASE_SHA, MANIFEST_COMMIT_SHA):
+        fresh._manifest_document(blob, fresh._commit_tree_shas[sha])
+    assert len(validated) == 2, "both verdicts are kept per (blob, tree)"
+
+
+def _listing(sha, entries, *, truncated=False) -> dict:
+    return {
+        "sha": sha,
+        "truncated": truncated,
+        "tree": [
+            {"path": path, "type": kind, "mode": mode, "sha": object_sha}
+            for path, (kind, mode, object_sha) in entries.items()
+        ],
+    }
+
+
+@pytest.mark.parametrize(
+    "case, fragment",
+    [
+        ("unreadable", "unreadable: HTTP 404"),
+        ("truncated", "was truncated"),
+        ("ambiguous", "lists an entry no path lookup can trust"),
+        ("wrong_identity", "identity mismatch"),
+        ("missing_identity", "identity mismatch"),
+        ("missing_complete", "has no complete listing"),
+        ("null_complete", "has no complete listing"),
+        ("numeric_complete", "has no complete listing"),
+        ("text_complete", "has no complete listing"),
+        ("malformed_listing", "has no complete listing"),
+        ("malformed_entry", "has a malformed entry"),
+        ("allowance", "the sweep's shared extra-read allowance is spent"),
+        ("submodule", "scripts is a commit entry, not a directory"),
+        ("symlink", "scripts is a 120000 blob the planner would follow"),
+    ],
+)
+def test_a_tree_that_cannot_answer_the_planner_re_proves_without_a_verdict(
+    monkeypatch, case, fragment
+):
+    """The planner asked about a path and no complete listing could answer. That
+    holds the pull request, but it is not the planner's verdict: nothing is kept
+    against the manifest, and the same child goes on to answer the next sweep."""
+    after = _missing_reference_edit()
+    fresh = _manifest_freshness(after)
+    root = fresh._commit_tree_shas[MANIFEST_COMMIT_SHA]
+    if case == "submodule":
+        fresh._root_trees[root]["scripts"] = ("commit", "160000", "c" * 40)
+    elif case == "symlink":
+        fresh._root_trees[root]["scripts"] = ("blob", "120000", "d" * 40)
+    else:
+        subtree = fresh._root_trees[root]["scripts"][2]
+        entries = fresh._root_trees.pop(subtree)
+        if case == "allowance":
+            fresh._commit_file_page_reads = MOG.COMMIT_FILE_PAGE_READ_CAP
+        else:
+            listing = _listing(subtree, entries, truncated=case == "truncated")
+            if case == "ambiguous":
+                listing["tree"] = listing["tree"] + listing["tree"][:1]
+            elif case == "wrong_identity":
+                listing["sha"] = _object_id("different subtree")
+            elif case == "missing_identity":
+                del listing["sha"]
+            elif case == "missing_complete":
+                del listing["truncated"]
+            elif case == "null_complete":
+                listing["truncated"] = None
+            elif case == "numeric_complete":
+                listing["truncated"] = 0
+            elif case == "text_complete":
+                listing["truncated"] = "false"
+            elif case == "malformed_listing":
+                listing["tree"] = {}
+            elif case == "malformed_entry":
+                listing["tree"].append(17)
+            served = (404, {"message": "Not Found"}) if case == "unreadable" else (200, listing)
+            monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: served)
+    stale, reason = _manifest_verdict(fresh)
+    assert stale is True, reason
+    assert "its manifest delta is not bounded" in reason and fragment in reason, reason
+    assert not fresh._manifest_valid and not fresh._manifest_rejections
+    assert _planner_validator()._unavailable is None
+    stale, reason = _manifest_verdict(_manifest_freshness(after))
+    assert stale is False, reason
+
+
+@pytest.mark.parametrize(
+    "case, fragment",
+    [
+        ("wrong_commit", "identity mismatch"),
+        ("missing_commit", "identity mismatch"),
+        ("short_tree", "has no valid root tree"),
+        ("malformed_tree", "has no valid root tree"),
+    ],
+)
+def test_manifest_parent_tree_identity_failure_stays_stale(monkeypatch, case, fragment):
+    """A parent response for another object is not evidence for this delta."""
+    after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
+    fresh = _manifest_freshness(after)
+    parent_tree = fresh._commit_tree_shas.pop(PROOF_BASE_SHA)
+    payload = {"sha": PROOF_BASE_SHA, "tree": {"sha": parent_tree}}
+    if case == "wrong_commit":
+        payload["sha"] = _object_id("different parent commit")
+    elif case == "missing_commit":
+        del payload["sha"]
+    elif case == "short_tree":
+        payload["tree"]["sha"] = parent_tree[:12]
+    else:
+        payload["tree"] = []
+
+    def serve(method, url, *_args, **_kwargs):
+        assert method == "GET" and url.endswith(f"/git/commits/{PROOF_BASE_SHA}")
+        return 200, payload
+
+    monkeypatch.setattr(MOG, "_request", serve)
+    _assert_held(fresh, fragment)
+    assert PROOF_BASE_SHA not in fresh._commit_tree_shas
+    assert not any(tree == parent_tree for _blob, tree in fresh._manifest_valid)
+    assert not fresh._manifest_rejections
+    assert _planner_validator()._unavailable is None
+    stale, reason = _manifest_verdict(_manifest_freshness(after))
+    assert stale is False, reason
+
+
+def test_a_rate_limited_answer_to_the_planner_propagates_and_spares_the_child(monkeypatch):
+    fresh = _manifest_freshness(_missing_reference_edit())
+    root = fresh._commit_tree_shas[MANIFEST_COMMIT_SHA]
+    del fresh._root_trees[fresh._root_trees[root]["scripts"][2]]
+    monkeypatch.setattr(
+        MOG, "_request", lambda *_a, **_k: (403, {"message": "API rate limit exceeded"})
+    )
+    with pytest.raises(MOG.RateLimited):
+        fresh._manifest_job_delta(MANIFEST_COMMIT_SHA)
+    assert MANIFEST_COMMIT_SHA not in fresh._manifest_deltas
+    assert not fresh._manifest_valid and not fresh._manifest_rejections
+    assert _planner_validator()._unavailable is None
+
+
+def test_a_broken_read_answering_the_planner_is_never_kept_as_its_rejection(monkeypatch):
+    """A connection failure while the planner asks about the tree is a broken read,
+    as anywhere else in the sweep: it propagates, nothing is kept against the
+    manifest, and the same sweep admits it once the tree answers."""
+    fresh = _manifest_freshness(_missing_reference_edit())
+    root = fresh._commit_tree_shas[MANIFEST_COMMIT_SHA]
+    subtree = fresh._root_trees[root]["scripts"][2]
+    entries = fresh._root_trees.pop(subtree)
+
+    def unreachable(*_a, **_k):
+        raise MOG.urllib.error.URLError("timed out")
+
+    monkeypatch.setattr(MOG, "_request", unreachable)
+    with pytest.raises(MOG.urllib.error.URLError):
+        fresh._manifest_job_delta(MANIFEST_COMMIT_SHA)
+    assert MANIFEST_COMMIT_SHA not in fresh._manifest_deltas
+    assert not fresh._manifest_valid and not fresh._manifest_rejections
+    assert _planner_validator()._unavailable is None
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: (200, _listing(subtree, entries)))
+    stale, reason = _manifest_verdict(fresh)
+    assert stale is False, reason
+
+
+def test_tree_path_lookups_answer_only_from_complete_canonical_listings():
+    fresh = _freshness()
+    root = _seed_tree(fresh, {path: ("100644", EMPTY_BLOB_SHA) for path in PLANNER_FIXTURE_FILES})
+    fresh._root_trees[root]["vendor"] = ("commit", "160000", "c" * 40)
+    fresh._root_trees[root]["tools"] = ("blob", "120000", "d" * 40)
+    for reference in ("", ".", "/etc/passwd", "../x", "a/../b"):
+        with pytest.raises(RuntimeError, match="is not a canonical repository path"):
+            fresh._tree_path_exists(root, reference)
+    assert fresh._tree_path_exists(root, "engine/widgets/__init__.py") is True
+    assert fresh._tree_path_exists(root, "engine/widgets") is True
+    assert fresh._tree_path_exists(root, "engine/nothing.py") is False
+    assert fresh._tree_path_exists(root, "tests/test_widgets.py/x") is False
+    with pytest.raises(RuntimeError, match="vendor is a commit entry, not a directory"):
+        fresh._tree_path_exists(root, "vendor/x.py")
+    assert fresh._tree_path_exists(root, "tools") is True
+    with pytest.raises(RuntimeError, match="tools is a 120000 blob the planner would follow"):
+        fresh._tree_path_exists(root, "tools/x.py")
+    assert fresh._commit_file_page_reads == 0
+
+
+def test_a_planner_checkout_missing_a_dependency_re_proves_without_a_call():
+    """The real sparse list one import short: the child cannot start, so every
+    job-local edit re-proves and no manifest is ever handed to it."""
+    validator = MOG.PlannerManifestValidator(
+        _planner_checkout(omit=("scripts/ci_scope_dependencies.py",))
+    )
+    try:
+        fresh = _manifest_freshness(_widget(**{"timeout-minutes": 45}), validator=validator)
+        _assert_held(fresh, "it did not start")
+        _stale, reason = _manifest_verdict(fresh)
+        assert "ci_scope_dependencies" in reason, reason
+        assert validator.calls == 0
+    finally:
+        validator.close()
+
+
+# A stand-in planner for the child protocol's failure modes; the real one cannot
+# be made to print, crash or hang on cue.
+PLANNER_STUB = r'''
+import os, sys, time
+
+
+class ManifestError(ValueError):
+    pass
+
+
+planner_path_exists = planner_path_is_file = planner_tracked_path_inventory = None
+
+
+def load_legacy_jobs(manifest, *, gate=None, path_exists=None):
+    case = manifest.read_text(encoding="utf-8").strip()
+    if case == "noisy":
+        print("planner chatter on stdout")
+        sys.stdout.flush()
+        os.write(1, b"raw chatter on fd 1\n")
+        return []
+    if case == "ask":
+        if path_exists("engine/widgets/__init__.py") is not True:
+            raise ManifestError("the oracle said no")
+        return []
+    if case == "boom":
+        raise KeyError("jobs")
+    if case == "many":
+        raise ManifestError("first finding\nsecond finding\n\nthird finding")
+    if case == "exit":
+        sys.stderr.write("planner crashed hard\n")
+        sys.stderr.flush()
+        os._exit(3)
+    if case == "unbound":
+        planner_path_exists("engine")
+    if case == "slow":
+        time.sleep(3)
+    if case == "env":
+        seen = [key for key in ("HOME", "MERGE_TOKEN", "READ_TOKEN") if key in os.environ]
+        raise ManifestError(" ".join(seen))
+    return []
+'''
+
+
+@pytest.fixture
+def stub_planner(tmp_path):
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    (scripts / "__init__.py").write_text("", encoding="utf-8")
+    (scripts / "run_ci_pack.py").write_text(PLANNER_STUB, encoding="utf-8")
+    made: list[MOG.PlannerManifestValidator] = []
+
+    def make(**timeouts):
+        made.append(MOG.PlannerManifestValidator(tmp_path, **timeouts))
+        return made[-1]
+
+    yield make
+    for validator in made:
+        validator.close()
+
+
+def test_a_planner_that_cannot_start_or_runs_out_of_time_admits_nothing(tmp_path, stub_planner):
+    absent = MOG.PlannerManifestValidator(tmp_path / "absent")
+    assert "it could not start under" in absent(b"noisy", lambda _reference: True)
+    spent = stub_planner(total_budget=0)
+    assert "its time budget for this sweep is spent" in spent(b"noisy", lambda _reference: True)
+    assert absent.calls == spent.calls == 0
+
+
+def test_planner_findings_are_summarized_to_the_first_and_a_count():
+    empty = "the planner rejected it without a finding"
+    assert MOG._summarize_planner_findings("") == empty
+    assert MOG._summarize_planner_findings("  \n ") == empty
+    assert MOG._summarize_planner_findings("a\nb\n\nc") == "a (+2 more)"
+    assert len(MOG._summarize_planner_findings("x" * 400)) == 300
+
+
+def test_one_planner_child_answers_a_sweep_through_chatter_and_aborts(stub_planner):
+    validator = stub_planner()
+
+    def present(_reference):
+        return True
+
+    def unreadable(_reference):
+        raise RuntimeError("tree unreadable")
+
+    assert validator(b"noisy", present) is None
+    assert validator(b"ask", present) is None
+    with pytest.raises(RuntimeError, match="tree unreadable"):
+        validator(b"ask", unreadable)
+    with pytest.raises(RuntimeError, match="the tree answered 'yes'"):
+        validator(b"ask", lambda _reference: "yes")
+    assert validator(b"noisy", present) is None
+    assert validator(b"boom", present) == "KeyError: 'jobs'"
+    assert validator(b"many", present) == "first finding (+2 more)"
+    assert validator.calls == 7 and validator._unavailable is None
+    validator.close()
+    assert validator._unavailable.endswith("it was closed")
+    assert validator(b"noisy", present) == validator._unavailable
+    assert validator.calls == 7
+
+
+def test_the_planner_child_never_inherits_a_sweep_token(monkeypatch, tmp_path, stub_planner):
+    """The child runs the default branch's loader and needs no credential; HOME
+    stays so a `pip --user` yaml parser still imports."""
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("MERGE_TOKEN", "merge-sentinel")
+    monkeypatch.setenv("READ_TOKEN", "read-sentinel")
+    assert stub_planner()(b"env", lambda _reference: True) == "HOME"
+
+
+@pytest.mark.parametrize(
+    "case, timeouts, fragment",
+    [
+        ("exit", {}, "it exited; its last stderr line: planner crashed hard"),
+        ("unbound", {}, "the loader looked a path up in the planner checkout, not the judged tree"),
+        ("slow", {"call_timeout": 1}, "it did not answer within 1s"),
+    ],
+)
+def test_a_planner_child_that_misbehaves_is_unavailable_for_the_sweep(
+    stub_planner, case, timeouts, fragment
+):
+    validator = stub_planner(**timeouts)
+    reason = validator(case.encode(), lambda _reference: True)
+    assert reason.startswith("the planner's manifest validator is unavailable: "), reason
+    assert fragment in reason, reason
+    assert validator(b"noisy", lambda _reference: True) == reason
+
+
+def test_a_tree_shared_by_two_manifest_commits_is_validated_once():
+    """Two job-local commits in a row: the middle manifest is the newer commit's
+    parent and the older commit's edit, under one tree. One verdict serves both,
+    and a second pull request is answered from the kept deltas alone."""
+    tip_sha, middle_sha = f"{1:040d}", f"{2:040d}"
+    middle = _widget(**{"timeout-minutes": 45})
+    tip = _edit_job(middle, "gadget-suite", **{"timeout-minutes": 45})
+    fresh = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, [MOG.LEGACY_MANIFEST_PATH])] * 2,
+        gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
+        pull_files={4242: [MANIFEST_PR_FILE], 4243: ["engine/gadgets/cog.py"]},
+    )
+    validated: list[bytes] = []
+
+    def validator(content, path_exists):
+        validated.append(content)
+        return _planner_validator()(content, path_exists)
+
+    fresh.manifest_validator = validator
+    fresh.ci_scope_active = True
+    fresh._commit_parents[tip_sha] = (middle_sha,)
+    fresh._commit_parents[middle_sha] = (PROOF_BASE_SHA,)
+    for sha, document in ((PROOF_BASE_SHA, _manifest_base()), (middle_sha, middle), (tip_sha, tip)):
+        _seed_manifest_commit(fresh, sha, document)
+    stale, reason = _manifest_verdict(fresh)
+    assert stale is False, reason
+    assert len(validated) == 3, "three manifests, one verdict each"
+    reads = fresh._commit_file_page_reads
+    stale, reason = _manifest_verdict(fresh, number=4243)
+    assert stale is True, reason
+    assert "gadget-suite paths select engine/gadgets/cog.py" in reason, reason
+    assert len(validated) == 3 and fresh._commit_file_page_reads == reads
+
+
+def _planner_closure() -> list[str]:
+    """`run_ci_pack`'s first-party import closure, read from source."""
+
+    def first_party(tree):
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                parts = node.module.split(".")
+                if parts[0] == "scripts":
+                    if len(parts) > 1:
+                        yield parts[1]
+                    else:
+                        yield from (alias.name for alias in node.names)
+                elif (ROOT / "scripts" / f"{parts[0]}.py").is_file():
+                    yield parts[0]
+            elif isinstance(node, ast.Import):
+                for alias in node.names:
+                    parts = alias.name.split(".")
+                    if parts[0] == "scripts" and len(parts) > 1:
+                        yield parts[1]
+                    elif (ROOT / "scripts" / f"{parts[0]}.py").is_file():
+                        yield parts[0]
+
+    seen: set[str] = set()
+    todo = ["run_ci_pack"]
+    while todo:
+        module = todo.pop()
+        if module in seen:
+            continue
+        seen.add(module)
+        source = ROOT / "scripts" / f"{module}.py"
+        if source.is_file():
+            todo.extend(first_party(ast.parse(source.read_text(encoding="utf-8"))))
+    return sorted(f"scripts/{module}.py" for module in seen)
+
+
+def test_the_planner_checkout_is_exactly_the_loaders_import_closure():
+    """Nothing the loader imports may be missing, and nothing else is fetched."""
+    assert sorted(_planner_sparse_paths()) == sorted([*_planner_closure(), "scripts/__init__.py"])
+
+
+def test_the_sweepers_own_checkout_keeps_the_live_inherited_waiver_fail_closed(tmp_path):
+    """Importing the planner where the sweeper runs must keep failing: that failure
+    is what `_touches_ci_control_plane` reads as a control-plane touch."""
+    checkout = next(
+        step
+        for step in _workflow()["jobs"]["sweep"]["steps"]
+        if str(step.get("uses", "")).startswith("actions/checkout")
+        and "path" not in (step.get("with") or {})
+    )
+    sparse = str(checkout["with"]["sparse-checkout"]).split()
+    assert "scripts/ci_scope_dependencies.py" not in sparse
+    (tmp_path / "scripts").mkdir()
+    for relative in sparse:
+        if relative.startswith("scripts/") and relative.endswith(".py"):
+            shutil.copyfile(ROOT / relative, tmp_path / relative)
+    probe = (
+        "import sys; sys.path[0] = sys.argv[1]; import merge_on_green as M; "
+        "print(M._touches_ci_control_plane(['engine/x.py']), "
+        "M._touches_ci_control_plane(['.github/workflows/ci.yml']))"
+    )
+    result = subprocess.run(
+        [sys.executable, "-E", "-c", probe, str(tmp_path / "scripts")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.split() == ["True", "True"], result.stdout
+    assert MOG._touches_ci_control_plane(["engine/x.py"]) is False
+
+
+def test_the_validator_finds_the_planner_checkout_the_sweep_names(monkeypatch, tmp_path):
+    monkeypatch.setenv(MOG.PLANNER_ROOT_ENV, str(tmp_path))
+    assert MOG.PlannerManifestValidator().root == tmp_path
+    assert MOG.PlannerManifestValidator(tmp_path / "given").root == tmp_path / "given"
+    monkeypatch.setenv(MOG.PLANNER_ROOT_ENV, "")
+    assert MOG.PlannerManifestValidator().root == Path(MOG._ROOT)
+    monkeypatch.delenv(MOG.PLANNER_ROOT_ENV)
+    assert MOG.PlannerManifestValidator().root == Path(MOG._ROOT)
+
+
+def test_the_sweep_points_the_validator_at_its_credential_free_planner_checkout():
+    steps = _workflow()["jobs"]["sweep"]["steps"]
+    planner = _planner_checkout_step()
+    sweep = next(step for step in steps if "scripts/merge_on_green.py" in str(step.get("run", "")))
+    assert steps.index(planner) < steps.index(sweep)
+    assert sweep["env"][MOG.PLANNER_ROOT_ENV] == "${{ github.workspace }}/" + planner["with"]["path"]
+    assert planner["with"]["persist-credentials"] is False
+    assert planner["with"]["filter"] == "blob:none"
+    assert planner["with"]["sparse-checkout-cone-mode"] is False
+    # The child runs inside the sweeper's checkout, so neither may store a token.
+    checkouts = [step for step in steps if str(step.get("uses", "")).startswith("actions/checkout")]
+    assert len(checkouts) == 2
+    assert all(step["with"]["persist-credentials"] is False for step in checkouts)
+
+
+def test_the_real_manifest_is_admitted_against_this_checkouts_own_tree():
+    """Serviceability: the planner's sparse checkout admits main's real manifest,
+    asking only what a tree of every tracked path can answer."""
+    raw = (ROOT / MOG.LEGACY_MANIFEST_PATH).read_bytes()
+    tracked = _fixture_git(ROOT, "ls-files", "-z").split("\0")
+    paths = tuple(path for path in tracked if path and path != MOG.LEGACY_MANIFEST_PATH)
+    fresh = _manifest_freshness(
+        yaml.safe_load(raw),
+        raw_after=b"# reflowed\n" + raw,
+        raw_before=raw,
+        paths_before=paths,
+        paths_after=paths,
+    )
+    stale, reason = _manifest_verdict(fresh)
+    assert stale is False, reason
+    assert len(fresh._manifest_valid) == 2
+
+
+# Planner parity: the sweeper mirrors `run_ci_pack` so it never imports the
+# planner (its sparse checkout lacks the planner's dependencies). Pin the mirror.
+
+
+def test_the_manifest_mirror_constants_match_the_planner():
+    import scripts.run_ci_pack as PLAN
+
+    assert MOG.LEGACY_MANIFEST_PATH == PLAN.LEGACY_MANIFEST_PATH
+    assert MOG.MANIFEST_PACK_JOB_ID == PLAN.PACK_JOB_ID
+    assert MOG.MANIFEST_JOB_GATES == PLAN.GATE_VALUES
+    assert MOG.MANIFEST_GLOBAL_INVALIDATORS == PLAN.GLOBAL_INVALIDATORS
+    assert MOG.MANIFEST_TRACKED_ROOTS == PLAN.TRACKED_ROOTS
+    assert MOG.MANIFEST_SCOPE_REFERENCE_RE.pattern == PLAN.SCOPE_REFERENCE_RE.pattern
+
+
+_BASE = _manifest_base()
+
+
+@pytest.mark.parametrize(
+    "base, candidate",
+    [
+        (_BASE, _BASE),
+        (_BASE, _edit_job(_BASE, "widget-suite", **{"timeout-minutes": 45})),
+        (_BASE, {**_BASE, "jobs": {**_BASE["jobs"], "new-suite": {"gate": "code"}}}),
+        (_BASE, {**_BASE, "jobs": {**_BASE["jobs"], "ci-pack": {"gate": "code"}}}),
+        (_BASE, {**_BASE, "jobs": {**_BASE["jobs"], "new-suite": "not-a-job"}}),
+        (_BASE, {**_BASE, "defaults": {}}),
+        (_BASE, {**_BASE, "extra": 1}),
+        (_BASE, {"defaults": _BASE["defaults"], "jobs": dict(reversed(_BASE["jobs"].items()))}),
+        (_BASE, {**_BASE, "jobs": {k: v for k, v in _BASE["jobs"].items() if k != "gadget-suite"}}),
+        (_BASE, _edit_job(_BASE, "nightly-data", gate="code")),
+        (_BASE, {**_BASE, "jobs": []}),
+        (_BASE, ["jobs"]),
+        (None, _BASE),
+    ],
+)
+def test_the_job_delta_classifier_matches_the_planner(base, candidate):
+    import scripts.run_ci_pack as PLAN
+
+    assert MOG._classify_bounded_manifest_job_delta(
+        base, candidate
+    ) == PLAN._classify_bounded_manifest_job_delta(base, candidate)
+
+
+@pytest.fixture(scope="module")
+def real_manifest():
+    """The checked-in manifest, as the planner validates it and as YAML parses it."""
+    import scripts.run_ci_pack as PLAN
+
+    path = ROOT / MOG.LEGACY_MANIFEST_PATH
+    jobs = PLAN.load_legacy_jobs(path, gate="code")
+    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    return PLAN, jobs, raw
+
+
+def test_the_glob_mirror_compiles_every_real_pattern_like_the_planner(real_manifest):
+    PLAN, jobs, _raw = real_manifest
+    patterns = {pattern for job in jobs for pattern in job.paths} | {"engine/", "a/**/b?.py"}
+    assert len(patterns) > 100
+    for pattern in sorted(patterns):
+        assert MOG._manifest_glob_regex(pattern).pattern == PLAN._glob_to_regex(pattern).pattern, pattern
+
+
+def _pattern_sample(pattern: str) -> str:
+    """A concrete file a pattern selects: wildcards filled with literal names."""
+    sample = pattern.replace("/**/", "/deep/").replace("**/", "deep/")
+    sample = sample.replace("/**", "/deep/leaf.py").replace("**", "deep")
+    return sample.replace("*", "x").replace("?", "q")
+
+
+@pytest.fixture(scope="module")
+def planner_scopes(real_manifest):
+    """The jobs exactly as `select_jobs` receives them: after `infer_job_scopes`.
+
+    Every exclusive job goes through inference, plus a few inferred-tier jobs so
+    the tree-derived branch provably ran too. Inferring the whole inferred tier
+    adds nothing here (the sweeper holds every one of those jobs unconditionally)
+    and selection is per job, so a subset selects each member as the whole would.
+    """
+    PLAN, jobs, raw = real_manifest
+    subset = [job for job in jobs if job.exclusive]
+    subset += [job for job in jobs if not job.exclusive][:5]
+    inferred, summary = PLAN.infer_job_scopes(subset)
+    return PLAN, inferred, summary, raw
+
+
+def test_exclusive_jobs_select_by_declared_paths_alone(planner_scopes):
+    """The sweeper reads an exclusive job's `paths` from raw YAML; the planner's
+    inferred view of it must be that same list with no fallback tier, or the
+    mirror would miss a selection."""
+    _PLAN, inferred, summary, raw = planner_scopes
+    assert "scope inference unavailable" not in summary, summary
+    assert "declared exclusive" in summary, summary
+    exclusive = [job for job in inferred if job.exclusive]
+    assert len(exclusive) > 100
+    for job in exclusive:
+        assert raw["jobs"][job.job_id].get("scope") == "exclusive", job.job_id
+        assert list(job.paths) == list(raw["jobs"][job.job_id]["paths"]), job.job_id
+        assert job.fallback_paths == (), job.job_id
+    inferred_tier = [job for job in inferred if not job.exclusive]
+    assert any(job.paths or job.fallback_paths for job in inferred_tier), summary
+    for job in inferred_tier:
+        assert raw["jobs"][job.job_id].get("scope") != "exclusive", job.job_id
+
+
+def test_every_planner_selection_is_a_sweeper_hit_on_the_real_manifest(planner_scopes):
+    """Superset, never subset: a job `select_jobs` picks for a pull request's file
+    must hold that pull request's green, under the job's real definition; a file
+    the planner treats as a global invalidator must already be refused as one."""
+    PLAN, inferred, _summary, raw = planner_scopes
+    samples = sorted(
+        {
+            _pattern_sample(pattern)
+            for job in inferred
+            if job.exclusive
+            for pattern in list(job.paths)[:4]
+        }
+    )
+    exclusive_selections = 0
+    full_suite = set()
+    covered = set()
+    for sample in samples:
+        selected, reason = PLAN.select_jobs(inferred, [sample])
+        if reason.startswith("full suite"):
+            assert MOG._manifest_matches_any(MOG.MANIFEST_GLOBAL_INVALIDATORS, sample), (
+                sample,
+                reason,
+            )
+            full_suite.add(sample)
+            continue
+        for job in selected:
+            exclusive_selections += job.exclusive
+            if job.exclusive:
+                covered.add(job.job_id)
+            definition = raw["jobs"][job.job_id]
+            assert MOG._manifest_job_hit(job.job_id, (None, definition), [sample]), (
+                job.job_id,
+                sample,
+            )
+            assert MOG._manifest_job_hit(job.job_id, (definition, None), [sample]), (
+                job.job_id,
+                sample,
+            )
+    # Every exclusive job was exercised by its own samples, unless each of them
+    # sends the planner to the full suite: a weak floor would pass a regression
+    # that silently stopped most selections.
+    uncovered = [
+        job.job_id
+        for job in inferred
+        if job.exclusive
+        and job.job_id not in covered
+        and not {_pattern_sample(pattern) for pattern in list(job.paths)[:4]} <= full_suite
+    ]
+    assert not uncovered, uncovered
+    assert exclusive_selections > 100
