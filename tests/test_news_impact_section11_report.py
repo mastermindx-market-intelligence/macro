@@ -263,10 +263,13 @@ def test_assembles_and_self_checks(registration, registry, eligible):
     assert acct["manifest_n"] == 74 and acct["discovered"] == 74 and acct["auto_published"] == 74
     assert acct["unique_groups"] == 74 and acct["issuer_impacts"] == 74 and acct["evaluated"] == 74
     assert acct["complete"] is True
-    # the cheap extractor ran nothing: null rows, accounting empty but complete
+    # the cheap extractor ran nothing: its nonempty manifest is incomplete
     row = _view_row(report, "critical_numeric_correctness_auto_published", "cheap_extractor_no_frontier")
     assert row["status"] != "measured" and row["value"] is None
-    assert report["system"]["constructions"]["cheap_extractor_no_frontier"]["accounting"]["discovered"] == 0
+    cheap = report["system"]["constructions"]["cheap_extractor_no_frontier"]["accounting"]
+    assert cheap["discovered"] == 0 and cheap["complete"] is False
+    row = _view_row(report, "disposition_accounting_complete", "cheap_extractor_no_frontier")
+    assert (row["value"], row["n"], row["six_way_sum"], row["crossing"]) == (0.0, 74, 0, "below")
     assert report["system"]["accounting_construction"] == "proposed_cascade"
     assert report["span_verification"] == "not_injected"
     rep.self_check(report)
@@ -513,3 +516,169 @@ def test_cli_reports_registration_refusal(tmp_path, capsys, registration, monkey
     assert rep.main(["--inputs", str(inputs), "--out", str(out)]) == 1
     assert "REGISTERED_IMPLEMENTATION_MISMATCH" in capsys.readouterr().err
     assert not out.exists()
+
+
+def test_construction_accounting_agrees_in_all_views_and_receipts(registration, eligible):
+    inp = _inputs(registration)
+    for cid, case in sorted(_cases(registration).items()):
+        if case["template"] == "T1":
+            inp["sut_rows"].append({
+                "case_id": cid, "construction": "cheap_extractor_no_frontier",
+                "disposition": "deferred", "novelty": None, "quantities": {},
+            })
+    _fill(inp, registration, "frontier_only_audit")
+    report = rep.assemble(inp, registration)
+    assert set(report["system"]["constructions"]) == set(rep.SUT_CONSTRUCTIONS)
+    for stratum, manifest_n, cheap_n, frontier_n in (
+        ("all", 74, 34, 13), ("T1", 34, 34, 6), ("T2", 36, 0, 6), ("T3", 4, 0, 1)
+    ):
+        receipt = report["receipts"]["all"] if stratum == "all" else report["receipts"]["strata"][stratum]
+        accounting = (
+            {con: block["accounting"] for con, block in report["system"]["constructions"].items()}
+            if stratum == "all" else report["strata_accounting"][stratum]
+        )
+        assert set(accounting) == set(rep.SUT_CONSTRUCTIONS)
+        for con, expected_n, expected_sum, complete in (
+            ("proposed_cascade", manifest_n, manifest_n, True),
+            ("cheap_extractor_no_frontier", manifest_n, cheap_n, cheap_n == manifest_n),
+            ("frontier_only_audit", frontier_n, frontier_n, True),
+        ):
+            acct = accounting[con]
+            crossing = "meets" if complete else "below"
+            assert (acct["manifest_n"], acct["six_way_sum"], acct["complete"]) == (
+                expected_n, expected_sum, complete
+            )
+            view = _view_row(report, "disposition_accounting_complete", con, stratum)
+            assert (view["value"], view["n"], view["six_way_sum"], view["crossing"]) == (
+                float(complete), expected_n, expected_sum, crossing
+            )
+            metrics = [
+                m for m in receipt["metrics"] if m["metric_id"] == "disposition_accounting_complete"
+                and m["baseline_id"] == con and m["fold_slice"] == "all_historical"
+            ]
+            thresholds = [
+                t for t in receipt["threshold_evaluations"]
+                if t["metric_id"] == "disposition_accounting_complete"
+                and t["baseline_id"] == con and t["fold_slice"] == "all_historical"
+            ]
+            assert len(metrics) == len(thresholds) == 1
+            assert (metrics[0]["value"], metrics[0]["n"]) == (float(complete), expected_n)
+            assert thresholds[0]["observed"] is complete
+            assert (thresholds[0]["n"], thresholds[0]["crossing"]) == (expected_n, crossing)
+        # No-packet baselines must not inherit the cascade's complete accounting.
+        for con in rep.NO_PACKET_NULL_REASON:
+            metric = next(
+                m for m in receipt["metrics"] if m["metric_id"] == "disposition_accounting_complete"
+                and m["baseline_id"] == con and m["fold_slice"] == "all_historical"
+            )
+            assert (metric["value"], metric["n"]) == (0.0, manifest_n)
+        for metric in report["view"]["all"] if stratum == "all" else report["view"]["strata"][stratum]:
+            if metric["value"] is None:
+                assert metric["crossing"] == "not_evaluable"
+    assert report["system"]["accounting_construction"] == "proposed_cascade"
+
+
+@pytest.mark.parametrize("kind", ["routing_items", "transfer_items"])
+def test_frontier_metric_inputs_refuse_off_draw_cases(registration, eligible, kind):
+    cases = _cases(registration)
+    off = cases["08ed2470ec73e40a"]
+    assert off["case_id"] not in registration["draws"]["frontier_only_audit"]["v2_match_case_ids"]
+    item = {
+        "case_id": off["case_id"], "construction": "frontier_only_audit",
+        "fold": off["fold"], "template": off["template"],
+        "outcome": "hit" if kind == "routing_items" else "no",
+    }
+    if kind == "routing_items":
+        item.update(metric="material_routing", source="routing_verdicts")
+    inp = _inputs(registration, routing=[], transfer=[])
+    inp[kind] = [item]
+    with pytest.raises(rep.ReportError) as exc:
+        rep.assemble(inp, registration)
+    assert exc.value.code == "OFF_AUDIT_SUBSET"
+    assert off["case_id"] in str(exc.value)
+
+
+@pytest.mark.parametrize("kind", ["routing_items", "transfer_items"])
+def test_frontier_metric_inputs_accept_draw_and_preserve_other_populations(registration, eligible, kind):
+    cases = _cases(registration)
+    on = cases["04d382c0d79ec6cd"]
+    off = cases["08ed2470ec73e40a"]
+    assert on["case_id"] in registration["draws"]["frontier_only_audit"]["v2_match_case_ids"]
+    constructions = [("frontier_only_audit", on), ("proposed_cascade", off)]
+    if kind == "routing_items":
+        constructions.append(("current_news_stack", off))
+    inp = _inputs(registration, routing=[], transfer=[])
+    for con, case in constructions:
+        item = {
+            "case_id": case["case_id"], "construction": con,
+            "fold": case["fold"], "template": case["template"],
+            "outcome": "hit" if kind == "routing_items" else "no",
+        }
+        if kind == "routing_items":
+            item.update(metric="material_routing", source="routing_verdicts")
+        inp[kind].append(item)
+    report = rep.assemble(inp, registration)
+    metric = "material_event_routing_recall" if kind == "routing_items" else "unsupported_ticker_to_supplier_count"
+    for con, _ in constructions:
+        view = _view_row(report, metric, con)
+        assert view["n"] == 1
+        assert view["value"] == (1.0 if kind == "routing_items" else 0.0)
+
+
+@pytest.mark.parametrize("target_kind", ["file", "symlink", "dangling_symlink"])
+def test_cli_refuses_output_created_during_assembly(
+    registration, eligible, tmp_path, capsys, monkeypatch, target_kind
+):
+    inputs = tmp_path / "inputs.json"
+    inputs.write_text(json.dumps(_inputs(registration)), encoding="utf-8")
+    out = tmp_path / "report.json"
+    target = tmp_path / "concurrent-target.json"
+    sentinel = b"concurrent writer owns this output\n"
+    assemble = rep.assemble
+
+    def concurrent_assemble(*args, **kwargs):
+        report = assemble(*args, **kwargs)
+        if target_kind == "file":
+            out.write_bytes(sentinel)
+        else:
+            if target_kind == "symlink":
+                target.write_bytes(sentinel)
+            out.symlink_to(target)
+        return report
+
+    monkeypatch.setattr(rep, "assemble", concurrent_assemble)
+    assert rep.main(["--inputs", str(inputs), "--out", str(out)]) == 1
+    captured = capsys.readouterr()
+    assert "OUT_EXISTS" in captured.err and "report ok" not in captured.out
+    if target_kind == "file":
+        assert out.read_bytes() == sentinel
+    else:
+        assert out.is_symlink() and out.readlink() == target
+        if target_kind == "symlink":
+            assert target.read_bytes() == sentinel
+        else:
+            assert not target.exists()
+
+
+@pytest.mark.parametrize("kind", ["routing_items", "transfer_items"])
+@pytest.mark.parametrize("field,value", [("template", "T1"), ("fold", "f1")])
+def test_frontier_metric_inputs_preserve_registered_stratum_and_fold(
+    registration, eligible, kind, field, value
+):
+    case = _cases(registration)["04d382c0d79ec6cd"]
+    assert (case["template"], case["fold"]) == ("T2", "f5")
+    assert case["case_id"] in registration["draws"]["frontier_only_audit"]["v2_match_case_ids"]
+    item = {
+        "case_id": case["case_id"], "construction": "frontier_only_audit",
+        "fold": case["fold"], "template": case["template"],
+        "outcome": "hit" if kind == "routing_items" else "no",
+    }
+    if kind == "routing_items":
+        item.update(metric="material_routing", source="routing_verdicts")
+    item[field] = value
+    inp = _inputs(registration, routing=[], transfer=[])
+    inp[kind] = [item]
+    with pytest.raises(rep.ReportError) as exc:
+        rep.assemble(inp, registration)
+    assert exc.value.code == "AUDIT_METADATA_MISMATCH"
+    assert case["case_id"] in str(exc.value)

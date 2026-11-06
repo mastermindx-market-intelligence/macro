@@ -85,6 +85,7 @@ CODES = (
     "BAD_REGISTRATION", "ENDPOINTS_SHA_MISMATCH", "UNKNOWN_CASE", "UNKNOWN_FIELD",
     "UNKNOWN_TEMPLATE", "UNKNOWN_CONSTRUCTION", "UNKNOWN_DISPOSITION", "UNKNOWN_ROUTING_SOURCE",
     "BAD_OUTCOME", "BAD_FOLD", "BAD_GOLD_STATUS", "BAD_COUNT", "BAD_ROW", "OFF_AUDIT_SUBSET",
+    "AUDIT_METADATA_MISMATCH",
     "DUPLICATE_ROW", "DUPLICATE_SLOT", "DUPLICATE_ROUTING", "DUPLICATE_TRANSFER", "DUPLICATE_COST",
     "GOLD_SLOT_MALFORMED", "CLUSTER_MISSING", "NO_SYSTEM_ROWS", "FORBIDDEN_KEY", "OUT_EXISTS",
 )
@@ -217,7 +218,8 @@ def _sut_rows(
 
 
 def _routing_items(
-    inputs: Mapping[str, Any], sources: frozenset[str]
+    inputs: Mapping[str, Any], sources: frozenset[str], audit: frozenset[str],
+    cases: Mapping[str, Mapping[str, Any]],
 ) -> tuple[dict[str, list[er.GradedItem]], dict[str, Counter]]:
     items: dict[str, list[er.GradedItem]] = defaultdict(list)
     coverage: dict[str, Counter] = defaultdict(Counter)
@@ -226,12 +228,18 @@ def _routing_items(
         cid, con, metric = str(it.get("case_id")), it.get("construction"), it.get("metric")
         if con not in ROUTING_CONSTRUCTIONS:
             raise ReportError("UNKNOWN_CONSTRUCTION", f"{cid}/{con}")
+        if con == "frontier_only_audit" and cid not in audit:
+            raise ReportError("OFF_AUDIT_SUBSET", cid)
         if metric not in ROUTING_OUTCOMES or it.get("outcome") not in ROUTING_OUTCOMES[metric]:
             raise ReportError("BAD_OUTCOME", f"{cid}/{metric}")
         if it.get("fold") not in er.HISTORICAL_FOLDS:
             raise ReportError("BAD_FOLD", f"{cid}/{metric}")
         if it.get("template") not in TEMPLATE_SCHEMA:
             raise ReportError("UNKNOWN_TEMPLATE", f"{cid}/{metric}")
+        if con == "frontier_only_audit" and (
+            it["fold"] != cases[cid]["fold"] or it["template"] != cases[cid]["template"]
+        ):
+            raise ReportError("AUDIT_METADATA_MISMATCH", cid)
         source = str(it.get("source") or "").split()[:1]
         source_id = source[0] if source else ""
         if source_id not in sources:
@@ -247,19 +255,27 @@ def _routing_items(
     return items, coverage
 
 
-def _transfer_items(inputs: Mapping[str, Any]) -> dict[str, list[er.GradedItem]]:
+def _transfer_items(
+    inputs: Mapping[str, Any], audit: frozenset[str], cases: Mapping[str, Mapping[str, Any]]
+) -> dict[str, list[er.GradedItem]]:
     items: dict[str, list[er.GradedItem]] = defaultdict(list)
     seen: set[tuple[str, str]] = set()
     for it in inputs.get("transfer_items", ()):
         cid, con = str(it.get("case_id")), it.get("construction")
         if con not in SUT_CONSTRUCTIONS:
             raise ReportError("UNKNOWN_CONSTRUCTION", f"{cid}/{con}")
+        if con == "frontier_only_audit" and cid not in audit:
+            raise ReportError("OFF_AUDIT_SUBSET", cid)
         if it.get("outcome") not in TRANSFER_OUTCOMES:
             raise ReportError("BAD_OUTCOME", f"{cid}/unsupported_transfer")
         if it.get("fold") not in er.HISTORICAL_FOLDS:
             raise ReportError("BAD_FOLD", f"{cid}/unsupported_transfer")
         if it.get("template") not in TEMPLATE_SCHEMA:
             raise ReportError("UNKNOWN_TEMPLATE", f"{cid}/unsupported_transfer")
+        if con == "frontier_only_audit" and (
+            it["fold"] != cases[cid]["fold"] or it["template"] != cases[cid]["template"]
+        ):
+            raise ReportError("AUDIT_METADATA_MISMATCH", cid)
         if (cid, con) in seen:
             raise ReportError("DUPLICATE_TRANSFER", f"{cid}/{con}")
         seen.add((cid, con))
@@ -465,12 +481,15 @@ def _receipt(
     costs: list[er.CostRecord],
     span_injected: bool,
     registry_path: Path | None,
+    *,
+    accounting_by_construction: Mapping[str, er.AccountingInput],
 ) -> dict[str, Any]:
     return er.build_receipt(
         graded_by_construction={(b, ABLATION): list(graded.get(b, [])) for b in baseline_ids},
         cluster_map=dict(groups),
         issuer_map=dict(issuers),
         accounting=accounting,
+        accounting_by_construction={(b, ABLATION): a for b, a in accounting_by_construction.items()},
         registration=reg["a3_registration"],
         costs=costs,
         baselines_run=baseline_ids,
@@ -527,9 +546,6 @@ def _view(
             mid in CRITICAL_METRICS or con == "deterministic_materiality_price_factor"
         ):
             value, status, reason, interval = None, "null_printed", NO_PACKET_NULL_REASON[con], None
-        if mid == "disposition_accounting_complete" and con in accounting_rows:
-            acct = accounting_rows[con]
-            value, n, status, reason = (1.0 if acct["complete"] else 0.0), acct["manifest_n"], "measured", None
         floored = (
             mid in plain
             or (stratum == "T3" and (mid in t3 or mid in CRITICAL_METRICS))
@@ -557,7 +573,7 @@ def _view(
             "null_reason": reason if status != "measured" else None,
             "interval": interval,
             "interval_null_reason": interval_null_reason,
-            "crossing": thr.get("crossing", "not_evaluable"),
+            "crossing": "not_evaluable" if value is None else thr.get("crossing", "not_evaluable"),
         }
         if mid == "disposition_accounting_complete" and con in accounting_rows:
             entry["six_way_sum"] = accounting_rows[con]["six_way_sum"]
@@ -611,8 +627,8 @@ def assemble(
 
     gold, gold_counts = _gold(inputs, cases)
     rows = _sut_rows(inputs, cases, audit)
-    routing, coverage = _routing_items(inputs, sources)
-    transfer = _transfer_items(inputs)
+    routing, coverage = _routing_items(inputs, sources, audit, cases)
+    transfer = _transfer_items(inputs, audit, cases)
     costs, cost_wrapper = _costs(inputs)
     calibration = _calibration(inputs)
     w2 = _w2(inputs)
@@ -633,12 +649,12 @@ def assemble(
 
     constructions_present = sorted({con for _, con in rows})
     manifests = {
-        con: (audit if con == "frontier_only_audit" else frozenset(cases)) for con in SUT_CONSTRUCTIONS
+        con: (audit if con == "frontier_only_audit" else frozenset(cases)) for con in baseline_ids
     }
     accounting = {
-        con: _accounting(rows, con, manifests[con], groups, issuers, evaluated) for con in SUT_CONSTRUCTIONS
+        con: _accounting(rows, con, manifests[con], groups, issuers, evaluated) for con in baseline_ids
     }
-    accounting_rows = {con: _accounting_block(a) for con, a in accounting.items()}
+    accounting_rows = {con: _accounting_block(accounting[con]) for con in SUT_CONSTRUCTIONS}
     accounting_construction = next(
         (c for c in ("proposed_cascade", "cheap_extractor_no_frontier", "frontier_only_audit") if c in constructions_present),
         None,
@@ -650,7 +666,7 @@ def assemble(
     too_small = _too_small(registry_path)
     receipt_all = _receipt(
         all_items, accounting[accounting_construction], reg, baseline_ids, groups, issuers, costs,
-        span_injected, registry_path,
+        span_injected, registry_path, accounting_by_construction=accounting,
     )
     strata_receipts: dict[str, Any] = {}
     strata_views: dict[str, Any] = {}
@@ -659,16 +675,16 @@ def assemble(
         sub_items = {con: [it for it in items if it.template == schema] for con, items in all_items.items()}
         sub_rows = {k: r for k, r in rows.items() if cases[k[0]]["template"] == tpl}
         sub_manifest = {
-            con: frozenset(c for c in manifests[con] if cases[c]["template"] == tpl) for con in SUT_CONSTRUCTIONS
+            con: frozenset(c for c in manifests[con] if cases[c]["template"] == tpl) for con in baseline_ids
         }
         sub_acct = {
-            con: _accounting(sub_rows, con, sub_manifest[con], groups, issuers, evaluated) for con in SUT_CONSTRUCTIONS
+            con: _accounting(sub_rows, con, sub_manifest[con], groups, issuers, evaluated) for con in baseline_ids
         }
-        sub_rows_blocks = {con: _accounting_block(a) for con, a in sub_acct.items()}
+        sub_rows_blocks = {con: _accounting_block(sub_acct[con]) for con in SUT_CONSTRUCTIONS}
         strata_accounting[tpl] = sub_rows_blocks
         strata_receipts[tpl] = _receipt(
             sub_items, sub_acct[accounting_construction], reg, baseline_ids, groups, issuers, (),
-            span_injected, registry_path,
+            span_injected, registry_path, accounting_by_construction=sub_acct,
         )
         strata_views[tpl] = _view(strata_receipts[tpl], registry, too_small, tpl, sub_rows_blocks)
 
@@ -772,7 +788,12 @@ def main(argv: list[str] | None = None) -> int:
         inputs = json.loads(raw.decode("utf-8"))
         reg = load_registration(Path(args.registration) if args.registration else None)
         report = assemble(inputs, reg, inputs_sha256=hashlib.sha256(raw).hexdigest())
-        out.write_text(render(report), encoding="utf-8")
+        payload = render(report)
+        try:
+            with out.open("x", encoding="utf-8") as stream:
+                stream.write(payload)
+        except FileExistsError as exc:
+            raise ReportError("OUT_EXISTS", str(out)) from exc
     except (ReportError, s11.RegistrationError, er.EvalReceiptError) as exc:
         print(str(exc), file=sys.stderr)
         return 1
