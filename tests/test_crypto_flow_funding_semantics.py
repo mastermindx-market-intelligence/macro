@@ -23,6 +23,7 @@ sys.path.insert(0, str(ROOT))
 
 from collectors import _crypto_observations as obs  # noqa: E402
 from engine import btc_intraday_cvd as CVD  # noqa: E402
+from scripts.build_crypto import _signed_musd  # noqa: E402
 
 PATCHES = ROOT / "research" / "crypto_science" / "patches"
 VECTOR_PATCH = PATCHES / "cx-t09-20261012__build_vector.py.patch"
@@ -109,6 +110,9 @@ def _macros() -> str:
         {% macro tone(tone) -%}
         {{- 'tone-up' if tone == 'bull' else ('tone-down' if tone == 'bear' else 'tone-flat') -}}
         {%- endmacro %}
+        {% macro qmark(en, zh='', rc_en='', rc_zh='') -%}
+        <span class="qm" tabindex="0" role="note" data-tip-en="{{ en }}"{% if zh %} data-tip-zh="{{ zh }}"{% endif %}{% if rc_en %} data-tip-rc-en="{{ rc_en }}"{% endif %}{% if rc_zh %} data-tip-rc-zh="{{ rc_zh }}"{% endif %}>?</span>
+        {%- endmacro %}
     """)
 
 
@@ -117,6 +121,7 @@ def _render(source: str, **ctx) -> str:
     return env.from_string(_macros() + source).render(
         fmt_money=lambda v, compact=False: "—" if v is None else f"{v}",
         fmt_pct=lambda v: "—" if v is None else f"{v}%",
+        fmt_signed_musd=_signed_musd,
         **ctx,
     )
 
@@ -324,7 +329,7 @@ def test_funding_absent_leaves_flow_valid_and_withholds_only_funding_sentence(mo
     rendered = _render(etf + heat, market={"flows": {"etf": {
         "tone": "bull", "value": 150, "state": "Rising", "state_zh": "上升",
     }}})
-    assert "$+150M" in rendered
+    assert "+$150M" in rendered
     assert "Settlement interval not established" in rendered
     assert "尚未确认结算间隔" in rendered
     assert "fmt_pct(market.heat.funding.value)" not in heat

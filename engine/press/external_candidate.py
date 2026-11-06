@@ -4,6 +4,10 @@ This consumes the existing sentinel's retained bytes. It is not a rights
 registry, publisher, provider or automatic feed admission. Qualification is a
 reviewed input pinned by its caller; hashes prove identity, not legal authority.
 The return is deliberately not a writer slot and ordinary plan() never calls it.
+Selected first-party measurements can satisfy the existing numerical receipt
+floor. That floor proves neither coverage of the external claims nor causality;
+source fidelity and relevant interpretation require separate editorial review.
+No minimum number of external quantities is inferred for non-numeric events.
 """
 from __future__ import annotations
 
@@ -77,6 +81,73 @@ def _dollars(atom: str) -> Decimal:
     raise ValueError("share operands require explicit currency magnitudes")
 
 
+def _reviewed_context(rows: object, *, root: Path, as_of: date, window_days: int) -> tuple[list[dict], dict]:
+    """Select reviewed facts from the existing engine extractors and exact bytes.
+
+    A relevance note records editorial judgment, not automatic proof of it.
+    These contextual measurements never establish the external event's effects.
+    Omit first_party_context for no selection; when present it must be a nonempty
+    reviewed list (null is not a completed context review). Unlike derived_share,
+    there is no required arithmetic decision to record when context is absent.
+    Artifact paths, including their parents, may not be symlinks. JSONL must be
+    complete object rows: silently skipping damaged evidence is inappropriate
+    for a qualification pinned to an exact artifact snapshot.
+    """
+    from engine.press import desk_planner as planner
+
+    if not isinstance(rows, list) or not 1 <= len(rows) <= 20:
+        raise ValueError("bounded reviewed first-party context required")
+    extractors = {rel: planner._ARTIFACT_EXTRACTORS[key]
+                  for key, rel in planner._ENGINE_ARTIFACTS}
+    facts, revisions, seen, snapshots = [], {}, set(), {}
+    root = Path(root).resolve()
+    for row in rows:
+        if not isinstance(row, dict) or set(row) != {"id", "artifact", "sha256", "relevance"}:
+            raise ValueError("reviewed context fields mismatch")
+        fid, rel, digest, relevance = (row[k] for k in ("id", "artifact", "sha256", "relevance"))
+        if (not isinstance(fid, str) or not fid or fid in seen
+                or not isinstance(rel, str) or rel not in extractors
+                or not isinstance(relevance, str) or not 1 <= len(relevance.strip()) <= 500):
+            raise ValueError("reviewed context identity or relevance invalid")
+        seen.add(fid)
+        path = root / rel
+        if path.resolve() != path:
+            raise ValueError("reviewed context artifact must not traverse a symlink")
+        if rel not in snapshots:
+            raw = _read_bound(path, digest, 8_000_000)
+            try:
+                payload = ([json.loads(line) for line in raw.splitlines() if line.strip()]
+                           if path.suffix == ".jsonl" else json.loads(raw))
+                if path.suffix == ".jsonl" and any(not isinstance(row, dict) for row in payload):
+                    raise ValueError("JSONL evidence requires object rows")
+                candidates = extractors[rel](payload, rel)
+            except Exception as exc:
+                raise ValueError("reviewed context artifact is malformed") from exc
+            snapshots[rel] = (digest, candidates)
+        saved_digest, candidates = snapshots[rel]
+        if saved_digest != digest:
+            raise ValueError("reviewed context has conflicting artifact revisions")
+        matches = [f for f in candidates if f.get("id") == fid]
+        if len(matches) != 1 or matches[0].get("tier") != "first_party":
+            raise ValueError("reviewed context fact is not an existing engine measurement")
+        fact = matches[0]
+        dated = fact.get("dated")
+        if not isinstance(dated, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", dated):
+            raise ValueError("reviewed context requires a calendar date")
+        try:
+            age = (as_of - date.fromisoformat(dated)).days
+        except ValueError as exc:
+            raise ValueError("reviewed context date is invalid") from exc
+        if not 0 <= age <= window_days:
+            raise ValueError("reviewed context is outside the current Brief window")
+        if not planner._press_safe(fact["text"]):
+            raise ValueError("reviewed context fact violates the Press lexicon")
+        receipt = "sha256:" + digest
+        facts.append({**fact, "receipt": receipt, "context_relevance": relevance.strip()})
+        revisions[fact["ref"]] = receipt
+    return facts, revisions
+
+
 def plan_whitehouse_candidate(*, document_path: Path, document_sha256: str,
                               qualification_path: Path, qualification_sha256: str,
                               policy_path: Path, as_of: str, root: Path,
@@ -89,10 +160,11 @@ def plan_whitehouse_candidate(*, document_path: Path, document_sha256: str,
     if not isinstance(document, dict) or not isinstance(qualification, dict):
         raise ValueError("source and qualification must be objects")
     q = qualification.get("external_planning")
-    if not isinstance(q, dict) or set(q) != {
+    required = {
         "document_sha256", "feed_url", "normalization", "body_origin", "body_truncated",
         "reviewed_claims", "reviewed_tickers", "derived_share",
-    }:
+    }
+    if not isinstance(q, dict) or set(q) not in (required, required | {"first_party_context"}):
         raise ValueError("explicit external planning qualification required")
     retained = qualification["retained_public_source"]
     _read_bound(policy_path, retained["policy_file_sha256"], 100_000)
@@ -168,24 +240,27 @@ def plan_whitehouse_candidate(*, document_path: Path, document_sha256: str,
         facts.append({"text": literal, "values": [str(value)], "tier": "third_party",
                       "ref": source_ref, "dated": qualification["event_date"]})
     derivation = q["derived_share"]
-    if not isinstance(derivation, dict) or set(derivation) != {"numerators", "denominator", "percent"}:
-        raise ValueError("external share derivation fields mismatch")
-    numerators = derivation["numerators"]
-    if (not isinstance(numerators, list) or not 1 <= len(numerators) <= len(claims)
-            or any(not isinstance(k, str) or k not in quantities for k in numerators)
-            or len(set(numerators)) != len(numerators)
-            or derivation["denominator"] not in quantities):
-        raise ValueError("external share operands are not reviewed claims")
-    denominator = _dollars(quantities[derivation["denominator"]])
-    if denominator <= 0:
-        raise ValueError("external share denominator must be positive")
-    share = sum((_dollars(quantities[k]) for k in numerators), Decimal(0)) / denominator * 100
-    share_text = format(share.normalize(), "f")
-    if not share.is_finite() or share_text != derivation["percent"]:
-        raise ValueError("external share arithmetic differs")
-    facts.append({"text": f"Reviewed commitments represent approximately {share_text}% of the stated package.",
-                  "values": [share_text], "tier": "third_party", "ref": source_ref,
-                  "dated": qualification["event_date"], "derived_from_external": True})
+    # Null records an explicit review that this event has no package-share
+    # calculation. Omission is still rejected by the qualification schema.
+    if derivation is not None:
+        if not isinstance(derivation, dict) or set(derivation) != {"numerators", "denominator", "percent"}:
+            raise ValueError("external share derivation fields mismatch")
+        numerators = derivation["numerators"]
+        if (not isinstance(numerators, list) or not 1 <= len(numerators) <= len(claims)
+                or any(not isinstance(k, str) or k not in quantities for k in numerators)
+                or len(set(numerators)) != len(numerators)
+                or derivation["denominator"] not in quantities):
+            raise ValueError("external share operands are not reviewed claims")
+        denominator = _dollars(quantities[derivation["denominator"]])
+        if denominator <= 0:
+            raise ValueError("external share denominator must be positive")
+        share = sum((_dollars(quantities[k]) for k in numerators), Decimal(0)) / denominator * 100
+        share_text = format(share.normalize(), "f")
+        if not share.is_finite() or share_text != derivation["percent"]:
+            raise ValueError("external share arithmetic differs")
+        facts.append({"text": f"Reviewed commitments represent approximately {share_text}% of the stated package.",
+                      "values": [share_text], "tier": "third_party", "ref": source_ref,
+                      "dated": qualification["event_date"], "derived_from_external": True})
     tickers = q["reviewed_tickers"]
     if not isinstance(tickers, dict) or not tickers or len(tickers) > 10:
         raise ValueError("explicit reviewed ticker association required")
@@ -197,6 +272,11 @@ def plan_whitehouse_candidate(*, document_path: Path, document_sha256: str,
                 or ticker not in available):
             raise ValueError("reviewed ticker has no source association or rendered dossier")
         links.append(f"https://www.mastermind-x.com/stocks/{ticker}.html")
+    context_revisions = {}
+    if "first_party_context" in q:
+        context_facts, context_revisions = _reviewed_context(
+            q["first_party_context"], root=root, as_of=now.date(), window_days=int(desk["window_days"]))
+        facts.extend(context_facts)
     pub, _ = planner.published_refs(root, cfg)
     staged, _ = planner.staged_refs(root, cfg)
     blocked = source_ref in pub | staged
@@ -214,7 +294,7 @@ def plan_whitehouse_candidate(*, document_path: Path, document_sha256: str,
             "qualification_sha256": qualification_sha256, "body_sha256": body_sha,
             "source_clocks": {"event_date": event_text, "published_at": published.isoformat(),
                               "observed_at": observed.isoformat(), "as_of": now.isoformat()},
-            "source_revisions": {source_ref: "sha256:" + document_sha256},
+            "source_revisions": {source_ref: "sha256:" + document_sha256, **context_revisions},
             "blocked_by_existing_coverage": blocked,
             "cadence_per_day": desk["cadence_per_day"], "cadence_consumed": False,
             "validation_context": context, "allow_stage": False, "allow_emit": False,

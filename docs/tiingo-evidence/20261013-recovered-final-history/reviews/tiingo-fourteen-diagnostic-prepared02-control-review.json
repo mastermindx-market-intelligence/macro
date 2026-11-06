@@ -1,0 +1,82 @@
+{
+  "schema": "tiingo.fourteen_later_diagnostic_exact_source_focused_clearance/v1",
+  "recorded_at_utc": "2026-10-14T03:57:23.868752+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "verdict": "PASS_SOURCE_CONDITIONAL_READONLY_VALIDATION",
+  "source_file": "tiingo-fourteen-settled-transport-later-diagnostic-prepared02.py",
+  "source_sha256": "4f81f872366953974eb2b73f9661b405dc4583fba27a2d8701d37b54b0677489",
+  "plan_file": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-planned01.json",
+  "plan_sha256": "0ff1630cf6497d3ef2114509e0b6d4f06d93f94e27a9da258b1d55acd9b99ebb",
+  "prior_review_file": "tiingo-fourteen-diagnostic-prepared01-control-review.json",
+  "prior_review_sha256": "88e0c44bfbf8f549db82b4e438073e598eed545e54b5568f16d25a7583b14842",
+  "cleared_findings": [
+    "H1",
+    "H2"
+  ],
+  "verification": {
+    "exact_two_requested_repairs_only": true,
+    "original_E_restored": "/Users/chriswong/.codex/visualizations/2026/10/11/01a12ab6-92cb-7c42-a711-42673ebb6b50/tiingo-phase1",
+    "run_identity_unchanged": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6",
+    "plan_and_all_evidence_accounting_census_and_loaded_source_hashes_match": true,
+    "ast_compile_only_passed": true,
+    "isolated_count_cases": [
+      {
+        "ledger_available": false,
+        "retained_admissions": 0,
+        "never_admitted": null,
+        "placeholders_authoritative": false
+      },
+      {
+        "ledger_available": false,
+        "retained_admissions": 4,
+        "never_admitted": null,
+        "placeholders_authoritative": false
+      },
+      {
+        "ledger_available": true,
+        "retained_admissions": 0,
+        "never_admitted": 14,
+        "placeholders_authoritative": true
+      },
+      {
+        "ledger_available": true,
+        "retained_admissions": 4,
+        "never_admitted": 10,
+        "placeholders_authoritative": true
+      },
+      {
+        "ledger_available": true,
+        "retained_admissions": 14,
+        "never_admitted": 0,
+        "placeholders_authoritative": true
+      }
+    ],
+    "candidate_module_executed": false
+  },
+  "decision": "Repaired source is accepted for one original-root foreground invocation after scoped current custody is positively reconciled. Validation may emit actualREADY; provider admission still requires actualsameprocess READY consumption and fresh intended-account quota plus all encoded final source/namespace/storage/output checks. No direct provider launch is accepted by this receipt.",
+  "preserved_actual_gates": [
+    "Root must complete current scoped known-writer/lease and unresolved-effect reconciliation; namespace stability is not universal absence and no denied globalprocess enumeration is required or authorized.",
+    "Actual readonly READY has terminalexitnull and must be consumed by the original root, with exact PID/run/method/plan/source evidence.",
+    "Only fresh authenticated intended-account quota and its exact proof may release the gate. All source/namespace/storage/trueabsence checks must still pass.",
+    "Any ledger-unavailable failure now emits never_admitted_countnull and placeholder authorityfalse; preserve reconciliation-required state, never inferzero attempts or readmit from empty placeholders.",
+    "One later attempt per fourteen literal windows, no automatic retry or successor; retain original unknown reason classes and all HTTP/provider/publicR2403/Fabric/publisher refusal boundaries."
+  ],
+  "parent_reported_custody_context": {
+    "source_carrier_session": 40563,
+    "exit_code": 0,
+    "terminal_chunk": "6638e2",
+    "HEAD": "2a08250fe61aa59ad3e1581149f0b93e9d5a17cf",
+    "reviewer_polled_processes_or_reran_git_custody": false,
+    "scoped_launch_custody_still_parent_owned": true
+  },
+  "findings": [],
+  "review_effects": {
+    "candidate_execution": false,
+    "provider_requests": 0,
+    "credential_reads": 0,
+    "archive_writes": 0,
+    "rawdata_scans": 0,
+    "source_edits": 0,
+    "workers": 0
+  }
+}

@@ -19,6 +19,8 @@ NO CN-LIMIT-ALPHA IMPORTS. Displayed score authority traces to
 from __future__ import annotations
 
 import logging
+import math
+import re
 from datetime import datetime, timezone
 from typing import Any, Callable, Iterable, Mapping
 
@@ -31,11 +33,24 @@ log = logging.getLogger(__name__)
 SCHEMA = "cn_prophet_live.armed/v1"
 MARKET = "CN"
 
+#: The nightly standouts board's four primary arrays, projected exactly once
+#: into the pack's frozen context. ``watch`` is an alias over the last three
+#: and every other key (``reversal_watch``, ``laggards``, ``ripening``, …) is
+#: a different lane — reading them here would double-count a ticker.
+PRIMARY_BOARD_ARRAYS: tuple[str, ...] = (
+    "buy", "more_actionable", "late_or_unfillable", "forming",
+)
+
+_TICKER_RE = re.compile(r"^\d{6}\.(SS|SZ)$")
+_AS_OF_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
 #: Frozen nightly legs the pack projects (spec §4). Live-derived fields are the
 #: evaluator's: state, market_status, price. Never recompute these at 5-min.
+#: ``score_rank`` rides last as a separately named leg: ``rank`` stays the
+#: published ``board_rank`` and is never replaced by it.
 FROZEN_LEG_KEYS: tuple[str, ...] = (
     "score", "rank", "lane", "rev_z", "reversal_member",
-    "theme_timing", "relay", "liquidity", "microstructure",
+    "theme_timing", "relay", "liquidity", "microstructure", "score_rank",
 )
 LIVE_DERIVED_KEYS: tuple[str, ...] = ("state", "market_status", "price")
 
@@ -130,6 +145,70 @@ def verify_edges(ticker: str, close: Any, checks: list,
     return AP.verify_edges(ticker, close, checks, gate_fn=gate_fn, calendar=cn_calendar)
 
 
+def project_primary_board(doc: Any) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+    """Project the frozen board's four primary arrays exactly once (P1).
+
+    Reads ``site/factordata/china_standouts.json``'s primary lanes —
+    ``PRIMARY_BOARD_ARRAYS`` in order — and maps each row's nested
+    ``prophet.score`` to the pack's flat ``prophet_score`` input and its
+    published ``board_rank`` to the flat ``prophet_rank`` input;
+    ``score_rank`` survives as a separately named leg. Returns
+    ``(rows_by_ticker, receipt)``. A structural refusal (non-dict doc, bad
+    ``as_of``, one ticker in two primary arrays) returns ``({}, {"refused": …})``
+    so the caller fails loud rather than shipping a partial board; per-row
+    defects exclude that row only, counted under one reason key.
+    """
+    if not isinstance(doc, dict):
+        return {}, {"refused": "as_of"}
+    as_of = doc.get("as_of")
+    if not isinstance(as_of, str) or not _AS_OF_RE.fullmatch(as_of):
+        return {}, {"refused": "as_of"}
+    try:
+        datetime.strptime(as_of, "%Y-%m-%d")
+    except ValueError:
+        return {}, {"refused": "as_of"}
+
+    rows: dict[str, dict[str, Any]] = {}
+    excluded: dict[str, int] = {}
+    primary_rows = 0
+    for array in PRIMARY_BOARD_ARRAYS:
+        seq = doc.get(array)
+        if not isinstance(seq, list):
+            continue
+        for row in seq:
+            primary_rows += 1
+            fields = row if isinstance(row, dict) else {}
+            ticker = fields.get("ticker")
+            prophet = fields.get("prophet")
+            score = prophet.get("score") if isinstance(prophet, dict) else None
+            board_rank = fields.get("board_rank")
+            if not (isinstance(ticker, str) and _TICKER_RE.fullmatch(ticker)):
+                excluded["ticker"] = excluded.get("ticker", 0) + 1
+                continue
+            if (isinstance(score, bool) or not isinstance(score, (int, float))
+                    or not math.isfinite(score) or not 0 <= score <= 100):
+                excluded["score"] = excluded.get("score", 0) + 1
+                continue
+            if isinstance(board_rank, bool) or not isinstance(board_rank, int) \
+                    or board_rank < 1:
+                excluded["board_rank"] = excluded.get("board_rank", 0) + 1
+                continue
+            if ticker in rows:
+                return {}, {"refused": "duplicate_ticker", "ticker": ticker}
+            blob = dict(row)
+            blob["prophet_score"] = score
+            blob["prophet_rank"] = board_rank
+            score_rank = row.get("score_rank")
+            blob["score_rank"] = score_rank if (
+                not isinstance(score_rank, bool) and isinstance(score_rank, int)
+                and score_rank >= 1) else None
+            blob.setdefault("lane", array)
+            rows[ticker] = blob
+    receipt = {"as_of": as_of, "primary_rows": primary_rows,
+               "projected": len(rows), "excluded": excluded}
+    return rows, receipt
+
+
 def attach_frozen(entry: dict[str, Any], frozen: Mapping[str, Any] | None) -> dict[str, Any]:
     """Project the nightly board's frozen legs onto one pack entry (spec §4)."""
     src = dict(frozen or {})
@@ -146,6 +225,7 @@ def attach_frozen(entry: dict[str, Any], frozen: Mapping[str, Any] | None) -> di
         "relay": src.get("relay"),
         "liquidity": src.get("liquidity"),
         "microstructure": src.get("microstructure"),
+        "score_rank": src.get("score_rank"),
     }
     entry["frozen"] = {k: v for k, v in blob.items() if v is not None}
     entry["repaint_disclosure"] = {
