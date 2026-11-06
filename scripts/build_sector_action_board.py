@@ -1,7 +1,6 @@
 """Build the source-bound action board consumed by US Sector Intelligence."""
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
 import os
@@ -15,28 +14,12 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from jinja2 import Environment, FileSystemLoader  # noqa: E402
-log = logging.getLogger("build_sector_action_board")
-
-#: The six actionable lanes a board counts. Mirrors the freshness gate's own
-#: lane set (``scripts/check_sector_intelligence_freshness.py``).
-_ACTION_LANES = (
-    "buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid",
+from engine.sector_action_board import (  # noqa: E402
+    ACTION_LANES as _ACTION_LANES, ActionBoardContractError,
+    _basket_as_of, _board_has_rows, action_board_envelope,
+    attach_two_reads, sector_setup_lookups,
 )
-
-
-def _basket_as_of(payload: dict[str, Any]) -> str:
-    top = payload.get("as_of")
-    theme = (payload.get("theme_intel") or {}).get("as_of") \
-        if isinstance(payload.get("theme_intel"), dict) else None
-    if not isinstance(top, str) or not top:
-        raise ValueError("baskets.json carries no usable top-level as_of")
-    if not isinstance(theme, str) or not theme:
-        raise ValueError("baskets.json carries no usable theme_intel.as_of")
-    if top != theme:
-        raise ValueError(
-            f"baskets.json vintage split: as_of={top}, theme_intel.as_of={theme}"
-        )
-    return top
+log = logging.getLogger("build_sector_action_board")
 
 
 def _atomic_json_write(path: Path, payload: dict[str, Any]) -> None:
@@ -54,15 +37,6 @@ def _atomic_json_write(path: Path, payload: dict[str, Any]) -> None:
             os.unlink(temp_name)
         except FileNotFoundError:
             pass
-
-
-class ActionBoardContractError(ValueError):
-    """The canonical action-board contract cannot be satisfied for this input.
-
-    The artifact MUST NOT be written when this is raised: the caller keeps the
-    previous one. Publishing a board without its source date and basket
-    binding is what strips a live consumer of the provenance it validates.
-    """
 
 
 def write_action_board(
@@ -84,42 +58,14 @@ def write_action_board(
         raise ActionBoardContractError("action_board carries no actionable rows")
     try:
         basket_raw = baskets_path.read_bytes()
-        basket_payload = json.loads(basket_raw)
-        if not isinstance(basket_payload, dict):
-            raise ValueError("baskets.json must contain a JSON object")
-        as_of = _basket_as_of(basket_payload)
-        datetime.fromisoformat(as_of.replace("Z", "+00:00"))
-    except (OSError, ValueError) as exc:
+    except OSError as exc:
         raise ActionBoardContractError(f"basket source is unusable: {exc}") from exc
-    payload = {
-        "schema": "sector_intelligence_action_board.v1",
-        "as_of": as_of,
-        "generated_utc": generated_utc,
-        "baskets_sha256": hashlib.sha256(basket_raw).hexdigest(),
-        "action_board": action_board,
-    }
+    payload = action_board_envelope(
+        basket_raw=basket_raw, action_board=action_board,
+        generated_utc=generated_utc,
+    )
     _atomic_json_write(output, payload)
     return payload
-
-
-def _board_has_rows(board: dict[str, Any]) -> bool:
-    """True when the board carries at least one actionable row.
-
-    Mirrors the emptiness rule of the freshness gate
-    (``scripts/check_sector_intelligence_freshness.py``) exactly: the six
-    lanes must hold a row AND the published total must be positive. A board
-    that fails either test is a failed computation, not a generation, and must
-    not overwrite the last accepted artifact.
-    """
-    lane_count = sum(
-        len(board.get(lane) or [])
-        for lane in _ACTION_LANES
-        if isinstance(board.get(lane) or [], list)
-    )
-    total = board.get("total")
-    if not isinstance(total, int):
-        total = lane_count
-    return total > 0 and lane_count > 0
 
 
 def _environment(root: Path) -> Environment:
@@ -198,15 +144,7 @@ def build_action_board(
     )
 
     sector_setups = canonical.sector_setup_view(latest, sector_timing)
-    setup_lookup: dict[str, dict[str, Any]] = {}
-    two_reads: dict[str, dict[str, Any]] = {}
-    if isinstance(sector_setups, dict):
-        for row in sector_setups.get("sectors") or []:
-            if not isinstance(row, dict) or not row.get("ticker"):
-                continue
-            setup_lookup[row["ticker"]] = row
-            if isinstance(row.get("two_reads_chip"), dict):
-                two_reads[row["ticker"]] = row["two_reads_chip"]
+    setup_lookup, two_reads = sector_setup_lookups(sector_setups)
 
     board = canonical.action_board(
         sector_timing,
@@ -216,14 +154,7 @@ def build_action_board(
     )
     if not isinstance(board, dict):
         raise ValueError("canonical action_board returned a non-dictionary")
-    if two_reads:
-        for lane in (*_ACTION_LANES, "notable"):
-            for item in board.get(lane) or []:
-                if not isinstance(item, dict):
-                    continue
-                ticker = item.get("ticker")
-                if item.get("kind") == "sector" and ticker in two_reads:
-                    item["two_reads_chip"] = two_reads[ticker]
+    attach_two_reads(board, two_reads)
 
     output = site / "basketdata" / "action_board.json"
     payload = write_action_board(

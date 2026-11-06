@@ -346,7 +346,7 @@ runtime authority. It must not silently resume an old Yahoo/breadth provider wri
 
 Whole-program acceptance requires a reconciled registry/family denominator, truthful source clocks and coverage, independent collection/materialization/publication, bounded fault isolation, real browser journeys and durable proof for every admitted family. Accepted static/editorial exceptions must be explicit.
 
-Next on this carrier: complete the exact CI-closure repair on Macro #10780, then use each repository's established protected release path and verify installation. Continue the original action-writer carrier and the explicit-input/producer-transfer work. Terminal #1311 must reach the existing beta deployment owner at its eventual merged SHA; signed-in open-tab proof and the remaining native journeys are still required. Do not enable a five-minute copy of the current builder. After the independent Sector canary is production-proven, migrate each remaining family through its existing carrier and acceptance rules.
+Next on this carrier: publish the qualified captured-board/OHLCV/enrichment source, extract the stock/sector timing and setup preparation, and compose the fixed-five Sector documents through the existing owners. Continue the original updater/writer-transfer carrier. The exact CI registration remains blocked by the recorded explicit command denial; it requires legitimate capability-owner resolution before that action is attempted again. Each repository's established protected release path and installation proof still bind. Terminal #1311 must reach the existing beta deployment owner at its eventual merged SHA; signed-in open-tab proof and the remaining native journeys are still required. Do not enable a five-minute copy of the current builder. After the independent Sector canary is production-proven, migrate each remaining family through its existing carrier and acceptance rules.
 
 
 ## Private broad/member input milestone — 2026-11-06
@@ -400,3 +400,66 @@ byte envelope, followed by full input-family capture and the final Sector produc
 Current Terminal queue entries are preserved; no source owner or serving route is
 activated. CI capability, updater/drain, protected release and authenticated beta
 remain distinct open delivery obligations.
+
+
+## Captured action-board milestone — 2026-11-06
+
+The canonical action-board reducer and exact-basket-byte envelope now accept explicit
+values. Both legacy builders delegate to the same owner; focused canonical injection,
+atomic writer, invalid-input preservation, six-lane routing and standout selection are
+preserved. The runtime composition detaches inputs and performs no acquisition or writes.
+The alert/action-board separation guard follows the moved calculation owner.
+
+The final affected gate passed 310 tests with four skips and four explicit generated-
+site precondition deselections. An unchanged test's integer-total iteration defect was
+reproduced against its exact published source and the literal original reducer before
+repairing the test. The source algorithms, writer envelope parity and remaining input
+obligations are recorded in [the action-board contract](SECTOR_ACTION_BOARD_INPUTS_2026-11-06.md).
+Diff-check exited0; source-only qualification does not establish runtime or beta proof.
+
+Next: explicit genuine thematic OHLCV and signal/texture calibration inputs, stock/sector
+timing and setup preparation, separately needed amalgam/holdings/auxiliary capture, and
+the final Sector composer. Preserve the existing updater, publisher, auth, BFF and
+protected-release owners; source barrier and authenticated open-tab acceptance remain
+open. No collection or serving authority has transferred.
+
+
+## Genuine member-field and enrichment milestone — 2026-11-06
+
+The existing deep member downloader and adjusted-price owner now support explicit
+Open/High/Low/Close/Volume capture, whole-history replacement and truthful historical/
+current qualification. Placeholder cleanup preserves original response extent and
+real holes; malformed values and impossible OHLC bars are refused. The four-field
+public path remains exact against the literal published implementation.
+
+The theme enrichment calculator now constructs each basket candle from that basket's
+captured membership and binds prepared observations to the actual resolved thematic
+panel. It preserves the legacy union calendar, weighting, late births, stale-tail
+behavior and deep history. Captured cycle inputs and texture calibrations replace
+ambient reads; unavailable/older full fields use the labelled close-only fallback
+without volume/tape substitution. Real preparation, enrichment and final theme
+intelligence executed together with ambient store/configuration acquisition blocked.
+
+Affected verification passed 388 with one skip and two exact sparse-membership
+precondition deselections; both failures reproduced against published source. Final
+boundary verification passed 119 after whole-frame allocation and snapshot-detachment
+fences. Counts overlap. [Contract and limits](SECTOR_OHLCV_ENRICHMENT_INPUTS_2026-11-06.md)
+and [exact source proof](SECTOR_OHLCV_ENRICHMENT_SOURCE_REVIEW_2026-11-06.json) retain
+the hashes, baseline comparison and actual consumer evidence. No provider or beta
+runtime acceptance is implied.
+
+The earlier board-only typed commit returned REFUSED/NOT_APPLIED; original publication
+remained 4eddd4, and no commit/push retry occurred. The current qualified source is a
+materially new candidate on that same carrier. At 10:56 UTC, an authoritative provider
+quota observation showed capacity; the distinct planned holdings-capture commission
+then ended with remote_admission_refused rc75. Worker start and complete effect absence
+are unproven, result consumption/retry/continuation are disallowed, and its source
+owner remains protected. Parent-owned independent source work continues. Full receipts
+are in the existing active-commission record.
+
+Next: timing/notable/setup calculation in the existing board owner, then the thin
+data-only fixed-five composer. Preserve captured source vintages, previous-generation
+Central input, distinct theme/allocation projections and deferred effects. Complete
+amalgam/holdings/auxiliary capture through their established owners. Sole-writer
+transfer, updater barrier, hosted/protected release, API/BFF/native integration,
+authenticated open-tab refresh and all remaining estate families remain open.

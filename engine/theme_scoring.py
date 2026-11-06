@@ -685,6 +685,226 @@ _SIG_CACHE: dict[tuple, dict] = {}
 _REGION_MARKET = {"us": "US", "china": "CN", "hk": "HK", "canada": "CA", "intl": "US"}
 
 
+def _basket_signals_from_candle(cand, meta, *, level, region, n_members,
+                                diagnostics=True) -> dict:
+    """Shared incumbent MTF/tape decision over already acquired candle values."""
+    out = {}
+    try:
+        if cand is not None:
+            n_total = int(meta.get("n_total") or n_members or 0)
+            n_live = int(meta.get("n_live") or 0)
+            member_cov = n_live / n_total if n_total else 0.0
+            meta["member_coverage_pct"] = round(member_cov, 3)
+            if member_cov >= MIN_CANDLE_MEMBER_COVERAGE:
+                mtf = basket_mtf.basket_mtf(cand, _REGION_MARKET.get(region, "US"))
+                if mtf:
+                    mtf["source"] = "member_ohlcv"
+                out = {"mtf": mtf, "tape": basket_tape.basket_tape(cand, meta), "meta": meta}
+            elif diagnostics:
+                log.info("basket candle coverage %.0f%% below %.0f%% floor; "
+                         "using full-basket close-only MTF",
+                         member_cov * 100, MIN_CANDLE_MEMBER_COVERAGE * 100)
+    except Exception as exc:  # noqa: BLE001 — additive overlay
+        if diagnostics:
+            log.warning("basket signals failed: %s", exc)
+        out = {}
+    if not out.get("mtf") and level is not None:
+        try:
+            close = pd.to_numeric(level, errors="coerce").dropna()
+            if len(close) >= 60:
+                mtf = basket_mtf.basket_mtf(pd.DataFrame({"close": close}),
+                                           _REGION_MARKET.get(region, "US"))
+                if mtf:
+                    mtf["source"] = "equal_weight_close"
+                    out = {"mtf": mtf, "tape": None,
+                           "meta": {"basis": "equal_weight_close",
+                                    "flow_available": False, "n_bars": int(len(close))}}
+        except Exception as exc:  # noqa: BLE001 — additive overlay
+            if diagnostics:
+                log.warning("basket close-only MTF fallback failed: %s", exc)
+    return out
+
+
+def basket_enrichments_from_inputs(rows, *, region: str, member_frames,
+                                    reference_close: pd.DataFrame,
+                                    source_session: str, calculation_inputs,
+                                    rollover_weights, breadth_divergence_fit: dict,
+                                    basis_tolerance: float = 1e-3) -> dict:
+    """Compute US signals/textures from one captured thematic price population.
+
+    ``reference_close`` is the resolved thematic panel used to prepare the rows,
+    including its accepted extra-member history. Each row's observed masked prices
+    must match it. Candles are constructed here for that row's actual membership;
+    a caller cannot attach another basket's otherwise valid candle or evidence.
+
+    The incumbent union observation calendar preserves deep history and real holes.
+    The captured US reference admits those dates and anchors cycle calculations.
+    Missing/currentness/basis shortfalls use the labelled close-only fallback.
+    """
+    from collections.abc import Mapping
+    from copy import deepcopy
+    from datetime import date
+    from dataclasses import fields
+    import json
+    from engine import cycles
+    from lib.adjusted_price_capture import MAX_COLUMNS, MAX_ROWS, MAX_PANEL_CELLS, OHLCV_FIELDS
+    if (region != "us" or not isinstance(rows, (tuple, list)) or len(rows) > 1000
+            or not isinstance(member_frames, Mapping) or len(member_frames) > MAX_COLUMNS
+            or not isinstance(calculation_inputs, cycles.CycleCalculationInputs)):
+        raise ValueError("Invalid explicit basket-enrichment scope")
+    calculation_inputs = cycles.CycleCalculationInputs(**{
+        field.name: getattr(calculation_inputs, field.name) for field in fields(calculation_inputs)})
+    try:
+        if not isinstance(source_session, str) or date.fromisoformat(source_session).isoformat() != source_session:
+            raise ValueError
+        target = pd.Timestamp(source_session)
+    except (TypeError, ValueError):
+        raise ValueError("Invalid basket-enrichment source session") from None
+    if (not isinstance(rollover_weights, (tuple, list)) or len(rollover_weights) != 5
+            or any(type(value) not in (int, float) or not np.isfinite(value) or value < 0
+                   for value in rollover_weights)):
+        raise ValueError("Five finite nonnegative explicit rollover weights are required")
+    weights = tuple(float(value) for value in rollover_weights)
+    if not isinstance(breadth_divergence_fit, dict):
+        raise ValueError("Explicit breadth-divergence calibration is required")
+    try:
+        fit = json.loads(json.dumps(breadth_divergence_fit, allow_nan=False))
+    except (TypeError, ValueError):
+        raise ValueError("Invalid explicit breadth-divergence calibration") from None
+    if fit.get("verdict") is not None and not isinstance(fit.get("verdict"), str):
+        raise ValueError("Invalid breadth-divergence verdict")
+    if fit.get("verdict") == "ship_sizing_leg":
+        wired = fit.get("wired_weights")
+        if (not isinstance(wired, list) or len(wired) != 3
+                or any(type(value) not in (int, float) or not np.isfinite(value) or value < 0
+                       for value in wired) or not np.isfinite(sum(wired)) or sum(wired) <= 0):
+            raise ValueError("Shipped breadth-divergence calibration requires positive nonnegative weight mass")
+    reference = calculation_inputs.reference_sessions.get("US")
+    if (reference is None or target not in reference
+            or pd.Timestamp(calculation_inputs.evaluation_date) < target):
+        raise ValueError("Explicit US calculation reference does not cover the source session")
+    # Capture each primitive before using it. Bounds precede potentially large copies.
+    raw_reference = basket_index._capture_index_panel(reference_close)
+    if (not raw_reference.index.isin(reference).all()
+            or (len(raw_reference) and raw_reference.index[-1] > target)):
+        raise ValueError("Resolved thematic reference lies outside the admitted source/reference")
+    total_cells = 0
+    for ticker, frame in member_frames.items():
+        if not isinstance(ticker, str) or not ticker or len(ticker) > 24:
+            raise ValueError("Invalid captured member-frame identity")
+        if frame is None:
+            continue
+        if (not isinstance(frame, pd.DataFrame) or len(frame) > MAX_ROWS
+                or frame.columns.has_duplicates or not set(frame.columns).issubset(OHLCV_FIELDS)):
+            raise ValueError("Invalid captured member-frame fields")
+        total_cells += frame.size
+        if total_cells > MAX_PANEL_CELLS * len(OHLCV_FIELDS):
+            raise ValueError("Captured member-frame allocation bound")
+    sources = {ticker: None if frame is None else frame.copy(deep=True)
+               for ticker, frame in member_frames.items()}
+    prepared, ids = [], set()
+    for row in rows:
+        bid = row.get("bid") if isinstance(row, dict) else None
+        if not isinstance(bid, str) or not bid or bid in ids or type(row.get("skip")) is not bool:
+            raise ValueError("Ambiguous basket-enrichment row identity")
+        ids.add(bid)
+        if row["skip"]:
+            continue
+        level = row.get("lvl")
+        if not isinstance(level, pd.Series):
+            raise ValueError("Explicit basket level must be a Series")
+        level = basket_index._capture_index_panel(level.to_frame("level"))["level"]
+        actual = level.dropna()
+        if (not len(actual) or actual.index[-1] != target
+                or not level.index.isin(reference).all()):
+            raise ValueError("Prepared basket observations do not match the source session")
+        members, _, member_symbols = basket_index._capture_member_index_scope(row["members"], level.index)
+        member_close = basket_index._capture_index_panel(row["mc_closes"])
+        if not set(member_close.columns).issubset(member_symbols):
+            raise ValueError("Unexpected prepared member-close identity")
+        if (target not in member_close.index or not member_close.loc[target].notna().any()
+                or (len(member_close) and member_close.index[-1] > target)
+                or not member_close.index.isin(reference).all()):
+            raise ValueError("Prepared member closes do not match the source session")
+        aligned = raw_reference.reindex(index=member_close.index, columns=member_close.columns)
+        observed = member_close.notna()
+        if (observed & (aligned.isna() | member_close.ne(aligned))).to_numpy().any():
+            raise ValueError("Prepared member prices do not match the captured resolved thematic panel")
+        prepared.append({"bid": bid, "lvl": level, "members": members,
+                         "member_symbols": member_symbols, "mc_closes": member_close,
+                         **{key: deepcopy(row[key]) for key in ("fp", "fp5", "crowd", "breadth_d", "perf")}})
+    out = {}
+    with cycles.bind_calculation_inputs(calculation_inputs):
+        for row in prepared:
+            bid, level, members = row["bid"], row["lvl"], row["members"]
+            member_symbols = row["member_symbols"]
+            scoped_frames = {ticker: sources[ticker] for ticker in member_symbols if ticker in sources}
+            calendar = pd.DatetimeIndex([])
+            for frame in scoped_frames.values():
+                if frame is None or frame.empty:
+                    continue
+                if (not isinstance(frame.index, pd.DatetimeIndex) or frame.index.hasnans
+                        or frame.index.has_duplicates or not frame.index.is_monotonic_increasing
+                        or frame.index.tz is not None or not frame.index.equals(frame.index.normalize())):
+                    raise ValueError("Invalid captured member observation calendar")
+                admitted = frame.index[frame.index <= target]
+                if not admitted.isin(reference).all():
+                    raise ValueError("Captured member calendar lies outside the US calculation reference")
+                calendar = calendar.union(admitted)
+                if len(calendar) > MAX_ROWS or len(calendar) * len(member_symbols) > MAX_PANEL_CELLS:
+                    raise ValueError("Member candle calendar allocation bound")
+            calendar = calendar.sort_values().as_unit("ns")
+            scoped_reference = raw_reference[[ticker for ticker in member_symbols if ticker in raw_reference]]
+            cand, meta = basket_index.consolidated_candle_from_inputs(
+                members, calendar, frames=scoped_frames, mode="equal", conv_map=None,
+                pit=False, alpha_pit=True, reference_close=scoped_reference,
+                basis_tolerance=basis_tolerance)
+            reason = None
+            if cand is None:
+                reason = "member_candle_unavailable"
+            else:
+                fields = ("open", "high", "low", "close", "dollar_vol", "n_live")
+                tip = cand["close"].dropna()
+                if (len(cand) and cand.index[-1] > target) or not cand.index.isin(reference).all():
+                    raise ValueError("Basket candle lies outside the admitted source/reference")
+                if not len(tip) or tip.index[-1] != target:
+                    reason = "member_candle_older_than_source"
+                elif meta.get("as_of") != source_session or meta.get("observed_endpoint") != source_session:
+                    reason = "member_observation_clock_unqualified"
+                elif not meta.get("reference_basis_qualified"):
+                    reason = "member_price_basis_unqualified"
+                elif (type(meta.get("observed_member_coverage_pct")) not in (int, float)
+                        or not np.isfinite(meta["observed_member_coverage_pct"])
+                        or meta["observed_member_coverage_pct"] < MIN_CANDLE_MEMBER_COVERAGE):
+                    reason = "current_member_coverage_insufficient"
+                elif any(pd.isna(cand.at[target, field]) for field in fields):
+                    reason = "current_candle_fields_unavailable"
+            qualified = reason is None
+            signals = _basket_signals_from_candle(
+                cand if qualified else None, meta if qualified else {},
+                level=level, region=region, n_members=len(members), diagnostics=False)
+            textures = basket_score.theme_textures(
+                level, row["fp"], row["fp5"], row["crowd"], row["breadth_d"], row["perf"],
+                mc_closes=row["mc_closes"], rollover_weights=weights,
+                breadth_divergence_fit=fit)
+            out[bid] = {
+                "signals": signals, "textures": textures,
+                "input_evidence": {
+                    "source_session": source_session,
+                    "member_candle_qualified": qualified,
+                    "member_candle_unavailable_reason": reason,
+                    "member_candle_observed_at": meta.get("observed_endpoint"),
+                    "current_member_coverage_pct": meta.get("observed_member_coverage_pct"),
+                    "reference_basis_qualified": bool(meta.get("reference_basis_qualified")),
+                    "member_price_basis_checks": meta.get("reference_basis_checks"),
+                    "unavailable_members": meta.get("unavailable_members"),
+                    "cycle_evaluation_date": calculation_inputs.evaluation_date,
+                    "breadth_divergence_verdict": fit.get("verdict"),
+                },
+            }
+    return out
+
+
 def _basket_signals(members: list[dict], level: pd.Series | None = None,
                     region: str = "us", conv_map: dict | None = None,
                     *, use_cache: bool = True) -> dict:
@@ -707,43 +927,15 @@ def _basket_signals(members: list[dict], level: pd.Series | None = None,
     key = (region, level_last, tuple(sorted(m.get("ticker", "") for m in members)))
     if use_cache and key in _SIG_CACHE:
         return _SIG_CACHE[key]
-    out: dict = {}
+    cand, meta = None, {}
     try:
         idx = basket_index.deep_calendar(members)
         if len(idx) >= 60:
             cand, meta = basket_index.consolidated_candle(members, idx, "equal", conv_map, pit=False)
-            if cand is not None:
-                n_total = int(meta.get("n_total") or len(members) or 0)
-                n_live = int(meta.get("n_live") or 0)
-                member_cov = n_live / n_total if n_total else 0.0
-                meta["member_coverage_pct"] = round(member_cov, 3)
-                if member_cov >= MIN_CANDLE_MEMBER_COVERAGE:
-                    mtf = basket_mtf.basket_mtf(cand, _REGION_MARKET.get(region, "US"))
-                    if mtf:
-                        mtf["source"] = "member_ohlcv"
-                    out = {"mtf": mtf,
-                           "tape": basket_tape.basket_tape(cand, meta),
-                           "meta": meta}
-                else:
-                    log.info("basket candle coverage %.0f%% below %.0f%% floor; "
-                             "using full-basket close-only MTF",
-                             member_cov * 100, MIN_CANDLE_MEMBER_COVERAGE * 100)
-    except Exception as e:  # noqa: BLE001 — additive overlay
-        log.warning("basket signals failed: %s", e)
-        out = {}
-    if not out.get("mtf") and level is not None:
-        try:
-            close = pd.to_numeric(level, errors="coerce").dropna()
-            if len(close) >= 60:
-                mtf = basket_mtf.basket_mtf(pd.DataFrame({"close": close}),
-                                            _REGION_MARKET.get(region, "US"))
-                if mtf:
-                    mtf["source"] = "equal_weight_close"
-                    out = {"mtf": mtf, "tape": None,
-                           "meta": {"basis": "equal_weight_close",
-                                    "flow_available": False, "n_bars": int(len(close))}}
-        except Exception as e:  # noqa: BLE001 — additive overlay
-            log.warning("basket close-only MTF fallback failed: %s", e)
+    except Exception as exc:  # noqa: BLE001 — additive overlay
+        log.warning("basket signals failed: %s", exc)
+    out = _basket_signals_from_candle(
+        cand, meta, level=level, region=region, n_members=len(members), diagnostics=True)
     if use_cache:
         _SIG_CACHE[key] = out
     return out
