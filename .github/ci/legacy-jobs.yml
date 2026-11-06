@@ -30529,6 +30529,8 @@ jobs:
       - templates/calculators/compounding.html.j2
       - templates/calculators/dollar_cost_averaging.html.j2
       - tests/js/calculator_input_integrity.test.mjs
+      - templates/calculators/trade_profit.html.j2
+      - site/tools/calculators/trade-profit.html
       - templates/calculators/cagr.html.j2
       - tests/test_cagr_copy_feedback.py
     runs-on: ubuntu-latest

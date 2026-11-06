@@ -940,3 +940,104 @@ test('compounding latest rejected operation still performs successful legacy cop
   assert.equal(ui.showCopied(), true);
   assert.equal(ui.fallbackShown(), false);
 });
+
+
+// Trade P/L full-controller admission regressions. Synthetic DOM/clipboard only.
+const root = process.env.TRADE_ROOT || ROOT;
+const paths = ['templates/calculators/trade_profit.html.j2', 'site/tools/calculators/trade-profit.html'];
+const scriptOf = source => {
+  const scripts = [...source.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+  const found = scripts.filter(s => s.includes('var direction = "long"') && s.includes('function compute(inp)'));
+  assert.equal(found.length, 1, 'one actual Trade P/L inline controller');
+  return found[0];
+};
+
+function page(path, direction='long') {
+  const nodes = new Map();
+  const documentEvents = new Map();
+  const copies = [];
+  const errors = [];
+  function node(id) {
+    const events = new Map(), classes = new Set(), attrs = new Map();
+    return {id, value:'', textContent:'', className:'', dataset:{},
+      classList:{add(c){classes.add(c)},remove(c){classes.delete(c)},contains(c){return classes.has(c)}},
+      addEventListener(name, fn){events.set(name, fn)},
+      fire(name, event={}){assert.ok(events.has(name), id+' listener '+name);events.get(name)(event)},
+      querySelectorAll(){return []},
+      getAttribute(name){return attrs.get(name)},setAttribute(name,value){attrs.set(name,value)},removeAttribute(name){attrs.delete(name)}
+    };
+  }
+  for(const id of ['entry','exit','qty','fees','date-open','date-close','out-main','out-main-unit',
+                   'out-plain','out-ret','out-ann','out-cost','out-days','direction-seg','copy-result','copied']) nodes.set(id,node(id));
+  const doc={getElementById(id){assert.ok(nodes.has(id),id);return nodes.get(id)},
+    addEventListener(name,fn){documentEvents.set(name,fn)}};
+  const context=vm.createContext({document:doc, navigator:{clipboard:{writeText(text){copies.push(text);return new Promise(()=>{})}}},
+    console:{error(...args){errors.push(args)}}, setTimeout(){return 1}, clearTimeout(){}, Math, Number, String, Date, isFinite, isNaN, parseFloat, Promise});
+  vm.runInContext(scriptOf(readFileSync(join(root,path),'utf8')),context,{filename:path});
+  documentEvents.get('DOMContentLoaded')();
+  assert.deepEqual(errors,[],'canonical WORKED_EXAMPLES');
+  const api={get:id=>nodes.get(id),copies,
+    input(id,value){nodes.get(id).value=String(value);nodes.get(id).fire('input')},
+    set(values){for(const [key,value] of Object.entries(values))this.input(key,value)},
+    copy(){nodes.get('copy-result').fire('click')},
+    direction(value){const button=node('direction');button.dataset.v=value;
+      nodes.get('direction-seg').fire('click',{target:{closest(){return button}}})}
+  };
+  api.direction(direction);
+  api.set({entry:'50',exit:'55',qty:'100',fees:'2'});
+  return api;
+}
+
+function withheld(p, note){
+  for(const id of ['out-main','out-ret','out-ann','out-cost','out-days']) assert.equal(p.get(id).textContent,'—',note+' '+id);
+  assert.ok(p.get('out-plain').textContent.length>0,note+' correction message');
+  const before=p.copies.length;p.copy();assert.equal(p.copies.length,before,note+' invalid result not copied');
+}
+
+test('template and committed page contain byte-identical original controller',()=>{
+  assert.equal(scriptOf(readFileSync(join(root,paths[0]),'utf8')),scriptOf(readFileSync(join(root,paths[1]),'utf8')));
+});
+
+for(const path of paths){
+  for(const dir of ['long','short']){
+    test(`${path} ${dir} canonical valid fees and no-fee defaults`,()=>{
+      const p=page(path,dir);
+      assert.equal(p.get('out-main').textContent,dir==='long'?'$498':'-$502');
+      assert.equal(p.get('out-ret').textContent,dir==='long'?'+9.96%':'-10.04%');
+      for(const fee of ['', '  ', '0','-0','+0','0.0']){
+        p.input('fees',fee);assert.equal(p.get('out-main').textContent,dir==='long'?'$500':'-$500');
+        p.copy();assert.ok(p.copies.at(-1).includes(dir));
+      }
+    });
+    for(const raw of ['oops','$2','2oops','2%','2.5.6','1,2','1,23','1,0000','0x10','NaN','Infinity','1e309']){
+      test(`${path} ${dir} supplied fee ${JSON.stringify(raw)} is not an assumed zero or prefix`,()=>{
+        const p=page(path,dir);p.copy();assert.equal(p.copies.length,1);
+        p.input('fees',raw);withheld(p,raw);assert.equal(p.get('fees').value,raw,'invalid input retained for correction');
+        p.input('fees','3');assert.equal(p.get('out-main').textContent,dir==='long'?'$497':'-$503');
+        p.copy();assert.equal(p.copies.length,2);assert.ok(p.copies.at(-1).includes(dir==='long'?'$497':'-$503'));
+      });
+    }
+    test(`${path} ${dir} negative fee remains refused`,()=>{const p=page(path,dir);p.input('fees','-2');withheld(p,'negative')});
+  }
+  for(const field of ['entry','exit','qty']){
+    for(const raw of ['12abc','1,2,3','0x10','', '1e309']){
+      test(`${path} ${field} rejects whole invalid token ${JSON.stringify(raw)}`,()=>{
+        const p=page(path);p.input(field,raw);withheld(p,field+' '+raw);
+      });
+    }
+  }
+  for(const [raw,fee] of [['1,234.50',1234.5],['.5',0.5],['5.',5],['+2',2],['002',2],[' 2 ',2],['2e1',20],['2E-1',0.2],['1,000e-2',10]]){
+    test(`${path} valid fee spelling ${JSON.stringify(raw)} preserves actual debit`,()=>{
+      const p=page(path);p.input('fees',raw);
+      const expected=500-fee;assert.equal(p.get('out-main').textContent,(expected<0?'-$':'$')+Math.abs(expected).toLocaleString('en-US',{maximumFractionDigits:2}));
+      p.copy();assert.equal(p.copies.length,1);
+    });
+  }
+  test(`${path} dated annualization and sign switching remain intact`,()=>{
+    const p=page(path);p.set({'date-open':'2025-01-01','date-close':'2026-01-01'});
+    assert.equal(p.get('out-days').textContent,'365');assert.equal(p.get('out-ann').textContent,'+10.0% if repeated at this pace for a year');
+    p.direction('short');assert.equal(p.get('out-main').textContent,'-$502');assert.equal(p.get('out-ann').textContent,'-10.0% if repeated at this pace for a year');
+    p.input('fees','fee');withheld(p,'dated invalid fee');
+    p.input('fees','2');assert.equal(p.get('out-days').textContent,'365');assert.equal(p.get('out-main').textContent,'-$502');
+  });
+}
