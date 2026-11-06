@@ -23,6 +23,8 @@ The source census is useful and is retained below with these explicit qualificat
 9. **Consumer limitation:** current native Discover views do not implement the entire legacy Brief/Explore/Research/Watches and action-board journey. PR 1311 refreshes active existing feeds only. Full journey parity remains an explicit migration obligation.
 10. **Evidence limitation:** this audit inspected source. It did not prove production publication, source freshness, authentication, installed code or browser behavior. Production observations are separately scoped in the evidence JSON.
 
+11. **Complete Brief dependency clarified, November 6:** the original basket chart/theme leadership also requires the broad/smallcap/midcap history panels, extras, current theme scoring/allocation, explicit historical context and canonical board data. The retained worker claim below that a closes advancer alone completes daily Sector is not accepted. [Broader runtime evidence](ALWAYS_ON_BRIEF_INPUT_EVIDENCE_2026-11-06.json) and the master plan record the complete chain. Preserve the raw return as evidence, not current authority.
+
 ## Input ownership and first independent canary
 
 The current source points to repository-local `data/yahoo/` histories. `lib/config.py` does not provide the proposed runtime data-root override; inventing an environment variable or mutating global cached configuration would leave undeclared fallback reads.

@@ -39,6 +39,8 @@ evidence:
   - research/market_os/ALWAYS_ON_MACRO_MIGRATION_2026-11-05.md
   - research/market_os/ALWAYS_ON_MACRO_EVIDENCE_2026-11-05.json
   - research/market_os/ALWAYS_ON_RUNTIME_EVIDENCE_2026-11-06.json
+  - research/market_os/ALWAYS_ON_BRIEF_INPUT_EVIDENCE_2026-11-06.json
+  - research/market_os/ALWAYS_ON_ACTIVE_COMMISSIONS_2026-11-06.json
   - https://github.com/mastermindx-market-intelligence/macro/issues/10779
   - https://github.com/mastermindx-market-intelligence/macro/actions/runs/42099034826
   - "Macro e39ec45902c1a2bb28507beb851593be6e422167: scripts/build_site.py bare action_board writer; scripts/build_sector_intelligence.py; docs/VPS_LIVE_ORCHESTRATION.md"
@@ -175,3 +177,34 @@ Terminal #1311 passed all 21 candidate checks and has a verified native merge-qu
 for `847af34df5f811fa4a9152936e42d199b8a45b08`. Beta's existing generation passed a CLEAN
 preflight with immutable receipt readback and matching policy digest. Queue admission and
 preflight are not merge, deployment, new source freshness or authenticated product proof.
+
+## Original Brief dependency and recovery ruling, November 6
+
+The complete Brief includes stock-basket history, theme intelligence/allocation, theme
+context and the action board; the 14 benchmark histories alone do not advance that product.
+The [bounded broader input evidence](../../research/market_os/ALWAYS_ON_BRIEF_INPUT_EVIDENCE_2026-11-06.json)
+and [retained commission briefs](../../research/market_os/ALWAYS_ON_ACTIVE_COMMISSIONS_2026-11-06.json)
+extend the source trace. Preserve the incumbent broad-calendar and whole-column vintage
+resolver, alias and membership semantics, configured coverage floors and actual history
+disclosures. Archived population counts cannot substitute for current constituent coverage.
+
+Runtime acquisition must return qualified explicit candidates without publishing or
+writing legacy caches. Calculations accept snapshots rather than reading repository
+fallbacks. Same-session corrections preserve consistent adjustment vintages. Failed
+required repair or coverage qualification retains the last accepted generation and
+reports a truthful stale/unavailable state.
+
+Keep historical context, grading, notification, forward-log and proxy-price owners
+unchanged. Prior accepted Sector input used for theme demotion is declared as a prior
+dependency; it must not become a circular read of the candidate generation. The native
+view may expose distinct baseline dates during transition, but complete Brief acceptance
+requires the qualified current basket/theme/board chain and real no-build screen proof.
+
+The recovered cohort source artifact from an rc1 provider termination is evidence for
+parent verification, not an accepted worker result. Pre-task thermal refusals do not
+authorize replay or failover; direct parent recovery is available within the current
+assignment. Original active effects remain fenced and are reconciled on their carriers.
+
+Post-transfer rollback changes the selected accepted generation while retaining the
+runtime source owner. Software rollback, missing profile or transport failure must not
+reactivate legacy provider collection or overwrite runtime histories.

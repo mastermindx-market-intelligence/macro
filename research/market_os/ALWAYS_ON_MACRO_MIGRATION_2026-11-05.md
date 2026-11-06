@@ -288,6 +288,58 @@ declared migration constraint, not silently recovered data. These changes preser
 original family and journey denominator.
 
 
+### November 6 complete Brief dependency closure
+
+The pure native projection is published at `38f2441def30f02cf2accf9ddfbaee334d86e1b5`.
+It reuses the existing action-board tier split, validates declared source/baseline dates,
+and supplies the original Brief leadership and comparison chart from accepted basket/handoff
+inputs. Its 52 focused projection/tier tests and two CI checks passed locally. This is
+qualified source, not a running publisher or beta acceptance.
+
+The current hosted contract-delta check at that head subsequently found three missing
+helper import-closure paths and a three-weight-second increase in unrelated packing probes.
+These are introduced integration defects, separate from the original copy-law repair PR10759.
+Preserve the existing gate and original repair carrier; fix actual dependency selection
+rather than lowering assertions or transferring an old green result.
+
+[New bounded origin evidence](ALWAYS_ON_BRIEF_INPUT_EVIDENCE_2026-11-06.json) records
+November 4 observations in the broad, smallcap, midcap and extra-member history panels
+while served Sector artifacts still carry November 3. Individually stable files do not
+prove a coherent cohort, and archived column counts do not prove active coverage.
+
+The original Brief therefore requires this complete calculation chain:
+
+1. Qualified broad/smallcap/midcap historical panels, extra members and SPY with source
+   identities, completed-session coverage and consistent correction vintages.
+2. Basket membership and the incumbent broad-calendar/whole-column resolution algorithm.
+   Extras cannot independently advance the basket calendar.
+3. Current theme intelligence and narrative allocation using explicitly captured context,
+   calibration and prior accepted Sector demotion input. Do not create a current-generation
+   circular dependency.
+4. Theme context derived from that allocation and a declared history/alignment snapshot.
+   The existing nightly context-history owner retains seeding and advancement.
+5. The incumbent action-board data algorithm separated from HTML builders, retaining
+   qualified alpha/insider/timing inputs and the canonical basket-byte/date association.
+6. One validated private generation and an entitlement-filtered native consumer.
+
+A view that declares an older basket baseline is a safe transitional representation,
+not acceptance of the original fresh Brief. Final Sector proof requires its leadership,
+chart endpoint, theme ranking and board to advance from the qualified completed session
+without Git data transport or frontend deployment.
+
+[Full active commission briefs and latest bounded dispositions](ALWAYS_ON_ACTIVE_COMMISSIONS_2026-11-06.json)
+retain scope, source pins, interfaces and acceptance obligations. Controller creation
+and local controller polling are not worker START proof. The API adapter returned for
+source review. Yahoo-profile, basket-context and board-data requests ended before task
+execution on host-temperature admission; they are not replayed or rehomed, and direct
+parent recovery remains available. The cohort request ended with a provider error after
+an immutable source artifact was recovered; that artifact is not accepted from prose.
+Publisher, cycle, source barrier, native UI and remaining active tasks keep their original
+carriers. The cohort, broad-history and runtime input snapshots remain private and inactive.
+
+After ownership transfer, rollback selects a previous accepted generation under the same
+runtime authority. It must not silently resume an old Yahoo/breadth provider writer.
+
 ## 9. Acceptance and next action
 
 **Do not call the migration complete because this plan, a PR, a green test or a shell route exists.** Sector acceptance requires a new accepted data generation visible in an already-open authenticated beta workspace without a page build or frontend deployment; coherent data, honest stale/unavailable behavior, preserved account boundaries and the original investigation journey must all pass.

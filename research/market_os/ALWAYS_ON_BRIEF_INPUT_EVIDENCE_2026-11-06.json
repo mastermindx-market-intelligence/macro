@@ -1,0 +1,298 @@
+{
+  "schema": "macro.always_on_brief_input_evidence.v1",
+  "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+  "source_reference": "38f2441def30f02cf2accf9ddfbaee334d86e1b5",
+  "observation": {
+    "observed_at": "2026-11-06T02:36:18.514738+00:00",
+    "panels": [
+      {
+        "path": "breadth/_closes_cache.parquet",
+        "exists": true,
+        "rows": 412,
+        "columns": 519,
+        "source_index_tip": "2026-11-04",
+        "nonnull_at_tip": 498,
+        "bytes": 1689608,
+        "mtime_utc": "2026-11-05T07:04:31.668499+00:00",
+        "stable_stat": true,
+        "sha256": "c15af005a704dae79da0a81cc08fddc118b58b63139d7b5c1f314aca5dae57c0"
+      },
+      {
+        "path": "smallcap_breadth/_closes_cache.parquet",
+        "exists": true,
+        "rows": 777,
+        "columns": 635,
+        "source_index_tip": "2026-11-04",
+        "nonnull_at_tip": 598,
+        "bytes": 3357546,
+        "mtime_utc": "2026-11-05T07:04:33.538504+00:00",
+        "stable_stat": true,
+        "sha256": "dc50f308ba1dca03b8e042d644bbef39b071b055bc41d56c511bce7f2f8e825c"
+      },
+      {
+        "path": "midcap_breadth/_closes_cache.parquet",
+        "exists": true,
+        "rows": 777,
+        "columns": 420,
+        "source_index_tip": "2026-11-04",
+        "nonnull_at_tip": 401,
+        "bytes": 2326087,
+        "mtime_utc": "2026-11-05T07:04:32.456501+00:00",
+        "stable_stat": true,
+        "sha256": "8b038ad028bae6c875e247d1ebd433bc85d528ee96c512df86461d2ab88bad1e"
+      },
+      {
+        "path": "baskets/extras.parquet",
+        "exists": true,
+        "rows": 964,
+        "columns": 692,
+        "source_index_tip": "2026-11-04",
+        "nonnull_at_tip": 615,
+        "bytes": 4703831,
+        "mtime_utc": "2026-11-05T07:04:28.465489+00:00",
+        "stable_stat": true,
+        "sha256": "a544b806968b6df6e991aa09adc21da05a0885dc3af11bb0e67f12934727cece"
+      }
+    ],
+    "timers": [
+      "Fri 2026-11-06 02:36:20 UTC       2s Fri 2026-11-06 02:31:20 UTC 4min 57s ago macro-catalyst-source-cycle.timer               macro-catalyst-source-cycle.service",
+      "Fri 2026-11-06 02:38:04 UTC 1min 45s Fri 2026-11-06 02:33:05 UTC 3min 12s ago macro-live-cnprophet.timer                      macro-live-cnprophet.service",
+      "Fri 2026-11-06 02:40:01 UTC 3min 42s Fri 2026-11-06 02:35:05 UTC 1min 12s ago macro-live-snapshot.timer                       macro-live-snapshot.service",
+      "Fri 2026-11-06 02:42:01 UTC     5min Fri 2026-11-06 02:12:02 UTC    24min ago macro-sentinel.timer                            macro-sentinel.service",
+      "Fri 2026-11-06 02:44:21 UTC     8min Fri 2026-11-06 01:44:43 UTC    51min ago macro-market-memory-breadth.timer               macro-market-memory-breadth.service",
+      "Fri 2026-11-06 02:44:25 UTC     8min Thu 2026-11-05 02:42:08 UTC      23h ago macro-git-store-maintenance.timer               macro-git-store-maintenance.service",
+      "Fri 2026-11-06 02:54:06 UTC    17min Fri 2026-11-06 01:53:15 UTC    43min ago macro-market-memory-technicals.timer            macro-market-memory-technicals.service",
+      "Fri 2026-11-06 03:01:58 UTC    25min Fri 2026-11-06 02:00:09 UTC    36min ago macro-biocatalyst.timer                         macro-biocatalyst.service",
+      "Fri 2026-11-06 03:17:23 UTC    41min Fri 2026-11-06 02:18:12 UTC    18min ago macro-market-memory-context.timer               macro-market-memory-context.service",
+      "Fri 2026-11-06 03:21:40 UTC    45min Fri 2026-11-06 02:21:10 UTC    15min ago macro-market-memory-options-context-audit.timer macro-market-memory-options-context-audit.service",
+      "Fri 2026-11-06 03:27:09 UTC    50min Fri 2026-11-06 02:27:20 UTC     8min ago macro-market-memory-source.timer                macro-market-memory-source.service",
+      "Fri 2026-11-06 03:30:39 UTC    54min Fri 2026-11-06 02:29:38 UTC     6min ago macro-market-memory-identity.timer              macro-market-memory-identity.service",
+      "Fri 2026-11-06 04:00:00 UTC 1h 23min Thu 2026-11-05 04:00:00 UTC      22h ago macro-market-memory-source-spy-rest.timer       macro-market-memory-source-spy-rest.service",
+      "Fri 2026-11-06 04:07:00 UTC 1h 30min Thu 2026-11-05 04:07:00 UTC      22h ago macro-market-memory-technicals-v2.timer         macro-market-memory-technicals-v2.service",
+      "Fri 2026-11-06 04:30:00 UTC 1h 53min Thu 2026-11-05 04:30:00 UTC      22h ago macro-market-memory-experience.timer            macro-market-memory-experience.service",
+      "Fri 2026-11-06 04:32:00 UTC 1h 55min Thu 2026-11-05 04:32:00 UTC      22h ago macro-market-memory-experience-v2.timer         macro-market-memory-experience-v2.service",
+      "Fri 2026-11-06 05:17:44 UTC 2h 41min Thu 2026-11-05 05:18:49 UTC      21h ago macro-user-backup.timer                         macro-user-backup.service",
+      "Fri 2026-11-06 06:47:34 UTC 4h 11min Thu 2026-11-05 06:47:10 UTC      19h ago macro-market-memory-production-records.timer    macro-market-memory-production-records.service",
+      "Fri 2026-11-06 08:07:58 UTC 5h 31min Thu 2026-11-05 14:37:57 UTC      11h ago macro-am-edition.timer                          macro-am-edition.service",
+      "Fri 2026-11-06 10:20:14 UTC       7h Thu 2026-11-05 13:20:42 UTC      13h ago macro-entry-radar-pack.timer                    macro-entry-radar-pack.service",
+      "Fri 2026-11-06 12:01:03 UTC       9h Thu 2026-11-05 22:59:01 UTC 3h 37min ago macro-live-breadth.timer                        macro-live-breadth.service",
+      "Fri 2026-11-06 13:03:05 UTC      10h Thu 2026-11-05 21:58:06 UTC 4h 38min ago macro-live-prophet.timer                        macro-live-prophet.service",
+      "Fri 2026-11-06 13:04:06 UTC      10h Thu 2026-11-05 21:59:17 UTC 4h 37min ago macro-live-entry-radar.timer                    macro-live-entry-radar.service",
+      "Fri 2026-11-06 13:21:23 UTC      10h Thu 2026-11-05 13:21:31 UTC      13h ago macro-market-memory-options.timer               macro-market-memory-options.service",
+      "Fri 2026-11-06 13:37:08 UTC      11h Thu 2026-11-05 21:37:06 UTC 4h 59min ago macro-live-bars.timer                           macro-live-bars.service",
+      "Fri 2026-11-06 20:02:09 UTC      17h Thu 2026-11-05 23:57:06 UTC 2h 39min ago macro-live-closepass.timer                      macro-live-closepass.service",
+      "Sat 2026-11-07 00:06:25 UTC      21h Fri 2026-11-06 00:00:37 UTC 2h 35min ago macro-biocatalyst-fixed-cohort.timer            macro-biocatalyst-fixed-cohort.service",
+      "Sat 2026-11-07 02:21:04 UTC      23h Fri 2026-11-06 02:21:14 UTC    15min ago macro-biocatalyst-history.timer                 macro-biocatalyst-history.service",
+      "-                                  - Fri 2026-11-06 02:36:16 UTC       2s ago macro-live-fast.timer                           macro-live-fast.service"
+    ],
+    "installed_unit_modules": [
+      {
+        "unit": "macro-biocatalyst-activation-heartbeat.service",
+        "python_modules": []
+      },
+      {
+        "unit": "macro-medtech.service",
+        "python_modules": []
+      },
+      {
+        "unit": "macro-api.service",
+        "python_modules": []
+      },
+      {
+        "unit": "macro-biocatalyst-history.service",
+        "python_modules": [
+          "scripts.biocatalyst_worker"
+        ]
+      },
+      {
+        "unit": "macro-entry-radar-pack.service",
+        "python_modules": [
+          "scripts.entry_radar_live_pack"
+        ]
+      },
+      {
+        "unit": "macro-market-memory-technicals.service",
+        "python_modules": [
+          "scripts.capture_market_memory_technicals"
+        ]
+      },
+      {
+        "unit": "macro-market-memory-context.service",
+        "python_modules": [
+          "scripts.project_market_memory_context"
+        ]
+      },
+      {
+        "unit": "macro-market-memory-technicals-v2.service",
+        "python_modules": [
+          "scripts.capture_market_memory_technicals_v2"
+        ]
+      },
+      {
+        "unit": "macro-market-memory-experience-v2.service",
+        "python_modules": [
+          "scripts.accrue_market_memory_spy_experience_v2"
+        ]
+      },
+      {
+        "unit": "macro-market-memory-options.service",
+        "python_modules": [
+          "scripts.capture_market_memory_option_oi"
+        ]
+      },
+      {
+        "unit": "macro-market-memory-source.service",
+        "python_modules": [
+          "scripts.ingest_market_memory_sources"
+        ]
+      },
+      {
+        "unit": "macro-ticker-news.service",
+        "python_modules": []
+      },
+      {
+        "unit": "macro-user-backup.service",
+        "python_modules": [
+          "scripts.backup_user_tables"
+        ]
+      },
+      {
+        "unit": "macro-market-memory-experience.service",
+        "python_modules": [
+          "scripts.accrue_market_memory_spy_experience"
+        ]
+      },
+      {
+        "unit": "macro-live-breadth.service",
+        "python_modules": [
+          "scripts.live_breadth_poller"
+        ]
+      },
+      {
+        "unit": "macro-market-memory-identity.service",
+        "python_modules": [
+          "scripts.ingest_market_memory_identity"
+        ]
+      },
+      {
+        "unit": "macro-market-memory-options-context-audit.service",
+        "python_modules": [
+          "scripts.audit_options_market_memory_context"
+        ]
+      },
+      {
+        "unit": "macro-catalyst-source-cycle.service",
+        "python_modules": [
+          "scripts.run_catalyst_source_cycle"
+        ]
+      },
+      {
+        "unit": "macro-live-snapshot.service",
+        "python_modules": [
+          "scripts.vps_live_orchestrator"
+        ]
+      },
+      {
+        "unit": "macro-sentinel.service",
+        "python_modules": [
+          "scripts.commercial_path_sentinel",
+          "scripts.freshness_sentinel"
+        ]
+      },
+      {
+        "unit": "macro-market-memory-production-records.service",
+        "python_modules": [
+          "scripts.capture_market_memory_options_episodes"
+        ]
+      },
+      {
+        "unit": "macro-live-entry-radar.service",
+        "python_modules": [
+          "scripts.entry_radar_live"
+        ]
+      },
+      {
+        "unit": "macro-live-prophet.service",
+        "python_modules": [
+          "scripts.prophet_live_evaluator"
+        ]
+      },
+      {
+        "unit": "macro-live-cnprophet.service",
+        "python_modules": [
+          "scripts.cn_live_evaluator"
+        ]
+      },
+      {
+        "unit": "macro-git-store-maintenance.service",
+        "python_modules": []
+      },
+      {
+        "unit": "macro-live-fast.service",
+        "python_modules": [
+          "scripts.vps_live_orchestrator"
+        ]
+      },
+      {
+        "unit": "macro-live-bars.service",
+        "python_modules": [
+          "scripts.vps_live_orchestrator"
+        ]
+      },
+      {
+        "unit": "macro-live-closepass.service",
+        "python_modules": [
+          "scripts.close_pass_mirror"
+        ]
+      },
+      {
+        "unit": "macro-market-memory-breadth.service",
+        "python_modules": [
+          "scripts.capture_market_memory_breadth"
+        ]
+      },
+      {
+        "unit": "macro-biocatalyst.service",
+        "python_modules": [
+          "scripts.biocatalyst_worker"
+        ]
+      },
+      {
+        "unit": "macro-am-edition.service",
+        "python_modules": [
+          "scripts.am_edition_live"
+        ]
+      },
+      {
+        "unit": "macro-market-memory-source-spy-rest.service",
+        "python_modules": [
+          "scripts.ingest_market_memory_sources_spy"
+        ]
+      },
+      {
+        "unit": "macro-biocatalyst-fixed-cohort.service",
+        "python_modules": [
+          "scripts.biocatalyst_fixed_cohort_transport"
+        ]
+      }
+    ]
+  },
+  "qualification": {
+    "read_only": true,
+    "individual_file_stat_stability": true,
+    "coherent_generation_proven": false,
+    "current_constituent_coverage_proven": false,
+    "unique_writer_attribution_proven": false,
+    "interpretation": "Broad US stock panels and basket extras have observations through November 4 while the separately observed served Sector generation remains November 3. Acquisition and downstream publication must be independently qualified. Enumerated installed systemd Python modules do not include scripts.collect or these historical collectors; cron/manual execution was not exhaustively examined."
+  },
+  "source_dependency_chain": [
+    "qualified broad/smallcap/midcap histories and extras plus SPY",
+    "engine.baskets: latest common broad-calendar observation and whole-column adjustment-vintage resolution",
+    "theme_scoring and group_flow: explicit context/calibration and prior accepted Sector input",
+    "narrative_rotation allocation and theme_context: current thematic ranking, declared historical context and alignment",
+    "canonical action-board data assembly and basket byte/date binding",
+    "one private accepted Sector generation",
+    "existing Macro auth/API, Terminal BFF, native shared-shell view"
+  ],
+  "rollback": "After runtime ownership transfers, select a previous accepted generation under the same runtime owner; do not silently re-enable legacy provider writers."
+}
