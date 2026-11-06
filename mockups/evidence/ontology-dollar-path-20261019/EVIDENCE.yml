@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/ontology.js
+  - templates/ontology.html.j2
+  - templates/ontology-scenario.js
+manifest: mockups/evidence/ontology-dollar-path-20261019/manifest.json

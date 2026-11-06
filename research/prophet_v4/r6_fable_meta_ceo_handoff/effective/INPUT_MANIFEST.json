@@ -1,0 +1,26 @@
+[
+  {
+    "id": "R1",
+    "file": "inputs/PROPHET_US_RESEARCH_R1.md",
+    "sha256": "96d0ab34f5db94537fe60b493af166b0c50ca8eac2b89641703d9bb290166465",
+    "words": 5958
+  },
+  {
+    "id": "R2",
+    "file": "inputs/PROPHET_US_MEASUREMENT_R2.md",
+    "sha256": "32bf1ddba37aa269469d7fb641dcf862ff4ea0aad3a567acdffa857cb26de19e",
+    "words": 6820
+  },
+  {
+    "id": "R3",
+    "file": "inputs/PROPHET_US_EARLY_LEADERSHIP_R3.md",
+    "sha256": "4ad7b39e8b4916029755f863d3b56ba0dc30d75ff46d95b031ceb24cb8946ff5",
+    "words": 6189
+  },
+  {
+    "id": "R4",
+    "file": "inputs/PROPHET_US_EARNINGS_CYCLE_R4.md",
+    "sha256": "e9464a12b8faba1e61b2d8ed6cb3d508f7c99efd41a6e3b4ee715a849fd593d2",
+    "words": 6325
+  }
+]

@@ -1,0 +1,253 @@
+schema: mastermind.rig_review.v1
+reference_id: sector-intelligence-cycles-20261021
+role: visual_taste
+artifact_sha: ab1e71ac3c58eb6fbb7f11656e64a9213a6cae90
+review_round: 2
+supersedes:
+  artifact_sha: 508539c0091ae8d77aea3f9ca009391cf4dbfa9f
+  receipt: reviews/round1_508539c0/visual_taste.yml
+reviewer:
+  identity: opus-auditor-visual-taste-sic-20261021-r2
+  model: 'claude-opus-5-5 (native reviewer agent a48a38779cafe1df4, ROUTE: review, MODE: READ_ONLY)'
+  independent_of_author: true
+  prior_design_participation: false
+  sibling_results_read: false
+quarantine:
+  first_pass_inputs:
+  - user/business job (baseline.yml user_job)
+  - production-before artifact (16 served-site captures + production source paths)
+  - proposed-after artifact (32 frozen boards 0-31 incl. HTML specimen boards 23-31 + design_refs/sector-paper-20261021)
+  - capability ledger (baseline.yml) + 9-row user task manifest + the reviewer's own round-1 receipt
+  first_pass_path: critic_return/round2_first_pass_visual_taste.md
+  rationale_received_after_first_pass: true
+first_pass:
+  frozen_at: '2026-10-22T04:38:01Z'
+  verdict: BLOCK
+  round1_dispositions:
+  - finding: VTC-001
+    status: partially_cured
+    evidence: 'Boards 23/24/25/26 now draw the Act-Now board: Buy now 3, Almost ready 2, In favour 2, Take profits
+      3, Stand aside 26 and Bottoming watch 7, each row with a score and 20d vs market, plus the regime headline
+      and the handoff; ''Check entry signals'' is gone (brief_repair/README.md:69). It is only partially cured because
+      board 27 still lists Paper boards 12/22/13 (the old Brief, no lane board) as DRAWN evidence for the same cells,
+      and 12/13/22 are not marked superseded, so the set holds two contradictory Brief designs.'
+  - finding: VTC-002
+    status: partially_cured
+    evidence: 'Boards 23-31 all carry one static capture of the product family (MASTERMINDX, flags, Other Assets,
+      Research, Terminal, theme, EN/中文), which satisfies ''canonical family, no third header'' at desktop; nav_static.html
+      is declared non-normative (brief_repair/README.md:19). Not cured elsewhere: Paper boards 01-22 are unchanged
+      and keep the five mock headers. At 390px the capture (25/26/30/31) shows no wordmark, no menu entry and no
+      settings, whereas prod-mobile-dark-zh-central has the hamburger, Terminal and settings.'
+  - finding: VTC-003
+    status: partially_cured
+    evidence: The Brief gains desktop dark (24) and mobile light (26). Board 27 still marks 4 of 8 Brief cells as
+      GAP, including both desktop ZH cells. No new board covers Explore, Dossier, Research or Watches, so those
+      board-20 gaps are untouched, and ZH desktop outside Cycles 02 is still undrawn. The dark boards 24/29 render
+      a white page canvas (see VTC-014), so even the new desktop-dark cells are not complete dark pages.
+  - finding: VTC-004
+    status: partially_cured
+    evidence: 'Cured on the Brief: boards 23-26 read ''Leadership is holding.'' (3 words), a 9-word subtitle, ''20d
+      vs market'' and ''score'', with no ''relative wealth'', ''Source rank'' or ''native binding''. Not cured on
+      Cycles: the corrections boards 28-31 put far heavier internal vocabulary on the face (VTC-016).'
+  - finding: VTC-005
+    status: partially_cured
+    evidence: Boards 23/24 restore the regime headline with its inked keyword ('Leadership is holding.' / 领涨格局延续。),
+      the Leadership handoff (Energy -> Health Care), the MASTERMINDX wordmark and the faint aurora. The mobile
+      Brief boards 25/26 draw no wordmark, so brand identity is still missing at 390.
+  - finding: VTC-006
+    status: partially_cured
+    evidence: 'The cards on board 24 now have graphite panel depth. But the page canvas is white: pixel samples
+      at (30,300), (30,1500), (1400,2300) and (300,135) are all 255,255,255. The dark Brief is therefore dark cards
+      on a light page, not a dark design. Board 29 (dark Cycles) shows the same.'
+  - finding: VTC-007
+    status: partially_cured
+    evidence: 'Boards 23-31 bind to captured production rows (Brief as of 2026-10-19, Cycles 2026-10-20) and label
+      the board-31 fixture. The Paper boards 01/08/12/14 are unchanged and keep their contradictions. Board 28 also
+      adds a new in-card one: XLF shows 73/100 pos_v2 in the head but ''cycle position 47/100'' in its read (VTC-019).'
+  - finding: VTC-008
+    status: not_cured
+    evidence: The PNGs for boards 20 and 21 are absent from the 508539c0..ab1e71ac diff. Board 21 still says '22
+      boards in this set' although the set now has 32, and board 20 still marks Brief desktop dark as Gap. Board
+      27 replaces only the Brief rows.
+  - finding: VTC-009
+    status: partially_cured
+    evidence: COMPONENTS.md now sets an 11px floor for the MODEL/PRIOR tag. However components.css:180-183 still
+      sizes .spc-model-prior-badge at var(--fs-micro), which templates/theme.css:62 sets to 10px, so the shared
+      CSS breaks the new rule. Paper boards 01-04 are unchanged, and no PRIOR cell is drawn on 28-31 (cycles_repair/README.md:98-100).
+      The rendered type size on 28-31 was not measured.
+  - finding: VTC-010
+    status: not_cured
+    evidence: The per-card EN/中文 switch on Paper boards 01/02 is unchanged and no COMPONENTS.md rule withdraws it.
+      Boards 28-31 draw no per-card switch, which is the right direction, but nothing marks 01/02 as superseded.
+      Evidence is limited to the diff stat and boards 28-31.
+  - finding: VTC-011
+    status: partially_cured
+    evidence: The repaired Brief boards 23-26 draw no chart, so the unnamed two-line chart is absent there. Paper
+      boards 12/13/22 still carry it and still count as Brief evidence on board 27.
+  - finding: VTC-012
+    status: partially_cured
+    evidence: 'COMPONENTS.md adds the rules this needs: a rail fade with a partially visible last item, range tracks
+      on --line, and retry buttons on button tokens. Paper boards 02/04/15/17 are unchanged and no new board draws
+      the corrected rails, track or retry button. The fixes exist as text only.'
+  findings:
+  - id: VTC-013
+    severity: blocker
+    finding: The Cycles corrections bind 'Resolved stance · engine' to the producer strings HOLD, HIGH-RISK BOUNCE
+      and SELL (28/29 XLF, XLK, XLC; 持有 on 30). These are outside the six doctrine stances (DESIGN_DOCTRINE Law
+      1; COMPONENTS.md:124 'never invent a stance outside the six'). SELL is drawn in red as a trade instruction.
+      This also contradicts the Brief, which maps its lanes to the six stances (brief_repair/README.md:21-30), leaving
+      two stance vocabularies in one reference.
+  - id: VTC-014
+    severity: blocker
+    finding: The shell page head and workflow switcher are unstyled on every board 23-31. The specimens link theme.css,
+      navigation-refresh.css, components.css and brief.css (brief.html:10-13) but not the shell stylesheet that
+      styles .si-page-title/.si-workflow (templates/_sector_central_paper.css.j2). 'Sector Intelligence / United
+      States / Brief Explore Research Watches' therefore renders as browser-default text with underlined links.
+      The theme canvas is also inverted. On mobile 25/26/30/31 (26 and 31 are the LIGHT boards) the page title and
+      switcher are black on a near-black canvas and unreadable. On dark desktop 24/29 the canvas is white, so the
+      MASTERMINDX wordmark and nav links are pale on white. The page identity is unreadable on most of the repair
+      boards.
+  - id: VTC-015
+    severity: major
+    finding: The workflow switcher drawn on all repair boards lists 4 of the 6 workflows (Brief, Explore, Research,
+      Watches; no Cycles, no Dossier). On the Cycles boards 28-31 it still marks Brief as current (cycles.html:270-274
+      copies the Brief switcher with aria-current on Brief), so the user cannot see where they are. Baseline 'six
+      workflows, one shell' is not shown.
+  - id: VTC-016
+    severity: major
+    finding: 'Boards 28-31 put internal field names, hashes and file paths on the card face at heading or body size.
+      Examples: ''phase_v2'', ''pos_v2'', ''epoch price_c4414dcb'', ''inside_window_past_central · n_confirmed_halves
+      22 · elapsed_half_cycle_ratio 2.09'', ''model_cell_current_claim parity_failed'', ''now.hazard'', ''size_mult'',
+      ''engine/sector_central.py:453'', a masterplan path, and a literal ''HEADER'' / ''页头'' eyebrow. ZH board 30
+      leaves low/central/high, PASS, ''down · trough'' and ''sector · price'' in English. This breaks Law 2 (plain
+      words on Tier 1) and makes the cards scan worse than boards 01-05.'
+  - id: VTC-017
+    severity: major
+    finding: Cycles is now split between two incompatible references. Boards 28-31 are a three-card grid with no
+      chart, legs strip, leadership table, series picker or touch sheet (cycles_repair/README.md:104-105). Boards
+      01-08 keep the instrument but also keep the phase and position families the corrections retire. No board shows
+      the corrected Cycles desk composed, so a builder must merge two visual systems by hand.
+  - id: VTC-018
+    severity: major
+    finding: Board 31 draws its incompatible_generation degraded state broken. The 'History is from a different
+      day' banner body is squeezed into a narrow column, one word per line ('History 2026-10-16, current read 2026-10-19.
+      Not drawn, so the two are never mixed.'), running past the banner's right edge. Directly above, unmuted 'events
+      · aligned' and 'fragmentation · aligned' chips contradict the banner in the same panel.
+  - id: VTC-019
+    severity: minor
+    finding: Each Cycles card shows two positions that contradict each other. The head says 73/100 pos_v2 while
+      'The read · legacy family' says 'cycle position 47/100' (XLF on 28/29). XLK shows 99 vs 53, and XLC shows
+      48 'Rolling over' vs 19 'Bottoming'. The label is honest, but a contradictory read drawn as reference law
+      should be withheld until the C14 producer cure, not shown.
+  - id: VTC-020
+    severity: minor
+    finding: 'Brief polish issues on 23-26: (1) ''1 days in / 已持续1天'' plural defect is drawn as law (brief_repair/README.md:76-77).
+      (2) An orphan half-width ''Sector measurement coverage unavailable'' card sits at the page foot. (3) Typed
+      em dashes remain in lane subtitles and the stance chip (''In favour — don''t chase'', ''Setting up — wait
+      for the trigger'', ''Leadership steady — stay with the leaders.''). (4) Row glyphs (diamond vs square) carry
+      an unlabeled distinction. (5) The lane grid is ragged, with blank space under Almost ready (23).'
+  strengths:
+  - The Brief is a dashboard again (23-26). The five Act-Now lanes plus Stand aside 26 and Bottoming watch 7 carry
+    real production rows with a score and 20d vs market, under a short regime headline with an inked keyword and
+    the Leadership handoff. Lane containers use neutral borders with no colored edge, and the README gate checks
+    this (brief_repair/README.md:68).
+  - 'Mobile 25/26 recomposes the lane board into one column with no horizontal overflow. The locked state on 26
+    is drawn honestly: 3 rows visible, ''23 more here. Sign in to see the full lane'', and a Locked panel saying
+    the rest of the page stays available.'
+  - ZH Brief 25 applies red-up / green-down to direction deltas while stance ink stays unflipped.
+  - The Cycles corrections present degraded states evidence-first. An unavailable hazard is a dashed gap with its
+    reason (non_monotone_cdf), never 0%. Parity failure is a 'Live parity not proven' chip with a muted ladder plus
+    the PARITY_FAILS record. The overdue chip is explicit. Phase age reads as a lower bound ('At least 5 sessions'),
+    never a placeholder 0. The board-31 fixture is labeled. The grader carries 'Neutral included. Not a win rate.'
+    with no invented number.
+  - The repair is reproducible. Both specimens are rendered from the committed copy deck, dataset and shared CSS
+    by a checked-in render.sh, and manifest rows 23-31 are honestly labeled PAPER_CAPACITY_LIMITED / html-specimen-chrome-headless-1x.
+  production_preferable_for:
+  - Mobile chrome and the shell sub-nav. prod-mobile-dark-zh-central has the menu entry, Terminal, settings and
+    a styled icon tab strip (总览 全景图谱 正在轮动 …). The proposal's 25/26/30/31 have no menu entry and an unstyled, unreadable
+    underlined-link switcher.
+  - 'Dark theme as a whole page: the production dark canvas is dark end to end, while boards 24/29 put dark cards
+    on a white page.'
+  quarantine_breaches: []
+second_pass:
+  amended_at: '2026-10-22T04:40:59Z'
+  rationale_received: true
+  amendments:
+  - finding: VTC-013
+    action: upheld
+    note: Blocker stands. The author confirms that HOLD / HIGH-RISK BOUNCE / SELL are drawn as the face stance and
+      that this conflicts with Law 1 and the six-stance rule (COMPONENTS.md:124). Copying production's stanceHTML
+      (templates/sector_cycles.js:155) puts the regression into the reference. The resolved_stance->six-stance mapping
+      is only intended for wave 2 and is not drawn.
+  - finding: VTC-014
+    action: upheld
+    note: Blocker stands, and the author confirms it. Boards 24/29 are white at the sampled dark canvas points.
+      The specimens do not link templates/_sector_central_paper.css.j2, so .si-page-title/.si-workflow are unstyled.
+      This also contradicts the revision_mandate VTC-006 cure claim that dark Brief surfaces bind theme.css tokens.
+  - finding: VTC-015
+    action: upheld
+    note: Major stands, not contested. cycles.html:270-274 copies the Brief switcher, which lists 4 of the 6 workflows
+      (no Cycles, no Dossier) and marks Brief as aria-current on the Cycles board.
+  - finding: VTC-016
+    action: upheld
+    note: Major stands. The author accepts that identifiers, hashes and paths belong in a provenance drawer with
+      plain EN/ZH labels on the face, and that the English in ZH board 30 is a defect. Falsifiable provenance is
+      a valid goal, but it is a drawer job, not a Tier-1 card-face job.
+  - finding: VTC-017
+    action: upheld
+    note: 'Major stands. Scoping boards 28-31 as corrections to 01-08 is the author''s intent, but the frozen reference
+      has no composite board and no per-board supersession notes. The author accepts that a reader therefore gets
+      a split Cycles desk: the chart is only in 01-08 and the corrected states are only in 28-31.'
+  - finding: VTC-018
+    action: upheld
+    note: Major stands, not contested. The board 31 banner text overflows its container, and 'aligned' chips contradict
+      the incompatible_generation fixture they sit under.
+  - finding: VTC-019
+    action: upheld
+    note: Minor stands. Labeling 'The read' as legacy does not remove a visible contradiction on one card (73/100
+      vs '47/100'). The author accepts it and intends to strip the legacy number; that is not yet done.
+  - finding: VTC-020
+    action: upheld
+    note: 'Minor stands, not contested. Four items remain: the ''1 days in'' plural (also self-noted in brief_repair/README.md:76-77),
+      the orphan coverage card, em dashes, and unlabeled glyphs on a ragged grid.'
+  disposition_notes:
+  - finding: VTC-002
+    note: 'The mandate''s ''resolved_by_declaration'' (all drawn headers non-normative) is acceptable for boards
+      01-22 only if each of those boards visibly carries the non-normative mark or a supersession note. Status stays
+      partially_cured: the mobile capture still lacks the canonical wordmark, menu and settings.'
+  - finding: VTC-006
+    note: The rationale does not change the evidence. The mandate claims dark tokens are bound (theme.css:63-69),
+      but the rendered board 24 canvas samples 255,255,255. Status stays partially_cured and is folded into VTC-014.
+  - finding: VTC-008
+    note: Deferral is noted (Paper frozen). The mandate's 'superseded' relies on boards_manifest.yml notes, but
+      board 21 still visibly says '22 boards' against a 32-board set. Status stays not_cured until the boards are
+      marked stale on their face or re-exported.
+  - finding: VTC-010
+    note: Deferral is noted, and the 'resolved_by_rule' text exists. The Paper pixels with the per-card switch are
+      unchanged, so status stays not_cured until they are marked non-normative.
+  - finding: VTC-011
+    note: Withdrawing the board-12 chart from the reference is an acceptable cure route. It counts only if board
+      12 is marked superseded/non-normative and stops counting as DRAWN evidence on board 27. Status stays partially_cured.
+  verdict: BLOCK
+  conditions:
+  - Cycles card face draws only the six doctrine stance chips, via a documented resolved_stance->stance mapping.
+    Engine strings (HOLD/HIGH-RISK BOUNCE/SELL) appear only in the provenance drawer.
+  - Specimens link the shell CSS (or an equivalent normative stylesheet) so .si-page-title/.si-workflow render styled.
+    Each theme renders its full canvas, proven by pixel samples in dark and light, on desktop and mobile.
+  - The workflow switcher lists all six workflows, with the correct aria-current on each board (Cycles on Cycles
+    boards).
+  - Identifiers, hashes and paths move to a provenance drawer, with plain EN/ZH labels on the face. ZH boards contain
+    no stray English.
+  - One composite corrected Cycles desk board (chart plus corrected states), or explicit supersession notes on boards
+    01-08 naming the replacing board.
+  - Board 31 banner fits its container. Chips are muted or reconciled under the incompatible_generation fixture.
+  - The legacy number is stripped from 'The read', so one card shows one score.
+  - Boards 12/13/22 are marked superseded and removed from board 27 DRAWN evidence. Boards 20/21 are refreshed or
+    visibly marked stale.
+  - The mobile chrome capture shows the canonical mobile header (wordmark, menu entry, settings) from templates/_site_nav.html.j2.
+  - .spc-model-prior-badge font size is >= 11px in components.css, matching the COMPONENTS.md rule.
+  - 'Minor polish: fix the ''1 days'' plural, the em dashes, the unlabeled glyphs and the grid alignment.'
+  production_preferable_for_after_rationale:
+  - Mobile chrome and the styled icon sub-nav, via the canonical _site_nav header family.
+  - Full-page dark theme canvas and surface hierarchy.
+  - Production's styled si-page-header/si-workflow shell, until the specimens link it.

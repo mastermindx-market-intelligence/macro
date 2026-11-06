@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-27T20:22:52Z",
+ "accession": "0001628280-26-059261",
+ "cik": "0001387467",
+ "doc_byte_length": 2239148,
+ "doc_sha256": "6d4c95e6af58015d107d47bb66895a3cd9fc36f1626e928c225ad7a841ec49a0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-27",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "aosl-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2192601,
+  "byte_start": 2191791,
+  "normalized": "Fifth Addendum to Foundry Agreement dated as of July 28, 2005 between the Registrant and Shanghai Hua Hong NEC Electronics Company, Limited (incorporated by reference to Exhibit 10.2 to the Quarterly Report on Form 10-Q (File No. 001-34717) filed with the Commission on May 10, 2022)",
+  "normalized_sha256": "d3136c071ef86f5ef26c505d0b6ea1306d652f4b2e97e798745aab4ba8868827",
+  "raw": "Fifth Addendum to Foundry Agreement dated as of July 28, 2005 between the Registrant and Shanghai Hua Hong NEC Electronics Company, Limited</a></span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"> </span><span style=\"color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:underline\"><a style=\"-sec-extract:exhibit;color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:underline\" href=\"https://www.sec.gov/Archives/edgar/data/1387467/000138746722000042/ex102aosl03312022q320221.htm\">(incorporated by reference to Exhibit 10.2 to the Quarterly Report on Form 10-Q (File No. 001-34717) filed with the Commission on May 10, 2022)",
+  "raw_sha256": "3568218d2bfe28e73283aae32abd358b60d981d7628687b5fc01cfe84ae857f8"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1387467/000162828026059261/aosl-20260630.htm",
+ "xbrl_contexts": []
+}

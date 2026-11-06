@@ -34,7 +34,7 @@ import json
 import logging
 import os
 import tempfile
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -73,6 +73,7 @@ AUTHORITY_BLOCK: dict[str, Any] = {
 
 _REGISTRY_PATH = "config/theme_thesis_registry.yml"
 _FORESIGHT_PATH = "site/basketdata/foresight_cascade.json"
+_FORESIGHT_HISTORY_PATH = "data/foresight/log.jsonl"
 _THEME_STATE_PATH = "data/neuralweb/theme_state.json"
 
 _LEDGER_OUT = "data/neuralweb/theme_thesis_ledger.jsonl"
@@ -102,6 +103,104 @@ def _load_json(root: Path, rel_path: str) -> dict | list | None:
     except Exception as exc:  # noqa: BLE001
         log.warning("could not read %s: %s", p, exc)
         return None
+
+
+def _load_jsonl(root: Path, rel_path: str) -> list[dict]:
+    """Load a JSONL artifact, dropping malformed/non-object rows."""
+    path = root / rel_path
+    if not path.exists():
+        return []
+    rows: list[dict] = []
+    try:
+        with path.open(encoding="utf-8") as fh:
+            for lineno, raw in enumerate(fh, 1):
+                raw = raw.strip()
+                if not raw:
+                    continue
+                try:
+                    row = json.loads(raw)
+                except json.JSONDecodeError as exc:
+                    log.warning("could not read %s line %d: %s", path, lineno, exc)
+                    continue
+                if isinstance(row, dict):
+                    rows.append(row)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("could not read %s: %s", path, exc)
+        return []
+    return rows
+
+
+def _parse_observation_date(value: Any) -> date | None:
+    """Parse a YYYY-MM-DD observation date; never infer one from build time."""
+    if not isinstance(value, str) or not value.strip():
+        return None
+    try:
+        return date.fromisoformat(value.strip()[:10])
+    except ValueError:
+        return None
+
+
+def _parse_observation_ts(value: Any, fallback: date, ordinal: int) -> tuple[datetime, int]:
+    """Return a stable ordering key for same-date correction selection."""
+    if isinstance(value, str) and value.strip():
+        try:
+            parsed = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=timezone.utc)
+            return parsed.astimezone(timezone.utc), ordinal
+        except ValueError:
+            pass
+    return datetime.combine(fallback, datetime.min.time(), tzinfo=timezone.utc), ordinal
+
+
+def _strip_stage(value: Any) -> str:
+    """Normalize 'PRECIPICE (text)' and comparable enum suffixes."""
+    if not isinstance(value, str) or not value.strip():
+        return "WATCH"
+    return value.split("(", 1)[0].strip().upper()
+
+
+def _canonical_foresight_history(
+    rows: list[dict],
+    theme_id: str,
+    *,
+    evaluation_as_of: str | None,
+    window_d: int | None,
+) -> tuple[list[dict], int]:
+    """Return latest correction per distinct observation date, oldest first.
+
+    The producer tape is the observation authority. Re-rendering a page does not
+    create another print. Multiple rows for one ``asof`` are corrections; only
+    the latest ``ts`` survives and the superseded count is disclosed.
+    """
+    evaluation_date = _parse_observation_date(evaluation_as_of)
+    by_date: dict[date, tuple[tuple[int, datetime, int], dict]] = {}
+    corrections_superseded = 0
+    for ordinal, row in enumerate(rows):
+        if row.get("theme") != theme_id:
+            continue
+        observed = _parse_observation_date(row.get("asof") or row.get("as_of"))
+        if observed is None:
+            continue
+        if evaluation_date is not None and observed > evaluation_date:
+            continue
+        rank = (int(bool(row.get("_current_projection"))), *_parse_observation_ts(row.get("ts"), observed, ordinal))
+        previous = by_date.get(observed)
+        if previous is not None:
+            corrections_superseded += 1
+        if previous is None or rank > previous[0]:
+            canonical = dict(row)
+            canonical["asof"] = observed.isoformat()
+            by_date[observed] = (rank, canonical)
+
+    selected = [by_date[d][1] for d in sorted(by_date)]
+    if evaluation_date is not None and window_d is not None:
+        cutoff = evaluation_date - timedelta(days=max(0, int(window_d)))
+        selected = [
+            row for row in selected
+            if (_parse_observation_date(row.get("asof")) or date.min) >= cutoff
+        ]
+    return selected, corrections_superseded
 
 
 def _load_foresight_index(root: Path) -> dict[str, dict]:
@@ -135,6 +234,8 @@ def _eval_falsifier(
     foresight: dict[str, dict],
     theme_state: dict[str, dict],
     theme_id: str,
+    foresight_history: list[dict] | None = None,
+    evaluation_as_of: str | None = None,
 ) -> dict:
     """Evaluate one falsifier spec. Returns a result dict with state + detail."""
     fid = f.get("id", "unknown")
@@ -157,6 +258,18 @@ def _eval_falsifier(
     op = check.get("op", "")
     threshold = check.get("threshold")
     kind = check.get("kind", "threshold")
+    history = foresight_history or []
+    window_d = check.get("window_d")
+    if kind in {"consecutive_threshold", "stage_regression"} \
+            and _parse_observation_date(evaluation_as_of) is None:
+        return {
+            "id": fid,
+            "rule_en": rule_en,
+            "state": STATE_DATA_MISSING,
+            "fired": False,
+            "reason_code": "OBSERVATION_CLOCK_MISSING",
+            "detail": "history-sensitive check requires a dated producer snapshot",
+        }
 
     # Choose artifact index
     if "foresight_cascade" in source:
@@ -179,6 +292,255 @@ def _eval_falsifier(
             "state": STATE_DATA_MISSING,
             "fired": False,
             "detail": f"theme {theme_id!r} absent from {source!r}",
+        }
+
+    if kind == "consecutive_threshold":
+        needed = max(2, int(check.get("consecutive_prints", 2)))
+        canonical, corrections = _canonical_foresight_history(
+            [*history, {**theme_dict, "theme": theme_id, "asof": evaluation_as_of, "_current_projection": True}],
+            theme_id,
+            evaluation_as_of=evaluation_as_of,
+            window_d=window_d,
+        )
+        if len(canonical) < needed:
+            return {
+                "id": fid,
+                "rule_en": rule_en,
+                "state": STATE_DATA_MISSING,
+                "fired": False,
+                "reason_code": "INSUFFICIENT_DISTINCT_HISTORY",
+                "detail": (
+                    f"requires {needed} distinct dated observations; "
+                    f"found {len(canonical)} within window"
+                ),
+                "evidence": {
+                    "source_artifact": _FORESIGHT_HISTORY_PATH,
+                    "observations": [row.get("asof") for row in canonical],
+                    "corrections_superseded": corrections,
+                },
+            }
+
+        observations: list[dict[str, Any]] = []
+        verdicts: list[bool] = []
+        for row in canonical[-needed:]:
+            value = row.get(field)
+            verdict = _apply_op(value, op, threshold)
+            if verdict is None:
+                return {
+                    "id": fid,
+                    "rule_en": rule_en,
+                    "state": STATE_DATA_MISSING,
+                    "fired": False,
+                    "reason_code": "HISTORY_FIELD_MISSING_OR_INCOMPATIBLE",
+                    "detail": f"history field {field!r} missing or incompatible",
+                    "evidence": {
+                        "source_artifact": _FORESIGHT_HISTORY_PATH,
+                        "observations": observations,
+                        "corrections_superseded": corrections,
+                    },
+                }
+            observations.append({
+                "as_of": row.get("asof"),
+                "value": value,
+                "condition_met": verdict,
+            })
+            verdicts.append(verdict)
+        fired = all(verdicts)
+        return {
+            "id": fid,
+            "rule_en": rule_en,
+            "state": STATE_FIRED if fired else STATE_ARMED,
+            "fired": fired,
+            "reason_code": (
+                "CONSECUTIVE_THRESHOLD_MET" if fired
+                else "CONSECUTIVE_THRESHOLD_NOT_MET"
+            ),
+            "detail": (
+                f"{needed} distinct dated observations checked: "
+                f"{field!r} {op} {threshold!r}"
+            ),
+            "evidence": {
+                "source_artifact": _FORESIGHT_HISTORY_PATH,
+                "observations": observations,
+                "corrections_superseded": corrections,
+            },
+        }
+
+    if kind == "stage_regression":
+        raw_current_stage = theme_dict.get(field)
+        if not isinstance(raw_current_stage, str) or not raw_current_stage.strip():
+            return {
+                "id": fid,
+                "rule_en": rule_en,
+                "state": STATE_DATA_MISSING,
+                "fired": False,
+                "reason_code": "CURRENT_STAGE_MISSING",
+                "detail": f"current stage field {field!r} is null/missing in source",
+            }
+        current_stage = _strip_stage(raw_current_stage)
+        targets = {_strip_stage(v) for v in (threshold or [])}
+        if current_stage not in targets:
+            return {
+                "id": fid,
+                "rule_en": rule_en,
+                "state": STATE_ARMED,
+                "fired": False,
+                "reason_code": "TARGET_STAGE_NOT_PRESENT",
+                "detail": f"current stage {current_stage!r} is not a regression target",
+            }
+
+        canonical, corrections = _canonical_foresight_history(
+            history,
+            theme_id,
+            evaluation_as_of=evaluation_as_of,
+            window_d=window_d,
+        )
+        evaluation_date = _parse_observation_date(evaluation_as_of)
+        prior_rows = [
+            row for row in canonical
+            if evaluation_date is not None
+            and (_parse_observation_date(row.get("asof")) or date.max) < evaluation_date
+        ]
+        if not prior_rows:
+            return {
+                "id": fid,
+                "rule_en": rule_en,
+                "state": STATE_DATA_MISSING,
+                "fired": False,
+                "reason_code": "PRIOR_DISTINCT_OBSERVATION_MISSING",
+                "detail": "no prior distinct dated observation proves a transition",
+                "evidence": {"corrections_superseded": corrections},
+            }
+
+        prior = None
+        prior_stage = None
+        for row in reversed(prior_rows):
+            raw_prior_stage = row.get("stage")
+            if not isinstance(raw_prior_stage, str) or not raw_prior_stage.strip():
+                return {
+                    "id": fid,
+                    "rule_en": rule_en,
+                    "state": STATE_DATA_MISSING,
+                    "fired": False,
+                    "reason_code": "PRIOR_STAGE_MISSING",
+                    "detail": (
+                        "historical predecessor stage is null/missing in source; "
+                        "transition evidence cannot be inferred"
+                    ),
+                    "evidence": {
+                        "prior_as_of": row.get("asof"),
+                        "prior_stage": None,
+                        "current_stage": current_stage,
+                        "corrections_superseded": corrections,
+                    },
+                }
+            normalized_prior_stage = _strip_stage(raw_prior_stage)
+            if normalized_prior_stage != current_stage:
+                prior = row
+                prior_stage = normalized_prior_stage
+                break
+        if prior is None:
+            return {
+                "id": fid,
+                "rule_en": rule_en,
+                "state": STATE_DATA_MISSING,
+                "fired": False,
+                "reason_code": "PRIOR_DISTINCT_OBSERVATION_MISSING",
+                "detail": "no predecessor to the current stage run was found",
+                "evidence": {"corrections_superseded": corrections},
+            }
+        allowed_source = (
+            check.get("watch_prior_stage_in")
+            if current_stage == "WATCH" and check.get("watch_prior_stage_in") is not None
+            else check.get("prior_stage_in")
+        ) or []
+        allowed_prior = {_strip_stage(v) for v in allowed_source}
+        if allowed_prior and prior_stage not in allowed_prior:
+            return {
+                "id": fid,
+                "rule_en": rule_en,
+                "state": STATE_ARMED,
+                "fired": False,
+                "reason_code": "REQUIRED_PREDECESSOR_NOT_PRESENT",
+                "detail": (
+                    f"latest prior stage {prior_stage!r} at {prior.get('asof')} "
+                    f"is not in {sorted(allowed_prior)!r}"
+                ),
+            }
+
+        if current_stage == "WATCH":
+            deterioration_field = check.get("watch_deterioration_field")
+            if not deterioration_field:
+                return {
+                    "id": fid,
+                    "rule_en": rule_en,
+                    "state": STATE_DATA_MISSING,
+                    "fired": False,
+                    "reason_code": "WATCH_DETERIORATION_SPEC_MISSING",
+                    "detail": "WATCH regression requires an independent deterioration field",
+                }
+            deterioration_value = theme_dict.get(deterioration_field)
+            if not isinstance(deterioration_value, str) or not deterioration_value.strip():
+                return {
+                    "id": fid,
+                    "rule_en": rule_en,
+                    "state": STATE_DATA_MISSING,
+                    "fired": False,
+                    "reason_code": "WATCH_DETERIORATION_FIELD_MISSING",
+                    "detail": (
+                        f"independent deterioration field {deterioration_field!r} "
+                        "is null/missing in source"
+                    ),
+                    "evidence": {
+                        "prior_as_of": prior.get("asof"),
+                        "prior_stage": prior_stage,
+                        "current_stage": current_stage,
+                        "deterioration_field": deterioration_field,
+                        "deterioration_value": None,
+                        "corrections_superseded": corrections,
+                    },
+                }
+            allowed_values = {
+                _strip_stage(v) for v in check.get("watch_deterioration_in", [])
+            }
+            if _strip_stage(deterioration_value) not in allowed_values:
+                return {
+                    "id": fid,
+                    "rule_en": rule_en,
+                    "state": STATE_ARMED,
+                    "fired": False,
+                    "reason_code": "WATCH_WITHOUT_INDEPENDENT_DETERIORATION",
+                    "detail": (
+                        "WATCH means scarcity was not confirmed; no separately "
+                        "evidenced deterioration was present"
+                    ),
+                    "evidence": {
+                        "prior_as_of": prior.get("asof"),
+                        "prior_stage": prior_stage,
+                        "current_stage": current_stage,
+                        "deterioration_field": deterioration_field,
+                        "deterioration_value": deterioration_value,
+                        "corrections_superseded": corrections,
+                    },
+                }
+
+        return {
+            "id": fid,
+            "rule_en": rule_en,
+            "state": STATE_FIRED,
+            "fired": True,
+            "reason_code": "STAGE_REGRESSION_WITH_ECONOMIC_DETERIORATION",
+            "detail": (
+                f"distinct transition {prior_stage} ({prior.get('asof')}) "
+                f"→ {current_stage} ({evaluation_as_of})"
+            ),
+            "evidence": {
+                "prior_as_of": prior.get("asof"),
+                "prior_stage": prior_stage,
+                "current_as_of": evaluation_as_of,
+                "current_stage": current_stage,
+                "corrections_superseded": corrections,
+            },
         }
 
     # Resolve field value (op-aware wildcard aggregation)
@@ -446,6 +808,8 @@ def compile_thesis_record(
     theme_state: dict[str, dict],
     as_of: str,
     prev_record: dict | None = None,
+    foresight_history: list[dict] | None = None,
+    evaluation_as_of: str | None = None,
 ) -> dict | None:
     """Compile a ledger record for one thesis.
 
@@ -459,7 +823,14 @@ def compile_thesis_record(
     falsifier_results = []
     falsifiers = thesis.get("falsifiers", [])
     for f in falsifiers:
-        result = _eval_falsifier(f, foresight, theme_state, theme_id)
+        result = _eval_falsifier(
+            f,
+            foresight,
+            theme_state,
+            theme_id,
+            foresight_history=foresight_history,
+            evaluation_as_of=evaluation_as_of,
+        )
         falsifier_results.append(result)
 
     # Summary counts
@@ -537,8 +908,17 @@ def run_stage(root: Path) -> None:
 
     # ── Load source artifacts ─────────────────────────────────────────────
     foresight = _load_foresight_index(root)
+    foresight_payload = _load_json(root, _FORESIGHT_PATH)
+    foresight_as_of = (
+        (foresight_payload.get("asof") or foresight_payload.get("as_of"))
+        if isinstance(foresight_payload, dict) else None
+    )
     if not foresight:
         stale_legs.append(_FORESIGHT_PATH)
+
+    foresight_history = _load_jsonl(root, _FORESIGHT_HISTORY_PATH)
+    if not foresight_history:
+        stale_legs.append(_FORESIGHT_HISTORY_PATH)
 
     theme_state_index = _load_theme_state_index(root)
     if not theme_state_index:
@@ -575,6 +955,8 @@ def run_stage(root: Path) -> None:
                 theme_state=theme_state_index,
                 as_of=as_of,
                 prev_record=prev,
+                foresight_history=foresight_history,
+                evaluation_as_of=foresight_as_of,
             )
         except Exception as exc:  # noqa: BLE001
             log.warning("theme_thesis: compile failed for %s: %s", thesis_id, exc)

@@ -1,0 +1,25 @@
+{
+  "workspace": {
+    "id": "rates_curves",
+    "title": {"en": "Rates", "zh": "利率"},
+    "subtitle": {"en": "", "zh": ""}
+  },
+  "region": {"code": "US", "display_name": "United States", "supported": true},
+  "availability": {"state": "STALE_SOURCE"},
+  "headline": {
+    "status": "ABSENT",
+    "null_reason": "NOT_APPLICABLE",
+    "effective_date": "2026-09-18"
+  },
+  "changes": {
+    "comparability": "COMPARABLE",
+    "prior_effective_date": "2026-09-17",
+    "deltas": [
+      {"metric_id": "us2y_level", "prior_value": 4.67, "current_value": 4.74, "delta": 0.07},
+      {"metric_id": "us10y_level", "prior_value": 4.10, "current_value": 4.20, "delta": 0.10},
+      {"metric_id": "us2y_level", "prior_value": 4.50, "current_value": 4.60, "delta": 0.10},
+      {"metric_id": "us10y_level", "prior_value": 4.00, "current_value": 4.05, "delta": 0.05}
+    ]
+  },
+  "axes": {"items": []}
+}

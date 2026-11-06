@@ -1,0 +1,356 @@
+<SEC-DOCUMENT>0001104659-26-053223.txt : 20260430
+<SEC-HEADER>0001104659-26-053223.hdr.sgml : 20260430
+<ACCEPTANCE-DATETIME>20260430182624
+ACCESSION NUMBER:		0001104659-26-053223
+CONFORMED SUBMISSION TYPE:	SCHEDULE 13D/A
+PUBLIC DOCUMENT COUNT:		1
+FILED AS OF DATE:		20260430
+DATE AS OF CHANGE:		20260430
+
+SUBJECT COMPANY:	
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Lucid Group, Inc.
+		CENTRAL INDEX KEY:			0001811210
+		STANDARD INDUSTRIAL CLASSIFICATION:	MOTOR VEHICLES & PASSENGER CAR BODIES [3711]
+		ORGANIZATION NAME:           	04 Manufacturing
+		EIN:				850891392
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		SCHEDULE 13D/A
+		SEC ACT:		1934 Act
+		SEC FILE NUMBER:	005-92164
+		FILM NUMBER:		26927990
+
+	BUSINESS ADDRESS:	
+		STREET 1:		7373 GATEWAY BLVD.
+		CITY:			NEWARK
+		STATE:			CA
+		ZIP:			94560
+		BUSINESS PHONE:		(510) 648-3553
+
+	MAIL ADDRESS:	
+		STREET 1:		7373 GATEWAY BLVD.
+		CITY:			NEWARK
+		STATE:			CA
+		ZIP:			94560
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Churchill Capital Corp IV
+		DATE OF NAME CHANGE:	20200714
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Annetta Acquisition Corp
+		DATE OF NAME CHANGE:	20200504
+
+FILED BY:		
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Ayar Third Investment Co
+		CENTRAL INDEX KEY:			0001874832
+		ORGANIZATION NAME:           	
+		EIN:				000000000
+		STATE OF INCORPORATION:			T0
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		SCHEDULE 13D/A
+
+	BUSINESS ADDRESS:	
+		ADDRESS IS A NON US LOCATION: 	YES
+		STREET 1:		C/O THE PUBLIC INVESTMENT FUND
+		STREET 2:		P.O. BOX 6847
+		CITY:			RIYADH
+		PROVINCE COUNTRY:   	T0
+		BUSINESS PHONE:		966 53 131 1097
+
+	MAIL ADDRESS:	
+		ADDRESS IS A NON US LOCATION: 	YES
+		STREET 1:		C/O THE PUBLIC INVESTMENT FUND
+		STREET 2:		P.O. BOX 6847
+		CITY:			RIYADH
+		PROVINCE COUNTRY:   	T0
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>SCHEDULE 13D/A
+<SEQUENCE>1
+<FILENAME>primary_doc.xml
+<TEXT>
+<XML>
+<?xml version="1.0" encoding="UTF-8"?><edgarSubmission xmlns="http://www.sec.gov/edgar/schedule13D" xmlns:com="http://www.sec.gov/edgar/common">
+  <schemaVersion>X0202</schemaVersion>
+<headerData>
+    <submissionType>SCHEDULE 13D/A</submissionType>
+    <previousAccessionNumber>0000929638-21-000927</previousAccessionNumber>
+    <filerInfo>
+      <filer>
+        <filerCredentials>
+          <!-- Field: Pseudo-Tag; ID: Name; Data: Ayar Third Investment Co -->
+          <cik>0001874832</cik>
+          <ccc>XXXXXXXX</ccc>
+        </filerCredentials>
+      </filer>
+      <liveTestFlag>LIVE</liveTestFlag>
+
+
+
+    </filerInfo>
+  </headerData>
+  <formData>
+    <coverPageHeader>
+      <amendmentNo>9</amendmentNo>
+      <securitiesClassTitle>Class A Common Stock, par value $0.0001 per share</securitiesClassTitle>
+      <dateOfEvent>04/28/2026</dateOfEvent>
+      <previouslyFiledFlag>false</previouslyFiledFlag>
+      <issuerInfo>
+        <issuerCIK>0001811210</issuerCIK>
+        <issuerCusips>
+          <issuerCusipNumber>549498202</issuerCusipNumber>
+        </issuerCusips>
+        <issuerName>Lucid Group, Inc.</issuerName>
+        <address>
+          <com:street1>7373 Gateway Boulevard</com:street1>
+          <com:city>Newark</com:city>
+          <com:stateOrCountry>CA</com:stateOrCountry>
+          <com:zipCode>94560</com:zipCode>
+        </address>
+      </issuerInfo>
+      <authorizedPersons>
+        <notificationInfo>
+          <personName>General Counsel's Office</personName>
+          <personPhoneNum>(510) 648-3553</personPhoneNum>
+          <personAddress>
+            <com:street1>Lucid Group, Inc.</com:street1>
+            <com:street2>7373 Gateway Boulevard</com:street2>
+            <com:city>Newark</com:city>
+            <com:stateOrCountry>CA</com:stateOrCountry>
+            <com:zipCode>94560</com:zipCode>
+          </personAddress>
+        </notificationInfo>
+      </authorizedPersons>
+    </coverPageHeader>
+    <reportingPersons>
+      <reportingPersonInfo>
+        <reportingPersonCIK>0001874832</reportingPersonCIK>
+        <reportingPersonNoCIK>N</reportingPersonNoCIK>
+        <reportingPersonName>Ayar Third Investment Company</reportingPersonName>
+        <memberOfGroup>a</memberOfGroup>
+        <fundType>WC</fundType>
+        <legalProceedings>N</legalProceedings>
+        <citizenshipOrOrganization>T0</citizenshipOrOrganization>
+        <soleVotingPower>0.00</soleVotingPower>
+        <sharedVotingPower>280188185.00</sharedVotingPower>
+        <soleDispositivePower>0.00</soleDispositivePower>
+        <sharedDispositivePower>0.00</sharedDispositivePower>
+        <aggregateAmountOwned>280188185.00</aggregateAmountOwned>
+        <isAggregateExcludeShares>N</isAggregateExcludeShares>
+        <percentOfClass>56.69</percentOfClass>
+        <typeOfReportingPerson>OO</typeOfReportingPerson>
+        <commentContent>See Item 5 below</commentContent>
+      </reportingPersonInfo>
+      <reportingPersonInfo>
+        <reportingPersonCIK>0001767640</reportingPersonCIK>
+        <reportingPersonNoCIK>N</reportingPersonNoCIK>
+        <reportingPersonName>Public Investment Fund</reportingPersonName>
+        <memberOfGroup>a</memberOfGroup>
+        <fundType>WC</fundType>
+        <legalProceedings>N</legalProceedings>
+        <citizenshipOrOrganization>T0</citizenshipOrOrganization>
+        <soleVotingPower>804139.00</soleVotingPower>
+        <sharedVotingPower>280188185.00</sharedVotingPower>
+        <soleDispositivePower>280992324.00</soleDispositivePower>
+        <sharedDispositivePower>0.00</sharedDispositivePower>
+        <aggregateAmountOwned>280992324.00</aggregateAmountOwned>
+        <isAggregateExcludeShares>N</isAggregateExcludeShares>
+        <percentOfClass>56.85</percentOfClass>
+        <typeOfReportingPerson>OO</typeOfReportingPerson>
+        <commentContent>See Item 5 below</commentContent>
+      </reportingPersonInfo>
+      <reportingPersonInfo>
+        <reportingPersonNoCIK>Y</reportingPersonNoCIK>
+        <reportingPersonName>Turqi A. Alnowaiser</reportingPersonName>
+        <memberOfGroup>a</memberOfGroup>
+        <fundType>OO</fundType>
+        <legalProceedings>N</legalProceedings>
+        <citizenshipOrOrganization>T0</citizenshipOrOrganization>
+        <soleVotingPower>232427.00</soleVotingPower>
+        <sharedVotingPower>280188185.00</sharedVotingPower>
+        <soleDispositivePower>232427.00</soleDispositivePower>
+        <sharedDispositivePower>0.00</sharedDispositivePower>
+        <aggregateAmountOwned>280420612.00</aggregateAmountOwned>
+        <isAggregateExcludeShares>N</isAggregateExcludeShares>
+        <percentOfClass>56.74</percentOfClass>
+        <typeOfReportingPerson>IN</typeOfReportingPerson>
+        <commentContent>See Item 5 below</commentContent>
+      </reportingPersonInfo>
+      <reportingPersonInfo>
+        <reportingPersonNoCIK>Y</reportingPersonNoCIK>
+        <reportingPersonName>Yasir Alsalman</reportingPersonName>
+        <memberOfGroup>a</memberOfGroup>
+        <fundType>OO</fundType>
+        <legalProceedings>N</legalProceedings>
+        <citizenshipOrOrganization>T0</citizenshipOrOrganization>
+        <soleVotingPower>40145.00</soleVotingPower>
+        <sharedVotingPower>280188185.00</sharedVotingPower>
+        <soleDispositivePower>40145.00</soleDispositivePower>
+        <sharedDispositivePower>0.00</sharedDispositivePower>
+        <aggregateAmountOwned>280228330.00</aggregateAmountOwned>
+        <isAggregateExcludeShares>N</isAggregateExcludeShares>
+        <percentOfClass>56.70</percentOfClass>
+        <typeOfReportingPerson>IN</typeOfReportingPerson>
+        <commentContent>See Item 5 below</commentContent>
+      </reportingPersonInfo>
+    </reportingPersons>
+    <items1To7>
+      <item1>
+        <securityTitle>Class A Common Stock, par value $0.0001 per share</securityTitle>
+        <issuerName>Lucid Group, Inc.</issuerName>
+        <issuerPrincipalAddress>
+          <com:street1>7373 Gateway Boulevard</com:street1>
+          <com:city>Newark</com:city>
+          <com:stateOrCountry>CA</com:stateOrCountry>
+          <com:zipCode>94560</com:zipCode>
+        </issuerPrincipalAddress>
+        <commentText>The following constitutes Amendment No. 9 ("Amendment No. 9") to the initial statement on Schedule 13D, filed on July 27, 2021 (the "Initial Schedule 13D") by the undersigned, and amendment No. 1 to the Initial Schedule 13D, filed on November 15, 2022 ("Amendment No. 1"), amendment No. 2 to the Initial Schedule 13D, filed on December 22, 2022 ("Amendment No. 2"), amendment No. 3 to the Initial Schedule 13D, filed on June 26, 2023 ("Amendment No. 3"),  amendment No. 4 to the Initial Schedule 13D filed on April 2, 2024 ("Amendment No. 4"), amendment No. 5 to the Initial Schedule 13D filed on April 2, 2024 ("Amendment No. 5"), amendment No. 6 to the Initial Schedule 13D filed on October 30, 2024 ("Amendment No. 6"), amendment No. 7 to the Initial Schedule 13D filed on April 2, 2025 ("Amendment No. 7") and amendment No. 8 to the Initial Schedule 13D filed on November 28, 2025 ("Amendment No. 8" and collectively with the Initial Schedule 13D, Amendment No. 1, Amendment No. 2, Amendment No. 3, Amendment No. 4, Amendment No. 5, Amendment No. 6, Amendment No. 7 and Amendment No. 8, referred to as the "Prior Schedule 13D"). This Amendment No. 9 amends the Prior Schedule 13D as specifically set forth herein. Capitalized terms used in this Amendment No. 9 and not otherwise defined herein have the meanings given to them in the Prior Schedule 13D.</commentText>
+      </item1>
+      <item2>
+        <filingPersonName>Public Investment Fund of Saudi Arabia ("PIF"), Ayar Third Investment Company ("Ayar"), Turqi A. Alnowaiser, Yasir Alsalman (the "Reporting Persons")</filingPersonName>
+        <principalBusinessAddress>The Public Investment Fund, P.O. Box 6847, Riyadh 11452, Kingdom of Saudi Arabia</principalBusinessAddress>
+        <principalJob>PIF is the sovereign wealth fund of the Kingdom of Saudi Arabia. Ayar is a wholly-owned subsidiary of PIF. In its capacity as the parent company and ultimate controlling party of Ayar, PIF beneficially owns, and has both dispositive and voting power over, all of the securities reported herein held by Ayar. Mr. Turqi A. Alnowaiser and Mr. Yasir Alsalman are the co-managers of Ayar, and in such capacity have the authority to vote the securities held by Ayar as reported herein. Neither Mr. Alnowaiser nor Mr. Alsalman has individual dispositive power with respect to any securities held by Ayar, as reported herein, and each disclaims beneficial ownership of the shares held by Ayar, as reported herein. See Item 5.</principalJob>
+        <hasBeenConvicted>No</hasBeenConvicted>
+        <convictionDescription>No</convictionDescription>
+        <citizenship>The Kingdom of Saudi Arabia</citizenship>
+      </item2>
+      <item4>
+        <transactionPurpose>Subscription Agreement
+
+On April 28, 2026, Ayar Third Investment Company ("Ayar"), an affiliate of the Public Investment Fund ("PIF") purchased from Lucid Group, Inc. (the "Issuer" or the "Company") $550 million of Series C Convertible Preferred Stock, par value $0.0001 per share (the "Series C Convertible Preferred Stock" and, together with the Series A Convertible Preferred Stock, the Series B Convertible Preferred Stock, the "Convertible Preferred Stock"), in a private placement (the "Private Placement"). The Private Placement was made pursuant to a subscription agreement, dated April 14, 2026 (the "Subscription Agreement"), between Lucid and Ayar.
+
+Pursuant to the Subscription Agreement, Ayar agreed, with certain exceptions, that without the prior written consent of the Issuer, it will not, for 12 months after the date of the closing of the Private Placement, directly or indirectly transfer any shares of Series C Convertible Preferred Stock or any shares of Common Stock issued pursuant to the terms thereof.
+
+The description of the Subscription Agreement does not purport to be complete and is qualified in its entirety by reference to the full text of the Subscription Agreement included as Exhibit 19 hereto.
+
+Designation of the Series C Convertible Preferred Stock
+
+Ranking and Dividend
+
+The Series C Convertible Preferred Stock will rank senior to the Common Stock with respect to dividends and distributions of assets upon the Company's liquidation, dissolution or winding up. The Series C Convertible Preferred Stock will have an initial value of $10,000 per share (the "Initial Value"). Dividends on the Series C Convertible Preferred Stock will be payable in the form of compounded dividends upon each share of Series C Convertible Preferred Stock (such payment in kind, "Compounded Returns"). Dividends will accrue on the Initial Value (as increased for any Compounded Returns previously compounded thereon) of each share of Series C Convertible Preferred Stock at a rate of 9% per annum and will compound on the basis of quarterly dividend payment dates on each March 31, June 30, September 30 and December 31 of each year, commencing June 30, 2026.
+
+Liquidation Preference
+
+Upon a liquidation, dissolution or winding up of the Company, each holder of shares of Series C Convertible Preferred Stock ("Holder") will be entitled to receive, with respect to each share of then-outstanding Series C Convertible Preferred Stock, out of the assets of the Company available for distribution to its stockholders (pari passu with the holders of any liquidation parity securities) an amount in cash equal to the greater of (a) an amount per share of Series C Convertible Preferred Stock as of the date of such liquidation, dissolution or winding up equal to (i) the per share accrued value (as used herein, representing the Initial Value, plus any Compounded Returns, plus accrued dividends from the last dividend payment date to, and including, the relevant date of determination) (the "Accrued Value") as of the relevant date (as defined in the Certificate of Designations of Series C Series C Convertible Preferred Stock of the Company (the "Certificate of Designations")) multiplied by (ii) the relevant percentage (as defined in the Certificate of Designations) (the product of (i) and (ii), the "Minimum Consideration"); and (b) the amount that such Holder would have received with respect to such share of Series C Convertible Preferred Stock based on its Accrued Value if all shares of Series C Convertible Preferred Stock had been converted at their Accrued Value (regardless of whether they were actually converted and without regard to any limitations on convertibility or to whether sufficient shares of Common Stock are available out of the Company's authorized but unissued stock for the purpose of effecting such conversion) into shares of Common Stock on the business day immediately prior to the date of such liquidation, dissolution or winding up.
+
+Conversion
+
+Each share of Series C Convertible Preferred Stock will be convertible, at the option of the respective Holder, from time to time after the initial issue date (the "Initial Issue Date"), and without the payment of additional consideration by the Holder, (a) at any time that the closing price per share of the Common Stock on the trading day immediately preceding the date on which the Holder delivers the relevant notice of conversion is at least such price as is specified in the Certificate of Designations, unless the Company otherwise consents to such conversion in its sole discretion, or (b) in all events during certain specified periods relating to a fundamental change or optional redemption by the Company, into such number of fully paid and non-assessable shares of Common Stock as is determined by dividing (i) the applicable Accrued Value as of the conversion date by (ii) the applicable Conversion Price in effect as of such conversion date. The Series C Convertible Preferred Stock will be convertible into the Company's Common Stock at an initial conversion price of $10.8160 per share (the "Conversion Price"). The Conversion Price is subject to customary anti-dilution adjustments, including in the event of any stock split, stock dividend, recapitalization or similar events.
+
+Voting
+
+Except as otherwise provided in the Certificate of Designations or by applicable law or the rules of any stock exchange on which the Company's securities are listed, on any matter presented to the stockholders of the Company for their action or consideration at any meeting of stockholders and on which matter holders of the Common Stock shall be entitled to vote, each Holder will be entitled to the number of votes equal to the number of whole shares of Common Stock into which the aggregate shares of Series C Convertible Preferred Stock held by such Holder are convertible on the record date for determining stockholders entitled to vote on such matter (subject to certain adjustments, but without regard to any limitations on convertibility or to whether sufficient shares of Common Stock are available out of the Company's authorized but unissued stock for the purpose of effecting the conversion). Holders will be entitled to notice of any meeting of stockholders and, except as otherwise provided in the Certificate of Designations or otherwise required by law, to vote together as a single class with the holders of Common Stock and any other class or series of stock entitled to vote thereon. The total voting power of Holders is subject to a voting cap (the "Voting Cap") equal to 19.99% of the voting power outstanding immediately prior to the Initial Issue Date, minus the voting power of the Common Stock issued in any offerings that would be integrated with the PIF Private Placement under the listing rules of The Nasdaq Stock Market LLC ("Nasdaq"). The Voting Cap can be removed by a subsequent stockholder approval, which the Company expects to seek.
+
+As long as at least 10% of the aggregate number of shares of the Series C Convertible Preferred Stock issued on the Initial Issue Date remain outstanding, and subject to certain other conditions, Holders will be entitled to a separate class vote with respect to, among other things, amendments to the Company's organizational documents that have an adverse effect on the Series C Convertible Preferred Stock, authorizations or issuances by the Company of capital stock of the Company that ranks senior or equal to the Series C Convertible Preferred Stock with respect to dividends or distributions on liquidation or the terms of which provide for cash dividends (other than the Common Stock), winding-up and dissolution, and decreases in the number of authorized shares of Series C Convertible Preferred Stock. The Company also agreed that as long as Ayar owns at least 50% of the Series C Convertible Preferred Stock issued on the Initial Issue Date, the Company will comply with certain debt incurrence covenants in its Existing Credit Agreements (as defined in the Certificate of Designations), which agreement may be waived with the sole consent of Ayar.
+
+Junior and Parity Securities
+
+Subject to certain exceptions, unless all accumulated and unpaid dividends on the Series C Convertible Preferred Stock for all preceding quarterly dividend payment periods have been declared upon all outstanding shares of Series C Convertible Preferred Stock through the most recently completed dividend period, the Company (1) may not repurchase, redeem or otherwise acquire shares of any parity stock or any junior stock (which includes the Common Stock), (2) may not declare or pay dividends on any junior stock (which includes the Common Stock) and (3) may not declare or pay dividends on any parity stock, unless the respective amounts of dividends declared on the Series C Convertible Preferred Stock and each such other class or series of dividend parity stock bear the same ratio to each other as all accumulated and unpaid dividends per share of the Series C Convertible Preferred Stock and such class or series of parity stock (subject to their having been declared by the Board of Directors (the "Board") of the Company out of legally available funds) bear to each other, in proportion to their respective liquidation preferences at the time of declaration.
+
+Mandatory Conversion
+
+On or after the third anniversary of the Initial Issue Date, if at any time (i) the daily VWAP (as defined in the Certificate of Designations) of the Common Stock has been at least 200% of the Conversion Price for at least twenty (20) trading days (whether or not consecutive) during any thirty (30) consecutive trading days (including the last day of such period) and (ii) certain Common Stock liquidity conditions (as defined in the Certificate of Designations) are satisfied, the Company will have the right, exercisable at its election within fifteen (15) business days following completion of the applicable thirty (30) trading day period, to cause all or any portion of the Series C Convertible Preferred Stock to convert into Common Stock. The Company will be required to pay an additional amount per share of Series C Convertible Preferred Stock payable in cash, shares of Common Stock valued based on a five-day average daily VWAP (with the number of shares of Common Stock rounded up to the nearest whole share) or a combination thereof, at the Company's election, in respect of such conversion equal to the greater of (x) the difference between (i) the Minimum Consideration and (ii) the value of the shares of Common Stock delivered upon mandatory conversion thereof and (y) zero.
+
+Fundamental Change
+
+Upon a "fundamental change" (as defined in the Certificate of Designations), the Holders will be entitled, on the fundamental change repurchase date specified by the Company, to receive an amount equal to the greater of (a) the Minimum Consideration and (b) an amount equal to the value that such Holder would have received if it had converted its shares of Series C Convertible Preferred Stock into shares of Common Stock on the business day immediately before the fundamental change repurchase date. The fundamental change repurchase price may be paid in cash, shares of Common Stock (or other securities to be received by a holder of Common Stock in such Fundamental Change) valued based on a five-day average daily VWAP (with the number of shares of Common Stock rounded up to the nearest whole share), or a combination thereof, at the Company's election. The Company may not elect to deliver shares of its Common Stock (or other securities to be received by a holder of Common Stock in such Fundamental Change) in partial or full satisfaction of the fundamental change repurchase price, if certain Common Stock liquidity conditions (as defined in the Certificate of Designations) are not satisfied.
+
+Optional Redemption
+
+On or after the fifth anniversary of the Initial Issue Date, the Company may redeem all or any portion of the Series C Convertible Preferred Stock at a redemption price per share equal to the greater of (a) the Minimum Consideration and (b) an amount equal to the value (calculated based on a twenty (20)-day average daily VWAP) of the number of shares of Common Stock issuable upon conversion at the Conversion Price on such redemption date. Such redemption price may be paid in cash, shares of Common Stock valued based on a twenty (20)-day average daily VWAP (with the number of shares of Common Stock rounded up to the nearest whole share), or a combination thereof, at the Company's election. The Company may not pay any portion of such redemption price in shares of Common Stock if the Common Stock liquidity conditions (as defined in the Certificate of Designations) are not satisfied.
+
+Nasdaq Rules
+
+The Certificate of Designations will provide that the number of shares of Common Stock deliverable upon conversion, redemption or repurchase of the Series C Convertible Preferred Stock will be limited as required by applicable Nasdaq listing rules, and any shares of Common Stock that would have been deliverable but are not delivered due to such limitation will be settled in cash, unless the Company shall have obtained any required stockholder approval. Lucid and Ayar have agreed to cooperate reasonably to obtain, and Ayar has agreed to consent in respect of such stockholder approval no later than 18 months following the closing of the PIF Private Placement.
+
+Remedies for Nonpayment
+
+The Certificate of Designations will provide that the dividend rate described above will be increased to a rate not exceeding 15% per annum upon certain events of noncompliance relating to a failure by the Company to deliver consideration due in connection with a fundamental change or optional redemption.
+
+The description of the Certificate of Designations does not purport to be complete and is qualified in its entirety by reference to the Certificate of Designations included as Exhibit 20 hereto.</transactionPurpose>
+      </item4>
+      <item5>
+        <percentageOfClassSecurities>PIF directly owns 804,139 shares of Common Stock and has sole voting and dispositive power of such shares. PIF may, pursuant to Rule 13d-3, be deemed to beneficially own the  280,188,185 shares of Common Stock directly owned by Ayar, including 33,258,443 shares of Common Stock issuable upon conversion of the Series A Convertible Preferred Stock, 19,794,423 shares of Common Stock issuable upon conversion of the Series B Convertible Preferred Stock and 50,850,591 shares of Common Stock issuable upon conversion of the Series C Convertible Preferred Stock, aggregating to a beneficial ownership of 280,992,324 shares. The number of shares of Common Stock issuable upon conversion of the Series A Convertible Preferred Stock and Series B Convertible Preferred Stock as March 30, 2026 reflects increases in the compounded returns on the shares of Series A Convertible Preferred Stock and Series B Convertible Preferred Stock in accordance with the terms thereof. The number of shares of Common Stock issuable upon conversion of the Series C Convertible Preferred Stock will have similar compounded returns. The Ayar securities and the shares of Common Stock held directly by PIF represent approximately 56.85% of the Issuer's issued and outstanding shares Common Stock. PIF disclaims beneficial ownership of the Ayar securities except to the extent of its pecuniary interest therein.
+
+Ayar directly owns 280,188,185 shares of Common Stock, including the shares of Common Stock issuable upon conversion of the Convertible Preferred Stock as of the date hereof, and has shared voting power over such shares, which represent approximately 56.69% of the Issuer's issued and outstanding shares of Common Stock.
+
+Mr. Alnowaiser, as the co-manager of Ayar, has shared voting power over 280,188,185 shares of Common Stock held by Ayar, including the shares of Common Stock issuable upon conversion of the Convertible Preferred Stock as of the date hereof. In addition, Mr. Alnowaiser has sole voting and dispositive power over 232,427 shares of Common Stock held in his name. Accordingly, Mr. Alnowaiser may be deemed the beneficial owner of an aggregate of  280,420,612 shares of Common Stock, representing approximately 56.74% of the Issuer's issued and outstanding shares of Common Stock. Mr. Alnowaiser disclaims beneficial ownership of any securities held by Ayar.
+
+Mr. Alsalman, as the co-manager of Ayar, has shared voting power over 280,188,185 shares of Common Stock held by Ayar, including the shares of Common Stock issuable upon conversion of the Convertible Preferred Stock as of the date hereof. In addition, Mr. Alsalman has sole voting and dispositive power over 40,145 shares of Common Stock held in his name. Accordingly, Mr. Alsalman may be deemed the beneficial owner of an aggregate of  280,228,330 shares of Common Stock, representing approximately 56.70% of the Issuer's issued and outstanding shares of Common Stock. Mr. Alsalman disclaims beneficial ownership of any securities held by Ayar.
+
+The percentages set forth in this Item 5(a) are based on 390,326,644 shares of Common Stock issued and outstanding as of April 28, 2026, as provided by the Issuer.  The amounts above do not include any shares deliverable in the future to Ayar pursuant to the prepaid forward transactions reported in Amendment No. 7 or Amendment No. 8.  All share numbers reported herein give effect to the 1-for-10 reverse stock split of Lucid's shares of Class A common stock effective on August 29, 2025.
+
+ Each of the Reporting Persons may be deemed to be a member of a group with respect to the Issuer or securities of the Issuer for the purposes of Section 13(d) or 13(g) of the Act. Each of the Reporting Persons disclaims beneficial ownership of all of the shares of Common Stock included in this report, except to the extent of any pecuniary interests therein, and the filing of this report shall not be construed as an admission that any such person or entity is the beneficial owner of any such securities for purposes of Section 13(d) or 13(g) of the Act, or for any other purpose.</percentageOfClassSecurities>
+        <numberOfShares>See section (a)</numberOfShares>
+        <transactionDesc>Ayar entered into the Subscription Agreement, agreeing to purchase an aggregate of 55,000 shares of Common Stock for $10,000 per share.</transactionDesc>
+      </item5>
+      <item6>
+        <contractDescription>The response to Item 4 of this Schedule 13D is incorporated by reference herein.
+
+Seventh IRA Amendment
+
+The shares of Series C Convertible Preferred Stock sold to Ayar and the shares of Common Stock issuable upon conversion thereof will be subject to the Investor Rights Agreement, dated as of February 22, 2021, by and among the Issuer, Ayar, and the other parties thereto, as amended from time to time (the "Investor Rights Agreement"), which governs the registration for resale of such shares of Series C Convertible Preferred Stock and Common Stock. On April 28, 2026, in connection with the Private Placement, the Issuer entered into an amendment to the Investor Rights Agreement (the "Seventh IRA Amendment") with Ayar. Pursuant to the Seventh IRA Amendment, Ayar will be entitled to certain registration rights, including piggy-back and shelf registration rights, with respect to the shares of Series C Convertible Preferred Stock issued in the Private Placement and any shares of Common Stock issuable upon conversion thereof. The description of the Seventh IRA Amendment does not purport to be complete and is qualified in its entirety by reference to the full text of the Seventh IRA Amendment included as Exhibit 21 hereto.
+
+DDTL Amendment
+
+On April 14, 2026, the Company entered into an Amendment No. 2 to the Term Loan Agreement (the "DDTL Amendment" and, together with the Term Loan Agreement as amended to date, the "DDTL Facility"), pursuant to which the aggregate undrawn delayed draw term commitments were increased by $500 million, such that, after giving effect to such increase, the sum of outstanding delayed draw term loans and aggregate undrawn delayed draw term commitments was increased to approximately $2.5 billion. The DDTL Amendment, among other things, eliminated the minimum liquidity covenant and removed the requirement that the Company fully utilize the borrowing availability under the ABL Credit Agreement (as defined therein) prior to making borrowings under the DDTL Facility. The description of the DDTL Amendment does not purport to be complete and is qualified in its entirety by reference to the full text of the DDTL Amendment included as Exhibit 22 hereto.</contractDescription>
+      </item6>
+      <item7>
+        <filedExhibits>19.  Subscription Agreement, dated April 14, 2026, between Lucid Group, Inc. and Ayar Third Investment Company (filed as Exhibit 10.1 to Lucid Group, Inc.'s Current Report on Form 10-K filed with the SEC on April 14, 2026 and incorporated herein by reference).
+
+20. Certificate of Designations of Series C Convertible Preferred Stock of Lucid Group, Inc. (filed as Exhibit 3.1 to Lucid Group, Inc.'s Current Report on Form 10-K filed with the SEC on April 28, 2026 and incorporated herein by reference).
+
+21.  Amendment No. 7 to the Investors Rights Agreement by and among Lucid Group, Inc., Ayar Third Investment Company and the other parties thereto (filed as Exhibit 10.1 to Lucid Group, Inc.'s Current Report on Form 8-K filed with the SEC on April 28, 2026, and incorporated herein by reference).
+
+22. Amendment No. 2 to Credit Agreement, dated April 14, 2026, among Lucid Group, Inc., and Ayar Third Investment Company, as the sole lender and administrative agent.(filed as Exhibit 10.4 to Lucid Group, Inc.'s Current Report on Form 10-K filed with the SEC on April 14, 2026 and incorporated herein by reference)</filedExhibits>
+      </item7>
+    </items1To7>
+    <signatureInfo>
+      <signaturePerson>
+        <signatureReportingPerson>Ayar Third Investment Company</signatureReportingPerson>
+        <signatureDetails>
+          <signature>/s/ Turqi A. Alnowaiser</signature>
+          <title>Turqi A. Alnowaiser, Manager</title>
+          <date>04/30/2026</date>
+        </signatureDetails>
+      </signaturePerson>
+      <signaturePerson>
+        <signatureReportingPerson>Public Investment Fund</signatureReportingPerson>
+        <signatureDetails>
+          <signature>/s/ Yasir O. AlRumayyan</signature>
+          <title>Yasir O. AlRumayyan, Governor</title>
+          <date>04/30/2026</date>
+        </signatureDetails>
+      </signaturePerson>
+      <signaturePerson>
+        <signatureReportingPerson>Turqi A. Alnowaiser</signatureReportingPerson>
+        <signatureDetails>
+          <signature>/s/ Turqi Alnowaiser</signature>
+          <title>Turqi Alnowaiser</title>
+          <date>04/30/2026</date>
+        </signatureDetails>
+      </signaturePerson>
+      <signaturePerson>
+        <signatureReportingPerson>Yasir Alsalman</signatureReportingPerson>
+        <signatureDetails>
+          <signature>/s/ Yasir Alsalman</signature>
+          <title>Yasir Alsalman</title>
+          <date>04/30/2026</date>
+        </signatureDetails>
+      </signaturePerson>
+    </signatureInfo>
+  </formData>
+</edgarSubmission>
+</XML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

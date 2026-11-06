@@ -1,0 +1,18 @@
+{
+  "schema": "mastermind.tiingo.corpus_audit.v2",
+  "expected_requests": 500,
+  "all_receipts_inspected": true,
+  "request_status_counts": {
+    "RAW_RECORDS_CAPTURED": 498,
+    "EMPTY_CAPTURED": 2
+  },
+  "scan": {
+    "receipts_scanned": 565,
+    "unrelated_receipts": 65,
+    "raw_bytes_read": 250573134,
+    "verified_raw_responses": 500
+  },
+  "plan_sha256": "1680b80063aba0e39647995ebb5a7091719944af9261326ac4a362a3dc835266",
+  "complete_history_proven": false,
+  "backtest_admission": "NOT_GRANTED"
+}

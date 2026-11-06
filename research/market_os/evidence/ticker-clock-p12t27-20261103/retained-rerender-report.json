@@ -1,0 +1,52 @@
+{
+  "protected_source": "91b2942304f8d32e1da22d5ea98d8474f8956c50",
+  "input_basis": "Current retained R2 owner cache, exact hashes in retained-r2/receipt.json; not the absent historical original-fetch manifest",
+  "flow": "Native load_all_aggregates/load_per_ticker/build_page_context/template/write_page; no browser, collector, producer refresh or serving effect",
+  "cases": [
+    {
+      "ticker": "HTFL",
+      "before_page_source_date": "2026-11-03",
+      "after_latest_issuer_source_date": "2026-10-30",
+      "price_as_of": "2026-10-30",
+      "daily_as_of": "2026-10-30",
+      "baked_price": "59.05",
+      "price_stamp_bilingual": "As of 2026-10-30 \u622a\u81f3 2026-10-30",
+      "technicals_bilingual": "daily bars \u65e5\u7ebf\u6570\u636e \u00b7 2026-10-30 Full detail \u5b8c\u6574\u6570\u636e",
+      "capital_evaluated_as_of": "2026-11-03",
+      "document_generation": "2026-11-03 01:00 UTC",
+      "jsonld_dateModified": "2026-11-03",
+      "non_clock_context_changes": [],
+      "html_sha256": "197af47c3776a9760f68b7c8e478fed4ae3762ef140a25605c71c0c5ccca0096"
+    },
+    {
+      "ticker": "MIAX",
+      "before_page_source_date": "2026-11-03",
+      "after_latest_issuer_source_date": "2026-10-30",
+      "price_as_of": "2026-10-30",
+      "daily_as_of": "2026-10-30",
+      "baked_price": "33.63",
+      "price_stamp_bilingual": "As of 2026-10-30 \u622a\u81f3 2026-10-30",
+      "technicals_bilingual": "daily bars \u65e5\u7ebf\u6570\u636e \u00b7 2026-10-30 Full detail \u5b8c\u6574\u6570\u636e",
+      "capital_evaluated_as_of": "2026-11-03",
+      "document_generation": "2026-11-03 01:00 UTC",
+      "jsonld_dateModified": "2026-11-03",
+      "non_clock_context_changes": [],
+      "html_sha256": "cfb943403a29faff393fdf7b4d7697f43167f8c8aee80549a4c63a8c75de929b"
+    },
+    {
+      "ticker": "AAPL",
+      "before_page_source_date": "2026-11-03",
+      "after_latest_issuer_source_date": "2026-11-03",
+      "price_as_of": "2026-10-30",
+      "daily_as_of": "2026-10-30",
+      "baked_price": "344.63",
+      "price_stamp_bilingual": "As of 2026-10-30 \u622a\u81f3 2026-10-30",
+      "technicals_bilingual": "daily bars \u65e5\u7ebf\u6570\u636e \u00b7 2026-10-30 Full detail \u5b8c\u6574\u6570\u636e",
+      "capital_evaluated_as_of": "2026-11-03",
+      "document_generation": "2026-11-03 01:00 UTC",
+      "jsonld_dateModified": "2026-11-03",
+      "non_clock_context_changes": [],
+      "html_sha256": "8de827412e5b63b23210794a8988dd1e4813af939aaa5a2938029762b138470e"
+    }
+  ]
+}

@@ -1,0 +1,207 @@
+{
+  "prereg_commit": "9659c1b7b41efc6c54e32c3cd79ba91c060e287b",
+  "source_commit": "9a481ef520e397853c9f5a8edd120cfff528ce16",
+  "ledger_path": "data/risk_radar/forward_log.jsonl",
+  "ledger_sha256": "612c4ecb5cfe1d794b42953ca0d0c8c9d5f43a294e7b03e60d10f74e5fc468a6",
+  "legacy_fields_unchanged": true,
+  "ledger_bytes_unchanged": true,
+  "source_module_sha256": "546e8c7369be61b34bee47e8ac83ba9b2c5c1b296885c414ab0a79139c1fa49b",
+  "audit": {
+    "definition": "us_issued_probability_audit.v1",
+    "as_of": "2026-09-20",
+    "target": "SPY close-relative loss >=5%; future 5/10/21 closing observations",
+    "input_rows": 51,
+    "min_display_n": 5,
+    "horizons": {
+      "h5": {
+        "n": 33,
+        "excluded_n": 18,
+        "excluded": {
+          "ungraded": 18
+        },
+        "from": "2026-06-23",
+        "through": "2026-08-18",
+        "events": 0,
+        "both_outcomes_present": false,
+        "mean_forecast": 0.028727,
+        "observed_rate": 0.0,
+        "brier": 0.000868,
+        "paired_n": 29,
+        "missing_baseline_n": 4,
+        "paired_model_brier": 0.000804,
+        "paired_base_brier": 0.001296,
+        "paired_brier_delta": -0.000492,
+        "bins": [
+          {
+            "lower": 0.0,
+            "upper": 0.1,
+            "upper_inclusive": false,
+            "n": 33,
+            "mean_forecast": 0.028727,
+            "observed_rate": 0.0
+          },
+          {
+            "lower": 0.1,
+            "upper": 0.2,
+            "upper_inclusive": false,
+            "n": 0,
+            "mean_forecast": null,
+            "observed_rate": null
+          },
+          {
+            "lower": 0.2,
+            "upper": 0.4,
+            "upper_inclusive": false,
+            "n": 0,
+            "mean_forecast": null,
+            "observed_rate": null
+          },
+          {
+            "lower": 0.4,
+            "upper": 0.6,
+            "upper_inclusive": false,
+            "n": 0,
+            "mean_forecast": null,
+            "observed_rate": null
+          },
+          {
+            "lower": 0.6,
+            "upper": 1.0,
+            "upper_inclusive": true,
+            "n": 0,
+            "mean_forecast": null,
+            "observed_rate": null
+          }
+        ]
+      },
+      "h10": {
+        "n": 33,
+        "excluded_n": 18,
+        "excluded": {
+          "ungraded": 18
+        },
+        "from": "2026-06-23",
+        "through": "2026-08-18",
+        "events": 0,
+        "both_outcomes_present": false,
+        "mean_forecast": 0.07697,
+        "observed_rate": 0.0,
+        "brier": 0.006073,
+        "paired_n": 29,
+        "missing_baseline_n": 4,
+        "paired_model_brier": 0.005779,
+        "paired_base_brier": 0.007396,
+        "paired_brier_delta": -0.001617,
+        "bins": [
+          {
+            "lower": 0.0,
+            "upper": 0.1,
+            "upper_inclusive": false,
+            "n": 29,
+            "mean_forecast": 0.073793,
+            "observed_rate": 0.0
+          },
+          {
+            "lower": 0.1,
+            "upper": 0.2,
+            "upper_inclusive": false,
+            "n": 4,
+            "mean_forecast": null,
+            "observed_rate": null
+          },
+          {
+            "lower": 0.2,
+            "upper": 0.4,
+            "upper_inclusive": false,
+            "n": 0,
+            "mean_forecast": null,
+            "observed_rate": null
+          },
+          {
+            "lower": 0.4,
+            "upper": 0.6,
+            "upper_inclusive": false,
+            "n": 0,
+            "mean_forecast": null,
+            "observed_rate": null
+          },
+          {
+            "lower": 0.6,
+            "upper": 1.0,
+            "upper_inclusive": true,
+            "n": 0,
+            "mean_forecast": null,
+            "observed_rate": null
+          }
+        ]
+      },
+      "h21": {
+        "n": 33,
+        "excluded_n": 18,
+        "excluded": {
+          "ungraded": 18
+        },
+        "from": "2026-06-23",
+        "through": "2026-08-18",
+        "events": 0,
+        "both_outcomes_present": false,
+        "mean_forecast": 0.155455,
+        "observed_rate": 0.0,
+        "brier": 0.0245,
+        "paired_n": 33,
+        "missing_baseline_n": 0,
+        "paired_model_brier": 0.0245,
+        "paired_base_brier": 0.031684,
+        "paired_brier_delta": -0.007184,
+        "bins": [
+          {
+            "lower": 0.0,
+            "upper": 0.1,
+            "upper_inclusive": false,
+            "n": 0,
+            "mean_forecast": null,
+            "observed_rate": null
+          },
+          {
+            "lower": 0.1,
+            "upper": 0.2,
+            "upper_inclusive": false,
+            "n": 33,
+            "mean_forecast": 0.155455,
+            "observed_rate": 0.0
+          },
+          {
+            "lower": 0.2,
+            "upper": 0.4,
+            "upper_inclusive": false,
+            "n": 0,
+            "mean_forecast": null,
+            "observed_rate": null
+          },
+          {
+            "lower": 0.4,
+            "upper": 0.6,
+            "upper_inclusive": false,
+            "n": 0,
+            "mean_forecast": null,
+            "observed_rate": null
+          },
+          {
+            "lower": 0.6,
+            "upper": 1.0,
+            "upper_inclusive": true,
+            "n": 0,
+            "mean_forecast": null,
+            "observed_rate": null
+          }
+        ]
+      }
+    },
+    "status": "descriptive_only",
+    "sample_unit": "overlapping_daily_forecast",
+    "publication_timing_verified": false,
+    "current_model_validated": false,
+    "note_en": "Historical issued odds, not a test of today's model. Daily windows overlap; publication timing is unverified.",
+    "note_zh": "历史发布概率，并非当前模型验证。每日窗口重叠；首发时点未经核实。"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "observed_at": "2026-10-14T00:44:14.855768+00:00",
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "candidate_id": "press-external-d6f361c4c330",
+  "source_sha256": {
+    "engine/press/official_feed_candidate.py": "f01f28bb20896c59b69ed95339875192d1e724a25078742119d2930e5f0d72f2",
+    "tests/test_press_official_feed_candidate.py": "0e5da284b0a6b87cb18ed85623dd1723f696027b679bafd10a9cd7433892769b"
+  },
+  "source_feed_sha256": "16f504bdb14bc85c9efc16dadaa7ee3bb152cc09b3556bfb4d898396a47831e6",
+  "qualification_sha256": "7d56d1551631f7fed678b4d5869b62270d9dfc01db6bf8f866781a7134e891b4",
+  "independent_review": "mmx-press-official-feed-review-20261013-001",
+  "post_review_change": "XMLParser TreeBuilder rejects decoded DTD, including UTF-16; one discriminating red/green test.",
+  "provider_calls": 0,
+  "stage_writes": 0,
+  "publication_approved": false
+}

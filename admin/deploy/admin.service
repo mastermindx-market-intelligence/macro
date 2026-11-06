@@ -17,7 +17,7 @@ Environment=CODEX_ACCOUNT_HOMES=/var/lib/macro-codex:/var/lib/macro-codex-2:/var
 Environment=CODEX_PROVIDER_ENABLED=1
 # Observable import-closure ABI. Bumping this forces the deploy reconciler to
 # install the changed unit and restart the persistent admin interpreter once.
-Environment=MMX_ADMIN_IMPORT_CLOSURE_GENERATION=2026-08-09-prophet-integrity-v1
+Environment=MMX_ADMIN_IMPORT_CLOSURE_GENERATION=2026-10-11-billing-catalog-v1
 StateDirectory=macro-codex macro-codex-2 macro-codex-3
 StateDirectoryMode=0700
 # ── Site Access Gate env (optional; admin reads/writes the same store) ────────

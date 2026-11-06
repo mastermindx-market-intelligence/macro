@@ -1,0 +1,331 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-20T06:50:43Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:55915/assets/css/1d85c19b.css?v=1d85c19b",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55915/assets/js/intelligence-hub-market-pulse.js?v=20260902a",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55915/wh_banner.js?v=4a53a176",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55915/assets/css/1d85c19b.css?v=1d85c19b"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55915/assets/js/intelligence-hub-market-pulse.js?v=20260902a"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55915/wh_banner.js?v=4a53a176"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 5040,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 5041,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 5040,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 5,
+          "h3": 5,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 13,
+        "payload_bytes_total": 569830,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 18,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 892
+      },
+      "page_id": "intelligence_hub.html",
+      "registry_route": "/intelligence_hub.html",
+      "route": "/intelligence_hub.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 589282,
+          "captured": true,
+          "file": "cells/1988091040f0cd82.png",
+          "force_state": null,
+          "height": 5040,
+          "locale": "en",
+          "sha256": "1988091040f0cd829360870c6b4377920a86108fc437700e8e8a4139fa6523cc",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 576732,
+          "captured": true,
+          "file": "cells/0d4c4c447193dafd.png",
+          "force_state": null,
+          "height": 5040,
+          "locale": "en",
+          "sha256": "0d4c4c447193dafd3a749a9f21b120d47d1de9b8790cb5a37188413de2edb244",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 587972,
+          "captured": true,
+          "file": "cells/f9946a825a02a85c.png",
+          "force_state": null,
+          "height": 5087,
+          "locale": "zh",
+          "sha256": "f9946a825a02a85c88f6e3c140f34e4bd934282f848437f201392f0b5aea17af",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 577357,
+          "captured": true,
+          "file": "cells/b32239c9e895e784.png",
+          "force_state": null,
+          "height": 5087,
+          "locale": "zh",
+          "sha256": "b32239c9e895e784618764c349fe68848f56719c9186be1276718cc670aae0ec",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 440249,
+          "captured": true,
+          "file": "cells/a00307aebf39763f.png",
+          "force_state": null,
+          "height": 5041,
+          "locale": "en",
+          "sha256": "a00307aebf39763f8c09697204832758499e7134416b852a48c1ac3d6922a4cb",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 434310,
+          "captured": true,
+          "file": "cells/4e8700bc29c14032.png",
+          "force_state": null,
+          "height": 5041,
+          "locale": "en",
+          "sha256": "4e8700bc29c14032a220efc529fef0c8d6de627691118b60f5e2dfcc33e8f531",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 433718,
+          "captured": true,
+          "file": "cells/02921475412ddb7e.png",
+          "force_state": null,
+          "height": 5042,
+          "locale": "zh",
+          "sha256": "02921475412ddb7e84293f4158856bf450819211edfdc687bfaa456867ca6c48",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 429896,
+          "captured": true,
+          "file": "cells/a8b033b1be07bad8.png",
+          "force_state": null,
+          "height": 5042,
+          "locale": "zh",
+          "sha256": "a8b033b1be07bad8fe0c630e123a07285b94438326cf8cdfcd82ac0a31db5111",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/intelligence_hub.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/sol-uiux-intel-hub-20260918",
+    "resolved_sha_or_none": "5b2bf8bf6a5ac2ed7d5f2abad453b58fbb188a52",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/sol-uiux-intel-hub-20260918 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/private/tmp/sol-uiux-intel-hub-20260918/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

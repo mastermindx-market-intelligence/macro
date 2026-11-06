@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-08-17T20:03:17Z",
+ "accession": "0001628280-26-057358",
+ "cik": "0001633978",
+ "doc_byte_length": 3332187,
+ "doc_sha256": "8fa710d6ca512bf191fee2211e129bb55d49be90caeddd3801c7203750db47ed",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-06-27",
+ "primary_document": "lite-20260627.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3070005,
+  "byte_start": 3068331,
+  "normalized": "Customer 130.4 %13.2 %",
+  "normalized_sha256": "74819404226b5be1e512574db0939f9952ef2c8a9bce06be23f953e072b04ece",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#cceeff;padding:1.5pt 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">Customer 1</span></td><td colspan=\"2\" style=\"background-color:#cceeff;border-top:1pt solid #000000;padding:1.5pt 0 1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-63\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-2059\">30.4</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;border-top:1pt solid #000000;padding:1.5pt 1pt 1.5pt 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;border-top:1pt solid #000000;padding:1.5pt 0 1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-66\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-2060\">13.2</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;border-top:1pt solid #000000;padding:1.5pt 1pt 1.5pt 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td></tr>",
+  "raw_sha256": "e26f1e05d43be080c8782899144d2ba8ee258684ccdad2d453cad6c4943e89ca"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1633978/000162828026057358/lite-20260627.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 32366,
+   "byte_start": 31701,
+   "context_ref": "c-63",
+   "raw": "<xbrli:context id=\"c-63\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001633978</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">lite:CustomerOneMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-06-29</xbrli:startDate><xbrli:endDate>2026-06-27</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "e84293cbd27092304248ae774f0b0255ce51eac47574a4ec6a5939871f176a71"
+  },
+  {
+   "byte_end": 34257,
+   "byte_start": 33592,
+   "context_ref": "c-66",
+   "raw": "<xbrli:context id=\"c-66\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001633978</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">lite:CustomerOneMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-06-30</xbrli:startDate><xbrli:endDate>2025-06-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "adba129207b11d156d89d57d33b723ea10c1ef0ae028762a3e0ea898a0ec7bf4"
+  }
+ ]
+}

@@ -1,0 +1,130 @@
+{
+  "head": "cb4ed1c0ea12d6973c20dc56906287685ecf8fc7",
+  "branch": "claude/mo-a-ud-b2-w1-volweather-fold",
+  "pr": "DRAFT",
+  "source_url": "site/macro.html",
+  "matrix": "theme(dark|light) × lang(en|zh) × viewport(1440|390) = 8 cells",
+  "page_errors": [],
+  "r_e_byte_identity": {
+    "selector": ".mx5-sc-left (slice from '<div class=\"mx5-sc-left\">' to matching close)",
+    "sha256": "346b194c2cb82100aac7d26efe27c99f2bc3d6629f84db6ffa37cd2053a23358",
+    "sha256_short": "346b194c2cb8",
+    "bytes": 23397,
+    "captured_at_head": "cb4ed1c0ea12d6973c20dc56906287685ecf8fc7",
+    "note": "Byte-identity gate. The same slice, extracted from site/macro.html at FINAL head, must hash to this value. R-W1-A-AMENDED: the strip lives in .mx5-sc-vw (a child of .mx5-sc-left), so the R-E gate slice is .mx5-sc-left (dial + scar chips + strip). Capture-last: this manifest is committed in the captures commit; captured_at_head is HEAD at capture time and must be an ancestor of the captures commit."
+  },
+  "cells": [
+    {
+      "file": "macro_dark_en_1440.png",
+      "isle_file": "risk_isle_dark_en_1440.png",
+      "viewport": "1440",
+      "theme": "dark",
+      "language": "en",
+      "strip": {
+        "w": 354,
+        "h": 391,
+        "rows": 8,
+        "eyebrow_en": "Volatility weather",
+        "eyebrow_zh": "波动率天气"
+      }
+    },
+    {
+      "file": "macro_dark_zh_1440.png",
+      "isle_file": "risk_isle_dark_zh_1440.png",
+      "viewport": "1440",
+      "theme": "dark",
+      "language": "zh",
+      "strip": {
+        "w": 354,
+        "h": 391,
+        "rows": 8,
+        "eyebrow_en": "Volatility weather",
+        "eyebrow_zh": "波动率天气"
+      }
+    },
+    {
+      "file": "macro_light_en_1440.png",
+      "isle_file": "risk_isle_light_en_1440.png",
+      "viewport": "1440",
+      "theme": "light",
+      "language": "en",
+      "strip": {
+        "w": 354,
+        "h": 391,
+        "rows": 8,
+        "eyebrow_en": "Volatility weather",
+        "eyebrow_zh": "波动率天气"
+      }
+    },
+    {
+      "file": "macro_light_zh_1440.png",
+      "isle_file": "risk_isle_light_zh_1440.png",
+      "viewport": "1440",
+      "theme": "light",
+      "language": "zh",
+      "strip": {
+        "w": 354,
+        "h": 391,
+        "rows": 8,
+        "eyebrow_en": "Volatility weather",
+        "eyebrow_zh": "波动率天气"
+      }
+    },
+    {
+      "file": "macro_dark_en_390.png",
+      "isle_file": "risk_isle_dark_en_390.png",
+      "viewport": "390",
+      "theme": "dark",
+      "language": "en",
+      "strip": {
+        "w": 327,
+        "h": 371,
+        "rows": 8,
+        "eyebrow_en": "Volatility weather",
+        "eyebrow_zh": "波动率天气"
+      }
+    },
+    {
+      "file": "macro_dark_zh_390.png",
+      "isle_file": "risk_isle_dark_zh_390.png",
+      "viewport": "390",
+      "theme": "dark",
+      "language": "zh",
+      "strip": {
+        "w": 327,
+        "h": 371,
+        "rows": 8,
+        "eyebrow_en": "Volatility weather",
+        "eyebrow_zh": "波动率天气"
+      }
+    },
+    {
+      "file": "macro_light_en_390.png",
+      "isle_file": "risk_isle_light_en_390.png",
+      "viewport": "390",
+      "theme": "light",
+      "language": "en",
+      "strip": {
+        "w": 327,
+        "h": 371,
+        "rows": 8,
+        "eyebrow_en": "Volatility weather",
+        "eyebrow_zh": "波动率天气"
+      }
+    },
+    {
+      "file": "macro_light_zh_390.png",
+      "isle_file": "risk_isle_light_zh_390.png",
+      "viewport": "390",
+      "theme": "light",
+      "language": "zh",
+      "strip": {
+        "w": 327,
+        "h": 371,
+        "rows": 8,
+        "eyebrow_en": "Volatility weather",
+        "eyebrow_zh": "波动率天气"
+      }
+    }
+  ]
+}

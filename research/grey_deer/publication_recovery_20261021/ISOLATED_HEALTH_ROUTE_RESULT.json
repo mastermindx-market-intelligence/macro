@@ -1,0 +1,936 @@
+{
+  "schema": "grey_deer.paired_isolated_health_route.v1",
+  "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+  "baseline": "fe7afd0111141bae27927715e709d074fea729e2",
+  "started_at": "2026-10-21T12:15:33.753551+00:00",
+  "stage": "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1",
+  "archive": {
+    "sha256": "ed2c3b671cbe5604cc4c6feb7e9dd387032f870d980021b759d8f481b9dc07cf",
+    "bytes": 104202240,
+    "members": 5219
+  },
+  "production_service_mutated": false,
+  "production_health_polled": false,
+  "scope": "One complete actual ASGI GET /health per exact fresh release process, with registered startup paused and frozen health inputs; full eligible-code restoration between processes.",
+  "limitations": [
+    "Presence fixtures preserve branching but do not authenticate providers.",
+    "Paused scheduler.running may satisfy the literal route while dispatch remains forbidden.",
+    "ASGI includes routing/middleware/body but excludes TCP/uvicorn and production contention.",
+    "Audit/read-only fences and cold-process effects differ from unconstrained production timing.",
+    "An isolated pass cannot erase the separately recorded live six-second failure."
+  ],
+  "production_before": {
+    "service": {
+      "MainPID": "3972732",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "ActiveEnterTimestamp": "Wed 2026-10-21 08:30:43 UTC"
+    },
+    "marker": "fe7afd0111141bae27927715e709d074fea729e2"
+  },
+  "context": {
+    "nonsecret_settings": {
+      "CODEX_PROVIDER_ENABLED": "1",
+      "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "BOT_LLM_BACKEND": "waterfall",
+      "METAB_KEYS_ENABLED": "2,3,4,5,6,7",
+      "MASTERMIND_SHARED_LLM_POOL": "1",
+      "CODEX_HOME": "/var/lib/macro-codex",
+      "MASTERMIND_RESP_CACHE_TTL": "30",
+      "MASTERMIND_VPS_AUTHORITATIVE": "1",
+      "MASTERMIND_SERVE_ONLY": "0",
+      "MASTERMIND_JOBSTORE": "memory",
+      "MASTERMIND_MACRO_MANAGED_EXTERNALLY": "1"
+    },
+    "oauth_presence_only": {
+      "DEEPSEEK_API_KEY": true,
+      "CODEX_ACCESS_TOKEN": false,
+      "CODEX_API_KEY": false,
+      "CLAUDE_CODE_OAUTH_TOKEN": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_1": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_2": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_3": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_4": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_5": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_6": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_7": true
+    },
+    "local_env_files": [
+      {
+        "path": "/opt/mastermind/.env",
+        "exists": true
+      },
+      {
+        "path": "/opt/mastermind/.env.local",
+        "exists": false
+      }
+    ],
+    "service_home_is_root": true,
+    "codex_executable": "/usr/bin/codex",
+    "codex_auth_file_present": false
+  },
+  "authority_snapshot_before": {
+    "portfolios/autonomous/nav_history.jsonl": {
+      "bytes": 10538,
+      "sha256": "0e0a85db720d63b8e29efe946c8c573be8c74bfdc3dcacc49b243bc4aa92f558"
+    },
+    "portfolios/autonomous/account.json": {
+      "bytes": 1411,
+      "sha256": "7869964267ad65e3533aa43a034fe81e7fd62df3628cb6bc7b4b1b8b641dcbea"
+    },
+    "portfolios/autonomous/fills.jsonl": {
+      "bytes": 12606,
+      "sha256": "778f2846e0e9e527b314a91e0cf105604186c8f081085c0b543a63da54df0a91"
+    },
+    "portfolios/china/nav_history.jsonl": {
+      "bytes": 10786,
+      "sha256": "1ce9ad2c7fdd5a7d979e100dd05988743eb4fc3f84d540ef9f95e7047a322b0d"
+    },
+    "portfolios/china/account.json": {
+      "bytes": 2823,
+      "sha256": "40041d51f109c3dc4a16728cacf0f9ee4392b3ddb96a8b4881e0a0c113107a06"
+    },
+    "portfolios/china/fills.jsonl": {
+      "bytes": 18251,
+      "sha256": "ed5f35b9d22c1630a25f696611d2152578afa464037cdb75bd4ed483919ee5a7"
+    },
+    "portfolios/hk/nav_history.jsonl": {
+      "bytes": 10636,
+      "sha256": "1095f0dea3775d594484bcb0a9de7298d40765a30eea74b8964b6a0864b65443"
+    },
+    "portfolios/hk/account.json": {
+      "bytes": 2208,
+      "sha256": "90f63ac286b4de07ef245a686a60d8fd51a5b836a77a1f62d60f67a67c940441"
+    },
+    "portfolios/hk/fills.jsonl": {
+      "bytes": 13401,
+      "sha256": "e37be161fd3f39371160c785142d798ee32edf1568c3a4da1c090a40f7617f93"
+    },
+    "portfolio_forward_evaluation/start.json": {
+      "bytes": 90345,
+      "sha256": "75d5182d55ffc7e569f50008d9293682cadf56130d42b00eaba23412e2e8585c"
+    }
+  },
+  "installed_baseline_source": {
+    "app/main.py": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+    "app/auth.py": "b9f78476bab0ec04068403e5caea73c9e50bf0aadfd05ef4156375f154810768",
+    "app/response_cache.py": "ee8ca98c904f255552700560d8804f877577276e181f55e1002c1be4c937d1e6",
+    "brain/client.py": "d8e09a42faa2e5a4536d20b2472074be45c2895f89c53217f50bd108181a5c6f",
+    "brain/cli_bridge.py": "a5471b67834ff7894f4e7302c7c42bceb7f0569feadd2b5758dc3fda0919af30",
+    "brain/codex_bridge.py": "eb18a1fecca9d6ec86a97b72af7b3e07da1ddae0ee09b362fab312c29ab405ff",
+    "brain/provider_waterfall.py": "cbebfa0575435c4bf0e50f245d7f2fbec76b5f643d81db7227a1ed7958df919f",
+    "brain/key_rotor.py": "c1b6c5cb2eeb6c64bf03bafe25d3725db03dfd723aac7ad478915a24073c1d50",
+    "bot/__init__.py": "2e5bd759495533c77f6ac0016f0f582aa256daf5ec47d45015efbd2969036f18"
+  },
+  "macro_dependency_sources": {
+    "engine/llm_auth.py": {
+      "bytes": 71580,
+      "sha256": "7060d1cabfeaec6ea3c26655a0d4deb41375e2b0f132474642cbefdf2ebb434e"
+    },
+    "engine/neuralweb/key_pool.py": {
+      "bytes": 60639,
+      "sha256": "474185c0770422de1a91a817f4568d33133b7c1969262d6cf3af5f45c22b475a"
+    },
+    "engine/neuralweb/capability_broker.py": {
+      "bytes": 9924,
+      "sha256": "9a1f615c030696fa956b28d994661a3108ff118c3667c2d4c64884ae9c5346a3"
+    },
+    "engine/metabolism/budget_gate.py": {
+      "bytes": 22360,
+      "sha256": "26c85f9b59bbd3deb3a7f7604f8521b05c4c5dfbcd6b6c11ac266ed0ed605b59"
+    },
+    "engine/codex_provider.py": {
+      "bytes": 30985,
+      "sha256": "8dc05bd58187158ee61594efcb9de7956fb28127b8107683ce5fb6c727350d12"
+    },
+    "engine/codex_lane/runner.py": {
+      "bytes": 31948,
+      "sha256": "52a67a427b612ce2df5ebb15613f45c4b6f0af4b31eba1e9145258d8979d20ce"
+    },
+    "lib/config.py": {
+      "bytes": 1131,
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+    }
+  },
+  "helper_sha256": {
+    "deploy_from_git.sh": "b983a9e88f6eddeac00929797d1e05c80e09e3c206bcabf4e26342fdb7dbb42f",
+    "deploy_code_to_vps.sh": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8"
+  },
+  "baseline_copy": {
+    "exit_code": 0,
+    "change_count": 3330,
+    "transcript": "rsync-1.txt",
+    "transcript_sha256": "7a93d1714ebf01db36f182a9f4aae5b193b1a89234a9a1f9da871721bf9bfc60",
+    "stderr": ""
+  },
+  "backup_copy": {
+    "exit_code": 0,
+    "change_count": 3330,
+    "transcript": "rsync-2.txt",
+    "transcript_sha256": "7a93d1714ebf01db36f182a9f4aae5b193b1a89234a9a1f9da871721bf9bfc60",
+    "stderr": ""
+  },
+  "backup_verification": {
+    "exit_code": 0,
+    "change_count": 0,
+    "transcript": "rsync-3.txt",
+    "transcript_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr": "",
+    "changes": []
+  },
+  "health_input_manifest": {
+    "/opt/mastermind-live-data/metabolism/key_ledger.jsonl": {
+      "source": "/opt/mastermind-live-data/metabolism/key_ledger.jsonl",
+      "target_in_namespace": "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/data/metabolism/key_ledger.jsonl",
+      "present": true,
+      "bytes": 120973,
+      "sha256": "2662a2ecba0c2a10a9264da27acbdfc9075649b67a4e33d8de8efbd75b90ea65"
+    },
+    "/opt/macro/data/metabolism/key_ledger.jsonl": {
+      "source": "/opt/macro/data/metabolism/key_ledger.jsonl",
+      "target_in_namespace": "/opt/macro/data/metabolism/key_ledger.jsonl",
+      "present": true,
+      "bytes": 641586,
+      "sha256": "1d11e30d221f63da5b65fbf0980118078f0eed3632c118f0b81716a52739df5a"
+    },
+    "/opt/macro/data/metabolism/key_usage.jsonl": {
+      "source": "/opt/macro/data/metabolism/key_usage.jsonl",
+      "target_in_namespace": "/opt/macro/data/metabolism/key_usage.jsonl",
+      "present": true,
+      "bytes": 391983,
+      "sha256": "2426350612c0906763ad0e2be357d2e97a170e3fc18f903409ec27faf7bacd33"
+    },
+    "/opt/macro/data/metabolism/key_budget_status.json": {
+      "source": "/opt/macro/data/metabolism/key_budget_status.json",
+      "target_in_namespace": "/opt/macro/data/metabolism/key_budget_status.json",
+      "present": true,
+      "bytes": 2702,
+      "sha256": "b016cfae4812aaa622f83f66fb6bb217037b2d83f1f5b4b448f1fac683ab0a3f"
+    },
+    "/opt/macro/data/mastermind/key_events.jsonl": {
+      "source": "/opt/macro/data/mastermind/key_events.jsonl",
+      "target_in_namespace": "/opt/macro/data/mastermind/key_events.jsonl",
+      "present": true,
+      "bytes": 43676,
+      "sha256": "391e8954c5d831ccc98c62a16acbbe93423bc6a94f5ad1fc985780d24c784cc8"
+    },
+    "/opt/macro/data/mastermind/key_pool_status.json": {
+      "source": "/opt/macro/data/mastermind/key_pool_status.json",
+      "target_in_namespace": "/opt/macro/data/mastermind/key_pool_status.json",
+      "present": true,
+      "bytes": 1140,
+      "sha256": "9f63a9208c13d9a779b7e5e3a025a71c2cce90f339587b91dc0679bd1ae57e39"
+    },
+    "/opt/macro/config/capability_manifest.yml": {
+      "source": "/opt/macro/config/capability_manifest.yml",
+      "target_in_namespace": "/opt/macro/config/capability_manifest.yml",
+      "present": true,
+      "bytes": 34421,
+      "sha256": "7c67e8ccaab2e3cae0847c341164b54ae87e814a424e959c90a0817c05912f97"
+    },
+    "/opt/macro/config/metabolism_budget.yml": {
+      "source": "/opt/macro/config/metabolism_budget.yml",
+      "target_in_namespace": "/opt/macro/config/metabolism_budget.yml",
+      "present": true,
+      "bytes": 12028,
+      "sha256": "0cf76b834be496c0341f75b7882d199ba5fe1652fb020781a8f1b30e75f8a86f"
+    },
+    "/opt/macro/config.yml": {
+      "source": "/opt/macro/config.yml",
+      "target_in_namespace": "/opt/macro/config.yml",
+      "present": true,
+      "bytes": 496073,
+      "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402"
+    }
+  },
+  "candidate_copy": {
+    "exit_code": 0,
+    "change_count": 3351,
+    "transcript": "rsync-4.txt",
+    "transcript_sha256": "9ba43591285b2d1d88c74224ee3242bceef28a34b82279d56a697ab36a3d6859",
+    "stderr": ""
+  },
+  "candidate_verification": {
+    "exit_code": 0,
+    "change_count": 0,
+    "transcript": "rsync-5.txt",
+    "transcript_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr": "",
+    "changes": []
+  },
+  "candidate_source": {
+    "app/main.py": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+    "app/auth.py": "b9f78476bab0ec04068403e5caea73c9e50bf0aadfd05ef4156375f154810768",
+    "app/response_cache.py": "78cc489be9d1abfef04d41a17dcdcc45ea2f3ce3f6ec60c31ad57399cc7cebb4",
+    "brain/client.py": "d8e09a42faa2e5a4536d20b2472074be45c2895f89c53217f50bd108181a5c6f",
+    "brain/cli_bridge.py": "454f6c2f3685d01b5323d0e5529e50cf101d085ebab15366d5518a8533ea7cd8",
+    "brain/codex_bridge.py": "bd1af0b78a40506f1c1b439301cdddd5d5cbc7a3759fb3e835e5842941acdcc4",
+    "brain/provider_waterfall.py": "71c34d863219dbf85acb23a368096a000297b9aa2e098c6dc18b75e5d311c5bb",
+    "brain/key_rotor.py": "c1b6c5cb2eeb6c64bf03bafe25d3725db03dfd723aac7ad478915a24073c1d50",
+    "bot/__init__.py": "2e5bd759495533c77f6ac0016f0f582aa256daf5ec47d45015efbd2969036f18"
+  },
+  "credential_fixture_policy": {
+    "names": [
+      "CLAUDE_CODE_OAUTH_TOKEN",
+      "CLAUDE_CODE_OAUTH_TOKEN_1",
+      "CLAUDE_CODE_OAUTH_TOKEN_2",
+      "CLAUDE_CODE_OAUTH_TOKEN_3",
+      "CLAUDE_CODE_OAUTH_TOKEN_4",
+      "CLAUDE_CODE_OAUTH_TOKEN_5",
+      "CLAUDE_CODE_OAUTH_TOKEN_6",
+      "CLAUDE_CODE_OAUTH_TOKEN_7",
+      "DEEPSEEK_API_KEY"
+    ],
+    "value": "isolated-nonsecret-presence-fixture",
+    "auth_file_created": false,
+    "credential_values_copied": false,
+    "credential_file_open_denied": true,
+    "presence_semantics_verified": true
+  },
+  "phases": {
+    "candidate": {
+      "phase": "candidate",
+      "exit_code": -9,
+      "launcher_reaped": true,
+      "process_group_gone": true,
+      "deadline_kind": "request_6s",
+      "request_start": {
+        "phase": "candidate",
+        "monotonic_ns": 7685355289290183,
+        "started_at": "2026-10-21T12:15:42.505111+00:00",
+        "deadline_seconds": 6
+      },
+      "response": null,
+      "startup": {
+        "schema": "grey_deer.isolated_health_route_child.v1",
+        "phase": "candidate",
+        "expected_commit": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+        "registered_startup_called": true,
+        "startup_completed": true,
+        "probe_completed": false,
+        "helper_contract_passed": false,
+        "provider_execution_allowed": false,
+        "credential_material_supplied": false,
+        "transport": "httpx ASGITransport; actual FastAPI routing, middleware and complete response body",
+        "dispatch_mode": "resume held before registered startup; executor dispatch forbidden",
+        "startup_elapsed_seconds": 2.126643438,
+        "scheduler_running": true,
+        "scheduler_state": 2,
+        "first_run_states": {
+          "autonomous_first_run": false,
+          "china_first_run": false,
+          "hk_first_run": false,
+          "heavyweight_first_run": false,
+          "etf_first_run": false
+        },
+        "jobs": [
+          {
+            "id": "publish_macro_snapshot",
+            "next_run_time": "2026-10-21 12:25:00+00:00"
+          },
+          {
+            "id": "macro_refresh",
+            "next_run_time": "2026-10-21 12:30:00+00:00"
+          },
+          {
+            "id": "portfolio_risk_compose",
+            "next_run_time": "2026-10-21 13:00:00+00:00"
+          },
+          {
+            "id": "prewarm_marks",
+            "next_run_time": "2026-10-21 13:00:00+00:00"
+          },
+          {
+            "id": "derisk_us_intraday",
+            "next_run_time": "2026-10-21 14:00:00+00:00"
+          },
+          {
+            "id": "watch_asia_overnight",
+            "next_run_time": "2026-10-21 14:20:00+00:00"
+          },
+          {
+            "id": "settle_pending",
+            "next_run_time": "2026-10-21 15:00:00+00:00"
+          },
+          {
+            "id": "portfolio_risk_daily",
+            "next_run_time": "2026-10-21 15:05:00+00:00"
+          },
+          {
+            "id": "daily_mark",
+            "next_run_time": "2026-10-21 22:35:00+00:00"
+          },
+          {
+            "id": "autonomous_daily",
+            "next_run_time": "2026-10-21 23:10:00+00:00"
+          },
+          {
+            "id": "loop_maintenance",
+            "next_run_time": "2026-10-21 23:45:00+00:00"
+          },
+          {
+            "id": "experiment_maturity",
+            "next_run_time": "2026-10-21 23:50:00+00:00"
+          },
+          {
+            "id": "settle_brain_asia",
+            "next_run_time": "2026-10-22 01:35:00+00:00"
+          },
+          {
+            "id": "watch_us_overnight",
+            "next_run_time": "2026-10-22 02:20:00+00:00"
+          },
+          {
+            "id": "china_daily",
+            "next_run_time": "2026-10-22 08:00:00+00:00"
+          },
+          {
+            "id": "hk_daily",
+            "next_run_time": "2026-10-22 09:00:00+00:00"
+          },
+          {
+            "id": "cio_weekly",
+            "next_run_time": "2026-10-25 10:00:00+00:00"
+          },
+          {
+            "id": "improvement_agenda_weekly",
+            "next_run_time": "2026-10-25 10:30:00+00:00"
+          }
+        ],
+        "startup_qualified": true,
+        "resume_requests": [
+          {
+            "state": 2,
+            "job_count": 18
+          }
+        ],
+        "dispatch_attempts": [],
+        "first_run_attempts": [],
+        "denied_events": [],
+        "write_paths": [
+          "receiver/data",
+          "receiver/data/governance",
+          "receiver/data/governance/doctrine_hash.json",
+          "receiver/data/governance/run_events.jsonl",
+          "receiver/data/portfolios/autonomous",
+          "receiver/data/portfolios/autonomous/.paper_transaction.lock",
+          "receiver/data/portfolios/china",
+          "receiver/data/portfolios/china/.paper_transaction.lock",
+          "receiver/data/portfolios/hk",
+          "receiver/data/portfolios/hk/.paper_transaction.lock"
+        ]
+      },
+      "child_result": null,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "helper_contract_passed": false
+    },
+    "baseline": {
+      "phase": "baseline",
+      "exit_code": 0,
+      "launcher_reaped": true,
+      "process_group_gone": true,
+      "deadline_kind": null,
+      "request_start": {
+        "phase": "baseline",
+        "monotonic_ns": 7685364620964373,
+        "started_at": "2026-10-21T12:15:51.836785+00:00",
+        "deadline_seconds": 6
+      },
+      "response": {
+        "phase": "baseline",
+        "start_monotonic_ns": 7685364620964373,
+        "complete_monotonic_ns": 7685370609931471,
+        "elapsed_seconds": 5.988967098,
+        "http_status": 200,
+        "body_bytes": 817,
+        "body_sha256": "9e74be5e82af48786f18d881de01a4494fc870695e7529b40ac9d2fa532a3c34",
+        "body_utf8": "{\"status\":\"ok\",\"paper_only\":true,\"reasoning_policy_scope\":\"scheduled_portfolio_reasoning\",\"reasoning_backend\":\"waterfall\",\"reasoning_policy\":\"codex_first_claude_oauth_fallback\",\"reasoning_policy_ok\":true,\"shared_reasoning_available\":true,\"codex_available\":false,\"reasoning_primary\":\"claude_oauth_fallback\",\"scheduled_portfolio_reasoning_backend\":\"waterfall\",\"scheduled_portfolio_reasoning_policy\":\"codex_first_claude_oauth_fallback\",\"scheduled_portfolio_reasoning_available\":true,\"scheduled_portfolio_reasoning_policy_ok\":true,\"scheduled_runtime_expected\":true,\"scheduler_running\":true,\"scheduled_runtime_ok\":true,\"advisor_chat_backend\":\"claude_agent_sdk\",\"advisor_chat_uses_scheduled_reasoning_waterfall\":false,\"commit\":\"fe7afd0111141bae27927715e709d074fea729e2\",\"version\":\"fe7afd0111141bae27927715e709d074fea729e2\"}",
+        "health": {
+          "status": "ok",
+          "paper_only": true,
+          "reasoning_backend": "waterfall",
+          "reasoning_policy": "codex_first_claude_oauth_fallback",
+          "reasoning_policy_ok": true,
+          "shared_reasoning_available": true,
+          "codex_available": false,
+          "scheduled_runtime_ok": true,
+          "scheduled_runtime_expected": true,
+          "scheduler_running": true,
+          "scheduler_started": null,
+          "commit": "fe7afd0111141bae27927715e709d074fea729e2",
+          "serve_only": null
+        },
+        "within_six_seconds": true,
+        "actual_scheduler_state": 2,
+        "helper_contract_passed": true
+      },
+      "startup": {
+        "schema": "grey_deer.isolated_health_route_child.v1",
+        "phase": "baseline",
+        "expected_commit": "fe7afd0111141bae27927715e709d074fea729e2",
+        "registered_startup_called": true,
+        "startup_completed": true,
+        "probe_completed": false,
+        "helper_contract_passed": false,
+        "provider_execution_allowed": false,
+        "credential_material_supplied": false,
+        "transport": "httpx ASGITransport; actual FastAPI routing, middleware and complete response body",
+        "dispatch_mode": "resume held before registered startup; executor dispatch forbidden",
+        "startup_elapsed_seconds": 1.81582957,
+        "scheduler_running": true,
+        "scheduler_state": 2,
+        "first_run_states": {
+          "autonomous_first_run": false,
+          "china_first_run": false,
+          "hk_first_run": false,
+          "heavyweight_first_run": false,
+          "etf_first_run": false
+        },
+        "jobs": [
+          {
+            "id": "publish_macro_snapshot",
+            "next_run_time": "2026-10-21 12:25:00+00:00"
+          },
+          {
+            "id": "macro_refresh",
+            "next_run_time": "2026-10-21 12:30:00+00:00"
+          },
+          {
+            "id": "portfolio_risk_compose",
+            "next_run_time": "2026-10-21 13:00:00+00:00"
+          },
+          {
+            "id": "prewarm_marks",
+            "next_run_time": "2026-10-21 13:00:00+00:00"
+          },
+          {
+            "id": "derisk_us_intraday",
+            "next_run_time": "2026-10-21 14:00:00+00:00"
+          },
+          {
+            "id": "watch_asia_overnight",
+            "next_run_time": "2026-10-21 14:20:00+00:00"
+          },
+          {
+            "id": "settle_pending",
+            "next_run_time": "2026-10-21 15:00:00+00:00"
+          },
+          {
+            "id": "portfolio_risk_daily",
+            "next_run_time": "2026-10-21 15:05:00+00:00"
+          },
+          {
+            "id": "daily_mark",
+            "next_run_time": "2026-10-21 22:35:00+00:00"
+          },
+          {
+            "id": "autonomous_daily",
+            "next_run_time": "2026-10-21 23:10:00+00:00"
+          },
+          {
+            "id": "loop_maintenance",
+            "next_run_time": "2026-10-21 23:45:00+00:00"
+          },
+          {
+            "id": "experiment_maturity",
+            "next_run_time": "2026-10-21 23:50:00+00:00"
+          },
+          {
+            "id": "settle_brain_asia",
+            "next_run_time": "2026-10-22 01:35:00+00:00"
+          },
+          {
+            "id": "watch_us_overnight",
+            "next_run_time": "2026-10-22 02:20:00+00:00"
+          },
+          {
+            "id": "china_daily",
+            "next_run_time": "2026-10-22 08:00:00+00:00"
+          },
+          {
+            "id": "hk_daily",
+            "next_run_time": "2026-10-22 09:00:00+00:00"
+          },
+          {
+            "id": "cio_weekly",
+            "next_run_time": "2026-10-25 10:00:00+00:00"
+          },
+          {
+            "id": "improvement_agenda_weekly",
+            "next_run_time": "2026-10-25 10:30:00+00:00"
+          }
+        ],
+        "startup_qualified": true,
+        "resume_requests": [
+          {
+            "state": 2,
+            "job_count": 18
+          }
+        ],
+        "dispatch_attempts": [],
+        "first_run_attempts": [],
+        "denied_events": [],
+        "write_paths": [
+          "receiver/data",
+          "receiver/data/governance",
+          "receiver/data/governance/doctrine_hash.json",
+          "receiver/data/governance/run_events.jsonl",
+          "receiver/data/portfolios/autonomous",
+          "receiver/data/portfolios/autonomous/.paper_transaction.lock",
+          "receiver/data/portfolios/china",
+          "receiver/data/portfolios/china/.paper_transaction.lock",
+          "receiver/data/portfolios/hk",
+          "receiver/data/portfolios/hk/.paper_transaction.lock"
+        ]
+      },
+      "child_result": {
+        "schema": "grey_deer.isolated_health_route_child.v1",
+        "phase": "baseline",
+        "expected_commit": "fe7afd0111141bae27927715e709d074fea729e2",
+        "registered_startup_called": true,
+        "startup_completed": true,
+        "probe_completed": true,
+        "helper_contract_passed": true,
+        "provider_execution_allowed": false,
+        "credential_material_supplied": false,
+        "transport": "httpx ASGITransport; actual FastAPI routing, middleware and complete response body",
+        "dispatch_mode": "resume held before registered startup; executor dispatch forbidden",
+        "startup_elapsed_seconds": 1.81582957,
+        "scheduler_running": true,
+        "scheduler_state": 2,
+        "first_run_states": {
+          "autonomous_first_run": false,
+          "china_first_run": false,
+          "hk_first_run": false,
+          "heavyweight_first_run": false,
+          "etf_first_run": false
+        },
+        "jobs": [
+          {
+            "id": "publish_macro_snapshot",
+            "next_run_time": "2026-10-21 12:25:00+00:00"
+          },
+          {
+            "id": "macro_refresh",
+            "next_run_time": "2026-10-21 12:30:00+00:00"
+          },
+          {
+            "id": "portfolio_risk_compose",
+            "next_run_time": "2026-10-21 13:00:00+00:00"
+          },
+          {
+            "id": "prewarm_marks",
+            "next_run_time": "2026-10-21 13:00:00+00:00"
+          },
+          {
+            "id": "derisk_us_intraday",
+            "next_run_time": "2026-10-21 14:00:00+00:00"
+          },
+          {
+            "id": "watch_asia_overnight",
+            "next_run_time": "2026-10-21 14:20:00+00:00"
+          },
+          {
+            "id": "settle_pending",
+            "next_run_time": "2026-10-21 15:00:00+00:00"
+          },
+          {
+            "id": "portfolio_risk_daily",
+            "next_run_time": "2026-10-21 15:05:00+00:00"
+          },
+          {
+            "id": "daily_mark",
+            "next_run_time": "2026-10-21 22:35:00+00:00"
+          },
+          {
+            "id": "autonomous_daily",
+            "next_run_time": "2026-10-21 23:10:00+00:00"
+          },
+          {
+            "id": "loop_maintenance",
+            "next_run_time": "2026-10-21 23:45:00+00:00"
+          },
+          {
+            "id": "experiment_maturity",
+            "next_run_time": "2026-10-21 23:50:00+00:00"
+          },
+          {
+            "id": "settle_brain_asia",
+            "next_run_time": "2026-10-22 01:35:00+00:00"
+          },
+          {
+            "id": "watch_us_overnight",
+            "next_run_time": "2026-10-22 02:20:00+00:00"
+          },
+          {
+            "id": "china_daily",
+            "next_run_time": "2026-10-22 08:00:00+00:00"
+          },
+          {
+            "id": "hk_daily",
+            "next_run_time": "2026-10-22 09:00:00+00:00"
+          },
+          {
+            "id": "cio_weekly",
+            "next_run_time": "2026-10-25 10:00:00+00:00"
+          },
+          {
+            "id": "improvement_agenda_weekly",
+            "next_run_time": "2026-10-25 10:30:00+00:00"
+          }
+        ],
+        "startup_qualified": true,
+        "response": {
+          "phase": "baseline",
+          "start_monotonic_ns": 7685364620964373,
+          "complete_monotonic_ns": 7685370609931471,
+          "elapsed_seconds": 5.988967098,
+          "http_status": 200,
+          "body_bytes": 817,
+          "body_sha256": "9e74be5e82af48786f18d881de01a4494fc870695e7529b40ac9d2fa532a3c34",
+          "body_utf8": "{\"status\":\"ok\",\"paper_only\":true,\"reasoning_policy_scope\":\"scheduled_portfolio_reasoning\",\"reasoning_backend\":\"waterfall\",\"reasoning_policy\":\"codex_first_claude_oauth_fallback\",\"reasoning_policy_ok\":true,\"shared_reasoning_available\":true,\"codex_available\":false,\"reasoning_primary\":\"claude_oauth_fallback\",\"scheduled_portfolio_reasoning_backend\":\"waterfall\",\"scheduled_portfolio_reasoning_policy\":\"codex_first_claude_oauth_fallback\",\"scheduled_portfolio_reasoning_available\":true,\"scheduled_portfolio_reasoning_policy_ok\":true,\"scheduled_runtime_expected\":true,\"scheduler_running\":true,\"scheduled_runtime_ok\":true,\"advisor_chat_backend\":\"claude_agent_sdk\",\"advisor_chat_uses_scheduled_reasoning_waterfall\":false,\"commit\":\"fe7afd0111141bae27927715e709d074fea729e2\",\"version\":\"fe7afd0111141bae27927715e709d074fea729e2\"}",
+          "health": {
+            "status": "ok",
+            "paper_only": true,
+            "reasoning_backend": "waterfall",
+            "reasoning_policy": "codex_first_claude_oauth_fallback",
+            "reasoning_policy_ok": true,
+            "shared_reasoning_available": true,
+            "codex_available": false,
+            "scheduled_runtime_ok": true,
+            "scheduled_runtime_expected": true,
+            "scheduler_running": true,
+            "scheduler_started": null,
+            "commit": "fe7afd0111141bae27927715e709d074fea729e2",
+            "serve_only": null
+          },
+          "within_six_seconds": true,
+          "actual_scheduler_state": 2,
+          "helper_contract_passed": true
+        },
+        "health_input_read_counts": {
+          "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/app/main.py": 1,
+          "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/__pycache__/client.cpython-312.pyc": 1,
+          "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/client.py": 1,
+          "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/__pycache__/codex_bridge.cpython-312.pyc": 1,
+          "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/codex_bridge.py": 1,
+          "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/__pycache__/provider_waterfall.cpython-312.pyc": 1,
+          "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/provider_waterfall.py": 1,
+          "/opt/macro/engine/__pycache__/__init__.cpython-312.pyc": 1,
+          "/opt/macro/engine/__pycache__/llm_auth.cpython-312.pyc": 1,
+          "/opt/macro/engine/neuralweb/__pycache__/__init__.cpython-312.pyc": 1,
+          "/opt/macro/engine/neuralweb/__pycache__/key_pool.cpython-312.pyc": 1,
+          "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/__pycache__/key_rotor.cpython-312.pyc": 1,
+          "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/key_rotor.py": 1,
+          "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/data/metabolism/key_ledger.jsonl": 14,
+          "/opt/macro/data/metabolism/key_budget_status.json": 1,
+          "/opt/macro/engine/neuralweb/__pycache__/capability_broker.cpython-312.pyc": 1,
+          "/opt/macro/config/capability_manifest.yml": 50,
+          "/opt/macro/data/metabolism/key_ledger.jsonl": 90,
+          "/opt/macro/engine/metabolism/__pycache__/__init__.cpython-312.pyc": 1,
+          "/opt/macro/engine/metabolism/__pycache__/budget_gate.cpython-312.pyc": 1,
+          "/opt/macro/data/metabolism/key_usage.jsonl": 6,
+          "/opt/macro/data/mastermind/key_events.jsonl": 6,
+          "/opt/macro/data/mastermind/key_pool_status.json": 6,
+          "/opt/macro/engine/__pycache__/codex_provider.cpython-312.pyc": 1,
+          "/opt/macro/engine/codex_lane/__pycache__/__init__.cpython-312.pyc": 1,
+          "/opt/macro/engine/codex_lane/__pycache__/runner.cpython-312.pyc": 1,
+          "/opt/macro/config/metabolism_budget.yml": 6
+        },
+        "loaded_release_modules": {
+          "bot": {
+            "path": "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/bot/__init__.py",
+            "sha256": "2e5bd759495533c77f6ac0016f0f582aa256daf5ec47d45015efbd2969036f18"
+          },
+          "brain.cli_bridge": {
+            "path": "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/cli_bridge.py",
+            "sha256": "a5471b67834ff7894f4e7302c7c42bceb7f0569feadd2b5758dc3fda0919af30"
+          },
+          "app.response_cache": {
+            "path": "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/app/response_cache.py",
+            "sha256": "ee8ca98c904f255552700560d8804f877577276e181f55e1002c1be4c937d1e6"
+          },
+          "app.auth": {
+            "path": "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/app/auth.py",
+            "sha256": "b9f78476bab0ec04068403e5caea73c9e50bf0aadfd05ef4156375f154810768"
+          },
+          "app.main": {
+            "path": "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/app/main.py",
+            "sha256": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8"
+          },
+          "brain.codex_bridge": {
+            "path": "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/codex_bridge.py",
+            "sha256": "eb18a1fecca9d6ec86a97b72af7b3e07da1ddae0ee09b362fab312c29ab405ff"
+          },
+          "brain.client": {
+            "path": "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/client.py",
+            "sha256": "d8e09a42faa2e5a4536d20b2472074be45c2895f89c53217f50bd108181a5c6f"
+          },
+          "brain.provider_waterfall": {
+            "path": "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/provider_waterfall.py",
+            "sha256": "cbebfa0575435c4bf0e50f245d7f2fbec76b5f643d81db7227a1ed7958df919f"
+          },
+          "brain.key_rotor": {
+            "path": "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1/receiver/brain/key_rotor.py",
+            "sha256": "c1b6c5cb2eeb6c64bf03bafe25d3725db03dfd723aac7ad478915a24073c1d50"
+          }
+        },
+        "safety_qualified": true,
+        "resume_requests": [
+          {
+            "state": 2,
+            "job_count": 18
+          }
+        ],
+        "dispatch_attempts": [],
+        "first_run_attempts": [],
+        "denied_events": [],
+        "write_paths": [
+          "baseline-request-start.json",
+          "baseline-request-start.json.tmp",
+          "baseline-response-complete.json",
+          "baseline-response-complete.json.tmp",
+          "baseline-startup.json",
+          "baseline-startup.json.tmp",
+          "receiver/data",
+          "receiver/data/governance",
+          "receiver/data/governance/doctrine_hash.json",
+          "receiver/data/governance/run_events.jsonl",
+          "receiver/data/portfolios/autonomous",
+          "receiver/data/portfolios/autonomous/.paper_transaction.lock",
+          "receiver/data/portfolios/china",
+          "receiver/data/portfolios/china/.paper_transaction.lock",
+          "receiver/data/portfolios/hk",
+          "receiver/data/portfolios/hk/.paper_transaction.lock"
+        ],
+        "python_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+      },
+      "stdout": {
+        "bytes": 156,
+        "sha256": "bd21ccffcd7cf6214dd02d6fe953f981800b76d685afb649952ead11702c7c0b"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "helper_contract_passed": true
+    }
+  },
+  "restoration": {
+    "exit_code": 0,
+    "change_count": 3351,
+    "transcript": "rsync-6.txt",
+    "transcript_sha256": "1c0e585f641741075b825b8227e51af7f693cb3752c3c08f4bdb909cc25ed962",
+    "stderr": ""
+  },
+  "restoration_verification": {
+    "exit_code": 0,
+    "change_count": 0,
+    "transcript": "rsync-7.txt",
+    "transcript_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr": "",
+    "changes": []
+  },
+  "restored_baseline_source": {
+    "app/main.py": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+    "app/auth.py": "b9f78476bab0ec04068403e5caea73c9e50bf0aadfd05ef4156375f154810768",
+    "app/response_cache.py": "ee8ca98c904f255552700560d8804f877577276e181f55e1002c1be4c937d1e6",
+    "brain/client.py": "d8e09a42faa2e5a4536d20b2472074be45c2895f89c53217f50bd108181a5c6f",
+    "brain/cli_bridge.py": "a5471b67834ff7894f4e7302c7c42bceb7f0569feadd2b5758dc3fda0919af30",
+    "brain/codex_bridge.py": "eb18a1fecca9d6ec86a97b72af7b3e07da1ddae0ee09b362fab312c29ab405ff",
+    "brain/provider_waterfall.py": "cbebfa0575435c4bf0e50f245d7f2fbec76b5f643d81db7227a1ed7958df919f",
+    "brain/key_rotor.py": "c1b6c5cb2eeb6c64bf03bafe25d3725db03dfd723aac7ad478915a24073c1d50",
+    "bot/__init__.py": "2e5bd759495533c77f6ac0016f0f582aa256daf5ec47d45015efbd2969036f18"
+  },
+  "baseline_post_probe_verification": {
+    "exit_code": 0,
+    "change_count": 0,
+    "transcript": "rsync-8.txt",
+    "transcript_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr": "",
+    "changes": []
+  },
+  "final_restoration": {
+    "exit_code": 0,
+    "change_count": 0,
+    "transcript": "rsync-9.txt",
+    "transcript_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr": ""
+  },
+  "final_restoration_verification": {
+    "exit_code": 0,
+    "change_count": 0,
+    "transcript": "rsync-10.txt",
+    "transcript_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr": "",
+    "changes": []
+  },
+  "production_after": {
+    "service": {
+      "MainPID": "3972732",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "ActiveEnterTimestamp": "Wed 2026-10-21 08:30:43 UTC"
+    },
+    "marker": "fe7afd0111141bae27927715e709d074fea729e2"
+  },
+  "production_identity_unchanged": true,
+  "health_context_unchanged": true,
+  "canonical_authority_after": {
+    "portfolios/autonomous/nav_history.jsonl": {
+      "bytes": 10538,
+      "sha256": "0e0a85db720d63b8e29efe946c8c573be8c74bfdc3dcacc49b243bc4aa92f558"
+    },
+    "portfolios/autonomous/account.json": {
+      "bytes": 1411,
+      "sha256": "7869964267ad65e3533aa43a034fe81e7fd62df3628cb6bc7b4b1b8b641dcbea"
+    },
+    "portfolios/autonomous/fills.jsonl": {
+      "bytes": 12606,
+      "sha256": "778f2846e0e9e527b314a91e0cf105604186c8f081085c0b543a63da54df0a91"
+    },
+    "portfolios/china/nav_history.jsonl": {
+      "bytes": 10786,
+      "sha256": "1ce9ad2c7fdd5a7d979e100dd05988743eb4fc3f84d540ef9f95e7047a322b0d"
+    },
+    "portfolios/china/account.json": {
+      "bytes": 2823,
+      "sha256": "40041d51f109c3dc4a16728cacf0f9ee4392b3ddb96a8b4881e0a0c113107a06"
+    },
+    "portfolios/china/fills.jsonl": {
+      "bytes": 18251,
+      "sha256": "ed5f35b9d22c1630a25f696611d2152578afa464037cdb75bd4ed483919ee5a7"
+    },
+    "portfolios/hk/nav_history.jsonl": {
+      "bytes": 10636,
+      "sha256": "1095f0dea3775d594484bcb0a9de7298d40765a30eea74b8964b6a0864b65443"
+    },
+    "portfolios/hk/account.json": {
+      "bytes": 2208,
+      "sha256": "90f63ac286b4de07ef245a686a60d8fd51a5b836a77a1f62d60f67a67c940441"
+    },
+    "portfolios/hk/fills.jsonl": {
+      "bytes": 13401,
+      "sha256": "e37be161fd3f39371160c785142d798ee32edf1568c3a4da1c090a40f7617f93"
+    },
+    "portfolio_forward_evaluation/start.json": {
+      "bytes": 90345,
+      "sha256": "75d5182d55ffc7e569f50008d9293682cadf56130d42b00eaba23412e2e8585c"
+    }
+  },
+  "all_canonical_authority_unchanged": true,
+  "all_snapshot_authority_unchanged": true,
+  "health_input_sources_unchanged": true,
+  "health_input_snapshots_unchanged": true,
+  "macro_dependency_sources_unchanged": true,
+  "execution_completed": true,
+  "paired_helper_contract_passed": false,
+  "completed_at": "2026-10-21T12:15:59.460655+00:00"
+}

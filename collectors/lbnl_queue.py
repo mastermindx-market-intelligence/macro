@@ -48,8 +48,9 @@ FALLBACK STRATEGY (CI)
   does NOT wedge the circuit breaker). "Queued Up" ships once a year, so a
   nightly hard failure on an annual file was pure wolf-crying. If the seed is
   MISSING the leg is genuinely dark and it stays a hard 'failed'.
-  Note the seed is a 2023-edition hand-seed; engine/power_scarcity labels the
-  leg's vintage in its payload rather than passing it off as current.
+  Note the seed is a hand-seed from the published summaries (its _note names
+  the editions); engine/power_scarcity labels the leg's data year in its
+  payload rather than passing it off as current.
 
 OUTPUT
   data/eia/interconnection_queue.json:

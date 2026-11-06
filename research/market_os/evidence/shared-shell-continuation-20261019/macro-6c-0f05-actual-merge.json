@@ -1,0 +1,28 @@
+{
+  "started_at": "2026-10-20T04:40:47.488311+00:00",
+  "head": "6c0f54d2a5acabaf3df7a01aa3f604c9edf22e36",
+  "incoming": "0f058428717ac7c96c11e5a3ebc960db6a61edab",
+  "base": "f54eeb09f3473e091ea55416a8dcad9196603e60",
+  "command": [
+    "git",
+    "merge",
+    "--no-ff",
+    "--no-commit",
+    "0f058428717ac7c96c11e5a3ebc960db6a61edab"
+  ],
+  "source": "original shared-shell-r27",
+  "candidate_receipt_sha256": "2b31e61342cc17b990d77ac83b162a4941ba11bd1d0df59fc7967c5dc2df75e4",
+  "reconciled_at": "2026-10-20T04:41:51.549920+00:00",
+  "merge_exit": 1,
+  "merge_log_sha256": "4ec7507be62797613678d750e6061e4176da50651f174555bdd3b98273c98970",
+  "pre_resolution_stage_verification": "original merge program verified exact three stages before reaching recorded whitespace refusal",
+  "unmerged_after_resolution": [],
+  "index": "b4588872643390de5d2fa6816ce0009fdcec7ebb",
+  "only_three_conflicts_differ_from_preview": true,
+  "candidate_hashes_match": true,
+  "owned_whitespace_exit": 0,
+  "full_merge_vs_prior_whitespace_exit": 2,
+  "same_whitespace_added_by_incoming": true,
+  "commit_created": false,
+  "push_started": false
+}

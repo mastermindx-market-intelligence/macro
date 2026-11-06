@@ -49,6 +49,19 @@
   var rangeEl = document.querySelector('[data-dq-range]');
   var fillEl = document.querySelector('[data-dq-fill]');
   var dotEl = document.querySelector('[data-dq-dot]');
+  var regularLabel = document.querySelector('[data-dq-regular-label]');
+  var extendedRow = document.querySelector('[data-dq-extended]');
+  var extendedValues = document.querySelector('[data-dq-ext-values]');
+  var extendedStatus = document.querySelector('[data-dq-ext-status]');
+  var extendedSession = document.querySelector('[data-dq-ext-session]');
+  var extendedPrice = document.querySelector('[data-dq-ext-price]');
+  var extendedAbs = document.querySelector('[data-dq-ext-abs]');
+  var extendedPct = document.querySelector('[data-dq-ext-pct]');
+  var extendedReference = document.querySelector('[data-dq-ext-reference]');
+  var extendedAge = document.querySelector('[data-dq-ext-age]');
+  var extendedQuote = null;
+  var expiryTimer = null;
+  var clockTimer = null;
 
   var POLL_MS = 15000;      // comfortably inside the hub's own snapshot cadence
   var TIMEOUT_MS = 6000;
@@ -99,6 +112,82 @@
 
   function isFiniteNumber(v) { return typeof v === 'number' && isFinite(v); }
 
+  function clearExtended(expired) {
+    extendedQuote = null;
+    if (expiryTimer !== null) clearTimeout(expiryTimer);
+    expiryTimer = null;
+    if (extendedValues) extendedValues.hidden = true;
+    if (extendedStatus) extendedStatus.hidden = false;
+    var fields = [extendedSession, extendedPrice, extendedAbs, extendedPct, extendedReference, extendedAge];
+    for (var i = 0; i < fields.length; i++) setBilingual(fields[i], '', '');
+    if (extendedRow) {
+      extendedRow.setAttribute('data-dq-state', expired ? 'stale' : 'unavailable');
+      extendedRow.classList.remove('pos', 'neg');
+    }
+    setBilingual(extendedStatus,
+      expired ? 'Extended quote expired. Showing the regular quote.' : 'Extended quote unavailable. Showing the regular quote.',
+      expired ? '盘前盘后报价已过期，现显示常规时段报价。' : '盘前盘后报价暂不可用，现显示常规时段报价。');
+  }
+
+  function validExtended(q, now) {
+    if (!q || !isFiniteNumber(q.price) || q.price <= 0 || q.currency !== 'USD' ||
+        !isFiniteNumber(q.change_abs) || !isFiniteNumber(q.change_pct) ||
+        (q.print_session !== 'pre' && q.print_session !== 'post') || q.market_session !== q.print_session ||
+        (q.freshness !== 'live' && q.freshness !== 'delayed') ||
+        !isFiniteNumber(q.as_of_ms) || q.as_of_ms <= 0 || q.as_of_ms > now ||
+        !isFiniteNumber(q.valid_until_ms) || q.valid_until_ms < q.as_of_ms ||
+        q.valid_until_ms > q.as_of_ms + 120000 || now >= q.valid_until_ms) return false;
+    var ref = q.completed_regular_reference;
+    if (!ref || !isFiniteNumber(ref.price) || ref.price <= 0 ||
+        typeof ref.session_date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(ref.session_date)) return false;
+    var date = new Date(ref.session_date + 'T00:00:00Z');
+    if (!isFiniteNumber(date.getTime()) || date.toISOString().slice(0, 10) !== ref.session_date) return false;
+    return Math.abs(q.change_abs - (q.price - ref.price)) < 0.000001 &&
+      Math.abs(q.change_pct - (q.price - ref.price) / ref.price * 100) < 0.000001;
+  }
+
+  function tickExtended() {
+    if (!extendedQuote) return;
+    var now = Date.now();
+    if (!validExtended(extendedQuote, now)) { clearExtended(true); return; }
+    var seconds = Math.floor((now - extendedQuote.as_of_ms) / 1000);
+    var delayed = extendedQuote.freshness === 'delayed';
+    setBilingual(extendedAge,
+      (delayed ? 'Delayed · ' : '') + 'Observed ' + seconds + 's ago',
+      (delayed ? '延迟 · ' : '') + '观测于' + seconds + '秒前');
+    // This deadline comes from the server's calendar, never receipt time.
+    if (expiryTimer === null) expiryTimer = setTimeout(function () {
+      clearExtended(true);
+    }, Math.max(0, extendedQuote.valid_until_ms - now));
+  }
+
+  function paintExtended(q) {
+    if (!extendedRow) return;
+    clearExtended(false);
+    extendedRow.hidden = q.session === 'regular';
+    var ext = q.extended_quote;
+    if (!validExtended(ext, Date.now())) return;
+    extendedQuote = ext;
+    extendedRow.hidden = false;
+    extendedRow.setAttribute('data-dq-state', 'current');
+    extendedRow.classList.toggle('pos', ext.change_abs >= 0);
+    extendedRow.classList.toggle('neg', ext.change_abs < 0);
+    if (extendedValues) extendedValues.hidden = false;
+    if (extendedStatus) extendedStatus.hidden = true;
+    var label = LABELS[ext.print_session];
+    setBilingual(extendedSession, label[0], label[1]);
+    if (extendedPrice) extendedPrice.textContent = '$' + fmtPrice(ext.price);
+    if (extendedAbs) extendedAbs.textContent = fmtAbs(ext.change_abs);
+    if (extendedPct) extendedPct.textContent = fmtPct(ext.change_pct);
+    var ref = ext.completed_regular_reference;
+    setBilingual(extendedReference,
+      'vs regular close $' + fmtPrice(ref.price) + ' · ' + ref.session_date,
+      '较常规时段收盘 $' + fmtPrice(ref.price) + ' · ' + ref.session_date);
+    tickExtended();
+    // Calendar-derived deadline is not a freshness clock. This one-shot clears
+    // at the exact session/age boundary even when the next fetch hangs or fails.
+  }
+
   // Which of the five labels this quote earns, and which CSS state paints it.
   // "live" is the only branch that yields a green pulsing pip, and it needs
   // BOTH a measured realtime feed and an open regular session.
@@ -121,6 +210,7 @@
   // pulsing green "Live" on a frozen price indefinitely. Open NVDA at 15:00,
   // hub dies at 15:05, look again at 16:30 and the page still says Live.
   function lapse() {
+    clearExtended(false);
     if (!painted || !stamp) return;   // never painted => the baked stamp is already honest
     stamp.setAttribute('data-dq-state', 'closed');
     setBilingual(stamp, LABELS.lapsed[0], LABELS.lapsed[1]);
@@ -145,6 +235,11 @@
       chgRow.classList.toggle('pos', up);
       chgRow.classList.toggle('neg', !up);
     }
+    var regularDate = q.regular_session_date ? ' · ' + q.regular_session_date : '';
+    setBilingual(regularLabel,
+      (q.session === 'regular' ? 'Regular session' : 'Regular close') + regularDate,
+      (q.session === 'regular' ? '常规时段' : '常规时段收盘') + regularDate);
+    paintExtended(q);
 
     // The 52-week bar moves with the price or the block contradicts itself.
     // Bounds are the BAKED 52w window; a live price outside it clamps to the
@@ -227,11 +322,17 @@
   // guarded on `inflight` and `document.hidden`, so calling it here is cheap
   // and safe.
   function start() {
+    tickExtended();
     poll();
     if (!timer) timer = setInterval(poll, POLL_MS);
+    if (!clockTimer) clockTimer = setInterval(tickExtended, 1000);
   }
 
   function stop() {
+    if (clockTimer) clearInterval(clockTimer);
+    clockTimer = null;
+    if (expiryTimer !== null) clearTimeout(expiryTimer);
+    expiryTimer = null;
     if (!timer) return;
     clearInterval(timer);
     timer = null;

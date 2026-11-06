@@ -329,7 +329,11 @@ class TestBuildPulse:
                     "themes": [{"id": "t1", "rank": 5, "score": 73},
                                 {"id": "t2", "rank": 4, "score": 62},
                                 {"id": "t3", "rank": 15, "score": 43}]}
-        archive_rows = [old_snap] * 6 + [
+        # Six actual dated observations, not six renders of one session.
+        archive_rows = [{**old_snap, "asof": day} for day in (
+            "2026-06-24", "2026-06-25", "2026-06-26",
+            "2026-06-29", "2026-06-30", "2026-07-01",
+        )] + [
             {"asof": "2026-07-02", "themes": [{"id": "t1", "rank": 1, "score": 80},
                                                {"id": "t2", "rank": 5, "score": 65},
                                                {"id": "t3", "rank": 15, "score": 45}]}

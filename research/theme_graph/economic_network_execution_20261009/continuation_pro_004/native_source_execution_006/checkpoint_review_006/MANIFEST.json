@@ -1,0 +1,50 @@
+{
+  "archive_member_count": 87,
+  "browsable_copy_count": 12,
+  "delivery_path_count": 18,
+  "files": [
+    {
+      "byte_length": 11162,
+      "path": "ARCHIVE_VERIFICATION_003.json",
+      "sha256": "246c16f15e446429a4d5c5d7e038dbc75b4d6a2cb0e24d14510d3a3a39c4c468"
+    },
+    {
+      "byte_length": 22007,
+      "path": "INPUT_VERIFICATION_001.json",
+      "sha256": "7e908a9e9507f0f7b6f6992247d59eaa71fc705da1dbf369b63d70b7084593d7"
+    },
+    {
+      "byte_length": 9066,
+      "path": "REVIEW.md",
+      "sha256": "74add9cd696934c260a4d0032e4321b6eae5cca832c7473b979c9907202d3b16"
+    },
+    {
+      "byte_length": 654,
+      "path": "REVIEWER_CORRECTION_003.json",
+      "sha256": "7830de7cc9d3ca7964098637b4a166ad387b87bc546bcfd319c6a5b8064a8825"
+    },
+    {
+      "byte_length": 5507,
+      "path": "check_archive_002.py",
+      "sha256": "b6b6b4347bb096f77c9666ea87fca9570697cdf97f0a0510b7edb8efcb511da4"
+    },
+    {
+      "byte_length": 5526,
+      "path": "check_archive_003.py",
+      "sha256": "dad5dc80503667e9ce77a80c2b19766ec70f22be041fb5ccf4dfb960bbcaedf5"
+    },
+    {
+      "byte_length": 2862,
+      "path": "check_frozen_inputs_001.py",
+      "sha256": "fecff2ec1cb9ca598c848b78a1f0316ad124f93eabcb558e6b2bf5fd24ef9357"
+    }
+  ],
+  "member_bytes": 56784,
+  "member_count": 7,
+  "native_provider_app_git_operations": 0,
+  "preserved_reviewer_failed_verifier": true,
+  "schema": "economic_network.checkpoint_006_independent_review_manifest/v1",
+  "self_excluded": true,
+  "v3_preparation_unchanged": true,
+  "verdict": "PASS_CORRECTED_CONTENT_AND_ARCHIVE"
+}

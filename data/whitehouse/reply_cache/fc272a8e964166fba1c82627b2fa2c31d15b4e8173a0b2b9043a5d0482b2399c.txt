@@ -1,0 +1,61 @@
+{
+  "activate": true,
+  "importance": 62,
+  "banner_days": 2,
+  "tone": "mixed",
+  "banner_title": "Trump defers federal diesel excise taxes Q4 2026 — freight, agri margins get breathing room",
+  "banner_title_zh": "特朗普宣布2026年Q4暂缓征收联邦柴油消费税——货运和农业利润率获得喘息空间",
+  "summary": "President Trump has ordered the Treasury to defer federal diesel excise taxes (26 U.S.C. 4041) and waive related penalties for Q4 2026, targeting relief at truckers, farmers, and fuel distributors amid elevated diesel prices.",
+  "summary_zh": "特朗普总统已下令财政部在2026年第四季度暂缓征收联邦柴油消费税（26 U.S.C. 4041）并免除相关罚金，旨在缓解卡车运输、农业和燃油分销商在高柴油价格下的压力。",
+  "analysis": "The executive order directs Treasury to use its 7508A disaster-relief authority to defer payment of diesel excise taxes incurred from October 5 through December 31, 2026, for taxpayers affected by restricted global diesel supply. It also waives penalties for selling dyed (off-road) diesel for highway use during that window and instructs Treasury to explore forgiving the deferred amounts entirely. This is an emergency fiscal transfer of roughly $0.244 per gallon of diesel to qualifying commercial users — meaningful for fuel-intensive industries facing a reflationary backdrop with tight petroleum product inventories.",
+  "sectors": [
+    {
+      "name": "Trucking & Freight",
+      "impact": "tailwind",
+      "rationale": "Fuel is the largest single operating cost for trucking firms; a deferred and potentially forgiven $0.244/gal tax directly supports Q4 margins."
+    },
+    {
+      "name": "Agriculture & Farm Equipment",
+      "impact": "tailwind",
+      "rationale": "Dyed diesel penalty waiver plus tax deferral lowers input costs for planting, harvesting, and irrigation operations."
+    },
+    {
+      "name": "Fuel Distribution & Retail",
+      "impact": "tailwind",
+      "rationale": "Penalty relief on dyed diesel sales for highway use reduces compliance costs and expands legal sales flexibility for distributors."
+    },
+    {
+      "name": "Refiners & Integrated Oils",
+      "impact": "headwind",
+      "rationale": "A lower effective tax on diesel consumer prices could marginally compress crack spreads at the margin, though volumes are unaffected."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "CHRW",
+      "direction": "benefit",
+      "rationale": "Large freight brokerage with substantial diesel fuel pass-through exposure; lower effective fuel costs support shipper demand."
+    },
+    {
+      "symbol": "KNX",
+      "direction": "benefit",
+      "rationale": "Asset-based truckload carrier with high fuel expense relative to revenue; tax deferral directly improves Q4 operating margin."
+    },
+    {
+      "symbol": "DE",
+      "direction": "benefit",
+      "rationale": "Core agriculture equipment maker; cheaper farm operating costs support equipment purchase cycles."
+    },
+    {
+      "symbol": "ADM",
+      "direction": "benefit",
+      "rationale": "Major grain handler and processor with large logistics and farm-facing operations; dyed diesel relief lowers input and transport costs."
+    },
+    {
+      "symbol": "VLO",
+      "direction": "hurt",
+      "rationale": "Refiner with material diesel exposure; a reduced effective fuel tax could marginally dampen retail diesel demand pricing."
+    }
+  ],
+  "confidence": "medium"
+}

@@ -1,0 +1,54 @@
+{
+  "synthetic": true,
+  "assertion": {
+    "assertion_ref": ""
+  },
+  "event_workspace": {
+    "fictional_issuer_only": true
+  },
+  "omissions": [
+    "economics"
+  ],
+  "authority": {
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_originate": false,
+    "can_open_entry": false
+  },
+  "domain": {
+    "anchor_theme_id": "theme:copper_steel_electrify",
+    "slice_key": "mining_copper_economics"
+  },
+  "account_generation": "synthetic-copper-page-3",
+  "revision_tuple": [
+    [
+      "account_generation",
+      "synthetic-copper-page-3"
+    ],
+    [
+      "source",
+      "synthetic-copper-source-3"
+    ]
+  ],
+  "expected": {
+    "signed_native_blocks": [],
+    "reported_only_economics": [
+      {
+        "reason": "Only the source is available."
+      }
+    ]
+  },
+  "issuer": {
+    "name": "Ardent Copper Holdings",
+    "cik": "0000000421",
+    "fictional": true
+  },
+  "source": {
+    "url": "https://example.invalid/ardent-copper-source-only.xhtml",
+    "rights_entitled": true,
+    "rights_revision": "synthetic-rights-copper-3",
+    "basis": "Ardent Copper Holdings fictional source text.",
+    "digest": "synthetic-copper-source-3"
+  }
+}

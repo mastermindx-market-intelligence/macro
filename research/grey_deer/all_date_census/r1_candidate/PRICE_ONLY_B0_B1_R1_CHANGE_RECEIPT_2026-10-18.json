@@ -1,0 +1,53 @@
+{
+  "schema": "risk_radar.price_only_b0_b1.r1_candidate_change.v1",
+  "created_at_utc": "2026-10-18T09:57:40.190725+00:00",
+  "status": "PROPOSED_CLOUD_CANDIDATE_FOR_ROOT_REVIEW",
+  "intended_repository_path": "research/grey_deer/all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+  "original": {
+    "bytes": 24836,
+    "sha256": "687bfed7c3cae90b350c7fd33f5301dc9c33bd09596553566790d131f77ebd67",
+    "cloud_original_unchanged": true
+  },
+  "candidate": {
+    "bytes": 27378,
+    "sha256": "2f09526c3501e540d699b3ba69cd5f2866d736a1200dd9787a7c417aa90080ee"
+  },
+  "independent_review": {
+    "path": "../consumer_comparison_20261017/release_integrity_20261018/PRICE_ONLY_B0_B1_INDEPENDENT_DESIGN_REVIEW_2026-10-18.md",
+    "sha256": "ed6795af0a5e595bcc1a847455f7b2a2f698a61e4ba41ea2088c58fa509ce87d",
+    "root_accepted_R1": true
+  },
+  "exact_change": {
+    "original_lines": [
+      102,
+      104
+    ],
+    "description": "Retains the original Brier paragraph and adds equal-exposure-per-report-population q weights, paired aggregation, empty population handling and non-recombination. Expands the calibration paragraph into model-specific bins, weighted mass/means, absolute error versus contribution and empty-bin handling.",
+    "all_other_original_text_unchanged": true,
+    "diff_path": "PRICE_ONLY_B0_B1_R1_2026-10-18.diff",
+    "diff_bytes": 5340,
+    "diff_sha256": "f47f51a134356b000630596bc518dc3ce1faf2d4831e1f55f9fa650896fd1047"
+  },
+  "preserved": {
+    "models": [
+      "B0_EXPOSURE",
+      "B0_POOLED",
+      "B1"
+    ],
+    "planned_estimation_units": 532,
+    "actual_fits": 0,
+    "source_purpose_status": "UNKNOWN",
+    "execution_admission": "NOT_ADMITTED",
+    "existing_reporting_populations_only": true,
+    "new_research_families": false,
+    "new_gates": false
+  },
+  "execution": {
+    "native": false,
+    "network": false,
+    "price_rows": false,
+    "features": false,
+    "models": false,
+    "tests": false
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "admission": "NOT_ADMITTED",
+  "adopted_at_utc": "2026-10-09T12:07:32.746860+00:00",
+  "authority": {
+    "export": false,
+    "gate": false,
+    "graph1": false,
+    "prediction": false,
+    "production": false,
+    "rank": false,
+    "size": false,
+    "trade": false,
+    "training": false
+  },
+  "authority_basis": "User commission plus explicit save-to-GitHub and end-to-end execution directive; bounded research implementation choice.",
+  "commissioning_sol_ceo_architectural_adjudication": "NOT_ASSERTED",
+  "correction_disposition": {
+    "R1": "ACCEPT_RESOLVED_SOURCE_CONTRACT",
+    "R2": "ACCEPT_RESOLVED_SOURCE_CONTRACT",
+    "R3": "PRINCIPAL_NORMATIVE_CLARIFICATION_BOUND; independent narrow delta review requested, not presumed"
+  },
+  "corrective_findings": {
+    "byte_length": 6613,
+    "path": "lanes/source_diagnostic_policy_review_v2/FINDINGS.json",
+    "sha256": "268c16cdc118fef8f3cf2955e07e81da6f12b2b4ee5aee5a8398c8966e94e142"
+  },
+  "corrective_review": {
+    "byte_length": 23737,
+    "path": "lanes/source_diagnostic_policy_review_v2/CORRECTIVE_METHOD_REVIEW.md",
+    "sha256": "8cafe4d8208d224d3ebf49b2f5db88785cc7543f48788ba5d1d347cff95945b8"
+  },
+  "corrective_review_manifest": {
+    "byte_length": 2358,
+    "path": "lanes/source_diagnostic_policy_review_v2/REVIEW_MANIFEST.json",
+    "sha256": "de4e69ae57a041b244b5e73662aeaed5095b45084bf90183b7529f557e1a05d2"
+  },
+  "decision_id": "GMI-WP02-METHOD-ADOPTION-20261009-PRO-004",
+  "decisions": [
+    {
+      "adopted_meaning": "Use labelled upper-half/next-quarter/lower-quarter count bands within US,CN_MAINLAND,HK,CA,UK,JP,EU activity pools; allow positive-valued microcaps in relative slots, with absolute USD tags alongside.",
+      "changes_120_quota": false,
+      "decision": "ADOPT_FOR_BOUNDED_SOURCE_DIAGNOSTIC_METHOD",
+      "id": "A01_RELATIVE_SIZE_SEMANTICS",
+      "reason": "Relative company-count slots match the geographic/activity source-disclosure diagnostic. They are not equal global-dollar size strata. Preserve exact USD capitalization and absolute companion tags; no silent absolute fallback."
+    },
+    {
+      "adopted_meaning": "Use the explicit single-activity routes, narrow IaaS/PaaS cloud-operator scope, public operating-equity/growth-market perimeter and objective exclusions in this JSON.",
+      "changes_120_quota": false,
+      "decision": "ADOPT_FOR_BOUNDED_SOURCE_DIAGNOSTIC_METHOD",
+      "id": "A02_ACTIVITY_AND_INSTRUMENT_PERIMETER",
+      "reason": "Freeze operating-equity/growth-market and narrow company-primary activity definitions before frame/vendor outcomes. Segment roles remain a separate axis; no quota substitution."
+    },
+    {
+      "adopted_meaning": "Use reported-share reference issuer cap,183-day maximum share-count age,5-session/10-day price bounds,common ECB FX date, D2026-09-30/K2026-10-09T00:00Z and actual later evidence freezeF.",
+      "changes_120_quota": false,
+      "decision": "ADOPT_FOR_BOUNDED_SOURCE_DIAGNOSTIC_METHOD",
+      "id": "A03_REPORTED_SHARE_REFERENCE_CAP_AND_CUTOFFS",
+      "reason": "A disclosed-share reference estimate with explicit ages, unit/action closure and separate D/K/F is auditable. It is retrospective and not a D-tradable or Mastermind-held-by-K universe."
+    }
+  ],
+  "existing_owner_boundary": {
+    "activity": "Existing classification/source owners retain actual company-primary and reported-segment evidence.",
+    "identity": "Existing canonical issuer/security owner retains all identifiers and primary-status exceptions.",
+    "product": "Existing F04/product and ThemeState owners; this method creates no UI/ranking/trade output.",
+    "propagation": "Existing Economic Propagation/K3-D owner; no new propagation engine.",
+    "source_and_rights": "Existing source/Data OS custodians retain acquisition and permitted-use decisions; actual trusted reader interface under bounded inspection.",
+    "source_custody": "Use canonical pro004 workspace and normal Git review; source merge is not runtime admission."
+  },
+  "first_executable_scope": {
+    "allowed": [
+      "Closed-envelope parsing, policy-binding validation and explicit supplied-record diagnostics",
+      "Exact synthetic membership reconstruction and assertion-conflict/unit arithmetic",
+      "Full42-pool and120-slot synthetic selection using the fixed seed, tie law and 18-cell INT residual algorithm",
+      "Typed holds and deficiency accounting for all untrusted real-source inputs",
+      "Deterministic receipts and meaningful independent small exhaustive and adversarial checks"
+    ],
+    "callable_real_source_admission_adapter_selected": null,
+    "default_real_source_mode_is_unconditionally_held": true,
+    "difficult_case_law": "Assess genuine source cases within the frozen selected cohort before vendor outputs. Report deficits; no synthetic evidence can satisfy the real30-case requirement or trigger issuer substitution.",
+    "network_store_registry_provider_or_application_mutations": false,
+    "output_semantics": "STRUCTURAL_ONLY. Synthetic outputs are explicitly artificial modeled results. Supplied-record counts never become eligible-population counts.",
+    "real_history_state": "FRAME_HISTORY_UNPROVEN",
+    "real_input_quantiles": null,
+    "real_input_reference_cap_resolution": null,
+    "real_input_selected_cohort": null,
+    "repository_directory": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1",
+    "source_admission_or_new_trust_registry": false,
+    "source_authority_state": "SOURCE_AUTHORITY_UNVERIFIED",
+    "source_rights_state": "SOURCE_RIGHTS_UNVERIFIED",
+    "synthetic_label_does_not_authenticate_or_classify_source_truth": true,
+    "untrusted_receipt_flags_cannot_change_mode": true
+  },
+  "normative_overrides": [
+    {
+      "expected_original": "Parse finite positive decimal inputs into exact rationals; apply exact source ratios. Compare/rank unrounded rational USD values. Display rounding cannot decide eligibility.",
+      "finding": "R3",
+      "pointer": "/capitalization/numeric_rule",
+      "reason": "Distinguish signed additive actions from positive multiplicative components without changing cap definition or selection law.",
+      "replacement": "Parse finite decimal strings into exact rationals with numeric-role validation. Actual positive-class share-count measurements, raw prices, quote-unit scales, FX rates, and multiplicative split/conversion/ADR factors must be strictly positive. Additive corporate-action share deltas may be negative, zero, or positive in the source-proved class/share units: preserve the sign, economic event identity, effective ordering, and dependency bindings. A zero delta is permitted only as an explicitly evidenced no-change value, never as missing evidence. Resulting shares for every included positive-valued class and the final issuer capitalization must be strictly positive; a supported zero/ceased-class assertion remains a separately typed fact and cannot be silently omitted or treated as a missing numeric factor. Cardinality counts are nonnegative integers, excluding booleans. Nonfinite values, booleans and binary floating-point inputs are invalid numeric values. Do not use absolute values, clipping, partial-class omission or imputation to make an invalid value pass. Compare/rank unrounded exact rational USD values; display rounding cannot decide eligibility. The signed-delta exception never admits a nonpositive price, FX rate or multiplicative factor."
+    }
+  ],
+  "operation_id": "gmi-economic-source-diagnostic-20261009-pro-004",
+  "principal": "Current commissioned principal researcher / root",
+  "prior_frozen_artifacts_may_be_modified": false,
+  "protected_procedure": {
+    "branch": "master",
+    "freshly_observed_at": "2026-10-09T12:01:38.622865+00:00",
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "sha": "7d82b9adb839d54e4ab25378ca333e498dd83fcc"
+  },
+  "real_selection_prerequisites": [
+    "An existing trusted owner receipt reader with authenticated provenance bound to exact source/derived bytes, D/K, scope, permitted use and derivation",
+    "Complete lawful historical venue/segment/instrument perimeter and all42 reference pools, including unselected issuers",
+    "Actual issuer/class/primary/activity/cap component resolution under adopted contract",
+    "Actual F freeze before vendor outputs; independent source-case adjudication and required deficiency accounting"
+  ],
+  "schema": "research.gmi.wp02.principal_policy_adoption/v1",
+  "scope": "RESEARCH_METHOD_AND_STRUCTURAL_KERNEL",
+  "source_memo": {
+    "byte_length": 58436,
+    "path": "lanes/source_diagnostic_policy_v2/SELECTION_POLICY_ADJUDICATION_MEMO.md",
+    "sha256": "4d322ba08f488c6b4b71f22899416b4cb412f951dc893c4145f43796126fea29"
+  },
+  "source_policy": {
+    "byte_length": 60312,
+    "path": "lanes/source_diagnostic_policy_v2/RECOMMENDED_SELECTION_POLICY.json",
+    "sha256": "d41422d76219b1c5d3a3c9cbb19a1bc3124433031200b09499033bd4dc30d522"
+  },
+  "status": "METHOD_ADOPTED_REAL_SOURCE_SELECTION_HELD",
+  "unchanged_parameters": {
+    "D": "2026-09-30",
+    "F": null,
+    "INT": {
+      "EU": 8,
+      "JP": 8,
+      "UK": 8
+    },
+    "K": "2026-10-09T00:00:00Z",
+    "difficult_cases_each_stratum_minimum": 6,
+    "difficult_cases_minimum": 30,
+    "groups_each": 4,
+    "reference_pool_count": 42,
+    "seed": "GMI-WP02-20261009-v1",
+    "size_slots": {
+      "L": 2,
+      "M": 1,
+      "S": 1
+    },
+    "strata_each": 24,
+    "total_issuers": 120
+  },
+  "workspace_base": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+}

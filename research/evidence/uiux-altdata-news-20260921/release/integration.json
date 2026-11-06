@@ -1,0 +1,16 @@
+{
+  "semantic_head": "5b527312a216db984928a0f2e7b7db8454fda5a6",
+  "integration_base": "f7539ad7e4e22cd889ff6d75190c2e1d686a0a53",
+  "protected_skillpack": "a3bcfdbb4d99f6af7c3a86a7fed730cbd0184465",
+  "preserved_candidate_files": {
+    "templates/alt_data.html.j2": "775fb2c016079db22daed17515f658824a39af93aabce080a5595067bd52a74d",
+    "tests/test_altdata_price_truth.py": "318dc39398f1c51613f707dfe83b669126a1f1ccfdb45522a7aaeddaf848bdd0",
+    "site/assets/css/41a985eb.css": "41a985ebf1910ed87aa66a1b03ec3d7f8ec0de7a690bc3c09404184fb8bfbcd5"
+  },
+  "conflict_resolution": "Only five accepted shared asset refs in site/alt_data.html; candidate-owned stylesheet and inline script unchanged",
+  "page_sha256": "e1bd5e7d48dfc9f4f6b1d909726497059cb9225503b6e01d6c2f75171c2df1de",
+  "tests": "83 passed",
+  "browser_cases": 8,
+  "browser_mode": "local explicit access/failure/delayed-success fixtures; not authenticated production proof",
+  "publication": "VPS-only, not deployed"
+}

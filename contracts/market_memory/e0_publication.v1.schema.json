@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "research_factory.market_memory_e0_publication.v1",
+  "title": "Market Memory E0 publication",
+  "description": "Metadata grammar only. Complete domain manifests, genuine owner installation/publication/independent closure/current access and durable reservations are separately required; passing this schema grants no access.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "research_factory.market_memory_e0_publication.v1",
+      "type": "string"
+    },
+    "authority": {
+      "const": "display_only",
+      "type": "string"
+    },
+    "publication_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      }
+    },
+    "study_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      }
+    },
+    "namespace_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      }
+    },
+    "installation_epoch": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      }
+    },
+    "registration_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "closure_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "owner_principal_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "owner_operation_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "published_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$",
+      "format": "date-time",
+      "minLength": 27,
+      "maxLength": 27
+    }
+  },
+  "required": [
+    "schema",
+    "authority",
+    "publication_id",
+    "study_id",
+    "namespace_id",
+    "installation_epoch",
+    "registration_ref",
+    "closure_ref",
+    "owner_principal_ref",
+    "owner_operation_ref",
+    "published_at"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "ref": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "minLength": 1,
+          "maxLength": 128,
+          "not": {
+            "pattern": "[^A-Za-z0-9_.:-]"
+          }
+        },
+        "object_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "minLength": 1,
+          "maxLength": 128,
+          "not": {
+            "pattern": "[^A-Za-z0-9_.:-]"
+          }
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        }
+      },
+      "required": [
+        "schema",
+        "object_id",
+        "sha256",
+        "bytes"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

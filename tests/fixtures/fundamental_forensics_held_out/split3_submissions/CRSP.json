@@ -1,0 +1,40 @@
+{
+  "cik": "0001674416",
+  "filings_10k": [
+    {
+      "accessionNumber": "0000950170-22-001282",
+      "filingDate": "2022-02-15",
+      "form": "10-K",
+      "primaryDocument": "crsp-20211231.htm",
+      "reportDate": "2021-12-31"
+    },
+    {
+      "accessionNumber": "0000950170-23-003441",
+      "filingDate": "2023-02-21",
+      "form": "10-K",
+      "primaryDocument": "crsp-20221231.htm",
+      "reportDate": "2022-12-31"
+    },
+    {
+      "accessionNumber": "0000950170-24-017571",
+      "filingDate": "2024-02-21",
+      "form": "10-K",
+      "primaryDocument": "crsp-20231231.htm",
+      "reportDate": "2023-12-31"
+    }
+  ],
+  "fiscalYearEnd": "1231",
+  "name": "CRISPR Therapeutics AG",
+  "response_sha256": {
+    "https://data.sec.gov/submissions/CIK0001674416.json": "e66f1d76f1754a83d0b7451fae156d91b0c2a6d3ef7cedb306c36f9c8f773fb0"
+  },
+  "retrieved_at": "2026-11-01T20:23:11Z",
+  "sic": "2836",
+  "sicDescription": "Biological Products, (No Diagnostic Substances)",
+  "source_urls": [
+    "https://data.sec.gov/submissions/CIK0001674416.json"
+  ],
+  "tickers": [
+    "CRSP"
+  ]
+}

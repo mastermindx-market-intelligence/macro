@@ -1,0 +1,30 @@
+{
+  "run_at": "2026-10-11T09:26:04Z",
+  "as_of": "2026-10-11",
+  "planned": 1,
+  "passed": 1,
+  "quarantined": 0,
+  "items": [
+    {
+      "id": "press-research_desk-2026-10-11-81675c403cda",
+      "desk": "research_desk",
+      "status": "passed",
+      "reason": ""
+    }
+  ],
+  "revision_reconciliation": {
+    "current_sources": 4562,
+    "superseded": 0,
+    "resolved": 0,
+    "correction_required": 0,
+    "published_mismatches": 0
+  },
+  "writer_state": {
+    "calls": 1,
+    "failures": 0,
+    "consecutive_failures": 0,
+    "circuit_open": false,
+    "tokens_used": 3099,
+    "token_budget": 12000
+  }
+}

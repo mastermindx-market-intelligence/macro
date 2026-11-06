@@ -1,0 +1,56 @@
+{
+  "observed_at": "2026-10-14T09:15:28.470715+00:00",
+  "installed": {
+    "observed_at": "2026-10-14T09:15:27.664269+00:00",
+    "head_before": "40e860a4b3f5531abb18da301cb388ca5761675e",
+    "head_after": "40e860a4b3f5531abb18da301cb388ca5761675e",
+    "stable_head": true,
+    "files": {
+      "site/stocks/CVS.html": {
+        "sha256": "db8b8d70aa57bb1f161723818be54d062e3afee03bd63a7ed9174b0541907392",
+        "bytes": 197917
+      },
+      "site.served/stocks/CVS.html": {
+        "sha256": "db8b8d70aa57bb1f161723818be54d062e3afee03bd63a7ed9174b0541907392",
+        "bytes": 197917
+      },
+      "lib/pages.py": {
+        "sha256": "2673025c9729d5665936dbe6cafd461e8dff200feacc3e0081f0f378df2fd28b",
+        "bytes": 37688
+      }
+    }
+  },
+  "public": {
+    "url": "https://www.mastermind-x.com/stocks/CVS.html",
+    "status": 200,
+    "sha256": "db8b8d70aa57bb1f161723818be54d062e3afee03bd63a7ed9174b0541907392",
+    "bytes": 197917
+  },
+  "served_http_match": true,
+  "source_site_served_match": true,
+  "scope": "Existing CVS dossier public route only; not PR9209 or follow-on installation, freshness, article admission or signup/follow write",
+  "browser": {
+    "method": "Actual Chrome UI via cua_repl",
+    "dossier_url": "https://www.mastermind-x.com/stocks/CVS.html",
+    "dossier_title": "CVS \u2014 CVS Health: signals, options & factor profile | MastermindX",
+    "dossier_rendered": true,
+    "clicked": "\u5728\u7ec8\u7aef\u4e2d\u6253\u5f00 CVS \u2197",
+    "declared_href": "https://app.mastermind-x.com/terminal?sym=CVS&from=macro",
+    "actual_overlay_url": "https://app.mastermind-x.com/terminal?sym=CVS&from=macro&ret=https%3A%2F%2Fwww.mastermind-x.com%2Fstocks%2FCVS.html&embed=dashboard",
+    "visible_selected_symbol": "CVS",
+    "visible_chart_heading": "CVS Health \u00b7 3D \u00b7 NYSE",
+    "return_control": "Back to the Macro Dashboard",
+    "returned_to_dossier": true,
+    "overlay_closed": true,
+    "new_signup": false,
+    "new_follow_write": false,
+    "watchlist_contents_retained": false,
+    "source_freshness_verified": false,
+    "rights_or_story_admission": false,
+    "limitations": [
+      "Existing session navigation only; no anonymous signup or follow mutation.",
+      "Rendered dossier as-of and generated labels are not underlying-input freshness proof.",
+      "Stock-page measurements were not added to the Press fact bank or used to bypass the deferred issuer review."
+    ]
+  }
+}

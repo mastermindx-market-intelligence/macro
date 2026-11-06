@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/am_edition.html.j2
+  - scripts/build_am_edition.py
+  - scripts/am_edition_live.py
+manifest: mockups/evidence/am-edition-natural-run/manifest.json

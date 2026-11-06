@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 from jsonschema import Draft202012Validator, FormatChecker
 
-from engine.btc_decision import build_decision
+from engine.btc_decision import build_decision, project_budget
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -597,3 +597,49 @@ def test_vector_action_surface_reads_only_decision_state() -> None:
     assert "exposure_hi" not in template
     assert "btc_decision.build_decision" in builder
     assert '"decision": decision' in builder
+
+
+def test_project_budget_preserves_valid_zero_and_canonical_source():
+    decision = build_decision(
+        _signals([{"alloc_optimal": 0.0}]),
+        _master(),
+        generated_at=datetime(2026, 8, 24, tzinfo=timezone.utc),
+    )
+    out = project_budget(decision)
+
+    assert out == {
+        "schema": "btc.decision/v1",
+        "status": "ok",
+        "as_of": "2026-08-20",
+        "integrity_ok": True,
+        "final_exposure_pct": 0,
+        "errors": [],
+        "authority_source": "btc.decision/v1.final.exposure_pct",
+    }
+
+
+def test_project_budget_suppresses_diagnostic_final_when_integrity_fails():
+    decision = build_decision(
+        _signals(
+            [{
+                "alloc_optimal": 0.4,
+                "alloc_optimal_raw": 0.8,
+                "override_active": False,
+            }]
+        ),
+        _master(),
+    )
+    assert decision["final"]["exposure_pct"] == 40
+    assert decision["integrity"]["ok"] is False
+
+    out = project_budget(decision)
+
+    assert out["status"] == "unavailable"
+    assert out["integrity_ok"] is False
+    assert out["final_exposure_pct"] is None
+    assert "RAW_FINAL_MISMATCH_WITHOUT_NAMED_OVERRIDE" in out["errors"]
+
+
+def test_project_budget_rejects_noncanonical_or_missing_decision():
+    assert project_budget(None)["final_exposure_pct"] is None
+    assert project_budget({"schema": "other", "status": "ok", "integrity": {"ok": True}, "final": {"exposure_pct": 60}})["status"] == "unavailable"

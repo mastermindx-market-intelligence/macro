@@ -77,7 +77,8 @@
       "members": [
         {
           "path": "data/capital_structure/source_manifest.jsonl",
-          "check": "jsonl_prefix"
+          "check": "jsonl_prefix",
+          "siblings_pattern": "^data/capital_structure/source_manifest\\.part-(\\d{4})\\.jsonl$"
         },
         {
           "path": "data/capital_structure/retrieval_attempts.parquet",

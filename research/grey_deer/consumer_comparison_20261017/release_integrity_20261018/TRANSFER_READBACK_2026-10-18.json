@@ -1,0 +1,10 @@
+{
+  "schema": "risk_radar.release_evidence_readback.v1",
+  "observed_at_utc": "2026-10-18T08:10:26.706646+00:00",
+  "files": 56,
+  "bytes": 1178368,
+  "mismatches": [],
+  "all_byte_exact": true,
+  "manifest_sha256": "225b8edb14495194724e933607d7a6ec94684f299e11fcdf338060030130f717",
+  "production_mutated": false
+}

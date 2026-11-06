@@ -53,9 +53,10 @@ import os
 import re
 import sys
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 # ---------------------------------------------------------------------------
 # Repo-root bootstrap so `lib.*` / `engine.*` imports work when run as a script
@@ -402,26 +403,143 @@ def _log_prompt_truncation(sent_chars: int, data: dict, model: str) -> None:
     )
 
 
-def _call_openai_compat(
-    system: str, user: str, oc_cfg: dict, *, max_tokens: int
-) -> tuple[str | None, str | None]:
-    """POST to a local OpenAI-compatible /chat/completions endpoint.
+@dataclass(frozen=True)
+class OpenAICompatResult:
+    """The DETAILED outcome of one OpenAI-compatible chat call.
 
-    Returns (text, degraded_reason). Never raises — connection / HTTP / shape
-    errors degrade to (None, reason). base_url + model come from oc_cfg.
+    ``reason`` keeps the legacy vocabulary byte-for-byte so
+    :func:`_call_openai_compat` callers see exactly what they saw before.
+    The extra fields exist because a caller may need more than a string:
+    ``usage`` is the provider's own token block (normalised to
+    ``prompt_tokens`` / ``completion_tokens`` / ``total_tokens``, ``None`` when
+    the provider sent none), ``status_code`` is the HTTP status when a response
+    was received, and ``error_kind`` is a transport-neutral failure kind
+    (``unconfigured`` / ``http`` / ``timeout`` / ``connection`` / ``empty`` /
+    ``bad_shape`` / ``unsupported``) so a caller with its own error taxonomy
+    does not have to parse a string.
+    """
+
+    text: str | None
+    reason: str | None
+    usage: dict[str, int | None] | None = None
+    status_code: int | None = None
+    error_kind: str | None = None
+
+
+#: The ONLY keys a caller-supplied ``request_profile`` may overlay onto the
+#: request body.  A profile is provider-owned and closed: an unknown key is a
+#: programming error, not a body field, and is refused rather than sent.
+_OPENAI_COMPAT_PROFILE_KEYS = frozenset({
+    "model",
+    "temperature",
+    "max_tokens",
+    "stream",
+    "thinking",
+    "reasoning_effort",
+})
+
+
+def _merge_request_profile(
+    payload: dict[str, Any], request_profile: Mapping[str, Any] | None
+) -> dict[str, Any]:
+    """Overlay a CLOSED provider-owned profile onto the request body.
+
+    ``None`` returns the payload unchanged, so the legacy call path is
+    bit-identical.  Unknown keys raise: a caller that invents a body field must
+    fail loudly here rather than silently widening the provider contract.
+    """
+    if request_profile is None:
+        return payload
+    if not isinstance(request_profile, Mapping):
+        raise ValueError("earnings_qual: request_profile must be a mapping")
+    unknown = sorted(str(key) for key in request_profile if key not in _OPENAI_COMPAT_PROFILE_KEYS)
+    if unknown:
+        raise ValueError(
+            f"earnings_qual: request_profile key(s) {unknown} are not in the closed "
+            f"profile set {sorted(_OPENAI_COMPAT_PROFILE_KEYS)}"
+        )
+    merged = dict(payload)
+    merged.update(request_profile)
+    return merged
+
+
+def _normalize_openai_usage(usage: Any) -> dict[str, int | None] | None:
+    """Normalise an OpenAI-shaped ``usage`` block, or ``None`` when absent."""
+    if not isinstance(usage, dict):
+        return None
+
+    def _count(key: str) -> int | None:
+        value = usage.get(key)
+        if isinstance(value, bool) or value is None:
+            return None
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
+    prompt = _count("prompt_tokens")
+    completion = _count("completion_tokens")
+    total = _count("total_tokens")
+    if prompt is None and completion is None and total is None:
+        return None
+    if total is None and prompt is not None and completion is not None:
+        total = prompt + completion
+    return {"prompt_tokens": prompt, "completion_tokens": completion, "total_tokens": total}
+
+
+def _openai_compat_error_kind(exc: BaseException) -> str:
+    """A transport-neutral failure kind from an exception's own name.
+
+    Deliberately NOT an error taxonomy: a caller that keeps a health vocabulary
+    (e.g. ``engine.provider_production_modes``) maps these kinds into it.
+    """
+    name = type(exc).__name__.lower()
+    if "timeout" in name:
+        return "timeout"
+    if "import" in name:
+        return "unsupported"
+    if "connection" in name or "connect" in name:
+        return "connection"
+    return "error"
+
+
+def _call_openai_compat_detailed(
+    system: str,
+    user: str,
+    oc_cfg: dict,
+    *,
+    max_tokens: int,
+    request_profile: Mapping[str, Any] | None = None,
+    api_key: str | None = None,
+) -> OpenAICompatResult:
+    """POST to a local OpenAI-compatible /chat/completions endpoint, in detail.
+
+    The full body of the legacy :func:`_call_openai_compat`, factored out so a
+    caller can receive the provider's ``usage`` block, the HTTP status and a
+    failure kind as well as the text.  Never raises on connection / HTTP /
+    shape errors — those degrade to a result with ``reason`` set.
+
+    ``api_key``: when a caller has already resolved the credential (the
+    production-mode credential boundary), it is passed here and used verbatim;
+    ``None`` keeps the legacy behaviour of reading ``oc_cfg["api_key_env"]``
+    from the environment.
+
+    ``request_profile``: an optional CLOSED body overlay, merged last.
     """
     base_url = str(oc_cfg.get("base_url") or "").rstrip("/")
     model = str(oc_cfg.get("model") or "")
     if not base_url or not model:
-        return None, "openai_compat_unconfigured"
+        return OpenAICompatResult(None, "openai_compat_unconfigured", None, None, "unconfigured")
     url = f"{base_url}/chat/completions"
-    api_key = ""
-    key_env = oc_cfg.get("api_key_env")
-    if key_env:
-        api_key = os.environ.get(str(key_env), "") or ""
+    resolved_key = api_key
+    if resolved_key is None:
+        resolved_key = ""
+        key_env = oc_cfg.get("api_key_env")
+        if key_env:
+            resolved_key = os.environ.get(str(key_env), "") or ""
     headers = {"Content-Type": "application/json"}
-    if api_key:
-        headers["Authorization"] = f"Bearer {api_key}"
+    if resolved_key:
+        headers["Authorization"] = f"Bearer {resolved_key}"
     payload = {
         "model": model,
         "messages": [
@@ -438,6 +556,7 @@ def _call_openai_compat(
         # pairing it with /no_think prevents hidden tokens from exhausting the
         # bounded completion before any JSON reaches message.content.
         payload["reasoning_effort"] = "none"
+    payload = _merge_request_profile(payload, request_profile)
     timeout = float(oc_cfg.get("timeout_s", 120))
     connect_timeout = float(oc_cfg.get("connect_timeout_s", min(timeout, 5)))
     try:
@@ -449,11 +568,18 @@ def _call_openai_compat(
             timeout=(connect_timeout, timeout),
         )
         if r.status_code != 200:
-            return None, f"openai_compat_http_{r.status_code}"
+            return OpenAICompatResult(
+                None,
+                f"openai_compat_http_{r.status_code}",
+                None,
+                int(r.status_code),
+                "http",
+            )
         data = r.json()
+        status_code = int(r.status_code)
     except Exception as exc:  # noqa: BLE001
         log.warning("earnings_qual: openai_compat call failed (%s)", exc)
-        return None, "openai_compat_error"
+        return OpenAICompatResult(None, "openai_compat_error", None, None, _openai_compat_error_kind(exc))
     _log_prompt_truncation(
         sum(len(str(m.get("content") or "")) for m in payload["messages"]),
         data if isinstance(data, dict) else {},
@@ -462,15 +588,28 @@ def _call_openai_compat(
     try:
         choices = data.get("choices") or []
         if not choices:
-            return None, "openai_compat_empty"
+            return OpenAICompatResult(None, "openai_compat_empty", None, status_code, "empty")
         msg = choices[0].get("message") or {}
         text = msg.get("content")
         if not text:
-            return None, "openai_compat_empty"
-        return str(text), None
+            return OpenAICompatResult(None, "openai_compat_empty", None, status_code, "empty")
+        usage = _normalize_openai_usage(data.get("usage"))
+        return OpenAICompatResult(str(text), None, usage, status_code, None)
     except Exception as exc:  # noqa: BLE001
         log.warning("earnings_qual: openai_compat parse failed (%s)", exc)
-        return None, "openai_compat_bad_shape"
+        return OpenAICompatResult(None, "openai_compat_bad_shape", None, status_code, "bad_shape")
+
+
+def _call_openai_compat(
+    system: str, user: str, oc_cfg: dict, *, max_tokens: int
+) -> tuple[str | None, str | None]:
+    """POST to a local OpenAI-compatible /chat/completions endpoint.
+
+    Returns (text, degraded_reason). Never raises — connection / HTTP / shape
+    errors degrade to (None, reason). base_url + model come from oc_cfg.
+    """
+    result = _call_openai_compat_detailed(system, user, oc_cfg, max_tokens=max_tokens)
+    return result.text, result.reason
 
 
 def _call_kimi(
@@ -1760,6 +1899,25 @@ def _validate_transport_frame(
     return True, None
 
 
+
+def validate_transport_frame(
+    frame,
+    path: Path,
+    block_name: str,
+    root: Path | None = None,
+) -> tuple[bool | None, str | None]:
+    """Public name for the earnings R2 generation contract.
+
+    ONE definition of "is this transported earnings payload the generation its manifest
+    commits to" for the whole repo. ``engine/prophet_stage_inputs.py`` reads the same
+    ``data/earnings_calls/history.parquet`` this module reads and validates it through
+    this function, so a second copy of the contract can never drift from this one.
+
+    ``None`` = no manifest beside the store (a hand-placed or fixture file — accepted).
+    ``False`` = an explicit contract failure; the caller must reject that candidate.
+    """
+    return _validate_transport_frame(frame, path, block_name, root=root)
+
 def _clean_identity(value: Any) -> str:
     text = str(value or "").strip().upper()
     if text in {"", "NAN", "NONE", "<NA>"}:
@@ -1897,6 +2055,65 @@ def _atomic_write_json(path: Path, obj: Any) -> None:
                 tmp.unlink()
             except OSError:
                 pass
+
+
+def _as_float(value: Any) -> float | None:
+    """Coerce a numeric cell to float; None/NaN/unparseable → None."""
+    if value is None:
+        return None
+    try:
+        f = float(value)
+    except (TypeError, ValueError):
+        return None
+    if f != f or f in (float("inf"), float("-inf")):
+        return None
+    return f
+
+
+def publish_ec_tone(value: Any, *, native: str) -> float | None:
+    """Published EC Tone for Stage Analysis JSON feeds: 0–100.
+
+    Native stores stay untouched (parquet / Prophet still read desk ~−10..30
+    or signed −1..1). ``native`` names the incoming scale:
+
+    * ``signed1`` — live scores.parquet ``sentiment`` in [−1, 1]
+    * ``desk30`` — EquityDesk / projected ``earnings_call_sent`` in ~−10..30
+      (12 is the documented neutral midpoint; the calibration clips at ±1)
+
+    ``desk30`` inverts the documented calibration
+    ``sentiment = clip((sent − 12) / 18, −1, 1)`` so the same call prints the
+    same 0–100 number on the Screener and the Earnings table.
+    """
+    v = _as_float(value)
+    if v is None:
+        return None
+    if native == "signed1":
+        s = max(-1.0, min(1.0, v))
+    elif native == "desk30":
+        s = max(-1.0, min(1.0, (v - 12.0) / 18.0))
+    else:
+        raise ValueError(f"unknown EC tone native scale: {native!r}")
+    return round((s + 1.0) / 2.0 * 100.0, 1)
+
+
+def publish_ec_result(value: Any, *, native: str) -> float | None:
+    """Published EC Result for Stage Analysis JSON feeds: 0–10.
+
+    * ``ten`` — live scores.parquet ``performance`` already on 0–10
+    * ``signed12`` — EquityDesk / projected ``earnings_call_perf`` in [−12, 12]
+
+    ``signed12`` inverts ``performance = clip((perf + 12) / 2.4, 0, 10)``.
+    """
+    v = _as_float(value)
+    if v is None:
+        return None
+    if native == "ten":
+        r = v
+    elif native == "signed12":
+        r = (v + 12.0) / 2.4
+    else:
+        raise ValueError(f"unknown EC result native scale: {native!r}")
+    return round(max(0.0, min(10.0, r)), 1)
 
 
 def _json_safe(obj: Any) -> Any:
@@ -2884,6 +3101,10 @@ def earnings_table(
     positive/negative highlights, slide file_path.  Latest `cap` calls by date
     (the full history stays in the backfill / R2 for the detail lane).
 
+    ``ec_sent`` / ``ec_perf`` are the published Stage Analysis display scale
+    (tone 0–100, result 0–10) — same vocabulary as screener.json. Native
+    parquet columns stay on the desk 0–30 / −12..12 store.
+
     Emits earnings_table.json.  Fail-open + display-tier.
     """
     import pandas as pd  # noqa: PLC0415
@@ -2907,8 +3128,8 @@ def earnings_table(
                 "call_date": r["call_dt"].date().isoformat(),
                 "quarter": r.get("fiscal_period") or r.get("calendar_quarter"),
                 "fiscal_period_valid": not bool(r.get("invalid_fiscal_period")),
-                "ec_sent": _json_safe(r.get("earnings_call_sent")),
-                "ec_perf": _json_safe(r.get("earnings_call_perf")),
+                "ec_sent": publish_ec_tone(r.get("earnings_call_sent"), native="desk30"),
+                "ec_perf": publish_ec_result(r.get("earnings_call_perf"), native="signed12"),
                 "ec_combined": _json_safe(r.get("earnings_call_combined")),
                 "level1_tags": _scrub_tag_list(_parse_tag_list(r.get("level1_tags"))),
                 "level2_tags": _scrub_tag_list(_parse_tag_list(r.get("level2_tags"))),

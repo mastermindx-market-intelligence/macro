@@ -1,0 +1,7 @@
+{
+  "mutation": "restore_scalar_warm_checks",
+  "rc": 1,
+  "detected": true,
+  "summary": "1 failed, 51 deselected in 4.52s",
+  "production": false
+}

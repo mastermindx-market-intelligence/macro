@@ -1,0 +1,182 @@
+{
+  "mode": "local browser with explicitly forced optional-data 401s",
+  "expected_prior_defect": false,
+  "results": [
+    {
+      "cell": "basket-ai_semiconductors.html-desktop-en-dark",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "b5eb9b53795787daee4ab2bd588cbd601c0fe5e710c55d3793a378edc669a7b1",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-desktop-en-light",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "b5eb9b53795787daee4ab2bd588cbd601c0fe5e710c55d3793a378edc669a7b1",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-desktop-zh-dark",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "b5eb9b53795787daee4ab2bd588cbd601c0fe5e710c55d3793a378edc669a7b1",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-desktop-zh-light",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "b5eb9b53795787daee4ab2bd588cbd601c0fe5e710c55d3793a378edc669a7b1",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-mobile-en-dark",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "b5eb9b53795787daee4ab2bd588cbd601c0fe5e710c55d3793a378edc669a7b1",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-mobile-en-light",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "b5eb9b53795787daee4ab2bd588cbd601c0fe5e710c55d3793a378edc669a7b1",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-mobile-zh-dark",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "b5eb9b53795787daee4ab2bd588cbd601c0fe5e710c55d3793a378edc669a7b1",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-mobile-zh-light",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "b5eb9b53795787daee4ab2bd588cbd601c0fe5e710c55d3793a378edc669a7b1",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-desktop-en-dark",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "8c88178417fe5c12bfb70dc1d3c0f0a4dd9decf1c25ca140b72437b1f9fa74c5",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-desktop-en-light",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "8c88178417fe5c12bfb70dc1d3c0f0a4dd9decf1c25ca140b72437b1f9fa74c5",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-desktop-zh-dark",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "8c88178417fe5c12bfb70dc1d3c0f0a4dd9decf1c25ca140b72437b1f9fa74c5",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-desktop-zh-light",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "8c88178417fe5c12bfb70dc1d3c0f0a4dd9decf1c25ca140b72437b1f9fa74c5",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-mobile-en-dark",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "8c88178417fe5c12bfb70dc1d3c0f0a4dd9decf1c25ca140b72437b1f9fa74c5",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-mobile-en-light",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "8c88178417fe5c12bfb70dc1d3c0f0a4dd9decf1c25ca140b72437b1f9fa74c5",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-mobile-zh-dark",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "8c88178417fe5c12bfb70dc1d3c0f0a4dd9decf1c25ca140b72437b1f9fa74c5",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-mobile-zh-light",
+      "http": 200,
+      "optional_statuses": [
+        401
+      ],
+      "score_details": 1,
+      "page_errors": [],
+      "html_sha256": "8c88178417fe5c12bfb70dc1d3c0f0a4dd9decf1c25ca140b72437b1f9fa74c5",
+      "passed": true
+    }
+  ]
+}

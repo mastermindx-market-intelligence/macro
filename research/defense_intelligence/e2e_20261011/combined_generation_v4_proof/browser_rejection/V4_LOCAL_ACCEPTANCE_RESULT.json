@@ -1,0 +1,229 @@
+{
+  "state": "LOCAL_FUNCTIONAL_PASS_PERFORMANCE_RED_VISUAL_REVIEW_OWED",
+  "scope": "Exact normalpublisher generatedHTML/unmodifiedstage; actualASGIlocaltestprincipal; notproduction/installedentitlement/customeracceptance",
+  "original_root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "coordinator": "01a13839-5716-7ba3-82cf-709943608987",
+  "built_source_head": "253df98603ac7f1f9944d92cb5efcab37fa9f5fb",
+  "committed_qualification_head": "d9af0853114c32ef4e8d1cd8959eb228641ef61a",
+  "generated_html_sha256": "0e1c097e850b7274178c976c357176a5180842b923fbc924f166f19f7f170ba6",
+  "timing": {
+    "measurement_complete": true,
+    "all_pass": false,
+    "median_ms": 3438.5500000044703,
+    "p95_ms": 3482.300000011921,
+    "max_ms": 3482.300000011921,
+    "target_ms": 3000
+  },
+  "timing_semantics": "All10 complete/exactvalue/unit/period/issuer atscroll0;all10>3000;allHTTP200/gzip;0HTTP/pageerrors;allfailurespreserved",
+  "matrix": {
+    "states": 24,
+    "all_captured": true,
+    "all_ready": true,
+    "all_six_theme_cards": true,
+    "all_geometry_loaded_no_overflow": true,
+    "http_errors": [],
+    "console_errors": [],
+    "taste_adjudication": "PENDING_ROOT_IMAGE_REVIEW",
+    "images": [
+      {
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "focus": null,
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/d51184c64dd84696.png"
+      },
+      {
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "focus": "investor-focus",
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/56bd0a96d8cc2d62--investor-focus.png"
+      },
+      {
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "focus": null,
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/ce576e0d71fdc8a3.png"
+      },
+      {
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "focus": "investor-focus",
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/ea029729ca60e4f6--investor-focus.png"
+      },
+      {
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "focus": null,
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/9cef5d6c8c5c01dc.png"
+      },
+      {
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "focus": "investor-focus",
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/243f7cb2c059c517--investor-focus.png"
+      },
+      {
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "focus": null,
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/beb7bde5f5967246.png"
+      },
+      {
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "focus": "investor-focus",
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/c13b0a1bad85c3f2--investor-focus.png"
+      },
+      {
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "tablet",
+        "focus": null,
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/691c532891b3e0ae.png"
+      },
+      {
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "tablet",
+        "focus": "investor-focus",
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/f76617349a6684ca--investor-focus.png"
+      },
+      {
+        "theme": "light",
+        "locale": "en",
+        "viewport": "tablet",
+        "focus": null,
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/c8407d539495536c.png"
+      },
+      {
+        "theme": "light",
+        "locale": "en",
+        "viewport": "tablet",
+        "focus": "investor-focus",
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/876fa83cd26c0f67--investor-focus.png"
+      },
+      {
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "tablet",
+        "focus": null,
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/e1d2986b83f4cca4.png"
+      },
+      {
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "tablet",
+        "focus": "investor-focus",
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/912cdf5ac37445a6--investor-focus.png"
+      },
+      {
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "tablet",
+        "focus": null,
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/1b7fa3dfa89785a7.png"
+      },
+      {
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "tablet",
+        "focus": "investor-focus",
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/f2a733def70199fa--investor-focus.png"
+      },
+      {
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "focus": null,
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/01e5da2fba997563.png"
+      },
+      {
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "focus": "investor-focus",
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/e8cd07b97f5c5506--investor-focus.png"
+      },
+      {
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "focus": null,
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/72cc7ffcdf5c63f8.png"
+      },
+      {
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "focus": "investor-focus",
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/55ed4ac557eca52d--investor-focus.png"
+      },
+      {
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "focus": null,
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/8dc31ab8c7b31cf4.png"
+      },
+      {
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "focus": "investor-focus",
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/f54866e95c78f004--investor-focus.png"
+      },
+      {
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "focus": null,
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/9dc9ab29b65602b0.png"
+      },
+      {
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "focus": "investor-focus",
+        "file": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/matrix-v4/mockups/evidence/defense-final-local/a40a56fa643c5c09--investor-focus.png"
+      }
+    ]
+  },
+  "functional": {
+    "RTX8269USDmillions2026Q2_deeplink": true,
+    "investorselection_then_browserback": true
+  },
+  "input_stability": {
+    "paths_n": 220,
+    "before_after_exact_equal": true,
+    "source_head_unchanged": true,
+    "canonical_inventory_unchanged": true
+  },
+  "server": {
+    "session_id": 7273,
+    "graceful_stop_exit_code": 0,
+    "listener_still_running": false,
+    "stopped_at": "2026-10-14T03:42:25.535235+00:00"
+  },
+  "artifact_sha256": {
+    "FINAL_CONFIG_V4.json": "6fa2130838ecdc6358e685eabd432dae79cd81de9fd74e21a0b15b8890adaa9b",
+    "stage-v4/INPUT_RECEIPT.json": "8d2199b90d527fd33c35a2781b02c93838b9152dd47df4fe4e4c393e76c451be",
+    "server-v4/SERVER_RECEIPT.json": "d44e9a15ca17923111d14c18e8abfcc8f9a25f888398f485592bf40f8f43cc21",
+    "TIMING_V4_COLD10.json": "5734172170b67e5f75f62a3d53a37a00e7ad20d4d5327a30b2f202b7b027f764",
+    "TIMING_V4_CRITICAL_PATH.json": "b3284a3cc42186855b75df103fb588d9b7ff7de8a35267af3c3cb71a2be7dc10",
+    "DEEPLINK_V4.json": "8d6453451443cfb4378a3f2d323a9eb57196cee017f3fe6ddd36ef40ebf33fce",
+    "BEFORE_INPUTS_V4.json": "6142299fb1b43731faa4985dbff84da67acc1d7c9a1ee23d78478c39cc678201",
+    "AFTER_INPUTS_V4.json": "6142299fb1b43731faa4985dbff84da67acc1d7c9a1ee23d78478c39cc678201",
+    "V4_INPUT_STABILITY.json": "42729f52db98426dd47ea57e4c85dcf0128c3449184384d4decb2878ba71da21",
+    "matrix-v4/mockups/evidence/defense-final-local/manifest.json": "ff05c11caaf5e7c31f154b1850f7f0125fad1686fc46522335086b590d6bba2e",
+    "matrix-v4/mockups/evidence/defense-final-local/CELL_GEOMETRY.json": "2b5b61881b81db7e3d612db2429111e88185fb31b29c434c62a7757a9514f054",
+    "matrix-v4/mockups/evidence/defense-final-local/READINESS.json": "ad5ed1bd40c42957382a9f286d86f953508d225d3a0426c8506d318979f0b66d"
+  },
+  "next_requirement": "Rootreviewimages;actualsourceperformance repair needed; newmaterialgeneration/proof/freeze before requalification. PreservethisREDbatch and accepted unchangedfunctional components."
+}

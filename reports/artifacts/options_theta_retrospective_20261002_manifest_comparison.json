@@ -1,0 +1,17 @@
+{
+  "old_manifest_sha256": "fa1453f1de296150055eea27fce440722ff491f9083145ebd5e4d66c5cb8e3d3",
+  "new_manifest_sha256": "6b678a65f531eb31735cca7641b898887739475a9c1a479c2a0ebbecd8a164dc",
+  "all_435_input_entries_identical": true,
+  "protocol_calendar_runtime_identical": true,
+  "source_digest_count": 1740,
+  "changes": [
+    {
+      "source_code_digest": {
+        "scripts/research/options_history_retrospective.py": [
+          "b67f614aa8ad15bb645c9c538d355515a95845a15ee5975877fbe3db68192fc3",
+          "ee529eca1aad4b9f699c92d6bf7b3d88ef9d2739f6f12dcdb896c6bfd9e0d6a1"
+        ]
+      }
+    }
+  ]
+}

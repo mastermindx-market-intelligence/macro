@@ -1,0 +1,62 @@
+{
+  "schema": "research.input_bindings.v1",
+  "binding_date_utc": "2026-10-09",
+  "policy_reviewed": "Original policy v1 only; subsequent corrections/adoption not inferred.",
+  "inputs": [
+    {
+      "path": "lanes/source_diagnostic_frame_v1/WP02_SAMPLING_FRAME_ASSESSMENT.md",
+      "sha256": "9ab4ef6dcb81eb0a3185269a851f22d315a2ff45c0be5c67dfb154efa4cfc1e0",
+      "read_scope": "full"
+    },
+    {
+      "path": "lanes/source_diagnostic_policy_review_v1/METHOD_REVIEW.md",
+      "sha256": "e35cc6b4bffa57cb7203f126620b069e7b2944dd45e29f71c4e9bf827dc390b6",
+      "read_scope": "full"
+    },
+    {
+      "path": "lanes/source_diagnostic_policy_v1/RECOMMENDED_SELECTION_POLICY.json",
+      "sha256": "03881ee568f6f08f06ef88a2fad0e33ff2fe14b3ab1db526c35221d642cfe9fd",
+      "read_scope": [
+        "cutoff_policy",
+        "instrument_and_venue",
+        "identity_and_primary",
+        "capitalization",
+        "relative_size",
+        "failure_and_falsifier_law",
+        "holds"
+      ]
+    }
+  ],
+  "research_scope": [
+    "Public primary exchange/regulator/provider documentation",
+    "Canada first",
+    "Bounded Japan regional exchange/perimeter extension"
+  ],
+  "out_of_scope": [
+    "China BSE investigation",
+    "All-vendor coverage assertion",
+    "Issuer/security census",
+    "Bulk data acquisition",
+    "Price acquisition",
+    "Statistical selection",
+    "Native/Git/application mutation",
+    "Source procurement or terms acceptance",
+    "Production or predictive admission"
+  ],
+  "representation_rules": {
+    "raw_response_bytes_retained": false,
+    "raw_response_sha256": null,
+    "short_saved_excerpt_hashes": "SHA-256 binds only exact retained UTF-8 strings, not raw web bytes",
+    "individual_retrieval_clock": "day precision only",
+    "source_public_availability_by_K": "unknown unless independently witnessed; current retrieval does not establish K"
+  },
+  "holds": {
+    "canada_complete_frame_proved": false,
+    "eligible_population_count": null,
+    "selected_issuers": 0,
+    "customer_entitlement_established": false,
+    "predictive_admission": false,
+    "production_admission": false
+  },
+  "integration": "R1 sourcing feasibility refines the existing historical-frame dependency; it is not another mission proposal or a new source/identity control plane."
+}

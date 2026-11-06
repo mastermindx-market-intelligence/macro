@@ -748,13 +748,13 @@ def expected_fire_after(now: datetime) -> tuple[date, datetime]:
 
 
 def cohort_size(index: dict | None, session: date) -> int | None:
-    """How many plans in ``index`` were recorded for ``session``.
+    """How many plans in ``index`` belong to the market ``session``.
 
-    Per-plan ``recorded_at`` is the honest cohort stamp.  Top-level ``asof`` /
-    ``recorded_at`` are the publication clock — ``date.today()`` at bake time — and
-    scripts/build_prophet.py:2100 says so in a comment: "a successful rerun can
-    refresh this publication stamp while its input freezes".  Reading them here is
-    how every previous sensor scored a frozen board green.
+    ``recorded_at`` is the honest publication/origination wall clock, including on
+    delayed weekend catch-ups.  The market-session identity is ``price_basis_date``
+    (or ``entry_date`` on older plans).  Legacy rows that predate both fields fall
+    back to per-plan ``recorded_at``.  Top-level ``asof`` / ``recorded_at`` remain
+    publication clocks and are never cohort evidence.
     """
     if not isinstance(index, dict):
         return None
@@ -762,9 +762,18 @@ def cohort_size(index: dict | None, session: date) -> int | None:
     if not isinstance(plans, list):
         return None
     wanted = session.isoformat()
+
+    def _session_stamp(plan: dict) -> str:
+        return str(
+            plan.get("price_basis_date")
+            or plan.get("entry_date")
+            or plan.get("recorded_at")
+            or ""
+        )[:10]
+
     return sum(
         1 for p in plans
-        if isinstance(p, dict) and str(p.get("recorded_at") or "")[:10] == wanted
+        if isinstance(p, dict) and _session_stamp(p) == wanted
     )
 
 
@@ -1065,7 +1074,7 @@ def decide(state: WatchdogState) -> list[Action]:
         reasons: list[str] = []
         if empty_cohort:
             reasons.append(
-                f"ZERO plans carry recorded_at={session.isoformat()} while intake "
+                f"ZERO plans belong to market session {session.isoformat()} while intake "
                 f"reports eligible_after_skips={eligible}"
             )
         if intake_breach:
@@ -1127,7 +1136,8 @@ def decide(state: WatchdogState) -> list[Action]:
             NOTICE, HEALTHY if data_current else WAIT,
             f"session {session.isoformat()}: source_asof "
             f"{src.isoformat() if src else '?'}, {cohort if cohort is not None else '?'} "
-            f"plans recorded for it, {len(recent)} {WORKFLOW_FILE} run(s) since "
+            f"plans assigned to that market session, {len(recent)} "
+            f"{WORKFLOW_FILE} run(s) since "
             f"{boundary.isoformat()}"
             + (f"; run {facts.in_flight_id} is {in_flight.get('status')}, "
                "still within the deadline ladder." if in_flight is not None

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-06T21:16:57Z",
+ "accession": "0000833640-26-000037",
+ "cik": "0000833640",
+ "doc_byte_length": 3722456,
+ "doc_sha256": "4613c1a0748c4bb342d61e8498862247b4fab9c9ca51c7db18197bd512be8823",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-06",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "powi-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 315490,
+  "byte_start": 315037,
+  "normalized": "We contract with three foundries for the manufacture of the vast majority of our silicon wafers: (1) Lapis Semiconductor Co., Ltd., or Lapis, (formerly OKI Electric Industry), (2) Seiko Epson Corporation, or Epson and (3) X-FAB Semiconductor Foundries AG, or X-FAB. These contractors manufacture wafers using our proprietary high-voltage process technologies at fabrication facilities located in Japan, Germany and the United States.",
+  "normalized_sha256": "af9a18952de3138f07390e9c687293fe8017f845cc3fc4330f5a422338811205",
+  "raw": "We contract with three foundries for the manufacture of the vast majority of our silicon wafers: (1)&#160;Lapis Semiconductor Co.,&#160;Ltd., or Lapis, (formerly OKI Electric Industry), (2)&#160;Seiko Epson Corporation, or Epson and (3)&#160;X-FAB Semiconductor Foundries AG, or X-FAB. These contractors manufacture wafers using our proprietary high-voltage process technologies at fabrication facilities located in Japan, Germany and the United States.",
+  "raw_sha256": "55b7f7683c65dba6d24241dad549518e10c26d72a4aca46fa73b4c40ed2d0d31"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/833640/000083364026000037/powi-20251231x10k.htm",
+ "xbrl_contexts": []
+}

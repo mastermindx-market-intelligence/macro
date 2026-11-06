@@ -1,0 +1,9 @@
+# Closed wave11 and first rolling capture use
+
+Original wave11 settled with all 5000 requests successful and zero failures. Eighteen accepted response snapshots qualified 4968 nonempty histories, 32 empty responses and 10531732 distinct bars. The closure reuses actual checksum, requested-window and reader-lineage proof without provider calls or rebuilding. Its cumulative catalogue census has 28184 nonempty histories, 61704769 bars, 100 empty responses and 19405 uncaptured desired windows.
+
+The unchanged original collector then began disjoint wave12 at 2026-10-12T18:29:54.081664Z through the reviewed module merged in #9018. Fresh company quota, archive space, source pins, successful prior settlement and zero collisions passed before launch. The first 232 responses were actually materialized and verified, bringing the census to 28416 histories and 61901655 bars. The full wave12 scope and complete runtime admission trace are pending; this first-use proof does not claim a throughput improvement or vendor arrival timing.
+
+The next 5000-request wave13 is prepared and preflighted only, with every wave12 selection reserved. It requires successful prior settlement and fresh quota/source/resource/collision checks. All sixteen held symbols remain excluded. The original collector, key carrier, four-in-flight limit, 24 GiB stop threshold, 2 GiB maximum admitted overshoot and 40 GiB admission floor remain in force.
+
+Evidence #9020 merged as b169a57fffe07ecff91fca0b830870e8b6318a96 after all twelve original CI packs and active gates passed. Terminal #955 remains OPEN/BLOCKED at 1a74e3cf93368a5c5381f0110b80601dff0ae3e3; its original PR workflow 38272372019 is action_required. The original approval refusal is retained. The immutable research consumer remains release 0b204cde, with four PRODUCED contracts and twenty PROPOSED. Complete vendor history, dated identity/PIT, broad deep fundamentals and responsive live BOATS acceptance remain open.
