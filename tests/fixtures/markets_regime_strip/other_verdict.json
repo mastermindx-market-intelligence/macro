@@ -1,0 +1,28 @@
+{
+  "market_state": {
+    "verdict": "MIXED",
+    "label_en": "Mixed",
+    "label_zh": "混合",
+    "score": 50,
+    "color": "yellow",
+    "caveat_en": "",
+    "caveat_zh": ""
+  },
+  "hk_market_state": {
+    "verdict": "BANANA",
+    "label_en": "Banana",
+    "label_zh": "香蕉",
+    "score": 50,
+    "caveat_en": "Display-only and lighter than the US read: Hong Kong sample is not a known verdict.",
+    "caveat_zh": "仅供展示，较美股版更轻量：此香港样例不是已知判读。"
+  },
+  "cn_market_state": {
+    "verdict": "MIXED",
+    "label_en": "Mixed",
+    "label_zh": "混合",
+    "score": 48,
+    "caveat_en": "Display-only and lighter than the US read: China sample is not risk-on or risk-off.",
+    "caveat_zh": "仅供展示，较美股版更轻量：此中国样例既非风险偏好也非风险规避。"
+  },
+  "stance": {}
+}

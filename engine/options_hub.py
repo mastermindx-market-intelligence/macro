@@ -70,6 +70,21 @@ def _f(x, n: int = 2):
     return round(v, n) if np.isfinite(v) else None
 
 
+def _legacy_option_rows(frame: pd.DataFrame) -> pd.DataFrame:
+    """Preserve the pre-clock EOD row population for legacy analytics.
+
+    Native raw clocks are additional provenance, not additional contracts. The
+    qualified projection consumes the original frame before this compatibility
+    view and refuses ambiguous repeated contract keys. Legacy analytics retain
+    the normalizer's previous full-row equality, without selecting a latest
+    observation or interpreting an unknown timezone.
+    """
+    clocks = [c for c in ("timestamp", "underlying_timestamp", "_theta_acquisition") if c in frame.columns]
+    if not clocks:
+        return frame.copy()
+    return frame.drop(columns=clocks).drop_duplicates().copy()
+
+
 def _today_str() -> str:
     return str(_date.today())
 
@@ -150,7 +165,7 @@ def compute_vol(
         return _empty_vol(root, asof)
 
     # ── normalise dates ──────────────────────────────────────────────────────
-    df = greeks_df.copy()
+    df = _legacy_option_rows(greeks_df)
     df["date"] = pd.to_datetime(df["date"]).dt.date.astype(str)
 
     asof_df = df[df["date"] == asof]
@@ -412,6 +427,9 @@ def compute_gex(
     oi_prev_df: pd.DataFrame,
     asof: str,
     root: str,
+    *,
+    exposure_context: dict | None = None,
+    exposure_inputs: tuple[pd.DataFrame, pd.DataFrame] | None = None,
 ) -> dict:
     """Build the options_hub/gex/{root} payload.
 
@@ -429,31 +447,50 @@ def compute_gex(
                     expiration, strike, right, open_interest.
         asof:       'YYYY-MM-DD' reference date.
         root:       Option root symbol.
+        exposure_context: Optional existing-owner exact terms/source receipt;
+                    see docs/OPTIONS_EXPOSURE_PROJECTION.md. Missing receipts
+                    remain explicit unavailable qualification.
 
     Returns a dict matching the options_hub.gex/v1 schema.
     """
     from engine.greeks import bs_greeks as _bs_greeks  # local import for hermetic tests
+    from engine.options_exposure_projection import build_exposure_projection
+
+    # Capture membership before the historical OI/IV filters. No inference from
+    # legacy marginals; the projection retains its own explicit qualification.
+    projection_greeks, projection_oi = greeks_df, oi_prev_df
+    if exposure_inputs is not None:
+        if (not exposure_context or exposure_context.get("kind") != "dated_provider_approximation"
+                or not exposure_context.get("contract_identity") or not isinstance(exposure_inputs, tuple)
+                or len(exposure_inputs) != 2 or not all(isinstance(f, pd.DataFrame) for f in exposure_inputs)):
+            raise ValueError("Separate projection inputs require a scoped dated identity")
+        projection_greeks, projection_oi = exposure_inputs
+    projection = build_exposure_projection(projection_greeks, projection_oi, asof, root,
+                                          context=exposure_context)
+
+    def empty_with_projection():
+        return {**_empty_gex(root, asof), "exposure_projection": projection}
 
     _MIN_IV = 0.005
 
     if greeks_df is None or greeks_df.empty or "date" not in greeks_df.columns:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
-    g = greeks_df.copy()
+    g = _legacy_option_rows(greeks_df)
     g["date"] = pd.to_datetime(g["date"]).dt.date.astype(str)
     g = g[g["date"] == asof]
     if g.empty:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     # ── spot ────────────────────────────────────────────────────────────────
     spot_vals = g["underlying_price"].dropna()
     spot = float(spot_vals.median()) if not spot_vals.empty else float("nan")
     if not np.isfinite(spot) or spot <= 0:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     # ── merge OI[t-1] ────────────────────────────────────────────────────────
     if oi_prev_df is not None and not oi_prev_df.empty:
-        oi = oi_prev_df[["expiration", "strike", "right", "open_interest"]].copy()
+        oi = _legacy_option_rows(oi_prev_df)[["expiration", "strike", "right", "open_interest"]].copy()
         oi["expiration"] = pd.to_datetime(oi["expiration"]).dt.date.astype(str)
         oi["strike"] = oi["strike"].astype(float)
         g["expiration"] = pd.to_datetime(g["expiration"]).dt.date.astype(str)
@@ -467,7 +504,7 @@ def compute_gex(
     # Only use contracts with positive OI[t-1]
     g = g[g["oi_prev"] > 0].copy()
     if g.empty:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     # ── prepare fields ────────────────────────────────────────────────────────
     g["is_call"] = g["right"].str.upper() == "C"
@@ -494,7 +531,7 @@ def compute_gex(
     _iv = g["iv"].to_numpy(float)
     g = g[~np.isfinite(_iv) | (_iv >= MIN_QUOTED_IV)].copy()
     if g.empty:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     # ── gamma (use feed value when present, else BS fallback) ─────────────────
     # This mirrors engine/gex_model._dollar_gamma logic.
@@ -506,7 +543,12 @@ def compute_gex(
     if miss.any():
         def _bs_g(k, t, s, call):
             s = float(s) if s is not None and np.isfinite(float(s) if s is not None else float("nan")) else float("nan")
-            if not np.isfinite(s) or s < _MIN_IV or not (t and t > 0):
+            # No usable iv: the greek is unknown. Do not publish that as an
+            # observed zero. A present-but-degenerate tenor still contributes 0
+            # (the historical fallback); only the unpriceable quote stays missing.
+            if not np.isfinite(s):
+                return float("nan")
+            if s < _MIN_IV or not (t and t > 0):
                 return 0.0
             try:
                 return _bs_greeks(spot, float(k), float(t), float(s), bool(call))[1]
@@ -516,8 +558,10 @@ def compute_gex(
             _bs_g(k, t, s, c)
             for k, t, s, c in zip(g["K"], g["T"], g["iv"], g["is_call"])
         ], dtype=float)
-        raw_gamma = raw_gamma.copy()
-        raw_gamma.values[miss] = bs_vals[miss]
+        # Series.values is read-only on this pandas build; assign into a copy.
+        filled = np.array(raw_gamma.to_numpy(dtype=float), dtype=float, copy=True)
+        filled[miss] = bs_vals[miss]
+        raw_gamma = pd.Series(filled, index=raw_gamma.index)
     g["_gamma"] = raw_gamma.astype(float)
 
     # ── dealer $ exposure ─────────────────────────────────────────────────────
@@ -549,19 +593,30 @@ def compute_gex(
     g["_put_gex"]   = np.where(~g["is_call"], g["_net_gex"], 0.0)
 
     # ── headline ──────────────────────────────────────────────────────────────
-    net_gex_bn = float(g["_net_gex"].sum() / 1e9)
+    # skipna sum of the known contracts — identical to the historical headline
+    # when every gamma is finite. A missing gamma must not be presented as a
+    # complete book total; the known sum is the additive net_gex_known_bn.
+    _gamma_arr = g["_gamma"].to_numpy(dtype=float)
+    n_gamma_missing = int((~np.isfinite(_gamma_arr)).sum())
+    net_gex_known_bn = float(g["_net_gex"].sum() / 1e9)
+    net_gex_bn = None if n_gamma_missing else net_gex_known_bn
 
     # ── gamma flip + exposure profile (ONE ±25% spot-grid evaluation) ─────────
     gamma_flip, profile = _flip_and_profile(g, spot)
 
     # ── walls: max |call_gex| above spot / max |put_gex| below ────────────────
+    def _sum_known(series: pd.Series) -> float:
+        # All-missing inputs are NaN, not the skipna sum of nothing (0.0).
+        # A real cancellation (equal call and put) still sums to 0.0.
+        return series.sum(min_count=1)
+
     by_k = g.groupby("K").agg(
-        gamma_net=("_net_gex", "sum"),
-        gamma_call=("_call_gex", "sum"),
-        gamma_put=("_put_gex", "sum"),
-        delta_net=("_net_delta", "sum"),
-        vanna_net=("_net_vanna", "sum"),
-        charm_net=("_net_charm", "sum"),
+        gamma_net=("_net_gex", _sum_known),
+        gamma_call=("_call_gex", _sum_known),
+        gamma_put=("_put_gex", _sum_known),
+        delta_net=("_net_delta", _sum_known),
+        vanna_net=("_net_vanna", _sum_known),
+        charm_net=("_net_charm", _sum_known),
     ).reset_index()
 
     above = by_k[(by_k["K"] > spot) & (by_k["gamma_net"] > 0)]
@@ -639,14 +694,17 @@ def compute_gex(
         "oi_date": "t-1",  # OI is always t-1 per OI timing law
         "n_days": len(greeks_dates),
         "since": greeks_dates[0] if greeks_dates else asof,
+        "n_gamma_missing": n_gamma_missing,
     }
 
     return {
         "schema": "options_hub.gex/v1",
+        "exposure_projection": projection,
         "asof": asof,
         "root": root,
         "spot_ref": _f(spot),
-        "net_gex_bn": _f(net_gex_bn, 4),
+        "net_gex_bn": None if net_gex_bn is None else _f(net_gex_bn, 4),
+        "net_gex_known_bn": _f(net_gex_known_bn, 4),
         "gamma_flip": _f(gamma_flip),
         # The §4.2 profile block — the flip's own grid, published as a curve.
         # None when the chain is too iv-sparse to re-price (same gate as the flip).

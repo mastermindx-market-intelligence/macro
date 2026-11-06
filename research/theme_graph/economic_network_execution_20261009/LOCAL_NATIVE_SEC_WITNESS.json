@@ -1,0 +1,599 @@
+{
+  "annotation_basis": "Manual reading of one actual retained foundry roster sentence. Exact source-local labels We, TSMC and semiconductor wafers; NVIDIA remains the separately recorded filing issuer. No automatic pronoun-to-legal-entity mapping or economic magnitude.",
+  "candidate_module_sha256": "27543f4a37202820f34071607b5cbdb1e48a04c30577a876ba1f803e1c41891d",
+  "capture_receipt_sha256": "3671954fc8d02dc2b58e68e705e249c6919ddaacfd8fad1a5e5af7a6620901b1",
+  "code_head": "037a23cf0fb232012bcb1a85f9cb714973782194",
+  "evidence_class": "LOCAL_NATIVE_REPLAY",
+  "executed_at": "2026-10-09T03:56:29.839534+00:00",
+  "historical_system_replay": false,
+  "native_fact_admission": false,
+  "no_latest_pointers": true,
+  "outcomes": {
+    "candidate_metadata_mismatch": {
+      "admission": "NOT_ADMITTED",
+      "authority": {
+        "gate": false,
+        "prediction": false,
+        "rank": false,
+        "size": false,
+        "trade": false
+      },
+      "candidate_inspection": null,
+      "content_boundary": {
+        "annotations": "caller_supplied_may_contain_source_text",
+        "public_export": "NOT_AUTHORIZED",
+        "public_safe_payload": "NOT_CERTIFIED",
+        "quote_free_payload": "NOT_CERTIFIED"
+      },
+      "gaps": {
+        "identity": [
+          "canonical_as_of_issuer_identity_not_established"
+        ],
+        "native_adoption": [
+          "relationship_dataset_and_owner_adoption_required"
+        ],
+        "reader_owner": [
+          "supplied_reader_production_owner_not_independently_authenticated"
+        ],
+        "rights": [
+          "purpose_specific_rights_not_established",
+          "downstream_emission_purposes_unresolved"
+        ],
+        "source_authorship": [
+          "sec_authorship_not_cryptographically_authenticated"
+        ],
+        "time": [
+          "source_capture_is_not_registered_known_at_or_historical_served_state"
+        ]
+      },
+      "graph1_projection": null,
+      "inspection_status": "REFUSED",
+      "limitations": [
+        "native_source_binding_is_relative_to_supplied_native_reader",
+        "native_custody_replay_is_not_economic_truth_or_rights_admission",
+        "manual_annotations_remain_supplied_and_unauthenticated",
+        "native_filing_lineage_is_not_candidate_correction_or_termination"
+      ],
+      "native_source_binding": null,
+      "refusal": {
+        "code": "CANDIDATE_SOURCE_METADATA_MISMATCH"
+      },
+      "schema": "company_intelligence.pinned_relationship_inspection/v1"
+    },
+    "current": {
+      "admission": "NOT_ADMITTED",
+      "authority": {
+        "gate": false,
+        "prediction": false,
+        "rank": false,
+        "size": false,
+        "trade": false
+      },
+      "candidate_inspection": {
+        "admission": "NOT_ADMITTED",
+        "annotation_trust": {
+          "document_annotations": "caller_supplied_not_authenticated",
+          "identity_annotations": "caller_supplied_not_authenticated",
+          "manual_assertions": "caller_supplied_not_authenticated"
+        },
+        "assertion_basis": "manual_review",
+        "authority": {
+          "gate": false,
+          "prediction": false,
+          "rank": false,
+          "size": false,
+          "trade": false
+        },
+        "content_boundary": {
+          "annotations": "echoed_as_supplied_may_contain_source_text",
+          "machine_replayed_support_text": "OMITTED",
+          "public_export": "NOT_AUTHORIZED",
+          "public_safe_payload": "NOT_CERTIFIED",
+          "quote_free_payload": "NOT_CERTIFIED"
+        },
+        "current_candidate_view": {
+          "assertion": {
+            "kind": "supplier_roster",
+            "lifecycle": "listed",
+            "magnitude": null,
+            "object_label": "TSMC",
+            "product_scope": "semiconductor wafers",
+            "subject_label": "We"
+          },
+          "bilateral_candidate": false,
+          "candidate_id": "manual:nvda:2026-10k:foundry-roster:tsmc-source-local",
+          "canonical_object_id": null,
+          "canonical_subject_id": null,
+          "disposition": "roster_observation_only",
+          "economic_weight": null,
+          "identity_annotation_status": "UNTRUSTED_NOT_RESOLVED",
+          "identity_annotations": null,
+          "revenue": null,
+          "revision": {
+            "relation": "original",
+            "supersedes_candidate_id": null
+          },
+          "revision_resolution": "NO_AUTOMATIC_SELECTION_OR_ORIGINAL_ERASURE",
+          "scope": "named_roster_only",
+          "shipments": null,
+          "theme_membership": null
+        },
+        "gaps": {
+          "identity": [
+            "as_of_native_issuer_identity_not_established"
+          ],
+          "native_adoption": [
+            "relationship_dataset_and_owner_adoption_required"
+          ],
+          "rights": [
+            "purpose_specific_rights_not_established",
+            "public_export_not_authorized"
+          ],
+          "time": [
+            "native_dataset_profile_and_bound_row_not_established"
+          ]
+        },
+        "graph1_projection": null,
+        "inspection_status": "INSPECTABLE",
+        "limitations": [
+          "structural_byte_replay_is_not_independent_semantic_adjudication",
+          "manual_assertion_is_not_verified_economic_truth",
+          "source_credibility_and_document_metadata_not_authenticated",
+          "echoed_annotations_may_contain_source_text_no_public_safe_certification",
+          "no_shipments_revenue_weight_theme_membership_or_propagation_inferred"
+        ],
+        "refusal": null,
+        "schema": "company_intelligence.relationship_inspection/v1",
+        "source_provenance": {
+          "dataset_id": null,
+          "document_id": "sec_document_5b75587074cf7849d010ec05a7ae7a18d305326a50418897d5d0bc75423bb26a",
+          "metadata_authenticity": "caller_supplied_not_authenticated",
+          "published_date": null,
+          "source_credibility": "not_verified",
+          "source_hash_status": "matched_supplied_bytes",
+          "source_ref": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+          "source_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+          "version": "sha256:94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e"
+        },
+        "support": {
+          "byte_end": 243668,
+          "byte_start": 243494,
+          "char_end": 243668,
+          "char_start": 243494,
+          "schema": "earnings_release.span_receipt/v1",
+          "semantic_adjudication": "NOT_PERFORMED",
+          "span_bytes": 174,
+          "span_sha256": "13a4750ac1264fdc31b6a3569e9a0c1672d0bffb798ff11539b8c289d6665b48",
+          "status": "STRUCTURALLY_REPLAYED",
+          "value_text_sha256": "13a4750ac1264fdc31b6a3569e9a0c1672d0bffb798ff11539b8c289d6665b48"
+        },
+        "temporal": {
+          "historical_system_replay": false,
+          "mode": "current_inspection"
+        }
+      },
+      "content_boundary": {
+        "annotations": "caller_supplied_may_contain_source_text",
+        "public_export": "NOT_AUTHORIZED",
+        "public_safe_payload": "NOT_CERTIFIED",
+        "quote_free_payload": "NOT_CERTIFIED"
+      },
+      "gaps": {
+        "identity": [
+          "canonical_as_of_issuer_identity_not_established"
+        ],
+        "native_adoption": [
+          "relationship_dataset_and_owner_adoption_required"
+        ],
+        "reader_owner": [
+          "supplied_reader_production_owner_not_independently_authenticated"
+        ],
+        "rights": [
+          "purpose_specific_rights_not_established",
+          "downstream_emission_purposes_unresolved"
+        ],
+        "source_authorship": [
+          "sec_authorship_not_cryptographically_authenticated"
+        ],
+        "time": [
+          "source_capture_is_not_registered_known_at_or_historical_served_state"
+        ]
+      },
+      "graph1_projection": null,
+      "inspection_status": "INSPECTABLE",
+      "limitations": [
+        "native_source_binding_is_relative_to_supplied_native_reader",
+        "native_custody_replay_is_not_economic_truth_or_rights_admission",
+        "manual_annotations_remain_supplied_and_unauthenticated",
+        "native_filing_lineage_is_not_candidate_correction_or_termination"
+      ],
+      "native_source_binding": {
+        "archive_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "canonical_identity": "not_resolved",
+        "document_id": "sec_document_5b75587074cf7849d010ec05a7ae7a18d305326a50418897d5d0bc75423bb26a",
+        "document_name": "nvda-20260125.htm",
+        "document_version": "sha256:94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+        "gzip_object_witness": {
+          "byte_length": 166203,
+          "content_type": "application/gzip",
+          "kind": "archive",
+          "object_key": "fundamental_forensics/sec-source/v1/objects/sha256/11/1131e65e38c5e8a87c6d49a1cf56f22bf47ab88d3debaba8791ca4e7f8f9430a.bin",
+          "relative_path": "objects/sha256/94/94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e.bin.gz",
+          "sha256": "1131e65e38c5e8a87c6d49a1cf56f22bf47ab88d3debaba8791ca4e7f8f9430a",
+          "snapshot_at": "2026-10-09T03:53:33.331285Z",
+          "snapshot_id": "ffsecsrc_520d816415a2d1dbde1fcf348abef2cbfdd8b28b88b4bf847a549613002d02ee"
+        },
+        "historical_served_state": "not_established",
+        "manifest_id": "ffsec_manifest_f050d1fb989d8f840c4291c5eb8b12788f1110bea58bf3b5b4ce239c8a771a61",
+        "manifest_key": "manifests/0001045810/0001045810-26-000021/ffsec_manifest_f050d1fb989d8f840c4291c5eb8b12788f1110bea58bf3b5b4ce239c8a771a61.json",
+        "manifest_witness": {
+          "byte_length": 2257,
+          "content_type": "application/json",
+          "kind": "archive",
+          "object_key": "fundamental_forensics/sec-source/v1/objects/sha256/d4/d4aed1a554bf7f208752591994fd854f6c2fe879e2b2d8eae77b3324040f9524.bin",
+          "relative_path": "manifests/0001045810/0001045810-26-000021/ffsec_manifest_f050d1fb989d8f840c4291c5eb8b12788f1110bea58bf3b5b4ce239c8a771a61.json",
+          "sha256": "d4aed1a554bf7f208752591994fd854f6c2fe879e2b2d8eae77b3324040f9524",
+          "snapshot_at": "2026-10-09T03:53:33.331285Z",
+          "snapshot_id": "ffsecsrc_520d816415a2d1dbde1fcf348abef2cbfdd8b28b88b4bf847a549613002d02ee"
+        },
+        "raw_byte_length": 1967931,
+        "raw_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+        "reader_owner_authenticity": "not_independently_established",
+        "receipt_sidecar_verified": true,
+        "receipt_sidecar_witness": {
+          "byte_length": 701,
+          "content_type": "application/json",
+          "kind": "archive",
+          "object_key": "fundamental_forensics/sec-source/v1/objects/sha256/52/52dc92ce41b106dfee5a8f10a2c09d75112d2274dc2aa562439617e6c1547f6a.bin",
+          "relative_path": "receipts/sha256/89/8999c2175a87c8a0810a2e01965f3d2007d122a590c4fed80e7f09f70d9dba5d.json",
+          "sha256": "52dc92ce41b106dfee5a8f10a2c09d75112d2274dc2aa562439617e6c1547f6a",
+          "snapshot_at": "2026-10-09T03:53:33.331285Z",
+          "snapshot_id": "ffsecsrc_520d816415a2d1dbde1fcf348abef2cbfdd8b28b88b4bf847a549613002d02ee"
+        },
+        "retrieval_receipt": {
+          "archive_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+          "byte_length": 1967931,
+          "content_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+          "document_id": "sec_document_5b75587074cf7849d010ec05a7ae7a18d305326a50418897d5d0bc75423bb26a",
+          "http_etag": null,
+          "http_last_modified": "Wed, 25 Feb 2026 21:42:44 GMT",
+          "receipt_id": "sec_archive_receipt_8999c2175a87c8a0810a2e01965f3d2007d122a590c4fed80e7f09f70d9dba5d",
+          "retrieved_at": "2026-10-09T03:53:33.185441Z",
+          "schema": "fundamental_forensics.sec_archive_receipt/v1",
+          "status": "retrieved",
+          "storage_key": "objects/sha256/94/94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e.bin.gz"
+        },
+        "rights": "not_established",
+        "sec_authorship": "not_cryptographically_authenticated",
+        "snapshot_at": "2026-10-09T03:53:33.331285Z",
+        "snapshot_id": "ffsecsrc_520d816415a2d1dbde1fcf348abef2cbfdd8b28b88b4bf847a549613002d02ee",
+        "source_custody": "verified_relative_to_supplied_native_reader",
+        "source_local_clocks": {
+          "accepted_at": "2026-02-25T21:42:19.000000Z",
+          "filed_on": "2026-02-25",
+          "recorded_at": "2026-10-09T03:53:33.214726Z"
+        },
+        "source_local_filing": {
+          "accession": "0001045810-26-000021",
+          "archive_index_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/index.json",
+          "base_form": "10-K",
+          "form": "10-K",
+          "is_inline_xbrl": 1,
+          "is_xbrl": 1,
+          "items": null,
+          "report_date": "2026-01-25"
+        },
+        "source_local_issuer": {
+          "cik": "0001045810",
+          "name": "NVIDIA CORP",
+          "ticker": null
+        },
+        "source_local_lineage": {
+          "amends_accession": null,
+          "is_amendment": false,
+          "relationship": "original"
+        },
+        "status": "NATIVE_PINNED_SOURCE_REPLAYED"
+      },
+      "refusal": null,
+      "schema": "company_intelligence.pinned_relationship_inspection/v1"
+    },
+    "historical": {
+      "admission": "NOT_ADMITTED",
+      "authority": {
+        "gate": false,
+        "prediction": false,
+        "rank": false,
+        "size": false,
+        "trade": false
+      },
+      "candidate_inspection": {
+        "admission": "NOT_ADMITTED",
+        "annotation_trust": {
+          "document_annotations": "caller_supplied_not_authenticated",
+          "identity_annotations": "caller_supplied_not_authenticated",
+          "manual_assertions": "caller_supplied_not_authenticated"
+        },
+        "assertion_basis": "manual_review",
+        "authority": {
+          "gate": false,
+          "prediction": false,
+          "rank": false,
+          "size": false,
+          "trade": false
+        },
+        "content_boundary": {
+          "annotations": "echoed_as_supplied_may_contain_source_text",
+          "machine_replayed_support_text": "OMITTED",
+          "public_export": "NOT_AUTHORIZED",
+          "public_safe_payload": "NOT_CERTIFIED",
+          "quote_free_payload": "NOT_CERTIFIED"
+        },
+        "current_candidate_view": null,
+        "gaps": {
+          "identity": [
+            "as_of_native_issuer_identity_not_established"
+          ],
+          "native_adoption": [
+            "relationship_dataset_and_owner_adoption_required"
+          ],
+          "rights": [
+            "purpose_specific_rights_not_established",
+            "public_export_not_authorized"
+          ],
+          "time": [
+            "native_dataset_profile_and_bound_row_not_established"
+          ]
+        },
+        "graph1_projection": null,
+        "inspection_status": "REFUSED",
+        "limitations": [
+          "structural_byte_replay_is_not_independent_semantic_adjudication",
+          "manual_assertion_is_not_verified_economic_truth",
+          "source_credibility_and_document_metadata_not_authenticated",
+          "echoed_annotations_may_contain_source_text_no_public_safe_certification",
+          "no_shipments_revenue_weight_theme_membership_or_propagation_inferred"
+        ],
+        "refusal": {
+          "code": "AS_OF_REGISTRY_REQUIRED"
+        },
+        "schema": "company_intelligence.relationship_inspection/v1",
+        "source_provenance": null,
+        "support": null,
+        "temporal": {
+          "as_of": "2026-02-26T00:00:00+00:00",
+          "historical_system_replay": false,
+          "mode": "supplied_native_row_as_of_inspection",
+          "row_validation": "bounded_candidate_probe_not_universal_native_schema"
+        }
+      },
+      "content_boundary": {
+        "annotations": "caller_supplied_may_contain_source_text",
+        "public_export": "NOT_AUTHORIZED",
+        "public_safe_payload": "NOT_CERTIFIED",
+        "quote_free_payload": "NOT_CERTIFIED"
+      },
+      "gaps": {
+        "identity": [
+          "canonical_as_of_issuer_identity_not_established"
+        ],
+        "native_adoption": [
+          "relationship_dataset_and_owner_adoption_required"
+        ],
+        "reader_owner": [
+          "supplied_reader_production_owner_not_independently_authenticated"
+        ],
+        "rights": [
+          "purpose_specific_rights_not_established",
+          "downstream_emission_purposes_unresolved"
+        ],
+        "source_authorship": [
+          "sec_authorship_not_cryptographically_authenticated"
+        ],
+        "time": [
+          "source_capture_is_not_registered_known_at_or_historical_served_state"
+        ]
+      },
+      "graph1_projection": null,
+      "inspection_status": "REFUSED",
+      "limitations": [
+        "native_source_binding_is_relative_to_supplied_native_reader",
+        "native_custody_replay_is_not_economic_truth_or_rights_admission",
+        "manual_annotations_remain_supplied_and_unauthenticated",
+        "native_filing_lineage_is_not_candidate_correction_or_termination"
+      ],
+      "native_source_binding": null,
+      "refusal": {
+        "code": "AS_OF_REGISTRY_REQUIRED"
+      },
+      "schema": "company_intelligence.pinned_relationship_inspection/v1"
+    },
+    "missing_document_selector": {
+      "admission": "NOT_ADMITTED",
+      "authority": {
+        "gate": false,
+        "prediction": false,
+        "rank": false,
+        "size": false,
+        "trade": false
+      },
+      "candidate_inspection": null,
+      "content_boundary": {
+        "annotations": "caller_supplied_may_contain_source_text",
+        "public_export": "NOT_AUTHORIZED",
+        "public_safe_payload": "NOT_CERTIFIED",
+        "quote_free_payload": "NOT_CERTIFIED"
+      },
+      "gaps": {
+        "identity": [
+          "canonical_as_of_issuer_identity_not_established"
+        ],
+        "native_adoption": [
+          "relationship_dataset_and_owner_adoption_required"
+        ],
+        "reader_owner": [
+          "supplied_reader_production_owner_not_independently_authenticated"
+        ],
+        "rights": [
+          "purpose_specific_rights_not_established",
+          "downstream_emission_purposes_unresolved"
+        ],
+        "source_authorship": [
+          "sec_authorship_not_cryptographically_authenticated"
+        ],
+        "time": [
+          "source_capture_is_not_registered_known_at_or_historical_served_state"
+        ]
+      },
+      "graph1_projection": null,
+      "inspection_status": "REFUSED",
+      "limitations": [
+        "native_source_binding_is_relative_to_supplied_native_reader",
+        "native_custody_replay_is_not_economic_truth_or_rights_admission",
+        "manual_annotations_remain_supplied_and_unauthenticated",
+        "native_filing_lineage_is_not_candidate_correction_or_termination"
+      ],
+      "native_source_binding": null,
+      "refusal": {
+        "code": "DOCUMENT_NOT_UNIQUELY_SELECTED"
+      },
+      "schema": "company_intelligence.pinned_relationship_inspection/v1"
+    },
+    "unsupported_source_labels": {
+      "admission": "NOT_ADMITTED",
+      "authority": {
+        "gate": false,
+        "prediction": false,
+        "rank": false,
+        "size": false,
+        "trade": false
+      },
+      "candidate_inspection": {
+        "admission": "NOT_ADMITTED",
+        "annotation_trust": {
+          "document_annotations": "caller_supplied_not_authenticated",
+          "identity_annotations": "caller_supplied_not_authenticated",
+          "manual_assertions": "caller_supplied_not_authenticated"
+        },
+        "assertion_basis": "manual_review",
+        "authority": {
+          "gate": false,
+          "prediction": false,
+          "rank": false,
+          "size": false,
+          "trade": false
+        },
+        "content_boundary": {
+          "annotations": "echoed_as_supplied_may_contain_source_text",
+          "machine_replayed_support_text": "OMITTED",
+          "public_export": "NOT_AUTHORIZED",
+          "public_safe_payload": "NOT_CERTIFIED",
+          "quote_free_payload": "NOT_CERTIFIED"
+        },
+        "current_candidate_view": null,
+        "gaps": {
+          "identity": [
+            "as_of_native_issuer_identity_not_established"
+          ],
+          "native_adoption": [
+            "relationship_dataset_and_owner_adoption_required"
+          ],
+          "rights": [
+            "purpose_specific_rights_not_established",
+            "public_export_not_authorized"
+          ],
+          "time": [
+            "native_dataset_profile_and_bound_row_not_established"
+          ]
+        },
+        "graph1_projection": null,
+        "inspection_status": "REFUSED",
+        "limitations": [
+          "structural_byte_replay_is_not_independent_semantic_adjudication",
+          "manual_assertion_is_not_verified_economic_truth",
+          "source_credibility_and_document_metadata_not_authenticated",
+          "echoed_annotations_may_contain_source_text_no_public_safe_certification",
+          "no_shipments_revenue_weight_theme_membership_or_propagation_inferred"
+        ],
+        "refusal": {
+          "code": "SOURCE_LOCAL_LABEL_UNSUPPORTED"
+        },
+        "schema": "company_intelligence.relationship_inspection/v1",
+        "source_provenance": null,
+        "support": null,
+        "temporal": {
+          "historical_system_replay": false,
+          "mode": "current_inspection"
+        }
+      },
+      "content_boundary": {
+        "annotations": "caller_supplied_may_contain_source_text",
+        "public_export": "NOT_AUTHORIZED",
+        "public_safe_payload": "NOT_CERTIFIED",
+        "quote_free_payload": "NOT_CERTIFIED"
+      },
+      "gaps": {
+        "identity": [
+          "canonical_as_of_issuer_identity_not_established"
+        ],
+        "native_adoption": [
+          "relationship_dataset_and_owner_adoption_required"
+        ],
+        "reader_owner": [
+          "supplied_reader_production_owner_not_independently_authenticated"
+        ],
+        "rights": [
+          "purpose_specific_rights_not_established",
+          "downstream_emission_purposes_unresolved"
+        ],
+        "source_authorship": [
+          "sec_authorship_not_cryptographically_authenticated"
+        ],
+        "time": [
+          "source_capture_is_not_registered_known_at_or_historical_served_state"
+        ]
+      },
+      "graph1_projection": null,
+      "inspection_status": "REFUSED",
+      "limitations": [
+        "native_source_binding_is_relative_to_supplied_native_reader",
+        "native_custody_replay_is_not_economic_truth_or_rights_admission",
+        "manual_annotations_remain_supplied_and_unauthenticated",
+        "native_filing_lineage_is_not_candidate_correction_or_termination"
+      ],
+      "native_source_binding": null,
+      "refusal": {
+        "code": "SOURCE_LOCAL_LABEL_UNSUPPORTED"
+      },
+      "schema": "company_intelligence.pinned_relationship_inspection/v1"
+    }
+  },
+  "pinned_adapter_sha256": "1000497dcfef316f1ad0726c08bcba7ba12dbe305175887e191d6f96512649bd",
+  "predictive_authority": false,
+  "production_owner_custody": false,
+  "rights_admission": false,
+  "schema": "economic_network.local_native_relationship_witness.v1",
+  "served_product_proof": false,
+  "source": {
+    "accession": "0001045810-26-000021",
+    "byte_length": 1967931,
+    "cik": "0001045810",
+    "document_id": "sec_document_5b75587074cf7849d010ec05a7ae7a18d305326a50418897d5d0bc75423bb26a",
+    "manifest_key": "manifests/0001045810/0001045810-26-000021/ffsec_manifest_f050d1fb989d8f840c4291c5eb8b12788f1110bea58bf3b5b4ce239c8a771a61.json",
+    "manifest_recorded_at": "2026-10-09T03:53:33.214726+00:00",
+    "raw_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+    "retrieved_at": "2026-10-09T03:53:33.185441Z",
+    "snapshot_at": "2026-10-09T03:53:33.331285Z",
+    "snapshot_id": "ffsecsrc_520d816415a2d1dbde1fcf348abef2cbfdd8b28b88b4bf847a549613002d02ee",
+    "submissions_capture_at": "2026-10-09T03:53:31.726239+00:00",
+    "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm"
+  },
+  "span": {
+    "byte_end": 243668,
+    "byte_start": 243494,
+    "char_end": 243668,
+    "char_start": 243494,
+    "span_sha256": "13a4750ac1264fdc31b6a3569e9a0c1672d0bffb798ff11539b8c289d6665b48"
+  },
+  "status": "PASS"
+}

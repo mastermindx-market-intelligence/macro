@@ -1,0 +1,30 @@
+{
+  "schema": "gmi.activity_curation_receipt/v1",
+  "proposal_id": "actprop:287edbf7e04b8aba873b7493",
+  "proposal_sha256": "5b08d12032d6371471b9ee43fc365bcb38601058d3e3484183a4a26615ee66a1",
+  "curator": "seat:6f14c2da-02a9-467e-9f37-7c2ebaccfe09 (acting curator, Chairman delegation 2026-10-21)",
+  "decision": "RATIFIED",
+  "reviewed_at": "2026-10-22T04:50:12Z",
+  "reasons": [
+    {
+      "code": "SOURCE_BACKED_PRIMARY_DISCLOSURE",
+      "detail": "Micron investor-relations release of 2024-02-26 (source_key manual:micron-ir:hbm3e-h200:2024-02-26, source_sha256 a7efabf9..., span bytes 370936-371320) states Micron's 24GB 8H HBM3E ships for NVIDIA H200; the row's issuer, counterparty, product and platform fields match that span."
+    },
+    {
+      "code": "ROLE_AND_SPECIES_FIT_DEFINITION",
+      "detail": "role component_supplier and species planned_product_integration fit theme:hbm_packaging (micro_theme, asserted 2026-10-08, definition_sha256 7b6bd278...); Micron supplies the HBM stack that the packaging theme describes, under rights family mastermind_curated."
+    },
+    {
+      "code": "IDENTITY_RESOLVED_EXACT",
+      "detail": "issuer ISS:US-XNAS-MU resolved by master_inception_exact to co:us:MU as of 2026-10-21; identity_read_sha256 recorded in the row."
+    },
+    {
+      "code": "MAGNITUDES_UNDISCLOSED_NOT_INFERRED",
+      "detail": "amount and economic_share stay UNDISCLOSED; this ratification asserts membership only and grants no magnitude, rank, score or graph_membership_use, which remains NOT_GRANTED pending the Chairman's ruling."
+    },
+    {
+      "code": "ACTING_CURATOR_SCOPE",
+      "detail": "Seat 6f14c2da acts as curator under the Chairman's 2026-10-21 end-to-end delegation for the M1 single-witness step; a named curator from the pending Chairman answer may re-review this row; authority_caps on the row are unchanged (may_materialize, may_publish, may_ratify all false)."
+    }
+  ]
+}

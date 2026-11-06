@@ -83,30 +83,75 @@ const MARK = {'__NaN__': NaN, '__Infinity__': Infinity, '__-Infinity__': -Infini
 const input = JSON.parse(fs.readFileSync(0, 'utf8'), function(k, v){
   return (typeof v === 'string' && Object.prototype.hasOwnProperty.call(MARK, v)) ? MARK[v] : v;
 });
-function makeEl(id){
-  return {id: id, innerHTML: '', style: {},
+/* A minimal DOM covering what the CURRENT template actually touches.  The
+   retained renderer reaches document.createElement (the forecast-snapshot
+   notice), appendChild/insertBefore, querySelector by class, remove,
+   contains and scrollTop — none of which the pre-#6868 slice used.  innerHTML
+   reports the renderer's own writes AND the text of any node inserted into
+   it, so the harness shows what a browser shows rather than what the renderer
+   alone wrote. */
+function makeEl(tag, id){
+  var el = {
+    tagName: tag || 'div', id: id || '', className: '', textContent: '',
+    style: {}, attrs: {}, children: [], parentNode: null, removed: false,
     classList: {add: function(){}, remove: function(){}, toggle: function(){}, contains: function(){ return false; }},
-    setAttribute: function(){}, getAttribute: function(){ return null; }, hasAttribute: function(){ return false; },
-    addEventListener: function(){}, querySelectorAll: function(){ return []; }, querySelector: function(){ return null; },
-    focus: function(){}, closest: function(){ return null; }};
+    setAttribute: function(k, v){ el.attrs[k] = String(v); },
+    getAttribute: function(k){ return Object.prototype.hasOwnProperty.call(el.attrs, k) ? el.attrs[k] : null; },
+    hasAttribute: function(k){ return Object.prototype.hasOwnProperty.call(el.attrs, k); },
+    addEventListener: function(){},
+    querySelectorAll: function(){ return []; },
+    querySelector: function(sel){
+      if (sel && sel.charAt(0) === '.'){
+        for (var i = 0; i < el.children.length; i++){
+          if (el.children[i].className === sel.slice(1)) return el.children[i];
+        }
+      }
+      return null;
+    },
+    contains: function(){ return false; },
+    appendChild: function(child){ el.children.push(child); child.parentNode = el; return child; },
+    insertBefore: function(child){ el.children.unshift(child); child.parentNode = el; return child; },
+    remove: function(){ el.removed = true; },
+    focus: function(){}, closest: function(){ return null; }
+  };
+  var html = '';
+  Object.defineProperty(el, 'innerHTML', {
+    get: function(){
+      return html + el.children.map(function(c){ return c.textContent || ''; }).join('');
+    },
+    set: function(v){ html = String(v); }
+  });
+  Object.defineProperty(el, 'firstChild', {
+    get: function(){ return el.children.length ? el.children[0] : null; }
+  });
+  return el;
 }
 const els = {};
 const documentStub = {
-  getElementById: function(id){ if (!els[id]) els[id] = makeEl(id); return els[id]; },
+  getElementById: function(id){ if (!els[id]) els[id] = makeEl('div', id); return els[id]; },
+  createElement: function(tag){ return makeEl(tag); },
   documentElement: {getAttribute: function(){ return 'en'; }},
-  activeElement: null, body: {style: {}}, querySelectorAll: function(){ return []; }
+  activeElement: null, body: {style: {}}, querySelectorAll: function(){ return []; },
+  querySelector: function(){ return null; }
 };
 const sandbox = {document: documentStub, console: console};
 vm.createContext(sandbox);
+sandbox.window = sandbox;
 vm.runInContext("'use strict';\n" + input.src, sandbox, {filename: 'dashboard.html.j2#release-radar'});
 const out = input.ops.map(function(op){
   if (op.op === 'card') return sandbox.renderCard(op.item);
-  if (op.op === 'modal'){
-    sandbox.openModal(op.item);
+  if (op.op === 'modal' || op.op === 'modal-refresh'){
+    sandbox.openModal(op.item, op.op === 'modal-refresh');
     return {title: els['rr-modal-title-block'].innerHTML, panes: els['rr-modal-inner'].innerHTML,
-            tabs: els['rr-tab-strip'].innerHTML};
+            tabs: els['rr-tab-strip'].innerHTML,
+            overflow: documentStub.body.style.overflow || '',
+            openItem: sandbox._rrOpenItem ? (sandbox._rrOpenItem.release_type || '') : null};
   }
-  if (op.op === 'scoreboard') return sandbox.scoreboardBlock(op.rows);
+  if (op.op === 'trackrecord') return sandbox.rrTrackRecordBlock(op.track);
+  if (op.op === 'countdown'){
+    var days = sandbox._rrDaysUntil(op.date);
+    return {days: days, labels: days === null ? null : sandbox._rrCountdownLabels(days)};
+  }
   throw new Error('unknown op ' + op.op);
 });
 process.stdout.write(JSON.stringify(out));
@@ -171,11 +216,17 @@ def _pane(modal: dict, tab: str) -> str:
 
 def test_renderer_slice_is_verbatim_script_not_template_logic():
     """Guard the harness: the slice must exist, contain the real entry points,
-    and hold no Jinja tag -- so the raw slice IS what the built page ships."""
+    and hold no Jinja tag -- so the raw slice IS what the built page ships.
+
+    #6868 (current main): the panel-level track record is rendered by
+    ``rrTrackRecordBlock``; the pre-#6868 ``scoreboardBlock`` is gone and must
+    NOT come back (it averaged a field the rows never carry)."""
     body = _renderer_source()
     for fn in ("function renderCard(", "function renderModal(", "function openModal(",
-               "function scoreboardBlock("):
+               "function rrTrackRecordBlock(", "function rrTrackRecordLine("):
         assert fn in body, fn
+    assert "function scoreboardBlock(" not in body, (
+        "the retired latest-scored-print scoreboard must not return")
     for tag in ("{{", "{%", "{#"):
         assert tag not in body
 
@@ -386,13 +437,160 @@ def test_history_reports_exact_lane_performance_or_unavailable(fx, tmp_path):
     assert "Track record unavailable for this forecast" in bare
 
 
+def test_release_history_is_not_evidence_for_the_selected_forecast_lane(fx, tmp_path):
+    """#6868 A1: the release-level track record and the SELECTED forecast's
+    exact model / target / horizon lane are two different facts and the page
+    must not present the first as evidence for the second."""
+    item = _with_diag(fx, _item(fx, "cpi_headline_2026_08"))
+    hist = _pane(_modal(item, tmp_path), "t3")
+    # the retained release-level product is still shown ...
+    assert "Track record" in hist
+    # ... beside the exact-lane statement, which is its own labelled group
+    assert "Exact model, target and horizon" in hist
+    assert "No scored record yet for this exact model, target and horizon" in hist
+
+
+def test_countdown_follows_the_et_clock_and_the_release_date_not_the_stale_days_to(fx, tmp_path):
+    """#6868 A1 (current main): the countdown is computed from the release date
+    against the Eastern date.  ``item.days_to`` is a queue position and goes
+    stale the moment the page is open, so it must never drive the countdown."""
+    a = _run([{"op": "countdown", "date": "2026-09-10"}], tmp_path)[0]
+    b = _run([{"op": "countdown", "date": "2026-09-11"}], tmp_path)[0]
+    assert a["days"] is not None and b["days"] is not None
+    assert b["days"] == a["days"] + 1, "the countdown must follow the release date"
+    # an unparseable date is never a countdown
+    bad = _run([{"op": "countdown", "date": "not-a-date"}], tmp_path)[0]
+    assert bad["days"] is None and bad["labels"] is None
+
+    # a long-past release date with a stale days_to == 1 must NOT read as
+    # "Releases tomorrow": the date wins over the queue position.
+    item = _item(fx, "cpi_headline_2026_08")
+    item["days_to"] = 1
+    item["release_date"] = "2020-09-10"
+    modal = _modal(item, tmp_path)
+    clock = _run([{"op": "countdown", "date": "2020-09-10"}], tmp_path)[0]
+    assert clock["days"] is not None and clock["days"] < 0
+    assert clock["labels"]["en"] in modal["title"]
+    assert "Releases tomorrow" not in modal["title"]
+    assert "明日发布" not in modal["title"]
+
+
+def test_refreshing_modal_rebuilds_the_panes_without_reopening_the_modal(fx, tmp_path):
+    """#6868 A1 (current main): ``openModal(item, refreshing)`` is the REFRESH
+    path.  It rebuilds the panes for the still-open modal and keeps the open
+    item; it must not perform the open-side effects (overlay open, body scroll
+    lock, focus move) that would steal the reader's place."""
+    item = _item(fx, "cpi_headline_2026_08")
+    opened = _modal(item, tmp_path)
+    assert opened["overflow"] == "hidden", "the open path locks the page scroll"
+    assert opened["openItem"] == item["release_type"]
+    refreshed = _run([{"op": "modal-refresh", "item": item}], tmp_path)[0]
+    assert refreshed["overflow"] == "", "the refresh path must not re-open the modal"
+    assert refreshed["panes"], "the refresh path must still rebuild the panes"
+    assert refreshed["tabs"], "the refresh path must still rebuild the tab strip"
+    assert refreshed["openItem"] == item["release_type"]
+
+
 def test_track_record_overlay_never_turns_missing_errors_into_zero(fx, tmp_path):
+    """#6868 A1, on the RETAINED track-record product (``rrTrackRecordBlock``).
+
+    The defect the retired overlay carried: the scored rows never carry an
+    error field, and the old average turned that absence into "MAE ours
+    0.000".  The retained product states what it actually has and a missing
+    error stays "—".  The payload is built by the REAL producer summary, so
+    the shape under test is the shape the page receives."""
+    import scripts.build_release_forecast as producer
     rows = fx["last_scored"]
     assert rows and all("our_mae" not in r for r in rows)
-    html = _run([{"op": "scoreboard", "rows": rows}], tmp_path)[0]
+    board = {
+        "evaluation_basis": "official_published_metric",
+        "evaluation_basis_counts": {"claims:champion": {"n": 1, "first_print_matched_n": 1}},
+        "by_release": {"claims": {}},
+        "by_shadow": {},
+    }
+    tr = producer._track_record_summary(board, "withheld_until_clean_aligned_forward_evidence")
+    html = _run([{"op": "trackrecord", "track": tr}], tmp_path)[0]
     assert "0.000" not in html
     assert "—" in html
-    assert "not an accuracy record" in html
+    # the count of scored forecasts is stated; no accuracy is claimed
+    assert "Accuracy isn't claimed yet." in html
+    assert "Benchmark only" in html
+
+
+def test_retained_track_record_states_never_overstate_a_release(fx, tmp_path):
+    """#6868 A1: the RETAINED product states, per release, what it actually has.
+
+    Clean-score count, first-print matches, the display floor (a release below
+    it is accruing, not scored), the uncertainty range only when the error
+    carries one, the benchmark-only / not-comparable states, and the retained
+    superseded receipts.  n=0 is never an accuracy claim."""
+    import scripts.build_release_forecast as producer
+    floor = producer.TRACK_RECORD_DISPLAY_MIN_N
+    verdict = producer.TRACK_RECORD_VERDICT_MIN_N
+    claim = "withheld_until_clean_aligned_forward_evidence"
+
+    def track(n, stats, matched=None, epochs=None, receipts=None):
+        board = {
+            "evaluation_basis": "official_published_metric",
+            "evaluation_basis_counts": {"claims:champion": {
+                "n": n,
+                "first_print_matched_n": n if matched is None else matched,
+                "target_epochs": ["e1"] if epochs is None else epochs,
+            }},
+            "by_release": {"claims": stats},
+            "by_shadow": {},
+        }
+        if receipts is not None:
+            board["score_receipts"] = receipts
+        return producer._track_record_summary(board, claim)
+
+    good = {"mae_ours": 0.05, "mae_ours_ci": [0.04, 0.06], "mae_naive_prior": 0.07}
+
+    # nothing scored: the row says so, and no accuracy is claimed
+    html = _run([{"op": "trackrecord", "track": track(0, {})}], tmp_path)[0]
+    assert "No clean scores" in html
+    assert "0.000" not in html
+    assert "Accuracy isn't claimed yet." in html
+
+    # a release that was never scored at all is not listed as a score either
+    empty = producer._track_record_summary(
+        {"evaluation_basis": "official_published_metric",
+         "evaluation_basis_counts": {}, "by_release": {}, "by_shadow": {}}, claim)
+    html = _run([{"op": "trackrecord", "track": empty}], tmp_path)[0]
+    assert "No release has been scored yet." in html
+    assert "0.000" not in html
+
+    # below the display floor: the count and the floor, never a score
+    html = _run([{"op": "trackrecord", "track": track(1, dict(good))}], tmp_path)[0]
+    assert "Accruing 1/%d" % floor in html
+    assert "0.05" not in html
+
+    # above the floor but below the verdict floor: early, with the count
+    html = _run([{"op": "trackrecord", "track": track(floor + 1, dict(good))}], tmp_path)[0]
+    assert "Early, n = %d" % (floor + 1) in html
+
+    # at or above the verdict floor: the error and its range are shown
+    html = _run([{"op": "trackrecord", "track": track(verdict, dict(good))}], tmp_path)[0]
+    assert "0.05 (0.04–0.06)" in html
+    assert "0.07" in html
+    assert "Accuracy isn't claimed yet." in html
+
+    # the range is withheld when the error carries none: the error stays hidden
+    no_ci = {"mae_ours": 0.05, "mae_ours_ci": None, "mae_naive_prior": 0.07}
+    html = _run([{"op": "trackrecord", "track": track(verdict, dict(no_ci))}], tmp_path)[0]
+    assert "Range pending" in html
+    assert "0.05" not in html
+
+    # a release scored against a mixed target is not comparable yet
+    html = _run([{"op": "trackrecord",
+                  "track": track(verdict, dict(good), matched=verdict - 1)}], tmp_path)[0]
+    assert "Not comparable yet" in html
+
+    # superseded receipts are retained, not erased
+    html = _run([{"op": "trackrecord",
+                  "track": track(verdict, dict(good),
+                                 receipts={"superseded_n": 3})}], tmp_path)[0]
+    assert "3 earlier scores are kept as superseded, not erased." in html
 
 
 def test_input_availability_is_not_painted_as_freshness(fx, tmp_path):

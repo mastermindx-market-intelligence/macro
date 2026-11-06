@@ -5,9 +5,14 @@
 
    Axes given an explicit range at build time (e.g. the ±1 growth/inflation score
    chart) are left ALONE — their fixed scale is the point. Self-contained; pairs
-   with the Plotly bundle already loaded on the page. */
+   with the Plotly bundle already loaded on the page. Missing observations and
+   hidden/legend-only traces never shape the y range. */
 (function () {
-  function asNum(v) { v = +v; return isFinite(v) ? v : null; }
+  function asNum(v) {
+    if (typeof v === 'number') return isFinite(v) ? v : null;
+    if (typeof v === 'string' && v.trim() !== '') { v = +v; return isFinite(v) ? v : null; }
+    return null;                       // null/undefined/''/booleans/objects: missing, never 0
+  }
   function asMs(x) {
     var t = (x instanceof Date) ? x.getTime() : new Date(x).getTime();
     return isFinite(t) ? t : null;
@@ -40,6 +45,7 @@
   function visibleYRanges(gd) {
     var bounds = {};
     (gd._fullData || gd.data || []).forEach(function (tr) {
+      if (tr.visible === false || tr.visible === 'legendonly') return;
       if (!tr.x || !tr.y) return;
       var ay = tr.yaxis || 'y';
       if (gd._tmFixedY && gd._tmFixedY[ay]) return;
@@ -73,6 +79,16 @@
     if (!gd || gd._tmRescale || typeof gd.on !== 'function') return;
     gd._tmRescale = true;
     gd._tmFixedY = fixedYAxes(gd);
+    function rescale() {
+      var upd = visibleYRanges(gd);
+      if (!upd) return;
+      gd._tmLock = true;
+      gd._tmScaled = true;             // y now carries an explicit range set by this module
+      window.Plotly.relayout(gd, upd).then(
+        function () { gd._tmLock = false; },
+        function () { gd._tmLock = false; }
+      );
+    }
     gd.on('plotly_relayout', function (ev) {
       if (gd._tmLock) return;
       var touchedX = Object.keys(ev).some(function (k) {
@@ -80,13 +96,15 @@
                (k.indexOf('range') > -1 || k.indexOf('autorange') > -1);
       });
       if (!touchedX) return;
-      var upd = visibleYRanges(gd);
-      if (!upd) return;
-      gd._tmLock = true;
-      window.Plotly.relayout(gd, upd).then(
-        function () { gd._tmLock = false; },
-        function () { gd._tmLock = false; }
-      );
+      rescale();
+    });
+    // legend clicks emit plotly_restyle ([{visible:[…]}, [idx]]), not plotly_relayout;
+    // once this module owns the y range, re-fit it to the traces now visible
+    gd.on('plotly_restyle', function (ev) {
+      if (gd._tmLock || !gd._tmScaled) return;
+      var u = ev && ev[0];
+      if (!u || !Object.prototype.hasOwnProperty.call(u, 'visible')) return;
+      rescale();
     });
   }
 

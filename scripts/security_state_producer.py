@@ -33,7 +33,13 @@ def _read_security_state_identity_rows(
     infer an identity independently of those owner APIs.
     """
     from engine.security_state import SecurityStateCompilationError, SecurityStateSubject
-    from lib.dataos.identity import IdentityError, IssuerMaster, VendorAliasTable
+    from lib.dataos.identity import (
+        IdentityError,
+        IssuerMaster,
+        VendorAliasTable,
+        parse_listing_key,
+        security_id as render_security_id,
+    )
 
     ref = data_dir / "reference"
     security_master = pd.read_parquet(ref / "security_master.parquet")
@@ -86,11 +92,22 @@ def _read_security_state_identity_rows(
             issuer_id = issuer_owner.issuer_of_security(security_id)
             issuer_cik = issuer_owner.cik_of_issuer(issuer_id) if issuer_id else None
             issuer_security_ids = issuer_owner.securities_of_issuer(issuer_id) if issuer_id else ()
-            listing_key = security_master_row.get("listing_key")
+            listing_key = issuer_owner.listing_key_of_security(security_id)
             if not issuer_id or not issuer_cik or not isinstance(listing_key, str) or not listing_key:
                 raise SecurityStateCompilationError(
                     f"owner identity is incomplete for {ticker}: "
                     f"issuer_id={issuer_id!r}, issuer_cik={issuer_cik!r}, listing_key={listing_key!r}"
+                )
+            try:
+                parsed_listing_key = parse_listing_key(listing_key)
+            except IdentityError as exc:
+                raise SecurityStateCompilationError(
+                    f"owner listing key for {ticker} is not a parseable ListingKey: {listing_key!r}"
+                ) from exc
+            if render_security_id(parsed_listing_key) != security_id:
+                raise SecurityStateCompilationError(
+                    f"owner listing key {listing_key!r} does not render the alias-resolved "
+                    f"security {security_id!r} for {ticker}"
                 )
 
             subject = SecurityStateSubject(
@@ -104,6 +121,7 @@ def _read_security_state_identity_rows(
                     ("alias_reader", "VendorAliasTable.resolve(store)"),
                     ("issuer_reader", "IssuerMaster.issuer_of_security"),
                     ("cik_reader", "IssuerMaster.cik_of_issuer"),
+                    ("listing_reader", "IssuerMaster.listing_key_of_security"),
                 ),
             )
             inputs[ticker] = {
@@ -172,19 +190,28 @@ def _mismatched_security_state_targets(to_write: list[tuple[str, dict]]) -> list
 
 def _fallback_subject_for_ticker(ticker: str):
     """The frozen pinned subject to use as a failure shell's subject when
-    the owner-identity batch itself could not be read (M1). Only the two
+    the owner-identity batch itself could not be read (M1). Only the
     allow-listed tickers ever reach this path (``_select_security_state_targets``
     filters upstream); an unexpected ticker is a programmer error.
+
+    This is a lookup against the frozen allowlist mapping, never a per-ticker
+    branch — no issuer gets bespoke handling here. The caller
+    (``compile_security_state_failure(..., owner_read_completed=False)``)
+    is told explicitly that this subject was NOT composed by a live owner
+    read this cycle, so the failure shell it produces never claims otherwise.
     """
     from engine import security_state as ss
 
-    if ticker == ss.PINNED_TICKER:
-        return ss.AAPL_SUBJECT
-    if ticker == "MSFT":
-        return ss.MSFT_SUBJECT
-    raise ss.SecurityStateCompilationError(
-        f"no pinned fallback subject for ticker {ticker!r}"
-    )
+    pinned_subjects_by_ticker = {
+        ss.PINNED_TICKER: ss.AAPL_SUBJECT,
+        "MSFT": ss.MSFT_SUBJECT,
+    }
+    try:
+        return pinned_subjects_by_ticker[ticker]
+    except KeyError as exc:
+        raise ss.SecurityStateCompilationError(
+            f"no pinned fallback subject for ticker {ticker!r}"
+        ) from exc
 
 
 def _load_security_state_validator(schema_path: Path):
@@ -202,6 +229,7 @@ def _load_security_state_validator(schema_path: Path):
 
 def _compile_security_state_failure_for_exception(
     *, subject, now: str, diagnostic: Exception, validator, prior_state: dict | None,
+    owner_read_completed: bool = True,
 ) -> dict:
     """Keep private diagnostics out of the public failure object and its hash."""
     from engine import security_state as ss
@@ -211,7 +239,7 @@ def _compile_security_state_failure_for_exception(
     del diagnostic
     return ss.compile_security_state_failure(
         subject=subject, validator=validator, now=now,
-        prior_state=prior_state,
+        prior_state=prior_state, owner_read_completed=owner_read_completed,
     )
 
 

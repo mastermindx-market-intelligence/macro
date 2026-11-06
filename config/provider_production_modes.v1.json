@@ -1,0 +1,38 @@
+{
+  "schema": "mastermind.provider_production_modes.v1",
+  "producer_program": "shared-ai-provider-control",
+  "modes": {
+    "minimax_payg_api": {
+      "provider_id": "minimax",
+      "protocol": "anthropic_compat",
+      "base_url": "https://api.minimax.io/anthropic",
+      "docs_ref": "MiniMax platform docs, \"Anthropic-compatible API\" (api.minimax.io/anthropic) — reviewable pointer, never fetched by code or tests",
+      "default_model": "MiniMax-M3",
+      "secret_ref": "MINIMAX_API_KEY",
+      "usage_class": "production_api",
+      "billing_mode": "metered",
+      "cost_identity": "minimax/metered",
+      "cap_id": "prod_api:minimax",
+      "enabled": false,
+      "subscription_fallback_allowed": false,
+      "pricing_ref": "MiniMax platform pricing page (metered PAYG) — reviewable pointer, no rate is encoded here",
+      "notes": "distinct from minimax-token-plan (#7103: interactive-only, production_backend_allowed=false)"
+    },
+    "glm_general_api": {
+      "provider_id": "glm",
+      "protocol": "openai_compat",
+      "base_url": "https://api.z.ai/api/paas/v4",
+      "docs_ref": "Z.ai PaaS v4 OpenAI-compatible chat completions (api.z.ai/api/paas/v4/chat/completions) — reviewable pointer, never fetched by code or tests",
+      "default_model": "glm-5.3-flash",
+      "secret_ref": "ZAI_API_KEY",
+      "usage_class": "production_api",
+      "billing_mode": "metered",
+      "cost_identity": "glm/metered",
+      "cap_id": "prod_api:glm",
+      "enabled": false,
+      "subscription_fallback_allowed": false,
+      "pricing_ref": "Z.ai platform pricing page (metered PAYG) — reviewable pointer, no rate is encoded here",
+      "notes": "distinct from glm-coding-plan (#7103)"
+    }
+  }
+}

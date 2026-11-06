@@ -171,11 +171,11 @@ from scripts.build_bonds import (
 # ---------------------------------------------------------------------------
 
 class TestNullSafety:
-    def test_missing_file_returns_accruing(self, tmp_path: Path) -> None:
-        """When credit_momentum.json is absent, vm returns accruing state without crashing."""
+    def test_missing_file_returns_unavailable(self, tmp_path: Path) -> None:
+        """A missing artifact is unavailable, rather than a low-stress observation."""
         vm = build_corp_credit_vm(data_root=tmp_path)
         assert vm["accruing"] is True
-        assert vm["hero"]["pill_en"] == "Watch — don't chase"
+        assert vm["hero"]["pill_en"] == "Source unavailable"
         assert vm["gauges"] == []
         assert vm["themes"] == []
         assert vm["finra"] is None
@@ -207,6 +207,51 @@ class TestNullSafety:
         assert "hero" in vm
         assert "gauges" in vm
         assert "themes" in vm
+
+    @pytest.mark.parametrize("raw", [None, "{bad json", "[]", "null", "{}"])
+    def test_unusable_source_cannot_report_low_stress(self, tmp_path: Path, raw: str | None) -> None:
+        if raw is not None:
+            p = tmp_path / "corp_bonds" / "credit_momentum.json"
+            p.parent.mkdir(parents=True)
+            p.write_text(raw)
+        vm = build_corp_credit_vm(data_root=tmp_path)
+        assert vm["source_available"] is False
+        assert "unavailable" in vm["hero"]["state_en"].lower()
+        assert "不可用" in vm["hero"]["state_zh"]
+        assert "low" not in vm["hero"]["subtitle_en"].lower()
+        health = _build_corp_credit_bond_health(vm)
+        assert health["market_state"] is None
+        assert health["as_of"] is None
+        assert not any(health["authority"].values())
+
+    def test_missing_source_does_not_render_absence_as_zero_maturities(self, tmp_path: Path) -> None:
+        html = _render_credit_section(build_corp_credit_vm(data_root=tmp_path))
+        assert "Credit reading unavailable" in html
+        assert "信用读数不可用" in html
+        for invented in ("Credit stress: low", "zero bonds maturing", "No new issuance", "无需关注"):
+            assert invented not in html
+        assert "corpcredit" in html
+
+    def test_usable_snapshot_keeps_existing_credit_readings(self, tmp_path: Path) -> None:
+        _write_cm(tmp_path / "corp_bonds" / "credit_momentum.json", _cm_with_live_roster())
+        vm = build_corp_credit_vm(data_root=tmp_path)
+        assert vm["source_available"] is True
+        html = _render_credit_section(vm)
+        assert "Spread gauges" in html and "利差仪表" in html
+        assert "2026-07-14" in html
+        assert "Credit reading unavailable" not in html
+
+
+def _render_credit_section(vm: dict) -> str:
+    """Render the actual existing credit section without unrelated page inputs."""
+    from jinja2 import Environment
+
+    source = (Path(__file__).resolve().parents[1] / "templates/bonds.html.j2").read_text()
+    section = source[source.rindex("{% if cc_vm is defined %}"):source.index("{# END CCW-W4 corporate credit desk #}")]
+    helper = '{% macro t(en, zh) %}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{% endmacro %}'
+    return Environment(autoescape=True).from_string(helper + section).render(
+        cc_vm=vm, div_card={"state": "delayed", "cause": "unbuilt"},
+    )
 
 
 # ---------------------------------------------------------------------------

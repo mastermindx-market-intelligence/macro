@@ -1,0 +1,681 @@
+{
+  "observed_at": "2026-10-14T15:57:52.238059+00:00",
+  "installed_head": "40568df0a487037144f55526ece6e0329b6272a4",
+  "source_id": "usda-2026-10-09-wasde-676",
+  "published_at": "2026-10-09T16:00:00Z",
+  "eligible_count": 202,
+  "ranked_position": 2,
+  "unheld_position": 1,
+  "candidate_pool": 8,
+  "blocked_target": false,
+  "held_refs": [
+    "artifact:data/gex/latest.json",
+    "artifact:data/market_state/latest.json",
+    "artifact:data/risk_radar/forward_log.jsonl",
+    "artifact:site/basketdata/breadth_split.json",
+    "artifact:site/basketdata/fear_greed.json",
+    "chronicle:TTWO-BULL-20261007",
+    "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+    "official_feed:url:cd2747adeed2",
+    "research_vault:marketdesk-4sbw9xdvesv-09647d",
+    "research_vault:marketdesk-8inwlunucuj-8950ab",
+    "research_vault:marketdesk-arbvfsvswas-96701d",
+    "research_vault:marketdesk-augnhdcr2jm-0cbff4",
+    "research_vault:marketdesk-dxcjj8lpx8k-75b4af",
+    "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+    "research_vault:marketdesk-f4gxuf5mmau-53a7ed",
+    "research_vault:marketdesk-ioh3cizfpog-b49a47",
+    "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+    "research_vault:marketdesk-qvymtn8aohk-00548d",
+    "research_vault:marketdesk-rc9hi0toy31-75d4dc",
+    "research_vault:marketdesk-stzblc3lgcn-40b123",
+    "research_vault:marketdesk-uc6giunqscq-05fcee",
+    "research_vault:marketdesk-xyyijkslpal-b997fb"
+  ],
+  "triage": {
+    "schema": "press.research_triage.v1",
+    "scoring_version": "w2r.1",
+    "as_of": "2026-10-14",
+    "ts": "2026-10-14T15:57:52Z",
+    "report_id": "usda-2026-10-09-wasde-676",
+    "title": "World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+    "institution": "U.S. Department of Agriculture",
+    "published_at": "2026-10-09",
+    "status": "skipped",
+    "drop_reason": null,
+    "drop_detail": null,
+    "tier": "none",
+    "rank": 2,
+    "w_score": 0.573867,
+    "w_score_pre_veto": 0.573867,
+    "components": {
+      "institution_tier": 0.5,
+      "cluster_density": 0.0,
+      "relevance": 0.666667,
+      "extraction_quality": 0.93,
+      "attention_potential": 0.8,
+      "novelty": 0.5
+    },
+    "contributions": {
+      "institution_tier": 0.08,
+      "cluster_density": 0.0,
+      "relevance": 0.146667,
+      "extraction_quality": 0.2232,
+      "attention_potential": 0.064,
+      "novelty": 0.06
+    },
+    "component_detail": {
+      "institution_tier": {
+        "state": "unranked",
+        "institution": "u_s_department_of_agriculture",
+        "note": "institution not in the tier register \u2014 neutral, NOT a measurement"
+      },
+      "cluster_density": {
+        "state": "measured-alone",
+        "institutions": 1,
+        "institutions_full": 4,
+        "story_id": "st-720ee43e90e2f33c",
+        "members": 1,
+        "note": "clustered and genuinely alone on its theme \u2014 this 0 IS a measurement, unlike the absent states"
+      },
+      "relevance": {
+        "state": "no-report-tickers",
+        "note": "this report carries no tickers, so the ticker half is unmeasurable and the topic half is renormalized to carry the component \u2014 NOT a zero ticker score",
+        "renormalized": true,
+        "w_topic_effective": 1.0,
+        "topic_hits": [
+          "demand",
+          "supply"
+        ],
+        "sources": {
+          "movers": {
+            "state": "observed",
+            "tickers": 16
+          },
+          "chronicle": {
+            "state": "observed",
+            "events": 37
+          },
+          "watchlist": {
+            "state": "observed",
+            "assets": 1
+          }
+        }
+      },
+      "extraction_quality": {
+        "state": "observed",
+        "points": 6,
+        "mean_words": 24.0,
+        "numeric_share": 1.0,
+        "pages": 40
+      },
+      "attention_potential": {
+        "state": "observed",
+        "shape": 1.0,
+        "top_pick": false,
+        "numbers": 2,
+        "entities": 6,
+        "length_band": "medium",
+        "contract": "ranking input only \u2014 never a framing instruction to the writer"
+      },
+      "novelty": {
+        "state": "no-peers",
+        "window_days": 30,
+        "note": "no published estate in the window \u2014 neutral value, NOT a measurement of novelty"
+      }
+    },
+    "veto": null,
+    "score_source": "planner-recomputed",
+    "datasketch_present": true
+  },
+  "first_unheld": [
+    {
+      "id": "usda-2026-10-09-wasde-676",
+      "title": "World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+      "published_at": "2026-10-09T16:00:00Z"
+    },
+    {
+      "id": "marketdesk-0ows1rkwgz6-1d9feb",
+      "title": "Shennan Circuits (002916.SZ) mSAP PCB and IC substrate capacity expansion, riding on strong AI demand; TP up to Rmb511; Buy",
+      "published_at": "2026-09-23T14:38:09Z"
+    },
+    {
+      "id": "marketdesk-m04zrgkxyce-22a813",
+      "title": "Cintas Corp. (CTAS) F1Q First Take Beat and raise quarter lifted by accelerating organic revenue growth and record margins",
+      "published_at": "2026-09-23T18:35:18Z"
+    },
+    {
+      "id": "marketdesk-ayiijj63mgv-f053ed",
+      "title": "US Weekly Kickstart The outlook for corporate equity supply and demand in 2027",
+      "published_at": "2026-10-10T03:44:06Z"
+    },
+    {
+      "id": "marketdesk-d5h90yu382j-bc2367",
+      "title": "General Mills Inc. (GIS) First Take F1Q beat; FY27 guidance reiterated",
+      "published_at": "2026-09-23T14:39:45Z"
+    },
+    {
+      "id": "marketdesk-75qspjfpqxs-b7f945",
+      "title": "GS Crook GS MORNING 1 FX Trader Call Today, 2 September CPI Preview, 3 Hybrids Stretched Equity Rates Correlation, 4 5 Key Charts and 5 GS Energy Webcast 14 Oct 2026",
+      "published_at": "2026-10-14T13:44:00Z"
+    },
+    {
+      "id": "marketdesk-810sqguhx8x-b2e5e5",
+      "title": "GS Armbrust What Matters Today HF Exposure to Mag 7 at the Highs Large Bank Earnings ASML and Anthropic Today US Equity Positioning is a Tailwind HF Performance in September 14 Oct 2026",
+      "published_at": "2026-10-14T13:44:19Z"
+    },
+    {
+      "id": "marketdesk-vduxjun5diu-38254c",
+      "title": "Wm weekly market view will earnings resolve the bond equity split 09 october 2026",
+      "published_at": "2026-10-10T03:10:55Z"
+    }
+  ],
+  "selected_slots": [
+    {
+      "id": "press-research_desk-2026-10-14-593acfb87c11",
+      "sources": [
+        "research_vault:usda-2026-10-09-wasde-676"
+      ]
+    }
+  ],
+  "quantity_index": [
+    [
+      "-0.42",
+      "first_party"
+    ],
+    [
+      "-1.79",
+      "first_party"
+    ],
+    [
+      "-2.59",
+      "first_party"
+    ],
+    [
+      "-3.32",
+      "first_party"
+    ],
+    [
+      "-3.68",
+      "first_party"
+    ],
+    [
+      "-5.44",
+      "first_party"
+    ],
+    [
+      "0.0",
+      "first_party"
+    ],
+    [
+      "0.0",
+      "first_party"
+    ],
+    [
+      "0.042",
+      "first_party"
+    ],
+    [
+      "0.09",
+      "first_party"
+    ],
+    [
+      "0.09",
+      "first_party"
+    ],
+    [
+      "0.1",
+      "first_party"
+    ],
+    [
+      "0.16",
+      "first_party"
+    ],
+    [
+      "0.16",
+      "first_party"
+    ],
+    [
+      "0.16",
+      "first_party"
+    ],
+    [
+      "0.16",
+      "first_party"
+    ],
+    [
+      "0.16",
+      "first_party"
+    ],
+    [
+      "0.16",
+      "first_party"
+    ],
+    [
+      "0.18",
+      "first_party"
+    ],
+    [
+      "0.18",
+      "first_party"
+    ],
+    [
+      "0.19",
+      "first_party"
+    ],
+    [
+      "0.19",
+      "first_party"
+    ],
+    [
+      "0.24",
+      "first_party"
+    ],
+    [
+      "0.24",
+      "first_party"
+    ],
+    [
+      "0.42",
+      "first_party"
+    ],
+    [
+      "0.43",
+      "first_party"
+    ],
+    [
+      "0.43",
+      "first_party"
+    ],
+    [
+      "0.68",
+      "first_party"
+    ],
+    [
+      "0.68",
+      "first_party"
+    ],
+    [
+      "0.81",
+      "first_party"
+    ],
+    [
+      "0.81",
+      "first_party"
+    ],
+    [
+      "1.03",
+      "first_party"
+    ],
+    [
+      "1.03",
+      "first_party"
+    ],
+    [
+      "1.79",
+      "first_party"
+    ],
+    [
+      "1.8",
+      "first_party"
+    ],
+    [
+      "1.92",
+      "first_party"
+    ],
+    [
+      "1.92",
+      "first_party"
+    ],
+    [
+      "100.0",
+      "first_party"
+    ],
+    [
+      "11.0",
+      "first_party"
+    ],
+    [
+      "11.0",
+      "first_party"
+    ],
+    [
+      "12.0",
+      "first_party"
+    ],
+    [
+      "16.0",
+      "first_party"
+    ],
+    [
+      "181.2",
+      "first_party"
+    ],
+    [
+      "2.59",
+      "first_party"
+    ],
+    [
+      "2.7",
+      "first_party"
+    ],
+    [
+      "20.0",
+      "first_party"
+    ],
+    [
+      "2026.0",
+      "first_party"
+    ],
+    [
+      "2026.0",
+      "first_party"
+    ],
+    [
+      "2026.0",
+      "first_party"
+    ],
+    [
+      "2026.0",
+      "first_party"
+    ],
+    [
+      "2026.0",
+      "first_party"
+    ],
+    [
+      "2026.0",
+      "first_party"
+    ],
+    [
+      "21.0",
+      "first_party"
+    ],
+    [
+      "23.0",
+      "first_party"
+    ],
+    [
+      "234.0",
+      "first_party"
+    ],
+    [
+      "26.1",
+      "first_party"
+    ],
+    [
+      "27.0",
+      "first_party"
+    ],
+    [
+      "27.0",
+      "first_party"
+    ],
+    [
+      "27.0",
+      "first_party"
+    ],
+    [
+      "27.0",
+      "first_party"
+    ],
+    [
+      "27.0",
+      "first_party"
+    ],
+    [
+      "27.0",
+      "first_party"
+    ],
+    [
+      "27.0",
+      "first_party"
+    ],
+    [
+      "27.0",
+      "first_party"
+    ],
+    [
+      "27.0",
+      "first_party"
+    ],
+    [
+      "27.0",
+      "first_party"
+    ],
+    [
+      "276.7",
+      "first_party"
+    ],
+    [
+      "2783.37",
+      "first_party"
+    ],
+    [
+      "282.0",
+      "first_party"
+    ],
+    [
+      "2855.37",
+      "first_party"
+    ],
+    [
+      "2855.37",
+      "first_party"
+    ],
+    [
+      "286.88",
+      "first_party"
+    ],
+    [
+      "286.88",
+      "first_party"
+    ],
+    [
+      "3.32",
+      "first_party"
+    ],
+    [
+      "3.68",
+      "first_party"
+    ],
+    [
+      "30361.25",
+      "first_party"
+    ],
+    [
+      "30361.25",
+      "first_party"
+    ],
+    [
+      "30569.48",
+      "first_party"
+    ],
+    [
+      "315.0",
+      "first_party"
+    ],
+    [
+      "35.3",
+      "first_party"
+    ],
+    [
+      "35.3",
+      "first_party"
+    ],
+    [
+      "4.56",
+      "first_party"
+    ],
+    [
+      "40.0",
+      "first_party"
+    ],
+    [
+      "40.0",
+      "first_party"
+    ],
+    [
+      "5.0",
+      "first_party"
+    ],
+    [
+      "5.44",
+      "first_party"
+    ],
+    [
+      "50.0",
+      "first_party"
+    ],
+    [
+      "50.0",
+      "first_party"
+    ],
+    [
+      "50.0",
+      "first_party"
+    ],
+    [
+      "514.02",
+      "first_party"
+    ],
+    [
+      "514.02",
+      "first_party"
+    ],
+    [
+      "516.21",
+      "first_party"
+    ],
+    [
+      "52.0",
+      "first_party"
+    ],
+    [
+      "52.0",
+      "first_party"
+    ],
+    [
+      "53.1",
+      "first_party"
+    ],
+    [
+      "62.3",
+      "first_party"
+    ],
+    [
+      "62.3",
+      "first_party"
+    ],
+    [
+      "68.0",
+      "first_party"
+    ],
+    [
+      "68.0",
+      "first_party"
+    ],
+    [
+      "69.87",
+      "first_party"
+    ],
+    [
+      "69.87",
+      "first_party"
+    ],
+    [
+      "73.9",
+      "first_party"
+    ],
+    [
+      "73.9",
+      "first_party"
+    ],
+    [
+      "74.1",
+      "first_party"
+    ],
+    [
+      "740.0",
+      "first_party"
+    ],
+    [
+      "743.57",
+      "first_party"
+    ],
+    [
+      "746.73",
+      "first_party"
+    ],
+    [
+      "746.73",
+      "first_party"
+    ],
+    [
+      "7742.28",
+      "first_party"
+    ],
+    [
+      "7742.28",
+      "first_party"
+    ],
+    [
+      "776.74",
+      "first_party"
+    ],
+    [
+      "776.74",
+      "first_party"
+    ],
+    [
+      "778.01",
+      "first_party"
+    ],
+    [
+      "7805.45",
+      "first_party"
+    ],
+    [
+      "84.0",
+      "first_party"
+    ],
+    [
+      "84.0",
+      "first_party"
+    ],
+    [
+      "9.0",
+      "first_party"
+    ]
+  ],
+  "cutover": false,
+  "writer_calls": 0,
+  "runtime_writes": 0,
+  "publication_approved": false,
+  "input_sha256": {
+    "engine/press/__pycache__/__init__.cpython-312.pyc": "86019209270468a1c4aba9e30dbed3eecd95536ab4c83356a988f8fc62d3a66e",
+    "engine/press/desk_planner.py": "8282028e5b4caae7005ef22582adef9b86d400590290e2a5b132c5052d4ddb7b",
+    "engine/press/__pycache__/validators.cpython-312.pyc": "897cfe9865950362440ff709fbabfd667d6493bc2ffa9e2bd8aa1b224dbb73fe",
+    "engine/press/validators.py": "33d293ae15910607785cd2340ae04e012b32cfee084d5b636e175b8e3d944ffe",
+    "config/press.yml": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+    "data/research_vault/catalog.json": "b87fa76805a84421b64febbbf47f44bfc4910c3ef5e8eead21fbf66bf06497f7",
+    "engine/press/research_triage.py": "18b009e7792a85fc6489da26a87e6deda241e90d19c171b5a5b02d973d651861",
+    "site/marketdata/sp500_heatmap.json": "02d03b2b9963ef43d97baee6e4e0e5999d5f835ba1e47bf0966815d131e1c272",
+    "site/marketdata/themes_heatmap.json": "b63aa08ac12a49b1d9013575ea5a256f8ce41ec7b39543464ad6b51e72be9174",
+    "data/marketing/hot_tape_pack.json": "75a5e773bcfdd7bf014556ccb2356916ca71bd1b648e62f26e3ef52aaeb269db",
+    "data/chronicle/events.jsonl": "218028927f3bd1607843bf2b170be83b4235a8b1c83ced272da062aee0b7b43b",
+    "data/alerts/watchlist_alerts.jsonl": "43612e8bf84be38038b1e88321579ee2b48758532dca191f1adaceec0ef02df6",
+    "data/press/published.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/market_state/latest.json": "462b7b7cebc50b09f672ea1f130d934494fefb65e740a9ad0076b87e71d40537",
+    "data/gex/latest.json": "37d95d486f459ff9d2719c37b1da6c29480d190a5cad9589b28bafbd4b556c54",
+    "site/basketdata/breadth_split.json": "b8efef380bf96ee40e298df79e390797ebc425c88d708b1d5b135c90c688dc24",
+    "site/basketdata/fear_greed.json": "7325555a626c4bab1f1093775ce7748dc40de153f7624350e883bffcfa7614dd",
+    "data/risk_radar/forward_log.jsonl": "240c202431cc160ca8ec53ec65125c2f9d858597bea60e416a91f01dea55017d"
+  },
+  "changed_inputs": [],
+  "stable_installed_head": true,
+  "head_after": "40568df0a487037144f55526ece6e0329b6272a4",
+  "read_file_count": 524,
+  "raw_private_sha256": "d0cd0451dd796e768de231682f327b37d2d9d746590310551db006632a32db08",
+  "selected_slot_equal_prior_accepted": true
+}

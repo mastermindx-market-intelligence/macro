@@ -1,0 +1,19 @@
+{
+  "kind": "independent_local_replay_manifest",
+  "source_revision": "9b86baae61ccaa858d99b53ee1023cbe866e9a4f",
+  "input_sha256": "9cee6689d59d47b0d2c087852b468b6120c056de9c0e21ca8fe6c0990ea366e1",
+  "input_rows": 6971,
+  "last_input_bar_date": "2026-10-08",
+  "receipt_sha256": "8a1caffb1401ea0730f747956e6ab99ded0ca4b0eb169fef58db46d23c9d29c5",
+  "receipt_retention": "Host-local evidence outside public Git; derived-publication rights remain unqualified",
+  "checks_passed": [
+    "ordered unique complete finite bars",
+    "positive prices and coherent ranges",
+    "bounded oscillators and percentile",
+    "independent 50-day moving-average arithmetic",
+    "independent 200-day moving-average arithmetic"
+  ],
+  "protected_endpoint_accessed": false,
+  "protected_endpoint_parity_verified": false,
+  "stage_or_emit": false
+}

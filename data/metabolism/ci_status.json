@@ -1,48 +1,19 @@
 {
-  "ts": "2026-09-10T11:38:52+00:00",
-  "main_sha": "c05088643d4b7affce958ee18a4c4bdbef119657",
+  "ts": "2026-11-05T18:27:00+00:00",
+  "main_sha": "efc1188d872c0557be34025dd1d7e14eb78f1072",
   "red_required": [
     {
-      "name": "publish",
-      "conclusion": "failure",
+      "name": "sweep",
+      "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34471431384/job/102851982926"
-    },
-    {
-      "name": "workflow-yaml",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34471043707/job/102850762735"
-    },
-    {
-      "name": "free-content-estate",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34471043707/job/102850762727"
-    },
-    {
-      "name": "engine-render-guards",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34471043707/job/102850762712"
-    },
-    {
-      "name": "template-site-sync",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34471043707/job/102850762583"
-    },
-    {
-      "name": "tier-gate",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34471043707/job/102850762578"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41983356908/job/127098312306"
     }
   ],
   "green": false,
-  "consecutive_failures": 120,
+  "consecutive_failures": 247,
   "sensed_shas": [
-    "c05088643d4b7affce958ee18a4c4bdbef119657"
+    "efc1188d872c0557be34025dd1d7e14eb78f1072",
+    "7b5c9ee277e182e880b2743eb67f2c8acc1cd213"
   ],
   "heartbeat_degraded": false
 }

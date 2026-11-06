@@ -34,7 +34,7 @@ kind: data
 verified_at: 2026-09-10
 verified_by: >
   engine/release_forecast.py:964 and :1174; engine/release_components_cpi.py:454;
-  scripts/build_release_forecast.py:1881 (_assign_cutoff_labels); nightly
+  scripts/build_release_forecast.py (_assign_cutoff_labels); nightly
   latest.json asof 2026-09-10T10:05:21Z through engine/release_diagnostics.py
   (CPI 2026-08 T-1 item: attribution.applies_to_primary=false,
   primary.basis=combined_v1_benchmark_augmented; PPI attribution
@@ -52,3 +52,41 @@ confidence: verified
 Recorded by the Release Radar A1 receiver (macro#6868). The adapter is
 additive and display-only: the producer attaches it once, after every ledger,
 scoring and scoreboard consumer, so no numerical path can read it back.
+
+## Current-main composition (2026-11-05)
+
+The A1 source was recomposed onto frozen main
+5481ebf6cbdcc0166776ed2f385cce938ecb955b (Macro PR #7036). The September
+findings above stand unchanged; this note records only what the current tree
+changes. (The one edit to an active field above drops a volatile line number:
+`_assign_cutoff_labels` moved with the growth of the builder, so it is now
+cited by name.)
+
+* The producer seam moved. Current main grew an `accuracy_claim` assignment
+  between the release-forecast consumers and the artifact assembly, so the
+  attachment now runs after that assignment and immediately before
+  `latest = {` — still after every ledger, scoring, scoreboard and
+  latest-clean-score consumer, still before the artifact is assembled, and
+  still after the `accuracy_claim` the build actually publishes.
+* The panel-level track record is no longer `scoreboardBlock`: current main
+  ships `rrTrackRecordBlock` / `rrTrackRecordLine`. The retired
+  latest-scored-print scoreboard was NOT restored. The A1 exact-lane
+  statement (model, target and horizon) now sits beside the retained
+  release-level track record in the modal's history tab, labelled as a
+  different fact: release-aggregate history is not evidence for the current
+  model, target and horizon.
+* `tests/test_release_diagnostics.py` executes the CURRENT template script.
+  The suite was adapted to the retained renderer — the harness models the DOM
+  the current script actually uses (`document.createElement` for the forecast
+  snapshot notice, `appendChild`/`insertBefore`/`remove`/`contains`), and the
+  track-record tests now drive the retained `rrTrackRecordBlock` with the
+  payload the real producer summary builds. 69 passed on this composition with
+  CI=1 and Node executing the template's own script.
+* The suite is enrolled in the CODE-gated, scope-exclusive
+  `dashboard-render-contract` job, not only in the gate:data
+  `unrun-release-forecast` lane, so a PR touching the new diagnostic or render
+  semantics runs it.
+
+No deployment, accuracy claim, receipt, decision, workstream or lifecycle
+follows from this note. The subtree remains display-only and authority-free:
+`display_only: true`, `authority: false`.
