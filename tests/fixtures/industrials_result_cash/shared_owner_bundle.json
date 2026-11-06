@@ -1,0 +1,27 @@
+{
+  "synthetic": true,
+  "identity": {
+    "company_id": "synthetic:halcyon",
+    "display_name": "Halcyon Flow Systems",
+    "fiscal_year_end_month": 12,
+    "reporting_currency": "USD",
+    "listings": [],
+    "issuer_kind": "industrial",
+    "external_ids": {
+      "cik": "0000987655"
+    }
+  },
+  "bundle": {
+    "contract": "industrials_theme_research.v1",
+    "views": {
+      "operating_views": []
+    }
+  },
+  "sources": [
+    {
+      "url": "https://example.invalid/shared_owner_bundle.json",
+      "mode": "synthetic",
+      "rights_state": "unknown"
+    }
+  ]
+}

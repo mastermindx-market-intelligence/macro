@@ -1,0 +1,32 @@
+{
+  "scope": "Local existing native fixture template renders only. Synthetic/admitted fixture inputs; no acquisition, economic or historical availability claim; no full build/site emission/browser/publisher.",
+  "source_base": "2e17ae66adca54dcecb9cbe9c669f32d8593ff41",
+  "browser": "NEW_CHROMIUM_LAUNCH_HELD; no browser execution performed",
+  "pages": {
+    "dislocations-disabled-fixed": {
+      "sha256": "06d5f8e95cc7a1eb38226e78f495299a180e0f7ba5ef946894aeef485cfc5a9b",
+      "bytes": 20624518,
+      "mixed_cjk_native_titles": 0,
+      "canonical_theme_consumer_included": true
+    }
+  },
+  "views": {
+    "dislocations": {
+      "converted_triggers": 21,
+      "all_tab_reachable_in_markup": true,
+      "all_native_titles_removed": true,
+      "exact_locale_pairs_sha256": "fa3e110ee4b1ce24b1e4b184d68dff69a4ac54c466b9414aaad8bbf5a022af71",
+      "example": [
+        "No admitted fragility score",
+        "无已准入的脆弱度评分"
+      ]
+    }
+  },
+  "disabled_actions": {
+    "focusable_existing_wrappers": 4,
+    "native_disabled_buttons": 8,
+    "malformed_disabledtitle": 0,
+    "same_exact_reason_on_wrapper_and_actions": true,
+    "touch_native_not_claimed": true
+  }
+}

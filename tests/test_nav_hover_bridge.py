@@ -1,5 +1,11 @@
 import hashlib
+import json
 import re
+import shutil
+import subprocess
+
+import pytest
+from rjsmin import jsmin
 from pathlib import Path
 
 
@@ -20,8 +26,8 @@ MACRO_HTML = (ROOT / "site" / "macro.html").read_text(encoding="utf-8")
 # The cache-buster the theme.js -> account.js -> nav_market.js chain is pinned
 # to, and a digest of the payload that key is responsible for busting. They MUST
 # move together -- see test_nav_release_key_moves_with_the_payload_it_busts.
-NAV_RELEASE_KEY = "20260921-nav-aria-escape"
-NAV_PAYLOAD_DIGEST = "e44cf717"
+NAV_RELEASE_KEY = "20261106-nav-aria-escape"
+NAV_PAYLOAD_DIGEST = "2116d1b2"
 
 
 def _payload_digest() -> str:
@@ -221,6 +227,8 @@ def test_hover_gap_release_uses_fresh_immutable_asset_chain() -> None:
         "20260808-zh-natural",
         "20260809-market-memory",
         "20260812-ui-audit-ink-grades",
+        "20260913-account-actions",
+    "20261010-account-continuity",
     ):
         assert stale not in TEMPLATE_THEME_JS
         assert stale not in SITE_THEME_JS
@@ -378,13 +386,14 @@ def test_panel_choreography_is_killed_by_name_under_reduced_motion() -> None:
 def test_nested_pages_resolve_market_nav_from_theme_asset_root() -> None:
     """Every nested estate must load the one shared market-menu runtime."""
     for source in (TEMPLATE_THEME_JS, SITE_THEME_JS):
+        source = jsmin(source, keep_bang_comments=True)
         assert "document.currentScript" in source
         assert 'script[src$="theme.js"],script[src*="theme.js?"]' in source
-        assert "var _mmSharedAssetRoot" in source
-        assert "new URL('.', _mmThemeScript" in source
-        assert source.count("var pfx = _mmSharedAssetRoot;") == 3
+        assert jsmin("var _mmSharedAssetRoot") in source
+        assert jsmin("new URL('.', _mmThemeScript") in source
+        assert source.count(jsmin("var pfx = _mmSharedAssetRoot;")) == 3
         assert "location.pathname.indexOf('/sectors/')" not in source
-        assert f"s.src = pfx + 'account.js?v={NAV_RELEASE_KEY}'" in source
+        assert jsmin(f"s.src = pfx + 'account.js?v={NAV_RELEASE_KEY}'") in source
 
 
 def test_research_icon_bridge_never_stomps_an_unknown_card() -> None:
@@ -417,3 +426,160 @@ def test_research_icon_bridge_never_stomps_an_unknown_card() -> None:
         assert icons["portfolio"] != icons["bot"]
         dashboard = _re.search(r"\n    dashboard: '([^']+)'", source).group(1)
         assert icons["portfolio"] != dashboard and icons["bot"] != dashboard
+
+
+_NAV_A11Y_HARNESS = r"""
+function runNavA11y(source, theme) {
+  function part(start, end) {
+    const a=source.indexOf(start), b=source.indexOf(end,a);
+    if(a<0||b<0)throw Error("Missing function boundary "+start);
+    return source.slice(a,b);
+  }
+  const bindSource=part("  function bindHoverSafeDropdowns(links)","  // Tracks what the rail is currently folded to");
+  const activeSource=part("  function remarkActive(links)","  /* ---- Panel choreography");
+  function assert(value,message){if(!value)throw Error(message);}
+  function element(classes){
+    const attrs={}, set=new Set(classes||[]), handlers={};
+    return {
+      attrs,handlers,parentElement:null,
+      classList:{add(...xs){xs.forEach(x=>set.add(x));},remove(...xs){xs.forEach(x=>set.delete(x));},contains(x){return set.has(x);}},
+      setAttribute(k,v){attrs[k]=String(v);},getAttribute(k){return Object.prototype.hasOwnProperty.call(attrs,k)?attrs[k]:null;},removeAttribute(k){delete attrs[k];},
+      addEventListener(k,f){(handlers[k]||(handlers[k]=[])).push(f);},
+      fire(k,e){(handlers[k]||[]).forEach(f=>f(e||{}));}
+    };
+  }
+  function fixture(width, initiallyOpen){
+    const document={activeElement:null}, raf=[], timers=new Map(), counts={open:0,close:0,abort:0};let timer=0;
+    const window={innerWidth:width,matchMedia(){return{matches:true};},clearTimeout(id){timers.delete(id);},setTimeout(fn){const id=++timer;timers.set(id,fn);return id;}};
+    const links=element(), owners=[], root={style:{setProperty(){}}};
+    for(let i=0;i<2;i++){
+      const dd=element(["nav-dd"]),trigger=element(["nav-link"]),menu=element(),child=element();
+      dd.parentElement=links;trigger.parentElement=dd;menu.parentElement=dd;child.parentElement=menu;
+      dd.trigger=trigger;dd.menu=menu;dd.child=child;
+      dd.querySelector=sel=>sel===":scope > a.nav-link"||sel===":scope > a"?trigger:sel===":scope > .nav-dd-menu"?menu:null;
+      dd.matches=()=>false;
+      dd.contains=x=>[dd,trigger,menu,child].includes(x);
+      trigger.getBoundingClientRect=()=>({bottom:10});
+      menu.getBoundingClientRect=()=>({top:18,height:100});
+      trigger.focus=()=>{document.activeElement=trigger;dd.fire("focusin",{target:trigger});};
+      owners.push(dd);
+    }
+    links.querySelectorAll=sel=>{
+      if(sel===":scope > .nav-dd")return owners.filter(d=>d.parentElement===links);
+      if(sel===':scope > .nav-dd > a.nav-link[aria-expanded="true"]')return owners.filter(d=>d.parentElement===links&&d.trigger.getAttribute("aria-expanded")==="true").map(d=>d.trigger);
+      if(sel===".nav-dd.open")return owners.filter(d=>d.classList.contains("open"));
+      if(sel===".nav-drill.is-open")return [];
+      throw Error("Unexpected selector "+sel);
+    };
+    const stage={
+      open(dd){counts.open++;owners.forEach(d=>d.classList.remove("nav-hover-open"));dd.classList.add("nav-hover-open");},
+      close(dd){counts.close++;dd.classList.remove("nav-hover-open");},
+      abort(dd){counts.abort++;dd.classList.remove("nav-hover-open");}
+    };
+    const bind=new Function("window","document","requestAnimationFrame","choreographer","navRootOf",bindSource+"; return bindHoverSafeDropdowns;")(window,document,fn=>raf.push(fn),()=>stage,()=>root);
+    if (initiallyOpen) owners[0].classList.add('open');
+    bind(links);
+    return {document,window,links,owners,counts,bind,
+      flushFrame(){const fs=raf.splice(0);fs.forEach(f=>f());},
+      flushTimers(){const fs=Array.from(timers.values());timers.clear();fs.forEach(f=>f());}
+    };
+  }
+  const cases=[
+    ["desktop Escape returns focus without reopening",()=>{
+      const f=fixture(1440),a=f.owners[0],b=f.owners[1];
+      assert(a.trigger.getAttribute("aria-expanded")==="false","initial expanded state");
+      f.document.activeElement=a.child;a.fire("focusin",{target:a.child});
+      assert(a.trigger.getAttribute("aria-expanded")==="true","keyboard open state");
+      b.fire("pointerenter",{target:b.trigger});
+      assert(a.trigger.getAttribute("aria-expanded")==="false"&&b.trigger.getAttribute("aria-expanded")==="true","switch collapses prior trigger");
+      a.fire("focusin",{target:a.child});const before=f.counts.open;let prevented=false;
+      a.fire("keydown",{key:"Escape",preventDefault(){prevented=true;}});
+      assert(prevented&&f.document.activeElement===a.trigger,"Escape must return focus");
+      assert(a.trigger.getAttribute("aria-expanded")==="false"&&!a.classList.contains("nav-hover-open"),"Escape must close");
+      assert(f.counts.open===before,"restoration focus must not reopen");
+      f.flushFrame();a.fire("focusin",{target:a.trigger});
+      assert(f.counts.open===before+1,"later genuine focus must reopen");
+    }],
+    ["pointer departure publishes collapsed state",()=>{
+      const f=fixture(1440),a=f.owners[0];a.fire("pointerenter",{});
+      assert(a.trigger.getAttribute("aria-expanded")==="true","pointer opens");
+      f.document.activeElement=null;a.fire("pointerleave",{});f.flushTimers();
+      assert(f.counts.close===1&&a.trigger.getAttribute("aria-expanded")==="false","pointer close state");
+    }],
+    ["mobile internal focus and accordion toggles stay truthful",()=>{
+      const f=fixture(390,true),a=f.owners[0],b=f.owners[1];
+      assert(a.trigger.getAttribute("aria-expanded")==="true","late binding must preserve existing accordion state");
+      a.classList.add("open");a.trigger.setAttribute("aria-expanded","true");
+      a.fire("focusin",{target:a.child});
+      assert(a.trigger.getAttribute("aria-expanded")==="true","internal mobile focus must not collapse aria");
+      a.fire("pointerleave",{});f.flushTimers();
+      assert(a.trigger.getAttribute("aria-expanded")==="true","hover close must yield to open mobile accordion");
+      a.classList.remove("open");b.classList.add("open");b.trigger.fire("click",{});f.flushFrame();
+      assert(a.trigger.getAttribute("aria-expanded")==="false"&&b.trigger.getAttribute("aria-expanded")==="true","accordion sibling state");
+      b.classList.remove("open");b.trigger.fire("click",{});f.flushFrame();
+      assert(b.trigger.getAttribute("aria-expanded")==="false","second tap state");
+      let prevented=false;const before=f.counts.abort;
+      b.fire("keydown",{key:"Escape",preventDefault(){prevented=true;}});
+      assert(!prevented&&f.counts.abort===before,"desktop Escape must yield to mobile owner");
+    }],
+    ["folded country retains its drill owner",()=>{
+      const f=fixture(1440),a=f.owners[0];
+      a.parentElement=element();a.classList.add("nav-market-drill");a.trigger.setAttribute("aria-expanded","true");
+      a.fire("focusin",{target:a.child});
+      assert(a.trigger.getAttribute("aria-expanded")==="true","folded drill state overwritten");
+      a.fire("pointerleave",{});f.flushTimers();
+      assert(a.trigger.getAttribute("aria-expanded")==="true","delayed hover close overwrote folded drill");
+      let prevented=false;a.fire("keydown",{key:"Escape",preventDefault(){prevented=true;}});
+      assert(!prevented&&f.counts.abort===0,"folded drill Escape intercepted");
+    }],
+    ["one exact current link preserves visual ancestry",()=>{
+      const links=element(),owner=element(["nav-dd"]),ancestor=element(),leaf=element(),duplicate=element(),stale=element();
+      owner.parentElement=links;owner.querySelector=()=>ancestor;ancestor.parentElement=owner;leaf.parentElement=owner;duplicate.parentElement=links;stale.parentElement=links;
+      ancestor.href="markets.html";leaf.href="macro.html";duplicate.href="macro.html";stale.href="other.html";stale.setAttribute("aria-current","page");
+      const items=[ancestor,leaf,duplicate,stale];
+      links.querySelectorAll=sel=>sel==="a.active"?items.filter(x=>x.classList.contains("active")):sel==="a[aria-current]"?items.filter(x=>x.getAttribute("aria-current")!==null):sel==="a[href]"?items:[];
+      const mark=new Function("location","fileOf",activeSource+"; return remarkActive;")({pathname:"/MACRO.HTML"},a=>a.href);
+      mark(links);
+      assert(items.filter(x=>x.getAttribute("aria-current")==="page").length===1&&leaf.getAttribute("aria-current")==="page","exact current identity");
+      assert(ancestor.classList.contains("active")&&ancestor.getAttribute("aria-current")===null,"visual ancestry must not become current");
+      assert(stale.getAttribute("aria-current")===null,"stale current marker");
+    }],
+    ["mobile owner close clears expanded children",()=>{
+      const f=fixture(390),a=f.owners[0],nav=element(["nav-open"]),btn=element();
+      a.classList.add("open");a.trigger.setAttribute("aria-expanded","true");
+      const i=theme.indexOf("function closeNav",theme.indexOf("function initMobileNav"));
+      const j=theme.indexOf("btn.addEventListener",i);
+      assert(i>=0&&j>i,"mobile close boundary");
+      const close=new Function("nav","btn","links",theme.slice(i,j)+"; return closeNav;")(nav,btn,f.links);
+      close();close();
+      assert(!a.classList.contains("open")&&a.trigger.getAttribute("aria-expanded")==="false","closed accordion retained expanded marker");
+      assert(!nav.classList.contains("nav-open")&&btn.getAttribute("aria-expanded")==="false","root close state");
+    }]
+  ];
+  return cases.map(([name,fn])=>{try{fn();return{name,pass:true};}catch(e){return{name,pass:false,error:String(e.message||e)};}});
+}
+"""
+
+
+def test_nav_keyboard_and_mobile_state_transitions() -> None:
+    """Exercise actual source functions with DOM/event fixtures, without a browser."""
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node is unavailable for the navigation state-transition fixture")
+    script = (
+        "const input = JSON.parse(require('fs').readFileSync(0, 'utf8'));\n"
+        + _NAV_A11Y_HARNESS
+        + "\nconsole.log(JSON.stringify(runNavA11y(input.nav, input.theme)));"
+    )
+    result = subprocess.run(
+        [node, "-e", script],
+        input=json.dumps({"nav": TEMPLATE_JS, "theme": TEMPLATE_THEME_JS}),
+        text=True,
+        capture_output=True,
+        timeout=15,
+        check=True,
+    )
+    cases = json.loads(result.stdout)
+    assert len(cases) == 6
+    failures = [case for case in cases if not case["pass"]]
+    assert not failures, failures
