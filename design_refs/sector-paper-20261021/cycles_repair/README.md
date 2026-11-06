@@ -1,0 +1,220 @@
+# Cycles corrections HTML specimen (boards 28–31, 34–36) — PAPER_CAPACITY_LIMITED
+
+Seat-authored HTML specimen of the R4 Sector Cycles corrections for the
+`sector-intelligence-cycles-20261021` reference set. It exists for the same reason as
+the Brief specimen (boards 23–27, 32, 33, 37): the Paper file `01M2WGNCX9475G79JRKJTCM08P` carries a
+file-wide size-limit warning and the seat makes no Paper writes, so the corrections the
+revision mandate requires on the Cycles boards (1–8) are drawn from the committed copy
+deck, the shared component CSS and three production rows instead. It is a **design
+specimen, not production**: the production template remains `templates/sector_cycles.js`
++ `templates/sector_cycles.html`, and nothing here is a build input.
+
+## What it is bound to
+
+- `../copy_deck.json` — every visible string: `cycles.*` (title, tagline, intro, section
+  headers, phase chips, hazard/rhythm/overdue/parity chips, `hazard_unavailable`,
+  `sizing_inert`, `leadlag_stop`, `stance_label`, `phase_age_*`, `read_provenance`,
+  `forecast_footnote`, `hazard_footnote`), `components.*` (as-of stamp, MODEL/PRIOR badge,
+  grader label/caption, footnote), `states.*` (fresh, incompatible_generation) and
+  `authority.*` (basis, built stamp, grader body). The four `cycles.*` keys added for this
+  specimen each carry a `source` citation (producer field, engine line or masterplan line).
+- `example_dataset.json` — three production rows (XLF, XLK, XLC) captured verbatim from
+  `site/sector_cycles_data.js` at the local render `d86344b93a0bd` (payload `meta.asOf`
+  2026-10-20), plus `meta`, `phases`, `rotation_context` and one labeled fixture
+  (`_fixtures.incompatible_generation`, used only by board 31 via `?state=`).
+- `enum_zh.json` — ZH forms of the producer enums that deck placeholders consume
+  (`next_turn` peak/trough, `kind` sector/basket). The EN forms are the producer values.
+- `../components/components.css` — `spc-asof-stamp`, `spc-chip`/`spc-phase-chip`,
+  `spc-model-prior-badge`, `spc-hazard-ladder` family, `spc-grader-caption`,
+  `spc-state-banner`, `spc-icon`. `cycles.css` adds only page layout and the card recipe.
+- `../../../templates/theme.css` + `navigation-refresh.css` — production tokens and the
+  real header chrome (`../brief_repair/nav_static.html`, a static capture copy; not a
+  source — see `chrome.specimen_copy` in proposal.yml).
+
+## Corrections drawn (mandate items this specimen answers)
+
+| Correction | Binding | Where |
+|---|---|---|
+| Position is the v2 family only | `now.pos_v2` rendered as the headline `/100` under `cycles.pos_label`; legacy `pos`, `phase`, `action`, `timing_state`, `signal` are **not rendered** on the face. Wave 2 (SIC-V2-C07/PRC-025): the legacy cycle-position numerals and projected-turn dates inside `now.read`/`read_zh` are stripped from 'The read' (`STRIP_EN`/`STRIP_ZH` in `build_cycles.py`) and the verbatim read is kept under `cycles.read_provenance` in the card's provenance drawer | card head / drawer |
+| Phase is `phase_v2` | `spc-phase-chip[data-phase]` from `now.phase_v2`; XLC shows the legacy/v2 disagreement the mandate names (legacy `Trough`, v2 `Downturn`) by drawing v2 only | card head |
+| One stance vocabulary (SIC-V2-C01/VTC-013) | `now.stance` (engine vocabulary `engine/cycle_ontology.py:113-123`: AVOID · WAIT · GET READY · BUY · HOLD · TRIM · SELL · COUNTERTREND ONLY · HIGH-RISK BOUNCE) is mapped by the producer, not the specimen (wave 3, SIC-ADJ-01 / SIC-V3-C01, C02): `engine/cycle_ontology.py` `DOCTRINE_STANCE` :147 → `doctrine_for` :179, stamped on every cell by `resolve_state` :948 (dataset: `stamp_doctrine.py`) — BUY→Act · GET READY→Get ready · HOLD, HIGH-RISK BOUNCE, COUNTERTREND ONLY→Watch — don't chase · TRIM, SELL→Protect gains · WAIT, AVOID→Stand aside; no None entry — a null stance draws the muted `cycles.stance_unavailable` line and no chip. The face prints `doctrine_stance_en/zh` under the `cycles.stance_source_eyebrow` line ("Engine mapping · Sector Cycles"); ink by `doctrine_ink` (`--ink-ok` / `--ink-warn` / `--muted`), never `--up`/`--down`; tests `tests/test_cycle_ontology.py:979/:991/:1007/:1023`. The engine stance + tone (`cycles.stance_engine_pattern`) and `now.divergence_note` stay in the provenance drawer; `cycles.clocks_chip` only when `now.divergence`. Captured rows: XLF HOLD→Watch, XLK HIGH-RISK BOUNCE→Watch, XLC SELL→Protect gains | card head / drawer |
+| Measured phase age, not zero | `now.phase_v2_age` by `status`: `lower_bound` → `cycles.phase_age_lower_bound` (n = sessions, date = observed_from); `measured` → `phase_age_measured`; else `phase_age_unknown`. All three captured rows are `lower_bound` (history_rows 56) | card head |
+| Hazard: MODEL vs PRIOR vs unavailable | `now.hazard.{1m,3m,6m}` → `spc-hz-val` + `spc-model-prior-badge[data-source]` + `cell_verdict`; `unavailable: true` → three gap cells (CSS dashed mark, no typed glyph, never 0 %) + `cycles.hazard_unavailable` + `unavailable_reason`; `estimate_kinds.model_cell_current_claim = parity_failed` → ladder muted + `cycles.hazard_parity_chip` + the claim code | hazard section |
+| Live parity recorded, not repaired | `meta.live_hazard_parity` (PARITY_FAILS · 15 failing features · measured_on a038b3f3) in the basis panel, the methods panel and metadata | header, methods, metadata |
+| Rhythm is descriptive and may be overdue | `rhythm.window{low,central,high}` with `rhythm.next_turn`, `cycles.rhythm_kind`, `cycles.overdue_chip` when `rhythm.overdue`; footnote `cycles.forecast_footnote` with the producer month strings (no ▲/▼) | rhythm section |
+| Sizing inert | `cycles.sizing_inert` with its source citation (`engine/sector_central.py:453 size_mult = 1.0`, W4.6) | methods |
+| Lead-lag STOP | `cycles.leadlag_stop` with its source citation (masterplan line 169, W5.1 STOP/NO-GO) | methods |
+| Grader denominator | `components.grader_caption` ("Neutral included. Not a win rate.") + `authority.grader_body`; **no number is drawn** — the captured `premiumdata/sector_central.json` has no grader key at this render | grader panel |
+| Generation guard on the raw clocks | `rotation_context.events/fragmentation` status chips (`aligned · 2026-10-20`); board 31 shows the `incompatible_generation` banner from the labeled fixture and prints the fixture label under it | events panel |
+| Correction contract | `meta.correction_contract.status = none_native` + its basis string, verbatim | metadata |
+
+## Boards
+
+| # | File | Viewport | Theme | Locale | Query | Height px |
+|---|---|---|---|---|---|---|
+| 28 | `28-cycles-desktop-light-en.png` | 1440 | light | EN | `?theme=light&lang=en` | 2343 |
+| 29 | `29-cycles-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en` | 2343 |
+| 30 | `30-cycles-mobile-dark-zh.png` | 390 (iframe host) | dark | ZH | `mobile_frame.html?src=cycles.html&theme=dark&lang=zh` | 4350 |
+| 31 | `31-cycles-mobile-light-en.png` | 390 (iframe host) | light | EN | `…&theme=light&lang=en&state=incompatible_generation` (fixture) | 4879 |
+| 34 | `34-cycles-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh` | 2260 |
+| 35 | `35-cycles-desktop-dark-zh.png` | 1440 | dark | ZH | `?theme=dark&lang=zh` | 2260 |
+| 36 | `36-cycles-mobile-light-zh.png` | 390 (iframe host) | light | ZH | `mobile_frame.html?src=cycles.html&theme=light&lang=zh` | 4350 |
+| 39 | `39-cycles-mobile-dark-en.png` | 390 (iframe host) | dark | EN | `mobile_frame.html?src=cycles.html&theme=dark&lang=en` | 4775 |
+| 40 | `40-cycles-desk-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en&desk=composite` (composite desk) | 3400 |
+| 41 | `41-cycles-desk-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh&desk=composite` (composite desk) | 3279 |
+
+Boards 30/31/36/39 are rendered inside `mobile_frame.html` because headless Chrome clamps its
+window width to ≥500 px; the host page copies `data-h`/`data-w`/`data-ovf` from the 390 px
+iframe document so the measurement is the mobile document's own.
+
+Wave 3 (SIC-V3, 2026-11-01): every Cycles board draws the producer-stamped doctrine chip
+(`doctrine_stance*` fields stamped by `stamp_doctrine.py` from `engine/cycle_ontology.py`
+`doctrine_for`; no map in this builder), the filled context card (as-of · generation ·
+hazard epoch), the family-match read rule (`family_match` in `build_cycles.py`; XLC draws
+the labeled Clocks-disagree state) and, after the live card grid, exactly one labeled
+FIXTURE card carrying the KM PRIOR cell shape (SIC-V3-C17). Board 40 opens the composite
+desk (`?desk=composite`): the production chart capture recorded in `prod_capture.json`
+(`site/sector_cycles.html` at d86344b93a0b, as of 2026-10-20) labeled with render source
+and as-of beside the correction cards, the as-of difference stated on the board face
+(SIC-V3-C09). Board heights in this table equal `png_px` in `boards_manifest.yml`
+(SIC-V3-C11). Probes: `components/board_probe.py` (theme pixels, 390 overflow, six-link
+switcher) and `components/zh_latin_grep.py` (ZH faces; since wave 5 every zh-latin line states its SIC-ADJ-03 scope — `<details>` skipped wholesale, `<code>` on a face counts, ALLOW XL?/FIX/SPY/MODEL/PRIOR, the Cycles boards with no allow-file) — lines in `capture.log`.
+
+Wave 4 (SIC-V4, 2026-11-01): the doctrine chips carry the engine's ZH vocabulary (`DOCTRINE_STANCES`,
+SIC-ADJ-02); one family rule decides every clock on a face (`leg_family` in `build_cycles.py`: the hazard
+leg and the rhythm projection reach the face only when they agree with the phase_v2 family, otherwise the
+labeled Hazard / Rhythm clock disagrees state names both clocks in plain words — XLF Ladder + Rhythm, XLK
+Rhythm, XLC Read + Hazard + Rhythm); the ladder state is glossed (uptrend), no study id reaches a face
+(Lead-lag: no claim; `zh_latin_grep.py` now counts letter+digit/punct tokens and lone letters); ZH faces
+name phases by the production chip label only (回落中 / 筑底中; 下行 drawer-only); a second labeled FIXTURE
+card draws the null-stance treatment (Stance unavailable). Board 41 is the light/ZH capture of
+`?desk=composite` with the production crop declared a dark-theme capture on the face. The composite desk
+(boards 40/41) is a review instrument outside the shipped surface: supporting evidence for the chart/card
+as-of relation, not a coverage cell; its caption states that the chart's "Where they stand" counts use
+the legacy `now.phase` clock while the specimen cards use `phase_v2` (SIC-V4-C07/C08).
+
+Wave 5 (SIC-ADJ-03 / SIC-V5, 2026-11-02): the zh-latin probe scope is one rule — `zh_latin_grep.py` skips a
+provenance drawer (`<details>`) wholesale and nothing else by tag except nav/script/style/svg/title/head, hidden
+elements and `l-en` spans, so a `<code>` identifier on a face counts (SIC-V5-C04/C05/C06); every zh-latin=0 line in
+`capture.log` states that scope and the tokens it exempted (ALLOW unchanged; the Cycles boards run with no allow-file).
+Identifiers a face must reference moved into the drawers: the ZH context card points to the page foot for the schema
+and epoch, the desk caption is plain ZH and the clock note names both clocks in plain words (`now.phase` / `phase_v2`
+and `templates/sector_cycles.js:611` in the desk drawer). Each card draws at most one Clocks block (`clocks_block`
+in `build_cycles.py`), one line per disagreeing clock naming both clocks — XLF Ladder + Rhythm, XLK Rhythm, XLC
+Hazard + Rhythm + Read — with neutral even-outline chips (`.cyc-outline`; the Live parity unproven chip takes the same
+treatment) so the doctrine chip is the only warn-ink chip on a card (SIC-V5-C07/C08); the hazard, rhythm and read
+sections are not drawn while their clock disagrees, and the overdue sentence sits in the drawer once per card. The
+ZH PRIOR fixture title and body use 先验 (SIC-V5-C09). Boards 40/41 declare the crop's EN interface on the face
+(EN-interface capture / 英文界面截图; `prod_capture.json` locale en) beside the dark-theme chip (SIC-V5-C03/C10).
+The engine HOLD sentence now names the Peak extended-uptrend override and is test-asserted identical in three
+places (`tests/test_cycle_ontology.py` `test_hold_sentence_is_identical_and_true`; SIC-V5-C02). Boards
+28-31/34-36/39-41 re-rendered; heights above equal `png_px` in `boards_manifest.yml` (SIC-V5-C12).
+
+Wave 6 (SIC-V6, 2026-11-02): the round-6 cures. The ZH clock-mismatch lines use a verb/colon construction
+(`cycles.hazard_mismatch_pattern` / `rhythm_mismatch_pattern` in `copy_deck.json`; SIC-V6-C05). `.cyc-cards` takes
+`align-items:start` so a card ends where its drawn sections end (C06) and the methods-card parity chip hugs its
+content (`.cyc-method .spc-chip{align-self:flex-start}`; C07). The page-level session family speaks data, not
+clocks: `Events data` / `Fragmentation data` chips with the status word, the dated qualifier `Data sessions aligned
+on the history day {d}; not current under this banner`, and `enum_zh.json` `aligned` = 一致 — no clock / 时钟 / 对齐
+term survives in that family, while each card's Clocks block keeps its name (C08). The deck test carries a ZH rule
+(`row_gaps` in `tests/test_sector_paper_copy_deck.py`): a cited row's ZH must itself have a fragment in the cited
+window (JS unicode escapes decoded) unless the source declares the ZH NEW or gives it a `ZH path:line`; 32 rows were
+re-sourced under it and the provenance drawers render those sources (C03/C04); the five C05/C08 rows carry their
+wave-6 provenance in the same field. Boards 28-31/34-36/39-41 re-rendered;
+the other 32 PNGs are byte-identical; heights above equal `png_px` in `boards_manifest.yml` (C09).
+
+Wave 7 (SIC-V7, 2026-11-02): the round-7 cures. The two drawn ZH Clocks patterns take the 显示 construction
+(`cycles.ladder_state_pattern` / `clocks_disagree_pattern` in `copy_deck.json`, and the undrawn `clocks_ladder_pattern`
+with them; SIC-V7-C04): the ladder line reads 阶段时钟显示回落中 · 时序阶梯显示上涨趋势——引擎说明见来源抽屉 and the read
+line 周期读数显示筑底中 · 阶段时钟显示回落中, so no drawn ZH Clocks line keeps a 时钟为 / 阶梯为 predicate; EN unchanged. The
+deck test's EN half now matches whole words of the normalized window (`_present` in `tests/test_sector_paper_copy_deck.py`;
+SIC-V7-C03 outcome (i)): an identifier substring (`win` inside `window`, `stance` inside `stanceHTML`) no longer vouches
+for a string; the PRC-049 falsifier is restated (stanceHTML opens at `templates/sector_cycles.js:158`; the :155 row clears
+the EN half on the whole token `nw.stance` at :157 and fails the ZH half) and `test_en_rule_rejects_identifier_substrings`
+is the EN-half falsifier (the PRC-051 grader shape at :332, the stance shape at :153). Deck sources: `stance_label` cites
+stanceHTML opening at :158 (C01); `grader_caption` cites `engine/sector_central_grader.py:498-506` (C02). Boards
+28-31/34-36/39-41 re-rendered; the other 32 PNGs are byte-identical; EN Cycles boards 28/29/40 byte-identical to 78c14f7d; 31/39 re-encoded with the same png_px and the same face (Chrome antialiasing nondeterminism, measured against the 78c14f7d bytes: 31: 761 px differ by at most 1 in a channel, all inside x 16-374 / y 82-116; 39: 752 px differ by at most 1 in a channel, all inside x 16-374 / y 82-116 — the global header search-field row (the site-nav search input; the seat's measured bounding box (16, 82, 374, 116) at 390 px; the wave-7 record's region label was wrong — VTC-048, corrected in wave 8); no EN string changed in wave 7); heights above equal `png_px` in
+`boards_manifest.yml` (C06).
+
+## How to render
+
+```
+python3 build_cycles.py      # writes cycles.html from the deck + dataset
+./render.sh                  # measures each board's document height, screenshots at 1x
+```
+
+## Gates (all passed at the committed render)
+
+- `data-ovf=""` on all four boards (no element wider than the viewport); `data-w` = 1440 / 390.
+- Glyph gate (python3, prose outside `<code>`/`.mono`/the nav): 0 typed `— → ← ↑ ↓ ▲ ▼`
+  in deck-bound text. The three remaining em dashes are **producer values** rendered
+  verbatim (`now.divergence_note` / `divergence_note_zh` for XLF) — a producer finding,
+  recorded below, not a specimen edit.
+- 0 `border-left` / `border-right` in `cycles.css` (no container edge stripes).
+- `python3 scripts/check_reference_integrity.py` clean for the set; `boards_manifest.yml`
+  rows 28–31 and 34–36 carry `png_px` equal to the PNG headers, `node_id: null`, `page_id: null`,
+  `paper_state: PAPER_CAPACITY_LIMITED`, `capture: html-specimen-chrome-headless-1x`.
+
+## Producer findings surfaced by the specimen (not cured here)
+
+1. `now.read` / `read_zh` narrate the **legacy** position ("cycle position 47/100" for XLF
+   while `pos_v2` is 72.64; XLC narrates "Bottoming" while `phase_v2` is `Downturn`). The
+   narrative is generated from the legacy family (`engine/sector_cycles.py::_engine_read`).
+   Wave 2 strips the legacy numerals and dates from the face copy and keeps the verbatim
+   read under `cycles.read_provenance` in the provenance drawer (SIC-V2-C07); the cure is
+   in the producer (C14), not in copy.
+2. `proj{central,low,high}` (2026-06 / 2026-05 / 2026-09 for XLF) disagrees with
+   `rhythm.window` (2026-07 / 2026-05 / 2027-02). The specimen binds the footnote to
+   `rhythm` (the versioned, descriptive contract, `rhythm_version 1`) and does not draw
+   `proj`; the production template still draws `proj` (`templates/sector_cycles.js:1420`).
+3. `now.divergence_note` carries a typed em dash in both locales — the deck glyph rule
+   does not reach producer prose. Cure belongs to `engine/cycle_ontology.py`.
+4. `design_refs/sector-paper-20261021/cycles_ia.md:166` cites `engine/sector_central.py:404`
+   for `size_mult = 1.0`; the line is `:453` (recorded in the deck `source` field).
+5. No captured row carries a PRIOR hazard cell (XLK/XLC are `unavailable`,
+   `non_monotone_cdf`); the PRIOR badge path is exercised by the component specimen
+   (board 0) only. Board coverage of a real PRIOR cell stays with the P10–P13 journey.
+
+## Wave 2 (SIC-V2 round-2 repairs) — what changed in this specimen
+
+- **Shared shell (C02/C03/C09, VTC-014/015):** `../components/si_shell.py` emits the
+  canonical site nav (`../brief_repair/nav_static.html`), the production page header
+  (`.si-page-header` / `.si-page-identity` / `.si-side-foot`, with the as-of stamp in the
+  side-foot) and a six-link workflow switcher with `aria-current="page"` on Cycles.
+  `../components/si_shell.css` block 1 is a verbatim copy of
+  `templates/_sector_central_paper.css.j2` (production draws four workflow links; the
+  accepted shell draws six). **Blocks 4 and 5 are proposals, not production CSS**: the
+  switcher wraps to a second row at ≤767px and the as-of stamp wraps inside the 40%
+  side-foot (measured overflow of 493px / 248px before the fix; probe `data-w=390`
+  `data-ovf=""` after).
+- **Provenance drawers (C04, VTC-016/PRC-024):** every producer identifier, hash, path,
+  field name and the full `cycles.hazard_footnote` moved off the card face into closed
+  `<details class="cyc-prov">` drawers ("How this was measured / 测量方式"): one per card,
+  plus methods, grader, events and metadata. The face carries `cycles.hazard_face_note`
+  only. `/usr/bin/grep -c 'cyc-prov' cycles.html` → 7 drawers; 0 identifiers outside them.
+- **ZH enums (C04/PRC-031):** `enum_zh.json` glosses the producer enums the engine ships
+  English-only (`peak`/`trough`/`sector`/`basket`/`up`/`down`/`price`/`aligned`); the nav
+  search placeholder and mono labels are ZH under `html[data-lang="zh"]`.
+- **Banner and qualifier (C06, VTC-018):** the `incompatible_generation` banner body wraps;
+  the `aligned` chips under it are muted (`.cyc-hz-muted`) and carry the dated qualifier
+  `cycles.aligned_qualifier` as a wrapping note (`.cyc-ev-qual`), shown only under
+  `html[data-state="incompatible_generation"]`.
+- **Badge and projection (C10/C11):** the MODEL/PRIOR badge renders at 11px
+  (`--fs-label`); `proj{central,low,high}` is drawn beside the rhythm method inside the
+  drawer (`cycles.proj_label`), never on the face.
+- **Boards 34–36:** ZH desktop light/dark and ZH mobile light added (PRC-027); boards
+  28–31 re-rendered. Coverage matrix (board 27) now covers both surfaces: 14 of 16 cells
+  drawn; the remaining Cycles gap is mobile · dark · EN.
+- **Producer prose is verbatim:** typed em dashes inside `now.divergence_note` and other
+  engine strings are kept as shipped (finding 3 below); the deck glyph rule governs deck
+  copy only.
+
+## Known specimen limits (not production claims)
+
+- Three sectors, not eleven; no chart, series picker, zoom or touch sheet (C25/C26/C28
+  remain on boards 3/5 and on the production page).
+- Static HTML: no hydration, no live-region status, no keyboard activation to prove;
+  the `<details>` drawers are closed in every capture (their open state is not frozen).
+- The `incompatible_generation` state on board 31 is a **labeled fixture**; the captured
+  Cycles clocks were `aligned` on 2026-10-20 (the render-log mismatch was Central's
+  rotation artifact, not Cycles).

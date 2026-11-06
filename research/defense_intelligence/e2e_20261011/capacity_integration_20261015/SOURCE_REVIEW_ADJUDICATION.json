@@ -1,0 +1,19 @@
+{
+  "run": "defense-capacity-repaired-source-review-01a13300-a",
+  "source_packet_sha256": "767ba8cfe10ede1b2296b7cafb14ded377cfffd572c0ddce5beaeb496654e214",
+  "retained_result_sha256": "befcd12d8c65d7f62c2b701755287c5d5e239076118181d988827b4a980063db",
+  "verdict": "ACCEPT bounded semantic review after parent applies explicit conservative period and approximation corrections",
+  "corrected_candidate_sha256": "95c76a84b672a791adabc40f79e1c8da90e0bcd5ff0730da08256d428c6ef6b5",
+  "verified": {
+    "all_six_source_hashes_and_availability_bound": true,
+    "additional_support_blocks_verified": true,
+    "same_original_sources": true,
+    "canonical_admission": false
+  },
+  "review_limits": [
+    "inline-text semantic review; parent owns raw ZIP and source-byte replay",
+    "no code-review verdict",
+    "no actual publication/production/whole-product acceptance"
+  ],
+  "source_curation": "Existing curator remains required; this records actual AI review identity, not fabricated human review."
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "prophet.cash_flow_research_case/v1",
+  "issuer": "Micron Technology, Inc.",
+  "cik": "0000723125",
+  "public_date": "2025-09-23",
+  "source_url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000024/a2025q4ex991-pressrelease.htm",
+  "retrieved_body_sha256": "8d4c182d2cf7e09681f188476b82fa3e4ff5547e9606fcecdf77cba5006cfeea",
+  "retrieved_bytes": 361800,
+  "system_available_at": null,
+  "as_run_recommendation": false,
+  "annual": {
+    "period": "FY2025",
+    "period_end": "2025-08-28",
+    "unit": "USD_millions",
+    "reported_net_income": 8539,
+    "reported_operating_cash": 17525,
+    "cash_adjustments": {
+      "depreciation_amortization": 8352,
+      "share_based_compensation": 972,
+      "receivables": -1776,
+      "inventory": 520,
+      "accounts_payable_accrued_expenses": 862,
+      "other_current_liabilities": -272,
+      "other": 328
+    },
+    "net_working_capital_component": -666,
+    "gross_ppe_outflow": 15857,
+    "government_incentives": 2005,
+    "ppe_sale_proceeds": 48,
+    "cfo_less_gross_ppe": 1668,
+    "issuer_adjusted_free_cash_flow": 3721,
+    "difference_between_measures": 2053,
+    "operating_cash_to_net_income": 2.052348050122965
+  },
+  "quarter": {
+    "period": "FY2025 Q4",
+    "period_end": "2025-08-28",
+    "unit": "USD_millions",
+    "reported_operating_cash": 5730,
+    "gross_ppe_outflow": 5658,
+    "government_incentives": 711,
+    "ppe_sale_proceeds": 20,
+    "cfo_less_gross_ppe": 72,
+    "issuer_adjusted_free_cash_flow": 803
+  },
+  "checks": {
+    "annual_income_plus_adjustments_equals_cfo": true,
+    "annual_and_quarter_measures_reconcile_separately": true,
+    "annual_components_not_attributed_to_quarter": true
+  },
+  "limits": [
+    "Source amounts and public date only; historical system ingestion is unknown.",
+    "Adjusted FCF is the issuer-defined measure, not cash available for distribution.",
+    "Cash conversion contains depreciation, other noncash adjustments and working-capital effects; no persistence or stock return inferred.",
+    "This public numeric example is not upstream D5 capture or current-user data."
+  ],
+  "financial_authority": {
+    "rank": false,
+    "entry": false,
+    "size": false,
+    "trade": false
+  }
+}

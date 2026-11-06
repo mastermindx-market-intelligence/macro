@@ -1,0 +1,139 @@
+{
+  "schema": "eval_os.supplied_text_case_acceptance.v1",
+  "at": "2026-10-15T10:24:11.459102+00:00",
+  "qualified_source": "6cb697a6be232dde33833d17db4663f31fe0c189",
+  "source_case": "gdp_growth_units_2024-04-25",
+  "case_count": {
+    "supplied_text": 16,
+    "legacy_bear_unchanged": 1,
+    "original_historical_objective_complete": false
+  },
+  "original_worker": {
+    "id": "eval-t6-gdp-units-01a1333d-c1",
+    "root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+    "parent": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+    "pool": "glm",
+    "host": "ubuntu0",
+    "retained_stdout_sha256": "4a8d55d041608da78c23883d570e4a3fa2f5ccc78920476a449e287090a0dce4",
+    "artifact_sha256": "aed41486a6335507c3ca9b6135026b058190f769784dd74c32388c9836803b88",
+    "accepted_by": "reviewer",
+    "acceptance": "Accepted with parent correction removing leading conclusions from question; not independent review or blind model-answer evidence. Original bytes retained.",
+    "usage_receipt": "unavailable"
+  },
+  "qualification": {
+    "at": "2026-10-15T10:22:45.264953+00:00",
+    "qualified_source": "6cb697a6be232dde33833d17db4663f31fe0c189",
+    "source_sha256": {
+      "engine/neuralweb/response_eval.py": "919fe0e92b5341ff8cdf2ae2118b7a9705f81d78bb97638c403e83740e7beb2d",
+      "tests/test_response_eval.py": "046320491eed059721c3bb45ac202ab8d1535d13a6134714688d3fdbf7aedd21",
+      "engine/neuralweb/eval/benchmark_gdp_growth_units_2024-04-25.json": "897ec4845128e17a320984b88b338321e6c203299695a16a0978e3d912cdf046",
+      "research/GDP_GROWTH_UNITS_CASE_2024_04_25.md": "fc944bb8e2d6f856c5ccfb48e1e7e1e9669fbd3dd0473f0feb5d531566675018",
+      ".github/ci/legacy-jobs.yml": "a53a308d52818233a66809b77b33a0ea94ffac31cd0e9e0fc9487299145cd8ca"
+    },
+    "closure_misses": {},
+    "repair": {
+      "job": "validated-claims-contract",
+      "new_path": "research/GDP_GROWTH_UNITS_CASE_2024_04_25.md",
+      "targeted_closure_count": 250,
+      "targeted_missing": [],
+      "all_other_jobs_and_sources_unchanged": true
+    },
+    "packing": [
+      {
+        "probe": "templates/index.html",
+        "jobs": 134,
+        "weight": 5621,
+        "packs": 10,
+        "max_jobs": 136,
+        "max_weight": 5803,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+      },
+      {
+        "probe": "scripts/build_free_content.py",
+        "jobs": 134,
+        "weight": 5441,
+        "packs": 10,
+        "max_jobs": 134,
+        "max_weight": 5600,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+      },
+      {
+        "probe": "engine/prophet/plan_book.py",
+        "jobs": 128,
+        "weight": 5384,
+        "packs": 9,
+        "max_jobs": 130,
+        "max_weight": 5600,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 128/314 jobs (1 unscoped always-on, 127 scoped matches)"
+      }
+    ],
+    "strict_breaches": [],
+    "reused_proof": "Full prior closure found only the single repaired job/path. Strict rows reused after exact one-exclusive-path diff, unchanged execution/weights/limits, and new-path nonmatch for all three probes. No suite rerun."
+  },
+  "preservation": {
+    "baseline": "bde9f2d893bc0be488eb3473a3e9fd2b89dc931b",
+    "jobs": 314,
+    "execution_definitions_unchanged": true,
+    "new_source_input_memberships": 12,
+    "changed_jobs": [
+      "flow-surface",
+      "fif-kernel-guards",
+      "eval-os-a1",
+      "validated-claims-contract",
+      "biocatalyst-serving",
+      "biocatalyst-history",
+      "crypto-assistant-context",
+      "defense-rail-laws",
+      "unrun-government-revenue-candidate-projection",
+      "unrun-government-revenue-grader",
+      "research-price-panel",
+      "ticker-news-qbus"
+    ],
+    "limits_unchanged": true,
+    "evaluator_function_class_definitions_unchanged": true
+  },
+  "new_checks": [
+    {
+      "name": "final-tests.xml",
+      "cases": [
+        [
+          "tests.test_response_eval",
+          "test_historical_text_case_uses_bound_source_and_explicit_runners[benchmark_gdp_growth_units_2024-04-25.json]"
+        ],
+        [
+          "tests.test_response_eval",
+          "test_historical_text_case_missing_metadata_cannot_fall_back_to_live_models[benchmark_gdp_growth_units_2024-04-25.json]"
+        ]
+      ],
+      "passed": 2,
+      "sha256": "1029fe238ba7b84d81d17a072f6507d5d79aa7961970dece4457614672d682a5"
+    },
+    {
+      "name": "ci-controls.xml",
+      "cases": [
+        [
+          "tests.test_ci_pack",
+          "test_the_curated_exclusive_set_is_actually_declared"
+        ],
+        [
+          "tests.test_ci_pack",
+          "test_eval_os_acceptance_runs_on_ordinary_code_prs"
+        ]
+      ],
+      "passed": 2,
+      "sha256": "9455f4542805b774bd27ffe43ce42482652eec44fc41ec20233d9c964e18daff"
+    }
+  ],
+  "proof_limits": [
+    "Injected callbacks prove source binding and explicit-runner contract only.",
+    "No model performance, historical PIT availability, independence, earned tier or consumer adoption.",
+    "Prior refused blind-answer operation and original uncertain effects remain unchanged."
+  ],
+  "sources": [
+    "https://www.bea.gov/news/2024/gross-domestic-product-first-quarter-2024-advance-estimate",
+    "https://www.bea.gov/sites/default/files/2024-04/tech1q24-adv.pdf"
+  ]
+}
