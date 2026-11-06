@@ -247,6 +247,100 @@ def test_valuation_posture_is_owner_attributed():
     assert "。" in posture["assumptions_text"]["zh"] or "，" in posture["assumptions_text"]["zh"]
 
 
+@pytest.mark.parametrize("reverse", [False, True])
+def test_shared_ticker_valuation_belongs_to_its_listing(reverse):
+    keys = ["TEST-A", "TEST-B"]
+    states = [_state(key, "DEMO") for key in keys]
+    postures = [
+        {**_valuation("DEMO", price=20, per_share=value), "listing_key": key}
+        for key, value in zip(keys, [40, 10])
+    ]
+    if reverse:
+        postures.reverse()
+    rows = compile_research_screener(states, postures)["rows"]
+    labels = {r["listing_key"]: r["valuation_posture"]["label"]["en"] for r in rows}
+    assert "inexpensive" in labels["TEST-A"]
+    assert labels["TEST-B"].startswith("Looks expensive")
+
+
+def test_ambiguous_ticker_cannot_supply_a_missing_listing_posture():
+    states = [_state("TEST-A", "DEMO"), _state("TEST-B", "DEMO")]
+    values = {"TEST-A": _valuation("DEMO", price=20, per_share=40),
+              "DEMO": _valuation("DEMO", price=20, per_share=10)}
+    rows = compile_research_screener(states, values)["rows"]
+    by_key = {r["listing_key"]: r["valuation_posture"] for r in rows}
+    assert "inexpensive" in by_key["TEST-A"]["label"]["en"]
+    assert by_key["TEST-B"] is None
+
+
+@pytest.mark.parametrize(
+    ("identity", "expected_listing"),
+    [({"ticker": "DEMO"}, "TEST-B"), ({"listing_key": "DEMO"}, "DEMO"), ({}, None)],
+)
+def test_mapping_key_can_be_one_listing_and_another_listings_ticker(identity, expected_listing):
+    states = [_state("DEMO", "OTHER"), _state("TEST-B", "DEMO")]
+    value = _valuation("", price=20, per_share=40)
+    value.update(identity)
+    rows = compile_research_screener(states, {"DEMO": value})["rows"]
+    matches = [r["listing_key"] for r in rows if r["valuation_posture"] is not None]
+    assert matches == ([expected_listing] if expected_listing else [])
+
+
+def test_stock_record_preserves_valuation_listing_identity(tmp_path):
+    from scripts.build_research_screener import build_payload
+
+    stockdir = tmp_path / "site" / "stockdata"
+    stockdir.mkdir(parents=True)
+    for key, ticker, value in [("TEST-A", "DEMO", 40), ("TEST-B", "DEMO", 10),
+                               ("TEST-C", "OTHER", 5), ("TEST-D", "TEST", 5)]:
+        valuation = _valuation(ticker, price=20, per_share=value)
+        if key == "TEST-C":
+            valuation["listing_key"] = "TEST-A"
+        if key == "TEST-D":
+            valuation["ticker"] = "DEMO"
+        record = {"security_state": _state(key, ticker), "valuation_scenario": {"v1": valuation}}
+        (stockdir / f"{key}.json").write_text(json.dumps(record))
+    postures = {r["listing_key"]: r["valuation_posture"] for r in build_payload(tmp_path)["rows"]}
+    assert "inexpensive" in postures["TEST-A"]["label"]["en"]
+    assert postures["TEST-B"]["label"]["en"].startswith("Looks expensive")
+    assert postures["TEST-C"] is None
+    assert postures["TEST-D"] is None
+
+
+@pytest.mark.parametrize(("field", "bad"), [
+    ("price", "NaN"), ("price", True), ("price", 10**400),
+    ("per_share", float("inf")), ("per_share", False),
+    ("computable", "false"),
+    ("sales_growth_pct", None), ("margin_delta_pp", "-Infinity"),
+    ("earnings_multiple", True),
+])
+def test_unusable_valuation_omits_the_posture_but_keeps_the_catalyst(field, bad):
+    state = _state("TEST-A", "DEMO", window_start="2026-11-05")
+    valuation = _valuation("DEMO", price=20, per_share=20)
+    base = valuation["scenarios"][0]
+    if field == "price":
+        valuation["price"]["value"] = bad
+    elif field in base:
+        base[field] = bad
+    else:
+        base["assumptions"][field] = bad
+    row = compile_research_screener([state], [valuation], as_of="2026-11-02")["rows"][0]
+    assert row["valuation_posture"] is None
+    assert row["catalyst"]["window_start"] == "2026-11-05"
+    assert "reported earnings" not in row["why"]["en"]
+    assert "已披露盈利" not in row["why"]["zh"]
+
+
+def test_finite_equal_values_and_explicit_zero_assumptions_keep_their_meaning():
+    state = _state("TEST-A", "DEMO")
+    valuation = _valuation("DEMO", price="20", per_share=20, growth=0, margin="0", multiple=18)
+    row = compile_research_screener([state], [valuation])["rows"][0]
+    assert "in line" in row["valuation_posture"]["label"]["en"]
+    text = row["valuation_posture"]["assumptions_text"]
+    assert text["en"] == "Sales unchanged, margins unchanged, valued at 18 times reported earnings."
+    assert "销售收入不变，利润率不变" in text["zh"]
+
+
 def test_en_zh_copy_uses_cjk_punctuation():
     payload = compile_research_screener(
         [_state("US-XNAS-AAPL", "AAPL", name="Apple", window_start="2026-09-12")],
