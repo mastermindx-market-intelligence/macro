@@ -1,0 +1,49 @@
+{
+  "schema": "c4.alfred.current-main-merge.v1",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/github-pr-sweep-2028-c4-pr10783-repair",
+  "head": "15e96ba9aee817351fa0468e39a1704700749ab1",
+  "integration_base": "ede58e46e40d454613b06ef0fbf1fb0f139d24a9",
+  "common_base": "ed1e10d45c6d2d8011012503d293a6542296ffc3",
+  "original_feature_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "contracts/market_memory/alfred_revision_source_context.v1.schema.json",
+    "engine/neuralweb/brain_analogues.py",
+    "engine/neuralweb/market_memory_alfred_revision_evidence.py",
+    "tests/test_market_memory_alfred_revision_evidence.py"
+  ],
+  "original_feature_blobs": {
+    ".github/ci/legacy-jobs.yml": "fabea05afcff166fb8c3888739edf1d46f6a55d3",
+    "contracts/market_memory/alfred_revision_source_context.v1.schema.json": "02b90778f00bb8ce78d07529fa37de685a7db340",
+    "engine/neuralweb/brain_analogues.py": "f8b05b1b0d87358fe108d60ff306c955dcd56bcc",
+    "engine/neuralweb/market_memory_alfred_revision_evidence.py": "8152fb18f55a0e6a9a2389d33e4ac50ae3cdcaf3",
+    "tests/test_market_memory_alfred_revision_evidence.py": "85535c10e400f35a92f5a0e9e5479216882e3a82"
+  },
+  "root_agents_blobs": {
+    "15e96ba9aee817351fa0468e39a1704700749ab1": "303d6c192bc7de52ec42605c351a88ea36d9c45c",
+    "ede58e46e40d454613b06ef0fbf1fb0f139d24a9": "c56edaa4260ce20cf4106044bc0d6701f13a8ccf"
+  },
+  "merge_exit_code": 1,
+  "merge_seconds": 16.45,
+  "log_sha256": "ac8c9db97fa7b3ae4b7161fd766d8d6f99bcec913ad0424463d87f87151a5f52",
+  "log_tail": [
+    "Auto-merging .github/ci/legacy-jobs.yml",
+    "CONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml",
+    "Automatic merge failed; fix conflicts and then commit the result."
+  ],
+  "unmerged": [
+    ".github/ci/legacy-jobs.yml"
+  ],
+  "feature_paths_against_main": [
+    ".github/ci/legacy-jobs.yml",
+    "contracts/market_memory/alfred_revision_source_context.v1.schema.json",
+    "engine/neuralweb/brain_analogues.py",
+    "engine/neuralweb/market_memory_alfred_revision_evidence.py",
+    "tests/test_market_memory_alfred_revision_evidence.py"
+  ],
+  "nonmanifest_blobs": {
+    "contracts/market_memory/alfred_revision_source_context.v1.schema.json": "02b90778f00bb8ce78d07529fa37de685a7db340",
+    "engine/neuralweb/brain_analogues.py": "f8b05b1b0d87358fe108d60ff306c955dcd56bcc",
+    "engine/neuralweb/market_memory_alfred_revision_evidence.py": "8152fb18f55a0e6a9a2389d33e4ac50ae3cdcaf3",
+    "tests/test_market_memory_alfred_revision_evidence.py": "85535c10e400f35a92f5a0e9e5479216882e3a82"
+  }
+}

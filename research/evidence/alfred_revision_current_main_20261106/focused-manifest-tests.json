@@ -1,0 +1,39 @@
+{
+  "schema": "c4.alfred.focused-manifest-tests.v1",
+  "published_head": "15e96ba9aee817351fa0468e39a1704700749ab1",
+  "integration_base": "ede58e46e40d454613b06ef0fbf1fb0f139d24a9",
+  "source_blobs": {
+    "contracts/market_memory/alfred_revision_source_context.v1.schema.json": "02b90778f00bb8ce78d07529fa37de685a7db340",
+    "engine/neuralweb/brain_analogues.py": "f8b05b1b0d87358fe108d60ff306c955dcd56bcc",
+    "engine/neuralweb/market_memory_alfred_revision_evidence.py": "8152fb18f55a0e6a9a2389d33e4ac50ae3cdcaf3",
+    "tests/test_market_memory_alfred_revision_evidence.py": "85535c10e400f35a92f5a0e9e5479216882e3a82",
+    ".github/ci/legacy-jobs.yml": "63c6081c7afd73a1e59295956af8e3e21a5876bc"
+  },
+  "control_source_blobs": {
+    "scripts/run_ci_pack.py": "3cbed58986d571e40af59eb03464e9419e8055a5",
+    "tests/test_ci_pack.py": "96e175b255ac58af554cd362e3f8e1f79dadcdc3",
+    "scripts/ci_scope_dependencies.py": "4c4779479f5bb41741fe7a5db114dfe304350a8a"
+  },
+  "source_and_controls_unchanged": true,
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp",
+    "/tmp/alfred-revision-current-main-c4-20261106/static-test-runtime",
+    "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+  ],
+  "exit_code": 0,
+  "test_seconds": 454.45,
+  "log_sha256": "cfe6a17f29a50d1745326172e51c3ffdfa376494bae858086450a54f79c9ffcc",
+  "log_tail": [
+    "..                                                                       [100%]",
+    "2 passed in 451.44s (0:07:31)"
+  ],
+  "accepted_74_product_cases_replayed": false,
+  "private_source_read_or_runtime_effects": false
+}
