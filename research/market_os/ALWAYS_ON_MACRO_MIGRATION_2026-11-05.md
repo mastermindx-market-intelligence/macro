@@ -1,7 +1,7 @@
 # Always-on Macro and Shared Shell migration
 
 Date: 2026-11-05.
-Status: IMPLEMENTATION IN PROGRESS; bounded Terminal #1285 beta release runtime-accepted; Macro #10780 and Terminal #1311 remain separate source carriers; producer transfer and authenticated generation acceptance remain open.
+Status: IMPLEMENTATION IN PROGRESS; Terminal #1285 and #1311 beta releases runtime-accepted at bb65839; Macro #10780 remains unarmed; producer transfer, generation-backed native integration and authenticated acceptance remain open.
 Tracking issue: https://github.com/mastermindx-market-intelligence/macro/issues/10779
 Operation: `macro-always-on-shared-shell-20261105-c3`.
 Source carrier: `sol/web-macro-always-on-shared-shell-20261105-c3`.
@@ -552,3 +552,38 @@ is unproven. No unchanged retry or alternate carrier was attempted. The CI denia
 holdings effect fence and browser capability failure remain. Macro source is not
 activated, its PR is not armed, and the source updater/writer transfer, complete
 capture, application/native integration and estate rollout remain open.
+
+
+## Captured context and source-barrier recovery ruling — 2026-11-06
+
+The existing Theme, Conditions, Crowding and Central owners now expose explicit-value
+context calculations without changing their mathematical bodies. One captured overlay
+supplies MRS weights and transition settings; full broad prices and the full FINRA
+population retain the original percentile statistics. Market State must be the actual
+captured published snapshot or the resolved incumbent fallback; unbound input cannot
+be represented as captured absence. [Contract](SECTOR_CONTEXT_INPUTS_2026-11-06.md).
+
+The focused suite passed 67 tests. The affected run passed 262 with one unchanged
+sparse-checkout CSS precondition failure. That exact baseline test reproduces the
+missing file and passes unchanged with the exact baseline CSS in an isolated tree.
+[Exact qualification](SECTOR_CONTEXT_INPUTS_SOURCE_REVIEW_2026-11-06.json).
+
+Source-barrier mutation remains held for correctness. The incumbent updater must
+retain fd9 and every Options pre-reset/EXIT/finalization fence. A separate stable-inode
+fd8 source lock must cover the exact recorded reset plus Movers/OHLC/site/both-press
+mirrors. First adoption must install and attest guarded definitions before reset and
+drain old unwrapped services: an exclusive lock alone cannot drain those old readers.
+A durable pending record must survive reboot and block guarded starts, including
+dangling or invalid markers. Recovery must reconcile the original target before
+mutable helper imports; HEAD equality or a completed phase marker alone does not
+prove mirrors or drains survived. No fresh fetch or optimistic new attempt may erase
+that uncertainty. Preserve each of the six units original timer/service intent, masks
+and later operator changes, and preserve original setup/Options finalizers. The
+immutable-helper closure and crash-safe restoration intent are still unresolved;
+no source barrier is claimed deployed or qualified.
+
+Next source work is the genuine member OHLCV private byte binding and the remaining
+captured auxiliary closure. The protected holdings result may not be consumed or
+redispatched. CI registration, a new Terminal managed carrier and browser acceptance
+remain fenced by their recorded capability results. No Macro source activation,
+legacy-writer transfer or estate-wide completion is claimed.

@@ -434,6 +434,19 @@ def _macro_context(region: str = "us") -> dict:
     # (state dict) is untouched — these fields never enter the composite score.
     # Fail-open: absent file → both stay None.
     _fx_display = _read_json("forex", "latest.json") if region != "us" else fx
+    return macro_context_from_inputs(regime=reg, bonds=bonds, forex=_fx_display, region=region)
+
+
+def macro_context_from_inputs(*, regime: dict, bonds: dict, forex: dict, region: str = "us") -> dict:
+    """Existing bilingual macro projection from captured documents, with no reads.
+
+    The adapter supplies the region's regime and the captured global Forex
+    document. Non-US Forex remains display-only, as in the legacy owner.
+    """
+    from copy import deepcopy
+    reg, captured_bonds, captured_fx = deepcopy((regime, bonds, forex))
+    bonds, fx = (captured_bonds, captured_fx) if region == "us" else ({}, {})
+    _fx_display = captured_fx
     cond = reg.get("conditions") or {}
     fc = cond.get("financial_conditions") or {}
     ra = cond.get("risk_appetite") or {}

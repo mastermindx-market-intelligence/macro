@@ -108,6 +108,17 @@ def _regime_anchor(latest: dict | None = None) -> dict:
         except Exception as e:  # noqa: BLE001
             log.warning("central: regime latest.json unreadable: %s", e)
 
+    def risk_reader(value):
+        from engine.conditions import macro_risk_score
+        return macro_risk_score(value)
+    def state_reader(value):
+        from engine import market_state
+        return market_state.load_persisted() or market_state.market_state_snapshot(value)
+    return _regime_anchor_projection(d, macro_risk_reader=risk_reader, market_state_reader=state_reader)
+
+
+def _regime_anchor_projection(d: dict, *, macro_risk_reader, market_state_reader) -> dict:
+    """One original projection; callbacks preserve legacy acquisition ordering."""
     quad, quad_name = d.get("quad"), d.get("quad_name")
     liquidity = d.get("liquidity_overlay") or d.get("liquidity")
     g_score, i_score = d.get("growth_score"), d.get("inflation_score")
@@ -116,8 +127,7 @@ def _regime_anchor(latest: dict | None = None) -> dict:
     # validated risk-OFF scalar: macro_risk_score MRS in [0,1], higher = more risk-OFF.
     mrs = None
     try:
-        from engine.conditions import macro_risk_score
-        mrs = macro_risk_score(d)
+        mrs = macro_risk_reader(d)
     except Exception as e:  # noqa: BLE001
         log.warning("central: macro_risk_score failed: %s", e)
     mrs = mrs or (d.get("macro_risk") if isinstance(d.get("macro_risk"), dict) else None) or {}
@@ -160,8 +170,7 @@ def _regime_anchor(latest: dict | None = None) -> dict:
     state_en, state_zh = gate_state_en, gate_state_zh
     ms_verdict = ms_score = ms_color = radar_state = None
     try:
-        from engine import market_state as _ms
-        snap = _ms.load_persisted() or _ms.market_state_snapshot(d)
+        snap = market_state_reader(d)
         if snap:
             state_en = snap.get("label_en") or state_en
             state_zh = snap.get("label_zh") or state_zh
@@ -186,6 +195,19 @@ def _regime_anchor(latest: dict | None = None) -> dict:
         "caution": bool(caution),
         "validated": True,
     }
+
+
+def regime_anchor_from_inputs(latest: dict | None, *, macro_risk: dict | None,
+                              market_state: dict | None) -> dict:
+    """Project captured resolved readings; no persisted-state read or recomputation.
+
+    The capture adapter resolves persisted MarketState versus its existing-owner
+    fallback. None means that resolution is unavailable, not permission to load.
+    """
+    from copy import deepcopy
+    data, risk, state = deepcopy((latest if latest is not None else {}, macro_risk, market_state))
+    return _regime_anchor_projection(data, macro_risk_reader=lambda value: risk,
+                                    market_state_reader=lambda value: state)
 
 
 def _aggregate_heat(hm: dict) -> dict:
@@ -275,6 +297,34 @@ def market_context() -> dict:
     except Exception as e:  # noqa: BLE001
         log.debug("central: compute_fragility failed: %s", e)
     return {**anc, "heat": _heat_table(), "_crowd_by_ticker": crowd}
+
+
+def market_context_from_inputs(*, latest: dict | None, macro_overlay: dict | None,
+                               market_state: dict | None, heatmap: dict | None,
+                               closes, short_interest, benchmark) -> dict:
+    """Compute existing Central context from one captured source set.
+
+    MarketState must already be resolved by its incumbent owner. Price/FINRA
+    inputs retain the complete broad cross-sections; theme-only subsets would
+    change the original percentile calculation. No None argument permits reads.
+    """
+    from copy import deepcopy
+    from engine.conditions import macro_risk_score_from_inputs
+    from engine.crowding import compute_fragility_from_inputs
+    latest, macro_overlay, market_state, heatmap = deepcopy((latest, macro_overlay, market_state, heatmap))
+    try:
+        risk = macro_risk_score_from_inputs(latest if latest is not None else {}, macro_overlay=macro_overlay)
+    except Exception as exc:  # noqa: BLE001 — preserve the incumbent persisted-risk fallback
+        log.warning("central: macro_risk_score failed: %s", exc)
+        risk = None
+    anchor = regime_anchor_from_inputs(latest, macro_risk=risk, market_state=market_state)
+    crowd = compute_fragility_from_inputs(closes=closes, si=short_interest, bench=benchmark)
+    try:
+        heat = _aggregate_heat(heatmap) if heatmap is not None else {}
+    except Exception as exc:  # noqa: BLE001 — same optional heat context contract
+        log.debug("central: heatmap aggregate failed: %s", exc)
+        heat = {}
+    return {**anchor, "heat": heat, "_crowd_by_ticker": crowd}
 
 
 # =========================================================================== #
