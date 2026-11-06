@@ -1164,6 +1164,12 @@ _RECO_WHY = {
 
 
 # ----------------------------------------------- backtested signal-strength grading
+def signal_calibration_from_document(document):
+    """Existing nested verdict from a captured document; preserve explicit nulls."""
+    from copy import deepcopy
+    return deepcopy(document.get("verdict", {})) if isinstance(document, dict) else {}
+
+
 def _signal_calibration() -> dict:
     """The backtested signal-PRECISION verdict from scripts.calibrate_baskets
     (data/strategies/baskets_calibration.json — the 27y SPDR-sector proxy kill-test).
@@ -1174,7 +1180,7 @@ def _signal_calibration() -> dict:
     try:
         p = config.data_dir() / "strategies" / "baskets_calibration.json"
         d = json.loads(p.read_text()) if p.exists() else {}
-        return d.get("verdict", {}) if isinstance(d, dict) else {}
+        return signal_calibration_from_document(d)
     except Exception:  # noqa: BLE001 — grading is enrichment, never fatal
         return {}
 
@@ -1563,37 +1569,57 @@ def acquire_theme_score_inputs(region: str = "us") -> ThemeScoreInputs | None:
 
 
 def _acquire_earnings_calendar(panel: dict) -> dict:
-    """READ-ONLY acquisition of the near-earnings chip's calendar.
-
-    Display-only (MLC-R10): never gates, orders, or scores any basket. Fail-open: an
-    absent/stale store simply leaves near_earnings_count absent from the payload. The
-    freshness window is measured against the PANEL session, never a wall clock.
-    """
-    out: dict = {}
+    """Legacy acquisition with the original panel-before-path/read ordering."""
     try:
-        idx = panel["idx"]
-        today = idx.max().date()
+        today = panel["idx"].max().date()
         earn_path = config.data_dir() / "earnings" / "earnings.parquet"
         if earn_path.exists():
             import pandas as _pd_w5
             earn_df = _pd_w5.read_parquet(earn_path)
-            # Only use the store if as_of is within 10 trading days (mirrors earn_blackout SLA)
-            earn_as_of_col = earn_df.get("as_of") if hasattr(earn_df, "get") else None
-            earn_fresh = False
-            if earn_as_of_col is not None and not earn_as_of_col.empty:
-                earn_most_recent = _pd_w5.Timestamp(str(earn_as_of_col.dropna().max()))
-                if earn_most_recent.tzinfo is not None:
-                    earn_most_recent = earn_most_recent.tz_convert(None)
-                age_cal = (_pd_w5.Timestamp(today) - earn_most_recent).days
-                earn_fresh = age_cal <= 14  # generous: 2 calendar weeks
-            if earn_fresh:
-                for tk, row in earn_df.iterrows():
-                    nd = row.get("next_date") if hasattr(row, "get") else None
-                    if nd and str(nd) not in ("", "nan", "None"):
-                        out[str(tk).upper()] = str(nd)[:10]
-    except Exception:  # noqa: BLE001 — tripwire-level; earnings chip must never crash the desk
+            return _earnings_calendar_projection(earn_df, today=today, timestamp_parser=_pd_w5.Timestamp)
+    except Exception:  # noqa: BLE001 — display-only and fail-open as before
+        pass
+    return {}
+
+
+def _earnings_calendar_projection(earn_df, *, today, timestamp_parser) -> dict:
+    """Shared incumbent freshness/row projection, including its 14-calendar-day rule."""
+    out: dict = {}
+    try:
+        import pandas as _pd_w5
+        earn_as_of_col = earn_df.get("as_of") if hasattr(earn_df, "get") else None
+        earn_fresh = False
+        if earn_as_of_col is not None and not earn_as_of_col.empty:
+            earn_most_recent = timestamp_parser(str(earn_as_of_col.dropna().max()))
+            if earn_most_recent.tzinfo is not None:
+                earn_most_recent = earn_most_recent.tz_convert(None)
+            age_cal = (_pd_w5.Timestamp(today) - earn_most_recent).days
+            earn_fresh = age_cal <= 14
+        if earn_fresh:
+            for tk, row in earn_df.iterrows():
+                nd = row.get("next_date") if hasattr(row, "get") else None
+                if nd and str(nd) not in ("", "nan", "None"):
+                    out[str(tk).upper()] = str(nd)[:10]
+    except Exception:  # noqa: BLE001 — same whole-calendar fail-open behavior
         out = {}
     return out
+
+
+def earnings_calendar_from_inputs(earnings, *, panel_session) -> dict:
+    """Project captured earnings using an explicit panel date and absolute vintage.
+
+    Relative date words are unresolved source data here, never a request to read
+    the wall clock. The legacy wrapper retains its original timestamp parser.
+    This is display-only and does not change scores, order or trade authority.
+    """
+    from datetime import date, datetime
+    if type(panel_session) is not date or earnings is None:
+        return {}
+    def absolute_timestamp(value):
+        return pd.Timestamp(datetime.fromisoformat(value))
+    return _earnings_calendar_projection(earnings, today=panel_session,
+                                        timestamp_parser=absolute_timestamp)
+
 
 
 def prepare_theme_basket_rows(panel: dict, *, region: str, group_flow_cfg: dict,

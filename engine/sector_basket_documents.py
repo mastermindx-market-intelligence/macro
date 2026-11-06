@@ -235,6 +235,7 @@ class SectorDocumentContext:
     grader_calls: object
     grader_frozen: object
     auxiliary_evidence: dict
+    fusion_macro_beta_table: Mapping | None = None
 
 
 @dataclass(frozen=True)
@@ -280,6 +281,9 @@ def compose_sector_documents(*, basket_inputs, theme_inputs, allocation_inputs,
     if (type(evaluation_date) is not date or not isinstance(built_at, datetime)
             or built_at.tzinfo is None or built_at.utcoffset() is None):
         raise SectorDocumentCompositionError("explicit_evaluation_and_aware_build_clocks_required")
+    if context.fusion_macro_beta_table is not None and (
+            not isinstance(context.fusion_macro_beta_table, Mapping) or context.fusion_calibrations):
+        raise SectorDocumentCompositionError("ambiguous_or_invalid_fusion_source")
     built = built_at.astimezone(timezone.utc)
     core_session = _session(context.core_source_session, "core_source_session")
     baseline = _session(context.baseline_session, "baseline_session")
@@ -397,13 +401,23 @@ def compose_sector_documents(*, basket_inputs, theme_inputs, allocation_inputs,
         basket_raw=basket_raw, action_board=action, generated_utc=built.isoformat())
     board_raw = encode(board_document)
 
+    calibrations = value.fusion_calibrations
+    if value.fusion_macro_beta_table is not None:
+        if not isinstance(value.fusion_macro_beta_table, Mapping) or calibrations:
+            raise SectorDocumentCompositionError("ambiguous_or_invalid_fusion_source")
+        # The captured adapter selects this path. Reuse the exact normalized risk
+        # calibration that produced the cycle spine; never accept an unrelated map.
+        calibrations = sector_central.fusion_calibrations_from_inputs(cycle_data,
+            macro_beta_table=dict(value.fusion_macro_beta_table),
+            risk_calibration=cycle_inputs.calculation_inputs.risk_calibration)
+
     central_data = sector_central.compute_from_inputs(sector_central.SectorCentralInputs(
         cycle_spine=cycle_data, market_context=value.market_context,
         closes=cycle_inputs.closes_tr, narrative_rotation=allocation,
         membership_document=basket_inputs.membership,
         membership_unavailable=value.membership_unavailable,
         rotation_artifact=value.rotation_artifact, rotation_events=value.rotation_events,
-        fusion_calibrations=value.fusion_calibrations), evaluation_date=evaluation_date)
+        fusion_calibrations=calibrations), evaluation_date=evaluation_date)
     if not isinstance(central_data, dict) or not central_data.get("sectors"):
         raise SectorDocumentCompositionError("central_calculation_unavailable")
     if central_data.get("as_of") != core_session:

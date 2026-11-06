@@ -453,19 +453,51 @@ def fusion_calibration_key(rec: dict) -> FusionCalibrationKey:
 
 
 def _resolve_fusion_calibration(rec: dict) -> tuple[float, float]:
-    """Legacy acquisition only; retain the established fail-soft calibration rules."""
+    """Legacy acquisition only; retain independent fail-soft defaults and order."""
+    def beta_reader(key):
+        from engine.conditions import sector_macro_beta
+        return sector_macro_beta(key)
+    def risk_reader(state, family):
+        from engine.cycles import risk_size_mult
+        return risk_size_mult(state, family)
+    return _fusion_calibration_values(rec, beta_reader=beta_reader, risk_reader=risk_reader)
+
+
+def _fusion_calibration_values(rec, *, beta_reader, risk_reader):
     key, family, state = fusion_calibration_key(rec)
     try:
-        from engine.conditions import sector_macro_beta
-        beta = sector_macro_beta(key)
+        beta = beta_reader(key)
     except Exception:  # noqa: BLE001
         beta = 0.0
     try:
-        from engine.cycles import risk_size_mult
-        size_mult = float(risk_size_mult(state, family))
+        size_mult = float(risk_reader(state, family))
     except Exception:  # noqa: BLE001
         size_mult = 1.0
     return beta, size_mult
+
+
+def fusion_calibration_from_inputs(rec, *, macro_beta_table, risk_calibration):
+    """Original independent beta/risk lookups using captured owner values."""
+    from copy import deepcopy
+    from engine.conditions import sector_macro_beta_from_inputs
+    from engine.cycles import risk_size_mult_from_inputs
+    rec, table, risk = deepcopy((rec, macro_beta_table, risk_calibration))
+    return _fusion_calibration_values(rec,
+        beta_reader=lambda key: sector_macro_beta_from_inputs(key, table=table),
+        risk_reader=lambda state, family: risk_size_mult_from_inputs(
+            state, family, risk_calibration=risk))
+
+
+def fusion_calibrations_from_inputs(cycle_spine, *, macro_beta_table, risk_calibration):
+    """Derive the actual Central lookup keys from the already computed cycle spine."""
+    result = {}
+    for rec in [*cycle_spine["sectors"], *cycle_spine.get("baskets", [])]:
+        key = fusion_calibration_key(rec)
+        if key not in result:
+            result[key] = fusion_calibration_from_inputs(rec, macro_beta_table=macro_beta_table,
+                                                        risk_calibration=risk_calibration)
+    return result
+
 
 
 def _fuse(rec: dict, mkt: dict, n_peers: int, trend: dict | None = None,

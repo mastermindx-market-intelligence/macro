@@ -617,3 +617,42 @@ are ready design requirements, not implemented or deployed protection.
 Next: complete the auxiliary captured-value projections and composition-input
 adapter, then implement and qualify the existing updater/setup barrier. Required
 holdings remain protected, and original CI/Terminal/browser gates still bind.
+
+
+## Auxiliary value projections and embedded updater design — 2026-11-06
+
+Captured earnings, aggregate breadth, risk/entry configuration, volatility selection
+and gates, and Theme/Narrative calibration now use the incumbent shared value
+projections. A deliberate freshness correction removes import-time fallback
+settings from fresh CycleCalculationInputs acquisition. Central fusion may now be
+derived from the actual computed cycle spine and that same captured risk calibration,
+with a supplied macro-beta table; mixed manual-map inputs refuse.
+[Contract](SECTOR_AUXILIARY_VALUE_PROJECTIONS_2026-11-06.md).
+
+The two new suites pass 97 tests. The affected engine/composer suites pass 447 with
+two unchanged real-cache Narrative smoke skips; exact reasons are separately
+confirmed. Literal prior functions and the byte-identical composer fixture support
+parity. [Exact proof](SECTOR_AUXILIARY_VALUE_PROJECTIONS_SOURCE_REVIEW_2026-11-06.json).
+
+For source-barrier implementation, prefer the smaller embedded installed-owner
+design: macro-update handles a closed early --live-lane fast/snapshot/bars branch,
+takes only fd8 SH, validates journal state using isolated stdlib code, then execs
+the original Python lane while retaining the lock. Main update retains fd9 and
+its unchanged Options finalizers. No second installed helper/control owner is needed.
+Bind pending recovery to the executing script bytes via /proc/$$/fd/255 and the
+original three-helper capsule. Atomic same-directory rename plus fsync is required
+at both existing updater installation sites. Any unresolved journal, including
+SOURCE_READY restoration, blocks owner replacement and a new source attempt.
+
+First adoption uses a narrow install-only entrance in existing setup.sh under fd9,
+installs the qualified updater without resetting the checkout, and returns before
+the separately observed ordinary updater invocation. Full setup must not use
+bootstrap_repo.sh's direct reset on enrolled/partial live installations. Existing,
+fresh and partial live-setup states must be distinguished from all six unit facts
+and existing public/state footprints; disabled-fast is not first-install proof.
+These are implementation requirements, not deployed protection.
+
+Next safe parallel scopes are bounded auxiliary-byte capture and the existing
+updater/setup barrier. The original protected holdings result and earlier failed
+worker attempts are not consumed or retried; new labor requires its own admitted
+first attempt. Runtime/application/native/whole-estate acceptance remains open.

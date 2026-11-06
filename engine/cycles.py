@@ -57,6 +57,20 @@ _ENTRY_SETTING_KEYS = (
 )
 
 
+_ENTRY_SETTING_DEFAULTS = {
+    "stoch_oversold": 25.0, "stoch_overbought": 80.0,
+    "daily_rsi_extension_cap": 62.0, "stretch_block_pct": 30.0,
+    "approach_days": 2, "overextended_osc_exempt_below_pct": -10.0,
+}
+
+
+def effective_entry_settings_from_inputs(entry_settings: dict | None) -> dict:
+    """Current explicit settings with source defaults, never import-time overrides."""
+    settings = entry_settings or {}
+    return {key: (int if key == "approach_days" else float)(settings.get(key, default))
+            for key, default in _ENTRY_SETTING_DEFAULTS.items()}
+
+
 @dataclass(frozen=True)
 class CycleCalculationInputs:
     """Captured values used by every nested cycle calculation in one invocation."""
@@ -145,15 +159,7 @@ def acquire_calculation_inputs(*, evaluation_date: str,
         macro_overlay=settings.get("macro_overlay") or {},
         vol_regime_overlay=settings.get("vol_regime_overlay") or {},
         vol_overlay_gate=vol_regime.load_overlay_gate() or {},
-        entry_gate={
-            "stoch_oversold": float(entry.get("stoch_oversold", _EG_STOCH_OS)),
-            "stoch_overbought": float(entry.get("stoch_overbought", _EG_STOCH_OB)),
-            "daily_rsi_extension_cap": float(entry.get("daily_rsi_extension_cap", _EG_DAILY_RSI_MAX)),
-            "stretch_block_pct": float(entry.get("stretch_block_pct", _EG_STRETCH_BLOCK)),
-            "approach_days": int(entry.get("approach_days", _EG_APPROACH_DAYS)),
-            "overextended_osc_exempt_below_pct": float(entry.get(
-                "overextended_osc_exempt_below_pct", _EG_OSC_EXEMPT_BELOW)),
-        },
+        entry_gate=effective_entry_settings_from_inputs(entry),
         reference_sessions={session_anchor._market_key(m):
             session_anchor.capture_reference_sessions(m, asof=day) for m in markets},
     )
@@ -255,6 +261,27 @@ _RISK_CALIB_LOADED: bool = False
 _RISK_CALIB_LOGGED: set = set()   # (family, state) pairs whose non-1.0 override was logged
 
 
+def _risk_calibration_values(d) -> dict:
+    """Original whole-document transformation; malformed cells raise as before."""
+    rsm = d.get("risk_size_mult") or {}
+    clamp = d.get("mult_clamp") or [0.5, 1.5]
+    out: dict = {}
+    for fam, states in rsm.items():
+        out[fam] = {}
+        for st, cell in states.items():
+            m = cell.get("risk_size_mult", 1.0) if isinstance(cell, dict) else float(cell)
+            out[fam][st] = float(min(max(m, clamp[0]), clamp[1]))
+    return out
+
+
+def risk_calibration_from_document(document) -> dict:
+    """Resolve one captured calibration; one malformed cell closes the whole map."""
+    try:
+        return _risk_calibration_values(deepcopy(document))
+    except Exception:  # noqa: BLE001 — preserve the incumbent all-1.0 fallback
+        return {}
+
+
 def _load_risk_calib() -> dict:
     """Load ladder_risk_calibration.json -> {family: {state: mult}}. Returns {} on any
     error (fallback to all-1.0). Mirrors _load_fitted_bands (W2.8)."""
@@ -264,14 +291,7 @@ def _load_risk_calib() -> dict:
             return {}
         import json as _json
         d = _json.loads(p.read_text(encoding="utf-8"))
-        rsm = d.get("risk_size_mult") or {}
-        clamp = d.get("mult_clamp") or [0.5, 1.5]
-        out: dict = {}
-        for fam, states in rsm.items():
-            out[fam] = {}
-            for st, cell in states.items():
-                m = cell.get("risk_size_mult", 1.0) if isinstance(cell, dict) else float(cell)
-                out[fam][st] = float(min(max(m, clamp[0]), clamp[1]))
+        out = _risk_calibration_values(d)
         log.info("cycles: loaded ladder risk calibration from %s (validated=%s, any_bound=%s)",
                  p, d.get("validated"), d.get("any_cell_bound"))
         return out
@@ -287,6 +307,12 @@ _RISK_FAMILY_ALIAS = {"sector": "us_sector", "us_sector": "us_sector",
                       "country": "country", "equity": "us_sector"}
 
 
+def risk_size_mult_from_inputs(state: str, family: str | None, *, risk_calibration: dict) -> float:
+    """Original family alias and state lookup with no cache or loader binding."""
+    fam = _RISK_FAMILY_ALIAS.get(family or "", family)
+    return risk_calibration.get(fam, {}).get(state, 1.0)
+
+
 def risk_size_mult(state: str, family: str | None) -> float:
     """Fitted SIZE multiplier in [0.5,1.5] for (state, family). 1.0 when no artifact, no
     family, or the cell did not earn a weight (null-cell discipline). Additive to sizing,
@@ -294,8 +320,7 @@ def risk_size_mult(state: str, family: str | None) -> float:
     global _RISK_CALIB, _RISK_CALIB_LOADED  # noqa: PLW0603
     captured = _CALCULATION_INPUTS.get()
     if captured is not None:
-        fam = _RISK_FAMILY_ALIAS.get(family or "", family)
-        return captured.risk_calibration.get(fam, {}).get(state, 1.0)
+        return risk_size_mult_from_inputs(state, family, risk_calibration=captured.risk_calibration)
     if not _RISK_CALIB_LOADED:
         _RISK_CALIB = _load_risk_calib()
         _RISK_CALIB_LOADED = True
@@ -2312,12 +2337,13 @@ def _entry_gate_cfg() -> dict:
 
 
 _EG = _entry_gate_cfg()
-_EG_STOCH_OS = float(_EG.get("stoch_oversold", 25.0))               # 3D StochRSI "from oversold" line
-_EG_STOCH_OB = float(_EG.get("stoch_overbought", 80.0))            # 3D/daily StochRSI overbought = chase
-_EG_DAILY_RSI_MAX = float(_EG.get("daily_rsi_extension_cap", 62.0))  # daily RSI14 hotter than this = too late
-_EG_STRETCH_BLOCK = float(_EG.get("stretch_block_pct", 30.0))     # % over 200dma = overextended chase
-_EG_APPROACH_DAYS = int(_EG.get("approach_days", 2))               # 3D "about to cross" ETA cap (trading days)
-_EG_OSC_EXEMPT_BELOW = float(_EG.get("overextended_osc_exempt_below_pct", -10.0))
+_EG_EFFECTIVE = effective_entry_settings_from_inputs(_EG)
+_EG_STOCH_OS = _EG_EFFECTIVE["stoch_oversold"]
+_EG_STOCH_OB = _EG_EFFECTIVE["stoch_overbought"]
+_EG_DAILY_RSI_MAX = _EG_EFFECTIVE["daily_rsi_extension_cap"]
+_EG_STRETCH_BLOCK = _EG_EFFECTIVE["stretch_block_pct"]
+_EG_APPROACH_DAYS = _EG_EFFECTIVE["approach_days"]
+_EG_OSC_EXEMPT_BELOW = _EG_EFFECTIVE["overextended_osc_exempt_below_pct"]
 # When price is this far BELOW the 200dma, the oscillator legs (StochRSI/RSI14) are
 # suppressed: post-washout the look-back range is compressed so any bounce pins
 # StochRSI > 80 (range-compression noise, not extension). The stretch leg

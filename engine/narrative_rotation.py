@@ -666,6 +666,12 @@ def _validation_meta(fname: str = "thematic_rotation_phase0.json") -> dict:
         return {}
 
 
+def sizing_calibration_from_document(document):
+    """Existing nested verdict from a captured document; preserve explicit nulls."""
+    from copy import deepcopy
+    return deepcopy(document.get("sizing", {})) if isinstance(document, dict) else {}
+
+
 def _sizing_calibration() -> dict:
     """The book-level vol-target SIZING verdict from scripts.calibrate_baskets (the 27y
     SPDR-sector proxy). Display-framed; the signal LOGIC is shared cross-region so the
@@ -673,7 +679,7 @@ def _sizing_calibration() -> dict:
     try:
         p = config.data_dir() / "strategies" / "baskets_calibration.json"
         d = json.loads(p.read_text()) if p.exists() else {}
-        return d.get("sizing", {}) if isinstance(d, dict) else {}
+        return sizing_calibration_from_document(d)
     except Exception:  # noqa: BLE001
         return {}
 

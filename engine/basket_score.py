@@ -482,6 +482,19 @@ def market_concentration(region: str = "us") -> dict:
         b = pd.read_parquet(config.data_dir() / _BREADTH_DIR.get(region, "breadth") / "breadth.parquet")
     except Exception:  # noqa: BLE001
         return {}
+    return _market_concentration_values(b)
+
+
+def market_concentration_from_inputs(breadth: pd.DataFrame | None) -> dict:
+    """Original daily/3/5/21-row summary of the captured aggregate breadth tape.
+
+    This is not reconstructed from constituent panels. None is resolved absence;
+    malformed present tapes retain the incumbent calculation's failure semantics.
+    """
+    return {} if breadth is None else _market_concentration_values(breadth)
+
+
+def _market_concentration_values(b: pd.DataFrame) -> dict:
     if b.empty:
         return {}
     last = b.iloc[-1]
