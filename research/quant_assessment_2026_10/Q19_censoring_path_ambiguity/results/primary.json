@@ -1,0 +1,1004 @@
+{
+ "b": 0.05355660116246886,
+ "bootstrap": {
+  "E": {
+   "block_len": 5,
+   "hi": 0.09074410163339383,
+   "lo": 0.0021551724137931034,
+   "n_blocks": 15,
+   "n_boot_finite": 2000,
+   "point": 0.03404255319148936,
+   "status": "ok"
+  },
+  "E_p": {
+   "block_len": 5,
+   "hi": 0.034420289855072464,
+   "lo": 0.012474012474012475,
+   "n_blocks": 15,
+   "n_boot_finite": 2000,
+   "point": 0.02127659574468085,
+   "status": "ok"
+  },
+  "block_dates": [
+   "2026-09-03",
+   "2026-09-04",
+   "2026-09-08",
+   "2026-09-09",
+   "2026-09-10",
+   "2026-09-11",
+   "2026-09-14",
+   "2026-09-15",
+   "2026-09-16",
+   "2026-09-17",
+   "2026-09-18",
+   "2026-09-21",
+   "2026-09-22",
+   "2026-09-23",
+   "2026-09-24"
+  ],
+  "coarse_ambiguous_share": {
+   "block_len": 5,
+   "hi": 0.12737642585551331,
+   "lo": 0.017662755133886775,
+   "n_blocks": 15,
+   "n_boot_finite": 2000,
+   "point": 0.059574468085106386,
+   "status": "ok"
+  }
+ },
+ "bounds_coarse_B3": {
+  "denominator": {
+   "n_administrative_pending": 122,
+   "n_assumed_noninformative": 0,
+   "n_informative_unknown": 402,
+   "n_invalid": 12,
+   "n_observed": 705,
+   "n_total": 1241,
+   "n_unknown": 536
+  },
+  "dropped_units": 0,
+  "full_denominator": {
+   "lower_first": [
+    0.11281224818694602,
+    0.5785656728444802
+   ],
+   "upper_first": [
+    0.21837228041901693,
+    0.6841257050765511
+   ]
+  },
+  "observed": {
+   "ambiguous_share": 0.059574468085106386,
+   "lower_first": [
+    0.19858156028368795,
+    0.2581560283687943
+   ],
+   "optimistic_upper_first": 0.44397163120567373,
+   "pessimistic_upper_first": 0.3843971631205674,
+   "upper_first": [
+    0.3843971631205674,
+    0.44397163120567373
+   ]
+  },
+  "pending_counted_as_loss": false,
+  "states": {
+   "ambiguous": 42,
+   "lower_first": 140,
+   "neither": 252,
+   "upper_first": 271
+  }
+ },
+ "bounds_refined_proposed": {
+  "denominator": {
+   "n_administrative_pending": 122,
+   "n_assumed_noninformative": 0,
+   "n_informative_unknown": 402,
+   "n_invalid": 12,
+   "n_observed": 705,
+   "n_total": 1241,
+   "n_unknown": 536
+  },
+  "dropped_units": 0,
+  "full_denominator": {
+   "lower_first": [
+    0.13215149073327961,
+    0.5664786462530218
+   ],
+   "upper_first": [
+    0.23045930701047543,
+    0.6647864625302176
+   ]
+  },
+  "observed": {
+   "ambiguous_share": 0.00425531914893617,
+   "lower_first": [
+    0.2326241134751773,
+    0.23687943262411348
+   ],
+   "optimistic_upper_first": 0.4099290780141844,
+   "pessimistic_upper_first": 0.4056737588652482,
+   "upper_first": [
+    0.4056737588652482,
+    0.4099290780141844
+   ]
+  },
+  "pending_counted_as_loss": false,
+  "states": {
+   "ambiguous": 3,
+   "lower_first": 164,
+   "neither": 252,
+   "upper_first": 286
+  }
+ },
+ "conventions_coarse": {
+  "B1_pessimistic_upper_first": 0.3843971631205674,
+  "B2_optimistic_upper_first": 0.44397163120567373,
+  "B3_identified_upper_first_bounds": [
+   0.3843971631205674,
+   0.44397163120567373
+  ]
+ },
+ "cumulative_incidence_test": {
+  "assumptions": {
+   "ambiguous_events": "interval-ambiguous; bounded by assignment to either cause",
+   "basis": "10d-pending units are censored by the vintage calendar cutoff",
+   "competing_events": [
+    "upper",
+    "lower"
+   ],
+   "informative_classes_never_benign": [
+    "informative_unknown",
+    "invalid"
+   ],
+   "noninformative_censoring_asserted": true
+  },
+  "bounds": {
+   "lower": {
+    "lower": [
+     0.0016116035455278,
+     0.020145044319097503,
+     0.0684931506849315,
+     0.0991136180499597,
+     0.13215149073327961
+    ],
+    "upper": [
+     0.0040290088638195,
+     0.0362610797743755,
+     0.09427880741337631,
+     0.11925866236905722,
+     0.23045930701047543
+    ]
+   },
+   "upper": {
+    "lower": [
+     0.33521353746978244,
+     0.35374697824335216,
+     0.40209508460918614,
+     0.5318291700241741,
+     0.5664786462530218
+    ],
+    "upper": [
+     0.33763094278807415,
+     0.3698630136986301,
+     0.42788074133763093,
+     0.5519742143432715,
+     0.6647864625302176
+    ]
+   }
+  },
+  "failed_conditions": [
+   "informative_or_invalid_censoring_present",
+   "interval_ambiguous_events_present"
+  ],
+  "grid": [
+   0.0,
+   1.0,
+   3.0,
+   5.0,
+   10.0
+  ],
+  "n_units": 1241,
+  "status": "bounds_only"
+ },
+ "episode_counts_by_path_class": {
+  "administrative_pending": 4542,
+  "informative_unknown": 4093,
+  "invalid": 928,
+  "observed": 19946
+ },
+ "episode_weighted": {
+  "E": 0.06060158155346981,
+  "n_observed_episodes": 13531
+ },
+ "fallback_detail": {
+  "eod:incomplete:incomplete|decision_after_target_close": 70,
+  "nested:non_nested_extrema": 1
+ },
+ "fallbacks": {
+  "eod:incomplete": 70,
+  "nested:non_nested_extrema": 1
+ },
+ "falsifier_b": {
+  "attrition_dominates": true,
+  "excess": 0.4300718363708059,
+  "full_denominator_width": 0.4343271555197421,
+  "observed_width": 0.004255319148936176
+ },
+ "honest_n": {
+  "test_dates_all": 16,
+  "test_dates_with_observed": 15,
+  "test_paths_all": 1241,
+  "test_paths_observed": 705,
+  "test_tickers_observed": 56
+ },
+ "horizon": "10d",
+ "leave_one_ticker_out": {
+  "by_ticker": {
+   "AAPL": 0.03587443946188341,
+   "AMAT": 0.03468208092485549,
+   "AMD": 0.028358208955223882,
+   "AMZN": 0.03519061583577713,
+   "ANET": 0.034482758620689655,
+   "APH": 0.03418803418803419,
+   "APP": 0.034383954154727794,
+   "AVGO": 0.03513909224011713,
+   "BA": 0.034532374100719423,
+   "CAT": 0.0345821325648415,
+   "CEG": 0.03428571428571429,
+   "CRM": 0.03473227206946455,
+   "CRWD": 0.03473227206946455,
+   "D": 0.03409090909090909,
+   "DE": 0.034236804564907276,
+   "ETN": 0.03428571428571429,
+   "GE": 0.03443328550932568,
+   "GEV": 0.03443328550932568,
+   "GLD": 0.03483309143686502,
+   "GOOGL": 0.03498542274052478,
+   "HON": 0.03409090909090909,
+   "HWM": 0.03418803418803419,
+   "IBM": 0.03428571428571429,
+   "IWM": 0.03529411764705882,
+   "KLAC": 0.034236804564907276,
+   "KRE": 0.03418803418803419,
+   "LMT": 0.0345821325648415,
+   "LRCX": 0.03473227206946455,
+   "META": 0.03560830860534125,
+   "MRVL": 0.027576197387518143,
+   "MSFT": 0.03566121842496285,
+   "MU": 0.023494860499265784,
+   "NEE": 0.034139402560455195,
+   "NRG": 0.034236804564907276,
+   "NVDA": 0.03560830860534125,
+   "ORCL": 0.035036496350364967,
+   "PANW": 0.03468208092485549,
+   "PCG": 0.03428571428571429,
+   "PH": 0.03409090909090909,
+   "PLTR": 0.035036496350364967,
+   "PWR": 0.03409090909090909,
+   "QCOM": 0.033093525179856115,
+   "QQQ": 0.035555555555555556,
+   "RTX": 0.03409090909090909,
+   "SMH": 0.033478893740902474,
+   "SOXX": 0.029498525073746312,
+   "SPY": 0.03560830860534125,
+   "TSLA": 0.03582089552238806,
+   "VRT": 0.034482758620689655,
+   "VST": 0.034236804564907276,
+   "XBI": 0.03409090909090909,
+   "XLE": 0.03409090909090909,
+   "XLF": 0.034139402560455195,
+   "XLK": 0.03428571428571429,
+   "XLP": 0.03409090909090909,
+   "XLY": 0.03409090909090909
+  },
+  "min_E": 0.023494860499265784
+ },
+ "mixed_class_paths": 7,
+ "n_train_widths": 529,
+ "path_counts_by_class": {
+  "administrative_pending": 148,
+  "informative_unknown": 643,
+  "invalid": 23,
+  "observed": 1234
+ },
+ "per_date": {
+  "2026-09-03": {
+   "E_num": 0,
+   "n_observed": 45,
+   "n_units": 72
+  },
+  "2026-09-04": {
+   "E_num": 2,
+   "n_observed": 44,
+   "n_units": 58
+  },
+  "2026-09-08": {
+   "E_num": 5,
+   "n_observed": 38,
+   "n_units": 67
+  },
+  "2026-09-09": {
+   "E_num": 4,
+   "n_observed": 36,
+   "n_units": 53
+  },
+  "2026-09-10": {
+   "E_num": 5,
+   "n_observed": 39,
+   "n_units": 67
+  },
+  "2026-09-11": {
+   "E_num": 7,
+   "n_observed": 44,
+   "n_units": 65
+  },
+  "2026-09-14": {
+   "E_num": 0,
+   "n_observed": 56,
+   "n_units": 88
+  },
+  "2026-09-15": {
+   "E_num": 0,
+   "n_observed": 5,
+   "n_units": 5
+  },
+  "2026-09-16": {
+   "E_num": 0,
+   "n_observed": 11,
+   "n_units": 11
+  },
+  "2026-09-17": {
+   "E_num": 1,
+   "n_observed": 41,
+   "n_units": 75
+  },
+  "2026-09-18": {
+   "E_num": 0,
+   "n_observed": 49,
+   "n_units": 93
+  },
+  "2026-09-21": {
+   "E_num": 0,
+   "n_observed": 152,
+   "n_units": 258
+  },
+  "2026-09-22": {
+   "E_num": 0,
+   "n_observed": 71,
+   "n_units": 84
+  },
+  "2026-09-23": {
+   "E_num": 0,
+   "n_observed": 67,
+   "n_units": 83
+  },
+  "2026-09-24": {
+   "E_num": 0,
+   "n_observed": 7,
+   "n_units": 84
+  },
+  "2026-09-25": {
+   "E_num": 0,
+   "n_observed": 0,
+   "n_units": 78
+  }
+ },
+ "per_date_classes_all": {
+  "2026-08-10": {
+   "informative_unknown": 25,
+   "observed": 30
+  },
+  "2026-08-11": {
+   "informative_unknown": 17,
+   "invalid": 1,
+   "observed": 32
+  },
+  "2026-08-12": {
+   "informative_unknown": 12,
+   "observed": 25
+  },
+  "2026-08-13": {
+   "observed": 4
+  },
+  "2026-08-20": {
+   "informative_unknown": 26,
+   "observed": 47
+  },
+  "2026-08-21": {
+   "informative_unknown": 14,
+   "invalid": 1,
+   "observed": 51
+  },
+  "2026-08-24": {
+   "informative_unknown": 24,
+   "invalid": 2,
+   "observed": 43
+  },
+  "2026-08-25": {
+   "informative_unknown": 16,
+   "observed": 43
+  },
+  "2026-08-26": {
+   "informative_unknown": 11,
+   "observed": 42
+  },
+  "2026-08-27": {
+   "informative_unknown": 23,
+   "observed": 50
+  },
+  "2026-08-28": {
+   "informative_unknown": 20,
+   "observed": 40
+  },
+  "2026-08-31": {
+   "informative_unknown": 15,
+   "invalid": 1,
+   "observed": 36
+  },
+  "2026-09-01": {
+   "informative_unknown": 21,
+   "invalid": 5,
+   "observed": 45
+  },
+  "2026-09-02": {
+   "informative_unknown": 17,
+   "invalid": 1,
+   "observed": 41
+  },
+  "2026-09-03": {
+   "informative_unknown": 26,
+   "invalid": 1,
+   "observed": 45
+  },
+  "2026-09-04": {
+   "informative_unknown": 13,
+   "invalid": 1,
+   "observed": 44
+  },
+  "2026-09-08": {
+   "informative_unknown": 26,
+   "invalid": 3,
+   "observed": 38
+  },
+  "2026-09-09": {
+   "informative_unknown": 15,
+   "invalid": 2,
+   "observed": 36
+  },
+  "2026-09-10": {
+   "informative_unknown": 27,
+   "invalid": 1,
+   "observed": 39
+  },
+  "2026-09-11": {
+   "informative_unknown": 21,
+   "observed": 44
+  },
+  "2026-09-14": {
+   "informative_unknown": 32,
+   "observed": 56
+  },
+  "2026-09-15": {
+   "observed": 5
+  },
+  "2026-09-16": {
+   "observed": 11
+  },
+  "2026-09-17": {
+   "informative_unknown": 34,
+   "observed": 41
+  },
+  "2026-09-18": {
+   "informative_unknown": 44,
+   "observed": 49
+  },
+  "2026-09-21": {
+   "informative_unknown": 105,
+   "invalid": 1,
+   "observed": 152
+  },
+  "2026-09-22": {
+   "informative_unknown": 10,
+   "invalid": 3,
+   "observed": 71
+  },
+  "2026-09-23": {
+   "informative_unknown": 16,
+   "observed": 67
+  },
+  "2026-09-24": {
+   "administrative_pending": 57,
+   "informative_unknown": 20,
+   "observed": 7
+  },
+  "2026-09-25": {
+   "administrative_pending": 65,
+   "informative_unknown": 13
+  },
+  "None": {
+   "administrative_pending": 26
+  }
+ },
+ "per_ticker": {
+  "AAPL": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 36
+  },
+  "AMAT": {
+   "E_num": 0,
+   "coarse_ambiguous": 1,
+   "n_observed": 13
+  },
+  "AMD": {
+   "E_num": 5,
+   "coarse_ambiguous": 5,
+   "n_observed": 35
+  },
+  "AMZN": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 23
+  },
+  "ANET": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 9
+  },
+  "APH": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 3
+  },
+  "APP": {
+   "E_num": 0,
+   "coarse_ambiguous": 1,
+   "n_observed": 7
+  },
+  "AVGO": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 22
+  },
+  "BA": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 10
+  },
+  "CAT": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 11
+  },
+  "CEG": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 5
+  },
+  "CRM": {
+   "E_num": 0,
+   "coarse_ambiguous": 4,
+   "n_observed": 14
+  },
+  "CRWD": {
+   "E_num": 0,
+   "coarse_ambiguous": 1,
+   "n_observed": 14
+  },
+  "D": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 1
+  },
+  "DE": {
+   "E_num": 0,
+   "coarse_ambiguous": 1,
+   "n_observed": 4
+  },
+  "ETN": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 5
+  },
+  "GE": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 8
+  },
+  "GEV": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 8
+  },
+  "GLD": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 16
+  },
+  "GOOGL": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 19
+  },
+  "HON": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 1
+  },
+  "HWM": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 3
+  },
+  "IBM": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 5
+  },
+  "IWM": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 25
+  },
+  "KLAC": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 4
+  },
+  "KRE": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 3
+  },
+  "LMT": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 11
+  },
+  "LRCX": {
+   "E_num": 0,
+   "coarse_ambiguous": 2,
+   "n_observed": 14
+  },
+  "META": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 31
+  },
+  "MRVL": {
+   "E_num": 5,
+   "coarse_ambiguous": 5,
+   "n_observed": 16
+  },
+  "MSFT": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 32
+  },
+  "MU": {
+   "E_num": 8,
+   "coarse_ambiguous": 9,
+   "n_observed": 24
+  },
+  "NEE": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 2
+  },
+  "NRG": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 4
+  },
+  "NVDA": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 31
+  },
+  "ORCL": {
+   "E_num": 0,
+   "coarse_ambiguous": 3,
+   "n_observed": 20
+  },
+  "PANW": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 13
+  },
+  "PCG": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 5
+  },
+  "PH": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 1
+  },
+  "PLTR": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 20
+  },
+  "PWR": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 1
+  },
+  "QCOM": {
+   "E_num": 1,
+   "coarse_ambiguous": 4,
+   "n_observed": 10
+  },
+  "QQQ": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 30
+  },
+  "RTX": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 1
+  },
+  "SMH": {
+   "E_num": 1,
+   "coarse_ambiguous": 1,
+   "n_observed": 18
+  },
+  "SOXX": {
+   "E_num": 4,
+   "coarse_ambiguous": 4,
+   "n_observed": 27
+  },
+  "SPY": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 31
+  },
+  "TSLA": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 35
+  },
+  "VRT": {
+   "E_num": 0,
+   "coarse_ambiguous": 1,
+   "n_observed": 9
+  },
+  "VST": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 4
+  },
+  "XBI": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 1
+  },
+  "XLE": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 1
+  },
+  "XLF": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 2
+  },
+  "XLK": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 5
+  },
+  "XLP": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 1
+  },
+  "XLY": {
+   "E_num": 0,
+   "coarse_ambiguous": 0,
+   "n_observed": 1
+  }
+ },
+ "refine_notes": {
+  "consistent": 616,
+  "no_admissible_evidence": 49,
+  "refined": 39,
+  "still_ambiguous": 1
+ },
+ "secondary_5d": {
+  "b": 0.05355660116246886,
+  "bootstrap_E": {
+   "block_len": 5,
+   "hi": 0.021278488680245313,
+   "lo": 0.0,
+   "n_blocks": 16,
+   "n_boot_finite": 2000,
+   "point": 0.006157635467980296,
+   "status": "ok"
+  },
+  "bounds_coarse_B3": {
+   "denominator": {
+    "n_administrative_pending": 0,
+    "n_assumed_noninformative": 0,
+    "n_informative_unknown": 402,
+    "n_invalid": 28,
+    "n_observed": 812,
+    "n_total": 1242,
+    "n_unknown": 430
+   },
+   "dropped_units": 0,
+   "full_denominator": {
+    "lower_first": [
+     0.1143317230273752,
+     0.46618357487922707
+    ],
+    "upper_first": [
+     0.13043478260869565,
+     0.4822866344605475
+    ]
+   },
+   "observed": {
+    "ambiguous_share": 0.008620689655172414,
+    "lower_first": [
+     0.1748768472906404,
+     0.1834975369458128
+    ],
+    "optimistic_upper_first": 0.20812807881773399,
+    "pessimistic_upper_first": 0.19950738916256158,
+    "upper_first": [
+     0.19950738916256158,
+     0.20812807881773399
+    ]
+   },
+   "pending_counted_as_loss": false,
+   "states": {
+    "ambiguous": 7,
+    "lower_first": 142,
+    "neither": 501,
+    "upper_first": 162
+   }
+  },
+  "bounds_refined_proposed": {
+   "denominator": {
+    "n_administrative_pending": 0,
+    "n_assumed_noninformative": 0,
+    "n_informative_unknown": 402,
+    "n_invalid": 28,
+    "n_observed": 812,
+    "n_total": 1242,
+    "n_unknown": 430
+   },
+   "dropped_units": 0,
+   "full_denominator": {
+    "lower_first": [
+     0.11835748792270531,
+     0.46537842190016104
+    ],
+    "upper_first": [
+     0.13123993558776167,
+     0.4782608695652174
+    ]
+   },
+   "observed": {
+    "ambiguous_share": 0.0012315270935960591,
+    "lower_first": [
+     0.1810344827586207,
+     0.18226600985221675
+    ],
+    "optimistic_upper_first": 0.2019704433497537,
+    "pessimistic_upper_first": 0.20073891625615764,
+    "upper_first": [
+     0.20073891625615764,
+     0.2019704433497537
+    ]
+   },
+   "pending_counted_as_loss": false,
+   "states": {
+    "ambiguous": 1,
+    "lower_first": 147,
+    "neither": 501,
+    "upper_first": 163
+   }
+  },
+  "conventions_coarse": {
+   "B1_pessimistic_upper_first": 0.19950738916256158,
+   "B2_optimistic_upper_first": 0.20812807881773399,
+   "B3_identified_upper_first_bounds": [
+    0.19950738916256158,
+    0.20812807881773399
+   ]
+  },
+  "fallback_detail": {
+   "eod:incomplete:incomplete|decision_after_target_close": 66,
+   "nested:non_nested_extrema": 1
+  },
+  "fallbacks": {
+   "eod:incomplete": 66,
+   "nested:non_nested_extrema": 1
+  },
+  "honest_n": {
+   "test_dates_all": 16,
+   "test_dates_with_observed": 16,
+   "test_paths_all": 1242,
+   "test_paths_observed": 812,
+   "test_tickers_observed": 58
+  },
+  "horizon": "5d",
+  "refine_notes": {
+   "consistent": 762,
+   "no_admissible_evidence": 43,
+   "refined": 6,
+   "still_ambiguous": 1
+  },
+  "test": {
+   "E": 0.006157635467980296,
+   "E_num": 5,
+   "E_p": 0.0012315270935960591,
+   "E_p_num": 1,
+   "coarse_ambiguous": 7,
+   "coarse_ambiguous_share": 0.008620689655172414,
+   "n_observed": 812,
+   "n_units": 1242,
+   "refined_ambiguous_share": 0.0012315270935960591
+  },
+  "train": {
+   "n_observed": 522,
+   "n_units": 781
+  }
+ },
+ "test": {
+  "E": 0.03404255319148936,
+  "E_num": 24,
+  "E_p": 0.02127659574468085,
+  "E_p_num": 15,
+  "coarse_ambiguous": 42,
+  "coarse_ambiguous_share": 0.059574468085106386,
+  "n_observed": 705,
+  "n_units": 1241,
+  "refined_ambiguous_share": 0.00425531914893617
+ },
+ "test_dates": [
+  "2026-09-03",
+  "2026-09-04",
+  "2026-09-08",
+  "2026-09-09",
+  "2026-09-10",
+  "2026-09-11",
+  "2026-09-14",
+  "2026-09-15",
+  "2026-09-16",
+  "2026-09-17",
+  "2026-09-18",
+  "2026-09-21",
+  "2026-09-22",
+  "2026-09-23",
+  "2026-09-24",
+  "2026-09-25"
+ ],
+ "ticker_fallbacks": 0,
+ "train": {
+  "n_observed": 529,
+  "n_units": 781
+ },
+ "train_dates": [
+  "2026-08-10",
+  "2026-08-11",
+  "2026-08-12",
+  "2026-08-13",
+  "2026-08-20",
+  "2026-08-21",
+  "2026-08-24",
+  "2026-08-25",
+  "2026-08-26",
+  "2026-08-27",
+  "2026-08-28",
+  "2026-08-31",
+  "2026-09-01",
+  "2026-09-02"
+ ],
+ "undated_units": 26,
+ "verdict": "REJECT",
+ "verdict_reason": "95% lower bound of E < 1.0pp or LOTO min E < 0.5pp"
+}

@@ -1,0 +1,76 @@
+{
+  "benchmark_id": "bls_survey_revision_2024-03-08",
+  "frozen": true,
+  "source": "research/BLS_SURVEY_REVISION_CASE_2024_03_08.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2024-03-08",
+    "session_label": "date only",
+    "adjudication_date": "2026-10-15",
+    "historical_source_availability": "unverified",
+    "dependence_group": "us-employment-february-2024",
+    "source": {
+      "path": "research/BLS_SURVEY_REVISION_CASE_2024_03_08.md",
+      "sha256": "465ff3b3f088d30c1c81902e2034e5ff375ddc4acee8764eef396fe2e2bde2d1"
+    },
+    "input_facts": [
+      {
+        "event_date": "2024-03-08",
+        "source_lines": [
+          7,
+          10
+        ],
+        "text": "The BLS release labelled March 8, 2024 reports February nonfarm payroll employment up 275,000 and unemployment at 3.9%, up 0.2 percentage point.\nPayroll employment comes from the establishment survey; unemployment comes from the household survey. Household employment was 161.152 million in January and 160.968 million in February; the civilian labor force was 167.276 million and 167.426 million respectively.\nDecember payroll growth was revised from 333,000 to 290,000 and January from 353,000 to 229,000; the combined revision was -167,000. Revisions incorporate additional reports and recalculated seasonal factors.\nThe release describes different survey coverage and sampling precision. It gives roughly 130,000 and 600,000 as monthly-change significance thresholds for establishment and household employment, respectively.",
+        "sha256": "c326322b09f79d517c88850bd4bfbfa5228e1c6343932601fcb9e0e372cb49aa"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        14,
+        14
+      ],
+      "text": "The two surveys measure different populations and concepts, so payroll growth and a higher unemployment rate are not a same-contract contradiction. Household employment fell 184,000 while the labor force rose 150,000; their difference implies 334,000 more unemployed, subject to the release's rounding. The household employment change is below its stated approximate significance threshold; the payroll change exceeds its separate stated threshold. Those thresholds do not alone establish a recession, causality, a directional trade or confidence in every subgroup. The unemployment-rate increase is 20 basis points, not 0.2 basis points. The -167,000 revision describes prior months and must not be presented as February payroll growth; 275,000 minus 167,000 equals 108,000 arithmetically but is not the released February change. No subsequent prices, outcomes, market expectations or policy path are supplied.",
+      "sha256": "4f0917759c83967a42ecfc920673a8b4d056e2359701bb00175f4492104fb577"
+    }
+  },
+  "question_en": "Using only the supplied release, reconcile February payroll growth with the higher unemployment rate, quantify the household employment and labor-force changes and the unemployment-rate unit, explain the prior-month revisions and the separate survey sampling thresholds, and state what cannot be concluded.",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2024-03-08 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2024-03-08] The BLS release labelled March 8, 2024 reports February nonfarm payroll employment up 275,000 and unemployment at 3.9%, up 0.2 percentage point.\nPayroll employment comes from the establishment survey; unemployment comes from the household survey. Household employment was 161.152 million in January and 160.968 million in February; the civilian labor force was 167.276 million and 167.426 million respectively.\nDecember payroll growth was revised from 333,000 to 290,000 and January from 353,000 to 229,000; the combined revision was -167,000. Revisions incorporate additional reports and recalculated seasonal factors.\nThe release describes different survey coverage and sampling precision. It gives roughly 130,000 and 600,000 as monthly-change significance thresholds for establishment and household employment, respectively.",
+  "expected_properties": [
+    {
+      "tag": "survey_population",
+      "check": "Payroll employment comes from the establishment survey and unemployment from the household survey; the two measure different populations and concepts, so payroll growth together with a higher unemployment rate is not a same-contract contradiction."
+    },
+    {
+      "tag": "household_arithmetic",
+      "check": "Household employment fell 184,000 (161.152 million to 160.968 million) while the civilian labor force rose 150,000 (167.276 million to 167.426 million); their difference implies 334,000 more unemployed, subject to the release's rounding."
+    },
+    {
+      "tag": "revision_window",
+      "check": "The -167,000 combined revision describes December and January; it must not be presented as February payroll growth, and 108,000 (275,000 minus 167,000) is arithmetic only, not the released February change."
+    },
+    {
+      "tag": "rate_units",
+      "check": "Unemployment at 3.9% is up 0.2 percentage point, which is 20 basis points, not 0.2 basis points."
+    },
+    {
+      "tag": "sampling_limits",
+      "check": "The roughly 130,000 and 600,000 monthly-change significance thresholds belong to the establishment and household surveys separately; the household employment change is below its stated approximate threshold while the payroll change exceeds its separate stated threshold."
+    },
+    {
+      "tag": "authority_limits",
+      "check": "Those thresholds alone establish no recession, causality, directional trade or confidence in every subgroup, and no subsequent prices, outcomes, market expectations or policy path are supplied."
+    }
+  ],
+  "known_failure_modes": [
+    "Treat payroll growth and a higher unemployment rate as a same-contract contradiction, ignoring that the two surveys cover different populations and concepts.",
+    "Misstate the household arithmetic: employment fell 184,000, the labor force rose 150,000, and the implied increase in unemployed is 334,000 before rounding.",
+    "Present the -167,000 combined revision as February payroll growth, or report 108,000 as the released February change.",
+    "Call the 0.2 percentage-point unemployment-rate rise 0.2 basis points.",
+    "Apply one survey's significance threshold to the other, or read a threshold crossing as proof of recession, causality, a directional trade or subgroup confidence.",
+    "Import subsequent prices, outcomes, market expectations or a policy path that the release does not supply."
+  ],
+  "gold_standard_sentence": "The establishment survey reports February payroll up 275,000 while the household survey shows unemployment at 3.9%, up 0.2 percentage point (20 basis points); these are different survey populations and concepts. Household employment fell 184,000, below its approximate 600,000 monthly-change significance threshold; the labor force rose 150,000, implying about 334,000 more unemployed subject to rounding. Payroll growth exceeds its separate approximate 130,000 threshold. The -167,000 revision belongs to December and January, not February. These facts alone establish no recession, causality, trade or policy path.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

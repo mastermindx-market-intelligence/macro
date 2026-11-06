@@ -209,7 +209,7 @@ def test_ordered_cli_counts_forward_sequence(tmp_path):
 
 
 def test_ordered_cli_never_uses_array_order_to_resolve_tied_times(tmp_path):
-    report = _ordered_cli(tmp_path, _full_session("all-tied"))
+    report = _ordered_cli(tmp_path, [dict(row, site="macro") for row in _full_session("all-tied")])
     assert report["stage_sessions"] == {
         "visit": 1, "intelligence_viewed": 1, "personal_act": 0, "watchlist_saved": 0}
     assert report["diagnostics"]["mixed_stage_timestamp_groups"] == 1
@@ -484,3 +484,95 @@ def test_explicit_unordered_is_identical_to_existing_default():
     assert AFR.build_report(rows, SINCE, UNTIL, set(), set(), ordered=False) == \
         AFR.build_report(rows, SINCE, UNTIL, set(), set())
     assert AFR.build_report(rows, SINCE, UNTIL, set(), set())["report"] == "activation_funnel_report.v1"
+
+
+# Site/session qualification keeps unknown sites out of ordered v2 only.
+def _site_contract_sequence(site="macro", sid="shared-session"):
+    return [_event("intelligence.viewed", sid, 1, site=site),
+            _event("personal.act", sid, 2, site=site),
+            _event("watchlist.saved", sid, 3, site=site)]
+
+
+def test_ordered_site_contract_rejects_unqualified_sites():
+    for bad_site in (None, "", " \t\n", 7, False, []):
+        rows = _site_contract_sequence(bad_site)
+        report = _ordered(rows)
+        assert set(report["stage_sessions"].values()) == {0}, repr(bad_site)
+        assert set(report["activity_stage_sessions"].values()) == {0}
+        assert set(report["conversion"].values()) == {None}
+        assert report["rows_admitted"] == 3
+        assert report["diagnostics"]["rows_without_recorded_site"] == 3
+        assert report["diagnostics"]["rows_without_recorded_session"] == 0
+        assert report["diagnostics"]["rows_excluded_from_site_session"] == 3
+
+
+def test_ordered_site_contract_missing_site_never_mints_a_journey():
+    rows = _site_contract_sequence()
+    for row in rows:
+        row.pop("site")
+    report = _ordered(rows)
+    assert set(report["stage_sessions"].values()) == {0}
+    assert report["rows_admitted"] == 3
+    assert report["diagnostics"]["rows_without_recorded_site"] == 3
+    assert report["diagnostics"]["rows_excluded_from_site_session"] == 3
+
+
+def test_ordered_site_contract_mixed_rows_preserve_valid_control():
+    rows = []
+    for bad_site in (None, "", "   ", False):
+        rows.extend(_site_contract_sequence(bad_site))
+    rows.extend(_site_contract_sequence("macro"))
+    report = _ordered(rows)
+    assert set(report["stage_sessions"].values()) == {1}
+    assert set(report["activity_stage_sessions"].values()) == {1}
+    assert set(report["conversion"].values()) == {1.0}
+    assert report["rows_admitted"] == 15
+    assert report["diagnostics"]["rows_without_recorded_site"] == 12
+    assert report["diagnostics"]["rows_excluded_from_site_session"] == 12
+
+
+def test_ordered_site_contract_overlapping_quality_counts_exclude_once():
+    bad = _event("intelligence.viewed", "", 1, site=None)
+    report = _ordered([bad] + _site_contract_sequence("macro"))
+    assert report["rows_admitted"] == 4
+    assert report["diagnostics"]["rows_without_recorded_session"] == 1
+    assert report["diagnostics"]["rows_without_recorded_site"] == 1
+    assert report["diagnostics"]["rows_excluded_from_site_session"] == 1
+    assert set(report["stage_sessions"].values()) == {1}
+
+
+def test_ordered_site_contract_preserves_valid_site_strings_exactly():
+    report = _ordered([
+        _event("intelligence.viewed", "shared", 1, site=" macro "),
+        _event("personal.act", "shared", 2, site="macro"),
+        _event("watchlist.saved", "shared", 3, site="macro")])
+    assert report["stage_sessions"] == {
+        "visit": 2, "intelligence_viewed": 1, "personal_act": 0, "watchlist_saved": 0}
+    assert report["activity_stage_sessions"]["personal_act"] == 1
+    assert report["diagnostics"]["rows_excluded_from_site_session"] == 0
+    assert set(_ordered(_site_contract_sequence(" macro "))["stage_sessions"].values()) == {1}
+    assert report["measurement"]["site_requirement"] == "nonblank_string_preserved_verbatim"
+
+
+def test_ordered_site_contract_real_cli_reports_exclusions(tmp_path):
+    import subprocess
+    import sys
+    rows = _site_contract_sequence(None) + _site_contract_sequence("macro")
+    source, target, markdown = [tmp_path / name for name in
+                               ("site-input.json", "site-result.json", "site-result.md")]
+    source.write_text(json.dumps(rows), encoding="utf-8")
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "scripts/activation_funnel_report.py"),
+         "--input", str(source), "--since", SINCE.isoformat(), "--until", UNTIL.isoformat(),
+         "--ordered", "--out", str(target), "--markdown", str(markdown)],
+        capture_output=True, text=True, timeout=10)
+    assert result.returncode == 0, result.stderr
+    report = json.loads(target.read_text())
+    assert report["rows_admitted"] == 6
+    assert report["diagnostics"]["rows_without_recorded_site"] == 3
+    assert report["diagnostics"]["rows_excluded_from_site_session"] == 3
+    assert set(report["stage_sessions"].values()) == {1}
+    text = markdown.read_text()
+    assert "nonblank recorded site or session" in text
+    assert '"rows_without_recorded_site": 3' in text
+    assert "shared-session" not in text

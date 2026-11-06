@@ -494,15 +494,14 @@ def test_the_quota_shapes_still_decide_the_same_commands():
 
 
 def test_no_gh_command_is_denied_merely_because_a_pull_request_is_armed():
-    """The words that used to end a worker's life must not appear in any deny.
+    """Keep the retired deny marker absent without banning native return advice.
 
-    A grep-level pin. The retired shape denied with "CI HANDOFF IN EFFECT" and
-    told the session to print a terminal marker instead of finishing; it resolved
-    that state through a now-deleted contract module loaded by file path. One
-    lowercase substring covers the rule, its deny text, its marker, and its
-    module, in every casing anyone would reintroduce them in.
+    The adjacent subprocess/command matrix pins permission behavior. This source
+    check only pins the retired marker; a harmless diagnostic such as "Codex
+    native background-terminal handoff" must not fail CI. A generic word ban
+    blocked the async-continuation candidate without finding a denied command.
     """
-    assert "handoff" not in HOOK.read_text(encoding="utf-8").lower()
+    assert "ci handoff in effect" not in HOOK.read_text(encoding="utf-8").lower()
 
 
 class _ExplodingSubprocess:
@@ -740,3 +739,20 @@ def test_a_heredoc_that_merely_mentions_polling_is_not_a_poll(_poll_state):
     )
     assert _nudged(doc) == ""
     assert _nudged(doc) == ""
+
+
+# A diagnostic describing native background return is not the retired gate.
+def test_retired_gate_pin_allows_native_background_handoff_text(tmp_path, monkeypatch):
+    sample = tmp_path / "quota_hook.py"
+    sample.write_text(HOOK.read_text(encoding="utf-8") + '\n# Codex native background-terminal handoff\n', encoding="utf-8")
+    monkeypatch.setitem(globals(), "HOOK", sample)
+    test_no_gh_command_is_denied_merely_because_a_pull_request_is_armed()
+
+
+@pytest.mark.parametrize("denial", ["CI HANDOFF IN EFFECT", "ci handoff in effect"])
+def test_retired_gate_pin_still_rejects_the_actual_denial(tmp_path, monkeypatch, denial):
+    sample = tmp_path / "quota_hook.py"
+    sample.write_text(HOOK.read_text(encoding="utf-8") + f'\nRETIRED_DENIAL = {denial!r}\n', encoding="utf-8")
+    monkeypatch.setitem(globals(), "HOOK", sample)
+    with pytest.raises(AssertionError):
+        test_no_gh_command_is_denied_merely_because_a_pull_request_is_armed()

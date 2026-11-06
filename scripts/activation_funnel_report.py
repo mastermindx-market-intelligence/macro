@@ -215,6 +215,8 @@ def _ordered_counts(rows: list[dict], until: datetime) -> tuple[dict, dict, dict
     groups: dict[tuple[str, str], list[dict]] = {}
     diagnostics = {
         "rows_without_recorded_session": 0,
+        "rows_without_recorded_site": 0,
+        "rows_excluded_from_site_session": 0,
         "rows_with_unqualified_occurrence_time": 0,
         "rows_with_occurrence_after_cutoff": 0,
         "mixed_stage_timestamp_groups": 0,
@@ -222,11 +224,16 @@ def _ordered_counts(rows: list[dict], until: datetime) -> tuple[dict, dict, dict
     }
     for row in rows:
         sid, site = row.get("session_id"), row.get("site")
-        if (not isinstance(sid, str) or not sid.strip()
-                or (site is not None and not isinstance(site, str))):
+        valid_session = isinstance(sid, str) and bool(sid.strip())
+        valid_site = isinstance(site, str) and bool(site.strip())
+        if not valid_session:
             diagnostics["rows_without_recorded_session"] += 1
+        if not valid_site:
+            diagnostics["rows_without_recorded_site"] += 1
+        if not (valid_session and valid_site):
+            diagnostics["rows_excluded_from_site_session"] += 1
             continue
-        groups.setdefault((site or "", sid), []).append(row)
+        groups.setdefault((site, sid), []).append(row)
 
     activity = {name: 0 for name, _ in _STAGES}
     ordered = dict(activity)
@@ -304,7 +311,9 @@ def _build_ordered_report(admitted: list[dict], dropped: dict,
             "unit": "recorded_site_session",
             "session_key": ["site", "session_id"],
             "cross_session_or_person_stitching": False,
-            "visit_definition": "any_admitted_row_with_recorded_session",
+            "visit_definition": "any_admitted_row_with_nonblank_site_and_recorded_session",
+            "site_requirement": "nonblank_string_preserved_verbatim",
+            "key_quality_diagnostics": "site_and_session_counts_may_overlap_excluded_count_is_unique",
             "order_clock": "client_ts_with_explicit_timezone",
             "order_rule": "strictly_increasing_between_action_stages",
             "clock_assurance": "client_reported_not_independently_verified",
@@ -323,6 +332,7 @@ def _ordered_markdown(rep: dict) -> str:
         f"# Observed ordered activation ({rep['report']})", "",
         f"Ingestion window: {rep['ingestion_cutoff']['since']} to {rep['ingestion_cutoff']['until']}.",
         "Unit: recorded site/session, not a resolved person or cross-device visit.",
+        "Rows without a nonblank recorded site or session are excluded from both counts.",
         "Order uses client timestamps with explicit timezones; tied times do not establish order.",
         "Results cover admitted rows only, not complete journeys or causal attribution.", "",
         "| Stage | Ordered prefix | Independent activity |", "|---|---:|---:|",

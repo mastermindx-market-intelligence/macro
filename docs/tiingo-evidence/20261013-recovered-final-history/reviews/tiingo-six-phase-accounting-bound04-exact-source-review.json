@@ -1,0 +1,43 @@
+{
+  "schema": "tiingo.six_phase_accounting_exact_source_review/v1",
+  "recorded_at_utc": "2026-10-13T21:39:21.810852+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "candidate": "tiingo-wave15-original-six-phase-accounting-bound04.py",
+  "candidate_sha256": "a1e89a53750d53a461e7def006949918f77ff6c0c7cf6c77b5759cecb162a828",
+  "verdict": "PASS_EXACT_READONLY_SIX_PHASE_ACCOUNTING_SOURCE",
+  "prior_reviews_sha256": [
+    "04a4f2ef3db0977e09c9c0219990c7bdb3eed33a64ec17b9b7266ae9d14daa4c",
+    "2eb0417feed472ff0dcddda514016b05ab95f6f9f829a306641c53b6e71b11e8"
+  ],
+  "H1_resolution": "PASS: METADATA_FROZEN initialized before helpers; sha registers every hash-only read; load registers exact parsed bytes; both reject conflicting later reads; accounting SELF_SHA captured through that helper without resetting map; final conflict-check merge and freeze revalidate all consumed source/metadata before publication.",
+  "delta_verified": "Exact bound03-to-bound04 diff only replaces the nontracking sha lambda and initialization order with the tracking sha helper. Reviewed six-phase conservation, loss facts and final publication logic unchanged.",
+  "verification": [
+    "Candidate SHA and AST/in-memory compile verified without executing accounting module",
+    "Isolated helper fixture with in-memory fake paths verified hash-only registration and repeat equality",
+    "Parsed-byte fixture verified the exact parsed buffer digest is retained",
+    "Changed hash-only input and changed parsed input both rejected",
+    "Final frozen-map merge, m.freeze and SELF_SHA output binding inspected; prior conservation review reused"
+  ],
+  "scope": "One same-carrier direct foreground metadata accounting invocation of this exact source with --actual-capture-and-QA-effects-accepted; exclusive evidence output only, zero archive/provider/credential effects",
+  "required_runtime_acceptance": [
+    "Parent must verify exact source at launch and consume actual native outcome plus exclusive accounting proof hash; review PASS is not an executed accounting result",
+    "Validate resulting4392 identity partition, six capture joins, raw-byte/row-hint conservation and finalC05 census before original-root actual acceptance",
+    "Keep allactualcaptureterminals/allQAeffects acceptance distinct from alloriginalQAterminals; original22925 and91287 remainunknown",
+    "Expected zero never-admitted does not authorize retrying held failures or quality/provider refusals; finalvendorhistory/canonicalidentity/PIT/programmeacceptance flags remainfalse"
+  ],
+  "expected_partition_from_retained_evidence": {
+    "requested": 4392,
+    "valid": 4381,
+    "quality": 1,
+    "held_failures": 10,
+    "never": 0,
+    "status": "Expected; no candidate execution performed"
+  },
+  "candidate_module_executed": false,
+  "accounting_result_claimed": false,
+  "archive_writes": 0,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "accepted_reader_rows_rescanned": false,
+  "delegation": false
+}
