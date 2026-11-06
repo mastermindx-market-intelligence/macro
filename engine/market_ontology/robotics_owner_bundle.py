@@ -134,15 +134,20 @@ This module imports wherever
 :mod:`engine.market_ontology.robotics_theme_research` imports, and no wider:
 that module binds #7870's Task 1 ``engine.theme_graph.curation_assertion``
 unguarded, so on the carrier alone every Robotics module is unimportable and
-the carrier-alone gate expects strict xfails. What this module does tolerate is
-the narrower and real window in which Task 1 is present but the shell's
-binding is not — the current review base is exactly that — where
-``BundleUnavailable`` resolves to the local mirror. The mirror can only ever be
-raised on a base that carries no shell to catch it, so no path exists where the
-shell misses a raise. Only the MIRROR resolution is exercised today: on the
-review base ``theme_research_binding`` does not exist, so
-``BundleUnavailable.__module__`` is this module and nothing stubs the shared
-class -- the shared resolution is exercised on no base reachable right now.
+the carrier-alone gate expects strict xfails. On every base that carries
+#7870 — this head included — the ``try`` import of ``BundleUnavailable``
+below is the LIVE resolution: the loader's 503 IS the shell's shared class,
+pinned by ``test_bundle_unavailable_is_the_shell_class`` in
+``tests/test_robotics_owner_bundle.py``. The local mirror class is a
+fallback no current base reaches, and it can only ever be raised on a base
+that carries no shell to catch it, so no path exists where the shell misses
+a raise. On a base with Task 1 but no shell,
+:mod:`robotics_theme_research` binds only the TYPE MIRROR — the frozen
+``ResearchQuery``/``OwnerBundle`` kept for the field-order pin in
+``tests/test_robotics_shared_type_mirror.py`` — and cannot compose,
+because the names its inner shell import binds (``ResearchRefusal``,
+``generation_fingerprint``, ``_is_instant``, ``_le``, ``_parse_clock``,
+``_parse_day``) stay unbound there.
 """
 from __future__ import annotations
 

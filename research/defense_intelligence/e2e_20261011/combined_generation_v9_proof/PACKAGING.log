@@ -1,0 +1,9 @@
+...................                                                      [100%]
+=============================== warnings summary ===============================
+tests/test_government_revenue_html_packaging.py: 13 warnings
+tests/test_shared_theme_progressive_loader.py: 1 warning
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/jinja2/lexer.py:654: DeprecationWarning: invalid escape sequence '\/'
+    .decode("unicode-escape")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+19 passed, 14 warnings in 79.07s (0:01:19)

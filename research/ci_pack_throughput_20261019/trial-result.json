@@ -1,0 +1,339 @@
+{
+  "merge": {
+    "headRefOid": "663163827c6f3a0f5fa6d74881dee3efe74849bd",
+    "mergeCommit": {
+      "oid": "7736fd72895fc24e55bf2d4bbc7b1f4e94203414"
+    },
+    "mergedAt": "2026-10-19T13:13:09Z",
+    "state": "MERGED",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9722"
+  },
+  "landing": {
+    "merge_sha": "7736fd72895fc24e55bf2d4bbc7b1f4e94203414",
+    "observed_main": "7736fd72895fc24e55bf2d4bbc7b1f4e94203414",
+    "source_test_blob_match": true,
+    "remote_feature_branch_absent": true,
+    "shared_ref_fetch_race_preserved": true
+  },
+  "hosted_plan": {
+    "schema": "ci.pack_plan.v2",
+    "workflow_run_id": "39247388552",
+    "tested_tree_sha": "ec1d0ebe23e5c1da636d15d44da77bc04831e629",
+    "subject_head_sha": "663163827c6f3a0f5fa6d74881dee3efe74849bd",
+    "base_sha": "f42ca7e130be35c43743148377d5debb5341d7d6",
+    "authority_changed": true,
+    "reason": "full suite: global invalidator changed (scripts/run_ci_pack.py)",
+    "legacy_job_count": 255,
+    "eligible_job_count": 255,
+    "plan_sha256": "c2ca2a06295545ce6df030bdf9cdf1d2f3c7806bf74e834e146c35f36344b599",
+    "changed_files_count": 8
+  },
+  "hosted_timing": {
+    "run_id": 39247388552,
+    "conclusion": "success",
+    "created_at": "2026-10-19T11:49:08Z",
+    "gate_completed_at": "2026-10-19T13:07:13Z",
+    "run_to_gate_seconds": 4685.0,
+    "sum_job_wall_minutes": 337.3833333333333,
+    "pack_0_wall_seconds": 1604.0,
+    "pack_0_steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success",
+        "seconds": 1.0
+      },
+      {
+        "name": "clear any sparse checkout a sibling job left in this shared workspace",
+        "conclusion": "skipped",
+        "seconds": 0.0
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success",
+        "seconds": 141.0
+      },
+      {
+        "name": "Run actions/setup-python@v5",
+        "conclusion": "success",
+        "seconds": 8.0
+      },
+      {
+        "name": "Run actions/setup-node@v4",
+        "conclusion": "success",
+        "seconds": 4.0
+      },
+      {
+        "name": "install isolated pack runner",
+        "conclusion": "success",
+        "seconds": 4.0
+      },
+      {
+        "name": "download the authoritative semantic plan",
+        "conclusion": "success",
+        "seconds": 0.0
+      },
+      {
+        "name": "download the planner's changed-file list",
+        "conclusion": "success",
+        "seconds": 1.0
+      },
+      {
+        "name": "publish the changed-file handle",
+        "conclusion": "success",
+        "seconds": 0.0
+      },
+      {
+        "name": "validate and run legacy CI pack",
+        "conclusion": "success",
+        "seconds": 1440.0
+      },
+      {
+        "name": "fail-safe full suite when no authoritative plan was produced",
+        "conclusion": "skipped",
+        "seconds": 0.0
+      },
+      {
+        "name": "relay the trusted pack fragment under the existing check contract",
+        "conclusion": "skipped",
+        "seconds": 0.0
+      },
+      {
+        "name": "bind trusted execution to the hosted authoritative plan",
+        "conclusion": "skipped",
+        "seconds": 0.0
+      },
+      {
+        "name": "publish this pack's raw semantic fragment",
+        "conclusion": "success",
+        "seconds": 1.0
+      },
+      {
+        "name": "Post Run actions/setup-node@v4",
+        "conclusion": "success",
+        "seconds": 0.0
+      },
+      {
+        "name": "Post Run actions/setup-python@v5",
+        "conclusion": "success",
+        "seconds": 1.0
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success",
+        "seconds": 0.0
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success",
+        "seconds": 0.0
+      }
+    ]
+  },
+  "inner_timing": {
+    "run_id": 39247388552,
+    "control_plane_groups": [
+      {
+        "name": "ci-control-plane-contracts \u2014 ci-plan/ci-pack/ci-gate workflow structure contract",
+        "started_at": "2026-10-19T12:08:03.856306+00:00",
+        "ended_at": "2026-10-19T12:08:44.023010+00:00",
+        "seconds": 40.166704
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 hosted-runner packing contract",
+        "started_at": "2026-10-19T12:08:44.033272+00:00",
+        "ended_at": "2026-10-19T12:21:04.447339+00:00",
+        "seconds": 740.414067
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 merge-gate reliability report contract",
+        "started_at": "2026-10-19T12:21:04.457519+00:00",
+        "ended_at": "2026-10-19T12:21:21.423601+00:00",
+        "seconds": 16.966082
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 transitional self-hosted runner policy and canary contracts",
+        "started_at": "2026-10-19T12:21:21.433670+00:00",
+        "ended_at": "2026-10-19T12:22:21.053795+00:00",
+        "seconds": 59.620125
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 nightly backstop selftest (scripts/nightly_backstop.py)",
+        "started_at": "2026-10-19T12:22:21.064247+00:00",
+        "ended_at": "2026-10-19T12:22:21.126652+00:00",
+        "seconds": 0.062405
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 nightly backstop dispatch rule (must never fire over a live run)",
+        "started_at": "2026-10-19T12:22:21.136645+00:00",
+        "ended_at": "2026-10-19T12:22:23.141803+00:00",
+        "seconds": 2.005158
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 audit_unrun_tests selftest",
+        "started_at": "2026-10-19T12:22:23.152023+00:00",
+        "ended_at": "2026-10-19T12:22:23.234972+00:00",
+        "seconds": 0.082949
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 no suite may be named by zero run: steps (baseline-gated)",
+        "started_at": "2026-10-19T12:22:23.244875+00:00",
+        "ended_at": "2026-10-19T12:22:50.699265+00:00",
+        "seconds": 27.45439
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 unrun-census discovery unit tests",
+        "started_at": "2026-10-19T12:22:50.703349+00:00",
+        "ended_at": "2026-10-19T12:24:19.256803+00:00",
+        "seconds": 88.553454
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 differential contract-delta gate contract",
+        "started_at": "2026-10-19T12:24:19.266987+00:00",
+        "ended_at": "2026-10-19T12:24:24.463278+00:00",
+        "seconds": 5.196291
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 check_skip_only_suites selftest",
+        "started_at": "2026-10-19T12:24:24.473607+00:00",
+        "ended_at": "2026-10-19T12:24:24.577339+00:00",
+        "seconds": 0.103732
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 no suite may skip in every job that names it",
+        "started_at": "2026-10-19T12:24:24.587546+00:00",
+        "ended_at": "2026-10-19T12:25:15.495242+00:00",
+        "seconds": 50.907696
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 skip-only detector unit tests",
+        "started_at": "2026-10-19T12:25:15.505461+00:00",
+        "ended_at": "2026-10-19T12:28:40.260078+00:00",
+        "seconds": 204.754617
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 check_ci_trigger_closure selftest",
+        "started_at": "2026-10-19T12:28:40.270366+00:00",
+        "ended_at": "2026-10-19T12:28:57.939607+00:00",
+        "seconds": 17.669241
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 every guarded suite's subjects must reach its own trigger paths",
+        "started_at": "2026-10-19T12:28:57.949804+00:00",
+        "ended_at": "2026-10-19T12:30:06.590975+00:00",
+        "seconds": 68.641171
+      },
+      {
+        "name": "ci-control-plane-contracts \u2014 trigger-closure guard unit tests",
+        "started_at": "2026-10-19T12:30:06.601245+00:00",
+        "ended_at": "2026-10-19T12:31:55.121460+00:00",
+        "seconds": 108.520215
+      }
+    ],
+    "packing_contract_sample": {
+      "historical_observations": 20,
+      "historical_median_seconds": 847.738,
+      "historical_min_seconds": 460.665,
+      "historical_max_seconds": 925.303,
+      "trial_seconds": 740.414067,
+      "descriptive_percent_difference_from_median": -12.660035647806279,
+      "causal_speedup_established": false
+    },
+    "limits": [
+      "Historical group sample biased toward critical packs; includes varying source/workload and retry strata.",
+      "One treatment full-suite run; no matched control or fleet p95 conclusion.",
+      "Post-merge runs still queued at 13:46Z."
+    ]
+  },
+  "local_cpu_samples": [
+    {
+      "algorithm": "old",
+      "wall_seconds": 34.10432420799043,
+      "cpu_seconds": 16.954441999999986
+    },
+    {
+      "algorithm": "new",
+      "wall_seconds": 14.218799875001423,
+      "cpu_seconds": 8.13603599999999
+    },
+    {
+      "algorithm": "new",
+      "wall_seconds": 13.945690999971703,
+      "cpu_seconds": 8.651618
+    },
+    {
+      "algorithm": "old",
+      "wall_seconds": 25.487504875054583,
+      "cpu_seconds": 17.88587100000001
+    },
+    {
+      "algorithm": "old",
+      "wall_seconds": 27.43014858395327,
+      "cpu_seconds": 18.138082999999995
+    },
+    {
+      "algorithm": "new",
+      "wall_seconds": 13.442097291932441,
+      "cpu_seconds": 9.583841000000007
+    }
+  ],
+  "postmerge_snapshot": {
+    "observed_at": "2026-10-19T13:46:43Z",
+    "created_after": "2026-10-19T13:13:09Z",
+    "runs": [
+      {
+        "id": 39262946808,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39262946808",
+        "created_at": "2026-10-19T13:45:58Z",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1
+      },
+      {
+        "id": 39261551699,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39261551699",
+        "created_at": "2026-10-19T13:36:07Z",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1
+      },
+      {
+        "id": 39260538584,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39260538584",
+        "created_at": "2026-10-19T13:29:04Z",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1
+      },
+      {
+        "id": 39259925981,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39259925981",
+        "created_at": "2026-10-19T13:24:47Z",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1
+      },
+      {
+        "id": 39259644106,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39259644106",
+        "created_at": "2026-10-19T13:22:49Z",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1
+      }
+    ]
+  },
+  "critical_pack_findings": {
+    "fif_kernel_guards": {
+      "current_declared_weight": 161,
+      "trial_command_seconds": 1428.793888,
+      "historical_kernel_step_n": 9,
+      "historical_kernel_step_median_seconds": 1617.655
+    },
+    "earnings_economic_dossier": {
+      "current_declared_weight": 59,
+      "trial_command_seconds": 1070.866915,
+      "historical_critical_sample_observations": 0
+    },
+    "interpretation": "Weights underestimate these observed commands. No revised partition or latency claim is accepted; full-trial cost replay remains to be done."
+  }
+}

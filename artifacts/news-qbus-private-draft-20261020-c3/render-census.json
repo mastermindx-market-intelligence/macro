@@ -1,0 +1,120 @@
+{
+  "schema": "news.release.render_census.v1",
+  "observed_at": "2026-10-20T17:05:00Z",
+  "source_head": "b82af8dae3b05e7eaea198cfe49d61fb9b8ce595",
+  "primary_pr_at_census": {
+    "number": 9846,
+    "state": "open",
+    "merged": false,
+    "head_sha": "b82af8dae3b05e7eaea198cfe49d61fb9b8ce595"
+  },
+  "runs": [
+    {
+      "id": 39434431696,
+      "name": "engine-render",
+      "status": "in_progress",
+      "event": "push",
+      "head_sha": "c10ca5a2656002cb3906d79c2c6b651aeed9a576",
+      "created_at": "2026-10-20T13:54:07Z",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39434431696"
+    },
+    {
+      "id": 39449013672,
+      "name": "engine-render",
+      "status": "pending",
+      "event": "push",
+      "head_sha": "44c244f05debb1e468b5b635b5234d98b36fb7c3",
+      "created_at": "2026-10-20T15:30:18Z",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39449013672"
+    },
+    {
+      "id": 39439974736,
+      "name": "render",
+      "status": "queued",
+      "event": "push",
+      "head_sha": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+      "created_at": "2026-10-20T14:31:17Z",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39439974736"
+    }
+  ],
+  "prior_render": {
+    "id": 39428285289,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "5a1262269cf0bde81ad01b24d12a44251fbc2d56",
+    "updated_at": "2026-10-20T16:45:19Z",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39428285289"
+  },
+  "assertions": [
+    "Prior render39428285289 finished successfully at16:45:19 before the qualified merge; it cannot prove #9846 coverage.",
+    "Running engine-render39434431696 has completed its initial git pull and is at re-render step20. It cannot qualify the unmerged candidate as its actual rendered input.",
+    "Render39439974736 is queued and its job has not started. Its old trigger SHA does not determine the eventual post-pull rendered source.",
+    "Engine-render39449013672 is pending. A surviving future normal run must read source containing the merge before rendering.",
+    "render.yml uses group pipeline-render; engine-render.yml uses pipeline-engine-render. Both have cancel-in-progress:false and use the render-linux fleet.",
+    "Normal main template merge triggers render.yml; any surviving eligible normal render can cover the merge after its post-pull HEAD includes it.",
+    "render pick step captures post-pull HEAD as rendered_from, emitted in successful render commit message as (scope=X, from=SHA).",
+    "templates/ticker_news_panel.j2 matches shared templates/* -> all, so this integration naturally includes full dossier render.",
+    "Require successful build_ticker_pages manifest/count guard, finalized guards, generated commit publication, then normal macro-update and served-byte/live product proof.",
+    "Neither a source checkout nor a pre-merge successful render proves generated dossier freshness."
+  ],
+  "effects": {
+    "dispatches": 0,
+    "cancellations": 0,
+    "live_writes": 0
+  },
+  "normal_proof_order": [
+    "Expected-head qualified primary merge",
+    "Surviving normal render starts/pulls source containing merge",
+    "Actual rendered_from resolves to a descendant containing merge; effective scope covers all or macro",
+    "Ticker dossier manifest/count and other guards pass; generated commit reaches main",
+    "Normal macro-update advances checkout and atomically publishes site.served",
+    "Read source and served generated dossier bytes, service state, and actual product behavior"
+  ],
+  "sources": {
+    "render": "https://github.com/mastermindx-market-intelligence/macro/blob/b82af8dae3b05e7eaea198cfe49d61fb9b8ce595/.github/workflows/render.yml",
+    "engine_render": "https://github.com/mastermindx-market-intelligence/macro/blob/b82af8dae3b05e7eaea198cfe49d61fb9b8ce595/.github/workflows/engine-render.yml",
+    "updater": "https://github.com/mastermindx-market-intelligence/macro/blob/b82af8dae3b05e7eaea198cfe49d61fb9b8ce595/app/deploy/update.sh"
+  },
+  "followup": {
+    "observed_at": "2026-10-20T17:08:02Z",
+    "primary_merge": {
+      "pr": 9846,
+      "merged": true,
+      "merged_at": "2026-10-20T17:06:32Z",
+      "reviewed_head": "b82af8dae3b05e7eaea198cfe49d61fb9b8ce595",
+      "merge_sha": "1298ed4281362329c682a1f7c038b932e4ccbb64"
+    },
+    "merge_triggered_runs": [
+      {
+        "id": 39463170478,
+        "name": "public-render",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "1298ed4281362329c682a1f7c038b932e4ccbb64",
+        "created_at": "2026-10-20T17:06:35Z",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39463170478"
+      },
+      {
+        "id": 39463170560,
+        "name": "render",
+        "status": "pending",
+        "conclusion": null,
+        "head_sha": "1298ed4281362329c682a1f7c038b932e4ccbb64",
+        "created_at": "2026-10-20T17:06:35Z",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39463170560"
+      },
+      {
+        "id": 39463170448,
+        "name": "engine-render",
+        "status": "pending",
+        "conclusion": null,
+        "head_sha": "1298ed4281362329c682a1f7c038b932e4ccbb64",
+        "created_at": "2026-10-20T17:06:35Z",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39463170448"
+      }
+    ],
+    "existing_render_39439974736": "still queued",
+    "qualification": "The merge-triggered normal render39463170560 (or its naturally surviving successor) is now the direct covering candidate; older queued render39439974736 may also cover only if its post-pull source includes1298ed4281362329c682a1f7c038b932e4ccbb64. Require actual rendered_from/ancestry and successful dossier guard+publication, then normal updater and served proof."
+  }
+}
+
