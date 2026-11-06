@@ -475,3 +475,296 @@ R4 predictive admission and R5 prospective-consumer proof stay closed until gate
    receipt (#8522) and then R5 against its frozen spec (#8521).
 3. Until then this program has no open build lane. A successor's first act is to read this
    section and the Chairman's carrier, not to re-census.
+
+## Autonomous round delta (2026-10-07 to 2026-10-11, D55–D64)
+
+Append-only. This section supersedes §30 items 1 and 2 and §32. Authority: Chairman handoff
+#8480, the Chairman's 10-06 administrative-override ruling
+(`DEC:ITP-SEAT-RELEASES-ADMINISTRATIVE-BLOCKS-UNDER-CHAIRMAN-2026-10-06`), and the Chairman's
+10-07 directive to run autonomously until only absolute blockers remain. Every ruling below is
+a workstream-owner act under that delegation, never a Sol ruling.
+
+### 33. Seat ledger D55–D64
+
+| D | PR | Rung | Squash | Exact head | Release comment | Note |
+|---|---|---|---|---|---|---|
+| D55 | #8582 R1 owner designation + degraded-closure receipts + probe v2 | **MERGED** 06:25:50Z | `49741404` | `1653fcf3d0` | ordinary chain | R1 = COMPLETE_DEGRADED; `DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07` |
+| D56 | #8584 EVAL-1 forward preregistration K3E-EVAL-1-V1 + custody DEC | **MERGED** 06:48:26Z | `01fcaf74` | `90a085f110` | ordinary chain | `boundary_at` 2026-10-07T13:30Z; `DEC:K3E-EVAL1-CUSTODY-UNDER-CHAIRMAN-DIRECTIVE-2026-10-07` |
+| D57 | #8591 R5 §8 question 1 ruling | **MERGED** 06:51:29Z | `42685180` | `2cdd66f7a7` | ordinary chain | `DEC:ITP-R5-NO-DURABLE-APPEND-2026-10-07`; R5 = CLOSED-NOT-BUILT |
+| D58 | #8604 Package E: basis/unit/currency change is noncomparable (GAP-E-BASIS) + ALIAS e_a #2 fixture | **MERGED** 07:54:31Z | `c34d8d2e` | `11923761b1` | ordinary chain, hand-merged on concluded green | `DEC:ITP-K3E-BASIS-CHANGE-IS-NONCOMPARABLE-2026-10-07`; 0 of 58,200 historical supersedes links affected |
+| D59 | #8603 EVAL-1 forward evaluator scoring core | **MERGED** 08:14:09Z | `6077ca56` | `1f79cffe2f` | ordinary chain, hand-merged on concluded green | `engine/k3e_eval1_forward.py`; library only, no live surface; trial NOT consumed |
+| D60 | #8599 EVAL-1 owner acceptance + activation receipt (PR-2) | **MERGED** 2026-10-11T11:07:41Z | `b88076e8` | `895b20bd8f` | HOLD-RELEASED, then hand-merged by the seat after boundary_at; never armed | `inspect_eval1_admission` (engine/k3e_eval_admission.py) admits on origin/main |
+| D61 | #8615 ALIAS: clock-bounded identity gate (orchestrator A, lane A6) | **MERGED** 09:36:08Z | `4fc4589f` | `9a5f9135c0` | ordinary chain, hand-merged on concluded green | `DEC:ITP-K3E-ALIAS-CLOCK-BOUNDED-IDENTITY-2026-10-07`; e_a #1 strict-xfail converted to a passing test; disclosed reason `SECURITY_IDENTITY_UNRESOLVED_AT_CUTOFF` |
+| D62 | #8619 R4 v2 pre-boundary admission receipt + issuer-axis clock DEC (orchestrator B, lane B5) | **MERGED** 10:14:02Z | `aeb37c78` | `4b45f21124` | ordinary chain, hand-merged on concluded green | verdict `R4_INSUFFICIENT_N_PRE_BOUNDARY`; `DEC:ITP-R4-ISSUER-AXIS-AS-KNOWN-VERSION-CLOCK-2026-10-07` |
+| D63 | #8626 issuer universe admits the S&P 400/600 R1 constituents forward-only (orchestrator A, lane A8; seat DEC) | **MERGED** 2026-10-11T11:54:15Z | `37ac222d` | `1147eaba77` | ordinary chain, hand-merged on concluded green | `DEC:ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07`; security_master 2,382 to 3,104 in the dry run |
+| D64 | #8630 EVAL-1 challenger trial identity (orchestrator B, lane B6) | **MERGED** 2026-10-11T12:12:51Z | `e966b10b` | `225cadae` | HOLD-RELEASED comment 6108893839, hand-merged with --match-head-commit | `DEC:K3E-EVAL1-CHALLENGER-TRIAL-IDENTITY-2026-10-07`; trial 1/1 SPENT at merge, before any F_DEV label read |
+
+#8583 (Package E2, FAMILY-SEAM, CLOCK and both RIGHTS xfails) merged as `4f31830b`. It is the
+Market-Intelligence seat's PR (fd47d431), not this seat's, and is listed for the ladder only.
+
+### 34. The §30 administrative gates were resolved by the seat
+
+1. **R1 owner designation: resolved, D55.** No live workstream owned the R1 paths, so
+   `WS:ALPHA-INTELLIGENCE-INTEGRATION` designated itself owner by adding them to its `owns_paths`.
+   It then issued `R1_OWNER_RECEIPTS_2026-10-07.json` in the spec's degraded forms:
+   - G1–G3: DEGRADED_LABELED_ABSENCE.
+   - G4: OWNER_REFUSAL_NO_CLASS. The rights vocabulary stays with #7870, and the value stays
+     "UNKNOWN".
+   - G5: CAPTURE_CLOCK_ONLY.
+
+   Readiness probe v2 reports `r1_status = COMPLETE_DEGRADED`
+   (`DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07`). The exclusions are binding on every downstream
+   study:
+   - Issuer-level studies exclude the 724 unresolved names.
+   - Prospective studies exclude the 777 undated aliases.
+   - Studies needing currency, fiscal-year-end or basis exclude the missing field.
+   - Rights-dependent use is excluded.
+   - Event-time studies are excluded.
+2. **EVAL-1 positive-outcome custody: resolved, D56 and D60.** The seat acts as EVAL-1 custodian
+   under the Chairman directive, openly and in its own name, never as Sol
+   (`DEC:K3E-EVAL1-CUSTODY-UNDER-CHAIRMAN-DIRECTIVE-2026-10-07`).
+   - PR-1 (#8584) froze `eval1_preregistration.v1.json` as K3E-EVAL-1-V1, with
+     `boundary_at` 2026-10-07T13:30Z.
+   - PR-2 (#8599) carries the owner acceptance and the activation receipt. It merged by hand after
+     the boundary and was never armed (D60, 2026-10-11T11:07:41Z, squash `b88076e8`).
+   - PR-3 (#8603) is the forward evaluator scoring core: B = 19,999 and seed 480336034.
+   - Blinding, the trial budget and the single-evaluator rule are unchanged.
+   - `WS:EVAL-OS-MEASUREMENT-LAW` may supersede this custody with a later registration.
+3. **R5 §8 question 1: ruled, D57.** No durable append is authorized
+   (`DEC:ITP-R5-NO-DURABLE-APPEND-2026-10-07`). R5 is **CLOSED-NOT-BUILT**, and G-PROD is
+   unreachable by construction. The receipt stays reproducible on demand through
+   `scripts/query_k3e_expectation_surface.py`.
+4. **Gates 3 and 4 in §30 are unchanged and absolute.** Vendor PIT procurement is a purchase.
+   Capital and rank authority is the Chairman's.
+
+### 35. Package E is closed except for one external identity gap
+
+#8604 (D58) adds mutation gate 4 to `collectors/equity_revisions.py::_apply_lineage`. A populated
+`unit`, `currency` or `basis` change between two observations is **noncomparable**. It no longer
+writes a supersedes link and never mutates the prior row. Null→value enrichment still supersedes.
+Corpus impact is zero: none of the 58,200 historical supersedes links change, so no historical
+refusal follow-up is owed.
+
+- The three GAP-E-BASIS strict xfails in `tests/test_k3e_semantic_seam_qualification.py` are
+  converted.
+- GAP-E-ALIAS e_a #2 had a defective fixture: its `as_of` preceded its own capture. The fixture
+  now uses `POST_ALIAS_AS_OF`, and the test is converted.
+- #8583 (MI seat) converted FAMILY-SEAM, CLOCK and both RIGHTS.
+- The one remaining strict xfail was **GAP-E-ALIAS e_a #1**. A pre-alias observation with no
+  `security_ref` or `issuer_ref` resolved by `ticker_compat` equality alone. That is a backward
+  identity leak.
+- The BASIS DEC said that no owner-issued, clocked crosswalk exists. Orchestrator A's A5 census
+  falsified that premise. The Data OS identity owner already publishes
+  `data/reference/vendor_aliases.parquet`, with a non-null `ingested_at` knowledge clock (not strictly append-only; a re-stamp only moves it later) and a
+  nullable `valid_from`, read via `lib/dataos/identity.VendorAliasTable`. The producer is
+  `scripts/build_security_master.py`, and `config/identity_seams.yml` lists it as master.
+- The seat ruled `DEC:ITP-K3E-ALIAS-CLOCK-BOUNDED-IDENTITY-2026-10-07`:
+  - The vendor space is yahoo. All 9,390 attempts are yfinance, and yahoo and membership agree on
+    all 1,217 shared symbols.
+  - An undated row is usable from its `ingested_at` forward, never before.
+  - A row is identity-resolved only if the security_id at capture equals the query ticker's
+    security_id at cutoff.
+  - Every other row stays counted but is snapshot-ineligible, with reason
+    `SECURITY_IDENTITY_UNRESOLVED_AT_CUTOFF`.
+  - 4,567 of 9,390 current attempts (48.6%) are disclosed as UNRESOLVED. Most were captured
+    before the table's first ingestion on 2026-08-13.
+- A correction note is appended to the BASIS DEC body. Its BASIS ruling stands.
+- Lane A6 builds the gate (D61). Widening coverage or dating alias rows is the identity owner's
+  forward work, and no backfill is authorized.
+
+### 36. R4 predictive admission
+
+Orchestrator B's B4 diagnosis (pinned origin/main `e208a2546b8b`) returned **R4_PARTIAL**.
+
+- **Issuer axis.** Raw `issuer_ref` is null on all 517,384 observation rows, so the dry run had
+  0 issuer episodes. After the clocked yahoo alias join, 268,016 rows (51.8%) over 780 tickers
+  map to 778 resolved US issuers. `data/reference/security_master.parquet` has no issuer-axis
+  clock column.
+- **MKT-1 frame.** Absent in the sparse tree only. The owner's price_pressure artifact is on main,
+  and a restored `massive_stock_day` store exists on the runner host. That is an environment gap,
+  not a data gap.
+- **Episodes.** Variant S (20 observed quiet sessions, the preregistered law) gives 450
+  identities and effective N 128. Every S start falls between 2026-09-29 and 2026-10-06.
+  Variant L gives effective N 715 but violates the quiet-session law, so it is a sensitivity
+  only.
+- **Era.** The K3E corpus (2026-08-24 to 10-06) falls between the locked holdout end
+  (2026-08-21) and the EVAL-1 boundary. R4 is therefore descriptive only and never
+  promotion-bearing.
+
+The seat ruled `DEC:ITP-R4-ISSUER-AXIS-AS-KNOWN-VERSION-CLOCK-2026-10-07`. For a cutoff C, the
+issuer mapping is read from the newest owner-published security_master version on origin/main
+committed at or before C minus 24 hours, with every field taken from that one version. The clock
+is labelled `REPO_HISTORY_AVAILABILITY`.
+
+Orchestrator B's lane B5 builds `R4_DRYRUN_RECEIPT_V2_2026-10-07` under a frozen spec:
+- S is primary.
+- Horizons 5, 21 and 63 use pre-boundary bars only. Every incomplete window is disclosed as
+  `RIGHT_CENSORED_AT_BOUNDARY`.
+- Effect statistics are computed only for cells that meet the floors (100 overall, 25 per
+  subgroup).
+
+**Result, D62 (#8619, squash `aeb37c78`): `R4_INSUFFICIENT_N_PRE_BOUNDARY`.**
+- Scope: 517,384 rows, of which 267,960 are issuer-formed (778 issuers, 780 tickers).
+- Variant S: 128 effective episodes overall against a floor of 100. But only 11 five-session
+  windows are COMPLETE, and none at 21 or 63 sessions. No subgroup has more than 8 COMPLETE
+  windows against its floor of 25.
+- COMPLETE windows bound every residual count from above, so the verdict holds whether or not
+  the MKT-1 market residual is available. Path (a), `data/price_pressure/latest.json`, carries
+  no per-name residual frame. Path (b) was not run because daily.yml held the store host. Both
+  are disclosed in the receipt.
+- Variant L (counts only; it violates the 20-quiet-session law) reaches 691 COMPLETE windows at
+  h=5 but does not bear on the decision.
+- Effects are "not estimated" in every cell.
+- The receipt is deterministic (json sha256 `ed082a2a…`) and is labelled INTER_ERA_GAP, not
+  promotion-bearing, rights UNKNOWN. The v1 receipt is untouched.
+
+The binding constraint is time, not identity: the forward N accrues only after `boundary_at`.
+
+### 37. Ladder at handoff
+
+| Artifact | Rung | Evidence |
+|---|---|---|
+| R1 | MERGED (COMPLETE_DEGRADED) | #8582 squash `49741404`; probe v2 on origin/main |
+| EVAL-1 PR-1 (preregistration) | MERGED | #8584 squash `01fcaf74` |
+| EVAL-1 PR-2 (acceptance + activation) | MERGED (2026-10-11, after boundary_at) | #8599 squash `b88076e8` |
+| Issuer universe admits the R1 constituents (A8) | MERGED (forward-only; first widened nightly pending) | #8626 squash `37ac222d`; DEC:ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07 |
+| EVAL-1 challenger trial identity (B6) | MERGED (trial 1/1 SPENT at merge) | #8630 squash `e966b10b`; DEC:K3E-EVAL1-CHALLENGER-TRIAL-IDENTITY-2026-10-07 |
+| EVAL-1 partition clock receipt builder (A9) | MERGED (lane head 6a9a2df8 + seat heal 3576087d: the five ITP receipt suites moved into the exclusive legacy-jobs job information-to-price-eval-receipts, which also healed main's ci-pack-0 packing-probe red; no ceiling moved) | #8805 squash `413e253a`; lane run-1791721435 on ubuntu1, 607 s wall; DEC:K3E-EVAL1-PARTITION-CLOCK-UNIT-2026-10-07 |
+| EVAL-1 PR-3 (scoring core) | MERGED (library; no live surface) | #8603 squash `6077ca56` |
+| R5 | CLOSED-NOT-BUILT (ruled) | #8591 squash `42685180` |
+| Package E BASIS + e_a #2 | MERGED | #8604 squash `c34d8d2e`; #8583 squash `4f31830b` (MI seat) |
+| Package E ALIAS e_a #1 | MERGED (display-tier CLI; no site surface) | #8615 squash `4fc4589f` |
+| R4 predictive admission | MERGED (descriptive; `R4_INSUFFICIENT_N_PRE_BOUNDARY`) | #8619 squash `aeb37c78`; §36 |
+| EVAL-1 trial consumption | identity committed (D64); scoring not started | Trial SPENT by the #8630 merge at 2026-10-11T12:12:51Z, before any F_DEV label read; no forward data exists before `boundary_at`, so scoring still needs forward outcomes |
+
+No artifact reached ACCEPTANCE in this round. ACCEPTANCE belongs to the Chairman.
+
+### 38. Absolute gates (only these remain)
+
+1. **Vendor point-in-time procurement.** A purchase; no seat, owner or lane can cure it.
+2. **Capital and rank authority.** The Chairman's. `financial_influence`, `k3e_admissible` and
+   `promotion_eligible` stay false.
+3. **EVAL-1 trial consumption.** The challenger trial identity was committed to main by #8630 (D64)
+   at 2026-10-11T12:12:51Z, before any F_DEV label read, so the single budgeted trial is SPENT.
+   Scoring is a different fact: forward outcomes do not exist before `boundary_at`, and the
+   challenger is scored only by the single evaluator after the forward window closes, under the
+   frozen preregistration. No authority can produce forward data early.
+4. **Alias coverage widening or dating.** The Data OS identity owner's forward work. The
+   4,567 attempts captured before the table's first ingestion stay UNRESOLVED; no backfill and no
+   K3E-local alias table are authorized.
+5. **R4 N floor.** `R4_INSUFFICIENT_N_PRE_BOUNDARY` (D62). The floor needs COMPLETE post-boundary
+   windows. Only forward time cures it, never relabelling or a backfill.
+
+### 39. DO_NOT_REDO and danger areas
+
+- Do not re-rule R1, R5, BASIS, ALIAS or the EVAL-1 custody; each is a recorded DEC. A fresh
+  session is not a material invalidator.
+- Do not re-run the EVAL-1 preregistration freeze or edit `eval1_preregistration.v1.json`; it is
+  frozen as K3E-EVAL-1-V1.
+- Do not arm #8599-class PRs. An activation receipt merged before `boundary_at` is refused by
+  `inspect_eval1_admission` with `FORWARD_BOUNDARY_NOT_REACHED`; the merge commit's own committer
+  time is what is checked.
+- Do not reproduce R4 digest `280b96ba…` at the current revision. It reproduces only at its own code
+  revision; the ALIAS gate changes the surface contract.
+- Do not diagnose an R2-canonical store as absent from a sparse worktree. `data/massive_stock_day`
+  is restored by `scripts.fetch_r2` in the nightly; a sparse tree has no bytes for it.
+- Do not write into `data/` in a sparse tree; an unredirected writer truncates committed artifacts.
+- Do not mint a K3E-local alias table or a new rights vocabulary; #7870 owns rights and the Data
+  OS identity owner owns aliases.
+
+### 40. NEXT
+
+1. A9 partition clock (#8805, squash 413e253a) is on main. The clock is read only at a fresh
+   origin/main (`eval1_partition_clock.py --repo <tree> --rev <origin/main full sha> --out <dir>`); its
+   admission gate refuses any other rev (REV_NOT_ADMISSION_SOURCE_MAIN) and proves freshness over the
+   network. First reading: F_DEV_OPEN at 413e253a (rev time 2026-10-11T14:05:56Z): 56/100 issuer overlap clusters, 215 episode_ids, checker OK, receipt sha256 e04da67a7d74fe2d. Second admitted reading at 616b1b87 (2026-10-11T14:3xZ): receipt sha256 c1dccda797684eb6, equal to the first once the rev stamps are dropped. A reading is a research artifact, never a score; the
+   json + md are never committed under data/.
+2. R1 CLOSED upgrade: after the first nightly that runs the widened builder (#8626), re-run
+   `r1_readiness_probe` at a post-build cutoff and issue the prospective owner receipt. Never
+   re-label rows at or before 2026-10-03T06:31:51Z.
+3. EVAL-1: the challenger identity is committed and the trial is SPENT (D64). Fit B0/B6/challenger on
+   F_DEV only, after F_DEV closes at 100 issuer overlap clusters (DEC:K3E-EVAL1-PARTITION-CLOCK-UNIT-2026-10-07),
+   with `engine/k3e_eval1_forward.py` as the single evaluator; F_HOLD stays locked; no tuning loop.
+4. R4 predictive admission re-runs only when the forward N floor can be met on post-boundary data.
+5. Absolute gates (section 38) stay with their owners: vendor PIT, capital/rank, forward time, the
+   Data OS identity owner for alias widening. No K3-E merge authorizes consumer wiring, rank, gate,
+   size, trade or deployment.
+
+## Site materialization delta (2026-10-21 to 2026-10-22, D65–D67)
+
+Append-only. Authority: the Chairman's 2026-10-21 directive to the Information-to-Price seat
+(Fable Meta-CEO, session 2fc05761) to materialize the program on the site through the fabric,
+with design accepted before implementation and every lane return judged by artifact. Every
+ruling below is a workstream-owner act under that delegation, never a Sol ruling.
+
+### 41. Seat ledger D65–D67
+
+| D | PR | Rung | Squash | Exact head | Release comment | Note |
+|---|---|---|---|---|---|---|
+| D65 | #9958 site program brief (`research/INFORMATION_TO_PRICE_SITE_PROGRAM_BRIEF_2026-10-21.md`) | **MERGED** 2026-10-21 | `cd90f651` | `da6f65eb` | ordinary chain | Page = descriptive view of `data/revisions/expectation_observations.parquet`; no ledger, no rank, no sizing |
+| D66 | #9969 Expectation Surface page: BUILD-DATA (lane itp-es-build-data-20261021-r1) + BUILD-UI (lane itp-es-build-ui-20261021-r1) + seat repairs r2/r3/r4/r5 | **MERGED** 2026-10-22T08:42:34Z | `6a4c0079` | `6de93f86` | ordinary chain, hand-merged with --match-head-commit on concluded green | `scripts/build_expectation_surface.py`, `templates/expectation_surface.html.j2`, `--esurf-*` token group in `templates/theme.css`, 22 page tests, render.yml ownership, visual-evidence receipt, P0B receipt remint, main merged at 8182ec04 |
+| D67 | records PR (this section, agentos handoff 2026-10-22, WS next_action item 4) | see agentos | | | ordinary chain | |
+
+### 42. What the page is and is not
+
+- `site/expectation_surface.html` is regenerated by the nightly from the parquet; it is a view.
+  `financial_influence` and `k3e_admissible` stay false on every record it reads
+  (`DEC:ITP-R5-NO-DURABLE-APPEND-2026-10-07`); R1 stays COMPLETE_DEGRADED
+  (`DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07`) and the page labels identity as such.
+- Seat rulings G1–G6 bind the page: horizon labels, UTC-only session clock, the
+  `research/index.html` link target, no unit claims, 25 moves per side, identity labels.
+- CI run 39712475941 reported 75 blocking design-ratchet findings on the lane template plus a
+  render-ownership miss. Repair r2 (commit 681f3dbf) moved every colour mix, series colour and
+  skeleton grey into `templates/theme.css` as the `--esurf-*` group (dark root + light override),
+  aliased under `body.page-es`, replaced every literal radius with `var(--r-*,<px>)`, and added
+  the builder to the render workflow paths. Pixel parity against the accepted screenshots is
+  at most 0.012 % per core shot (timestamp region only); 131 tests pass on the merged tree.
+- CI on the r2 head left two legacy packs red. Repair r3 (commit 4bdb0b14) answered both:
+  ci-pack-3's visual-evidence gate (`scripts/check_ui_visual_evidence.py`) requires every material
+  template/CSS change to be owned by a committed receipt, so
+  `mockups/evidence/expectation-surface/EVIDENCE.yml` now owns the page template and
+  `templates/theme.css` with a `mastermind.p0_evidence.v2` manifest from
+  `scripts/capture_page_evidence.py` (8 rest cells desktop/mobile x en/zh x dark/light plus
+  hover(.es-btn) and focus(.es-card-t) interaction cells in both themes, 24/24 captured; gate rc 0
+  on the exact PR-vs-main diff). ci-pack-8's template<->site sync found `site/theme.css` stale
+  against `templates/theme.css` (1 of 139 pairs); it was re-copied byte-identical.
+- The r3 `site/theme.css` re-copy turned three more legacy packs red, because that file is pinned
+  by the Prophet P0B zero-FOUC evidence. Repair r4 (commit f7e8076c) re-minted the same-diff
+  consequences exactly as commit 692bf4f8 had for the previous theme change: both
+  `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout{,-canada}.json` receipts were re-verified
+  with `scripts/verify_stock_dashboard_mobile_layout.cjs` against a fresh
+  `scripts/render_stock_dashboard_fixture.py` render under the same Chromium 151.0.7922.34 the
+  committed receipts record (only the theme.css digest line moved, screenshots pixel-identical;
+  ci-pack-10 closure gate rc 0); `manifest.json` `repair_extension.browser_receipts` was re-bound to
+  the new receipt digests with the superseded extension archived in `repair_extension_history`
+  (ci-pack-5 binding tests 6 passed); `site/research_screener.html` was re-baked from the committed
+  payload so its `theme.css?v=` stamp matches (ci-pack-7 parity 2 passed).
+- The r4 head went CI-green on the required checks but GitHub reported it CONFLICTING: main had
+  moved 38 commits (1f536032 to 8182ec04) and prophet r7 Wave A (#9954, commit 2ebafe80) changed
+  `templates/theme.css` and re-minted the same P0B receipts. Repair r5 (merge commit 6de93f86)
+  merged origin/main into the branch (both theme.css copies auto-merged, byte-identical, `--esurf-*`
+  group intact), took main's copies of the four derived files and re-ran the r4 remint against the
+  merged theme: both receipts rc 0 (digest line only), manifest re-bound on top of main's manifest
+  (history 13), screener re-baked; closure gate rc 0, binding tests 6 passed, parity 2 passed, page
+  suite 22 passed on the merged tree. Never a rebase or force-push on the shared branch.
+- Lesson for every later BUILD-UI packet: `NOT DONE UNLESS` must name the design ratchet
+  (`scripts/check_design_system.py --mode enforce-added`),
+  `tests/test_render_builder_ownership.py`, the visual-evidence receipt
+  (`scripts/check_ui_visual_evidence.py` on the PR diff, capture with hover/focus force states),
+  the `site/*.css` derived-copy pair rule, and — whenever `templates/theme.css` changes — the
+  P0B remint (both mobile-layout receipts + manifest bindings) and the research screener re-bake,
+  all in the same diff; and a long-lived PR that touches theme.css must check `mergeable` after
+  every CI read and merge main + remint in one act, because every other theme change races it.
+
+### 43. NEXT (critical path first)
+
+1. PRODUCTION_PROOF: first nightly render after `6a4c0079` writes `site/expectation_surface.html`
+   on origin/main, the registry row appears, and the production URL returns 200 with
+   `body.page-es` and the latest session date. Until then the rung is MERGED.
+2. Wave 2 (design-tier): Research mega-menu item for the page (38 nav-parity suites check
+   `templates/_navlinks.html.j2`), per-security link-out, CPL-1 coupling panel. The page does
+   NOT join the Intelligence Hub desk rail (live lamps and qledger records; this surface is
+   descriptive).
+3. Fabric owner items, not this seat's: GLM vision delegation refused for lanes
+   (`controller_minimax_lease_required`), host_pick thermal gate vs lane_runtime admission race,
+   `USAGE_RECEIPT_MISSING` on a successful lane.

@@ -1,0 +1,12 @@
+{
+  "started_at": "2026-10-20T11:36:51.684741+00:00",
+  "head": "ae3e6bc547361b632223e7e9bde73128b399035e",
+  "incoming": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "source_index": "39477d0a200f63fe0d1fcf1eaa4f6d21873c86aa",
+  "old_manifest_sha256": "a54e03e87ada47e40eac679da9b5d0e714bbb39536116220de674dd7296041a9",
+  "old_indexed_files": 322,
+  "old_handoff_body_sha256": "5b224370c9b4eb82408ff4e4f6c09b5fd8142dc9233bb542ce22fcf18884f912",
+  "old_workstream_sha256": "907d44fd7658983b708a8a8262dc373bdd20de7f1d8c78cbbdfba5a5bbc30a8c",
+  "initial_import_refusal": "v1 stopped before any repository write on a missing optional encoding key in14 legacy raw entries; v2 treats absent encoding as identity while preserving all old rows verbatim",
+  "record_writes_started": true
+}

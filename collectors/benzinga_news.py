@@ -404,7 +404,31 @@ def catch_up_once(
         cursor_epoch=current_epoch,
         observed_at=observed_at,
     )
+    return apply_catch_up_batch(
+        batch=batch, store=store, universe=universe, expected_cursor=current_text,
+    )
+
+
+def apply_catch_up_batch(
+    *, batch: DeltaBatch, store: NewsStore, universe: UniverseQualification,
+    expected_cursor: str | None,
+) -> CatchUpResult:
+    """Accept a completed network batch on the caller's store-owning thread."""
+    if universe.status != "qualified":
+        raise BenzingaRoutingError("universe_not_qualified")
+    current_text = expected_cursor
     if batch.gap_unresolved:
+        if current_text is None:
+            # First catch-up: hold the client's lookback base so the next
+            # catch-up still requests the original window (including pages
+            # this budget never reached). Cursor-only compare-and-set: no
+            # revision rows are committed, and a cursor that appeared since
+            # the read surfaces as CursorConflict.
+            store.commit(
+                (),
+                expected_cursor=None,
+                next_cursor=str(batch.next_cursor_epoch),
+            )
         return CatchUpResult(
             committed=False,
             gap_unresolved=True,

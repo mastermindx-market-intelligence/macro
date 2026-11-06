@@ -363,3 +363,143 @@ def test_jsonschema_parent_of_economic_share_rejected(edges_schema):
 
 def test_jsonschema_valid_parent_of_accepted(edges_schema):
     _validate(edges_schema, _parent_of("theme:cat_h", "theme:mid_h"))
+
+
+# Taxonomy V2 L01: optional sub_theme tier and value_chain_position display attribute.
+_VALUE_CHAIN_POSITIONS = ("upstream", "midstream", "downstream", "enabler")
+_ADJACENCY_MESSAGE = (
+    "macro_category→theme",
+    "theme→sub_theme",
+    "sub_theme→micro_theme",
+    "theme→micro_theme",
+)
+
+
+def _node_with_value_chain(node_id: str, tier: str, position: object) -> dict:
+    return _theme_node(
+        node_id, tier,
+        source_meta=json.dumps(
+            {"nominated_from": "operator:curation",
+             "value_chain_position": position},
+            sort_keys=True),
+    )
+
+
+def test_macro_category_theme_sub_theme_micro_theme_chain_passes(tmp_path, breaks):
+    nodes = [
+        _theme_node("theme:cat_h", "macro_category"),
+        _theme_node("theme:mid_h", "theme"),
+        _theme_node("theme:sub_h", "sub_theme"),
+        _theme_node("theme:micro_h", "micro_theme"),
+    ]
+    edges = [
+        _parent_of("theme:cat_h", "theme:mid_h"),
+        _parent_of("theme:mid_h", "theme:sub_h", valid_from="2024-01-02"),
+        _parent_of("theme:sub_h", "theme:micro_h", valid_from="2024-01-03"),
+    ]
+    root = _write_store(
+        tmp_path / "sub_chain", nodes=nodes, edges=edges, evidence=[_evidence()])
+    assert _hierarchy_breaches(root, breaks) == []
+
+
+def test_theme_to_micro_theme_without_sub_theme_still_passes(tmp_path, breaks):
+    nodes, edges, ev = _hierarchy_chain_nodes_edges()
+    root = _write_store(
+        tmp_path / "legacy_chain", nodes=nodes, edges=edges, evidence=ev)
+    assert _hierarchy_breaches(root, breaks) == []
+
+
+@pytest.mark.parametrize(
+    "parent_tier,child_tier,src,dst",
+    [
+        ("macro_category", "sub_theme", "theme:cat_forbid", "theme:sub_forbid"),
+        ("sub_theme", "sub_theme", "theme:sub_left", "theme:sub_right"),
+        ("sub_theme", "theme", "theme:sub_parent", "theme:theme_child"),
+        ("micro_theme", "sub_theme", "theme:micro_parent", "theme:sub_child"),
+        ("macro_category", "micro_theme", "theme:cat_skip", "theme:micro_skip"),
+    ],
+)
+def test_forbidden_parent_of_pair_breaches_adjacency(
+        tmp_path, breaks, parent_tier, child_tier, src, dst):
+    nodes = [_theme_node(src, parent_tier), _theme_node(dst, child_tier)]
+    edges = [_parent_of(src, dst)]
+    root = _write_store(
+        tmp_path / "forbid", nodes=nodes, edges=edges, evidence=[_evidence()])
+    breaches = _hierarchy_breaches(root, breaks)
+    needle = f"{parent_tier!r}→{child_tier!r}"
+    assert any(
+        "tier adjacency" in x and needle in x
+        and all(pair in x for pair in _ADJACENCY_MESSAGE)
+        for x in breaches
+    ), breaches
+
+
+def test_sub_theme_tier_passes_tier_check(tmp_path, breaks):
+    nodes = [_theme_node("theme:sub_only", "sub_theme")]
+    root = _write_store(
+        tmp_path / "sub_only", nodes=nodes, edges=[], evidence=[_evidence()])
+    assert _hierarchy_breaches(root, breaks) == []
+
+
+def test_subtheme_typo_tier_fails(tmp_path, breaks):
+    nodes = [_theme_node("theme:typo_tier", "subtheme")]
+    root = _write_store(
+        tmp_path / "typo_tier", nodes=nodes, edges=[], evidence=[_evidence()])
+    breaches = _hierarchy_breaches(root, breaks)
+    assert any(
+        "kind=theme requires tier" in x
+        and "macro_category|theme|sub_theme|micro_theme" in x
+        and "subtheme" in x
+        for x in breaches
+    ), breaches
+
+
+@pytest.mark.parametrize("position", _VALUE_CHAIN_POSITIONS)
+def test_value_chain_position_on_sub_theme_passes(tmp_path, breaks, position):
+    nodes = [_node_with_value_chain("theme:sub_vc", "sub_theme", position)]
+    root = _write_store(
+        tmp_path / "sub_vc", nodes=nodes, edges=[], evidence=[_evidence()])
+    assert _hierarchy_breaches(root, breaks) == []
+
+
+@pytest.mark.parametrize("position", _VALUE_CHAIN_POSITIONS)
+def test_value_chain_position_on_micro_theme_passes(tmp_path, breaks, position):
+    nodes = [_node_with_value_chain("theme:micro_vc", "micro_theme", position)]
+    root = _write_store(
+        tmp_path / "micro_vc", nodes=nodes, edges=[], evidence=[_evidence()])
+    assert _hierarchy_breaches(root, breaks) == []
+
+
+def test_value_chain_position_on_theme_tier_fails(tmp_path, breaks):
+    nodes = [_node_with_value_chain("theme:mid_vc", "theme", "midstream")]
+    root = _write_store(
+        tmp_path / "theme_vc", nodes=nodes, edges=[], evidence=[_evidence()])
+    breaches = _hierarchy_breaches(root, breaks)
+    assert any(
+        f"hierarchy: node {'theme:mid_vc'!r} value_chain_position" in x
+        and "sub_theme|micro_theme" in x
+        and "got 'theme'" in x
+        for x in breaches
+    ), breaches
+
+
+def test_value_chain_position_middle_fails(tmp_path, breaks):
+    nodes = [_node_with_value_chain("theme:sub_badpos", "sub_theme", "middle")]
+    root = _write_store(
+        tmp_path / "bad_pos", nodes=nodes, edges=[], evidence=[_evidence()])
+    breaches = _hierarchy_breaches(root, breaks)
+    assert any(
+        f"hierarchy: node {'theme:sub_badpos'!r} value_chain_position" in x
+        and "'middle'" in x
+        for x in breaches
+    ), breaches
+    assert not any("sub_theme|micro_theme" in x for x in breaches)
+
+
+def test_jsonschema_sub_theme_tier_accepted(nodes_schema):
+    _validate(nodes_schema, _theme_node("theme:sub_ok", "sub_theme"))
+
+
+def test_jsonschema_subtheme_typo_rejected(nodes_schema):
+    row = _theme_node("theme:sub_bad", "subtheme")
+    _validate_fails(nodes_schema, row)

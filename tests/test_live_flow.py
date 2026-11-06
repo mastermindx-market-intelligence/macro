@@ -1054,6 +1054,260 @@ class TestZeroDTE:
         assert ev["zerodte"] is True
 
 
+def _signed_print(
+    exp, hhmm="09:30", size=100, price=2.80, sign=1.0, right="C", seq=1,
+) -> dict:
+    """One already-signed print for a direct ``_accumulate_tide`` call.
+
+    Naive ``trade_timestamp`` is exchange time, matching ``_minute_key``.
+    """
+    return {
+        "root": "SPY",
+        "right": right,
+        "expiration": exp,
+        "strike": 550.0,
+        "price": price,
+        "size": size,
+        "sign": sign,
+        "trade_timestamp": f"2026-07-02T{hhmm}:00",
+        "sequence": seq,
+    }
+
+
+def _dte_tide_for(rows: list[dict]) -> dict:
+    """Run the DTE split the way ``_accumulate_tide`` does, and return that dict."""
+    dte_tide: dict = {}
+    lf._accumulate_tide(
+        combined=pd.DataFrame(rows),
+        root="SPY",
+        group_en="Index/ETF",
+        group_zh="指数/ETF",
+        batch_ts=BATCH_TS,
+        session_date=SESSION_DATE,
+        market_tide_minutes={},
+        sector_tide={},
+        dte_tide=dte_tide,
+        root_minutes={},
+        root_strikes={},
+        root_expiries={},
+        sweep_clusters={},
+    )
+    return dte_tide
+
+
+def _admission_frame(exp, hhmm="15:00", size=100, price=0.10, seq=999) -> pd.DataFrame:
+    """One raw call print in the shape ``TestZeroDTE`` feeds ``process_batch``."""
+    ts = f"2026-07-02T{hhmm}:00"
+    return pd.DataFrame([{
+        "root": "SPY", "right": "C", "expiration": exp,
+        "strike": 550.0, "price": price, "bid": 0.05, "ask": 0.15,
+        "size": size, "trade_timestamp": ts, "quote_timestamp": ts,
+        "sequence": seq, "date": "2026-07-02",
+    }])
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# F02-Q2 — unreadable or past expiry is unknown, never 0DTE
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestUnknownExpiry:
+    """Expiry that cannot be read, or that is already past, is not 0DTE.
+
+    ``process_batch`` drops those rows before an event exists.
+    ``expirations_valid`` (engine/live_flow.py, the block that calls
+    ``_is_canonical_date`` and ``date.fromisoformat(value) >= session_day``)
+    refuses a non-canonical string and any date before the session. The
+    0DTE coercion lives in ``_enrich_contract_row`` and in the DTE split of
+    ``_accumulate_tide``, which that gate never calls. Same split as
+    ``TestSweepLikeFlag.test_untimed_print_venue_is_not_counted``: assert the
+    drop on ``process_batch``, and call the function that still has the bug.
+    """
+
+    @pytest.mark.parametrize("expiration", ["", "nan", "not-a-date", None])
+    def test_unreadable_expiry_is_unknown_not_0dte(self, expiration):
+        row = pd.Series({
+            "expiration": expiration, "strike": 550.0, "right": "C", "size": 100,
+        })
+        enrich = lf._enrich_contract_row(row, SESSION_DATE, None)
+        assert enrich["dte"] is None, enrich
+        assert enrich["dte_bucket"] == "unknown", enrich
+        assert enrich["zerodte"] is False, enrich
+        # Other keys stay on today's path (no prev close, no prior OI).
+        assert enrich["mny_bucket"] == "unknown"
+        assert enrich["vol_gt_oi"] is None
+        assert enrich["vol_gt_oi_ratio"] is None
+
+        result = _run(_admission_frame(expiration), etf_floor=0, name_floor=0)
+        assert result["events"] == [], (
+            f"expiration {expiration!r} reached an event; "
+            f"events={result['events']!r} notes={result['meta_notes']!r}"
+        )
+        assert any(
+            "invalid_source_rows_dropped" in note for note in result["meta_notes"]
+        ), result["meta_notes"]
+
+    def test_past_expiry_is_unknown_not_0dte(self):
+        """Session 2026-07-02, expiration 2026-07-01 is past, not same-day."""
+        row = pd.Series({
+            "expiration": "2026-07-01", "strike": 550.0, "right": "C", "size": 100,
+        })
+        enrich = lf._enrich_contract_row(row, SESSION_DATE, None)
+        assert enrich["dte"] is None, enrich
+        assert enrich["dte_bucket"] == "unknown", enrich
+        assert enrich["zerodte"] is False, enrich
+        assert enrich["mny_bucket"] == "unknown"
+        assert enrich["vol_gt_oi"] is None
+        assert enrich["vol_gt_oi_ratio"] is None
+
+        result = _run(_admission_frame("2026-07-01"), etf_floor=0, name_floor=0)
+        assert result["events"] == []
+        assert any(
+            "invalid_source_rows_dropped" in note for note in result["meta_notes"]
+        ), result["meta_notes"]
+
+    def test_readable_expiry_is_unchanged(self):
+        """Same-day, 10-day, and compact YYYYMMDD stay on today's arithmetic.
+
+        Compact ``20260705`` parses under ``pd.Timestamp`` (dte 3, bucket
+        ``1_7d``) but ``process_batch`` drops it: ``_is_canonical_date``
+        admits only ``YYYY-MM-DD``. The event-level pin is the direct enrich,
+        which is the path that sees the value.
+        """
+        same = _run(_admission_frame("2026-07-02", seq=1), etf_floor=0, name_floor=0)
+        assert len(same["events"]) == 1
+        ev = same["events"][0]
+        assert ev["dte"] == 0
+        assert ev["dte_bucket"] == "0d"
+        assert ev["zerodte"] is True
+
+        ten = _run(
+            _admission_frame("2026-07-12", hhmm="14:00", price=2.50, seq=2),
+            etf_floor=0, name_floor=0,
+        )
+        assert len(ten["events"]) == 1
+        ev = ten["events"][0]
+        assert ev["dte"] == 10
+        assert ev["dte_bucket"] == "8_30d"
+        assert ev["zerodte"] is False
+
+        compact_batch = _run(
+            _admission_frame("20260705", seq=3), etf_floor=0, name_floor=0,
+        )
+        assert compact_batch["events"] == []
+        assert any(
+            "invalid_source_rows_dropped" in note
+            for note in compact_batch["meta_notes"]
+        ), compact_batch["meta_notes"]
+
+        row = pd.Series({
+            "expiration": "20260705", "strike": 550.0, "right": "C", "size": 100,
+        })
+        enrich = lf._enrich_contract_row(row, SESSION_DATE, None)
+        assert enrich["dte"] == 3
+        assert enrich["dte_bucket"] == "1_7d"
+        assert enrich["zerodte"] is False
+
+    @pytest.mark.parametrize(
+        "expiration",
+        [
+            pytest.param(pd.Timestamp("2026-07-12", tz="UTC"), id="timestamp-utc"),
+            pytest.param("2026-07-12T00:00:00Z", id="iso-zulu"),
+        ],
+    )
+    def test_classify_expiry_tz_aware_is_readable(self, expiration):
+        assert lf._classify_expiry(expiration, SESSION_DATE) == (10, "8_30d")
+
+    @pytest.mark.parametrize(
+        ("expiration", "expected"),
+        [
+            pytest.param(None, (None, "unknown"), id="none"),
+            pytest.param(float("nan"), (None, "unknown"), id="nan-float"),
+            pytest.param("", (None, "unknown"), id="empty"),
+            pytest.param("nan", (None, "unknown"), id="nan-str"),
+            pytest.param("None", (None, "unknown"), id="none-str"),
+            pytest.param("not-a-date", (None, "unknown"), id="junk"),
+            pytest.param("2026-07-01", (None, "unknown"), id="past"),
+            pytest.param(20260705.0, (None, "unknown"), id="float-yyyymmdd"),
+            pytest.param(pd.NaT, (None, "unknown"), id="nat"),
+            pytest.param(1, (None, "unknown"), id="int-one"),
+            pytest.param(b"2026-07-05", (None, "unknown"), id="bytes"),
+            pytest.param(object(), (None, "unknown"), id="object"),
+            pytest.param("2026-07-02", (0, "0d"), id="same-day"),
+            pytest.param("20260705", (3, "1_7d"), id="compact-str"),
+            pytest.param(20260705, (3, "1_7d"), id="compact-int"),
+            pytest.param(pd.Timestamp("2026-07-12"), (10, "8_30d"), id="timestamp-naive"),
+            pytest.param("2026-07-12 16:00", (10, "8_30d"), id="datetime-str"),
+            pytest.param("9999-12-31", (2912260, "90p"), id="far-future"),
+            pytest.param(pd.Timestamp("2026-07-12", tz="UTC"), (10, "8_30d"), id="timestamp-utc"),
+            pytest.param("2026-07-12T00:00:00Z", (10, "8_30d"), id="iso-zulu"),
+        ],
+    )
+    def test_classify_expiry_never_raises(self, expiration, expected):
+        assert lf._classify_expiry(expiration, SESSION_DATE) == expected
+
+    def test_unknown_minutes_survive_consecutive_batches(self):
+        """Two refused rows in two minutes both remain under ``dte_tide["unknown"]``.
+
+        Copies the ``TestPollerMergePath`` prior-state thread. ``process_batch``
+        will not insert the key: ``expirations_valid`` drops the row first.
+        Each batch classifies the refused print with ``_accumulate_tide`` on
+        the carried ``dte_tide`` (the copy at the tide-accumulator block of
+        ``process_batch``, ``{k: dict(v) for k, v in ps.get("dte_tide", {}).items()}``,
+        keeps every key, including one it did not itself create). A later
+        admitted batch must still hold both minutes.
+        """
+        batches = [("", "09:31", 1001), ("not-a-date", "10:15", 2002)]
+        prior = None
+        for exp, hhmm, seq in batches:
+            raw = _admission_frame(exp, hhmm=hhmm, price=2.80, size=100, seq=seq)
+            raw["bid"] = 2.40
+            raw["ask"] = 2.80
+            result = lf.process_batch(
+                calls_df=raw, puts_df=None,
+                session_date=SESSION_DATE, batch_ts=BATCH_TS,
+                prior_state=prior,
+                etf_floor=0, name_floor=0,
+                etf_anchors=["SPY"],
+            )
+            assert result["events"] == []
+            assert any(
+                "invalid_source_rows_dropped" in note
+                for note in result["meta_notes"]
+            ), result["meta_notes"]
+            signed = raw.copy()
+            signed["sign"] = 1.0
+            lf._accumulate_tide(
+                combined=signed,
+                root="SPY",
+                group_en="Index/ETF",
+                group_zh="指数/ETF",
+                batch_ts=BATCH_TS,
+                session_date=SESSION_DATE,
+                market_tide_minutes=result["state"]["market_tide_minutes"],
+                sector_tide=result["state"]["sector_tide"],
+                dte_tide=result["state"]["dte_tide"],
+                root_minutes=result["state"]["root_minutes"],
+                root_strikes=result["state"]["root_strikes"],
+                root_expiries=result["state"]["root_expiries"],
+                sweep_clusters=result["state"]["sweep_clusters"],
+            )
+            prior = result["state"]
+
+        admitted = _admission_frame("2026-07-12", hhmm="11:00", price=2.80, size=100, seq=3003)
+        admitted["bid"] = 2.40
+        admitted["ask"] = 2.80
+        final = lf.process_batch(
+            calls_df=admitted, puts_df=None,
+            session_date=SESSION_DATE, batch_ts=BATCH_TS,
+            prior_state=prior,
+            etf_floor=0, name_floor=0,
+            etf_anchors=["SPY"],
+        )
+        unknown = final["state"]["dte_tide"].get("unknown", {})
+        assert set(unknown) == {"09:31", "10:15"}, final["state"]["dte_tide"]
+        assert "8_30d" in final["state"]["dte_tide"]
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # FIX 1 — vol_gt_oi uses cumulative day-volume, not per-batch coalesced size
 # ──────────────────────���──────────────────────────────────────────────────────
@@ -1628,6 +1882,45 @@ class TestSectorDteTideMath:
         dte_tide = result["state"].get("dte_tide", {})
         assert "8_30d" in dte_tide, f"8_30d bucket missing: {list(dte_tide.keys())}"
 
+    def test_one_unreadable_row_does_not_erase_the_minute(self):
+        """One bad expiration must not drop the readable rows of that minute.
+
+        Signed premium is ``price * size * 100 * sign``, and calls add to
+        ``ncp``. Called on ``_accumulate_tide`` directly: ``process_batch``
+        drops the unreadable row at ``expirations_valid`` before this split,
+        so the minute-erasing ``except: pass`` is only reachable here.
+        """
+        price = 2.80
+        readable_size = 100
+        bad_size = 40
+        sign = 1.0
+        mkey = "09:30"
+        readable_ncp = price * readable_size * 100.0 * sign
+        bad_ncp = price * bad_size * 100.0 * sign
+        dte_tide = _dte_tide_for([
+            _signed_print("2026-07-12", hhmm=mkey, size=readable_size, price=price, sign=sign, seq=1),
+            _signed_print("", hhmm=mkey, size=bad_size, price=price, sign=sign, seq=2),
+        ])
+        assert mkey in dte_tide.get("8_30d", {}), dte_tide
+        assert dte_tide["8_30d"][mkey]["ncp"] == pytest.approx(readable_ncp)
+        assert dte_tide["8_30d"][mkey]["npp"] == pytest.approx(0.0)
+        assert dte_tide["unknown"][mkey]["ncp"] == pytest.approx(bad_ncp)
+        assert dte_tide["unknown"][mkey]["npp"] == pytest.approx(0.0)
+
+    def test_past_expiry_tide_is_unknown_not_0d(self):
+        """A past expiration accumulates under ``unknown``, not ``0d``."""
+        price = 2.80
+        size = 100
+        mkey = "09:30"
+        ncp = price * size * 100.0 * 1.0
+        dte_tide = _dte_tide_for([
+            _signed_print("2026-07-01", hhmm=mkey, size=size, price=price, seq=1),
+        ])
+        assert "unknown" in dte_tide, dte_tide
+        assert dte_tide["unknown"][mkey]["ncp"] == pytest.approx(ncp)
+        assert dte_tide["unknown"][mkey]["npp"] == pytest.approx(0.0)
+        assert "0d" not in dte_tide, dte_tide
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 22. Per-root rollups (strikes + expiries)
@@ -1735,10 +2028,13 @@ class TestSweepLikeFlag:
             session_date=SESSION_DATE, batch_ts=BATCH_TS,
             etf_floor=0, name_floor=0, etf_anchors=["SPY"],
         )
-        # Check at least one event exists and is swept
-        if result["events"]:
-            assert result["events"][0]["swept"] is True, \
-                "3 prints, 2 exchanges, 1.5s span must be swept=True"
+        # Non-vacuous: an empty event list must not pass this case.
+        assert result["events"], (
+            "3 prints, 2 exchanges, 1.5s span must emit a notable event"
+        )
+        assert result["events"][0]["swept"] is True, (
+            "3 prints, 2 exchanges, 1.5s span must be swept=True"
+        )
 
     def test_not_swept_single_exchange(self):
         """3 prints, 1 exchange → swept=False (not multi-exchange)."""
@@ -1788,6 +2084,160 @@ class TestSweepLikeFlag:
             assert "swept" in ev, f"'swept' key missing from event: {ev}"
             assert isinstance(ev["swept"], bool), \
                 f"'swept' must be bool, got {type(ev['swept'])}"
+
+    def _run(self, df: pd.DataFrame) -> dict:
+        return lf.process_batch(
+            calls_df=df, puts_df=None,
+            session_date=SESSION_DATE, batch_ts=BATCH_TS,
+            etf_floor=0, name_floor=0, etf_anchors=["SPY"],
+        )
+
+    @pytest.mark.parametrize(
+        "missing",
+        [None, np.nan, "", "   "],
+        ids=["none", "nan", "empty", "whitespace"],
+    )
+    def test_missing_exchange_is_not_a_venue(self, missing):
+        """A missing exchange is not a second venue.
+
+        Three timed prints within 2s on exchanges [CBOE, <missing>, <missing>]
+        are one venue. None, NaN, "" and whitespace are missing.
+        """
+        df = self._make_prints(n_prints=3, n_exchanges=1, span_sec=1.0)
+        df.loc[df.index[1], "exchange"] = missing
+        df.loc[df.index[2], "exchange"] = missing
+        stored = df["exchange"].tolist()
+        assert stored[0] == "CBOE"
+        for raw in stored[1:]:
+            blank = isinstance(raw, str) and raw.strip() == ""
+            assert blank or pd.isna(raw), repr(raw)
+
+        result = self._run(df)
+        assert result["events"], "missing-exchange fixture must still emit the contract"
+        assert result["events"][0]["swept"] is False, (
+            f"missing exchange {missing!r} counted as a venue; "
+            f"swept={result['events'][0]['swept']}"
+        )
+
+    def test_untimed_print_venue_is_not_counted(self):
+        """An unparseable timestamp does not contribute its exchange.
+
+        Three CBOE prints within 2s plus one ISE print whose trade_timestamp
+        does not parse is one venue, so the contract is not sweep-like.
+
+        Called on ``_detect_sweeps`` directly. ``process_batch`` drops an
+        unparseable ``trade_timestamp`` at the source gate
+        (``_source_times_et`` / ``rth_valid``, engine/live_flow.py around the
+        ``expirations_valid`` block) before step 4c, so the venue-count defect
+        is only visible on the frame the heuristic itself receives.
+        """
+        timed = self._make_prints(n_prints=3, n_exchanges=1, span_sec=1.0)
+        assert set(timed["exchange"]) == {"CBOE"}
+        untimed = timed.iloc[[0]].copy()
+        untimed["exchange"] = "ISE"
+        untimed["trade_timestamp"] = "not-a-timestamp"
+        untimed["sequence"] = int(timed["sequence"].max()) + 1
+        frame = pd.concat([timed, untimed], ignore_index=True)
+        parsed = pd.to_datetime(frame["trade_timestamp"], errors="coerce")
+        assert int(parsed.isna().sum()) == 1
+        assert frame.loc[parsed.isna(), "exchange"].tolist() == ["ISE"]
+
+        flags = lf._detect_sweeps(frame, {})
+        key = ("2026-07-05", 550.0, "C")
+        assert flags.get(key, False) is False, (
+            f"unparseable-timestamp ISE print counted as a venue; flags={flags}"
+        )
+
+    def test_cross_contract_prints_are_not_grouped(self):
+        """Prints on two strikes are not one sweep, even inside one 2s window."""
+        left = self._make_prints(n_prints=2, n_exchanges=2, span_sec=1.0)
+        right = self._make_prints(n_prints=1, n_exchanges=1, span_sec=0.0)
+        right["strike"] = 555.0
+        right["exchange"] = "PHLX"
+        right["sequence"] = int(left["sequence"].max()) + 1
+        frame = pd.concat([left, right], ignore_index=True)
+
+        flags = lf._detect_sweeps(frame, {})
+        assert flags.get(("2026-07-05", 550.0, "C"), False) is False
+        assert flags.get(("2026-07-05", 555.0, "C"), False) is False
+        assert not any(flags.values()), flags
+
+        result = self._run(frame)
+        assert len(result["events"]) == 2, result["events"]
+        by_strike = {ev["strike"]: ev["swept"] for ev in result["events"]}
+        assert by_strike == {550.0: False, 555.0: False}
+
+    def test_qualified_sweep_with_unqualified_extras_still_flags(self):
+        """Three qualifying prints still flag when a missing-exchange print is added.
+
+        The extra print sits inside the same 2s window. Rejecting the contract
+        because one print has no exchange would be an over-reject.
+        """
+        df = self._make_prints(n_prints=3, n_exchanges=2, span_sec=1.5)
+        extra = df.iloc[[0]].copy()
+        extra["sequence"] = int(df["sequence"].max()) + 1
+        extra["exchange"] = None
+        frame = pd.concat([df, extra], ignore_index=True)
+        # Keep a real missing value if concat coerced None into the string dtype.
+        frame.loc[frame.index[-1], "exchange"] = None
+        tail = frame["exchange"].iloc[-1]
+        assert pd.isna(tail) or tail is None, repr(tail)
+
+        result = self._run(frame)
+        assert result["events"], "qualifying sweep must still emit"
+        assert result["events"][0]["swept"] is True, (
+            "3 qualifying prints on 2 venues within 2s must stay swept "
+            "when a missing-exchange print is also present"
+        )
+
+    def test_sweep_flag_key_parity_with_process_batch_lookup(self):
+        """S6: sweep flag keys match process_batch for expirations it admits.
+
+        ``_make_prints`` carries expiration ``"2026-07-05"`` as a str. The
+        source gate ``_is_canonical_date`` (engine/live_flow.py:243) admits
+        only strings matching ``^\\d{4}-\\d{2}-\\d{2}$``, applied in
+        ``process_batch`` at ``expirations_valid`` (engine/live_flow.py:792).
+        ``_coalesce_batch`` rewrites admitted expirations with
+        ``strftime("%Y-%m-%d")`` (engine/live_flow.py:339). Step 5 looks the
+        flag up with ``str(row.get("expiration", ""))`` from that coalesced
+        row (engine/live_flow.py:1029 and the ``sweep_key`` at line 1065).
+
+        Compact ``20260705`` and a Timestamp are not formats this path
+        carries: ``process_batch`` drops them before ``_detect_sweeps``.
+        """
+        df = self._make_prints(n_prints=3, n_exchanges=2, span_sec=1.5)
+        assert bool(df["expiration"].map(type).eq(str).all())
+        assert set(df["expiration"].tolist()) == {"2026-07-05"}
+
+        lookup = (
+            str(df["expiration"].iloc[0]),
+            float(df["strike"].iloc[0]),
+            str(df["right"].iloc[0]).upper()[:1],
+        )
+        flags = lf._detect_sweeps(df, {})
+        assert flags.get(lookup) is True, flags
+        assert list(flags) == [lookup]
+
+        result = self._run(df)
+        assert result["events"], "ISO expiration fixture must emit"
+        ev = result["events"][0]
+        assert ev["exp"] == lookup[0]
+        assert ev["right"] == lookup[2]
+        assert float(ev["strike"]) == lookup[1]
+        assert ev["swept"] is True
+
+        for raw in ("20260705", 20260705, pd.Timestamp("2026-07-05")):
+            other = df.copy()
+            other["expiration"] = raw
+            rejected = self._run(other)
+            assert rejected["events"] == [], (
+                f"expiration {raw!r} is not an admitted process_batch format; "
+                f"events={rejected['events']!r} notes={rejected['meta_notes']!r}"
+            )
+            assert any(
+                "invalid_source_rows_dropped" in note
+                for note in rejected["meta_notes"]
+            ), rejected["meta_notes"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1932,6 +2382,35 @@ class TestDteTideCurrentShape:
         assert len(series) == 2
         assert series[1]["ncp"] == pytest.approx(150.0, abs=1), \
             "0d NCP at 09:31 should be cumulative 100+50=150"
+
+    def test_unclassified_sums_unknown_and_defaults_zero(self):
+        """``unclassified`` is the rounded sum of ``dte_tide["unknown"]``.
+
+        ``buckets`` stays the five published labels. A state with no
+        ``unknown`` key still publishes ``{"ncp": 0.0, "npp": 0.0}``.
+        """
+        state = {
+            "dte_tide": {
+                "0d": {"09:30": {"ncp": 100.0, "npp": -50.0}},
+                "unknown": {
+                    "09:30": {"ncp": 10.0, "npp": -4.0},
+                    "09:31": {"ncp": 5.0, "npp": 1.0},
+                },
+            }
+        }
+        out = lf.build_dte_tide_current(SESSION_DATE, BATCH_TS, state)
+        assert out["schema"] == "live_flow.dte_tide/v1"
+        assert out["asof"] == BATCH_TS
+        assert set(out["buckets"]) == {"0d", "1_7d", "8_30d", "31_90d", "90p"}
+        assert "unknown" not in out["buckets"]
+        assert out["buckets"]["0d"] == [{"t": "09:30", "ncp": 100.0, "npp": -50.0}]
+        assert out["unclassified"] == {"ncp": 15.0, "npp": -3.0}
+
+        bare = lf.build_dte_tide_current(SESSION_DATE, BATCH_TS, {})
+        assert bare["schema"] == "live_flow.dte_tide/v1"
+        assert bare["asof"] == BATCH_TS
+        assert set(bare["buckets"]) == {"0d", "1_7d", "8_30d", "31_90d", "90p"}
+        assert bare["unclassified"] == {"ncp": 0.0, "npp": 0.0}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
