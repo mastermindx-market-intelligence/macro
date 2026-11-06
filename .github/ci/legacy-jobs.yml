@@ -10452,7 +10452,7 @@ jobs:
       # The data_gate half of tests/test_fif_p2_evidence_capture.py (FIF P2 #9011,
       # 2026-10-12): the three tests that build or query the FIF kernel over committed
       # data/edgar, data/universe, data/breadth and data/reference parquet, so a nightly
-      # commit alone can move their verdict. The other half runs in fif-kernel-guards on
+      # commit alone can move their verdict. The other half runs in fif-kernel-guards-b on
       # the code gate. Last, after the options/render data_gate half, for the same reason.
       - name: FIF P2 evidence-capture assertions that read committed data (the data_gate half)
         run: python -m pytest tests/test_fif_p2_evidence_capture.py -m data_gate -q

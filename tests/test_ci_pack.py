@@ -1555,7 +1555,7 @@ def test_fif_kernel_guards_selects_on_registry_v1_0_0_fixture_edit(real_manifest
     selected, reason = PACK.select_jobs(
         jobs, ["tests/fixtures/fundamental_forensics_registry_v1_0_0/x.json"]
     )
-    assert FIF_KERNEL_SIBLINGS & {job.job_id for job in selected}, reason
+    assert FIF_KERNEL_SIBLINGS <= {job.job_id for job in selected}, reason
 
 
 def test_fif_kernel_siblings_share_one_closure_and_partition_the_suite_once(
