@@ -9327,7 +9327,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     background:color-mix(in srgb,var(--muted) 10%,var(--panel));border:1px solid color-mix(in srgb,var(--line) 84%,transparent);
     margin:9px 0 6px;overflow:visible;box-shadow:inset 0 1px 2px color-mix(in srgb,var(--text) 8%,transparent)}
   .rr-interval-fill{position:absolute;top:2px;bottom:2px;border-radius:999px;
-    background:color-mix(in srgb,var(--text) 24%,transparent)}
+    background:var(--text);opacity:.24}
   .rr-interval-tick{position:absolute;top:-4px;width:2px;height:18px;
     background:var(--text);border-radius:2px;box-shadow:0 0 0 2px color-mix(in srgb,var(--panel2) 85%,transparent)}
   .rr-interval-labels{display:flex;justify-content:space-between;
@@ -9391,7 +9391,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   .rr-conf-bar-wrap{display:flex;height:12px;border-radius:999px;overflow:hidden;
     border:1px solid color-mix(in srgb,var(--line) 82%,transparent);background:var(--panel);
     box-shadow:inset 0 1px 2px color-mix(in srgb,var(--text) 8%,transparent)}
-  .rr-conf-seg-known{background:color-mix(in srgb,var(--ok) 70%,transparent)}
+  .rr-conf-seg-known{background:var(--ok);opacity:.70}
   .rr-conf-seg-proxy{background:color-mix(in srgb,var(--warn) 65%,transparent)}
   .rr-conf-seg-residual{background:color-mix(in srgb,var(--muted) 40%,transparent)}
   .rr-conf-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;font-size:9.5px;color:var(--muted)}
@@ -10566,7 +10566,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       svgParts.push('<line x1="'+xOf(p90)+'" y1="22" x2="'+xOf(p90)+'" y2="34" stroke="var(--muted)" stroke-width="1.5"/>');
       /* p25-p75 shaded box — neutral ink (a band is not a direction) */
       if (b.inner){
-        svgParts.push('<rect x="'+xOf(b.p25)+'" y="20" width="'+(xOf(b.p75)-xOf(b.p25))+'" height="16" fill="color-mix(in srgb,var(--text) 18%,transparent)" rx="2"/>');
+        svgParts.push('<rect x="'+xOf(b.p25)+'" y="20" width="'+(xOf(b.p75)-xOf(b.p25))+'" height="16" fill="var(--mc-ink-18)" rx="2"/>');
       }
       /* benchmark ticks (muted) */
       ticks.forEach(function(t){
