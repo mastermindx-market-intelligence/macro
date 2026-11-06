@@ -27618,6 +27618,7 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - engine/rate_futures_repricing.py
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "config/dataset_registry.yml"
@@ -36506,6 +36507,8 @@ jobs:
       - lib/intl_library_retained.py
       - lib/intl_policy_publication.py
       - lib/intl_yield_publication.py
+      - collectors/rate_futures.py
+      - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -38005,6 +38008,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py

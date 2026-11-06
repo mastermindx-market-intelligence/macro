@@ -1,0 +1,2748 @@
+{
+  "schema": "c4.shared-shell.source-qualification.v1",
+  "pr": 10674,
+  "publication_branch": "claude/ssd-accepted-products-p12t2s5-20261103-7de64ea4ac4749d9",
+  "expected_original_head": "fcaea2d81caf00090f5c7d434d2536c30bc5f717",
+  "integration_base": "ede58e46e40d454613b06ef0fbf1fb0f139d24a9",
+  "old_joined_base": "c02c2a221e6a353fa9f2f922ef11240ab5c4299b",
+  "qualification_operation": "github-pr-sweep-2028-c4-pr10674-repair",
+  "qualifier_branch_push_permitted": false,
+  "mastermind_law_pin": "3551bf914bc3cab6117f93377ba89ac1d9c3c30a",
+  "original_feature_path_count": 440,
+  "source_entries": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cc29abe0267790eb7ef1ecbb6a3afe83163723e2"
+    },
+    {
+      "path": ".github/workflows/render.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e30c214f182052e2d6d0df56a8944ecda067b8ab"
+    },
+    {
+      "path": "agentos/handoffs/MARKET-OS-SHARED-SHELL-2026-09-24.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8908c44215850a47593a86ac368cf4a5055a68d6"
+    },
+    {
+      "path": "app/deploy/update.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "97609b06c0bb28490d3f2f026453532897634e58"
+    },
+    {
+      "path": "app/investigation_native_capture.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "87ac03ba2eca5eeecd6ff3fad86f97814fb99bb9"
+    },
+    {
+      "path": "app/macro_command.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a9d27313ce5b997271813bacf961b4ad9dc38337"
+    },
+    {
+      "path": "app/macro_policy_preview.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5cc3f7ec04695e610681bbf334818e22d6103689"
+    },
+    {
+      "path": "app/main.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bfe07db562bbbcaeac426b5a0f3ac27e6892ed67"
+    },
+    {
+      "path": "app/options_scenario_bindings.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c582c2326cef69fe9213a5ee4a836fe3cee81b87"
+    },
+    {
+      "path": "app/options_scenarios.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c0e426754609d4cab1ea4fead95677b9c1ead109"
+    },
+    {
+      "path": "app/research.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d6500ed1084a586764d379c01a7e682fb6627b05"
+    },
+    {
+      "path": "collectors/base.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b2da0d53f42d9bc08079d18e5f2dbd92cd8e76d3"
+    },
+    {
+      "path": "collectors/imf_weo.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "014912a7e72d88a3b9b0bedfb55b1200b00ba197"
+    },
+    {
+      "path": "collectors/intl_macro.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "46fc6c4cb7999e4b71109db8d042ffa830541833"
+    },
+    {
+      "path": "config.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "78c5bf930efb8bc3d6671efc006a9982d94e46e6"
+    },
+    {
+      "path": "config/dag.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2d039fd0ceced3b40e9a405d9d7b3b3d59c9ab5"
+    },
+    {
+      "path": "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ce0f61916d3862b6944f51987d56937e97f54101"
+    },
+    {
+      "path": "docs/verification/shared-shell-china-hub-retained-source-20261103.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "09b21edbe65fa47d81c7d924f18826412a85ec19"
+    },
+    {
+      "path": "docs/verification/shared-shell-forensics-source-return-20261103.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "44b7e8fdf32746e35657635f8d3353712deb8d4e"
+    },
+    {
+      "path": "engine/baskets_hk.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dc18f0d956c8082f8a579d6ca23388ad38b29e46"
+    },
+    {
+      "path": "engine/contagion.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e0b48450932293a7cd8ad01f58c2736feba4cf9b"
+    },
+    {
+      "path": "engine/international_macro_dashboard.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3aa9503e0504f6b6834adfc9346a276bafa7f9a9"
+    },
+    {
+      "path": "engine/intl_bonds.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e30591b0c2d5837dc2cd62feef09e5b81cd3e54e"
+    },
+    {
+      "path": "engine/intl_rates.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "29fc9c3138fecb80c61eaddba98c434bc01dd7f9"
+    },
+    {
+      "path": "engine/intl_run.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f3fef86d335e208568b76d1c07bb2f7527358271"
+    },
+    {
+      "path": "engine/leadership_receipt.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "604624a58efe69b163b23595185357efc7c3ddcb"
+    },
+    {
+      "path": "engine/market_os/macro_workspaces/business_activity.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a0090dd1a4e9fe1c13393126c3954c13764f015a"
+    },
+    {
+      "path": "lib/intl_annual_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "232d45f46fcb3042cf982fdda3354c0b523f9f57"
+    },
+    {
+      "path": "lib/intl_boe_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a52e1c29dd0013d48d0981a8c68beac2ecd0b2d2"
+    },
+    {
+      "path": "lib/intl_boe_source.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3898e41e1d300a9072638c0a847c332773a584f3"
+    },
+    {
+      "path": "lib/intl_durable_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b273d234d1eae1436ee3e87e2755b815e9aa7a8b"
+    },
+    {
+      "path": "lib/intl_ecb_policy_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "302ea5c8954ccdb09a2c725799ea0a3b5526663b"
+    },
+    {
+      "path": "lib/intl_ecb_policy_source.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1b08d077d9953f5d5c35731d157c6873eb015691"
+    },
+    {
+      "path": "lib/intl_eod_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e98c3264e637dffd17c0422524a8fccdda7557f5"
+    },
+    {
+      "path": "lib/intl_eurostat_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "79302a8666ea72acfb669cea98ae19633001f222"
+    },
+    {
+      "path": "lib/intl_eurostat_source.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ceeff89ce106dedb1eaa3a37801db4582b519ed1"
+    },
+    {
+      "path": "lib/intl_feed_reader.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b1de457b2bf850004d152dc0b8e9b44528b0e444"
+    },
+    {
+      "path": "lib/intl_generation_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6738680f99b0c684cbfcc24cd3d0fc21179be8a5"
+    },
+    {
+      "path": "lib/intl_history_materialization.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "65f8d13005d66deb9e92aa06fafda0460db368de"
+    },
+    {
+      "path": "lib/intl_history_mount.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f4482c0b05b57b02d55cc7ba6f1341d7b5e3181b"
+    },
+    {
+      "path": "lib/intl_investigation_action.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d57afb300b3b061fbee7190a80e91b2996d5eb5c"
+    },
+    {
+      "path": "lib/intl_investigation_action_mount.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4ca403f4bc886ea00c705464db32614b048e9e19"
+    },
+    {
+      "path": "lib/intl_investigation_owner.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a5e4e4a523420d7630a9d6aebdc805f7d778e106"
+    },
+    {
+      "path": "lib/intl_investigation_projection.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d6ce7c24c7840ff65d95867908c5a9d929586782"
+    },
+    {
+      "path": "lib/intl_library_mount.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "437d9c0d52366efb0f2487d0a238d4ea73a5fec1"
+    },
+    {
+      "path": "lib/intl_library_retained.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7508b0f4f138f6a5425ed3ce114f4c6046504a86"
+    },
+    {
+      "path": "lib/intl_macro_mount.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5f277aadd332add348528b321afeb0f7a56efaea"
+    },
+    {
+      "path": "lib/intl_macro_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0f1f3929ba52d0d06855db197751ec54918e9107"
+    },
+    {
+      "path": "lib/intl_policy_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "84f491ecef74ea5a0f7470682f8e486342535f4b"
+    },
+    {
+      "path": "lib/intl_risk_mount.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0f7a93ab80633c90079f8fecc0e076a3f98229fe"
+    },
+    {
+      "path": "lib/intl_risk_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7266450deb1dc08d42716b926c2d362dde11dc41"
+    },
+    {
+      "path": "lib/intl_workspace_history.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d3d6455d17b71f4c0e46a65fa5ac22bf2582fae1"
+    },
+    {
+      "path": "lib/intl_workspace_risk.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "89dc7baa98f93e6f2e0c75ff160ffd850469b117"
+    },
+    {
+      "path": "lib/intl_workspace_risk_pressure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "97df3e204c3c56c39ce2b00cf56591c5cc08faae"
+    },
+    {
+      "path": "lib/intl_workspace_risk_section.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "701142695740f91336eaab79d883ce70e0a2a551"
+    },
+    {
+      "path": "lib/intl_yield_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2af9c8e77f659771288144a3a78599a833132d75"
+    },
+    {
+      "path": "lib/macro_suite_labels.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7e5360e7abda4e44681d74ffa555ea7a83604dfa"
+    },
+    {
+      "path": "lib/macro_suite_view.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3fef545d1df6c3adfc3a5de5ebe9462eabbb3609"
+    },
+    {
+      "path": "lib/pages.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "06a1bf465a5598864b14fddf857da50d4c17ec49"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/EVIDENCE.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0a4a9453ded1880d743c7ed90bee06bbcc11ce93"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-dark-en-row.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12391d1533634609492f600ab4423cdb138e2310"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-dark-en-sources.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8e0b412530781341e39107eca9a7372629d637e5"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-dark-zh-row.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1babb72406e94107d1cfa7c518d51b212defe625"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-dark-zh-sources.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ae835d19dd7a75cb2f03e0fb5b49ef09c33b4bc4"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-light-en-row.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "58f926abd8f6daed44aedef8822af05f048f508c"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-light-en-sources.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5152b82002fd4bb1c34752deab1b09dbf53c405a"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-light-zh-row.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c388c01174dddb08bb8337b04cf8f181a3b5fcd5"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/1440-light-zh-sources.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d7145d53ba3917b0a02d541bd2d495ed1e0f3bae"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-dark-en-row.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "55c295edfd22e999f44031f13603895d3558267b"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-dark-en-sources.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4bcae6f85e08326e5ffba9c685906c0bfb096aa0"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-dark-zh-row.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "729daf9b53980a223cfff61a4ea9dd14566a0798"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-dark-zh-sources.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3f571f7eb766f3430d816703a83ff8b9d231a671"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-light-en-row.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aa541f0dc36a5ef3d05fcf09d90e922daca18b74"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-light-en-sources.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e2fba11ecab0b734d3f3a838ee615cd37503947"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-light-zh-row.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "804a4fbcf80aa7cd049c57e42ad21937f1baebef"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/evidence/390-light-zh-sources.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3553f63b4d526c8fff612a5bd8f3340e45d02a6e"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-missing-final-1440-dark-en-row.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6228dab4440d0551781a6574c1a7557d345020a0"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-missing-final-1440-dark-en-sources.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "021098d6a2cc93e0c8f45fac1b5717808474055f"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-missing-final-390-light-zh-row.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cdca6eaa6a54c22e7dabefaa4fd278a1e65c766f"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-missing-final-390-light-zh-sources.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "04e7d76c7c098023440cd723fa71d2b764549e24"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-receipt-final-1440-dark-en-row.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12391d1533634609492f600ab4423cdb138e2310"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-receipt-final-1440-dark-en-sources.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec54ea27a2c31a8cea0c1909e86183c66545dcf2"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-receipt-final-390-light-zh-row.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "804a4fbcf80aa7cd049c57e42ad21937f1baebef"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/frame-source/frame-receipt-final-390-light-zh-sources.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1849f3922f6a3c4fc06541c56842030541785a89"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2e2e54873a676ea514dd7f8dfbe9c0d66e4338c4"
+    },
+    {
+      "path": "mockups/evidence/bonds-sovereign-depth-20261103/observations.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "822856087a5dd49af130ac4086f5ba7e6fdd0644"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/EVIDENCE.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6ca73552b27734e17532984a79cb1519cc81d4c"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/FROZEN_PACKET.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bc85c06636754020affdcbe2add36ac78f7da310"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b4a98a4c2cec9c0ba61f76292644c38faeb88a36"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/before-v2-1440-dark-en-metric.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8a5c41ac1055b09e96cf83544b5545081fb86a63"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/before-v2-390-light-zh-metric.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "acf4c6a88d87ff8abf1c737d1885a5cd6925011e"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/before-v2-result.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "89a881644ebb168575bdb6e441ac916f3225389c"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/candidate-390-light-zh-refusal.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9a5c5de8038ab42130a5800b36d516c329be511a"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/candidate-first-1440-dark-en-refusal.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "93546e8f6890215ac12be4ec6a794c05a5caa18f"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/candidate-result-harness-locale-negative.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fdc03c03611170da64b0091f585e147498a850be"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/capture-manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e64389fc2c3182f72a670d8572de4efd37c45a39"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/capture_settled.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9077a59e70dcdf5ebc10d12ea9bb5f67cf6da025"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/design-check.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2fa67c63aafbaf8469217a1713daa7d4ee03581f"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/journey-result.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a5d0e6ff49b89deb01a652e1fd75987da5735e14"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/prepare.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "49461e5ea7a664179506aa85bed6d39be868b3c8"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/probe_candidate.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de3bdb6337a486f270ee67326b446535797f8124"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/probe_candidate_zh.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35b35be74c4f5f377cf32c6f05f6c46eff2878be"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/probe_v2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5b4f97c5b33991aea056c3c7fe12fe654a4e5070"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/qualify.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e0beab1441247195c3113942f068cac8a16c65c1"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/regression-green.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0bf8573a6dcb6cbf432325311bc82cbd4516a44f"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/regression-red.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "575f8fd3aeff323ae276e3281a1d8abc56950157"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/retained/macrodata/workspaces/business_activity/US/latest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "075f1e78d5d918823cd8465e82cc6ab5705b8d9a"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/retained/macrodata/workspaces/manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "826ed5953b18f98d43749d29fab5db50049d0871"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/runtime-style-check.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a18dd4aae5f79e4041fcef8091712c5c31121ed1"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-1440-dark-en-depth.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5d7eef43cf0af2e06bfa7a66671a778eb41b50cb"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-1440-dark-en-drawer.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9ead5b5397cb4b5adce7c8d0330ec7d22b16fccb"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-1440-dark-en-entry.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "314dd8e298d89e46a06feb9a4ec6764abb794a3c"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-1440-dark-zh-depth.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d70c695c2dc697192e66cd795971b0e39e6e6242"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-1440-dark-zh-entry.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "59cb9336520599f3c9d10ab96dbb2c22b5174e91"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-1440-light-en-depth.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f193f90b72f55c4b954c1c6ded16fc23bf8055b0"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-1440-light-en-entry.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "65ddc2440b34e65b01276189f4ce303f1c337ace"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-1440-light-zh-depth.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "44e2dd4cb8fb83b008f3335e75ed4ca4e3213e24"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-1440-light-zh-entry.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7a0b3fbfbc969d8a2d9f8bef18f904b98bc9165d"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-390-dark-en-depth.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d1a6af520b05c56634df2a301425a1f688c2bd04"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-390-dark-en-entry.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9ca876f46b1fb1fbe4751ad1274969bc540e976f"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-390-dark-zh-depth.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "334312e6941750b1c4ad726f07279f09a7660988"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-390-dark-zh-entry.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9a88fac533288773b330c129a2a66278ca44dae3"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-390-light-en-depth.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a7f266e1365979228ebe490db8251f2a60c433c0"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-390-light-en-entry.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "caff2b6719310e7110cb6dd4f77eec480e3c291b"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-390-light-zh-depth.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "247d770fdc082670e3a1e8fe86c49afd4218e97a"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-390-light-zh-drawer.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "52e9704b21d817b2e7bd56444a432e3867b5a248"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/settled-390-light-zh-entry.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "99431f156239f53c12848dc4a699ef30d7ee64d3"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/snapshot-summary.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a1259847429eaf271e828f3ca0587ea7dedecd7f"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/source-qualification.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cbfbdace3463489d38e82450b700d7c6fffd0ebd"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/source.diff",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ed719dd92e401d45f930e63779453684c4162343"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/view.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0eaad4aa28910a8447fcd9c28583000c77880165"
+    },
+    {
+      "path": "mockups/evidence/business-activity-depth-20261103/visual-evidence-check.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "138b6d65b310ccad1a59b97861f1a5d3cb6b61d9"
+    },
+    {
+      "path": "research/market_os/SHARED_SHELL_CEO_CONTINUATION_2026-10-21.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2303c8ace0a673ae7a6c687d4031d18a4ce2078c"
+    },
+    {
+      "path": "research/market_os/SHARED_SHELL_WEBAPP_PRODUCTION_PLAN_2026-10-18.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bd78e9922a39a499740332d52618af4703157d8f"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/BONDS_ASSET_ONLY_PACKET.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d8d2bfeaa92469fc6cbd0193c8fb36eca9bbd861"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/BONDS_ASSET_ONLY_QUALIFICATION.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d677647e8876e0756b1446b877496202974479a9"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/BUSINESS_COPY_REPAIR_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b4d1ee15cc12b6ea9c66abe65aec47182a591701"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/BUSINESS_COPY_REPAIR_PACKET.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "13308bfe8d583b6553cb3c53cfe499cf6f575aed"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/COMPOSITION_RESULT.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ba07cff61a3ae69204a622309441a3bbcc0719f"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/CURRENT_BASE_PARSER_SEAM_PACKET.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5716a2ac80a763d44e0e5bac2967c4dba664f542"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/FROZEN_COMPOSITION_PACKET.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e8b30de0683b2981d764cbdb7d1a507406867980"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/PROPHET_PARSER_COMPATIBILITY_PACKET.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6b72687c02435bca279eea07d7f1589756db7233"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/PROPHET_PARSER_QUALIFICATION.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "86be44119d6a52caf3fc7d219c4d3b1831893923"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/RELEASE_QUALIFICATION.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "19bad2c6c2ae544dd746eecb1a36a0d9cfc32bb5"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/SUCCESSOR_COMPOSITION_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "259d4d8212231ce26b45628c4a6602f86ba42a12"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/T11_BUSINESS_COMPOSITION_ADDENDUM.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "876b6f6bc9536ac702946c19ff2c2ff84a87967e"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/affected-composition-tests.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ef6defbe4c727e94f4012685d2bb9712607214b8"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-complete.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dbab0614339713731db6194f4feb5bfcd596b1fe"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/asset-audit-causal-green.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f933909e70058d3a1e8206e682178b6789053bff"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/bonds-asset-only-emission.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "33e33d5dedad52b678a060fc5dbf04d00f5c71b1"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/bonds-asset-only-emission.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0577417a26fc00773da2e600835635f60bca89e5"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/bonds-assets-final-green.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b309184ad8c164cdd84b7457ba9f84d6f4c2c1f8"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/bonds-css-pair-final-green.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "868ac7f6d8b4e81ea9531b47d68b6631b4d0f938"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-ci-relocation.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "30c4febbbc6618d5e53fefff918f6431075ae164"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/BUSINESS_CLOCK_S13_FROZEN_PACKET.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8253dfc07dd9f9b823278ecf76b7cc44ce628448"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/BUSINESS_CLOCK_S13_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c1f8194613b5fa9c2330fd41c4f5c1d2893c654b"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-design.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "be31ab45393c98cdc5388cdb90ce45fe433d8b7a"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-final-focused.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "966069e6ba1b40488a73c28fec35b0edd6617d07"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-final-native-report.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cb428caf8652d1c1c790ee667d01b15b2760cc47"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-review-finding-green.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a59d5e759734ca1c90af628d6e49a00d5d11f659"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-review-finding-native-report.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "06359fba04d4750d5c73b12d74f0683a42a0aa32"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-review-finding-red.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fa1e93d9a2122e993fa0fe2563d198873c281da3"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business-clock-s13-ui-evidence.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business_clock_s13_native.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "80f0faa46d896a57b442e73658221ea945fa5b42"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-clock-s13/business_clock_s13_review_finding_native.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c8c2182eb62a5e747bec3f4b3c2fb1e75cb9a2ed"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-copy-current-preimages.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f68259d7daeb19e119283fd14cd02bf961f48e67"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-copy-native-report.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5b499bd5ac74a430a820ef8ac6590c8ac77c3054"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-copy-original-guards-green.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d325803f2e4e362022d2e890360872668f29f27c"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-copy-source-red.log.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "135e6f8bc61278ca0576ac807d8a978508fc491b"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-copy-unit-green.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fed4d963bfe8d344645b0a189d82058f43688c00"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/business-current-parser-and-input-join.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fd0c3181d98e0a7994f60504c3d73a7b33966062"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/ci-original-semantic-binding.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d82aed5e12236678541a4f9169e91770563a89ad"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/ci-original-terminal-intake.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8813c4d0e2f1a3b4cb84a207a1d9d357edaaf432"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/ci-ownership-closure.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9baa9fd105587c8a56377dc513be2218bbd5d5e2"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/ci-pack6-semantic-fragment.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "691a6080d85b065964531bc7dd3ddb9b67549b61"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/composition-qualification.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ebbc7a42e9df70589e321bd7085a587854be0c4f"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/current-base-j9-final-green.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "94e9c1eb2781e3f22b72e67d1ecfad629086068c"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/current-base-parser-seam-green.log.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9a8308716390a3f9d1597bb98eb778dd686a3238"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/emit_business_current.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "441d4689ad7ac3d644c467d817936fc8138600fb"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/emit_qualified.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8d2e7925e9758e9bcd1f7db181a0361d2f662f0f"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/full-materialization.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "378a14287021d29540c3b38182fbe32898363e46"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/full-qualification-guards.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e5053375700c4e0354b7a05b4b570a2df55293b"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/hosted-parser-binding.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c71119edf1231f13dfe8f162cd6d58b9200684b6"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/j9-tmp-causal-green.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6f7ef46bb0442f73461389898b0cfec9c3d7a899"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/j9-tmp-causal-red.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a44ab69c34c19bf793985ca828b3e27d700446d7"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/native-emission-report.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8f33e06ab9603f4d1e08655cb373c8e833504ab0"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/ordinary-guards.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ea0eb5236f405f7325f78b6057cae93e91389f2"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/parser-remaining-hosted-nodes.log.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f8ac629c969c56d46c8ad932420a8a946cb63a22"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/qualify_composition.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "abdbd836490a7cb88a9fda76690dd3158325d460"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/release-current-base-drift.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0df7dd7e734f89499423bb9e9e771d87eb154a8f"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/runtime_styles-full-guard.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "19f9c292394f839a7c8c40585f4038f72f6232b7"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-inputs-preflight.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "64f39981ad72958429e3a580f8a0fd76c42f396d"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/S14_INTEGRATION_PACKET.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "07f76c532a366725b0f85e68d6732dbd5762c744"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/S14_SOURCE_COMPOSITION_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "232977f4ce3c067fb76eb1d48b101ba103534874"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/closure-cap-hk-app-input/S14_S8_APP_INPUT_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0ea6b2e310c6f28372fb66a69386efbd7f710bbe"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/closure-cap-hk-app-input/native-render-report.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7196ee4f36d1417a89894601b45f0076bb08fad7"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/closure-cap-hk-app-input/s14-s7-closure-repair-complete--closure-repair-proof.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "000e745eb60389d7806530f31106f8d0edeb4c49"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/closure-cap-hk-app-input/s14-s7-full-closure-consumer-proof.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2c4a8bb948a05587b1a5aee94e9520ecf115c031"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/closure-cap-hk-app-input/s14-s8-affected-closure-proof.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7f7d45283b66bfc3af2cf7ece9fd2d7043b73ed6"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/closure-cap-hk-app-input/s14-s8-applied-inputs.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dfa6101bfb21e1591365dc3a33769133f58a445d"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/closure-cap-hk-app-input/s14-s8-current-cap-integration.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "228ec3e9a4d3711134e7e9da71991930ae234f90"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/closure-cap-hk-app-input/s14-s8-current-protected.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e3707beb813acf695632bf2d30a7efacefa6d85a"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/closure-cap-hk-app-input/s14-s8-integration-preservation.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e27f950d5bda32348698ae7550aa2f3e4d4219a5"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/closure-cap-hk-app-input/s14-s8-ui-guard.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/CAUSAL_CHECKS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9f29dbf6d3a92f917394598f14a126ead916d12e"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/REPAIR_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2a581b4e1883bdd12cb63eef0f6b205e4c345f25"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/S14_COMMODITY_DOM_REPAIR_PACKET.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9c925d906b95444dbb907c02db6283ac892a40a0"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/s14-commodity-empty-cohort-causal.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3f3d2b181198ab8d4bbcb451e1428e94ac358751"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/s14-retained-qualified-gold-cohort.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "68a384fb5ba27c80af30fd2db8c6c9637b8ef4b3"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/DELIVERY_CONTRACT.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "32b0225a72766cda7f82d8f4873fe9f53c546c76"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/PACKET.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "397a67ad1a67802c51cf81892c3269f048a5671f"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/S14_S5_COMPOSITION_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aed6efb99ab442ddb893b19b932d6c01a8df2a07"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/native-current-owner-projection.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9d7adc6c71e074760e3b592831a33d98f0012946"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/native-render-report.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec515c6f05ba2b1d2a38346d53f2e385ddbd1c95"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/static-guards-GREEN.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "46210a450e986517aff5a46a74cb2b15afbcad7e"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-business-country-rotation/static-guards-RED.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "adcb2d9aac337d523515eec8aa7cf2ac66c7fbeb"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-history-official/S14_S8_FINAL_COMPOSITION_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9574c79ef39816d35d461a4e534e789db5b392d7"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-history-official/S14_S8_S9_JOINED_SOURCE_INPUT.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a6064a11c66bd86375a0b2e5a2ef5f41b7083ef5"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-protected-publisher-seam/PUBLISHER_SEAM.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "89fc118b2049193c7b07bfdfa7b6a38bce72e44f"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/current-protected-publisher-seam/S14_S6_LOCAL_COMPOSITION_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c3623733a3f1e08918c0d2d7da60eedfbfc9826e"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/CAUSAL_CHECKS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "becf09b3f16bc6f384838867c39521e0b321b886"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/CURRENT_BASE_COMPOSITION.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c0efca4ad49093319323598dc433f966fdf22a56"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/PACKET.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1a0754f710c5856219722a46f2af17bb03688ec9"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/REPAIR_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f2aeea49711f97834ff3cce508d90e3355de4f1"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/s14-fault-composed-native-business-emission.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "36182ccbf3a8533e51551c2c87ebb264386eac02"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/s14-fault-native-business-emission.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6b46debb9dc59d8f78e9ca04964c01cf07e318bc"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/fault-copy-repair/s14-fault-t11-measure-report.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c2e1367e2510cab3a36f4c812eed04e8e76f7bb1"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/nasdaq-current-protected/S14_S7_COMPOSITION_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2956334da1c90c0d4311050c068c22c950c1dc88"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/nasdaq-current-protected/native-render-report.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8d7322f2a4e4fac0ecb1fe95467fd1471c7fe5f2"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/nasdaq-current-protected/s14-s6-recovery-current-pr-10656.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "93f314b913d7e2712661809cecd0ebbd2f641f9f"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/nasdaq-current-protected/s14-s6-recovery-current-pr-10674.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "df37e7804b52e6d5bbd5620699d9658445a8e11c"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/nasdaq-current-protected/s14-s7-body-assertions.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "396199e6bcdd53ad87692f43997049132e9b95bf"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/nasdaq-current-protected/s14-s7-ci-union.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec9b93c655894e52932011fc4528187980309525"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/nasdaq-current-protected/s14-s7-code-manifest-validation.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6d309fdc2767dfe37056c440cd6b85248e45512c"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/nasdaq-current-protected/s14-s7-preservation-seams.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b0fa8f3b6f62bd11738b80bbbfd133ea983f6961"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/nasdaq-current-protected/s14-s7-record-validation.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b2bbf8bb5677f76902d5c5f8cd11425c392b2e7e"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/nasdaq-current-protected/s14-s7-t52-integration.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ff11288bf9838ae37d4ca6a518f25704b607cfce"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/nasdaq-current-protected/s14-s7-ui-guard.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/S14_S3_COMPOSITION_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "94efe9c690f7940102e24ff2c50f88b69951028d"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/S14_S3_FROZEN_COMPOSITION_PACKET.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6a1c37ff1f517ee2d2c88e23aa457a3cc134be65"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/s14-s3-affected-seams.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fdf90f4ed15f9f80213d1c24d55b300f4d52b0a9"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/s14-s3-current-commodity-dom.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f76d6aae792007a00dc4b7cef8c0dd5908389aba"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/s14-s3-native-business-emission.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "220940aa24262de3c0bf5704d45e473345dd4f88"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/s14-s3-routing-packing.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1d95c8fa54426e09a0b7b40bae1a89a1803bb27c"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/s14_s3_bind_composition.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a49fa8f815eb7287e2c4f32eefa915363ac56b7d"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/protected-conflict-calendar-history/s14_s3_routing_packing.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4dbc8ab00278630a64a640f4ffc7656c726093dd"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/qualified-T55-join/JOINED_SOURCE_PRESERVATION.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2aa3ec86768b25c57dcfc92c007f49dad1624863"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/qualified-T55-join/T55-qualification.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "522380027ea6f85af7e7cdac86acf405e89df68b"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/S14_S4_FROZEN_LOCAL_COMPOSITION_PACKET.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6933ed4ddbfd31a68ac9534b62ccc684ca6c845c"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/S14_S4_GLT_EWP4_APPLICABILITY.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c93160cd562b5ebc636970e52bc91ba498c099fd"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/S14_S4_LOCAL_COMPOSITION_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "424a19a2f02b5242e71600692e60e7696f4519d5"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/s14-s4-current-commodity-dom.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f76d6aae792007a00dc4b7cef8c0dd5908389aba"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/s14-s4-protected-radar-preservation.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8892e1c0040ff71b288ce78ef2c66ba0c18d1df8"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/s14-s4-radar-native-seam.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "37f16f6edf9c9764400ff23f7675fb46169782fd"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/s14-s4-scoped-postimage-delta.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "26177ea980d57c67c4f48b457279b8ca61c9a2ca"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/radar-current-source/s14_s4_bind_local.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ff7e66347e003873a0560e675ac972763d8b10b"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/retained-negative-results.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cd0c5b654e2a12aea8605d492923193f3ceaf8b3"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-added-design.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "be31ab45393c98cdc5388cdb90ce45fe433d8b7a"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-clock-followup-final.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bcf49618ad1f43153086794469f22aa908a21681"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-composition-source-parity.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "02e225c92539d368a45ba7a03f11403289c7eed5"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-native-business-emission.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ea53008061a439a32df67bc1ca3069085ff87c85"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-preservation-contract-identity.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "404d8021bea5310113bd6a9b91e5bb0d9bc981cb"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-t11-and-clock-followup.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8fd3c08e4e9357ea9b914dc3cf0af86cd3511a04"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-t11-measure-report.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d7c4effbfe4d21b562da4fe4ab1482d930f003bb"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14-ui-evidence.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14_native_business_emit.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f54a5709974a51449f6a7b2506fef5ec988d325"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/s14_t11_measure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fe26f123a859b73164880e96c859b7fd5abc2895"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/successor-design-guard.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "be31ab45393c98cdc5388cdb90ce45fe433d8b7a"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/successor-visual-evidence-guard.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/t11-business-green.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e96335d00fdc4e72d5b50ce4fc9170d1c68bd14d"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/t11-business-measurement.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c93204d5fffa152d859123945c63752716a6b744"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/t11-business-red.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fc61e2d690d380d478574fda02ab7e062d00f025"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/t11-business-repair-qualification.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1f8b74dfc91e2ad41d5c520ca479960616e444dc"
+    },
+    {
+      "path": "research/market_os/evidence/accepted-products-p12t2s5-20261103/visual_evidence-full-guard.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/ADJUDICATION.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1bb44145b0d9887705c9e585b2d6dd76cc0d9f07"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/FRAME_SOURCE_RECEIPT_ADDENDUM.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0f51dc5a4f86bd2ce479bd649582a5cee1eaa866"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/capture_depth.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d5753fc6e1fc9bf9cdcecbe7c13f3c2cff92911f"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/frame-missing-final-observations.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "11f5cee202aa1120462c68f25f5323c0907d5530"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/frame-owner-green.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e676d75cd11b3a8e23ab93595220fe2f38166046"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/frame-owner-red.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12697c1f22260eaa129df13931e64035d9702b17"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/frame-receipt-final-observations.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "30aff0670f59d8e147e4f9ec8dc511311a274a4d"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/frame-seven-country-parity.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ae48ce306c457f5ec7d9394f7dcc4ce0b76cd28a"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/frame-source-tests.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cb9fa78c62726207ba5bfec09c936f74ee5a00ae"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/probe_frame_owner.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e7ba9f1c5f487eac85b6c43b15567f321ea4b77d"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/probe_source_contract.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1b1c6543b8f48b548ae02378bf711b516e9a3701"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/render_depth.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9a0aa86f06fbe530ce23ea54a6b4deb2eef094a0"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-frame-source-20261103/source-qualification.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a61dfffe1497bfcf7ba40138b44f2cab25e563f1"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/ADJUDICATION.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9099339dfb6dae23cdf4240eb9e7505b18b9ed61"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/FROZEN_SOURCE_DISCLOSURE_PACKET.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "74018cfc6ab0bf2ac0de03f34bb23bdce72ddbe2"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/FROZEN_SOURCE_DISCLOSURE_PACKET_V2.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "022aa075fc23db0af5049d432b897aaa30337797"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/SOURCE_LINK_LEGIBILITY_ADDENDUM.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "60203d9be4c811cfb7b0721ceed848966f35fff0"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/TARGET_SIZE_ADDENDUM.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c9888679fd0b83599bc015ef601a35c21a3beaa3"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/capture_depth.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8d00037cdd4e4d540001ddb51457fb45d346f8e6"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/compare_native_snapshots.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "53dc3b0aca4ca0ffa5ae6514803af0ed4a5e07b8"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/final-observations.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "822856087a5dd49af130ac4086f5ba7e6fdd0644"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/final-render-identity.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4359ba17d96e2e5d758dbd19c0e402b4f1934517"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/font-source-receipt.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "698482f6f6b99a99687fd85bd4fbf9b0fe2a9d5b"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/measure_targets.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "88c070ec87ce72a41753927345ccba4ac445ad71"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/native-intl-snapshot-after.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b763ebdc95441a60cc0ae8fba0889d9dc6d13ac7"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/native-intl-snapshot-before.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2d1061d159d2f1044d9b9b5feac20b3d7fce0dd7"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/native-retained-comparison.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8ecd9bb63e909697fd0a84d604153e1580b17150"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/probe_source_contract.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a041203d7534fa73a63928ec2b3f40b5742bbaba"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/render_depth.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "17b96061de0f1ef9b8e2dd8bd0bf6d5aebbeeea0"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/retained-owner-source-probe-after.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6fa71a34bbad76a0a9550fc887f14404c0a86e4b"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/retained-owner-source-probe.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8b58ca66c88e6ad33bec819227a8bd9f8d3f2a7c"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/source-identity.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "99ad4809f11c468e2388a4fbf59a12aef620bff8"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/target-content-parity.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "48eb96a888f5e580d9173aaa1f0e0adaa8f378eb"
+    },
+    {
+      "path": "research/market_os/evidence/bonds-sovereign-depth-20261103/target-size-qualification.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ebeda83d78a9a2296dd00b9dd9e1143b7c0e4e2d"
+    },
+    {
+      "path": "research/market_os/evidence/country-cycles-p12t48-20261104/COUNTRY_CYCLES_JOURNEY.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7e81432793c74d4606cbad249790a36af92455c3"
+    },
+    {
+      "path": "scripts/build_bonds.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b076a4c868a7d08dcb74e61a08f4a19dac2ed396"
+    },
+    {
+      "path": "scripts/build_consumer_cyclical_plnt_page.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a2efaadea469f5c207e665e5111d3f65361a1b44"
+    },
+    {
+      "path": "scripts/build_feeds.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "206f63a693bc3b9d11185adb7532091fd607fb8e"
+    },
+    {
+      "path": "scripts/build_international_macro.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "053d9b20b57027d1caeb857a6d749c4298564a99"
+    },
+    {
+      "path": "scripts/build_intl.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c21c45874119a89853781c720422ecfb51bf5f93"
+    },
+    {
+      "path": "scripts/build_product_page_registry.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "801006d5301d2d38279f4866c232d9d70beba659"
+    },
+    {
+      "path": "scripts/build_subsector_confluence.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "75dfa50794355a7e1cf26f652e2f187bac488e26"
+    },
+    {
+      "path": "scripts/build_subsector_rotation_china_pages.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d30196d700c88edb55d36490d8d5d5d7124bbee1"
+    },
+    {
+      "path": "scripts/build_subsector_rotation_pages.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee09de7c18f446a3df2535db020be9c9cb394235"
+    },
+    {
+      "path": "scripts/ci_apt_native_stage.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bd27d357a7dd485c6194df793fe68236bb47fcaf"
+    },
+    {
+      "path": "scripts/ci_browser_native_setup.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "05e9701c66b0b8ef9501276cf4c6841ad53c9274"
+    },
+    {
+      "path": "scripts/externalize_css.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c2e79acab107f5c95fd988c80511d6d00228d50e"
+    },
+    {
+      "path": "scripts/publish_r2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d5e6eaafa70c007605c812c9a26a12417e9a0878"
+    },
+    {
+      "path": "scripts/render_intl_durable.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2ee3ffb04ce2ade7fce0850c9f45b12c527ebd71"
+    },
+    {
+      "path": "scripts/run_ci_pack.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c92cb85cc6623e948aaf5da4677f1683387ad997"
+    },
+    {
+      "path": "site/assets/css/de1c4f80.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d86915f1cb8764790cd939e712ec60e027d9461f"
+    },
+    {
+      "path": "site/bonds.html",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "735a1cbda723e99f38f1f78e4060798c1f13ba7f"
+    },
+    {
+      "path": "site/fundamental_forensics.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "45ade618ae2ae78d1093bc23df98dd3ffc6f9fca"
+    },
+    {
+      "path": "site/intl.html",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24b4282036eafaf0d59b21c84ead4cc0b4536f92"
+    },
+    {
+      "path": "site/intl_workspace.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9317aaf5afc8dcdecda46a4e8dece1b6a60198f6"
+    },
+    {
+      "path": "site/intl_workspace_history.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3acd3a92a3c537c7d6fb6bf1968798dd9a6d0b22"
+    },
+    {
+      "path": "site/macro_business_activity.html",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cb5988020413a69febbd7405c711cca066798100"
+    },
+    {
+      "path": "site/stock_seasonality.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2d6c36eaef8dd2b321c1ef92276657ff5a35a043"
+    },
+    {
+      "path": "templates/_macro_suite_shell.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a2a04b330ea678c4d6104064d73bfb7327f95bdf"
+    },
+    {
+      "path": "templates/basket_detail.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cd386170dc4dfdfcc9590ce0e7fac7dd92b88918"
+    },
+    {
+      "path": "templates/bonds.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "816f1038305914424278caad76d623b8dab505ea"
+    },
+    {
+      "path": "templates/china_intel.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "34e3b08bcfc6f7ef6edaad6ad93050185673c707"
+    },
+    {
+      "path": "templates/country_cycles.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f2118f7d10c572c70b0261bae7d8be6610c3ce1d"
+    },
+    {
+      "path": "templates/fundamental_forensics.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "45ade618ae2ae78d1093bc23df98dd3ffc6f9fca"
+    },
+    {
+      "path": "templates/history.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "98ed3b0d522d7bd238f04050acf63e77fa4725d3"
+    },
+    {
+      "path": "templates/intl_workspace.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9317aaf5afc8dcdecda46a4e8dece1b6a60198f6"
+    },
+    {
+      "path": "templates/intl_workspace/coverage.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3613434e2ccc318636795fd527c67cf253ff6956"
+    },
+    {
+      "path": "templates/intl_workspace/dossier.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d568254898ef9f0682fbb047ecb608554ac1e7b"
+    },
+    {
+      "path": "templates/intl_workspace/history.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c8114a03023ee248849dcdf5be65c6932cdd813"
+    },
+    {
+      "path": "templates/intl_workspace/macro.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c5f7c9318b3e5a5a76963a9ba45320a60557f3ed"
+    },
+    {
+      "path": "templates/intl_workspace/risk.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "678e0908756458d98d96e4dd110c0f571a1a2d83"
+    },
+    {
+      "path": "templates/intl_workspace/shell.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6202ce18f9fe182f46712aa01c9ae132fd9c1e79"
+    },
+    {
+      "path": "templates/intl_workspace_history.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3acd3a92a3c537c7d6fb6bf1968798dd9a6d0b22"
+    },
+    {
+      "path": "templates/macro_business_activity.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35478ddfc09f6665895737297a27bf3caf4e540d"
+    },
+    {
+      "path": "templates/stock_seasonality.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2d6c36eaef8dd2b321c1ef92276657ff5a35a043"
+    },
+    {
+      "path": "templates/subsector_detail.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "989dea2826679323467341481f7176714d2c148a"
+    },
+    {
+      "path": "templates/subsector_rotation_detail.html.j2",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9916eb27e6025ff6360e68dcfcf307018fac81e0"
+    },
+    {
+      "path": "tests/fixtures/intl_workspace/boe_iudbedr_2026.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "75c9a5b8ef7bfe11aa03a4dfc29452f42f321731"
+    },
+    {
+      "path": "tests/fixtures/intl_workspace/eurostat_tipsbp20_ea21.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a30a28070a528b01455d2e103b750392edec5665"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/collapses/business_definition_version_p12t2s6.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "599c6d4c984fd997a10bc7ba47547087bd73c0cb"
+    },
+    {
+      "path": "tests/fixtures/macro_suite_t11/collapses/zz_business_period_clocks_p12t2s14.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a71d651324036a7aa69eba76a28cd9a872697a2b"
+    },
+    {
+      "path": "tests/fundamental_forensics_drawer_resume.test.mjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "703c119c384409f84b3d5437ea1bdc9daea84ea3"
+    },
+    {
+      "path": "tests/intl_gs_dossier_browser.test.cjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec805276276314ea88f823bf59def837459b3610"
+    },
+    {
+      "path": "tests/intl_gs_dossier_fixture.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9983b134272552f67ff0a46064b58a731659b86a"
+    },
+    {
+      "path": "tests/intl_gs_fixture_site.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2071581304d5256ba867c4978d7311012826dd37"
+    },
+    {
+      "path": "tests/intl_gs_scanner_fixture.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3c510a6b6101c5cc1f5eae45df97843675060255"
+    },
+    {
+      "path": "tests/intl_investigation_action_controller.test.cjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dfc64e35e32b315acc7405dfb3d686602f2c9288"
+    },
+    {
+      "path": "tests/intl_workspace_history_controller.test.cjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e48488d093d7731d25bc5576945768964eb079b9"
+    },
+    {
+      "path": "tests/intl_workspace_history_selection.test.cjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "072f4316cc95680cfdd697d296b45cfd0027609d"
+    },
+    {
+      "path": "tests/js/test_stock_seasonality_selection.cjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35ea096c9a507e307026d73d286ca3372a54f1d1"
+    },
+    {
+      "path": "tests/test_basket_detail_glance_copy.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1a91cbeb4bced081a6cd933545c5075bd687ffb7"
+    },
+    {
+      "path": "tests/test_bonds_glance_copy.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2bdf08958feeaa88218f1859c2891aed27af6b03"
+    },
+    {
+      "path": "tests/test_build_product_page_registry.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2348c5d5fb9d24ef51f8e31a8d41262e8b44a332"
+    },
+    {
+      "path": "tests/test_china_intel_visits_render.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ba4151ecfabcd457687013fe15a5e8f6a4692b38"
+    },
+    {
+      "path": "tests/test_ci_apt_native_stage.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8828289ffe5bd9b55d6f2fb6d5dfe7d86c5dabca"
+    },
+    {
+      "path": "tests/test_ci_browser_native_setup.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "be970c572d0045d1b9cc524cda7862185a9fefee"
+    },
+    {
+      "path": "tests/test_ci_pack.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e11d56725302f90d1fbebd4d7a4e739479abbbd"
+    },
+    {
+      "path": "tests/test_ci_pack_semantic.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e6998a6eea8704bff9a5c9d2c3cc215dd29ab5bc"
+    },
+    {
+      "path": "tests/test_commodity_workspace_ui.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5a4482fa95e5745059f4ac06eebe05cd0ed8b3d5"
+    },
+    {
+      "path": "tests/test_dag_conformance.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "32143c81d0559148575f8bee8cb23ae1dc7b1141"
+    },
+    {
+      "path": "tests/test_deploy_update_self_heal.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "00b25e884ade7dce4198be8177cb1e717a8814b8"
+    },
+    {
+      "path": "tests/test_externalize_css.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6a9708a1f39822f26c247a4a73ed55d519fc6513"
+    },
+    {
+      "path": "tests/test_fundamental_forensics_ui.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1c50d2bd449975ebb21741d2dcabc254654cf235"
+    },
+    {
+      "path": "tests/test_history_provenance_copy.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "73303ae376869d2e7d859f8243976ac469fd5a45"
+    },
+    {
+      "path": "tests/test_international_macro_dashboards.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ca82f0d347aef6cc6fa0a839186d8d633e0b51f7"
+    },
+    {
+      "path": "tests/test_intl_boe_collector.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a0af6d12472f3631337b516095eea2e89a5600e2"
+    },
+    {
+      "path": "tests/test_intl_boe_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7c786c45cc1c50cb9096312862dcfd1032b6652a"
+    },
+    {
+      "path": "tests/test_intl_boe_source.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e268324b99786dcdad427f5ffe5f8bba6a2d9a1d"
+    },
+    {
+      "path": "tests/test_intl_chart_mount.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b56aa65842b354e30f2bb2d2b4a89a50171daae6"
+    },
+    {
+      "path": "tests/test_intl_durable_native_inputs.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5a3ab3e5e6d1842433182bdd5fe656e7e33cfb60"
+    },
+    {
+      "path": "tests/test_intl_durable_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c3c5c2fdd0dbbea7c9473ce66f147e30cddc3f2a"
+    },
+    {
+      "path": "tests/test_intl_ecb_policy_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5f18a6fa2d104b2bf5a2aba13fb9a4745caae6ef"
+    },
+    {
+      "path": "tests/test_intl_ecb_policy_source.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fc0207b03358fea610e0f5d3b48961f6b8fe62c8"
+    },
+    {
+      "path": "tests/test_intl_eurostat_annual_pressure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "43b74682a0276b68733c2563b10ca49aed95cbb7"
+    },
+    {
+      "path": "tests/test_intl_eurostat_annual_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2b6b955006b5869292e0f54bf689b5600fe52cbf"
+    },
+    {
+      "path": "tests/test_intl_eurostat_annual_source.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "58338ae3b301bb955884f10318400364cc3190f6"
+    },
+    {
+      "path": "tests/test_intl_eurostat_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8ad686078f0392fd28a870f04baebf45a8146128"
+    },
+    {
+      "path": "tests/test_intl_eurostat_source.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "297ad1b9cdcfeb83571913656f5a9d587dcef983"
+    },
+    {
+      "path": "tests/test_intl_feed_reader.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8bcabacfa5936ffef538ce83d68e883d75737ee8"
+    },
+    {
+      "path": "tests/test_intl_generation_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a2e6caec9b0f71111f1682ae03a26e6859e91d21"
+    },
+    {
+      "path": "tests/test_intl_generation_publish_join.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d941c8481ea1dd286104e47d71498ccb7b7139e"
+    },
+    {
+      "path": "tests/test_intl_gs_coverage.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "665ae1f821b5c8f7b3bd3dc797f30dcb714acfaf"
+    },
+    {
+      "path": "tests/test_intl_gs_dislocations_view.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f62525b2794db55bb8ebbfa7fa11a1ba0ed03938"
+    },
+    {
+      "path": "tests/test_intl_gs_dossier.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "268a1ae154843d0f7347160fe80199e3b0a35ba5"
+    },
+    {
+      "path": "tests/test_intl_gs_foundation.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9ca0e89a4a2f87e68fa18cda21d59801009add0a"
+    },
+    {
+      "path": "tests/test_intl_gs_scanner.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8ec6695e470b799aa89047af5d18d01f11fcbdcd"
+    },
+    {
+      "path": "tests/test_intl_history_mount.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d32fadbb73bc4f69c474e3d39dba79347c6319d1"
+    },
+    {
+      "path": "tests/test_intl_history_publication_build.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "538b06689a5bfba2a90662d033ea01829425ccb6"
+    },
+    {
+      "path": "tests/test_intl_history_publication_independent.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "68114ba58f8c8755b579e022f82c998683d50550"
+    },
+    {
+      "path": "tests/test_intl_history_read_receipt.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bc20b44eee63d9b3824f5d65bad1fafac6a104bb"
+    },
+    {
+      "path": "tests/test_intl_inspector_mount.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4a4f03945316146b1e52addc68dd6858316e7b83"
+    },
+    {
+      "path": "tests/test_intl_investigation_action.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f5552aff3a47962a9a7f7a9ba09f9879a195c51e"
+    },
+    {
+      "path": "tests/test_intl_investigation_action_mount.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "47db182ab3b70ab13eaeef726637982689f76dbf"
+    },
+    {
+      "path": "tests/test_intl_investigation_action_render.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d4b8252c772deb7cf86fc7e15dc44abda9ba3471"
+    },
+    {
+      "path": "tests/test_intl_investigation_owner.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cb32e343a384aaa935b57a120c9bb13693ba128f"
+    },
+    {
+      "path": "tests/test_intl_investigation_projection.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4ec1c69603812eefbfa3db8403e5e0318a7e9bbe"
+    },
+    {
+      "path": "tests/test_intl_investigation_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee0cb84f571ab7e5db89747df0b6a89726d2eaff"
+    },
+    {
+      "path": "tests/test_intl_native_read_observer.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "53898ecb41fdc0cf7cf85bfd12c6e6b1cf91d683"
+    },
+    {
+      "path": "tests/test_intl_policy_comparison.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "eb600e6a8f5f8abc8a14ad56d73097c3b25dcdaa"
+    },
+    {
+      "path": "tests/test_intl_policy_comparison_independent.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "171614626711cdaf884d57e295e1a4c23e12a4f6"
+    },
+    {
+      "path": "tests/test_intl_policy_feed_preview.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "93e1d8c1e49681c325b1b26a2eb60896ab28b177"
+    },
+    {
+      "path": "tests/test_intl_real_field_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bda96a4f3c94795a8a98dba00b545f0c28806751"
+    },
+    {
+      "path": "tests/test_intl_risk_native_publication.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a8a7a3efc4d00c506d0181b39fdc518c777e730a"
+    },
+    {
+      "path": "tests/test_intl_risk_publication_build.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "60c369479b70e35ff220624ffdec720a73af0294"
+    },
+    {
+      "path": "tests/test_intl_workspace_history_render.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dca386dbff8b8de8d0389e91ae061bf4379b8522"
+    },
+    {
+      "path": "tests/test_intl_workspace_history_ui_independent.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "76eb9a74a149c9a71349e1f68ca12a15c14312aa"
+    },
+    {
+      "path": "tests/test_intl_workspace_risk.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "46cfbd752a132dfc4f01be71f0eb46e18bf3271e"
+    },
+    {
+      "path": "tests/test_intl_workspace_risk_ui_independent.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "be1e5010b7fcb1178c2727238cd9914d460f988c"
+    },
+    {
+      "path": "tests/test_investigation_native_capture.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "58014717004f5fd89d345bc8b2396653dc372a61"
+    },
+    {
+      "path": "tests/test_leadership_receipt.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f90f0980987c7c240a878a3689dd5cd912572b84"
+    },
+    {
+      "path": "tests/test_macro_command_api.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d7da1afadc0994c15b6a462c7730519583ea63c9"
+    },
+    {
+      "path": "tests/test_macro_command_copy_law.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cff4f8317879f27a1791149a022d5530c534f954"
+    },
+    {
+      "path": "tests/test_macro_policy_preview_api.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9384fd972e2a37b40404b0c224902feb90ce0cd8"
+    },
+    {
+      "path": "tests/test_macro_rates_curves_route.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f2023778c5368dacf2c6be0a81300bd4893538fe"
+    },
+    {
+      "path": "tests/test_macro_suite_pages.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2130552e2906083f1f52e8ba380cb6e8471ad38"
+    },
+    {
+      "path": "tests/test_macro_workspace_business_activity.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2d1a098cb0b6c2deeca91329150dc533638de3a8"
+    },
+    {
+      "path": "tests/test_native_capture_participant.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b9103cc8bc21222abd0d88b29f2e2f529954be9b"
+    },
+    {
+      "path": "tests/test_prophet_card_shared.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d75d42b2eb234935d9fe1f49d4b3db28a16c08e4"
+    },
+    {
+      "path": "tests/test_prophet_journey_reconcile.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "89999147e2157e9bb3cd1dc63e10fadefa8cb056"
+    },
+    {
+      "path": "tests/test_render_intl_durable.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d456823e1a04ea02e68637c259d61ae948ed9436"
+    },
+    {
+      "path": "tests/test_render_intl_scope.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c1e32a59f8ef32975a834b1be27f73b656b45d10"
+    },
+    {
+      "path": "tests/test_research_revision_read.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "00320ec2f3d57ece4494ad84959bf59d86ec3aaa"
+    },
+    {
+      "path": "tests/test_scenario_initial_capture.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aebe52657a66595d3ab9160d20144c70aeb32eb9"
+    },
+    {
+      "path": "tests/test_sector_cycles.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a19a938f608f97859fe7b9108324d7e8e48665b8"
+    },
+    {
+      "path": "tests/test_subsector_confluence.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e64991c1b5e394fbeb5e4287969ae77251604768"
+    },
+    {
+      "path": "tests/test_subsector_rotation.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1b88be6461a47e93bb8d0593841d1855810634e5"
+    }
+  ],
+  "new_composition": {
+    "manifest": "cc29abe0267790eb7ef1ecbb6a3afe83163723e2",
+    "runner": "c92cb85cc6623e948aaf5da4677f1683387ad997",
+    "html": [
+      {
+        "path": "site/bonds.html",
+        "before_blob": "b30bae174153f490ab469ea41973f0faae71bb91",
+        "after_blob": "735a1cbda723e99f38f1f78e4060798c1f13ba7f",
+        "main_blob": "644847f1f26a0fd19a65e5bee07a717007d246d0"
+      },
+      {
+        "path": "site/intl.html",
+        "before_blob": "ce970e75dd6480ae23598e3b43e2a7d0b1f0c065",
+        "after_blob": "24b4282036eafaf0d59b21c84ead4cc0b4536f92",
+        "main_blob": "5ff7412380f559be2b3d4bb91a89317c530fb577"
+      },
+      {
+        "path": "site/macro_business_activity.html",
+        "before_blob": "b0610573753a26c1d0712d3a3a83ff61467120f6",
+        "after_blob": "cb5988020413a69febbd7405c711cca066798100",
+        "main_blob": "9e67f689517583fac222cdf92d2f7d442eae8968"
+      }
+    ]
+  },
+  "manifest_incoming_additions": {
+    "regime-outlook-mapping": [
+      "engine/rate_futures_repricing.py"
+    ],
+    "washout-turn-organ": [
+      "collectors/rate_futures.py",
+      "engine/rate_futures_repricing.py"
+    ],
+    "unrun-picks-boards": [
+      "engine/rate_futures_repricing.py"
+    ]
+  },
+  "all_published_non_path_metadata_unchanged": true,
+  "published_path_order_and_duplicates_preserved": true,
+  "job_count": 388,
+  "gate_counts": {
+    "code": 316,
+    "data": 72
+  },
+  "ontology_total_minutes": 15,
+  "installer_upper_bound_minutes": 10,
+  "runner_comment_only_ast_unchanged": true,
+  "generated_html_feature_and_main_deltas_preserved": true,
+  "local_existing_cases": {
+    "passed": 24,
+    "failed": 0,
+    "skipped": 0,
+    "log_sha256": "ee9843d75dad80aa627f654f053c07a57e7e14ca71c7becf4f6817f18b72fe41"
+  },
+  "new_browser_execution": false,
+  "original_unknown_effects_replayed": false,
+  "fresh_hosted_ci": "pending original-branch publication",
+  "merge_or_production_acceptance": false,
+  "files": {
+    "README.md": {
+      "bytes": 3498,
+      "sha256": "1c57e75bb5586921b1659026230da1d3111ab8fff4e5b187264de4f357aeb2c3"
+    },
+    "current-main-merge.json": {
+      "bytes": 36320,
+      "sha256": "ab755560f8f959ea9c99a966f21854321bbe4a0289e0382294d46583f8a39e38"
+    },
+    "current-main-merge.log": {
+      "bytes": 275,
+      "sha256": "6e944407573e40fd3e294e4060d9446631e8857a12352862e60ee8ded7cb6544"
+    },
+    "current-source-composition.json": {
+      "bytes": 16001,
+      "sha256": "e9f228036bbdc1b70af794f0d95f27bc47abffa5ef30ec438516d5912222de5e"
+    },
+    "focused-ci-policy-tests.json": {
+      "bytes": 1513,
+      "sha256": "20ada5837a2338e0b14c4b970af8330a14257189d2552311b306d25c08dbef60"
+    },
+    "focused-ci-policy-tests.log": {
+      "bytes": 111,
+      "sha256": "ee9843d75dad80aa627f654f053c07a57e7e14ca71c7becf4f6817f18b72fe41"
+    },
+    "generated-html-composition.json": {
+      "bytes": 8893,
+      "sha256": "33b72056561538f162ed2d842ac5b70008f913db8d3b41c83924eb53dd72e02b"
+    },
+    "inherited-main-whitespace-check.log.gz": {
+      "bytes": 2889,
+      "sha256": "ad86346851d3aae24ed9469931fca95271368a7e67aa7f24db9b16c28269401f",
+      "encoding": "gzip",
+      "decoded_bytes": 45833,
+      "decoded_sha256": "f3ee8ecd1765adc34b09d67b60dda7cfa6349886836e164648ce357e0db045d2"
+    }
+  }
+}

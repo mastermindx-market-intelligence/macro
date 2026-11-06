@@ -2,7 +2,7 @@
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
   "asof": "2026-11-06",
-  "n_events_logged": 1871,
+  "n_events_logged": 1873,
   "n_events_graded": 1510,
   "classes": [
     {
@@ -125,7 +125,7 @@
     {
       "event_type": "guidance_raise",
       "direction": "bullish",
-      "n": 62,
+      "n": 63,
       "n_graded": 38,
       "hit_5d": 0.7105263157894737,
       "hit_21d": 0.5588235294117647,
@@ -151,7 +151,7 @@
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 141,
+      "n": 142,
       "n_graded": 57,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 2169,
+    "n_sampled": 2180,
     "n_graded": 0,
     "classes": []
   }

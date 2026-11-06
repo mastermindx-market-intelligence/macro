@@ -467,9 +467,9 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-06T07:20:24Z",
+    "built_at": "2026-11-06T09:38:53Z",
     "calculation_as_of": "2026-11-05",
-    "code_version": "3fc4cc0570d00df1d8bcdfd16c5390597b660f8f",
+    "code_version": "2012464520f1da80764b2211ce2637e597e4966a",
     "content_sha256": "81a4a94106174f4596d95e30d64186f82022dfbedcd3ed3035421a0c1f90815f",
     "generation_id": "liquidity_regime-US-81a4a94106174f45",
     "producer": "engine.market_os.macro_workspaces.liquidity_regime",

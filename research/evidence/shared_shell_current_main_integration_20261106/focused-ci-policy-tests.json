@@ -1,0 +1,35 @@
+{
+  "schema": "c4.shared-shell.focused-ci-policy-tests.v1",
+  "source_blobs": {
+    ".github/ci/legacy-jobs.yml": "cc29abe0267790eb7ef1ecbb6a3afe83163723e2",
+    "scripts/run_ci_pack.py": "c92cb85cc6623e948aaf5da4677f1683387ad997",
+    "site/bonds.html": "735a1cbda723e99f38f1f78e4060798c1f13ba7f",
+    "site/intl.html": "24b4282036eafaf0d59b21c84ead4cc0b4536f92",
+    "site/macro_business_activity.html": "cb5988020413a69febbd7405c711cca066798100",
+    "tests/test_ci_pack.py": "1e11d56725302f90d1fbebd4d7a4e739479abbbd"
+  },
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp",
+    "/tmp/shared-shell-c4-composition-20261106/static-test-runtime",
+    "tests/test_ci_pack.py::test_ontology_browser_total_budget_retains_ten_minute_installer",
+    "tests/test_ci_pack.py::test_ontology_explorer_exclusive_scope_keeps_runtime_inputs",
+    "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 281.65,
+  "source_unchanged": true,
+  "log_sha256": "ee9843d75dad80aa627f654f053c07a57e7e14ca71c7becf4f6817f18b72fe41",
+  "log_path": "/tmp/shared-shell-c4-composition-20261106/focused-ci-policy-tests.log",
+  "log_tail": [
+    "........................                                                 [100%]",
+    "24 passed in 227.31s (0:03:47)"
+  ],
+  "browser_or_unknown_execution_replayed": false
+}

@@ -22,78 +22,87 @@ waves:
     title: Executive Attention Frontier architecture/source-law freeze
     status: done
     next_action: >
-      Terminal architecture boundary. Mastermind PR #275 is merged and protected at
-      c544e837d8d704e81f1c7ddfe0ebada830abf3df with F0 through controlling F0G. Macro PR #6690
-      is the sole durable Agent OS projection and must be protected after exact current-base CI
-      review. F0 remains SPEC_ONLY / RECORDS_ONLY and creates no live allocator, queue, Wake route,
-      action authority, target transfer, lifecycle transition or Control Room ranking.
+      Preserve protected F0G through Mastermind PR #275 at
+      c544e8378b447bb69515666e539d6a4da24e4d27 and the durable Agent OS projection
+      through merged Macro PR #6690 at 51091ccaf8e40b2c0a2e6b21acb7c8e77dd6b76e.
+      These are completed source prerequisites, not proof of implementation acceptance,
+      installed execution, a live allocator or action authority.
   - id: A1
     title: Pure deterministic Executive Attention Frontier v1 engine
-    status: todo
+    status: in_progress
     depends_on: [F0]
     next_action: >
-      The source-law gates are clear: controlling F0G is protected through Mastermind PR #275 and
-      the corrected pure Executive Steward is protected through PR #228 at merge
-      dcce6f7ab6efad360f4854d748ad0d65dc9e0f7c. After Macro PR #6690 is protected, fresh-read
-      current protected Mastermind/Macro and commission exactly one bounded CAPACITY_SELECTABLE CTO
-      Sol implementation carrier: explicit valid attention demand plus caller-supplied corrected
-      Steward/source-attributed context -> deterministic authority x attention-pressure x
-      serviceability result, exact bundles/projection receipts, genuine partial-order frontier,
-      fairness/concurrent-demand truth and point-in-time evidence semantics. No source effect or
-      QUEUED claim exists until the canonical Capacity/runtime owner binds a receiver.
+      Recover and complete the existing unmerged Mastermind PR #888 candidate, observed at
+      ff147c8c1efdccf5608ce8414ff1b7e7c3be1cbd on 2026-11-05. It contains
+      control_plane/executive_attention_frontier.py and the corpus/order suites.
+      The September 20 report's 102 tests and 1500-snapshot fuzz are dated candidate
+      evidence, not current-head protected or production acceptance. Preserve the pure
+      explicit-demand transform and existing Steward vocabulary; do not recommission
+      another engine or infer a running worker from this wave's in_progress state.
   - id: A1R
     title: Independent adversarial semantics review
-    status: todo
+    status: in_progress
     depends_on: [A1]
     next_action: >
-      Independently attack priority/authority leakage, pressure/serviceability conflation,
-      exact-Sol-target fallback, stale/unknown handling, exact-only fan-in, hidden totalization,
-      option-to-wait, Cost-of-Delay misuse, fairness, concurrent interrupts, permutation
-      stability, point-in-time replay and EFFECT_UNKNOWN before any product promotion.
+      Retain the September 20 report of five defects found in fourteen adversarial
+      attacks and the candidate repairs, including freshness, authority-partitioned
+      fan-in and deterministic dominance. Those receipts do not establish acceptance
+      of the current unmerged #888 head. Complete the current applicable source,
+      required CI and acceptance gates on that carrier; the historical wave title
+      does not impose a separate review ceremony beyond current protected law.
   - id: A2
     title: Real-portfolio report-only shadow adaptor and forensic projection
-    status: todo
+    status: in_progress
     depends_on: [A1R]
     next_action: >
-      Consume real current owners through corrected Steward and Agent OS, expose EAF v1 in a
-      report-only machine/Control Room read seam, and measure source/admission coverage,
-      degraded states, exact receipts and baseline executive interruption. No notifications,
-      Wake mutation, target transfer, scheduling, lifecycle or raw-fact suppression.
+      Preserve #888's existing executive_attention_shadow.py candidate. The September
+      20 report measured 69 work cards and zero admitted obligations on one host; it
+      is not a current fleet-coverage measurement. Its disappearing-CEO example used
+      Control Room fixture obligations, not a verified production incident. Keep
+      source-confidence disclosure and source-owned admission; verify current owner
+      evidence before any installed or production claim. No new gather, persistence,
+      notification, Wake or lifecycle plane is authorized.
   - id: A3
     title: Control Room Attention Frontier experience
-    status: todo
+    status: in_progress
     depends_on: [A2]
     next_action: >
-      Add the compact Attention Frontier composition to the existing Control Room, preserving
-      pressure vs authority vs can-act-now separation, valid waits, exact bundles, concurrent
-      executive pressure, raw forensic drilldown and responsive browser proof. Route bounded
-      product implementation through Terra unless later capacity/complexity evidence justifies
-      another avenue.
+      Complete the existing #888 draft UI/compositor candidate and its current
+      responsive and real-path acceptance. The observed head already contains
+      app/static/chairman_control HTML, CSS and JavaScript plus the UI regression
+      suite; the old September body saying the browser section is unimplemented
+      is not current source truth. Preserve the accepted D8 CSS repair. Handoff C
+      was removed from #888 and belongs only to #1231; do not copy that seam back.
   - id: A4
     title: Chat-native Meta-CEO and Program-CEO frontier consumer
-    status: todo
+    status: in_progress
     depends_on: [A2]
     next_action: >
-      Project the same read-only EAF result into the accepted Chat-native CEO context/query
-      path without creating session identity, a stored inbox or new action authority. Current
-      actor actionability remains governed by existing exact target/runtime law.
+      Retain render_chat_snapshot() in #888's existing shadow candidate and complete
+      its source and consumer acceptance on that carrier. The September 20 report
+      describes candidate behavior, not a protected or installed chat consumer.
+      Preserve the same read-only frontier, source-confidence disclosure and existing
+      authority/runtime gates; no session identity or action authority is created.
   - id: A5
     title: Point-in-time prospective multi-program calibration and promotion
-    status: todo
+    status: in_progress
     depends_on: [A3, A4]
     next_action: >
-      Establish a real baseline, then run prospective report-only multi-program shadow at
-      decision time. Require high enough source/admission coverage, zero accepted severe-
-      interrupt misses, zero priority-driven authority escalation, zero independent-interrupt
-      suppression, zero semantic suppression, preserved waits, truthful unknowns, exact omission
-      receipts, bounded starvation/fairness debt and materially reduced executive scanning/
-      interruption with no harmful severe-decision latency regression before default promotion.
+      Preserve #888's executive_attention_calibration.py candidate. The historical
+      labelled-episode result rejected promotion for insufficient scanning reduction;
+      it is not prospective production calibration. Current source coverage and
+      readiness must be established through the existing owners before real calibration.
+      Retain the zero-violation, point-in-time and no-hindsight acceptance requirements;
+      do not promote the program from candidate tests or the old zero-demand snapshot.
 next_action: >
-  Review, current-base join, validate and protect Macro PR #6690 as the sole ten-record Agent OS
-  projection of protected F0G. Then fresh-read current protected Mastermind/Macro and ask the
-  canonical Capacity/runtime owner to bind exactly one bounded A1 implementation carrier using the
-  frozen mission and non-goals above. Do not call A1 QUEUED, STARTED or in progress until that live
-  owner records the exact Job/Attempt/Worker/receiver binding.
+  Complete the existing Mastermind #888 implementation carrier after reconciling its
+  actual current custody, source, checks and remaining product proof. Observed on
+  2026-11-05: OPEN / Draft at ff147c8c1efdccf5608ce8414ff1b7e7c3be1cbd; the three
+  EAF modules remain absent from protected Mastermind
+  49c2e1d93e5e080b1671c98087a845e5beb09dd5. A1 through A5 in_progress means
+  unmerged candidate delivery, not an active runtime Job, Attempt or Worker.
+  Preserve the September evidence and the October 4 Handoff C transfer to #1231.
+  This Macro records correction neither completes EAF nor commissions execution.
 decisions:
   - DEC:EXECUTIVE-ATTENTION-FRONTIER-ARCHITECTURE
   - DEC:EXECUTIVE-ATTENTION-CONCURRENT-DEMAND-LAW
@@ -104,6 +113,8 @@ decisions:
 discoveries:
   - DSC:EXECUTIVE-ATTENTION-DEMAND-IS-FEDERATED-NOT-ALLOCATED
   - DSC:EXECUTIVE-ATTENTION-INPUTS-ARE-NOT-UNIFORMLY-STRUCTURED
+  - DSC:STEWARD-ATTENTION-JOIN-DROPS-REAL-EXECUTIVE-DEMAND
+  - DSC:EXECUTIVE-ATTENTION-ADMISSION-SOURCES-ARE-DARK
 artifacts:
   - mastermind:research/MASTERMIND_EXECUTIVE_ATTENTION_ECONOMICS_F0G_CONSOLIDATED_V1_CONTRACT_2026-08-30.md
   - mastermind:research/MASTERMIND_EXECUTIVE_ATTENTION_ECONOMICS_F0_ARCHITECTURE_2026-08-30.md
@@ -148,7 +159,7 @@ do_not_redo:
 ## Current controlling architecture
 
 The controlling implementation contract is protected F0G at Mastermind merge
-`c544e837d8d704e81f1c7ddfe0ebada830abf3df`:
+`c544e8378b447bb69515666e539d6a4da24e4d27`:
 
 `explicit valid demand -> authority requirement -> source-backed attention pressure -> independent serviceability -> exact root/projection relation -> genuine partial-order frontier -> local context/fairness service -> read-only Control Room / Chat-native projection`.
 
@@ -166,17 +177,42 @@ degrades serviceability. No global scalar or hidden total order is allowed.
 
 Both architecture/source prerequisites are protected: F0G through Mastermind PR #275 and the
 corrected pure Executive Steward through PR #228. This clears the **source-law prerequisite** for
-A1; it does not admit execution, bind a receiver, or prove production. Macro PR #6690 must first be
-protected so a fresh session can recover the exact workstream, laws and handoff without this chat.
+A1; it does not admit execution, bind a receiver, or prove production. Macro PR #6690 is already
+merged at `51091ccaf8e40b2c0a2e6b21acb7c8e77dd6b76e`. Its completed durable projection must not
+be recommissioned.
 
 A1 must consume existing owner-native immutable facts through the protected Steward composition. It
 may not gather, persist source state, invent demand from prose, copy Steward identity resolution, or
 create a second action/lifecycle/placement plane.
 
-## Current placement state
+## Current implementation custody and acceptance
 
-No implementation receiver, Job, Attempt or Worker is bound by this record. A1 is ordinary
-`CAPACITY_SELECTABLE` bounded implementation after the durable F0 projection is protected. Preferred
-avenue is `CTO Sol`; routine placement belongs to the current Capacity/runtime owner. This workstream
-must not ask the Chairman to choose a numbered account or broadcast an OPEN_PICKUP merely because
-placement is not yet available.
+[Mastermind #888](https://github.com/mastermindx-market-intelligence/Mastermind/pull/888)
+is the existing EAF implementation carrier, observed OPEN / Draft at
+`ff147c8c1efdccf5608ce8414ff1b7e7c3be1cbd` on 2026-11-05. Its engine, shadow,
+calibration, compositor and browser source exist on that candidate; the three EAF
+modules were absent from protected Mastermind
+`49c2e1d93e5e080b1671c98087a845e5beb09dd5` when checked. Source existence and
+historical tests do not establish protection, installation or product acceptance.
+
+The [October 4 custody receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/888#issuecomment-5977724837)
+names this exact head, preserves EAF and the D8 CSS repair, and transfers Handoff C
+to its sole carrier #1231. No EAF functionality was moved there. Recover current
+writer/effect state before another implementation mutation; an old author or role
+name is not a standing approval gate. This record creates no runtime binding and
+does not assert that a worker is currently running.
+
+## Dated candidate evidence preserved from September 20
+
+[Original Macro #7517 source](https://github.com/mastermindx-market-intelligence/macro/blob/f239ba0aab29bde02e84230436bd394a82dd4f77/agentos/workstreams/WS-EXECUTIVE-ATTENTION-ECONOMICS.md)
+preserves the complete original report. Its reported evidence includes:
+
+- A1: 102 tests and 1500-snapshot fuzz with no reported permutation or interrupt-visibility violation.
+- A1R: five of fourteen adversarial attacks exposed defects; the report describes repairs for freshness, authority partitioning, dominance, conflicted identity and ready-age accounting.
+- A2/A4: a shadow and chat projection candidate; the CEO-decision-loss reproduction used fixtures. A real host composition reportedly returned 69 work cards and no admitted attention demand.
+- A3: 224 Control Room/remote tests at that time. The later current candidate also contains browser implementation; neither statement is current responsive or production proof.
+- A5: a labelled episode with zero reported violations correctly returned NOT_PROMOTABLE because scanning reduction was unproven. Prospective calibration remained incomplete.
+
+These are dated source receipts, not newly executed tests or current coverage
+measurements. Current source law, native PR state and actual acceptance evidence
+govern continuation.
