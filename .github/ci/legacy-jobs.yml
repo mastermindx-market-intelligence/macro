@@ -14180,6 +14180,7 @@ jobs:
     # provenance copy, so that module and its closure join the paths.
     paths:
       - "templates/china_altdata.html.j2"
+      - "engine/neuralweb/capability_broker.py"
       - "engine/china_narrative_radar.py"
       - "engine/china_sector_index.py"
       - "engine/china_sector_pathway.py"
@@ -14354,6 +14355,7 @@ jobs:
     # scope: exclusive pins the job to its static import closure plus ancestor inits.
     paths:
       - "templates/china_radar.html.j2"
+      - "engine/neuralweb/capability_broker.py"
       - "tests/test_china_radar_candidate_convergence.py"
       - "tests/test_china_radar_horizon_record.py"
       - "tests/test_china_radar_ledger_json_valid.py"
