@@ -1,0 +1,177 @@
+{
+  "source_id": "E01",
+  "observed_at": "2026-10-06T23:26:51Z",
+  "evidence_class": "OBSERVED_BOUNDED_RUNTIME_READ",
+  "tools": [
+    "executive_state",
+    "executive_fabric",
+    "executive_job"
+  ],
+  "source_shas": {
+    "macro": "88804ed7079700c598bb8e04aa64307d1335402d",
+    "mastermind": "5b244a2bbe4c2a94ec25a887eb4a0d8fafe1ea2f"
+  },
+  "runtime_counts": {
+    "attempts": {
+      "by_status": {
+        "CANCELLED": 0,
+        "CANCEL_REQUESTED": 0,
+        "CHECKPOINTED": 0,
+        "CLAIMED": 0,
+        "COMPLETED": 9,
+        "FAILED": 1,
+        "LOST": 5,
+        "RATE_LIMITED": 0,
+        "RUNNING": 0
+      },
+      "total": 15
+    },
+    "jobs": {
+      "by_status": {
+        "CANCELLED": 0,
+        "CANCEL_REQUESTED": 0,
+        "CHECKPOINTED": 0,
+        "COMPLETED": 9,
+        "FAILED": 1,
+        "LOST": 0,
+        "QUEUED": 3,
+        "RATE_LIMITED": 0,
+        "RUNNING": 0
+      },
+      "total": 13
+    },
+    "workers": {
+      "by_status": {
+        "AVAILABLE": 1,
+        "BUSY": 0,
+        "DRAINING": 0,
+        "ERROR": 0,
+        "OFFLINE": 0,
+        "RATE_LIMITED": 0
+      },
+      "total": 1
+    }
+  },
+  "runtime_database_present": true,
+  "fabric": {
+    "count": 12,
+    "total": 12,
+    "truncated": false,
+    "degraded": [
+      "root enumeration provenance is unjoined; creation provenance requires exact-root acquisition"
+    ],
+    "roots": [
+      {
+        "depth": 0,
+        "job_id": "JOB-001",
+        "orchestration_role": null,
+        "parent_job_id": null,
+        "status": "COMPLETED"
+      },
+      {
+        "depth": 0,
+        "job_id": "JOB-002",
+        "orchestration_role": null,
+        "parent_job_id": null,
+        "status": "QUEUED"
+      },
+      {
+        "depth": 0,
+        "job_id": "JOB-003",
+        "orchestration_role": "aggregation",
+        "parent_job_id": null,
+        "status": "QUEUED"
+      },
+      {
+        "depth": 0,
+        "job_id": "JOB-004",
+        "orchestration_role": null,
+        "parent_job_id": null,
+        "status": "COMPLETED"
+      },
+      {
+        "depth": 0,
+        "job_id": "JOB-005",
+        "orchestration_role": null,
+        "parent_job_id": null,
+        "status": "COMPLETED"
+      },
+      {
+        "depth": 0,
+        "job_id": "JOB-007",
+        "orchestration_role": null,
+        "parent_job_id": null,
+        "status": "COMPLETED"
+      },
+      {
+        "depth": 0,
+        "job_id": "JOB-008",
+        "orchestration_role": null,
+        "parent_job_id": null,
+        "status": "COMPLETED"
+      },
+      {
+        "depth": 0,
+        "job_id": "JOB-009",
+        "orchestration_role": null,
+        "parent_job_id": null,
+        "status": "COMPLETED"
+      },
+      {
+        "depth": 0,
+        "job_id": "JOB-010",
+        "orchestration_role": null,
+        "parent_job_id": null,
+        "status": "COMPLETED"
+      },
+      {
+        "depth": 0,
+        "job_id": "JOB-011",
+        "orchestration_role": null,
+        "parent_job_id": null,
+        "status": "COMPLETED"
+      },
+      {
+        "depth": 0,
+        "job_id": "JOB-012",
+        "orchestration_role": null,
+        "parent_job_id": null,
+        "status": "COMPLETED"
+      },
+      {
+        "depth": 0,
+        "job_id": "JOB-013",
+        "orchestration_role": "aggregation",
+        "parent_job_id": null,
+        "status": "QUEUED"
+      }
+    ]
+  },
+  "queued_job_scope": [
+    {
+      "id": "JOB-002",
+      "status": "QUEUED",
+      "attempt_count": 1,
+      "scope": "Executive Phase1C-A proof receipt; prior attempt lost and requeued"
+    },
+    {
+      "id": "JOB-003",
+      "status": "QUEUED",
+      "attempt_count": 0,
+      "scope": "Executive exact-session interconnect acceptance review"
+    },
+    {
+      "id": "JOB-013",
+      "status": "QUEUED",
+      "attempt_count": 0,
+      "scope": "Executive post-1191 interconnect acceptance review"
+    }
+  ],
+  "limitations": [
+    "Read-only; no jobs or workers dispatched or modified",
+    "Installed runtime sources differ from protected research source pins",
+    "Fabric provenance is partial/unjoined",
+    "Does not establish liveness or source leases for other runtimes, Claude/Fable sessions, Radar or TOI",
+    "No independent production Radar/Terminal browser verification performed"
+  ]
+}

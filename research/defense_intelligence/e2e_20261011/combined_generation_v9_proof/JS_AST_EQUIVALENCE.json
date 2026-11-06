@@ -1,0 +1,25 @@
+{
+  "state": "PASS_EXACT_NORMALIZED_AST_EQUALITY",
+  "scope": "Parsed script structure only; not browser timing, authenticated behavior or installed acceptance",
+  "parser": "acorn@8.19.0",
+  "parser_sha256": "b95392d79457d0357555c5ed3e56302d074b92dff119bcf3b44179500b10e9df",
+  "parser_options": {
+    "ecmaVersion": "latest",
+    "sourceType": "script"
+  },
+  "normalization": "Remove only start/end source character positions; retain raw literal spelling, directives, all nodes, identifiers, values and ordering.",
+  "before": {
+    "path": "/Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/stage-v4/theme.js",
+    "bytes": 412627,
+    "sha256": "75c416d8d22a936b346022e40fd1e56cb7f82e49754e6c1f44a90c15fb71ce18",
+    "normalized_ast_sha256": "633448accde93acbca67446e2486c56d7efdc8b92ba01d979ad9f98410ac9930",
+    "ast_nodes": 35904
+  },
+  "after": {
+    "path": "site/theme.js",
+    "bytes": 264524,
+    "sha256": "1cee2e7c89ab9235be9d73370c524bc837013f0eea9cc02fdf7184ba7ad1d18b",
+    "normalized_ast_sha256": "633448accde93acbca67446e2486c56d7efdc8b92ba01d979ad9f98410ac9930",
+    "ast_nodes": 35904
+  }
+}

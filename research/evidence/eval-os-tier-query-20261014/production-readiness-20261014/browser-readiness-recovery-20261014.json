@@ -1,0 +1,41 @@
+{
+  "recorded_at": "2026-10-14T16:45:27.347232+00:00",
+  "source": "Supported CUA browser inventory, tab creation and read-only DOM evaluations in original root",
+  "technical_recovery": {
+    "stale_alias": "browser2",
+    "original_tab": "1925920612",
+    "stale_alias_result": "Browser is not available: browser2",
+    "verified_browser_id": "2",
+    "profile": "Person 1",
+    "extension_instance_id": "1f0c0e69-85a3-42a1-a2f1-8434bc78b887",
+    "original_tab_in_inventory": false,
+    "replacement_verification_tab": "1925922370",
+    "same_profile_provenance": "Existing 06:25 browser-capture-path receipt also names browser_id 2",
+    "new_account_or_credentials": false,
+    "tab_marked_handoff": true
+  },
+  "observed_dom": {
+    "authenticated_shell_has_logout": true,
+    "forced_rederive": false,
+    "has_rederive_control": true,
+    "main_counts": {
+      "artifacts": 649,
+      "assessed": 353,
+      "engines": 385
+    },
+    "origin": "https://admin.mastermind-x.com",
+    "route": "#/page/intelligence_os",
+    "source_observed_text": "2026-10-14 16:43:17 UTC"
+  },
+  "capabilities_advertised": [
+    "pageAssets",
+    "cdp"
+  ],
+  "limitations": [
+    "Readiness and old production DOM only; not A1 acceptance",
+    "No new API response capture or visual matrix claimed",
+    "Initial empty main was asynchronous loading, later populated normally",
+    "No forced Re-derive, owner run, source-clock reset, credential extraction or account switch",
+    "Original uncertain Fabric effects are separate and unchanged"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "paths": "M\tdata/marketing/x_intel/state.json\nM\tdata/whitehouse/health.json\nM\tscripts/build_macro_context.py\nM\tsite/whitehouse.html\nM\ttemplates/macro_context.html.j2\nM\ttests/test_macro_context_authority.py\n",
+  "stat": " data/marketing/x_intel/state.json     |  22 +--\n data/whitehouse/health.json           |  21 +-\n scripts/build_macro_context.py        |   5 +-\n site/whitehouse.html                  | 235 +++++++++++++++++++++-\n templates/macro_context.html.j2       |  86 ++++++++\n tests/test_macro_context_authority.py | 359 ++++++++++++++++++++++++++++++++++\n 6 files changed, 696 insertions(+), 32 deletions(-)\n",
+  "commits": "a3817230e8bc849159b06d81c87ffb4a072ca86b whitehouse: alert update 2026-10-20T00:20Z\n424cdcdab864e1ae89cde8b04dde956ee0bb93e6 x-intel: daily light corpus 2026-10-20T00:16Z [skip ci]\n7777a1df363809b24561c054b8c006286f5c0a56 Macro Context: print what the radar artifacts already say (W23-L4) (#9798)\n",
+  "our_ci_path_deletions": {},
+  "new_main_material_blobs_identical": true
+}

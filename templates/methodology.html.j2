@@ -116,27 +116,89 @@
       <p>Stats per series: annualized Sharpe with a <b>block-bootstrap 95% CI</b>, max drawdown, and (across the screened factors) a deflated-Sharpe haircut. A green Sharpe whose CI straddles zero is shown as exactly that.</p>
 
       <h2 id="horizons">{{ t('Returns, horizons & σ', '回报、跨度与 σ') }}</h2>
-      <p>Returns are total returns (split- and dividend-adjusted prices). Horizons: 1d / 5d / 20d / 60d / MTD / YTD, each rebased to the start of the window. The <b>σ ("sigma")</b> mode z-scores the current h-day move against the prior 252 <i>overlapping</i> h-day moves of that same series — "is this move unusual for THIS series?", with <code>|z| ≥ 2</code> the headline flag. σ is only defined for the fixed-window horizons (1d/5d/20d/60d), not MTD/YTD. Because the windows overlap, σ answers "unusual?", not "statistically significant?".</p>
+      <p>Returns are total returns (split- and dividend-adjusted prices){%- if
+        meth.bk_price_resolution is not none %} {{ t('on the factor suite; the thematic-basket'
+        ~ ' price basis is recorded under Thematic baskets.',
+        '仅指因子套件；主题篮子的定价基准见下文“主题篮子”一节。') }}{%- else %}.{%- endif %} Horizons:
+        1d / 5d / 20d / 60d / MTD / YTD, each rebased to the start of the window. The <b>σ
+        ("sigma")</b> mode z-scores the current h-day move against the prior 252
+        <i>overlapping</i> h-day moves of that same series — "is this move unusual for THIS
+        series?", with <code>|z| ≥ 2</code> the headline flag. σ is only defined for the
+        fixed-window horizons (1d/5d/20d/60d), not MTD/YTD. Because the windows overlap, σ
+        answers "unusual?", not "statistically significant?".</p>
 
       <h2 id="ic">{{ t('The IC scorecard — our rigor edge', 'IC 记分卡 — 我们的严谨之处') }}</h2>
-      <p>This is the honest test most factor dashboards (FactorWatch included) don't show. At each quarter-end we rebuild every factor <b>as it was knowable then</b> (no look-ahead, no survivorship-recovery) and rank-correlate the factor score with the <b>next 63-day return</b> — the Information Coefficient. We report:</p>
+      <p>This is the honest test most factor dashboards (FactorWatch included) don't show. At
+        each quarter-end we rebuild every factor <b>as it was knowable then</b> (no look-ahead,
+        no survivorship-recovery) and rank-correlate the factor score with the
+        <b>next {{ meth.ic_horizon_d if meth.ic_horizon_d is not none else 63 }}-day return</b>
+        — the Information Coefficient. We report:</p>
       <ul>
         <li><b>mean IC</b> and <b>IC-IR</b> (IC ÷ its volatility, annualized) — the predictive edge and its consistency;</li>
         <li><b>t<sub>HAC</sub></b> — a Newey-West t-stat (overlapping forward windows autocorrelate the IC series, so the naive t-stat overstates significance);</li>
         <li><b>q<sub>FDR</sub></b> — a Benjamini-Hochberg false-discovery-rate control across the whole factor panel (screening many factors inflates false positives);</li>
         <li><b>collinearity</b> — pairwise factor correlation + VIF, with the Löwdin-decorrelated composite to show how much overlap is real.</li>
       </ul>
-      <p class="panel note">Current read over <b>{{ meth.ic_span }}</b> ({{ meth.ic_rebalances }} quarterly rebalances, ~{{ meth.ic_universe }} names): <b>{{ 'no factor clears BH-FDR(10%)' if not meth.ic_any_survive else 'few factors clear BH-FDR(10%)' }}</b>, and the point-in-time fix made the spreads honestly weaker than a naive latest-data backtest — that gap <i>is</i> the look-ahead/survivorship bias being removed. Judge every number against zero, and against n≈{{ meth.ic_rebalances }}.</p>
+      <p class="panel note">Current read over <b>{{ meth.ic_span }}</b> ({{ meth.ic_rebalances }}
+        quarterly rebalances, ~{{ meth.ic_universe }} names): <b>{{ 'no factor clears
+        BH-FDR(10%)' if not meth.ic_any_survive else 'few factors clear BH-FDR(10%)' }}</b>
+        {%- if meth.ic_survivorship_biased is sameas true %},
+        {{ t('basis this panel records:', '该面板记录的基准：') }} <b>{{ meth.ic_universe_kind }}</b>
+        {{ t('universe', '股票域') }}, {{ t('prices over', '价格跨度') }} <b>{{ meth.ic_price_span }}</b>
+        — {{ t('delisted names are absent, so this read is an', '已退市公司缺席，因此该读数是一个') }}
+        <b>{{ t('optimistic bound', '乐观上界') }}</b>{{ t(', not a bias-removed one.',
+        '，而非已消除偏差的读数。') }}{%- if meth.ic_survivors %}
+        {{ t('Clearing BH-FDR(10%):', '通过 BH-FDR(10%) 的因子：') }}{%- for s in meth.ic_survivors %}
+        <b>{{ s.name }}</b> q<sub>FDR</sub> {{ s.q_fdr if s.q_fdr is not none else '—' -}}
+        {{ ',' if not loop.last }}{%- endfor %}.{%- endif %}{%- else %}, and the point-in-time fix
+        made the spreads honestly weaker than a naive latest-data backtest — that gap <i>is</i> the
+        look-ahead/survivorship bias being removed.{%- endif %} Judge every number against zero,
+        and against n≈{{ meth.ic_rebalances }}.</p>
 
       <h2 id="sectors">{{ t('Sector monitor', '行业监测') }}</h2>
       <p>Each of the {{ meth.n_sectors }} GICS sectors is built into a cap-weighted daily series, expressed <b>relative to the S&P</b> at each horizon, and colored by how unusual that relative move is vs the sector's own trailing-year distribution (the same σ z-score). <code>|z| ≥ 2</code> flags an outsized rotation. It is a relational view — sector vs market, normalized by the sector's own history — not an absolute-return ranking.</p>
 
       <h2 id="baskets">{{ t('Thematic baskets', '主题篮子') }}</h2>
       <p>Curated thematic stock baskets, <b>equal-weighted</b>, with point-in-time <b>dated membership</b> (a member counts only within [added, removed)), rebalanced at month-ends and on any dated change. Each basket carries a written <b>thesis</b> and each member a one-line <b>rationale</b>; the dated changelog is part of the product. Performance is shown raw, relative to the S&P, and in σ; where a listed ETF approximates the theme the basket is cross-checked against it both <b>absolute</b> and <b>market-adjusted</b> (basket−S&P vs ETF−S&P, which strips shared market beta).</p>
-      <p class="panel note"><b>Hindsight caveat:</b> membership was curated knowing the period, so the full ~3y series is a backtest of the as-of-creation membership — descriptive structure, <b>not</b> an out-of-sample track and not a buy list (the displacement-style baskets in particular are monitoring lists / hedge candidates).</p>
+      <p class="panel note"><b>Hindsight caveat:</b>{%- if meth.bk_n_back_projected is not none %}
+        {{ t('membership was curated knowing the period, and ' ~ meth.bk_n_back_projected ~ ' of '
+          ~ meth.bk_n_total ~ ' baskets here are back-projected — the roster curated today'
+          ~ ' carried backward from the ' ~ meth.bk_series_start ~ ' series start —',
+          '成分是在已知整段区间的情况下遴选的：共 ' ~ meth.bk_n_total ~ ' 个篮子中有 '
+          ~ meth.bk_n_back_projected ~ ' 个为回溯外推 — 今日遴选的成分被回溯套用至 '
+          ~ meth.bk_series_start ~ ' 的序列起点 —') }}
+        {%- else %} membership was curated knowing the period, so the full ~3y series is a
+        backtest of the as-of-creation membership —
+        {%- endif %} descriptive structure, <b>not</b> an out-of-sample track and not a buy list
+        (the displacement-style baskets in particular are monitoring lists / hedge candidates).</p>
+      {%- if meth.bk_price_resolution is not none -%}{%- set _pr = meth.bk_price_resolution %}
+      <p class="panel note"><b>{{ t('Basket price basis:', '篮子定价基准：') }}</b>
+        {{ t('resolved ' ~ _pr.resolved_n ~ ' of ' ~ _pr.requested_n ~ ' basket members',
+          '已取到价格 ' ~ _pr.resolved_n ~ ' / ' ~ _pr.requested_n ~ ' 个篮子成分') }}{% if
+        _pr.unresolved_n %}, {{ t('unresolved', '未取到') }} <code>{{ _pr.unresolved_tickers |
+        join(' ') }}</code>{% endif %}; {{ t('basis', '基准') }}{%- for _k, _v in
+        _pr.source_basis.items() %} <code>{{ _k }}={{ _v }}</code>{{ ',' if not loop.last }}
+        {%- endfor %}; {{ t('adjustment vintage', '调整版本') }} <code>{{ _pr.adjustment_vintage
+        }}</code>.{% if meth.bk_n_partial is not none %} {{
+        t(meth.bk_n_partial ~ ' of ' ~ meth.bk_n_observed ~ ' baskets priced on a partial'
+        ~ ' member set', meth.bk_n_observed ~ ' 个篮子中有 ' ~ meth.bk_n_partial
+        ~ ' 个按部分成分定价') }}{{ t(', lowest coverage', '，最低覆盖') }}
+        <code>{{ meth.bk_min_coverage.id }}</code> {{ meth.bk_min_coverage.observed_n }}/{{
+        meth.bk_min_coverage.configured_n }}.{% endif %}</p>
+      {%- endif %}
 
       <h2 id="seasonality">{{ t('Seasonality (Ken French)', '季节性 (Ken French)') }}</h2>
-      <p>Deep-history seasonality uses the Ken French Data Library's monthly factor returns (Momentum 1927+, Value/Size/Profitability/Investment 1963+) — academic total-US-market long/short portfolios, decades longer than our price cache. Per calendar month we report mean, median and hit-rate (% of months positive), over both full history and a trailing-30-year window.</p>
+      <p>Deep-history seasonality uses the Ken French Data Library's monthly factor returns
+        {%- if meth.seasonality_styles is not none %} ({%- for s in meth.seasonality_styles %}
+        {{- t(s.label_en, s.label_zh) }} {{ s.start }}, {{ s.n_months }} {{ t('months', '个月') -}}
+        {{ '; ' if not loop.last }}{%- endfor %}){% else %}
+        (Momentum 1927+, Value/Size/Profitability/Investment 1963+){%- endif %} — academic
+        total-US-market long/short portfolios, decades longer than our price cache. Per
+        calendar month we report mean, median and hit-rate (% of months positive), over both
+        full history and a{% if meth.seasonality_window_years is not none %}
+        {%- for w in meth.seasonality_window_years %} {{ t('trailing-' ~ w ~ '-year',
+        '近 ' ~ w ~ ' 年') }}{% if not loop.last %} /{% endif %}{%- endfor %}{%- else %}
+        trailing-30-year{% endif %} window.</p>
       <p class="panel note">These are a <b>definition mismatch</b> vs our S&P-1500 z-score quintiles — treat them as the long-run <b>climate of a style</b>, not a forecast of our daily factor leadership. Seasonality is deliberately kept out of every calibrated score.</p>
 
       <h2 id="validation">{{ t('Validation', '验证') }}</h2>
@@ -144,7 +206,9 @@
 
       <h2 id="limits">{{ t('Limitations & disclaimer', '局限与免责声明') }}</h2>
       <ul>
-        <li>Annual (not quarterly) fundamentals; ~3 years (not multi-decade) of prices; mild survivorship bias; ETF-only validation.</li>
+        <li>Annual (not quarterly) fundamentals; ~3 years (not multi-decade) of prices;{% if
+          meth.ic_survivorship_biased is sameas true %} survivorship bias (IC panel: an
+          optimistic bound){% else %} mild survivorship bias{% endif %}; ETF-only validation.</li>
         <li>σ uses overlapping windows (autocorrelated); the IC sample is small (n≈{{ meth.ic_rebalances }}); baskets are hindsight-curated.</li>
         <li>Everything here is <b>read-only analytics for informational purposes only — not investment advice</b>, provided as-is with no guarantee of accuracy, timeliness or completeness.</li>
       </ul>

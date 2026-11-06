@@ -118,6 +118,8 @@ log = logging.getLogger("qledger_desk_adapter")
 # --------------------------------------------------------------------------- #
 @dataclass(frozen=True)
 class FamilyConfig:
+    #: Exact source-owned ledger declaration for read-only consumers.
+    native_ledger: str | None = None
     lean_field: str = "lean"
     #: declared lean -> direction. A lean absent from this table (a desk's own
     #: declared no-call, e.g. stock_desk's "neutral") is SKIPPED, never
@@ -136,15 +138,18 @@ class FamilyConfig:
 
 _FAMILIES: dict[str, FamilyConfig] = {
     "stock_desk": FamilyConfig(
+        native_ledger="data/stock_desk/theses.jsonl",
         lean_direction={"constructive": 1, "cautious": -1, "avoid": -1},
         anchor_at_registration=True,
     ),
     "thematic_desk": FamilyConfig(
+        native_ledger="data/thematic_desk/theses.jsonl",
         lean_direction={"overweight": 1, "underweight": -1, "avoid": -1},
         region_filter=lambda row: str(row.get("market") or "").strip().lower() == "us",
         anchor_at_registration=True,
     ),
     "demand_chain": FamilyConfig(
+        native_ledger="data/demand_chain/theses.jsonl",
         lean_direction={"outperform": 1, "underperform": -1},
     ),
 }
@@ -152,6 +157,12 @@ _FAMILIES: dict[str, FamilyConfig] = {
 
 def known_families() -> tuple[str, ...]:
     return tuple(_FAMILIES)
+
+
+def native_ledger_for_family(family: str) -> str | None:
+    """The exact existing native store, never a directory-name heuristic."""
+    config = _FAMILIES.get(family)
+    return config.native_ledger if config else None
 
 
 # --------------------------------------------------------------------------- #

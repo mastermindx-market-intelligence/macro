@@ -1,0 +1,113 @@
+{
+  "bounded_diagnostic_state": "PROVEN_LOCAL_RETROSPECTIVE_DESCRIPTION",
+  "contract": "defense.retrospective_diagnostic_return_manifest.v1",
+  "files": {
+    "ARITHMETIC_SPOTS.json": {
+      "bytes": 6343,
+      "sha256": "169f1d44c3a6d3fb77583c48a7e9d5942403ee4811c73a46d8765a01a0a677e1"
+    },
+    "CALENDAR_EXPECTATIONS.json": {
+      "bytes": 16901,
+      "sha256": "fe8cb8c46890e01974c558de14e31bff71285e518d1602fb731a4ab7dabbd919"
+    },
+    "CONTINUITY_APPEND.md": {
+      "bytes": 2645,
+      "sha256": "de53a86b88ef19678c5da7b59c325ffd3ae97ce1de81f07f1d90764a49858cb6"
+    },
+    "CONTRACT_MAPPING.json": {
+      "bytes": 6124,
+      "sha256": "3161b83db482d04c181de850ea4f85774dfd897c72b48a1fb8e665ea36bed894"
+    },
+    "DPV3_EQUITY_RETROSPECTIVE_DIAGNOSTIC_20261013.md": {
+      "bytes": 11231,
+      "sha256": "1186a6e2f6c49fbf94d616698277821ee9c30ca8d9809580503c9285546a00ba"
+    },
+    "EXPECTED_NUMERIC_ROWS.json": {
+      "bytes": 59579,
+      "sha256": "3397ed93de5ee43e169527247a0e2f4b321507e1dd3c5ef8786d2569d4a0c558"
+    },
+    "FABRIC_KERNEL_ACCEPTED_STATUS.json": {
+      "bytes": 410,
+      "sha256": "7ea51d86b2bb2859163b4558533c142d52626ebb6ec63f281a99c4a29929c8c1"
+    },
+    "FABRIC_METHOD_ACCEPTED_STATUS.json": {
+      "bytes": 413,
+      "sha256": "9aa7e08231f00f82105404cc10a4e60f59a30800032d97ac10604175efc6bf21"
+    },
+    "KERNEL_ACCEPTANCE.json": {
+      "bytes": 1226,
+      "sha256": "b3054d4b902073698197abd9e77609cfb6bfa44ac7ea7b86ca749c0acc10a5f2"
+    },
+    "KERNEL_RETAINED.txt": {
+      "bytes": 2618,
+      "sha256": "fdb76c7768358ba05ffc7095b06fb6913ddf3abf0a7cb8d918b0000f41d7ac41"
+    },
+    "KERNEL_SELF_TESTS.json": {
+      "bytes": 101,
+      "sha256": "d7df841d219ad09a1d36c9379079a7e63cec38abf2cc94c43768e8969165b046"
+    },
+    "METHOD_REVIEW_ADJUDICATION.json": {
+      "bytes": 1772,
+      "sha256": "611ca08974b95e27f6db428b81c7c036b4e8f726f194fbc3a4bd4200eedbc40a"
+    },
+    "METHOD_REVIEW_RETAINED.txt": {
+      "bytes": 26898,
+      "sha256": "020503a914743ecc0a5c8c6023385681947d01083350f47752635ceeb7b049b0"
+    },
+    "NUMERIC_SUMMARY.json": {
+      "bytes": 5039,
+      "sha256": "1c5fa3ef64deb893f1595d28a08fbec1817b0c90650cf9fedc88600f75c14669"
+    },
+    "PRE_OUTCOME_SCOPE.json": {
+      "bytes": 78332,
+      "sha256": "a7d54f3c9a4fe8e3f71ec6e2058317cb85d9b093abf50c2796e97d93b60d984f"
+    },
+    "RESULT.json": {
+      "bytes": 360124,
+      "sha256": "17abc9126e4d3d5766a515f0e071bc57bd74c3bc746a1615f0695f447cd8f16b"
+    },
+    "REVIEW_BOUNDARY_CHECKS.json": {
+      "bytes": 11861,
+      "sha256": "dec1b5000388d43d11e7024b7f94feeb06912aeb850f96ee7a8c92332b824dc3"
+    },
+    "SCOPE_RECORDED_BEFORE_PRICE_READ.json": {
+      "bytes": 300,
+      "sha256": "f0cd88bf4c7bf73fa2d9f6a1b7a6780138965fe3f7630dee89353e8e6d4ae114"
+    },
+    "diagnostic.py": {
+      "bytes": 41124,
+      "sha256": "051ef76306cc6761fe8c7cbd24d7fc713b4b60e842f4c69f7349097f24bb5f72"
+    },
+    "kernel-integration-repairs.patch": {
+      "bytes": 4586,
+      "sha256": "136b7b09c16eb805e22f1debb2a3ed65e5f3df48eabc5260b959e4c64c54b89a"
+    },
+    "prepare_expected_numeric_rows.py": {
+      "bytes": 2883,
+      "sha256": "90f4ec0066e51126e7ce24e63dd8c8a1b6d9e1ef5768551cd3d684662cc3be60"
+    },
+    "qualify_review_boundaries.py": {
+      "bytes": 4964,
+      "sha256": "b3e45383b243856a7f72169aad6731bf9786bf2ab27917f19f84c2a0182e06b4"
+    },
+    "retrospective-docs-additive.patch": {
+      "bytes": 11647,
+      "sha256": "be4d86afff54468eb0a27bec1788cf881ced96a208e2472daaf394607cc43dda"
+    },
+    "run_diagnostic.py": {
+      "bytes": 8797,
+      "sha256": "1af8122a5a48810e2942e8ed907b0e91e0527dd5d9ac4d6bfa3294423215cabd"
+    },
+    "verify_kernel_against_oracle.py": {
+      "bytes": 3534,
+      "sha256": "22b5d8db6cac9d79168aca19dd6d075bd8d9bd5839a2a4f8d50d2fb66e6d697a"
+    }
+  },
+  "full_program_complete": false,
+  "native_parent": "01a13839-f414-75d3-8ab6-ba9a20930e7d",
+  "next_action": "Root integrate/review additive research document and continuity at safe source boundary; preserve publication proof, scientific admission and original Q3 effect gates.",
+  "original_root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "price_packet_sha256": "f10935de7cacd0cf2c1554cf5a01e35a939645e6459b732b3e9f86f2592e0cd1",
+  "price_vintage": "grv-price-076efbccf0d19608dd181ce133e8471e6f8ac39025a60fd4ec741b8b253940e5",
+  "source_head_at_replay": "7c8069a604c77a63ef4c048263cef45f262d0bdc"
+}

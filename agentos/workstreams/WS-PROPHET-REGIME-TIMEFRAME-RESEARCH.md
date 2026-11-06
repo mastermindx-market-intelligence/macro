@@ -9,7 +9,7 @@ objective: >
   has a mechanical verdict recorded with its falsifier, the C2 decisive hypothesis is
   adjudicated by the seat, the §7 product implication map is written, and nothing is
   promoted to authority without the separate gauntlet.
-status: active
+status: done
 program: prophet
 repos: [macro, mastermind]
 owner: fable-ceo
@@ -29,25 +29,35 @@ do_not_redo:
 waves:
   - id: W1
     title: Pre-registered wave 1 — A1/B1/C1/C2/F1 fabric lanes, seat adjudication of C2
-    status: in_progress
-    pr: 8375
+    status: done
+    pr: 8445
     next_action: >
-      Collect the B1 and C1 GLM lane returns from mini2 (launcher ids
-      rs_20261004T011728Z_4177 and rs_20261004T011730Z_4264), refute each via an
-      Opus read-only reviewer, repair at most twice, then launch C2 on B1+C1 ACCEPT and
-      A1/F1 as fill.
+      Closed 2026-10-05: all seven lane records shipped (A1/B1/C1/E/F1 in the wave-1
+      results PR #8445, squash 62992f803f1b; C2 r2 + D0 r3 in the follow-up PR) and ruled
+      (05 §1/§3, 09 §0). C2 r2 independent review verdict recorded; C2 r3 (records+tests only,
+      result.json pinned) reviewed and recorded in the closure PR (05 ledger addendum 2026-10-05 05:16Z).
   - id: W2
     title: Theme-persistence and timeframe transposition follow-ups conditioned on W1 verdicts
-    status: todo
+    status: done
     depends_on: [W1]
+    next_action: >
+      Absorbed into wave 1 per 03 §4: D parked with a named blocker (DEC:D-LANE-PARKED-AS-FORWARD-STUDY),
+      E family×regime tournament SCOPED_NULL ACCEPT, Phase-22 continuity note (06), conditioning-table spec (07).
+      Any further theme-persistence work is a NEW pre-registration (09 §2 C1-W2 construction), never a re-run.
   - id: W3
     title: Product implication map into Prophet surfaces (display tier only, no promotion)
-    status: todo
+    status: done
     depends_on: [W2]
+    next_action: >
+      Delivered as evidence (rung ≤ MERGED): V4 owners on #6805 (5984703124), Temporal Grain on #6803 (5987833169);
+      owner acknowledgement is owner-side and open. Exit-gate audit: 05 §8.
 next_action: >
-  Watch the two running mini2 lanes to DONE, rsync results/<LANE>/ into the program
-  tree, run each lane's pytest and hash check locally, commission the Opus reviewer,
-  and record verdicts in 05_ACCEPTANCE_AND_CONTINUATION.md.
+  Wave 1 CLOSED (2026-10-05): A1, B1, C1, E, F1 accepted in the results PR #8445; C2 r2
+  ACCEPTED-WITH-GAP and D0 r3 ACCEPTED-WITH-GAPS in the follow-up PR, both reviewed by
+  artifact (05 §2 ledger addendum 2026-10-05). C2 r2 review verdict + C2 r3 (records+tests
+  only) recorded in the closure PR (05 ledger addendum 2026-10-05 05:16Z; reviews/ on record);
+  the program RESULT is posted once on #8363 after the closure PR merges. W2 only as a new pre-registration (09 §2 names
+  the C1-W2 construction); lane D is a forward study per DEC:D-LANE-PARKED-AS-FORWARD-STUDY.
 ---
 
 # WS:PROPHET-REGIME-TIMEFRAME-RESEARCH

@@ -1,0 +1,30 @@
+{
+  "schema": "tiingo.actual_settled_remaining_quality_diagnosis_parent_acceptance/v1",
+  "recorded_at_utc": "2026-10-13T00:52:08.404529+00:00",
+  "original_tool_session": 14302,
+  "original_exit_code": 0,
+  "original_terminal_return_consumed": true,
+  "actual_diagnosis_sha256": "72ed522bf0c81fe29bde3a61078886627f04c0616487870afc5778a72e01e7cf",
+  "all_remaining_raw_checksum_and_requested_window_verified": true,
+  "all_present_partial_projection_lineage_verified": true,
+  "remaining_responses": 1570,
+  "original_failed_snapshot_responses": 1341,
+  "later_responses": 229,
+  "retained_valid_partial_projections": 758,
+  "retained_partial_files": 1516,
+  "quality_quarantine_candidate": {
+    "symbol": "RBGPF",
+    "receipt_id": "fbc8e27fa55a315b86159989b328c73d4dc11334cbfa916e05084c310c537dbd",
+    "raw_sha256": "fe36f5c36f07be21d1838bf09574d0a3bd46086377b3309d6c04c77d86bc06cc",
+    "raw_bytes": 1163554,
+    "whole_receipt_rows": 4751,
+    "invalid_volume_field_count": 2,
+    "projected_artifacts_present": false
+  },
+  "archive_writes_by_diagnosis": 0,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "raw_values_or_market_rows_in_this_summary": false,
+  "reviewed_reconciliation_actual_session": 37818,
+  "reconciliation_accepted_before_actual_return": false
+}

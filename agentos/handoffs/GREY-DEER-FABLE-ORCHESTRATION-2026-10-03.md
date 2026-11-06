@@ -1,3 +1,65 @@
+---
+workstream: WS:GREY-DEER-RISK-INTELLIGENCE
+session: handoff/grey-deer-fable-orchestration-20261003
+model: sol
+ended_because: blocked
+mission: Preserve the October 3, 2026 Grey Deer/Fable orchestration handoff in the incumbent Agent OS
+  schema. This is archival source maintenance, not a transfer of program orchestration, source leases
+  or live receiver authority.
+state_before: The historical handoff on original PR8391 head07e5366e49d11320acd7787bef1f27962c84ec04 is
+  a 246-line record without required YAML frontmatter. Its historical capacity/admission frontier was
+  blocked; current runtime state has not been reverified.
+changed:
+- path: agentos/handoffs/GREY-DEER-FABLE-ORCHESTRATION-2026-10-03.md
+  what: Add required schema metadata and dated archival framing while preserving the entire original body,
+    all ten action-specific refusals, accepted negative studies and scientific/action-authority limits.
+verified:
+- claim: Read the immutable original handoff and the real existing workstream join.
+  command: GitHub fetch_file at PR head07e5366e49d11320acd7787bef1f27962c84ec04 and workstream main0cd0e3284b10acb15f5b79d6b28ca72e93c3d3bf.
+  result: Handoff blob669a65ead598e2732c16e16cff857327bdd61eaa,246lines; workstream blob67d333db7a4a43732b1169f078a81a7f28b17f80
+    retains owner coo-fable and active status. Source/metadata reads only.
+unverified:
+- claim: Current Fable receiver, admission, live runtime, source leases, external holds, deployment, scientific
+    acceptance and uncertain effects.
+  what_would_verify: A separately authorized operational continuation reconciles the current canonical
+    owners and original effect targets without replaying any denied action.
+unresolved:
+- The Grey Deer program remains incomplete; the archived capacity/admission state and carrier census do
+  not assert today's state.
+- All recorded action-specific refusals, scientific qualification limits, held implementation carriers
+  and original-source custody remain independently binding.
+next_actions:
+- Complete this original-carrier archival schema repair and its required current delivery checks; observe
+  the existing protected controller's actual result.
+- Before any later operational continuation, establish current intent, governing source, receiver/custody
+  and effect state through the existing owners; do not launch the archived Fable cycles from this record
+  alone.
+do_not_redo:
+- Preserve all ten original denial fences; do not retry or proxy their selected-PR census, warning execution,
+  bank-copy/census, research, Chromium, Radar helper, checkpoint-copy, E02 freeze, Chronicle setup or
+  failed-log actions.
+- Preserve accepted negative research, no automatic exits, no fused authority score, no duplicate event/episode/forecast
+  ledger and all false rank/gate/size/trade permissions.
+- Do not transfer existing leases, create a parallel orchestrator, alter spend/provider policy or claim
+  a receiver/START from organizational ownership.
+danger_areas:
+- Treating the historical procedure pin, carrier census, capacity/effect/receiver statements or first
+  execution cycles as current runtime truth or new dispatch authority.
+- Conflating organizational coo-fable ownership with live source leases or a bound executing receiver.
+- Promoting archived test counts or source landing to current scientific, deployed or entitled-consumer
+  acceptance.
+prs:
+- 8391
+---
+
+## Archival qualification — 2026-11-06
+
+The complete handoff below is the October 3, 2026 snapshot. Its “current” carrier census, procedure pin, WAITING_CAPACITY / PRE_START / EFFECT_NONE, no-receiver/no-START statements and proposed first cycles are historical evidence, not present runtime facts or a new dispatch instruction. The metadata records that historical blocked handoff and the current archival schema repair; `model: sol` is the record's schema identity, not a newly verified served-model claim.
+
+The existing `WS:GREY-DEER-RISK-INTELLIGENCE` remains the program owner record, with `owner: coo-fable`. This correction does not transfer orchestration, source leases, review effects or implementation custody. Preserve all ten action-specific refusals and all still-applicable holds and uncertain-effect fences. The historical 163/22-test counts and accepted negative studies are not re-executed or promoted. No provider, Fable, runtime, research, Paper, production, sizing or trading action is authorized by landing this archive.
+
+---
+
 # Fable Orchestration Handoff — Grey Deer / Risk Radar / Market Fragility & Recovery Intelligence
 
 **Date:** 2026-10-03 ET  

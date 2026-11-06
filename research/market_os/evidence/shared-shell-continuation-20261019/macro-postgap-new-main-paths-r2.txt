@@ -1,0 +1,6 @@
+M	data/marketing/x_intel/state.json
+M	data/whitehouse/health.json
+M	scripts/build_macro_context.py
+M	site/whitehouse.html
+M	templates/macro_context.html.j2
+M	tests/test_macro_context_authority.py

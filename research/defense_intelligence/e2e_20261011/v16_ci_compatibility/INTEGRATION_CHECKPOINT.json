@@ -1,0 +1,27 @@
+{
+  "created_at": "2026-10-14T13:28:13.617668+00:00",
+  "original_pr": 9066,
+  "pushed_head": "9d8c7ce9f1729cbff8fbe34fbee949a8bb545bd2",
+  "observed_ci_run": 38564650554,
+  "observed_ci_checkout": "d1c3b2fe23f58172d3e25f2da2c7978f3bf03171",
+  "observed_ci_base": "f1d8347968272bb5b2b1da14cf5ad12f9d7242ab",
+  "new_protected_main": "29e383bc0ded2c3d3dae819fd5b7647ab6fea229",
+  "demonstrated_failure": "leadership-rotation-science exclusive scope omitted engine/rates_command_basis.py imported by engine/yield_momentum.py",
+  "repair": "Only add the exact missing dependency path; retain existing job, selector, tests and ceilings",
+  "local_ci_verification": "3 selected CI closure/inventory/always-on checks passed",
+  "source_proof": {
+    "conclusion": "passed",
+    "source_checkout": "bd8c3adc188e927a86dc2009a2ad9b4a6928270b",
+    "identity": "7c9eabbb26be0277484c1dd8651160a42ab27e3396de8fe1c9573a30ba65bbb2",
+    "summary": "104 passed, 1 skipped, 1 warning in 2467.72s (0:41:07)",
+    "cases": 105
+  },
+  "outputs": "all109 match V15 byte-for-byte",
+  "canonical_capacity_input_changed": false,
+  "financial_cas_or_production_effect": false,
+  "current_reader_tests": "67 passed; local only",
+  "baseline_source_qualification": "two workflow hashes qualified; all 33 legacy records/scan clocks unchanged",
+  "hosted_CI": "old head terminal failure, new exact head checks required",
+  "capacity_preparation_head": "42cc69fa4460d604d40ccb0c5d769e76160edbec",
+  "mission_complete": false
+}

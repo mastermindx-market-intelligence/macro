@@ -1,0 +1,86 @@
+{
+  "schema": "eval_os.a28.science_adjudication.v1",
+  "status": "BOUNDED_SYNTHETIC_A28_CAPACITY_ACCEPTED_PRODUCTION_UNPROVED",
+  "consumed_receipts_sha256": {
+    "composed-scale-report.json": "7cf45be47347a3ce8b2e063f0dc079a1b023f3a8e1d348bffc12d8fff9046055",
+    "baseline-result.json": "38ed75de1df45276e135f394c8fc32e4e80a20f7d0f53196351ec0db47c52a3d",
+    "A1-result.json": "8966c19fa49edc4ffa635675fc0fe1324a5bbea2feb034556864a4b2e16d896d"
+  },
+  "observed": {
+    "claims_bytes": 104577282,
+    "claims_rows": 359548,
+    "grades_bytes": 76734746,
+    "grades_rows": 541168,
+    "baseline_peak_rss_bytes": 447348736,
+    "A1_peak_rss_bytes": 452182016,
+    "incremental_peak_rss_bytes": 4833280,
+    "A1_cold_wall_seconds": 4.201863374999448,
+    "A1_force_wall_seconds": 2.727728500000012,
+    "A1_hit_wall_seconds": 0.0008670839997648727,
+    "two_serialized_force_wall_seconds": 6.758615291000751,
+    "forced_claim_transports": 4,
+    "grade_read_attempts": 0,
+    "readiness_compute_attempts": 0,
+    "historical_available_minus_A1_peak_bytes": 1974349824,
+    "sources_stable": true,
+    "fixtures_unchanged": true
+  },
+  "rulings": [
+    "Full observed corpus byte scale is exercised and absolute process peak is below root1GiB ceiling; one artifact does not establish that release is unsafe.",
+    "The4.6MiB peak differential supports small incremental A1 memory at this fixture; peak includes imports and cumulative operations, not a precise allocation attribution.",
+    "Single-sample cold wall delta1.633s is not a recurring overhead or VPS latency estimate; CPUcold1.497s versus baseline1.478s is much closer.",
+    "Cachehit reads no claims; fourforcecalls produce exactly fourclaim text transports, proving no added A1 corpus reread or grade/readiness path in this experiment.",
+    "Source-current647artifact/369producer/102owner cardinality and808033B Synapse parsing/stat work were not exercised by one-artifactfixture. _synapse_dependency_mtime_key adds per-call metadata work including hits.",
+    "Exactly one cardinality extension is justified to discriminate that new work, without repeating corpus generation or changing application source.",
+    "Historical2.26GiB headroom is context only; localMac results do not reserve production memory or prove production/client latency."
+  ],
+  "extension": {
+    "helper": "probe_cardinality_extension.py",
+    "sha256": "267b32eafc04a7e09b29e50c1c58e4a343b5529b3e84c03e3acc1047afdb8a4b",
+    "syntax": "AST parsed, not executed",
+    "corpus_reuse": "same_inode_hardlinks; originals and original script preserved",
+    "budget": "Original1GiB peak watchdog,60s perchild; actual real builder/_derive, existing guards",
+    "source_synapse_sha256": "ec3f4ed483c1890710cc04f1766b4dd71785c195eab6d8872e57aaf5f026139f",
+    "status": "EXECUTED_ROOT_ACCEPTED_EXACT_RECEIPTS_CONSUMED"
+  },
+  "scope_limit": "No empirical/current-market qualification, full production object graph/producer AST reproduction, customer SLO or production canary.",
+  "cardinality_receipts_sha256": {
+    "cardinality-report.json": "9cb0d1041023972f6f576c1700065e28c53d3a3caefc4fedbd6c90b2c6adf25e",
+    "baseline-result.json": "924a3438aab6a92bbfebae667780aa5e8fa018f34627e726671cd6c34c374e94",
+    "A1-result.json": "ec9242cfa109685725c4f8bd0c02844abaf6d28b2d392bf18ac6f8137e72f566"
+  },
+  "cardinality_observed": {
+    "actual_resolved_engines": 647,
+    "actual_assessed_artifacts": 647,
+    "producer_files": 369,
+    "owners": 102,
+    "synapse_bytes": 808033,
+    "baseline_peak_rss_bytes": 454213632,
+    "A1_peak_rss_bytes": 468107264,
+    "incremental_peak_rss_bytes": 13893632,
+    "baseline_cold_wall_seconds": 5.221006458999909,
+    "A1_cold_wall_seconds": 9.044377207999787,
+    "A1_cache_hit_wall_seconds": 1.2929330419992766,
+    "A1_cache_hit_claim_transports": [],
+    "A1_force_wall_seconds": 12.81008337500134,
+    "A1_two_serialized_force_wall_seconds": 25.60670199999913,
+    "whole_A1_child_wall_seconds": 49.605960667000545,
+    "guard_attempts": {
+      "grades": 0,
+      "readiness_compute": 0
+    },
+    "margin_to_root_RSS_ceiling_bytes": 605634560,
+    "historical_available_minus_peak_bytes": 1958424576
+  },
+  "final_ruling": [
+    "Both source-bound probes qualify complete synthetic corpus-size and current Synapse cardinality workload within root1GiB/60s limits, with no watchdog or attempted grades/readiness path.",
+    "A1 maximum446.4MiB compared baseline433.2MiB, differential13.25MiB; memory amplification concern is materially narrowed without claiming production capacity.",
+    "647-entry cache hit takes1.293s and0.622CPU seconds despite zero claims reads. It performs meaningful dependency YAML/stat work; do not generalize initial submillisecond1-artifact hit.",
+    "Cold9.044s, force12.810s and two serialized25.607s are reported single-sample local timings, not a VPS/client SLO or throughput forecast. Whole child49.606s completes inside the60s ceiling.",
+    "Full corpus bytes are reused unchanged; fourforcedcalls produce fourclaim text transports and zero grade/readiness attempts.",
+    "No concrete declared requirement was violated, so no further source/test broadening or performance platform is warranted for held-release review.",
+    "Candidate is eligible for bounded capacity review at these exact bytes; actual VPS latency/headroom/concurrent service behavior and production graph/artifact shapes remain unproved under original protected release controls."
+  ],
+  "no_additional_work_requested": true,
+  "source_edits": false
+}

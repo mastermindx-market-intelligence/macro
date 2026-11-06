@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-18T21:55:17Z",
+ "accession": "0000215466-26-000004",
+ "cik": "0000215466",
+ "doc_byte_length": 3547169,
+ "doc_sha256": "cc814e3c24419e09f2864e6f257ae3afcabacd26e94779a7bec9453ab6a4359e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-18",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cde-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3338795,
+  "byte_start": 3338400,
+  "normalized": "Because there is no minimum obligation associated with the deposit, it is not considered a financing, and each shipment is considered to be a separate performance obligation. The Franco-Nevada Gold Stream Agreement represents a contract liability under ASC 606, which requires the Company to ratably recognize a portion of the deposit as revenue for each gold ounce delivered to Franco-Nevada.",
+  "normalized_sha256": "8c35c77459ae4f4348e27271f6e4bc4023df06cafe67ad9e96d6cd8a0b4d0114",
+  "raw": " Because there is no minimum obligation associated with the deposit, it is not considered a financing, and each shipment is considered to be a separate performance obligation. The Franco-Nevada Gold Stream Agreement represents a contract liability under ASC 606, which requires the Company to ratably recognize a portion of the deposit as revenue for each gold ounce delivered to Franco-Nevada. ",
+  "raw_sha256": "f2d94ed8f1f608180ea8c1616e60bbbf4c342b603092ad5292cced0969789b56"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/215466/000021546626000004/cde-20251231.htm",
+ "xbrl_contexts": []
+}

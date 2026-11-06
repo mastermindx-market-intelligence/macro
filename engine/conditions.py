@@ -11,8 +11,8 @@ risk that the price-based quad lacks:
                             labor leg; Sahm is the graceful fallback only when the
                             claims feed is absent), the smoothed recession
                             probability, the Excess Bond Premium model prob + level,
-                            and a term-premium-ADJUSTED curve slope (strips the
-                            2022-24 false inversion from a low/negative term premium).
+                            and a legacy TP10 curve heuristic (2s10s plus the
+                            10y term-premium model estimate; not an expectations-only decomposition).
   • Growth nowcast        — Weekly Economic Index + Atlanta Fed GDPNow.
   • Labor / real-activity — high-frequency leading reads that front-run the
                             monthly, revised payrolls: weekly jobless claims,
@@ -697,14 +697,15 @@ def conditions_snapshot(f: pd.DataFrame) -> dict:
         "ebp": _last(_col(f, "ebp")),
         "ny_fed_prob": _last(_col(f, "recession_prob")),
     }
-    # the headline insight: term premium can invert the curve without recession
+    # Compatibility heuristic only: compare raw 2s10s with 2s10s + the 10y
+    # term-premium model estimate. This is not a matched-maturity expectations decomposition.
     cr, ca = recession["curve_raw"], recession["curve_tp_adjusted"]
     if cr is not None and ca is not None:
         recession["curve_note"] = (
-            "raw curve inverted but term-premium-adjusted slope is positive "
-            "(low term premium, not a recession signal)"
+            "raw curve is negative while the legacy TP10 heuristic is positive; "
+            "the two reads disagree, without identifying the cause of inversion"
             if cr < 0 <= ca else
-            "raw and term-premium-adjusted curve agree")
+            "raw curve and legacy TP10 heuristic have the same sign")
 
     # growth nowcast
     wei = _last(_col(f, "wei"))

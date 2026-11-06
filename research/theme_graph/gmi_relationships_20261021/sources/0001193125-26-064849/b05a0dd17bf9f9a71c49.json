@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-24T02:40:48Z",
+ "accession": "0001193125-26-064849",
+ "cik": "0000863436",
+ "doc_byte_length": 4762527,
+ "doc_sha256": "bd492fd6e7dde5f3d3b55d7e518a1cd7add7e5dc8f4f908b959efcc14c4ac31c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "bhe-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4086199,
+  "byte_start": 4084199,
+  "normalized": "Applied Materials, Inc. and subsidiaries 14% 14%",
+  "normalized_sha256": "3d6c097a2460b215f57bcc9b70aaf4c821d3ba71a3e13932e2e23435396ad6e0",
+  "raw": "Applied Materials, Inc. and subsidiaries</span></p></td>\n         <td style=\"padding-top:0in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0in;\"><p style=\"font-size:9pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n         <td style=\"padding-top:0in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0in;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_1af16b78-05b0-47ae-8a70-c72def21efe4\" contextRef=\"C_f7bdb6a7-2292-4672-999e-c0a9dce5bbe9\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">14</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">%</span></p></td>\n         <td style=\"padding-top:0in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0in;\"><p style=\"font-size:9pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n         <td style=\"padding-top:0in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0in;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_757fb3c7-dcaa-4a9a-a8ea-45d2f664ebde\" contextRef=\"C_16b4f9a6-6f28-4436-b8fe-67a3a3698278\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">14</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">%",
+  "raw_sha256": "b05a0dd17bf9f9a71c49868e2d74b093b25e687b0f1e79d6cc96d8faabfa36ae"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/863436/000119312526064849/bhe-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 136191,
+   "byte_start": 135488,
+   "context_ref": "C_16b4f9a6-6f28-4436-b8fe-67a3a3698278",
+   "raw": "<xbrli:context id=\"C_16b4f9a6-6f28-4436-b8fe-67a3a3698278\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000863436</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">bhe:AppliedMaterialsIncMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "53dd35977c5a5f96ed1cddf44e3981a04b9973244c22574db4406db280a4c84c"
+  }
+ ]
+}

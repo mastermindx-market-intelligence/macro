@@ -1,0 +1,33 @@
+{
+ "inputs": "terms from the data alone: underlying, OCC root, strike, call/put, expiry day; exercise style None (strict) or the labelled map (sensitivity); deliverable, multiplier and settlement None; clock None; spot from the chain; sigma None (no option price; vendor iv never used); rate SOFR; continuous yield None; dividends None; valuation = cutoff = asof minute",
+ "rows_decided_sensitivity": 4418705,
+ "rows_decided_strict": 4418705,
+ "rows_not_unavailable_sensitivity": 0,
+ "rows_not_unavailable_strict": 0,
+ "rows_without_valuation_clock": 0,
+ "sensitivity": [
+  {
+   "model": "UNAVAILABLE",
+   "reasons": [
+    "deliverable_unknown",
+    "multiplier_unknown",
+    "settlement_clock_unknown",
+    "market_input_missing"
+   ],
+   "rows": 4418705
+  }
+ ],
+ "strict": [
+  {
+   "model": "UNAVAILABLE",
+   "reasons": [
+    "exercise_style_unknown",
+    "deliverable_unknown",
+    "multiplier_unknown",
+    "settlement_clock_unknown",
+    "market_input_missing"
+   ],
+   "rows": 4418705
+  }
+ ]
+}

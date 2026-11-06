@@ -1,0 +1,81 @@
+{
+  "schema": "tiingo.current_qualified_census_with_actual_later_repair/v1",
+  "observed_at_utc": "2026-10-14T02:55:40.516483+00:00",
+  "method_sha256": "f07c4cec963a5841ce98deac219e6cbcdbfe7fd749f192d5e68a8a57f372f0e9",
+  "accepted_nonempty_ticker_histories": 47550,
+  "accepted_distinct_bars": 100592522,
+  "projected_rows_across_receipts": 100592774,
+  "accepted_receipts": 47702,
+  "candidate_capture_status_counts": {
+    "NONEMPTY_DESIRED_REQUEST_WINDOWS_CAPTURED": 47550,
+    "CAPTURED_EMPTY_RESPONSE": 117,
+    "UNCAPTURED_CATALOGUE_WINDOW": 19,
+    "CAPTURED_SOURCE_QUALITY_QUARANTINED": 3
+  },
+  "missing_candidate_count": 22,
+  "failed_vendor_requests_not_retried": false,
+  "known_uncaptured_attempted_candidates": [
+    {
+      "ticker": "DTV_1",
+      "outcome": "HTTP_404_SOURCE_NOT_ADMITTED"
+    },
+    {
+      "ticker": "DVVDF",
+      "outcome": "HTTP_403_SOURCE_NOT_ADMITTED"
+    },
+    {
+      "ticker": "CHEOY",
+      "outcome": "TRANSPORT_FAILURE"
+    },
+    {
+      "ticker": "DTZZF",
+      "outcome": "TRANSPORT_FAILURE"
+    },
+    {
+      "ticker": "DUA",
+      "outcome": "TRANSPORT_FAILURE"
+    },
+    {
+      "ticker": "DUAVF",
+      "outcome": "TRANSPORT_FAILURE"
+    },
+    {
+      "ticker": "DUBS",
+      "outcome": "TRANSPORT_FAILURE"
+    },
+    {
+      "ticker": "DVHL",
+      "outcome": "TRANSPORT_FAILURE"
+    },
+    {
+      "ticker": "DVSPF",
+      "outcome": "TRANSPORT_FAILURE"
+    },
+    {
+      "ticker": "DVTC",
+      "outcome": "TRANSPORT_FAILURE"
+    },
+    {
+      "ticker": "DVXB",
+      "outcome": "HTTP_403_DURING_INCORRECT_CREDENTIAL_ARGUMENT_HELD_NO_RETRY"
+    },
+    {
+      "ticker": "DVYA",
+      "outcome": "HTTP_403_DURING_INCORRECT_CREDENTIAL_ARGUMENT_HELD_NO_RETRY"
+    },
+    {
+      "ticker": "EA",
+      "outcome": "HTTP_403_DURING_INCORRECT_CREDENTIAL_ARGUMENT_HELD_NO_RETRY"
+    }
+  ],
+  "original_census_sha256": "1d7d8bb7762cde131f785a04f7490dc307d076d78a1607a2d73de408305e2b80",
+  "later_repair_result_sha256": "f2340622f80e4edc1a998943699d749c6e2c5953b7c340cb61b12de9a2bafd7d",
+  "original_failed_attempts_retained": true,
+  "all_this_repair_raw_operations_settled": true,
+  "all_this_repair_qualification_effects_accepted": true,
+  "canonical_identity_admitted": false,
+  "pit_backtest_eligible": false,
+  "full_programme_acceptance": false,
+  "current_census_sha256": "c54a2c3c070d14c2a98ad5bd874de919e1704d177bcf0723ed203af67d03ea96",
+  "historical_original4392_fact": "4381 valid + 1 source-quality quarantine + 10 attempted failures + 0 never admitted; retained unchanged. The later repair is separate."
+}

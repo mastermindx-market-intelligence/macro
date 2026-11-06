@@ -1,0 +1,190 @@
+{
+  "schema": "eval_os.installed_identity_observation.v2",
+  "observed_at": "2026-10-24T03:04:17.753978+00:00",
+  "candidate": "4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e",
+  "before_identity": {
+    "installed_head": {
+      "returncode": 0,
+      "stdout": "d8e8f1a4a085f3e219b56dfd88ad0c7d48a1af6e"
+    },
+    "admin": {
+      "returncode": 0,
+      "stdout": "MainPID=3217253\nExecMainStartTimestamp=Sat 2026-10-24 03:00:35 UTC\nActiveState=active\nSubState=running"
+    }
+  },
+  "after_identity": {
+    "installed_head": {
+      "returncode": 0,
+      "stdout": "d8e8f1a4a085f3e219b56dfd88ad0c7d48a1af6e"
+    },
+    "admin": {
+      "returncode": 0,
+      "stdout": "MainPID=3217253\nExecMainStartTimestamp=Sat 2026-10-24 03:00:35 UTC\nActiveState=active\nSubState=running"
+    }
+  },
+  "stable_observed_epoch": true,
+  "sources": {
+    "admin/evidence_findings.py": {
+      "state": "observed",
+      "bytes": 7312,
+      "sha256": "d2355370c9c458db54a35e2253903d5b781b5b0193c945b587618706cb3bf909",
+      "mtime_ns": 1792810814180104880,
+      "expected_sha256": "d2355370c9c458db54a35e2253903d5b781b5b0193c945b587618706cb3bf909",
+      "matches_candidate": true
+    },
+    "admin/evidence_status.py": {
+      "state": "observed",
+      "bytes": 17167,
+      "sha256": "5315e8e95b2a5ee3c5c12b88eac8126c8578db12a773357916aed20bdb459efd",
+      "mtime_ns": 1792810814180104880,
+      "expected_sha256": "5315e8e95b2a5ee3c5c12b88eac8126c8578db12a773357916aed20bdb459efd",
+      "matches_candidate": true
+    },
+    "admin/intelligence_os.py": {
+      "state": "observed",
+      "bytes": 49950,
+      "sha256": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+      "mtime_ns": 1792810814182104820,
+      "expected_sha256": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+      "matches_candidate": true
+    },
+    "admin/server.py": {
+      "state": "observed",
+      "bytes": 111623,
+      "sha256": "95ce8727470024b00c4e1083e1ccde69144fa823ebad301c39b4f87c19f4c584",
+      "mtime_ns": 1792810814189104610,
+      "expected_sha256": "95ce8727470024b00c4e1083e1ccde69144fa823ebad301c39b4f87c19f4c584",
+      "matches_candidate": true
+    },
+    "admin/static/app.js": {
+      "state": "observed",
+      "bytes": 1027913,
+      "sha256": "49a5431df90ea372fa32b5df5c44135c3118d0769613579028cecaed3911ff1d",
+      "mtime_ns": 1792810814205104132,
+      "expected_sha256": "49a5431df90ea372fa32b5df5c44135c3118d0769613579028cecaed3911ff1d",
+      "matches_candidate": true
+    },
+    "admin/static/index.html": {
+      "state": "observed",
+      "bytes": 3448,
+      "sha256": "520ef58f3770b6673d1b613831c6cc15fef6efca71c00683b80993f4f019dcce",
+      "mtime_ns": 1792810814206104102,
+      "expected_sha256": "520ef58f3770b6673d1b613831c6cc15fef6efca71c00683b80993f4f019dcce",
+      "matches_candidate": true
+    },
+    "admin/static/preferences.js": {
+      "state": "observed",
+      "bytes": 3173,
+      "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f",
+      "mtime_ns": 1792810814206104102,
+      "expected_sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f",
+      "matches_candidate": true
+    },
+    "admin/static/styles.css": {
+      "state": "observed",
+      "bytes": 233252,
+      "sha256": "8c5fb312fdd757c7adf39311f6ca8b07b0d50935b54460ace7546bcd91aab11a",
+      "mtime_ns": 1792810814208104042,
+      "expected_sha256": "8c5fb312fdd757c7adf39311f6ca8b07b0d50935b54460ace7546bcd91aab11a",
+      "matches_candidate": true
+    },
+    "app/deploy/update.sh": {
+      "state": "observed",
+      "bytes": 152489,
+      "sha256": "a794619e68e8b90ea725dd335d38adf1ab6bf7f7d965d634a6c7442ce01ef684",
+      "mtime_ns": 1792810814217103773,
+      "expected_sha256": "a794619e68e8b90ea725dd335d38adf1ab6bf7f7d965d634a6c7442ce01ef684",
+      "matches_candidate": true
+    },
+    "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json": {
+      "state": "observed",
+      "bytes": 21903,
+      "sha256": "f86677c419e97eb3932024db56e5e147de7b5a88536bb9701af5ea367e8140db",
+      "mtime_ns": 1792810814220103683,
+      "expected_sha256": "f86677c419e97eb3932024db56e5e147de7b5a88536bb9701af5ea367e8140db",
+      "matches_candidate": true
+    },
+    "engine/neuralweb/response_eval.py": {
+      "state": "observed",
+      "bytes": 68845,
+      "sha256": "b4caa23259a91e78ef4ddbbbce2ec38c6339fa12090f9135018d125d1b320e1d",
+      "mtime_ns": 1792810814221103653,
+      "expected_sha256": "b4caa23259a91e78ef4ddbbbce2ec38c6339fa12090f9135018d125d1b320e1d",
+      "matches_candidate": true
+    },
+    "engine/qledger.py": {
+      "state": "observed",
+      "bytes": 258090,
+      "sha256": "6473c710806b26bc5ee3da3ad781d07b3ca02f208f9789a723186216819c1e00",
+      "mtime_ns": 1792810814225103534,
+      "expected_sha256": "6473c710806b26bc5ee3da3ad781d07b3ca02f208f9789a723186216819c1e00",
+      "matches_candidate": true
+    },
+    "scripts/build_intelligence_registry.py": {
+      "state": "observed",
+      "bytes": 27326,
+      "sha256": "8f224e29d69517cbb5fd1e390ec05f70755d0bf5f89056ff016f2caf9d7381a9",
+      "mtime_ns": 1792810814251102756,
+      "expected_sha256": "8f224e29d69517cbb5fd1e390ec05f70755d0bf5f89056ff016f2caf9d7381a9",
+      "matches_candidate": true
+    },
+    "scripts/grade_qledger.py": {
+      "state": "observed",
+      "bytes": 53641,
+      "sha256": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2",
+      "mtime_ns": 1792810814252102726,
+      "expected_sha256": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2",
+      "matches_candidate": true
+    },
+    "admin/theme_tokens.py": {
+      "state": "observed",
+      "bytes": 5698,
+      "sha256": "1e27b1decad0273a3a495e7151be8ba22a03e131761ceeb93da065af1693cf46",
+      "mtime_ns": 1792810814208104042,
+      "expected_sha256": "1e27b1decad0273a3a495e7151be8ba22a03e131761ceeb93da065af1693cf46",
+      "matches_candidate": true
+    },
+    "templates/theme.css": {
+      "state": "observed",
+      "bytes": 223949,
+      "sha256": "29ec9caa2e2b8496a39ae2731eb228805bd28e8ad680bd7b0a549bbe3adc5f4e",
+      "mtime_ns": 1792658711530276061,
+      "expected_sha256": "29ec9caa2e2b8496a39ae2731eb228805bd28e8ad680bd7b0a549bbe3adc5f4e",
+      "matches_candidate": true
+    },
+    "engine/qledger_desk_adapter.py": {
+      "state": "observed",
+      "bytes": 33610,
+      "sha256": "55f7304d9c422992cb5710a95c118c16cfd78999b7bb51095e0951b9018c11c4",
+      "mtime_ns": 1792810814226103504,
+      "expected_sha256": "55f7304d9c422992cb5710a95c118c16cfd78999b7bb51095e0951b9018c11c4",
+      "matches_candidate": true
+    }
+  },
+  "installed_updater": {
+    "state": "observed",
+    "bytes": 152489,
+    "sha256": "a794619e68e8b90ea725dd335d38adf1ab6bf7f7d965d634a6c7442ce01ef684",
+    "mtime_ns": 1792810816587033039,
+    "matches_candidate": true
+  },
+  "admin_resources": {
+    "returncode": 0,
+    "stdout": "MemoryCurrent=27242496\nMemoryPeak=28909568\nMemoryMax=infinity"
+  },
+  "owner_artifacts": {
+    "data/qledger/run_status.json": {
+      "state": "observed",
+      "bytes": 877,
+      "sha256": "34382abc67a5a6fd403df587a8109b2fa229074c5c9bf22425e63e8b90f7c906",
+      "mtime_ns": 1792185729711960657
+    },
+    "site/qledger/track_record.json": {
+      "state": "observed",
+      "bytes": 280643,
+      "sha256": "971251182d1558171de784236fd0c22ffd6a2c06f6708cb4b02d417732c435e4",
+      "mtime_ns": 1792759695550207466
+    }
+  },
+  "scope": "Bounded file and process observations. Stable endpoints do not prove atomicity or served assets. Not API/render acceptance, market freshness, release permission or post-release update proof."
+}

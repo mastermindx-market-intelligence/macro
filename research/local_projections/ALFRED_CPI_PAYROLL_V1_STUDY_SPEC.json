@@ -1,0 +1,78 @@
+{
+  "schema": "f10.lp.research_study_spec/v1",
+  "id": "f10-lp-alfred-cpi-payroll-descriptive-v1",
+  "frozen_at": "2026-10-20T02:02:22.464482+00:00",
+  "source_commit": "d52827f26b062f67d594350a65becf406710d4d1",
+  "sources": [
+    {
+      "series": "CPIAUCSL",
+      "path": "data/fred_vintage/release_targets/CPIAUCSL_all_vintages.parquet",
+      "sha256": "eabad732825e9d6820774f067e8f86791cc3f64a6a81b655522af621c851f22c",
+      "bytes": 219151
+    },
+    {
+      "series": "PAYEMS",
+      "path": "data/fred_vintage/release_targets/PAYEMS_all_vintages.parquet",
+      "sha256": "572f0ebcbea40c98c90e6a1a100d38f5cbb3de15e9e436676bc3aa317785b98b",
+      "bytes": 410301
+    }
+  ],
+  "manifest_sha256": "76845980ec3e026be1e01f7b468656f24b2968567d4ccfcb36dc69d20df63206",
+  "cutoff": "2026-10-17T00:00:00+00:00",
+  "purpose": "Exercise existing LP native consumer on an authentic retained producer panel; descriptive research only. No hypothesis of profitable prediction or causal identification.",
+  "question": "What is the descriptive monthly payroll-log-level response associated with one percentage point of CPI month-on-month change, using vintage values known by each selected CPI vintage anchor?",
+  "periods": {
+    "start": "1998-01-01",
+    "end": "2026-09-01",
+    "cadence": "exactly one observation per calendar month; require full contiguous range, never condition selection on numeric outcomes"
+  },
+  "selection": "For each month choose earliest retained CPI vintage strictly after month-end and at most45 calendar days later; choose prior-month CPI and current-month PAYEMS latest vintages no later than this anchor. Reject missing/late/duplicate/invalid data rather than revise range or impute. Earliest retained vintage is not asserted to be the true first publication.",
+  "transform": {
+    "y": "natural log of selected payroll level",
+    "shock": "100*(log(selected CPI current period)-log(selected CPI prior period at same anchor))",
+    "period": "CPI anchor calendar date",
+    "known_at": "CPI anchor calendar date plus2days at00:00UTC; conservative bound on declared date-only availability, not invented exact intraday publication time"
+  },
+  "historical_clock_checks": "All selected component vintage dates <=anchor; anchor dates strictly increasing; preceding control-row availability bounds <=current bound; all bounds<=cutoff. No future/current-revised substitution. Source-supplied vintage clocks are not independent rights/availability certification.",
+  "estimator": "engine.local_projections.impulse_response unchanged; scripts/run_local_projections.py native CSV consumer",
+  "primary": {
+    "horizons": 3,
+    "lags": 4,
+    "embargo": 1,
+    "min_obs": 60
+  },
+  "robustness_family": [
+    {
+      "horizons": 3,
+      "lags": 2,
+      "embargo": 1,
+      "min_obs": 60
+    },
+    {
+      "horizons": 3,
+      "lags": 8,
+      "embargo": 1,
+      "min_obs": 60
+    }
+  ],
+  "multiplicity": "One honest family for all3 configurations; existing TrialLedger BEFORE each estimation; report total3 after all attempted. Existing BY adjustment covers4 dependent horizons within each run; search-count disclosure is not additional specification-search p-value correction. No selection of a best specification.",
+  "diagnostics": "Retain all raw envelopes including nulls and typed abstentions, effective N, HAC request/actual, BY panel q, threats and bias direction. No causal/forecast/model-utility acceptance from significance.",
+  "success_criterion": "Engineering: exact authentic input bytes consumed and registration retained before estimator, complete native run/readback under released source. Scientific: no promotion gate; report all outcomes without threshold-based winner selection.",
+  "threats": [
+    "Endogenous CPI/payroll common causes; association does not identify causal response",
+    "Monthly release-date approximation and conservative2day delay; no intraday forecast claim",
+    "Earliest retained-vintage availability can differ from original initial release; strict45day bound excludes archive-floor pseudo-first rows",
+    "Nonstationary payroll loglevels and macro regimes may confound LP coefficients;3 lag variants are sensitivity diagnostics, not validation",
+    "Partial source vintage coverage or selected values missing fails whole prerequisite instead of silently dropping months"
+  ],
+  "authority": {
+    "research_only": true,
+    "causal": false,
+    "forecast": false,
+    "signal": false,
+    "sizing": false,
+    "execution": false,
+    "publication": false
+  },
+  "estimation_state": "NOT_STARTED; metadata/hash/source contract only, numeric outcome values not inspected"
+}

@@ -1,0 +1,16 @@
+{
+  "observed_at": "2026-10-20T03:00:45.859920+00:00",
+  "reason": "Independent review clarified 5649 is total, seven is excess",
+  "index_before": "6d1ff5356914f5b854120b9db1045882c110fe1b",
+  "index_after": "1996dbf7a6b9f754c67ed5726bcd4d505482b80b",
+  "test_sha256_before": "2fb04148ba994aaebacead07f16b6dd6ca3818ff77ddb952f9d86ec48c6b1ca2",
+  "test_sha256_after": "7a717c84b2e3e758a016efc540d17f10b3f98f0c929a22b252bb98c0e5efc4ff",
+  "executable_ast_unchanged": true,
+  "patch_sha256": "42dec7c9a86bdd21ae12732213341cb77c763ee0a25174edc4dd2636e9ed169b",
+  "focused_test_receipt_sha256": "31f6814bcf7e455f9348b1db4789c4d8a252381e2b02c6e012d9b213581243a3",
+  "focused_test_result": "2 passed in 184.79s; pre-wording tree; executable AST and paths unchanged",
+  "storage_free_bytes": {
+    "worktree": 245135544320,
+    "temporary": 245135544320
+  }
+}

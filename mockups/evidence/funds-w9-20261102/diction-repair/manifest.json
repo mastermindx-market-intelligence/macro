@@ -1,0 +1,346 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "zh"
+    ],
+    "themes": [
+      "light"
+    ],
+    "viewports": {
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-11-03T01:49:30Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "mobile": {
+            "document_height_px": 10124,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 10124,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 0,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "mobile"
+        },
+        "panel_count": 50,
+        "payload_bytes_total": 1105442,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 15,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 704
+      },
+      "page_id": "macro:fund_index",
+      "registry_route": "/fund_index.html",
+      "route": "/fund_index.html",
+      "route_kind": "page",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 772229,
+          "captured": true,
+          "file": "evidence/7087f785bc4557ea.png",
+          "force_state": null,
+          "height": 10124,
+          "locale": "zh",
+          "sha256": "7087f785bc4557ea4bd5d9a83b674e9c2aaf3ec1b1611ceb4ee0812f4b578568",
+          "theme": "light",
+          "timing": {
+            "cls": 0.043175585732662024,
+            "inp_proxy_ms": null,
+            "lcp_ms": 2788,
+            "resource_count": 14,
+            "server_timing": [],
+            "transfer_bytes": 996849
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    },
+    {
+      "console_errors": [
+        {
+          "source_url": "https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/GOOGL.png",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        },
+        {
+          "source_url": "https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/GOOG.png",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        },
+        {
+          "source_url": "https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/DAL.png",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        },
+        {
+          "source_url": "https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/AAPL.png",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        },
+        {
+          "source_url": "https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/AXP.png",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        },
+        {
+          "source_url": "https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/KO.png",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        },
+        {
+          "source_url": "https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/BAC.png",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        },
+        {
+          "source_url": "https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/CVX.png",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        },
+        {
+          "source_url": "https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/OXY.png",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        },
+        {
+          "source_url": "https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/CB.png",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        }
+      ],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "mobile": {
+            "document_height_px": 5611,
+            "elements_wider_than_viewport": 68,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 5611,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 68,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 5,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "mobile"
+        },
+        "panel_count": 5,
+        "payload_bytes_total": 495807,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 25,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 1076
+      },
+      "page_id": "macro:fund_berkshire",
+      "registry_route": "/fund_berkshire.html",
+      "route": "/fund_berkshire.html",
+      "route_kind": "page",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 574486,
+          "captured": true,
+          "file": "evidence/0f1edb3cf557e020.png",
+          "force_state": null,
+          "height": 5611,
+          "locale": "zh",
+          "sha256": "0f1edb3cf557e020d4a5866071009fc25a2079bc0b28c4dd594f9a243db61133",
+          "theme": "light",
+          "timing": {
+            "cls": 5.9046429544340645e-06,
+            "inp_proxy_ms": null,
+            "lcp_ms": 128,
+            "resource_count": 24,
+            "server_timing": [],
+            "transfer_bytes": 996849
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/fund_index.html",
+      "/fund_berkshire.html"
+    ],
+    "max_pages": 30,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "/Volumes/Mastermind/evidence/funds-w9-20261102/page-registry.json",
+    "registry_rows": 348,
+    "repo": null,
+    "selected": 2
+  },
+  "target": {
+    "base_url": "http://127.0.0.1:61759",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "unavailable: a live origin does not disclose the commit it is serving",
+    "site_dir": null
+  },
+  "timing_basis": "lab",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.4.0"
+  },
+  "totals": {
+    "pages": 2,
+    "states_attempted": 2,
+    "states_captured": 2
+  }
+}

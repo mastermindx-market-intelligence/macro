@@ -1,0 +1,23 @@
+{
+  "clock": "2026-10-16T01:25:48.578749+00:00",
+  "scope": "Real live UI CSV/JSON export, existing signed-in administrator; not hostile injected-source acceptance",
+  "state": "MATCHING_12_RECORD_EXPORTS_WITH_BASIS_GAP",
+  "bundle": "grw2-b6f34ff433e4b0c0450f4fa5",
+  "query": {
+    "filters": {
+      "mode": "changes",
+      "truth": "all",
+      "q": "N0002418C2305",
+      "agency": "",
+      "ticker": ""
+    },
+    "result_scope": "current visible governed workspace cut"
+  },
+  "json_csv_record_ids_match": true,
+  "authority_limits_preserved": true,
+  "sha256": {
+    "government-revenue-2026-10-15-grw2-b6f34ff433e4b0c0450f4fa5-view.json": "d97ddf204503d29fc1387b4b63cdb5e0f5964b757af20f3395c367e43377f0f3",
+    "government-revenue-2026-10-15-grw2-b6f34ff433e4b0c0450f4fa5-view.csv": "fc65c9e3434e89439797a73d13687d8515bc62d73851386dd285d046b151eccc"
+  },
+  "demonstrated_gap": "CSV omits selected amount currency/provenance; JSON amount allowlist drops native as_of. Prepared local repair preserves them without synthesizing facts."
+}

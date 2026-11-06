@@ -308,3 +308,173 @@ def test_a_node_gap_is_located_by_step_number_not_by_slug(tmp_path):
     assert "oil_shock" not in gaps[0]["where_label"]["en"]
     assert "ghost" not in gaps[1]["where_label"]["en"]
     assert "ghost" not in gaps[1]["where_label"]["zh"]
+
+
+# Private X4 projection uses native identity, never ticker equality or new stores.
+def _portfolio_inputs():
+    from lib.dataos.identity import VendorAliasTable
+    request = {'schema': 'ontology_portfolio_request.v1', 'chain': 'oil_inflation_duration_derate',
+               'source_manifest_hash': 'sha256:' + '1' * 64,
+               'symbols': ['NEW', 'REUSED', 'OTHER', 'MISSING']}
+    snapshot = {
+        'source': {'chain': 'oil_inflation_duration_derate', 'source_manifest_hash': request['source_manifest_hash'], 'reads': []},
+        'company_exposure': {'status': 'available', 'reason': None, 'asof': '2026-01-02',
+                             'identity_source': {'sha256': '2' * 64}},
+        'exposure_screens': [{'id': 'synthetic_screen', 'status': 'available', 'companies': {
+            'linked': [{'symbol': 'OLD', 'security_id': 'SEC:US-XNYS-OLD'},
+                       {'symbol': 'REUSED', 'security_id': 'SEC:US-XNYS-REUSED'}],
+            'unlinked': [], 'identity_unavailable': False}}],
+    }
+    aliases = VendorAliasTable.from_records([
+        {'vendor': 'store', 'vendor_symbol': 'OLD', 'security_id': 'SEC:US-XNYS-OLD',
+         'valid_from': None, 'valid_to': '2026-02-01'},
+        {'vendor': 'store', 'vendor_symbol': 'NEW', 'security_id': 'SEC:US-XNYS-OLD',
+         'valid_from': '2026-02-01', 'valid_to': None},
+        {'vendor': 'store', 'vendor_symbol': 'REUSED', 'security_id': 'SEC:US-XNYS-REUSED',
+         'valid_from': None, 'valid_to': '2026-02-01'},
+        {'vendor': 'store', 'vendor_symbol': 'REUSED', 'security_id': 'SEC:US-XNYS-REUSED.2',
+         'valid_from': '2026-02-01', 'valid_to': None},
+        {'vendor': 'store', 'vendor_symbol': 'OTHER', 'security_id': 'SEC:CA-XTSE-OTHER',
+         'valid_from': None, 'valid_to': None},
+    ])
+    return request, snapshot, aliases
+
+
+def _portfolio_project(request=None, snapshot=None, aliases=None):
+    from datetime import date
+    from engine.ontology_portfolio import project_portfolio_read
+    default_request, default_snapshot, default_aliases = _portfolio_inputs()
+    return project_portfolio_read(request or default_request,
+        snapshot=snapshot or default_snapshot, aliases=aliases or default_aliases,
+        identity_date=date(2026, 10, 19))
+
+
+def test_portfolio_membership_survives_rename_but_never_ticker_reuse():
+    out = _portfolio_project()
+    assert out['rows'][0]['state'] == 'covered'
+    assert out['rows'][0]['security_id'] == 'SEC:US-XNYS-OLD'
+    assert out['rows'][0]['channels'] == ['synthetic_screen']
+    assert out['rows'][1]['state'] == 'not_in_available_screens'
+    assert out['rows'][1]['security_id'] == 'SEC:US-XNYS-REUSED.2'
+    assert out['rows'][2]['currency'] == 'CAD'
+    assert out['rows'][3]['state'] == 'identity_unresolved'
+    assert out['counts'] == {'covered': 1, 'not_in_available_screens': 2,
+                             'identity_unresolved': 1, 'membership_unavailable': 0}
+    assert out['pnl'] is None
+    assert not any(out['authority'].values())
+
+
+def test_portfolio_does_not_mutate_snapshot_or_carry_private_sizes():
+    request, snapshot, aliases = _portfolio_inputs()
+    before = json.dumps(snapshot, sort_keys=True)
+    out = _portfolio_project(request, snapshot, aliases)
+    assert before == json.dumps(snapshot, sort_keys=True)
+    assert not any(k in json.dumps(out) for k in ('shares', 'entry_price', 'notes', 'weights'))
+
+
+def test_portfolio_partial_native_screen_coverage_remains_visible():
+    request, snapshot, aliases = _portfolio_inputs()
+    snapshot['exposure_screens'].append({'id': 'unavailable', 'status': 'unavailable'})
+    snapshot['exposure_screens'][0]['companies']['unlinked'] = [{'symbol': 'UNMAPPED'}]
+    out = _portfolio_project(request, snapshot, aliases)
+    assert out['unresolved_channels'] == ['synthetic_screen', 'unavailable']
+    assert out['rows'][0]['state'] == 'covered'
+
+
+def test_portfolio_absent_membership_never_claims_no_exposure():
+    request, snapshot, aliases = _portfolio_inputs()
+    snapshot['exposure_screens'] = []
+    snapshot['company_exposure'].update(status='unavailable', reason='chain_inactive')
+    out = _portfolio_project(request, snapshot, aliases)
+    assert out['counts']['membership_unavailable'] == 3
+    assert out['counts']['not_in_available_screens'] == 0
+    assert out['membership_reason'] == 'chain_inactive'
+
+
+def test_portfolio_alias_source_absent_keeps_every_requested_row_unknown():
+    from datetime import date
+    from engine.ontology_portfolio import project_portfolio_read
+    request, snapshot, _ = _portfolio_inputs()
+    out = project_portfolio_read(request, snapshot=snapshot, aliases=None, identity_date=date(2026,10,19))
+    assert out['counts']['identity_unresolved'] == 4
+    assert len(out['rows']) == 4
+
+
+@pytest.mark.parametrize('mutation', [
+    lambda r: r.update(shares=[100]), lambda r: r.update(symbols=['NEW', 'NEW']),
+    lambda r: r.update(symbols=['private secret\n']), lambda r: r.update(symbols=['NEW']*501),
+    lambda r: r.update(chain='../../outside'), lambda r: r.update(source_manifest_hash='unknown'),
+])
+def test_portfolio_private_request_is_closed_and_bounded(mutation):
+    from engine.ontology_portfolio import parse_request, PortfolioInputError
+    request, _, _ = _portfolio_inputs()
+    mutation(request)
+    with pytest.raises(PortfolioInputError, match='^invalid_request$'):
+        parse_request(json.dumps(request).encode())
+
+
+def test_portfolio_private_request_rejects_duplicate_keys_and_oversize():
+    from engine.ontology_portfolio import parse_request, PortfolioInputError
+    for raw in [b'{"symbols":[],"symbols":[]}', b' ' * 65537, b'\xff']:
+        with pytest.raises(PortfolioInputError, match='^invalid_request$'):
+            parse_request(raw)
+
+
+def test_portfolio_refuses_changed_selection_instead_of_refreshing_silently():
+    from engine.ontology_portfolio import PortfolioInputError
+    request, snapshot, aliases = _portfolio_inputs()
+    snapshot['source']['source_manifest_hash'] = 'sha256:' + '3' * 64
+    with pytest.raises(PortfolioInputError, match='^snapshot_changed$'):
+        _portfolio_project(request, snapshot, aliases)
+
+
+def test_portfolio_wrapper_rechecks_selected_sources_after_projection(tmp_path, monkeypatch):
+    from datetime import UTC, datetime
+    from engine import ontology_portfolio as portfolio
+    from engine import ontology_explorer as explorer
+    request, snapshot, _ = _portfolio_inputs()
+    owner = tmp_path / 'owner.json'; owner.write_bytes(b'original')
+    snapshot['source']['reads'] = [{'path':'owner.json', 'sha256':hashlib.sha256(b'original').hexdigest()}]
+    snapshot['company_exposure']['identity_source'] = {'status': 'unavailable', 'sha256': None}
+    monkeypatch.setattr(explorer, 'compose_snapshot', lambda *a, **k: snapshot)
+    original = portfolio.project_portfolio_read
+    def changed(*a, **k):
+        out = original(*a, **k); owner.write_bytes(b'changed'); return out
+    monkeypatch.setattr(portfolio, 'project_portfolio_read', changed)
+    with pytest.raises(explorer.SourceIncoherent, match='selected_source_changed'):
+        portfolio.compose_portfolio_read(tmp_path, request, now=datetime(2026,10,19,tzinfo=UTC))
+
+
+def test_portfolio_composes_real_selected_owner_and_alias_bytes_without_recomputation(tmp_path, monkeypatch):
+    from datetime import UTC, datetime
+    import pandas as pd
+    from engine import ontology_explorer as explorer
+    from engine.ontology_portfolio import compose_portfolio_read
+    import engine.transmission_chains as owner
+    from tests.test_ontology_explorer_contract import _exposure_root
+    root=_exposure_root(tmp_path)
+    # Preserve synthetic values, but bind the one product chain accepted by this reader.
+    import yaml
+    definition=yaml.safe_load((root/'knowledge/transmission'/f'{fx.SLUG}.yaml').read_text())
+    definition['chain']=explorer.DEFAULT_CHAIN
+    state=json.loads((root/'data/transmission/chain_state.json').read_text())
+    state['chains'][0]['chain']=explorer.DEFAULT_CHAIN
+    root=fx.build_root(root,yaml_doc=definition,state_doc=state,slug=explorer.DEFAULT_CHAIN)
+    path=root/'data/reference/vendor_aliases.parquet';path.parent.mkdir(parents=True,exist_ok=True)
+    pd.DataFrame([{'vendor':'store','vendor_symbol':'SYNA','security_id':'SEC:US-XNAS-SYNA',
+      'valid_from':None,'valid_to':None}]).to_parquet(path,index=False)
+    now=datetime(2026,1,4,tzinfo=UTC)
+    snapshot=explorer.compose_snapshot(root,chain=explorer.DEFAULT_CHAIN,now=now)
+    before={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    def forbidden(*args,**kwargs):raise AssertionError('cannot recompute owner screen')
+    monkeypatch.setattr(owner,'resolve_blast',forbidden)
+    out=compose_portfolio_read(root,{'schema':'ontology_portfolio_request.v1','chain':explorer.DEFAULT_CHAIN,
+      'source_manifest_hash':snapshot['source']['source_manifest_hash'],'symbols':['SYNA','SYNB']},now=now)
+    assert out['rows'][0]['security_id']=='SEC:US-XNAS-SYNA'
+    assert out['rows'][0]['channels']==['synthetic_screen']
+    assert out['rows'][0]['currency']=='USD'
+    assert out['rows'][1]['state']=='identity_unresolved'
+    assert out['unresolved_channels']==['synthetic_screen']
+    assert out['identity_source_sha256']==hashlib.sha256(path.read_bytes()).hexdigest()
+    assert out['membership_asof']=='2026-01-02' and out['identity_valid_on']=='2026-01-04'
+    assert before=={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}

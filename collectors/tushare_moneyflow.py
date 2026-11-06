@@ -26,6 +26,8 @@ import logging
 
 import pandas as pd
 
+from lib.market_observations import provider_date_matches, snapshot_rejection_reason
+
 from lib import config
 from collectors import _drip
 from collectors import tushare_client as tc
@@ -71,9 +73,11 @@ def refresh() -> int:
     if not tc.enabled():
         return 0
     today = pd.Timestamp.utcnow().strftime("%Y-%m-%d")
+    previous = None
     if OUT.exists():
         try:
-            if str(pd.read_parquet(OUT, columns=["asof"])["asof"].max()) >= today:
+            previous = pd.read_parquet(OUT)
+            if "asof" in previous and str(previous["asof"].max()) >= today:
                 return 0
         except Exception:  # noqa: BLE001
             pass
@@ -89,6 +93,9 @@ def refresh() -> int:
                     "warning above for the vendor code (40101=bad/rotated token, "
                     "40203=rate-limit/entitlement).", OUT.name, _committed_through())
         return 0
+    if not provider_date_matches(df, trade_date):
+        log.warning("%s: provider trade_date disagrees with query date; last-good snapshot retained", OUT.name)
+        return 0
     _num_cols(df, ["pct_change", "close", "net_amount", "net_amount_rate",
                    "buy_elg_amount", "buy_elg_amount_rate", "buy_lg_amount", "buy_lg_amount_rate"])
     df["ticker"] = df["ts_code"]
@@ -100,6 +107,10 @@ def refresh() -> int:
     keep = ["ticker", "name", "close", "pct_change", "net_amount", "net_amount_rate",
             "main_net", "main_net_rate", "trade_date", "asof"]
     out = df[[c for c in keep if c in df.columns]].dropna(subset=["ticker"])
+    reason = snapshot_rejection_reason(out, previous, "CN", value_cols=('net_amount', 'net_amount_rate', 'close'))
+    if reason:
+        log.warning("%s: %s; last-good snapshot retained", OUT.name, reason)
+        return 0
     OUT.parent.mkdir(parents=True, exist_ok=True)
     out.to_parquet(OUT, index=False)
     log.info("tushare moneyflow: wrote %s (%d names, %s)", OUT, len(out), trade_date)
@@ -114,6 +125,8 @@ def refresh() -> int:
     try:
         sdf, sdate = tc.snapshot_by_date("moneyflow_ind_dc", fields=_FIELDS_IND)
         if sdf is not None and len(sdf):
+            if not provider_date_matches(sdf, sdate):
+                raise ValueError("sector provider trade_date disagrees with query date; last-good retained")
             _num_cols(sdf, ["net_amount", "net_amount_rate", "rank"])
             sdf = sdf.rename(columns={"ts_code": "sector_code"})
             sdf["trade_date"] = sdate
@@ -121,6 +134,12 @@ def refresh() -> int:
             skeep = ["sector_code", "name", "net_amount", "net_amount_rate",
                      "content_type", "rank", "trade_date", "asof"]
             sout = sdf[[c for c in skeep if c in sdf.columns]]
+            prior_sector = pd.read_parquet(OUT_SECTOR) if OUT_SECTOR.exists() else None
+            reason = snapshot_rejection_reason(
+                sout, prior_sector, "CN", identity_col="sector_code",
+                value_cols=("net_amount", "net_amount_rate"))
+            if reason:
+                raise ValueError(f"sector {reason}; last-good snapshot retained")
             sout.to_parquet(OUT_SECTOR, index=False)
             log.info("tushare moneyflow sector: wrote %s (%d boards)", OUT_SECTOR, len(sout))
             # Append to the PIT sector history (additive).

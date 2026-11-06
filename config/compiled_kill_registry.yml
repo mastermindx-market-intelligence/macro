@@ -650,6 +650,13 @@ entries:
     section: 2
     section_name: killed_signal_families
 
+  - topic: 'Mastermind trend-persistence Wave C group persistence: the eleven-GICS-sector, as-of-now-labelled constructions of `research/TREND_PERSISTENCE_PREREG_C1.md` §4 (seven group features — sector relative strength 60/120, RS consistency 120, participation 50, 20-day hit rate, leader retention 60x60, coherence 60 — in rank-linear form against relative-to-SPY forward return at 20 and 60 sessions) as a carried hypothesis, a C2 confirmation read, a constants block, or any built field'
+    key: KILL-TREND-PERSISTENCE-SECTOR-GROUP-PERSISTENCE
+    verdict: 'C1-NULL (pre-registered Wave C development pass, run once 2026-10-05T00:06Z at Mastermind master 1644ace945a8) — three cells scored, none met the five carry conditions; against the gating baseline B* (a member''s own trailing returns and volatility) the group features move the fit −0.0024 at h20 (one-sided p 0.67, 1/5 blocks) and +0.0019 at h60 (p 0.32, 3/5 blocks); no cell carries, n_read is null, no C2 read is ever made. Closes these constructions on this universe and these horizons only: GICS industry-group/industry, basket and dynamic-theme constructions are untested — revive ONLY under a NEW pre-registration document (never an edit of the C1 text) gated on formation dates after it merges (2022-07-06..2026-06-02 have now been scored three times: V2, B2, C1)'
+    source: 'Mastermind `research/data/trend_persistence_c1_result.json` + `_c1_attempt.json` (Mastermind PR 1252; instrument PR 1230) + `DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-C`'
+    section: 2
+    section_name: killed_signal_families
+
   - topic: 'Ticker-cluster bootstrap CIs without time control'
     key: LAW-TIME-CLUSTERED-CI
     verdict: 'FORBIDDEN estimator — anti-conservative, effective N = months'

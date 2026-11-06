@@ -1,0 +1,6 @@
+outcome: captured
+pages: 1  states: 24/24 captured
+manifest: /Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/v15-main-integration/browser-matrix/mockups/evidence/defense-final-local/manifest.json
+smells: /Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/v15-main-integration/browser-matrix/mockups/evidence/defense-final-local/smells.json
+Source-bound ASGI matrix saved /Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/v15-main-integration/browser-matrix/mockups/evidence/defense-final-local
+{"capture_exit": 0, "server_stopped": 0, "journal_saved": true}

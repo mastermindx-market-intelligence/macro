@@ -18,6 +18,9 @@ All events are CONTEXT — see LIMITATIONS.md.
 from __future__ import annotations
 
 import json
+import hashlib
+import math
+import numbers
 import logging
 from datetime import datetime, timezone
 
@@ -273,11 +276,56 @@ _REGIME_ZONE_ZH = {
 }
 
 
+
+def _smile_transitions(state: pd.Series):
+    previous = None
+    out = []
+    for ts, value in state.items():
+        if pd.isna(value):
+            previous = None
+            continue
+        if previous is not None and value != previous:
+            out.append((ts, previous, value))
+        previous = value
+    return out
+
+
+def qualified_current_events(events: list[dict], dollar: pd.DataFrame | None) -> dict:
+    """Qualify the current display without deleting or rewriting event history.
+
+    Legacy smile events no longer reproduced within current covered history are
+    retained in the ledger but withheld from the current-change presentation.
+    This projection creates no new event or notification IDs.
+    """
+    families = {"smile_regime", "smile_regime_flip"}
+    valid = {e["id"] for e in dollar_events(dollar) + desk_smile_regime_events(dollar)}
+    visible, withheld = [], []
+    for event in events:
+        if event.get("type") in families:
+            if dollar is None or dollar.empty:
+                withheld.append({"id": event.get("id"), "reason": "dollar_evidence_unavailable"})
+                continue
+            try:
+                ts = pd.Timestamp(event.get("ts"))
+                ts = ts.tz_localize(None) if ts.tzinfo else ts
+                first, last = pd.Timestamp(dollar.index.min()), pd.Timestamp(dollar.index.max())
+                first = first.tz_localize(None) if first.tzinfo else first
+                last = last.tz_localize(None) if last.tzinfo else last
+                covered = first.date() <= ts.date() <= last.date()
+            except (TypeError, ValueError):
+                covered = True
+            if not covered or event.get("id") not in valid:
+                withheld.append({"id": event.get("id"), "reason": "outside_qualified_dollar_coverage" if not covered else "not_reproduced_by_qualified_smile_history"})
+                continue
+        visible.append(event)
+    return {"events": visible, "withheld": withheld, "history_modified": False}
+
+
 def dollar_events(dollar: pd.DataFrame | None) -> list[dict]:
     if dollar is None or dollar.empty or "smile_regime" not in dollar.columns:
         return []
     out = []
-    for ts, frm, to in _transitions(dollar["smile_regime"]):
+    for ts, frm, to in _smile_transitions(dollar["smile_regime"]):
         zone_en = _REGIME_ZONE_EN.get(to, to)
         zone_zh = _REGIME_ZONE_ZH.get(to, _z(to))
         out.append(_ev(None, "smile_regime", ts, "high",
@@ -300,7 +348,7 @@ def desk_smile_regime_events(dollar: pd.DataFrame | None) -> list[dict]:
     if dollar is None or dollar.empty or "smile_regime" not in dollar.columns:
         return []
     out = []
-    for ts, frm, to in _transitions(dollar["smile_regime"]):
+    for ts, frm, to in _smile_transitions(dollar["smile_regime"]):
         out.append(_ev(None, "smile_regime_flip", ts, "high",
                        f"Dollar smile flipped: {frm} → {to}",
                        f"The dollar-smile decomposition regime changed: {frm} → {to}. "
@@ -589,3 +637,132 @@ def rebuild(results: dict, desk: dict | None = None, regime: dict | None = None,
 def recent(events: list[dict], days: int) -> list[dict]:
     cutoff = (datetime.now(timezone.utc) - pd.Timedelta(days=days)).isoformat()
     return [e for e in events if e["ts"] >= cutoff]
+
+
+def evaluate_price_condition(rule: dict, bars: list[dict], *, now: str) -> dict:
+    """Pure finalized-bar evaluation for the existing watch/alert owner.
+
+    Supports contiguous UTC four-hour slots only: 00/04/08/12/16/20 UTC.
+    A market closure or session convention requiring skipped slots must withhold
+    until its adapter contract is qualified. No calendar inference, fetching,
+    aggregation, correction resolution, persistence or activation occurs here.
+    Input feed assertions require qualification by the calling source owner.
+    """
+    def clock(v):
+        if not isinstance(v, str):
+            return None
+        try:
+            t = pd.Timestamp(v)
+            return t.tz_convert("UTC") if pd.notna(t) and t.tzinfo else None
+        except (ValueError, TypeError, OverflowError):
+            return None
+
+    def numeric(v):
+        return isinstance(v, numbers.Real) and not isinstance(v, bool) and math.isfinite(float(v))
+
+    def identifier(v):
+        return isinstance(v, str) and bool(v.strip())
+
+    def revision(v):
+        return isinstance(v, int) and not isinstance(v, bool) and v > 0
+
+    def safe_json(v):
+        # Invalid numbers stay unknown, never zero. Their rejection reason is
+        # retained outside this strict-JSON evidence projection.
+        if v is None or isinstance(v, (str, bool)):
+            return v
+        if isinstance(v, numbers.Real):
+            return v if isinstance(v, (int, float)) and math.isfinite(float(v)) else float(v) if math.isfinite(float(v)) else None
+        if isinstance(v, dict):
+            return {str(k): safe_json(value) for k, value in v.items()}
+        if isinstance(v, (list, tuple)):
+            return [safe_json(value) for value in v]
+        return None
+
+    reasons, selected, observations = [], [], []
+    if not isinstance(rule, dict):
+        reasons.append("invalid_rule_shape")
+        rule = {}
+    if not isinstance(bars, list) or any(not isinstance(bar, dict) for bar in bars):
+        reasons.append("invalid_observation_window")
+        bars = []
+    count, threshold, operator = rule.get("consecutive"), rule.get("threshold"), rule.get("operator")
+    current, expiry = clock(now), clock(rule.get("expires_at"))
+    if rule.get("kind") != "price_close":
+        reasons.append("unsupported_condition_kind")
+    if not identifier(rule.get("condition_id")) or not revision(rule.get("revision")):
+        reasons.append("missing_or_invalid_rule_identity")
+    if not isinstance(count, int) or isinstance(count, bool) or not 1 <= count <= 10:
+        reasons.append("invalid_sequence_length")
+    if not numeric(threshold) or threshold <= 0 or not isinstance(operator, str) or operator not in {"lt", "gt", "lte", "gte"}:
+        reasons.append("invalid_price_rule")
+    if not all(identifier(rule.get(k)) for k in ("pair", "feed", "interval", "calendar")):
+        reasons.append("missing_quote_convention")
+    if rule.get("interval") != "4H" or rule.get("calendar") != "fx-utc-4h/v1":
+        reasons.append("unsupported_interval_or_calendar")
+    if current is None or expiry is None:
+        reasons.append("unknown_evaluation_clock_or_expiry")
+    elif current >= expiry:
+        reasons.append("condition_expired")
+
+    # Inspect the FULL supplied window before tail selection. An earlier supplied
+    # correction must not disappear merely because a stale copy arrived later.
+    seen_ids, seen_ends = set(), set()
+    for bar in bars:
+        identity = bar.get("observation_id")
+        end = clock(bar.get("bar_end"))
+        if not identifier(identity) or identity in seen_ids:
+            reasons.append("missing_or_duplicate_observation_identity")
+        else:
+            seen_ids.add(identity)
+        if end is not None:
+            if end in seen_ends:
+                reasons.append("ambiguous_bar_revision_or_identity")
+            seen_ends.add(end)
+    if isinstance(count, int) and not isinstance(count, bool) and 1 <= count <= 10:
+        selected = bars[-count:]
+        if len(selected) != count:
+            reasons.append("insufficient_finalized_observations")
+        for bar in selected:
+            if bar.get("status") != "final" or bar.get("quote_basis") != "literal":
+                reasons.append("nonfinal_or_synthetic_bar")
+            if any(bar.get(k) != rule.get(k) for k in ("pair", "feed", "interval", "calendar")):
+                reasons.append("observation_convention_mismatch")
+            if not numeric(bar.get("close")) or bar.get("close", 0) <= 0:
+                reasons.append("invalid_close")
+            end, available = clock(bar.get("bar_end")), clock(bar.get("available_at"))
+            if end is None or available is None or current is None or end > available or available > current:
+                reasons.append("ineligible_observation_clock")
+            if end is not None and (end.hour % 4 or end.minute or end.second or end.microsecond or end.nanosecond):
+                reasons.append("invalid_4h_slot_boundary")
+            sequence = bar.get("bar_sequence")
+            if not isinstance(sequence, int) or isinstance(sequence, bool):
+                reasons.append("missing_calendar_sequence")
+            if not revision(bar.get("revision")):
+                reasons.append("missing_observation_revision")
+            observations.append({k: bar.get(k) for k in ("observation_id", "revision", "bar_end", "bar_sequence", "close")})
+        if selected:
+            valid_until = clock(selected[-1].get("expires_at"))
+            if current is None or valid_until is None or current >= valid_until:
+                reasons.append("latest_observation_stale_or_unknown")
+        if not reasons:
+            for a, b in zip(selected, selected[1:]):
+                if b["bar_sequence"] != a["bar_sequence"] + 1:
+                    reasons.append("sequence_unresolved")
+                if clock(b["bar_end"]) - clock(a["bar_end"]) != pd.Timedelta(hours=4):
+                    reasons.append("unsupported_or_nonconsecutive_4h_slots")
+    outcome = "withheld"
+    if not reasons:
+        compare = {"lt": lambda v: v < threshold, "gt": lambda v: v > threshold,
+                   "lte": lambda v: v <= threshold, "gte": lambda v: v >= threshold}[operator]
+        outcome = "met" if all(compare(b["close"]) for b in selected) else "not_met"
+    input_fields = ("observation_id", "revision", "pair", "feed", "interval", "calendar", "quote_basis", "status", "bar_end", "available_at", "expires_at", "bar_sequence", "close")
+    evidence = safe_json({"condition_id": rule.get("condition_id"), "rule_revision": rule.get("revision"),
+                "rule": rule, "outcome": outcome, "withheld_reasons": sorted(set(reasons)),
+                "observations": observations,
+                "supplied_observations": [{k: b.get(k) for k in input_fields} for b in bars],
+                "evaluator_version": "forex.final-close.v1"})
+    canonical = json.dumps(evidence, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return {**evidence, "evaluation_id": hashlib.sha256(canonical.encode()).hexdigest(),
+            "evaluated_at": safe_json(now), "authority": "condition_observation_only",
+            "forecast_probability": None, "activation": "not_performed"}

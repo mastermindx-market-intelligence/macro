@@ -1,0 +1,6 @@
+# Current-year FDA reference coverage, inclusive through the current UTC date.
+# This is not a historical backfill or a real-time regulatory notification feed.
+# The start date is fixed deliberately; changing coverage is an operator choice.
+# The mandatory /etc/macro-medtech.env must be root:root 0600 and contain only
+# this one assignment plus comments. No credentials belong in this file.
+MEDTECH_START_ON=2026-01-01

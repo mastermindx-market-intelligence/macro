@@ -1,0 +1,194 @@
+{
+  "at": "2026-10-14T10:51:14.924Z",
+  "chartCanvases": [
+    {
+      "bottom": 654,
+      "height": 556,
+      "top": 98,
+      "width": 904,
+      "x": 112,
+      "y": 98
+    },
+    {
+      "bottom": 654,
+      "height": 556,
+      "top": 98,
+      "width": 904,
+      "x": 112,
+      "y": 98
+    },
+    {
+      "bottom": 654,
+      "height": 556,
+      "top": 98,
+      "width": 62,
+      "x": 1016,
+      "y": 98
+    },
+    {
+      "bottom": 654,
+      "height": 556,
+      "top": 98,
+      "width": 62,
+      "x": 1016,
+      "y": 98
+    },
+    {
+      "bottom": 818,
+      "height": 163,
+      "top": 655,
+      "width": 904,
+      "x": 112,
+      "y": 655
+    },
+    {
+      "bottom": 818,
+      "height": 163,
+      "top": 655,
+      "width": 904,
+      "x": 112,
+      "y": 655
+    },
+    {
+      "bottom": 818,
+      "height": 163,
+      "top": 655,
+      "width": 62,
+      "x": 1016,
+      "y": 655
+    },
+    {
+      "bottom": 818,
+      "height": 163,
+      "top": 655,
+      "width": 62,
+      "x": 1016,
+      "y": 655
+    },
+    {
+      "bottom": 846,
+      "height": 28,
+      "top": 818,
+      "width": 904,
+      "x": 112,
+      "y": 818
+    },
+    {
+      "bottom": 846,
+      "height": 28,
+      "top": 818,
+      "width": 904,
+      "x": 112,
+      "y": 818
+    },
+    {
+      "bottom": 846,
+      "height": 28,
+      "top": 818,
+      "width": 62,
+      "x": 1016,
+      "y": 818
+    }
+  ],
+  "detent": null,
+  "documentScrollTop": 0,
+  "evidenceBoundary": "DOM and rendered browser state only; no private chart state, ownership census or injected production hooks",
+  "gridScroll": {
+    "height": 318,
+    "left": 0,
+    "top": 1386,
+    "width": 316
+  },
+  "horizontalOverflow": false,
+  "panel": {
+    "attributes": [
+      [
+        "data-options-companion",
+        "true"
+      ],
+      [
+        "data-options-host",
+        "rail"
+      ],
+      [
+        "data-options-root",
+        "SPY"
+      ]
+    ],
+    "host": "rail",
+    "rect": {
+      "bottom": 872,
+      "height": 818,
+      "top": 54,
+      "width": 360,
+      "x": 1080,
+      "y": 54
+    },
+    "root": "SPY",
+    "session": null,
+    "visible": true
+  },
+  "returnChip": null,
+  "scope": "范围与显示⌄3 到期日 · ±6% · 全局尺度",
+  "scrolledPanelAncestors": [
+    {
+      "class": "OptionsCompanion-module__oh6_ja__view",
+      "left": 0,
+      "tag": "DIV",
+      "top": 157
+    }
+  ],
+  "selected": {
+    "buttons": [
+      {
+        "disabled": false,
+        "label": null,
+        "pressed": "false",
+        "text": "在图表标记行权价",
+        "visible": true
+      },
+      {
+        "disabled": false,
+        "label": null,
+        "pressed": null,
+        "text": "查看节点",
+        "visible": true
+      }
+    ],
+    "rect": {
+      "bottom": 566.140625,
+      "height": 72,
+      "top": 494.140625,
+      "width": 327,
+      "x": 1092,
+      "y": 494.140625
+    },
+    "text": "778 · 2026-10-12 · −2.86B在图表标记行权价查看节点"
+  },
+  "selectedCells": [
+    {
+      "label": "778, 2026-10-12: −2.86B 美元 / 现价上涨1%",
+      "rect": {
+        "bottom": 373.421875,
+        "height": 32,
+        "top": 341.421875,
+        "width": 83.328125,
+        "x": 1156.984375,
+        "y": 341.421875
+      },
+      "value": "-2858.088963"
+    }
+  ],
+  "selectedChartType": [
+    "蜡烛图✓"
+  ],
+  "servedDeployments": [
+    "f3f5d90df6d3b08227389dbeb512018697f2e634"
+  ],
+  "session": "收盘快照2026-10-12↻数据来源热力图生成时间2026-10-13T23:00:09.564118+00:00收盘价格2026-10-12期权希腊值2026-10-12持仓量发布日2026-10-12上一持仓量发布日2026-10-09最新持仓量发布日2026-10-13现价时间不可用",
+  "url": "https://app.mastermind-x.com/terminal?symbol=SPY",
+  "viewport": {
+    "height": 900,
+    "width": 1440
+  }
+}

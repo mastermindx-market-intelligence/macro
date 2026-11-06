@@ -65,13 +65,28 @@ on:
     inputs:
       emit:
         description: >-
-          Publish the passing staged drafts. FALSE (the default) runs staging
-          only: it writes drafts + validator reports to data/press/staging/,
-          uploads them as an artifact, and commits nothing. Set true only after
-          reading a staging artifact.
+          Publish exactly one committed reviewed bundle (promotion_bundle,
+          promotion_slot and promotion_sha256 required). No generation occurs
+          during promotion. FALSE (the default) stages and uploads evidence only;
+          without a bundle it runs the normal planner/writer.
         required: false
         type: boolean
         default: false
+      promotion_bundle:
+        description: >-
+          Optional repository-owned research/agentic_media/press_reviewed/*.json
+          bundle. Imports exact reviewed bytes without generation. Commit through
+          the protected release path first; supply its slot and SHA256 below.
+        required: false
+        default: ""
+      promotion_slot:
+        description: "Exact reviewed slot ID; required with promotion_bundle."
+        required: false
+        default: ""
+      promotion_sha256:
+        description: "SHA256 of the committed reviewed bundle; required with promotion_bundle."
+        required: false
+        default: ""
       desks:
         description: >-
           Comma-separated desk names to run (brief, research_desk). Blank runs
@@ -115,6 +130,10 @@ jobs:
       passed: ${{ steps.stage.outputs.passed }}
     env:
       PRESS_PUBLISH_ENABLED: ${{ vars.PRESS_PUBLISH_ENABLED }}
+      PRESS_REQUEST_EMIT: ${{ inputs.emit }}
+      PRESS_PROMOTION_BUNDLE: ${{ inputs.promotion_bundle }}
+      PRESS_PROMOTION_SLOT: ${{ inputs.promotion_slot }}
+      PRESS_PROMOTION_SHA256: ${{ inputs.promotion_sha256 }}
       # Credential waterfall — engine/llm_auth.py probes these in order. Any one
       # of them arms the writer; none of them leaves it mute (and loud about it).
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -154,12 +173,29 @@ jobs:
           # sails on, PASSED falls back to 0, and a CRASHED staging run reports
           # green. `pipefail` alone does not save you when nothing is piped.
           set -euo pipefail
-          ARGS="--staging"
-          if [ -n "${PRESS_DESKS:-}" ]; then ARGS="$ARGS --desks $PRESS_DESKS"; fi
-          if [ -n "${PRESS_MAX_SLOTS:-}" ]; then ARGS="$ARGS --max-slots $PRESS_MAX_SLOTS"; fi
-          if [ -n "${PRESS_AS_OF:-}" ]; then ARGS="$ARGS --as-of $PRESS_AS_OF"; fi
-          # shellcheck disable=SC2086
-          python -m scripts.run_press $ARGS
+          if [ "${PRESS_REQUEST_EMIT:-false}" = "true" ] && \
+             { [ -z "${PRESS_PROMOTION_BUNDLE:-}" ] || [ -z "${PRESS_PROMOTION_SLOT:-}" ] || [ -z "${PRESS_PROMOTION_SHA256:-}" ]; }; then
+            echo "::error title=press_unreviewed_emit::emit requires an exact committed reviewed bundle before generation"
+            exit 1
+          fi
+          if [ -n "${PRESS_PROMOTION_BUNDLE:-}${PRESS_PROMOTION_SLOT:-}${PRESS_PROMOTION_SHA256:-}" ]; then
+            : "${PRESS_PROMOTION_BUNDLE:?reviewed bundle required}"
+            : "${PRESS_PROMOTION_SLOT:?exact reviewed slot required}"
+            : "${PRESS_PROMOTION_SHA256:?reviewed bundle SHA256 required}"
+            if [ -n "${PRESS_DESKS:-}${PRESS_MAX_SLOTS:-}${PRESS_AS_OF:-}" ]; then
+              echo "::error title=press_promotion_inputs::reviewed promotion cannot request generation inputs"
+              exit 1
+            fi
+            python -m scripts.run_press --import-reviewed-bundle "$PRESS_PROMOTION_BUNDLE" \
+              --promotion-slot "$PRESS_PROMOTION_SLOT" --promotion-sha256 "$PRESS_PROMOTION_SHA256"
+          else
+            ARGS="--staging"
+            if [ -n "${PRESS_DESKS:-}" ]; then ARGS="$ARGS --desks $PRESS_DESKS"; fi
+            if [ -n "${PRESS_MAX_SLOTS:-}" ]; then ARGS="$ARGS --max-slots $PRESS_MAX_SLOTS"; fi
+            if [ -n "${PRESS_AS_OF:-}" ]; then ARGS="$ARGS --as-of $PRESS_AS_OF"; fi
+            # shellcheck disable=SC2086
+            python -m scripts.run_press $ARGS
+          fi
           # A MISSING summary file is a FAILED run, not a zero-pass run: the
           # orchestrator always writes it on a completed staging pass, so its
           # absence means the process died. Defaulting to 0 here turned a crash
@@ -197,12 +233,18 @@ jobs:
           && needs.stage.result == 'success'
           && github.event_name == 'workflow_dispatch'
           && inputs.emit
+          && inputs.promotion_bundle != ''
+          && inputs.promotion_slot != ''
+          && inputs.promotion_sha256 != ''
           && needs.stage.outputs.passed != ''
           && needs.stage.outputs.passed != '0' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       PRESS_PUBLISH_ENABLED: ${{ vars.PRESS_PUBLISH_ENABLED }}
+      PRESS_PROMOTION_BUNDLE: ${{ inputs.promotion_bundle }}
+      PRESS_PROMOTION_SLOT: ${{ inputs.promotion_slot }}
+      PRESS_PROMOTION_SHA256: ${{ inputs.promotion_sha256 }}
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -225,7 +267,10 @@ jobs:
           path: data/press/staging/
 
       - name: emit passing drafts (content/seo/blog + site/blog + ledger)
-        run: python -m scripts.run_press --emit
+        run: |
+          set -euo pipefail
+          python -m scripts.run_press --promote-reviewed-bundle data/press/staging/_reviewed_bundle.json \
+            --promotion-slot "$PRESS_PROMOTION_SLOT" --promotion-sha256 "$PRESS_PROMOTION_SHA256"
 
       - name: rebuild the press property trees from the fresh ledger
         # WHY THIS RUNS AFTER THE EMIT AND NOT INSTEAD OF IT: --emit renders the
@@ -337,14 +382,23 @@ jobs:
             comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
                      <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
               | while IFS= read -r f; do rm -f -- "$f" || true; done
-            if git pull --rebase --autostash origin main && push_autostash_ok && git push origin HEAD:main; then
-              echo "::notice title=press_publish::press-publish: pushed on attempt $i"
-              exit 0
+            if git pull --rebase --autostash origin main && push_autostash_ok; then
+              # A rebase can bring a source correction or a competing publication.
+              # Recheck before every push; never regenerate or silently re-approve.
+              if [ -n "${PRESS_PROMOTION_BUNDLE:-}" ]; then
+                python -m scripts.run_press --check-reviewed-bundle "$PRESS_PROMOTION_BUNDLE" \
+                  --promotion-slot "$PRESS_PROMOTION_SLOT" --promotion-sha256 "$PRESS_PROMOTION_SHA256" \
+                  --published || exit 1
+              fi
+              if git push origin HEAD:main; then
+                echo "::notice title=press_publish::press-publish: pushed on attempt $i"
+                exit 0
+              fi
             fi
             git rebase --abort 2>/dev/null || true
             echo "press-publish: push attempt $i lost a race; re-syncing"
             sleep $((i * 7))
           done
 
-          echo "::warning title=press_publish_push::press-publish: could not push after 5 attempts (non-fatal)"
-          exit 0
+          echo "::error title=press_publish_push::press-publish: could not push after 5 attempts"
+          exit 1
