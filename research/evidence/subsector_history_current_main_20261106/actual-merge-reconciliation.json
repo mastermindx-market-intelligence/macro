@@ -1,0 +1,224 @@
+{
+  "schema": "c4.subsector.actual-merge-reconciliation.v1",
+  "head": "191568e908c92829729e3c50ef0b604e6f839817",
+  "merge_head": "ede58e46e40d454613b06ef0fbf1fb0f139d24a9",
+  "source_index": {
+    "data/subsector_rotation/confluence_snapshots.jsonl": {
+      "index_blob": "f043423be9023f4c1d2d2678278f10eb141b1bcf",
+      "index_mode": "100644",
+      "working_file_present": false,
+      "working_blob": null,
+      "index_flag": "S data/subsector_rotation/confluence_snapshots.jsonl"
+    },
+    "engine/subsector_confluence_history.py": {
+      "index_blob": "48e51c846f17a21f0a6a8a53cfe9c0c5646da837",
+      "index_mode": "100644",
+      "working_file_present": true,
+      "working_blob": "48e51c846f17a21f0a6a8a53cfe9c0c5646da837",
+      "index_flag": "H engine/subsector_confluence_history.py"
+    },
+    "scripts/build_subsector_confluence.py": {
+      "index_blob": "9ad33805b91b3285192002390731fe024752515f",
+      "index_mode": "100644",
+      "working_file_present": true,
+      "working_blob": "9ad33805b91b3285192002390731fe024752515f",
+      "index_flag": "H scripts/build_subsector_confluence.py"
+    },
+    "site/marketdata/subsector_confluence_history.json": {
+      "index_blob": "06cfedfeda6b965f14ec0953b6d8af359e963efe",
+      "index_mode": "100644",
+      "working_file_present": false,
+      "working_blob": null,
+      "index_flag": "S site/marketdata/subsector_confluence_history.json"
+    },
+    "site/subsectors.js": {
+      "index_blob": "2fe99d64f0de298e8229eda78bfda2607a11be1b",
+      "index_mode": "100644",
+      "working_file_present": false,
+      "working_blob": null,
+      "index_flag": "S site/subsectors.js"
+    },
+    "templates/subsectors.js": {
+      "index_blob": "2fe99d64f0de298e8229eda78bfda2607a11be1b",
+      "index_mode": "100644",
+      "working_file_present": true,
+      "working_blob": "2fe99d64f0de298e8229eda78bfda2607a11be1b",
+      "index_flag": "H templates/subsectors.js"
+    },
+    "tests/test_subsector_confluence_history.py": {
+      "index_blob": "eaa795758f71cea3fb53c46563bacbbde43e21b3",
+      "index_mode": "100644",
+      "working_file_present": true,
+      "working_blob": "eaa795758f71cea3fb53c46563bacbbde43e21b3",
+      "index_flag": "H tests/test_subsector_confluence_history.py"
+    },
+    "tests/test_subsector_confluence_history_ui.py": {
+      "index_blob": "f36e16ca8b7441b55a3a1e7335007ceb51578c7c",
+      "index_mode": "100644",
+      "working_file_present": true,
+      "working_blob": "f36e16ca8b7441b55a3a1e7335007ceb51578c7c",
+      "index_flag": "H tests/test_subsector_confluence_history_ui.py"
+    }
+  },
+  "all_eight_published_blobs_and_modes_preserved_in_index": true,
+  "private_entries": 991,
+  "private_unchanged": true,
+  "sparse_profile_sha256": "c89089c86d6d9ce63c7fbd9f56321c904bb961323b0540a2f27940419322d542",
+  "sparse_profile": [
+    "/*",
+    "!/*/",
+    "/.agents/",
+    "/.claude/",
+    "/.codex/",
+    "/.cursor/",
+    "/.github/",
+    "/.grok/",
+    "/.warp/",
+    "/admin/",
+    "/agentos/",
+    "/app/",
+    "/artifacts/",
+    "/browser/",
+    "/calibration/",
+    "/collectors/",
+    "/config/",
+    "/content/",
+    "/contracts/",
+    "/design_refs/",
+    "/docs/",
+    "/engine/",
+    "/finviz_themes/",
+    "/handoffs/",
+    "/knowledge/",
+    "/lib/",
+    "/ops/",
+    "/orch/",
+    "/plugins/",
+    "/properties/",
+    "/reports/",
+    "/requirements/",
+    "/research/",
+    "/scripts/",
+    "/templates/",
+    "/tests/",
+    "/tools/",
+    "/ux-evidence/",
+    "/worker/"
+  ],
+  "feature_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "data/subsector_rotation/confluence_snapshots.jsonl",
+    "engine/subsector_confluence_history.py",
+    "scripts/build_subsector_confluence.py",
+    "site/marketdata/subsector_confluence_history.json",
+    "site/subsectors.js",
+    "templates/subsectors.js",
+    "tests/test_subsector_confluence_history.py",
+    "tests/test_subsector_confluence_history_ui.py"
+  ],
+  "unmerged": [
+    ".github/ci/legacy-jobs.yml"
+  ],
+  "manifest_stage_blobs": {
+    "common": "3e70f4697b0fe63b2aaf4dce39810d87bc95d6bf",
+    "published": "166a0c9ef62dce1f7962d58420c917b7848fea46",
+    "current-main": "1d9aa5eb38c327ccb33f347ec176159d76c7a185"
+  },
+  "incoming_main_delta": {
+    "regime-outlook-mapping": {
+      "paths_added": [
+        "engine/rate_futures_repricing.py"
+      ],
+      "paths_removed": [],
+      "nonpath_changed": false,
+      "nonpath_differing_fields": []
+    },
+    "unrun-picks-boards": {
+      "paths_added": [
+        "engine/rate_futures_repricing.py"
+      ],
+      "paths_removed": [],
+      "nonpath_changed": false,
+      "nonpath_differing_fields": []
+    },
+    "washout-turn-organ": {
+      "paths_added": [
+        "collectors/rate_futures.py",
+        "engine/rate_futures_repricing.py"
+      ],
+      "paths_removed": [],
+      "nonpath_changed": false,
+      "nonpath_differing_fields": []
+    }
+  },
+  "published_feature_delta": {
+    "biocatalyst-serving": {
+      "paths_added": [
+        "engine/subsector_confluence_history.py",
+        "tests/__init__.py",
+        "tests/test_subsector_confluence_history.py",
+        "tests/test_subsector_confluence_history_ui.py",
+        "templates/subsectors.js",
+        "site/subsectors.js",
+        "site/marketdata/subsector_confluence_history.json"
+      ],
+      "paths_removed": [],
+      "nonpath_changed": true,
+      "nonpath_differing_fields": [
+        "steps"
+      ]
+    },
+    "eval-os-a1": {
+      "paths_added": [
+        "engine/subsector_confluence_history.py"
+      ],
+      "paths_removed": [],
+      "nonpath_changed": false,
+      "nonpath_differing_fields": []
+    },
+    "nw-lobe-unfreeze": {
+      "paths_added": [
+        "engine/subsector_confluence_history.py"
+      ],
+      "paths_removed": [],
+      "nonpath_changed": false,
+      "nonpath_differing_fields": []
+    },
+    "qledger-cluster-honest-ci": {
+      "paths_added": [
+        "engine/subsector_confluence_history.py"
+      ],
+      "paths_removed": [],
+      "nonpath_changed": false,
+      "nonpath_differing_fields": []
+    },
+    "unrun-picks-boards": {
+      "paths_added": [
+        "engine/subsector_confluence_history.py"
+      ],
+      "paths_removed": [],
+      "nonpath_changed": false,
+      "nonpath_differing_fields": []
+    },
+    "washout-turn-organ": {
+      "paths_added": [
+        "engine/subsector_confluence_history.py"
+      ],
+      "paths_removed": [],
+      "nonpath_changed": false,
+      "nonpath_differing_fields": []
+    }
+  },
+  "conflicts": [
+    {
+      "owner": "washout-turn-organ",
+      "left": "      - \"engine/subsector_confluence_history.py\"\n",
+      "right": "      - collectors/rate_futures.py\n      - engine/rate_futures_repricing.py\n"
+    },
+    {
+      "owner": "unrun-picks-boards",
+      "left": "      # Confluence publication-history source and fixture closure.\n      - \"engine/subsector_confluence_history.py\"\n",
+      "right": "      - engine/rate_futures_repricing.py\n"
+    }
+  ]
+}

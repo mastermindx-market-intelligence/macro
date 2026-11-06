@@ -1,0 +1,45 @@
+{
+  "schema": "c4.subsector.focused-manifest-tests.v1",
+  "published_head": "191568e908c92829729e3c50ef0b604e6f839817",
+  "integration_base": "ede58e46e40d454613b06ef0fbf1fb0f139d24a9",
+  "source_index_blobs": {
+    ".github/ci/legacy-jobs.yml": "aecb63fadf17c5b811d29f69e42a713917faad5c",
+    "data/subsector_rotation/confluence_snapshots.jsonl": "f043423be9023f4c1d2d2678278f10eb141b1bcf",
+    "engine/subsector_confluence_history.py": "48e51c846f17a21f0a6a8a53cfe9c0c5646da837",
+    "scripts/build_subsector_confluence.py": "9ad33805b91b3285192002390731fe024752515f",
+    "site/marketdata/subsector_confluence_history.json": "06cfedfeda6b965f14ec0953b6d8af359e963efe",
+    "site/subsectors.js": "2fe99d64f0de298e8229eda78bfda2607a11be1b",
+    "templates/subsectors.js": "2fe99d64f0de298e8229eda78bfda2607a11be1b",
+    "tests/test_subsector_confluence_history.py": "eaa795758f71cea3fb53c46563bacbbde43e21b3",
+    "tests/test_subsector_confluence_history_ui.py": "f36e16ca8b7441b55a3a1e7335007ceb51578c7c"
+  },
+  "control_source_blobs": {
+    "scripts/run_ci_pack.py": "3cbed58986d571e40af59eb03464e9419e8055a5",
+    "tests/test_ci_pack.py": "96e175b255ac58af554cd362e3f8e1f79dadcdc3",
+    "scripts/ci_scope_dependencies.py": "4c4779479f5bb41741fe7a5db114dfe304350a8a"
+  },
+  "source_and_controls_unchanged": true,
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp",
+    "/tmp/subsector-history-current-main-c4-20261106/static-test-runtime",
+    "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+  ],
+  "exit_code": 0,
+  "test_seconds": 325.63,
+  "log_sha256": "66fd3664adc2269622c5d399e1880672536501952c1a83c44ac4c6ab16e513a8",
+  "log_tail": [
+    "..                                                                       [100%]",
+    "2 passed in 323.74s (0:05:23)"
+  ],
+  "private_entries": 991,
+  "private_unchanged": true,
+  "accepted_product_and_browser_tests_replayed": false,
+  "sparse_runtime_completeness_claimed": false
+}

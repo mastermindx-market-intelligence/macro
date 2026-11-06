@@ -1,0 +1,31 @@
+{
+  "schema": "c4.subsector.current-source-composition.v1",
+  "published_head": "191568e908c92829729e3c50ef0b604e6f839817",
+  "integration_base": "ede58e46e40d454613b06ef0fbf1fb0f139d24a9",
+  "manifest_after_blob": "aecb63fadf17c5b811d29f69e42a713917faad5c",
+  "manifest_sha256": "e2d2ec2848cd9ca84087ca606dc8b357b883a0750998fcd2bf55948d96177e63",
+  "all_published_non_path_metadata_unchanged": true,
+  "published_path_order_and_duplicates_preserved": true,
+  "incoming_main_additions": {
+    "regime-outlook-mapping": [
+      "engine/rate_futures_repricing.py"
+    ],
+    "washout-turn-organ": [
+      "collectors/rate_futures.py",
+      "engine/rate_futures_repricing.py"
+    ],
+    "unrun-picks-boards": [
+      "engine/rate_futures_repricing.py"
+    ]
+  },
+  "resolved_conflict_owners": [
+    "washout-turn-organ",
+    "unrun-picks-boards"
+  ],
+  "job_count": 388,
+  "all_eight_product_index_blobs_unchanged": true,
+  "existing_biocatalyst_steps_unchanged": true,
+  "unrun_picks_gate": "data",
+  "diff_check_exit_code": 0,
+  "sparse_runtime_completeness_claimed": false
+}

@@ -26712,6 +26712,7 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - engine/rate_futures_repricing.py
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "config/dataset_registry.yml"
@@ -35366,6 +35367,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/subsector_confluence_history.py"
+      - collectors/rate_futures.py
+      - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -36865,6 +36868,7 @@ jobs:
     paths:
       # Confluence publication-history source and fixture closure.
       - "engine/subsector_confluence_history.py"
+      - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
