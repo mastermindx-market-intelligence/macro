@@ -1,0 +1,324 @@
+{
+  "schema": "pb_d_operator_verification.v1",
+  "operation": "PB-D-OPERATOR-QUICKSTART-20261008",
+  "status_at_publication": "NATIVE_VERIFIED_RELEASE_PENDING",
+  "user_outcome": "Run the synthetic PB-D example on M2 Studio using one complete command without selecting a repository, changing cwd, activating Python, or installing packages.",
+  "procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "commit": "c7e47c859eb2925c5626931fd511800773ba09ac",
+    "schema": "mastermind.sol_skillpack.v1",
+    "skillpack_version": "1.0.1",
+    "bootstrap_compatible": true,
+    "authority_boundaries_reference": "Optional skill-side reference unavailable; protected source law and current repository laws read directly."
+  },
+  "source": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "base_commit": "8aa1aca8c593982e722bbc666a221fdd82466f15",
+    "branch": "sol/web-pb-d-operator-quickstart-20261008",
+    "prior_implementation_pr": 8576,
+    "prior_implementation_merge": "9cb7173c4f08e1f6ca82281d886ee3637c1ed84a",
+    "workspace_receipt": {
+      "action": "acquire",
+      "effect": "APPLIED",
+      "receipt": {
+        "base_sha": "8aa1aca8c593982e722bbc666a221fdd82466f15",
+        "branch": "sol/web-pb-d-operator-quickstart-20261008",
+        "common_git_dir": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git",
+        "head_sha": "8aa1aca8c593982e722bbc666a221fdd82466f15",
+        "lane": "web",
+        "lock_reason": "mastermind-linked-worktree:v1 operation=PB-D-OPERATOR-QUICKSTART-20261008 lane=web base=8aa1aca8c593982e722bbc666a221fdd82466f15",
+        "operation_id": "PB-D-OPERATOR-QUICKSTART-20261008",
+        "reused": false,
+        "source_repository": "/Users/chriswong/Documents/Cluade/macro-main",
+        "workspace_path": "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008",
+        "workspace_root": "/Volumes/Mastermind/agent-workspaces/macro"
+      },
+      "repository": "macro",
+      "schema_version": "mastermind.workspace_cli/v2"
+    }
+  },
+  "native": {
+    "actual_user_error": "User supplied a Python 2.7 No module named scripts error; original working directory unknown.",
+    "base_commit": "8aa1aca8c593982e722bbc666a221fdd82466f15",
+    "checks": [
+      {
+        "command": [
+          "/bin/bash",
+          "-n",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh"
+        ],
+        "cwd": "/tmp",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "name": "bash_3_2_syntax",
+        "seconds": 0.024,
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/bin/bash",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh",
+          "--output-dir",
+          "/Users/chriswong/Downloads"
+        ],
+        "cwd": "/Users/chriswong",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "name": "exact_operator_command",
+        "report": {
+          "authority_flags": {
+            "enroll": false,
+            "entry": false,
+            "promote": false,
+            "rank": false,
+            "size": false
+          },
+          "bytes": 233195,
+          "complete_pairs": 1,
+          "path": "/Users/chriswong/Downloads/pb-d-example.iLCo5P/report.json",
+          "sha256": "0d98a85d9932323e30975e2540a758b7f0ebd3898e3fcdbf43ee265e6049a593",
+          "state": "FROZEN_DESIGN_NOT_ENROLLED",
+          "synthetic_h5_increment_pp": 4
+        },
+        "seconds": 3.509,
+        "stderr": "",
+        "stdout": "Running the PB-D SYNTHETIC EXAMPLE: fictional inputs, not market evidence.\nPB-D SYNTHETIC EXAMPLE completed. This is not market evidence.\nStudy state: frozen design not enrolled\nComplete synthetic pairs: 1\nH5 SPY-excess difference: +4 percentage points\nAuthority flags: all disabled (enroll, entry, promote, rank, size)\nReport saved to: /Users/chriswong/Downloads/pb-d-example.iLCo5P/report.json\n"
+      },
+      {
+        "command": [
+          "/bin/bash",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh",
+          "--output-dir",
+          "/Users/chriswong/Downloads"
+        ],
+        "cwd": "/Users/chriswong",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "name": "repeat_operator_command",
+        "report": {
+          "authority_flags": {
+            "enroll": false,
+            "entry": false,
+            "promote": false,
+            "rank": false,
+            "size": false
+          },
+          "bytes": 233195,
+          "complete_pairs": 1,
+          "path": "/Users/chriswong/Downloads/pb-d-example.04KTxg/report.json",
+          "sha256": "0d98a85d9932323e30975e2540a758b7f0ebd3898e3fcdbf43ee265e6049a593",
+          "state": "FROZEN_DESIGN_NOT_ENROLLED",
+          "synthetic_h5_increment_pp": 4
+        },
+        "seconds": 0.415,
+        "stderr": "",
+        "stdout": "Running the PB-D SYNTHETIC EXAMPLE: fictional inputs, not market evidence.\nPB-D SYNTHETIC EXAMPLE completed. This is not market evidence.\nStudy state: frozen design not enrolled\nComplete synthetic pairs: 1\nH5 SPY-excess difference: +4 percentage points\nAuthority flags: all disabled (enroll, entry, promote, rank, size)\nReport saved to: /Users/chriswong/Downloads/pb-d-example.04KTxg/report.json\n"
+      },
+      {
+        "command": [
+          "/bin/bash",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh",
+          "--output-dir",
+          "/tmp/PB-D-OPERATOR-QUICKSTART-20261008/pb-d-foreign-8r11ps42/foreign working directory/output with spaces"
+        ],
+        "cwd": "/tmp/PB-D-OPERATOR-QUICKSTART-20261008/pb-d-foreign-8r11ps42/foreign working directory",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "name": "foreign_cwd_python_alias_and_import_isolation",
+        "report": {
+          "authority_flags": {
+            "enroll": false,
+            "entry": false,
+            "promote": false,
+            "rank": false,
+            "size": false
+          },
+          "bytes": 233195,
+          "complete_pairs": 1,
+          "path": "/private/tmp/PB-D-OPERATOR-QUICKSTART-20261008/pb-d-foreign-8r11ps42/foreign working directory/output with spaces/pb-d-example.dl8Jqd/report.json",
+          "sha256": "0d98a85d9932323e30975e2540a758b7f0ebd3898e3fcdbf43ee265e6049a593",
+          "state": "FROZEN_DESIGN_NOT_ENROLLED",
+          "synthetic_h5_increment_pp": 4
+        },
+        "seconds": 0.41,
+        "stderr": "",
+        "stdout": "Running the PB-D SYNTHETIC EXAMPLE: fictional inputs, not market evidence.\nPB-D SYNTHETIC EXAMPLE completed. This is not market evidence.\nStudy state: frozen design not enrolled\nComplete synthetic pairs: 1\nH5 SPY-excess difference: +4 percentage points\nAuthority flags: all disabled (enroll, entry, promote, rank, size)\nReport saved to: /private/tmp/PB-D-OPERATOR-QUICKSTART-20261008/pb-d-foreign-8r11ps42/foreign working directory/output with spaces/pb-d-example.dl8Jqd/report.json\n"
+      },
+      {
+        "actual_python_version": "2.7.18",
+        "command": [
+          "/bin/bash",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh",
+          "--python",
+          "/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python",
+          "--output-dir",
+          "/tmp/PB-D-OPERATOR-QUICKSTART-20261008/pb-d-foreign-8r11ps42/foreign working directory/output with spaces"
+        ],
+        "cwd": "/tmp/PB-D-OPERATOR-QUICKSTART-20261008/pb-d-foreign-8r11ps42/foreign working directory",
+        "exit_code": 2,
+        "expected_exit_code": 2,
+        "name": "wrong_python_version_rejected",
+        "seconds": 0.053,
+        "stderr": "PB-D requires Python 3.12; this interpreter reports 2.7.18.\nPB-D: Python version check failed for: /Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python\nSetup instructions: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/research/policy_behavior/pro_returns/PB-D/PB_D_OPERATOR_QUICKSTART.md\n",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/bin/bash",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh",
+          "--python"
+        ],
+        "cwd": "/tmp/PB-D-OPERATOR-QUICKSTART-20261008/pb-d-foreign-8r11ps42/foreign working directory",
+        "exit_code": 2,
+        "expected_exit_code": 2,
+        "name": "missing_python_argument",
+        "seconds": 0.011,
+        "stderr": "PB-D: --python requires a value.\nUsage: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh [--python ABSOLUTE_EXECUTABLE] [--output-dir EXISTING_DIRECTORY]\n       /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh --help\n\nRun the synthetic PB-D example; its result is not market evidence.\nDefault Python: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/.venv/bin/python (Python 3.12 required)\nDefault output parent: /var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/\nEach invocation creates a fresh child directory and preserves its report.\nSetup instructions: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/research/policy_behavior/pro_returns/PB-D/PB_D_OPERATOR_QUICKSTART.md\n",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/bin/bash",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh",
+          "--python",
+          "python"
+        ],
+        "cwd": "/tmp/PB-D-OPERATOR-QUICKSTART-20261008/pb-d-foreign-8r11ps42/foreign working directory",
+        "exit_code": 2,
+        "expected_exit_code": 2,
+        "name": "relative_python_argument",
+        "seconds": 0.01,
+        "stderr": "PB-D: --python requires an absolute executable path; received: python\nUsage: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh [--python ABSOLUTE_EXECUTABLE] [--output-dir EXISTING_DIRECTORY]\n       /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh --help\n\nRun the synthetic PB-D example; its result is not market evidence.\nDefault Python: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/.venv/bin/python (Python 3.12 required)\nDefault output parent: /var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/\nEach invocation creates a fresh child directory and preserves its report.\nSetup instructions: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/research/policy_behavior/pro_returns/PB-D/PB_D_OPERATOR_QUICKSTART.md\n",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/bin/bash",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh",
+          "--unknown"
+        ],
+        "cwd": "/tmp/PB-D-OPERATOR-QUICKSTART-20261008/pb-d-foreign-8r11ps42/foreign working directory",
+        "exit_code": 2,
+        "expected_exit_code": 2,
+        "name": "unknown_argument",
+        "seconds": 0.01,
+        "stderr": "PB-D: Unknown argument: --unknown\nUsage: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh [--python ABSOLUTE_EXECUTABLE] [--output-dir EXISTING_DIRECTORY]\n       /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh --help\n\nRun the synthetic PB-D example; its result is not market evidence.\nDefault Python: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/.venv/bin/python (Python 3.12 required)\nDefault output parent: /var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/\nEach invocation creates a fresh child directory and preserves its report.\nSetup instructions: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/research/policy_behavior/pro_returns/PB-D/PB_D_OPERATOR_QUICKSTART.md\n",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/bin/bash",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh",
+          "--help"
+        ],
+        "cwd": "/tmp/PB-D-OPERATOR-QUICKSTART-20261008/pb-d-foreign-8r11ps42/foreign working directory",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "name": "help_without_running_example",
+        "seconds": 0.009,
+        "stderr": "",
+        "stdout": "Usage: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh [--python ABSOLUTE_EXECUTABLE] [--output-dir EXISTING_DIRECTORY]\n       /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh --help\n\nRun the synthetic PB-D example; its result is not market evidence.\nDefault Python: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/.venv/bin/python (Python 3.12 required)\nDefault output parent: /var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/\nEach invocation creates a fresh child directory and preserves its report.\nSetup instructions: /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/research/policy_behavior/pro_returns/PB-D/PB_D_OPERATOR_QUICKSTART.md\n"
+      }
+    ],
+    "global_python_changed": false,
+    "host": "m2studio",
+    "operation": "PB-D-OPERATOR-QUICKSTART-20261008",
+    "prior_outputs_preserved": true,
+    "pytest": {
+      "command": [
+        "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_pb_d_quality.py",
+        "tests/test_pb_d_cohort.py",
+        "tests/test_pb_d_evaluation.py",
+        "tests/test_pb_d_consumer.py",
+        "-q",
+        "--junitxml=/tmp/PB-D-OPERATOR-QUICKSTART-20261008/pb-d-operator-native-tests.xml"
+      ],
+      "exit_code": 0,
+      "junit": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 200
+      },
+      "log": "/tmp/PB-D-OPERATOR-QUICKSTART-20261008/pb-d-operator-native-tests.log",
+      "seconds": 5.445,
+      "summary": "159 passed, 1 warning, 41 subtests passed in 5.14s"
+    },
+    "python": "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/.venv/bin/python",
+    "schema": "pb_d_operator_native_verification.v1",
+    "scientific_report_unchanged_sha256": "0d98a85d9932323e30975e2540a758b7f0ebd3898e3fcdbf43ee265e6049a593",
+    "source_sha256": {
+      ".github/ci/legacy-jobs.yml": "81b8d0fdd42258a3210c024084477950dccc24538fba6736bd28de0d99d95a1c",
+      "research/policy_behavior/pro_returns/PB-D/PB_D_IMPLEMENTATION.md": "34d83339e8d4d02c0e3e9684a56aa181f95f2a3298a9cdaf7248be7600ece444",
+      "research/policy_behavior/pro_returns/PB-D/PB_D_OPERATOR_QUICKSTART.md": "d6d8ce27ff02d02bc990b9501e62c5cbf30f08f1528d37a9d83ea3f98f00a593",
+      "scripts/query_pb_d_event_quality.py": "12efe0ffb03abd0d430c0305b185e8527a8ea1740adcb24f74eb33777a167bc5",
+      "scripts/run_pb_d_example.sh": "d7097de7ee6ffe76dbbdbccc89a053912c9704db977a263b46a016b876bfa758"
+    },
+    "user_command": [
+      "/bin/bash",
+      "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh",
+      "--output-dir",
+      "/Users/chriswong/Downloads"
+    ],
+    "verified_at_epoch": 1791495594.077673,
+    "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008"
+  },
+  "warning_disposition": {
+    "observed": [
+      "=============================== warnings summary ===============================",
+      ".venv/lib/python3.12/site-packages/_pytest/pathlib.py:102",
+      "  /Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/.venv/lib/python3.12/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-474d5e1d-41e1-4c72-bb71-7a21e4336b2a/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:",
+      "  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-474d5e1d-41e1-4c72-bb71-7a21e4336b2a/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'",
+      "    warnings.warn(",
+      "",
+      "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
+      "159 passed, 1 warning, 41 subtests passed in 5.14s"
+    ],
+    "scope": "pytest cleanup of an existing shared temporary Chromium directory; no test failed. The directory and its permissions were not changed. Further runs, if required by a material change, use operation-owned basetemp."
+  },
+  "review": {
+    "launcher_builder": "methods_implementation, native session helper",
+    "independent_review": {
+      "reviewer": "implementation_census, native session helper",
+      "verdict": "PASS",
+      "launcher_sha256": "d7097de7ee6ffe76dbbdbccc89a053912c9704db977a263b46a016b876bfa758",
+      "scope": [
+        "launcher",
+        "CLI docstring",
+        "implementation guide",
+        "operator quickstart",
+        "exact CI job delta"
+      ],
+      "findings": "No blocker. Interpreter/cwd isolation, failure status, report-derived success, repeat-run preservation, operator directions and unchanged CI gates verified by source review.",
+      "native_execution_owned_by": "root"
+    },
+    "routing_rationale": "C1 routine bounded operator repair. Native helpers cover separable source construction/review. No external provider or Executive dispatch. Fable unnecessary; no model/provider identity inferred beyond the provided session tools."
+  },
+  "ci_change": {
+    "paths_added": [
+      "scripts/run_pb_d_example.sh"
+    ],
+    "step_added": "PB-D operator example from a foreign working directory",
+    "job": "pb-d-event-quality",
+    "existing_scientific_suites_preserved": true,
+    "curated_registry_changed": false,
+    "packing_limits_changed": false
+  },
+  "release_evidence_location": "The operator repair PR body records the exact published candidate, concluded candidate CI, merge identity and fresh-main parity/replay after these exist. This file records native evidence available before publication.",
+  "retention": "Prepared M2 workspace and its isolated .venv are retained as the user-facing runnable copy. Replace and verify the published command before retiring this copy.",
+  "scope": {
+    "scientific_engine_changes": false,
+    "cli_changes": "docstring examples only",
+    "existing_cli_json_and_exit_contracts_unchanged": true,
+    "live_data_collection": false,
+    "prospective_enrollment": false,
+    "global_python_changed": false,
+    "automatic_package_install_from_launcher": false
+  },
+  "research_delivery_preference": "Save research to GitHub this turn and in future unless the Chairman redirects the destination."
+}

@@ -1,0 +1,263 @@
+{
+  "started_at": "2026-10-20T18:32:41.443481+00:00",
+  "head": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+  "incoming": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+  "base": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "state": "ADOPTED_STAGED",
+  "preview_sha256": "d48340c2608dec18ce6984358aaed262b53ad8df85d34c87770d870ddf89e7f2",
+  "source_owner_before": {
+    "lib/pages.py": {
+      "bytes": 37988,
+      "sha256": "ee50b30dc5cd990e6c07ec433422f1032379d6857e4cd0586ee4de65f3b6c1a5"
+    },
+    "lib/shared_shell.py": {
+      "bytes": 5407,
+      "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c"
+    },
+    "lib/site_assets.py": {
+      "bytes": 7180,
+      "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275"
+    },
+    "lib/config.py": {
+      "bytes": 1131,
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+    },
+    "scripts/optimize_assets.py": {
+      "bytes": 11756,
+      "sha256": "1c6ada51deb3be91f7b621bb6c1d3c52f373c6424c346ec6563ffb7b97cf26be"
+    },
+    "templates/data_base.js": {
+      "bytes": 2367,
+      "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+    },
+    "config.yml": {
+      "bytes": 496073,
+      "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402"
+    }
+  },
+  "asset_count": 103,
+  "CI_actual_raw_and_stage_match_preview": true,
+  "four_whole_render_candidate_bytes_unchanged_from_reviewed_final_preview": true,
+  "chat_source_pair_equal": true,
+  "selected": [
+    "site/canada.html",
+    "site/canada_stock.html",
+    "site/chat.html",
+    "site/china.html",
+    "site/china_lookup.html",
+    "site/china_special_situations.html",
+    "site/etfs.html",
+    "site/factors.html",
+    "site/hk_lookup.html",
+    "site/hk_stocks.html",
+    "site/intl_stock.html",
+    "site/macro.html",
+    "site/news.html",
+    "site/ontology.html",
+    "site/reference.html",
+    "site/reports.html",
+    "site/research_screener.html",
+    "site/sector_central.html",
+    "site/signal_lab.html",
+    "site/special_situations.html",
+    "site/stock.html",
+    "site/stocks/index.html",
+    "site/tech_lab.html",
+    "site/us_stocks.html",
+    "templates/chat.html",
+    "site/macro_labor_markets.html"
+  ],
+  "before_index_sha256": "c98b5f26cd203ee2eb8d2a6d500cedafb798793de3292484ead9c82afb0005eb",
+  "rows": [
+    {
+      "path": "site/canada.html",
+      "before_sha256": "968b20d386a33bc981c548a797e17abbd4b59775ca941e20c14e4d05881e71b7",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_canada.html",
+      "candidate_bytes": 252917,
+      "candidate_sha256": "39739f2f1b21ca87e95737d3514fc79d85907d430d442737a9b1e4b396b252af"
+    },
+    {
+      "path": "site/canada_stock.html",
+      "before_sha256": "d05b1aa6626d3b5d93d608a6db88c2b03a4d3683e3eccd8e47ced4a243178486",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_canada_stock.html",
+      "candidate_bytes": 103824,
+      "candidate_sha256": "0b7faf0862599ce618e2ebaa5ca20a4fb80295d21a0681c6a71608d455492e59"
+    },
+    {
+      "path": "site/chat.html",
+      "before_sha256": "dc476fc69f153ac7e72abda72b41ba4e20d5dccb2d12d4f191086593c7126ee7",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_chat.html",
+      "candidate_bytes": 90161,
+      "candidate_sha256": "fff5636b40c45cbd56d55b8848bbbe5a45b99ff9e067b5ddd7de829dbbdb3386"
+    },
+    {
+      "path": "site/china.html",
+      "before_sha256": "ec30d379ac54dd20b0c6ac4efc0e3f32c42fa94397197799b4670ef31233e80c",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_china.html",
+      "candidate_bytes": 270048,
+      "candidate_sha256": "f1e59087aecfa5af0c3ffd79e10f233ecccb33349196e6c00181f5de75d80461"
+    },
+    {
+      "path": "site/china_lookup.html",
+      "before_sha256": "fa352cc02c6504ce104c82eca9f91996776fe2fe1dbf50916733180f2d5d0204",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_china_lookup.html",
+      "candidate_bytes": 105523,
+      "candidate_sha256": "4d80092f4baf632bf0db72bacfe4e0814f5ced06191302196c3de3bd5a41da24"
+    },
+    {
+      "path": "site/china_special_situations.html",
+      "before_sha256": "d3e91bd1179c893cc3a68e62569f8b00dadb4980a6ece273925c33101670a732",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_china_special_situations.html",
+      "candidate_bytes": 94354,
+      "candidate_sha256": "d1b37dfc34ff699922ff1a78576719d74ac598e0f16987c47847dfbb03ce94ec"
+    },
+    {
+      "path": "site/etfs.html",
+      "before_sha256": "10157cd76547ebb1ee0b3f4ce430617a8b8e0c21f0c98682ad50387fd404d1ec",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_etfs.html",
+      "candidate_bytes": 97337,
+      "candidate_sha256": "8de40e98593c6a9c4e167876ce914326f4c17eb3c967c0fc94d27029ac6404e7"
+    },
+    {
+      "path": "site/factors.html",
+      "before_sha256": "d56bd2ddf086643536c01f6ca3ed0bfa4fe87ef898eb5d511f2c0473a40c51c9",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_factors.html",
+      "candidate_bytes": 598581,
+      "candidate_sha256": "db2661bcbcdd91d8a85e99f6b421d9581c003b583796d680e9a6975a09e0b7c9"
+    },
+    {
+      "path": "site/hk_lookup.html",
+      "before_sha256": "aed8817aa92eddf785bc105ec986c2a2b6aefb91b036d90fd237d8547662f4d7",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_hk_lookup.html",
+      "candidate_bytes": 95409,
+      "candidate_sha256": "ae09fb248b49941fb40931cc1857e3d00af88831ddee9296f02a8626c2bdb543"
+    },
+    {
+      "path": "site/hk_stocks.html",
+      "before_sha256": "abc88748c3c304f2f8b16c1c90c47f8744ac3591c7027c1a538d4ae222ad5ffd",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_hk_stocks.html",
+      "candidate_bytes": 591004,
+      "candidate_sha256": "a21752aa133d3312cfdb07ff5a7d3c4491476e1aec75ce3f43a29e87184b7d9a"
+    },
+    {
+      "path": "site/intl_stock.html",
+      "before_sha256": "4cac5c39537636727a8e491ebacc6640a532bab7f144226b8596e43398750ab7",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_intl_stock.html",
+      "candidate_bytes": 98862,
+      "candidate_sha256": "e8aa2a41157b94f61f9b25340eab8689ce5f607e9a31d5f1750903f1be3e6c2d"
+    },
+    {
+      "path": "site/macro.html",
+      "before_sha256": "eb2f7f73da6e3cf8e2cb32b2aa559df8f87b9ec77b4318faecad7c4c83fb4e39",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_macro.html",
+      "candidate_bytes": 619730,
+      "candidate_sha256": "149a3a4b57914477f248ced7fc9cbcb0a55a993a32977937dc6b7c96bfcee741"
+    },
+    {
+      "path": "site/news.html",
+      "before_sha256": "8af01045821914d1b08f02417d18c9c05d42dd9a3c13320dde898e5aa3a3096c",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_news.html",
+      "candidate_bytes": 200069,
+      "candidate_sha256": "fda2fb806fc0ed76500c8304dbf276e0818f629a9a48a82ffe07f3e2929020db"
+    },
+    {
+      "path": "site/ontology.html",
+      "before_sha256": "dc5f2a87ab855263d109be0a22bf1c9558aae47028b40eabb14090ee3f7fb807",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_ontology.html",
+      "candidate_bytes": 59604,
+      "candidate_sha256": "235d466c803cbb1fbb4eaeb2b45ce431ac8e92caf655372caf3c23e02851eb6a"
+    },
+    {
+      "path": "site/reference.html",
+      "before_sha256": "a0bd3e03518f97f9e664a50cb5dd7f042dbb10505cbf6a5e1acdb7c9bb22a618",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_reference.html",
+      "candidate_bytes": 378618,
+      "candidate_sha256": "e407773f59423786e5a90700c3e8837e4f3aabfb75b816c14edce87f207ac050"
+    },
+    {
+      "path": "site/reports.html",
+      "before_sha256": "ba0a93ed7c81aca10553baa3c970e20f2433a3af45af3514461cb9401bb6d53b",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_reports.html",
+      "candidate_bytes": 99521,
+      "candidate_sha256": "b5a529f563719960d960dd6945d7e2db5fd20c571d6050bad7b002ad470ef11e"
+    },
+    {
+      "path": "site/research_screener.html",
+      "before_sha256": "3e0db5baa5a1139f21f97d04f307ff672bd7913cabbecd448c1e4a5334fef4ea",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_research_screener.html",
+      "candidate_bytes": 73864,
+      "candidate_sha256": "d32da92c3f75c32917324a19baa5bd77b81f3020e860d0e5d38213d15c95352e"
+    },
+    {
+      "path": "site/sector_central.html",
+      "before_sha256": "64c18ba1a48abdc545d4057a4660fe17058cb981c4a32d3bf1406d1004902fb0",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_sector_central.html",
+      "candidate_bytes": 374831,
+      "candidate_sha256": "a49d8ec8699efc665f3b91c18e630288b04544507ced4deaad1dc008b5630f05"
+    },
+    {
+      "path": "site/signal_lab.html",
+      "before_sha256": "b7b171c3bc6b89927705f78732f2ae7e9fe8214a399025b463992e54881875cf",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_signal_lab.html",
+      "candidate_bytes": 511173,
+      "candidate_sha256": "1f6ace7930700ede2e2741cac3aed86bf3582e12e23ad206bac2776b3e608357"
+    },
+    {
+      "path": "site/special_situations.html",
+      "before_sha256": "bb308c82f60f88c3c2eb480dfadc199fc24bd0caeea2b8c89e0471d1b11e4b0f",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_special_situations.html",
+      "candidate_bytes": 114875,
+      "candidate_sha256": "acbd96914a0800356498f0fbc26d8ab9417675e0bd48e119b3918f55cd79ac23"
+    },
+    {
+      "path": "site/stock.html",
+      "before_sha256": "f457a498e775f26edd7d6770cd3b7e127749de4122e61a3ea0798e84bbb3bdcd",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_stock.html",
+      "candidate_bytes": 264119,
+      "candidate_sha256": "0289ce1bd9d64668cbae686bf62611ae3cb5fae8b2cf1ae6530a1f0b74c5b0e8"
+    },
+    {
+      "path": "site/stocks/index.html",
+      "before_sha256": "b4066efe79593f9fa884dc25e2270e086a89b0cf9033342015e90a7c45f0b22c",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_stocks_index.html",
+      "candidate_bytes": 649487,
+      "candidate_sha256": "3f5a52f92e6e7415a057154c40279502efda36da5d53c997205084d2e428fe42"
+    },
+    {
+      "path": "site/tech_lab.html",
+      "before_sha256": "5a69a1ce404903476ed7944ef31fef99fa5df88ce1c1eff6476256e85df12c64",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_tech_lab.html",
+      "candidate_bytes": 156945,
+      "candidate_sha256": "9690c564245eb2b7090741d2e0d10279a6bec16554422966a4685a0f0a2353c2"
+    },
+    {
+      "path": "site/us_stocks.html",
+      "before_sha256": "95837a723a8a5977f7dbbe5929d9f2ea64c337bd246c26b5d74beef609b6a345",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_us_stocks.html",
+      "candidate_bytes": 742422,
+      "candidate_sha256": "e6505f391f18770c4f81118115154f06bc4e2807567831778d5c79785f6bae5f"
+    },
+    {
+      "path": "templates/chat.html",
+      "before_sha256": "dc476fc69f153ac7e72abda72b41ba4e20d5dccb2d12d4f191086593c7126ee7",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/templates_chat.html",
+      "candidate_bytes": 90161,
+      "candidate_sha256": "fff5636b40c45cbd56d55b8848bbbe5a45b99ff9e067b5ddd7de829dbbdb3386"
+    },
+    {
+      "path": "site/macro_labor_markets.html",
+      "before_sha256": "191b97a35bab2c472d981339c42fd482b0e2fd230f5a31f1bfd15b80964c11df",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-html-before-adoption/site_macro_labor_markets.html",
+      "candidate_bytes": 255252,
+      "candidate_sha256": "95a25e8bd42750c261552e8abb67ea7b4a13004d721f57d018187e95e93146e0"
+    }
+  ],
+  "finished_at": "2026-10-20T18:32:57.061100+00:00",
+  "owner_and_assets_unchanged": true,
+  "remaining_unmerged": [
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json"
+  ],
+  "after_index_sha256": "204768a5e9039477e6c84a9bccf5bc432e4552729409f207637040f4471d934b"
+}

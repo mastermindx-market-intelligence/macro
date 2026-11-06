@@ -52,13 +52,31 @@ Discipline: append-only, keep-FIRST per (date, id). A past day's stamp is NEVER
 rewritten — this is the PIT invariant. The grader re-enforces this on read;
 we enforce it on write.
 
+B11 fences (SIC-D-B1011): a replay or an off-lane run must not advance the live
+forward ledger. Three refusals, in order, all before any write and all returning
+0 without raising:
+
+  1. lane   — engine "sector_cycles" refuses unless nightly_advance_enabled()
+              (COLLECT_LANE=nightly, the daily.yml engine-job sentinel; render.yml's
+              replay band runs the same builder with no lane env). country_cycles
+              and cycle_ontology ALSO append from that off-lane render band, so they
+              stay ungated until every appending production caller is nightly.
+  2. future — an asOf dated after today's UTC date is a clock skew or a fabricated
+              stamp; it must never occupy a real day's keep-FIRST slot.
+  3. replay — an asOf older than the newest date already in the log is a stale
+              session being backfilled after a newer one was observed. Equal dates
+              keep the existing keep-FIRST behaviour.
+
 Never raises: every failure is logged and returns 0.
 """
 from __future__ import annotations
 
 import logging
+from datetime import date, datetime, timezone
 
 import pandas as pd
+
+from engine.ledger_lane import nightly_advance_enabled
 
 log = logging.getLogger(__name__)
 
@@ -202,6 +220,21 @@ def _extract_cycle_rows(data: dict) -> list[dict]:
     return rows
 
 
+def _utc_today() -> str:
+    """Today's UTC date as an ISO string — the future fence's clock."""
+    return datetime.now(timezone.utc).date().isoformat()
+
+
+def _iso_date(value) -> str | None:
+    """Best-effort strict ISO date (YYYY-MM-DD); None when unparseable. All three
+    engines stamp `str(<date>.date())` / a strict-ISO-asserted string, so None is
+    a degenerate input, and the fences skip rather than guess (never raise)."""
+    try:
+        return date.fromisoformat(str(value)[:10]).isoformat()
+    except (TypeError, ValueError):
+        return None
+
+
 def append_forward_log(data: dict | None, engine: str) -> int:
     """Append today's per-series cycle signal to an append-only, point-in-time log
     (`data/<engine>/forward_log.parquet`), keyed by (date, id), keep-FIRST-per-date
@@ -214,7 +247,8 @@ def append_forward_log(data: dict | None, engine: str) -> int:
               "cycle_ontology")
     engine  : "sector_cycles", "country_cycles" or "cycle_ontology"
 
-    Returns the number of new rows appended (0 on any error or empty input).
+    Returns the number of new rows appended (0 on any error, empty input, or a
+    B11 refusal — lane / future / replay; the module docstring has the census).
     Never raises.
     """
     if engine not in _ENGINES:
@@ -230,6 +264,14 @@ def append_forward_log(data: dict | None, engine: str) -> int:
 def _append(data: dict | None, engine: str) -> int:
     if not data:
         return 0
+    # B11 fence 1 — lane. The live sector_cycles ledger advances only from the
+    # nightly engine lane (HOUSE-U5: nightly is the SOLE advancer of data/ forward
+    # ledgers). render.yml's replay band runs build_sector_cycles with no lane env;
+    # that run renders, it must not stamp.
+    if engine == "sector_cycles" and not nightly_advance_enabled():
+        log.warning("forward_log_lane_refused engine=sector_cycles "
+                    "(COLLECT_LANE/US_LANE != nightly) — live ledger not advanced")
+        return 0
     if engine == "cycle_ontology":
         # the flagship payload carries its build date at the top level, not under meta
         rows = _extract_cycle_rows(data)
@@ -244,7 +286,13 @@ def _append(data: dict | None, engine: str) -> int:
     if not rows:
         return 0
 
-    new = pd.DataFrame(rows)
+    # B11 fence 2 — future. An asOf after today's UTC date must never take a
+    # real day's keep-FIRST slot.
+    asof_d = _iso_date(asof)
+    if asof_d is not None and asof_d > _utc_today():
+        log.warning("forward_log_future_refused engine=%s asOf=%s is after today "
+                    "— live ledger not advanced", engine, asof)
+        return 0
 
     try:
         from lib import config
@@ -253,8 +301,7 @@ def _append(data: dict | None, engine: str) -> int:
         log.warning("cycle_forward_log[%s]: cannot resolve data dir: %s", engine, e)
         return 0
 
-    p.parent.mkdir(parents=True, exist_ok=True)
-
+    prior = pd.DataFrame()
     if p.exists():
         try:
             prior = pd.read_parquet(p)
@@ -262,10 +309,23 @@ def _append(data: dict | None, engine: str) -> int:
             log.warning("cycle_forward_log[%s]: cannot read prior log (%s) — starting fresh",
                         engine, e)
             prior = pd.DataFrame()
-        if not prior.empty:
-            combined = pd.concat([prior, new], ignore_index=True)
-        else:
-            combined = new
+
+    # B11 fence 3 — replay. An older session must not be backfilled after a newer
+    # one was observed; an equal date falls through to keep-FIRST below.
+    if not prior.empty and asof_d is not None and "date" in prior.columns:
+        prior_dates = [d for d in (_iso_date(x) for x in prior["date"]) if d]
+        if prior_dates and asof_d < max(prior_dates):
+            log.warning("forward_log_replay_refused engine=%s asOf=%s predates newest "
+                        "prior stamp %s — live ledger not advanced",
+                        engine, asof, max(prior_dates))
+            return 0
+
+    new = pd.DataFrame(rows)
+
+    p.parent.mkdir(parents=True, exist_ok=True)
+
+    if not prior.empty:
+        combined = pd.concat([prior, new], ignore_index=True)
     else:
         combined = new
 

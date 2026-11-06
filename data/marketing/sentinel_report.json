@@ -1,109 +1,128 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-09-17T10:13:56Z",
-  "as_of": "2026-09-17",
+  "produced_at": "2026-11-06T13:42:26Z",
+  "as_of": "2026-11-06",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
     "items": 14,
-    "passed": 14,
-    "quarantined": 0,
-    "quarantined_policy": 0,
+    "passed": 12,
+    "quarantined": 2,
+    "quarantined_policy": 2,
     "quarantined_overflow": 0,
     "warnings": 0,
     "exceptions_applied": 0
   },
-  "reasons_histogram": {},
-  "quarantined": [],
-  "passed": [
-    {
-      "id": "post-flagship-024",
-      "account": "flagship",
-      "slot": "D1-S24",
-      "type": "chart",
-      "cashtag": "$ASO",
-      "headline": ""
-    },
-    {
-      "id": "post-conf-flagship-007",
-      "account": "flagship",
-      "slot": "CONF-07",
-      "type": "signal",
-      "cashtag": "$LRCX",
-      "headline": "$LRCX just lined up a pattern we track."
-    },
-    {
-      "id": "post-theme-003",
-      "account": "flagship",
-      "slot": "D1-S2",
-      "type": "theme_list",
-      "cashtag": "$AR",
-      "headline": "Commodities Energy selling off, -2.2% avg on Wednesday"
-    },
+  "reasons_histogram": {
+    "near_dup": 2
+  },
+  "quarantined": [
     {
       "id": "post-meagan-013",
       "account": "meagan",
       "slot": "D1-S13",
       "type": "macro",
       "cashtag": "",
-      "headline": ""
+      "headline": "",
+      "class": "policy",
+      "reasons": [
+        "near_dup:post-founder-016"
+      ]
     },
     {
-      "id": "post-meagan-031",
-      "account": "meagan",
-      "slot": "D1-S31",
+      "id": "post-cici-003",
+      "account": "cici",
+      "slot": "D1-S3",
+      "type": "macro",
+      "cashtag": "",
+      "headline": "",
+      "class": "policy",
+      "reasons": [
+        "near_dup:post-founder-016"
+      ]
+    }
+  ],
+  "passed": [
+    {
+      "id": "post-flagship-014",
+      "account": "flagship",
+      "slot": "D1-S14",
       "type": "chart",
-      "cashtag": "$UTL",
+      "cashtag": "$XRAY",
       "headline": ""
     },
     {
-      "id": "post-meagan-038",
-      "account": "meagan",
-      "slot": "D1-S38",
+      "id": "post-flagship-034",
+      "account": "flagship",
+      "slot": "D1-S34",
       "type": "receipt",
-      "cashtag": "$EZPW",
+      "cashtag": "$NB",
       "headline": ""
     },
     {
-      "id": "post-sophia-012",
-      "account": "sophia",
-      "slot": "D1-S12",
+      "id": "post-theme-003",
+      "account": "flagship",
+      "slot": "D1-S2",
+      "type": "theme_list",
+      "cashtag": "$CDLR",
+      "headline": "Energy Renewable selling off, -5.0% avg on Thursday"
+    },
+    {
+      "id": "post-founder-001",
+      "account": "founder",
+      "slot": "D1-S1",
+      "type": "chart",
+      "cashtag": "$OSK",
+      "headline": ""
+    },
+    {
+      "id": "post-founder-016",
+      "account": "founder",
+      "slot": "D1-S16",
       "type": "macro",
       "cashtag": "",
       "headline": ""
     },
     {
-      "id": "post-sophia-047",
+      "id": "post-theme-004",
+      "account": "meagan",
+      "slot": "D1-S5",
+      "type": "theme_list",
+      "cashtag": "$SNDK",
+      "headline": "Semiconductors selling off, -12.6% avg on Thursday"
+    },
+    {
+      "id": "post-sophia-023",
       "account": "sophia",
-      "slot": "D1-S47",
+      "slot": "D1-S23",
       "type": "chart",
-      "cashtag": "$URBN",
+      "cashtag": "$MTG",
       "headline": ""
     },
     {
-      "id": "post-insider-004",
+      "id": "post-sophia-032",
       "account": "sophia",
-      "slot": "D1-S21",
-      "type": "insider",
-      "cashtag": "$COO",
+      "slot": "D1-S32",
+      "type": "chart",
+      "cashtag": "$MRP",
       "headline": ""
     },
     {
-      "id": "post-kelly-012",
-      "account": "kelly",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
+      "id": "post-sophia-042",
+      "account": "sophia",
+      "slot": "D1-S42",
+      "type": "chart",
+      "cashtag": "$UVV",
       "headline": ""
     },
     {
-      "id": "post-kelly-036",
-      "account": "kelly",
-      "slot": "D1-S36",
-      "type": "receipt",
-      "cashtag": "$PCG",
+      "id": "post-sophia-050",
+      "account": "sophia",
+      "slot": "D1-S50",
+      "type": "chart",
+      "cashtag": "$NUE",
       "headline": ""
     },
     {
@@ -111,30 +130,22 @@
       "account": "kelly",
       "slot": "D1-S3",
       "type": "theme_list",
-      "cashtag": "$JBHT",
-      "headline": "Transportation & Logistics selling off, -1.8% avg on Wednesday"
-    },
-    {
-      "id": "post-cici-021",
-      "account": "cici",
-      "slot": "D1-S21",
-      "type": "chart",
-      "cashtag": "$ELV",
-      "headline": ""
+      "cashtag": "$DDD",
+      "headline": "Hardware selling off, -8.9% avg on Thursday"
     },
     {
       "id": "post-theme-006",
       "account": "cici",
       "slot": "D1-S2",
       "type": "theme_list",
-      "cashtag": "$HOOD",
-      "headline": "FinTech selling off, -1.5% avg on Wednesday"
+      "cashtag": "$LRCX",
+      "headline": "Artificial Intelligence selling off, -6.9% avg on Thursday"
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 78,
-      "hits": 0,
+      "pairs_checked": 66,
+      "hits": 2,
       "shared_media_hits": 0
     },
     "cadence": {
@@ -153,50 +164,44 @@
     "cherry_pick": {
       "status": "run",
       "loss_tickers_in_window": [
-        "AAP",
-        "ACM",
-        "AEP",
-        "AIN",
-        "ALHC",
-        "ASTE",
-        "BL",
-        "CARR",
-        "CC",
-        "CMS",
-        "COLL",
+        "AA",
+        "AKAM",
+        "AMSF",
+        "AOSL",
+        "AROC",
+        "BWXT",
+        "CENX",
+        "CMI",
         "CVS",
-        "CXT",
-        "EIX",
-        "HBAN",
-        "HUBG",
-        "IART",
-        "LZB",
-        "MMS",
-        "MPT",
+        "DAN",
+        "DY",
+        "ECG",
+        "EXK",
+        "HLIT",
+        "JBSS",
+        "LBRT",
+        "LSTR",
+        "MLI",
+        "MTZ",
+        "NB",
+        "NRG",
+        "NWSA",
         "OI",
-        "PCG",
-        "PNC",
-        "PPG",
-        "PRVA",
-        "PSMT",
-        "RHP",
-        "ROL",
-        "TTD",
-        "UPS",
-        "UPWK",
-        "UTHR",
-        "VCYT",
-        "WH",
-        "WHR",
-        "WING",
-        "WSO",
-        "XRAY",
-        "YUM"
+        "PL",
+        "PLG",
+        "POWL",
+        "SGML",
+        "SHEN",
+        "SUPN",
+        "SXI",
+        "VRT",
+        "VTOL",
+        "WULF"
       ],
       "cherry_pick_detected": false
     },
     "stale_receipts": {
-      "age_days": 6,
+      "age_days": 1,
       "max": 7
     },
     "kill_switch": {
@@ -227,7 +232,7 @@
       "graduate_after_days": 21,
       "weeks_1_2_days": 5,
       "weeks_3_4_days": 10,
-      "as_of": "2026-09-17",
+      "as_of": "2026-11-06",
       "as_of_usable": true,
       "base": {
         "max_posts_per_account_per_day": null,
@@ -243,7 +248,7 @@
       "accounts": {
         "flagship": {
           "created": "2026-07-24",
-          "age_days": 55,
+          "age_days": 105,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -356,7 +361,7 @@
         },
         "founder": {
           "created": "2026-07-27",
-          "age_days": 52,
+          "age_days": 102,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -378,7 +383,7 @@
         },
         "meagan": {
           "created": "2026-07-28",
-          "age_days": 51,
+          "age_days": 101,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -400,7 +405,7 @@
         },
         "sophia": {
           "created": "2026-07-28",
-          "age_days": 51,
+          "age_days": 101,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -422,7 +427,7 @@
         },
         "kelly": {
           "created": "2026-07-28",
-          "age_days": 51,
+          "age_days": 101,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -444,7 +449,7 @@
         },
         "cici": {
           "created": "2026-07-28",
-          "age_days": 51,
+          "age_days": 101,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -466,7 +471,7 @@
         },
         "mastermind_news": {
           "created": "2026-08-02",
-          "age_days": 46,
+          "age_days": 96,
           "tier": "graduated",
           "enabled": true,
           "caps": {

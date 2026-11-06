@@ -40,10 +40,15 @@ Usage:
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from scripts.sparse_guard import refuse_if_vacuous, trees_for  # noqa: E402
 
 # Cross-age threshold from engine/confluence_tiers.py
 FRESH_TICKS = 2
@@ -259,6 +264,20 @@ def main(argv: list[str] | None = None) -> int:
     argv = argv if argv is not None else sys.argv[1:]
     artifact = argv[0] if argv else "site/factordata/us_standouts.json"
 
+    # `_check` returns [] for an absent artifact ON PURPOSE (first run, or not yet emitted) —
+    # that tolerance is correct. What was wrong is that an empty list then printed "passes all 5
+    # board invariants" about a file that does not exist, so the absent case and the clean case
+    # were one indistinguishable line. Resolve the artifact ONCE here and say which happened.
+    resolved = Path(artifact)
+    if not resolved.is_absolute():
+        resolved = ROOT / resolved
+    n_present = 1 if resolved.exists() else 0
+    refusal = refuse_if_vacuous(n_present, trees_for(resolved),
+                                "check-board-contradictions-vacuous")
+    if refusal:
+        print(f"check_board_contradictions: REFUSED — {refusal}", file=sys.stderr)
+        return 1
+
     violations = _check(artifact)
     if violations:
         print(
@@ -275,8 +294,16 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 1
 
+    if not n_present:
+        print(
+            f"check_board_contradictions: SKIPPED — checked 0 of 1 artifact(s); {artifact} is "
+            f"absent (not emitted yet). NO invariant was evaluated — this is not a pass."
+        )
+        return 0
+
     print(
-        f"check_board_contradictions: OK — {artifact} passes all 5 board invariants "
+        f"check_board_contradictions: OK — checked 1 of 1 artifact(s); {artifact} "
+        f"passes all 5 board invariants "
         f"(a: stale-fresh, b: imminent-blocked, c: band-verdict, d: declared-sort "
         f"[stage+score under us_prophet_v1, alpha-desc on legacy boards], "
         f"e: W4-reflexivity-neff-consistency)."

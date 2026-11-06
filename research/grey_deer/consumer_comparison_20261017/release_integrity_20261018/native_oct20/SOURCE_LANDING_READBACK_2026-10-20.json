@@ -1,0 +1,159 @@
+{
+  "classification": "FIVE_FILE_SOURCE_LANDING_VERIFIED",
+  "completed_at": "2026-10-20T04:23:34.958762+00:00",
+  "candidate": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+  "merge": "a7553e0a18339c910eef9687c730b06605dd710e",
+  "fetched_main": "a7553e0a18339c910eef9687c730b06605dd710e",
+  "fetch": {
+    "returncode": 0,
+    "stderr": "From https://github.com/mastermindx-market-intelligence/Mastermind\n * branch                  master     -> FETCH_HEAD\nAuto packing the repository in background for optimum performance.\nSee \"git help gc\" for manual housekeeping.\nwarning: The last gc run reported the following. Please correct the root cause\nand remove /Users/chriswong/Documents/GitHub/Mastermind/.git/worktrees/risk-radar-release-integrity-20261018-0310/gc.log\nAutomatic cleanup will not be performed until the file is removed.\n\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references prune\n"
+  },
+  "pr": 1610,
+  "files": [
+    {
+      "path": "scripts/deploy_code_to_vps.sh",
+      "bytes": 20370,
+      "sha256": {
+        "candidate": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+        "merge": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+        "fetched_main": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8"
+      },
+      "git_blobs": {
+        "candidate": "f871e88815e70338a646008dbe77dfcc1727e978",
+        "merge": "f871e88815e70338a646008dbe77dfcc1727e978",
+        "fetched_main": "f871e88815e70338a646008dbe77dfcc1727e978"
+      }
+    },
+    {
+      "path": "tests/test_datadog_vps_install.py",
+      "bytes": 5991,
+      "sha256": {
+        "candidate": "a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95",
+        "merge": "a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95",
+        "fetched_main": "a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95"
+      },
+      "git_blobs": {
+        "candidate": "34677f34ee196120edc3b60c1af22a1840e6539f",
+        "merge": "34677f34ee196120edc3b60c1af22a1840e6539f",
+        "fetched_main": "34677f34ee196120edc3b60c1af22a1840e6539f"
+      }
+    },
+    {
+      "path": "tests/test_deploy_provenance.py",
+      "bytes": 50039,
+      "sha256": {
+        "candidate": "80ebb89997b575aed4b8986fdec11f27a1987c0ec5cb3e3d80ad8041c9ae7d10",
+        "merge": "80ebb89997b575aed4b8986fdec11f27a1987c0ec5cb3e3d80ad8041c9ae7d10",
+        "fetched_main": "80ebb89997b575aed4b8986fdec11f27a1987c0ec5cb3e3d80ad8041c9ae7d10"
+      },
+      "git_blobs": {
+        "candidate": "decdfc11daae32148a32b3397af1da535daa965b",
+        "merge": "decdfc11daae32148a32b3397af1da535daa965b",
+        "fetched_main": "decdfc11daae32148a32b3397af1da535daa965b"
+      }
+    },
+    {
+      "path": "tests/test_forward_evaluation.py",
+      "bytes": 31215,
+      "sha256": {
+        "candidate": "637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d",
+        "merge": "637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d",
+        "fetched_main": "637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d"
+      },
+      "git_blobs": {
+        "candidate": "0c342266f003d0936305f1be8e38bfe55c6f60da",
+        "merge": "0c342266f003d0936305f1be8e38bfe55c6f60da",
+        "fetched_main": "0c342266f003d0936305f1be8e38bfe55c6f60da"
+      }
+    },
+    {
+      "path": "tests/test_portfolio_archival.py",
+      "bytes": 16993,
+      "sha256": {
+        "candidate": "0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384",
+        "merge": "0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384",
+        "fetched_main": "0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384"
+      },
+      "git_blobs": {
+        "candidate": "0ef18069ad35b4880b3997915e5eeca3085ecd87",
+        "merge": "0ef18069ad35b4880b3997915e5eeca3085ecd87",
+        "fetched_main": "0ef18069ad35b4880b3997915e5eeca3085ecd87"
+      }
+    }
+  ],
+  "startup_source_identity": [
+    {
+      "path": "app/main.py",
+      "git_blobs": {
+        "candidate": "fdb22dc1a2650ff57d50a1c9c1cfebcf10521da4",
+        "merge": "fdb22dc1a2650ff57d50a1c9c1cfebcf10521da4",
+        "fetched_main": "fdb22dc1a2650ff57d50a1c9c1cfebcf10521da4"
+      },
+      "candidate_equals_merge": true,
+      "candidate_equals_fetched_main": true
+    },
+    {
+      "path": "app/scheduler.py",
+      "git_blobs": {
+        "candidate": "979ae223b87c85b14a5906c009de4eb78fda31d4",
+        "merge": "979ae223b87c85b14a5906c009de4eb78fda31d4",
+        "fetched_main": "979ae223b87c85b14a5906c009de4eb78fda31d4"
+      },
+      "candidate_equals_merge": true,
+      "candidate_equals_fetched_main": true
+    },
+    {
+      "path": "app/web.py",
+      "git_blobs": {
+        "candidate": "3cff8680694edc84aeb8dc64361422ba4c5e7944",
+        "merge": "3cff8680694edc84aeb8dc64361422ba4c5e7944",
+        "fetched_main": "3cff8680694edc84aeb8dc64361422ba4c5e7944"
+      },
+      "candidate_equals_merge": true,
+      "candidate_equals_fetched_main": true
+    },
+    {
+      "path": "bot/overnight.py",
+      "git_blobs": {
+        "candidate": "2e4e7ba161ef06e0fc83446c9be9716e36cc993c",
+        "merge": "2e4e7ba161ef06e0fc83446c9be9716e36cc993c",
+        "fetched_main": "2e4e7ba161ef06e0fc83446c9be9716e36cc993c"
+      },
+      "candidate_equals_merge": true,
+      "candidate_equals_fetched_main": true
+    },
+    {
+      "path": "control_plane/executive_incident_composition.py",
+      "git_blobs": {
+        "candidate": "729c66cda35b5fd631c753c5536ae87e4d8a6195",
+        "merge": "729c66cda35b5fd631c753c5536ae87e4d8a6195",
+        "fetched_main": "729c66cda35b5fd631c753c5536ae87e4d8a6195"
+      },
+      "candidate_equals_merge": true,
+      "candidate_equals_fetched_main": true
+    },
+    {
+      "path": "control_plane/worker_adapter.py",
+      "git_blobs": {
+        "candidate": "c7514e76e19b1d1e05edf142fa0c1352cb40c4eb",
+        "merge": "c7514e76e19b1d1e05edf142fa0c1352cb40c4eb",
+        "fetched_main": "c7514e76e19b1d1e05edf142fa0c1352cb40c4eb"
+      },
+      "candidate_equals_merge": true,
+      "candidate_equals_fetched_main": true
+    },
+    {
+      "path": "ops/executive_os/provider_readiness.py",
+      "git_blobs": {
+        "candidate": "21173eaf67b90becc4119b397b877c4c857f6df8",
+        "merge": "4f3f26b1bc5d3e7968dc1ebbcba30a6937acc7aa",
+        "fetched_main": "4f3f26b1bc5d3e7968dc1ebbcba30a6937acc7aa"
+      },
+      "candidate_equals_merge": false,
+      "candidate_equals_fetched_main": false
+    }
+  ],
+  "queue_observer_receipt_sha256": "8c4119c2e79b9304751c138c3eb4b65ff3544283f92acf0dfac4d2128fafc485",
+  "production_acceptance": false,
+  "runtime_installed": false
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "special_situations.premium.v1",
+  "parser_version": "special-situations-premium/1.0.0",
+  "scored": false,
+  "is_context_only": true,
+  "disclaimer": "Context only \u2014 an event-tracking display of public filings, not a signal, recommendation, or sizing input.",
+  "built": "2026-11-06 12:31 UTC",
+  "status": "computed",
+  "refusal": null,
+  "ticker": "CVI",
+  "issuer_key": "cik:1376139",
+  "company": "CVR ENERGY INC",
+  "category": "Acquisitions",
+  "currency": "USD",
+  "offer_price": 47.55,
+  "offer_accession": "0001193125-26-448369",
+  "offer_filing_date": "2026-11-05",
+  "offer_form_type": "424B5",
+  "offer_price_provenance": "filing_terms_extracted",
+  "announcement_filing_date": "2026-11-03",
+  "unaffected_price": 55.91999816894531,
+  "unaffected_price_date": "2026-11-02",
+  "premium_pct": -15.0,
+  "amendment_vintage": {
+    "form_type": "424B5",
+    "is_amendment": false,
+    "n_amendments": 0,
+    "filings_in_deal": 2
+  },
+  "source_url": "https://www.sec.gov/Archives/edgar/data/1376139/000119312526448369/0001193125-26-448369-index.htm",
+  "null_en": null,
+  "null_zh": null
+}
