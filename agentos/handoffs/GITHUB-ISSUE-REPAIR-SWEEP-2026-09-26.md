@@ -1,3 +1,56 @@
+---
+workstream: WS:AGENT-OS
+session: sol/github-issue-repair-sweep-checkpoint-20260926
+model: sol
+ended_because: ci_handoff
+mission: Archive the September 26, 2026 issue-repair checkpoint in the existing handoff schema, preserving
+  historical receipts, unfinished lanes and effect boundaries. WS:AGENT-OS identifies this concrete archival-schema
+  repair, not ownership of the historical incident sweep.
+state_before: Original PR8044 head e35caccd6854637c02fa5d1079cba3f557d52cdc contains a 193-line records-only
+  checkpoint, blob4799cc21eeaa7e473077dfdd9f85d3d7bd4abde1, without YAML frontmatter. This archival repair
+  has not refreshed the historical incident conclusions.
+changed:
+- path: agentos/handoffs/GITHUB-ISSUE-REPAIR-SWEEP-2026-09-26.md
+  what: Add required handoff metadata and an archival qualification; preserve the complete original193-line
+    body without changing any historical receipt, refusal or unfinished-lane statement.
+verified:
+- claim: The original immutable source checkpoint was read and lacks a leading YAML frontmatter block.
+  command: GitHub fetch_file(repository_full_name='mastermindx-market-intelligence/macro', path='agentos/handoffs/GITHUB-ISSUE-REPAIR-SWEEP-2026-09-26.md',
+    ref='e35caccd6854637c02fa5d1079cba3f557d52cdc')
+  result: Blob4799cc21eeaa7e473077dfdd9f85d3d7bd4abde1,193lines. Source read only; no historical runtime/provider/incident
+    check was repeated.
+unverified:
+- claim: Current applicability of historical closures, production state, runner state, access/rulesets,
+    live ownership and absence of uncertain effects.
+  what_would_verify: A newly assigned receiver performs bounded current-source, live-owner and original-target
+    effect reconciliation before any separately authorized operational continuation.
+unresolved:
+- 'Historical September26 checkpoint lanes #6783, #8025, #6693 and #5979 remain recorded; their present
+  disposition is not asserted by this archival repair.'
+next_actions:
+- Finish this same-carrier records repair and its actual current delivery checks; consume the protected
+  controller's merge receipt.
+- Any later incident continuation begins with current Chairman intent, protected source law, live ownership
+  and effect reconciliation; an archived author is not a required approver.
+do_not_redo:
+- Preserve the original historical DO_NOT_REDO set and all refusal/effect receipts.
+- Do not replay research/runtime work, close incidents, dispatch jobs, alter schedules, lower thresholds
+  or reopen completed carriers as part of this archival correction.
+danger_areas:
+- Reading historical 'current' or 'next action' text as present authority.
+- Treating historical denial/reconciliation statements as proof of today's effects or access.
+- Overlapping a live writer or uncertain effect, or treating source-record acceptance as operational/product
+  acceptance.
+prs:
+- 8044
+---
+
+## Archival qualification — schema maintenance only
+
+The body below is the preserved September 26, 2026 checkpoint. Its “current,” “next action,” lifecycle, acceptance and effect statements describe that historical checkpoint. This metadata repair does not revalidate those statements, create a live assignment, release a present hold or authorize operational action. Current Chairman intent, protected source law, live ownership and original-target effect reconciliation govern any later continuation. The WS:AGENT-OS join identifies this concrete record-schema maintenance defect; it does not transfer ownership of the historical incident sweep. The original provider, direct-merge and other refusals remain historical fences, not retry permissions.
+
+## Preserved historical checkpoint
+
 # GitHub Issue Repair Sweep — Sol Continuation Handoff — 2026-09-26
 
 ## Identity / authority

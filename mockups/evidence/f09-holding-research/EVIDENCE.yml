@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/institutional_holding_research.css
+  - site/institutional_holding_research.css
+  - templates/fundamental_forensics.html.j2
+  - site/fundamental_forensics.html
+manifest: mockups/evidence/f09-holding-research/manifest.json

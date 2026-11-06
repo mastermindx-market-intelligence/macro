@@ -1,0 +1,14 @@
+[
+  {
+    "check": "bad_hash",
+    "passed": true,
+    "returncode": 1,
+    "expected_error": "retained PDF hash mismatch"
+  },
+  {
+    "check": "existing_output",
+    "passed": true,
+    "returncode": 1,
+    "expected_error": "existing evidence must not be overwritten"
+  }
+]

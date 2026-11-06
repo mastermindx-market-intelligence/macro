@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0001652044-21-000020",
+    "expected_period_end": "2021-03-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "19546000000",
+    "fiscal_year": 2021,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "GOOGL",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "goog-20210331.htm | us-gaap:OperatingIncomeLoss @ ie2ee2da496fa495789d2280c65104f66_D20210101-20210331 (StatementBusinessSegmentsAxis=goog:GoogleServicesSegmentMember; ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember) | 'Google Services $ 11,548 $ 19,546' | Segment operating income for the largest segment, Google Services, for the three months ended March 31, 2021; segment note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_profit_or_loss",
+    "target_kind": "extract",
+    "trial_id": "PK03|0001652044-21-000020|extract|segment_profit_or_loss"
+  },
+  {
+    "accession": "0001652044-21-000020",
+    "expected_period_end": "2021-03-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "51178000000",
+    "fiscal_year": 2021,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "GOOGL",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "goog-20210331.htm | us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax @ i1720bfb35667446ca9a24bff9a5bdda0_D20210101-20210331 (StatementBusinessSegmentsAxis=goog:GoogleServicesSegmentMember) | 'Google Services total 38,198 51,178' | Largest reportable segment by revenues for the three months ended March 31, 2021: Google Services (vs Google Cloud 4,047; Other Bets 198); segment note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_revenue",
+    "target_kind": "extract",
+    "trial_id": "PK03|0001652044-21-000020|extract|segment_revenue"
+  }
+]
