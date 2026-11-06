@@ -33,6 +33,10 @@ changed:
     what: >-
       Linked the master plan and this handoff; added LR-PSL-W1 in_progress with PR 10806.
       Preserved LR-W1-W5 acceptance and LR-W6 preregistration/history embargo.
+  - path: research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_SOURCE_AUDIT_2026-11-06.md
+    what: Native evidence/clock/rights and consumer admission audit; precise next contracts and actual cross-session risk mismatch.
+  - path: research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_NATIVE_READ_2026-11-06.json
+    what: Retained native-shape proof on the 2026-10-22 artifact with source hash, all-eleven output, unchanged input/default and explicit production/freshness limitations.
 verified:
   - claim: Protected source law and bootstrap were pinned compatibly before edits.
     command: >-
@@ -61,6 +65,24 @@ verified:
       Native REQUEST_REFUSED_BEFORE_LAUNCH / EXECUTION_NOT_ELIGIBLE,
       execution_absence_proven true; controller exit 75; no START, no result, retry false.
       Direct parent work used NO_ELIGIBLE_PRE_EFFECT_WORKER. No replay or replacement worker.
+  - claim: Implementation is durably published and the plan/handoff read back exactly.
+    command: Original Studio publisher commit/push, then GitHub fetch_file at 378e289b180b90ed2902a7689e960932a8a26fe6.
+    result: APPLIED local/remote head equality; code blob 49f160a8d661e8be2dc7fb072f9406888967c8fc; plan/handoff text equality true.
+  - claim: Native retained sector input composes all eleven groups without changing input or default output.
+    command: >-
+      Studio process 12800 read existing macro-main site/sectordata/sector_cycles.json,
+      called measured_group_read with default and include_sector_dossiers=True,
+      compared default output and native bytes, and emitted the source-linked JSON receipt.
+    result: >-
+      Source session 2026-10-22; SHA-256 46a7b95a11446f12028a90cb071955710d516accd68f49db5ad99bab111194fa;
+      11/11 measured for 21 and 63 sessions; dossier 4788 bytes; measurement available but
+      explanatory dossier partial; freshness unverified and historical admissibility false.
+      This proves native shape, not a deployed/current production path.
+  - claim: Continuity records are schema-valid and the source diff is clean.
+    command: >-
+      python3 scripts/agentos.py validate --paths agentos/workstreams/WS-LEADERSHIP-ROTATION-INTELLIGENCE.md
+      agentos/handoffs/LEADERSHIP-ROTATION-INTELLIGENCE-2026-11-06-persistent-sector-c4.md; git diff --check.
+    result: 0 errors, two pre-existing prefix-style owns_paths warnings; diff check exit 0.
 unverified:
   - claim: The implementation head has passed hosted required CI.
     what_would_verify: GitHub checks attached to the exact published implementation head.
@@ -92,8 +114,8 @@ unresolved:
 next_actions:
   - >-
     Continue on PR 10806 and its original source workspace: publish/read back the qualified
-    source slice, finish the bounded native evidence/consumer admission audit, and fix concrete
-    findings. Inspect exact-head CI once published; do not dispatch an unrelated daily builder.
+    source slice, use the completed native evidence audit and qualify any disjoint consumer parser after
+    a current custody check; fix concrete findings. Inspect exact-head CI once published; do not dispatch an unrelated daily builder.
   - >-
     Reconcile #10780 and accepted UI source custody before consumer activation. If disjoint
     downstream work is available, use existing Terminal/portfolio readers and preserve all
@@ -146,6 +168,10 @@ The source task tree is
 The original assignment is
 [Mastermind #1202 comment 6695716256](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1202#issuecomment-6695716256).
 Initial plan publication is commit `d213d0ee71d8b0736b1f58f35dbfe185cfc76889`.
+Implementation publication is commit `378e289b180b90ed2902a7689e960932a8a26fe6`.
+The completed [native source audit](../../research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_SOURCE_AUDIT_2026-11-06.md)
+and [native-shape receipt](../../research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_NATIVE_READ_2026-11-06.json)
+preserve the exact source limits and next admission obligations.
 All candidate work stays in [Macro PR #10806](https://github.com/mastermindx-market-intelligence/macro/pull/10806).
 
 ## Custody and effects

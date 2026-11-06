@@ -46,6 +46,8 @@ artifacts:
   - research/ROTATION_EVENTS_V2_MASTERPLAN_BY_FABLE.md
   - research/SECTOR_ROTATION_CONTINUATION.md
   - research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_MASTERPLAN_2026-11-06.md
+  - research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_SOURCE_AUDIT_2026-11-06.md
+  - research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_NATIVE_READ_2026-11-06.json
 waves:
   - id: LR-W1
     title: T01 frontier + T02 source qualification + T03–T05/T08 contract projection + T06 evidence modes + T16 replay isolation
