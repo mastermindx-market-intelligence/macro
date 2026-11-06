@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-15T07:17:23.107992+00:00",
+  "tested_commit": "0ec629a508fe96af93d1b1bc1d5405343952b30e",
+  "local_test_tree": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/eval-os-tested-closure-20261015-5c3558312d9d865a",
+  "a1_closure_paths": 1202,
+  "missing": [
+    "engine/sector_intelligence/consumer_cyclical_display.py",
+    "engine/sector_intelligence/consumer_cyclical_projection.py",
+    "engine/sector_intelligence/consumer_cyclical_shared_contract.py",
+    "engine/sector_intelligence/finance_case_signal.py",
+    "engine/sector_intelligence/finance_page_signal.py",
+    "engine/sector_intelligence/finance_projection.py",
+    "engine/sector_intelligence/finance_watching.py",
+    "engine/sector_intelligence/finance_witness_hints.py",
+    "scripts/build_consumer_cyclical_plnt_page.py"
+  ],
+  "matches_hosted_annotations": true,
+  "result": "RED_REPRODUCED",
+  "scope": "Exact hosted tested tree; no carrier mutation/main integration/product changes."
+}

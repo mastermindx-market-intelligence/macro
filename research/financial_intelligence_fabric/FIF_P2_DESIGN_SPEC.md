@@ -665,6 +665,7 @@ Map `code` + `reason` (C1 `:189-190,268-315`) to glance copy. Raw code stays in 
 | A35-I1 | duplicate_share_class | Same company, another share class | 同一公司的另一类股份 |
 | A35-X1 | missing_peer_observation | No observation in this package | 本数据包中无观察值 |
 | A35-B1 | metric_not_applicable | This metric does not apply | 该指标不适用 |
+| A35-W1 | statement_withheld | Statement not rebuilt from this filing | 未能从该财报重建此报表 |
 | A35-P1 | period_misaligned | Reporting period does not line up | 报告期未对齐 |
 | A35-P2 | period_shifted-and-labeled | Shifted period | 期间已平移 |
 
@@ -848,6 +849,7 @@ Mechanism: `t()` in `html.j2:1-3`, `pair()` in `js:185-189`. No i18n catalog. No
 | Same company, another share class | 同一公司的另一类股份 | A35-I1 | 6 |
 | No observation in this package | 本数据包中无观察值 | A35-X1 | 6 |
 | This metric does not apply | 该指标不适用 | A35-B1 | 6 |
+| Statement not rebuilt from this filing | 未能从该财报重建此报表 | A35-W1 | 6 |
 | Reporting period does not line up | 报告期未对齐 | A35-P1 | 6 |
 | Shifted period | 期间已平移 | A35-P2 | 2 |
 | Excluded | 已排除 | unknown code | 1 |

@@ -14,11 +14,22 @@ from engine.company_intelligence.documents import (
     SourceDocument,
 )
 from engine.company_intelligence.industrials_source_facts import (
+    _DATE_ONLY_RE,
+    _INSTANT_RE,
+    _aware_instant,
     edition_chain,
     edition_documents,
     extract_case_cells,
 )
 from tests.industrials_result_cash_helpers import case
+
+
+_FULLWIDTH_DIGITS = "\uff10\uff11\uff12\uff13\uff14\uff15\uff16\uff17\uff18\uff19"
+
+
+def _fullwidth(text: str) -> str:
+    """Map ASCII digits to fullwidth digits (the crash fixture)."""
+    return text.translate(str.maketrans("0123456789", _FULLWIDTH_DIGITS))
 
 
 def test_ind_r205() -> None:
@@ -101,3 +112,76 @@ def test_filing_enrichment_is_not_an_amendment() -> None:
     assert documents[0].rights_state == "public_primary"
     assert filing.rights_state == "unknown"
     assert all(document.rights_profile == "rp_unknown_v1" for document in documents)
+
+
+def test_fullwidth_digit_instant_stays_unknown() -> None:
+    """A Unicode-digit instant is unknown; it must never raise.
+
+    ``_INSTANT_RE`` without ``re.ASCII`` matches fullwidth digits and
+    ``datetime.fromisoformat`` then refuses them, which used to kill
+    edition construction for the whole case.
+    """
+    instant = _fullwidth("2026-07-09T12:00:00Z")
+    assert not any(ch.isdigit() and ch.isascii() for ch in instant)
+    documents = edition_documents(
+        {
+            "synthetic": True,
+            "issuer": {"company_id": "synthetic:halcyon"},
+            "sources": [
+                {
+                    "source_id": "halcyon-fullwidth",
+                    "url": "https://example.invalid/fullwidth.json",
+                    "mode": "release",
+                    "rights_state": "unknown",
+                }
+            ],
+            "documents": [
+                {
+                    "document_ref": "synthetic:document:fullwidth",
+                    "source_id": "halcyon-fullwidth",
+                    "source_at": instant,
+                }
+            ],
+        }
+    )
+    assert len(documents) == 1
+    assert documents[0].published_at is None
+    assert documents[0].available_at is None
+    assert _INSTANT_RE.fullmatch(instant) is None
+
+
+def test_fullwidth_digit_date_only_stays_unknown() -> None:
+    """A Unicode-digit date-only clock stays unknown, as ASCII does."""
+    date_only = _fullwidth("2026-07-30")
+    assert not any(ch.isdigit() and ch.isascii() for ch in date_only)
+    documents = edition_documents(
+        {
+            "synthetic": True,
+            "issuer": {"company_id": "synthetic:halcyon"},
+            "sources": [
+                {
+                    "source_id": "halcyon-fullwidth-date",
+                    "url": "https://example.invalid/fullwidth-date.json",
+                    "mode": "release",
+                    "rights_state": "unknown",
+                }
+            ],
+            "documents": [
+                {
+                    "document_ref": "synthetic:document:fullwidth-date",
+                    "source_id": "halcyon-fullwidth-date",
+                    "source_at": date_only,
+                }
+            ],
+        }
+    )
+    assert len(documents) == 1
+    assert documents[0].published_at is None
+    assert documents[0].available_at is None
+    assert _DATE_ONLY_RE.fullmatch(date_only) is None
+
+
+def test_calendar_invalid_ascii_instant_stays_unknown() -> None:
+    """The regex admits 2026-02-30; ``fromisoformat`` must be caught."""
+    assert _INSTANT_RE.fullmatch("2026-02-30T12:00:00Z") is not None
+    assert _aware_instant("2026-02-30T12:00:00Z") is None

@@ -13,6 +13,9 @@ import ipaddress
 import json
 import os
 import socket
+import signal
+from contextlib import contextmanager
+from contextvars import ContextVar
 import threading
 import time
 import urllib.parse
@@ -56,8 +59,102 @@ _MAX_HISTORY = 12
 _MAX_CONTEXT_CACHE_ENTRIES = 256
 
 
+_READ_FAILURE_STAGES = frozenset({"sibling_marker", "immutable_generation_manifest", "immutable_workspace_body"})
+_READ_FAILURE_CATEGORIES = frozenset({"http_error", "timeout", "connection_error", "request_error", "unknown"})
+
+
+def _closed_read_failure(stage: object, category: object, status: object) -> dict[str, Any]:
+    safe_stage = stage if isinstance(stage, str) and stage in _READ_FAILURE_STAGES else None
+    safe_category = category if isinstance(category, str) and category in _READ_FAILURE_CATEGORIES else "unknown"
+    return {
+        "request_stage": safe_stage,
+        "exception_category": safe_category,
+        "http_status": status if safe_category == "http_error" and type(status) is int and 100 <= status <= 599 else None,
+    }
+
+
 class CompanyIntelligenceReadError(RuntimeError):
     """The public source is unavailable or fails its immutable-contract checks."""
+
+    def __init__(self, *args: object, request_stage: str | None = None,
+                 exception_category: str = "unknown", http_status: int | None = None):
+        super().__init__(*args)
+        for name, value in _closed_read_failure(request_stage, exception_category, http_status).items():
+            setattr(self, name, value)
+
+
+def _request_failure_diagnostics(exc: BaseException) -> dict[str, Any]:
+    category, status = "unknown", None
+    if isinstance(exc, (requests.Timeout, TimeoutError)):
+        category = "timeout"
+    elif isinstance(exc, requests.ConnectionError):
+        category = "connection_error"
+    elif isinstance(exc, requests.HTTPError):
+        category = "http_error"
+        # requests.Response is false for HTTP errors; test actual presence.
+        response = exc.response
+        status = response.status_code if response is not None else None
+    elif isinstance(exc, requests.RequestException):
+        category = "request_error"
+    return _closed_read_failure(None, category, status)
+
+
+def read_failure_diagnostics(exc: BaseException) -> dict[str, Any]:
+    """Only closed, observed facts; never render exception text or transport data.
+
+    Prior/carry-forward wrappers retain their original cause. A bounded walk
+    preserves the reader facts through those wrappers without exposing a cause.
+    """
+    current: BaseException | None = exc
+    for _ in range(6):
+        if isinstance(current, CompanyIntelligenceReadError):
+            return _closed_read_failure(current.request_stage, current.exception_category, current.http_status)
+        if isinstance(current, (requests.RequestException, TimeoutError)):
+            return _request_failure_diagnostics(current)
+        current = current.__cause__ if current is not None else None
+    return _closed_read_failure(None, "unknown", None)
+
+
+# Optional producer-only budget. Context-local; never changes other readers or
+# enlarges the incumbent per-request timeout. No thread/process is launched.
+_read_deadline = ContextVar("company_intelligence_read_deadline", default=None)
+
+
+class CompanyIntelligenceReadBudgetExceeded(CompanyIntelligenceReadError):
+    """Optional consumer exhausted its own read budget."""
+
+
+def check_read_budget() -> float:
+    deadline = _read_deadline.get()
+    remaining = _REQUEST_TIMEOUT_SECONDS if deadline is None else deadline - time.monotonic()
+    if remaining <= 0:
+        raise CompanyIntelligenceReadBudgetExceeded("optional owner read budget exhausted")
+    return min(_REQUEST_TIMEOUT_SECONDS, remaining)
+
+
+@contextmanager
+def bounded_read_budget(seconds: float):
+    # This optional ordinary-writer scope is synchronous/main-thread only.
+    # A requests timeout does NOT bound DNS, headers or a trickling response.
+    # Never replace another consumer's active process timer or launch a worker.
+    if (not 0 < seconds <= 16 or threading.current_thread() is not threading.main_thread()
+            or signal.getitimer(signal.ITIMER_REAL) != (0.0, 0.0)):
+        raise CompanyIntelligenceReadBudgetExceeded("optional owner read budget unavailable")
+    previous = _read_deadline.get()
+    deadline = time.monotonic() + seconds
+    token = _read_deadline.set(min(previous, deadline) if previous is not None else deadline)
+    old_handler = signal.getsignal(signal.SIGALRM)
+    def expired(_signum, _frame):
+        raise CompanyIntelligenceReadBudgetExceeded("optional owner read budget exhausted")
+    try:
+        signal.signal(signal.SIGALRM, expired)
+        signal.setitimer(signal.ITIMER_REAL, seconds)
+        check_read_budget()
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, old_handler)
+        _read_deadline.reset(token)
 
 
 _cache_lock = threading.Lock()
@@ -191,13 +288,14 @@ def _fetch_bytes(url: str, *, limit: int, allow_404: bool = False) -> bytes | No
                 "Accept": "application/json",
                 "User-Agent": "MastermindCompanyIntelligence/1.0",
             },
-            timeout=_REQUEST_TIMEOUT_SECONDS,
+            timeout=check_read_budget(),
             stream=True,
             # A redirected R2 object could switch this server-side fetch to a
             # private endpoint.  Immutable objects never need a redirect.
             allow_redirects=False,
         )
         with response:
+            check_read_budget()
             response_url = urllib.parse.urlsplit(str(getattr(response, "url", url) or url))
             if (
                 getattr(response, "is_redirect", False)
@@ -218,6 +316,7 @@ def _fetch_bytes(url: str, *, limit: int, allow_404: bool = False) -> bytes | No
             chunks: list[bytes] = []
             used = 0
             for chunk in response.iter_content(chunk_size=65536):
+                check_read_budget()
                 if not chunk:
                     continue
                 used += len(chunk)
@@ -228,10 +327,25 @@ def _fetch_bytes(url: str, *, limit: int, allow_404: bool = False) -> bytes | No
     except CompanyIntelligenceReadError:
         raise
     except requests.RequestException as exc:
-        raise CompanyIntelligenceReadError("Company Intelligence public source unavailable") from exc
+        raise CompanyIntelligenceReadError(
+            "Company Intelligence public source unavailable", **_request_failure_diagnostics(exc)
+        ) from exc
+    check_read_budget()
     if len(body) > limit:
         raise CompanyIntelligenceReadError("public object exceeds safe size bound")
     return body
+
+
+def _fetch_workspace_bytes(url: str, *, limit: int, request_stage: str,
+                           allow_404: bool = False) -> bytes | None:
+    """Attribute existing producer reads without changing their transport guards."""
+    if request_stage not in _READ_FAILURE_STAGES:
+        raise ValueError("unknown workspace request stage")
+    try:
+        return _fetch_bytes(url, limit=limit, allow_404=allow_404)
+    except CompanyIntelligenceReadError as exc:
+        exc.request_stage = request_stage
+        raise
 
 
 def _json_object(body: bytes, *, name: str) -> dict[str, Any]:
@@ -938,7 +1052,8 @@ def fetch_current_workspace_marker_raw(
     the identical discipline to predecessor-generation manifests)."""
     resolved = _public_base_url(base_url, require_public_host=False)
     url = _workspace_object_url(resolved, "manifest.json")
-    body = _fetch_bytes(url, limit=_MAX_MANIFEST_BYTES, allow_404=True)
+    body = _fetch_workspace_bytes(url, limit=_MAX_MANIFEST_BYTES, allow_404=True,
+                                 request_stage="sibling_marker")
     if body is None:
         return None
     marker = _json_object(body, name="event workspace marker")
@@ -974,7 +1089,8 @@ def _fetch_generation_manifest_raw(
     "current" manifest, instead of a second GET for the same object."""
     resolved = _public_base_url(base_url, require_public_host=False)
     url = _workspace_object_url(resolved, f"generations/{generation_id}/manifest.json")
-    body = _fetch_bytes(url, limit=_MAX_MANIFEST_BYTES, allow_404=True)
+    body = _fetch_workspace_bytes(url, limit=_MAX_MANIFEST_BYTES, allow_404=True,
+                                 request_stage="immutable_generation_manifest")
     if body is None:
         raise WorkspaceChainNotPublished(f"generation {generation_id} manifest 404")
     manifest = _json_object(body, name=f"generation {generation_id} manifest")
@@ -987,7 +1103,8 @@ def _fetch_raw_workspace_bytes(
     """Fetch one generation-addressed workspace once, retaining exact bytes."""
     resolved = _public_base_url(base_url, require_public_host=False)
     url = _workspace_object_url(resolved, f"generations/{generation_id}/workspaces/{event_id}.json")
-    body = _fetch_bytes(url, limit=_MAX_WORKSPACE_BYTES, allow_404=True)
+    body = _fetch_workspace_bytes(url, limit=_MAX_WORKSPACE_BYTES, allow_404=True,
+                                 request_stage="immutable_workspace_body")
     if body is None:
         raise WorkspaceChainNotPublished(f"{event_id}: workspace 404 in generation {generation_id}")
     return body

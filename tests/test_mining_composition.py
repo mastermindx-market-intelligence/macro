@@ -1389,3 +1389,48 @@ def test_typed_absences_do_not_mint_an_issuer_identity():
     assert mp_issuer() is None
     assert profile_for_ticker("FCX") is None
     assert profile_for_ticker("MP") is None
+
+
+# ---------------------------------------------------------------------------
+# W15-B — _iso_date_in returns only real calendar dates (date-window defect)
+# ---------------------------------------------------------------------------
+
+
+def test_iso_date_in_rejects_non_gregorian_windows() -> None:
+    """A YYYY-MM-DD-shaped window that is not a real date never counts.
+
+    The old isdigit-only scan accepted ``0000-00-00``, month 13, day 40 and
+    fullwidth digits, so the validity comparison could run on a non-date.
+    The first window that IS a real Gregorian date is returned instead.
+    """
+    assert composition._iso_date_in("0000-00-00") is None
+    assert composition._iso_date_in("2026-13-40") is None
+    assert composition._iso_date_in("2026-02-30") is None
+    assert composition._iso_date_in("\uff12\uff10\uff12\uff16-\uff10\uff13-\uff13\uff11") is None
+    assert composition._iso_date_in("2026-03-31") == "2026-03-31"
+    assert composition._iso_date_in("FY2026-03-31") == "2026-03-31"
+    assert composition._iso_date_in("0000-00-00 later 2027-03-31") == "2027-03-31"
+
+
+def test_placeholder_date_window_does_not_precede_validity() -> None:
+    """A placeholder window is skipped; the later real date governs the withhold.
+
+    The identity row is shaped exactly like the rows built by
+    ``test_t04b_two_identity_bundle_withholds_only_the_early_subject``
+    (name/cik/stable_subject_id/valid_from/fictional).
+    """
+    row = {
+        "name": "FCX Synthetic",
+        "cik": "0000000421",
+        "stable_subject_id": "subject:fcx",
+        "valid_from": "2026-01-01",
+        "fictional": True,
+    }
+    # Old bug: "0000-00-00" sorted before "2026-01-01" and withheld the packet.
+    assert composition._period_precedes_issuer_validity(
+        "0000-00-00 later 2027-03-31", "subject:fcx", [row]
+    ) is False
+    # Control: a genuine pre-validity date still fires the real withhold.
+    assert composition._period_precedes_issuer_validity(
+        "2025-06-30", "subject:fcx", [row]
+    ) is True

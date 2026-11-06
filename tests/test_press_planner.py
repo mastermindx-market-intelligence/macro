@@ -7,9 +7,12 @@ synthetic repo root under tmp_path (MM_DATA_GUARD law).
 from __future__ import annotations
 
 import json
+import copy
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 _REPO = Path(__file__).resolve().parent.parent
 if str(_REPO) not in sys.path:
@@ -17,6 +20,76 @@ if str(_REPO) not in sys.path:
 
 from engine.press import desk_planner as P  # noqa: E402
 from tests import press_fixtures as F  # noqa: E402
+
+
+def _qualified_radar_row():
+    return {
+        "asof": "2026-10-12", "state": "caution", "dominant_scare": "rates",
+        "top_score": 70.3, "can_force": False, "authority_tier": "advisory",
+        "drawdown_prob": {
+            "h21": 0.19, "h10": 0.1, "h5": 0.042,
+            "calibration_evidence": {
+                "schema": "risk_radar_probability_evidence.v1",
+                "evidence_class": "reconstructed_historical", "precision_grade": False,
+                "target": {"depth": 0.05, "horizons": [5, 10, 21],
+                           "price_path": "native SPY closing observations"},
+                "horizons": {"h21": {"matched": True, "displayed_probability": 0.19}},
+            },
+        },
+    }
+
+
+def test_radar_receipt_preserves_probability_target_and_calibration_limits():
+    row = _qualified_radar_row()
+    before = copy.deepcopy(row)
+    fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+    assert "at least 5%" in fact["text"] and "SPY closing prices" in fact["text"]
+    assert "21-session" in fact["text"] and "0.19" in fact["text"]
+    assert "reconstructed historical" in fact["text"]
+    assert "not precision-grade" in fact["text"]
+    assert "not independent episodes" in fact["text"]
+    assert "advisory" in fact["text"]
+    assert "0.1" not in fact["values"] and "0.042" not in fact["values"]
+    assert fact["tier"] == "first_party" and fact["dated"] == "2026-10-12"
+    assert P._press_safe(fact["text"])
+    assert row == before
+
+
+@pytest.mark.parametrize("path,value", [
+    (("drawdown_prob",), None),
+    (("drawdown_prob",), []),
+    (("drawdown_prob", "calibration_evidence"), None),
+    (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+    (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+    (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+    (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+    (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+    (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+    (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+    (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+    (("drawdown_prob", "h21"), True),
+    (("drawdown_prob", "h21"), float("nan")),
+    (("drawdown_prob", "h21"), -0.1),
+    (("drawdown_prob", "h21"), 1.1),
+])
+def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+    row = _qualified_radar_row()
+    cursor = row
+    for key in path[:-1]:
+        cursor = cursor[key]
+    cursor[path[-1]] = value
+    fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+    assert "probability" not in fact["text"]
+    assert "caution" in fact["text"] and "70.3" in fact["text"]
+    assert fact["values"] == ["70.3"]
+
+
+def test_radar_receipt_accepts_explicit_zero_probability():
+    row = _qualified_radar_row()
+    row["drawdown_prob"]["h21"] = 0
+    row["drawdown_prob"]["calibration_evidence"]["horizons"]["h21"]["displayed_probability"] = 0
+    fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+    assert "probability 0" in fact["text"]
 
 
 def _cfg(root):
@@ -245,6 +318,69 @@ def test_research_slot_may_link_its_public_coverage_page(tmp_path):
     assert slot["allowed_links"] == [slot["primary_source"]["url"]]
 
 
+def test_research_preserves_source_tickers_and_links_only_their_existing_dossiers(tmp_path):
+    root = F.fixture_root(tmp_path)
+    baseline = P.plan(["research_desk"], as_of="2026-07-26", root=root)[0]
+    catalog_path = root / "data/research_vault/catalog.json"
+    catalog = json.loads(catalog_path.read_text())
+    catalog["items"][0]["tickers"] = ["CAT", "MISSING", "CAT", "index", "../CAT", 3, None]
+    catalog_path.write_text(json.dumps(catalog))
+    before = catalog_path.read_bytes()
+    stocks = root / "site/stocks"
+    stocks.mkdir(parents=True)
+    for ticker in ("CAT", "UNRELATED", "index"):
+        (stocks / f"{ticker}.html").write_text("<html></html>")
+
+    slot = P.plan(["research_desk"], as_of="2026-07-26", root=root)[0]
+
+    assert slot["story"]["tickers"] == ["CAT", "MISSING"]
+    assert slot["allowed_links"] == [
+        baseline["primary_source"]["url"], "https://www.mastermind-x.com/stocks/CAT.html"]
+    for key in ("id", "primary_source", "sources", "facts", "raw_documents"):
+        assert slot[key] == baseline[key]
+    assert catalog_path.read_bytes() == before
+    from engine.press import validators
+    good = {"body_html": '<p><a href="/stocks/CAT.html">Caterpillar</a></p>'}
+    bad = {"body_html": '<p><a href="/stocks/UNRELATED.html">Other company</a></p>'}
+    assert validators.check_link_allowlist(good, slot, _cfg(root))["ok"]
+    assert not validators.check_link_allowlist(bad, slot, _cfg(root))["ok"]
+
+
+@pytest.mark.parametrize("tickers", [None, "CAT", {"CAT": True}, []])
+def test_research_does_not_infer_tickers_from_title_or_malformed_metadata(tmp_path, tickers):
+    root = F.fixture_root(tmp_path)
+    path = root / "data/research_vault/catalog.json"
+    catalog = json.loads(path.read_text())
+    catalog["items"][0].update(title="Caterpillar CAT research", tickers=tickers)
+    path.write_text(json.dumps(catalog))
+    page = root / "site/stocks/CAT.html"
+    page.parent.mkdir(parents=True)
+    page.write_text("<html></html>")
+
+    slot = P.plan(["research_desk"], as_of="2026-07-26", root=root)[0]
+
+    assert slot["story"]["tickers"] == []
+    assert slot["allowed_links"] == [slot["primary_source"]["url"]]
+
+
+def test_research_dossier_links_still_require_the_configured_public_prefix(tmp_path):
+    root = F.fixture_root(tmp_path)
+    path = root / "data/research_vault/catalog.json"
+    catalog = json.loads(path.read_text())
+    catalog["items"][0]["tickers"] = ["CAT"]
+    path.write_text(json.dumps(catalog))
+    page = root / "site/stocks/CAT.html"
+    page.parent.mkdir(parents=True)
+    page.write_text("<html></html>")
+    cfg = _cfg(root)
+    cfg["public_link_prefixes"] = ["/research/"]
+
+    slot = P.plan(["research_desk"], as_of="2026-07-26", root=root, cfg=cfg)[0]
+
+    assert slot["story"]["tickers"] == ["CAT"]
+    assert slot["allowed_links"] == [slot["primary_source"]["url"]]
+
+
 def test_every_slot_carries_the_publication_from_the_registry(tmp_path):
     root = F.fixture_root(tmp_path)
     cfg = _cfg(root)
@@ -459,6 +595,16 @@ def test_research_raw_document_is_the_vault_summary_not_the_source_pdf(tmp_path)
     assert F.SOURCE_DOC.split(":")[0] in slot["raw_documents"][0]["text"]
 
 
+def test_research_fact_dates_identify_publication_not_observation(tmp_path):
+    root = F.fixture_root(tmp_path)
+    slot = P.plan(["research_desk"], as_of="2026-07-26", root=root)[0]
+    report_facts = [f for f in slot["facts"] if f["ref"] in slot["sources"]]
+    assert report_facts and all(f["date_role"] == "publication" for f in report_facts)
+    assert all(f["dated"] == "2026-07-25" for f in report_facts)
+    engine_facts = [f for f in slot["facts"] if f["ref"] not in slot["sources"]]
+    assert all(f.get("date_role") != "publication" for f in engine_facts)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # planner hygiene: it must not hand the writer forbidden vocabulary
 # ─────────────────────────────────────────────────────────────────────────────
@@ -482,3 +628,186 @@ def test_planner_never_seeds_banned_vocabulary_into_the_prompt_context():
 def test_slugify_matches_the_estate_slug_shape():
     assert P.slugify("Risk Radar: Watch → Caution!") == "risk-radar-watch-caution"
     assert P.slugify("x" * 200) == "x" * 70
+
+
+def _prophet_scope_fixture(tmp_path, **overrides):
+    from engine.chronicle.adapters import adapt_prophet_ledger
+
+    root = F.fixture_root(tmp_path)
+    row = {
+        'schema': 'prophet.ledger/v1', 'id': 'POWI-BULL-20260930',
+        'asset': 'POWI', 'direction': 'BULL', 'outcome': 'INVALIDATED',
+        'stock_result_pct': -13.5521, 'days_held': 14,
+        'close_date': '2026-10-14', 'asof': '2026-10-15',
+        'signal_date': '2026-09-30', 'signal_date_basis': 'tier_event_date',
+        'source_marker_date': '2026-09-30', 'entry_date': '2026-09-30',
+        'signal_tier': 'T1', 'signal_provisional': True, 'confirmed_date': None,
+    }
+    row.update(overrides)
+    ledger = root / 'data/prophet/ledger.jsonl'
+    ledger.parent.mkdir(parents=True)
+    ledger.write_text(json.dumps(row) + '\n')
+    events, gap = adapt_prophet_ledger(root)
+    assert not gap and len(events) == 1
+    (root / 'data/chronicle/events.jsonl').write_text(json.dumps(events[0]) + '\n')
+    return root, row, ledger
+
+
+def test_prophet_scope_reaches_writer_without_creating_receipts(tmp_path):
+    from engine.press import writer, validators
+
+    root, row, ledger = _prophet_scope_fixture(tmp_path)
+    before = ledger.read_bytes()
+    slot, = P.plan(['brief'], as_of='2026-10-15', root=root)
+    lead = slot['facts'][0]
+    scope = lead.get('context_relevance', '')
+    assert 'paper-plan' in scope and 'not executed trades' in scope
+    assert 'provisional=true' in scope and 'confirmation=not recorded' in scope
+    assert 'signal_date_basis=tier_event_date' in scope
+    assert 'signal=2026-09-30' in scope and 'closed=2026-10-14' in scope
+    assert len(scope) <= 500
+    assert lead['values'] == []
+    plain = copy.deepcopy(slot)
+    plain['facts'][0].pop('context_relevance')
+    assert validators.fact_tier_index(slot) == validators.fact_tier_index(plain)
+    _, prompt = writer.build_prompt(slot, P.load_config(root))
+    assert scope in prompt and ledger.read_bytes() == before
+
+
+def test_prophet_legacy_alias_does_not_become_fresh_confirmation(tmp_path):
+    root, _, _ = _prophet_scope_fixture(
+        tmp_path, signal_date_basis='legacy_formation_alias',
+        source_marker_date='2026-06-17', signal_provisional=False, signal_tier=None,
+    )
+    slot, = P.plan(['brief'], as_of='2026-10-15', root=root)
+    scope = slot['facts'][0]['context_relevance']
+    assert 'source_marker=2026-06-17' in scope
+    assert 'legacy alias is not a fresh signal' in scope
+    assert 'confirmation=not recorded' in scope
+
+
+@pytest.mark.parametrize('change', ['missing', 'corrupt', 'quarantined', 'changed_outcome', 'future'])
+def test_prophet_scope_refuses_unbound_or_unusable_ledger(tmp_path, change):
+    from engine.prophet_integrity import LEDGER_QUARANTINE_SCHEMA
+
+    root, row, ledger = _prophet_scope_fixture(tmp_path)
+    if change == 'missing':
+        ledger.unlink()
+    elif change == 'corrupt':
+        ledger.write_text('{broken\n')
+    elif change == 'quarantined':
+        (ledger.parent / 'ledger_quarantine.json').write_text(json.dumps({
+            'schema': LEDGER_QUARANTINE_SCHEMA, 'count': 1,
+            'quarantined': [{'id': row['id'], 'reason': 'unqualified outcome'}],
+        }))
+    else:
+        row['outcome' if change == 'changed_outcome' else 'asof'] = (
+            'T1_HIT' if change == 'changed_outcome' else '2026-10-16')
+        ledger.write_text(json.dumps(row) + '\n')
+    assert P.plan(['brief'], as_of='2026-10-15', root=root) == []
+
+
+def _prophet_plan_fixture(tmp_path):
+    root, row, ledger = _prophet_scope_fixture(tmp_path,
+        price_basis_date='2026-09-30', recorded_at='2026-10-01')
+    plan = {key: value for key, value in row.items() if key not in (
+        'outcome', 'stock_result_pct', 'days_held', 'close_date')}
+    plan.update(schema='prophet.trade_plan/v1', asof='2026-10-01',
+        entry=51.8, invalidation=46.22, targets=[60.17, 68.54], trigger=51.8,
+        entry_status='bounce_wait', authority_tier='display')
+    path = root / 'site/prophet/plans' / (row['id'] + '.json')
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(plan))
+    return root, row, plan, path
+
+
+@pytest.mark.parametrize('signal_tier,signal_provisional', [('T1', True), ('T2', False), (None, None)])
+def test_prophet_plan_parameters_reach_writer_as_historical_thresholds(tmp_path, signal_tier, signal_provisional):
+    import hashlib
+    from engine.press import writer
+    root, row, plan, path = _prophet_plan_fixture(tmp_path)
+    row.update(signal_tier=signal_tier, signal_provisional=signal_provisional)
+    plan.update(signal_tier=signal_tier, signal_provisional=signal_provisional)
+    (root / 'data/prophet/ledger.jsonl').write_text(json.dumps(row) + '\n')
+    path.write_text(json.dumps(plan))
+    original = path.read_bytes()
+    # Prompt construction now validates the same dossier admission as write().
+    dossier = root / 'site/stocks' / (row['asset'] + '.html')
+    dossier.parent.mkdir(parents=True, exist_ok=True)
+    dossier.write_text('<h1>Fictional dossier</h1>')
+    slot, = P.plan(['brief'], as_of='2026-10-15', root=root)
+    fact, = [f for f in slot['facts'] if f['id'].startswith('prophet_plan_')]
+    assert fact['values'] == ['51.8', '46.22', '60.17', '68.54']
+    assert fact['dated'] == '2026-10-01'
+    assert 'Historical paper-plan thresholds' in fact['text']
+    assert 'bounce_wait' in fact['context_relevance']
+    assert 'display' in fact['context_relevance']
+    assert 'not executed prices or achieved returns' in fact['context_relevance']
+    assert 'not an instruction to trade' in fact['context_relevance']
+    assert slot['native_plan_scope'] == fact['native_plan_scope']
+    assert slot['native_plan_scope']['recorded_at'] == '2026-10-01'
+    assert slot['native_plan_scope']['price_basis_date'] == '2026-09-30'
+    assert slot['native_plan_scope']['close_date'] == row['close_date']
+    assert slot['native_plan_scope']['entry_status'] == 'bounce_wait'
+    assert slot['native_plan_scope']['authority_tier'] == 'display'
+    assert slot['native_plan_scope']['confirmed_date'] is None
+    assert slot['native_plan_scope']['signal_tier'] == row.get('signal_tier')
+    assert slot['native_plan_scope']['signal_provisional'] == row.get('signal_provisional')
+    assert slot['source_revisions']['artifact:site/prophet/plans/' + path.name] == (
+        'sha256:' + hashlib.sha256(original).hexdigest())
+    _, prompt = writer.build_prompt(slot, P.load_config(root))
+    assert fact['text'] in prompt and fact['context_relevance'] in prompt
+    assert path.read_bytes() == original
+
+
+@pytest.mark.parametrize('field,value', [
+    ('asset', 'VNO'), ('entry_date', '2026-10-01'),
+    ('price_basis_date', None), ('signal_provisional', False), ('signal_tier', 'T2'),
+    ('recorded_at', '2026-10-16'), ('asof', '2026-10-16'),
+    ('confirmed_date', '2026-10-01'), ('integrity_status', 'quarantined'),
+    ('entry', True), ('invalidation', float('nan')), ('targets', [60.17, None]),
+    ('targets', [44.0, 68.54]), ('entry_status', 'invented status'),
+    ('origination_mode', 'outage_backfill_fixture'),
+])
+def test_prophet_plan_refuses_mismatch_bad_geometry_or_unqualified_clock(tmp_path, field, value):
+    root, _, plan, path = _prophet_plan_fixture(tmp_path)
+    plan[field] = value
+    path.write_text(json.dumps(plan))
+    assert P.plan(['brief'], as_of='2026-10-15', root=root) == []
+
+
+def test_prophet_plan_uses_canonical_corrections_and_binds_receipt(tmp_path):
+    root, row, plan, path = _prophet_plan_fixture(tmp_path)
+    plan['price_basis_date'] = None
+    path.write_text(json.dumps(plan))
+    correction = {'schema': 'prophet.plan_correction/v1',
+        'id': row['id'] + ':price_basis:20261002', 'corrects_id': row['id'],
+        'field': 'price_basis_date', 'old_value': None, 'new_value': '2026-09-30',
+        'basis': 'Fixture native price session', 'corrected_at': '2026-10-02',
+        'evidence': {'price_source': 'fixture', 'published_entry': 51.8}}
+    corr = root / 'data/prophet/plan_corrections.jsonl'
+    corr.write_text(json.dumps(correction) + '\n')
+    slot, = P.plan(['brief'], as_of='2026-10-15', root=root)
+    assert any(f['id'].startswith('prophet_plan_') for f in slot['facts'])
+    assert 'artifact:data/prophet/plan_corrections.jsonl' in slot['source_revisions']
+    correction['corrected_at'] = '2026-10-16'
+    corr.write_text(json.dumps(correction) + '\n')
+    assert P.plan(['brief'], as_of='2026-10-15', root=root) == []
+
+
+def test_prophet_plan_mutation_during_projection_refuses_slot(tmp_path, monkeypatch):
+    from engine import prophet_integrity as I
+    root, _, plan, path = _prophet_plan_fixture(tmp_path)
+    native = I.load_effective_plans
+    def racing_read(repo):
+        result = native(repo)
+        path.write_text(json.dumps(dict(plan, entry=52.0)))
+        return result
+    monkeypatch.setattr(I, 'load_effective_plans', racing_read)
+    assert P.plan(['brief'], as_of='2026-10-15', root=root) == []
+
+
+def test_prophet_plan_duplicate_native_identity_refuses_slot(tmp_path):
+    root, _, plan, path = _prophet_plan_fixture(tmp_path)
+    (path.parent / 'duplicate.json').write_text(json.dumps(dict(plan, entry=52.0)))
+    assert P.plan(['brief'], as_of='2026-10-15', root=root) == []

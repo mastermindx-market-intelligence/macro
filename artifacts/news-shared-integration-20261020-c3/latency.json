@@ -1,0 +1,83 @@
+{
+  "schema": "qbus.news_latency_benchmark.v1",
+  "observed_at": "2026-10-20T13:28:06.541674+00:00",
+  "source_sha256": {
+    "app/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "app/ticker_news.py": "c9a53497f6c042638678a0d662912b66eae783ad97690ce628e8c98736d0901d",
+    "app/ticker_news_stream.py": "a0648e8b4c3611ed044fe3639f49f2415ecf3052e1a008fbcc7014a8f7a62bf0",
+    "engine/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "engine/company_intelligence/__init__.py": "09e8425cdca490d03bece9462af575fddd25802e0ca2aa12be7d24f6ded8b347",
+    "engine/company_intelligence/contracts.py": "a9ab0b648e72b7537fc812618adab8325bd9f88410ba1169103929ddccc276ad",
+    "engine/company_intelligence/health.py": "db924871e9a49446ebbe6e84c2c9c57a361b903fb8764a5a891a531cdb449210",
+    "engine/company_intelligence/views.py": "b5cc18f5722305f841a18b94867edcdd36e6797889136bd807e6a5161cef70f4",
+    "engine/macro_surprise.py": "3ccc8540b9d3190053c307270b6a360363a2be90f6dd6e9be2bb24e3df19fa4f",
+    "engine/news_common.py": "3ce3d36fc3db1884f471d86049c7ca931f0aefee5d362fcf8bf483c90d93c67b",
+    "engine/news_events.py": "b284515cf4e7f62fcc718c8d633f6ce61efddf576c6dbcc08cb58a124e079556",
+    "engine/qbus_news_annotate.py": "6c95e78bae584c4c47a59670e0254b22bae379f1d91401bd785ebb148227835b",
+    "engine/qbus_news_cluster.py": "d846f744aa9ed09093ec9b3d68de21e7b94cad443dd280e4337f4f7f6a311763",
+    "engine/qbus_news_contract.py": "3b6c25f1acf4a466c48b15ee829fd1572d7f54def29330ab9a2247cc09e414e3",
+    "engine/qbus_news_quality.py": "cb1072bcdb565b73025b736e62b644dff521042cde9381bf41844d861063034f",
+    "engine/qbus_news_receipts.py": "80af79dd7aa187ce3ff3a763c95917f7f6106a933bd0213de22d62b270a60e21",
+    "engine/qbus_news_reducer.py": "24d5374ec1b29dd9f3031546863e42a8183fce1cd69fa160445f0314f3ba8310",
+    "engine/qbus_news_retrieval.py": "deba9840d37b2c2580357b63279b725bf8bdefcc3f6c3128f766206e5a876eb6",
+    "engine/qbus_news_store.py": "7acd4f05573da77422a6d4eafb39b614f86c9c3cbffb72b04fcabf38cc83d5dd",
+    "engine/qbus_news_universe.py": "c368a9ee5ec2db54cbc46cac662b0da3784ffe687b4b6bc3387370107212acb8",
+    "engine/qbus_news_velocity.py": "1c6e6da6f10ac9bf30d6ce0879865f40bd19063554d1cea39bf8e3dd12b0693e",
+    "engine/qkernel.py": "bfffb15fd03709f38466f9d0620802ef6e57ce24fc0cbb8236274ca0e24daa2b",
+    "lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+    "scripts/benchmark_ticker_news.py": "e185673eb7eba234826182c94e24e150b61f783abc671e5af5e24bcbe89d9f9a"
+  },
+  "source_stable_during_run": true,
+  "warmup": {
+    "subscribers": 1,
+    "events": 1,
+    "excluded_from_results": true
+  },
+  "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+  "proof_scope": "controlled local SQLite-to-SSE fanout; both arms use current projection and authorization; excludes vendor, WAN, Terminal BFF and browser paint",
+  "control": {
+    "poll_seconds": 1.0,
+    "shared_reads": false,
+    "subscribers": 32,
+    "events": 24,
+    "receive_before_commit_to_sse": {
+      "samples": 768,
+      "p50_ms": 1254.91,
+      "p95_ms": 1501.7,
+      "p99_ms": 1567.46,
+      "max_ms": 1625.6
+    },
+    "commit_duration": {
+      "samples": 24,
+      "p50_ms": 12.07,
+      "p95_ms": 16.56,
+      "p99_ms": 24.91,
+      "max_ms": 24.91
+    },
+    "database_reads": 64,
+    "subscriber_read_requests": 64
+  },
+  "candidate": {
+    "poll_seconds": 0.1,
+    "shared_reads": true,
+    "subscribers": 32,
+    "events": 24,
+    "receive_before_commit_to_sse": {
+      "samples": 768,
+      "p50_ms": 94.6,
+      "p95_ms": 156.91,
+      "p99_ms": 177.34,
+      "max_ms": 193.75
+    },
+    "commit_duration": {
+      "samples": 24,
+      "p50_ms": 13.15,
+      "p95_ms": 61.34,
+      "p99_ms": 86.62,
+      "max_ms": 86.62
+    },
+    "database_reads": 26,
+    "subscriber_read_requests": 376
+  }
+}

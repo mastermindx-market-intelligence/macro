@@ -1,0 +1,14 @@
+{
+  "status": "fulfilled",
+  "value": {
+    "content": [
+      {
+        "type": "text",
+        "text": "[Reading 35 lines from start (total: 35 lines, 0 remaining)]\n\n{\n  \"observed_at_utc\": \"2026-10-18T10:14:17.559131+00:00\",\n  \"run\": 39081858131,\n  \"job\": 117575031870,\n  \"exit_code\": 0,\n  \"raw_log\": \"/tmp/rr-w5-engine-job117575031870-20261018.log\",\n  \"bytes\": 4482863,\n  \"sha256\": \"8b0852ab26cf54a928f9c88be752621d6ebee546db60131176f1805f366b9702\",\n  \"line_count\": 44668,\n  \"matched_lines\": 5,\n  \"matches\": [\n    {\n      \"line\": 112,\n      \"text\": \"engine\\tUNKNOWN STEP\\t2026-10-18T03:27:07.3146310Z 5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa\"\n    },\n    {\n      \"line\": 505,\n      \"text\": \"engine\\tUNKNOWN STEP\\t2026-10-18T03:30:51.8373670Z    5e3e1e9d2d97..c357a4b308fb  main       -> origin/main\"\n    },\n    {\n      \"line\": 34262,\n      \"text\": \"engine\\tUNKNOWN STEP\\t2026-10-18T03:44:45.6201800Z   \\\"code_version\\\": \\\"5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa\\\",\"\n    },\n    {\n      \"line\": 38123,\n      \"text\": \"engine\\tUNKNOWN STEP\\t2026-10-18T06:27:16.5255050Z ##[group]Grey Deer pullback prospective issue+grade (grey_deer_pullback_nightly)  [3s, rc=0]\"\n    },\n    {\n      \"line\": 38124,\n      \"text\": \"engine\\tUNKNOWN STEP\\t2026-10-18T06:27:16.5256090Z {\\\"grade\\\": {\\\"already_graded\\\": 0, \\\"asof_missing\\\": 0, \\\"graded\\\": 0, \\\"immature\\\": 30, \\\"malformed\\\": 0, \\\"prereg_mismatch\\\": 0, \\\"refusals\\\": [], \\\"skipped_non_issued\\\": 0}, \\\"issue\\\": {\\\"duplicates\\\": 0, \\\"issued\\\": 30, \\\"refusals\\\": [\\\"OBSERVER_NOT_ON_MAIN\\\"]}, \\\"store_identity\\\": \\\"collectors.massive_stock_day:SPY\\\", \\\"ticker\\\": \\\"SPY\\\"}\"\n    }\n  ],\n  \"truncated_matches\": false,\n  \"stderr\": \"\"\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}
+

@@ -3042,3 +3042,156 @@ def test_v1_fact_metrics_and_emittable_result_keys_are_disjoint_and_ordered() ->
         "definition order; mutant (m2) swaps two adjacent entries",
         _proj._EMITTABLE_RESULT_KEYS,
     )
+
+
+# ---------------------------------------------------------------------------
+# W15-B-C12C1: one malformed fact withholds itself, never kills the projection
+# ---------------------------------------------------------------------------
+
+
+def test_calendar_invalid_period_end_is_withheld_not_a_case_error() -> None:
+    """``2026-06-31`` passes ``_DATE_RE`` but names no day on a calendar.
+
+    Admission is regex-only, so the fact travelled into the document and the
+    contract's own ``format: date`` check raised ``CaseShapeError`` from the
+    backstop, losing the whole projection. The surviving-result assertions
+    mirror ``test_dependency_local_degradation_unparseable_value_text``
+    (advertising stays READY when one total_revenue side is refused).
+    """
+    facts = _plnt_facts()
+    for f in facts:
+        if f["metric"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2026-06-30":
+            f["period_end"] = "2026-06-31"
+            break
+    document = project_economic_change(_plnt_case(facts=facts))
+    emitted_fact_keys = {f["key"] for f in document["facts"]}
+    assert "total_revenue_current" not in emitted_fact_keys
+    reasons = {
+        d["dependency"]: d["reason"] for d in document["degraded_dependencies"]
+    }
+    assert reasons.get(FACT_KEY_TOTAL_REVENUE) == (
+        "fact_period_end_missing_or_malformed"
+    ), reasons
+    assert _result_by_key(
+        document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE
+    )["value_text"] == "10141"
+
+
+def test_double_minus_scale_is_withheld_not_int_crash() -> None:
+    """``"--3".lstrip("-").isdigit()`` is True while ``int("--3")`` raises.
+
+    Stripping ALL leading minuses then calling ``int`` let the string pass
+    admission and crash the projection inside ``_envelope_scale``.
+    """
+    facts = _plnt_facts()
+    for f in facts:
+        if f["metric"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2026-06-30":
+            f["scale_power10"] = "--3"
+            break
+    document = project_economic_change(_plnt_case(facts=facts))
+    emitted_fact_keys = {f["key"] for f in document["facts"]}
+    assert "total_revenue_current" not in emitted_fact_keys
+    reasons = {
+        d["dependency"]: d["reason"] for d in document["degraded_dependencies"]
+    }
+    assert reasons.get(FACT_KEY_TOTAL_REVENUE) == (
+        "fact_scale_power10_missing_or_malformed"
+    ), reasons
+
+
+def test_superscript_scale_is_withheld() -> None:
+    """``"²"`` is a Unicode digit to ``str.isdigit`` and unusable by ``int``.
+
+    Same hole as the double minus: the gate asked the wrong predicate, so
+    the crash moved to ``int()`` and the document was lost.
+    """
+    facts = _plnt_facts()
+    for f in facts:
+        if f["metric"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2026-06-30":
+            f["scale_power10"] = "\u00b2"
+            break
+    document = project_economic_change(_plnt_case(facts=facts))
+    emitted_fact_keys = {f["key"] for f in document["facts"]}
+    assert "total_revenue_current" not in emitted_fact_keys
+    reasons = {
+        d["dependency"]: d["reason"] for d in document["degraded_dependencies"]
+    }
+    assert reasons.get(FACT_KEY_TOTAL_REVENUE) == (
+        "fact_scale_power10_missing_or_malformed"
+    ), reasons
+
+
+def test_single_minus_and_plain_digit_scale_strings_stay_admitted() -> None:
+    """Control: the tightened grammar must not refuse genuinely usable text.
+
+    ``"-3"`` and ``"6"`` were always readable by ``_envelope_scale`` and stay
+    admitted with their value preserved; no defaulting to 0, no refusal.
+    """
+    for scale in ("-3", "6"):
+        facts = _plnt_facts()
+        for f in facts:
+            if (
+                f["metric"] == FACT_KEY_TOTAL_REVENUE
+                and f["period_end"] == "2026-06-30"
+            ):
+                f["scale_power10"] = scale
+                break
+        document = project_economic_change(_plnt_case(facts=facts))
+        emitted = {f["key"]: f for f in document["facts"]}
+        assert "total_revenue_current" in emitted, scale
+        assert emitted["total_revenue_current"]["scale_power10"] == int(scale)
+        reasons = {d["reason"] for d in document["degraded_dependencies"]}
+        assert "fact_scale_power10_missing_or_malformed" not in reasons, scale
+
+
+def test_calendar_invalid_period_start_is_withheld_not_a_case_error() -> None:
+    """``2026-04-31`` passes ``_DATE_RE`` but April has thirty days.
+
+    Before the fix only ``period_end`` was checked against a calendar, so an
+    impossible start day reached the contract's ``format: date`` backstop and
+    raised ``CaseShapeError`` for the whole projection.
+    """
+    facts = _plnt_facts()
+    for f in facts:
+        if f["metric"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2026-06-30":
+            f["period_start"] = "2026-04-31"
+            break
+    document = project_economic_change(_plnt_case(facts=facts))
+    emitted_fact_keys = {f["key"] for f in document["facts"]}
+    assert "total_revenue_current" not in emitted_fact_keys
+    reasons = {
+        d["dependency"]: d["reason"] for d in document["degraded_dependencies"]
+    }
+    assert reasons.get(FACT_KEY_TOTAL_REVENUE) == (
+        "fact_period_start_missing_or_malformed"
+    ), reasons
+    assert _result_by_key(
+        document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE
+    )["value_text"] == "10141"
+
+
+def test_non_ascii_decimal_digit_scale_is_withheld() -> None:
+    """``int()`` reads U+0663 as 3, so an unguarded ``\\d`` would publish it.
+
+    ``_SCALE_TEXT_RE`` spells ``[0-9]`` on purpose. These are category Nd
+    digits that ``\\d`` matches; each must be refused, not rebased to 3.
+    """
+    for scale in ("\u0663", "\u0969", "\uff13"):
+        facts = _plnt_facts()
+        for f in facts:
+            if (
+                f["metric"] == FACT_KEY_TOTAL_REVENUE
+                and f["period_end"] == "2026-06-30"
+            ):
+                f["scale_power10"] = scale
+                break
+        document = project_economic_change(_plnt_case(facts=facts))
+        emitted_fact_keys = {f["key"] for f in document["facts"]}
+        assert "total_revenue_current" not in emitted_fact_keys, scale
+        reasons = {
+            d["dependency"]: d["reason"]
+            for d in document["degraded_dependencies"]
+        }
+        assert reasons.get(FACT_KEY_TOTAL_REVENUE) == (
+            "fact_scale_power10_missing_or_malformed"
+        ), (scale, reasons)

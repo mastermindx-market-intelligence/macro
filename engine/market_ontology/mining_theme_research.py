@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import json
 import math
+from datetime import date
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
@@ -175,16 +176,23 @@ def _order_rows_by_stable_source_identity(rows: Iterable[Mapping[str, Any]]) -> 
 
 
 def _iso_date_in(text: str) -> str | None:
-    """First YYYY-MM-DD in ``text``, or None. ISO dates compare as strings."""
+    """First real calendar date (YYYY-MM-DD) in ``text``, or None; ISO dates compare as strings."""
     for index in range(0, max(0, len(text) - 9)):
         chunk = text[index:index + 10]
         if (
             chunk[4:5] == "-"
             and chunk[7:8] == "-"
+            and chunk[0:4].isascii()
             and chunk[0:4].isdigit()
+            and chunk[5:7].isascii()
             and chunk[5:7].isdigit()
+            and chunk[8:10].isascii()
             and chunk[8:10].isdigit()
         ):
+            try:
+                date.fromisoformat(chunk)
+            except ValueError:
+                continue
             return chunk
     return None
 

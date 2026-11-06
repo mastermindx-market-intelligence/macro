@@ -20,6 +20,7 @@ from __future__ import annotations
 import copy
 import json
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,13 +28,16 @@ from typing import Any, Iterable, Mapping
 
 from jsonschema import Draft202012Validator
 
+from engine.news_impact.eval_grade import UNIT_MAP
 from engine.news_impact.validate import project_display
 
 SCHEMA_NAME = "prophet_evidence.v1"
 BUNDLE_SCHEMA_NAME = "prophet_evidence_bundle.v1"
 AUTHORITY = "context_only"
 STANCE_KEY = "stance_heads_up"
-ADAPTER_VERSION = "ni-prophet-adapter-1"
+ADAPTER_VERSION = "ni-prophet-adapter-2"
+# news_impact_event.v1 quantity_range carries no bound; display_quantity requires one.
+RANGE_BOUND = "exact"
 
 CODES = frozenset({
     "AUTHORITY_NOT_CONTEXT_ONLY",
@@ -157,6 +161,43 @@ THESIS_ID_RE = re.compile(r"^thesis_[0-9a-f]{24}$")
 TICKER_RE = re.compile(r"^[A-Z0-9][A-Z0-9.-]{0,14}$")
 COPY_KEY_RE = re.compile(r"^[a-z][a-z0-9_]{2,62}$")
 URL_RE = re.compile(r"(?i)\b(https?|ftps?|wss?|file|javascript|vbscript|gopher|hxxps?|hxtp)\s*:")
+
+# Analyst-rating / recommendation phrases a glance line must never carry (F2
+# control M11).  copy_templates.v1 bans price-target vocabulary but names no
+# rating vocabulary, and the contracts are frozen, so the adapter refuses these
+# itself.  Deliberately NOT matched: a bare "upgrade to" (firmware, products),
+# bare overweight/outperform and bare 增持/减持 (factual holdings and
+# relative-performance statements), and "buy signal" / 买入信号, which the
+# fixed stance line uses only to negate.
+_RATING_WORD = (
+    r"(?:buy|sell|hold|overweight|underweight|outperform|underperform|neutral"
+    r"|equal[\s-]?weight|market\s+perform|sector\s+perform)"
+)
+RECOMMENDATION_EN_RE = re.compile(
+    r"(?i)\b(?:strong\s+(?:buy|sell)"
+    r"|(?:buy|sell|hold|overweight|underweight|outperform|underperform|neutral)\s+rating"
+    r"|rated\s+(?:an?\s+)?" + _RATING_WORD +
+    r"|(?:up|down)grade[ds]?\s+to\s+(?:an?\s+)?(?:strong\s+)?" + _RATING_WORD +
+    r"|top\s+pick|conviction\s+buy)\b"
+)
+RECOMMENDATION_ZH = (
+    "强烈买入", "强烈卖出", "买入评级", "卖出评级",
+    "增持评级", "减持评级", "强烈推荐", "评级上调至", "评级下调至",
+)
+
+
+def recommendation_phrase(text: str) -> str | None:
+    """The first rating/recommendation phrase in ``text`` (raw or NFKC-folded)."""
+    for candidate in (text, unicodedata.normalize("NFKC", text)):
+        m = RECOMMENDATION_EN_RE.search(candidate)
+        if m:
+            return m.group(0)
+        for phrase in RECOMMENDATION_ZH:
+            if phrase in candidate:
+                return phrase
+    return None
+
+
 INJECTION_RE = re.compile(
     r"(?i)(ignore|disregard|forget|override)\s+(all\s+|any\s+|the\s+|every\s+)?"
     r"(previous|prior|above|preceding|earlier)|you\s+are\s+now|"
@@ -325,6 +366,15 @@ def _require_text_safe(value: str, *, path: str, schema: Mapping[str, Any] | Non
     errs = list(_text_safe_validator(schema).iter_errors(value))
     if errs or URL_RE.search(value):
         raise ProphetAdapterError("TEXT_UNSAFE", f"{path} fails text_safe")
+    # Full-width Latin and other compatibility forms fold to ASCII under NFKC;
+    # the folded form must pass the same gate (F2 control M01c).
+    folded = unicodedata.normalize("NFKC", value)
+    if folded != value and (
+        list(_text_safe_validator(schema).iter_errors(folded)) or URL_RE.search(folded)
+    ):
+        raise ProphetAdapterError(
+            "TEXT_UNSAFE", f"{path} fails text_safe after compatibility normalization"
+        )
     return value
 
 
@@ -360,13 +410,63 @@ def _one_decimal(n: float) -> str:
     return text
 
 
+# Non-monetary contract units (endpoints.v1 normalisation.unit_map). A currency
+# code is never appended to these.
+_NON_MONETARY_UNITS = frozenset({"shares", "percent", "units"})
+
+# Rate and ratio units the contract unit_map does not list. Matched against the
+# whole unit (lower-cased, whitespace collapsed), never a token of it, so
+# "USD per basis point" is unaffected. Display only: no unit is converted or
+# rescaled, and the contract unit_map is unchanged.
+_NON_MONETARY_RATE_UNITS = frozenset(
+    {
+        "bp",
+        "bps",
+        "basis point",
+        "basis points",
+        "percentage point",
+        "percentage points",
+        "ppt",
+        "ratio",
+        "x",
+        "times",
+    }
+)
+
+
+def _is_non_monetary_unit(unit: str, canonical: str | None) -> bool:
+    """True when no currency code belongs after ``unit``."""
+    if canonical in _NON_MONETARY_UNITS:
+        return True
+    return " ".join(unit.lower().split()) in _NON_MONETARY_RATE_UNITS
+
+
+def _unit_names_currency(unit: str, currency: str) -> bool:
+    """True when a token of ``unit`` is, or maps to, ``currency``."""
+    wanted = currency.lower()
+    for token in re.findall(r"[a-z$€£]+", unit.lower()):
+        if token == wanted or UNIT_MAP.get(token, "").lower() == wanted:
+            return True
+    return False
+
+
 def format_amount(quantity: Mapping[str, Any], locale: str) -> str:
-    """Deterministic amount_format (copy_templates.v1). Never derives EPS or % cap."""
+    """Deterministic amount_format (copy_templates.v1). Never derives EPS or % cap.
+
+    The USD billion/million tiers apply only when the unit means USD in the
+    contract unit_map (or is empty with currency USD). Every other amount is
+    shown raw with its unit, plus the currency code when the unit does not name
+    it; it is never converted and never rescaled. Scale is never inferred from
+    the unit (endpoints.v1 normalisation; eval_grade does the same), so a
+    "thousands" unit is displayed as written. Tiers are chosen after rounding,
+    so 999999.96 shows as $1 million. A negative amount carries exactly one
+    minus sign, dropped when the shown figure rounds to 0.
+    """
     if quantity.get("form") == "absent":
         return ""
     bound = str(quantity.get("bound") or "exact")
     currency = str(quantity.get("currency") or "")
-    unit = str(quantity.get("unit") or "")
+    unit = str(quantity.get("unit") or "").strip()
     if quantity.get("form") == "range":
         low = format_amount(
             {**dict(quantity), "form": "point", "value": quantity.get("low")}, locale
@@ -376,27 +476,40 @@ def format_amount(quantity: Mapping[str, Any], locale: str) -> str:
         )
         return f"{low}–{high}"
     value = quantity.get("value")
-    if not isinstance(value, (int, float)):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
         return ""
-    av = abs(float(value))
-    sign = "-" if float(value) < 0 else ""
-    usd = currency == "USD" or unit == "USD"
-    if usd and av >= 1e9:
-        en = f"{sign}${_one_decimal(float(value) / 1e9)} billion"
-        zh = f"{sign}{_one_decimal(float(value) / 1e8)}亿美元"
-    elif usd and av >= 1e6:
-        en = f"{sign}${_one_decimal(float(value) / 1e6)} million"
-        zh = f"{sign}{_one_decimal(float(value) / 1e4)}万美元"
+    magnitude = abs(float(value))
+    canonical = UNIT_MAP.get(unit.lower()) if unit else None
+    usd = (canonical == "USD" and currency in ("USD", "NA", "")) or (
+        not unit and currency == "USD"
+    )
+    if usd and (magnitude >= 1e9 or float(_one_decimal(magnitude / 1e6)) >= 1000):
+        shown = _one_decimal(magnitude / 1e9)
+        en = f"${shown} billion"
+        zh = f"{_one_decimal(magnitude / 1e8)}亿美元"
+    elif usd and (magnitude >= 1e6 or float(_one_decimal(magnitude)) >= 1e6):
+        shown = _one_decimal(magnitude / 1e6)
+        en = f"${shown} million"
+        zh = f"{_one_decimal(magnitude / 1e4)}万美元"
     elif usd:
-        en = f"{sign}${_one_decimal(float(value))}"
-        zh = f"{sign}{_one_decimal(float(value))}美元"
+        shown = _one_decimal(magnitude)
+        en = f"${shown}"
+        zh = f"{shown}美元"
     else:
-        body = f"{_one_decimal(float(value))} {unit}".strip()
-        en = f"{sign}{body}"
-        zh = f"{sign}{body}"
+        shown = _one_decimal(magnitude)
+        label = unit
+        if (
+            currency not in ("", "NA")
+            and not _is_non_monetary_unit(unit, canonical)
+            and not _unit_names_currency(unit, currency)
+        ):
+            label = f"{label} {currency}".strip()
+        en = f"{shown} {label}".strip()
+        zh = en
+    sign = "-" if float(value) < 0 and shown != "0" else ""
     prefix_en = {"approximately": "about ", "up_to": "up to ", "at_least": "at least "}.get(bound, "")
     prefix_zh = {"approximately": "约", "up_to": "至多", "at_least": "至少"}.get(bound, "")
-    return f"{prefix_zh}{zh}" if locale == "zh" else f"{prefix_en}{en}"
+    return f"{prefix_zh}{sign}{zh}" if locale == "zh" else f"{prefix_en}{sign}{en}"
 
 
 def format_window(period: Any, locale: str, templates: Mapping[str, Any]) -> str:
@@ -432,7 +545,9 @@ def _scan_injection(node: Any, findings: list[str], path: str = "") -> None:
     elif isinstance(node, list):
         for i, item in enumerate(node):
             _scan_injection(item, findings, f"{path}/{i}")
-    elif isinstance(node, str) and INJECTION_RE.search(node):
+    elif isinstance(node, str) and (
+        INJECTION_RE.search(node) or INJECTION_RE.search(unicodedata.normalize("NFKC", node))
+    ):
         findings.append(path or "/")
 
 
@@ -486,22 +601,35 @@ def _absence_dict(raw: Mapping[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _require_quantity_keys(slot: str, raw: Mapping[str, Any], keys: tuple[str, ...]) -> None:
+    for key in keys:
+        if key not in raw:
+            raise ProphetAdapterError("MISSING_REQUIRED_FIELD", f"{slot}.{key}")
+
+
 def _project_quantity(slot: str, raw: Mapping[str, Any]) -> dict[str, Any]:
-    form = raw.get("form")
+    _require_quantity_keys(slot, raw, ("form",))
+    form = raw["form"]
+    if form not in {"point", "range", "absent"}:
+        raise ProphetAdapterError("SCHEMA_VIOLATION", f"{slot}.form")
     if form == "absent":
         absence = raw.get("absence") or {}
         return {"slot": slot, "form": "absent", "absence": _absence_dict(absence)}
     if form == "range":
+        # "exact" is the only bound that adds no hedge the v1 range does not carry.
+        _require_quantity_keys(slot, raw, ("low", "high", "unit", "currency", "basis"))
         return {
             "slot": slot,
             "form": "range",
             "low": raw["low"],
             "high": raw["high"],
-            "bound": raw["bound"],
+            # A bound the input carries is kept as given; output validation judges it.
+            "bound": raw["bound"] if "bound" in raw else RANGE_BOUND,
             "unit": raw["unit"],
             "currency": raw["currency"],
             "basis": raw["basis"],
         }
+    _require_quantity_keys(slot, raw, ("value", "bound", "unit", "currency", "basis"))
     return {
         "slot": slot,
         "form": "point",
@@ -978,6 +1106,9 @@ def render_glance_copy(
         for token in banned:
             if token and _banned_token_hit(blob, token):
                 raise ProphetAdapterError("TEXT_UNSAFE", f"banned glance token {token!r}")
+        phrase = recommendation_phrase(blob)
+        if phrase:
+            raise ProphetAdapterError("TEXT_UNSAFE", f"recommendation phrase {phrase!r}")
         if locale == "en":
             title_words = [w for w in filled["title"].split() if w]
             sub_words = [w for w in filled["subtitle"].split() if w]
