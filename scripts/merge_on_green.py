@@ -6576,11 +6576,19 @@ def live_authorized_pull(
         )
         return None, "authorization-unreadable"
     if status >= 400 or not isinstance(live, dict):
-        _annotate(
-            "warning",
-            "merge-on-green authorization",
-            f"PR #{number}: live authorization read returned HTTP {status}.",
+        # Reuse the existing body/header classifier without changing this guard's
+        # fail-closed disposition or its callers' retry policy. A bare HTTP 403
+        # hides the distinction between exhausted quota and an authorization fault.
+        failure = _read_failed(
+            status, live, f"PR #{number}: live authorization read failed"
         )
+        detail = str(failure)
+        if token:
+            detail = detail.replace(token, "[redacted]")
+        # Provider text is untrusted annotation data, never another log command.
+        detail = re.sub(r"[\x00-\x1f\x7f-\x9f]", " ", detail)
+        detail = " ".join(detail.split()).replace("%", "%25")[:600]
+        _annotate("warning", "merge-on-green authorization", detail)
         return None, "authorization-unreadable"
     if live.get("merged") is True:
         return None, "already-merged"
