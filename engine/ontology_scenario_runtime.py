@@ -143,11 +143,19 @@ def _wti_history(root: Path, observation: dict, cutoff: datetime) -> tuple[dict,
     return image, generation, binding, receipt['effective_bar_date'], clocks[0], clocks[3], facts
 
 
+def _require_wti_txi_cohort(root: Path, state: dict) -> None:
+    """Resolve the selected TXI's listed bytes, without upgrading its evidence claims."""
+    checked = txi.verify_prospective_input_capture(root, state)
+    if (checked['status'] != 'listed_input_bytes_match'
+            or checked.get('generation_id') != state['input_capture']['generation_id']):
+        raise _unqualified('native_txi_input_cohort_unavailable')
+
+
 def _wti_txi_generation(root: Path, state_receipt: dict, source: dict, binding: dict,
                         cutoff: datetime) -> tuple[str, datetime]:
     state = json.loads(_read_bound(root, state_receipt))
     capture = state['input_capture']
-    # The WTI input of this selected generation, not a claim about other TXI inputs.
+    # Bind the WTI input and then resolve all listed inputs of this selected generation.
     txi_generation = capture['generation_id']
     capture_digest = hashlib.sha256(txi._capture_json(
         {k: v for k, v in capture.items() if k != 'generation_id'})).hexdigest()
@@ -160,6 +168,7 @@ def _wti_txi_generation(root: Path, state_receipt: dict, source: dict, binding: 
     completed = _stamp(capture['capture_completed_at'])
     if not (_stamp(capture['capture_started_at']) <= completed <= cutoff):
         raise _unqualified('native_txi_generation_at_cutoff')
+    _require_wti_txi_cohort(root, state)
     return txi_generation, completed
 
 
@@ -222,6 +231,8 @@ def _load_native_baseline(root: Path, snapshot: dict, assumption: dict, *,
         dates = [date.fromisoformat(session) for _, session in pairs]
         if dates != sorted(set(dates)) or dates[-1] > _stamp(sessions.last_session_completed_at).astimezone(UTC).date():
             raise _unqualified('vendor_session_label_mapping')
+        # The selector may perform I/O. A changed cohort cannot reach decoding.
+        _require_wti_txi_cohort(root, json.loads(_read_bound(root, receipts[_TXI_STATE])))
         # Only an independently admitted subject reaches parquet decoding.
         raw = store._wti_parquet_bytes(root / _WTI_FILE)
         if (hashlib.sha256(raw).hexdigest() != binding['sha256']
@@ -300,4 +311,14 @@ def evaluate_current_scenario(root: Path, assumption: dict, expected_manifest: s
         if hashlib.sha256(store._wti_parquet_bytes(root / _WTI_FILE)).hexdigest() != export['canonical_parquet']['sha256']:
             raise SourceIncoherent('scenario_source_changed')
     for receipt in receipts: _read_bound(root, receipt)
+    if baseline is not None and assumption['node_ref'] == 'yahoo:CL=F':
+        state_receipt = next(r for r in receipts if r['path'] == _TXI_STATE)
+        try:
+            _require_wti_txi_cohort(root, json.loads(_read_bound(root, state_receipt)))
+        except NativeScenarioInputsUnavailable as exc:
+            # X1 does not list every TXI input. Never return a numeric result if
+            # those additional bytes changed during evaluation.
+            result = evaluate_scenario(assumption, snapshot=snapshot, chain=chain, baseline=None,
+                evaluated_at=now.isoformat(), owner_refusal=dict(reason=exc.reason,
+                missing_owner_inputs=list(exc.missing), adapter_method=METHOD))
     return result

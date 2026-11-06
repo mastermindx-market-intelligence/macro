@@ -574,6 +574,9 @@ def _qualified_scenario_client(monkeypatch,tmp_path,x2_inputs):
     def qualified(root,snapshot,assumption,**kwargs):
         return replace(baseline,source_manifest_hash=snapshot['source']['source_manifest_hash'])
     monkeypatch.setattr(runtime,'_load_native_baseline',qualified)
+    # This transport-only owner stub supplies synthetic qualification. The real
+    # listed-cohort admission is exercised by published_wti and S9's negatives.
+    monkeypatch.setattr(runtime,'_require_wti_txi_cohort',lambda root,state: None)
     return _client(monkeypatch,tmp_path,root=root,chain=chain['chain']),root
 
 
@@ -1106,15 +1109,33 @@ def published_wti(monkeypatch, tmp_path, x2_inputs, request):
         lineage=dict(provider='yahoo', ticker='CL=F', series_identity='vendor_continuous_CL=F',
                      field='Close', basis='vendor_continuous_close_no_adj_close_returned'))
     export = store.export_yahoo_wti_observation(native, frame, frame)
-    raw = path.read_bytes()
-    capture = dict(schema='txi.prospective_input_read.v1', status='observed_input_bytes',
-                   capture_started_at=cutoff, capture_completed_at=cutoff,
-                   causal_state_sha256=hashlib.sha256(txi._capture_json(txi._causal_projection(state))).hexdigest(),
-                   observation_asof=historical.effective_at, reads=[dict(path='data/yahoo/CL_F.parquet',
-                   bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest(), status='present')])
-    capture['generation_id'] = 'sha256:' + hashlib.sha256(txi._capture_json(capture)).hexdigest()
-    state['input_capture'] = capture
+    # Resolve a complete synthetic listed cohort with the real capture writer.
+    # These are invented observations, not native session or historical evidence.
     fx.build_root(tmp_path, yaml_doc=chain, state_doc=state, slug=chain['chain'])
+    producer = tmp_path / 'engine/transmission_chains.py'
+    producer.parent.mkdir()
+    producer.write_bytes(Path(txi.__file__).read_bytes())
+    regime = data / 'regime/latest.json'
+    regime.parent.mkdir()
+    regime.write_text('{"regime":"synthetic-original"}')
+    ledger = data / 'transmission/chain_episodes.jsonl'
+    ledger.write_text('{"synthetic":"predecessor"}\n')
+    class CaptureClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return now
+    with monkeypatch.context() as capture_clock:
+        capture_clock.setattr(txi, 'datetime', CaptureClock)
+        observed_reads = txi._InputReadCapture(tmp_path)
+        for rel in ['knowledge/transmission', 'knowledge/transmission/proposed']:
+            observed_reads.directory(tmp_path / rel)
+        for retained in [path, regime, ledger, tmp_path / f"knowledge/transmission/{chain['chain']}.yaml"]:
+            observed_reads.read(retained)
+        capture = observed_reads.finish(state, [])
+    state['input_capture'] = capture
+    # Publication may append transitions after capturing the predecessor prefix.
+    ledger.write_text(ledger.read_text() + '{"synthetic":"post-capture-append"}\n')
+    (data / 'transmission/chain_state.json').write_text(json.dumps(state))
     snap = runtime.compose_snapshot(tmp_path, chain=chain['chain'], now=now)
     labels = tuple((str(d.date()), str(d.date())) for d in frame.index)
     sessions = runtime.VerifiedWTISessions(export['sha256'], capture['generation_id'],

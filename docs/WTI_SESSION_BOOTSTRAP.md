@@ -59,3 +59,24 @@ the actual collection constructor and actual `app.main` installation statements
 with the authenticated route. It does not start unrelated API services, call a
 vendor or install this code. Positive fixture behavior proves composition only;
 real supplier evidence and protected release/live acceptance remain separate.
+
+## Full listed-input admission (T005.S9)
+
+Before a WTI subject reaches its independent session selector, the runtime uses
+`verify_prospective_input_capture` on the exact snapshot-bound TXI state. Every
+listed input and the declared definition population must resolve against that
+selected publication; the generation must match. It repeats the check after
+selector I/O, before price decoding, and after evaluation. An unavailable or
+changed cohort returns the existing typed unavailable response with
+`native_txi_input_cohort_unavailable`; no numeric result escapes.
+
+The verifier retains the predecessor ledger's captured-prefix semantics, so
+normal transition appends need not match the earlier full-file hash. Observation
+date, capture completion, selected cutoff and later publication observation are
+separate clocks. Later publication cannot move the selected cutoff or repair an
+earlier mismatch. Matching listed bytes does not authenticate the producer, prove
+read completeness or historical availability, or grant scientific acceptance.
+
+This is a prospective guard on the held source composition, not installation or
+a claim that an earlier producer consumed mixed inputs. It adds no data supplier,
+reconstruction, deployment pins or numeric permission.
