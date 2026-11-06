@@ -5,6 +5,7 @@
  "authority": "none — measurement only; no rank/gate/size consumer",
  "bases": {
   "basket_misses": "equal-weight member returns over data/baskets/ohlcv with point-in-time dated membership — the basket machinery's own store and construction, NOT the breadth caches above (they are S&P-1500 and cannot see the off-index members the ignited baskets are full of).",
+  "subtheme_funnel": "existing subsector_rotation.highlights.emerging producer classification joined to current-only Finviz membership and the existing lossless Prophet candidate_pool; measurement only.",
   "runner_eligibility": "engine.confluence_tiers.tier_stream (completed buckets, raw-3D-cross T1 fallback) — last row = eligible_today, tail(63) = days_eligible/first_eligible. One basis for both so the verdict and the window cannot disagree about a day.",
   "universe_eligible_today": "engine.confluence_tiers.cascade last bar, take_active=False (no §7 master supplied here) — a STRICTER set than the stream basis, which is why a runner can be stream-eligible and absent from it.",
   "board_gate": "engine.signal_gate.gate per runner (gate_* fields) — the live board's own basis, over a narrower universe than the board's.",
@@ -32,7 +33,10 @@
   "conversion_rate": 0.4015,
   "conversion_n": "53/132",
   "basket_misses_n": 0,
-  "basket_scored_n": 49
+  "basket_scored_n": 49,
+  "subtheme_emerging_n": null,
+  "subtheme_leadership_gaps_n": null,
+  "subtheme_featured_coverage_pct": null
  },
  "top63_excluder_hist": {
   "not_topped_veto(stoch_ob)": 58,
@@ -295,6 +299,18 @@
     "days_since_top5_entry": null
    }
   ]
+ },
+ "subtheme_funnel": {
+  "schema": "prophet_subtheme_funnel/v1",
+  "tier": "ops_telemetry",
+  "authority": "none — funnel measurement only; no rank/gate/size consumer",
+  "available": false,
+  "as_of": "2026-11-06",
+  "membership_temporality": "current_only",
+  "emerging": [],
+  "gaps": [],
+  "gap_class_hist": {},
+  "null_reason": "rotation and Prophet board are not on the same completed session"
  },
  "basket_misses": {
   "tier": "ops_telemetry",
@@ -11163,6 +11179,11 @@
    "input": "data/themes_heatmap/subsector_perf_history.jsonl",
    "severity": "structural",
    "reason": "carries asof+subsectors — no theme-level emerging_score rank, so the top-5 entry date is not recoverable from this archive; days_since_top5_entry reported null rather than approximated from the subsector unit (masterplan W2 owns the theme-level PIT rank archive)"
+  },
+  {
+   "input": "site/marketdata/subsector_rotation.json",
+   "severity": "unexpected",
+   "reason": "subtheme funnel clock mismatch: rotation_asof=2026-11-06 standouts_asof=2026-11-05 — refusing a cross-session join"
   },
   {
    "input": "data/baskets/ohlcv",
