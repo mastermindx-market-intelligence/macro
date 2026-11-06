@@ -1,0 +1,561 @@
+{
+  "schema": "mastermind.always_on_migration_evidence.v1",
+  "recorded_at": "2026-11-06 01:33:45 UTC",
+  "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+  "governing_source_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+  "implementation_source_sha": "8f452a0bb7fd171b9c63aa9b4b060040a61ce219",
+  "observations": {
+    "runtime_close_cohort": {
+      "observed_at": "2026-11-06T01:30:49.787073+00:00",
+      "python": "3.12.3",
+      "pandas": "3.0.3",
+      "found": 14,
+      "cohort": [
+        {
+          "symbol": "IWM",
+          "rows": 6650,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "8c3ccef48e5efd41028c1f77e8f8b36daa2dba077ceac000f6bd25ec68bc7948",
+          "stable_read": true
+        },
+        {
+          "symbol": "QQQ",
+          "rows": 6958,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "b2675680c40f9849b9e0aec91adc7142f3f99ed1035fb9d827e91ca5c26d8292",
+          "stable_read": true
+        },
+        {
+          "symbol": "SPY",
+          "rows": 8500,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "d0a8d337629f8aa9db4c86d3b5aa28b3dc5901b13c4348874cc02acacc484f3c",
+          "stable_read": true
+        },
+        {
+          "symbol": "XLB",
+          "rows": 7010,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "c511be8b718bf996150113b9c6a82ac80b8b044e0efb57acbb11cd15c856128c",
+          "stable_read": true
+        },
+        {
+          "symbol": "XLC",
+          "rows": 2107,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "ffa422284728f97d448459db6f444ea8cb126a41bb4c687748feb7b7f6fdc61a",
+          "stable_read": true
+        },
+        {
+          "symbol": "XLE",
+          "rows": 7010,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "10a880b1b723c49c44b4d9c7ca00f129cdfbb25c0b49f9bfe4b65d948dce4ff8",
+          "stable_read": true
+        },
+        {
+          "symbol": "XLF",
+          "rows": 7010,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "f1d109f0203b86352505ee9791f2e819c873ab194c35cbd7b5e502c154d2bfb8",
+          "stable_read": true
+        },
+        {
+          "symbol": "XLI",
+          "rows": 7010,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "94166138fb6d9db4997c30d0c9a74f95da969203d7005bd1ba8346f8f97e8d58",
+          "stable_read": true
+        },
+        {
+          "symbol": "XLK",
+          "rows": 7010,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "dc2c87cb588e3b6a9480a6393fc1431009ad3986dafbca651c368eb797d35f74",
+          "stable_read": true
+        },
+        {
+          "symbol": "XLP",
+          "rows": 7010,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "c252e1a68cc27271bb1bb9c95acd4e0330daf8c23b1a73daa6423d4d5d0f1ba6",
+          "stable_read": true
+        },
+        {
+          "symbol": "XLRE",
+          "rows": 2785,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "2a2bdfbdc233eacb4c90585f5d78d2c585fbe6bfb0fb47e4b8082104fb41eb2e",
+          "stable_read": true
+        },
+        {
+          "symbol": "XLU",
+          "rows": 7010,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "d20e5be20a1e267c0191d4537c2094a8cf6b10dcbcccfaacadccf197efab5179",
+          "stable_read": true
+        },
+        {
+          "symbol": "XLV",
+          "rows": 7010,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "0cd4d775e5cbf2a2e5bd7926c5df5be01f05fe000dfcdad40568d4d9e30198bb",
+          "stable_read": true
+        },
+        {
+          "symbol": "XLY",
+          "rows": 7010,
+          "columns": [
+            "close_price",
+            "close",
+            "volume"
+          ],
+          "index_name": "Date",
+          "last_index": "2026-11-04 00:00:00",
+          "last_date_column": null,
+          "sha256": "2c090ac9ff59a2253e795d0ad8faaaa17eb8810842733fdd0ee804c974d522fb",
+          "stable_read": true
+        }
+      ]
+    },
+    "served_sector_generation": {
+      "observed_at": "2026-11-06T01:31:38.191113+00:00",
+      "vps_source_head": "8d55f6dc49e85ce577949b090562741da84039e5",
+      "served_root": "/opt/macro/site.served",
+      "files": [
+        {
+          "path": "sectordata/sector_central.json",
+          "sha256": "9c8244c518365acc533854e27fbef67a697fba506f1e98a372458b00e8a93047",
+          "as_of": "2026-11-03",
+          "asof": null,
+          "meta_asOf": null,
+          "theme_intel_as_of": null,
+          "baskets_sha256": null,
+          "action_board_sha256": null,
+          "stable_read": true
+        },
+        {
+          "path": "sectordata/sector_cycles.json",
+          "sha256": "382d49dd7d0c9fcd5c2820926eb36bf4a70e76478fdbb7679f362dd80047d620",
+          "as_of": null,
+          "asof": null,
+          "meta_asOf": "2026-11-03",
+          "theme_intel_as_of": null,
+          "baskets_sha256": null,
+          "action_board_sha256": null,
+          "stable_read": true
+        },
+        {
+          "path": "basketdata/baskets.json",
+          "sha256": "9cbbb014283a90fc9c3e305d4d93ccccf2b92ea856b7e6729db760820e6b9961",
+          "as_of": "2026-11-03",
+          "asof": null,
+          "meta_asOf": null,
+          "theme_intel_as_of": "2026-11-03",
+          "baskets_sha256": null,
+          "action_board_sha256": null,
+          "stable_read": true
+        },
+        {
+          "path": "basketdata/action_board.json",
+          "sha256": "6b942bbd9024807ac85edeacb51f249f1b94c78dc9ae8f57edb20508514ffe1d",
+          "as_of": null,
+          "asof": null,
+          "meta_asOf": null,
+          "theme_intel_as_of": null,
+          "baskets_sha256": null,
+          "action_board_sha256": null,
+          "stable_read": true
+        },
+        {
+          "path": "premiumdata/sector_central.json",
+          "sha256": "3e39b22ed7fff014d0de0be43bbf3a01e132d292bc51ed72085a100dd1a5f2ee",
+          "as_of": "2026-11-03",
+          "asof": null,
+          "meta_asOf": null,
+          "theme_intel_as_of": null,
+          "baskets_sha256": "9cbbb014283a90fc9c3e305d4d93ccccf2b92ea856b7e6729db760820e6b9961",
+          "action_board_sha256": "df07251bf017fc594d7f4fa8c20a691fa63ecd767733bfa8ba93d6153c24b7e0",
+          "stable_read": true
+        }
+      ]
+    },
+    "beta_preflight": {
+      "receipt_path": "/var/lib/mastermind-terminal-beta/release-preflight/20261106T012240Z-3930ce93bb1ed6f3d66ba1ae4cac7e441995ba78-87f68895212e4075545a3a6051ff5f45ead49f8e26f1e710abc9222f7108b901.json",
+      "receipt_sha256": "56e07f884f9eb5d7abd4f55ef98f95bd1d3e405d844425c6f3e0e311d7467093",
+      "policy_canonical_sha256": "99f76cb211b086d1f83bb86c10747e2711a4c318fa4bd5dab1b94e84d46fe1d6",
+      "summary": {
+        "accepted_sha": "3930ce93bb1ed6f3d66ba1ae4cac7e441995ba78",
+        "canonical_repo": "/opt/terminal/.gitsrc-beta",
+        "generated_at": "2026-11-06T01:22:40.676610Z",
+        "policy_digest": "99f76cb211b086d1f83bb86c10747e2711a4c318fa4bd5dab1b94e84d46fe1d6",
+        "policy_path": "/opt/terminal/.gitsrc-beta/ops/terminal_source_audit.beta.json",
+        "receipt_id": "87f68895212e4075545a3a6051ff5f45ead49f8e26f1e710abc9222f7108b901",
+        "result": "CLEAN",
+        "schema": "mastermind.terminal.release_preflight_receipt.v1",
+        "source_audit_receipt_id": "3ead90c1352f737b51fe752e00a2aad28dd176648de9c8e8c58f06f0909a1925"
+      },
+      "nested_keys": {
+        "source_audit": [
+          "accepted_ref",
+          "accepted_sha",
+          "canonical_repo",
+          "canonical_repo_head",
+          "deployment",
+          "findings",
+          "generated_at",
+          "mappings",
+          "policy_digest",
+          "receipt_id",
+          "schema",
+          "status",
+          "summary"
+        ]
+      }
+    },
+    "terminal_queue_admission": [
+      {
+        "action": "native_protected_queue_admission",
+        "request_correction": "omit queue-incompatible delete-branch flag after pre-effect CLI rejection and null queue/auto readback",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "! The merge strategy for master is set by the merge queue\n"
+      },
+      {
+        "readback": {
+          "data": {
+            "repository": {
+              "mergeQueue": {
+                "id": "MQ_kwDOTOzwKM4ABTs-"
+              },
+              "pullRequest": {
+                "id": "PR_kwDOTOzwKM8AAAABNMUtAw",
+                "headRefOid": "847af34df5f811fa4a9152936e42d199b8a45b08",
+                "mergeStateStatus": "UNSTABLE",
+                "mergeQueueEntry": {
+                  "id": "MQE_lQDOTOzwKM8AAAABNMUtA84ABTs-zgPEicQ"
+                },
+                "autoMergeRequest": null
+              }
+            }
+          }
+        }
+      }
+    ],
+    "terminal_candidate_ci": {
+      "head_sha": "847af34df5f811fa4a9152936e42d199b8a45b08",
+      "checks": [
+        {
+          "name": "Terminal typecheck + tests",
+          "id": 127648402013,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T01:23:26Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127648402013"
+        },
+        {
+          "name": "Terminal e2e mobile-3 (shard)",
+          "id": 127625953593,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T01:20:57Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953593"
+        },
+        {
+          "name": "Terminal e2e desktop-5 (shard)",
+          "id": 127625953495,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T00:59:24Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953495"
+        },
+        {
+          "name": "Terminal e2e serial (shard)",
+          "id": 127625953416,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T00:42:31Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953416"
+        },
+        {
+          "name": "Terminal e2e desktop-3 (shard)",
+          "id": 127625953405,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T00:50:14Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953405"
+        },
+        {
+          "name": "Terminal e2e tablet-1 (shard)",
+          "id": 127625953391,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T01:03:19Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953391"
+        },
+        {
+          "name": "Terminal e2e desktop-2 (shard)",
+          "id": 127625953315,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T00:51:52Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953315"
+        },
+        {
+          "name": "Terminal e2e tablet-3 (shard)",
+          "id": 127625953311,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T01:17:34Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953311"
+        },
+        {
+          "name": "Terminal e2e tablet-2 (shard)",
+          "id": 127625953306,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T01:11:36Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953306"
+        },
+        {
+          "name": "Investigation PostgreSQL invariants",
+          "id": 127625953199,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T00:28:59Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953199"
+        },
+        {
+          "name": "Terminal e2e desktop-4 (shard)",
+          "id": 127625953147,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T00:47:31Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953147"
+        },
+        {
+          "name": "Ingest + signal-layer tests",
+          "id": 127625953135,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T00:34:02Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953135"
+        },
+        {
+          "name": "Terminal unit + typecheck (shard)",
+          "id": 127625953129,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T00:45:20Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953129"
+        },
+        {
+          "name": "Terminal e2e mobile-1 (shard)",
+          "id": 127625953113,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T01:10:57Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953113"
+        },
+        {
+          "name": "Terminal e2e mobile-2 (shard)",
+          "id": 127625953109,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T01:15:30Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953109"
+        },
+        {
+          "name": "Quote Hub tests",
+          "id": 127625953078,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T00:25:00Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625953078"
+        },
+        {
+          "name": "Terminal e2e desktop-1 (shard)",
+          "id": 127625952821,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T01:17:45Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136292628/job/127625952821"
+        },
+        {
+          "name": "CodeQL",
+          "id": 127625579622,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 57789,
+          "completed_at": "2026-11-06T00:23:05Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/runs/127625579622"
+        },
+        {
+          "name": "Analyze (actions)",
+          "id": 127625152086,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T00:23:14Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136285538/job/127625152086"
+        },
+        {
+          "name": "Analyze (javascript-typescript)",
+          "id": 127625152078,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T00:25:14Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136285538/job/127625152078"
+        },
+        {
+          "name": "Analyze (python)",
+          "id": 127625151749,
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "completed_at": "2026-11-06T00:23:12Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42136285538/job/127625151749"
+        }
+      ]
+    },
+    "incumbent_provider_probe": {
+      "probe": "incumbent_yahoo_single_symbol_acquisition",
+      "started_at": "2026-11-06T01:35:27.630637+00:00",
+      "finished_at": "2026-11-06T01:35:28.038148+00:00",
+      "symbol": "SPY",
+      "request_period": "5d",
+      "attempt_limit": 1,
+      "available": true,
+      "rows": 4,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "last_session": "2026-11-04 00:00:00",
+      "missing_adjusted_close": [],
+      "canonical_store_or_publication_called": false,
+      "qualified_snapshot": false
+    }
+  },
+  "qualifications": [
+    "The close files and served artifacts were separate read-only observations 49 seconds apart. File stability was checked individually; this is not proof of a coherent source cohort transaction.",
+    "At those observations the benchmark histories reached November 4 while the served Sector research remained November 3. Source lag and downstream publication lag are distinct. No unique last-writer or universal failure cause is inferred.",
+    "The served action board lacks source-date/basket-binding metadata and its actual byte hash differs from the paid payload's recorded action-board hash.",
+    "Beta preflight is CLEAN for the incumbent deployed generation 3930ce93; its immutable receipt was read back and canonical policy digest matched. This is not a new deployment or browser proof.",
+    "Terminal candidate 847af34 passed all 21 native checks. Native protected queue admission has an actual queue-entry readback; admission is not merge, installation or acceptance.",
+    "The first native queue command had a CLI usage refusal because --delete-branch is incompatible with merge queues. Same-PR readback showed no queue or automerge effect. The corrected same-carrier exact-head command omitted that flag and returned the recorded queue entry. No protected merge bypass occurred.",
+    "The private coherent-generation worker artifact 127a58e is NOT_ACCEPTED. Parent review identified retained-manifest, unchanged-path, path-validation and durability defects. A bounded paid rework is underway on the original root; no candidate publisher or producer was activated.",
+    "The foundation commit 8f452a0 was published and its initially uncertain typed push reconciled APPLIED on matching local/remote heads. The original Macro PR carrier was then fast-forwarded locally to 8f without a duplicate PR. Its remote PR head remains 86e8 pending qualified integration and CI repair.",
+    "One bounded incumbent SPY acquisition on the VPS returned November 4 as its last session. It did not call the canonical store or publisher and is not a qualified cohort snapshot. November 5 provider availability is not established."
+  ]
+}

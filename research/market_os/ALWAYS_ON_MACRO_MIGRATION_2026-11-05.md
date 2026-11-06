@@ -235,6 +235,59 @@ An explicit input boundary must include the cycle spine, context, close history,
 
 The existing Git-store maintenance decision explicitly leaves off-Git publication to a pipeline decision; the Chairman's current assignment supplies that direction. Existing fixed shallow-history, issuer ancestry, pull-guard and maintenance requirements remain in force. This change does not authorize re-shallowing or replacing the data/control owner.
 
+
+### November 6 integration and deployment boundary
+
+The explicit fusion/action-board foundation is published at
+`8f452a0bb7fd171b9c63aa9b4b060040a61ce219`. Its original uncertain typed push was
+reconciled APPLIED with matching local/remote heads. The original Macro #10780 carrier
+has been fast-forwarded locally to that descendant; there is no second main-targeted
+foundation PR. Preserve the original PR through the remaining CI repairs.
+
+Qualification at this boundary is 210 focused source tests, two existing CI closure/packing
+checks, and 16 full-output parity cases. These results prove the extracted fusion boundary
+and canonical action-board metadata behavior. They do not prove independent input collection,
+a running daily producer, complete native journey parity, or live beta freshness.
+
+[November 6 runtime evidence](ALWAYS_ON_RUNTIME_EVIDENCE_2026-11-06.json) records:
+
+- 14 individually stable Yahoo history reads through November 4, with both price bases.
+- Served central/cycle/basket research through November 3 at VPS source
+  `8d55f6dc49e85ce577949b090562741da84039e5`, plus the continuing action-board binding
+  mismatch. Source lag and downstream publication lag are separate.
+- A bounded incumbent SPY acquisition returning November 4, without store/publication calls.
+  November 5 provider availability is not inferred.
+- All 21 Terminal candidate checks successful at
+  `847af34df5f811fa4a9152936e42d199b8a45b08`, followed by actual native merge-queue
+  entry readback. The original queue request's incompatible branch-deletion CLI flag was
+  rejected before admission; its corrected same-carrier form retained exact-head and
+  protected-queue controls.
+- Beta's incumbent generation `3930ce93bb1ed6f3d66ba1ae4cac7e441995ba78` passed a CLEAN
+  read-only preflight. The immutable receipt was read back and its policy digest matched.
+  Neither queue admission nor preflight is deployment or browser acceptance.
+
+The private coherent publisher's first worker artifact is not accepted. Parent inspection
+found concrete defects in retained-manifest validation, unchanged-path integrity, safe
+path handling and crash-durability claims. Its bounded rework remains inactive. No runtime
+or paid serving route was enabled from that candidate.
+
+The detailed source-transfer and consumer decision is now recorded in the existing
+[architecture decision](../../agentos/decisions/DEC-MACRO-ALWAYS-ON-DATA-SEPARATE-FROM-CODE.md).
+The next integration package is the existing owner's explicit cohort binding and writer
+fences, after the already commissioned cycle/cohort/publisher artifacts qualify. A single
+immutable bootstrap may use one installed commit; recurring collection cannot depend on Git.
+Existing R2 transport requires a verified fixed-manifest mode before it can act as a coherent
+compatibility replica. Old provider collectors and direct parquet writers must settle and
+be fenced before runtime authority changes.
+
+The named native consumer receives one bounded Sector view through the existing BFF and
+registration/entitlement owners, resolving one generation per request. Brief leadership and
+comparison come from the established handoff and basket-series owners. Personal saved
+investigations stay on the existing Supabase owner; device-local legacy notes remain a
+declared migration constraint, not silently recovered data. These changes preserve the
+original family and journey denominator.
+
+
 ## 9. Acceptance and next action
 
 **Do not call the migration complete because this plan, a PR, a green test or a shell route exists.** Sector acceptance requires a new accepted data generation visible in an already-open authenticated beta workspace without a page build or frontend deployment; coherent data, honest stale/unavailable behavior, preserved account boundaries and the original investigation journey must all pass.

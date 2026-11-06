@@ -38,6 +38,7 @@ alternatives:
 evidence:
   - research/market_os/ALWAYS_ON_MACRO_MIGRATION_2026-11-05.md
   - research/market_os/ALWAYS_ON_MACRO_EVIDENCE_2026-11-05.json
+  - research/market_os/ALWAYS_ON_RUNTIME_EVIDENCE_2026-11-06.json
   - https://github.com/mastermindx-market-intelligence/macro/issues/10779
   - https://github.com/mastermindx-market-intelligence/macro/actions/runs/42099034826
   - "Macro e39ec45902c1a2bb28507beb851593be6e422167: scripts/build_site.py bare action_board writer; scripts/build_sector_intelligence.py; docs/VPS_LIVE_ORCHESTRATION.md"
@@ -94,3 +95,83 @@ unqualified storage owner or infrastructure purchase follows from this ruling.
 Source delivery now includes Macro #10780 and Terminal #1311. They do not establish
 installation or acceptance. The native Brief/Watches/action-board gaps, independent
 producer path and authenticated beta open-tab proof remain required.
+
+## Transfer and consumer ruling, November 6
+
+The foundation at Macro `8f452a0bb7fd171b9c63aa9b4b060040a61ce219` provides explicit
+fusion inputs and a compatible legacy adapter, plus one canonical action-board writer.
+Its 210 focused tests, two CI closure checks and 16 complete-output parity cases qualify
+that source boundary only. The input collector, cycle boundary, corrected coherent
+publisher, ownership transfer and served consumer still require integration.
+
+The close cohort is eleven SPDRs plus SPY, QQQ and IWM: 14 symbols. Preserve the existing
+DataOS dataset and Yahoo source owner. One narrow profile in existing Yahoo configuration
+may declare legacy, shadow and runtime operation, the cohort and snapshot version.
+It is configuration within the existing owner, not a new lifecycle service or registry.
+Shadow candidates cannot replace served truth. Runtime ownership permits one authoritative
+advancer; old collectors and direct-write exceptions must be fenced before adoption.
+The existing RF9 capture eligibility stays unchanged, and the standing Yahoo commercial
+attestation is not reopened by this transfer.
+
+Place authoritative runtime histories and selected generations outside the Git checkout
+and every served root. The deployment hazards are separate: update.sh's reset can replace
+tracked checkout data; its site-to-site.served rsync can replace generated presentation.
+Neither may overwrite the runtime source or its selected served generation. Extend the
+existing updater's source-drain protection for the actual runtime executable closure.
+
+Bootstrap at most once from 14 immutable blobs at one verified installed commit, recording
+blob and byte identities, both price bases and actual acquisition time. Independently
+stable live file reads are useful observations but do not establish an atomic adjustment
+vintage. Historical rows imported now are not proof of their historical availability.
+Ordinary runtime refresh may not depend on Git fetch, checkout or data commits.
+
+The incumbent R2 transport's ordinary mutable directory restore is not a coherent cohort
+reader. Any compatibility mode must pin one immutable manifest, verify every member and
+select a complete binding atomically; R2 remains a replica of the selected source.
+Verify its actual access profile before storing private snapshots. Do not merely add
+the whole Yahoo directory to a mutable upload/download allowlist.
+
+Read the selected input binding once per computation and keep TR and price histories on
+that binding. Legacy compute adapters must explicitly consume it for transferred symbols.
+A missing runtime binding must not silently fall back to checkout data or restart provider
+collection. Preserve whole-overlap corrections, full-history rebase, completed sessions,
+stale-span refusal and nightly keep-FIRST grading authority.
+
+For native Sector adoption, extend Macro's existing application with one fixed-domain,
+named-view reader. Resolve one corrected private-generation manifest per request and
+return the required projections with a common receipt. Invoke the existing registration
+and entitlement owners using server-selected original resource paths, overriding caller
+path/kind hints. The API route must enforce these rules directly because the static
+Caddy asset chain does not cover /api routes. Keep the manifest, filesystem paths, paid
+member hashes and private diagnostics out of responses and errors.
+
+Transport this bounded view through Terminal's existing Sector BFF, retaining its fixed
+origin, filtered shared cookie, six-second deadline, four-MiB bound and private/no-store
+policy. Reconcile PR1285's original failure-classification carrier before editing that
+shared handler. Apply one coherent view update; independent basket-pulse/quote overlays
+retain their own clocks and owners.
+
+Brief uses the accepted si_handoff leadership and basket-series comparison; cycle-history
+JSON is not an interchangeable chart source. Action-board previews reuse the existing
+tier split. Watches reuse the turn-desk/tape projections and existing Supabase watchlist
+owner. Accumulation requires an explicit output from its existing calculation. Device-local
+legacy notes cannot be silently recovered from another origin; preserve the original
+journey until any explicit migration is qualified. Saving an observation does not arm an
+alert for which no evaluator exists.
+
+The November 6 evidence distinguishes source and publication lag: the observed 14 history
+files reached November 4, while central/cycles/baskets still reached November 3 and the
+served paid payload referenced a different action-board generation. One bounded incumbent
+Yahoo SPY request also returned November 4, so no claim is made that November 5 data was
+already available through that request. Acquisition, calculation, publication and browser
+dates remain distinct.
+
+The original private publisher candidate `127a58e76557049167305afc29a21bff25d5f86e` is
+not accepted: parent source review found concrete retained-generation, unchanged-path,
+path-validation and durability defects. Bounded rework preserves its original root and
+inactive posture. Passing the worker's original tests does not waive those defects.
+
+Terminal #1311 passed all 21 candidate checks and has a verified native merge-queue entry
+for `847af34df5f811fa4a9152936e42d199b8a45b08`. Beta's existing generation passed a CLEAN
+preflight with immutable receipt readback and matching policy digest. Queue admission and
+preflight are not merge, deployment, new source freshness or authenticated product proof.
