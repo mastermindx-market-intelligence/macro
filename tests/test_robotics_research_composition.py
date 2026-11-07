@@ -107,6 +107,34 @@ def test_every_response_validates_against_the_contract():
             _RESPONSE_SCHEMA.validate(response)
 
 
+
+@pytest.mark.skipif(not HAS_CODEC, reason=CODEC_REASON)
+def test_platform_labelled_subject_validates_in_every_view():
+    """R-36 item 17 rule 9 (#9103 F1): a platform-labelled subject is emitted
+    with row kind "platform" -- the kind native_subjects and graph nodes
+    already give that selector. Every response, in every view, validates
+    against the contract, and every industrial row's kind equals the
+    native_subjects kind for its selector. On 5bf72439 the industrial row
+    enum lacked "platform" and all five views failed validation."""
+    query, bundle = load_bundle_case("witness_motion_parker_kseries")
+    platformed = copy.deepcopy(dict(bundle.assertions[0]))
+    platformed["subject"]["source_platform_label"] = "K-Series platform"
+    platformed["curation_revision"] = None
+    platformed = json.loads(encode_assertion(platformed))
+    bundle = dataclasses.replace(bundle, assertions=(platformed,))
+    kinds_seen = set()
+    for view in robotics.VIEWS:
+        response = robotics.compose_robotics_research(
+            dataclasses.replace(query, view=view), bundle)
+        _RESPONSE_SCHEMA.validate(response)
+        native = {s["selector"]: s["kind"] for s in response["native_subjects"]}
+        for section in response["industrial_views"].values():
+            for row in section["rows"]:
+                if row["selector"] is not None:
+                    assert row["kind"] == native[row["selector"]]
+                    kinds_seen.add(row["kind"])
+    assert "platform" in kinds_seen
+
 def test_top_level_envelope_keys_and_consts():
     response, query, _ = compose("witness_perception_orbbec_twinny")
     assert set(response.keys()) == TOP_LEVEL_KEYS
