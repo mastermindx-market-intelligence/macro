@@ -1,0 +1,56 @@
+{
+  "scope": "Local isolated replay of the retained corrected native projection, not installed-source acceptance or editorial approval",
+  "retained_snapshot_head": "774dd525e0bd79123e73e1021390e740d3f9a5be",
+  "retained_snapshot_at": "2026-10-15T09:34:04.166064+00:00",
+  "retained_snapshot_sha256": "90894e21aaf106778175363923e65ebc6966fe2078020cac57fc683912bd00ad",
+  "source_sha256": "d488f6c614e1545125a5c5169e798d2a5d074721f46b510ac8528653010fad9a",
+  "accepted": [
+    {
+      "id": "POWI-BULL-20260930",
+      "text": "Historical paper-plan thresholds for POWI, recorded 2026-10-01, price basis 2026-09-30: entry reference $51.8; invalidation threshold $46.22; hypothetical target levels $60.17, $68.54. Activation trigger $51.8.",
+      "context_relevance": "Historical simulated plan; entry_status=bounce_wait; authority_tier=display. Parameters are not executed prices or achieved returns, not independent market observations, and not an instruction to trade. No recorded confirmation is invented; use the linked closure scope and its original signal clocks.",
+      "values": [
+        "51.8",
+        "46.22",
+        "60.17",
+        "68.54"
+      ],
+      "dated": "2026-10-01",
+      "native_input_unchanged": true
+    },
+    {
+      "id": "VNO-BULL-20261008",
+      "text": "Historical paper-plan thresholds for VNO, recorded 2026-10-09, price basis 2026-10-08: entry reference $33.81; invalidation threshold $33.21; hypothetical target levels $34.71, $35.61. Activation trigger $33.81.",
+      "context_relevance": "Historical simulated plan; entry_status=bounce_wait; authority_tier=display. Parameters are not executed prices or achieved returns, not independent market observations, and not an instruction to trade. No recorded confirmation is invented; use the linked closure scope and its original signal clocks.",
+      "values": [
+        "33.81",
+        "33.21",
+        "34.71",
+        "35.61"
+      ],
+      "dated": "2026-10-09",
+      "native_input_unchanged": true
+    }
+  ],
+  "provider_calls": 0,
+  "production_writes": 0,
+  "publication": false,
+  "d14_credit": 0,
+  "application_commit": "cb54d3e9766973271a3d7964bb1f0be52779766a",
+  "validation": {
+    "fresh_planner_writer": 148,
+    "prior_unchanged_checks_reused": 369,
+    "total_affected": 517,
+    "existing_sparse_site_skip": 1,
+    "new_unit_controls": 18,
+    "portable_groups_fresh": 19,
+    "portable_groups_reused": 26,
+    "portable_total": 45
+  },
+  "not_proven": [
+    "installed consumer behavior",
+    "editorial acceptance",
+    "public story",
+    "trade execution"
+  ]
+}

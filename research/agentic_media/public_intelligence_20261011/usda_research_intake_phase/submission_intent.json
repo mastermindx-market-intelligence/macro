@@ -1,0 +1,9 @@
+{
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "source_id": "usda-2026-10-09-wasde-676",
+  "source_sha256": "6cc97c08be7e683b6114ae8e16d49fce2f21dce3ed3f9933b0acbd2d37e6840b",
+  "sidecar_sha256": "1a215b20c74538f8532757ce2ee043b5784a3e6573e857a8d51eeca8ffd2c80e",
+  "script_sha256": "dae9049733825df80344a4388c0636779cb4ed16f18401feebcacd041ec78f87",
+  "write_scope": "Two absent research_inbox objects only, JSON first then original PDF. Existing conditional R2Store method; no overwrite, workflow dispatch, corpus/catalog write, Press generation or publication.",
+  "replay": "Never rerun after any attempted write; reconcile same keys and exact output."
+}

@@ -1,21 +1,21 @@
 {
-  "appended": 4,
-  "asof": "2026-10-02",
+  "appended": 14,
+  "asof": "2026-11-06",
   "candidates": {
     "R": 0,
-    "T": 9,
-    "W": 5
+    "T": 7,
+    "W": 31
   },
   "deduped": {
     "R": 0,
-    "T": 5,
-    "W": 5
+    "T": 2,
+    "W": 22
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-10-02",
+      "asof": "2026-11-06",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -27,21 +27,31 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 9
+        "ohlcv_absent": 37
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Industrial Automation": {
-          "theme_thrust_frac": 0.2857,
+        "Commodities Metals": {
+          "theme_thrust_frac": 0.04,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Digital Entertainment": {
+          "theme_thrust_frac": 0.0435,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Electric Vehicles": {
+          "theme_thrust_frac": 0.0882,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 28,
-      "tickers_read": 37
+      "tickers_ok": 78,
+      "tickers_read": 115
     },
     "keys": [
       "relay_count_3d",
@@ -61,15 +71,15 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 122,
-      "n_covered": 81,
+      "members_indexed": 205,
+      "n_covered": 107,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-10-02",
-      "n_tickers": 1547,
+      "last_session": "2026-11-06",
+      "n_tickers": 1550,
       "ok": true,
       "reason": null,
       "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
@@ -78,9 +88,14 @@
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": false,
-      "n_asked": 0,
-      "n_covered": 0
+      "consulted": true,
+      "direction": "bull",
+      "grid": "W",
+      "horizon": "13w",
+      "n_asked": 9,
+      "n_covered": 9,
+      "reason": null,
+      "source": "engine.event_atlas.receipt"
     },
     "enabled": true,
     "keys": [
@@ -103,54 +118,65 @@
   "flag_tickers": {
     "R": [],
     "T": [
-      "CGNX",
-      "GXO",
-      "RRX",
-      "ST"
+      "NEM",
+      "RGLD",
+      "ALB",
+      "AMZN",
+      "VZ"
     ],
-    "W": []
+    "W": [
+      "CASY",
+      "TPR",
+      "O",
+      "EIX",
+      "BYD",
+      "LVS",
+      "WYNN",
+      "APP",
+      "WTFC"
+    ]
   },
-  "n_universe": 1493,
+  "n_universe": 1489,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-03 22:11:16",
-  "runtime_s": 99.0,
+  "run_utc": "2026-11-07 12:45:10",
+  "runtime_s": 104.3,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-10-02",
-    "n_members": 122,
+    "asof": "2026-11-06",
+    "n_members": 205,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.415,
+        "emerging_score": 2.724,
         "rank": 1,
-        "theme": "Semiconductors"
+        "theme": "Commodities Metals"
       },
       {
-        "emerging_score": 2.127,
+        "emerging_score": 2.122,
         "rank": 2,
-        "theme": "Industrial Automation"
+        "theme": "Digital Entertainment"
       },
       {
-        "emerging_score": 1.744,
+        "emerging_score": 1.872,
         "rank": 3,
-        "theme": "Robotics"
+        "theme": "Consumer Goods"
       },
       {
-        "emerging_score": 1.587,
+        "emerging_score": 1.537,
         "rank": 4,
-        "theme": "Biometrics"
+        "theme": "Electric Vehicles"
       },
       {
-        "emerging_score": 1.587,
+        "emerging_score": 1.505,
         "rank": 5,
-        "theme": "Cybersecurity"
+        "theme": "Energy Renewable"
       }
     ]
   },
@@ -159,19 +185,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 5,
-    "asof_max": "2026-10-02",
+    "aligned": 31,
+    "asof_max": "2026-11-06",
     "asof_mismatch": 0,
-    "asof_run": "2026-10-02",
+    "asof_run": "2026-11-06",
     "evaluated": 713,
-    "fresh": 5,
+    "fresh": 32,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 19.1,
+    "runtime_s": 18.8,
     "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 61,
+    "state_turn": 60,
     "universe_n": 717
   }
 }
