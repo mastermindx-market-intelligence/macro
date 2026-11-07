@@ -461,3 +461,70 @@ def test_current_reading_real_zero_stays_calm_in_risk_detail():
     assert "Unavailable" not in scare and "不可用" not in scare
     assert '<span class="l-en">calm</span>' in scare
     assert ">0.0<" in scare
+
+
+# Shared mx5 focus trap. Tab from the last <summary> left the dialog: summaries
+# were not in the trap's list, and controls inside a closed <details> (or a
+# display:none panel) were. Browser measurements live in the PR evidence; CI packs
+# install no browser, so the shipped source is what is asserted here.
+_MX5_STOP_KINDS = ("button:not(", "a[href]", "input:not(", "select:not(", "textarea:not(", "summary",
+                   "[tabindex]:not(")
+
+
+def _mx5_focus_helpers(html: str) -> str:
+    """The shared mx5 dialog focus helpers as the rendered page ships them."""
+    starts = [html.find(name) for name in ("function _tabStop(el)", "function _focusFirst(dlg)")]
+    start = min(pos for pos in starts if pos >= 0)
+    return html[start:_idx(html[start:], "function _prefReduced()") + start]
+
+
+def _mx5_trap_selector(helpers: str) -> str:
+    """The selector the trap collects stops with: the one that knows summaries."""
+    found = [s for s in re.findall(r"querySelectorAll\(\s*'([^']+)'", helpers) if "summary" in s]
+    assert found, "no focus-helper selector collects <summary> stops"
+    return found[0]
+
+
+def _mx5_fn(helpers: str, name: str) -> str:
+    start = _idx(helpers, f"function {name}(")
+    nxt = helpers.find("\n    function ", start + 1)
+    return helpers[start:] if nxt < 0 else helpers[start:nxt]
+
+
+def test_mx5_dialog_trap_collects_every_native_tab_stop():
+    selector = _mx5_trap_selector(_mx5_focus_helpers(_render()))
+    for kind in _MX5_STOP_KINDS:
+        assert kind in selector, kind
+
+
+def test_mx5_dialog_trap_skips_stops_the_keyboard_cannot_reach():
+    helpers = _mx5_focus_helpers(_render())
+    stop = _mx5_fn(helpers, "_tabStop")
+    # Zero-box stops (display:none panels) drop out.
+    assert "getClientRects().length" in stop
+    # Chrome reports boxes inside a closed <details>, so the disclosure is asked
+    # instead, outward through nested ones; only its own summary stays reachable.
+    assert "details:not([open])" in stop and ":scope > summary" in stop
+    assert ".contains(el)" in stop and "parentElement" in stop
+    for name in ("_focusFirst", "_trapTab"):
+        body = _mx5_fn(helpers, name)
+        if "_dlgStops(" in body:
+            body = _mx5_fn(helpers, "_dlgStops")
+        assert "_tabStop" in body, name
+
+
+def test_risk_dialog_trap_ends_on_the_last_visible_summary():
+    from bs4 import BeautifulSoup  # lazy: other suites import this module's helpers
+
+    html = _render()
+    selector = _mx5_trap_selector(_mx5_focus_helpers(html))
+    start = _idx(html, 'id="dlg-risk"')
+    end = html.find('class="mx5-dlg"', start)
+    dlg = html[start:] if end < 0 else html[start:end]
+    reachable = BeautifulSoup(_default_visible(dlg), "html.parser").select(selector)
+    every = BeautifulSoup(dlg, "html.parser").select(selector)
+    # The stop Tab leaked from (the last summary a reader can see) must be the one
+    # the trap wraps on.
+    assert reachable[-1].name == "summary"
+    # And the filter carries weight: the raw list ends inside a closed disclosure.
+    assert len(every) > len(reachable)
