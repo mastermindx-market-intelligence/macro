@@ -1,0 +1,228 @@
+{
+  "deterministic_witnesses": [
+    {
+      "evidence": {
+        "basket_path": [
+          100.0,
+          100.0,
+          100.0,
+          100.0
+        ],
+        "weighted_member_high": 110.0,
+        "weighted_member_low": 90.0
+      },
+      "name": "synchronized_extrema",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "market_return": -0.05,
+        "return_difference": 0.020000000000000004,
+        "sector_return": -0.03,
+        "true_residual": 0.0
+      },
+      "name": "defensive_beta_is_not_alpha",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "relative_wealth": 0.021052631578947434,
+        "return_difference": 0.020000000000000004
+      },
+      "name": "wealth_ratio_is_not_return_difference",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "new_relative_log_return": 0.0,
+        "window_change": 0.04
+      },
+      "name": "rolling_window_carry",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "economic_prediction_proven": false,
+        "leads": [
+          5,
+          5,
+          5,
+          5
+        ]
+      },
+      "name": "mechanical_confirmation_lead",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "confidence_interval": false,
+        "observed_fraction": 0.5,
+        "whole_population_bounds": [
+          0.3,
+          0.7
+        ]
+      },
+      "name": "missing_breadth_identification_bounds",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "split_adjusted_creation_notional": 0,
+        "unadjusted_notional": 5000
+      },
+      "name": "split_is_not_creation",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "distinct_exposure_vectors": 1,
+        "theme_labels": 2,
+        "underlying_weights": [
+          0.8,
+          0.2
+        ]
+      },
+      "name": "duplicate_themes_do_not_diversify",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "forecast_feature_admissible": true,
+        "target_later_than_origin": true,
+        "that_label_usable_at_training_cutoff": false
+      },
+      "name": "future_target_is_valid_not_a_future_feature",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "long_return": 0.050000000000000044,
+        "middle_return": 0.10000000000000009,
+        "short_return": -0.010000000000000009
+      },
+      "name": "horizon_performance_need_not_be_monotonic",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "full_population_brier": 0.16000000000000003,
+        "success_only_brier": 0.6400000000000001
+      },
+      "name": "success_only_selection_changes_estimand",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "bills_terminal_wealth": 1.0020019011404844,
+        "cash_trades_charged": 0,
+        "delayed_terminal_wealth": 1.1036053740269312,
+        "delayed_trades_charged": 2,
+        "early_terminal_wealth": 1.0479010500000001,
+        "early_trades_charged": 2,
+        "illustrative_cost_not_market_estimate": 0.001,
+        "terminal_session": 20
+      },
+      "name": "common_terminal_date_does_not_force_early_win",
+      "passed": true
+    }
+  ],
+  "market_data_read": false,
+  "native_lr_qualification": false,
+  "oracle_dependence_experiment": [
+    {
+      "cross_sector_correlation": 0.0,
+      "effective_n_under_declared_covariance": 660.0,
+      "illustrative_oracle_power": [
+        {
+          "closed_form": 0.822307051292436,
+          "mean_effect_in_unit_sd": 0.1,
+          "oracle_rejection_rate": 0.82225
+        },
+        {
+          "closed_form": 0.9997614007567732,
+          "mean_effect_in_unit_sd": 0.2,
+          "oracle_rejection_rate": 0.9999
+        }
+      ],
+      "naive_false_positive_rate": 0.0515,
+      "naive_mc_wilson95": [
+        0.048522152433424025,
+        0.05465010390890181
+      ],
+      "naive_rate_closed_form": 0.050000000000000155,
+      "oracle_false_positive_rate": 0.0515,
+      "oracle_mc_wilson95": [
+        0.048522152433424025,
+        0.05465010390890181
+      ],
+      "temporal_ar1": 0.0,
+      "variance_inflation_vs_iid": 1.0
+    },
+    {
+      "cross_sector_correlation": 0.6,
+      "effective_n_under_declared_covariance": 94.28571428571429,
+      "illustrative_oracle_power": [
+        {
+          "closed_form": 0.2502048310670837,
+          "mean_effect_in_unit_sd": 0.1,
+          "oracle_rejection_rate": 0.2515
+        },
+        {
+          "closed_form": 0.6168289650551789,
+          "mean_effect_in_unit_sd": 0.2,
+          "oracle_rejection_rate": 0.6168
+        }
+      ],
+      "naive_false_positive_rate": 0.26835,
+      "naive_mc_wilson95": [
+        0.2622539633991366,
+        0.27453500690565663
+      ],
+      "naive_rate_closed_form": 0.2670708141231096,
+      "oracle_false_positive_rate": 0.0515,
+      "oracle_mc_wilson95": [
+        0.048522152433424025,
+        0.05465010390890181
+      ],
+      "temporal_ar1": 0.0,
+      "variance_inflation_vs_iid": 7.0
+    },
+    {
+      "cross_sector_correlation": 0.6,
+      "effective_n_under_declared_covariance": 32.14285714285714,
+      "illustrative_oracle_power": [
+        {
+          "closed_form": 0.14053764904036714,
+          "mean_effect_in_unit_sd": 0.1,
+          "oracle_rejection_rate": 0.1412
+        },
+        {
+          "closed_form": 0.3046894602553408,
+          "mean_effect_in_unit_sd": 0.2,
+          "oracle_rejection_rate": 0.30515
+        }
+      ],
+      "naive_false_positive_rate": 0.3592,
+      "naive_mc_wilson95": [
+        0.3525785276075277,
+        0.36587554974587133
+      ],
+      "naive_rate_closed_form": 0.3583052821208338,
+      "oracle_false_positive_rate": 0.0515,
+      "oracle_mc_wilson95": [
+        0.048522152433424025,
+        0.05465010390890181
+      ],
+      "temporal_ar1": 0.5,
+      "variance_inflation_vs_iid": 20.533333333333335
+    }
+  ],
+  "panel_dates": 60,
+  "panel_sectors": 11,
+  "production_imports": false,
+  "python_version": "3.13.5",
+  "replications": 20000,
+  "scope": "synthetic_design_witnesses_only",
+  "script_sha256": "d0b889817438e7126b1c9b046bbb6c053c499c5f32817beeee9d5debe681b286",
+  "seed": 20261016
+}

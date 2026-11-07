@@ -43176,6 +43176,7 @@ jobs:
       - "tests/test_tiingo_archive.py"
       - "tests/test_tiingo_views.py"
       - "tests/test_tiingo_reader.py"
+      - "tests/test_sector_allocation_tiingo.py"
       - "tests/test_tiingo_forex_source.py"
       - "tests/test_tiingo_history.py"
       - "tests/test_tiingo_research_query.py"
