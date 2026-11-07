@@ -1,11 +1,12 @@
 # Draft decision packet: weighted calibration methods for Options Alpha
 
-Status: DRAFT — NOT RATIFIED — NOT EXECUTABLE POLICY.
-Date: 2026-10-04.
+Method status: DRAFT — NOT RATIFIED — NOT EXECUTABLE POLICY.
+Proposal date: 2026-10-04. Decision-record reconciliation: 2026-11-07.
 Carrier: mastermind-terminal issue 599, operation
 options-alpha-product-integration-20260917-sol-001.
 Author: the assigned root engineering orchestrator, with read-only methodological assistance.
-Required acceptance: the existing Opus statistics review and Fable ratification.
+Required acceptance before method verdicts or implementation: the existing Opus
+statistics review and Fable ratification.
 Fable principal review 5403843781 returned UNRATIFIED / REVISE for head
 ed5617599e73cc2d389c6de29924f5270ef762e6. The proposed 20-per-bin/200-total
 gate and monotonicity/dependence rule are not ratified. This revision records
@@ -16,6 +17,32 @@ This packet makes the remaining method decision concrete. It does not modify the
 frozen registration, authorize a study, or make calibration available. In particular,
 the proposed support gate below is operationally prohibitive under the frozen
 weight law. It must not be adopted merely because it is now written down.
+
+## Recorded 2026-10-11 disposition
+
+This revision incorporates [Fable's Q01 DR-1..DR-6 ruling](https://github.com/mastermindx-market-intelligence/macro/pull/8385#issuecomment-6107542191).
+The earlier [identity correction acceptance](https://github.com/mastermindx-market-intelligence/macro/pull/8385#issuecomment-5975689276)
+closed only the wording finding in [the principal review](https://github.com/mastermindx-market-intelligence/macro/pull/8385#issuecomment-5403843781).
+
+The table records those dated decisions; it is not a new statistical verdict,
+a current runtime census or an amendment to the frozen registration. Publication
+of this reconciled decision record does not ratify the method, authorize a fit,
+create an FS5 artifact, or release the separate #8555/#7328 programme holds.
+
+| Decision | Recorded disposition |
+| --- | --- |
+| DR-1: support | O-A was adopted: accept the delay and keep calibration UNAVAILABLE under the frozen 30/20 native-weight floors. O-B (20 per bin / 200 total) and O-D (a smaller floor) were rejected. O-C is only a data-free operating-characteristics design for the statistics owner. Any gate derived from it, including per-bin precision rule S1, still needs an FS-3 amendment, re-check and an agentos DEC from the owning session. No floor is imposed on the six-pilot programme. |
+| DR-2: ties and bins | T1 is the selected design: whole-tie contiguous bins, B = min(10, G). This does not silently amend the frozen literal ten-equal-mass wording or authorize trainer changes. The incumbent unweighted lib/flow_score.ece() must not gate this weighted method. |
+| DR-3: monotonicity | M1/M2 remain deferred to the operating-characteristics package. Its design must use b >= L = H+1 and stress 2L and 4L; no fixed point tolerance is adopted. |
+| DR-4: weight population | P is each admitted population as implemented in #8377, retaining the stated edge bound of less than two effective observations. Installed concurrency weights are not recomputed within evaluation subsets, bins, score groups, era cells or bootstrap replicates. A per-bin math.fsum conservation test is owed before implementation acceptance. |
+| DR-5: freeze before labels | Freeze P, b, floors, the B-rule, dynamic-programming objective, tie rule and seed before any calibration_eval label is read. Insufficiency reports remain label-blind. |
+| DR-6: bookkeeping | 4.8 / 17.5 / 50.8 years denote covered label-window sessions; the corresponding best-case anchor years are 4.7 / 17.4 / 50.5. The Brier gate label is “resolution exceeds reliability.” |
+
+The remaining Opus statistics review and Fable method ratification are not
+supplied by this record. No native enrollment route, provider refusal or alternate
+reviewer substitution was retried. The historical proposals below are retained
+to explain the choices; the rejected 20/200 gate and superseded b=H proposal are
+not current implementation candidates.
 
 ## Existing law and the finite gap
 
@@ -32,8 +59,10 @@ fit-free preregistration permits repair; it supplies no admitted fit or artifact
 Source PR #8377, merged 4176875142889a3c650f041f067d1cb954fedf7e, therefore correctly
 leaves calibration unavailable and forbids an FS5 artifact.
 
-The five proposed choices below form a single review candidate. No partial choice
-may be silently installed in the trainer. Existing populations, source clocks,
+The original five proposed choices below form the historical review candidate.
+The dated disposition above identifies accepted directions, rejected thresholds
+and deferred scientific choices. No partial choice may be silently installed in
+the trainer. Existing populations, source clocks,
 horizons, 15 CPCV paths, 24-point grid, trial count, era registry and BH-FDR family
 remain unchanged by this draft.
 
@@ -93,11 +122,13 @@ A faster implementation must reproduce this reference partition on the frozen
 synthetic boundary cases. Numeric invariance tests must state their rounding
 tolerance separately from the strict gate comparisons.
 
-## 2. Proposed support gate — NOT RECOMMENDED FOR RATIFICATION AS WRITTEN
+## 2. Rejected 20/200 support proposal — feasibility record
 
-A concrete candidate is >=20 effective observations per occupied bin and
+The original candidate was >=20 effective observations per occupied bin and
 >=200 effective observations for the evaluation population, even when ties reduce
-B below ten. The existing >=30 bucket and >=20 era floors would also remain.
+B below ten. DR-1 rejected those new thresholds. The existing >=30 bucket and
+>=20 era floors remain the recorded governing floors; the calculation below is
+retained to explain the rejected proposal's feasibility cost.
 
 The new 20-per-bin number is NOT implied by the old 20-per-era floor. Avoiding
 tiny-bin rate claims motivates a separate gate; the neighboring era number alone
@@ -107,7 +138,9 @@ More importantly, current global concurrency makes this candidate impractical.
 Let P be the exact admitted parent population used to compute and install native
 concurrency weights, and let E be its calibration_eval subset. The method receipt
 must identify P by manifest/hash. Evaluation retains those installed weights;
-concurrency must not be recomputed inside E.
+concurrency must not be recomputed inside E, any bin, score group, era cell or
+bootstrap replicate. Repeated bootstrap selection carries the already allocated
+print weights; it does not redefine the installed population P.
 
 For equal inclusive label-window length L=H+1, let c_P(s) and c_E(s) count the
 collapsed (fill_session, root) units in P and E whose windows cover NYSE session s.
@@ -126,25 +159,25 @@ bound, not an equality when outside-subset units contribute to global concurrenc
 For a continuous evaluation anchor calendar of T sessions, coverage is at most
 T+H, yielding the separate best-case necessary anchor bound T>=N*L-H.
 
-| Primary horizon H | N=30 covered / anchors | N=200 covered / anchors | N=200 anchor years |
-| --- | ---: | ---: | ---: |
-| 5 | 180 / 175 | 1,200 / 1,195 | 4.7 |
-| 21 | 660 / 639 | 4,400 / 4,379 | 17.4 |
-| 63 | 1,920 / 1,857 | 12,800 / 12,737 | 50.5 |
+| Primary horizon H | N=30 covered / anchors | N=200 covered / anchors | N=200 covered years | N=200 anchor years |
+| --- | ---: | ---: | ---: | ---: |
+| 5 | 180 / 175 | 1,200 / 1,195 | 4.8 | 4.7 |
+| 21 | 660 / 639 | 4,400 / 4,379 | 17.5 | 17.4 |
+| 63 | 1,920 / 1,857 | 12,800 / 12,737 | 50.8 | 50.5 |
 
-Years use 252 anchor sessions/year. Any c_E/c_P<1 increases actual requirements;
+Each year column divides its own session denominator by 252. Any c_E/c_P<1 increases actual requirements;
 calendar length alone supplies no finite sufficient upper bound. Report anchor
 sessions, covered label-window sessions and realized sum_s(c_E/c_P) separately.
 These are evaluation support bounds, not total archive-length requirements or
 admission evidence. Other disjoint populations need their own support. The
 calculation is a data-free consequence of the weight formula, not an empirical
-result. The proposed 20/200 gate remains new and unratified.
+result. DR-1 rejected the proposed 20/200 gate rather than installing it.
 
-Recommendation: do not ratify the 20-per-bin candidate by default. The statistics
-review must either explicitly accept this delay or commission a separately
-registered weight/support amendment with a defensible dependence model. This
-packet neither changes that model nor picks a smaller convenient floor. Until
-that decision is ratified, calibration remains unavailable.
+The recorded choice is O-A: accept the delay under the frozen 30/20 floors.
+O-C may prepare a data-free operating-characteristics design; it cannot choose a
+new gate from calibration_eval labels. Any resulting support/dependence change
+still needs the owner amendment, re-check, DEC and required statistics acceptance.
+This packet neither changes the weight model nor picks a smaller convenient floor.
 
 ## 3. Exact weighted metrics
 
@@ -158,6 +191,8 @@ For each sufficient occupied bin j:
     base_Brier = sum_i w_i (base_rate-y_i)^2 / W
 
 Retain strict ECE < 0.05 and Brier < base_Brier. Equality is not a pass.
+The recorded Brier gate label is **resolution exceeds reliability**; the label
+does not replace or relax the strict weighted comparison above.
 A one-class evaluation population is insufficient; base Brier is zero and AUC
 is undefined. Report the row count and effective weight separately, including
 per-bin and per-era support.
@@ -174,7 +209,9 @@ Proposed design, also requiring statistics ratification:
 - Keep the accepted score-bin boundaries fixed.
 - Construct the complete NYSE evaluation anchor calendar, including zero-event
   sessions. Circular moving blocks contain b consecutive calendar sessions;
-  b=H is the current unratified candidate, not a consequence of L=H+1.
+  the original b=H proposal is superseded by DR-3's design constraint
+  b >= L = H+1, with 2L and 4L dependence stress. No particular block length
+  or operating-characteristic gate is ratified by this record.
 - Draw ceil(T/b) block start indices independently and uniformly from 0..T-1.
   Concatenate their circular b-session sequences, then truncate to exactly T
   session indices. Select the existing collapsed weighted units anchored on each
@@ -210,8 +247,10 @@ dependence-envelope values are unset. Until Opus review and Fable ratification
 resolve them, monotonicity gate decisions remain null. No data-free simulation
 or operating-characteristic acceptance evidence is claimed in this packet.
 
-The b=63-session block proposal itself needs about 1,260 evaluation anchor sessions, but
-the proposed native-N=200 gate is far more restrictive. This check adds no model
+The original b=63 / twenty-block illustration was unratified. For H=63,
+DR-3's design lower bound is L=64 sessions, with 128/256-session stress cases;
+no block-equivalent support floor is adopted here. The rejected N=200 proposal
+must not return as an implied gate. This diagnostic adds no model
 selection path, registered verdict cell, p-value or BH-FDR family member. It is
 a calibration diagnostic, not independent evidence of alpha.
 
@@ -242,7 +281,8 @@ intervals; Kish-N substitution; or a smaller support floor chosen to obtain a pa
 None resolves the dependence and feasibility question.
 
 After ratification, synthetic tests must prove row-order and repeated-print
-splitting invariance; weight/prediction/label-mass conservation; label-blind edges;
+splitting invariance; weight/prediction/label-mass conservation, including per-bin
+math.fsum conservation of the already allocated print weights; label-blind edges;
 deterministic tie collapse and partitioning; strict threshold equality behavior;
 all-equal-score insufficiency; reproducible bootstrap receipts; and appropriate
 flat-curve versus large reversed-curve behavior. No real study or fit is authorized
@@ -255,8 +295,10 @@ this concrete draft and returned UNRATIFIED / REVISE; neither that examination n
 generic worker availability fills the named review gate. A genuinely eligible review binding is a required
 capability change. No provider refusal was retried or bypassed.
 
-Open ratification decisions are explicit: support/dependence feasibility; approval
-of the changed nominal-bin wording; approval of the new inference/time gates; and
-the proposed deterministic numeric and bootstrap conventions. Until all
-are closed through the existing owner, frozen v1 and the current no-artifact
-behavior remain authoritative.
+Remaining method-acceptance decisions are explicit: the data-free support and
+dependence operating characteristics; a lawful amendment for the selected T1
+bin design; any inference/time gates; and the deterministic numeric/bootstrap
+conventions. O-A's accepted delay does not ratify those methods, and the rejected
+20/200 or smaller-floor alternatives must not be silently reinstated. Until the
+remaining decisions close through the existing owner, frozen v1 and no-artifact
+behavior remain authoritative for this proposal.

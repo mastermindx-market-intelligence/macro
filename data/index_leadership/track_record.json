@@ -1,104 +1,104 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-10-02",
-  "generated_at": "2026-10-03T17:39:50.709017+00:00",
+  "as_of": "2026-11-03",
+  "generated_at": "2026-11-06T12:02:43.751547+00:00",
   "is_context_only": true,
-  "n_snapshots": 1084,
-  "n_days": 37,
+  "n_snapshots": 1371,
+  "n_days": 47,
   "horizons": {
     "5": {
-      "n_matured": 976,
+      "n_matured": 1328,
       "by_stage": {
         "running": {
-          "n": 902,
-          "mean_fwd_rel": -0.0065,
-          "hit_rate": 0.417
+          "n": 1251,
+          "mean_fwd_rel": -0.0052,
+          "hit_rate": 0.431
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0013,
+          "mean_fwd_rel": -0.0011,
           "hit_rate": 0.472
         },
         "coiling_primed": {
-          "n": 38,
-          "mean_fwd_rel": 0.0114,
-          "hit_rate": 0.579
+          "n": 41,
+          "mean_fwd_rel": 0.011,
+          "hit_rate": 0.585
         }
       },
-      "running_ic": -0.0132,
-      "running_ic_t_hac": -0.185,
+      "running_ic": -0.0173,
+      "running_ic_t_hac": -0.289,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 891,
+      "n_matured": 1328,
       "by_stage": {
         "running": {
-          "n": 817,
-          "mean_fwd_rel": -0.0116,
-          "hit_rate": 0.368
+          "n": 1251,
+          "mean_fwd_rel": -0.0102,
+          "hit_rate": 0.408
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0067,
+          "mean_fwd_rel": -0.0064,
           "hit_rate": 0.417
         },
         "coiling_primed": {
-          "n": 38,
+          "n": 41,
           "mean_fwd_rel": 0.0142,
-          "hit_rate": 0.474
+          "hit_rate": 0.488
         }
       },
-      "running_ic": -0.0263,
-      "running_ic_t_hac": -0.411,
+      "running_ic": -0.0422,
+      "running_ic_t_hac": -0.847,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 714,
+      "n_matured": 1215,
       "by_stage": {
         "running": {
-          "n": 640,
-          "mean_fwd_rel": -0.025,
-          "hit_rate": 0.317
+          "n": 1138,
+          "mean_fwd_rel": -0.0325,
+          "hit_rate": 0.319
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0183,
-          "hit_rate": 0.306
+          "mean_fwd_rel": -0.0189,
+          "hit_rate": 0.278
         },
         "coiling_primed": {
-          "n": 38,
-          "mean_fwd_rel": 0.0183,
-          "hit_rate": 0.605
+          "n": 41,
+          "mean_fwd_rel": 0.0196,
+          "hit_rate": 0.61
         }
       },
-      "running_ic": -0.0007,
-      "running_ic_t_hac": -0.018,
+      "running_ic": -0.0978,
+      "running_ic_t_hac": -1.143,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 65,
+      "n_matured": 551,
       "by_stage": {
         "running": {
-          "n": 56,
-          "mean_fwd_rel": -0.0442,
-          "hit_rate": 0.339
+          "n": 486,
+          "mean_fwd_rel": -0.0546,
+          "hit_rate": 0.296
         },
         "coiling": {
-          "n": 8,
-          "mean_fwd_rel": -0.0796,
-          "hit_rate": 0.25
+          "n": 33,
+          "mean_fwd_rel": -0.0445,
+          "hit_rate": 0.242
         },
         "coiling_primed": {
-          "n": 1,
-          "mean_fwd_rel": -0.0704,
-          "hit_rate": 0.0
+          "n": 32,
+          "mean_fwd_rel": 0.0084,
+          "hit_rate": 0.531
         }
       },
-      "running_ic": null,
-      "running_ic_t_hac": null,
+      "running_ic": -0.0507,
+      "running_ic_t_hac": -2.06,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     }
@@ -116,67 +116,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-09-11",
-      "id": "russell:oil-gas-equipment-services",
-      "name": "Oil & Gas Equipment & Services",
+      "date": "2026-10-13",
+      "id": "subsectors:internet-content-information",
+      "name": "Internet Content & Information",
       "stage": "running",
-      "fwd_rel": -0.1003,
+      "fwd_rel": -0.1689,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "russell:oil-gas-e-p",
-      "name": "Oil & Gas E&P",
+      "date": "2026-10-13",
+      "id": "nasdaq:internet-content-information",
+      "name": "Internet Content & Information",
       "stage": "running",
-      "fwd_rel": -0.0988,
+      "fwd_rel": -0.1689,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "russell:building-products-equipment",
-      "name": "Building Products & Equipment",
-      "stage": "coiling_primed",
-      "fwd_rel": -0.0811,
+      "date": "2026-10-13",
+      "id": "baskets:semicap-equipment",
+      "name": "Semiconductor Equipment (WFE)",
+      "stage": "running",
+      "fwd_rel": -0.1615,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "russell:auto-truck-dealerships",
-      "name": "Auto & Truck Dealerships",
+      "date": "2026-10-13",
+      "id": "nasdaq:semiconductor-equipment-materials",
+      "name": "Semiconductor Equipment & Materials",
       "stage": "running",
-      "fwd_rel": -0.0793,
+      "fwd_rel": -0.1594,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "subsectors:auto-manufacturers",
-      "name": "Auto Manufacturers",
+      "date": "2026-10-13",
+      "id": "russell:semiconductor-equipment-materials",
+      "name": "Semiconductor Equipment & Materials",
       "stage": "running",
-      "fwd_rel": -0.078,
+      "fwd_rel": -0.1581,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "russell:insurance-life",
-      "name": "Insurance - Life",
+      "date": "2026-10-13",
+      "id": "subsectors:semiconductor-equipment-materials",
+      "name": "Semiconductor Equipment & Materials",
       "stage": "running",
-      "fwd_rel": -0.0735,
+      "fwd_rel": -0.1469,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "russell:broadcasting",
-      "name": "Broadcasting",
+      "date": "2026-10-13",
+      "id": "baskets:mag7",
+      "name": "Magnificent Seven",
       "stage": "running",
-      "fwd_rel": -0.0724,
+      "fwd_rel": -0.0448,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "baskets:us-sector-comm",
-      "name": "Communication Services (Equal-Weight)",
+      "date": "2026-10-13",
+      "id": "russell:packaging-containers",
+      "name": "Packaging & Containers",
       "stage": "running",
-      "fwd_rel": -0.0631,
+      "fwd_rel": -0.0013,
       "horizon_d": 21
     }
   ],

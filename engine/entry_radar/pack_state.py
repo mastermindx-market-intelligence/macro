@@ -13,7 +13,8 @@ needs, so an evaluator can answer it for a whole market without the histories:
   as **display context only** — the last confirmed closes for a glance surface.
   It is never an input to any indicator value or any decision.  A 252-row tail
   cannot reproduce the canonical SMA-seeded Wilder-RMA / EMA recursions within
-  the live oracle tie band (measured 1e-7 to 1e-4 off vs 1e-14 for the append
+  the live oracle tie band (measured tail-recompute error ≈1e-3, 7.6e-4 to 8.05e-4
+  off vs 1e-14 for the append
   states here).  A decision whose |margin| is at or below the tie band must be
   settled from the pack's frozen substrate frame through the pack reader, never
   from this file (see :data:`CANONICAL_FALLBACK`).
@@ -317,10 +318,10 @@ def load_compact(path: Path | str, *, expected_sha256: str) -> dict[str, Compact
     prev_ticker: str | None = None
     for cells in table.to_pylist():
         row = _row(cells)
+        if row.ticker in out:
+            raise CompactStateError("compact_schema", f"{row.ticker}: listed twice")
         if prev_ticker is not None and row.ticker <= prev_ticker:
             raise CompactStateError("compact_schema", "rows not sorted by ticker")
         prev_ticker = row.ticker
-        if row.ticker in out:
-            raise CompactStateError("compact_schema", f"{row.ticker}: listed twice")
         out[row.ticker] = row
     return out

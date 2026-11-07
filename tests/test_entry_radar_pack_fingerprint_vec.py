@@ -70,20 +70,9 @@ def _tz_shift() -> pd.DataFrame:
     return x
 
 
-# Frozen copy of the loop on main before the column-wise builder; never edit it to match new code.
-def _frozen_old_loop(frame) -> str:
-    rows = []
-    index = pd.DatetimeIndex(frame.index)
-    for position in range(len(frame)):
-        row = [index[position].date().isoformat()]
-        for column in ("high", "low", "close"):
-            try:
-                value = float(frame[column].iloc[position])
-            except (TypeError, ValueError):
-                value = float("nan")
-            row.append(None if not np.isfinite(value) else value)
-        rows.append(row)
-    return sha16(rows)
+def _v2_oracle(frame: pd.DataFrame) -> str:
+    """Cell-by-cell v2 tokenisation: UTC ISO timestamps, distinct non-finite tokens."""
+    return sha16(lp._fingerprint_rows_slow(frame))
 
 
 FAST = {
@@ -105,8 +94,26 @@ SLOW = {
     "empty_no_columns": lambda: pd.DataFrame(index=pd.DatetimeIndex([])),
     "empty_missing_close": lambda: pd.DataFrame({"high": [], "low": []}, index=pd.DatetimeIndex([])),
 }
-#: Digests the cell-by-cell loop produced on main before the column-wise builder existed.
+#: Digests the v2 cell-by-cell oracle produces for each fixture.
 PINNED = {
+    "plain": "9f003a10a4c7cafa",
+    "nonfinite": "26705722a8c79245",
+    "empty": "4f53cda18c2baa0c",
+    "int": "e1b917eac4a8ba12",
+    "float32": "078af53dec13ad02",
+    "tz": "069e2a4c4b77abca",
+    "extra_col": "9f003a10a4c7cafa",
+    "object": "8f79633aa5e8fe1f",
+    "nat": "0e0019ca425702de",
+    "Int64": "e1b917eac4a8ba12",
+    "bool": "418c923ef370865d",
+    "neg_zero": "69754f96a38c6309",
+    "tz_shift": "e629bfb49d953a04",
+    "empty_no_columns": "4f53cda18c2baa0c",
+    "empty_missing_close": "4f53cda18c2baa0c",
+}
+#: Legacy v1 digests (date-only index, non-finite as None) — still verified at load.
+PINNED_V1 = {
     "plain": "44483a571b3adaeb",
     "nonfinite": "a39b805ea1cf62f2",
     "empty": "4f53cda18c2baa0c",
@@ -141,15 +148,21 @@ def test_odd_frames_use_the_reference_rows(name):
 
 
 @pytest.mark.parametrize("name", sorted(PINNED))
-def test_digests_are_the_ones_the_old_loop_produced(name):
+def test_digests_are_the_ones_the_v2_oracle_produced(name):
     make = FAST.get(name) or SLOW[name]
     assert lp.substrate_fingerprint(make()) == PINNED[name]
 
 
 @pytest.mark.parametrize("name", sorted(FAST) + sorted(SLOW))
-def test_every_fixture_equals_the_frozen_old_loop(name):
+def test_every_fixture_equals_the_v2_oracle(name):
     frame = (FAST.get(name) or SLOW[name])()
-    assert lp.substrate_fingerprint(frame) == _frozen_old_loop(frame)
+    assert lp.substrate_fingerprint(frame) == _v2_oracle(frame)
+
+
+@pytest.mark.parametrize("name", sorted(PINNED_V1))
+def test_v1_legacy_digests_remain_pinned(name):
+    make = FAST.get(name) or SLOW[name]
+    assert lp._substrate_fingerprint_v1(make()) == PINNED_V1[name]
 
 
 def test_neg_zero_and_local_date_are_distinguished():
@@ -162,24 +175,26 @@ def test_neg_zero_and_local_date_are_distinguished():
     tz_frame = _tz_shift()
     utc_frame = tz_frame.copy()
     utc_frame.index = utc_frame.index.tz_convert("UTC")
-    assert lp.substrate_fingerprint(tz_frame) != lp.substrate_fingerprint(utc_frame)
+    assert lp.substrate_fingerprint(tz_frame) == lp.substrate_fingerprint(utc_frame)
+    with pytest.raises(lp.LivePackError, match="substrate_index_not_normalized"):
+        lp._refuse_substrate_index_not_normalized(_tz_shift(), ticker="X")
 
 
-def test_nonempty_frame_missing_a_column_raises_like_the_old_loop():
+def test_nonempty_frame_missing_a_column_raises_like_the_oracle():
     frame = _base().drop(columns=["low"])
     with pytest.raises(KeyError):
         lp.substrate_fingerprint(frame)
     with pytest.raises(KeyError):
-        _frozen_old_loop(frame)
+        _v2_oracle(frame)
 
 
-def test_non_finite_cells_are_none_and_the_rest_are_floats():
+def test_non_finite_cells_use_distinct_tokens_and_the_rest_are_floats():
     rows = lp._fingerprint_rows_fast(_nonfinite())
-    assert rows[0] == ["2026-01-05", 1.5, 1.0, 1.2]
-    assert rows[1][1] is None and rows[2][2] is None and rows[3][3] is None
+    assert rows[0][0].startswith("2026-01-05T00:00:00")
+    assert rows[1][1] == "nan" and rows[2][2] == "+inf" and rows[3][3] == "-inf"
     cells = [cell for row in rows for cell in row[1:]]
-    assert sum(cell is None for cell in cells) == 3
-    assert all(type(cell) is float for cell in cells if cell is not None)
+    assert sum(cell in ("nan", "+inf", "-inf") for cell in cells) == 3
+    assert all(type(cell) is float for cell in cells if cell not in ("nan", "+inf", "-inf"))
 
 
 def test_random_frames_agree():

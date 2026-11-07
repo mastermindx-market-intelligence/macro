@@ -226,3 +226,17 @@ W1 proceeds against fixtures immediately; nothing in W1 waits on the producer.
 - Open: whether `episodes` publication should be a separate served file rather than an
   additive key (chosen: additive key, to keep ONE pack and ONE reader); whether W2 D-DETECTOR
   starts before R1-B runs (chosen: yes — display tier ships freely; R1-B governs promotion only).
+
+## §7 Amendments (2026-10-04, seat a0115103)
+
+- **§4.2 → design spec.** The screen's exact markup, CSS, copy, states and evidence matrix are pinned
+  in `research/IDR_DISLOCATIONS_SCREEN_DESIGN_SPEC_V1.md`; the Terminal is dark-only, so the evidence
+  matrix is dark × EN/ZH × 1440/820/390 — a recorded deviation from the macro two-art-direction law.
+- **§4.3 parameter name.** The chart page accepts both `sym` and `symbol`; the shell's `navHref`
+  emits `symbol`, so the deep link is `/terminal?symbol=<sym>&episode=<id>` and `episode` ships only
+  with the marker plumbing (no dead parameter before T-CHART).
+- **§4.4 N1 ruling.** `state` is source-scoped (what the producer published and how fresh);
+  `source.join_degraded` is user-scoped (how much of *this* watchlist could be joined). A degraded
+  join never downgrades `state`; the screen discloses it as its own line.
+- **§4.5 fixture selection.** Fixtures are selected by the `mm_e2e_dislo` cookie under
+  `TERMINAL_E2E_FIXTURE=1` (PR #795), not by the mechanism described above — recorded deviation.

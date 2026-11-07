@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-18T21:55:17Z",
+ "accession": "0000215466-26-000004",
+ "cik": "0000215466",
+ "doc_byte_length": 3547169,
+ "doc_sha256": "cc814e3c24419e09f2864e6f257ae3afcabacd26e94779a7bec9453ab6a4359e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-18",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cde-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3338400,
+  "byte_start": 3337619,
+  "normalized": "The Prior Gold Stream Agreement was terminated in 2014 and its minimum ounce delivery requirement satisfied in 2016, after which sales under the Franco-Nevada Gold Stream Agreement commenced. Under the Franco-Nevada Gold Stream Agreement, Coeur Mexicana received a $22.0 million deposit toward future deliveries. In accordance with generally accepted accounting principles, although Coeur Mexicana has satisfied its contractual obligation to repay the deposit to Franco-Nevada, the deposit is accounted for as deferred revenue and is recognized as revenue on a units-of-production basis as ounces are sold to Franco-Nevada.",
+  "normalized_sha256": "6d510c217a0d6baf2d98c97baeef622c9aad939031b97d8753bd3c092f0f8cb3",
+  "raw": " The Prior Gold Stream Agreement was terminated in 2014 and its minimum ounce delivery requirement satisfied in 2016, after which sales under the Franco-Nevada Gold Stream Agreement commenced. Under the Franco-Nevada Gold Stream Agreement, Coeur Mexicana received a $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-396\" decimals=\"-5\" name=\"cde:Deposittobereceivedundergoldstreamagreement\" scale=\"6\" id=\"f-1793\">22.0</ix:nonFraction> million deposit toward future deliveries. In accordance with generally accepted accounting principles, although Coeur Mexicana has satisfied its contractual obligation to repay the deposit to Franco-Nevada, the deposit is accounted for as deferred revenue and is recognized as revenue on a units-of-production basis as ounces are sold to Franco-Nevada.",
+  "raw_sha256": "7d45a7abea7f288d62777a59c8568781e282e90ddf1603c9d870b3cef874a92c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/215466/000021546626000004/cde-20251231.htm",
+ "xbrl_contexts": []
+}

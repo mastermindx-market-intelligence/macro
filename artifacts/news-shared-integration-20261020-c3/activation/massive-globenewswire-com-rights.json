@@ -1,0 +1,29 @@
+{
+  "audiences": [
+    "site_full",
+    "internal_research",
+    "blog_draft",
+    "marketing_draft"
+  ],
+  "capabilities": {
+    "body_display": false,
+    "derivative_processing": true,
+    "headline_display": true,
+    "historical_retention": true,
+    "image_display": false,
+    "internal_ingestion": true,
+    "source_link_display": true,
+    "teaser_display": true
+  },
+  "effective_at": "2026-10-20T13:41:32.940484+00:00",
+  "expires_at": "2026-11-19T13:41:32.940484+00:00",
+  "operational_expiry_basis": "30-day operational revalidation; not contractual expiration",
+  "owner_ref": "https://github.com/mastermindx-market-intelligence/macro/blob/a815e54f50e012fd693c9a1ec311f5e814f330bd/research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+  "product_id": "shared-ticker-news-metadata",
+  "provider": "massive",
+  "receipt_id": "mm-shared-news-globenewswire-com-20261020",
+  "schema": "qbus.news_rights_receipt.v1",
+  "scope_note": "Only metadata delivered by the general news endpoint for this exact publisher; no article-body crawl, image ingestion, provider AI insights, or automatic publication.",
+  "source": "massive:globenewswire.com",
+  "status": "approved"
+}
