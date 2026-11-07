@@ -37,9 +37,9 @@ def _fake_prices(monkeypatch):
     is decided by its member prefix and the cross-sectional IC is essentially perfect."""
     exit_px = {"W": 110.0, "L": 90.0, "SPY": 100.0}
     monkeypatch.setattr(S, "_covers", lambda t, root, end: True)
-    monkeypatch.setattr(S, "_level_asof", lambda t, root, start: 100.0)
+    monkeypatch.setattr(S, "_level_asof", lambda t, root, start, **kwargs: 100.0)
     monkeypatch.setattr(S, "_close_at",
-                        lambda t, root, end: exit_px.get(t[0] if t != "SPY" else "SPY", 100.0))
+                        lambda t, root, end, **kwargs: exit_px.get(t[0] if t != 'SPY' else 'SPY', 100.0))
 
 
 def _ledger(tmp_path, *, n_ic_days: int, day_step: int, today: date, horizon_gap: int = 90):

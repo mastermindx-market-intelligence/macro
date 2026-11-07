@@ -1,0 +1,19 @@
+{
+  "kind": "SELECTED_FIELDS_TRANSCRIBED_FROM_NATIVE_GITHUB_READ",
+  "repository": "mastermindx-market-intelligence/macro",
+  "commit": "e4910184b25c27eda95f81a09d3ce4a6f5d8535d",
+  "path": "data/subsector_rotation/track_record.json",
+  "source_blob": "6713f5ad29061e752b8c21e9a180bc3c31a84574",
+  "as_of": "2026-10-01",
+  "generated_at": "2026-10-02T11:48:00.166631+00:00",
+  "n_snapshots": 12634,
+  "n_days": 47,
+  "verdict": "measuring",
+  "horizons": {
+    "5": {"n_matured":12051,"score_ic":-0.0367,"score_ic_t_hac":-0.59,"proven":false,"n_ic_dates":45,"emerging_n":534,"emerging_mean_fwd_rel":-0.0074,"emerging_hit_rate":0.423,"v2":{"n_matured":6700,"score_ic":-0.0488,"score_ic_t_hac":-0.97}},
+    "10": {"n_matured":10979,"score_ic":-0.0231,"score_ic_t_hac":-0.304,"proven":false,"n_ic_dates":41,"emerging_n":486,"emerging_mean_fwd_rel":-0.0049,"emerging_hit_rate":0.453,"v2":{"n_matured":5628,"score_ic":-0.0541,"score_ic_t_hac":-1.335}},
+    "21": {"n_matured":9907,"score_ic":-0.005,"score_ic_t_hac":-0.057,"proven":false,"n_ic_dates":37,"emerging_n":438,"emerging_mean_fwd_rel":-0.0088,"emerging_hit_rate":0.438,"v2":{"n_matured":4556,"score_ic":-0.0362,"score_ic_t_hac":-0.976}},
+    "63": {"n_matured":5351,"score_ic":-0.0103,"score_ic_t_hac":-0.083,"proven":false,"n_ic_dates":20,"emerging_n":239,"emerging_mean_fwd_rel":0.0033,"emerging_hit_rate":0.481,"v2":{"n_matured":0,"score_ic":null,"score_ic_t_hac":null}}
+  },
+  "limitations": ["Existing producer output, not independently recomputed market returns.", "Legacy labels use calendar arithmetic despite documented session horizons.", "Old/new comparison populations differ; raw IC gap is not paired treatment evidence.", "Selected-field transcription is not the full source file or its original bytes."]
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "subtheme_coverage_integration_evidence.v1",
+  "source_base": "ee4124d999a5cc8e10526127352534f18ca557f4",
+  "procedure_pin": "bdf2a972e68a70270c24d4b5d61a4d60edc4f288",
+  "generated_at": "2026-10-03T04:19:08.959804+00:00",
+  "scope": "AUTHOR_REAL_IMPORT_SYNTHETIC_IO_AND_NODE_RENDERER_TESTS_NOT_MARKET_OR_BROWSER_PROOF",
+  "files": {
+    "engine/subsector_track_record.py": {
+      "bytes": 41135,
+      "git_blob": "d759804fa045b0485c1118047743925be3fb15c1",
+      "sha256": "33dc3267163318e1b29a55b363d17fe77d5b387093a5bfc10bb34570e9f47db8"
+    },
+    "tests/test_subsector_track_record.py": {
+      "bytes": 55815,
+      "git_blob": "9b6a1dd50656346873275f08947123a4785d5553",
+      "sha256": "2ef93ff5c4227994ce3fcf7b4dcdcbc55e97c39bc33acab40716b79f896fabb2"
+    },
+    "templates/subsector_rotation.js": {
+      "bytes": 96941,
+      "git_blob": "cbbf1a3ed7ab7b6373a109f2116dffcb1230bcfb",
+      "sha256": "dd041da1490d29810097c4eabe4e71b7cd0d4765ca56bc4cd409f307b538952e"
+    }
+  },
+  "tests": {
+    "passed": 218,
+    "coverage_before_repair_failed": 8,
+    "malformed_before_repair_failed": 4,
+    "renderer_before_repair_failed": 14,
+    "new_total": 30,
+    "log": {
+      "bytes": 340,
+      "git_blob": "72c0a16e55cc26386f67dc0d5320d4edec8eab86",
+      "sha256": "5a52f0897e107fb3255301da66c0cf1c2bce96d4eb153a400c005e953a700a83"
+    },
+    "real_imports": true,
+    "no_skips_waivers_or_workflow_changes": true
+  },
+  "consumer": "Existing templates/subsector_rotation.js drawTrackRecord",
+  "coverage_contract": {
+    "population_basis": "parsed_snapshot_rows",
+    "reason_policy": "first_failing_gate",
+    "selection_bias_corrected": false,
+    "denominator": "due parsed observations, excluding pending and invalid records",
+    "by_stage": [
+      "emerging",
+      "fading",
+      "neutral",
+      "unknown"
+    ]
+  },
+  "browser": {
+    "state": "BLOCKED",
+    "scope": "local static synthetic fragment",
+    "html": {
+      "function_sha256": "9e38f709c1181bebfb6e50d992fad0f5a0782a22c096594e1d8db83f7ee48083",
+      "css_sha256": "3e52b8ef90c168733e95cd8331e5ca087ce55c97f81d1a399f75ed40b1f597fd",
+      "html_sha256": "5cd4272a09c0361ddbacaa5a3d233a459e8b6220f7ff960c294a56ca492fb9b2",
+      "html_bytes": 5217,
+      "scope": "STATIC_HTML_FROM_EXACT_RENDERER_WITH_REAL_COMPONENT_CSS_SYNTHETIC_THEME_TOKENS"
+    },
+    "error": "Chromium file navigation ERR_BLOCKED_BY_ADMINISTRATOR; no successful browser screenshot or CSS proof",
+    "no_retry_or_transport_bypass": true
+  },
+  "prior_ci": {
+    "head": "ee4124d999a5cc8e10526127352534f18ca557f4",
+    "run_id": 37094428913,
+    "conclusion": "success"
+  },
+  "unproven": [
+    "historical data qualification",
+    "raw-market performance",
+    "independent review",
+    "browser or live-product ordinary-refresh proof",
+    "new-head hosted CI"
+  ],
+  "authority": {
+    "live_rank_change": false,
+    "can_trade": false,
+    "can_size": false,
+    "deployed": false
+  },
+  "held_actions": [
+    "original actual M2 price/tree coverage inspection",
+    "original public-industry result inspection",
+    "local browser file navigation"
+  ]
+}
