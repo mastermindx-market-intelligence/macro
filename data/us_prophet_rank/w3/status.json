@@ -88,28 +88,30 @@
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-11-04",
+    "board_as_of": "2026-11-06",
     "coverage": {
-      "identical": 8,
+      "identical": 0,
       "matured": 0,
       "revisions_refused": 0,
       "stamps": 0,
       "written": 0
     },
     "dry_run": false,
-    "failures": [],
+    "failures": [
+      "expected candidate stamp 2026-11-06 absent from the durable store \u2014 session_missing; refusing Pages backfill"
+    ],
     "family": {
-      "identical": 8,
+      "identical": 0,
       "matured": 0,
       "revisions_refused": 0,
       "stamps": 0,
       "written": 0
     },
-    "n_coverage_rows": 8,
-    "n_family_rows": 8,
-    "n_paired_rows": 2097,
+    "n_coverage_rows": 0,
+    "n_family_rows": 0,
+    "n_paired_rows": 2166,
     "paired": {
-      "identical": 2054,
+      "identical": 2123,
       "matured": 0,
       "revisions_refused": 0,
       "stamps": 0,
@@ -141,19 +143,19 @@
       "2026-10-29",
       "2026-10-30"
     ],
-    "require_stamp": "2026-11-04",
+    "require_stamp": "2026-11-06",
     "same_stamp_revisions_refused": [],
     "sessions_written": {
-      "identical": 33,
+      "identical": 34,
       "matured": 0,
       "refused": 0,
-      "written": 0
+      "written": 1
     }
   },
   "latest_session": {
-    "liveness": "unmatured",
-    "reason": "paired observation accrued; H=10 outcome pending (not zero)",
-    "stamp_date": "2026-11-04"
+    "liveness": "session_missing",
+    "reason": "candidate session missing from the durable store; not pulled from Pages",
+    "stamp_date": "2026-11-06"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [
@@ -172,11 +174,15 @@
     {
       "reason": "candidate session missing from the durable store; not pulled from Pages",
       "stamp_date": "2026-10-30"
+    },
+    {
+      "reason": "candidate session missing from the durable store; not pulled from Pages",
+      "stamp_date": "2026-11-06"
     }
   ],
   "n_degraded_or_unpaired": 20,
-  "n_missing": 4,
-  "paired_sessions_accrued": 33,
+  "n_missing": 5,
+  "paired_sessions_accrued": 34,
   "same_stamp_revisions_refused": [
     {
       "changed_fields": [
@@ -12092,10 +12098,10 @@
   ],
   "schema": "us.prophet_w3_status/v1",
   "structural": {
-    "n_coverage_rows": 264,
-    "n_family_rows": 264,
+    "n_coverage_rows": 272,
+    "n_family_rows": 272,
     "outcome_blind": true,
     "schema": "prophet_fusion.w3_structural.v1"
   },
-  "unmatured_sessions": 32
+  "unmatured_sessions": 33
 }
