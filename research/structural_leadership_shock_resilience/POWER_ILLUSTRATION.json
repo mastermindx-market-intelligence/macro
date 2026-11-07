@@ -1,0 +1,56 @@
+{
+  "schema": "slr_p0.power_illustration.v1",
+  "status": "DERIVED_ASSUMPTION_BASED_NOT_EMPIRICAL",
+  "alpha_two_sided": 0.05,
+  "target_power": 0.8,
+  "normal_quantile_sum_approx": 2.8,
+  "target_effect_return_units": 0.005,
+  "residualized_exposure_variance": 1.0,
+  "rows": [
+    {
+      "assumed_outcome_sd": 0.08,
+      "assumed_effective_n": 100,
+      "mde_return_units": 0.022399999999999996
+    },
+    {
+      "assumed_outcome_sd": 0.08,
+      "assumed_effective_n": 250,
+      "mde_return_units": 0.014167003917554339
+    },
+    {
+      "assumed_outcome_sd": 0.08,
+      "assumed_effective_n": 500,
+      "mde_return_units": 0.010017584539199056
+    },
+    {
+      "assumed_outcome_sd": 0.08,
+      "assumed_effective_n": 915,
+      "mde_return_units": 0.007405211574961605
+    },
+    {
+      "assumed_outcome_sd": 0.1,
+      "assumed_effective_n": 100,
+      "mde_return_units": 0.027999999999999997
+    },
+    {
+      "assumed_outcome_sd": 0.1,
+      "assumed_effective_n": 250,
+      "mde_return_units": 0.017708754896942923
+    },
+    {
+      "assumed_outcome_sd": 0.1,
+      "assumed_effective_n": 500,
+      "mde_return_units": 0.01252198067399882
+    },
+    {
+      "assumed_outcome_sd": 0.1,
+      "assumed_effective_n": 915,
+      "mde_return_units": 0.009256514468702006
+    }
+  ],
+  "ideal_effective_n_required": {
+    "0.08": 2008,
+    "0.1": 3136
+  },
+  "warning": "No SLR outcome variance, dependence, incidence or effect was estimated. Effective N is not the row count. Controls reduce exposure variance; clustering and event filters usually reduce usable information."
+}
