@@ -28,9 +28,11 @@ Run: python3 -m pytest tests/test_ci_plan_workflow.py -q
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 from typing import Any
 
 import yaml
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
@@ -94,7 +96,7 @@ def test_ci_plan_job_exists_and_publishes_bounded_identity_outputs() -> None:
     bytes on PR #5578 — all twelve packs died at launch with "Argument list too
     long" before running a test (run 31775693780). The list now travels as the
     `ci-changed-files` artifact and only its 64-character digest rides here;
-    adding a seventh output that scales with the diff would reopen the hole
+    adding any output that scales with the diff would reopen the hole
     under a new name.
     """
     job = _job("ci-plan")
@@ -110,39 +112,83 @@ def test_ci_plan_job_exists_and_publishes_bounded_identity_outputs() -> None:
         "subject_head_sha": "${{ steps.identity.outputs.subject_head_sha }}",
         "tested_base_sha": "${{ steps.identity.outputs.tested_base_sha }}",
         "semantic_role": "${{ steps.identity.outputs.semantic_role }}",
+        "native_group_json": "${{ needs.ci-admission.outputs.native_group_json }}",
+        "admission_generation": "${{ steps.identity.outputs.admission_generation }}",
+        "admitted_pr": "${{ needs.ci-admission.outputs.pr_number }}",
+        "admitted_repository_id": "${{ needs.ci-admission.outputs.head_repository_id }}",
+        "same_repository": "${{ needs.ci-admission.outputs.same_repository || (github.event.pull_request.head.repo.full_name == github.repository && 'true' || 'false') }}",
     }
+
+
+def _assert_native_pr_lifecycle(events):
+    assert events['pull_request']['types'] == ['opened', 'synchronize', 'reopened']
+    assert 'closed' not in events['pull_request']['types']
+
+
+def _assert_ci_original_proof_graph(workflow):
+    assert workflow['concurrency'] == {
+        'group': "ci-${{ github.event_name == 'merge_group' && format('group-{0}-{1}-{2}', github.event.merge_group.base_ref, github.sha, github.run_id) || inputs.proof_role == 'pr_head' && format('admitted-{0}-{1}', inputs.admission_generation, github.run_id) || github.event.pull_request.number || github.ref }}",
+        'cancel-in-progress': "${{ github.event_name != 'workflow_dispatch' && github.event_name != 'merge_group' }}",
+    }
+    resolver = workflow['jobs']['ci-admission']
+    assert resolver['if'] == "github.event_name == 'merge_group' || (github.event_name == 'workflow_dispatch' && inputs.proof_role != '')"
+    plan = workflow['jobs']['ci-plan']
+    assert plan['needs'] == ['ci-admission']
+    assert plan['if'] == "always() && !cancelled() && (needs.ci-admission.result == 'success' || (needs.ci-admission.result == 'skipped' && github.event_name != 'merge_group' && !(github.event_name == 'workflow_dispatch' && inputs.proof_role != '')))"
 
 
 def test_closed_lifecycle_events_cannot_enter_semantic_ci_concurrency() -> None:
-    """Out-of-order close delivery must be unable to replace a live proof slot.
-
-    GitHub replaces the pending member of a concurrency group even when
-    cancel-in-progress is false. The correctness boundary is therefore the trigger:
-    `closed` must not schedule this workflow at all. Open/sync/reopen remain the only
-    PR lifecycle events that can occupy the PR-number group.
-    """
+    """Native closed events cannot displace proof; admitted originals are isolated."""
     workflow = _workflow()
-    triggers = workflow.get("on") or workflow.get(True)
-    pull_request = triggers["pull_request"]
-    assert pull_request["types"] == ["opened", "synchronize", "reopened"]
-    assert "closed" not in pull_request["types"]
-    assert workflow["concurrency"] == {
-        "group": "ci-${{ github.event.pull_request.number || github.ref }}",
-        "cancel-in-progress": "${{ github.event_name != 'workflow_dispatch' }}",
-    }
-    assert "if" not in _job("ci-plan")
+    _assert_native_pr_lifecycle(workflow.get('on', workflow.get(True)))
+    _assert_ci_original_proof_graph(workflow)
+
+
+def test_ci_original_proof_graph_refuses_unsafe_source_mutations():
+    import copy
+    import pytest
+    original = _workflow()
+    mutations = [
+        ('concurrency', 'group', "ci-${{ github.event.pull_request.number || github.ref }}"),
+        ('concurrency', 'group', "ci-${{ inputs.admission_generation }}"),
+        ('concurrency', 'cancel-in-progress', True),
+        ('ci-admission', 'if', "inputs.proof_role != ''"),
+        ('ci-plan', 'needs', []),
+        ('ci-plan', 'if', 'always()'),
+        ('ci-plan', 'if', "always() && !cancelled()"),
+        ('ci-plan', 'if', "needs.ci-admission.result == 'success'"),
+    ]
+    for job, field, value in mutations:
+        changed = copy.deepcopy(original)
+        target = changed['concurrency'] if job == 'concurrency' else changed['jobs'][job]
+        target[field] = value
+        with pytest.raises(AssertionError):
+            _assert_ci_original_proof_graph(changed)
+    for types in (['opened', 'synchronize', 'reopened', 'closed'], ['opened']):
+        with pytest.raises(AssertionError):
+            _assert_native_pr_lifecycle({'pull_request': {'types': types}})
+
 
 
 def test_ci_plan_checks_out_full_history_for_the_base_diff() -> None:
-    """The planner diffs against synthetic-merge parent 1, which a shallow clone may lack.
+    """Retain protected control first, then exact candidate with complete ancestry."""
+    steps = _job('ci-plan')['steps']
+    checkouts = [step for step in steps if str(step.get('uses', '')).startswith('actions/checkout@')]
+    assert [step['name'] for step in checkouts] == [
+        'check out protected proof control', 'check out the exact candidate']
+    control, candidate = checkouts
+    assert control['if'] == "needs.ci-admission.result == 'success'"
+    assert control['with']['ref'] == '${{ github.workflow_sha }}'
+    assert control['with']['persist-credentials'] is False
+    assert control['with']['sparse-checkout'] == 'scripts'
+    retain = next(step for step in steps if step.get('name') == 'retain protected proof control bundle')
+    assert retain['if'] == control['if']
+    assert steps.index(control) < steps.index(retain) < steps.index(candidate)
+    assert candidate['with']['ref'] == '${{ needs.ci-admission.outputs.tested_commit || github.sha }}'
+    assert candidate['with']['fetch-depth'] == 0
+    assert candidate['with']['filter'] == 'blob:none'
+    assert 'if' not in candidate
 
-    Drop `fetch-depth: 0` and the diff fails, the planner widens to the full suite by
-    law (fail-SAFE), and every PR runs everything while the plan still reports
-    success.  The regression costs the entire feature and reds nothing.
-    """
-    checkouts = [s for s in _job("ci-plan")["steps"] if str(s.get("uses", "")).startswith("actions/checkout@")]
-    assert len(checkouts) == 1, f"ci-plan should check out exactly once, found {len(checkouts)}"
-    assert checkouts[0]["with"]["fetch-depth"] == 0
 
 
 def test_ci_plan_sparse_profile_omits_only_the_measured_heavy_trees() -> None:
@@ -156,8 +202,9 @@ def test_ci_plan_sparse_profile_omits_only_the_measured_heavy_trees() -> None:
     checkout = next(
         step
         for step in _job("ci-plan")["steps"]
-        if str(step.get("uses", "")).startswith("actions/checkout@")
+        if step.get("name") == "check out the exact candidate"
     )
+    assert str(checkout['uses']).startswith('actions/checkout@')
     assert checkout["with"]["sparse-checkout-cone-mode"] is False
     assert checkout["with"]["sparse-checkout"].splitlines() == [
         "/*",
@@ -245,20 +292,20 @@ def test_ci_plan_scope_arg_uses_the_immutable_pull_request_base_sha() -> None:
 
 
 def test_workflow_dispatch_passes_no_changed_from_so_main_stays_full_suite() -> None:
-    """Main's baseline is the audit backstop and must run the complete manifest.
-
-    `--changed-from` may reach the planner ONLY through `$CI_SCOPE_ARG`, which is
-    conditioned on `github.event_name == 'pull_request'` and collapses to `''`
-    otherwise.  Hard-code the flag into either run scalar and main's dispatch starts
-    selecting — the one run that is supposed to prove everything proves a subset.
-    """
+    """Main stays full; only the verified PR identity can request changed-base scope."""
     step = _plan_step()
-    assert "--changed-from" not in step["run"]
-    scope_arg = step["env"]["CI_SCOPE_ARG"]
-    assert "github.event_name == 'pull_request'" in scope_arg
-    assert scope_arg.rstrip().endswith("|| '' }}")
-    assert "CI_SCOPE_ARG" not in _pack_step().get("env", {})
-    assert "--changed-from" not in _pack_step()["run"]
+    assert '--changed-from' not in step['run']
+    assert step['env']['CI_SCOPE_ARG'] == (
+        "${{ (steps.identity.outputs.semantic_role == 'pr_head' || steps.identity.outputs.semantic_role == 'merge_group') && "
+        "format('--changed-from {0}', steps.identity.outputs.tested_base_sha) || '' }}")
+    identity = next(s for s in _job('ci-plan')['steps'] if s.get('id') == 'identity')
+    assert identity['env']['ADMISSION_GENERATION'] == '${{ needs.ci-admission.outputs.admission_generation }}'
+    assert identity['env']['ADMITTED_MERGE'] == '${{ needs.ci-admission.outputs.tested_commit }}'
+    assert identity['env']['ADMITTED_BASE'] == '${{ needs.ci-admission.outputs.base }}'
+    assert identity['env']['ADMITTED_HEAD'] == '${{ needs.ci-admission.outputs.subject_head }}'
+    assert 'CI_SCOPE_ARG' not in _pack_step().get('env', {})
+    assert '--changed-from' not in _pack_step()['run']
+
 
 
 def test_workflow_dispatch_can_pin_the_exact_observed_main_sha() -> None:
@@ -327,7 +374,7 @@ def test_ci_pack_is_gated_on_an_affirmative_has_work() -> None:
     assert condition == (
         "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
-        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "(github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || "
         "needs.trusted-ci.result == 'success')"
     )
@@ -394,30 +441,30 @@ def test_superseded_packs_stop_when_their_run_is_cancelled() -> None:
 
 
 def test_only_ci_gate_may_outlive_a_cancelled_run() -> None:
-    """Exactly one job survives a cancel, and it is the short fail-closed verdict.
+    """A top-level cancellation veto makes plan's always() cancellable.
 
-    Every job whose `if:` carries `always()` keeps running in a cancelled run and
-    holds the concurrency group, so the next run cannot start. `ci-gate` is the
-    single deliberate exception. `!cancelled()` would leave it `skipped` in a
-    cancelled run, and GitHub reports a skipped job as passing even a required
-    check; ruleset 21813020 (c0b-native-main-interlock) names `ci-gate` as one.
-    Under `always()` it publishes a real failure instead: one short hosted job
-    (timeout 10 min) against a false proof.
+    This is a bounded structural proof of the current predicates, not a general
+    GitHub expression interpreter. A status function overrides implicit success;
+    every non-gate use therefore needs an unavoidable !cancelled() conjunct.
     """
-    jobs = _workflow()["jobs"]
-    survivors = {
-        name
-        for name, job in jobs.items()
-        if isinstance(job, dict) and "always()" in _bare_expression(job.get("if", ""))
-    }
-    assert survivors == {"ci-gate"}, (
-        f"jobs that outlive a cancelled run: {sorted(survivors)}; a long one holds "
-        "the PR's next run `pending` with zero jobs (see ci.yml's concurrency block)"
-    )
-    gate = jobs["ci-gate"]
-    assert gate["if"] == "always()"
-    assert gate["runs-on"] == "ubuntu-latest"
-    assert gate["timeout-minutes"] <= 10
+    jobs = _workflow()['jobs']
+    survivors = set()
+    for name, job in jobs.items():
+        if not isinstance(job, dict):
+            continue
+        expression = _bare_expression(job.get('if', ''))
+        if not any(status in expression for status in ('always()', 'cancelled()', 'failure()', 'success()')):
+            continue  # No explicit status function: GitHub's implicit success gate.
+        if expression == 'always()':
+            survivors.add(name)
+        else:
+            assert '!cancelled()' in _top_level_conjuncts(expression), (name, expression)
+    assert survivors == {'ci-gate'}, survivors
+    gate = jobs['ci-gate']
+    assert gate['if'] == 'always()'
+    assert gate['runs-on'] == 'ubuntu-latest'
+    assert gate['timeout-minutes'] <= 10
+
 
 
 def test_ci_pack_passes_pack_count_twelve() -> None:
@@ -440,7 +487,7 @@ def test_ci_pack_pins_the_plan_hash_and_unpins_itself_when_there_is_none() -> No
     """
     step = _pack_step()
     hosted_guard = (
-        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "(github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc')"
     )
     assert step["if"] == f"{hosted_guard} && needs.ci-plan.outputs.plan_sha != ''"
@@ -465,7 +512,7 @@ def test_pack_shell_arguments_stay_unquoted_so_an_empty_value_disappears() -> No
     assert "'$CI_SCOPE_ARG'" not in run
 
 
-def test_folded_pack_commands_fold_to_one_line_and_carry_no_comment_marker() -> None:
+def test_plan_shell_array_and_pack_commands_preserve_argument_boundaries() -> None:
     """The two folded-scalar traps this repo has already been bitten by.
 
     A `#` inside a `run: >-` scalar deletes the rest of the command, and a
@@ -475,7 +522,11 @@ def test_folded_pack_commands_fold_to_one_line_and_carry_no_comment_marker() -> 
     thing, so the only detector is the folded RESULT: exactly one line, no `#`.
     """
     run = str(_plan_step()["run"]).strip()
-    assert "\n" not in run
+    assert _plan_step()["shell"] == "bash"
+    assert 'native_args=(--native-group-json "$CI_NATIVE_GROUP_JSON")' in run
+    assert '"${native_args[@]}"' in run
+    import subprocess
+    assert subprocess.run(["bash", "-n"], input=run, text=True, capture_output=True).returncode == 0
     assert "#" not in run
     pack_run = str(_pack_step()["run"])
     assert "set -euo pipefail" in pack_run
@@ -719,7 +770,7 @@ def test_ci_pack_downloads_the_list_and_exports_only_its_path() -> None:
     )
     assert download["with"]["path"] == "${{ runner.temp }}/ci-changed-files"
     assert download["if"] == (
-        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "(github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc')"
     ), (
         "hosted execution downloads this artifact for forks and the ordinary "
@@ -733,3 +784,283 @@ def test_ci_pack_downloads_the_list_and_exports_only_its_path() -> None:
         "the pack step must inherit the handle from $GITHUB_ENV, not re-declare "
         "it — one writer keeps the two jobs naming the same bytes"
     )
+
+
+def test_verified_identity_outputs_reject_raw_inputs_and_unbounded_transport(monkeypatch):
+    import copy
+    import pytest
+    original = _workflow()
+    changes = [(key, '${{ inputs.' + key + ' }}') for key in (
+        'admission_generation', 'admitted_pr', 'admitted_repository_id', 'same_repository')]
+    changes.append(('changed_files', '${{ steps.plan.outputs.changed_files }}'))
+    for key, value in changes:
+        changed = copy.deepcopy(original)
+        changed['jobs']['ci-plan']['outputs'][key] = value
+        monkeypatch.setattr(sys.modules[__name__], '_workflow', lambda: changed)
+        with pytest.raises(AssertionError):
+            test_ci_plan_job_exists_and_publishes_bounded_identity_outputs()
+
+
+def test_exact_candidate_checkout_rejects_weaker_history_and_control(monkeypatch):
+    import copy
+    import pytest
+    original = _workflow()
+    for kind in ('shallow', 'mutable', 'unconditional-control', 'untrusted-control', 'missing-root'):
+        changed = copy.deepcopy(original)
+        steps = changed['jobs']['ci-plan']['steps']
+        control = next(s for s in steps if s.get('name') == 'check out protected proof control')
+        candidate = next(s for s in steps if s.get('name') == 'check out the exact candidate')
+        if kind == 'shallow': candidate['with']['fetch-depth'] = 1
+        elif kind == 'mutable': candidate['with']['ref'] = '${{ github.ref }}'
+        elif kind == 'unconditional-control': control.pop('if')
+        elif kind == 'untrusted-control': control['with']['ref'] = '${{ inputs.tested_merge_sha }}'
+        else: candidate['with']['sparse-checkout'] = '!/data/\n'
+        monkeypatch.setattr(sys.modules[__name__], '_workflow', lambda: changed)
+        with pytest.raises((AssertionError, KeyError)):
+            test_ci_plan_checks_out_full_history_for_the_base_diff()
+            test_ci_plan_sparse_profile_omits_only_the_measured_heavy_trees()
+
+
+def test_scope_guard_rejects_main_selection_and_raw_dispatch_role(monkeypatch):
+    import copy
+    import pytest
+    original = _workflow()
+    for role in ("github.event_name == 'workflow_dispatch'", "inputs.proof_role == 'pr_head'", 'true'):
+        changed = copy.deepcopy(original)
+        step = next(s for s in changed['jobs']['ci-plan']['steps'] if s.get('id') == 'plan')
+        step['env']['CI_SCOPE_ARG'] = step['env']['CI_SCOPE_ARG'].replace(
+            "steps.identity.outputs.semantic_role == 'pr_head'", role)
+        monkeypatch.setattr(sys.modules[__name__], '_workflow', lambda: changed)
+        with pytest.raises(AssertionError):
+            test_workflow_dispatch_passes_no_changed_from_so_main_stays_full_suite()
+
+
+def test_actual_identity_shell_distinguishes_main_verified_admission_and_native_pr(tmp_path):
+    import os
+    import subprocess
+    identity = next(s for s in _job('ci-plan')['steps'] if s.get('id') == 'identity')
+    tool = tmp_path / 'git'
+    tool.write_text('#!/bin/sh\ncase "$1" in\nrev-parse) echo "$TEST_TREE";;\nrev-list) echo "$TEST_TREE $TEST_BASE $TEST_HEAD";;\n*) exit 90;;\nesac\n')
+    tool.chmod(0o700)
+    main, merge, head = '4' * 40, '3' * 40, '1' * 40
+    for case in ('main', 'admitted', 'native', 'wrong-base'):
+        output = tmp_path / (case + '.out')
+        admitted = case in ('admitted', 'wrong-base')
+        env = dict(os.environ, PATH=str(tmp_path) + os.pathsep + os.environ['PATH'],
+            EVENT_NAME='pull_request' if case == 'native' else 'workflow_dispatch',
+            GITHUB_SHA=merge if case == 'native' else main, EVENT_HEAD_SHA=head,
+            TEST_TREE=main if case == 'main' else merge, TEST_BASE=main, TEST_HEAD=head,
+            EXPECTED_DISPATCH_SHA='', ADMISSION_GENERATION='a' * 12 if admitted else '',
+            ADMITTED_MERGE=merge if admitted else '', ADMITTED_BASE=('2' * 40 if case == 'wrong-base' else main) if admitted else '',
+            ADMITTED_HEAD=head if admitted else '', GITHUB_RUN_ID='70', GITHUB_RUN_ATTEMPT='1', GITHUB_OUTPUT=str(output))
+        result = subprocess.run(['bash', '-c', identity['run']], env=env, capture_output=True, text=True)
+        if case == 'wrong-base':
+            assert result.returncode != 0
+            assert not output.exists()
+            continue
+        assert result.returncode == 0, result.stderr + result.stdout
+        values = dict(line.split('=', 1) for line in output.read_text().splitlines())
+        assert values['semantic_role'] == ('main' if case == 'main' else 'pr_head')
+        assert values['tested_base_sha'] == main
+        assert values['subject_head_sha'] == (main if case == 'main' else head)
+        assert values['admission_generation'] == ('a' * 12 if admitted else '')
+
+
+def test_pc_fork_routing_rejects_resolver_only_identity_at_every_consumer(monkeypatch):
+    import copy
+    import pytest
+    original = _workflow()
+    old = "github.event.pull_request.head.repo.full_name != github.repository"
+    resolver_only = "needs.ci-plan.outputs.same_repository != 'true'"
+    for place in ('job', 'execution', 'fallback', 'artifact'):
+        changed = copy.deepcopy(original)
+        job = changed['jobs']['ci-pack']
+        if place == 'job': target = job
+        elif place == 'execution': target = next(s for s in job['steps'] if '--expect-plan-sha' in s.get('run', ''))
+        elif place == 'fallback': target = next(s for s in job['steps'] if s.get('name') == 'fail-safe full suite when no authoritative plan was produced')
+        else: target = next(s for s in job['steps'] if 'download-artifact@' in s.get('uses', '') and s.get('with', {}).get('name') == 'ci-changed-files')
+        assert old in target['if']
+        target['if'] = target['if'].replace(old, resolver_only)
+        monkeypatch.setattr(sys.modules[__name__], '_workflow', lambda: changed)
+        with pytest.raises(AssertionError):
+            test_ci_pack_is_gated_on_an_affirmative_has_work()
+            test_ci_pack_pins_the_plan_hash_and_unpins_itself_when_there_is_none()
+            test_ci_pack_downloads_the_list_and_exports_only_its_path()
+
+
+def test_cancellation_survivor_check_rejects_missing_or_bypassable_veto(monkeypatch):
+    import copy
+    import pytest
+    original = _workflow()
+    for condition in ('always()', 'always() && true', 'always() && !cancelled() || true', 'cancelled()'):
+        changed = copy.deepcopy(original)
+        changed['jobs']['ci-plan']['if'] = condition
+        monkeypatch.setattr(sys.modules[__name__], '_workflow', lambda: changed)
+        with pytest.raises(AssertionError):
+            test_only_ci_gate_may_outlive_a_cancelled_run()
+
+
+def test_native_identity_executes_exact_single_parent_tree_and_refuses_mismatch(tmp_path):
+    import json
+    import os
+    import subprocess
+    def git(*args):
+        return subprocess.check_output(["git", *args], cwd=tmp_path, text=True).strip()
+    git("init", "-q")
+    git("config", "user.name", "fixture")
+    git("config", "user.email", "fixture@example.invalid")
+    (tmp_path / "value").write_text("base")
+    git("add", "value"); git("commit", "-qm", "base")
+    base = git("rev-parse", "HEAD")
+    (tmp_path / "value").write_text("group")
+    git("add", "value"); git("commit", "-qm", "group")
+    head, tree = git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}")
+    group = dict(target_ref="codex/merge-queue-pilot", queue_entry_id="fixture-entry",
+                 pr_number=1, source_head_sha="b" * 40, group_head_sha=head, base_sha=base, tree_sha=tree)
+    command = next(s for s in _job("ci-plan")["steps"] if s.get("id") == "identity")["run"]
+    env = dict(os.environ, EVENT_NAME="merge_group", GITHUB_SHA=head, ADMITTED_MERGE=head,
+               ADMITTED_BASE=base, ADMITTED_HEAD="b" * 40, ADMISSION_GENERATION="a" * 12,
+               EXPECTED_DISPATCH_SHA="", GITHUB_RUN_ID="1", GITHUB_RUN_ATTEMPT="1")
+    for i, change in enumerate(({}, {"tree_sha": "c" * 40}, {"base_sha": "d" * 40}, {"source_head_sha": "e" * 40})):
+        output = tmp_path / f"output-{i}"
+        result = subprocess.run(["bash", "-c", command], cwd=tmp_path,
+            env=dict(env, CI_NATIVE_GROUP_JSON=json.dumps(group | change), GITHUB_OUTPUT=str(output)),
+            text=True, capture_output=True)
+        assert (result.returncode == 0) is (not change), result.stderr
+        if not change:
+            values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+            assert values["semantic_role"] == "merge_group"
+            assert values["subject_head_sha"] == "b" * 40
+            assert values["tested_base_sha"] == base
+        else:
+            assert not output.exists()
+
+
+def test_native_plan_json_is_one_argument_and_never_shell_code(tmp_path):
+    import json
+    import os
+    import subprocess
+    runner = tmp_path / "ci-plan-runner/bin/python"
+    runner.parent.mkdir(parents=True)
+    runner.write_text("#!" + sys.executable + "\nimport json,os,sys\nopen(os.environ['ARGV_FILE'],'w').write(json.dumps(sys.argv[1:]))\n")
+    runner.chmod(0o755)
+    payload = '{"queue_entry_id":"quote \" ; touch NEVER_EXECUTE ; #"}'
+    env = dict(os.environ, RUNNER_TEMP=str(tmp_path), CONTROL_ROOT="/protected", SEMANTIC_ROLE="merge_group",
+        CI_NATIVE_GROUP_JSON=payload, CI_ADMISSION_ARG="--admission-generation aaaaaaaaaaaa",
+        CI_SCOPE_ARG="--changed-from " + "b" * 40, GITHUB_OUTPUT=str(tmp_path / "out"),
+        GITHUB_RUN_ID="1", GITHUB_EVENT_NAME="merge_group", TESTED_TREE_SHA="c" * 40,
+        SUBJECT_HEAD_SHA="d" * 40, TESTED_BASE_SHA="b" * 40, ARGV_FILE=str(tmp_path / "argv"))
+    result = subprocess.run(["bash", "-c", _plan_step()["run"]], cwd=tmp_path, env=env, text=True, capture_output=True)
+    assert result.returncode == 0, result.stderr
+    args = json.loads((tmp_path / "argv").read_text())
+    assert args[args.index("--native-group-json") + 1] == payload
+    assert not (tmp_path / "NEVER_EXECUTE").exists()
+
+
+def test_group_final_authority_remains_inside_required_ci_gate():
+    gate = _job("ci-gate")
+    checkout = next(s for s in gate["steps"] if "actions/checkout@" in s.get("uses", ""))
+    assert "github.workflow_sha" in checkout["with"]["ref"]
+    final = next(s for s in gate["steps"] if "--native-final" in s.get("run", ""))
+    assert final["if"] == "always() && github.event_name == 'merge_group'"
+    assert not final.get("continue-on-error", False)
+    assert "ci-semantic-evidence.json" in final["run"]
+    assert gate["steps"].index(final) > next(i for i,s in enumerate(gate["steps"]) if s.get("id") == "semantic_reconcile")
+    assert "github.event_name != 'merge_group'" in _job("trusted-ci")["if"]
+    assert "with" not in _job("trusted-ci")
+
+
+@pytest.fixture
+def contract_merge_checkout(tmp_path):
+    """Real shallow-boundary raw commits; no provider calls or candidate Python."""
+    import json
+    import os
+    import subprocess
+    env = dict(os.environ, GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1",
+               GIT_ALLOW_PROTOCOL="", GIT_NO_LAZY_FETCH="1")
+    def git(*args, input=None):
+        return subprocess.check_output(["git", "-c", "core.hooksPath=/dev/null", *args],
+            cwd=tmp_path, env=env, input=input, text=True).strip()
+    git("init", "-q")
+    git("config", "user.name", "contract fixture")
+    git("config", "user.email", "fixture@example.invalid")
+    tree = git("mktree", input="")
+    base = git("commit-tree", tree, "-m", "base")
+    source = git("commit-tree", tree, "-p", base, "-m", "source")
+    group = git("commit-tree", tree, "-p", base, "-m", "squash")
+    merge = git("commit-tree", tree, "-p", base, "-p", source, "-m", "PR merge")
+    identity = dict(target_ref="codex/merge-queue-pilot", queue_entry_id="fixture-entry",
+        pr_number=1, source_head_sha=source, group_head_sha=group, base_sha=base, tree_sha=tree)
+    step = next(s for s in _job("contract-delta")["steps"] if s.get("id") == "contract-merge")
+    def execute(role="merge_group", mutation=None):
+        native = role == "merge_group"
+        tested = group if native else merge
+        values = dict(env, EXPECTED_PR_HEAD=source, EXPECTED_TESTED_MERGE=tested,
+            EXPECTED_TESTED_BASE=base, SEMANTIC_ROLE=role,
+            EVENT_NAME="merge_group" if native else "pull_request",
+            ADMISSION_GENERATION="a" * 12 if native else "",
+            CI_NATIVE_GROUP_JSON=json.dumps(identity) if native else "")
+        if mutation:
+            tested, values = mutation(tested, values, dict(identity), merge)
+        git("checkout", "--detach", "-q", tested)
+        (tmp_path / ".git" / "shallow").write_text(tested + "\n")
+        output = tmp_path / "contract-output"
+        values["GITHUB_OUTPUT"] = str(output)
+        result = subprocess.run(["bash", "-c", step["run"]], cwd=tmp_path,
+            env=values, text=True, capture_output=True)
+        return result, output
+    return execute, base, source
+
+
+@pytest.mark.parametrize("role", ["merge_group", "pr_head"])
+def test_contract_delta_accepts_exact_native_squash_and_ordinary_merge(contract_merge_checkout, role):
+    execute, base, source = contract_merge_checkout
+    result, output = execute(role)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert dict(line.split("=", 1) for line in output.read_text().splitlines()) == {
+        "base_sha": base, "head_sha": source}
+
+
+@pytest.mark.parametrize("case", ["two_parent_native", "base", "source", "tree", "head",
+    "missing_group", "duplicate_key", "missing_generation", "wrong_generation",
+    "wrong_event", "wrong_role", "target", "ordinary_wrong_base", "ordinary_wrong_head"])
+def test_contract_delta_refuses_misbound_native_and_ordinary_proofs(contract_merge_checkout, case):
+    import json
+    execute, _, _ = contract_merge_checkout
+    role = "pr_head" if case.startswith("ordinary_") else "merge_group"
+    def mutation(tested, values, group, merge):
+        if case == "two_parent_native":
+            tested = merge; values["EXPECTED_TESTED_MERGE"] = merge; group["group_head_sha"] = merge
+        elif case in {"base", "source", "tree", "head"}:
+            field = {"base":"base_sha", "source":"source_head_sha", "tree":"tree_sha", "head":"group_head_sha"}[case]
+            group[field] = "f" * 40
+        elif case == "target": group["target_ref"] = "untrusted-target"
+        elif case == "wrong_event": values["EVENT_NAME"] = "pull_request"
+        elif case == "wrong_role": values["SEMANTIC_ROLE"] = "main"
+        elif case == "missing_generation": values["ADMISSION_GENERATION"] = ""
+        elif case == "wrong_generation": values["ADMISSION_GENERATION"] = "unknown"
+        elif case == "ordinary_wrong_base": values["EXPECTED_TESTED_BASE"] = "f" * 40
+        elif case == "ordinary_wrong_head": values["EXPECTED_PR_HEAD"] = "f" * 40
+        if role == "merge_group": values["CI_NATIVE_GROUP_JSON"] = json.dumps(group)
+        if case == "missing_group": values["CI_NATIVE_GROUP_JSON"] = ""
+        if case == "duplicate_key": values["CI_NATIVE_GROUP_JSON"] = values["CI_NATIVE_GROUP_JSON"][:-1] + ', "base_sha":"' + group["base_sha"] + '"}'
+        return tested, values
+    result, output = execute(role, mutation)
+    assert result.returncode != 0, case
+    assert not output.exists(), case
+
+
+def test_contract_delta_consumes_only_authenticated_plan_group_outputs():
+    job = _job("contract-delta")
+    step = next(s for s in job["steps"] if s.get("id") == "contract-merge")
+    assert job["needs"] == ["ci-plan"]
+    assert "needs.ci-plan.result == 'success'" in job["if"]
+    assert step["env"]["SEMANTIC_ROLE"] == "${{ needs.ci-plan.outputs.semantic_role }}"
+    assert step["env"]["ADMISSION_GENERATION"] == "${{ needs.ci-plan.outputs.admission_generation }}"
+    assert step["env"]["CI_NATIVE_GROUP_JSON"] == "${{ needs.ci-plan.outputs.native_group_json }}"
+    assert step["env"]["EVENT_NAME"] == "${{ github.event_name }}"
+    assert 'python3 -I' in step["run"]
+    fetch = next(s for s in job["steps"] if s.get("name") == "fetch the exact tested PR merge base")
+    assert fetch["run"] == "git fetch --depth=1 origin ${{ steps.contract-merge.outputs.base_sha }}"
+    gate = next(s for s in job["steps"] if s.get("name") == "differential contract-delta gate")
+    assert '--base ${{ steps.contract-merge.outputs.base_sha }}' in gate["run"]

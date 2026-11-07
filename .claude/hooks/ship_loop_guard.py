@@ -1831,6 +1831,11 @@ def _semantic_evidence_for_run(
             f"run {run_id}'s advertised semantic artifact has no download URL"
         )
     source = _semantic_json_from_archive(_get_artifact_bytes(download_url))
+    if (role == "main" and isinstance(source, dict) and source.get("event") == "workflow_dispatch"
+            and source.get("role") == "pr_head"):
+        semantic_proof.load_semantic_evidence(source, advertised=True, expected_run_id=run_id,
+            expected_event="workflow_dispatch", expected_role="pr_head", expected_workflow="ci")
+        return semantic_proof.LoadedSemanticEvidence("admitted_pr", None)
     expected_tree = head_sha if role == "main" else None
     # PR-head evidence seals the tested merge commit's FIRST PARENT as
     # ``base_sha``; the advertised ``pull_requests[].base`` (or the merged PR
@@ -1917,6 +1922,15 @@ def _semantic_pr_base_sha(
     return next(iter(bases), None)
 
 
+def _authenticate_admitted_green(owner, repo, head_sha, runs, base_sha=None):
+    from scripts import merge_on_green as admission_reader
+    if admission_reader.has_admitted_subject_checks(runs):
+        loaded = _semantic_evidence_for_head(owner, repo, head_sha,
+            check_runs=runs, expected_base_sha=base_sha)
+        if not semantic_proof.semantic_gate_verdict(loaded.evidence).clear:
+            raise semantic_proof.SemanticProofError("admitted semantic proof is not clear")
+
+
 def _semantic_evidence_for_head(
     owner: str,
     repo: str,
@@ -1926,6 +1940,11 @@ def _semantic_evidence_for_head(
     expected_base_sha: str | None = None,
 ) -> Any:
     """Newest exact-head PR evidence; costs nothing unless a caller is already red."""
+    from scripts import merge_on_green as admission_reader
+    if admission_reader.has_admitted_subject_checks(check_runs):
+        return admission_reader.admitted_semantic_evidence_for_head(
+            f"{owner}/{repo}", head_sha, "", check_runs=check_runs,
+            expected_base_sha=expected_base_sha, read_json=_get_json, download=_get_artifact_bytes)
     linked: list[tuple[int, dict[str, Any]]] = []
     for check in check_runs or []:
         if str(check.get("name") or "") != "ci-gate":
@@ -2744,6 +2763,14 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
 
     runs = _head_check_runs(owner, repo, head_sha)
     red, pending, passed = _split_head_runs(runs)
+    if not red:
+        try:
+            _authenticate_admitted_green(owner, repo, head_sha, runs,
+                _semantic_pr_base_sha(runs, head_sha, number))
+        except RateLimited:
+            raise
+        except Exception as exc:
+            return CI_FAILED_UNMERGED, f"Admitted subject proof is unusable: {str(exc)[:500]}"
     if red:
         try:
             loaded = (
@@ -3300,6 +3327,13 @@ def _check_ci(
                 + (f": {', '.join(names[:8])}" if names else "")
                 + "). An absence of red is not a pass."
             )
+        try:
+            _authenticate_admitted_green(owner, repo, head_sha, runs,
+                _semantic_pr_base_sha(runs, head_sha) or base_sha or None)
+        except RateLimited:
+            raise
+        except Exception as exc:
+            return False, f"Admitted subject proof is unusable: {str(exc)[:500]}"
         return True, ""
 
     semantic_notes: list[str] = []

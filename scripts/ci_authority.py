@@ -732,6 +732,422 @@ def run_pull_request_target(
     return (0 if decision["allowed"] is True else 1), decision, active_check
 
 
+# Source support only: activating main requires a separate protected rollout.
+NATIVE_QUEUE_TARGET = "codex/merge-queue-pilot"
+NATIVE_QUEUE_TARGETS = frozenset({"main", NATIVE_QUEUE_TARGET})
+NATIVE_QUEUE_QUERY = """
+query($owner: String!, $name: String!, $target: String!, $qualifiedRef: String!) {
+  repository(owner: $owner, name: $name) {
+    nameWithOwner
+    ref(qualifiedName: $qualifiedRef) { name target { oid } }
+    mergeQueue(branch: $target) {
+      configuration {
+        mergeMethod maximumEntriesToBuild maximumEntriesToMerge minimumEntriesToMerge
+      }
+      entries(first: 100) {
+        totalCount pageInfo { hasNextPage }
+        nodes {
+          id position baseCommit { oid }
+          headCommit { oid tree { oid } parents(first: 3) { nodes { oid } } }
+          pullRequest {
+            number state isDraft baseRefName headRefOid headRefName
+            baseRepository { nameWithOwner } headRepository { nameWithOwner }
+            potentialMergeCommit { tree { oid } parents(first: 3) { nodes { oid } } }
+          }
+        }
+      }
+    }
+  }
+}
+"""
+
+
+NATIVE_PR_RELEASE_QUERY = """query($owner:String!,$name:String!,$number:Int!){
+ repository(owner:$owner,name:$name){ nameWithOwner pullRequest(number:$number){
+ id number state isDraft headRefOid baseRefName reviewDecision
+ baseRef { name branchProtectionRule {
+   requiresApprovingReviews requiredApprovingReviewCount requiresCodeOwnerReviews
+ } }
+ } }
+}"""
+
+
+def validate_native_queue_snapshot(
+    data: object, payload: object, expected_repository: str, *,
+    execution_sha: str, execution_ref: str,
+) -> dict[str, object]:
+    """Bind one native pilot group; this grants neither admission nor release.
+
+    The trusted event supplies execution_sha/ref. Candidate jobs separately
+    check their actual checkout against this result. No branch-name-derived PR
+    number, default-branch alias, incomplete page or native configuration guess.
+    """
+    def require(condition: object, reason: str) -> None:
+        if not condition:
+            raise AuthorityContractError(reason)
+
+    def mapping(value: object, reason: str) -> Mapping[str, Any]:
+        result = _mapping(value)
+        require(result is not None, reason)
+        return result  # type: ignore[return-value]
+
+    def oid(value: object) -> str:
+        require(type(value) is str and re.fullmatch(r"[0-9a-f]{40}", value),
+                "invalid native queue SHA")
+        return str(value)
+
+    event = mapping(payload, "missing native event")
+    require(_repository(expected_repository) == expected_repository,
+            "invalid expected repository")
+    require(event.get("action") == "checks_requested", "wrong native action")
+    require(mapping(event.get("repository"), "missing event repository").get("full_name")
+            == expected_repository, "foreign event repository")
+    group = mapping(event.get("merge_group"), "missing native group")
+    head, base = oid(group.get("head_sha")), oid(group.get("base_sha"))
+    target_ref = group.get("base_ref")
+    selected_target = target_ref.removeprefix("refs/heads/") if isinstance(target_ref,str) else ""
+    require(target_ref == "refs/heads/" + selected_target and selected_target in NATIVE_QUEUE_TARGETS,
+            "native target is not allowlisted")
+    ref = group.get("head_ref")
+    require(type(ref) is str and ref.startswith("refs/heads/gh-readonly-queue/" + selected_target + "/")
+            and _safe_ref(ref) is not None and ref == execution_ref,
+            "native event/execution ref differs")
+    require(head == execution_sha, "native event/execution SHA differs")
+    root = mapping(data, "missing native snapshot")
+    repo = mapping(root.get("repository"), "missing API repository")
+    require(repo.get("nameWithOwner") == expected_repository, "foreign API repository")
+    target = mapping(repo.get("ref"), "selected pilot target is absent")
+    require(target.get("name") == selected_target
+            and mapping(target.get("target"), "target tip absent").get("oid") == base,
+            "group base is not the selected current target tip")
+    queue = mapping(repo.get("mergeQueue"), "selected native queue is absent")
+    config = mapping(queue.get("configuration"), "native configuration absent")
+    require(config.get("mergeMethod") == "SQUASH" and all(
+        type(config.get(key)) is int and config[key] == 1
+        for key in ("maximumEntriesToBuild", "maximumEntriesToMerge", "minimumEntriesToMerge")
+    ), "only serial SQUASH build1/merge1/min1 is supported")
+    entries = mapping(queue.get("entries"), "queue inventory absent")
+    nodes = entries.get("nodes")
+    require(isinstance(nodes, list) and len(nodes) <= 100
+            and type(entries.get("totalCount")) is int
+            and entries["totalCount"] == len(nodes)
+            and mapping(entries.get("pageInfo"), "queue page info absent").get("hasNextPage") is False,
+            "native queue inventory incomplete")
+    ids: set[str] = set()
+    positions: set[int] = set()
+    matches = []
+    for raw in nodes:
+        row = mapping(raw, "malformed queue member")
+        entry_id, position = row.get("id"), row.get("position")
+        require(type(entry_id) is str and 0 < len(entry_id) <= 256
+                and all(32 < ord(c) < 127 for c in entry_id) and entry_id not in ids
+                and type(position) is int and position > 0 and position not in positions,
+                "duplicate or malformed native entry identity")
+        ids.add(entry_id); positions.add(position)
+        candidate = row.get("headCommit")
+        require(candidate is None or isinstance(candidate, Mapping), "malformed queue head")
+        if isinstance(candidate, Mapping) and candidate.get("oid") == head:
+            matches.append(row)
+    require(len(matches) == 1, "native group has no unique entry")
+    entry = matches[0]
+    require(entry["position"] == 1, "native group is not first")
+    require(mapping(entry.get("baseCommit"), "entry base absent").get("oid") == base,
+            "entry base differs")
+    candidate = mapping(entry.get("headCommit"), "entry head absent")
+    require(mapping(candidate.get("parents"), "group parents absent").get("nodes") == [{"oid": base}],
+            "native group is not an exact single-parent squash")
+    tree = oid(mapping(candidate.get("tree"), "group tree absent").get("oid"))
+    pr = mapping(entry.get("pullRequest"), "native source PR absent")
+    number = pr.get("number")
+    require(type(number) is int and number > 0 and pr.get("state") == "OPEN"
+            and pr.get("isDraft") is False and pr.get("baseRefName") == selected_target,
+            "native source PR is not open ready against selected target")
+    require(all(mapping(pr.get(key), "PR repository absent").get("nameWithOwner") == expected_repository
+                for key in ("baseRepository", "headRepository")), "foreign native source PR")
+    require(_safe_ref(pr.get("headRefName")) is not None, "native source branch is missing or malformed")
+    source = oid(pr.get("headRefOid"))
+    merge = mapping(pr.get("potentialMergeCommit"), "potential PR merge unavailable")
+    require(mapping(merge.get("parents"), "PR merge parents absent").get("nodes")
+            == [{"oid": base}, {"oid": source}], "potential merge does not bind source/base")
+    require(mapping(merge.get("tree"), "PR merge tree absent").get("oid") == tree,
+            "potential PR merge and native group trees differ")
+    return dict(target_ref=selected_target, queue_entry_id=entry["id"],
+                pr_number=number, source_head_sha=source, group_head_sha=head,
+                base_sha=base, tree_sha=tree)
+
+
+
+def native_protection_contract(rules: object, *, repository_id: int,
+                               protected_source_sha: str,
+                               protected_source_ref: str = "refs/heads/main",
+                               selected_target: str = NATIVE_QUEUE_TARGET) -> dict[str, object]:
+    """Validate COMPLETE effective branch-rule rows read for the pilot.
+
+    Caller reads the selected target's active rules through the normal API;
+    evaluate/disabled rules never qualify. Source pins are exact immutable
+    controller bytes, not a candidate-supplied expected workflow name.
+    """
+    if (selected_target not in NATIVE_QUEUE_TARGETS or protected_source_ref not in {"refs/heads/main", "refs/heads/" + NATIVE_QUEUE_TARGET}
+            or _positive_int(repository_id) is None or _sha(protected_source_sha) is None
+            or not isinstance(rules, list) or not 0 < len(rules) <= 1000
+            or any(not isinstance(row, dict) for row in rules)):
+        raise AuthorityContractError("native effective protection is unavailable")
+    queue_rules = [r.get('parameters') for r in rules if r.get('type') == 'merge_queue']
+    if len(queue_rules) != 1 or not isinstance(queue_rules[0], dict):
+        raise AuthorityContractError("native merge queue rule missing or ambiguous")
+    queue = queue_rules[0]
+    if (queue.get('merge_method') != 'SQUASH' or queue.get('grouping_strategy') != 'ALLGREEN'
+            or any(type(queue.get(key)) is not int or queue[key] != 1 for key in (
+                'max_entries_to_build', 'max_entries_to_merge', 'min_entries_to_merge'))):
+        raise AuthorityContractError("native protection is not serial single-entry SQUASH")
+    required = {'.github/workflows/ci.yml', '.github/workflows/fences.yml',
+                '.github/workflows/ci-authority.yml'}
+    found = set()
+    for rule in rules:
+        if rule.get('type') != 'workflows':
+            continue
+        parameters = rule.get('parameters')
+        if (not isinstance(parameters, dict) or parameters.get('do_not_enforce_on_create') is True
+                or not isinstance(parameters.get('workflows'), list)):
+            raise AuthorityContractError("native workflow protection incomplete")
+        for row in parameters['workflows']:
+            if not isinstance(row, dict):
+                raise AuthorityContractError("native required workflow malformed")
+            if row.get('path') in required:
+                if (type(row.get('repository_id')) is not int or row['repository_id'] != repository_id
+                        or row.get('sha') != protected_source_sha
+                        or row.get('ref') not in {None, protected_source_ref, protected_source_ref.removeprefix('refs/heads/')}
+                        or row['path'] in found):
+                    raise AuthorityContractError("native required workflow source is not uniquely protected")
+                found.add(row['path'])
+    if found != required:
+        raise AuthorityContractError("native integrated proof/fence/authority protection absent")
+    # Preserve effective ruleset minima for the policy adapter. Classic rules
+    # are read on the same current PR GraphQL snapshot below, never through an
+    # additional Administration-token REST endpoint.
+    approvals = 0
+    codeowners = False
+    last_push = False
+    for rule in rules:
+        if rule.get('type') != 'pull_request':
+            continue
+        parameters = rule.get('parameters')
+        if (not isinstance(parameters, dict)
+                or type(parameters.get('required_approving_review_count')) is not int
+                or not 0 <= parameters['required_approving_review_count'] <= 100
+                or type(parameters.get('require_code_owner_review')) is not bool
+                or type(parameters.get('require_last_push_approval')) is not bool):
+            raise AuthorityContractError('native effective review protection incomplete')
+        approvals = max(approvals, parameters['required_approving_review_count'])
+        codeowners = codeowners or parameters['require_code_owner_review']
+        last_push = last_push or parameters['require_last_push_approval']
+    return dict(target_ref=selected_target, protected_source_sha=protected_source_sha,
+                protected_source_ref=protected_source_ref,
+                required_workflows=sorted(found),
+                required_formal_approvals=approvals,
+                requires_code_owner_reviews=codeowners,
+                review_decision_required=approvals>0 or codeowners or last_push)
+
+
+def native_review_facts(protection, current_pr, *, repository, group):
+    """Bind already-qualified native enforcement to one fresh PR snapshot.
+
+    This is an in-process contract, not candidate JSON or durable approval.
+    The caller authenticates complete effective rules and the GraphQL response.
+    Server reviewDecision retains CODEOWNERS/last-push enforcement; this helper
+    does not try to recreate GitHub's reviewer-eligibility engine.
+    """
+    if (not isinstance(protection, dict) or not isinstance(current_pr, dict)
+            or not isinstance(group, dict) or _repository(repository) is None
+            or group.get('target_ref') not in NATIVE_QUEUE_TARGETS
+            or protection.get('target_ref') != group['target_ref']
+            or _sha(protection.get('protected_source_sha')) is None
+            or protection.get('required_workflows') != sorted([
+                '.github/workflows/ci.yml', '.github/workflows/fences.yml',
+                '.github/workflows/ci-authority.yml'])
+            or type(protection.get('required_formal_approvals')) is not int
+            or not 0 <= protection['required_formal_approvals'] <= 100
+            or type(protection.get('requires_code_owner_reviews')) is not bool
+            or type(protection.get('review_decision_required')) is not bool
+            or type(current_pr.get('number')) is not int
+            or current_pr['number'] != group.get('pr_number')
+            or current_pr.get('headRefOid') != group.get('source_head_sha')
+            or _sha(group.get('source_head_sha')) is None
+            or current_pr.get('baseRefName') != group['target_ref']
+            or 'reviewDecision' not in current_pr
+            or current_pr['reviewDecision'] not in {
+                None, 'APPROVED', 'REVIEW_REQUIRED', 'CHANGES_REQUESTED'}):
+        raise AuthorityContractError('native review facts are missing or misbound')
+    base = current_pr.get('baseRef')
+    if (not isinstance(base, dict) or base.get('name') != group['target_ref']
+            or 'branchProtectionRule' not in base):
+        raise AuthorityContractError('native current classic review protection unavailable')
+    classic = base['branchProtectionRule']
+    approvals = protection['required_formal_approvals']
+    codeowners = protection['requires_code_owner_reviews']
+    decision_required = protection['review_decision_required']
+    if classic is not None:
+        if (not isinstance(classic, dict)
+                or type(classic.get('requiresApprovingReviews')) is not bool
+                or type(classic.get('requiredApprovingReviewCount')) is not int
+                or not 0 <= classic['requiredApprovingReviewCount'] <= 100
+                or type(classic.get('requiresCodeOwnerReviews')) is not bool
+                or (classic['requiresApprovingReviews'] is False
+                    and classic['requiredApprovingReviewCount'] != 0)):
+            raise AuthorityContractError('native current classic review protection malformed')
+        approvals = max(approvals, classic['requiredApprovingReviewCount'])
+        codeowners = codeowners or classic['requiresCodeOwnerReviews']
+        decision_required = decision_required or classic['requiresApprovingReviews']
+    decision_required = decision_required or approvals>0 or codeowners
+    decision = current_pr['reviewDecision']
+    if decision in {'REVIEW_REQUIRED', 'CHANGES_REQUESTED'} or (
+            decision_required and decision != 'APPROVED'):
+        raise AuthorityContractError('native server review disposition is not satisfied')
+    return dict(repository=repository, pr_number=group['pr_number'],
+        head_sha=group['source_head_sha'], target_ref=group['target_ref'],
+        protection_source_sha=protection['protected_source_sha'],
+        required_formal_approvals=approvals, requires_code_owner_reviews=codeowners,
+        review_decision=decision, review_decision_required=decision_required,
+        native_enforcement_qualified=True)
+
+
+def native_source_entry_qualification(loaded, *, expected_head_sha: str,
+                                      protection: dict[str, object]) -> None:
+    """Only entry may use exact-head success against an older base.
+
+    The caller first authenticates the original artifact/run/definition via the
+    incumbent reader. This function cannot authenticate arbitrary JSON. The
+    final group gate uses a separate exact-group reader and cannot call this
+    predicate to transfer PR green to a group.
+    """
+    from scripts.ci_semantic_proof import load_semantic_evidence, semantic_gate_verdict
+    if (not isinstance(protection, dict) or protection.get('target_ref') not in NATIVE_QUEUE_TARGETS
+            or _sha(protection.get('protected_source_sha')) is None
+            or protection.get('required_workflows') != sorted([
+                '.github/workflows/ci.yml', '.github/workflows/fences.yml', '.github/workflows/ci-authority.yml'])):
+        raise AuthorityContractError("native entry lacks verified integrated protection")
+    document = getattr(loaded, 'evidence', None)
+    if getattr(loaded, 'mode', None) != 'semantic' or not isinstance(document, dict):
+        raise AuthorityContractError("native entry lacks authenticated original source proof")
+    validated = load_semantic_evidence(document, advertised=True,
+        expected_subject_head_sha=expected_head_sha, expected_role='pr_head', expected_workflow='ci')
+    # The exact original must be wholly clear. No inherited-red waiver is entry
+    # authority; this does not compare its base with current mutable target.
+    if (not semantic_gate_verdict(validated.evidence).clear
+            or any(step.get('classification') != 'passed' for job in document['jobs'] for step in job['steps'])):
+        raise AuthorityContractError("native source original is not wholly passed")
+
+
+def native_release_authorization(pull, comments, reviews, *, group,
+                                 review_decision, issuer_permission,
+                                 comments_complete, reviews_complete, expected_repository,
+                                 review_policy=None, issuer_login=None, producer_intent=None):
+    """Current release disposition; never cached at enqueue or inferred from CI.
+
+    The read adapter supplies complete original server rows and the permission
+    of the server-recorded arm/enqueue actor. It preserves the incumbent hold
+    grammar and current non-author review requirement. Target rules independently
+    enforce their own additional counts/code-owner/security requirements.
+    """
+    from scripts.merge_on_green import recorded_hold, label_names
+    if (not isinstance(pull,dict) or not isinstance(group,dict)
+            or comments_complete is not True or reviews_complete is not True
+            or not isinstance(comments,list) or not isinstance(reviews,list)
+            or len(comments)>1000 or len(reviews)>1000
+            or any(not isinstance(c,dict) or type(c.get('id')) is not int or c['id']<=0
+                   or not isinstance(c.get('body'),str) or not isinstance(c.get('user'),dict)
+                   for c in comments)
+            or len({c['id'] for c in comments})!=len(comments)):
+        raise AuthorityContractError('native current release custody incomplete')
+    producer_authorized=(isinstance(producer_intent,dict)
+        and producer_intent.get('kind')=='github_actions_producer'
+        and producer_intent.get('repository')==expected_repository
+        and producer_intent.get('pr_number')==group.get('pr_number')
+        and producer_intent.get('head_sha')==group.get('source_head_sha')
+        and producer_intent.get('target_ref')==group.get('target_ref')
+        and producer_intent.get('actor_login')==issuer_login=='github-actions[bot]'
+        and all(type(producer_intent.get(k)) is int and producer_intent[k]>0 for k in
+            ('repository_id','pr_number','arm_event_id','actor_id','app_id','producer_run_id','producer_run_attempt'))
+        and isinstance(producer_intent.get('producer_generation'),str)
+        and re.fullmatch('[0-9a-f]{12}',producer_intent['producer_generation']) is not None)
+    if (type(pull.get('number')) is not int or pull.get('number')!=group['pr_number'] or pull.get('state')!='open'
+            or pull.get('draft') is not False or pull.get('merged') is not False
+            or (pull.get('head') or {}).get('sha')!=group['source_head_sha']
+            or group.get('target_ref') not in NATIVE_QUEUE_TARGETS
+            or (pull.get('base') or {}).get('ref')!=group['target_ref']
+            or _repository(expected_repository) is None
+            or any(((pull.get(key) or {}).get('repo') or {}).get('full_name')!=expected_repository for key in ('head','base'))
+            or 'merge-on-green' not in label_names(pull) or 'merge-blocked' in label_names(pull)
+            or (issuer_permission not in {'write','maintain','admin'} and not producer_authorized)):
+        raise AuthorityContractError('native current source/intent/issuer is not authorized')
+    if not isinstance(pull.get('body'),str) or not isinstance(pull.get('title'),str):
+        raise AuthorityContractError('native current hold text unavailable')
+    if recorded_hold(pull['body'],comments,pull['title']):
+        raise AuthorityContractError('native current source is under a recorded hold')
+    author=(pull.get('user') or {}).get('login')
+    if (not _safe_login(author) or _safe_login(issuer_login) is None
+            or not isinstance(review_policy,dict)
+            or review_policy.get('disposition')!='QUALIFIED'
+            or review_policy.get('origin')!='AUTOMATIC_POLICY'
+            or review_policy.get('repository')!=expected_repository
+            or type(review_policy.get('pull_number')) is not int
+            or review_policy['pull_number']!=group['pr_number']
+            or review_policy.get('head_sha')!=group['source_head_sha']
+            or review_policy.get('target_ref')!=group['target_ref']
+            or type(review_policy.get('native_review_decision_required')) is not bool):
+        raise AuthorityContractError('native protected policy qualification missing or misbound')
+    for kind in ('independent_assessments','formal_non_author_approvals'):
+        required=review_policy.get('required_'+kind)
+        accepted=review_policy.get('accepted_'+kind)
+        if type(required) is not int or type(accepted) is not int or not 0<=required<=accepted:
+            raise AuthorityContractError('native protected policy review requirement unsatisfied')
+    if (review_decision not in {None,'APPROVED'}
+            or review_policy['native_review_decision_required'] and review_decision!='APPROVED'):
+        raise AuthorityContractError('native current server review disposition unsatisfied')
+    latest={}; seen=set()
+    for row in reviews:
+        if (not isinstance(row,dict) or _positive_int(row.get('id')) is None or row['id'] in seen
+                or not isinstance(row.get('user'),dict) or not _safe_login(row['user'].get('login'))
+                or row.get('state') not in {'APPROVED','CHANGES_REQUESTED','COMMENTED','DISMISSED','PENDING'}):
+            raise AuthorityContractError('native original review inventory incomplete')
+        seen.add(row['id'])
+        # Comment-only reviews do not dismiss a prior request/approval. An
+        # actual DISMISSED row supersedes that same review's disposition.
+        if row['state'] in {'COMMENTED','PENDING'}:continue
+        actor=row['user']['login'].lower()
+        if actor not in latest or row['id']>latest[actor]['id']:latest[actor]=row
+    if any(row['state']=='CHANGES_REQUESTED' for row in latest.values()):
+        raise AuthorityContractError('native current review requests changes')
+    if any(review_policy['required_'+kind]>0 for kind in (
+            'independent_assessments','formal_non_author_approvals')):
+        contributors=review_policy.get('source_contributors')
+        reviewers=review_policy.get('qualifying_reviewer_logins')
+        if (not isinstance(contributors,list) or not contributors
+                or any(_safe_login(x) is None for x in contributors)
+                or not isinstance(reviewers,list) or not reviewers
+                or any(_safe_login(x) is None for x in reviewers)
+                or len({x.lower() for x in reviewers})!=len(reviewers)
+                or any(x.lower() in {author.lower(),*(c.lower() for c in contributors)} for x in reviewers)):
+            raise AuthorityContractError('native policy source-independent review binding unavailable')
+
+
+def native_final_evidence(loaded, *, admission_record, run_id, attempt):
+    """No PR/main/cross-run proof may finalize a native queue original."""
+    from scripts import ci_proof_admission as admission
+    from scripts.ci_semantic_proof import load_semantic_evidence, semantic_gate_verdict
+    if (not isinstance(admission_record,admission.NativeAdmission)
+            or admission_record.run_id!=run_id or admission_record.run_attempt!=attempt
+            or getattr(loaded,'mode',None)!='semantic'):
+        raise AuthorityContractError('native final original admission differs')
+    expected=admission.native_execution_identity(admission_record)
+    checked=load_semantic_evidence(loaded.evidence,advertised=True,
+        expected_run_id=run_id,expected_role='merge_group',expected_event='merge_group',expected_workflow='ci',
+        expected_tested_tree_sha=expected['group_head_sha'],expected_subject_head_sha=expected['source_head_sha'],
+        expected_base_sha=expected['base_sha'],expected_admission_generation=admission_record.generation,
+        expected_native_group=expected)
+    if not semantic_gate_verdict(checked.evidence).clear:
+        raise AuthorityContractError('native final group execution is incomplete or failed')
+
 def evaluate_merge_group(payload: object, expected_repository: str) -> dict[str, object]:
     """Validate the queue event consumed by the trusted-default-branch job."""
     event = _mapping(payload)
@@ -775,28 +1191,8 @@ def run_merge_group(
     *,
     details_url: str = "",
 ) -> tuple[int, dict[str, object], dict[str, object]]:
-    """Publish the matching base-specific context on the synthetic queue head."""
-    decision = evaluate_merge_group(payload, expected_repository)
-    head_sha = str(decision["head_sha"])
-    base_ref = str(decision["base_ref"])
-    receipt, allowed = _base_context_receipt(decision, base_ref)
-    check = _completed_check_payload(
-        receipt,
-        name=f"{CHECK_NAME}/{base_ref}",
-        head_sha=head_sha,
-        external_id=(
-            f"{SCHEMA}:{expected_repository}:merge_group:{head_sha}:{base_ref}"
-        ),
-        allowed=allowed,
-        details_url=details_url,
-    )
-    try:
-        api.create_check(expected_repository, check)
-    except Exception as exc:
-        raise GitHubApiError(
-            "completed merge-group ci-authority check could not be created"
-        ) from exc
-    return 0, decision, check
+    """Legacy envelope-only publication cannot grant native final authority."""
+    raise AuthorityContractError("native group requires authenticated membership and final integrated proof")
 
 
 def _retry_after_seconds(headers: Any) -> float | None:
@@ -1118,11 +1514,50 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--event", type=Path, default=Path(os.environ.get("GITHUB_EVENT_PATH", ""))
     )
+    parser.add_argument("--native-membership", action="store_true")
+    parser.add_argument("--native-final", action="store_true")
+    parser.add_argument("--evidence", type=Path)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--source-branch-output", type=Path)
     args = parser.parse_args(argv)
     repository = os.environ.get("GITHUB_REPOSITORY", "")
     try:
         payload = _read_json(args.event)
         event = _mapping(payload)
+        if args.native_membership or args.native_final:
+            from scripts.resolve_ci_pr_admission import resolve_native, ResolutionError, _integer
+            workflow_ref = os.environ.get("GITHUB_WORKFLOW_REF", "")
+            prefix = repository + "/.github/workflows/"
+            workflow_file = workflow_ref[len(prefix):].split("@", 1)[0] if workflow_ref.startswith(prefix) else ""
+            if args.native_membership == args.native_final:
+                raise AuthorityContractError("native reader mode is ambiguous")
+            if args.native_membership and args.output is None:
+                raise AuthorityContractError("native membership output destination missing")
+            evidence = None
+            if args.native_final:
+                if workflow_file != "ci.yml" or args.evidence is None:
+                    raise AuthorityContractError("native final evidence/caller missing")
+                from scripts.ci_semantic_proof import _strict_json_load
+                evidence = _strict_json_load(args.evidence)
+            try:
+                group = resolve_native(payload, repository=repository,
+                    repository_id=_integer(os.environ.get("GITHUB_REPOSITORY_ID", "")),
+                    run_id=_integer(os.environ.get("GITHUB_RUN_ID", "")),
+                    run_attempt=_integer(os.environ.get("GITHUB_RUN_ATTEMPT", "")),
+                    workflow_sha=os.environ.get("GITHUB_WORKFLOW_SHA", ""),
+                    workflow_ref=workflow_ref, event_sha=os.environ.get("GITHUB_SHA", ""),
+                    event_name=os.environ.get("GITHUB_EVENT_NAME", ""), ref=os.environ.get("GITHUB_REF", ""),
+                    token=os.environ.get("GITHUB_TOKEN", ""), membership_only=args.native_membership, workflow_file=workflow_file, include_source_branch=True, final_evidence=evidence)
+            except ResolutionError as exc:
+                raise AuthorityContractError("native membership is incomplete") from exc
+            if args.native_final:
+                return 0
+            if args.source_branch_output is not None:
+                if args.source_branch_output == args.output:
+                    raise AuthorityContractError("native sidecar destinations overlap")
+                args.source_branch_output.write_text(group["source_branch"] + "\n", encoding="utf-8")
+            args.output.write_text(json.dumps(group["group"], sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
+            return 0
         api = GitHubApi(
             os.environ.get("GITHUB_API_URL", "https://api.github.com"),
             os.environ.get("GITHUB_TOKEN", ""),
@@ -1141,7 +1576,7 @@ def main(argv: list[str] | None = None) -> int:
                 api,
                 details_url=_details_url(),
             )
-    except (AuthorityContractError, GitHubApiError):
+    except (AuthorityContractError, GitHubApiError, OSError, ValueError):
         print(
             json.dumps(
                 {"schema": SCHEMA, "allowed": False, "reason": "controller_error"},

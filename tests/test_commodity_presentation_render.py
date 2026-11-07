@@ -65,3 +65,84 @@ def test_template_data_change_fails_closed(publication):
     template.write_text(template.read_text().replace("commodity_workspace|tojson", "{}|tojson"))
     with pytest.raises(ValueError, match="payload bytes"):
         render(publication)
+
+
+def company_journey_component(workspace, *, linked=True):
+    """Render a test-owned identity fixture through the real production component.
+
+    Published data may legitimately have no active equity cohorts. Navigation
+    coverage must not require manufacturing one in the production publication.
+    """
+    from copy import deepcopy
+    from datetime import date
+    from pathlib import Path
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+    from engine.commodity_decision_workspace import fingerprint
+    from engine.transmission_company_continuation import ContinuationLink, continuation_for
+    from lib.dataos.identity import VendorAliasTable
+
+    fixture = deepcopy(workspace)
+    for chain in fixture["chains"]:
+        chain["cohorts"] = []
+    gold = next(chain for chain in fixture["chains"] if chain["id"] == "real_rate_peak_gold_rerate")
+    aliases = VendorAliasTable.from_records([{
+        "vendor": "store", "vendor_symbol": "AAPL", "security_id": "SEC:0:AAPL",
+        "valid_from": None, "valid_to": None,
+    }])
+    continuation = continuation_for("AAPL", aliases, date.fromisoformat(gold["as_of"]),
+        chain_id=gold["id"], channel_id="test_company_return", chain_asof=gold["as_of"])
+    assert isinstance(continuation, ContinuationLink)
+    if linked:
+        gold["cohorts"] = [{
+            "id": "test_company_return", "label": {"en": "Test company", "zh": "测试企业"},
+            "note": {"en": "Synthetic navigation fixture", "zh": "合成导航测试"},
+            "count": 1, "unevaluable": 0, "ranked": False,
+            "companies": {"linked": [continuation.as_dict()], "linked_count": 1},
+        }]
+    fixture["fingerprint"] = fingerprint({"test_fixture": "company_return_journey", "workspace": fixture})
+    env = Environment(loader=FileSystemLoader(Path(__file__).resolve().parents[1] / "templates"),
+                      autoescape=True, undefined=StrictUndefined)
+    macro = '{% macro t(en,zh) %}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{% endmacro %}'
+    component = env.from_string(macro + '{% include "_commodity_decision_workspace.html.j2" %}').render(commodity_workspace=fixture)
+    return component, fixture, continuation.href
+
+
+@pytest.mark.parametrize("linked", [True, False])
+def test_real_company_component_positive_and_empty_cohorts(linked):
+    from copy import deepcopy
+    from html.parser import HTMLParser
+    from pathlib import Path
+    import re
+
+    html = (Path(__file__).resolve().parents[1] / "site/commodities.html").read_text()
+    payloads = re.findall(r'<script\b[^>]*\bid="cw-data"[^>]*>(.*?)</script>', html, re.S)
+    assert len(payloads) == 1
+    original = json.loads(payloads[0])
+    before = deepcopy(original)
+    component, fixture, href = company_journey_component(original, linked=linked)
+    assert original == before
+    assert fixture["assets"] == original["assets"] and fixture["as_of"] == original["as_of"]
+    assert fixture["fingerprint"] != original["fingerprint"]
+
+    class Links(HTMLParser):
+        def __init__(self):
+            super().__init__(); self.rows = []
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            if "data-cw-company-href" in attrs:
+                assert tag == "a"
+                self.rows.append(attrs)
+    parsed = Links(); parsed.feed(component)
+    assert [row["data-cw-company-href"] for row in parsed.rows] == ([href] if linked else [])
+    for row in parsed.rows:
+        assert row["href"] == href and row["target"] == "_blank" and row["rel"] == "noopener"
+    rendered = json.loads(re.findall(r'<script\b[^>]*\bid="cw-data"[^>]*>(.*?)</script>', component, re.S)[0])
+    assert rendered == fixture
+
+
+if __name__ == "__main__":
+    import sys
+    if sys.argv[1:] != ["--company-journey-fixture"]:
+        raise SystemExit("expected --company-journey-fixture")
+    component, _, _ = company_journey_component(json.load(sys.stdin))
+    sys.stdout.write(component)

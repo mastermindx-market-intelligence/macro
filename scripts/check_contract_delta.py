@@ -187,20 +187,22 @@ import time
 from pathlib import Path
 from typing import Any, Iterable, NamedTuple
 
-ROOT = Path(__file__).resolve().parent.parent
+_CONTROL_ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_REL = ".github/ci/legacy-jobs.yml"
 # Where the packing-probe ceilings live; read, never imported (`packing_probe_spec`).
 PACKING_PROBE_SUITE_REL = "tests/test_ci_pack.py"
 CONTROL_PLANE_CLASSES = ("probes", "skip_only", "trigger_gaps")
 
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(_CONTROL_ROOT))
 
 from scripts.run_ci_pack import (  # noqa: E402
     curated_exclusive_closure_findings,
     packing_probe_breaches,
     packing_probe_measurements,
 )
-from scripts.audit_unrun_tests import gated_unrun_suites  # noqa: E402
+# Code stays in the protected bundle; candidate data uses the same validated
+# explicit checkout root as every imported census, never the bundle directory.
+from scripts.audit_unrun_tests import ROOT, gated_unrun_suites  # noqa: E402
 from scripts.check_ci_trigger_closure import trigger_gap_findings  # noqa: E402
 from scripts.check_skip_only_suites import skip_only_findings  # noqa: E402
 from scripts.ci_scope_dependencies import (  # noqa: E402
@@ -626,9 +628,14 @@ def _start_worker(repo_root: Path, spec: dict[str, Any]) -> subprocess.Popen:
     them one after another. `spec` is the head's packing-probe ceilings
     (`packing_probe_spec`), so the base is measured against the same ones.
     """
+    # The selected baseline owns its code and data root. Do not carry the
+    # protected head bundle's candidate-root override into this distinct cwd.
+    worker_env = os.environ.copy()
+    worker_env.pop("MASTERMIND_TRUSTED_CI_REPO_ROOT", None)
     return subprocess.Popen(
-        [sys.executable, "-c", _WORKER_SOURCE, json.dumps(spec)],
-        cwd=repo_root, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+        [sys.executable, "-I", "-c", _WORKER_SOURCE, json.dumps(spec)],
+        cwd=repo_root, env=worker_env,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
     )
 
 
@@ -896,6 +903,30 @@ def caller_sparse_cone(repo_root: Path) -> list[str] | None:
     return listed or None
 
 
+def caller_sparse_noncone_rules(repo_root: Path) -> list[str] | None:
+    """Exact non-cone tracked-path selection, or None for a full/cone caller.
+
+    Hosted contract-delta uses a non-cone negative list to omit generated
+    binary assets; a full base against that sparse head compares different
+    materialization universes. Preserve exact caller rules, never guess a
+    subset or infer a successful census from missing Python source bytes.
+    """
+    try:
+        enabled = _git("config", "--get", "core.sparseCheckout", cwd=repo_root).strip()
+    except ContractDeltaError:
+        return None
+    if enabled != "true":
+        return None
+    cone = _git("config", "--get", "--type=bool", "--default=false",
+                "core.sparseCheckoutCone", cwd=repo_root).strip()
+    if cone != "false":
+        return None
+    rules = _git("sparse-checkout", "list", cwd=repo_root).splitlines()
+    if not rules:
+        raise ContractDeltaError("non-cone sparse checkout has no rules")
+    return rules
+
+
 def materialize_base_tree(base_ref: str, *, repo_root: Path = ROOT):
     """A throwaway detached worktree at `base_ref`, plus its cleanup callable.
 
@@ -919,6 +950,7 @@ def materialize_base_tree(base_ref: str, *, repo_root: Path = ROOT):
     """
     base_sha = _git("rev-parse", f"{base_ref}^{{commit}}", cwd=repo_root).strip()
     cone = caller_sparse_cone(repo_root)
+    noncone_rules = None if cone is not None else caller_sparse_noncone_rules(repo_root)
     temp_root = base_tree_temp_root()
     # Collect what earlier SIGKILLed runs leaked BEFORE adding to the pile: this is
     # the only place that can, see reap_stale_base_trees().
@@ -936,12 +968,15 @@ def materialize_base_tree(base_ref: str, *, repo_root: Path = ROOT):
             except ContractDeltaError:
                 pass
 
-    if cone is None:
+    if cone is None and noncone_rules is None:
         _git("worktree", "add", "--detach", str(tmpdir), base_sha, cwd=repo_root)
         return tmpdir, base_sha, cleanup
     try:
         _git("worktree", "add", "--detach", "--no-checkout", str(tmpdir), base_sha, cwd=repo_root)
-        _git("sparse-checkout", "set", "--cone", "--", *cone, cwd=tmpdir)
+        if cone is not None:
+            _git("sparse-checkout", "set", "--cone", "--", *cone, cwd=tmpdir)
+        else:
+            _git("sparse-checkout", "set", "--no-cone", "--", *noncone_rules, cwd=tmpdir)
         _git("read-tree", "-mu", "HEAD", cwd=tmpdir)
     except BaseException:
         cleanup()

@@ -17,20 +17,24 @@ name: fences
 # app (integration 15368), so the existing ruleset contract and immune-lane
 # classification stay intact while runner allocation falls from three to one.
 on:
+  merge_group:
+    types: [checks_requested]
   pull_request:
     branches: [main]
   push:
-    branches: [main]
+    branches: [main, codex/merge-queue-pilot]
 
 permissions:
   contents: read
   checks: write
+  pull-requests: read
+  actions: read
 
 concurrency:
   # Only the newest commit on a PR (or newest descendant on main) needs to prove
   # these read-only fences.  This coalesces agent push bursts before they consume
   # hosted runner slots.
-  group: fences-${{ github.event.pull_request.number || github.ref }}
+  group: fences-${{ github.event_name == 'merge_group' && format('group-{0}-{1}-{2}', github.event.merge_group.base_ref, github.sha, github.run_id) || github.event.pull_request.number || github.ref }}
   # cancel-in-progress became EVENT-CONDITIONAL 2026-08-09. On a PR it is still
   # `true` — a newer commit obsoletes the older fence result, and coalescing agent
   # push bursts is the whole reason this line exists. On MAIN it must be `false`,
@@ -70,8 +74,35 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: check out protected native membership control
+        if: github.event_name == 'merge_group'
+        uses: actions/checkout@v4
         with:
+          ref: ${{ github.workflow_sha }}
+          filter: blob:none
+          sparse-checkout: scripts
+          persist-credentials: false
+      - name: authenticate native group before candidate code
+        id: native_membership
+        if: github.event_name == 'merge_group'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_WORKFLOW_SHA: ${{ github.workflow_sha }}
+          GITHUB_WORKFLOW_REF: ${{ github.workflow_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/fence-native-control"
+          mkdir "$RUNNER_TEMP/fence-native-control"
+          cp -R scripts "$RUNNER_TEMP/fence-native-control/scripts"
+          python3 -I "$RUNNER_TEMP/fence-native-control/scripts/ci_authority.py" \
+            --native-membership --event "$GITHUB_EVENT_PATH" \
+            --output "$RUNNER_TEMP/native-group.json" \
+            --source-branch-output "$RUNNER_TEMP/native-source-branch"
+      - uses: actions/checkout@v4
+        id: candidate_checkout
+        with:
+          ref: ${{ github.sha }}
           # The old fetch-depth:0 shape fetched every branch/tag in a repository
           # with hundreds of stale agent refs, then materialized ~74.5k tracked
           # paths. 2026-08-20 run 32381887910 spent about an hour here and died
@@ -104,6 +135,11 @@ jobs:
             /data/metabolism/journal/
             /data/ai_costs/usage.jsonl
             /config.yml
+            # Materialize exact HOLD policy inputs within the checkout.
+            # Avoid test-time lazy blob fetches against the promisor remote.
+            /CLAUDE.md
+            /AGENTS.md
+            /.cursor/rules/ship-loop-terminal-states.mdc
           sparse-checkout-cone-mode: false
       - uses: actions/setup-python@v5
         with:
@@ -128,9 +164,39 @@ jobs:
         # for pull_request events. For a PR, GitHub's tested SHA is a synthetic
         # two-parent merge. Those exact parents are immutable proof identity; do
         # not re-fetch mutable main/head refs while making the attribution call.
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref }}
         run: |
           set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = "merge_group" ]; then
+            python3 - <<'NATIVE'
+          import json, os, subprocess
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          group = json.loads((root / "native-group.json").read_text())
+          def git(*args): return subprocess.check_output(["git", *args], text=True).strip()
+          assert git("rev-list", "--parents", "-n", "1", "HEAD").split() == [group["group_head_sha"], group["base_sha"]]
+          assert git("rev-parse", "HEAD^{tree}") == group["tree_sha"]
+          assert git("rev-parse", "HEAD") == os.environ["GITHUB_SHA"]
+          (root / "native-fence-shas").write_text(group["base_sha"] + " " + group["source_head_sha"] + "\n")
+          NATIVE
+            read -r TESTED_BASE_SHA SUBJECT_HEAD_SHA < "$RUNNER_TEMP/native-fence-shas"
+            BRANCH=$(cat "$RUNNER_TEMP/native-source-branch")
+            test -n "$BRANCH"
+            # Group diff is base-to-integrated group. Preserve original source
+            # messages for loop trailers; the squash message is not that census.
+            if ! NATIVE_MERGE_BASE=$(git merge-base "$TESTED_BASE_SHA" "$SUBJECT_HEAD_SHA"); then
+              git fetch --no-tags --no-recurse-submodules --filter=blob:none --deepen=4096 origin "+$TESTED_BASE_SHA:refs/ci-fence/base" "+$SUBJECT_HEAD_SHA:refs/ci-fence/head"
+              NATIVE_MERGE_BASE=$(git merge-base "$TESTED_BASE_SHA" "$SUBJECT_HEAD_SHA")
+            fi
+            SELF_MOD_INPUT_DIR="$RUNNER_TEMP/self-mod-fence"
+            mkdir -p "$SELF_MOD_INPUT_DIR"
+            git diff --name-only -z "$TESTED_BASE_SHA" "$GITHUB_SHA" | python3 -I "$RUNNER_TEMP/fence-native-control/scripts/check_self_mod_fence.py" --write-files-file-from-nul "$SELF_MOD_INPUT_DIR/changed-files.json"
+            git log --format="%B" "$NATIVE_MERGE_BASE..$SUBJECT_HEAD_SHA" > "$SELF_MOD_INPUT_DIR/commit-messages.txt"
+            python3 -I "$RUNNER_TEMP/fence-native-control/scripts/check_self_mod_fence.py" --branch "$BRANCH" --files-file "$SELF_MOD_INPUT_DIR/changed-files.json" --trailers-file "$SELF_MOD_INPUT_DIR/commit-messages.txt"
+            exit 0
+          fi
           read -r MERGE_SHA TESTED_BASE_SHA SUBJECT_HEAD_SHA EXTRA_PARENT \
             < <(git rev-list --parents -n 1 "$GITHUB_SHA")
           if [ "$MERGE_SHA" != "$GITHUB_SHA" ] || [ -z "$TESTED_BASE_SHA" ] || \
@@ -156,7 +222,7 @@ jobs:
               exit 1
             fi
           fi
-          BRANCH="${{ github.head_ref }}"
+          BRANCH="$SOURCE_BRANCH"
           SELF_MOD_INPUT_DIR="$RUNNER_TEMP/self-mod-fence"
           FILES_FILE="$SELF_MOD_INPUT_DIR/changed-files.json"
           TRAILERS_FILE="$SELF_MOD_INPUT_DIR/commit-messages.txt"
@@ -241,6 +307,9 @@ jobs:
         if: always()
         uses: actions/github-script@v7
         env:
+          NATIVE_EVENT: ${{ github.event_name == 'merge_group' }}
+          NATIVE_MEMBERSHIP: ${{ steps.native_membership.outcome }}
+          CANDIDATE_CHECKOUT: ${{ steps.candidate_checkout.outcome }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           SELF_MOD_SELFTEST: ${{ steps.self_mod_selftest.outcome }}
           SELF_MOD_LIVE: ${{ steps.self_mod_live.outcome }}
@@ -252,7 +321,10 @@ jobs:
           GRADER_LIVE: ${{ steps.grader_live.outcome }}
         with:
           script: |
-            const pass = values => values.every(value => ['success', 'skipped'].includes(value));
+            const nativeReady = process.env.NATIVE_EVENT !== 'true' ||
+              (process.env.NATIVE_MEMBERSHIP === 'success' && process.env.CANDIDATE_CHECKOUT === 'success');
+            const pass = values => nativeReady && values.every(value =>
+              process.env.NATIVE_EVENT === 'true' ? value === 'success' : ['success', 'skipped'].includes(value));
             const checks = [
               {
                 name: 'self-mod-fence',

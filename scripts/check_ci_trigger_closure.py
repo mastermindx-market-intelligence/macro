@@ -113,6 +113,7 @@ from scripts.audit_unrun_tests import (  # noqa: E402
     ROOT,
     WORKFLOWS,
     discover_suites,
+    ci_proof_paths,
 )
 from scripts.ci_scope_dependencies import (  # noqa: E402
     _DATA_MARKER,
@@ -161,23 +162,32 @@ def _run_steps(definition: object) -> list[str]:
 
 
 def pr_gates() -> list[dict]:
-    """Every `on.pull_request` workflow, its path filter, and the files it governs.
+    """Every PR proof workflow, its ownership filter, and the files it governs.
 
     ``patterns is None`` means the workflow declares no `paths:` and therefore
     starts on EVERY pull request — anything it runs is unconditionally reachable.
     """
+    if CI_MANIFEST.exists() and not (WORKFLOWS / "ci.yml").is_file():
+        raise RuntimeError("CI proof ownership unavailable: missing CI workflow")
     gates: list[dict] = []
     for path in sorted(WORKFLOWS.glob("*.yml")):
         payload = _load(path)
-        if payload is None:
-            continue
-        block = _on_block(payload)
-        if block is None or "pull_request" not in block:
-            continue
-        trigger = block.get("pull_request")
-        patterns = None
-        if isinstance(trigger, dict) and isinstance(trigger.get("paths"), list):
-            patterns = [str(p) for p in trigger["paths"]]
+        if path.name == "ci.yml":
+            # Preserve CI's governed suites after native-trigger cutover. Missing
+            # ownership must refuse the census, never silently remove its rows.
+            patterns = ci_proof_paths(WORKFLOWS, CI_MANIFEST)
+            if payload is None:
+                raise RuntimeError("CI proof workflow unavailable")
+        else:
+            if payload is None:
+                continue
+            block = _on_block(payload)
+            if block is None or "pull_request" not in block:
+                continue
+            trigger = block.get("pull_request")
+            patterns = None
+            if isinstance(trigger, dict) and isinstance(trigger.get("paths"), list):
+                patterns = [str(p) for p in trigger["paths"]]
 
         runs: list[str] = []
         for definition in (payload.get("jobs") or {}).values():

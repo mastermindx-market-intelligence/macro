@@ -527,7 +527,8 @@ def test_tier_gate_is_reachable_from_its_own_inputs():
     )
     # PyYAML resolves the bare key `on` to True (YAML 1.1 booleans).
     triggers = ci.get("on") or ci.get(True)
-    matchers = [_gh_path_filter_to_re(p) for p in triggers["pull_request"]["paths"]]
+    from scripts.audit_unrun_tests import ci_proof_paths
+    matchers = [_gh_path_filter_to_re(p) for p in ci_proof_paths()]
 
     steps = [
         step

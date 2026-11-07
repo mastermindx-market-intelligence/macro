@@ -90,7 +90,7 @@ def _recording(name: str, function, calls: list):
 
 def test_same_repo_fence_checkout_is_bounded_sparse_and_blob_filtered() -> None:
     job = _document()["jobs"]["fence-pack"]
-    checkout = next(step for step in job["steps"] if step.get("uses") == "actions/checkout@v4")
+    checkout = next(step for step in job["steps"] if step.get("id") == "candidate_checkout")
     options = checkout["with"]
 
     assert options["filter"] == "blob:none"
@@ -116,16 +116,35 @@ def test_same_repo_fence_checkout_is_bounded_sparse_and_blob_filtered() -> None:
         "/data/metabolism/journal/",
         "/data/ai_costs/usage.jsonl",
         "/config.yml",
+        # Hold-suite parity must not cause a separate lazy promisor fetch.
+        "/CLAUDE.md",
+        "/AGENTS.md",
+        "/.cursor/rules/ship-loop-terminal-states.mdc",
     }
     assert required <= sparse
     assert "/site/" not in sparse
     assert "/data/" not in sparse
+    # The parity suite runs as part of the required fast fence. Every source-law
+    # input must be locally materialized by the *same exact-SHA checkout*, rather
+    # than relying on test-time git-show downloads from the promisor remote.
+    hold = _load_hold_suite_module()
+    assert all(
+        ("/" + path) in sparse
+        or any(pattern.endswith("/") and ("/" + path).startswith(pattern)
+               for pattern in sparse)
+        for path in hold.PARITY_FILES
+    )
+    # Do not expand editor roots just to include one exact policy file.
+    assert "/.cursor/" not in sparse
+    assert "/.claude/" not in sparse
 
 
 def test_self_mod_live_check_uses_exact_synthetic_parents_and_fails_closed() -> None:
     job = _document()["jobs"]["fence-pack"]
     live = _named_step(job, LIVE_CHECK_STEP)
     command = live["run"]
+    # The native path has its own bounded ancestry check; inspect legacy PR branch separately.
+    command = command[command.index('read -r MERGE_SHA TESTED_BASE_SHA SUBJECT_HEAD_SHA EXTRA_PARENT'):]
 
     assert 'git rev-list --parents -n 1 "$GITHUB_SHA"' in command
     assert "expected one synthetic merge with exactly two parents" in command
@@ -133,7 +152,7 @@ def test_self_mod_live_check_uses_exact_synthetic_parents_and_fails_closed() -> 
     merge_base = 'MERGE_BASE=$(git merge-base "$TESTED_BASE_SHA" "$SUBJECT_HEAD_SHA")'
     assert command.count(merge_base) == 2
     first_probe = command.index(merge_base)
-    fetch = command.index("git fetch")
+    fetch = command.index("git fetch", first_probe)
     second_probe = command.rindex(merge_base)
     assert first_probe < fetch < second_probe
     assert command.count("git fetch") == 1
@@ -282,8 +301,9 @@ def test_hold_wrapper_regressions_execute_inside_the_fast_fence() -> None:
     This is the executable half: every canonical regression is invoked here rather
     than copied into a second assertion set.
 
-    fence-pack calls these functions without pytest, from a sparse checkout with no
-    ``.claude/``, ``CLAUDE.md``, ``AGENTS.md`` or ``.cursor/``. Fixtures are supplied as
+    fence-pack calls these functions without pytest, from a sparse checkout
+    whose exact HOLD policy files are materialized (without the broad editor
+    roots). Fixtures are supplied as
     a ``pytest.MonkeyPatch.context()`` and a temporary directory, never ``capsys``, and
     parametrized cases iterate the suite's own constants rather than copies. Every test
     function in the suite is called here; one that genuinely cannot run here belongs in
@@ -302,8 +322,8 @@ def test_hold_wrapper_regressions_execute_inside_the_fast_fence() -> None:
     hold.test_parked_message_still_forbids_every_release_action()
     with pytest.MonkeyPatch.context() as monkeypatch:
         hold.test_parked_message_is_pure_and_needs_no_probe_or_network(monkeypatch)
-    # CLAUDE.md, AGENTS.md and .cursor/ are outside fence-pack's sparse checkout; the
-    # suite reads a law file from exact HEAD whenever it is absent on disk.
+    # Exact HOLD parity files are inside fence-pack's original sparse checkout.
+    # The test's git-show fallback remains for other incomplete developer trees.
     for relative in hold.PARITY_FILES:
         hold.test_source_law_agrees_ship_attempt_is_not_the_reciprocal_dialogue(relative)
         hold.test_source_law_never_calls_parked_session_terminal(relative)
@@ -379,7 +399,7 @@ def test_hold_wrapper_regressions_execute_inside_the_fast_fence() -> None:
 
 def test_agent_os_record_contract_runs_inside_the_existing_fast_fence() -> None:
     job = _document()["jobs"]["fence-pack"]
-    checkout = next(step for step in job["steps"] if step.get("uses") == "actions/checkout@v4")
+    checkout = next(step for step in job["steps"] if step.get("id") == "candidate_checkout")
     sparse = {
         line.strip()
         for line in str(checkout["with"]["sparse-checkout"]).splitlines()
@@ -422,3 +442,22 @@ def test_fork_self_mod_fence_runs_the_same_canonical_agent_os_validator() -> Non
     job = _document()["jobs"]["fork-self-mod-fence"]
     commands = [step.get("run") for step in job["steps"]]
     assert commands.count("python3 scripts/agentos.py validate") == 1
+
+
+def test_native_fence_authenticates_source_branch_before_candidate_and_keeps_trailers():
+    job = _document()["jobs"]["fence-pack"]
+    steps = job["steps"]
+    member = next(s for s in steps if s.get("id") == "native_membership")
+    candidate = next(s for s in steps if s.get("id") == "candidate_checkout")
+    assert steps.index(member) < steps.index(candidate)
+    assert "--source-branch-output" in member["run"]
+    assert "github.workflow_sha" in steps[0]["with"]["ref"]
+    live = _named_step(job, LIVE_CHECK_STEP)["run"]
+    assert 'BRANCH=$(cat "$RUNNER_TEMP/native-source-branch")' in live
+    assert '"$NATIVE_MERGE_BASE..$SUBJECT_HEAD_SHA"' in live
+    assert 'git diff --name-only -z "$TESTED_BASE_SHA" "$GITHUB_SHA"' in live
+    assert "group[\"tree_sha\"]" in live
+    publish = next(s for s in steps if s.get("id") == "publish")["with"]["script"]
+    assert "process.env.NATIVE_MEMBERSHIP === 'success'" in publish
+    assert "process.env.CANDIDATE_CHECKOUT === 'success'" in publish
+    assert "process.env.NATIVE_EVENT === 'true' ? value === 'success'" in publish

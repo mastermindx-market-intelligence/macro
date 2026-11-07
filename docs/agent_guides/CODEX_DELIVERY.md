@@ -1,5 +1,35 @@
 ## Definition of done
 
+### Guarded native-queue review transition
+
+Macro's interim universal formal-APPROVED and separate manual non-author arming
+requirements remain until the existing rollout proves compatible protected
+governance source, the installed guard, effective required-workflow rules and
+actual native release behavior. A source paragraph or pilot does not activate
+main. The canonical Mastermind review policy owns the counts; a general
+attended-session waiver does not replace its distinct AUTOMATIC contract. Bind
+the actual protected policy revision and source-qualified exact-PR/head result,
+and reject missing, forged, stale or caller-lowered counts. Keep the optional
+review host OFF.
+
+After that qualified transition, the responsible session may submit its original
+authorized opt-in and the protected native queue performs the non-author final
+release. Retire only the interim universal formal approval and second manual
+arming ceremony. Preserve actual native/CODEOWNERS review, explicit source or
+issuer holds, current authorization, complete source/finding evidence and this
+candidate's complete integrated proof. A technical PASS is not formal APPROVED.
+A genuinely independent source-non-author reviewer may also be an eligible
+release issuer unless a binding rule or hold requires separate identities.
+Zero-review candidates do not require reviewer-ancestry completeness; collect
+identity evidence only for independence or another source/issuer condition that
+actually applies. Unknown native enforcement is not zero.
+
+Use the same incumbent adapter/authority boundary before enqueue and at the
+protected final gate. No per-PR waiver, author-selected origin, extra registry,
+reviewer chase, direct/admin merge or source-author self-release follows from
+this transition. Main native mode stays OFF until source, protection and actual
+positive/negative release proof qualify; current holds are not released by prose.
+
 DONE for ordinary substantive, verified work is the full delivery chain, which is
 never abandoned partway and never handed back to the operator to finish:
 

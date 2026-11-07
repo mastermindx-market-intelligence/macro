@@ -20,6 +20,89 @@ STEP_SHA = "6" * 64
 OTHER_STEP_SHA = "7" * 64
 
 
+def _admitted_dispatch_plan(generation="a" * 12):
+    plan = _plan()
+    plan["event"] = "workflow_dispatch"
+    plan["admission_generation"] = generation
+    plan["plan_sha256"] = proof.authoritative_plan_sha256(plan)
+    return plan
+
+
+def test_admitted_dispatch_generation_is_hashed_reconciled_and_reader_bound():
+    plan = _admitted_dispatch_plan()
+    fragment = _fragment(plan=plan)
+    fragment["admission_generation"] = plan["admission_generation"]
+    evidence = proof.reconcile_evidence(plan, [fragment])
+    assert evidence["event"] == "workflow_dispatch"
+    assert evidence["role"] == "pr_head" and evidence["admission_generation"] == "a" * 12
+    assert proof.load_semantic_evidence(evidence, advertised=True,
+        expected_event="workflow_dispatch", expected_role="pr_head",
+        expected_admission_generation="a" * 12).mode == "semantic"
+    assert _admitted_dispatch_plan("b" * 12)["plan_sha256"] != plan["plan_sha256"]
+    with pytest.raises(proof.SemanticProofError, match="admission_generation mismatch"):
+        proof.load_semantic_evidence(evidence, advertised=True, expected_admission_generation="b" * 12)
+
+
+@pytest.mark.parametrize("generation", [None, "", True, "A" * 12, "a" * 11, "a" * 13])
+def test_admitted_dispatch_requires_canonical_generation(generation):
+    with pytest.raises(proof.SemanticProofError, match="admission_generation"):
+        _admitted_dispatch_plan(generation)
+
+
+@pytest.mark.parametrize("fragment_generation", [None, "b" * 12])
+def test_cross_generation_or_missing_generation_fragment_is_refused(fragment_generation):
+    plan = _admitted_dispatch_plan()
+    fragment = _fragment(plan=plan)
+    if fragment_generation is not None:
+        fragment["admission_generation"] = fragment_generation
+    with pytest.raises(proof.SemanticProofError):
+        proof.reconcile_evidence(plan, [fragment])
+
+
+@pytest.mark.parametrize("role,plan_digest,evidence_digest", [
+    ("pr_head", "aca8777ed1c4e61ac8f6ee8d952648cef6da48ac7f799f1094870fe3d69729ac",
+     "24c1c849c6c6ad46bf9c2a2f7e01a921b77f9182bf53eadc6b2471aa0baf9b9a"),
+    ("main", "58fe595e5ec8bcc49b6f068bbb6060b96a4b287ed7999c85dd0ccb57690b03b6",
+     "55b7efcf1688d1dafcdd6c6dbc1816c9534016650f82f9cab4c6b654ab2137b7"),
+])
+def test_legacy_identity_documents_and_digests_are_unchanged(role, plan_digest, evidence_digest):
+    plan = _plan(role=role)
+    fragment = _fragment(role=role, plan=plan)
+    evidence = proof.reconcile_evidence(plan, [fragment])
+    assert plan["plan_sha256"] == plan_digest and evidence["evidence_sha256"] == evidence_digest
+    assert all("admission_generation" not in doc for doc in (plan, fragment, evidence))
+    plan["admission_generation"] = "a" * 12
+    with pytest.raises(proof.SemanticProofError):
+        proof.authoritative_plan_sha256(plan)
+
+
+def test_generation_cannot_be_deleted_or_forged_in_final_evidence():
+    plan = _admitted_dispatch_plan()
+    fragment = dict(_fragment(plan=plan), admission_generation="a" * 12)
+    evidence = proof.reconcile_evidence(plan, [fragment])
+    for mutation in (None, "b" * 12):
+        changed = dict(evidence)
+        if mutation is None:
+            changed.pop("admission_generation")
+        else:
+            changed["admission_generation"] = mutation
+        with pytest.raises(proof.SemanticProofError):
+            proof.load_semantic_evidence(changed, advertised=True)
+
+
+def test_planner_failure_retains_admitted_dispatch_identity_and_never_becomes_green(tmp_path):
+    output = tmp_path / "evidence.json"
+    assert proof.main(["reconcile", "--plan", str(tmp_path / "missing.json"),
+        "--fragments-dir", str(tmp_path / "fragments"), "--output", str(output),
+        "--fallback-workflow-run-id", "99", "--fallback-workflow", "ci",
+        "--fallback-event", "workflow_dispatch", "--fallback-role", "pr_head",
+        "--fallback-tested-tree-sha", TREE, "--fallback-subject-head-sha", HEAD,
+        "--fallback-base-sha", BASE, "--fallback-admission-generation", "a" * 12]) == 2
+    evidence = json.loads(output.read_text())
+    assert evidence["status"] == "failure" and evidence["admission_generation"] == "a" * 12
+    assert proof.load_semantic_evidence(evidence, advertised=True, expected_admission_generation="a" * 12).mode == "semantic"
+
+
 def _plan(*, role: str = "pr_head", authority: bool = False) -> dict:
     document = {
         "schema": proof.PLAN_SCHEMA,
@@ -568,11 +651,9 @@ def test_plan_digest_and_role_event_are_recomputed_not_trusted() -> None:
 def test_diagnostic_pr_candidate_plan_is_double_refused_before_workflow_even_applies() -> None:
     """A pr_head/workflow_dispatch diagnostic-canary plan must never pose as
     merge-gating ``ci.semantic_evidence.v1`` (#6351 P0R bridge addendum). The
-    pair-set gate inside ``_identity`` fires FIRST — pr_head/workflow_dispatch
-    is not an authoritative pair no matter what ``workflow`` says — so the
-    separate ``workflow == "ci"`` assertion never even gets evaluated. This
-    module (scripts/ci_semantic_proof.py) is UNCHANGED by the bridge; this
-    pins that its existing, narrower pair set already closes this shape.
+    pair-set gate inside ``_identity`` fires FIRST for the diagnostic workflow.
+    The separately admitted ci dispatch extension requires workflow == ci and
+    a canonical admission generation; it grants this diagnostic no authority.
     """
     plan = _plan(role="pr_head")
     plan["event"] = "workflow_dispatch"

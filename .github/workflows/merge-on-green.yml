@@ -29,13 +29,14 @@ name: merge-on-green
 on:
   workflow_run:
     workflows: [ci, fences, integration-baseline]
-    types: [completed]
+    types: [requested, completed]
   schedule:
     # Recovery net only. Completed proof workflows provide the normal wake-up.
     - cron: "*/10 * * * *"
   workflow_dispatch:
 
 permissions:
+  checks: write          # protected original terminal proof -> subject-head checks only
   actions: write         # READ the integration-baseline / ci / fences workflow-run
                          # state, and WRITE one `workflow_dispatch` of ci.yml on main.
                          # The write half is new (2026-08-08) and is load-bearing: the
@@ -117,11 +118,13 @@ jobs:
     # add or remove the lease label.
     if: >-
       github.event_name != 'workflow_run'
+      || (github.event.action == 'requested' && github.event.workflow_run.name == 'ci' && github.event.workflow_run.event == 'merge_group')
       || (
         github.event.workflow_run.conclusion != ''
         && (
           github.event.workflow_run.name != 'fences'
           || github.event.workflow_run.head_branch != 'main'
+          || github.event.workflow_run.event == 'push'
         )
       )
 
@@ -138,8 +141,11 @@ jobs:
         merge-on-green-${{ github.event_name == 'workflow_run'
         && github.event.workflow_run.name == 'fences'
         && github.event.workflow_run.head_branch == 'main'
+        && github.event.workflow_run.event != 'push'
         && 'skip-ci-ignored'
         || github.event_name != 'workflow_run'
+        && 'sweep'
+        || github.event.workflow_run.name == 'ci'
         && 'sweep'
         || github.event.workflow_run.conclusion == 'failure'
         && format('mark-{0}', github.event.workflow_run.head_sha)
@@ -177,13 +183,21 @@ jobs:
       # gate`) rather than merging on undated greens.
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
           filter: blob:none
           sparse-checkout: |
             scripts/merge_on_green.py
+            scripts/ci_proof_admission.py
+            scripts/ci_admission_stages.py
             scripts/ci_semantic_proof.py
             scripts/ci_authority_paths.py
+            scripts/ci_authority.py
+            scripts/ci_native_review_policy.py
+            scripts/check_runner_policy.py
             scripts/gh_path_filter.py
             scripts/run_ci_pack.py
+            .github/ci/legacy-jobs.yml
             .github/workflows
           sparse-checkout-cone-mode: false
 
@@ -207,8 +221,234 @@ jobs:
                  --break-system-packages pyyaml
           python3 -c "import yaml"
 
-      - name: sweep merge-on-green pull requests
+      # The same serialized job owns every stage. Upload boundaries seal
+      # immutable original-attempt bytes before their dependent hosted effect.
+      - name: prepare original legacy migration
+        id: migration_prepare
+        if: >-
+          !cancelled() && (github.event_name != 'workflow_run'
+          || github.event.workflow_run.name == 'ci'
+          || github.event.workflow_run.conclusion == 'success')
         env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+        run: python3 -I scripts/ci_admission_stages.py migration-prepare
+
+      - name: seal original legacy migration intent
+        id: migration_intent
+        if: steps.migration_prepare.outputs.prepared == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-migration-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.migration_prepare.outputs.generation }}-intent
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/migration-intent/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: apply original legacy migration
+        id: migration_apply
+        if: steps.migration_intent.outcome == 'success'
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+          ARTIFACT_ID: ${{ steps.migration_intent.outputs.artifact-id }}
+        run: python3 -I scripts/ci_admission_stages.py migration-apply
+
+      - name: seal original legacy migration outcome
+        id: migration_outcome
+        if: steps.migration_apply.outputs.settled == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-migration-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.migration_apply.outputs.generation }}-outcome
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/migration-outcome/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: bind actual original native execution
+        id: native_bind
+        if: >-
+          !cancelled() && (github.event_name != 'workflow_run'
+          || github.event.workflow_run.name == 'ci'
+          || github.event.workflow_run.conclusion == 'success')
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+        run: python3 -I scripts/ci_admission_stages.py bind-native
+
+      - name: seal native original execution binding
+        id: native_bound
+        if: steps.native_bind.outputs.bound == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.native_bind.outputs.generation }}-native-bound
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/native-execution/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: finalize native original binding
+        if: steps.native_bound.outcome == 'success'
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+          ARTIFACT_ID: ${{ steps.native_bound.outputs.artifact-id }}
+        run: python3 -I scripts/ci_admission_stages.py finalize-native
+
+      - name: reconcile original admitted completion
+        if: >-
+          github.event_name != 'workflow_run' || github.event.workflow_run.name == 'ci'
+          || github.event.workflow_run.conclusion == 'success'
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CHECKS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+          TRIGGER_RUN_ID: ${{ github.event.workflow_run.id }}
+          TRIGGER_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: python3 -I scripts/ci_admission_stages.py complete
+
+      - name: prepare complete shared proof demand
+        id: admission_prepare
+        if: >-
+          !cancelled() && steps.native_bind.outputs.bound != 'true' && (github.event_name != 'workflow_run'
+          || github.event.workflow_run.name == 'ci'
+          || github.event.workflow_run.conclusion == 'success')
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+        run: python3 -I scripts/ci_admission_stages.py prepare
+
+      - name: seal changed demand records
+        id: admission_demands
+        if: steps.admission_prepare.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-demands-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/demands/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: index all changed demand and reserve oldest eligible
+        id: admission_reserve
+        if: >-
+          !cancelled() && steps.admission_prepare.outcome == 'success'
+          && steps.admission_prepare.outputs.ready == 'true'
+          && (steps.admission_prepare.outputs.changed != 'true' || steps.admission_demands.outcome == 'success')
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          # Native enqueue must generate merge_group events; no job-token fallback.
+          NATIVE_ENQUEUE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+          ARTIFACT_ID: ${{ steps.admission_demands.outputs.artifact-id }}
+        run: python3 -I scripts/ci_admission_stages.py reserve
+
+      - name: seal original preparation
+        id: admission_prepared
+        if: steps.admission_reserve.outputs.prepared == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.admission_reserve.outputs.generation }}-${{ steps.admission_reserve.outputs.receipt_suffix || 'prepared' }}
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/prepared/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: seal complete original PR coverage
+        id: admission_checkpoint
+        if: steps.admission_reserve.outputs.prepared == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-checkpoint-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.admission_reserve.outputs.pr_number }}
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/checkpoint/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: dispatch exactly one original admitted proof
+        id: admission_dispatch
+        if: steps.admission_prepared.outcome == 'success' && steps.admission_checkpoint.outcome == 'success'
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          # Native enqueue must generate merge_group events; no job-token fallback.
+          NATIVE_ENQUEUE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+          ARTIFACT_ID: ${{ steps.admission_prepared.outputs.artifact-id }}
+          CHECKPOINT_ARTIFACT_ID: ${{ steps.admission_checkpoint.outputs.artifact-id }}
+        run: python3 -I scripts/ci_admission_stages.py dispatch
+
+      - name: seal original returned proof run
+        id: admission_bound
+        if: steps.admission_dispatch.outputs.bound == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.admission_dispatch.outputs.generation }}-${{ steps.admission_dispatch.outputs.receipt_suffix || 'bound' }}
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/bound/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: index original run then release launch pointer
+        if: steps.admission_bound.outcome == 'success'
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+          ARTIFACT_ID: ${{ steps.admission_bound.outputs.artifact-id }}
+        run: python3 -I scripts/ci_admission_stages.py finalize
+
+      - name: bind enqueued native original in this sweep
+        id: native_same_original
+        if: steps.admission_dispatch.outputs.receipt_suffix == 'native-queued'
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+        run: python3 -I scripts/ci_admission_stages.py bind-native-wait
+
+      - name: seal same-sweep native original binding
+        id: native_same_bound
+        if: steps.native_same_original.outputs.bound == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.native_same_original.outputs.generation }}-native-bound
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/native-execution/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: finalize same-sweep native original binding
+        if: steps.native_same_bound.outcome == 'success'
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+          ARTIFACT_ID: ${{ steps.native_same_bound.outputs.artifact-id }}
+        run: python3 -I scripts/ci_admission_stages.py finalize-native
+
+      - name: sweep merge-on-green pull requests
+        if: ${{ !cancelled() }}
+        env:
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
           GH_REPO: ${{ github.repository }}
           # READS use the job's own GITHUB_TOKEN. Its quota is per-repository and
           # separate from the shared 5,000/hr account pool that ship_loop_guard.py

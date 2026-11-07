@@ -63,6 +63,7 @@ from scripts.ci_semantic_proof import (  # noqa: E402
     PLAN_SCHEMA,
     FailureAtomCollector,
     SemanticProofError,
+    admission_identity_fields,
     _validate_base_replay,
     effective_proof_id,
     job_exec_sha256,
@@ -131,10 +132,10 @@ RUNNER_CONTRACT = "ci-pack/linux-x86_64/python-3.12.13/node-20/v2"
 # plan and replay an exact PR candidate's changed-file inventory the same way
 # `ci.yml`'s real `pr_head/pull_request` plan does, so every existing pr_head
 # invariant (exact changed inventory, changed_from == base_sha) still applies
-# unchanged. No other workflow name may use this pair; a merge-gating plan
-# (`workflow == "ci"`) is refused independently by
-# scripts/ci_semantic_proof.py's own narrower pair set and its own
-# `workflow == "ci"` assertion, which this constant does not touch.
+# unchanged. The separate merge-gating ci dispatch path additionally requires an
+# admission_generation; it does not change this diagnostic exception or grant
+# diagnostic evidence merge authority. The shared semantic reader still requires
+# workflow == "ci" and authenticating consumers bind the admitted generation.
 DIAGNOSTIC_CANARY_WORKFLOW = "infrastructure-selfhosted-ci-canary"
 TRUSTED_EXECUTOR_WORKFLOW = "trusted-ci-executor"
 DIAGNOSTIC_PR_WORKFLOWS = frozenset(
@@ -401,6 +402,7 @@ def _is_standalone_pip_install(command: str) -> bool:
 # would let a non-gating lane's plan pose as authority for a merge.
 SUPPORTED_PLAN_ROLE_EVENTS = frozenset({
     ("pr_head", "pull_request"),
+    ("merge_group", "merge_group"),
     ("main", "workflow_dispatch"),
     ("main", "workflow_run"),
     ("main", "schedule"),
@@ -2159,6 +2161,8 @@ class CIPackPlan:
     # plan sha, and the consuming pack's artifact/digest check refuses.
     changed_files_sha256: str = field(default="", compare=False, repr=False)
     changed_files_count: int = field(default=0, compare=False, repr=False)
+    admission_generation: str | None = None
+    native_group: Mapping[str, Any] | None = None
 
     @property
     def pack_count(self) -> int:
@@ -2181,6 +2185,7 @@ class CIPackPlan:
         """
         return {
             "schema": self.schema,
+            **_admission_fields(self.workflow, self.event, self.role, self.admission_generation, self.native_group),
             "workflow_run_id": self.workflow_run_id,
             "workflow": self.workflow,
             "event": self.event,
@@ -2221,6 +2226,34 @@ class CIPackPlan:
         }
 
 
+def _admission_fields(workflow, event, role, generation=None, native_group=None):
+    try:
+        return admission_identity_fields(workflow=workflow, event=event, role=role,
+                                         admission_generation=generation, native_group=native_group)
+    except SemanticProofError as exc:
+        raise ManifestError(str(exc)) from exc
+
+
+def _fragment_admission_fields(plan):
+    if plan is not None:
+        return _admission_fields(plan.workflow, plan.event, plan.role, plan.admission_generation, plan.native_group)
+    workflow = os.environ.get("GITHUB_WORKFLOW", "ci")
+    event = os.environ.get("GITHUB_EVENT_NAME", "local")
+    role = os.environ.get("CI_SEMANTIC_ROLE", "main")
+    # Exact-base replay is a separate legacy main identity. An inherited parent
+    # generation must not be relabeled onto that replay.
+    generation = os.environ.get("CI_ADMISSION_GENERATION") if (
+        workflow, event, role) == ("ci", "workflow_dispatch", "pr_head") else None
+    native_group = None
+    if (workflow, event, role) == ("ci", "merge_group", "merge_group"):
+        generation = os.environ.get("CI_ADMISSION_GENERATION")
+        try:
+            native_group = json.loads(os.environ["CI_NATIVE_GROUP_JSON"])
+        except (KeyError, ValueError) as exc:
+            raise ManifestError("native group fragment lacks verified identity") from exc
+    return _admission_fields(workflow, event, role, generation, native_group)
+
+
 def plan_hash_payload(
     *,
     workflow_run_id: str,
@@ -2239,6 +2272,8 @@ def plan_hash_payload(
     pack_jobs: Iterable[Iterable[str]],
     pack_weights: Iterable[int],
     semantic_jobs: Iterable[SemanticJobSpec | Mapping[str, Any]],
+    admission_generation: str | None = None,
+    native_group: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Exactly what a pack must agree with ci-plan about, and nothing else.
 
@@ -2262,6 +2297,7 @@ def plan_hash_payload(
     """
     return {
         "schema": PLAN_SCHEMA,
+        **_admission_fields(workflow, event, role, admission_generation, native_group),
         "workflow_run_id": workflow_run_id,
         "workflow": workflow,
         "event": event,
@@ -2320,6 +2356,8 @@ def build_plan(
     tested_tree_sha: str | None = None,
     subject_head_sha: str | None = None,
     base_sha: str | None = None,
+    admission_generation: str | None = None,
+    native_group: Mapping[str, Any] | None = None,
 ) -> CIPackPlan:
     """Decide, once, what this CI run executes.
 
@@ -2409,18 +2447,25 @@ def build_plan(
     if (role, event) not in SUPPORTED_PLAN_ROLE_EVENTS and not (
         role == "pr_head"
         and event == "workflow_dispatch"
-        and workflow in DIAGNOSTIC_PR_WORKFLOWS
+        and (workflow in DIAGNOSTIC_PR_WORKFLOWS or workflow == "ci")
     ):
         raise ManifestError(
             f"semantic plan role/event combination {role}/{event} is unsupported"
         )
-    if role == "pr_head" and changed is None:
+    if admission_generation is None and (workflow, event, role) == ("ci", "workflow_dispatch", "pr_head"):
+        admission_generation = os.environ.get("CI_ADMISSION_GENERATION")
+    _admission_fields(workflow, event, role, admission_generation, native_group)
+    if role == "merge_group" and (
+        native_group["group_head_sha"], native_group["source_head_sha"], native_group["base_sha"]
+    ) != (tested_tree_sha, subject_head_sha, base_sha):
+        raise ManifestError("native_group disagrees with semantic plan identity")
+    if role in {"pr_head", "merge_group"} and changed is None:
         raise ManifestError(
             "a PR semantic plan requires an exact changed-file inventory; "
             "planner uncertainty may widen compatibility execution but cannot "
             "mint authority_changed=false"
         )
-    if role == "pr_head" and changed_from != base_sha:
+    if role in {"pr_head", "merge_group"} and changed_from != base_sha:
         raise ManifestError("PR semantic plan changed_from must equal exact base_sha")
     if role == "main" and (
         changed_from is not None
@@ -2435,7 +2480,7 @@ def build_plan(
     )
     try:
         authority_changed = bool(
-            role == "pr_head"
+            role in {"pr_head", "merge_group"}
             and changed is not None
             and any(is_ci_authority_path(path) for path in changed)
         )
@@ -2456,6 +2501,8 @@ def build_plan(
         for job in eligible
     )
     hash_payload = plan_hash_payload(
+        admission_generation=admission_generation,
+        native_group=native_group,
         workflow_run_id=workflow_run_id,
         workflow=workflow,
         event=event,
@@ -2474,6 +2521,8 @@ def build_plan(
         semantic_jobs=semantic_jobs,
     )
     return CIPackPlan(
+        admission_generation=admission_generation,
+        native_group=native_group,
         schema=PLAN_SCHEMA,
         changed_from=changed_from,
         scope_mode=scope_mode,
@@ -2520,6 +2569,8 @@ def plan_from_workflow(
     tested_tree_sha: str | None = None,
     subject_head_sha: str | None = None,
     base_sha: str | None = None,
+    admission_generation: str | None = None,
+    native_group: Mapping[str, Any] | None = None,
     gate: str | None = None,
 ) -> CIPackPlan:
     """Load the manifest, resolve the diff, and plan — the whole decision."""
@@ -2549,6 +2600,8 @@ def plan_from_workflow(
         return build_plan(
             legacy,
             changed,
+            admission_generation=admission_generation,
+        native_group=native_group,
             changed_from=changed_from,
             scope_mode=scope_mode,
             pack_count=pack_count,
@@ -2600,6 +2653,8 @@ def load_authoritative_plan(
     expect_tested_tree_sha: str | None = None,
     expect_subject_head_sha: str | None = None,
     expect_base_sha: str | None = None,
+    expect_admission_generation: str | None = None,
+    expect_native_group: Mapping[str, Any] | None = None,
     gate: str | None = None,
 ) -> CIPackPlan:
     """Load the planner artifact without recomputing scope or partition.
@@ -2646,6 +2701,8 @@ def load_authoritative_plan(
         "base_sha": expect_base_sha,
     }
     actuals = {"plan_sha256": published_sha, **identities}
+    if expect_admission_generation is not None and document.get("admission_generation") != expect_admission_generation:
+        raise ManifestError("authoritative plan admission_generation mismatch")
     for key, expected in expectations.items():
         if expected and actuals[key] != expected:
             raise ManifestError(
@@ -2733,8 +2790,8 @@ def load_authoritative_plan(
     if changed_from is not None and not isinstance(changed_from, str):
         raise ManifestError("authoritative plan changed_from must be text or null")
     role = required_text("role")
-    if role not in {"pr_head", "main"}:
-        raise ManifestError("authoritative plan role must be pr_head or main")
+    if role not in {"pr_head", "main", "merge_group"}:
+        raise ManifestError("authoritative plan role must be pr_head, main or merge_group")
     event = required_text("event")
     # `workflow` is read HERE, before the role/event validation below, so the
     # same narrow main-owned diagnostic admission build_plan() grants can be
@@ -2744,12 +2801,21 @@ def load_authoritative_plan(
     if (role, event) not in SUPPORTED_PLAN_ROLE_EVENTS and not (
         role == "pr_head"
         and event == "workflow_dispatch"
-        and workflow in DIAGNOSTIC_PR_WORKFLOWS
+        and (workflow in DIAGNOSTIC_PR_WORKFLOWS or workflow == "ci")
     ):
         raise ManifestError(
             f"authoritative plan role/event combination {role}/{event} is unsupported"
         )
-    if role == "pr_head" and changed_from != identities["base_sha"]:
+    admission_generation = document.get("admission_generation")
+    native_group = document.get("native_group")
+    if expect_native_group is not None and native_group != expect_native_group:
+        raise ManifestError("authoritative plan native_group mismatch")
+    _admission_fields(workflow, event, role, admission_generation, native_group)
+    if role == "merge_group" and (
+        native_group["group_head_sha"], native_group["source_head_sha"], native_group["base_sha"]
+    ) != (identities["tested_tree_sha"], identities["subject_head_sha"], identities["base_sha"]):
+        raise ManifestError("native_group disagrees with semantic plan identity")
+    if role in {"pr_head", "merge_group"} and changed_from != identities["base_sha"]:
         raise ManifestError(
             "PR authoritative plan must diff and replay the same exact base SHA"
         )
@@ -2782,6 +2848,8 @@ def load_authoritative_plan(
         raise ManifestError("authoritative plan authority_changed must be boolean")
 
     payload = plan_hash_payload(
+        admission_generation=admission_generation,
+        native_group=native_group,
         workflow_run_id=required_text("workflow_run_id"),
         workflow=workflow,
         event=event,
@@ -2818,7 +2886,7 @@ def load_authoritative_plan(
             raise ManifestError("changed-file artifact count disagrees with plan")
         try:
             computed_authority_changed = bool(
-                role == "pr_head"
+                role in {"pr_head", "merge_group"}
                 and resolved_changed is not None
                 and any(is_ci_authority_path(item) for item in resolved_changed)
             )
@@ -2832,6 +2900,8 @@ def load_authoritative_plan(
         resolved_changed = None
 
     plan = CIPackPlan(
+        admission_generation=admission_generation,
+        native_group=native_group,
         schema=PLAN_SCHEMA,
         changed_from=changed_from,
         scope_mode=scope_mode,
@@ -3523,12 +3593,16 @@ INTERNATIONAL_FOUNDATION_FROZEN_PATHS = (
 def prepare_canonical_main(
     root: Path, *, tested_tree_sha: str, base_ref: str = "main",
     frozen_paths: tuple[str, ...] = INTERNATIONAL_FOUNDATION_FROZEN_PATHS,
+    comparison_paths: tuple[str, ...] | None = None,
 ) -> str:
     """Acquire actual main once, then deepen only its pinned history as needed.
 
     ``frozen_paths`` are the exact repository paths the calling job's frozen
     guard compares at the canonical base and the tested tree; every one must be
-    present offline at both before this returns.
+    present offline at both before this returns. Optional ``comparison_paths``
+    qualifies a dynamic diff: collect exact old/new blob identities without
+    rename/content reads, acquire missing guard/diff blobs in one batch, then
+    verify them offline. Added/deleted paths need only their existing side.
 
     The International frozen-file guard reads origin/main and its merge base
     with HEAD. Its fetch-depth-0 preparation already establishes tested-tree
@@ -3554,6 +3628,13 @@ def prepare_canonical_main(
             isinstance(path, str) and path and not path.startswith("/")
             and ".." not in path.split("/") for path in frozen_paths)):
         raise RuntimeError("canonical-main preparation requires exact relative frozen paths")
+    if comparison_paths is not None and (
+        not isinstance(comparison_paths, tuple) or not comparison_paths or not all(
+            isinstance(path, str) and path and not path.startswith(("/", ":"))
+            and ".." not in path.split("/") for path in comparison_paths
+        )
+    ):
+        raise RuntimeError("canonical-main preparation requires relative comparison paths")
 
     root = root.resolve()
     # Only the explicit acquisition may use transport. All readiness/object
@@ -3610,6 +3691,7 @@ def prepare_canonical_main(
                 raise RuntimeError("canonical-main required object identity unavailable")
             required("cat-file", "-e", f"{oid}^{{commit}}")
             required("cat-file", "-e", f"{oid}^{{tree}}")
+        required_blobs: set[str] = set()
         for ref in (canonical_base, tested_tree_sha):
             for path in frozen_paths:
                 entry = required("ls-tree", ref, "--", path)
@@ -3617,7 +3699,74 @@ def prepare_canonical_main(
                 if (len(fields) != 4 or fields[1] != "blob" or fields[3] != path
                         or not re.fullmatch(r"[0-9a-f]{40}", fields[2])):
                     raise RuntimeError("canonical-main required frozen object unavailable")
-                required("cat-file", "-e", f"{fields[2]}^{{blob}}")
+                required_blobs.add(fields[2])
+
+        if comparison_paths is not None:
+            # Tree-only inventory: --no-renames avoids content reads while the
+            # historical blobs may still be absent from a promisor checkout.
+            raw_diff = required("diff", "--raw", "--no-renames", "--no-abbrev",
+                                "--no-ext-diff", "--no-textconv", "-z",
+                                canonical_base, tested_tree_sha, "--", *comparison_paths)
+            entries = raw_diff.split("\0")
+            if entries == [""]:
+                entries = []
+            elif entries[-1] == "":
+                entries.pop()
+            else:
+                raise RuntimeError("canonical-main comparison inventory is incomplete")
+            if len(entries) % 2:
+                raise RuntimeError("canonical-main comparison inventory is malformed")
+            for index in range(0, len(entries), 2):
+                fields = entries[index].split()
+                if (len(fields) != 5 or not fields[0].startswith(":")
+                        or not entries[index + 1]):
+                    raise RuntimeError("canonical-main comparison entry is malformed")
+                for mode, oid in ((fields[0][1:], fields[2]), (fields[1], fields[3])):
+                    if not re.fullmatch(r"[0-9a-f]{40}", oid):
+                        raise RuntimeError("canonical-main comparison identity is malformed")
+                    if mode == "000000" and oid == "0" * 40:
+                        continue
+                    if mode == "160000" and oid != "0" * 40:
+                        continue  # gitlink diffs name commits, not local blob contents
+                    if mode not in {"100644", "100755", "120000"} or oid == "0" * 40:
+                        raise RuntimeError("canonical-main comparison mode is unsupported")
+                    required_blobs.add(oid)
+
+        ordered = sorted(required_blobs)
+        def missing_blobs() -> list[str]:
+            probe = subprocess.run(
+                ["git", "cat-file", "--batch-check=%(objectname) %(objecttype)"],
+                cwd=root, env=git_env, input="".join(oid + "\n" for oid in ordered),
+                capture_output=True, text=True, check=True,
+            )
+            rows = probe.stdout.splitlines()
+            if len(rows) != len(ordered):
+                raise RuntimeError("canonical-main comparison probe is incomplete")
+            missing = []
+            for oid, row in zip(ordered, rows):
+                if row == oid + " missing":
+                    missing.append(oid)
+                elif row != oid + " blob":
+                    raise RuntimeError("canonical-main comparison object is not a blob")
+            return missing
+
+        missing = missing_blobs()
+        if missing:
+            # One exact-object acquisition under the incumbent logical-job
+            # deadline. Never retry, fetch each object lazily, or alter refs.
+            subprocess.run(
+                ["git", "fetch", "--no-recurse-submodules", "--no-tags",
+                 "--no-write-fetch-head", "--filter=blob:none", "origin", "--stdin"],
+                cwd=root, env=fetch_env, input="".join(oid + "\n" for oid in missing),
+                text=True, check=True,
+            )
+            check_bindings()
+            if commit("FETCH_HEAD") != canonical_sha:
+                raise RuntimeError("canonical-main comparison acquisition changed FETCH_HEAD")
+            if missing_blobs():
+                if comparison_paths is None:
+                    raise RuntimeError("canonical-main required local object unavailable after explicit acquisition")
+                raise RuntimeError("canonical-main comparison blobs remained unavailable")
 
     for depth in _EXACT_TESTED_TREE_DEPTHS:
         check_bindings()
@@ -5369,6 +5518,7 @@ def execute_pack(
                     emit_semantic_fragment,
                     {
                         "schema": FRAGMENT_SCHEMA,
+                        **_fragment_admission_fields(plan),
                         "workflow_run_id": plan.workflow_run_id,
                         "workflow": plan.workflow,
                         "event": plan.event,
@@ -5421,6 +5571,7 @@ def execute_pack(
                     emit_semantic_fragment,
                     {
                         "schema": FRAGMENT_SCHEMA,
+                        **_fragment_admission_fields(plan),
                         "workflow_run_id": (
                             plan.workflow_run_id
                             if plan is not None
@@ -5657,6 +5808,7 @@ def execute_pack(
             }
         fragment = {
             "schema": FRAGMENT_SCHEMA,
+            **_fragment_admission_fields(plan),
             **identity,
             "pack_index": pack_index,
             "infrastructure": pack_infrastructure,
@@ -5790,7 +5942,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--workflow-run-id", default=None)
     parser.add_argument("--workflow-name", default=None)
     parser.add_argument("--event", default=None)
-    parser.add_argument("--role", choices=("pr_head", "main"), default=None)
+    parser.add_argument("--role", choices=("pr_head", "main", "merge_group"), default=None)
+    parser.add_argument("--admission-generation", default=None)
+    parser.add_argument("--native-group-json", default=None)
+    parser.add_argument("--expect-native-group-json", default=None)
+    parser.add_argument("--expect-admission-generation", default=None)
     parser.add_argument("--expect-tested-tree-sha", default=None)
     parser.add_argument("--expect-subject-head-sha", default=None)
     parser.add_argument("--expect-base-sha", default=None)
@@ -5886,6 +6042,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("--tracked-paths-file requires --tested-tree-sha")
     if args.semantic_replay_job and not args.execute:
         parser.error("--semantic-replay-job requires --execute")
+    if args.semantic_replay_job and (args.admission_generation is not None or args.expect_admission_generation is not None or args.native_group_json is not None or args.expect_native_group_json is not None):
+        parser.error("exact-base replay cannot carry a parent admission generation")
     if args.semantic_replay_job and args.emit_semantic_fragment is None:
         parser.error("--semantic-replay-job requires --emit-semantic-fragment")
     if args.base_replay_budget_seconds < 1:
@@ -5962,6 +6120,8 @@ def main(argv: list[str] | None = None) -> int:
                 expect_tested_tree_sha=args.expect_tested_tree_sha,
                 expect_subject_head_sha=args.expect_subject_head_sha,
                 expect_base_sha=args.expect_base_sha,
+                expect_admission_generation=args.expect_admission_generation,
+                expect_native_group=json.loads(args.expect_native_group_json) if args.expect_native_group_json else None,
                 gate=args.gate,
             )
         else:
@@ -5976,6 +6136,8 @@ def main(argv: list[str] | None = None) -> int:
                 workflow_name=args.workflow_name,
                 event=args.event,
                 role=args.role,
+                admission_generation=args.admission_generation,
+                native_group=json.loads(args.native_group_json) if args.native_group_json else None,
                 tested_tree_sha=args.tested_tree_sha,
                 subject_head_sha=args.subject_head_sha,
                 base_sha=args.base_sha,

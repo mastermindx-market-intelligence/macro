@@ -79,10 +79,16 @@ def test_merge_control_hosted_canary_is_read_only_main_pinned_and_non_acting() -
     assert options["sparse-checkout-cone-mode"] is False
     assert set(str(options["sparse-checkout"]).split()) == {
         "scripts/merge_on_green.py",
+        "scripts/ci_proof_admission.py",
+        "scripts/ci_admission_stages.py",
         "scripts/ci_semantic_proof.py",
         "scripts/ci_authority_paths.py",
+        "scripts/ci_authority.py",
+        "scripts/ci_native_review_policy.py",
+        "scripts/check_runner_policy.py",
         "scripts/gh_path_filter.py",
         "scripts/run_ci_pack.py",
+        ".github/ci/legacy-jobs.yml",
         ".github/workflows",
     }
 
@@ -117,6 +123,8 @@ def test_merge_control_hosted_canary_is_read_only_main_pinned_and_non_acting() -
     command = production_probe["run"]
     assert 'python3 -c "import yaml"' in command
     assert "python3 -m py_compile" in command
+    for dependency in ("scripts/ci_authority.py", "scripts/ci_native_review_policy.py", "scripts/check_runner_policy.py"):
+        assert dependency in command
     assert "import scripts.merge_on_green as mog" in command
     assert "mog.main" in command
 
@@ -765,3 +773,20 @@ def test_four_slot_keeps_all_evidence_legs_and_production_parallelism_frozen() -
 
     trusted = workflow("trusted-ci-executor.yml")["jobs"]["trusted-pack"]
     assert trusted["strategy"]["max-parallel"] == 3
+
+
+@pytest.mark.parametrize("dependency", [
+    "scripts/ci_authority.py", "scripts/ci_native_review_policy.py", "scripts/check_runner_policy.py",
+])
+def test_merge_control_canary_rejects_missing_native_runtime_dependency(monkeypatch, dependency):
+    original = workflow
+    canary = original("merge-control-hosted-canary.yml")
+    step = next(s for s in canary["jobs"]["hosted-environment"]["steps"]
+                if s.get("name") == "exact production sparse checkout")
+    step["with"]["sparse-checkout"] = "\n".join(
+        line for line in step["with"]["sparse-checkout"].splitlines() if line.strip() != dependency
+    ) + "\n"
+    monkeypatch.setattr(sys.modules[__name__], "workflow",
+                        lambda name: canary if name == "merge-control-hosted-canary.yml" else original(name))
+    with pytest.raises(AssertionError):
+        test_merge_control_hosted_canary_is_read_only_main_pinned_and_non_acting()

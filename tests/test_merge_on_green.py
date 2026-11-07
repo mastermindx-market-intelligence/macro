@@ -25,6 +25,13 @@ import yaml
 import scripts.merge_on_green as MOG
 
 
+@pytest.fixture(autouse=True)
+def legacy_cases_without_migration_intent(monkeypatch):
+    # These existing lease/merge cases predate migration. Its real original
+    # intent/refusal boundary is covered in test_ci_admission_stages.py.
+    monkeypatch.setattr(MOG, 'legacy_migration_pending', lambda *args: False)
+
+
 ROOT = Path(__file__).resolve().parents[1]
 REAL_IN_FLIGHT_PR_PROOFS = MOG.in_flight_pr_proofs
 REAL_HOSTED_POOL_CENSUS = MOG.hosted_pool_census
@@ -121,7 +128,7 @@ def test_the_workflow_is_event_driven_with_a_ten_minute_recovery_schedule():
         "fences",
         "integration-baseline",
     }
-    assert workflow_run.get("types") == ["completed"]
+    assert workflow_run.get("types") == ["requested", "completed"]
 
 
 def test_the_sweep_is_hosted_outside_the_m2_failure_domain():
@@ -295,10 +302,16 @@ def test_the_sweeper_sparse_checks_out_only_what_it_reads():
     wanted = set(str(options["sparse-checkout"]).split())
     assert wanted == {
         "scripts/merge_on_green.py",
+        "scripts/ci_proof_admission.py",
+        "scripts/ci_admission_stages.py",
         "scripts/ci_semantic_proof.py",
         "scripts/ci_authority_paths.py",
+        "scripts/ci_authority.py",
+        "scripts/ci_native_review_policy.py",
+        "scripts/check_runner_policy.py",
         "scripts/gh_path_filter.py",
         "scripts/run_ci_pack.py",
+        ".github/ci/legacy-jobs.yml",
         ".github/workflows",
     }
     assert options["sparse-checkout-cone-mode"] is False
@@ -3459,8 +3472,9 @@ def test_one_bad_pull_request_does_not_fail_the_sweep(monkeypatch, capsys):
 
     attempts = 0
 
-    def flaky(_repo, pull, *_a):
+    def flaky(_repo, pull, *_a, native_guard):
         nonlocal attempts
+        assert native_guard is True
         attempts += 1
         if attempts == 1:
             raise RuntimeError("transient")
@@ -3468,6 +3482,7 @@ def test_one_bad_pull_request_does_not_fail_the_sweep(monkeypatch, capsys):
 
     monkeypatch.setattr(MOG, "sweep_pull", flaky)
     assert MOG.main() == 0
+    assert attempts == 2, "the typed native guard must not prevent either real fixture invocation"
     assert "::warning" in capsys.readouterr().out
 
 
@@ -3487,7 +3502,8 @@ def test_a_red_main_blocks_ordinary_pulls_and_allows_one_explicit_repair(
     monkeypatch.setattr(MOG.ProofFreshness, "build", classmethod(lambda *_a, **_k: _freshness()))
     swept: list[int] = []
 
-    def record(_repo, pull, *_a):
+    def record(_repo, pull, *_a, native_guard):
+        assert native_guard is True
         swept.append(pull["number"])
         return "merged"
 
@@ -4937,7 +4953,8 @@ def _main_harness(
     monkeypatch.setattr(MOG, "ensure_main_baseline", lambda *_a: "stubbed")
     seen: list[int] = []
 
-    def fake_sweep(_repo, pull, *_rest):
+    def fake_sweep(_repo, pull, *_rest, native_guard):
+        assert native_guard is True
         seen.append(pull["number"])
         return verdict
 
@@ -4945,27 +4962,38 @@ def _main_harness(
     return seen
 
 
-def test_repo_wide_proof_census_sums_every_active_actions_state(monkeypatch):
-    counts = {
-        "queued": 3,
-        "in_progress": 4,
-        "pending": 1,
-        "requested": 2,
-        "waiting": 5,
-    }
-    seen: list[str] = []
-
+def test_repo_wide_proof_census_counts_distinct_runs_across_both_carriers(monkeypatch):
+    from urllib.parse import parse_qs, urlsplit
+    seen = []
     def fake_request(method, url, token, payload=None):
         assert method == "GET" and token == "read" and payload is None
-        for run_status, count in counts.items():
-            if f"status={run_status}" in url:
-                seen.append(run_status)
-                return 200, {"total_count": count, "workflow_runs": []}
-        raise AssertionError(url)
-
+        query = parse_qs(urlsplit(url).query)
+        # Event-filtering would omit admitted dispatches and reopen oversubscription.
+        assert "event" not in query
+        assert query["per_page"] == ["100"]
+        state = query["status"][0]
+        seen.append(state)
+        rows = {
+            "queued": [(1,"pull_request"), (2,"workflow_dispatch")],
+            "in_progress": [(1,"pull_request"), (3,"pull_request")],
+            "pending": [(4,"workflow_dispatch")],
+            "requested": [(5,"pull_request")],
+            "waiting": [(6,"workflow_dispatch")],
+        }[state]
+        return 200, {"total_count":len(rows), "workflow_runs":[
+            {"id":i, "run_attempt":1, "event":event, "status":state}
+            for i,event in rows]}
     monkeypatch.setattr(MOG, "_request", fake_request)
-    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read") == sum(counts.values())
+    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read") == 6
     assert set(seen) == set(MOG.ACTIVE_PR_PROOF_STATUSES)
+
+
+@pytest.mark.parametrize("rows,total", [([],1), ([{"id":True}],1),
+    ([{"id":1,"run_attempt":1,"status":"unknown"}],1), ([],101)])
+def test_census_requires_complete_run_identities(monkeypatch, rows, total):
+    monkeypatch.setattr(MOG,"_request",lambda *_a,**_k:(200,{
+        "total_count":total,"workflow_runs":rows}))
+    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets","read") is None
 
 
 @pytest.mark.parametrize(
@@ -5141,8 +5169,10 @@ def test_repo_wide_active_proofs_clamp_update_branch_capacity(
     allowances: list[int] = []
 
     def inspect_budget(
-        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked,
+        *, native_guard,
     ):
+        assert native_guard is True
         allowances.append(budget.max_refreshes)
         return "pending"
 
@@ -5188,8 +5218,10 @@ def test_existing_owner_only_consumes_extra_capacity_until_its_run_is_indexed(
     observed: list[tuple[int, bool]] = []
 
     def inspect_budget(
-        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked,
+        *, native_guard,
     ):
+        assert native_guard is True
         observed.append((budget.max_refreshes, budget.requires_refresh_lease))
         return "pending"
 
@@ -5487,8 +5519,10 @@ def test_adaptive_cap_widens_update_branch_capacity_only_on_a_served_pool(
     allowances: list[int] = []
 
     def inspect_budget(
-        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked,
+        *, native_guard: bool,
     ):
+        assert native_guard is True
         allowances.append(budget.max_refreshes)
         return "pending"
 
@@ -5535,9 +5569,17 @@ def test_adaptive_census_is_not_read_where_it_cannot_widen_anything(
         raise AssertionError("census read although no headroom could be used")
 
     monkeypatch.setattr(MOG, "hosted_pool_census", never)
-    monkeypatch.setattr(MOG, "sweep_pull", lambda *_a: "pending")
+    def pending(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, _budget, _blocked,
+        *, native_guard: bool,
+    ):
+        assert native_guard is True
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", pending)
     assert MOG.main() == 0
     out = capsys.readouterr().out
+    assert "sweep failed" not in out
     if authorized and lease_readable:
         assert "global cap 8 (census skipped: flat cap)" in out
 
@@ -5555,8 +5597,10 @@ def test_adaptive_census_exception_degrades_to_the_flat_cap_without_deferring(
     allowances: list[int] = []
 
     def inspect_budget(
-        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked,
+        *, native_guard: bool,
     ):
+        assert native_guard is True
         allowances.append(budget.max_refreshes)
         return "pending"
 
@@ -8855,7 +8899,8 @@ def test_the_sweep_orders_the_baseline_AFTER_it_learns_what_it_could_not_answer(
     seen: dict[str, object] = {}
 
     def fake_sweep(_repo, pull, _read, _write, _fresh, _proof=None, _budget=None,
-                   blocked=None):
+                   blocked=None, *, native_guard):
+        assert native_guard is True
         if blocked is not None:
             blocked.add("ci-pack-2")
         return "blocked"
@@ -10585,6 +10630,76 @@ def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
             + admitted * MOG.MAX_REQUESTS_PER_PULL
             + MOG.MAX_REFRESHES_PER_SWEEP
             + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR
+
+
+# ci-trigger-closure: data — changed-file names only; no fixture path is opened.
+_SIGNAL_SANITY_BAKE_FILES = [
+    "reports/signal-sanity.md", "data/signal_sanity/signal_sanity.json",
+    "data/signal_sanity/baseline.jsonl", "site/foresight.html",
+]
+_SIGNAL_SANITY_BAKE_MESSAGE = "engine: regime update 2026-11-04"
+
+
+def test_engine_signal_sanity_companion_does_not_stale_site_proof():
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, _SIGNAL_SANITY_BAKE_FILES, _SIGNAL_SANITY_BAKE_MESSAGE)],
+        gates=[{"workflow": "ci.yml", "patterns": ["site/**", "reports/**"]}],
+        pull_files={4242: ["site/chart.js"]},
+    )
+    stale, reason = freshness.stale_for(
+        _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
+    )
+    assert stale is False, reason
+
+
+@pytest.mark.parametrize("extra", [
+    "templates/dashboard.html.j2", "engine/signal_quality.py", "tests/test_signal_sanity.py",
+    "scripts/signal_sanity.py", ".github/ci/legacy-jobs.yml", ".github/workflows/ci.yml",
+    "agentos/workstreams/WS-REAL.md", "reports/authored.md", "reports/signal-sanity.md/source.py",
+    "engine/marketing/hot_tape.py", "engine/marketing/hot_tape_llm.py", "scripts/hot_tape_radar.py",
+])
+def test_engine_signal_sanity_companion_refuses_mixed_authored_commit(extra):
+    files = [*_SIGNAL_SANITY_BAKE_FILES, extra]
+    assert not MOG.is_skip_ci_noise(_SIGNAL_SANITY_BAKE_MESSAGE, files)
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, files, _SIGNAL_SANITY_BAKE_MESSAGE)],
+        gates=[{"workflow": "ci.yml", "patterns": ["site/**"]}],
+        pull_files={4242: ["site/chart.js"]},
+    )
+    stale, _ = freshness.stale_for(
+        _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
+    )
+    assert stale is True
+
+
+@pytest.mark.parametrize("message,files", [
+    ("docs: authored report", _SIGNAL_SANITY_BAKE_FILES),
+    ("engine: regime update", _SIGNAL_SANITY_BAKE_FILES),
+    ("engine: regime update 2026-11-04 + source", _SIGNAL_SANITY_BAKE_FILES),
+    (_SIGNAL_SANITY_BAKE_MESSAGE, ["reports/signal-sanity.md"]),
+    (_SIGNAL_SANITY_BAKE_MESSAGE, _SIGNAL_SANITY_BAKE_FILES[:2]),
+    (_SIGNAL_SANITY_BAKE_MESSAGE, [_SIGNAL_SANITY_BAKE_FILES[0], *_SIGNAL_SANITY_BAKE_FILES[2:]]),
+    (_SIGNAL_SANITY_BAKE_MESSAGE, [*_SIGNAL_SANITY_BAKE_FILES, ""]),
+    (_SIGNAL_SANITY_BAKE_MESSAGE, None),
+    (_SIGNAL_SANITY_BAKE_MESSAGE, []),
+])
+def test_engine_signal_sanity_companion_requires_exact_complete_shape(message, files):
+    assert not MOG.is_skip_ci_noise(message, files)
+
+
+def test_engine_signal_sanity_companion_does_not_relax_truncated_inventory():
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, _SIGNAL_SANITY_BAKE_FILES, _SIGNAL_SANITY_BAKE_MESSAGE)],
+        gates=[{"workflow": "ci.yml", "patterns": ["site/**"]}],
+        pull_files={4242: ["site/chart.js"]},
+    )
+    freshness._commit_files[freshness.commits[0]["sha"]] = (_SIGNAL_SANITY_BAKE_FILES, True)
+    stale, reason = freshness.stale_for(
+        _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
+    )
+    assert stale is True and "too many files" in reason
+    assert not MOG.is_skip_ci_path("reports/signal-sanity.md")
+    assert MOG.PIPELINE_TREES == ("data/", "site/")
 
 
 # --- live authorization diagnostics (Policy Monitor release recovery) ----------

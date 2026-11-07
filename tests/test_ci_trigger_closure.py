@@ -57,9 +57,9 @@ _SPEC.loader.exec_module(GUARD)
 
 
 def _ci_paths() -> list[str]:
-    payload = yaml.safe_load(CI.read_text())
-    block = payload[True] if True in payload else payload["on"]
-    return list(block["pull_request"]["paths"])
+    paths = GUARD.ci_proof_paths(CI.parent, MANIFEST)
+    assert paths, "CI must retain explicit canonical proof ownership"
+    return paths
 
 
 # ── 1. glob semantics: GitHub's, not fnmatch's ───────────────────────────────
@@ -528,3 +528,111 @@ def test_annotations_start_the_line_and_flush() -> None:
                 f"line {node.lineno}: an annotation emitted through a logger is "
                 "prefixed with the level and never parses"
             )
+
+
+# Source coverage only: these fixtures do not emulate scheduling or admission.
+def _canonical_proof_fixture(tmp_path, monkeypatch, *, native):
+    import json
+    workflows = tmp_path / '.github/workflows'
+    workflows.mkdir(parents=True)
+    manifest = tmp_path / '.github/ci/legacy-jobs.yml'
+    manifest.parent.mkdir()
+    paths = ['tests/**', 'engine/covered.py', '.github/ci/legacy-jobs.yml']
+    events = {'workflow_dispatch': {'inputs': {'proof_role': {}, 'admission_generation': {}}}}
+    if native:
+        events['pull_request'] = {'paths': paths}
+    doc = {'on': events, 'jobs': {'pack': {'steps': [
+        {'run': 'python scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml'}]}}}
+    (workflows / 'ci.yml').write_text(json.dumps(doc))
+    manifest.write_text(json.dumps({'proof_paths': paths, 'jobs': {}}))
+    (tmp_path / 'tests').mkdir()
+    for name in ('test_owned.py', 'test_gap.py'):
+        (tmp_path / 'tests' / name).write_text('def test_subject(): pass\n')
+    monkeypatch.setattr(GUARD, 'ROOT', tmp_path)
+    monkeypatch.setattr(GUARD, 'WORKFLOWS', workflows)
+    monkeypatch.setattr(GUARD, 'CI_MANIFEST', manifest)
+    monkeypatch.setattr(GUARD, 'suites_by_source', lambda: {
+        '.github/ci/legacy-jobs.yml': {'tests/test_owned.py': {'owned'}, 'tests/test_gap.py': {'gap'}}})
+    monkeypatch.setattr(GUARD, 'closure', lambda path, *args: {
+        'engine/covered.py' if path.name == 'test_owned.py' else 'engine/uncovered.py': 'fixture subject read'})
+    return workflows, manifest, doc
+
+
+def test_canonical_cutover_preserves_owned_census_and_real_gap(tmp_path, monkeypatch):
+    import json
+    workflows, manifest, doc = _canonical_proof_fixture(tmp_path, monkeypatch, native=True)
+    before = GUARD.census()
+    doc['on'].pop('pull_request')
+    (workflows / 'ci.yml').write_text(json.dumps(doc))
+    after = GUARD.census()
+    assert before == after
+    assert {r['test'] for r in after} == {'tests/test_owned.py', 'tests/test_gap.py'}
+    assert [r['test'] for r in GUARD.trigger_gap_findings(after)] == ['tests/test_gap.py']
+    assert all('.github/ci/legacy-jobs.yml::' in r['run_by'][0] for r in after)
+
+
+def test_canonical_reader_reads_the_owned_manifest(tmp_path, monkeypatch):
+    workflows, manifest, doc = _canonical_proof_fixture(tmp_path, monkeypatch, native=False)
+    actual_read = Path.read_text
+    observed = []
+    def capture(path, *args, **kwargs):
+        observed.append(path)
+        return actual_read(path, *args, **kwargs)
+    monkeypatch.setattr(Path, 'read_text', capture)
+    paths = GUARD.ci_proof_paths(workflows, manifest)
+    assert observed == [workflows / 'ci.yml', manifest]
+    assert GUARD.matched('.github/ci/legacy-jobs.yml', paths)
+
+
+def test_contract_delta_consumer_keeps_gap_after_cutover(tmp_path, monkeypatch):
+    import json
+    from scripts import check_contract_delta as delta
+    workflows, manifest, doc = _canonical_proof_fixture(tmp_path, monkeypatch, native=True)
+    import contextlib
+    monkeypatch.setattr(delta, 'ROOT', tmp_path)
+    monkeypatch.setattr(delta, '_tracked_tree_inventory', lambda root: contextlib.nullcontext())
+    monkeypatch.setattr(delta, 'packing_probe_measurements', lambda *a, **k: [])
+    monkeypatch.setattr(delta, 'skip_only_findings', lambda: [])
+    monkeypatch.setattr(delta, 'trigger_gap_findings', GUARD.trigger_gap_findings)
+    spec = {'probes': [], 'max_packs': 12}
+    before = delta._head_control_plane_findings(spec)['trigger_gaps']
+    doc['on'].pop('pull_request')
+    (workflows / 'ci.yml').write_text(json.dumps(doc))
+    after = delta._head_control_plane_findings(spec)['trigger_gaps']
+    assert after == before
+    assert [r['test'] for r in after] == ['tests/test_gap.py']
+
+
+@pytest.mark.parametrize('defect', ['missing', 'empty', 'string', 'nonstring', 'negation', 'catchall-only', 'mismatch', 'malformed-workflow', 'missing-workflow'])
+def test_canonical_cutover_refuses_missing_or_malformed_ownership(tmp_path, monkeypatch, defect):
+    import json
+    workflows, manifest, doc = _canonical_proof_fixture(tmp_path, monkeypatch, native=defect == 'mismatch')
+    if defect == 'missing': manifest.unlink()
+    elif defect == 'missing-workflow': (workflows / 'ci.yml').unlink()
+    elif defect == 'malformed-workflow': (workflows / 'ci.yml').write_text('on: [unterminated')
+    else:
+        bad = {'empty': [], 'string': 'engine/**', 'nonstring': [None],
+               'negation': ['engine/**', '!engine/secret/**'], 'catchall-only': ['**'],
+               'mismatch': ['different/**']}[defect]
+        manifest.write_text(json.dumps({'proof_paths': bad, 'jobs': {}}))
+    with pytest.raises(RuntimeError, match='CI proof ownership'):
+        GUARD.pr_gates()
+
+
+@pytest.mark.parametrize('events', ['pull_request', ['push', 'pull_request']])
+def test_legacy_native_scalar_and_list_events_stay_unfiltered(tmp_path, monkeypatch, events):
+    import json
+    workflows, manifest, doc = _canonical_proof_fixture(tmp_path, monkeypatch, native=True)
+    doc['on'] = events
+    (workflows / 'ci.yml').write_text(json.dumps(doc))
+    manifest.unlink()
+    assert GUARD.pr_gates()[0]['patterns'] is None
+
+
+def test_legacy_native_unfiltered_gate_stays_unfiltered(tmp_path, monkeypatch):
+    import json
+    workflows, manifest, doc = _canonical_proof_fixture(tmp_path, monkeypatch, native=True)
+    doc['on'] = {'pull_request': None}
+    (workflows / 'ci.yml').write_text(json.dumps(doc))
+    manifest.unlink()
+    assert GUARD.pr_gates()[0]['patterns'] is None

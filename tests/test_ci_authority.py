@@ -784,7 +784,7 @@ def test_merge_group_envelope_produces_stable_trusted_verdict() -> None:
         ),
     ],
 )
-def test_merge_group_publishes_matching_base_context_on_synthetic_head(
+def test_merge_group_envelope_cannot_publish_authority_on_synthetic_head(
     base_ref: str, base_sha: str, expected_name: str
 ) -> None:
     event = {
@@ -797,15 +797,12 @@ def test_merge_group_publishes_matching_base_context_on_synthetic_head(
         },
     }
     api = FakeApi([])
-    code, decision, check = AUTHORITY.run_merge_group(event, REPOSITORY, api)
-
-    assert code == 0
-    assert decision["base_ref"] == base_ref
-    assert check["name"] == expected_name
-    assert check["head_sha"] == HEAD
-    assert check["status"] == "completed"
-    assert check["conclusion"] == "success"
-    assert api.checks == [check]
+    # Event syntax is not authenticated native membership or integrated proof.
+    # Neither allowlisted target may manufacture a green diagnostic check.
+    assert AUTHORITY.evaluate_merge_group(event, REPOSITORY)["base_ref"] == base_ref
+    with pytest.raises(AUTHORITY.AuthorityContractError, match="authenticated membership"):
+        AUTHORITY.run_merge_group(event, REPOSITORY, api)
+    assert api.checks == [], expected_name
 
 
 def test_workflow_is_required_workflow_shaped_and_never_executes_candidate() -> None:
@@ -825,12 +822,13 @@ def test_workflow_is_required_workflow_shaped_and_never_executes_candidate() -> 
         "checks": "write",
         "contents": "read",
         "pull-requests": "read",
+        "actions": "read",
     }
     assert checkout["uses"] == (
         "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
     )
     assert checkout["with"] == {
-        "ref": "${{ github.event.repository.default_branch }}",
+        "ref": "${{ github.workflow_sha }}",
         "fetch-depth": 1,
         "sparse-checkout": "scripts",
         "persist-credentials": False,
@@ -843,8 +841,14 @@ def test_workflow_is_required_workflow_shaped_and_never_executes_candidate() -> 
     assert merge_group_step["env"] == {
         "GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
     }
-    assert pull_step["run"] == merge_group_step["run"]
-    assert pull_step["run"].startswith("python3 scripts/ci_authority.py")
+    assert pull_step["run"] == 'python3 -I scripts/ci_authority.py --event "$GITHUB_EVENT_PATH"'
+    assert merge_group_step["run"] == (
+        'python3 -I scripts/ci_authority.py --native-membership '
+        '--event "$GITHUB_EVENT_PATH" --output "$RUNNER_TEMP/native-group.json"'
+    )
+    assert "continue-on-error" not in job
+    assert all("continue-on-error" not in step for step in job["steps"])
+    assert all("container" not in section for section in (job, document))
     assert "subprocess" not in (ROOT / "scripts/ci_authority.py").read_text()
     assert "diagnostic evidence only" in source
     assert "must never be the sole required authority" in source

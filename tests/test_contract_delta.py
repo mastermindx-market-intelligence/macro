@@ -285,14 +285,17 @@ def _step_named(job: dict, name: str) -> dict | None:
     return None
 
 
-def test_ci_yml_carries_a_contract_delta_job_gated_to_pull_request() -> None:
+def test_ci_yml_carries_a_contract_delta_job_gated_to_authenticated_pr_proof() -> None:
     jobs = _ci_jobs()
     assert "contract-delta" in jobs, "ci.yml must declare a contract-delta job"
     job = jobs["contract-delta"]
-    assert job.get("if") == "github.event_name == 'pull_request'", (
-        "contract-delta must never attempt to run on a push/workflow_dispatch "
-        "main-proof event -- it has no PR base to diff against there"
-    )
+    assert job.get("needs") == ["ci-plan"]
+    assert job.get("if") == (
+        "!cancelled() && needs.ci-plan.result == 'success' && "
+        "(needs.ci-plan.outputs.semantic_role == 'pr_head' || "
+        "needs.ci-plan.outputs.semantic_role == 'merge_group')"
+    ), "contract-delta requires a successful authenticated PR or native-group plan"
+
     assert job.get("runs-on") == "ubuntu-latest"
     # 25 -> 45 (2026-08-19, PR #6013 cancellation): the job is off the
     # critical path (packs run ~30 min regardless), so this pins a floor, not
@@ -314,15 +317,33 @@ def test_contract_delta_binds_to_the_exact_tested_merge_parent() -> None:
     resolver = _step_named(job, "resolve the exact tested PR merge base")
     assert resolver is not None
     assert resolver.get("env", {}).get("EXPECTED_PR_HEAD") == (
-        "${{ github.event.pull_request.head.sha }}"
+        "${{ needs.ci-plan.outputs.subject_head_sha }}"
     )
+    assert resolver.get("env", {}).get("EXPECTED_TESTED_MERGE") == (
+        "${{ needs.ci-plan.outputs.tested_tree_sha }}"
+    )
+    assert resolver.get("env", {}).get("EXPECTED_TESTED_BASE") == (
+        "${{ needs.ci-plan.outputs.tested_base_sha }}"
+    )
+    assert {key: resolver["env"][key] for key in (
+        "SEMANTIC_ROLE", "EVENT_NAME", "ADMISSION_GENERATION", "CI_NATIVE_GROUP_JSON"
+    )} == {
+        "SEMANTIC_ROLE": "${{ needs.ci-plan.outputs.semantic_role }}",
+        "EVENT_NAME": "${{ github.event_name }}",
+        "ADMISSION_GENERATION": "${{ needs.ci-plan.outputs.admission_generation }}",
+        "CI_NATIVE_GROUP_JSON": "${{ needs.ci-plan.outputs.native_group_json }}",
+    }
+    assert "inputs." not in str(resolver.get("env", {}))
+
     resolver_run = resolver.get("run", "")
     assert "git rev-parse HEAD" in resolver_run
     assert "GITHUB_SHA" in resolver_run
     assert "git cat-file -p HEAD" in resolver_run
     assert "sed -n 's/^parent //p'" in resolver_run
     assert '"$#" -ne 2' in resolver_run
+    assert '"$tested_merge" != "$EXPECTED_TESTED_MERGE"' in resolver_run
     assert '"$tested_head" != "$EXPECTED_PR_HEAD"' in resolver_run
+    assert '"$tested_base" != "$EXPECTED_TESTED_BASE"' in resolver_run
     assert 'base_sha=$tested_base' in resolver_run
 
     blob = "\n".join(
@@ -391,7 +412,13 @@ def test_contract_delta_merge_resolver_selects_current_tested_base(
     env = {
         **os.environ,
         "GITHUB_SHA": tested_merge,
+        "SEMANTIC_ROLE": "pr_head",
+        "EVENT_NAME": "pull_request",
+        "ADMISSION_GENERATION": "",
+        "CI_NATIVE_GROUP_JSON": "",
         "EXPECTED_PR_HEAD": pr_head,
+        "EXPECTED_TESTED_MERGE": tested_merge,
+        "EXPECTED_TESTED_BASE": tested_base,
         "GITHUB_OUTPUT": str(output),
     }
     subprocess.run(
@@ -419,6 +446,19 @@ def test_contract_delta_merge_resolver_selects_current_tested_base(
     assert bad.returncode != 0
     assert "second parent does not match the exact PR head" in bad.stderr
 
+    # A valid-looking PR head does not license a different base or tested merge.
+    for changed_env in (
+        {"EXPECTED_TESTED_BASE": creation_base},
+        {"EXPECTED_TESTED_MERGE": creation_base},
+    ):
+        refused = subprocess.run(
+            ["bash", "-c", resolver["run"]],
+            cwd=repo, env={**env, **changed_env},
+            check=False, capture_output=True, text=True,
+        )
+        assert refused.returncode != 0
+        assert refused.stderr
+
 
 def test_ci_gate_needs_contract_delta() -> None:
     jobs = _ci_jobs()
@@ -427,7 +467,7 @@ def test_ci_gate_needs_contract_delta() -> None:
     assert isinstance(needs, list) and "contract-delta" in needs
 
 
-def test_ci_gate_enforcement_step_treats_skip_as_ok() -> None:
+def test_ci_gate_enforcement_requires_success_for_pr_proof() -> None:
     jobs = _ci_jobs()
     gate = jobs["ci-gate"]
     step = _step_named(gate, "enforce contract-delta verdict")
@@ -436,12 +476,34 @@ def test_ci_gate_enforcement_step_treats_skip_as_ok() -> None:
         "${{ needs.contract-delta.result }}"
     )
     run = step.get("run", "")
-    # Gated specifically on the literal string "failure", never on
-    # non-"success" -- the latter would fail ci-gate on every non-pull_request
-    # event, where contract-delta is `skipped` by design (see the job's own
-    # `if:`, pinned above) and must read as OK.
-    assert '$CONTRACT_DELTA_RESULT" = "failure"' in run
-    assert '!= "success"' not in run and '!="success"' not in run
+    # An admitted PR proof must not green when the contract job is skipped.
+    # Main baseline has no PR contract and must not be blocked by that skip.
+    assert step.get("env", {}).get("PR_PROOF") == (
+        "${{ github.event_name == 'pull_request' || (needs.ci-plan.outputs.semantic_role == 'pr_head' || needs.ci-plan.outputs.semantic_role == 'merge_group') }}"
+    )
+    assert 'if [ "$PR_PROOF" = "true" ] && [ "$CONTRACT_DELTA_RESULT" != "success" ]; then' in run
+    assert 'if [ "$CONTRACT_DELTA_RESULT" = "failure" ]' not in run
+
+
+
+@pytest.mark.parametrize("pr_proof,contract_result,allowed", [
+    ("true", "success", True),
+    ("true", "failure", False),
+    ("true", "skipped", False),
+    ("true", "cancelled", False),
+    ("true", "", False),
+    ("false", "skipped", True),
+])
+def test_ci_gate_executes_original_contract_verdict(pr_proof, contract_result, allowed):
+    """Run the real shell guard; a missing native plan role cannot waive PR proof."""
+    step = _step_named(_ci_jobs()["ci-gate"], "enforce contract-delta verdict")
+    result = subprocess.run(
+        ["bash", "-c", step["run"]],
+        env={**os.environ, "PR_PROOF": pr_proof,
+             "CONTRACT_DELTA_RESULT": contract_result},
+        capture_output=True, text=True, check=False,
+    )
+    assert (result.returncode == 0) is allowed, result.stdout + result.stderr
 
 
 def test_legacy_jobs_ci_control_plane_job_runs_the_new_suite() -> None:
@@ -521,6 +583,81 @@ def test_sparse_caller_gets_a_base_tree_with_the_same_cone(tmp_path: Path, monke
     finally:
         cleanup()
     assert not tree.exists()
+
+
+def test_noncone_caller_base_mirrors_exact_binary_exclusions(tmp_path: Path, monkeypatch) -> None:
+    """PR/base must use identical non-cone source selection, not full-base fallback."""
+    repo = _make_repo(tmp_path)
+    (repo / "mockups").mkdir()
+    (repo / "mockups" / "evidence.png").write_bytes(b"test image")
+    (repo / "mockups" / "guard.py").write_text("GUARD = 1\n")
+    _git("add", "-A", cwd=repo)
+    _git("commit", "-q", "-m", "media fixture", cwd=repo)
+    (repo / "engine" / "x.py").write_text("X = 3\n")
+    _git("commit", "-q", "-am", "new head", cwd=repo)
+
+    rules = ["/*", "!/data/", "!/mockups/**/*.png"]
+    _git("sparse-checkout", "set", "--no-cone", "--", *rules, cwd=repo)
+    assert CCD.caller_sparse_cone(repo) is None
+    assert CCD.caller_sparse_noncone_rules(repo) == rules
+    assert not (repo / "data" / "big.txt").exists()
+    assert not (repo / "mockups" / "evidence.png").exists()
+    assert (repo / "mockups" / "guard.py").exists()
+
+    monkeypatch.setenv(CCD.TEMP_ROOT_ENV, str(tmp_path))
+    tree, _sha, cleanup = CCD.materialize_base_tree("HEAD~1", repo_root=repo)
+    try:
+        assert _git("config", "--get", "core.sparseCheckoutCone", cwd=tree).strip() == "false"
+        assert CCD.caller_sparse_noncone_rules(tree) == rules
+        assert (tree / "engine" / "x.py").read_text() == "X = 2\n"
+        assert (tree / "mockups" / "guard.py").exists()
+        assert not (tree / "mockups" / "evidence.png").exists()
+        assert not (tree / "data" / "big.txt").exists()
+        assert "mockups/evidence.png" in _git("ls-tree", "-r", "--name-only", "HEAD", cwd=tree)
+        assert _git("status", "--porcelain", cwd=tree) == ""
+    finally:
+        cleanup()
+    assert not tree.exists()
+
+
+def test_noncone_caller_git_default_without_explicit_cone_flag(tmp_path: Path) -> None:
+    """Hosted sparse checkout may omit optional core.sparseCheckoutCone key."""
+    repo = _make_repo(tmp_path)
+    rules = ["/*", "!/data/", "!/mockups/**/*.png"]
+    _git("sparse-checkout", "set", "--no-cone", "--", *rules, cwd=repo)
+    _git("config", "--worktree", "--unset", "core.sparseCheckoutCone", cwd=repo)
+    assert subprocess.run(["git", "config", "--get", "core.sparseCheckoutCone"],
+                          cwd=repo, capture_output=True, check=False).returncode == 1
+    assert _git("config", "--get", "core.sparseCheckout", cwd=repo).strip() == "true"
+    assert _git("sparse-checkout", "list", cwd=repo).splitlines() == rules
+    assert CCD.caller_sparse_noncone_rules(repo) == rules
+
+
+def test_noncone_caller_corrupt_git_boolean_fails_closed(tmp_path: Path) -> None:
+    """Invalid cone values must not silently select a full base tree."""
+    repo = _make_repo(tmp_path)
+    _git("sparse-checkout", "set", "--no-cone", "--", "/*", "!/data/", cwd=repo)
+    _git("config", "--worktree", "core.sparseCheckoutCone", "invalid", cwd=repo)
+    with pytest.raises(CCD.ContractDeltaError):
+        CCD.caller_sparse_noncone_rules(repo)
+
+
+def test_contract_delta_checkout_excludes_media_but_keeps_source_and_proof() -> None:
+    job = _ci_jobs()["contract-delta"]
+    checkout = _step_named(job, "check out the exact candidate")
+    assert checkout is not None
+    opts = checkout["with"]
+    rules = opts["sparse-checkout"].splitlines()
+    assert opts["sparse-checkout-cone-mode"] is False
+    assert opts["filter"] == "blob:none"
+    assert opts["fetch-depth"] == 1
+    assert rules[:3] == ["/*", "!/site/", "!/data/"]
+    assert set(rules[3:]) == {
+        f"!/{root}/**/*.{ext}"
+        for root in ("mockups", "verify_shots")
+        for ext in ("png", "jpg", "jpeg", "webp", "gif", "mp4", "mov", "pdf", "zip")
+    }
+    assert len(rules[3:]) == 18
 
 
 def test_caller_sparse_cone_is_none_for_a_full_checkout(tmp_path: Path) -> None:
@@ -1120,8 +1257,8 @@ def test_start_worker_hands_the_head_spec_to_the_base(
     monkeypatch.setattr(CCD.subprocess, "Popen", FakePopen)
     spec = {"probes": [["a.py", 1, 2]], "max_packs": 3}
     CCD._start_worker(tmp_path, spec)
-    assert seen["args"][:3] == [sys.executable, "-c", CCD._WORKER_SOURCE]
-    assert json.loads(seen["args"][3]) == spec
+    assert seen["args"][:4] == [sys.executable, "-I", "-c", CCD._WORKER_SOURCE]
+    assert json.loads(seen["args"][4]) == spec
     assert seen["kwargs"]["cwd"] == tmp_path
 
 
@@ -1319,3 +1456,158 @@ def test_head_control_plane_findings_bind_the_tree_inventory_and_the_head_spec(
     assert payload["skip_only"] == [{"test": "tests/test_x.py", "needs": ["numpy"]}]
     assert payload["trigger_gaps"] == []
     assert set(payload["timings"]) == set(CCD.CONTROL_PLANE_CLASSES)
+
+
+# Copied control source is intentionally outside the tested checkout. No Git
+# worktree or remote is created by these fixtures; .git is only the root marker
+# consumed by the shared audit validation, and malformed probes stop CLI early.
+_CONTROL_MODULES = (
+    'check_contract_delta', 'run_ci_pack', 'audit_unrun_tests',
+    'check_ci_trigger_closure', 'check_skip_only_suites', 'ci_scope_dependencies',
+    'ci_semantic_proof', 'ci_authority_paths', 'workflow_run_source',
+)
+
+
+def _copied_contract_case(tmp_path):
+    control = tmp_path / 'control'
+    candidate = tmp_path / 'candidate'
+    for root in (control, candidate):
+        (root / 'scripts').mkdir(parents=True)
+        (root / 'scripts/__init__.py').write_text('')
+    for name in _CONTROL_MODULES:
+        (control / 'scripts' / (name + '.py')).write_text(
+            (Path(CCD.__file__).parent / (name + '.py')).read_text())
+    (candidate / '.git').mkdir()
+    (candidate / 'tests').mkdir()
+    # This data file must be parsed, never imported. Both the module and any
+    # candidate control replacement leave a marker if accidentally executed.
+    marker = tmp_path / 'candidate-code-executed'
+    poison = 'from pathlib import Path\nPath(' + repr(str(marker)) + ').write_text("bad")\nraise RuntimeError("untrusted candidate control executed")\n'
+    (candidate / 'tests/test_ci_pack.py').write_text(poison)
+    for name in _CONTROL_MODULES:
+        (candidate / 'scripts' / (name + '.py')).write_text(poison)
+    env = dict(os.environ, MASTERMIND_TRUSTED_CI_REPO_ROOT=str(candidate),
+               GITHUB_WORKSPACE=str(candidate), PYTHONPATH=str(candidate))
+    # Match setup-python's installed dependency availability without relying on
+    # this developer host's user site (which -I correctly excludes). No network.
+    import venv
+    runtime = tmp_path / 'isolated-python'
+    venv.EnvBuilder(with_pip=False, symlinks=True).create(runtime)
+    python = runtime / 'bin/python'
+    purelib = Path(subprocess.check_output([str(python), '-I', '-c',
+        'import sysconfig; print(sysconfig.get_path("purelib"))'], text=True).strip())
+    shutil.copytree(Path(yaml.__file__).parent, purelib / 'yaml')
+    return control, candidate, marker, env, python
+
+
+def test_copied_contract_cli_reads_candidate_probes_without_importing_candidate_code(tmp_path):
+    control, candidate, marker, env, python = _copied_contract_case(tmp_path)
+    result = subprocess.run([str(python), '-I', str(control / 'scripts/check_contract_delta.py'),
+        '--base', '4' * 40], cwd=candidate, env=env, capture_output=True, text=True, timeout=20)
+    assert result.returncode == 1
+    assert str(candidate / 'tests/test_ci_pack.py') in result.stdout
+    assert 'must define PACKING_PROBES' in result.stdout
+    assert str(control / 'tests/test_ci_pack.py') not in result.stdout
+    assert not marker.exists(), result.stderr
+
+
+def test_copied_contract_imports_keep_code_and_candidate_data_roots_distinct(tmp_path):
+    control, candidate, marker, env, python = _copied_contract_case(tmp_path)
+    code = """
+import json, sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+from scripts import check_contract_delta as c, audit_unrun_tests as a, ci_scope_dependencies as d
+from scripts import run_ci_pack as p, check_ci_trigger_closure as t, check_skip_only_suites as s
+print(json.dumps({'roots': [str(m.ROOT) for m in (c,a,d,t,s)],
+ 'defaults': [str(c.run.__kwdefaults__['repo_root']), str(c.materialize_base_tree.__kwdefaults__['repo_root'])],
+ 'code': [str(Path(m.__file__).resolve()) for m in (c,a,d,p,t,s)]}))
+"""
+    result = subprocess.run([str(python), '-I', '-c', code, str(control)],
+        cwd=candidate, env=env, capture_output=True, text=True, timeout=20)
+    assert result.returncode == 0, result.stderr
+    found = json.loads(result.stdout)
+    assert found['roots'] == [str(candidate)] * 5
+    assert found['defaults'] == [str(candidate)] * 2
+    assert all(Path(path).is_relative_to(control) for path in found['code'])
+    assert not marker.exists()
+
+
+@pytest.mark.parametrize('bad_root', ['relative', 'wrong-cwd', 'not-checkout'])
+def test_copied_contract_refuses_invalid_candidate_root(tmp_path, bad_root):
+    control, candidate, marker, env, python = _copied_contract_case(tmp_path)
+    if bad_root == 'relative': env['MASTERMIND_TRUSTED_CI_REPO_ROOT'] = 'candidate'
+    elif bad_root == 'wrong-cwd': env['MASTERMIND_TRUSTED_CI_REPO_ROOT'] = str(control)
+    else: (candidate / '.git').rmdir()
+    result = subprocess.run([str(python), '-I', str(control / 'scripts/check_contract_delta.py'),
+        '--base', '4' * 40], cwd=candidate, env=env, capture_output=True, text=True, timeout=20)
+    assert result.returncode != 0
+    assert 'MASTERMIND_TRUSTED_CI_REPO_ROOT' in result.stderr
+    assert not marker.exists()
+
+
+def test_selected_base_worker_does_not_inherit_the_head_data_root(tmp_path, monkeypatch):
+    control, candidate, marker, env, python = _copied_contract_case(tmp_path)
+    baseline = tmp_path / 'selected-baseline'
+    shutil.copytree(control, baseline)
+    (baseline / '.git').mkdir()
+    probe = """
+import sys, json, os
+sys.path.insert(0, '.')
+from scripts import audit_unrun_tests as audit
+print(json.dumps({'root': str(audit.ROOT), 'code': audit.__file__,
+ 'isolated': sys.flags.isolated, 'override': os.environ.get('MASTERMIND_TRUSTED_CI_REPO_ROOT'),
+ 'spec': json.loads(sys.argv[1])}))
+"""
+    monkeypatch.setattr(CCD, '_WORKER_SOURCE', probe)
+    monkeypatch.setenv('MASTERMIND_TRUSTED_CI_REPO_ROOT', str(candidate))
+    monkeypatch.setenv('PYTHONPATH', str(candidate))
+    spec = {'probes': [['engine/example.py', 3, 8]], 'max_packs': 12}
+    monkeypatch.setattr(CCD.sys, 'executable', str(python))
+    proc = CCD._start_worker(baseline, spec)
+    stdout, stderr = proc.communicate(timeout=20)
+    assert proc.returncode == 0, stderr
+    found = json.loads(stdout)
+    assert found['root'] == str(baseline)
+    assert Path(found['code']).resolve().is_relative_to(baseline)
+    assert found['isolated'] == 1 and found['override'] is None
+    assert found['spec'] == spec
+    assert os.environ['MASTERMIND_TRUSTED_CI_REPO_ROOT'] == str(candidate)
+    assert not marker.exists()
+
+
+def test_selected_base_worker_cannot_fall_back_to_candidate_pythonpath(tmp_path, monkeypatch):
+    control, candidate, marker, env, python = _copied_contract_case(tmp_path)
+    baseline = tmp_path / 'selected-baseline'
+    baseline.mkdir()
+    (candidate / 'candidate_only.py').write_text(
+        'from pathlib import Path\nPath(' + repr(str(marker)) + ').write_text("bad")\n')
+    probe = "import sys; sys.path.insert(0, '.'); import candidate_only"
+    monkeypatch.setattr(CCD, '_WORKER_SOURCE', probe)
+    monkeypatch.setenv('PYTHONPATH', str(candidate))
+    monkeypatch.setattr(CCD.sys, 'executable', str(python))
+    proc = CCD._start_worker(baseline, {})
+    stdout, stderr = proc.communicate(timeout=20)
+    assert proc.returncode != 0 and 'candidate_only' in stderr
+    assert not marker.exists()
+
+
+@pytest.mark.parametrize("regression", ["group_job_omitted", "group_final_omitted", "raw_role_input"])
+def test_contract_native_workflow_consumers_reject_identity_regressions(monkeypatch, regression):
+    jobs = _ci_jobs()
+    if regression == "group_job_omitted":
+        jobs["contract-delta"]["if"] = jobs["contract-delta"]["if"].replace(
+            " || needs.ci-plan.outputs.semantic_role == 'merge_group'", "")
+        check = test_ci_yml_carries_a_contract_delta_job_gated_to_authenticated_pr_proof
+    elif regression == "group_final_omitted":
+        step = _step_named(jobs["ci-gate"], "enforce contract-delta verdict")
+        step["env"]["PR_PROOF"] = step["env"]["PR_PROOF"].replace(
+            " || needs.ci-plan.outputs.semantic_role == 'merge_group'", "")
+        check = test_ci_gate_enforcement_requires_success_for_pr_proof
+    else:
+        resolver = _step_named(jobs["contract-delta"], "resolve the exact tested PR merge base")
+        resolver["env"]["SEMANTIC_ROLE"] = "${{ inputs.proof_role }}"
+        check = test_contract_delta_binds_to_the_exact_tested_merge_parent
+    monkeypatch.setattr(sys.modules[__name__], "_ci_jobs", lambda: jobs)
+    with pytest.raises(AssertionError):
+        check()

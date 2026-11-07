@@ -2,8 +2,8 @@ name: ci-authority
 
 # This workflow is designed to be selected by an organization required-workflow
 # ruleset. pull_request_target loads this file from the trusted default branch;
-# every checkout below names that branch explicitly and never materializes the
-# candidate head. The controller posts the same stable check name directly to
+# every checkout below pins the framework workflow definition and never
+# materializes the candidate head. The controller posts the same stable check name directly to
 # the exact, API-reverified PR head as diagnostic evidence only. That custom
 # check must never be the sole required authority: the organization
 # required-workflow rule remains mandatory.
@@ -41,12 +41,13 @@ jobs:
       checks: write
       contents: read
       pull-requests: read
+      actions: read
     steps:
-      # actions/checkout v4.2.2, immutable. Never replace this ref with a PR,
-      # merge-group, or github.sha expression: candidate code is the threat.
+      # Exact framework workflow definition; the native resolver separately
+      # authenticates its required protected source ref/SHA before subject use.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ github.event.repository.default_branch }}
+          ref: ${{ github.workflow_sha }}
           fetch-depth: 1
           sparse-checkout: scripts
           persist-credentials: false
@@ -55,12 +56,12 @@ jobs:
         if: ${{ github.event_name == 'pull_request_target' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 scripts/ci_authority.py --event "$GITHUB_EVENT_PATH"
+        run: python3 -I scripts/ci_authority.py --event "$GITHUB_EVENT_PATH"
 
       # The job itself is the stable check on GitHub's synthetic queue head. Its
-      # executable comes from the explicit default-branch checkout above.
-      - name: validate trusted merge-group envelope
+      # executable comes from the exact framework workflow definition above.
+      - name: validate authenticated native membership
         if: ${{ github.event_name == 'merge_group' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 scripts/ci_authority.py --event "$GITHUB_EVENT_PATH"
+        run: python3 -I scripts/ci_authority.py --native-membership --event "$GITHUB_EVENT_PATH" --output "$RUNNER_TEMP/native-group.json"

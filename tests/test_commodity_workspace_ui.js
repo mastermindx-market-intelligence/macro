@@ -22,6 +22,16 @@ const cohortRenderer = [
   "template = env.from_string(macro + '{% include \"_commodity_decision_workspace.html.j2\" %}')",
   "json.dump({name: template.render(commodity_workspace=payload) for name, payload in payloads.items()}, sys.stdout)"
 ].join("\n");
+function assertPublishedGoldLinks(source, document) {
+  // Match the canonical template's chain.id-to-asset mapping.
+  const expected = source.chains.filter(chain => chain.id.includes("gold")).flatMap(
+    chain => (chain.cohorts || []).flatMap(
+      cohort => (cohort.companies?.linked || []).slice(0,6).map(company => company.href)));
+  const actual = Array.from(document.querySelectorAll(
+    '[data-cw-chain-asset="gold"] a[data-cw-company-href]'), link => link.dataset.cwCompanyHref);
+  assert.deepEqual(actual.sort(), expected.sort(), "published Gold company links differ from source");
+}
+
 function renderCompanyCohortFixtures(publishedHTML) {
   const source = new JSDOM(publishedHTML,{includeNodeLocations:true});
   const mount = source.window.document.getElementById("commodity-workspace");
@@ -31,6 +41,16 @@ function renderCompanyCohortFixtures(publishedHTML) {
   const location = source.nodeLocation(mount);
   assert.ok(location && location.endOffset > location.startOffset,"bounded workspace source");
   const published = JSON.parse(mount.querySelector("#cw-data").textContent);
+  // Preserve the original publisher-honesty and Gold-specific guards before
+  // constructing any controlled template fixture. Fixture links cannot cover
+  // a missing source-backed link in the actual committed page.
+  const ownerLinked = published.chains.some(chain => (chain.cohorts || []).some(
+    cohort => (cohort.companies?.linked || []).length > 0));
+  const publishedCompanyLinks = source.window.document.querySelectorAll('a[data-cw-company-href]');
+  if (ownerLinked) assert.ok(publishedCompanyLinks.length > 0, "owner-backed company links omitted");
+  else assert.equal(publishedCompanyLinks.length, 0, "unqualified company link was published");
+  assertPublishedGoldLinks(published, source.window.document);
+
   const payloads = {};
   for (const mode of ["linked","empty","unavailable"]) {
     const payload = JSON.parse(JSON.stringify(published));
@@ -160,6 +180,14 @@ async function checkMissingCompanyCohort(mode) {
 }
 
 (async()=>{
+  check("another chain cannot conceal omitted authorized Gold links",()=>{
+    const mixed = d.createElement("div");
+    const other = d.createElement("section");other.dataset.cwChainAsset="oil";
+    const link = d.createElement("a");link.dataset.cwCompanyHref="https://app.mastermind-x.com/analysis?symbol=A";
+    other.appendChild(link);mixed.appendChild(other);
+    const source = {chains:[{id:"real_rate_peak_gold_rerate",cohorts:[{companies:{linked:[{href:link.dataset.cwCompanyHref}]}}]}]};
+    assert.throws(()=>assertPublishedGoldLinks(source,mixed),/published Gold company links differ from source/);
+  });
   check("controlled company links come from the actual template",()=>{
     assert.equal(data.test_fixture,"company-return-cohort:linked");
     assert.equal(d.querySelectorAll("[data-cw-company-href]").length,1);

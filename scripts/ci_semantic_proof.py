@@ -614,12 +614,50 @@ def _expected_plan(plan: Mapping[str, Any]) -> tuple[dict[tuple[str, str], dict[
     return expected, packs
 
 
+def admission_identity_fields(*, workflow: object, event: object, role: object,
+                              admission_generation: object = None,
+                              native_group: object = None) -> dict[str, Any]:
+    """Structural identity only; trusted receipt readers separately admit runs."""
+    is_group = (workflow, event, role) == ("ci", "merge_group", "merge_group")
+    is_dispatch = (workflow, event, role) == ("ci", "workflow_dispatch", "pr_head")
+    result: dict[str, Any] = {}
+    if is_group or is_dispatch:
+        if not isinstance(admission_generation, str) or not re.fullmatch(r"[0-9a-f]{12}", admission_generation):
+            raise SemanticProofError("unsupported role/event combination: admission_generation must be 12 lowercase hex")
+        result["admission_generation"] = admission_generation
+    elif admission_generation is not None:
+        raise SemanticProofError("unsupported admission_generation on legacy identity")
+    if is_group:
+        group = _object(native_group, "native_group")
+        if set(group) != {"target_ref", "queue_entry_id", "pr_number", "source_head_sha",
+                          "group_head_sha", "base_sha", "tree_sha"}:
+            raise SemanticProofError("native_group has missing or unsupported fields")
+        if group["target_ref"] not in {"main", "codex/merge-queue-pilot"}:
+            raise SemanticProofError("native_group target is not allowlisted")
+        entry = group["queue_entry_id"]
+        if not isinstance(entry, str) or not 0 < len(entry) <= 256 or not all(32 < ord(c) < 127 for c in entry):
+            raise SemanticProofError("native_group queue entry is invalid")
+        if type(group["pr_number"]) is not int or group["pr_number"] <= 0:
+            raise SemanticProofError("native_group PR number is invalid")
+        for key in ("source_head_sha", "group_head_sha", "base_sha", "tree_sha"):
+            _sha(group[key], "native_group " + key, size=40)
+        result["native_group"] = dict(group)
+    elif native_group is not None:
+        raise SemanticProofError("native_group is forbidden on a legacy identity")
+    return result
+
+
+def _identity_extensions(identity: Mapping[str, Any]) -> dict[str, Any]:
+    return {key: identity[key] for key in ("admission_generation", "native_group") if key in identity}
+
+
 def _identity(plan: Mapping[str, Any]) -> dict[str, Any]:
     role = _string(plan.get("role"), "role")
-    if role not in {"pr_head", "main"}:
-        raise SemanticProofError("role must be pr_head or main")
+    if role not in {"pr_head", "main", "merge_group"}:
+        raise SemanticProofError("role must be pr_head, main or merge_group")
     event = _string(plan.get("event"), "event")
-    if (role, event) not in {("pr_head", "pull_request"), ("main", "workflow_dispatch")}:
+    if (role, event) not in {("pr_head", "pull_request"), ("main", "workflow_dispatch"), ("merge_group", "merge_group")} and not (
+            (role, event) == ("pr_head", "workflow_dispatch") and plan.get("workflow") == "ci"):
         raise SemanticProofError(f"role/event combination {role}/{event} is not authoritative")
     workflow_run_id = _string(str(plan.get("workflow_run_id", "")), "workflow_run_id")
     if not workflow_run_id.isdecimal() or int(workflow_run_id) < 1:
@@ -628,6 +666,8 @@ def _identity(plan: Mapping[str, Any]) -> dict[str, Any]:
     if workflow != "ci":
         raise SemanticProofError("workflow must be ci")
     identity = {
+        **admission_identity_fields(workflow=workflow, event=event, role=role,
+                                    admission_generation=plan.get("admission_generation"), native_group=plan.get("native_group")),
         "workflow_run_id": workflow_run_id,
         "workflow": workflow,
         "event": event,
@@ -637,8 +677,13 @@ def _identity(plan: Mapping[str, Any]) -> dict[str, Any]:
         "base_sha": _sha(plan.get("base_sha"), "base_sha", size=40),
         "plan_sha256": _sha(plan.get("plan_sha256"), "plan_sha256", size=64),
     }
+    if role == "merge_group":
+        group = identity["native_group"]
+        if (group["group_head_sha"], group["source_head_sha"], group["base_sha"]) != (
+            identity["tested_tree_sha"], identity["subject_head_sha"], identity["base_sha"]):
+            raise SemanticProofError("native_group disagrees with semantic identity")
     if "changed_from" in plan:
-        if role == "pr_head":
+        if role in {"pr_head", "merge_group"}:
             if plan.get("changed_from") != identity["base_sha"]:
                 raise SemanticProofError("PR changed_from must equal exact base_sha")
         elif plan.get("changed_from") is not None or not (
@@ -655,9 +700,9 @@ def _identity(plan: Mapping[str, Any]) -> dict[str, Any]:
 def plan_hash_payload_from_document(plan_source: Mapping[str, Any]) -> dict[str, Any]:
     """Rebuild exactly the runner's v2 plan-hash payload from its publication."""
     plan = _object(plan_source, "plan")
-    if set(plan) != _PLAN_DOCUMENT_KEYS:
-        raise SemanticProofError("plan has missing or unsupported fields")
     identity = _identity(plan)
+    if set(plan) != _PLAN_DOCUMENT_KEYS | set(_identity_extensions(identity)):
+        raise SemanticProofError("plan has missing or unsupported fields")
     if plan.get("schema") != PLAN_SCHEMA:
         raise SemanticProofError(f"plan schema must be {PLAN_SCHEMA}")
     authority_changed = plan.get("authority_changed")
@@ -770,6 +815,7 @@ def plan_hash_payload_from_document(plan_source: Mapping[str, Any]) -> dict[str,
         )
     return {
         "schema": PLAN_SCHEMA,
+        **_identity_extensions(identity),
         "workflow_run_id": identity["workflow_run_id"],
         "workflow": identity["workflow"],
         "event": identity["event"],
@@ -896,7 +942,7 @@ def reconcile_evidence(
             "pack_index",
             "infrastructure",
             "jobs",
-        }:
+        } | set(_identity_extensions(identity)):
             raise SemanticProofError("fragment has missing or unsupported fields")
         for key, value in identity.items():
             if fragment.get(key) != value:
@@ -1029,6 +1075,11 @@ def reconcile_evidence(
                 result["detail"] = _bounded_text(raw["detail"])
             if raw["outcome"] == "passed":
                 result["classification"] = "passed"
+            elif identity["role"] == "merge_group":
+                # Native groups require their own complete green execution. PR
+                # base replay/main-debt facts never excuse a failed group unit.
+                result["classification"] = "unknown"
+                result["detail"] = "native group unit did not pass in this original execution"
             elif identity["role"] == "main":
                 # A step can go dark (not_run_prior_failure / timed_out /
                 # infrastructure_blocked) behind an earlier failing step in
@@ -1170,9 +1221,9 @@ def _validate_evidence(source: Mapping[str, Any]) -> Mapping[str, Any]:
         "infrastructure",
         "evidence_sha256",
     }
-    if set(evidence) != expected_top_keys:
-        raise SemanticProofError("semantic evidence has missing or unsupported fields")
     identity = _identity(evidence)
+    if set(evidence) != expected_top_keys | set(_identity_extensions(identity)):
+        raise SemanticProofError("semantic evidence has missing or unsupported fields")
     if evidence.get("status") not in {"clear", "failure"}:
         raise SemanticProofError("evidence status must be clear or failure")
     if type(evidence.get("authority_changed")) is not bool:
@@ -1256,6 +1307,8 @@ def _validate_evidence(source: Mapping[str, Any]) -> Mapping[str, Any]:
                 raise SemanticProofError(
                     f"evidence classification requires a failure for {job_id}/{proof_id}"
                 )
+            if identity["role"] == "merge_group" and classification not in {"passed", "unknown"}:
+                raise SemanticProofError("native group evidence contains a foreign failure exemption")
             if identity["role"] == "main" and classification not in {
                 "passed",
                 "main_failure",
@@ -1325,6 +1378,8 @@ def load_semantic_evidence(
     expected_role: str | None = None,
     expected_workflow: str | None = None,
     expected_event: str | None = None,
+    expected_admission_generation: str | None = None,
+    expected_native_group: Mapping[str, Any] | None = None,
 ) -> LoadedSemanticEvidence:
     if source is None:
         if advertised:
@@ -1341,9 +1396,11 @@ def load_semantic_evidence(
         "role": expected_role,
         "workflow": expected_workflow,
         "event": expected_event,
+        "admission_generation": expected_admission_generation,
+        "native_group": expected_native_group,
     }
     for key, value in expected.items():
-        if value is not None and str(evidence.get(key)) != str(value):
+        if value is not None and (evidence.get(key) != value if key == "native_group" else str(evidence.get(key)) != str(value)):
             raise SemanticProofError(f"semantic evidence {key} mismatch")
     return LoadedSemanticEvidence("semantic", evidence)
 
@@ -1650,6 +1707,8 @@ def _planner_failure_evidence(
     tested_tree_sha: object | None = None,
     subject_head_sha: object | None = None,
     base_sha: object | None = None,
+    admission_generation: object | None = None,
+    native_group: object | None = None,
 ) -> dict[str, Any]:
     """Materialize a bounded failure even when the plan cannot be loaded.
 
@@ -1673,6 +1732,8 @@ def _planner_failure_evidence(
     )
     complete_identity = all(value is not None and str(value) for value in supplied)
     evidence: dict[str, Any] = {
+        **({"admission_generation": admission_generation} if admission_generation is not None else {}),
+        **({"native_group": native_group} if native_group is not None else {}),
         "schema": EVIDENCE_SCHEMA,
         "workflow_run_id": str(workflow_run_id) if complete_identity else "unknown",
         "workflow": str(workflow) if complete_identity else "ci",
@@ -1730,6 +1791,8 @@ def _cli_reconcile(args: argparse.Namespace) -> int:
             tested_tree_sha=args.fallback_tested_tree_sha,
             subject_head_sha=args.fallback_subject_head_sha,
             base_sha=args.fallback_base_sha,
+            admission_generation=args.fallback_admission_generation,
+            native_group=json.loads(args.fallback_native_group) if args.fallback_native_group else None,
         )
         _write_json(Path(args.output), evidence)
         print(json.dumps(evidence, sort_keys=True, separators=(",", ":")))
@@ -1766,10 +1829,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     reconcile.add_argument("--fallback-workflow-run-id")
     reconcile.add_argument("--fallback-workflow")
     reconcile.add_argument("--fallback-event")
-    reconcile.add_argument("--fallback-role", choices=("pr_head", "main"))
+    reconcile.add_argument("--fallback-role", choices=("pr_head", "main", "merge_group"))
     reconcile.add_argument("--fallback-tested-tree-sha")
     reconcile.add_argument("--fallback-subject-head-sha")
     reconcile.add_argument("--fallback-base-sha")
+    reconcile.add_argument("--fallback-admission-generation")
+    reconcile.add_argument("--fallback-native-group")
     validate = subparsers.add_parser("validate", help="validate one final evidence document")
     validate.add_argument("--input", required=True)
     return parser.parse_args(argv)
