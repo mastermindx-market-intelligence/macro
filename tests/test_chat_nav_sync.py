@@ -29,12 +29,19 @@ no divergence, and the selftest only ever proved the CHECK tolerates a stamp.
 """
 from __future__ import annotations
 
+import hashlib
 import re
+import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 from jinja2 import Environment, FileSystemLoader
 from markupsafe import Markup, escape
+
+from scripts.check_template_site_sync import check as tss_check
+from scripts.sync_chat_nav import check as nav_check
 
 from scripts.sync_chat_nav import (
     check,
@@ -260,3 +267,162 @@ def test_rendered_header_is_bilingual() -> None:
         "the Terminal control rendered without its Chinese label — "
         "scripts.sync_chat_nav.render_canonical is passing an English-only t()"
     )
+
+
+# Selftest annotation contract: fixture failures stay textual, while real
+# default-path failures retain their GitHub error annotations. The fence pack
+# selects these cases with -k annotation_mode; the existing data job runs all.
+#: What GitHub's collector scrapes. A workflow command is only a command when it
+#: STARTS the line (tests/test_audit_unrun_tests.py::
+#: test_annotations_start_the_line_and_flush pins the same rule for the census),
+#: so line-start is exactly the right test — and exactly what the fix withholds.
+_ANNOTATION_PREFIX = "::"
+
+
+def _workflow_commands(stdout: str) -> list[str]:
+    return [line for line in stdout.splitlines() if line.startswith(_ANNOTATION_PREFIX)]
+
+
+def _run_selftest(script: str) -> subprocess.CompletedProcess[str]:
+    """The guard's own CI step, run the way CI runs it.
+
+    A subprocess and not an in-process call to ``selftest()``: the defect was
+    about the BYTES a CI step puts on stdout, which is the only thing the
+    annotation collector ever sees.
+    """
+    return subprocess.run(
+        [sys.executable, script, "--selftest"],
+        cwd=ROOT, capture_output=True, text=True, timeout=300,
+    )
+
+
+# --------------------------------------------------------------- sync_chat_nav
+
+#: The selftest renders the REAL templates/ and copies the real site/chat.html
+#: into its fixture. CI always checks out the full tree; a sparse session worktree
+#: (policy R8) omits site/, and there the guard cannot run at all.
+_HAS_CHAT_PAIR = (ROOT / "templates" / "chat.html").is_file() and (
+    ROOT / "site" / "chat.html").is_file()
+
+
+@pytest.mark.skipif(not _HAS_CHAT_PAIR,
+                    reason="sparse worktree: templates/chat.html + site/chat.html absent")
+def test_annotation_mode_chat_nav_selftest_publishes_no_annotation() -> None:
+    r = _run_selftest("scripts/sync_chat_nav.py")
+    assert r.returncode == 0, f"selftest failed:\n{r.stdout}\n{r.stderr}"
+    assert "selftest PASS" in r.stdout, f"selftest did not run to completion:\n{r.stdout}"
+    assert not _workflow_commands(r.stdout), (
+        "the chat-nav selftest published a GitHub annotation from a PASSING run — it "
+        f"will appear red on every PR that runs the fence pack: {_workflow_commands(r.stdout)}"
+    )
+
+
+@pytest.mark.skipif(not _HAS_CHAT_PAIR,
+                    reason="sparse worktree: templates/chat.html + site/chat.html absent")
+def test_annotation_mode_chat_nav_selftest_still_prints_the_drift_TEXT() -> None:
+    """Quiet, not silent: the words are what make the selftest worth running."""
+    r = _run_selftest("scripts/sync_chat_nav.py")
+    assert "selftest: fixture error [chat-nav-sync drift]" in r.stdout, (
+        f"the selftest no longer reports the drift it deliberately created:\n{r.stdout}")
+    assert "The header is GENERATED" in r.stdout, (
+        f"the drift message lost its remedy text:\n{r.stdout}")
+
+
+def test_annotation_mode_chat_nav_real_drift_still_publishes_the_annotation(tmp_path: Path) -> None:
+    """Positive control. A real hand-edit must still go red, with the ``::`` prefix."""
+    if not _HAS_CHAT_PAIR:
+        pytest.skip("sparse worktree: templates/chat.html + site/chat.html absent")
+    shutil.copytree(ROOT / "templates", tmp_path / "templates")
+    (tmp_path / "site").mkdir()
+    shutil.copy2(ROOT / "site" / "chat.html", tmp_path / "site" / "chat.html")
+
+    page = tmp_path / "templates" / "chat.html"
+    text = page.read_text(encoding="utf-8")
+    assert text.count('<div class="nav-links">') == 1
+    page.write_text(
+        text.replace('<div class="nav-links">',
+                     '<div class="nav-links">\n    <a href="whitehouse.html">X</a>', 1),
+        encoding="utf-8")
+
+    import io, contextlib
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        ok = nav_check(tmp_path)          # exactly what main() calls — no annotate kwarg
+    assert ok is False, "the gate did not fire on a hand-added menu link"
+    assert any(line.startswith("::error title=chat-nav-sync drift::")
+               for line in buf.getvalue().splitlines()), (
+        f"real drift no longer publishes its annotation:\n{buf.getvalue()}")
+
+
+# ------------------------------------------------------- check_template_site_sync
+
+def test_annotation_mode_template_site_sync_selftest_publishes_no_annotation() -> None:
+    r = _run_selftest("scripts/check_template_site_sync.py")
+    assert r.returncode == 0, f"selftest failed:\n{r.stdout}\n{r.stderr}"
+    assert "selftest PASS" in r.stdout, f"selftest did not run to completion:\n{r.stdout}"
+    assert not _workflow_commands(r.stdout), (
+        "the template↔site-sync selftest published a GitHub annotation from a PASSING "
+        f"run, about a mkdtemp fixture: {_workflow_commands(r.stdout)}")
+
+
+def test_annotation_mode_template_site_sync_selftest_still_prints_the_refusal_TEXT() -> None:
+    r = _run_selftest("scripts/check_template_site_sync.py")
+    assert "selftest: fixture error [template-site-sync wrong-direction fix refused]" in r.stdout, (
+        f"the selftest no longer reports the refusal it exists to provoke:\n{r.stdout}")
+
+
+def test_annotation_mode_template_site_sync_real_refusal_still_publishes_the_annotation(tmp_path: Path) -> None:
+    """Positive control: the wrong-direction refusal is a real, blocking finding."""
+    (tmp_path / "templates").mkdir()
+    (tmp_path / "site").mkdir()
+    # The 2026-07-26 chat.html shape: the SITE copy is the fresh one, and the
+    # template's ?v= contradicts the asset on disk, so templates/ -> site/ would
+    # ship bytes the edge pins for a year.
+    (tmp_path / "site" / "app.js").write_text("var live = 1;\n")
+    live = hashlib.sha256((tmp_path / "site" / "app.js").read_bytes()).hexdigest()[:8]
+    (tmp_path / "templates" / "wrongway.html").write_text(
+        '<script src="app.js?v=deadbeef" defer></script>\n')
+    (tmp_path / "site" / "wrongway.html").write_text(
+        f'<script src="app.js?v={live}" defer></script>\n<link href="extra.css">\n')
+
+    import io, contextlib
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        diverged = tss_check(tmp_path, fix=True)   # what main() calls — no annotate kwarg
+    assert diverged == ["wrongway.html"]
+    assert getattr(tss_check, "refused", []) == ["wrongway.html"]
+    assert any(
+        line.startswith("::error title=template-site-sync wrong-direction fix refused::")
+        for line in buf.getvalue().splitlines()), (
+        f"a real wrong-direction refusal no longer publishes its annotation:\n{buf.getvalue()}")
+
+
+@pytest.mark.parametrize("annotate", [True, False])
+@pytest.mark.parametrize("fix", [True, False])
+def test_annotation_mode_template_site_sync_unavailable_emitter_preserves_gate_and_annotation_mode(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+    annotate: bool, fix: bool,
+) -> None:
+    """Current main's fail-closed emitter guard must also respect fixture output mode."""
+    import scripts.check_template_site_sync as sync
+
+    (tmp_path / "templates").mkdir()
+    (tmp_path / "site").mkdir()
+    (tmp_path / "templates" / "theme.js").write_text("const source = 1;")
+    live = tmp_path / "site" / "theme.js"
+    live.write_text("const retained = 1;")
+    original = live.read_bytes()
+    monkeypatch.setattr(sync, "_bake_theme", lambda _template: None)
+
+    assert sync.check(tmp_path, fix=fix, annotate=annotate) == ["theme.js"]
+    assert live.read_bytes() == original, "unavailable bake must never overwrite the site"
+    assert sync.check.unfixed == (["theme.js"] if fix else [])
+    out = capsys.readouterr().out
+    assert "Cannot verify site/theme.js" in out
+    commands = _workflow_commands(out)
+    if annotate:
+        assert any(line.startswith("::error title=theme emitter unavailable::")
+                   for line in commands), out
+    else:
+        assert not commands, out
+        assert "selftest: fixture error [theme emitter unavailable]" in out
