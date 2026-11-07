@@ -1,0 +1,759 @@
+{
+  "schema": "d06.resume-implementation.v1",
+  "checkpoint_time": "2026-11-04 13:31:18 UTC",
+  "classification": "PROVEN_OUTCOME",
+  "classification_scope": "Scoped D06 design and implementation delivery; production acceptance and complete cross-system migration qualification remain unclaimed.",
+  "protected_source": "0f9043313069d90cc3e1629a04ff2455f0f0fe78",
+  "programme_source": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "macro_parent": "8d26633704b73dec6a948744cc2bdb28fb3beeb8",
+  "scoped_design_implementation_delivered": true,
+  "terminal": {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "pr": 1270,
+    "branch": "sol/web-d06-terminal-reader-resilience-20261103-c4",
+    "operation_id": "d06-terminal-reader-resilience-20261103-c4",
+    "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/d06-terminal-reader-resilience-20261103-c4",
+    "head": "357c32f1a330dda9362955361ae0ab30a3e54048",
+    "clean_after_push": true,
+    "publication": {
+      "commit_action": "94485fba6aab1c3af0d5604fb056130c5c1bfaeffcef2a3b9bd3288428d361ad",
+      "push_action": "c01190b0ce5fa382ef1d407271a0c0c3e86b7a8ff0a49fbd9fa120d9089664c8",
+      "state": "APPLIED",
+      "head": "357c32f1a330dda9362955361ae0ab30a3e54048",
+      "clean": true
+    },
+    "completed_phases": [
+      "reader continuity and feedback",
+      "compact embed language/data states",
+      "adaptive workspace",
+      "Scripts save/conflict journeys",
+      "public snapshot and embed/fullscreen",
+      "concrete hosted-CI and phone fullscreen repair",
+      "paired Scripts translation routing",
+      "portfolio refresh, fullscreen-row and drawing-recovery test assumptions repaired"
+    ],
+    "phase_heads": {
+      "workspace": "f9960127b0ac51fc9cd6422cfd4d28946e0d3f67",
+      "scripts": "f01a4ebf0924d53a448f1acb63a8ee235418d8b6",
+      "snapshot_embed": "efafc1176a2eb48834125c085615e94033fa1ae7",
+      "ci_repair": "496ab37cbbbb236d9fe17e55595cd4171f2ff222",
+      "copy_routing": "9d1d8549a3d5f77208de385631e10c31c7d16c4f",
+      "final_test_repair": "357c32f1a330dda9362955361ae0ab30a3e54048"
+    },
+    "final_repair_proof": {
+      "unit_passes": 105,
+      "unit_files": 17,
+      "original_desktop_pan_passes": 2,
+      "embed_browser": {
+        "passed": 38,
+        "skipped": 16,
+        "failed": 0,
+        "flaky": 0
+      },
+      "typescript_exit": 0,
+      "focused_lint_exit": 0,
+      "embed_baseline_diagnostics": 5,
+      "source_stable": true,
+      "artifact_members": 71,
+      "runtime_pngs": 51,
+      "aggregate_sha256": "bed79dc1f1cf1eaf8307537d4e78c74870f65b4571e92f1419afbbab84f7f972",
+      "receipt": "terminal/docs/pr-crops/d06-ci-20261104/verification.json",
+      "limits": [
+        "Counts refer to source-bound runs in the receipt; overlapping historical runs are not summed.",
+        "105 units precede only final embed layout/browser-test refinements; tested unit sources unchanged.",
+        "Two original pan journeys precede only embed-specific refinements.",
+        "No physical WKWebView, browser-UI Escape or production upload/RLS acceptance."
+      ]
+    },
+    "previous_publication": {
+      "commit_action": "7dd4ca39657ce9c982f7271b92cddaa32c8ac4cedc0bb7e410f56e797b7e4859",
+      "push_action": "e71a14c0e226a5203141080930deb57a1c86ce2b423b3d71a61bb9a23d1e4fb9",
+      "state": "APPLIED"
+    },
+    "copy_routing": {
+      "head": "9d1d8549a3d5f77208de385631e10c31c7d16c4f",
+      "keys_per_locale": 56,
+      "locales": 2,
+      "unchanged_values": 112,
+      "stable_object_identity": true,
+      "plain_language_exit": 0,
+      "consumer_dom_tests": 20,
+      "focused_lint_exit": 0,
+      "manifest_members": 5,
+      "manifest_aggregate_sha256": "eb6cf4d6120514b2240884908d02a45771674ff42d2319b8aaa07f610e0f8510",
+      "receipt": "terminal/docs/pr-crops/d06-copy-routing-20261104/verification.json"
+    },
+    "previous_copy_publication": {
+      "commit_action": "0778ec9054556e38b95c586f403e75c2cc9381e50714a84a22e6ad004e65ea0c",
+      "push_action": "0e22f50c1e111ba9c11ed3a810c519a5e8ec038e4cdc9aed6bd433e0865d57e4",
+      "state": "APPLIED"
+    },
+    "final_test_repair": {
+      "source_parent": "9d1d8549a3d5f77208de385631e10c31c7d16c4f",
+      "head": "357c32f1a330dda9362955361ae0ab30a3e54048",
+      "production_source_changes": false,
+      "browser_cases": 12,
+      "portfolio_locale_cases": 6,
+      "embed_cases": 3,
+      "drawing_recovery_cases": 3,
+      "retries": 0,
+      "failures": 0,
+      "skips": 0,
+      "event_refresh_units": 33,
+      "unit_count_overlaps_prior": true,
+      "lint": {
+        "portfolio_findings": 0,
+        "shell_baseline_findings": 38,
+        "new_findings": 0,
+        "full_file_clean": false
+      },
+      "runtime_pngs": 6,
+      "receipt": "terminal/docs/pr-crops/d06-final-tests-20261104/verification.json",
+      "manifest": {
+        "members": 21,
+        "bytes": 469229,
+        "aggregate_sha256": "f60d9598ddc17a9ad326ade946529bd0aa2dbafd7af379924b9fcd1e5d02ab6d"
+      },
+      "prior_members_byte_identical": [
+        71,
+        5
+      ],
+      "old_hosted_run": {
+        "id": 41827927547,
+        "head": "9d1d8549a3d5f77208de385631e10c31c7d16c4f",
+        "status": "completed",
+        "conclusion": "failure",
+        "jobs_success": 11,
+        "jobs_failure": 6,
+        "distinct_assertions_repaired": 3,
+        "local_retry_zero_cases": 12
+      }
+    }
+  },
+  "macro": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 10734,
+    "branch": "sol/web-d06-macro-implementation-20261104-c4",
+    "operation_id": "d06-macro-implementation-20261104-c4",
+    "workspace": "/Volumes/Mastermind 2/agent-workspaces/macro/web/d06-macro-implementation-20261104-c4",
+    "base": "a8a5d3523614777d88eb2579d6efab52cd862e33",
+    "initial_implementation_head": "40d395a898c8c6749b4c9998a71fc9196e544c2e",
+    "head": "ec69837d6843343d4f692e28677324af81af8a7b",
+    "clean_after_push": true,
+    "completed_pages": [
+      "Market Structure",
+      "Stage Analysis",
+      "S&P Vector"
+    ],
+    "final_verification": {
+      "unit_passes": 253,
+      "unit_files": 9,
+      "source_paths": 30,
+      "source_stable": true,
+      "historical_proof_byte_identical": true,
+      "market": {
+        "matrix": 6,
+        "edge_cases": 2
+      },
+      "stage": {
+        "matrix": 5,
+        "edge_cases": 7,
+        "advanced_flow_matrix_limit": "Seven advanced flows recorded only at 1440 dark EN"
+      },
+      "spvector": {
+        "matrix": 5,
+        "edge_cases": 5
+      },
+      "actual_pinned_contexts": 4,
+      "canonical_capture": {
+        "pages": 3,
+        "states": 72,
+        "rest": 24,
+        "hover": 24,
+        "focus": 24,
+        "viewports": [
+          [
+            1440,
+            900
+          ],
+          [
+            390,
+            844
+          ]
+        ],
+        "locales": [
+          "en",
+          "zh"
+        ],
+        "themes": [
+          "dark",
+          "light"
+        ],
+        "producer": "scripts/capture_page_evidence.py",
+        "target_git_identity": null
+      },
+      "guards": {
+        "ci_manifest_exit": 0,
+        "design_ratchet_exit": 0,
+        "visual_evidence_exit": 0,
+        "source_citation_tests": 94,
+        "packing_seam_tests": 2,
+        "packing_verdict_replay": "passed with original-limit negative control",
+        "fresh_full_contract_census_pass_claimed": false,
+        "original_full_contract_census_exit": 1,
+        "exact_planning_weight_funding_per_probe": 4,
+        "job_pack_runtime_limits_unchanged": true
+      },
+      "receipt": "docs/pr-crops/d06-macro-ci-20261104/verification.json",
+      "limits": [
+        "Owned local generated pages and exact pinned producer artifacts plus explicit synthetic edge cases.",
+        "No live feed, physical device, source-freshness/completeness, model-publication or quant recertification claim.",
+        "Data-owned D06 suites retain gate:data; direct253 test proof is separate from ordinary PR code-pack selection."
+      ],
+      "packing_calibration": {
+        "original_census_exit": 1,
+        "original_findings": 3,
+        "kind": "Three specified planning-weight ceilings increase by exactly four under the existing protocol. Job membership, job count, pack count, runtime limits and selectors remain unchanged.",
+        "canonical_verdict_replay": "passed; old limits reproduce3breaches, calibrated limits0",
+        "focused_seam_tests": 2,
+        "fresh_census_performed": false
+      },
+      "source_citation_guard_tests": 94,
+      "unit_phase": "The 253-test functional run precedes the final phone-help CSS adjustment.",
+      "post_help_css": {
+        "unit_passes": 85,
+        "overlaps_253": true,
+        "market_matrix": 6,
+        "market_edge_cases": 2,
+        "settled_help_observations": 4,
+        "phone_open_close_themes": 2
+      },
+      "artifact_inventory": {
+        "members": 204,
+        "bytes": 42553354,
+        "aggregate_sha256": "7d72bbf78ee75edfd01942882db6bbb85d221b9251f3615151ed20bc548c6762",
+        "path": "docs/pr-crops/d06-macro-ci-20261104/manifest.json",
+        "retains_historical_diagnostics": true
+      },
+      "phase": "Historical CI repair at ede62cbbc69441aca64973ee638c55be544cfc4d; later integration and locale checks are recorded separately."
+    },
+    "original_proof": {
+      "members": 63,
+      "aggregate_sha256": "68bbf8be117fe16a002368a214a5ee0a0709c8784ae70385f1f5d58dc5d7b0f9",
+      "path": "docs/pr-crops/d06-macro-20261104"
+    },
+    "initial_base": "52abe2e183833a216267942a99513e6c9cbe062f",
+    "publication": {
+      "commit_action": "ef1e4535f14c2cc2a2e57db8b330baeead9f02f2bbcc114b593f9cd81864e9f2",
+      "push_action": "1ca99925740dede5e7ff623fa33691a26f8d0b402e96569b75448d31c37b6356",
+      "state": "APPLIED",
+      "head": "ec69837d6843343d4f692e28677324af81af8a7b",
+      "clean": true
+    },
+    "integration_and_locale": {
+      "integration_commit": "4ac468b3a552559ec20afa14e71b19ea3a1ae680",
+      "integration_parents": [
+        "ede62cbbc69441aca64973ee638c55be544cfc4d",
+        "a8a5d3523614777d88eb2579d6efab52cd862e33"
+      ],
+      "integration_tree": "cd20a7b86184173ab4836d406d8f890b7643dece",
+      "integration_commit_action": "812de4ebcbb3e69864576ec68f10543f1d4febd6bc8db53e9dd52a385bc293f5",
+      "final_head": "ec69837d6843343d4f692e28677324af81af8a7b",
+      "checked_inputs": 415,
+      "spvector_input_closure": 398,
+      "input_hashes_unchanged": true,
+      "producer_auxiliary_writes": false,
+      "integration_focused_tests": 27,
+      "final_market_tests": 85,
+      "test_counts_overlap_prior": true,
+      "integrated_runtime_pngs": 12,
+      "total_runtime_pngs": 25,
+      "new_canonical_market_cells": 24,
+      "final_color_contexts": 4,
+      "color_matches_per_context": 75,
+      "retained_regimes": {
+        "long": 50,
+        "short": 25
+      },
+      "classification_changes": 0,
+      "final_market_matrix": 6,
+      "final_market_edge_cases": 2,
+      "integrated_actual_contexts": 4,
+      "stage_readers_per_context": 12,
+      "source_hashes": {
+        "market_html": "b69a01d3a916f465173414d30c23df78bed067b874cf229692a04b42821b8cbb",
+        "market_template": "f34e88b11467e73b88ffeb8438c1acddbe21f681d948373cb06f59be541ae1bb",
+        "stage_html": "984a78b8678d28a949c4a7d2aa1756c199275ca5fff81eeefad02341e63077c2",
+        "spvector_html": "faf1dcca2a5916e0ce4a6792b607fc755d80797b3ec932c9327554247b3b789e"
+      },
+      "guards": {
+        "ci_manifest_exit": 0,
+        "design_ratchet_exit": 0,
+        "visual_evidence_exit": 0
+      },
+      "receipt": "docs/pr-crops/d06-macro-integration-20261104/verification.json",
+      "manifest": {
+        "members": 94,
+        "bytes": 14395023,
+        "aggregate_sha256": "104d614c3a00ffa2f087727b89c7093e7e1d8b176be2543da811227d2dbd86d1"
+      },
+      "prior_members_byte_identical": [
+        63,
+        204
+      ],
+      "limits": [
+        "Current final Market24 canonical cells are separate from earlier72 captures and integration12 runtime images.",
+        "Four color probes cover desktop dark and phone light in EN/ZH; canonical matrix separately covers both themes at both widths.",
+        "No physical-device, production-acceptance, full75-case or model/backtest recertification claim."
+      ]
+    }
+  },
+  "paper": {
+    "actual_edits": true,
+    "rendered_inspected_exported": true,
+    "current_boards": 16,
+    "terminal": {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-17-0",
+      "boards": [
+        "1U01-0",
+        "1UEL-0",
+        "1US3-0",
+        "1V6P-0",
+        "1W4S-0",
+        "1WI8-0",
+        "1WI9-0",
+        "1WIA-0",
+        "1WYN-0",
+        "1WYO-0"
+      ],
+      "finalized": true
+    },
+    "macro_original": {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-29-0",
+      "boards": [
+        "743I-0",
+        "743J-0",
+        "743K-0"
+      ],
+      "market_finalized": true,
+      "stage_desktop": "Visual complete, screenshot and JSX captured; explicit capacity/data-loss warning stopped further mutation before finish marker."
+    },
+    "macro_continuation": {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-18-0",
+      "boards": [
+        "1XGS-0",
+        "1XGT-0",
+        "1XGU-0"
+      ],
+      "supersedes_incomplete": [
+        "743L-0",
+        "743M-0",
+        "743N-0"
+      ],
+      "finalized": true,
+      "finish_operation": "d06-r7-finish-new-macro-boards-20261104",
+      "finish_effect": "APPLIED"
+    },
+    "caveats": [
+      "Paper values illustrative, not live market verification.",
+      "No source board deletion or lossless entire-file migration claim."
+    ]
+  },
+  "ci": {
+    "as_of": "2026-11-04 13:31:18 UTC",
+    "terminal": {
+      "head": "357c32f1a330dda9362955361ae0ab30a3e54048",
+      "runs": [
+        {
+          "id": 41838706410,
+          "name": "CI",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 5743,
+          "jobs_url": "https://api.github.com/repos/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41838706410/jobs",
+          "logs_url": "https://api.github.com/repos/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41838706410/logs",
+          "workflow_id": 311558834
+        }
+      ],
+      "pr": 1270,
+      "draft": true,
+      "mergeable": true,
+      "success_claimed": false,
+      "old_run": {
+        "id": 41827927547,
+        "head": "9d1d8549a3d5f77208de385631e10c31c7d16c4f",
+        "status": "completed",
+        "conclusion": "failure",
+        "jobs_success": 11,
+        "jobs_failure": 6,
+        "distinct_assertions_repaired": 3,
+        "local_retry_zero_cases": 12
+      }
+    },
+    "macro": {
+      "head": "ec69837d6843343d4f692e28677324af81af8a7b",
+      "runs": [
+        {
+          "id": 41838271475,
+          "name": "fences",
+          "status": "in_progress",
+          "conclusion": null,
+          "run_number": 33940,
+          "jobs_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/runs/41838271475/jobs",
+          "logs_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/runs/41838271475/logs",
+          "workflow_id": 311473437
+        },
+        {
+          "id": 41838271518,
+          "name": "ci",
+          "status": "in_progress",
+          "conclusion": null,
+          "run_number": 31866,
+          "jobs_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/runs/41838271518/jobs",
+          "logs_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/runs/41838271518/logs",
+          "workflow_id": 297914825
+        }
+      ],
+      "pr": 10734,
+      "draft": true,
+      "mergeable": true,
+      "success_claimed": false
+    },
+    "reruns_or_cancellations_requested": false
+  },
+  "foundation": {
+    "observed_at": "2026-11-04 07:39:09 UTC",
+    "f01_head": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
+    "f02_head": "2ea60216320f2294c0f66aa43d6071e6e1d0d587",
+    "joint_v1_released": false,
+    "operative": "candidate.4 provisional",
+    "candidate5_adopted": false,
+    "f02_return_blob": "ae55340e11bf77d1a8aeb1a8db0a293662d983dc",
+    "f02_original_effect": "EFFECT_UNKNOWN / original G15 target retained",
+    "current_reinspection_claimed": false,
+    "retained_hold": "Original F01/F02 uncertain effects remain fenced at their original targets."
+  },
+  "migration": {
+    "cases": 75,
+    "partial": 35,
+    "unexecuted": 40,
+    "fully_qualified": 0,
+    "retained_macro_images": 72,
+    "qualification": "Original IDs, inputs, expected results and owners preserved. Bounded executed subsets and unproven scope remain explicit."
+  },
+  "release": {
+    "terminal_draft": true,
+    "macro_implementation_draft": true,
+    "canonical_draft": true,
+    "ready": false,
+    "enqueue": false,
+    "merge": false,
+    "deployed": false,
+    "joint_shell_rollout": false,
+    "scoped_implementation_complete": true,
+    "production_acceptance": false,
+    "full_migration_qualification": false
+  },
+  "effects": {
+    "new_unknown": 0,
+    "external_messages": 0,
+    "background_observer": false,
+    "optional_children": "Bounded read-only reasoning/evidence extraction; root sole source/Paper writer; no formal review ceremony."
+  },
+  "next_action": "Both implementation branches are published with local proof complete. Consume hosted CI for Terminal357c32f1 and Macroec69837d; repair any concrete new failure on the same owner. Preserve Draft/release holds and the partial75-case qualification boundary.",
+  "protected_source_readback": {
+    "pin": "0f9043313069d90cc3e1629a04ff2455f0f0fe78",
+    "material_delta_read": true,
+    "unchanged_required_sources_reused_by_byte_identity": true
+  },
+  "intent_supersession": "Current Chairman explicitly authorizes actual D06 Paper design and implementation. Old blanket STOP AT READ/availability blocker is superseded for the exact owned disjoint R2 boards; no foundation unknown effect is retried.",
+  "historical_checkpoint": {
+    "schema": "d06.resume-implementation.v1",
+    "checkpoint_time": "2026-11-04 09:06 UTC",
+    "protected_source": "0f9043313069d90cc3e1629a04ff2455f0f0fe78",
+    "programme_source": "6e1862867193ec6486a22001a0e4fb515da20448",
+    "macro_parent": "b3db232c3f5dbc7d20769c740d22a02a04875880",
+    "terminal": {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "pr": 1270,
+      "branch": "sol/web-d06-terminal-reader-resilience-20261103-c4",
+      "operation_id": "d06-terminal-reader-resilience-20261103-c4",
+      "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/d06-terminal-reader-resilience-20261103-c4",
+      "head": "f9960127b0ac51fc9cd6422cfd4d28946e0d3f67",
+      "clean_after_push": true,
+      "feedback": {
+        "commit": "fed19d1ac3aa8a716f528c8205651ff60b7b413d",
+        "commit_action": "74c331c6987ae7cd191a6067faa3e00369b02d0494f0af0101b350fb65fe16af",
+        "push_action": "2300f6a2ecdf45238282781ae8e1a7fdbf2226fa76c2e069b484541edbd4333c",
+        "published_blob_matches": 28,
+        "unit_passes": 65,
+        "combined_browser": {
+          "passed": 46,
+          "skipped": 14,
+          "qualification": "before final feedback-only margin refinement"
+        },
+        "final_feedback_browser": {
+          "passed": 12,
+          "failed": 0,
+          "skipped": 0,
+          "flaky": 0
+        },
+        "inspected_pngs": 12,
+        "receipt_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/fed19d1ac3aa8a716f528c8205651ff60b7b413d/terminal/docs/pr-crops/d06-reader-feedback/verification.json"
+      },
+      "embed": {
+        "commit": "d73e55b556c532d09ad144e69be0673db31d035c",
+        "commit_action": "46a8ffcdbfd9d7faa9df01d53c27e85b342f2b041dc611a0920150df59372ab4",
+        "push_action": "aa72616ab3f1b4c2ac9201998d2165b19202d578ecae2beadfde7b7dd43e576d",
+        "published_blob_matches": 28,
+        "browser": {
+          "passed": 18,
+          "failed": 0,
+          "skipped": 0,
+          "flaky": 0
+        },
+        "language_observations": 30,
+        "pngs": 18,
+        "inspected_samples": 6,
+        "lint": {
+          "preexisting_errors": 5,
+          "current_errors": 5,
+          "identical_diagnostics": true,
+          "new_test_errors": 0
+        },
+        "typescript_exit": 0,
+        "receipt_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d73e55b556c532d09ad144e69be0673db31d035c/terminal/docs/pr-crops/d06-embed-language/verification.json"
+      },
+      "embed_data": {
+        "commit": "974128ee2f9527a9c8a1db2b78ae97fc239a9786",
+        "parent": "d73e55b556c532d09ad144e69be0673db31d035c",
+        "commit_action": "a7ca4b32a6fe9411f2181ac743a4388925d5e820265c6d38575c6ccbfa66aab1",
+        "push_action": "31a567d5668b0895109f7a4176a34520e7a2c43c6bb24416ab71866074464d9f",
+        "published_blob_matches": 57,
+        "unit": {
+          "passed": 47,
+          "failed": 0
+        },
+        "baseline": {
+          "failed": 2,
+          "scope": "HTTP503 misclassified as absence in EN/ZH"
+        },
+        "initial_browser": {
+          "passed": 38,
+          "failed": 1,
+          "scope": "320px clean-root scrolling; same failed trace also records reduced-motion hydration mismatch"
+        },
+        "full_browser": {
+          "passed": 39,
+          "failed": 0,
+          "skipped": 0,
+          "flaky": 0,
+          "new_cases": 21,
+          "existing_language_cases": 18,
+          "scope": "before final two text-color changes"
+        },
+        "final_refinement": {
+          "passed": 9,
+          "failed": 0,
+          "skipped": 0,
+          "flaky": 0,
+          "overlaps_full_run": true,
+          "scope": "ready and compact variants after final colors, including light clean unavailable state"
+        },
+        "computed_color_observations": 18,
+        "visible_text_contrast_observations": 15,
+        "minimum_contrast": 14.053766617886108,
+        "default_viewports": [
+          [
+            1440,
+            900
+          ],
+          [
+            820,
+            1180
+          ],
+          [
+            390,
+            844
+          ]
+        ],
+        "short_viewports": [
+          [
+            900,
+            300
+          ],
+          [
+            390,
+            300
+          ],
+          [
+            320,
+            300
+          ]
+        ],
+        "minimum_short_chart_height": 137.859375,
+        "retained_success_pngs": 33,
+        "inspected_success_pngs": 29,
+        "retained_failure_pngs": 3,
+        "lint": {
+          "preexisting_component_errors": 5,
+          "offending_source_signatures_match": true,
+          "other_changed_files_findings": 0
+        },
+        "typescript_exit": 0,
+        "receipt_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/974128ee2f9527a9c8a1db2b78ae97fc239a9786/terminal/docs/pr-crops/d06-embed-data/verification.json",
+        "limits": [
+          "deterministic local fixtures",
+          "no actual native host",
+          "no actual 400% zoom or physical device",
+          "no producer freshness, exchange provenance or PIT claim",
+          "existing invalid-volume zero fallback retained",
+          "no final Paper, production or complete-case acceptance"
+        ]
+      },
+      "workspace_phase": {
+        "parent": "974128ee2f9527a9c8a1db2b78ae97fc239a9786",
+        "commit": "f9960127b0ac51fc9cd6422cfd4d28946e0d3f67",
+        "commit_action": "798ea4b1b9db2dd5e07777bf7095633ad88f4a00ab34b24db283096c9a1fa09d",
+        "push_action": "a74527d92179c896f0c930ddf6f1f4431edb4fc70f418caef135c1d946b3fe19",
+        "unit_passes": 55,
+        "new_workspace_unique_browser_journeys": 4,
+        "existing_reader_browser_passes": 27,
+        "intentional_skips": 16,
+        "typescript_exit": 0,
+        "receipt_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/f9960127b0ac51fc9cd6422cfd4d28946e0d3f67/terminal/docs/pr-crops/d06-workspace-20261104/runtime/verification.json",
+        "current_working_phase": "Scripts source applied after workspace publication; focused tests running; uncommitted."
+      }
+    },
+    "ci": {
+      "prior_head": "0cf50dc0c7db259b284b48632df3f05fcb0fb7b7",
+      "prior_run": 41776880568,
+      "prior_successful_jobs": 17,
+      "current_head": "f9960127b0ac51fc9cd6422cfd4d28946e0d3f67",
+      "current_run": null,
+      "current_status_at_publication_readback": "not yet read for this head",
+      "pr_check_run": 41793276738,
+      "pr_check_status_at_publication_readback": "queued",
+      "current_head_qualified": false,
+      "previous_embed_head": "d73e55b556c532d09ad144e69be0673db31d035c",
+      "previous_embed_run": 41788110415,
+      "previous_embed_jobs_at_readback": {
+        "success": 5,
+        "cancelled": 2,
+        "in_progress": 9
+      },
+      "previous_head": "974128ee2f9527a9c8a1db2b78ae97fc239a9786"
+    },
+    "foundation": {
+      "observed_at": "2026-11-04 07:39:09 UTC",
+      "f01_head": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
+      "f02_head": "2ea60216320f2294c0f66aa43d6071e6e1d0d587",
+      "joint_v1_released": false,
+      "operative": "candidate.4 provisional",
+      "candidate5_adopted": false,
+      "f02_return_blob": "ae55340e11bf77d1a8aeb1a8db0a293662d983dc",
+      "f02_original_effect": "EFFECT_UNKNOWN / original G15 target retained"
+    },
+    "paper": {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-17-0",
+      "page_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-17-0",
+      "native_edit_applied": true,
+      "rendered_inspected_exported": true,
+      "boards": [
+        {
+          "node": "1U01-0",
+          "name": "Desktop dark EN"
+        },
+        {
+          "node": "1UEL-0",
+          "name": "Phone dark EN"
+        },
+        {
+          "node": "1US3-0",
+          "name": "Constrained light EN"
+        },
+        {
+          "node": "1V6P-0",
+          "name": "Phone light ZH"
+        },
+        {
+          "node": "1W4S-0",
+          "name": "Keyboard and focused return"
+        },
+        {
+          "node": "1WI8-0",
+          "name": "Scripts desktop dark EN",
+          "implementation": "next phase"
+        },
+        {
+          "node": "1WI9-0",
+          "name": "Scripts phone light ZH",
+          "implementation": "next phase"
+        },
+        {
+          "node": "1WIA-0",
+          "name": "Public snapshot light EN",
+          "implementation": "subsequent phase"
+        }
+      ],
+      "token_hash": "55dd37b7",
+      "receipt_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/f9960127b0ac51fc9cd6422cfd4d28946e0d3f67/terminal/docs/pr-crops/d06-workspace-20261104/paper/receipt.json",
+      "historical_read_only": {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-W-0",
+        "desktop_node": "1K9F-0",
+        "mobile_node": "1KNZ-0",
+        "token_hash": "55dd37b7",
+        "read_and_desktop_screenshot_verified": true,
+        "catalog_hash": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+        "read_snapshot_file_scope": "56990c1d183160fd97af75da054690161b6840657045ffcecea33dd2ce8e1c89",
+        "write_binding_observed": true,
+        "c4_per_seat_write_acceptance_established": false,
+        "mutations": 0
+      }
+    },
+    "migration": {
+      "cases": 75,
+      "partial": 12,
+      "unexecuted": 63,
+      "fully_qualified": 0,
+      "new_credit": "Bounded actual Paper R2 and workspace implementation proof; complete-case qualification remains pending.",
+      "retained_macro_images": 72
+    },
+    "release": {
+      "terminal_draft": true,
+      "macro_draft": true,
+      "ready": false,
+      "merge": false,
+      "enqueue": false,
+      "deployed": false,
+      "mission_complete": false
+    },
+    "effects": {
+      "new_unknown": 0,
+      "optional_native_adviser": "bounded read-only architecture/source reasoning; no formal approval or source/Paper writer",
+      "external_messages": 0,
+      "background_observer": false
+    },
+    "next_action": "Continue current Scripts source tests and browser proof in original Terminal operation; commit/push verified slice. Then snapshot/embed and Macro Market Structure/Stage/S&P presentation work. Preserve existing F01/F02 unknown targets and Draft release holds.",
+    "protected_source_readback": {
+      "pin": "0f9043313069d90cc3e1629a04ff2455f0f0fe78",
+      "material_delta_read": true,
+      "unchanged_required_sources_reused_by_byte_identity": true
+    },
+    "intent_supersession": "Current Chairman explicitly authorizes actual D06 Paper design and implementation. Old blanket STOP AT READ/availability blocker is superseded for the exact owned disjoint R2 boards; no foundation unknown effect is retried."
+  },
+  "canonical_projection": {
+    "pr": 10655,
+    "branch": "design/d06-terminal-phase2a-20261103-c4",
+    "previous_head": "8d26633704b73dec6a948744cc2bdb28fb3beeb8",
+    "draft": true,
+    "mergeability_at_prepublication": false,
+    "release_hold_unchanged": true,
+    "carrier": "Original GitHub API carrier; exact expected-head update"
+  }
+}
