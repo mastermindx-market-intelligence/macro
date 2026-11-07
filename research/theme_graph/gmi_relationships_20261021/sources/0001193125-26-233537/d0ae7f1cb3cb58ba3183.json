@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T12:24:32Z",
+ "accession": "0001193125-26-233537",
+ "cik": "0000866291",
+ "doc_byte_length": 4981774,
+ "doc_sha256": "9bfce73a4ff3ec58c3821089b8cb487ea67ec44d612c8db96567e4ebe0d95b48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-27",
+ "primary_document": "algm-20260327.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2850007,
+  "byte_start": 2849650,
+  "normalized": "No other customers accounted for 10% or more of total net sales for any of these periods. See Note 21, “Related Party Transactions” for a discussion of the termination, distribution and consulting agreements between Sanken and the Company to transition the marketing and sale of the Company’s products in Japan from Sanken to the Company.",
+  "normalized_sha256": "a02c3c1f5e3573f49d8fec41d938011a5f466439e187ef15e41722996adbf2a1",
+  "raw": " No other customers accounted for 10% or more of total net sales for any of these periods. See Note 21, &#8220;Related Party Transactions&#8221; for a discussion of the termination, distribution and consulting agreements between Sanken and the Company to transition the marketing and sale of the Company&#8217;s products in Japan from Sanken to the Company.",
+  "raw_sha256": "d0ae7f1cb3cb58ba3183e42247ec2171a63098f87bd17fb13c5dd4a361926680"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/866291/000119312526233537/algm-20260327.htm",
+ "xbrl_contexts": []
+}

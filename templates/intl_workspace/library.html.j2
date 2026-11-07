@@ -1,0 +1,57 @@
+{% set locale = locale|default('en') %}
+{% set tool_map = {} %}
+{% for tool in payload.tools %}
+  {% if tool.get('presentation_key') is not none %}{% set _ = tool_map.update({tool.get('presentation_key'): tool}) %}{% endif %}
+{% endfor %}
+<section class="intl-library" data-im-panel data-view="library" data-im-library-static data-horizon="{{ payload.context.get('horizon', '')|e }}" data-basis="{{ payload.context.get('currency_basis', '')|e }}" data-source="{{ (payload.context.get('source_reference') or '')|e }}" data-im-library-generation="{{ payload.catalogue_generation|e }}"{% if generation|default('') %} data-im-generation="{{ generation|e }}"{% endif %} id="{{ context_id|e }}-library">
+  <h2 class="intl-library__heading" id="{{ context_id|e }}-library-heading"><span class="l-en">Library</span><span class="l-zh">工具库</span></h2>
+  <p class="intl-library__intro" id="{{ context_id|e }}-library-intro"><span class="l-en">Find a research tool for your question.</span><span class="l-zh">按研究问题查找工具。</span></p>
+  <form class="intl-library__search" data-im-library-search-form role="search" action="#">
+    <label class="intl-library__search-label" for="{{ context_id|e }}-library-search"><span class="l-en">Search tools and questions</span><span class="l-zh">搜索工具与研究问题</span></label>
+    <input type="search" data-im-library-search autocomplete="off" id="{{ context_id|e }}-library-search" disabled>
+    <button type="button" data-im-library-clear disabled><span class="l-en">Clear search</span><span class="l-zh">清除搜索</span></button>
+    <p class="intl-library__status" data-im-library-status role="status" aria-live="polite"></p>
+  </form>
+  <p class="intl-library__notice"><span class="l-en">Tool descriptions are available. Current numerical values are not qualified for this view.</span><span class="l-zh">工具说明可查看。此视图的当前数值尚未通过适用性确认。</span></p>
+  <div class="intl-library__groups" data-im-library-groups id="{{ context_id|e }}-library-groups">
+    {% for group in payload.groups|sort(attribute='slot') %}
+      {% set group_id = group.get('id', '') %}
+      <section class="intl-library__group" data-im-library-group="{{ group_id|e }}" id="{{ context_id|e }}-library-group-{{ loop.index }}">
+        <button class="intl-library__group-open" type="button" data-im-library-group-open data-im-action="set_library_group" data-im-group="{{ group_id|e }}" hidden><span class="l-en">Open {{ group.get('label_en', '')|e }}</span><span class="l-zh">打开{{ group.get('label_zh', '')|e }}</span></button>
+        <h3 class="intl-library__group-heading" tabindex="-1" id="{{ context_id|e }}-library-group-heading-{{ loop.index }}"><span class="l-en">{{ group.get('label_en', '')|e }}</span><span class="l-zh">{{ group.get('label_zh', '')|e }}</span></h3>
+        <ol class="intl-library__tools" data-im-library-tools="{{ group_id|e }}">
+          {% for tool_key in group.get('tool_keys', []) %}
+            {% set tool = tool_map.get(tool_key) %}
+            {% if tool %}
+              <li class="intl-library__tool" data-im-library-tool="{{ tool_key|e }}" data-im-library-order="{{ tool.get('order')|e }}">
+                <p class="intl-library__tool-name"><span class="l-en">{{ tool.get('label_en', '')|e }}</span><span class="l-zh">{{ tool.get('label_zh', '')|e }}</span></p>
+                <p class="intl-library__tool-question"><span class="l-en">{{ tool.get('question_en', '')|e }}</span><span class="l-zh">{{ tool.get('question_zh', '')|e }}</span></p>
+                {% set analytical_scope = tool.get('analytical_scope') %}
+                {% if tool.get('presentation_key') == 'euro_fragmentation' %}
+                  <p class="intl-library__tool-scope" data-im-library-scope="euro-context"><span class="l-en">Euro-area context; research market unchanged</span><span class="l-zh">欧元区背景；研究市场保持不变</span></p>
+                {% elif tool.get('interpretation_notice') == 'model_context_not_company_exposure' %}
+                  <p class="intl-library__tool-scope" data-im-library-scope="model-context"><span class="l-en">Model context, not company exposure</span><span class="l-zh">模型背景，并非公司敞口</span></p>
+                {% endif %}
+                {% set target = tool.get('target') %}
+                {% if tool.get('route_state') == 'available' and target and target.get('route') %}
+                  {% set target_href = '#' ~ target.get('region_id') if target.get('page_id') == 'macro:intl' and target.get('region_id') is not none else target.get('route') %}
+                  <a class="intl-library__tool-link" href="{{ target_href|e }}"><span class="l-en">Open {{ tool.get('label_en', '')|e }}</span><span class="l-zh">打开{{ tool.get('label_zh', '')|e }}</span></a>
+                {% else %}
+                  <p class="intl-library__tool-unavailable"><span class="l-en">This tool’s destination is not available yet.</span><span class="l-zh">此工具的目标页面暂不可用。</span></p>
+                {% endif %}
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ol>
+      </section>
+    {% endfor %}
+  </div>
+  <ol class="intl-library__results" data-im-library-results hidden></ol>
+  <p class="intl-library__empty" data-im-library-empty hidden><span class="l-en">No tools match this search.</span><span class="l-zh">没有匹配的工具。</span></p>
+  <button class="intl-library__back" type="button" data-im-library-back data-im-action="set_library_group" hidden><span class="l-en">Back to groups</span><span class="l-zh">返回分组</span></button>
+  {% if payload.get('catalogue_state') == 'available' %}
+    <script type="application/json" data-im-library-catalogue>{{ payload.search_catalogue|tojson }}</script>
+  {% else %}
+    <p class="intl-library__catalogue-unavailable"><span class="l-en">The tool catalogue is unavailable for this view.</span><span class="l-zh">此视图的工具目录暂不可用。</span></p>
+  {% endif %}
+</section>

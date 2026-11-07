@@ -1,0 +1,22 @@
+✔ actual frozen public disclosure is accepted with independent gptd identity (2.237959ms)
+✔ closed contract clocks, authority, source private fields and unknown states fail closed (1.302958ms)
+✔ source links reject unsafe origins, credentials and future source clocks (0.503625ms)
+✔ all six visible stories preserve source-native allocation, policy, notification and segment limits (2.581208ms)
+✔ qualified issuer links change only independent issuer; program/FMS links use exact IDs (0.300333ms)
+✔ primary sources and public copy are escaped; technical pointers remain optional (0.717917ms)
+✔ per-call auth, same-principal last-good refresh and403 clearing (2.520625ms)
+✔ logout/account switch discards delayed old read and cannot overwrite new403 (2.951833ms)
+✔ source context completeness cannot be inferred from labels or source count (0.301375ms)
+✔ theme narratives and sources stay complete inside native closed disclosures while typed reasons remain visible (4.153542ms)
+✔ new narrative disclosure openness and focused summary survive an actual language refresh (1.680125ms)
+✔ mobile queue keeps a bounded scroll surface instead of expanding every retained record (0.343875ms)
+✔ theme FMS navigation selects the exact row produced by the shipped FMS module (5.209083ms)
+✔ theme program navigation resolves the shipped program module view identity (1.643667ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 84.906834
