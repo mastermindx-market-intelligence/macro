@@ -1,0 +1,486 @@
+{
+  "scope": "R4 research arithmetic only; not product tests, source admission, a full financial audit, forecasts, or alpha evidence.",
+  "research_date": "2026-09-23",
+  "method": "Exact rational arithmetic, including decimal inputs; residual = source/display target minus calculated. Hypothetical H inputs are explicit assumptions. EXACT_INVALID_SEMANTICS is deliberately ineligible as an economic metric.",
+  "exact_arithmetic_checks": 41,
+  "retained_nonzero_residuals": 5,
+  "columns": [
+    "id",
+    "expression",
+    "result_fraction",
+    "expected_fraction",
+    "residual_fraction",
+    "unit",
+    "source_or_assumptions",
+    "disposition"
+  ],
+  "rows": [
+    [
+      "ALB-01",
+      "1743.313 - 1153.012",
+      "590301/1000",
+      "590301/1000",
+      "0",
+      "USD million",
+      "B02 Q2 income",
+      "EXACT"
+    ],
+    [
+      "ALB-02",
+      "828.188+313.606+95.018-42.300+14.661-247.857+131.744+5.299-14.298-2.792-12.543-19.798-53.125+60.438",
+      "1056241/1000",
+      "1056241/1000",
+      "0",
+      "USD million",
+      "B02 H1 cash flow",
+      "EXACT"
+    ],
+    [
+      "ALB-03",
+      "1056.241 - 170.407",
+      "442917/500",
+      "442917/500",
+      "0",
+      "USD million",
+      "B02 H1 CFO less capex, derived residual",
+      "EXACT"
+    ],
+    [
+      "ALB-04",
+      "709.997 - 71.731",
+      "319133/500",
+      "319133/500",
+      "0",
+      "USD million",
+      "B02 Q2 issuer FCF",
+      "EXACT"
+    ],
+    [
+      "ALB-05",
+      "-247.857 + 131.744",
+      "-116113/1000",
+      "-116113/1000",
+      "0",
+      "USD million",
+      "B02 equity income and dividends cash adjustment",
+      "EXACT"
+    ],
+    [
+      "ALB-06",
+      "65 * 19.53",
+      "25389/20",
+      "12767/10",
+      "29/4",
+      "USD million",
+      "B02 displayed volume and average price; not exact revenue reconstruction",
+      "RETAINED_RESIDUAL"
+    ],
+    [
+      "PLS-01",
+      "2107 - 600",
+      "1507",
+      "1507",
+      "0",
+      "USD per shipped tonne",
+      "B04 same-basis indicative price/cost difference, not FCF",
+      "EXACT"
+    ],
+    [
+      "PLS-02",
+      "2415 - 437",
+      "1978",
+      "1978",
+      "0",
+      "USD per tonne, incompatible bases",
+      "B04 deliberately invalid mixed-basis counterexample",
+      "EXACT_INVALID_SEMANTICS"
+    ],
+    [
+      "PLS-03",
+      "1978 - 1507",
+      "471",
+      "471",
+      "0",
+      "USD per tonne difference",
+      "B04 size of mixed-basis arithmetic distortion",
+      "EXACT"
+    ],
+    [
+      "PLS-04",
+      "2107 * 6 / 5.2",
+      "31605/13",
+      "2415",
+      "-210/13",
+      "USD per SC6-equivalent tonne",
+      "B04 approximate grade/averaging cannot reconstruct published equivalent",
+      "RETAINED_RESIDUAL"
+    ],
+    [
+      "PLS-05",
+      "882 + 2679",
+      "3561",
+      "3561",
+      "0",
+      "tonnes lithium hydroxide",
+      "B04 two JV trains; not LCE or attributable output",
+      "EXACT"
+    ],
+    [
+      "PLS-06",
+      "2290 - 1455",
+      "835",
+      "835",
+      "0",
+      "AUD million",
+      "B04 displayed cash balance movement",
+      "EXACT"
+    ],
+    [
+      "PLS-07",
+      "579 - 162 + 443",
+      "860",
+      "835",
+      "-25",
+      "AUD million",
+      "B04 selected bridge incomplete; unexplained residual held",
+      "RETAINED_RESIDUAL"
+    ],
+    [
+      "SQM-01",
+      "75.8 + 8.3",
+      "841/10",
+      "841/10",
+      "0",
+      "thousand tonnes LCE",
+      "B05 source regional contributions",
+      "EXACT"
+    ],
+    [
+      "SQM-02",
+      "48 / 6.74 + 1.2",
+      "14022/1685",
+      "83/10",
+      "-73/3370",
+      "thousand tonnes LCE",
+      "B05 source-specific approximate conversion, not refinery recovery",
+      "RETAINED_RESIDUAL"
+    ],
+    [
+      "SQM-03",
+      "1779.2 - 124.9",
+      "16543/10",
+      "16543/10",
+      "0",
+      "USD million",
+      "B05 group lithium less international division, implied remainder",
+      "EXACT"
+    ],
+    [
+      "NVX-01",
+      "2.121113 - 25.199079 + 0.596882 - 0.759269 + 0.184571",
+      "-11527891/500000",
+      "-11527891/500000",
+      "0",
+      "USD million",
+      "B09 H1 operating cash flow",
+      "EXACT"
+    ],
+    [
+      "NVX-02",
+      "-1.043640 + 0.154390 - 0.098907 - 9.029977",
+      "-5009067/500000",
+      "-5009067/500000",
+      "0",
+      "USD million",
+      "B09 H1 investing cash flow",
+      "EXACT"
+    ],
+    [
+      "NVX-03",
+      "14.515039 - 0.815254 - 0.620487 - 0.285853 - 0.530866",
+      "12262579/1000000",
+      "12262579/1000000",
+      "0",
+      "USD million",
+      "B09 H1 financing cash flow",
+      "EXACT"
+    ],
+    [
+      "NVX-04",
+      "-23.055782 - 10.018134 + 12.262579",
+      "-20811337/1000000",
+      "-20811337/1000000",
+      "0",
+      "USD million",
+      "B09 H1 net cash movement before FX",
+      "EXACT"
+    ],
+    [
+      "NVX-05",
+      "79.865999 - 20.811337 + 0.480254",
+      "14883729/250000",
+      "14883729/250000",
+      "0",
+      "USD million",
+      "B09 closing cash",
+      "EXACT"
+    ],
+    [
+      "NMG-01",
+      "295 + 132",
+      "427",
+      "427",
+      "0",
+      "CAD million",
+      "B10 two components of one equity package",
+      "EXACT"
+    ],
+    [
+      "MP-01",
+      "95.629 + 16.524 - 3.663",
+      "10849/100",
+      "10849/100",
+      "0",
+      "USD million",
+      "B11 segment revenue elimination",
+      "EXACT"
+    ],
+    [
+      "MP-02",
+      "32.505 + 7.532",
+      "40037/1000",
+      "40037/1000",
+      "0",
+      "USD million",
+      "B11 segment EBITDA subtotal",
+      "EXACT"
+    ],
+    [
+      "MP-03",
+      "40.037 - 10.983 - 0.561",
+      "28493/1000",
+      "28493/1000",
+      "0",
+      "USD million",
+      "B11 consolidated adjusted EBITDA",
+      "EXACT"
+    ],
+    [
+      "MP-04",
+      "108.490 + 17.580",
+      "12607/100",
+      "12607/100",
+      "0",
+      "USD million",
+      "B11 revenue plus separately reported PPA income",
+      "EXACT"
+    ],
+    [
+      "MP-05",
+      "28.493 - 17.580",
+      "10913/1000",
+      "10913/1000",
+      "0",
+      "USD million",
+      "B11 one-factor residual, not no-support counterfactual",
+      "EXACT"
+    ],
+    [
+      "MP-06",
+      "126.070 - 158.099",
+      "-32029/1000",
+      "-32029/1000",
+      "0",
+      "USD million",
+      "B11 operating loss",
+      "EXACT"
+    ],
+    [
+      "LYC-01",
+      "977.945 - 585.493",
+      "98113/250",
+      "98113/250",
+      "0",
+      "AUD million",
+      "B12 printed p86 income screenshot",
+      "EXACT"
+    ],
+    [
+      "LYC-02",
+      "392.452 - 140.068 - 3.414 - 1.613",
+      "247357/1000",
+      "247357/1000",
+      "0",
+      "AUD million",
+      "B12 printed p86 operating profit",
+      "EXACT"
+    ],
+    [
+      "LYC-03",
+      "247.357 + 38.512 - 29.813 - 33.704",
+      "27794/125",
+      "27794/125",
+      "0",
+      "AUD million",
+      "B12 printed p86 profit for year",
+      "EXACT"
+    ],
+    [
+      "LYC-04",
+      "504.128 + 704.971",
+      "1209099/1000",
+      "1209099/1000",
+      "0",
+      "AUD million",
+      "B12 printed p87 cash plus term deposits",
+      "EXACT"
+    ],
+    [
+      "LYC-05",
+      "977.945 * 1000 / 12122",
+      "977945/12122",
+      "807/10",
+      "751/30305",
+      "AUD per kg total sold REO",
+      "B12 displayed weighted average price",
+      "RETAINED_RESIDUAL"
+    ],
+    [
+      "H-01",
+      "1000000 * 60 / 1000000",
+      "60",
+      "60",
+      "0",
+      "GWh",
+      "H1 hypothetical EV energy baseline",
+      "EXACT"
+    ],
+    [
+      "H-02",
+      "1200000 * 55 / 1000000",
+      "66",
+      "66",
+      "0",
+      "GWh",
+      "H1 hypothetical EV energy successor",
+      "EXACT"
+    ],
+    [
+      "H-03",
+      "60 * 0.6 * 0.6 * 1000",
+      "21600",
+      "21600",
+      "0",
+      "tonnes hypothetical nickel requirement",
+      "H1 assumed share/loading, not industry calibration",
+      "EXACT"
+    ],
+    [
+      "H-04",
+      "66 * 0.45 * 0.6 * 1000",
+      "17820",
+      "17820",
+      "0",
+      "tonnes hypothetical nickel requirement",
+      "H1 assumed share/loading, not industry calibration",
+      "EXACT"
+    ],
+    [
+      "H-05",
+      "(17820 / 21600 - 1) * 100",
+      "-35/2",
+      "-35/2",
+      "0",
+      "percent",
+      "H1 demand change despite EV growth",
+      "EXACT"
+    ],
+    [
+      "H-06",
+      "20000 - 8 * 2200 - 4000",
+      "-1600",
+      "-1600",
+      "0",
+      "USD per tonne finished product",
+      "H2 hypothetical converter initial contribution",
+      "EXACT"
+    ],
+    [
+      "H-07",
+      "25000 - 8 * 2200 - 4000",
+      "3400",
+      "3400",
+      "0",
+      "USD per tonne finished product",
+      "H2 hypothetical output-price recovery",
+      "EXACT"
+    ],
+    [
+      "H-08",
+      "25000 - 8 * 2600 - 4000",
+      "200",
+      "200",
+      "0",
+      "USD per tonne finished product",
+      "H2 hypothetical feedstock repricing",
+      "EXACT"
+    ],
+    [
+      "H-09",
+      "10000 * 0.6 * 0.75 * 0.6",
+      "2700",
+      "2700",
+      "0",
+      "tonnes per year",
+      "H3 hypothetical qualified-recipe allocation; not probability",
+      "EXACT"
+    ],
+    [
+      "H-10",
+      "1000 * (7000 - 4000) - 3000000 - 1000000",
+      "-1000000",
+      "-1000000",
+      "0",
+      "USD per quarter",
+      "H4 hypothetical ramp contribution before capex/working capital",
+      "EXACT"
+    ],
+    [
+      "H-11",
+      "2000 * (7000 - 4000) - 3000000 - 1000000",
+      "2000000",
+      "2000000",
+      "0",
+      "USD per quarter",
+      "H4 hypothetical shipment increase",
+      "EXACT"
+    ],
+    [
+      "H-12",
+      "1000 * 1000 * 80 + 400 * 1000 * (110 - 80)",
+      "92000000",
+      "92000000",
+      "0",
+      "USD",
+      "H5 synthetic market receipts plus scoped floor payment",
+      "EXACT"
+    ],
+    [
+      "H-13",
+      "1000 * 1000 * 110 - 92000000",
+      "18000000",
+      "18000000",
+      "0",
+      "USD",
+      "H5 overstatement from wrongly applying floor to all volume",
+      "EXACT"
+    ]
+  ],
+  "held_calculations": [
+    "No global battery utilization from EV-only deployment divided by all-use nameplate capacity.",
+    "No NOVONIX qualification probability or commercial acceptance from 12/14 test parameters.",
+    "No PLS recovery from mined ore grade and a different processed-ore boundary; selected cash movement bridge remains incomplete.",
+    "No Lynas cash-flow statement arithmetic admitted from its unrecovered p89 image; selected income/balance pages were visually inspected.",
+    "No universal rare-earth floor or no-support counterfactual; full individual contracts not reviewed."
+  ]
+}
