@@ -147,7 +147,8 @@
       earliestSupportedCutoff: requireUtc(entry.earliest_supported_cutoff, 'entry_earliest_cutoff'),
       sourceSession: entry.source_session === null || entry.source_session === undefined ? null : requireSession(entry.source_session, 'entry_source_session'),
       supportedCutoffs: null,
-      newerContextId: isToken(entry.newer_context_id) ? entry.newer_context_id : null,
+      instrumentId: requireToken(entry.instrument_id, 'entry_instrument'),
+      sameSession: null,
       fieldsPresent: {}
     };
     var flags = requireObject(entry.field_status, 'entry_field_status');
@@ -228,6 +229,32 @@
     if (normalized.requestClock.origin !== 'runtime_request_clock' || n.limit < 1 || n.limit > CATALOG_LIMIT
         || n.returned !== normalized.entries.length || n.returned > n.limit || n.offset + n.returned > n.total) throw ContractError('catalog_accounting');
     normalized.entries.forEach(function (entry) { entry.catalogOffset = String(n.offset); });
+    normalized.entries.forEach(function (entry, i) {
+      var relation = entriesRaw[i].same_session_observations;
+      if (relation === undefined) return; // Older installed catalogs remain usable.
+      relation = requireObject(relation, 'session_observations');
+      var rows = asArray(relation.observations), total = requireCount(relation.total, 'session_total');
+      var family = requireSha(relation.family_sha256, 'session_family');
+      if (relation.relationship !== 'same_source_session_not_certified_correction.v1'
+          || !rows || rows.length > 4 || total < rows.length || total > 255
+          || relation.omitted !== total - rows.length || (!entry.sourceSession && total)) throw ContractError('session_accounting');
+      var seen = {};
+      entry.sameSession = rows.map(function (row) {
+        requireObject(row, 'session_observation');
+        ['query_id','context_id','capture_id','subject_id','instrument_id'].forEach(function (key) { requireToken(row[key], 'session_' + key); });
+        requireSha(row.packet_sha256, 'session_packet');
+        requireUtc(row.earliest_supported_cutoff, 'session_cutoff');
+        requireUtc(row.event_time, 'session_event'); requireUtc(row.as_known_at, 'session_known');
+        if (row.subject_id !== normalized.subject.subjectId || row.instrument_id !== entry.instrumentId
+            || row.source_session !== entry.sourceSession || row.family_sha256 !== family
+            || row.generation_id !== normalized.generation.generationId
+            || row.generation_sha256 !== normalized.generation.generationSha256
+            || row.context_id === entry.contextId || seen[row.context_id]) throw ContractError('session_binding');
+        seen[row.context_id] = true;
+        return Object.assign({}, row);
+      });
+      entry.sameSessionTotal = total; entry.sameSessionFamily = family;
+    });
     var seen = {};
     entriesRaw.forEach(function (entry) {
       if (entry.subject_id !== normalized.subject.subjectId || instruments.indexOf(entry.instrument_id) === -1 || seen[entry.context_id]) throw ContractError('catalog_entry_binding');
@@ -697,7 +724,7 @@
     return params;
   }
 
-  function loadCatalog(intent) {
+  function loadCatalog(intent, sessionNavigation, focusCapture) {
     intent = intent || { mode: state.mode };
     state.intent = Object.assign({}, intent, { mode: intent.mode || state.mode });
     var slot = beginIntent();
@@ -728,6 +755,24 @@
         var mismatch = deepLinkMismatch(intent, catalog);
         if (mismatch) return renderTypedUnavailable('deep_link_mismatch', mismatch);
       }
+      if (sessionNavigation) {
+        var target = catalog.entries.filter(function (entry) { return entry.contextId === intent.context && entry.queryId === intent.query; })[0];
+        var ref = sessionNavigation.reference;
+        if (catalog.generation.profile !== sessionNavigation.generation.profile
+            || catalog.generation.storeId !== sessionNavigation.generation.storeId
+            || !target || target.captureId !== ref.capture_id || target.packetSha256 !== ref.packet_sha256
+            || target.instrumentId !== ref.instrument_id || target.sourceSession !== ref.source_session
+            || target.sameSessionFamily !== ref.family_sha256
+            || target.earliestSupportedCutoff !== ref.earliest_supported_cutoff
+            || target.eventTime !== ref.event_time || target.asKnownAt !== ref.as_known_at
+            || Date.parse(intent.cutoff) < Date.parse(target.earliestSupportedCutoff)) {
+          return renderTypedUnavailable('missing_exact_capture', 'session_target_binding');
+        }
+        // Retain A as the previous history entry; ordinary selection below
+        // replaces this new entry with B's exact, authorized target URL.
+        if (!writeUrlIntent(sessionNavigation.original)) return;
+        history.pushState(history.state, '', location.href);
+      }
       state.catalog = catalog;
       state.referenceInvalid = false;
       state.catalogPages = 1;
@@ -737,7 +782,7 @@
       if (wanted) {
         var entry = findEntry(wanted);
         if (!entry) return renderTypedUnavailable('missing_exact_capture', 'context_not_in_disclosed_catalog');
-        selectEntry(entry, intent);
+        selectEntry(entry, intent, !!sessionNavigation || focusCapture);
         return;
       }
       renderCatalogPrompt();
@@ -812,7 +857,7 @@
   }
 
   /* Explicit capture selection: the only path that ever opens a capture. */
-  function selectEntry(entry, intentExtras) {
+  function selectEntry(entry, intentExtras, focusCapture) {
     state.selected = entry;
     state.sourceCase = null;
     state.committed = null;
@@ -834,8 +879,8 @@
     state.intent = intent;
     writeUrlIntent(publishableIntent(intent));
     renderCatalogDependentControls();
-    if (state.mode === 'saved') return runSaved(intent);
-    return runCompare(intent);
+    if (state.mode === 'saved') return runSaved(intent, focusCapture);
+    return runCompare(intent, focusCapture);
   }
 
   function defaultMethodId(mode) {
@@ -884,7 +929,7 @@
 
   /* Saved output mode: exact operational PIT playback only. No retained
    * analysis, no legacy recomputed substitution, ever. */
-  function runSaved(intent) {
+  function runSaved(intent, focusCapture) {
     var intentSlot = beginIntent();
     renderLoading();
     ui.resultBody.innerHTML = skeletonMarkup();
@@ -904,6 +949,8 @@
       }
       state.committed = { kind: 'saved', intent: intent, data: playback };
       renderCommitted();
+      // The selected row remains in the DOM when result buttons are replaced.
+      if (focusCapture) ui.captureSelect.focus({ preventScroll: false });
     }).catch(function (error) {
       if (commitGate(intentSlot, state)) return;
       renderRequestFailure(error, { retry: function () { runSaved(intent); } });
@@ -913,7 +960,7 @@
   /* Historical/current modes: exact retained comparison through the
    * registered method only. The analysis cutoff is chosen explicitly;
    * the server refuses unsupported cutoffs and the UI never shifts one. */
-  function runCompare(intent) {
+  function runCompare(intent, focusCapture) {
     var intentSlot = beginIntent();
     renderLoading();
     ui.resultBody.innerHTML = skeletonMarkup();
@@ -945,6 +992,7 @@
         state.sourceCase = { contextId: state.sourceContext, data: compare.sourceCards[state.sourceContext] };
       }
       renderCommitted();
+      if (focusCapture) ui.captureSelect.focus({ preventScroll: false });
     }).catch(function (error) {
       if (commitGate(intentSlot, state)) return;
       renderRequestFailure(error, { retry: function () { runCompare(intent); } });
@@ -1268,6 +1316,12 @@
       return;
     }
     var cutoffs = entry.supportedCutoffs.slice();
+    // Offer the disclosed sibling threshold as an explicit user choice;
+    // never advance the selected cutoff while rendering or navigating.
+    (entry.sameSession || []).forEach(function (row) {
+      if (cutoffs.indexOf(row.earliest_supported_cutoff) === -1) cutoffs.push(row.earliest_supported_cutoff);
+    });
+    cutoffs.sort();
     if (current && isUtc(current) && cutoffs.indexOf(current) === -1) { cutoffs.push(current); cutoffs.sort(); }
     ui.cutoffSelect.innerHTML = cutoffs.map(function (value) {
       return '<option value="' + esc(value) + '">' + esc(clockLabel(value)) + '</option>';
@@ -1310,7 +1364,7 @@
     else renderCompare();
     renderCutoffControl();
     renderSelectedClock();
-    renderCorrectionNotice();
+    renderSessionObservations();
     /* A direct pinned commit holds neither catalog nor selected entry, so
      * the pre-request loading copy on the picker must not outlive its own
      * truth: repaint it from the committed binding. Catalog-selected commits
@@ -1411,15 +1465,31 @@
       '来源日期（' + clockLabel(state.selected.eventTime) + '）早于本次分析（' + clockLabel(state.catalog.requestClock.referenceCutoffUtc) + '）；请按保存依据比较。');
   }
 
-  function correctionNoticeIfNeeded() {
-    var entry = state.selected;
-    if (!entry || !entry.newerContextId || !findEntry(entry.newerContextId)) return '';
-    return banner('corrected_version',
-      'A later saved version exists', '存在较晚保存版本',
-      'This view keeps the selected original. Open the later version to compare.',
-      '此视图保留所选原始版本；可打开较晚版本进行比较。',
-      '<button type="button" class="gbtn gbtn-quiet mmr-action" data-mmr-action="open-newer" data-mmr-context="' + esc(entry.newerContextId) + '">' +
-      esc(copy('Open the later version', '打开较晚版本')) + '</button>');
+  function sessionObservationsMarkup() {
+    var entry = state.selected, rows = entry && entry.sameSession;
+    if (!rows || !rows.length) return '';
+    var cutoff = state.intent && state.intent.cutoff;
+    return '<div class="mmr-note" data-mmr-state="same_session_observations"><h3>' +
+      esc(copy('Other saved readings · same source session', '其他已保存解读 · 同一来源日期')) + '</h3><p>' +
+      esc(copy('These are separate saved observations, not certified corrections or independent trials. The selected cutoff stays unchanged.',
+               '这些是分别保存的观测，并非经认证的更正或独立试验；所选截止时间保持不变。')) + '</p>' +
+      rows.map(function (row) {
+        var unsupported = Date.parse(cutoff) < Date.parse(row.earliest_supported_cutoff);
+        return '<button type="button" class="gbtn gbtn-quiet mmr-action" data-mmr-action="open-session-observation" data-mmr-context="' + esc(row.context_id) + '"' + (unsupported ? ' disabled' : '') + '>' +
+          esc(copy('Open saved reading: ', '打开已保存解读：')) + esc(clockLabel(row.as_known_at)) + '</button>' +
+          (unsupported ? '<p>' + esc(copy('Unavailable at this cutoff. Choose a supported cutoff explicitly to inspect it.', '此截止时间尚不可用；请明确选择支持的截止时间后再查看。')) + '</p>' : '');
+      }).join('') + (entry.sameSessionTotal > rows.length ? '<p>' + esc(copy('Additional saved readings omitted: ', '未展示的其他保存解读：')) + String(entry.sameSessionTotal - rows.length) + '</p>' : '') + '</div>';
+  }
+
+  function openSessionObservation(contextId) {
+    var entry = state.selected, ref = entry && entry.sameSession && entry.sameSession.filter(function (row) { return row.context_id === contextId; })[0];
+    if (!ref || !state.intent || !state.committed || !isUtc(state.intent.cutoff)
+        || Date.parse(state.intent.cutoff) < Date.parse(ref.earliest_supported_cutoff)) return false;
+    var original = publishableIntent(currentIntent());
+    var intent = Object.assign({}, original, { query: ref.query_id, context: ref.context_id,
+      catalogOffset: null, sourceContext: ref.context_id });
+    return loadCatalog(intent, { reference: ref, original: original,
+      generation: Object.assign({}, state.catalog.generation) });
   }
 
   var COVERAGE_LABELS = {
@@ -1577,9 +1647,9 @@
     }
   }
 
-  function renderCorrectionNotice() {
-    var existing = ui.resultBody.querySelector('[data-mmr-state="corrected_version"]');
-    var notice = correctionNoticeIfNeeded();
+  function renderSessionObservations() {
+    var existing = ui.resultBody.querySelector('[data-mmr-state="same_session_observations"]');
+    var notice = sessionObservationsMarkup();
     if (notice && !existing) ui.resultBody.insertAdjacentHTML('afterbegin', notice);
   }
 
@@ -1715,14 +1785,14 @@
     if ((intent.gen && state.catalog.generation.generationId !== intent.gen)
         || (intent.genSha && state.catalog.generation.generationSha256 !== intent.genSha)
         || (intent.context && !state.catalog.entries.some(function (entry) { return entry.contextId === intent.context && entry.catalogOffset === String(intent.catalogOffset || '0'); }))) {
-      return loadCatalog(intent);
+      return loadCatalog(intent, null, opts.focusCapture);
     }
     var mismatch = deepLinkMismatch(intent, state.catalog);
     if (mismatch) { beginIntent(); return renderTypedUnavailable('deep_link_mismatch', mismatch); }
     if (intent.context) {
       var entry = findEntry(intent.context);
       if (!entry) return renderTypedUnavailable('missing_exact_capture', 'context_not_in_disclosed_catalog');
-      selectEntry(entry, intent);
+      selectEntry(entry, intent, opts.focusCapture);
       return;
     }
     if (opts.persist !== false) writeUrlIntent(publishableIntent(currentIntent()));
@@ -1832,9 +1902,8 @@
       inspectCaseSource(contextId, field);
       return;
     }
-    if (action === 'open-newer' && contextId) {
-      var entry = findEntry(contextId);
-      if (entry) selectEntry(entry, {});
+    if (action === 'open-session-observation' && contextId) {
+      openSessionObservation(contextId);
       return;
     }
   }
@@ -1851,7 +1920,7 @@
     if (Object.keys(intent).length === 0 && state.selected) {
       return; /* incumbent-only navigation; retained intent unchanged */
     }
-    applyIntent(intent, { persist: false });
+    applyIntent(intent, { persist: false, focusCapture: true });
   }
 
   function boot() {

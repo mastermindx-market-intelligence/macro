@@ -40707,6 +40707,10 @@ jobs:
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
       - tests/test_market_memory_retained_catalog.py
+      - tests/test_market_memory_session_navigation.py
+      - tests/js/market_memory_session_navigation.test.cjs
+      - templates/market_memory_retained.js
+      - tests/fixtures/market_memory_retained_owner_wire.json
       - tests/test_market_memory_retained_saved.py
       - tests/test_market_memory_retained_saved_api.py
       - tests/test_market_memory_read_observation.py
@@ -41845,7 +41849,7 @@ jobs:
       # alongside the existing frozen/PIT research contracts, in this CODE gate.
       - name: frozen price panel + RS pullback admission, retained observations and temporal conformance and all existing owning contracts in one pytest session
         run: >-
-          python -m pytest
+          node --version && python -m pytest
           tests/test_research_price_panel.py
           tests/test_entry_radar_rs_pullback_phase1.py
           tests/test_entry_radar_rs_pullback_launch_labels.py
@@ -41873,7 +41877,7 @@ jobs:
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
           tests/test_market_memory_synthetic_capacity.py
-          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_read_observation.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py tests/test_market_memory_history.py tests/test_market_memory_history_archive.py tests/test_market_memory_history_transcripts.py tests/test_market_memory_history_extend.py tests/test_market_memory_history_cli.py tests/test_market_memory_history_dossier.py tests/test_market_memory_history_macro.py tests/test_market_memory_history_view.py -q
+          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_session_navigation.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_read_observation.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py tests/test_market_memory_history.py tests/test_market_memory_history_archive.py tests/test_market_memory_history_transcripts.py tests/test_market_memory_history_extend.py tests/test_market_memory_history_cli.py tests/test_market_memory_history_dossier.py tests/test_market_memory_history_macro.py tests/test_market_memory_history_view.py -q
       # The command includes all original source/temporal owner tests plus
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.

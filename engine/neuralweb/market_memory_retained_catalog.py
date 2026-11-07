@@ -10,6 +10,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 import re
+from hashlib import sha256
 import time
 
 from engine.neuralweb import market_memory_pit as pit
@@ -20,6 +21,7 @@ from engine.neuralweb import market_memory_episode_retrieval as retrieval
 
 SCHEMA = "market_memory.retained_context_catalog.v1"
 MAX_RESPONSE_BYTES = 128 * 1024
+MAX_SESSION_OBSERVATIONS = 4
 
 
 @contextmanager
@@ -132,6 +134,7 @@ def read_catalog(root: Path, *, user_id: str, mode: str, offset: int, limit: int
         with _observe_catalog_stage(stage_observer, "response_projection"):
             entries = []
             instrument_ids = set()
+            families = {}
             for original, resource in zip(originals, resources):
                 receipt, packet, feature = original.receipt, original.stored.packet, original.feature
                 if (receipt["capture_id"] != resource["capture_id"]
@@ -146,6 +149,18 @@ def read_catalog(root: Path, *, user_id: str, mode: str, offset: int, limit: int
                 # later collection/build/feature clocks. Preserve the actual maximum.
                 supported = max(clocks.values(), key=cohort.utc_instant)
                 instrument_ids.add(receipt["subject"]["instrument_id"])
+                # Relationship is a native same-session observation grouping, not
+                # a correction/replacement claim. Registries, transform and mode
+                # must agree before two saved readings can share this family.
+                family = cohort.canonical([
+                    receipt["subject"]["subject_id"], receipt["subject"]["instrument_id"],
+                    feature.get("source_artifact", {}).get("source_asof"),
+                    packet["schema"], packet["mode"], packet["feature_registry_version"],
+                    packet["source_registry_version"], feature["schema"],
+                    feature["transform_version"], packet["required_domains"],
+                ])
+                families[receipt["context_id"]] = sha256(family).hexdigest()
+
                 entries.append({
                     "query_id": receipt["query_id"], "context_id": receipt["context_id"],
                     "capture_id": receipt["capture_id"], "packet_sha256": receipt["packet_sha256"],
@@ -165,6 +180,27 @@ def read_catalog(root: Path, *, user_id: str, mode: str, offset: int, limit: int
                 })
             entries.sort(key=lambda x: (cohort.utc_instant(x["as_known_at"]),
                 cohort.utc_instant(x["event_time"]), x["query_id"]), reverse=True)
+            # Compute only from the fully authorized pinned generation, never
+            # from a latest-generation lookup or a second private reader.
+            locator_fields = ("query_id", "context_id", "capture_id", "packet_sha256",
+                              "subject_id", "instrument_id", "source_session",
+                              "earliest_supported_cutoff", "event_time", "as_known_at")
+            for entry in entries:
+                siblings = [other for other in entries
+                            if entry["source_session"] is not None
+                            and other["context_id"] != entry["context_id"]
+                            and families[other["context_id"]] == families[entry["context_id"]]]
+                entry["same_session_observations"] = {
+                    "relationship": "same_source_session_not_certified_correction.v1",
+                    "family_sha256": families[entry["context_id"]],
+                    "total": len(siblings),
+                    "omitted": max(0, len(siblings) - MAX_SESSION_OBSERVATIONS),
+                    "observations": [{**{key: other[key] for key in locator_fields},
+                                      "generation_id": pin.generation_id,
+                                      "generation_sha256": pin.generation_sha256,
+                                      "family_sha256": families[other["context_id"]]}
+                                     for other in siblings[:MAX_SESSION_OBSERVATIONS]],
+                }
             if locate:
                 # Locate only inside the already pinned, fully authorized population.
                 # Return its ordinary page; never choose another capture or cutoff.
