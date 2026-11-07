@@ -1,0 +1,131 @@
+
+/* Risk Envelope: compact context inside the existing Risk Radar, never a page panel.
+   Dark: subtle luminance inset. Light: quiet structured inset with a hairline, no glow. */
+#dlg-risk .riskdlg-context {
+  margin-top:12px; padding:12px 16px;
+  border:1px solid var(--line); border-radius:var(--r-card);
+  background:var(--panel2); color:var(--ink-2);
+}
+html[data-theme="light"] #dlg-risk .riskdlg-context {
+  background:color-mix(in srgb,var(--panel2) 60%,var(--panel));
+  box-shadow:none;
+}
+#dlg-risk .gde-head {display:flex; align-items:baseline; justify-content:space-between; gap:8px; flex-wrap:wrap;}
+#dlg-risk .gde-head h3 {margin:0; font-size:var(--fs-sm); font-weight:650; color:var(--ink-1);}
+#dlg-risk .gde-coherence {font-size:var(--fs-label); color:var(--ink-2);}
+#dlg-risk .gde-reads {display:flex; gap:20px; flex-wrap:wrap; margin-top:8px;}
+#dlg-risk .gde-read {display:flex; align-items:baseline; gap:8px;}
+#dlg-risk .gde-q {font-size:var(--fs-label); color:var(--ink-3);}
+#dlg-risk .gde-a {font-size:var(--fs-md); font-weight:650; color:var(--gde-c);}
+#dlg-risk .gde-arr {font-size:var(--fs-label); margin-left:4px;}
+#dlg-risk .gde-context-line {margin:8px 0 0; font-size:var(--fs-sm); line-height:1.45;}
+#dlg-risk .gde-meta {display:flex; flex-wrap:wrap; gap:8px 12px; margin-top:8px; font-size:var(--fs-label); color:var(--ink-3);}
+#dlg-risk .gde-meta [hidden], #dlg-risk .gde-receipt[hidden] {display:none;}
+#dlg-risk .gde-prob-evidence {color:var(--ink-2); font-variant-numeric:tabular-nums;}
+#dlg-risk .gde-prob-evidence .gde-prob-k {font-weight:650; color:var(--ink-1);}
+#dlg-risk .gde-prob-evidence.is-thin, #dlg-risk .gde-prob-evidence.is-thin .gde-prob-k {color:var(--ink-warn);}
+#dlg-risk .gde-stamp-live, #dlg-risk .gde-pending {color:var(--ink-2);}
+#dlg-risk .gde-disc {margin-top:4px;}
+#dlg-risk .gde-disc > summary {cursor:pointer; min-height:40px; align-content:center; font-size:var(--fs-label); color:var(--ink-2);}
+#dlg-risk .gde-disc > summary:focus-visible {outline:2px solid var(--link); outline-offset:2px; border-radius:var(--r-ctl);}
+#dlg-risk .gde-disc-body {padding-top:8px; border-top:1px solid var(--line);}
+#dlg-risk .gde-tblwrap {max-width:100%; overflow-x:auto;}
+#dlg-risk .gde-tbl {width:100%; border-collapse:collapse; font-size:var(--fs-label);}
+#dlg-risk .gde-tbl th, #dlg-risk .gde-tbl td {padding:8px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+#dlg-risk .gde-tbl th {color:var(--ink-2); font-weight:600;}
+#dlg-risk .gde-tbl td {color:var(--ink-1);}
+#dlg-risk .gde-warn {color:var(--ink-warn);}
+#dlg-risk .gde-req {color:var(--ink-3);}
+#dlg-risk .gde-disc-h {font-size:var(--fs-sm); font-weight:600; margin:12px 0 4px;}
+#dlg-risk .gde-conflicts {padding-left:16px; margin:0; font-size:var(--fs-label); line-height:1.5;}
+#dlg-risk .gde-receipt, #dlg-risk .gde-policy {font-size:var(--fs-label); line-height:1.5; color:var(--ink-3); overflow-wrap:anywhere; margin:8px 0 0;}
+@media(max-width:640px) {
+  #dlg-risk .riskdlg-context {padding:12px;}
+  #dlg-risk .gde-reads {gap:8px 16px;}
+  #dlg-risk .gde-tbl {min-width:460px;}
+}
+
+/* The legacy band must not impose its rails or large spacing inside Risk Radar. */
+#dlg-risk .gde-head {border:0; padding:0; margin:0;}
+#dlg-risk .gde-read {border:0; padding:0; margin:0;}
+#dlg-risk .gde-disc > summary {display:flex; gap:6px; align-items:center; padding:0;}
+#dlg-risk .gde-disc > summary::before {content:"+";}
+#dlg-risk .gde-disc[open] > summary::before {content:"−";}
+
+/* The existing button carries a separate stress caveat, never a changed radar score. */
+#mx5BtnRisk {max-width:100%; flex-wrap:wrap;}
+#mx5BtnRisk .gde-button-context {border-left:1px solid var(--line); padding-left:6px; white-space:normal;}
+.gde-button-context[data-gde-stage="FRAGILE"] {color:var(--ink-warn);}
+.gde-button-context[data-gde-stage="TRANSMITTING"], .gde-button-context[data-gde-stage="BREAKDOWN"] {color:var(--ink-act);}
+#mx5BtnRisk .gde-button-context[hidden], #dlg-risk .gde-live-reading[hidden], #dlg-risk .gde-input-caveat[hidden] {display:none;}
+#dlg-risk .gde-causes {margin:8px 0 0; font-size:var(--fs-sm); line-height:1.45; color:var(--ink-1);}
+#dlg-risk .gde-input-caveat {margin:4px 0 0; font-size:var(--fs-label); color:var(--ink-warn);}
+#dlg-risk .gde-live-reading {display:flex; gap:4px 10px; flex-wrap:wrap; margin-top:8px; font-size:var(--fs-sm); line-height:1.4;}
+#dlg-risk .gde-live-reading strong {font-weight:650; color:var(--ink-1);}
+#dlg-risk .gde-live-reading > span {color:var(--ink-2);}
+
+#dlg-risk .gde-live-source-rows {white-space:pre-line; font-size:var(--fs-label); line-height:1.6; overflow-wrap:anywhere;}
+#dlg-risk #gde-live-sources[hidden] {display:none;}
+
+/* Options compare — compact display-only cross-name map inside Risk Detail.
+   It extends existing volatility depth instead of adding another dashboard panel. */
+#dlg-risk .riskdlg-options-compare {margin-top:12px;border-top:1px solid var(--line);padding-top:4px;}
+#dlg-risk .riskdlg-options-compare > summary {display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;cursor:pointer;font-size:var(--fs-sm);font-weight:650;color:var(--ink-1);}
+#dlg-risk .riskdlg-options-compare > summary:focus-visible {outline:2px solid var(--link);outline-offset:2px;border-radius:var(--r-ctl);}
+#dlg-risk .ocmp-summary-copy {display:flex;align-items:center;gap:6px;}
+#dlg-risk .ocmp-summary-badge {font-size:var(--fs-label);font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums;}
+#dlg-risk .ocmp-shell {padding:8px 0 2px;}
+#dlg-risk .ocmp-title {display:block;font-size:var(--fs-md);color:var(--ink-1);}
+#dlg-risk .ocmp-expl,#dlg-risk .ocmp-note,#dlg-risk .ocmp-meta,#dlg-risk .ocmp-receipt,#dlg-risk .ocmp-foot-copy {font-size:var(--fs-label);line-height:1.5;color:var(--ink-2);}
+#dlg-risk .ocmp-expl {margin:5px 0 0;max-width:760px;}
+#dlg-risk .ocmp-note {margin:4px 0 0;color:var(--ink-3);}
+#dlg-risk .ocmp-meta {margin:8px 0 0;color:var(--ink-3);font-variant-numeric:tabular-nums;}
+#dlg-risk .ocmp-chart-wrap {margin-top:10px;max-width:760px;overflow:hidden;border:1px solid var(--line);border-radius:var(--r-card);background:var(--panel2);}
+#dlg-risk .ocmp-chart {display:block;width:100%;height:auto;min-height:300px;}
+#dlg-risk .ocmp-grid {stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke;}
+#dlg-risk .ocmp-tick,#dlg-risk .ocmp-axis,#dlg-risk .ocmp-label {fill:var(--ink-3);font-family:var(--font-mono);font-size:10px;}
+#dlg-risk .ocmp-axis {font-size:11px;font-weight:650;fill:var(--ink-2);}
+#dlg-risk .ocmp-label {font-size:10px;fill:var(--ink-2);pointer-events:none;}
+#dlg-risk .ocmp-trail {fill:none;stroke-width:1.5;vector-effect:non-scaling-stroke;opacity:.12;}
+#dlg-risk .ocmp-trail-calm {stroke:var(--link);}
+#dlg-risk .ocmp-trail-fast {stroke:var(--act);opacity:.32;}
+#dlg-risk .ocmp-trail.is-selected {opacity:.72;stroke-width:2;}
+#dlg-risk .ocmp-point {cursor:pointer;outline:none;}
+#dlg-risk .ocmp-point .ocmp-dot {stroke:var(--panel);stroke-width:2;vector-effect:non-scaling-stroke;transition:r .14s ease,stroke-width .14s ease;}
+#dlg-risk .ocmp-point-calm .ocmp-dot {fill:var(--link);}
+#dlg-risk .ocmp-point-fast .ocmp-dot {fill:var(--act);}
+#dlg-risk .ocmp-point:focus-visible .ocmp-dot,#dlg-risk .ocmp-point.is-selected .ocmp-dot {stroke:var(--ink-1);stroke-width:3;}
+#dlg-risk .ocmp-point.is-selected .ocmp-label {fill:var(--ink-1);font-weight:750;}
+#dlg-risk .ocmp-legend {display:flex;flex-wrap:wrap;gap:8px 16px;margin:9px 0 0;font-size:var(--fs-label);color:var(--ink-2);}
+#dlg-risk .ocmp-key {display:inline-flex;align-items:center;gap:6px;}
+#dlg-risk .ocmp-key::before {content:"";width:16px;height:2px;border-radius:var(--r-ctl);background:var(--line);}
+#dlg-risk .ocmp-key-calm::before {background:var(--link);}
+#dlg-risk .ocmp-key-fast::before {background:var(--act);}
+#dlg-risk .ocmp-key-trail::before {height:1px;background:var(--link);opacity:.52;}
+#dlg-risk .ocmp-readout {margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--panel2);max-width:760px;}
+#dlg-risk .ocmp-focus-head {display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+#dlg-risk .ocmp-focus-ticker {font-family:var(--font-mono);font-size:var(--fs-md);color:var(--ink-1);}
+#dlg-risk .ocmp-focus-state {font-size:var(--fs-label);font-weight:750;letter-spacing:.06em;}
+#dlg-risk .ocmp-focus-state-calm {color:var(--link);}
+#dlg-risk .ocmp-focus-state-fast {color:var(--act);}
+#dlg-risk .ocmp-metrics {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+#dlg-risk .ocmp-metric {min-width:0;padding-top:8px;border-top:1px solid var(--line);}
+#dlg-risk .ocmp-metric-top {display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
+#dlg-risk .ocmp-metric-name {font-size:var(--fs-sm);color:var(--ink-1);}
+#dlg-risk .ocmp-metric-value {font-family:var(--font-mono);font-size:var(--fs-lg);font-variant-numeric:tabular-nums;color:var(--ink-1);}
+#dlg-risk .ocmp-metric-copy {margin:4px 0 0;font-size:var(--fs-label);line-height:1.5;color:var(--ink-2);}
+#dlg-risk .ocmp-receipt {margin:8px 0 0;color:var(--ink-3);font-family:var(--font-mono);}
+#dlg-risk .ocmp-foot {display:flex;align-items:flex-start;justify-content:space-between;gap:14px;max-width:760px;margin-top:10px;}
+#dlg-risk .ocmp-link {font-size:var(--fs-label);font-weight:650;white-space:nowrap;color:var(--link);text-decoration:none;}
+#dlg-risk .ocmp-link:hover {text-decoration:underline;}
+html[data-theme="light"] #dlg-risk .ocmp-chart-wrap,html[data-theme="light"] #dlg-risk .ocmp-readout {background:var(--panel);box-shadow:none;}
+@media(max-width:640px) {
+  #dlg-risk .riskdlg-options-compare > summary {align-items:flex-start;flex-direction:column;justify-content:center;gap:2px;padding:7px 0;}
+  #dlg-risk .ocmp-chart {min-height:250px;}
+  #dlg-risk .ocmp-metrics {grid-template-columns:1fr;}
+  #dlg-risk .ocmp-foot {flex-direction:column;gap:7px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  #dlg-risk .ocmp-point .ocmp-dot {transition:none;}
+}
+

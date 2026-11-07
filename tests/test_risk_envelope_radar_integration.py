@@ -456,3 +456,288 @@ def test_duration_context_does_not_mutate_envelope_or_replace_odds_evidence():
     assert "Risk pressure" in html and "5 issued sessions" in html
     assert "Odds evidence" in html and "n=300" in html
     assert e == before
+
+
+def test_options_compare_extends_existing_risk_detail_without_a_second_poller():
+    template_js = (ROOT / "templates" / "risk_envelope_live.js").read_text()
+    site_js = (ROOT / "site" / "risk_envelope_live.js").read_text()
+    css = (ROOT / "templates" / "options_compare.css").read_text()
+
+    assert template_js == site_js
+    assert 'var COMPARE_URL = "options_compare.json";' in template_js
+    assert "renderOptionsCompare" in template_js
+    assert 'link.href = "options.html#scanner"' in template_js
+    assert "Fast means one of the biggest five-session moves in this map" in template_js
+    assert "It is not bullish, bearish, or a trade signal." in template_js
+    assert template_js.count("setInterval(") == 1
+    assert "innerHTML" not in template_js
+
+    assert "#dlg-risk .riskdlg-options-compare" in css
+    assert "#dlg-risk .ocmp-chart" in css
+    assert "#dlg-risk .ocmp-metrics" in css
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node required for shipped JS")
+def test_options_compare_shipped_js_is_syntax_valid():
+    proc = subprocess.run(
+        ["node", "--check", str(ROOT / "templates" / "risk_envelope_live.js")],
+        capture_output=True, text=True, timeout=20,
+    )
+    assert proc.returncode == 0, proc.stderr
+
+
+def test_options_compare_generated_macro_assets_match_source_bytes():
+    import hashlib
+
+    template_js = (ROOT / "templates" / "risk_envelope_live.js").read_bytes()
+    site_js = (ROOT / "site" / "risk_envelope_live.js").read_bytes()
+    macro = (ROOT / "site" / "macro.html").read_text()
+    compare_css = (ROOT / "templates" / "options_compare.css").read_bytes()
+    site_css = (ROOT / "site" / "options_compare.css").read_bytes()
+    css_source = (ROOT / "templates" / "_risk_envelope_band.css.j2").read_text()
+
+    assert template_js == site_js
+    js_key = hashlib.sha256(site_js).hexdigest()[:8]
+    assert f'risk_envelope_live.js?v={js_key}' in macro
+    assert compare_css == site_css
+    compare_key = hashlib.sha256(site_css).hexdigest()[:8]
+    assert f'options_compare.css?v={compare_key}'.encode() in site_js
+    builder = (ROOT / "scripts" / "build_site.py").read_text()
+    assert '"risk_envelope_live.js", "options_compare.css"' in builder
+
+    # The existing band's accepted source and asset stay intact. The new
+    # comparison styles are isolated so EW evidence is not silently rebound.
+    expected_asset = ("\n" + css_source).encode()
+    css_key = hashlib.sha256(expected_asset).hexdigest()[:8]
+    css_asset = ROOT / "site" / "assets" / "css" / f"{css_key}.css"
+    assert css_asset.exists()
+    assert css_asset.read_bytes() == expected_asset
+    assert f'assets/css/{css_key}.css?v={css_key}' in macro
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node required for shipped JS")
+@pytest.mark.parametrize("failure", ["none", "css", "data", "absent-body"])
+def test_options_compare_waits_for_styles_and_never_retries_failed_loads(failure):
+    harness = r"""
+const assert = require("assert");
+const fs = require("fs");
+const vm = require("vm");
+const source = fs.readFileSync(process.argv[1], "utf8");
+const failure = process.argv[2];
+const links = [];
+const body = {};
+let fetches = 0, renders = 0, timers = 0;
+const context = {
+  window: {},
+  Date: class extends Date { static now() { return Date.parse("2026-11-06T12:00:00Z"); } },
+  document: {
+    readyState: "complete",
+    getElementById: () => null,
+    querySelector: selector => failure !== "absent-body" && selector === "#dlg-risk .mx5-dlg-body" ? body : null,
+    createElement: tag => { assert.strictEqual(tag, "link"); return {}; },
+    head: {appendChild: link => { links.push(link); }},
+  },
+  fetch: url => {
+    assert.strictEqual(url, "options_compare.json");
+    fetches += 1;
+    return failure === "data" ? Promise.reject(new Error("unavailable")) :
+      Promise.resolve({ok: true, json: () => Promise.resolve({marker: "same-ledger"})});
+  },
+  setInterval: () => { timers += 1; },
+  __record: (payload, target) => {
+    assert.strictEqual(payload.marker, "same-ledger");
+    assert.strictEqual(target, body);
+    renders += 1;
+  },
+};
+const instrumented = source.replace(
+  /\}\)\(\);\s*$/,
+  'globalThis.__mount = mountOptionsCompare; globalThis.__age = ocAgeDays; ' +
+  'renderOptionsCompare = function(payload, target) { __record(payload, target); };})();'
+);
+assert.notStrictEqual(instrumented, source);
+vm.runInNewContext(instrumented, context);
+assert.strictEqual(context.__age("2026-09-30"), 37, "age is measured when read, not frozen at generation");
+assert.strictEqual(context.__age("2026-11-06"), 0);
+assert.strictEqual(context.__age("2026-11-07"), null);
+assert.strictEqual(context.__age("2026-02-30"), null);
+assert.strictEqual(context.__age(null), null);
+const flush = () => new Promise(resolve => setImmediate(resolve));
+(async () => {
+  context.__mount();
+  await flush();
+  if (failure === "absent-body") {
+    assert.strictEqual(fetches, 0);
+    assert.strictEqual(links.length, 0);
+    assert.strictEqual(renders, 0);
+    assert.strictEqual(timers, 1);
+    return;
+  }
+  assert.strictEqual(fetches, 1);
+  assert.strictEqual(links.length, 1);
+  assert.strictEqual(links[0].rel, "stylesheet");
+  assert.match(links[0].href, /^options_compare\.css\?v=[0-9a-f]{8}$/);
+  assert.strictEqual(renders, 0, "do not render before the stylesheet loads");
+  if (failure === "css") links[0].onerror();
+  else links[0].onload();
+  await flush();
+  context.__mount();
+  await flush();
+  assert.strictEqual(fetches, 1, "the existing one-shot read must not retry");
+  assert.strictEqual(links.length, 1, "the style request must not duplicate");
+  assert.strictEqual(renders, failure === "none" ? 1 : 0);
+  assert.strictEqual(timers, 1, "retain only the existing envelope poller");
+})().catch(error => { console.error(error); process.exitCode = 1; });
+"""
+    proc = subprocess.run(
+        ["node", "-e", harness, str(ROOT / "templates" / "risk_envelope_live.js"), failure],
+        capture_output=True, text=True, timeout=20,
+    )
+    assert proc.returncode == 0, proc.stderr
+
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node required for shipped JS")
+@pytest.mark.parametrize("case", ["v2", "legacy", "unknown-schema", "unknown-method", "missing-count", "null-rank", "missing-reference"])
+def test_options_compare_v2_renderer_preserves_contract_and_pricing_limits(case):
+    ref = {
+        "state": "available_unqualified",
+        "standard_deviations": 1,
+        "calendar_days_per_year": 365,
+        "tenor_days": 45.5,
+        "reference_pct": 8.1,
+        "reference_price_units": None,
+        "price_units_reason": "reference_price_clock_and_basis_unqualified",
+        "underlying_reference": {
+            "reported_value": 100.0, "observed_at": None,
+            "clock_qualified": False, "basis_qualified": False,
+        },
+        "physical_probability": None, "forecast": False, "trade_authority": False,
+    }
+    payload = {
+        "schema": "options_compare.v2", "state": "ready", "as_of": "2026-10-01",
+        "rank_method": "midpoint_ties_strictly_prior",
+        "minimum_prior_observations": 20, "window_prior_observations": 60,
+        "rows": [
+            {"ticker": "QQQ", "options_pct": 50.0, "protection_pct": 75.0,
+             "prior_n": 20, "history_n": 21, "zone": "calm",
+             "atm_call_iv_pct": 23.0, "protection_skew_volpts": 2.0,
+             "trail": [], "iv_pricing_reference": ref},
+            {"ticker": "AAPL", "options_pct": 30.0, "protection_pct": 40.0,
+             "prior_n": 40, "history_n": 41, "zone": "fast",
+             "atm_call_iv_pct": 28.0, "protection_skew_volpts": 3.0,
+             "trail": [], "iv_pricing_reference": {**ref, "tenor_days": 30.0, "reference_pct": 5.5}},
+        ],
+    }
+    if case == "legacy":
+        payload["schema"] = "options_compare.v1"
+        payload.pop("rank_method")
+        for row in payload["rows"]:
+            row["history_n"] = 20
+            row.pop("prior_n")
+            row.pop("iv_pricing_reference")
+    elif case == "unknown-schema":
+        payload["schema"] = "options_compare.v9"
+    elif case == "unknown-method":
+        payload["rank_method"] = "unqualified_method"
+    elif case == "missing-count":
+        payload["rows"][0]["prior_n"] = None
+    elif case == "null-rank":
+        payload["schema"] = "options_compare.v1"
+        payload["rows"][0]["options_pct"] = None
+    elif case == "missing-reference":
+        payload["rows"][0]["iv_pricing_reference"] = {
+            **ref, "reference_pct": None,
+        }
+    original = deepcopy(payload)
+    harness = r"""
+const assert = require("assert"), fs = require("fs"), vm = require("vm");
+const source = fs.readFileSync(process.argv[1], "utf8");
+const payload = JSON.parse(process.argv[2]);
+class El {
+  constructor(tag) {
+    this.tagName=tag; this.children=[]; this.attributes={}; this.listeners={};
+    this.className=""; this.textContent=""; this.parentNode=null;
+    this.classList={
+      add:(name)=>{this.className += " " + name;},
+      toggle:(name,on)=>{this.attributes["toggle-"+name]=Boolean(on);}
+    };
+  }
+  appendChild(el){el.parentNode=this;this.children.push(el);return el;}
+  insertBefore(el,ref){return this.appendChild(el);}
+  setAttribute(k,v){this.attributes[k]=String(v);if(k==="class")this.className=String(v);}
+  getAttribute(k){return this.attributes[k] ?? null;}
+  addEventListener(k,fn){this.listeners[k]=fn;}
+  querySelector(){return null;}
+  querySelectorAll(selector){
+    return walk(this).filter(el=>selector===".ocmp-trail[data-ticker]" &&
+      el.className.split(" ").includes("ocmp-trail") && el.attributes["data-ticker"]);
+  }
+}
+function walk(el){return [el,...el.children.flatMap(walk)];}
+function text(el){return [el.textContent,...el.children.map(text)].join(" ");}
+const body=new El("div"), sentinel=new El("p");
+sentinel.textContent="Existing Risk Detail"; body.appendChild(sentinel);
+const context={
+  window:{}, Date, Number,
+  document:{
+    readyState:"loading", addEventListener:()=>{},
+    createElement:tag=>new El(tag), createElementNS:(_ns,tag)=>new El(tag),
+    getElementById:id=>walk(body).find(el=>el.id===id)||null,
+    querySelector:()=>null,
+  },
+  setInterval:()=>{},
+  fetch:()=>{throw new Error("unexpected provider or network request");},
+};
+const instrumented=source.replace(/\}\)\(\);\s*$/,
+  "globalThis.__compare=renderOptionsCompare;})();");
+assert.notStrictEqual(instrumented, source);
+vm.runInNewContext(instrumented, context);
+const before=JSON.stringify(payload);
+const rendered=context.__compare(payload,body);
+const initial=text(body);
+let selected=initial;
+if(rendered){
+  const target=walk(body).find(el=>el.tagName==="g" && el.getAttribute("data-ticker")==="AAPL");
+  assert(target && target.listeners.keydown);
+  target.listeners.keydown({type:"keydown",key:"Enter",preventDefault:()=>{}});
+  selected=text(body);
+  assert.strictEqual(context.__compare(payload,body),true);
+}
+assert.strictEqual(JSON.stringify(payload),before);
+assert.strictEqual(body.children[0],sentinel);
+console.log(JSON.stringify({rendered,initial,selected,children:body.children.length}));
+"""
+    proc = subprocess.run(
+        ["node", "-e", harness, str(ROOT / "templates" / "risk_envelope_live.js"), json.dumps(payload)],
+        capture_output=True, text=True, timeout=20,
+    )
+    assert proc.returncode == 0, proc.stderr
+    result = json.loads(proc.stdout)
+    assert payload == original
+    if case in {"unknown-schema", "unknown-method", "missing-count", "null-rank"}:
+        assert result["rendered"] is False
+        assert result["children"] == 1
+        return
+    assert result["rendered"] is True and result["children"] == 2
+    if case == "legacy":
+        assert "19 prior same-source observations" in result["initial"]
+        assert "higher than" in result["initial"]
+        assert "ties split equally" not in result["initial"]
+        assert "IV pricing reference unavailable for this snapshot" in result["initial"]
+        assert "±" not in result["initial"]
+        return
+    assert "20 prior same-source observations" in result["initial"]
+    assert "ties split equally" in result["initial"]
+    assert "40 prior same-source observations" in result["selected"]
+    assert "Up to 30 selected names" in result["initial"]
+    if case == "missing-reference":
+        assert "IV pricing reference unavailable for this snapshot" in result["initial"]
+        assert "±0.00%" not in result["initial"]
+    else:
+        assert "45.5 days" in result["initial"] and "±8.10%" in result["initial"]
+        assert "365 calendar days" in result["initial"]
+        assert "price-unit range is unavailable" in result["initial"]
+        assert "timing and basis are unqualified" in result["initial"]
+    assert "±5.50%" in result["selected"] and "30 days" in result["selected"]
+    assert "$" not in result["initial"] and "68%" not in result["initial"]

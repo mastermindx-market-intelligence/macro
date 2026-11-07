@@ -37,6 +37,7 @@ maintainer writes for `session_n_back(D, 1)`), with `<td>/_manifest.json`'s
 from __future__ import annotations
 
 import logging
+import math
 from datetime import date, datetime, timezone
 
 from lib import config
@@ -1429,6 +1430,363 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
         "source_break_date": break_date,
         "history_dates": history_dates,
     }
+
+
+
+# --------------------------------------------------------------------------- #
+# Cross-name options-pricing map — display-only projection over this ledger   #
+# --------------------------------------------------------------------------- #
+
+COMPARE_SCHEMA = "options_compare.v2"
+_COMPARE_WINDOW_SESSIONS = 60
+_COMPARE_TRAIL_SESSIONS = 5
+_COMPARE_MIN_SESSIONS = 20
+_COMPARE_MAX_NAMES = 30
+# Macro Risk Detail default: liquid bellwethers spanning index beta, rates,
+# sectors, mega-cap, semis and high-beta leaders. Missing names simply fall out;
+# the remaining slots are filled by current selected-expiry chain coverage.
+_COMPARE_DEFAULT_UNIVERSE = (
+    "SPY", "QQQ", "IWM", "DIA", "TLT", "SMH", "XLF",
+    "NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA",
+    "AMD", "AVGO", "NFLX", "COIN", "MSTR", "MU", "INTC",
+    "JPM", "LLY", "ORCL", "PLTR", "ARM", "LRCX", "AMAT", "V", "CAT",
+)
+# Exchange/index option roots are not user-facing equity/ETF tickers in this
+# comparison. Their ETF proxies already sit in the default bellwether set.
+_COMPARE_EXCLUDED_ROOTS = frozenset({
+    "SPX", "SPXW", "XSP", "NDX", "NDXP", "RUT", "RUTW", "VIX", "VIXW",
+})
+
+
+def _compare_finite(value):
+    if isinstance(value, bool):
+        return None
+    try:
+        out = float(value)
+    except (TypeError, ValueError):
+        return None
+    return out if math.isfinite(out) else None
+
+
+def _compare_int(value) -> int:
+    out = _compare_finite(value)
+    if out is None or out < 0:
+        return 0
+    return int(out)
+
+
+def _compare_rank_vs_prior(values) -> float | None:
+    """Midpoint-tie percentile against strictly preceding valid observations.
+
+    The last value is the selected observation, never part of its baseline.
+    An invalid selected value cannot silently select an older observation.
+    """
+    values = list(values)
+    if len(values) < 2:
+        return None
+    current = _compare_finite(values[-1])
+    prior = [_compare_finite(value) for value in values[:-1]]
+    prior = [value for value in prior if value is not None]
+    if current is None or not prior:
+        return None
+    below = sum(value < current for value in prior)
+    tied = sum(value == current for value in prior)
+    return round(100.0 * (below + 0.5 * tied) / len(prior), 1)
+
+
+def _compare_iv_pricing_reference(observation: dict) -> dict:
+    """Selected-tenor percentage scale; no inferred price clock or forecast.
+
+    The ledger owns annual fractional ATM IV and selected calendar-day tenor.
+    Its spot field does not carry a qualified observation clock or price basis.
+    Keep the percentage scale separate from an unavailable price-unit expansion.
+    """
+    iv = _compare_finite(observation.get("atm_call_iv"))
+    tenor = _compare_finite(observation.get("tenor_days"))
+    spot = _compare_finite(observation.get("spot"))
+    spot = spot if spot is not None and spot > 0 else None
+    result = {
+        "state": "unavailable",
+        "standard_deviations": 1,
+        "calendar_days_per_year": 365,
+        "tenor_days": tenor,
+        "reference_pct": None,
+        "reference_price_units": None,
+        "price_units_reason": "reference_price_clock_and_basis_unqualified",
+        "underlying_reference": {
+            "reported_value": spot,
+            "observed_at": None,
+            "clock_qualified": False,
+            "basis_qualified": False,
+        },
+        "physical_probability": None,
+        "forecast": False,
+        "trade_authority": False,
+    }
+    if iv is None or iv <= 0 or tenor is None or tenor <= 0:
+        return result
+    try:
+        percentage = 100.0 * iv * math.sqrt(tenor / 365.0)
+    except (OverflowError, ValueError):
+        return result
+    if not math.isfinite(percentage):
+        return result
+    result["state"] = "available_unqualified"
+    result["reference_pct"] = round(percentage, 6)
+    return result
+
+
+def build_compare_payload(
+    hist,
+    *,
+    as_of: str | None = None,
+    today: date | None = None,
+    window: int = _COMPARE_WINDOW_SESSIONS,
+    trail: int = _COMPARE_TRAIL_SESSIONS,
+    max_names: int = _COMPARE_MAX_NAMES,
+    min_obs: int = _COMPARE_MIN_SESSIONS,
+) -> dict:
+    """Build the screenshot-style two-axis cross-name options map.
+
+    X is selected ~30d ATM-call IV versus the ticker's own prior history.
+    Y is 25d-put minus ATM-call IV skew against the same paired-valid baseline.
+    Default eligibility is 20 prior observations; each baseline contains up to
+    60 prior observations, excluding its current point and splitting ties.
+    The optional IV percentage reference uses the actual selected tenor and a
+    declared 365-calendar-day scaling convention, without price-clock claims.
+
+    This is a DISPLAY projection, not a predictor. "Fast" is the top decile
+    of five-session path length in this map among displayed names; it says
+    options pricing moved quickly, not that the stock is bullish or bearish.
+
+    Every displayed name must have an observation on the supplied complete
+    session as_of. Selection is a readability budget (largest current
+    selected-expiry chain row count), not a liquidity ranking.
+    """
+    today = today or date.today()
+    base = {
+        "schema": COMPARE_SCHEMA,
+        "state": "unavailable",
+        "context_only": True,
+        "scored": False,
+        "authority": "display_only",
+        "as_of": as_of,
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        # Legacy count names continue to include the selected observation.
+        "window_target_sessions": int(window) + 1,
+        "window_prior_observations": int(window),
+        "trail_sessions": int(trail),
+        "minimum_sessions": int(min_obs) + 1,
+        "minimum_prior_observations": int(min_obs),
+        "rank_method": "midpoint_ties_strictly_prior",
+        "max_names": int(max_names),
+        "source_stale_days": None,
+        "history_basis": {
+            "kind": "same_source_as_current_session",
+            "detail": (
+                "each percentile uses strictly prior paired-valid observations "
+                "from that point's source, with midpoint ties; current and "
+                "cross-source observations are excluded from its baseline"
+            ),
+        },
+        "selection": {
+            "kind": "macro_bellwethers_then_selected_expiry_coverage",
+            "detail": (
+                "market-representative default bellwethers first; missing slots "
+                "filled by largest current selected-expiry chain row count; "
+                "fallback coverage is not a liquidity ranking"
+            ),
+        },
+        "fast_rule": {
+            "kind": "top_decile_5_session_percentile_path",
+            "detail": (
+                "largest recent movement in this two-axis map; descriptive only, "
+                "not direction or a trade signal"
+            ),
+            "fast_n": 0,
+        },
+        "axes": {
+            "x": {
+                "key": "options_pct",
+                "label": "Options pricier",
+                "metric": "~30d ATM-call IV vs the ticker's own prior sessions",
+            },
+            "y": {
+                "key": "protection_pct",
+                "label": "Protection pricier",
+                "metric": (
+                    "~30d 25delta-put minus ATM-call IV skew vs the ticker's "
+                    "own prior sessions"
+                ),
+            },
+        },
+        "rows": [],
+    }
+    if hist is None or getattr(hist, "empty", True):
+        return base
+    required = {"date", "underlying", "atm_call_iv", "skew", "n_strikes"}
+    if not required.issubset(set(getattr(hist, "columns", ()))):
+        return base
+
+    work = hist.copy()
+    work["date"] = work["date"].map(_iso_date)
+    work["_underlying"] = work["underlying"].astype(str).str.upper().str.strip()
+    # Match the ledger owner: weekend rows are not sessions. Filter before
+    # selecting as_of or counting the history window, minimum and trail.
+    work = work[
+        (work["date"].astype(str).str.len() == 10)
+        & (work["_underlying"] != "")
+        & ~work["date"].map(_is_weekend_iso)
+    ]
+    if work.empty:
+        return base
+    if as_of is None:
+        as_of = max(work["date"].tolist())
+    as_of = str(as_of)[:10]
+    try:
+        date.fromisoformat(as_of)
+    except ValueError:
+        return base
+    base["as_of"] = as_of
+
+    work = work[work["date"] <= as_of]
+    current_names = set(
+        work.loc[work["date"] == as_of, "_underlying"].astype(str).tolist()
+    )
+    if not current_names:
+        return base
+
+    candidates: list[dict] = []
+    for ticker, group in work.groupby("_underlying", sort=False):
+        ticker = str(ticker).upper()
+        if ticker not in current_names:
+            continue
+        group = group.sort_values("date").drop_duplicates("date", keep="last")
+        observations: list[dict] = []
+        for _, rec in group.iterrows():
+            atm = _compare_finite(rec.get("atm_call_iv"))
+            skew = _compare_finite(rec.get("skew"))
+            if atm is None or skew is None:
+                continue
+            observations.append({
+                "date": str(rec.get("date"))[:10],
+                "atm_call_iv": atm,
+                "skew": skew,
+                "spot": _compare_finite(rec.get("spot")),
+                "tenor_days": _compare_finite(rec.get("tenor_days")),
+                "n_strikes": _compare_int(rec.get("n_strikes")),
+                "source": _source_of(rec.get("source")),
+            })
+        if not observations or observations[-1]["date"] != as_of:
+            continue
+        # Do not percentile-rank across the historical Polygon→ThetaData source
+        # boundary. The parity audit found material methodology disagreement;
+        # apples-to-apples history is the current session's source only.
+        current_source = observations[-1]["source"]
+        observations = [
+            row for row in observations if row["source"] == current_source
+        ]
+        if len(observations) <= min_obs or observations[-1]["date"] != as_of:
+            continue
+
+        points: list[dict] = []
+        for index in range(len(observations)):
+            segment = observations[max(0, index - window): index + 1]
+            if len(segment) <= min_obs:
+                continue
+            x_pct = _compare_rank_vs_prior(
+                [row["atm_call_iv"] for row in segment]
+            )
+            y_pct = _compare_rank_vs_prior([row["skew"] for row in segment])
+            if x_pct is None or y_pct is None:
+                continue
+            points.append({
+                "date": observations[index]["date"],
+                "options_pct": x_pct,
+                "protection_pct": y_pct,
+                "prior_n": len(segment) - 1,
+            })
+        if not points or points[-1]["date"] != as_of:
+            continue
+
+        path = points[-trail:]
+        path_length = sum(
+            math.hypot(
+                right["options_pct"] - left["options_pct"],
+                right["protection_pct"] - left["protection_pct"],
+            )
+            for left, right in zip(path, path[1:])
+        )
+        current = observations[-1]
+        candidates.append({
+            "ticker": ticker,
+            "asof": as_of,
+            "spot": current["spot"],
+            "tenor_days": current["tenor_days"],
+            "options_pct": points[-1]["options_pct"],
+            "protection_pct": points[-1]["protection_pct"],
+            "atm_call_iv_pct": round(current["atm_call_iv"] * 100.0, 2),
+            "protection_skew_volpts": round(current["skew"] * 100.0, 2),
+            "history_n": min(window + 1, len(observations)),
+            "prior_n": points[-1]["prior_n"],
+            "iv_pricing_reference": _compare_iv_pricing_reference(current),
+            "n_strikes": current["n_strikes"],
+            "source": current["source"],
+            "trail": path,
+            "path_length": round(path_length, 2),
+            "movement_rank_pct": None,
+            "zone": "calm",
+        })
+
+    by_ticker = {row["ticker"]: row for row in candidates}
+    selected = [
+        by_ticker[ticker]
+        for ticker in _COMPARE_DEFAULT_UNIVERSE
+        if ticker in by_ticker
+    ][:max_names]
+    selected_names = {row["ticker"] for row in selected}
+    if len(selected) < max_names:
+        fallback = sorted(
+            (
+                row for row in candidates
+                if row["ticker"] not in selected_names
+                and row["ticker"] not in _COMPARE_EXCLUDED_ROOTS
+            ),
+            key=lambda row: (-int(row.get("n_strikes") or 0), row["ticker"]),
+        )
+        selected.extend(fallback[: max_names - len(selected)])
+    movers = sorted(
+        [row for row in selected if row["path_length"] > 0],
+        key=lambda row: (-row["path_length"], row["ticker"]),
+    )
+    fast_n = (
+        min(len(movers), max(1, math.ceil(len(selected) * 0.10)))
+        if selected and movers else 0
+    )
+    fast_names = {row["ticker"] for row in movers[:fast_n]}
+
+    n_selected = len(selected)
+    for position, row in enumerate(
+        sorted(selected, key=lambda item: (item["path_length"], item["ticker"]))
+    ):
+        row["movement_rank_pct"] = (
+            round(100.0 * position / (n_selected - 1), 1)
+            if n_selected > 1 else 100.0
+        )
+    for row in selected:
+        if row["ticker"] in fast_names:
+            row["zone"] = "fast"
+
+    base["fast_rule"]["fast_n"] = fast_n
+    base["rows"] = selected
+    if selected:
+        base["state"] = "ready"
+        try:
+            base["source_stale_days"] = (today - date.fromisoformat(as_of)).days
+        except (TypeError, ValueError):
+            base["source_stale_days"] = None
+    return base
+
 
 
 def load_gate() -> dict | None:

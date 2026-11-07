@@ -37,6 +37,399 @@
     detail.appendChild(band);
   }
 
+
+  /* Nightly cross-name options comparison. One static read inside the existing
+     Risk Detail dialog; intentionally no second timer, retry loop or score plane. */
+  var COMPARE_URL = "options_compare.json";
+  var COMPARE_CSS_URL = "options_compare.css?v=d7fb6e2d";
+  var compareLoaded = false, comparePending = false;
+
+  function loadOptionsCompareStyles() {
+    return new Promise(function (resolve) {
+      var link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = COMPARE_CSS_URL;
+      link.onload = function () { resolve(true); };
+      link.onerror = function () { resolve(false); };
+      document.head.appendChild(link);
+    });
+  }
+
+  function ocAgeDays(asOf) {
+    if (typeof asOf !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(asOf)) return null;
+    var stamp = Date.parse(asOf + "T00:00:00Z");
+    if (!Number.isFinite(stamp) || new Date(stamp).toISOString().slice(0, 10) !== asOf) return null;
+    var days = Math.floor((Date.now() - stamp) / 86400000);
+    return days >= 0 ? days : null;
+  }
+
+  function ocEl(tag, cls, value) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (value != null) node.textContent = String(value);
+    return node;
+  }
+
+  function ocPair(parent, en, zh, tag) {
+    var kind = tag || "span";
+    var a = ocEl(kind, "l-en", en), b = ocEl(kind, "l-zh", zh);
+    parent.appendChild(a); parent.appendChild(b);
+    return parent;
+  }
+
+  function ocSvg(tag, attrs) {
+    var node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    Object.keys(attrs || {}).forEach(function (key) {
+      node.setAttribute(key, String(attrs[key]));
+    });
+    return node;
+  }
+
+  function ocPct(value) {
+    return typeof value === "number" && Number.isFinite(value) &&
+      value >= 0 && value <= 100 ? value : null;
+  }
+
+  function ocPriorCount(row, isV2) {
+    var n = isV2 ? row.prior_n : row.history_n - 1;
+    if (!Number.isInteger(n) || n < (isV2 ? 20 : 1)) return null;
+    if (isV2 && (n > 60 || row.history_n !== n + 1)) return null;
+    return n;
+  }
+
+  function ocText(svg, x, y, value, cls, anchor) {
+    var node = ocSvg("text", {
+      x:x, y:y, "text-anchor":anchor || "start", "class":cls || ""
+    });
+    node.textContent = value;
+    svg.appendChild(node);
+    return node;
+  }
+
+  function renderOptionsCompare(payload, body) {
+    if (!payload || (payload.schema !== "options_compare.v1" &&
+        payload.schema !== "options_compare.v2") ||
+        payload.state !== "ready" || !Array.isArray(payload.rows) ||
+        payload.rows.length < 2 || !body) return false;
+    var isV2 = payload.schema === "options_compare.v2";
+    if (isV2 && payload.rank_method !== "midpoint_ties_strictly_prior") return false;
+    if (document.getElementById("riskdlg-options-compare")) return true;
+
+    var rows = payload.rows.filter(function (row) {
+      return row && row.ticker && ocPct(row.options_pct) !== null &&
+        ocPct(row.protection_pct) !== null && ocPriorCount(row, isV2) !== null;
+    });
+    if (rows.length < 2) return false;
+
+    var detail = ocEl("details", "riskdlg-options-compare");
+    detail.id = "riskdlg-options-compare";
+    var summary = ocEl("summary", "ocmp-summary");
+    var summaryCopy = ocEl("span", "ocmp-summary-copy");
+    ocPair(summaryCopy, "Options risk pricing · compare names",
+      "期权风险定价 · 标的对比");
+    summary.appendChild(summaryCopy);
+    var badge = ocEl("span", "ocmp-summary-badge");
+    var fastN = rows.filter(function (row) { return row.zone === "fast"; }).length;
+    ocPair(badge, fastN + " fast · " + (rows.length - fastN) + " calm",
+      fastN + " 个快速 · " + (rows.length - fastN) + " 个平稳");
+    summary.appendChild(badge);
+    detail.appendChild(summary);
+
+    var shell = ocEl("div", "ocmp-shell");
+    var intro = ocEl("div", "ocmp-intro");
+    var title = ocEl("strong", "ocmp-title");
+    ocPair(title, "Where options and protection are getting richer",
+      "期权与下行保护正在变贵的位置");
+    intro.appendChild(title);
+    var expl = ocEl("p", "ocmp-expl");
+    ocPair(expl,
+      "Right = roughly 30-day options are richer than usual for that name. Up = downside protection is richer. Trails show the last five available same-source sessions.",
+      "越靠右＝该标的约30日期权相对自身同源历史更贵；越靠上＝下行保护更贵。轨迹显示最近五个同源可用交易日。");
+    intro.appendChild(expl);
+    var note = ocEl("p", "ocmp-note");
+    ocPair(note,
+      "Fast means one of the biggest five-session moves in this map. Source breaks are excluded. It is not bullish, bearish, or a trade signal.",
+      "“快速”仅表示该标的在此图中的五日移动幅度较大；不同数据源的历史不会混算。它不代表看多、看空或交易信号。");
+    intro.appendChild(note);
+    shell.appendChild(intro);
+
+    var meta = ocEl("div", "ocmp-meta");
+    var stale = ocAgeDays(payload.as_of);
+    var staleEn = Number.isFinite(stale) && stale > 0 ? " · " + stale + "d old" : "";
+    var staleZh = Number.isFinite(stale) && stale > 0 ? " · 已过去" + stale + "天" : "";
+    ocPair(meta, "Delayed EOD · as of " + (payload.as_of || "—") + staleEn,
+      "延迟收盘数据 · 截至 " + (payload.as_of || "—") + staleZh);
+    shell.appendChild(meta);
+
+    var chartWrap = ocEl("div", "ocmp-chart-wrap");
+    var svg = ocSvg("svg", {
+      viewBox:"0 0 660 430", role:"img",
+      "aria-label":"Options pricing and downside protection comparison"
+    });
+    svg.classList.add("ocmp-chart");
+    var x0 = 58, x1 = 626, y0 = 28, y1 = 354;
+    function x(value) { return x0 + ocPct(value) / 100 * (x1 - x0); }
+    function y(value) { return y1 - ocPct(value) / 100 * (y1 - y0); }
+
+    [0, 25, 50, 75, 100].forEach(function (point) {
+      svg.appendChild(ocSvg("line", {
+        x1:x(point), x2:x(point), y1:y0, y2:y1, "class":"ocmp-grid"
+      }));
+      svg.appendChild(ocSvg("line", {
+        x1:x0, x2:x1, y1:y(point), y2:y(point), "class":"ocmp-grid"
+      }));
+      ocText(svg, x(point), 378, point + "%", "ocmp-tick", "middle");
+      ocText(svg, 47, y(point) + 4, point + "%", "ocmp-tick", "end");
+    });
+    ocText(svg, (x0 + x1) / 2, 410, "Options pricier",
+      "ocmp-axis l-en", "middle");
+    ocText(svg, (x0 + x1) / 2, 410, "期权更贵",
+      "ocmp-axis l-zh", "middle");
+    var yEn = ocText(svg, 16, (y0 + y1) / 2, "Protection pricier",
+      "ocmp-axis l-en", "middle");
+    var yZh = ocText(svg, 16, (y0 + y1) / 2, "下行保护更贵",
+      "ocmp-axis l-zh", "middle");
+    yEn.setAttribute("transform", "rotate(-90 16 " + ((y0 + y1) / 2) + ")");
+    yZh.setAttribute("transform", "rotate(-90 16 " + ((y0 + y1) / 2) + ")");
+
+    var groups = {};
+    rows.forEach(function (row, index) {
+      var trail = Array.isArray(row.trail) ? row.trail.filter(function (point) {
+        return ocPct(point.options_pct) !== null &&
+          ocPct(point.protection_pct) !== null;
+      }) : [];
+      if (trail.length > 1) {
+        var points = trail.map(function (point) {
+          return x(point.options_pct).toFixed(1) + "," +
+            y(point.protection_pct).toFixed(1);
+        }).join(" ");
+        var trailLine = ocSvg("polyline", {
+          points:points,
+          "class":"ocmp-trail ocmp-trail-" +
+            (row.zone === "fast" ? "fast" : "calm")
+        });
+        trailLine.setAttribute("data-ticker", row.ticker);
+        svg.appendChild(trailLine);
+      }
+      var group = ocSvg("g", {
+        "class":"ocmp-point ocmp-point-" +
+          (row.zone === "fast" ? "fast" : "calm"),
+        tabindex:"0", role:"button",
+        "aria-label":row.ticker + ", options " +
+          Math.round(row.options_pct) + " percent, protection " +
+          Math.round(row.protection_pct) + " percent"
+      });
+      group.setAttribute("data-ticker", row.ticker);
+      var cx = x(row.options_pct), cy = y(row.protection_pct);
+      group.appendChild(ocSvg("circle", {
+        cx:cx, cy:cy, r:row.zone === "fast" ? 7 : 6, "class":"ocmp-dot"
+      }));
+      var label = ocSvg("text", {
+        x:cx + 8, y:cy + ((index % 3) - 1) * 7 + 3, "class":"ocmp-label"
+      });
+      label.textContent = row.ticker;
+      group.appendChild(label);
+      var tip = ocSvg("title");
+      tip.textContent = row.ticker + " · options " +
+        Math.round(row.options_pct) + "% · protection " +
+        Math.round(row.protection_pct) + "%";
+      group.appendChild(tip);
+      svg.appendChild(group);
+      groups[row.ticker] = group;
+    });
+    chartWrap.appendChild(svg);
+    shell.appendChild(chartWrap);
+
+    var legend = ocEl("div", "ocmp-legend");
+    var calmKey = ocEl("span", "ocmp-key ocmp-key-calm");
+    ocPair(calmKey, "Calm zone", "平稳区"); legend.appendChild(calmKey);
+    var fastKey = ocEl("span", "ocmp-key ocmp-key-fast");
+    ocPair(fastKey, "Fast zone", "快速区"); legend.appendChild(fastKey);
+    var trailKey = ocEl("span", "ocmp-key ocmp-key-trail");
+    ocPair(trailKey, "Last 5 sessions", "最近5个交易日");
+    legend.appendChild(trailKey);
+    shell.appendChild(legend);
+
+    var readout = ocEl("div", "ocmp-readout");
+    var focusHead = ocEl("div", "ocmp-focus-head");
+    var focusTicker = ocEl("strong", "ocmp-focus-ticker");
+    focusHead.appendChild(focusTicker);
+    var focusState = ocEl("span", "ocmp-focus-state");
+    var focusStateEn = ocEl("span", "l-en");
+    var focusStateZh = ocEl("span", "l-zh");
+    focusState.appendChild(focusStateEn); focusState.appendChild(focusStateZh);
+    focusHead.appendChild(focusState); readout.appendChild(focusHead);
+    var metrics = ocEl("div", "ocmp-metrics");
+
+    function metric(kind) {
+      var box = ocEl("div", "ocmp-metric ocmp-metric--" + kind);
+      var top = ocEl("div", "ocmp-metric-top");
+      var name = ocEl("span", "ocmp-metric-name");
+      var nameEn = ocEl("span", "l-en"), nameZh = ocEl("span", "l-zh");
+      name.appendChild(nameEn); name.appendChild(nameZh);
+      var value = ocEl("strong", "ocmp-metric-value");
+      var bodyText = ocEl("p", "ocmp-metric-copy");
+      var bodyEn = ocEl("span", "l-en"), bodyZh = ocEl("span", "l-zh");
+      bodyText.appendChild(bodyEn); bodyText.appendChild(bodyZh);
+      top.appendChild(name); top.appendChild(value);
+      box.appendChild(top); box.appendChild(bodyText); metrics.appendChild(box);
+      return {
+        nameEn:nameEn, nameZh:nameZh, value:value, bodyEn:bodyEn, bodyZh:bodyZh
+      };
+    }
+
+    var optionsMetric = metric("options");
+    var protectionMetric = metric("protection");
+    readout.appendChild(metrics);
+    var receipt = ocEl("p", "ocmp-receipt");
+    var receiptEn = ocEl("span", "l-en"), receiptZh = ocEl("span", "l-zh");
+    receipt.appendChild(receiptEn); receipt.appendChild(receiptZh);
+    readout.appendChild(receipt);
+    var pricing = ocEl("p", "ocmp-receipt");
+    var pricingEn = ocEl("span", "l-en"), pricingZh = ocEl("span", "l-zh");
+    pricing.appendChild(pricingEn); pricing.appendChild(pricingZh);
+    readout.appendChild(pricing);
+    shell.appendChild(readout);
+
+    function select(row) {
+      Object.keys(groups).forEach(function (ticker) {
+        groups[ticker].classList.toggle("is-selected", ticker === row.ticker);
+      });
+      svg.querySelectorAll(".ocmp-trail[data-ticker]").forEach(function (trailLine) {
+        trailLine.classList.toggle(
+          "is-selected", trailLine.getAttribute("data-ticker") === row.ticker
+        );
+      });
+      focusTicker.textContent = row.ticker;
+      focusStateEn.textContent = row.zone === "fast" ? "FAST" : "CALM";
+      focusStateZh.textContent = row.zone === "fast" ? "快速" : "平稳";
+      focusState.className = "ocmp-focus-state ocmp-focus-state-" +
+        (row.zone === "fast" ? "fast" : "calm");
+
+      optionsMetric.nameEn.textContent = row.ticker + " options";
+      optionsMetric.nameZh.textContent = row.ticker + " 期权";
+      optionsMetric.value.textContent = Math.round(row.options_pct) + "%";
+      var priorN = ocPriorCount(row, isV2);
+      optionsMetric.bodyEn.textContent = isV2 ?
+        "ATM-call IV percentile: " + Math.round(row.options_pct) + "% across " +
+          priorN + " prior same-source observations (ties split equally)." :
+        "ATM-call IV is higher than " + Math.round(row.options_pct) + "% of " +
+          priorN + " prior same-source observations.";
+      optionsMetric.bodyZh.textContent = isV2 ?
+        "平值看涨隐波位于此前" + priorN + "个同源观测的第" +
+          Math.round(row.options_pct) + "百分位（并列值按半数计）。" :
+        "平值看涨隐波高于此前" + priorN + "个同源观测中约" +
+          Math.round(row.options_pct) + "%的读数。";
+
+      protectionMetric.nameEn.textContent = row.ticker + " protection";
+      protectionMetric.nameZh.textContent = row.ticker + " 下行保护";
+      protectionMetric.value.textContent =
+        Math.round(row.protection_pct) + "%";
+      protectionMetric.bodyEn.textContent = isV2 ?
+        "25-delta put-over-ATM-call IV skew percentile: " +
+          Math.round(row.protection_pct) + "% across the same " + priorN +
+          " prior same-source observations (ties split equally)." :
+        "25-delta put-over-ATM-call IV skew is higher than " +
+          Math.round(row.protection_pct) + "% of the same " + priorN +
+          " prior same-source observations.";
+      protectionMetric.bodyZh.textContent = isV2 ?
+        "25Δ看跌相对平值看涨的隐波偏度位于同一组此前" + priorN +
+          "个同源观测的第" + Math.round(row.protection_pct) +
+          "百分位（并列值按半数计）。" :
+        "25Δ看跌相对平值看涨的隐波偏度高于同一组此前" + priorN +
+          "个同源观测中约" + Math.round(row.protection_pct) + "%的读数。";
+
+      var iv = Number(row.atm_call_iv_pct), skew = Number(row.protection_skew_volpts);
+      receiptEn.textContent = "Current read: " +
+        (Number.isFinite(iv) ? iv.toFixed(1) + "% ATM-call IV" : "IV unavailable") +
+        " · " +
+        (Number.isFinite(skew) ?
+          (skew >= 0 ? "+" : "") + skew.toFixed(1) + " vol pts protection skew" :
+          "skew unavailable") +
+        " · context only.";
+      receiptZh.textContent = "当前读数：" +
+        (Number.isFinite(iv) ? iv.toFixed(1) + "% 平值看涨隐波" : "隐波不可用") +
+        " · " +
+        (Number.isFinite(skew) ?
+          (skew >= 0 ? "+" : "") + skew.toFixed(1) + " 个波动点保护偏度" :
+          "偏度不可用") +
+        " · 仅作背景参考。";
+
+      var ref = isV2 ? row.iv_pricing_reference : null;
+      var refValid = ref && ref.state === "available_unqualified" &&
+        ref.standard_deviations === 1 && ref.calendar_days_per_year === 365 &&
+        typeof ref.reference_pct === "number" && Number.isFinite(ref.reference_pct) &&
+        ref.reference_pct >= 0 && typeof ref.tenor_days === "number" &&
+        Number.isFinite(ref.tenor_days) && ref.tenor_days > 0;
+      if (refValid) {
+        var tenor = String(Math.round(ref.tenor_days * 10) / 10);
+        pricingEn.textContent = "1σ IV pricing reference over " + tenor +
+          " days: ±" + ref.reference_pct.toFixed(2) +
+          "%. Annual ATM IV is scaled using 365 calendar days. A price-unit range is unavailable because reference price timing and basis are unqualified. Pricing context only; no forecast or outcome probability.";
+        pricingZh.textContent = tenor + "日期限的1σ隐波定价参考：±" +
+          ref.reference_pct.toFixed(2) +
+          "%。按365个自然日缩放年化平值隐波。参考价格的时间与价格口径未经确认，价格单位区间不可用。仅作定价背景，不代表预测或结果概率。";
+      } else {
+        pricingEn.textContent = "IV pricing reference unavailable for this snapshot.";
+        pricingZh.textContent = "此快照的隐波定价参考不可用。";
+      }
+    }
+
+    rows.forEach(function (row) {
+      var group = groups[row.ticker];
+      function choose(event) {
+        if (event && event.type === "keydown" &&
+            event.key !== "Enter" && event.key !== " ") return;
+        if (event && event.preventDefault) event.preventDefault();
+        select(row);
+      }
+      group.addEventListener("click", choose);
+      group.addEventListener("keydown", choose);
+    });
+    select(rows.find(function (row) { return row.ticker === "SPY"; }) || rows[0]);
+
+    var foot = ocEl("div", "ocmp-foot");
+    var footCopy = ocEl("span", "ocmp-foot-copy");
+    ocPair(footCopy,
+      "Up to 30 selected names. The default view uses market bellwethers; if one is unavailable, a name with deeper selected-expiry chain coverage fills the slot. That fallback is not a liquidity ranking.",
+      "最多显示30个精选标的。默认视图使用市场代表性标的；若某标的不可用，则以所选到期日链覆盖更深的标的补位。该补位并非流动性排名。");
+    foot.appendChild(footCopy);
+    var link = ocEl("a", "ocmp-link");
+    link.href = "options.html#scanner";
+    ocPair(link, "Open Options workspace →", "打开期权工作台 →");
+    foot.appendChild(link);
+    shell.appendChild(foot);
+
+    detail.appendChild(shell);
+    var volDetail = body.querySelector ? body.querySelector(".riskdlg-vw") : null;
+    if (volDetail && volDetail.parentNode === body) {
+      body.insertBefore(detail, volDetail.nextSibling);
+    } else {
+      var drivers = body.querySelector ? body.querySelector(".riskdlg-drivers") : null;
+      if (drivers) body.insertBefore(detail, drivers);
+      else body.appendChild(detail);
+    }
+    return true;
+  }
+
+  function mountOptionsCompare() {
+    if (compareLoaded || comparePending ||
+        typeof document.querySelector !== "function") return;
+    var body = document.querySelector("#dlg-risk .mx5-dlg-body");
+    if (!body || !document.head || typeof fetch !== "function") return;
+    comparePending = true;
+    Promise.all([
+      loadOptionsCompareStyles(),
+      fetch(COMPARE_URL, {cache:"no-store"})
+        .then(function (response) { return response.ok ? response.json() : null; })
+    ])
+      .then(function (results) {
+        compareLoaded = true; comparePending = false;
+        if (results[0]) renderOptionsCompare(results[1], body);
+      })
+      .catch(function () { compareLoaded = true; comparePending = false; });
+  }
+
   var lastLiveFeed = null, hadLive = false, requestPending = false;
 
   function contextCopy() {
@@ -292,5 +685,7 @@
 
   if (document.readyState !== "loading") tick();
   else document.addEventListener("DOMContentLoaded", tick);
+  if (document.readyState !== "loading") mountOptionsCompare();
+  else document.addEventListener("DOMContentLoaded", mountOptionsCompare);
   setInterval(tick, Math.max(15, POLL) * 1000);
 })();

@@ -1,0 +1,22 @@
+{
+  "schema": "mastermind.options_compare_visual_receipt.v1",
+  "captured_from_branch": "sol/options-compare-risk-detail-20261006",
+  "source_head_before_evidence_commit": "53a9a63794c343119fd73f836f6492b4d9bd5898",
+  "captured_at": "2026-10-07T06:00:00Z",
+  "capture_scope": "local static render of exact branch site/macro.html + exact branch generated CSS/JS assets; options payload built from tracked canonical skew ledger",
+  "production_claim": false,
+  "authenticated_production": false,
+  "natural_market_event": false,
+  "site_macro_sha256": "7c2d208faaea5c4718dbec6bfeaf99bf570e43ba91b53eba69f6629059b2c829",
+  "risk_js_sha256": "e5ad3fdba5498bcb0245612f83fbe327910194b7ddf08d04a2afb84890dd1641",
+  "risk_css_asset_sha256": "6f2cdcc1d6106a7124731de5cda2cd9c95b4fbf7b5a75c09ee0b8740593cc749",
+  "options_compare_sha256": "27282f6908cb5e2968ac55ff9f20b90a6f439b146fd45fbf27f115773ad2b781",
+  "interaction_assertions": {
+    "cells": "desktop/mobile x en/zh x light/dark = 8 forced-state cells",
+    "points_each": 30,
+    "no_page_overflow": true,
+    "chart_visible": true,
+    "summary_keyboard_focus": true
+  },
+  "note": "Anonymous static evidence proves layout/interaction only. Production publication, access-tier execution, and live-data freshness require separate post-merge proof."
+}

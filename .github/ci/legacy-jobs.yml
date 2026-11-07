@@ -20891,6 +20891,7 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - "site/risk_envelope_live.js"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -36890,6 +36891,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "templates/options_compare.css"
+      - "site/options_compare.css"
+      - "site/assets/css/04f9b05b.css"
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -47011,6 +47015,10 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "templates/options_compare.css"
+      - "site/options_compare.css"
+      - "site/risk_envelope_live.js"
+      - "site/assets/css/04f9b05b.css"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -47580,6 +47588,7 @@ jobs:
     # the nightly engine shell). No data/** fallback.
     scope: exclusive
     paths:
+      - "site/options_compare.json"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"

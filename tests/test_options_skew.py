@@ -1782,3 +1782,329 @@ def test_k3e_a8_projection_exposes_owner_underlying_reference_but_keeps_it_unqua
         "delta_convention_receipt",
         "immutable_source_projection_receipt",
     } <= set(out["qualification"]["missing"])
+
+
+# --------------------------------------------------------------------------- #
+# Macro Risk Detail — cross-name options pricing map (display-only)
+# --------------------------------------------------------------------------- #
+
+def _compare_history(n_names=30, n_sessions=65):
+    import math
+    dates = pd.bdate_range("2026-07-01", periods=n_sessions)
+    rows = []
+    for k in range(n_names):
+        ticker = f"T{k:02d}"
+        for i, stamp in enumerate(dates):
+            amp = 0.030 if k < 3 else 0.006 + k * 0.0001
+            rows.append({
+                "date": stamp.date().isoformat(),
+                "underlying": ticker,
+                "atm_call_iv": 0.25 + amp * math.sin(i / 2 + k),
+                "skew": 0.02 + amp * 0.6 * math.cos(i / 2.4 + k / 3),
+                "n_strikes": 1000 - k,
+                "spot": 100.0 + k,
+                "tenor_days": 30.0,
+                "source": "thetadata",
+            })
+    return pd.DataFrame(rows), dates
+
+
+def test_options_compare_is_context_only_pit_and_uses_one_complete_session():
+    hist, dates = _compare_history()
+    asof = dates[50].date().isoformat()
+    before = S.build_compare_payload(hist, as_of=asof, today=date(2026, 10, 6))
+
+    future = pd.DataFrame([{
+        "date": "2026-12-31", "underlying": "T00", "atm_call_iv": 9.0,
+        "skew": 9.0, "n_strikes": 1000, "spot": 100.0, "tenor_days": 30.0,
+        "source": "thetadata",
+    }])
+    after = S.build_compare_payload(
+        pd.concat([hist, future], ignore_index=True),
+        as_of=asof,
+        today=date(2026, 10, 6),
+    )
+
+    assert before["schema"] == S.COMPARE_SCHEMA
+    assert before["state"] == "ready"
+    assert before["context_only"] is True and before["scored"] is False
+    assert before["authority"] == "display_only"
+    left = next(row for row in before["rows"] if row["ticker"] == "T00")
+    right = next(row for row in after["rows"] if row["ticker"] == "T00")
+    assert left["trail"] == right["trail"]
+    assert all(row["asof"] == asof for row in before["rows"])
+
+
+def test_options_compare_excludes_cross_source_history_from_percentiles():
+    hist, dates = _compare_history(n_names=1, n_sessions=40)
+    cutoff = dates[15].date().isoformat()
+    old = hist["date"] < cutoff
+    hist.loc[old, "source"] = "polygon_gex"
+    # Make the old-source observations absurd so contamination is obvious.
+    hist.loc[old, "atm_call_iv"] = 9.0
+    hist.loc[old, "skew"] = 9.0
+
+    mixed = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+    theta_only = S.build_compare_payload(
+        hist[hist["source"] == "thetadata"].copy(),
+        as_of=dates[-1].date().isoformat(),
+    )
+
+    assert mixed["history_basis"]["kind"] == "same_source_as_current_session"
+    assert len(mixed["rows"]) == 1
+    row = mixed["rows"][0]
+    clean = theta_only["rows"][0]
+    assert row["source"] == "thetadata"
+    assert row["history_n"] == 25
+    assert row["options_pct"] == clean["options_pct"]
+    assert row["protection_pct"] == clean["protection_pct"]
+    assert row["trail"] == clean["trail"]
+
+
+def test_options_compare_caps_at_30_and_fast_is_movement_only_top_decile():
+    hist, dates = _compare_history(n_names=35)
+    payload = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+
+    assert len(payload["rows"]) == 30
+    assert [row["ticker"] for row in payload["rows"][:3]] == ["T00", "T01", "T02"]
+    fast = [row for row in payload["rows"] if row["zone"] == "fast"]
+    assert len(fast) == 3
+    assert payload["fast_rule"]["fast_n"] == 3
+    assert "not direction or a trade signal" in payload["fast_rule"]["detail"]
+    assert min(row["path_length"] for row in fast) >= max(
+        row["path_length"] for row in payload["rows"] if row["zone"] == "calm"
+    )
+
+
+def test_options_compare_short_or_cross_date_name_stays_absent():
+    hist, dates = _compare_history(n_names=3, n_sessions=30)
+    asof = dates[-1].date().isoformat()
+    hist = hist[~((hist["underlying"] == "T01") & (hist["date"] == asof))]
+    keep_t02 = set(d.date().isoformat() for d in dates[-10:])
+    hist = hist[(hist["underlying"] != "T02") | hist["date"].isin(keep_t02)]
+
+    payload = S.build_compare_payload(hist, as_of=asof)
+    assert {row["ticker"] for row in payload["rows"]} == {"T00"}
+
+
+def test_options_skew_emit_writes_compare_from_the_same_ledger(monkeypatch, tmp_path):
+    from scripts import build_options_skew as builder
+
+    hist, dates = _compare_history(n_names=3, n_sessions=30)
+    asof = dates[-1].date().isoformat()
+    skew_payload = {
+        "schema": S.SCHEMA, "ledger_asof": asof, "n": 3,
+        "scored": False, "gate_status": "measuring",
+    }
+    monkeypatch.setattr(builder.S, "emit_from_ledger", lambda **kwargs: skew_payload)
+    monkeypatch.setattr(builder.S, "load_history", lambda: hist)
+    monkeypatch.setattr(builder.config, "site_dir", lambda: tmp_path)
+
+    returned = builder.emit(today=date(2026, 10, 6))
+    assert returned == skew_payload
+    compare = json.loads((tmp_path / "options_compare.json").read_text())
+    assert compare["schema"] == S.COMPARE_SCHEMA
+    assert compare["as_of"] == asof
+    assert compare["state"] == "ready"
+    assert compare["context_only"] is True and compare["scored"] is False
+
+
+def test_options_compare_weekends_do_not_change_session_ranks_trails_or_asof():
+    hist, dates = _compare_history(n_names=1, n_sessions=35)
+    asof = dates[-1].date().isoformat()
+    weekend_dates = [
+        stamp for stamp in pd.date_range(
+            dates[0], dates[-1] + pd.Timedelta(days=7)
+        )
+        if stamp.weekday() >= 5
+    ]
+    weekends = pd.DataFrame([
+        {
+            **hist.iloc[-1].to_dict(),
+            "date": stamp.date().isoformat(),
+            "atm_call_iv": 9.0,
+            "skew": 9.0,
+        }
+        for stamp in weekend_dates
+    ])
+    mixed = pd.concat([hist, weekends], ignore_index=True)
+    clean = S.build_compare_payload(hist, as_of=asof, today=date(2026, 10, 6))
+
+    explicit = S.build_compare_payload(
+        mixed, as_of=asof, today=date(2026, 10, 6)
+    )
+    latest = S.build_compare_payload(mixed, today=date(2026, 10, 6))
+
+    assert clean["state"] == "ready"
+    assert clean["rows"][0]["history_n"] == 35
+    assert len(clean["rows"][0]["trail"]) == 5
+    for payload in (explicit, latest):
+        assert payload["as_of"] == asof
+        assert payload["rows"] == clean["rows"]
+        assert payload["fast_rule"] == clean["fast_rule"]
+        assert payload["source_stale_days"] == clean["source_stale_days"]
+
+
+def test_options_compare_weekends_cannot_satisfy_minimum_sessions():
+    hist, dates = _compare_history(n_names=1, n_sessions=16)
+    weekends = pd.DataFrame([
+        {**hist.iloc[-1].to_dict(), "date": stamp.date().isoformat()}
+        for stamp in pd.date_range(dates[0], dates[-1])
+        if stamp.weekday() >= 5
+    ])
+    mixed = pd.concat([hist, weekends], ignore_index=True)
+    assert len(hist) < 20 <= len(mixed)
+
+    payload = S.build_compare_payload(
+        mixed, as_of=dates[-1].date().isoformat()
+    )
+
+    assert payload["minimum_sessions"] == 21
+    assert payload["minimum_prior_observations"] == 20
+    assert payload["state"] == "unavailable"
+    assert payload["rows"] == []
+
+
+def test_options_compare_weekend_only_history_has_no_complete_session():
+    hist, _ = _compare_history(n_names=1, n_sessions=25)
+    hist["date"] = [
+        stamp.date().isoformat()
+        for stamp in pd.date_range("2026-05-02", periods=25, freq="W-SAT")
+    ]
+
+    latest = S.build_compare_payload(hist)
+    explicit = S.build_compare_payload(hist, as_of=hist["date"].iloc[-1])
+
+    assert latest["as_of"] is None
+    for payload in (latest, explicit):
+        assert payload["state"] == "unavailable"
+        assert payload["rows"] == []
+
+
+
+# Original-journey continuation: strictly prior baseline and IV pricing scale.
+def test_options_compare_v2_requires_twenty_prior_observations():
+    hist, dates = _compare_history(n_names=2, n_sessions=21)
+    short = S.build_compare_payload(hist, as_of=dates[-2].date().isoformat())
+    full = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+    assert short["state"] == "unavailable" and short["rows"] == []
+    assert full["schema"] == "options_compare.v2"
+    assert full["rank_method"] == "midpoint_ties_strictly_prior"
+    assert full["minimum_prior_observations"] == 20
+    assert full["window_prior_observations"] == 60
+    assert full["minimum_sessions"] == 21
+    assert full["window_target_sessions"] == 61
+    assert len(full["rows"]) == 2
+    for row in full["rows"]:
+        assert row["prior_n"] == 20
+        assert row["history_n"] == 21
+        assert len(row["trail"]) == 1
+        assert row["trail"][0]["prior_n"] == 20
+
+
+def test_options_compare_v2_midpoint_ties_and_sixty_prior_window():
+    hist, dates = _compare_history(n_names=2, n_sessions=65)
+    hist["atm_call_iv"] = .25
+    hist["skew"] = .02
+    payload = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+    assert len(payload["rows"]) == 2
+    for row in payload["rows"]:
+        assert row["options_pct"] == 50.0
+        assert row["protection_pct"] == 50.0
+        assert row["prior_n"] == 60
+        assert row["history_n"] == 61
+
+
+def test_options_compare_v2_oldest_of_sixty_prior_values_counts():
+    hist, dates = _compare_history(n_names=1, n_sessions=62)
+    hist["atm_call_iv"] = .30
+    hist["skew"] = .03
+    # The oldest included prior value must survive: 60 prior values + current.
+    hist.loc[1, ["atm_call_iv", "skew"]] = [.10, .01]
+    hist.loc[61, ["atm_call_iv", "skew"]] = [.20, .02]
+    row = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())["rows"][0]
+    assert row["options_pct"] == pytest.approx(1.7)
+    assert row["protection_pct"] == pytest.approx(1.7)
+    assert row["prior_n"] == 60
+
+
+def test_options_compare_v2_same_source_threshold_counts_prior_only():
+    hist, dates = _compare_history(n_names=1, n_sessions=21)
+    hist.loc[0, "source"] = "polygon_gex"
+    payload = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+    assert payload["state"] == "unavailable"
+    assert payload["rows"] == []
+
+
+def test_options_compare_v2_every_trail_point_has_its_own_prior_cutoff():
+    hist, dates = _compare_history(n_names=1, n_sessions=70)
+    payload = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+    row = payload["rows"][0]
+    assert len(row["trail"]) == 5
+    for point in row["trail"]:
+        isolated = S.build_compare_payload(
+            hist[hist["date"] <= point["date"]].copy(), as_of=point["date"]
+        )["rows"][0]
+        assert isolated["trail"][-1] == point
+        assert point["prior_n"] == 60
+    assert payload["context_only"] is True and payload["scored"] is False
+
+
+def test_options_compare_v2_rank_does_not_replace_an_invalid_current_value():
+    assert S._compare_rank_vs_prior([.10, .10, .10]) == 50.0
+    assert S._compare_rank_vs_prior([.10, .10, None]) is None
+    assert S._compare_rank_vs_prior([.10, .10, True]) is None
+
+
+def test_options_compare_v2_actual_tenor_iv_reference_keeps_price_clock_unknown():
+    import math
+    hist, dates = _compare_history(n_names=1, n_sessions=25)
+    hist.loc[hist.index[-1], ["atm_call_iv", "spot", "tenor_days"]] = [.20, 100.0, 36.5]
+    row = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())["rows"][0]
+    ref = row["iv_pricing_reference"]
+    assert ref["state"] == "available_unqualified"
+    assert ref["standard_deviations"] == 1
+    assert ref["calendar_days_per_year"] == 365
+    assert ref["tenor_days"] == 36.5
+    assert ref["reference_pct"] == pytest.approx(100 * .20 * math.sqrt(36.5 / 365), abs=1e-6)
+    assert ref["reference_price_units"] is None
+    assert ref["price_units_reason"] == "reference_price_clock_and_basis_unqualified"
+    assert ref["underlying_reference"] == {
+        "reported_value": 100.0,
+        "observed_at": None,
+        "clock_qualified": False,
+        "basis_qualified": False,
+    }
+    assert ref["physical_probability"] is None
+    assert ref["forecast"] is False and ref["trade_authority"] is False
+
+
+@pytest.mark.parametrize("tenor", [None, 0, -1, float("inf"), float("nan")])
+def test_options_compare_v2_invalid_tenor_cannot_become_a_pricing_reference(tenor):
+    hist, dates = _compare_history(n_names=1, n_sessions=25)
+    hist.loc[hist.index[-1], "tenor_days"] = tenor
+    ref = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())["rows"][0]["iv_pricing_reference"]
+    assert ref["state"] == "unavailable"
+    assert ref["reference_pct"] is None and ref["reference_price_units"] is None
+
+
+@pytest.mark.parametrize("spot", [None, 0, -1, float("inf"), float("nan")])
+def test_options_compare_v2_missing_spot_does_not_invent_price_units(spot):
+    hist, dates = _compare_history(n_names=1, n_sessions=25)
+    hist.loc[hist.index[-1], "spot"] = spot
+    ref = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())["rows"][0]["iv_pricing_reference"]
+    assert ref["state"] == "available_unqualified"
+    assert ref["reference_pct"] is not None
+    assert ref["underlying_reference"]["reported_value"] is None
+    assert ref["underlying_reference"]["observed_at"] is None
+    assert ref["reference_price_units"] is None
+
+
+@pytest.mark.parametrize("iv", [0, -0.2, float("nan"), float("inf"), 1e308, True])
+def test_options_compare_v2_pricing_reference_refuses_invalid_or_overflowing_iv(iv):
+    ref = S._compare_iv_pricing_reference({
+        "atm_call_iv": iv, "spot": 100.0, "tenor_days": 1e308,
+        "date": "2026-10-01", "source": "thetadata",
+    })
+    assert ref["state"] == "unavailable"
+    assert ref["reference_pct"] is None and ref["reference_price_units"] is None
