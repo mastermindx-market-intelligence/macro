@@ -4110,6 +4110,48 @@ def test_company_intelligence_product_surfaces_reach_focused_ci_packs() -> None:
     assert re.search(r"\bhttpx\b", publish_ops_install)
 
 
+
+def test_earnings_worker_control_plane_has_binding_code_gate_owner(real_manifest_scopes) -> None:
+    """An ops-only or test-only worker diff must execute its hermetic contract."""
+    jobs, _note = real_manifest_scopes
+    by_id = {job.job_id: job for job in jobs}
+    job = by_id["earnings-release-identity"]
+
+    assert job.gate == "code"
+    assert job.is_scoped, "worker ownership must be proved after scope inference"
+    declared = set(job.definition.get("paths") or [])
+    required = {
+        "ops/bootstrap_earnings_worker.sh",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/launchd/com.mastermind.earnings-worker.plist",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/launchd/run_earnings_worker.sh",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "tools/earnings_worker/README.md",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "tests/test_earnings_worker_launchd.py",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "config/earnings_qual.yml",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+    }
+    assert required <= declared
+
+    commands = "\n".join(
+        str(step.get("run", ""))
+        for step in job.definition["steps"]
+        if isinstance(step, dict)
+    )
+    assert "tests/test_earnings_worker_launchd.py" in commands  # ci-trigger-closure: data — suite NAME checked in manifest commands, not opened
+
+    # These are the two previously-dark shapes from PR #7366 review: changing
+    # only the test contract or only one production control path must select the
+    # binding code-gate owner, not merely a broader gate:data ops pack.
+    for changed in (
+        "tests/test_earnings_worker_launchd.py",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/bootstrap_earnings_worker.sh",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/launchd/com.mastermind.earnings-worker.plist",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/launchd/run_earnings_worker.sh",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+    ):
+        selected, _reason = PACK.select_jobs(
+            [item for item in jobs if item.gate == "code"], [changed]
+        )
+        assert "earnings-release-identity" in {item.job_id for item in selected}
+
+
 def test_ci_pack_partial_clone_keeps_history_without_historical_site_blobs() -> None:
     """ci-plan keeps full history; packs shallow-checkout the current tree.
 

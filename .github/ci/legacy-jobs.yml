@@ -42006,6 +42006,20 @@ jobs:
     # rather than running, which reads as a pack failure rather than a missing dep.
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
     gate: code
+    # Bind the hermetic worker credential/control contract to ordinary PR CI.
+    # Keep transitive inference and the broader nightly data owners unchanged.
+    paths:
+      - "ops/bootstrap_earnings_worker.sh"
+      - "ops/launchd/com.mastermind.earnings-worker.plist"
+      - "ops/launchd/run_earnings_worker.sh"
+      - "tools/earnings_worker/README.md"
+      - "tests/test_earnings_worker_launchd.py"
+      - "tests/test_edgar_filing_identity_join.py"
+      - "tests/test_earnings_release_binding.py"
+      - "tests/test_edgar_earnings_8k.py"
+      - "tests/test_marketing_edgar_earnings_wire.py"
+      - "ops/earnings_worker_requirements.txt"
+      - "config/earnings_qual.yml"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -42021,7 +42035,8 @@ jobs:
           tests/test_edgar_filing_identity_join.py
           tests/test_earnings_release_binding.py
           tests/test_edgar_earnings_8k.py
-          tests/test_marketing_edgar_earnings_wire.py -q -rs
+          tests/test_marketing_edgar_earnings_wire.py
+          tests/test_earnings_worker_launchd.py -q -rs
 
   market-memory-contract:
     # Public-safe temporal-context and product-shell contract. Private captures,
