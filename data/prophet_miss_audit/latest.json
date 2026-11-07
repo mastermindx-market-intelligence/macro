@@ -178,7 +178,7 @@
    "GILD",
    "GDDY"
   ],
-  "plan_universe_n": 748
+  "plan_universe_n": 761
  },
  "themes": {
   "basis": "subsector_rotation.emerging_score",
@@ -314,10 +314,9 @@
   "n_gaps": 7,
   "featured_coverage_pct": 41.7,
   "gap_class_hist": {
-   "ADMISSION_GAP": 3,
+   "ADMISSION_GAP": 4,
    "COVERED_FEATURED": 5,
-   "FEATURED_GAP": 3,
-   "SCORING_GAP": 1
+   "FEATURED_GAP": 3
   },
   "emerging": [
    {
@@ -355,7 +354,7 @@
      "alpha_below_floor": 1,
      "already_open": 1
     },
-    "best_pool_rank": 47,
+    "best_pool_rank": 50,
     "gap_class": "FEATURED_GAP",
     "gap": true
    },
@@ -424,7 +423,7 @@
     "rs_mom": 1.88,
     "accel": 12.348,
     "n_members": 8,
-    "eligible_n": 1,
+    "eligible_n": 0,
     "scored_n": 0,
     "featured_n": 0,
     "visible_n": 0,
@@ -434,17 +433,13 @@
      "leaders": 0,
      "ran": 0
     },
-    "members_eligible": [
-     "JOBY"
-    ],
+    "members_eligible": [],
     "members_scored": [],
     "members_featured": [],
     "members_visible": [],
-    "blocker_hist": {
-     "sector_cap_overflow": 1
-    },
-    "best_pool_rank": 53,
-    "gap_class": "SCORING_GAP",
+    "blocker_hist": {},
+    "best_pool_rank": null,
+    "gap_class": "ADMISSION_GAP",
     "gap": true
    },
    {
@@ -825,7 +820,7 @@
      "alpha_below_floor": 1,
      "already_open": 1
     },
-    "best_pool_rank": 47,
+    "best_pool_rank": 50,
     "gap_class": "FEATURED_GAP",
     "gap": true
    },
@@ -840,7 +835,7 @@
     "rs_mom": 1.88,
     "accel": 12.348,
     "n_members": 8,
-    "eligible_n": 1,
+    "eligible_n": 0,
     "scored_n": 0,
     "featured_n": 0,
     "visible_n": 0,
@@ -850,17 +845,13 @@
      "leaders": 0,
      "ran": 0
     },
-    "members_eligible": [
-     "JOBY"
-    ],
+    "members_eligible": [],
     "members_scored": [],
     "members_featured": [],
     "members_visible": [],
-    "blocker_hist": {
-     "sector_cap_overflow": 1
-    },
-    "best_pool_rank": 53,
-    "gap_class": "SCORING_GAP",
+    "blocker_hist": {},
+    "best_pool_rank": null,
+    "gap_class": "ADMISSION_GAP",
     "gap": true
    },
    {
@@ -1055,7 +1046,7 @@
   "n_scored": 49,
   "n_misses": 0,
   "n_top_decile": 2,
-  "n_unrepresented": 22,
+  "n_unrepresented": 20,
   "misses": [],
   "baskets": [
    {
@@ -1123,11 +1114,13 @@
     "n_members": 18,
     "n_members_live": 18,
     "n_members_read": 18,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "CL"
+    ],
     "present_counts": {
      "buy": 0,
-     "watch": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -1308,11 +1301,13 @@
     "n_members": 35,
     "n_members_live": 33,
     "n_members_read": 35,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "CL"
+    ],
     "present_counts": {
      "buy": 0,
-     "watch": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -1665,12 +1660,13 @@
     "n_members": 15,
     "n_members_live": 15,
     "n_members_read": 15,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
+     "BKSY",
      "PL"
     ],
     "present_counts": {
-     "buy": 1,
+     "buy": 2,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -2028,15 +2024,14 @@
     "n_members": 24,
     "n_members_live": 24,
     "n_members_read": 24,
-    "n_members_on_board": 3,
+    "n_members_on_board": 2,
     "members_on_board": [
      "DELL",
-     "MPWR",
-     "MU"
+     "MPWR"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 3,
+     "watch": 2,
      "leaders": 0,
      "ran": 0
     },
@@ -2124,14 +2119,13 @@
     "n_members": 5,
     "n_members_live": 4,
     "n_members_read": 5,
-    "n_members_on_board": 2,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "MU",
      "SNDK"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 2,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -2149,17 +2143,16 @@
     "n_members": 75,
     "n_members_live": 74,
     "n_members_read": 75,
-    "n_members_on_board": 5,
+    "n_members_on_board": 4,
     "members_on_board": [
      "ACN",
      "DELL",
      "MPWR",
-     "MU",
      "SNDK"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 4,
+     "watch": 3,
      "leaders": 1,
      "ran": 0
     },
@@ -2257,16 +2250,16 @@
   "graded_by": "engine.grading.grade_next_bar_return (next-bar fill, survivorship-aware) via engine.name_score_grader's own forward-store ladder",
   "scored_field": "score — name_score.potential_score, the number the US board displays as conviction.score (scripts/build_stock_library.py overwrites c['score'] with the potential score for backward compatibility)",
   "available": true,
-  "n_calls": 196419,
+  "n_calls": 199317,
   "n_frozen_echoes_excluded": 241,
-  "n_stamp_dates": 80,
+  "n_stamp_dates": 81,
   "stamp_dates": {
    "first": "2026-06-29",
-   "last": "2026-11-05"
+   "last": "2026-11-06"
   },
   "forward_store": {
    "group": "stocks",
-   "n_names_stamped": 3029,
+   "n_names_stamped": 3030,
    "n_names_resolved": 377,
    "coverage_pct": 12.4,
    "note": "the forward join resolves only names with a per-name close store; a stamped name with no store is absent from every horizon, not scored zero"

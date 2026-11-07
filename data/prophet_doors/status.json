@@ -1,5 +1,5 @@
 {
-  "appended": 14,
+  "appended": 0,
   "asof": "2026-11-06",
   "candidates": {
     "R": 0,
@@ -8,50 +8,26 @@
   },
   "deduped": {
     "R": 0,
-    "T": 2,
-    "W": 22
+    "T": 7,
+    "W": 31
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-11-06",
-      "consulted": true,
-      "n_keys": 27,
-      "n_themes": 18,
-      "ok": true,
-      "reason": null,
-      "source": "site/basketdata/foresight_cascade.json"
+      "consulted": false
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": true,
-      "null_reasons": {
-        "ohlcv_absent": 37
-      },
+      "consulted": false,
+      "null_reasons": {},
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {
-        "Commodities Metals": {
-          "theme_thrust_frac": 0.04,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Digital Entertainment": {
-          "theme_thrust_frac": 0.0435,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Electric Vehicles": {
-          "theme_thrust_frac": 0.0882,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        }
-      },
+      "themes_read": {},
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 78,
-      "tickers_read": 115
+      "tickers_ok": 0,
+      "tickers_read": 0
     },
     "keys": [
       "relay_count_3d",
@@ -69,33 +45,17 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": true,
-      "high_lookback": 63,
-      "members_indexed": 205,
-      "n_covered": 107,
-      "reason": null,
-      "window_sessions": 21
+      "consulted": false
     },
     "turnover": {
-      "consulted": true,
-      "last_session": "2026-11-06",
-      "n_tickers": 1550,
-      "ok": true,
-      "reason": null,
-      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
-      "window_max": 60
+      "consulted": false
     }
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": true,
-      "direction": "bull",
-      "grid": "W",
-      "horizon": "13w",
-      "n_asked": 9,
-      "n_covered": 9,
-      "reason": null,
-      "source": "engine.event_atlas.receipt"
+      "consulted": false,
+      "n_asked": 0,
+      "n_covered": 0
     },
     "enabled": true,
     "keys": [
@@ -117,24 +77,8 @@
   },
   "flag_tickers": {
     "R": [],
-    "T": [
-      "NEM",
-      "RGLD",
-      "ALB",
-      "AMZN",
-      "VZ"
-    ],
-    "W": [
-      "CASY",
-      "TPR",
-      "O",
-      "EIX",
-      "BYD",
-      "LVS",
-      "WYNN",
-      "APP",
-      "WTFC"
-    ]
+    "T": [],
+    "W": []
   },
   "n_universe": 1489,
   "overflow": {
@@ -142,8 +86,8 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-11-07 12:45:10",
-  "runtime_s": 104.3,
+  "run_utc": "2026-11-07 15:49:34",
+  "runtime_s": 121.9,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
@@ -194,7 +138,7 @@
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 18.8,
+    "runtime_s": 22.3,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 60,

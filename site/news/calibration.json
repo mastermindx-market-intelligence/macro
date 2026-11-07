@@ -2,7 +2,7 @@
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
   "asof": "2026-11-07",
-  "n_events_logged": 1885,
+  "n_events_logged": 1886,
   "n_events_graded": 1510,
   "classes": [
     {
@@ -151,7 +151,7 @@
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 143,
+      "n": 144,
       "n_graded": 57,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
