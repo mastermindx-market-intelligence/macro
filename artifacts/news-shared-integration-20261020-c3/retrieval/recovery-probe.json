@@ -1,0 +1,97 @@
+{
+  "schema": "news.integration.recovery_probe_result.v1",
+  "observed_at": "2026-10-20T10:29:55.264340+00:00",
+  "proof_scope": "Nine recovered reproduction cases on current unmodified source, isolated SQLite fixtures; no production claim.",
+  "source_unchanged": true,
+  "source_sha256": {
+    "engine/qbus_news_store.py": "343c5e7d326406d491c045f9913756c28380511fb8c26b18eaf6fb4310f4932c",
+    "engine/qbus_news_contract.py": "3b6c25f1acf4a466c48b15ee829fd1572d7f54def29330ab9a2247cc09e414e3",
+    "engine/qbus_news_cluster.py": "0740c1860d0630defa0b0d64d53cee28f1393467e3e2eb149f4f72b87dbe0a2e",
+    "engine/qbus_news_quality.py": "d99532e07e4e92220412e0f75916fc3ce71c981f0b320d3ab88eed51f8e3df21",
+    "engine/qbus_news_receipts.py": "0256e34ab964e6300e4f10622ff78bdb5e52263788fb454c10e79f2d3329edf4",
+    "engine/qbus_news_reducer.py": "24d5374ec1b29dd9f3031546863e42a8183fce1cd69fa160445f0314f3ba8310",
+    "engine/news_common.py": "3ce3d36fc3db1884f471d86049c7ca931f0aefee5d362fcf8bf483c90d93c67b",
+    "engine/qkernel.py": "bfffb15fd03709f38466f9d0620802ef6e57ce24fc0cbb8236274ca0e24daa2b",
+    "app/ticker_news.py": "ce765d539d8d00b2adf14bb4c05255e96f259f5f60ce954133bc0cf5f3e93485",
+    "app/ticker_news_stream.py": "5d1bc575711e785c9c8b92eb621aa4bae78014449bc917780eaf211ecbb96fb4",
+    "tests/test_ticker_news_api.py": "feaac492f5a93b20f7342f0f7440fe7832a8ad806b4d8d987b6fde7b837f6eba",
+    "engine/qbus_news_retrieval.py": "deba9840d37b2c2580357b63279b725bf8bdefcc3f6c3128f766206e5a876eb6"
+  },
+  "cases": [
+    {
+      "case": "quality_and_stream_agree",
+      "passed": true,
+      "groups": 1,
+      "sources": 2,
+      "representative": "massive:reuters.com",
+      "change_cursor": 2
+    },
+    {
+      "case": "teaser_permissions_are_source_specific",
+      "passed": true
+    },
+    {
+      "case": "same_publisher_two_transports_count_once",
+      "passed": true,
+      "source_count": 1,
+      "item_count": 2
+    },
+    {
+      "case": "material_revision_not_hidden_by_quality",
+      "passed": true,
+      "snapshot_title": "Nvidia guides revenue to $9.1B",
+      "stream_title": "Nvidia guides revenue to $9.1B",
+      "same_group": true
+    },
+    {
+      "case": "different_initial_facts_do_not_merge",
+      "passed": true,
+      "groups": 2
+    },
+    {
+      "case": "same_security_burst_does_not_duplicate",
+      "passed": true,
+      "accelerator_groups": 1,
+      "known_candidate_gap": true
+    },
+    {
+      "case": "partial_source_revocation",
+      "passed": true,
+      "frames": [
+        {
+          "event": "upsert",
+          "source": "massive:reuters.com"
+        },
+        {
+          "event": "restricted",
+          "source": null
+        }
+      ]
+    },
+    {
+      "case": "derivative_revocation",
+      "passed": true,
+      "frames": [
+        {
+          "event": "upsert",
+          "source": "massive:reuters.com"
+        },
+        {
+          "event": "restricted",
+          "source": null
+        }
+      ]
+    },
+    {
+      "case": "during_await_revocation",
+      "passed": true,
+      "frames": [
+        {
+          "event": "restricted",
+          "source": null
+        }
+      ]
+    }
+  ],
+  "original_receipt_sha256": "4282cbd15ef36d23a614319dbd98903ebc33035568ab8eed9af1e9aa93648907"
+}

@@ -1,0 +1,8 @@
+{
+  "mode": "isolated_local_member_access_fixture",
+  "production_authentication_tested": false,
+  "button": "Risk building \u00b7 56",
+  "existing_button_opens_radar": true,
+  "evidence_keyboard_opens": true,
+  "escape_closes": true
+}

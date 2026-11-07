@@ -1,0 +1,35 @@
+{
+  "schema": "mastermind.terminal_tactical_r1_registration_receipt.v1",
+  "study_id": "tti-r1-extended-session-v1",
+  "family": "entry_radar",
+  "pre_registration_commit": "c621a35aec7fcafd9cbb9a531c614bb70bbcf790",
+  "registration_commit": "0109877f57009973cbebe9f72e43bd23e35a5183",
+  "ledger_lines_before": 1674,
+  "ledger_lines_after": 1758,
+  "study_rows": 84,
+  "ledger_prefix_sha256": "7a82e5b7766a7f2bbeb9e8c46bb57ab0b9a1b32d262a853944d093645769f119",
+  "ledger_after_sha256": "aef5e0cb097ff9957135704839646b5cca9fe62df7c4a8c5cf888c840b55f1fe",
+  "prefix_preserved": true,
+  "grid_sha256": "86b9e84faec43882e4ccc0975b2193a2ee489e618cd13adcbe784ea7dab53b46",
+  "selectors": [
+    "ALL_EARLY",
+    "ALL_LATE",
+    "GAP_UP",
+    "PERSISTENT",
+    "PERSISTENT_OPEN_ACCEPT",
+    "WEAKNESS_PERSISTENT",
+    "WEAKNESS_RECLAIM"
+  ],
+  "horizons": [
+    "1d",
+    "3d",
+    "60m",
+    "close"
+  ],
+  "cost_bps": [
+    10,
+    25,
+    50
+  ],
+  "authority": "research_accounting_only_no_rank_alert_size_or_trade_authority"
+}

@@ -1,0 +1,78 @@
+{
+  "schema": "mastermind.about_footer_source_change.v1",
+  "started_at": "2026-10-20T15:23:01.133610+00:00",
+  "base_head": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f",
+  "owner": "templates/landing.css plus incumbent scripts.optimize_assets.make_optimizer/lib.shared_shell/lib.pages",
+  "writes": [
+    {
+      "path": "templates/landing.css",
+      "before_sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a",
+      "after_sha256": "c1ea62635e000a19784177a04f147d62e73be03569506793382dde7ab9219efd",
+      "bytes": 120266
+    },
+    {
+      "path": "site/landing.css",
+      "before_sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a",
+      "after_sha256": "c1ea62635e000a19784177a04f147d62e73be03569506793382dde7ab9219efd",
+      "bytes": 120266
+    },
+    {
+      "path": "templates/about.html",
+      "before_sha256": "8d510aa15007af23cfe519f6f2c331663c7e8b3d77a4aca52a351295fef78670",
+      "after_sha256": "2bfc1c3a2eaab89261e532e98ce0f3eea0f07924e69eebd998f82989ad27083f",
+      "bytes": 38676
+    },
+    {
+      "path": "site/about.html",
+      "before_sha256": "8d510aa15007af23cfe519f6f2c331663c7e8b3d77a4aca52a351295fef78670",
+      "after_sha256": "2bfc1c3a2eaab89261e532e98ce0f3eea0f07924e69eebd998f82989ad27083f",
+      "bytes": 38676
+    },
+    {
+      "path": "templates/index.html",
+      "before_sha256": "5d00241de8d5f6532650ddffad668f516e99da8d8c547d25ba389cd6bfea1a8e",
+      "after_sha256": "9cbf16b01fd74cea580c92056eed8e21e7b461344a2e5767b675936a6fad7302",
+      "bytes": 188017
+    },
+    {
+      "path": "site/index.html",
+      "before_sha256": "5d00241de8d5f6532650ddffad668f516e99da8d8c547d25ba389cd6bfea1a8e",
+      "after_sha256": "9cbf16b01fd74cea580c92056eed8e21e7b461344a2e5767b675936a6fad7302",
+      "bytes": 188017
+    },
+    {
+      "path": "site/products/market-terminal.html",
+      "before_sha256": "a36e241767a227646c67a6fa8d55ba017598547586c7470865fccf4bc8d98391",
+      "after_sha256": "5901db2724640cb204d0182d6ddcffea98f0e85619ba3b12bdf8368db33c9ef7",
+      "bytes": 132966
+    },
+    {
+      "path": "site/products/market-dashboards.html",
+      "before_sha256": "e470c4d837c8bee5b5ef4733e1e5e9db3ac5e735f05d2a1d39a2f847fca4e520",
+      "after_sha256": "c08e01c4de053b90027b0dfbefaddf91d7d733631d5b976779edf91525beabf0",
+      "bytes": 99566
+    },
+    {
+      "path": "site/products/mastermind-ai.html",
+      "before_sha256": "8144dd73fb27277bcfd3aac2c4bb6069c5bf082e524cb04ae3a384f09fd0a701",
+      "after_sha256": "e44b7149def31d7087ee688ce46168af46eb1c457ba00d5d03a3bf1f3efb872d",
+      "bytes": 87456
+    }
+  ],
+  "new_renderer": false,
+  "preexisting_canonical_stamp_drift": [
+    "site/products/market-terminal.html",
+    "site/products/market-dashboards.html",
+    "site/products/mastermind-ai.html"
+  ],
+  "css_sha256": "c1ea62635e000a19784177a04f147d62e73be03569506793382dde7ab9219efd",
+  "diff_stat": " site/about.html                      | 2 +-\n site/index.html                      | 2 +-\n site/landing.css                     | 1 +\n site/products/market-dashboards.html | 8 ++++----\n site/products/market-terminal.html   | 8 ++++----\n site/products/mastermind-ai.html     | 8 ++++----\n templates/about.html                 | 2 +-\n templates/index.html                 | 2 +-\n templates/landing.css                | 1 +\n 9 files changed, 18 insertions(+), 16 deletions(-)\n",
+  "diff_sha256": "ee1cc0e81c00dd436d5b922f32d4b1a6ad144dcb50e341a2e779dffd06858acb",
+  "whitespace_check": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "finished_at": "2026-10-20T15:23:03.546074+00:00",
+  "complete": true
+}

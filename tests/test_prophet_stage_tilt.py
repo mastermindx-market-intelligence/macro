@@ -383,13 +383,17 @@ def test_stage_tilt_present_in_plan_and_no_validated():
     plain-word EN and no 'validated' token.
 
     R0-C added three DISCLOSURE keys (ec_source_state / ec_source_path /
-    ec_source_reason). They are the only additions and they never enter the
-    eligibility test — the leash-matrix tests above pin that the numbers did not move.
+    ec_source_reason). The 2026-09-18 earnings-source restore added two more of the same
+    kind — ec_source_tier (WHICH native EquityDesk store answered: the R2-transported
+    history or the local-only backfill) and ec_source_generation (that store's published
+    generation, when it has one). All five are disclosure: none enters the eligibility
+    test, and the leash-matrix tests above pin that no number moved.
     """
     _hd, st = pb._compute_stage_tilt("AAA", "2026-07-01", _tilt_inputs())
     expected_keys = {
         "leash", "eligible", "stage_at_entry", "ec_sent", "ec_call_date",
-        "ec_source_state", "ec_source_path", "ec_source_reason",
+        "ec_source_state", "ec_source_path", "ec_source_tier",
+        "ec_source_generation", "ec_source_reason",
         "bear_gate", "provisional", "demoted", "basis",
     }
     assert set(st.keys()) == expected_keys

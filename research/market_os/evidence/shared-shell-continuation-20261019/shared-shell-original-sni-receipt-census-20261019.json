@@ -1,0 +1,394 @@
+{
+  "observed_at": "2026-10-19T09:24:15.805857+00:00",
+  "workspace": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017",
+  "exists": true,
+  "rev-parse HEAD": {
+    "exit": 0,
+    "out": "2e017f066e102c698f711db0eb2eee0138232c5f\n",
+    "error": ""
+  },
+  "branch --show-current": {
+    "exit": 0,
+    "out": "sol/web-macro-fear-greed-dynamics-20261017\n",
+    "error": ""
+  },
+  "status --porcelain=v1": {
+    "exit": 0,
+    "out": "",
+    "error": ""
+  },
+  "cat-file -t 5ef7a7f39f99232bf9b574c7603da1011ee3af66": {
+    "exit": 0,
+    "out": "commit\n",
+    "error": ""
+  },
+  "task_tmp_candidates": [
+    {
+      "path": "/tmp/fgi9548-ci-39179044557-pack2.err",
+      "size": 0,
+      "mtime": "2026-10-19T00:49:35.483086+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi-9548-merge-attempt.log",
+      "size": 171,
+      "mtime": "2026-10-18T03:00:48.009845+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi-9548-ff-20261018.log",
+      "size": 265833,
+      "mtime": "2026-10-18T10:32:59.058419+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fg-pr-9548-evidence-note.json",
+      "size": 7947,
+      "mtime": "2026-10-18T01:22:33.160813+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-sni-lock-repair-test-20261018.log",
+      "size": 1089,
+      "mtime": "2026-10-19T00:00:11.543060+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi-9548-legacy-main.yml",
+      "size": 1751466,
+      "mtime": "2026-10-18T02:59:16.812978+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-main2.yml",
+      "size": 1797161,
+      "mtime": "2026-10-18T10:31:43.091357+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-20261018-merge-tests.log",
+      "size": 1089,
+      "mtime": "2026-10-18T10:38:15.663653+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-pack5-39182817296.log",
+      "size": 261455,
+      "mtime": "2026-10-19T04:45:00.717473+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-options-source-gate-20261019.json",
+      "size": 33852,
+      "mtime": "2026-10-19T04:54:05.633866+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-public-macro-20261018.html",
+      "size": 616661,
+      "mtime": "2026-10-18T11:03:47.671129+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-protected-asset-checkpoint.json",
+      "size": 22419,
+      "mtime": "2026-10-18T11:11:57.060253+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-20261019-0054-checkpoint.json",
+      "size": 27965,
+      "mtime": "2026-10-19T00:54:34.064283+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-a20-full-20261019.log",
+      "size": 1077,
+      "mtime": "2026-10-19T00:51:41.762304+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fg9548-production-equivalence-checkpoint.json",
+      "size": 20795,
+      "mtime": "2026-10-18T11:04:15.086866+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-merge-20261018-2345.log",
+      "size": 106,
+      "mtime": "2026-10-18T23:51:47.863972+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-checkpoint-20261019.json",
+      "size": 25375,
+      "mtime": "2026-10-19T00:04:11.837862+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-production-readonly-um_kwest",
+      "size": 96,
+      "mtime": "2026-10-18T11:08:02.191633+00:00",
+      "is_file": false,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-production-probe-latest.json",
+      "size": 864,
+      "mtime": "2026-10-18T11:08:06.707355+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-d481-browser-20261018",
+      "size": 19264,
+      "mtime": "2026-10-18T10:58:35.678227+00:00",
+      "is_file": false,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-new-collector-evidence-note.json",
+      "size": 19573,
+      "mtime": "2026-10-18T11:02:21.486758+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-0712-material-frontier.json",
+      "size": 40216,
+      "mtime": "2026-10-19T07:21:26.830850+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fg-9548-checkpoint-20261018.json",
+      "size": 11804,
+      "mtime": "2026-10-18T03:06:02.596927+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fg-9548-second-repair-receipt.json",
+      "size": 14163,
+      "mtime": "2026-10-18T10:41:17.574310+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi-9548-legacy-merged-conflicts.yml",
+      "size": 1752524,
+      "mtime": "2026-10-18T02:59:16.871251+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-525a80-browser-20261019.log",
+      "size": 1148,
+      "mtime": "2026-10-19T00:02:35.470873+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/mmos-ohf-sealed-owner-regressions-20261018.log",
+      "size": 195,
+      "mtime": "2026-10-18T10:30:20.306425+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-protected-law-20261019-0712",
+      "size": 256,
+      "mtime": "2026-10-19T07:12:36.863896+00:00",
+      "is_file": false,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fg-9548-ci-oscillation.json",
+      "size": 9791,
+      "mtime": "2026-10-18T01:59:21.525578+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-source-browser-checkpoint-20261018.json",
+      "size": 18255,
+      "mtime": "2026-10-18T10:59:39.752224+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548_live_release_probe.py",
+      "size": 3729,
+      "mtime": "2026-10-18T11:08:00.745953+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi-9548-legacy-ours.yml",
+      "size": 1744078,
+      "mtime": "2026-10-18T02:59:16.406977+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/sni_s1_blobs_0rl2aukk",
+      "size": 11040,
+      "mtime": "2026-10-18T23:57:01.448383+00:00",
+      "is_file": false,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-a20-20261019.log",
+      "size": 1359,
+      "mtime": "2026-10-19T00:51:11.890478+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi-9548-ff.log",
+      "size": 705340,
+      "mtime": "2026-10-18T03:00:34.450926+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-ql9556-failopen-checkpoint.json",
+      "size": 36570,
+      "mtime": "2026-10-19T05:57:30.676058+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-base2.yml",
+      "size": 1760697,
+      "mtime": "2026-10-18T10:31:42.353312+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi-9548-legacy-base.yml",
+      "size": 1743092,
+      "mtime": "2026-10-18T02:59:16.264025+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-source-freshness-note.json",
+      "size": 16102,
+      "mtime": "2026-10-18T10:44:25.012730+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fg9548-law-20261019",
+      "size": 256,
+      "mtime": "2026-10-19T05:47:20.046431+00:00",
+      "is_file": false,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-daily-39180557790-collect.log",
+      "size": 378594,
+      "mtime": "2026-10-19T04:49:36.337978+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-525a80-browser-20261019",
+      "size": 19264,
+      "mtime": "2026-10-19T00:02:35.469659+00:00",
+      "is_file": false,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-ours2.yml",
+      "size": 1761683,
+      "mtime": "2026-10-18T10:31:42.909176+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-public-macro-20261019-0453.html",
+      "size": 616948,
+      "mtime": "2026-10-19T04:51:48.944241+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/sni_s1_blobs_p26tn6sf",
+      "size": 5088,
+      "mtime": "2026-10-18T23:53:56.334077+00:00",
+      "is_file": false,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi-9548-merge-20261018.log",
+      "size": 171,
+      "mtime": "2026-10-18T10:33:38.955419+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-d481-browser-20261018.log",
+      "size": 1146,
+      "mtime": "2026-10-18T10:58:35.679908+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-preview2.yml",
+      "size": 1798180,
+      "mtime": "2026-10-18T10:31:43.145665+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi-9548-merge-tests.log",
+      "size": 111,
+      "mtime": "2026-10-18T03:04:16.152369+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-readonly-main-merge-tree.txt",
+      "size": 41,
+      "mtime": "2026-10-19T07:18:46.005285+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-ci-39179044557-pack2.log",
+      "size": 230272,
+      "mtime": "2026-10-19T00:49:36.525160+00:00",
+      "is_file": true,
+      "is_symlink": false
+    },
+    {
+      "path": "/tmp/fgi9548-20261019-0452-owner-frontier.json",
+      "size": 31702,
+      "mtime": "2026-10-19T04:51:25.121438+00:00",
+      "is_file": true,
+      "is_symlink": false
+    }
+  ],
+  "agentos/handoffs_matching_paths": "",
+  "research_matching_paths": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v15_proof/candidate-pytest.log.xml.sealed-686d36aa1f894d48\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v15_proof/candidate-pytest.log.collection.sealed-ede71a579c6309c4\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v15_proof/candidate-pytest.log.sealed-bc16bfd337977d74\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/current_main_product_20261015/proof/candidate-pytest.log.xml.sealed-072620f67b621120\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/current_main_product_20261015/proof/candidate-pytest.log.sealed-96e9bd7e6ec29c9a\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/current_main_product_20261015/proof/candidate-pytest.log.collection.sealed-c3046f252e877a43\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/current_release_proof_20261015/shared-language-integration/candidate-pytest.log.sealed-d21e97e8e4ed0eea\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/current_release_proof_20261015/shared-language-integration/candidate-pytest.log.collection.sealed-def68e04be41e82c\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/current_release_proof_20261015/shared-language-integration/candidate-pytest.log.xml.sealed-476a414808679947\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/current_release_proof_20261015/render-merge/candidate-pytest.log.sealed-743134bd1639b44e\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/current_release_proof_20261015/render-merge/candidate-pytest.log.xml.sealed-da570707999ea126\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/current_release_proof_20261015/render-merge/candidate-pytest.log.collection.sealed-fd22bdae1499ae0c\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/current_release_proof_20261015/candidate-pytest.log.xml.sealed-d477a6cc7baa455a\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/current_release_proof_20261015/candidate-pytest.log.sealed-a4f75ab4e5bef282\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/current_release_proof_20261015/candidate-pytest.log.collection.sealed-c570fe821bb00704\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v16_proof/full-proof.log.sealed-0aba61f687100440\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v16_proof/full-proof.log.collection.sealed-0affa28560010c4c\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v16_proof/full-proof.log.xml.sealed-2042e600f040242a\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v4_proof/final-candidate-proof.log.collection.sealed-3bc094f861ad6f1a\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v4_proof/final-candidate-proof.log.xml.sealed-1b5a2314938b61a3\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v4_proof/final-candidate-proof.log.sealed-1178eaa886a099df\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v14_proof/candidate.log.sealed-abf813e1271d44f7\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v14_proof/candidate.log.xml.sealed-e0fe089119c06846\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/navigation_export_20261016/review_repair/proof/PROOF.log.sealed-32baf5109549040b\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/navigation_export_20261016/review_repair/proof/PROOF.log.collection.sealed-f706106577f1f894\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/navigation_export_20261016/review_repair/proof/PYTEST.log.sealed-510357f244816f2b\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/navigation_export_20261016/review_repair/proof/PROOF.log.xml.sealed-b02ee3a2e5d91d75\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/navigation_export_20261016/review_repair/proof/PYTEST.log.xml.sealed-88e99d9407d22b27\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/navigation_export_20261016/review_repair/proof/PYTEST.log.collection.sealed-aaa80c1e664e0dee\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/navigation_export_20261016/proof/PROOF.log.sealed-15f3da1697e4061e\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/navigation_export_20261016/proof/PROOF.log.collection.sealed-5cc1075ad076ad78\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/navigation_export_20261016/proof/PROOF.log.xml.sealed-6220ac1707b8ea2c\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v14_proof/candidate.log.collection.sealed-cc54c645d77e7537\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v9_proof/final-candidate-proof.log.collection.sealed-ad575d59111a4ea2\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v9_proof/final-candidate-proof.log.xml.sealed-a9f7fbf43d985c38\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v9_proof/final-candidate-proof.log.sealed-b179fdee5d56aa51\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/final-candidate-proof.log.collection.sealed-6356e69440aecc60\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/final-candidate-proof.log.xml.sealed-b9f56a8335347ec3\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/final-candidate-proof.log.sealed-99e944fe2dfb55ae\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v11_proof/final-candidate-proof.log.xml.sealed-420608473c2f5222\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v11_proof/final-candidate-proof.log.sealed-e662859727a9f8b7\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v11_proof/final-candidate-proof.log.collection.sealed-62e3a53fd10ebd32\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v12_proof/candidate.log.collection.sealed-9ff3316d0e1db2a7\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v12_proof/candidate.log.xml.sealed-1cb923a859b55050\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v12_proof/candidate.log.sealed-c52b68c42c472946\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v17_proof/full-proof.log.sealed-09f729dcae1c8a36\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v17_proof/full-proof.log.xml.sealed-7d77f5b254efa026\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v17_proof/full-proof.log.collection.sealed-b93235fdc3926866\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/acceptance/sni_copy_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/acceptance/sni_copy_guard_literals.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/evaluation/sni_eval_ledger.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_entitlement_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_counter_relation_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_denominator_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_seal.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_inference.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_comparison_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_class_duplicate_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_then_known_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_three_clock_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_join_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_ads_ratio_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_release_evidence_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_session_state_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_kpi_missingness_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_identity_binding_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_correction_lineage_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/single_name_intelligence/common/sni_view_state_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v13_proof/candidate.log.sealed-99d43eaa1e5bc880\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v13_proof/candidate.log.collection.sealed-b82a65b6e43adc7e\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/research/defense_intelligence/e2e_20261011/combined_generation_v13_proof/candidate.log.xml.sealed-98cde41bfc6276b4\n",
+  "tests_matching_paths": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_famj2_repair.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_stats.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_a12_session_state_property.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_entitlement_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut6_stress_set.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut6_seal_full_check_cli.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_counter_relation_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_ledger_order.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_fear_greed_honesty.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_class_duplicate_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_join_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_eval_ledger.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut7_c.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_cli.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_seal_integrity.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_v1_1_hardening.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_x8brep_repair.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_prereg_challenger.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_injection_safety_ext.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_common_equivalence.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_session_state_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut8_d.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut7_g.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_injection_safety.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_quarantine_fence.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_famkt_repair.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_family_text_rule_v2_conformance.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_regen_hk_g1_fixture.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_a20c_structural_authority_scan.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_us_stress_then_known.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_common.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_copy_guard_literals.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_a8_us_transfer_draft.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_report_s2seal.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_selection.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_decomp_infoleak.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_a39_receipts_ledger_c2.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_branch_copy.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_seal_full_check.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_run_s1_a.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_ledger_seal.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_x8brep2_repair.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_three_clock_census.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_language.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_clocklaw_sessions.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_common_inference.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_v1_1_hardening.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_seal_integrity.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut6_common_seal.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_clocklaw_half_days.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_stress_post_idrfix.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_clocklaw_outcomes.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_clock.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_entitlement_guard_properties.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_seal_adjacent.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_cglrep_repair.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_copy_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_no_ticker_branches.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_event_stress.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_comparison_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_x8arep2_repair.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_decomposition.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_ads_ratio_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_info_leak.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_report_order.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_irp_gap4_bootstrap_repro.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_draft_loaders.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut6_run_s1_cli.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_mirror.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut7_f.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_program_invariants.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_language.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_missing_not_zero.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut8_a.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut7_b.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_public_exposure.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_x9_redteam.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_run_s2_b.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_denominator_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_then_known_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_three_clock_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/fear_greed_intelligence_browser.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_build_seal.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_fear_euphoria.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_famvcc_repair.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_fear_greed.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_p03_ulp_stability.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_collapse.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_fear_greed_intelligence.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_stats.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_a04_identity_property.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_a29_proper_score_repro.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_famj_repair.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_report_order.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_release_evidence_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_register_consistency.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_ledger_order.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_run_s2_a.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_view_state_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_join_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_guard_chain_composition.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut6_scanners.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut6_run_s2_core.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut6_run_s1_frames.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut6_run_s2_cli.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_manifest_synth.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_run_s1_b.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_us_stress.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_denominator_guard_properties.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_cli.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_a07_then_known_exclusion.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut6_collapse_p04.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_challenger.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_manifest.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_property.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut6_eval_ledger.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_x8crepc_repair.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_a39_receipts_ledger.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_identity_refusals.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_dual_counter_property.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_common_seal.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut7_e.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_correction_lineage_guard_properties.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_x8arep_repair.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_comparison_guard_properties.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_property.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_famdc_repair.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_guard_family_invariants.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_eval_ledger_property.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_a33_reference_evidence.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_run_seal_repro.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_join_guard_properties.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_nonfinite_abstain.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s0_amendment_a01_draft.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut7_a.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_identity_binding_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut8_b.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_a33_matrix.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_identity_refusals_hardening.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_v1_2_hash_invariant.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_correction_lineage_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut8_c.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s2_abstain.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_mirror.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_stats_direction.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_independent_repro.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_kpi_missingness_guard.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_s1_info_leak.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_x8crepb_repair.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_p04_v2_draft.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mutation_s2_state_loaders.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_acceptance_matrix.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_a07_then_known_property.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_mut7_d.py\n/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/tests/test_sni_us_stress_onboarding.py\n"
+}

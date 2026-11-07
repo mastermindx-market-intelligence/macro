@@ -1,0 +1,127 @@
+{
+  "started_at": "2026-10-20T15:38:48Z",
+  "source_head": "8b51fb46d18739a4d10d1ef07dce3ca0f989f0da",
+  "working_delta": [
+    "lib/macro_suite_labels.py",
+    "tests/test_macro_command_copy_law.py"
+  ],
+  "labels_sha256": "06cdb700046b781b6195dcaf12a3ed48ed7c0280face297c83f26e96f936e9f2",
+  "owner": "scripts.build_macro_suite_pages.render",
+  "args": {
+    "root": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+    "data_root": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/site/macrodata",
+    "out_dir": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site",
+    "page_built_at": "2026-10-20T15:38:48Z"
+  },
+  "pages": [
+    {
+      "name": "macro_liquidity_regime.html",
+      "bytes": 200487,
+      "sha256": "21147e9602a5bdf9f4f72becb085a8f14f10b67e72e83aab1800ce6148e55ee7",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_growth_real_economy.html",
+      "bytes": 264837,
+      "sha256": "34dbc7fc3166f4bd839bd7815cfa8bcfabfc79101f81b8d9631ee9d5e3a7e486",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_business_activity.html",
+      "bytes": 292963,
+      "sha256": "f691ef3dd2c87dd7bd02f13e652bfffe2e9d2d12554e321b22e8b1484193cdb2",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_labor_markets.html",
+      "bytes": 254945,
+      "sha256": "381d82b042929dbfbe4a0db8d16e0f94c1974069df80e7e965cc3a508b590e6c",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_inflation_system.html",
+      "bytes": 208588,
+      "sha256": "c1e1242e101df2068b33c865acffd038f7d516053ac5b2d8ce408eeb112174b3",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_monetary_policy.html",
+      "bytes": 267689,
+      "sha256": "9dbf481f3fd654d9b616b1322c290c25ca859ae4db76031098cd79054b6bfcba",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_financial_conditions.html",
+      "bytes": 308053,
+      "sha256": "715c188acfc44f2db1d9247733771e84b68c06cc3de8d7039fb946c7d9f05368",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_liquidity_central_banks.html",
+      "bytes": 337861,
+      "sha256": "4e70fa8323317779018659399b27c822f1b82a86680270e7d52b0abc9f668d45",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_capital_structure.html",
+      "bytes": 293940,
+      "sha256": "0c26a00b53de987df41911ee49a40a6d915b0bd68cef9a26098981d08c056b18",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_housing_real_estate.html",
+      "bytes": 261931,
+      "sha256": "551eebc8fab7a59a848384900a54ce6aa9adae663013527c9ecfbfbafd4c8aed",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_consumer_payments.html",
+      "bytes": 307646,
+      "sha256": "350e131ee1b909182d6093023ba07059cc489ad161839c41df4240a090ca9141",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_national_debt_liabilities.html",
+      "bytes": 348069,
+      "sha256": "0cb36c63646038d58b1e2ce3ea5e11afd48bd4bc05c8fbe1dde6df68972fc27d",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_rates_curves.html",
+      "bytes": 422600,
+      "sha256": "85030032b2332f857f0d1c8f6723daee43ce4dc2783428684bb7e88fb7e57a27",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_trade_flows.html",
+      "bytes": 264892,
+      "sha256": "3da8bd1f49165257d684d630a7763427b5398dece78fc5b48dcff1e2af652357",
+      "differs_from_committed": true,
+      "copy_guard": []
+    },
+    {
+      "name": "macro_monetary.html",
+      "bytes": 148112,
+      "sha256": "111ffabeccc54622d2b35cffe9924799ddd01744c8007a92aae2146185c630e6",
+      "differs_from_committed": true,
+      "copy_guard": []
+    }
+  ],
+  "adopted": false,
+  "patch_bytes": 5993,
+  "patch_sha256": "bcae8d0cebf67e17e7a8a3113ed654856745f4bb8837977b8d0cfb03ee25320d",
+  "finished_at": "2026-10-20T15:38:54.593484+00:00"
+}

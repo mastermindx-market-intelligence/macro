@@ -1106,8 +1106,11 @@ def test_temporal_split_does_not_leak_holdout_basis_shock_into_train_interval():
     )
     additive = got["methods"]["additive_basis"]
     assert additive["train_abs_error_q90_target_points"] == pytest.approx(0)
-    assert additive["test_mae_target_points"] > 0
-    assert additive["test_q90_interval_coverage"] < 1
+    # The only shock pair crosses the split and must be purged.
+    assert additive["test_mae_target_points"] == pytest.approx(0)
+    assert additive["test_q90_interval_coverage"] == pytest.approx(1)
+    assert got["input_contract"]["train_events"] == 17
+    assert got["input_contract"]["test_events"] == 11
     assert got["input_contract"]["purge_cross_boundary_pairs"] is True
 
 
@@ -1151,4 +1154,261 @@ def test_duplicate_effective_timestamp_refuses():
             source_instrument="SPX",
             target_instrument="ES",
             horizon_seconds=60,
+        )
+
+
+def test_holdout_basis_drift_is_visible_without_widening_the_train_band():
+    source = [100 + i for i in range(30)]
+    target = [x + (5 if i < 18 else 25 + 2 * (i - 18))
+              for i, x in enumerate(source)]
+    got = r10.calibrate_mapping(
+        _pairs(source, target), source_instrument="SPX", target_instrument="ES",
+        horizon_seconds=60, match_tolerance_seconds=0, train_fraction=0.60,
+    )
+    stats = got["methods"]["additive_basis"]
+    assert stats["train_abs_error_q90_target_points"] == 0
+    assert stats["test_mae_target_points"] == pytest.approx(2)
+    assert stats["test_bias_target_points"] == pytest.approx(-2)
+    assert stats["test_q90_interval_coverage"] == 0
+    assert (stats["train_n"], stats["test_n"]) == (17, 11)
+
+
+@pytest.mark.parametrize("horizon", [1e-12, 1e-10, 4e-10])
+def test_horizon_that_rounds_to_zero_nanoseconds_refuses(horizon):
+    with pytest.raises(r10.R10Refusal, match="nanosecond"):
+        r10.calibrate_mapping(
+            _pairs(range(100, 120), range(105, 125)),
+            source_instrument="SPX", target_instrument="ES", horizon_seconds=horizon,
+        )
+
+
+@pytest.mark.parametrize("unit", ["s", "ms", "us", "ns"])
+def test_timestamp_storage_unit_does_not_change_the_declared_horizon(unit):
+    frame = _pairs(range(100, 120), range(105, 125))
+    for column in ("source_ts", "target_ts"):
+        frame[column] = pd.to_datetime(frame[column], utc=True).astype(f"datetime64[{unit}, UTC]")
+    got = r10.calibrate_mapping(
+        frame, source_instrument="SPX", target_instrument="ES",
+        horizon_seconds=120, match_tolerance_seconds=0,
+    )
+    assert got["input_contract"]["train_events"] == 10
+    assert got["input_contract"]["test_events"] == 6
+    assert got["methods"]["additive_basis"]["test_mae_target_points"] == 0
+    assert got["input_contract"]["effective_horizon_nanoseconds"] == 120_000_000_000
+
+
+def test_finite_huge_horizon_is_unmatched_without_integer_wrap():
+    with pytest.raises(r10.R10Refusal, match="no horizon-matched"):
+        r10.calibrate_mapping(
+            _pairs(range(100, 120), range(105, 125)),
+            source_instrument="SPX", target_instrument="ES", horizon_seconds=1e308,
+        )
+
+
+def test_finite_huge_tolerance_does_not_overflow_its_conversion():
+    got = r10.calibrate_mapping(
+        _pairs(range(100, 120), range(105, 125)),
+        source_instrument="SPX", target_instrument="ES",
+        horizon_seconds=60, match_tolerance_seconds=1e308,
+    )
+    assert got["input_contract"]["train_events"] == 11
+    assert got["input_contract"]["test_events"] == 7
+    json.dumps(got, allow_nan=False)
+
+
+def test_endpoints_near_timestamp_limit_never_wrap_or_point_backwards():
+    frame = _pairs(range(100, 112), range(105, 117))
+    limit_ns = pd.Timestamp.max.value
+    stamps = pd.to_datetime([limit_ns - (11 - i) * 1_000_000_000 for i in range(12)], utc=True)
+    frame["source_ts"] = stamps
+    frame["target_ts"] = stamps
+    clean = r10._clean_pairs(frame, max_skew_seconds=0)
+    with np.errstate(over="raise"):
+        events = r10._future_pairs(clean, horizon_seconds=2, match_tolerance_seconds=0)
+    assert events["origin_idx"].tolist() == list(range(10))
+    assert events["endpoint_idx"].tolist() == list(range(2, 12))
+    assert (events["endpoint_at"] > events["origin_at"]).all()
+
+
+@pytest.mark.parametrize("allowed", [False, True])
+def test_timestamp_skew_uses_checked_difference_across_wide_dates(allowed):
+    frame = _pairs(range(100, 120), range(105, 125))
+    frame["source_ts"] = pd.date_range("1700-01-01", periods=20, freq="min", tz="UTC")
+    frame["target_ts"] = pd.date_range("2200-01-01", periods=20, freq="min", tz="UTC")
+    kwargs = dict(source_instrument="SPX", target_instrument="ES", horizon_seconds=60,
+                  match_tolerance_seconds=0,
+                  max_skew_seconds=20_000_000_000 if allowed else 10_000_000_000)
+    if allowed:
+        got = r10.calibrate_mapping(frame, **kwargs)
+        assert 10_000_000_000 < got["input_contract"]["observed_skew_max_seconds"] < 20_000_000_000
+        assert got["methods"]["additive_basis"]["test_mae_target_points"] == 0
+    else:
+        with pytest.raises(r10.R10Refusal, match="timestamp skew exceeds gate"):
+            r10.calibrate_mapping(frame, **kwargs)
+
+
+def test_fractional_nanosecond_skew_gate_is_not_rounded_up():
+    frame = _pairs(range(100, 120), range(105, 125))
+    stamps = pd.date_range("2026-01-01", periods=20, freq="ns", tz="UTC")
+    frame["source_ts"] = stamps
+    frame["target_ts"] = stamps + pd.Timedelta(1, unit="ns")
+    with pytest.raises(r10.R10Refusal, match="timestamp skew exceeds gate"):
+        r10.calibrate_mapping(
+            frame, source_instrument="SPX", target_instrument="ES",
+            max_skew_seconds=0.6e-9, horizon_seconds=2e-9,
+        )
+
+
+@pytest.mark.parametrize("errors,mae,rmse,bias", [
+    ([1e308, 1e308], 1e308, 1e308, 1e308),
+    ([-1e308, 1e308], 1e308, 1e308, 0),
+    ([0, 0], 0, 0, 0),
+    ([1e-300, 1e-300], 1e-300, 1e-300, 1e-300),
+])
+def test_finite_error_statistics_do_not_overflow_or_underflow(errors, mae, rmse, bias):
+    values = np.asarray(errors)
+    got = r10._method_stats(values, values)
+    assert got["test_mae_target_points"] == pytest.approx(mae, rel=1e-14, abs=0)
+    assert got["test_rmse_target_points"] == pytest.approx(rmse, rel=1e-14, abs=0)
+    assert got["test_bias_target_points"] == pytest.approx(bias, rel=1e-14, abs=0)
+    json.dumps(got, allow_nan=False)
+
+
+def test_linear_quantile_preserves_tiny_middle_values_with_a_large_tail():
+    values = np.asarray([1e-300, 1e-300, 1e308])
+    got = r10._method_stats(values, values)
+    assert got["train_abs_error_q50_target_points"] == 1e-300
+    assert got["train_abs_error_q90_target_points"] == pytest.approx(8e307)
+    assert got["test_rmse_target_points"] == pytest.approx(1e308 / np.sqrt(3))
+    json.dumps(got, allow_nan=False)
+
+
+def test_signed_mean_preserves_a_tiny_residual_after_large_cancellation():
+    values = np.asarray([1e308, 1e308, -1e308, -1e308, 1e-300])
+    got = r10._method_stats(values, values)
+    assert got["test_bias_target_points"] == pytest.approx(2e-301, rel=1e-14, abs=0)
+    json.dumps(got, allow_nan=False)
+
+
+@pytest.mark.parametrize("which", ["train", "test"])
+@pytest.mark.parametrize("bad", [float("nan"), float("inf")])
+def test_nonfinite_mapping_errors_are_refused(which, bad):
+    arrays = {"train": np.asarray([0.0, 1.0]), "test": np.asarray([0.0, 1.0])}
+    arrays[which][0] = bad
+    with pytest.raises(r10.R10Refusal, match="finite"):
+        r10._method_stats(**arrays)
+
+
+@pytest.mark.parametrize("column", r10.REQUIRED_COLUMNS)
+def test_duplicate_required_column_labels_refuse_before_ambiguous_selection(column):
+    frame = _pairs(range(100, 120), range(105, 125))
+    duplicate = pd.concat([frame, frame[[column]]], axis=1)
+    with pytest.raises(r10.R10Refusal, match="duplicate required column"):
+        r10.calibrate_mapping(
+            duplicate, source_instrument="SPX", target_instrument="ES", horizon_seconds=60,
+        )
+
+
+def test_finite_price_relation_with_unrepresentable_ratio_refuses():
+    with pytest.raises(r10.R10Refusal, match="ratio.*finite"):
+        r10.calibrate_mapping(
+            _pairs([1e-308] * 20, [1e308] * 20),
+            source_instrument="SPX", target_instrument="ES", horizon_seconds=60,
+        )
+
+
+def test_mapping_errors_survive_an_overflowing_prediction_intermediate():
+    source = [1e308, 1.4e308] * 10
+    target = [1.5e308] * 20
+    frame = r10._clean_pairs(_pairs(source, target), max_skew_seconds=0)
+    events = r10._future_pairs(frame, horizon_seconds=60, match_tolerance_seconds=0)
+    assert events.iloc[0]["additive_error"] == pytest.approx(4e307)
+    assert events.iloc[0]["ratio_error"] == pytest.approx(6e307)
+    got = r10.calibrate_mapping(
+        _pairs(source, target), source_instrument="SPX", target_instrument="ES",
+        horizon_seconds=60, match_tolerance_seconds=0,
+    )
+    json.dumps(got, allow_nan=False)
+
+
+@pytest.mark.parametrize("source,target,level,method", [
+    (1e308, 1.5e308, 1.5e308, "additive"),
+    (1.0, 2.0, 1e308, "multiplicative"),
+])
+def test_unrepresentable_requested_mapping_level_refuses(source, target, level, method):
+    with pytest.raises(r10.R10Refusal, match=method + " mapped level.*finite"):
+        r10.calibrate_mapping(
+            _pairs([source] * 20, [target] * 20),
+            source_instrument="SPX", target_instrument="ES",
+            horizon_seconds=60, match_tolerance_seconds=0, source_level=level,
+        )
+
+
+@pytest.mark.parametrize("level", [125.0, 1250.0])
+def test_spot_benchmark_never_claims_requested_level_interval_coverage(level):
+    source = [100 + i for i in range(30)]
+    target = [value * (1.02 + i * 0.001) for i, value in enumerate(source)]
+    got = r10.calibrate_mapping(
+        _pairs(source, target), source_instrument="SPX", target_instrument="ES",
+        horizon_seconds=60, match_tolerance_seconds=0, source_level=level,
+    )
+    example = got["mapping_example"]
+    assert got["schema"] == "skylit.r10.cross_instrument_mapping_feasibility/v2"
+    assert example["benchmark_scope"] == "observed_source_target_spot_relation"
+    assert example["requested_level_coverage_qualified"] is False
+    assert example["requested_level_interval"] is None
+    for method in r10.METHODS:
+        assert "empirical_q90_mapping_drift_target_points" not in example[method]
+        assert example[method]["spot_relation_drift_q90_benchmark_target_points"] == (
+            got["methods"][method]["train_abs_error_q90_target_points"]
+        )
+
+
+def test_cli_refuses_nonfinite_json_instead_of_printing_success(tmp_path, monkeypatch, capsys):
+    path = tmp_path / "synthetic-pairs.csv"
+    _pairs(range(100, 120), range(105, 125)).to_csv(path, index=False)
+    monkeypatch.setattr(r10, "calibrate_mapping",
+                        lambda *args, **kwargs: {"status": "MAPPING_CALIBRATION_COMPLETE",
+                                                  "unqualified_value": float("inf")})
+    code = r10.main(["--csv", str(path), "--source-instrument", "SPX",
+                    "--target-instrument", "ES"])
+    assert code == 2
+    output = capsys.readouterr().out
+    assert "Infinity" not in output and "NaN" not in output
+    assert json.loads(output)["status"] == "REFUSED"
+
+
+def test_positive_price_ratio_that_underflows_to_zero_refuses():
+    with pytest.raises(r10.R10Refusal, match="ratio.*positive"):
+        r10.calibrate_mapping(
+            _pairs([1e308] * 20, [1e-308] * 20),
+            source_instrument="SPX", target_instrument="ES", horizon_seconds=60,
+        )
+
+
+def test_additive_error_preserves_small_residual_beside_large_prices():
+    source = [1.0, 1e308] * 10
+    target = [2.0, 1e308] * 10
+    clean = r10._clean_pairs(_pairs(source, target), max_skew_seconds=0)
+    events = r10._future_pairs(clean, horizon_seconds=60, match_tolerance_seconds=0)
+    assert events.iloc[0]["additive_error"] == 1.0
+    assert events.iloc[1]["additive_error"] == -1.0
+    assert np.isfinite(events[["additive_error", "ratio_error"]].to_numpy()).all()
+
+
+def test_additive_mapping_at_observed_source_preserves_small_target_price():
+    got = r10.calibrate_mapping(
+        _pairs([1e308] * 20, [1.0] * 20),
+        source_instrument="SPX", target_instrument="ES", horizon_seconds=60,
+        match_tolerance_seconds=0, source_level=1e308,
+    )
+    assert got["mapping_example"]["additive_basis"]["mapped_target_level"] == 1.0
+
+
+def test_multiplicative_mapped_level_cannot_underflow_to_zero():
+    with pytest.raises(r10.R10Refusal, match="multiplicative mapped level.*positive"):
+        r10.calibrate_mapping(
+            _pairs([2.0] * 20, [1.0] * 20),
+            source_instrument="SPX", target_instrument="ES", horizon_seconds=60,
+            match_tolerance_seconds=0, source_level=float(np.nextafter(0.0, 1.0)),
         )
