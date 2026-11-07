@@ -215,3 +215,26 @@ hover+focus applied, 24/24); check_ui_visual_evidence.py rc=0 locally on the mer
 label = barrier) -> land check -> Cycles phase 2 from main.
 
 2026-11-02 16:5xZ (seat 1a26b044, P21 CI repair round 3 on #9917): run 41473988248 (merge of 85e440aabebc into main d8d958df8c1d) was red on contract-delta and ci-pack-10, both main-side contracts that landed on 2026-11-01/02 and bind this branch's own changes. contract-delta: 3 introduced / 0 inherited — main's new curated `ew-p4-descriptive-ui` job reaches this branch's `engine/hazard_parity.py` (via scripts/build_sector_central.py -> engine/sector_cycles.py), which loads scripts/build_hazard_panel.py and scripts/fit_cycle_hazard.py by literal path (and the panel script names research/cycle_masterplan/W41_PANEL_CENSUS.md); widened that job's `paths:` (commit 06034232; local `_head_findings()` closure {} and the curated-closure guard tests pass). ci-pack-10: legacy job ew-p4-descriptive-ui, `test_receipt_shots_depict_the_source_under_test` — the EW-P5 FU2 receipt (main 20a05db0) binds git blobs of templates/dashboard.html.j2, sector_central.html.j2 and si_workspace.js, all three changed by this branch; re-ran the unchanged probe on this tree (67/68 shots byte-identical, one anti-aliasing-only delta), rebuilt `pr_source_equivalence` from the immutable tree at the capture revision, recorded the recapture in research/grey_deer/evidence/EW_P4_DESCRIPTIVE_UI_2026-10-31.md; local suite 162 passed / 2 skipped (site/ rows skip on the sparse tree). No pack ran red for this programme's own tests. Next: push -> one CI read -> squash-merge #9917 as the PARTIAL release -> land check -> Cycles phase 2 from main.
+
+## Checkpoint 7 — Cycles wave committed, capture pack gated (2026-11-05 12:xxZ)
+
+Seat 1a26b044 (Opus 5.5 orchestrator). The Sector Cycles build wave sits on `claude/sic-cycles-wave-20261102`
+(SSD worktree `sic-cycles-wave-bfd60d3b3200930f`), cut from main 6a9b870b after #9917 landed as 8e322ca3.
+The chain is L7 098637a4 -> L6.1 2cb523dc -> L6.2 2089f1d2 -> L6.3 250ce53d (one exclusive node job,
+`sector-cycles-wave`, fail-closed on any SKIPPED line) -> L6.5a-q (closure lanes, last b8ad83cc) -> L6.6
+ce62bab9 -> L6.7 8e1f62f4 -> L6.8 e21d080a -> L6.9 cf604b9d (merge of main 457c1cad, no conflicts) -> L6.10
+54443adb -> L6.11 3fdb12f6 -> L6.4 f5747b87 (capture pack). The L6.4 pack is
+`mockups/evidence/sector-cycles-20261105/`: 51 cells (28-cell matrix plus 23 delta cells, 375x812 included),
+22 zh_latin probes, MANIFEST.sha256 124 lines verified, plus three wave visual-evidence packs (china, dossier,
+platform). Rendered fixture-only from source through the allowed injectors, never from production data.
+`scripts/check_ui_visual_evidence.py` returns 0 findings on the full branch diff 457c1cad..f5747b87 (run on a
+full copy because the gate refuses a sparse tree). Local suites at L6.11: shell 144 passed / 1 failed (sparse
+`site/si_workspace.js`, DEV-L6-6); China + wave 325 passed / 3 failed (pre-existing #7949 redirect stubs).
+
+Disclosed, not closed: GAP-L6-FIX-1 (fixture chip absent on 38 of 51 cells, face-only), GAP-ZHGREP-1 and
+GAP-ZH-ENG-1 (Latin residue on ZH cells, v1 217 tokens), the premiumdata 401 on every v1 cell, and the
+fixture-only render (no production readback yet). Deviations DEV-L6-3..10 are named in the commit bodies.
+
+Next: push -> PR to main carrying the closure table -> fresh READ_ONLY Opus review -> one CI read per
+boundary -> squash-merge with `--match-head-commit` (HOLD label = barrier) -> P22 production journeys after
+a natural nightly (never dispatch daily.yml) -> P23 Fable acceptance and the canonical programme update.

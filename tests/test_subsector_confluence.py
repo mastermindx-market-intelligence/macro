@@ -150,6 +150,52 @@ def test_score_group_real_subsector_semiconductors():
         assert "stock_tier" in m and "stock_buyable" in m
 
 
+# ------------------------------------------------- US Chinese labels (SIC-D35) ----
+
+def test_us_industry_zh_matches_the_heatmap_map():
+    """The engine's sub-industry names must equal templates/heatmap.js INDUSTRY_ZH, the map the
+    heatmap already shows, so one industry never reads two ways in Chinese."""
+    import re
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    js = (root / "templates" / "heatmap.js").read_text(encoding="utf-8")
+    body = re.search(r"var INDUSTRY_ZH = \{(.*?)\n\s*\};", js, re.S)
+    assert body is not None
+    pairs = re.findall(r"'((?:[^'\\]|\\.)+)'\s*:\s*'((?:[^'\\]|\\.)+)'", body.group(1))
+    assert len(pairs) == len(dict(pairs))
+    assert dict(pairs) == sc._INDUSTRY_ZH
+
+
+def test_us_sector_zh_matches_the_heatmap_sector_names():
+    from engine import sp500_heatmap
+    assert len(sc._SECTOR_ZH) == 11
+    for name, zh in sc._SECTOR_ZH.items():
+        assert sp500_heatmap.SECTOR_ZH.get(name) == zh, name
+
+
+def test_us_desk_passes_chinese_labels_to_every_group(monkeypatch):
+    from engine import subsector_scan
+    groups = {("Technology", "Semiconductors"): ["A", "B", "C"],
+              ("Financial", "Banks - Regional"): ["D", "E", "F"],
+              ("Technology", "Unmapped Industry"): ["G", "H", "I"]}
+    monkeypatch.setattr(subsector_scan, "_industry_map", lambda: groups)
+    monkeypatch.setattr(sc, "_spy_close", lambda: None)
+    seen = []
+
+    def fake_score(key, label, sector, tickers, spy, cache, **kw):
+        seen.append((kw.get("kind"), label, kw.get("label_zh"), kw.get("sector_zh")))
+        return None
+
+    monkeypatch.setattr(sc, "score_group", fake_score)
+    sc.compute_subsector_confluence()
+    assert ("subsector", "Semiconductors", "半导体", "信息技术") in seen
+    assert ("subsector", "Banks - Regional", sc._INDUSTRY_ZH["Banks - Regional"], "金融") in seen
+    # an industry the map does not know stays None: the page falls back to English, never blank
+    assert ("subsector", "Unmapped Industry", None, "信息技术") in seen
+    assert ("sector", "Technology", "信息技术", "信息技术") in seen
+    assert ("sector", "Financial", "金融", "金融") in seen
+
+
 # ----------------------------------------------------- China 同花顺 (THS) desk ----
 
 def _has_china():

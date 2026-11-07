@@ -68,6 +68,7 @@ function render(spec) {
     isThisWeek: spec.isThisWeek,
     isDeskInst: (inst) => typeof inst === 'string' && inst.indexOf('Desk') === 0,
     T: (en) => en,
+    tagName: spec.tagName || ((t) => t),
   };
 
   runInNewContext(UPDATE_HERO + '\nupdateHero();', sandbox, { timeout: 1000 });
@@ -139,6 +140,17 @@ test('fresh catalog with server aggregate: 12 / 4 / 73 and the weekly lead lines
   );
   assert.equal(v.text('v-zh-lead'), '本周新增 12 篇机构研报 · 73 篇精选 · 4 家研究部门在发。');
   assert.equal(v.buildWebCalls(), 1);
+});
+
+test('SIC-D40: the most-covered theme reads through the tag-name map, never as the raw slug', () => {
+  const v = render({
+    source: 'live', fresh: true, items: SNAPSHOT_ITEMS,
+    isThisWeek: () => true,
+    summary: { new_this_week: 12, desks_this_week: 4, highlighted: 73 },
+    summaryObj: { most_covered_theme: 'cybersecurity' },
+    tagName: (t) => (t === 'cybersecurity' ? '网络安全' : t),
+  });
+  assert.equal(v.text('fig-theme'), '网络安全');
 });
 
 test('fresh entitlement preview without an aggregate never turns a 3-item slice into a claim', () => {

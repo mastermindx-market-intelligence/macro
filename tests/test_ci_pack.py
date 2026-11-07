@@ -5319,6 +5319,12 @@ CURATED_EXCLUSIVE = {
     # exact 55-file non-wildcard import closure plus the eight Jinja templates the
     # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
     "global-liquidity-transmission",
+    # SIC Cycles wave (#7646, 2026-11-04): the wave suites' inferred scan roots
+    # smeared onto templates/index.html, scripts/build_free_content.py and
+    # engine/prophet/plan_book.py at the fallback tier (138/137 and 132/131 jobs).
+    # Exclusive with the exact 245-file non-wildcard import closure plus the 57
+    # templates and page scripts the suites load at runtime; no ceiling moved.
+    "sector-cycles-wave",
 }
 
 

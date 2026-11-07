@@ -24,7 +24,7 @@
    view reads use those classes; without this sheet the glyph spans render empty. #}
 <link rel="stylesheet" href="dashboard-icons.css">
 <link rel="stylesheet" href="cycle.css?v=4">
-<link rel="stylesheet" href="sector_cycles.css">
+<link rel="stylesheet" href="sector_cycles.css"><link rel="stylesheet" href="sector_cycles_platform.css"><link rel="stylesheet" href="sector_cycles_states.css">
 <link rel="stylesheet" href="rotation_glance.css">
 {# Preload the embedded cycle map's critical path (core data + engine + orchestrator) so the
    three download in PARALLEL from HTML-parse time instead of the old 3-hop load-event waterfall.
@@ -34,7 +34,7 @@
 <link rel="preload" href="sector_cycles_data.js" as="script">
 <link rel="preload" href="mm_charts.js" as="script">
 <link rel="preload" href="sector_cycles.js" as="script">
-<link rel="prefetch" href="sector_cycles_series_data.js" as="script">
+<link rel="prefetch" href="sector_cycles_series_data.js" as="script"><link rel="prefetch" href="sector_cycles_states.js" as="script"><link rel="prefetch" href="sector_cycles_face.js" as="script"><link rel="prefetch" href="sector_cycles_compare.js" as="script"><link rel="prefetch" href="sector_cycles_platform.js" as="script">
 <link rel="prefetch" href="sector_cycles_narr_data.js" as="script">
 <link rel="prefetch" href="sector_cycles_dna_data.js" as="script">
 <link rel="preload" href="sector_central_data.js" as="script">
@@ -547,7 +547,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .rvx-hocol .lbl{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .rvx-hocol .nm{font-size:15px;font-weight:750;margin:4px 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rvx-hocol .meta{font-size:11.5px;color:var(--muted)}
-.rvx-hocol.out .nm{color:var(--rvx-weak)} .rvx-hocol.in .nm{color:var(--rvx-lead)}
+.rvx-hocol .nm{color:var(--text)} /* neutral: the signed delta beside it carries direction in the locale's up/down ink */
 .rvx-hoarrow{flex:none;width:46px;display:grid;place-items:center}
 .rvx-hoarrow svg{width:46px;height:28px;overflow:visible}
 .rvx-hoarrow path.ln{stroke:url(#rvxHo);stroke-width:2;fill:none;stroke-linecap:round;stroke-dasharray:58;stroke-dashoffset:58;animation:rvxHoDraw 1.1s ease-out .5s forwards}
@@ -1196,7 +1196,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   .si-trace-foot{margin-top:6px;font-size:12px}
   .si-trace-foot a{color:var(--ink-link, var(--link))}
   .si-vocab{cursor:help;border:1px solid var(--line);border-radius:50%;width:18px;height:18px;display:inline-grid;place-items:center;font-size:11px;color:var(--muted)}
-  #si-map .cyc-stage{margin-top:14px}
+  #si-map .cyc-stage,#si-cycles .cyc-stage{margin-top:14px}
   #si-movement .sr-scope{margin-top:8px}
 
 </style>
@@ -1495,9 +1495,9 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   </header>
   <nav class="si-workflow" aria-label="Sector Intelligence workflow">
     <a class="si-view-btn on" data-view="overview" href="#overview" aria-current="page">{{ t('Brief', '简报') }}</a>
-    <a class="si-workflow-link" data-si-workflow="explore" href="#map">{{ t('Explore', '探索') }}</a>
+    <a class="si-workflow-link" data-si-workflow="explore" href="#map">{{ t('Explore', '探索') }}</a><a class="si-workflow-link" data-si-workflow="dossier" href="#dossier">{{ t('Dossier', '档案') }}</a>
     <a class="si-workflow-link" data-si-workflow="research" href="#tm-mount">{{ t('Research', '研究') }}</a>
-    <a class="si-workflow-link" data-si-workflow="watches" href="#accumulation-section">{{ t('Watches', '观察') }}</a>
+    <a class="si-workflow-link" data-si-workflow="watches" href="#accumulation-section">{{ t('Watches', '观察') }}</a><a class="si-workflow-link" data-si-workflow="cycles" href="#cycles">{{ t('Cycles', '周期') }}</a>
     <span class="si-workflow-note">{{ t('Sectors, themes and industries, connected.', '串联板块、主题与行业。') }}</span>
   </nav>
   <nav class="si-side" aria-label="Sector Intelligence views" hidden>
@@ -1600,7 +1600,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     <div class="dtp-body" id="ftr-dtp-body"></div>
     <button class="dtp-more" id="ftr-dtp-more" type="button" aria-expanded="false" hidden></button>
     <!-- T+1 fade note (FT-R3): plain words at a glance; receipt demoted to the ? tip -->
-    <div class="dtp-fn ftr-tape-t1"><span class="l-en">Not a buy signal: sharp one-day flips usually don&#39;t hold &mdash; in 26 past cases about 6 in 10 faded within a day.</span><span class="l-zh">非买入信号：剧烈的单日反转多难持续 — 历史26次中约六成在一天内消退。</span> <span class="ftr-t1-help" data-tip-en="Technical receipt: T+1 violent-flip base rate 58% fade (n=26) · flip-confirmation lens · descriptive only, not a directional signal." data-tip-zh="技术说明：T+1剧烈反转基础概率58%消退（n=26）· 翻转确认透镜 · 仅描述、非方向信号。">?</span><span id="ftr-dtp-fn-flow"></span></div>
+    <div class="dtp-fn ftr-tape-t1"><span class="l-en">Not a buy signal: sharp one-day flips usually don&#39;t hold &mdash; in 26 past cases about 6 in 10 faded within a day.</span><span class="l-zh">非买入信号：剧烈的单日反转多难持续 — 历史26次中约六成在一天内消退。</span> <span class="ftr-t1-help" data-tip-en="Technical receipt: T+1 violent-flip base rate 58% fade (n=26) · flip-confirmation lens · descriptive only, not a directional signal." data-tip-zh="技术说明：T+1剧烈反转基准率58%消退（n=26）· 翻转确认透镜 · 仅描述、非方向信号。">?</span><span id="ftr-dtp-fn-flow"></span></div>
   </div>
   </div>{# /ftr-tape-full #}
 
@@ -1677,7 +1677,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     }
     return {cls:'closed', en:'LAST SESSION', zh:'上一交易时段', asofStr:asofStr, live:false};
   }
-
+  function _tapeOlderNote(pulse){ var h=document.querySelector('.rvx-hero[data-si-as-of]'), pg=h?String(h.getAttribute('data-si-as-of')||'').slice(0,10):'', tp=String((pulse&&(pulse.as_of_quotes||pulse.as_of_utc))||'').slice(0,10), a=Date.parse(pg), b=Date.parse(tp); if(!isFinite(a)||!isFinite(b)||(a-b)<=5*864e5) return ''; return ' <span class="mr-chip mr-chip-stale" data-tip-en="Observation is no longer current." data-tip-zh="观测已过期。">'+L('Older evidence shown','显示较早证据')+'</span>'; }
   // ── Tape band v3: ranked leader/laggard columns + complex row + expander ──
   function renderTapeStrip(pulse){
     var band=document.getElementById('ftr-tape-band');
@@ -1689,7 +1689,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     if(tokEl){ tokEl.className='dtp-token '+st.cls; }
     if(tokLbl){ tokLbl.innerHTML=L(esc(st.en),esc(st.zh)); }
     var asofEl=document.getElementById('ftr-tape-asof');
-    if(asofEl){ asofEl.innerHTML=st.asofStr?L('as of '+esc(st.asofStr),'截至 '+esc(st.asofStr)):''; }
+    if(asofEl){ asofEl.innerHTML=(st.asofStr?L('as of '+esc(st.asofStr),'截至 '+esc(st.asofStr)):'')+_tapeOlderNote(pulse); }
     if(st.live){ band.classList.add('live-mode'); } else { band.classList.remove('live-mode'); }
 
     var bodyEl=document.getElementById('ftr-dtp-body');
@@ -1886,7 +1886,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     if(tokEl){ tokEl.className='ftr-strip-token'+(st.live?' live':''); }
     if(dotEl){ dotEl.className='ftr-strip-dot'+(st.live?'':' no-anim'); }
     if(tokLbl){ tokLbl.innerHTML=L(esc(st.en),esc(st.zh)); }
-    if(asofEl){ asofEl.innerHTML=st.asofStr?L(esc(st.asofStr),esc(st.asofStr)):''; }
+    if(asofEl){ asofEl.innerHTML=(st.asofStr?L(esc(st.asofStr),esc(st.asofStr)):'')+_tapeOlderNote(pulse); }
     var all=(pulse.baskets||[]).filter(function(b){return b.live_ew_chg_pct!=null&&b.tape_rank!=null;});
     all.sort(function(a,b){return b.tape_rank-a.tape_rank;});
     var leadEl=document.getElementById('ftr-strip-leaders');
@@ -2217,7 +2217,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
         <div class="mr-early" id="mr-early"></div>
       </div>
     </section>
-    {# ── Cycle clock — the sector_cycles overlay, embedded (window.SECTOR_CYCLES) ── #}
+  </section></section>{# /si-view map part 1 #}<section class="si-view" data-view="cycles" id="si-cycles" aria-labelledby="si-cycles-h">{% set _cc = cycles_ctx or {} %}{% set _cg = _cc.get('generation') or {} %}{% set _cv = _cc.get('coverage') %}<div class="rvx-sec-h"><h2 id="si-cycles-h" tabindex="-1">{{ t('Cycles', '周期') }}</h2></div><p class="muted sm si-cycles-ctx-line" id="si-cycles-asof">{{ t('As of', '截至') }} {% if _cc.get('asof') %}<time datetime="{{ _cc.get('asof') }}">{{ _cc.get('asof') }}</time>{% else %}{{ t('— unavailable', '— 不可用') }}{% endif %} · {{ t('Generation', '生成状态') }} <span id="si-cycles-gen">{% if _cg.get('status') == 'aligned' %}{{ t('History matches the current read', '历史与当前读数一致') }}{% elif _cg.get('status') == 'incompatible_generation' %}{% set _gx = (_cg.get('artifact_session') or '—')|string %}{% set _gy = (_cg.get('consumer_session') or '—')|string %}<span data-tip-en="{{ 'History {x}, current read {y}. Not drawn, so the two are never mixed.'|replace('{x}', _gx)|replace('{y}', _gy) }}" data-tip-zh="{{ '历史 {x}，当前读数 {y}。不绘制，避免混用。'|replace('{x}', _gx)|replace('{y}', _gy) }}">{{ t('History is from a different day', '历史来自不同日期') }}</span>{% else %}{{ t('— unavailable', '— 不可用') }}{% endif %}</span></p>{% if _cv and _cv.get('expected') and (_cv.get('measured') or 0) < _cv.get('expected') %}<p class="muted sm" id="si-cycles-cov">{{ t('Partial coverage', '覆盖不完整') }} {{ _cv.get('measured') or 0 }} / {{ _cv.get('expected') }}{% if _cv.get('missing') %} · {{ _cv.get('missing')|join(', ') }}{% endif %}</p>{% elif not _cv %}<p class="muted sm" id="si-cycles-cov" data-tip-en="Coverage and its evidence date appear with the measured-sector read." data-tip-zh="覆盖情况与证据日期随板块实测数据一同显示。">{{ t('Sector measurement coverage unavailable', '板块测量覆盖暂不可用') }}</p>{% endif %}<script type="application/json" id="si-cycles-ctx">{{ {'asof': _cc.get('asof'), 'generation': _cc.get('generation'), 'coverage': _cc.get('coverage')}|tojson }}</script>{# ── Cycle clock — the sector_cycles overlay, embedded (window.SECTOR_CYCLES) ── #}
 <section class="scc-cycle cyc-page sc-page" id="sc-cyclemap">
     <div class="scc-section-h">
       <h2><span class="l-en">Cycle map — every sector &amp; theme on one clock</span><span class="l-zh">周期图谱 — 各板块与主题同框</span></h2>
@@ -2268,7 +2268,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
       </aside>
     </section>
   </section>
-
+  </section>{# /si-view cycles #}<section class="si-view" data-view="map"><section class="rvx-sec" id="si-map-gated">
     {# ── One gated read per sector (11 cap-weighted ETFs) — basket-kind reads live in the lane expands above ── #}
     <div class="scc-boardhead" id="sc-board">
       <div class="scc-section-h">
@@ -2844,7 +2844,7 @@ function renderRegimeSizing(){
   const rcEn=showNote?`Caution gate: US books only (volatility-overlay drawdown study${asof?`, asof ${asof}`:''}) — no drawdown edge over plain volatility-targeting. Not tested separately for this market.`:'';
   const rcZh=showNote?`审慎档位：仅基于美国标的（波动率叠加回撤研究${asof?`，数据截至 ${asof}`:''}）——相较单纯波动率目标没有回撤优势。未针对本市场单独检验。`:'';
   const rcAttr=showNote?` data-tip-rc-en="${esc(rcEn)}" data-tip-rc-zh="${esc(rcZh)}"`:'';
-  return `<span class="pulse-size" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}"${rcAttr}>${L('positions sized to '+pct+'%','仓位缩至 '+pct+'%')}</span>`;
+  return `<span class="pulse-size" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}"${rcAttr}>${L('Read from US volatility','依据美国波动率读数')}</span>`;
 }
 
 {% include "_sector_central_brief.js.j2" %}
@@ -2860,7 +2860,7 @@ function renderVerdictHero(){
     om.innerHTML=(zh?'原第一':'was #1')+(r20!=null?' · <span class="rvx-num">'+fmtPct(r20)+'</span> 20d':'')+(r5!=null&&r5<0?' · <span class="rvx-num rvx-dn">'+fmtPct(r5)+'</span> 5d':''); } }
   const im=document.getElementById('hero-in-meta');
   if(im&&im.dataset.id){ const t=themeById(im.dataset.id); if(t){ const r20=relPct(t,'20d'), v=t.pulse_rank_delta_5d;
-    im.innerHTML=(r20!=null?'<span class="rvx-num rvx-up">'+fmtPct(r20)+'</span> 20d':'')+(v!=null&&v>0?' · '+(zh?'快速上行':'climbing fast'):''); } }
+    im.innerHTML=(r20!=null?'<span class="rvx-num '+(r20<0?'rvx-dn':'rvx-up')+'">'+fmtPct(r20)+'</span> 20d':'')+(v!=null&&v>0?' · '+(zh?'快速上行':'climbing fast'):''); } }
 }
 
 // ── Rotation map (signature) + linked board — one source, many views ──
@@ -3260,7 +3260,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     var sub = (s.kind==='basket' ? (s.etf_proxy?esc(s.etf_proxy)+' · ':'') : (esc(s.ticker||'')+' · ')) + esc(lang()==='zh'?(s.group_zh||s.group):s.group);
     var chips=[];
     // Phase chip: RS rank (63d) moved to hover tip (XSR-R2 ONE-rank law — fast-lens rank is THE displayed rank).
-    var rsHover = (cy.rs_21d_rank||cy.rs_rank) ? ' data-tip-en="63d RS rank: #'+(cy.rs_21d_rank||cy.rs_rank)+' (slow clock — see fast tape below)" data-tip-zh="63日RS排名：第'+(cy.rs_21d_rank||cy.rs_rank)+'位（慢时钟——见下方快线）"' : '';
+    var rsHover = cy.rs_rank ? ' data-tip-en="63d RS rank: #'+cy.rs_rank+' (slow clock — see fast tape below)" data-tip-zh="63日RS排名：第'+cy.rs_rank+'位（慢时钟——见下方快线）"' : '';  // SIC-D33: the tip names the 63d rank, so it shows the 63d rank
     if(cy.phaseLabel||cy.phase) chips.push('<span class="chip2"'+rsHover+'>'+esc(cy.phaseLabel||cy.phase)+'</span>');
     // XSR-W1b: fast-tape board rail — ordinal display (#2 of 11) + plain-word state.
     // Internal enum names (TURN SIGNALED, RALLY ON, etc.) NEVER appear at tier 1 —
@@ -3342,7 +3342,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     el.innerHTML='<h2>'+L('Self-grader — measured accuracy','自评分器 — 已衡量准确度')+'</h2>'+
       '<div class="muted sm">'+L('Realized directional hit-rate, cross-sectional rank-IC and excess-vs-SPY of the conviction calls, by horizon. Sparse until it accrues; never fed back into the live score.',
         '按时间跨度衡量信念判断的已实现方向命中率、横截面秩相关与超越SPY的超额收益。数据累积前较稀疏；绝不回灌入实时评分。')+'</div>'+
-      '<div class="gr-grid">'+(cells.join('')||'<div class="muted sm">'+L('accruing','累积中')+'</div>')+'</div>'+
+      '<div class="muted sm">'+L('Conviction-call hit rate over all resolved calls, Neutral included. Not a win rate.','全部已结算判断（含中性）的条件命中率，并非胜率。')+'</div>'+'<div class="gr-grid">'+(cells.join('')||'<div class="muted sm">'+L('accruing','累积中')+'</div>')+'</div>'+
       graderVersionFrame();
   }
   /* RB13 F1: once score version 2 is active the top-level scorecard is the

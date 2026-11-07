@@ -248,12 +248,60 @@ def test_single_new_global_snapshot():
 
 
 def test_langchange_refreshes_the_clipped_mark_language():
-    """RI05b MINOR: a clipped field's '(shortened)' mark follows the page
-    language after a switch; the six verbatim values are never rewritten."""
+    """RI05b MINOR + L7 D9: a clipped field's '(shortened)' mark and the typed
+    unavailable state follow the page language after a switch; the six
+    verbatim values are never rewritten (paint only sets textContent, and the
+    composer is never assigned)."""
     script = _island_script(_html())
     assert "function currentShortenedMark()" in script
     region = _langchange_region(script)
     assert "shortenedMark = currentShortenedMark();" in region
-    assert "paint('si-rb-q', fields.q + (qCarried.shortened ? shortenedMark : ''))" in region
-    assert "paint('si-rb-snap', fields.snap + (snapCarried.shortened ? shortenedMark : ''))" in region
-    assert "si-rb-subject" not in region and "si-rb-obs" not in region and "si-rb-ev" not in region
+    assert "paintReadback();" in region
+    assert ".value =" not in region
+    body = script[script.index("function paintReadback()"):script.index("paintReadback();")]
+    assert "paint('si-rb-q', fields.q ? fields.q + (qCarried.shortened ? shortenedMark : '') : '')" in body
+    assert "paint('si-rb-snap', fields.snap ? fields.snap + (snapCarried.shortened ? shortenedMark : '') : '')" in body
+    for sink in READBACK_IDS:
+        assert f"paint('{sink}'" in body
+
+
+# SIC-D39: the sector names as engine/news_common.py SECTOR_ETFS (copied here
+# so this test reads no engine source) and the page names as the nav.
+SECTOR_NAME_PAIRS = {
+    "XLB": ("Materials", "原材料"), "XLC": ("Communication Services", "通信服务"),
+    "XLE": ("Energy", "能源"), "XLF": ("Financials", "金融"),
+    "XLI": ("Industrials", "工业"), "XLK": ("Technology", "科技"),
+    "XLP": ("Consumer Staples", "必需消费"), "XLRE": ("Real Estate", "房地产"),
+    "XLU": ("Utilities", "公用事业"), "XLV": ("Health Care", "医疗保健"),
+    "XLY": ("Consumer Discretionary", "可选消费"),
+}
+ORIGIN_NAME_PAIRS = {
+    "sector_central.html": ("Sector Intelligence", "行业情报"),
+    "sector_cycles.html": ("U.S. Sector Cycles", "美国行业周期"),
+}
+
+
+def test_carried_ids_read_as_names_beside_the_verbatim_value():
+    """SIC-D39: 'sector:XLK' and 'sector_central.html' were the only subject
+    and origin copy. A page-language name now rides beside each, repainted on
+    a language switch, while the carried value keeps its own sink, painted
+    verbatim and only demoted to secondary ink."""
+    html = _html()
+    markup = _island_markup(html)
+    script = _island_script(html)
+    for row in ("subject", "origin"):
+        name = f'<span class="si-rb-name" id="si-rb-{row}-name" hidden></span>'
+        value = f'<span class="si-rb-val" id="si-rb-{row}"></span>'
+        assert name + value in markup, row
+    for ticker, (en, zh) in SECTOR_NAME_PAIRS.items():
+        assert f"{ticker}: ['{en}', '{zh}']" in script, ticker
+    for page, (en, zh) in ORIGIN_NAME_PAIRS.items():
+        assert f"'{page}': ['{en}', '{zh}']" in script, page
+    body = script[script.index("function paintReadback()"):script.index("paintReadback();")]
+    assert "paint('si-rb-subject', fields.subject);" in body
+    assert "paint('si-rb-origin', fields.origin);" in body
+    assert "paintNames();" in body
+    names = script[script.index("function paintName("):script.index("function paintReadback()")]
+    assert "el.textContent = name;" in names
+    assert "innerHTML" not in names and ".value =" not in names
+    assert ".si-rb-val.si-rb-raw{" in html

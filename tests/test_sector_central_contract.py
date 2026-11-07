@@ -20,7 +20,7 @@ CONTRACT = ROOT / "research" / "sector_completion_20261021" / "INTEGRATION_CONTR
 LEGACY_JOBS = ROOT / ".github" / "ci" / "legacy-jobs.yml"
 
 #: route ids the contract's Routes table records (observed set == expected set).
-ROUTES = ["overview", "map", "moving", "money", "explore", "confluence"]
+ROUTES = ["overview", "map", "moving", "money", "explore", "confluence", "cycles"]
 
 #: fixed mount points the contract records.
 MOUNT_IDS = ["tm-mount", "accumulation-section", "si-measured"]
@@ -69,10 +69,13 @@ def test_router_source_declares_every_contract_route():
 
 
 def test_template_mounts_every_contract_route_section():
-    """Each route id has exactly one si-view section carrying it in the template."""
+    """Each route id has an si-view section in the template: exactly one, except map,
+    whose two halves wrap the Cycles view."""
     tpl = _read(TEMPLATE)
     found = re.findall(r'<section class="si-view[^"]*" data-view="([a-z]+)"', tpl)
-    assert found == ROUTES, f"template si-view sections drifted from the contract: {found}"
+    assert set(found) == set(ROUTES), f"template si-view sections drifted from the contract: {found}"
+    counts = {r: found.count(r) for r in ROUTES}
+    assert counts == {**{r: 1 for r in ROUTES}, "map": 2}, counts
 
 
 def test_router_is_the_script_the_template_loads():
@@ -124,7 +127,7 @@ def test_contract_records_observed_route_set_and_verdict():
     assert "RESTORES_VIEW" in text
     # the observed route set is stated as equal to the expected six (wrap-insensitive)
     flat = " ".join(text.split())
-    assert "overview, map, moving, money, explore, confluence" in flat
+    assert "overview, map, moving, money, explore, confluence, cycles" in flat
 
 
 def test_legacy_jobs_gate_line_lists_contract_suite():

@@ -28,6 +28,22 @@
   /* ── i18n (mirrors the site l-en/l-zh idiom) ── */
   function zh() { return doc.documentElement.getAttribute('data-lang') === 'zh'; }
   function T(en, cn) { return zh() ? cn : en; }
+  // SIC-D40: theme tags are open producer slugs. A known topic reads in the page
+  // language; a person's name or an unknown slug stays verbatim (never a
+  // guessed translation) and is marked as English text. data-v keeps the raw tag.
+  var TAG_NAMES = {
+    'agriculture': ['Agriculture', '农业'], 'corn': ['Corn', '玉米'], 'soybeans': ['Soybeans', '大豆'],
+    'wheat': ['Wheat', '小麦'], 'harvest': ['Harvest', '收获'], 'crop-condition': ['Crop condition', '作物状况'],
+    'cybersecurity': ['Cybersecurity', '网络安全'], 'insurance': ['Insurance', '保险'],
+    'proposed-settlement': ['Proposed settlement', '拟议和解'], 'issuer-event': ['Issuer event', '发行人事件'],
+    'industrials': ['Industrials', '工业'], 'construction-equipment': ['Construction equipment', '工程机械'],
+    'patents': ['Patents', '专利'], 'trade': ['Trade', '贸易'], 'forecast': ['Forecast', '预测'],
+    'Fear and Greed': ['Fear and Greed', '恐惧与贪婪']
+  };
+  // Own keys only: a slug such as 'constructor' is unknown, not an Object member.
+  function tagPair(t) { return Object.prototype.hasOwnProperty.call(TAG_NAMES, t) ? TAG_NAMES[t] : null; }
+  function tagName(t) { var n = tagPair(t); return n ? T(n[0], n[1]) : t; }
+  function tagLang(t) { return (!tagPair(t) && zh()) ? 'en' : ''; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   /* ── transfer progress ───────────────────────────────────────────────────
@@ -411,7 +427,7 @@
 
     $('fig-new').textContent = newN === null ? '—' : newN;
     $('fig-desks').textContent = deskN === null ? '—' : deskN;
-    $('fig-theme').textContent = topTheme || T('—', '—');
+    $('fig-theme').textContent = (topTheme ? tagName(topTheme) : '') || T('—', '—');
     $('fig-total').textContent = TOTAL_COUNT;
     buildWeb();
 
@@ -653,7 +669,8 @@
     grp.querySelectorAll('.aff:not([data-v=""])').forEach(function (b) { b.remove(); });
     var counts = {}; ITEMS.forEach(function (x) { x.tags.forEach(function (t) { counts[t] = (counts[t] || 0) + 1; }); });
     Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 5).forEach(function (th) {
-      var b = doc.createElement('button'); b.className = 'aff'; b.setAttribute('data-f', 'theme'); b.setAttribute('data-v', th); b.textContent = th;
+      var b = doc.createElement('button'); b.className = 'aff'; b.setAttribute('data-f', 'theme'); b.setAttribute('data-v', th); b.textContent = tagName(th);
+      if (tagLang(th)) b.setAttribute('lang', tagLang(th));
       grp.appendChild(b);
     });
     syncFacetActive('theme', FILT.theme);
@@ -686,7 +703,7 @@
       // when the server search has resolved, restrict to its hit ids; otherwise
       // fall back to a client-side substring over the baked fields (instant).
       if (SEARCH_HITS) return SEARCH_HITS[x.id];
-      var hay = (x.title + ' ' + x.inst + ' ' + x.desk + ' ' + x.points.join(' ') + ' ' + x.tags.join(' ') + ' ' + x.tickers.join(' ')).toLowerCase();
+      var hay = (x.title + ' ' + x.inst + ' ' + x.desk + ' ' + x.points.join(' ') + ' ' + x.tags.join(' ') + ' ' + x.tags.map(tagName).join(' ') + ' ' + x.tickers.join(' ')).toLowerCase();
       if (hay.indexOf(FILT.q.toLowerCase()) < 0) return false;
     }
     return true;
@@ -834,7 +851,7 @@
       + ptsHtml + moreBtn
       + '<div class="rep-foot"><div class="rep-meta">'
         + '<span class="rep-date">' + CAL_SVG + esc(fmtWhen(x.at, x.date)) + '</span>'
-        + '<span class="rep-tags">' + x.tags.map(function (t) { return '<span class="rep-tag">' + esc(t) + '</span>'; }).join('') + tickerHtml + '</span></div>'
+        + '<span class="rep-tags">' + x.tags.map(function (t) { return '<span class="rep-tag"' + (tagLang(t) ? ' lang="en"' : '') + '>' + esc(tagName(t)) + '</span>'; }).join('') + tickerHtml + '</span></div>'
         + '<div class="rep-acts">'
           + '<button class="btn ghost" data-act="view">' + VIEW_SVG + T('View', '查看') + '</button>'
           + '<button class="btn primary" data-act="view">' + DL_SVG + T('Open', '打开') + '</button>'
@@ -845,6 +862,7 @@
   /* active-filter chips */
   function labelFor(dim, val) {
     if (dim === 'side') return val === 'buy' ? T('Buy-side', '买方') : (val === 'sell' ? T('Sell-side', '卖方') : T('Independent', '独立'));
+    if (dim === 'theme') return tagName(val);
     return val;
   }
   function renderActiveChips() {
@@ -1531,7 +1549,7 @@
   function onLangChange() {
     var q = $('q'); q.placeholder = q.getAttribute('data-ph-' + (zh() ? 'zh' : 'en'));
     var vf = $('vh-find-in'); vf.placeholder = vf.getAttribute('data-ph-' + (zh() ? 'zh' : 'en'));
-    buildTree(); updateHero(); renderFeed();
+    buildTree(); buildThemeFacets(); updateHero(); renderFeed();
     if ($('overlay').classList.contains('open') && V.item) {
       $('vh-stamp').innerHTML = '<span class="dt"></span>' + stampLabel(V.item.side);
       buildRelated(V.item);

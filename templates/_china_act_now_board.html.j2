@@ -34,6 +34,11 @@
   .row-pop-mark .ic-svg { fill:none; stroke:currentColor; stroke-width:1.8;
     stroke-linecap:round; stroke-linejoin:round; }
   .row-pop-mark .ic-svg { width:17px; height:17px; display:block; }
+  /* Lane header — neutral surface; lane identity is carried by the lane title and its
+     count (docs/DESIGN_DOCTRINE.md: no accent stripe on any edge). theme.css:1754 paints
+     a 3px top bar through this pseudo-element; the board stops it here, with the include,
+     for the same stamp reason as the rules above. */
+  .anv2-lane-hd::before { content: none; }
   </style>
   <div class="panel span12 anv2-board" id="act-now">
     {{ dc.dc_css() }}
@@ -298,7 +303,7 @@
                'Beaten down, first signs of turning up — watch only', '超跌初现回升迹象 — 仅观察',
                _anl.bottoming_watch, 'anv2-bot') }}
     {{ _anlane('reduce', 'red', 'Reduce / Avoid',        '减仓 / 回避',
-               'Trend weakening — consider trimming', '趋势转弱 — 考虑减仓',
+               'Trend weakening', '趋势转弱',
                _anl.reduce_avoid, 'anv2-red') }}
 
     </div>{# /.anv2-grid #}

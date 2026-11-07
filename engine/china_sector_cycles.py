@@ -218,10 +218,10 @@ def build_basket(b: dict, chart: dict, accent: str, bench: pd.Series | None,
 
 
 def _rank_rs(items: list[dict]) -> None:
-    ranked = sorted([s for s in items if s["now"].get("rs_63d") is not None],
-                    key=lambda s: s["now"]["rs_63d"], reverse=True)
-    for n, s in enumerate(ranked, 1):
-        s["now"]["rs_rank"] = n
+    """Both leadership lenses, through the US engine's own stamper: rs_rank (63d,
+    unchanged) and rs_21d_rank. SIC-D33: the card shows rs_21d when it is
+    stamped, so its rank has to come from the same 21d lens."""
+    sc._stamp_rs_ranks(items)
 
 
 def _global_last(bench: pd.Series | None) -> pd.Timestamp:

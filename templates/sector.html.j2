@@ -12,6 +12,8 @@
 <title>{{ s.name }} ({{ s.fund }}) — cycle & holdings</title>
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="../sector_cycles.css">
+<link rel="stylesheet" href="../sector_cycles_states.css">
 <style>
   * { box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font:14px/1.5 -apple-system,
@@ -19,15 +21,15 @@
   @media (min-width:1100px){ body{ padding:26px max(40px,calc((100vw - 1200px)/2)); } }
   .early { margin:6px 0; padding:8px 12px; border-radius:8px;
            background:color-mix(in srgb, var(--g-cold) 14%, var(--panel2));
-           border-left:3px solid var(--g-cold); font-size:13px; }
+           border:1px solid var(--line); font-size:13px; }
   .macro-caution { margin:6px 0; padding:8px 12px; border-radius:8px;
            background:color-mix(in srgb, var(--down) 10%, var(--panel2));
-           border-left:3px solid var(--down); font-size:13px; }
+           border:1px solid var(--line); font-size:13px; }
   .shock-deesc-banner { margin:10px 0; padding:10px 14px; border-radius:8px;
            background:color-mix(in srgb, var(--warn) 15%, var(--panel2));
-           border-left:4px solid var(--warn); font-size:13px; font-weight:600; }
+           border:1px solid var(--line); font-size:13px; font-weight:600; }
   .agewhen { margin:6px 0; padding:7px 11px; border-radius:8px; background:var(--panel2);
-             border-left:3px solid var(--link); font-size:13px; color:var(--text); }
+             border:1px solid var(--line); font-size:13px; color:var(--text); }
   .agechip { font-size:11px; font-weight:700; padding:2px 7px; border-radius:9px;
              background:var(--panel); color:var(--muted); border:1px solid var(--line);
              white-space:nowrap; }
@@ -52,29 +54,25 @@
   /* entry call bar + urgency colors */
   .entrybar { display:flex; gap:10px; align-items:flex-start; margin:10px 0 8px;
               padding:9px 12px; border-radius:9px; background:var(--panel2);
-              border-left:4px solid var(--muted); font-size:14px; }
+              border:1px solid var(--line); font-size:14px; }
   .entrytag { font-weight:800; font-size:12px; letter-spacing:.04em; white-space:nowrap;
               padding:3px 9px; border-radius:7px; }
   .urgpill { font-weight:700; font-size:11px; padding:2px 8px; border-radius:9px; }
   .urg-now .entrytag, .urgpill.urg-now { background:var(--up); color:#fff; }
-  .urg-now { border-left-color:var(--up); }
   .urg-imminent .entrytag, .urgpill.urg-imminent { background:var(--g-cold); color:#fff; }
-  .urg-imminent { border-left-color:var(--g-cold); }
   .urg-soon .entrytag, .urgpill.urg-soon { background:color-mix(in srgb,var(--g-cold) 30%,var(--panel)); color:var(--text); }
-  .urg-soon { border-left-color:var(--g-cold); }
   .urg-hold .entrytag, .urgpill.urg-hold { background:var(--panel); color:var(--muted); border:1px solid var(--line); }
-  .urg-hold { border-left-color:var(--muted); }
   .urg-later .entrytag, .urgpill.urg-later { background:var(--panel); color:var(--muted); border:1px solid var(--line); }
-  .urg-later { border-left-color:var(--muted); }
   .urg-caution .entrytag, .urgpill.urg-caution { background:var(--warn); color:#1a1a1a; }
-  .urg-caution { border-left-color:var(--warn); }
   .urg-exit .entrytag, .urgpill.urg-exit { background:var(--down); color:#fff; }
-  .urg-exit { border-left-color:var(--down); }
   .urg-avoid .entrytag, .urgpill.urg-avoid { background:color-mix(in srgb,var(--down) 30%,var(--panel)); color:var(--text); }
-  .urg-avoid { border-left-color:var(--down); }
+  /* verdict box — even border on every edge. theme.css:1267 gives .verdict a 6px left
+     edge in the urgency hue; docs/DESIGN_DOCTRINE.md forbids an accent stripe on any edge.
+     The call stays labelled by its action word and tag. */
+  .verdict { border:1px solid var(--line); }
   /* glance-level two-timeframe synthesis sentence, sits right under the verdict */
   .synthesis { margin:8px 0 4px; padding:9px 13px; border-radius:9px; font-size:13.5px; line-height:1.5;
-               background:color-mix(in srgb, var(--link) 9%, var(--panel2)); border-left:3px solid var(--link); }
+               background:var(--panel2); border:1px solid var(--line); }
   /* context-indicator chip: factual extreme, NOT an alarm — neutral so it can't compete with the verdict */
   .sigchip.ctx { border-color:var(--line); }
   .sigchip.ctx .sc-v, .sigchip.ctx .sc-s { color:var(--muted); }
@@ -91,6 +89,9 @@
            padding:14px 16px; margin-bottom:14px; }
   .topline { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
   .muted { color:var(--muted); }
+  .asof { font-size:12px; white-space:nowrap; }
+  .fail-note { margin:6px 0 0; padding:6px 10px; border-radius:var(--r-ctl,8px); color:var(--text);
+           background:var(--esurf-warn-soft); border:1px solid var(--line); font-size:13px; }
   .state { display:inline-block; padding:2px 11px; border-radius:12px; font-weight:700;
            font-size:12.5px; }
   .card { background:var(--panel2); border:1px solid var(--line); border-radius:10px;
@@ -112,7 +113,48 @@
   th,td { text-align:left; padding:4px 8px; border-bottom:1px solid var(--line); }
   th { color:var(--muted); font-weight:500; }
   .tv { margin-top:8px; overflow:hidden; }
+  /* third-party chart failure state — a neutral surface in the widget's 440px frame: no
+     direction or health ink, no edge stripe. The rest of the dossier stays. */
+  .tv-err { box-sizing:border-box; min-height:440px; display:flex; flex-direction:column; justify-content:center; gap:6px; padding:24px; background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-ctl,8px); }
+  .tv-err .t { margin:0; font-weight:600; color:var(--text); }
+  .tv-err .s { margin:0; color:var(--muted); font-size:13px; max-width:52ch; }
   details summary { cursor:pointer; color:var(--ink-link, var(--link)); font-size:12.5px; margin-top:6px; }
+  /* Sector dossier (L5): tablist + the panels the Cycles family feeds. Neutral surfaces,
+     even borders, a full focus ring; selection is text + surface + border, never colour alone.
+     Until sector_dossier.js binds, every server-rendered panel stays visible in order and the
+     script-only panels stay out of the way. */
+  #scd:not([data-bound]) .scd-tabs, #scd:not([data-bound]) .scd-js { display:none; }
+  .scd-tabs { display:flex; gap:4px; overflow-x:auto; margin:14px 0; padding:4px;
+              background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,12px); scrollbar-width:thin; }
+  .scd-tabs [role="tab"] { flex:0 0 auto; appearance:none; background:transparent; color:var(--muted);
+              border:1px solid transparent; border-radius:var(--r-ctl,8px); padding:7px 14px; min-height:36px;
+              font:inherit; font-size:13.5px; font-weight:600; cursor:pointer; white-space:nowrap; }
+  .scd-tabs [role="tab"]:hover { color:var(--text); background:var(--panel2); }
+  .scd-tabs [role="tab"][aria-selected="true"] { color:var(--text); background:var(--panel2); border-color:var(--line); }
+  .scd-tabs [role="tab"]:focus-visible, .scd-panel:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  .scd-panel[hidden] { display:none; }
+  .scd-mtab { width:100%; border-collapse:collapse; font-size:13px; }
+  .scd-mtab .num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .scd-tk { font-weight:700; font-variant-numeric:tabular-nums; }
+  .scd-tk[aria-disabled="true"] { color:var(--muted); cursor:default; text-decoration:none; }
+  .scd-nm { color:var(--muted); font-size:12.5px; margin-left:8px; }
+  .scd-nc { margin-left:8px; font-size:11px; font-weight:700; padding:1px 7px; border-radius:var(--r-pill,999px);
+            color:var(--muted); border:1px solid var(--line); background:var(--panel2); white-space:nowrap; }
+  /* L6.19: the identity header persists across tabs; the Cycle tab's breadth block reads as one section
+     with neutral type only (no direction ink, no edge accents); an empty or loading mount keeps its height
+     until the data paints. */
+  .scd-head { margin-bottom:0; }
+  .scd-mount:empty, .scd-mount:has(> .sc-state--loading) { min-height:480px; }
+  .scd-trend { margin:0; font-size:13px; color:var(--muted); }
+  .scd-breadth { display:flex; flex-direction:column; gap:6px; }
+  .scd-breadth-copy { margin:0; font-size:13px; line-height:1.5; color:var(--text); max-width:72ch; }
+  .scd-legs { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:6px 16px;
+              list-style:none; padding:0; margin:4px 0 0; }
+  .scd-leg { display:flex; justify-content:space-between; align-items:baseline; gap:8px; font-size:13px;
+             padding:6px 10px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel2); min-width:0; }
+  .scd-num { font-family:var(--font-mono,inherit); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .scd-meta, .scd-breadth-nc { margin:0; font-size:12px; color:var(--muted); }
+  .scd-open { margin:14px 0 0; font-size:13px; }
 </style>
 </head>
 <body>
@@ -128,11 +170,16 @@
 {% if shock_state is defined and shock_state and shock_state.get('active') %}
 <div class="shock-deesc-banner">⚠ <span class="l-en">SHOCK — ranks computed on pre-shock data; discount until {{ shock_state.get('expires', '') }}.</span><span class="l-zh">冲击 — 排名依据冲击前数据计算；有效期至 {{ shock_state.get('expires', '') }}，届前请酌情折扣。</span></div>
 {% endif %}
-  <div class="panel">
+{# ---- Sector dossier (L5): the identity header (name, state, entry badge, as-of, alerts) sits above the
+     tablist so every tab keeps the page title; Overview keeps the rest of the legacy body in order, and the
+     other tabs are fed by the Cycles family (sector_cycles_states/_face + sector_dossier.js). ---- #}
+<div id="scd" class="scd" data-fund="{{ s.fund }}">
+  <header class="panel scd-head">
     <div class="topline">
       <h1>{{ td(s.name) }} <span class="muted">({{ s.fund }})</span></h1>
       <span class="state st-{{ s.ladder.state | replace(" ", "_") }}">{{ td(s.ladder.label) }}</span>
-      {% if s.ladder.eq_badge %}<span class="eqbadge eq-{{ s.ladder.eq_dir }}">{{ t('Entry','入场') }} {{ s.ladder.eq_badge }} <span class="eqg">{{ td(s.ladder.eq_grade) }}</span></span>{{ help(s.ladder.eq_tip, s.ladder.eq_tip_zh) }}{% endif %}
+      {% if s.ladder.eq_badge %}<span class="eqbadge eq-{{ s.ladder.eq_dir }}">{{ t('Entry','入场') }} {{ s.ladder.eq_badge }} <span class="eqg">{{ t(s.ladder.eq_grade, s.ladder.eq_grade_zh) }}</span></span>{{ help(s.ladder.eq_tip, s.ladder.eq_tip_zh) }}{% endif %}
+      {% if s.as_of %}<span class="asof muted">{{ t('Data as of','数据截至') }} {{ s.as_of }}</span>{% endif %}
       <span style="flex:1"></span>
       <span class="af-wrap">
         <button class="af-toggle" id="af-btn" type="button" aria-label="Toggle alert feed" aria-expanded="false" aria-controls="af-feed">🔔 <span>{{ t('Alerts','警报') }}</span>{% if alerts and alerts.n_recent %}<span class="af-badge">{{ alerts.n_recent }}</span>{% endif %} <span class="af-caret">▾</span></button>
@@ -178,6 +225,18 @@
         </div>
       </span>
     </div>
+  </header>
+  <div class="scd-tabs" role="tablist" aria-label="{{ s.fund }}">
+    <button type="button" role="tab" id="scd-t-overview" data-tab="overview" aria-controls="scd-p-overview" aria-selected="true" tabindex="0">{{ t('Overview', '概览') }}</button>
+    <button type="button" role="tab" id="scd-t-cycle" data-tab="cycle" aria-controls="scd-p-cycle" aria-selected="false" tabindex="-1">{{ t('Cycle', '周期') }}</button>
+    <button type="button" role="tab" id="scd-t-signals" data-tab="signals" aria-controls="scd-p-signals" aria-selected="false" tabindex="-1">{{ t('Signals', '信号') }}</button>
+    <button type="button" role="tab" id="scd-t-drivers" data-tab="drivers" aria-controls="scd-p-drivers" aria-selected="false" tabindex="-1">{{ t('Drivers', '驱动因素') }}</button>
+    <button type="button" role="tab" id="scd-t-companies" data-tab="companies" aria-controls="scd-p-companies" aria-selected="false" tabindex="-1">{{ t('Companies', '公司') }}</button>
+    <button type="button" role="tab" id="scd-t-evidence" data-tab="evidence" aria-controls="scd-p-evidence" aria-selected="false" tabindex="-1">{{ t('Evidence', '证据') }}</button>
+    <button type="button" role="tab" id="scd-t-record" data-tab="record" aria-controls="scd-p-record" aria-selected="false" tabindex="-1">{{ t('Track record', '跟踪记录') }}</button>
+  </div>
+  <section role="tabpanel" id="scd-p-overview" class="scd-panel" aria-labelledby="scd-t-overview" tabindex="0">
+  <div class="panel">
     {% set e = s.ladder.entry %}
     {# ---- bold VERDICT: the action verb + tag + call, read in a glance ---- #}
     <div class="verdict urg-{{ e.urgency }}">
@@ -216,7 +275,7 @@
       <div class="sigchip ctx">
         <span class="sc-k">Stoch</span>
         <span class="sc-v">{{ sv|round(0)|int if sv is not none else '—' }}</span>
-        <span class="sc-s">{{ t('Washout','超卖') }}</span>
+        <span class="sc-s">{% if sv is not none %}{{ t('Washout','超卖') if sv < 20 else (t('high','偏高') if sv > 80 else t('mid','中性')) }}{% endif %}</span>
       </div>
       {% set dd = s.cycle.dc_day %}{% set band = s.cycle.dc_band %}
       <div class="sigchip ctx">
@@ -268,9 +327,9 @@
         {{ help("The DAILY cycle is the short rhythm — equities tend to bottom every ~36-42 trading days. 'Day N' counts trading days since the last daily low. Past ~42 (overdue) means a fresh low could come any day.", "日线周期是短节奏 — 股市通常每约 36-42 个交易日筑底一次。“第 N 天”指自上次日线低点以来的交易日数。超过约 42 天（已逾期）意味着新低随时可能出现。") }}</div>
       {% if cp.weekly_line %}<div><b>🗓 {{ t(cp.weekly_line, cp.weekly_line_zh) }}</b> — {{ t(cp.weekly_phase, cp.weekly_phase_zh) }}
         {{ help("The WEEKLY (investor) cycle is the bigger rhythm — ~16-26 weeks, containing several daily cycles. It sets the tide the daily cycles swim in; early weeks = more upside room, late weeks = treat rallies cautiously.", "周线（投资者）周期是更大的节奏 — 约 16-26 周，包含数个日线周期。它决定了日线周期所处的大势；早期周次=上行空间更大，晚期周次=对反弹保持谨慎。") }}</div>{% endif %}
-      {% if cp.translation %}<div class="muted">{{ t(cp.translation, cp.translation_zh) }}</div>{% endif %}
+      {% if cp.translation %}<div class="muted">{{ t(cp.translation, cp.translation_zh) }}{% if s.cycle.failed_cycle %} {{ t('That describes the last completed cycle; the current one has since failed (below).', '以上描述的是上一个已完成的周期；当前周期其后已失败（见下）。') }}{% endif %}</div>{% endif %}
     </div>
-    {% if s.cycle.failed_cycle %}<p class="neg" style="margin:6px 0 0">⚠ {{ t('Failed cycle: price is below the low that started this cycle. How often the larger trend then rolls over has not been measured here.', '周期失败：价格已跌破启动本周期的低点。此后更大趋势掉头向下的频率，本站尚未测算。') }}</p>{% endif %}
+    {% if s.cycle.failed_cycle %}<p class="fail-note">⚠ {{ t('Failed cycle: price is below the low that started this cycle. How often the larger trend then rolls over has not been measured here.', '周期失败：价格已跌破启动本周期的低点。此后更大趋势掉头向下的频率，本站尚未测算。') }}</p>{% endif %}
     <details style="margin-top:8px"><summary>{{ t('full reasoning', '完整推理') }}</summary>
       <p class="muted" style="margin:6px 0">{{ t(s.ladder.why, s.ladder.why_zh) }} {{ t('Next:', '下一步：') }} {{ t(s.ladder.next, s.ladder.next_zh) }}</p>
     </details>
@@ -279,8 +338,8 @@
   {% if s.confluence and s.confluence.ok %}
   {% set c = s.confluence %}
   <div class="panel" id="confluence">
-    <h2>{{ t('Entry setup — the 3-day view', '入场配置 — 3 日视角') }}
-      {{ help("The same buy/sell read that drives the Sector setups board on the main dashboard, checked against the 200-day trend. A sector whose momentum is already stretched is never a fresh buy. The base rate is what this state actually went on to do over the next 63 days, against SPY. A risk and timing read, not a forecast.", "和主看板「板块买卖配置」用的是同一套买卖读数，以 200 日趋势把关。动量已经拉得很开的板块，绝不算新买点。基础概率是这个状态在随后 63 天里对 SPY 的实际表现。这是风险和择时的参考，不是预测。") }}
+    <h2>{{ t('Entry setup — the 3-day view', '入场形态 — 3 日视角') }}
+      {{ help("The same buy/sell read that drives the Sector setups board on the main dashboard, checked against the 200-day trend. A sector whose momentum is already stretched is never a fresh buy. The base rate is what this state actually went on to do over the next 63 days, against SPY. A risk and timing read, not a forecast.", "和主看板「板块买卖 — 短线择时」栏目用的是同一套买卖读数，以 200 日趋势把关。动量已经拉得很开的板块，绝不算新买点。基准率是这个状态在随后 63 天里对 SPY 的实际表现。这是风险和择时的参考，不是预测。") }}
     </h2>
     <p style="margin:6px 0">
       <span class="state" style="border:1px solid {{ c.color }};color:{{ c.color }};padding:2px 9px;border-radius:7px;font-weight:700">{{ t(c.label, c.label_zh) }}</span>
@@ -309,8 +368,9 @@
     <div class="tv">
       <div class="tradingview-widget-container">
         <div id="tv_main"></div>
-        <script src="https://s3.tradingview.com/tv.js"></script>
-        <script>new TradingView.widget({"container_id":"tv_main","symbol":"{{ s.fund }}","interval":"D","theme":(localStorage.getItem('theme')==='light'?'light':'dark'),"style":"1","height":440,"width":"100%","hide_side_toolbar":true,"allow_symbol_change":true,"studies":["RSI@tv-basicstudies","MACD@tv-basicstudies"]});</script>
+        <script>function tvUnavailable(){var h=document.getElementById('tv_main');if(!h||h.getAttribute('data-err'))return;h.setAttribute('data-err','1');h.innerHTML='<div class="tv-err" role="alert"><p class="t"><span class="l-en">Chart unavailable right now</span><span class="l-zh">图表暂不可用</span></p><p class="s"><span class="l-en">The third-party chart did not load. The cycle, momentum and evidence on this page are unaffected.</span><span class="l-zh">第三方图表未能加载。本页的周期、动量与证据不受影响。</span></p></div>';}</script>
+        <script src="https://s3.tradingview.com/tv.js" onerror="tvUnavailable()"></script>
+        <script>if (!window.TradingView) { tvUnavailable(); } else new TradingView.widget({"container_id":"tv_main","symbol":"{{ s.fund }}","interval":"D","theme":(localStorage.getItem('theme')==='light'?'light':'dark'),"style":"1","height":440,"width":"100%","hide_side_toolbar":true,"allow_symbol_change":true,"studies":["RSI@tv-basicstudies","MACD@tv-basicstudies"]});</script>
       </div>
     </div>
   </div>
@@ -372,6 +432,33 @@
     <p class="muted" style="font-size:12px;margin-top:8px">{{ t('Sector-neutral residual momentum — a modest, regime-decayed edge measured over 1962–2026. Stock-selection context within the sector, not a standalone buy list.', '板块中性残差动量 —— 基于 1962–2026 测得的温和、随周期衰减的优势。用于板块内选股的参考，而非独立买入清单。') }}</p>
   </div>
   {% endif %}
+  </section>
+  <section role="tabpanel" id="scd-p-cycle" class="scd-panel scd-js" aria-labelledby="scd-t-cycle" tabindex="0">
+    <div id="scd-cycle" class="scd-mount"></div>
+  </section>
+  <section role="tabpanel" id="scd-p-signals" class="scd-panel scd-js" aria-labelledby="scd-t-signals" tabindex="0">
+    <div id="scd-signals" class="panel scd-mount"></div>
+  </section>
+  <section role="tabpanel" id="scd-p-drivers" class="scd-panel scd-js" aria-labelledby="scd-t-drivers" tabindex="0">
+    <div id="scd-drivers" class="panel scd-mount"></div>
+  </section>
+  <section role="tabpanel" id="scd-p-companies" class="scd-panel" aria-labelledby="scd-t-companies" tabindex="0">
+  {% if s.members %}
+  <div class="panel scd-members">
+    <h2>{{ t('Members', '成分') }}</h2>
+    <table class="scd-mtab">
+      <thead><tr><th scope="col">{{ t('Ticker', '代码') }}</th><th scope="col" class="num">{{ t('Weight', '权重') }}</th></tr></thead>
+      <tbody>
+      {% for m in s.members %}
+      <tr data-resolved="{{ 'true' if m.resolved else 'false' }}">
+        <td>{% if m.resolved %}<a class="scd-tk" href="../stock.html#{{ m.ticker }}">{{ m.ticker }}</a>{% else %}<a class="scd-tk" aria-disabled="true" data-reason="{{ m.reason }}">{{ m.ticker }}</a><span class="scd-nc">{{ t('Not covered', '未覆盖') }}</span>{% endif %}{% if m.name %}<span class="l-en scd-nm">{{ m.name }}</span>{% endif %}</td>
+        <td class="num">{% if m.weight is number %}{{ '%.1f'|format(m.weight) }}%{% else %}<span class="muted">—</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
 
   {% if s.holdings %}
   <div class="panel">
@@ -383,7 +470,7 @@
     {% set holdings_en = ('Top ' ~ n ~ ' holdings, ' ~ share ~ '% of the fund — each analyzed on its own cycle') if have_share else ('Top ' ~ n ~ ' holdings — each analyzed on its own cycle') %}
     {% set holdings_zh = ('前 ' ~ n ~ ' 大持仓，合计占基金 ' ~ share ~ '% — 各自按其周期分析') if have_share else ('前 ' ~ n ~ ' 大持仓 — 各自按其周期分析') %}
     <h2>{{ t(holdings_en, holdings_zh) }}
-      {{ help("Every holding gets the same treatment as the ETF: daily-cycle position, multi-timeframe momentum, and a ladder state. The states carry measured base rates (table at the bottom). Weight = % of the ETF this stock represents — the top names drive the fund.", "每只持仓都与 ETF 同样处理：日线周期位置、跨周期动量及阶梯状态。各状态附有实测基准胜率（见底部表格）。权重=该股票占 ETF 的百分比 — 前几大成分股主导基金走势。") }}
+      {{ help("Every holding gets the same treatment as the ETF: daily-cycle position, multi-timeframe momentum, and a ladder state. The states carry measured base rates (table at the bottom). Weight = % of the ETF this stock represents — the top names drive the fund.", "每只持仓都与 ETF 同样处理：日线周期位置、跨周期动量及阶梯状态。各状态附有实测基准率（见底部表格）。权重=该股票占 ETF 的百分比 — 前几大成分股主导基金走势。") }}
     </h2>
     {% for h in s.holdings %}
     <div class="card">
@@ -414,10 +501,17 @@
     {% endfor %}
   </div>
   {% endif %}
-
+  {% if not s.members and not s.holdings %}
+  <div class="sc-state sc-state--unavailable" data-state="unavailable" data-residual="no-holdings-file" role="status"><p class="sc-state-t">{{ t('Not covered', '未覆盖') }}</p></div>
+  {% endif %}
+  </section>
+  <section role="tabpanel" id="scd-p-evidence" class="scd-panel scd-js" aria-labelledby="scd-t-evidence" tabindex="0">
+    <section id="scd-evidence" class="panel scd-mount"></section>
+  </section>
+  <section role="tabpanel" id="scd-p-record" class="scd-panel" aria-labelledby="scd-t-record" tabindex="0">
   <div class="panel">
     <h2>{{ t('How much to trust these states — measured, not promised', '这些状态有多可信 — 实测得出，而非承诺') }}
-      {{ help("Every trading day since 2000, across sector ETFs and large stocks, we computed the same ladder state from data available at the time and measured what price did over the next month. These are those base rates. They are tendencies with real spread around them — position sizing beats certainty.", "自 2000 年以来的每个交易日，针对各行业 ETF 与大型股票，我们用当时可得的数据计算出相同的阶梯状态，并测量此后一个月的价格表现。以下即为这些基准胜率。它们是带有实际离散度的倾向 — 仓位管理胜过确定性。") }}
+      {{ help("Every trading day since 2000, across sector ETFs and large stocks, we computed the same ladder state from data available at the time and measured what price did over the next month. These are those base rates. They are tendencies with real spread around them — position sizing beats certainty.", "自 2000 年以来的每个交易日，针对各行业 ETF 与大型股票，我们用当时可得的数据计算出相同的阶梯状态，并测量此后一个月的价格表现。以下即为这些基准率。它们是带有实际离散度的倾向 — 仓位管理胜过确定性。") }}
     </h2>
     {% if calibration %}
     <table>
@@ -471,6 +565,9 @@
        通常为 36-42 个交易日（谷底到谷底）；时间窗能捕捉约 70% 的低点，故约十分之三会提前或滞后出现 —
        这正是为何每个买入状态都以确认（摆动低点、10 日均线）为前提。图表由 TradingView 提供。</span></p>
   </div>
+  <div class="panel scd-js"><div id="scd-record-face" class="scd-mount"></div></div>
+  </section>
+</div>
 
 <script>
 /* alert feed: floating popover (grows out of the 🔔 button, overlays the page)
@@ -520,6 +617,9 @@
 </script>
 <script src="../mtf.js"></script>
 <script src="../theme.js"></script>
+<script defer src="../sector_cycles_states.js"></script>
+<script defer src="../sector_cycles_face.js"></script>
+<script defer src="../sector_dossier.js"></script>
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>

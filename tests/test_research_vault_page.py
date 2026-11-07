@@ -817,3 +817,164 @@ def test_saved_clock_repaints_once_a_catalog_settles():
     assert "paintSavedClock();" in settle
     ingest = js[js.index("function ingest("):]
     assert ingest.index("ITEMS = items.map(normItem);") < ingest.index("finishCatalogPaint(")
+
+
+# --- SIC-D40: theme tags read in the page language --------------------------
+
+# Every tag the production catalog carried on 2026-11-05 (20 slugs). A topic must
+# have a Chinese name; a person's name stays verbatim and is never translated.
+_PRODUCTION_TAGS = (
+    "McElligott", "agriculture", "corn", "soybeans", "Fear and Greed", "Chris Wood",
+    "cybersecurity", "proposed-settlement", "insurance", "issuer-event", "harvest",
+    "crop-condition", "industrials", "construction-equipment", "patents", "trade",
+    "Cembalest", "wheat", "forecast", "Mcelligott",
+)
+_PERSON_TAGS = {"McElligott", "Mcelligott", "Chris Wood", "Cembalest"}
+
+
+def _vault_js() -> str:
+    return (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+
+
+def _tag_names() -> dict:
+    js = _vault_js()
+    block = js[js.index("var TAG_NAMES = {"):js.index("function tagName(")]
+    pairs = re.findall(r"'([^']+)': \['([^']+)', '([^']+)'\]", block)
+    return {slug: (en, zh) for slug, en, zh in pairs}
+
+
+def test_theme_tags_are_painted_through_the_name_map():
+    """SIC-D40: under ZH the theme chips, hero figure, report tags and active
+    filter chip printed raw English slugs. The map names them; the filter key
+    and data-v stay the raw tag so filtering never depends on the language."""
+    js = _vault_js()
+    assert "b.textContent = th;" not in js
+    assert "b.textContent = tagName(th);" in js
+    assert "b.setAttribute('data-v', th);" in js
+    assert "if (dim === 'theme') return tagName(val);" in js
+    assert "x.tags.indexOf(FILT.theme)" in js
+    assert "esc(tagName(t))" in js
+    assert "tagName(topTheme)" in js
+    assert "x.tags.map(tagName).join(' ')" in js
+    assert "buildThemeFacets(); updateHero(); renderFeed();" in js
+
+
+def test_every_production_topic_has_a_chinese_name():
+    names = _tag_names()
+    assert names, "TAG_NAMES block not found"
+    missing = [t for t in _PRODUCTION_TAGS if t not in names and t not in _PERSON_TAGS]
+    assert missing == []
+    assert not (_PERSON_TAGS & names.keys()), "a person's name is never translated"
+    for slug, (en, zh) in names.items():
+        assert "配置" not in zh, slug
+        assert re.search(r"[一-鿿]", zh), slug
+        assert not re.search(r"[一-鿿]", en), slug
+
+
+def test_tag_name_reads_by_language_and_marks_verbatim_names():
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node not installed")
+    js = _vault_js()
+    start = js.index("var TAG_NAMES = {")
+    end = js.index("\n", js.index("function tagLang("))
+    script = """
+var LANG = 'en';
+function zh() { return LANG === 'zh'; }
+function T(en, cn) { return zh() ? cn : en; }
+""" + js[start:end] + """
+var out = {};
+['en', 'zh'].forEach(function (l) {
+  LANG = l;
+  out[l] = {topic: tagName('cybersecurity'), topicLang: tagLang('cybersecurity'),
+            person: tagName('McElligott'), personLang: tagLang('McElligott'),
+            unknown: tagName('new-slug'), unknownLang: tagLang('new-slug'),
+            inherited: ['constructor', '__proto__', 'toString'].map(function (t) {
+              return [tagName(t), tagLang(t)]; })};
+});
+console.log(JSON.stringify(out));
+"""
+    done = subprocess.run([node, "-e", script], capture_output=True, text=True, timeout=30)
+    assert done.returncode == 0, done.stderr
+    out = json.loads(done.stdout)
+    inherited = ["constructor", "__proto__", "toString"]
+    # An Object member name is an unknown slug: verbatim, and marked English under ZH.
+    assert out["en"] == {"topic": "Cybersecurity", "topicLang": "", "person": "McElligott",
+                         "personLang": "", "unknown": "new-slug", "unknownLang": "",
+                         "inherited": [[t, ""] for t in inherited]}
+    assert out["zh"] == {"topic": "网络安全", "topicLang": "", "person": "McElligott",
+                         "personLang": "en", "unknown": "new-slug", "unknownLang": "en",
+                         "inherited": [[t, "en"] for t in inherited]}
+
+
+# --- SIC-D41: no painted edge stripe on a vault container --------------------
+
+_RULE = re.compile(r"([^{}]+)\{([^{}]*)\}")
+_THIN = re.compile(r"(?:^|;)\s*(height|width)\s*:\s*(\d+(?:\.\d+)?)px")
+
+
+def edge_stripes(css: str) -> list[str]:
+    """Selectors of pseudo-elements painted as a thin band along a whole edge:
+    pinned to both ends of one edge (left:0 + right:0, or top:0 + bottom:0),
+    a painted background, and the cross dimension at most 6px."""
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    found = []
+    for sel, body in _RULE.findall(css):
+        if "::before" not in sel and "::after" not in sel:
+            continue
+        decl = " ".join(body.split())
+        if "background" not in decl:
+            continue
+        spans_row = re.search(r"\bleft\s*:\s*0", decl) and re.search(r"\bright\s*:\s*0", decl)
+        spans_col = re.search(r"\btop\s*:\s*0", decl) and re.search(r"\bbottom\s*:\s*0", decl)
+        thin = [(d, float(v)) for d, v in _THIN.findall(";" + decl) if float(v) <= 6]
+        if (spans_row and any(d == "height" for d, _ in thin)) or (
+                spans_col and any(d == "width" for d, _ in thin)):
+            found.append(" ".join(sel.split()))
+    return found
+
+
+def _vault_template() -> str:
+    return (bld.ROOT / "templates" / "research_vault.html.j2").read_text(encoding="utf-8")
+
+
+def test_vault_containers_carry_no_edge_stripe():
+    """SIC-D41: a highlighted card and the reader modal each wore a 3px accent
+    band across the top edge. A container never takes an edge stripe
+    (docs/DESIGN_DOCTRINE.md); the card keeps an even border and its
+    Highlighted label."""
+    assert edge_stripes(_vault_template()) == []
+    assert ".rep.pick{ border-color:" in _vault_template()
+
+
+def test_highlighted_card_keeps_its_label():
+    js = _vault_js()
+    assert "T('Highlighted', '精选')" in js
+    assert "(x.top ? ' pick' : '')" in js
+    src = (bld.ROOT / "scripts" / "build_research_vault.py").read_text(encoding="utf-8")
+    assert "精选" in src and '" pick" if top' in src
+
+
+@pytest.mark.parametrize(
+    "old",
+    [
+        '.rep.pick::before{ content:""; position:absolute; top:0; left:0; right:0; height:3px; '
+        "border-radius:18px 18px 0 0;\n  background:linear-gradient(90deg, var(--rv), var(--rv-2)); }",
+        '.rv-modal::before{ content:""; position:absolute; top:0; left:0; right:0; height:3px; z-index:5;\n'
+        "  background:linear-gradient(90deg, var(--rv), var(--rv-2), "
+        "color-mix(in srgb,var(--rv) 20%,transparent)); }",
+    ],
+)
+def test_the_stripe_rule_rejects_the_base_rules(old):
+    assert edge_stripes(old)
+    assert edge_stripes(_vault_template() + "\n" + old)
+
+
+def test_the_stripe_rule_keeps_bullets_and_washes():
+    keep = (".rep-points li::before{ content:''; position:absolute; left:0; top:.6em; width:6px; "
+            "height:6px; background:var(--rv); }\n"
+            ".rv-hero::before{ content:''; position:absolute; inset:0; background:var(--wash); }")
+    assert edge_stripes(keep) == []

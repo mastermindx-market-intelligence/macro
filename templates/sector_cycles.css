@@ -86,6 +86,11 @@ html[data-lang="zh"] #sc-chart:empty::after { content: "周期图加载中…"; 
 }
 /* let the hero breathe + lift the chart inside its card */
 .sc-page .cyc-hero { padding: 18px 18px 12px; }
+/* The focus head keeps no accent edge (Chairman visual rule): the series hue is the dot
+   beside the title, the same key the chart line uses. */
+.sc-page .cyc-fhead { border-left: 0; padding-left: 0; }
+.sc-page .cyc-fhead .cyc-ftitle::before { content: ""; display: inline-block; width: .5em; height: .5em;
+  border-radius: var(--r-pill, 999px); background: var(--c, var(--muted)); margin-right: .4em; vertical-align: .12em; }
 
 /* ---- segmented controls (scale + mode) — premium pill switch ------------ */
 .sc-modes, .sc-scale { display: inline-flex; align-items: center; gap: 3px; background: var(--panel2);
@@ -129,6 +134,31 @@ html[data-theme="light"] .sc-mbtn.on, html[data-theme="light"] .sc-sbtn.on { col
    mm_charts CSS only reveals peak/trough glyphs on focus — exactly what we want. */
 .sc-page .mmc-series.is-focus .mmc-mk-peak, .sc-page .mmc-series.is-focus .mmc-mk-trough { opacity: 1; }
 
+/* light-theme series ink (D31). The sector accents are dark-tuned 400 tones: on white
+   the XLB lime line sat at 1.5:1 and the dimmed comparison lines (.12) all but vanished.
+   In light each line, marker and key dot is darkened by brightness(.6), a straight sRGB
+   multiply that keeps the hue (focused 4.1-7.0:1 on white, XLB lowest); the markers' panel
+   halo darkens with them into a thin grey keyline. Unfocused lines rise to .82 and dimmed
+   ones to .28 so the comparison set still reads behind the focused line. The position and
+   cycle-clock dots keep their panel rings and are left as they are. Dark is unchanged; the
+   international page (.sc-intl) keeps its own palette. */
+:is(html[data-theme="light"].sc-page:not(.sc-intl), html[data-theme="light"] .sc-page) .mmc-series :is(.mmc-hist, .mmc-proj, .mmc-mk) { filter: brightness(.6); }
+:is(html[data-theme="light"].sc-page:not(.sc-intl), html[data-theme="light"] .sc-page) .mmc-series:not(.is-focus) :is(.mmc-hist, .mmc-proj) { stroke-opacity: .82; }
+:is(html[data-theme="light"].sc-page:not(.sc-intl), html[data-theme="light"] .sc-page) .mmc-series.is-dim { opacity: .28; }
+:is(html[data-theme="light"].sc-page:not(.sc-intl), html[data-theme="light"] .sc-page) :is(.cyc-chip .dot, .sc-bchip .dot, .mini-chip .dot, .sc-lead-nm .dot, .sc-sdot, .cyc-fhead .cyc-ftitle::before) { filter: brightness(.6); }
+/* Selected sector chips (D31): white text on a 400-tone accent fill fell to about 1.5:1 on the
+   lime and amber sectors in both themes. A selected chip now sits on the panel with its accent
+   laid underneath as a .2 tint and a full accent border (darkened in light, like the lines), with
+   bold text in the page ink, so the label reads in either theme and the selected state rests on
+   weight and border as well as hue. The international page keeps its chips. */
+:is(html.sc-page:not(.sc-intl), html .sc-page) :is(.cyc-chip.on, .sc-bchip.on) {
+  color: var(--text); background: var(--panel); border-color: var(--c); font-weight: 700; position: relative; isolation: isolate; }
+:is(html.sc-page:not(.sc-intl), html .sc-page) :is(.cyc-chip.on, .sc-bchip.on)::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--c); opacity: .2; pointer-events: none; }
+:is(html.sc-page:not(.sc-intl), html .sc-page) :is(.cyc-chip.on, .sc-bchip.on) .dot { background: var(--c); box-shadow: none; }
+:is(html[data-theme="light"].sc-page:not(.sc-intl), html[data-theme="light"] .sc-page) :is(.cyc-chip.on, .sc-bchip.on)::after {
+  content: ""; position: absolute; inset: -1px; border: 1px solid var(--c); border-radius: inherit; filter: brightness(.6); pointer-events: none; }
+
 /* clickable narrative bands (focused sector, price mode) */
 .sc-page .mmc-vband { cursor: pointer; transition: opacity .2s ease; }
 .sc-page .mmc-vband:hover { opacity: .2 !important; }
@@ -146,7 +176,7 @@ html[data-theme="light"] .sc-mbtn.on, html[data-theme="light"] .sc-sbtn.on { col
 /* turns/legs timeline — each clickable leg reveals its narrative below */
 .sc-legs { display: flex; flex-direction: column; gap: 5px; max-height: 320px; overflow-y: auto; padding-right: 4px; scrollbar-width: thin; }
 .sc-leg { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 9px;
-  background: var(--panel2); border: 1px solid var(--line); border-left: 3px solid var(--lc, var(--muted));
+  background: var(--panel2); border: 1px solid var(--line);
   border-radius: 9px; padding: 7px 11px; cursor: pointer; transition: border-color .16s, background .16s, transform .12s; }
 .sc-leg:hover { border-color: color-mix(in srgb, var(--c, var(--link)) 45%, var(--line)); transform: translateX(2px); }
 .sc-leg.open { border-color: color-mix(in srgb, var(--c, var(--link)) 60%, var(--line));
@@ -179,19 +209,29 @@ html[data-theme="light"] .sc-mbtn.on, html[data-theme="light"] .sc-sbtn.on { col
 /* rows past the cap, revealed by the "See all N" control below the list (the
    button reuses .xc-more so the two see-more affordances on this panel match) */
 .sc-lead-row.sc-lead-hidden { display: none; }
+/* The collapsed "where they stand" map (cycle.css .xc-map-clamp) ends on the last whole chip
+   line instead of fading through a mask: the gradient left live chips in what read as disabled
+   ink. sector_cycles.js sets --xc-cut; the inline padding gives chip focus rings room inside
+   the clip without moving the chips. "See all N" stays the way to the rest. */
+.sc-page .xc-map-clamp { padding-inline: 4px; margin-inline: -4px; }
+.sc-page .xc-map-clamp:not(.xc-map-open) { max-height: var(--xc-cut, 220px); -webkit-mask-image: none; mask-image: none; }
 
 /* scorecard header: keep the (sometimes long) phase badge from overlapping the
    (sometimes 2-line) sector name — let the name column flex/shrink, tags stay top-right */
 .sc-page .cc-id { flex: 1 1 auto; min-width: 0; }
-.sc-page .cc-nm { overflow-wrap: anywhere; }
+.sc-page .cc-nm { overflow-wrap: break-word; }
 .cc-tags { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex: none; }
 .sc-page .cc-phase { font-size: 10px; }
 @media (max-width: 880px) { .sc-page .cyc-cards { grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); } }
+/* every card is header / sparkline / meta: a 3-row subgrid lines those bands up across
+   a grid row, so a 2-line sector name no longer drops its sparkline below its neighbours' */
+.sc-page .cyc-card { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; align-content: start; }
+.sc-page .cyc-cards + .sc-prov-text { margin-top: 18px; }
 
 /* Cards read by CYCLE PHASE, not by the (rainbow) per-ETF accent — only the small
    identity dot keeps the ETF colour, so the grid groups visually by where each
    sector sits. --ph = phase hue, --c = ETF accent. */
-.sc-page .cyc-card::before { background: var(--ph, var(--c)); }
+.sc-page .cyc-card::before { content: none; }  /* A2_D28: no accent stripe on a container (Chairman rule; DESIGN_DOCTRINE) */
 .sc-page .cyc-card::after { background: radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--ph, var(--c)) 13%, transparent), transparent 55%); }
 .sc-page .cyc-card:hover { border-color: color-mix(in srgb, var(--ph) 48%, var(--line));
   box-shadow: 0 10px 30px color-mix(in srgb, var(--ph) 18%, transparent); }
@@ -238,8 +278,10 @@ html[data-theme="light"] .sc-mbtn.on, html[data-theme="light"] .sc-sbtn.on { col
 .cc-rot.cc-rot-major { color: var(--ink-warn, var(--warn)); background: color-mix(in srgb, var(--warn) 14%, transparent);
   border-color: color-mix(in srgb, var(--warn) 48%, var(--line)); }
 /* "aggregate not representative" — the sector's legs disagree hard (fragmentation flag). */
+/* It wraps to two short lines: a one-line chip (~185px) squeezed the sector name
+   in the header to ~73px, and "Technology" broke mid-word (SIC GAP-B M2). */
 .cc-frag { font-size: 10.5px; font-weight: 750; letter-spacing: .03em; padding: 2px 8px;
-  border-radius: 6px; line-height: 1.45; white-space: nowrap; color: var(--muted);
+  border-radius: calc(var(--r-ctl,8px) * .75); line-height: 1.45; white-space: normal; max-width: 16ch; text-align: right; color: var(--muted);
   background: color-mix(in srgb, var(--muted) 10%, transparent);
   border: 1px dashed color-mix(in srgb, var(--muted) 45%, var(--line)); }
 
@@ -348,8 +390,7 @@ html[data-theme="light"] .sc-bchip.on { color: #fff; }
 
 /* prominent projected next-turn card */
 .sc-fcast { margin-top: 12px; padding: 11px 13px; border-radius: 11px; border: 1px solid var(--line);
-  background: var(--panel2, var(--panel)); border-left: 3px solid var(--muted); }
-.sc-fcast.pk { border-left-color: var(--down); } .sc-fcast.tr { border-left-color: var(--up); }
+  background: var(--panel2, var(--panel)); }
 .sc-fcast-hd { display: flex; align-items: center; gap: 7px; }
 .sc-fcast-ar { font-size: 15px; font-weight: 800; }
 .sc-fcast.pk .sc-fcast-ar { color: var(--ink-down, var(--down)); } .sc-fcast.tr .sc-fcast-ar { color: var(--ink-up, var(--up)); }
@@ -500,8 +541,7 @@ html[data-theme="light"] .sc-openpage { color: #fff; }
 @keyframes sc-hint-in { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
 
 /* ---- Cycle DNA panel — the front-loaded "history rhymes" / predictive read ---- */
-/* padding-left clears the accent border-left so the heading/text never touch the blue rule */
-.sc-dna { border-left: 3px solid color-mix(in srgb, var(--link) 55%, var(--line)); padding-left: 13px; }
+/* The DNA group keeps the even .cyc-grp border; no accent edge (Chairman visual rule). */
 .sc-dna .cyc-lbl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .sc-dna-conf { font-size: 10px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase;
   padding: 1px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: var(--panel2); }
@@ -553,3 +593,177 @@ html[data-theme="light"] .sc-openpage { color: #fff; }
 .cc-hz b { font-weight: 700; }
 .cc-hz.hz-muted { color: var(--muted); opacity: .8; }
 .sc-page .sc-hazard { margin-top: 12px; margin-bottom: 0; }
+
+/* sc-face.v1 */
+/* SC_FACE (templates/sector_cycles_face.js) — every selector scoped under .scf;
+   module roots also match in compound form (.scf.X). Theme tokens only. */
+.scf *:focus-visible { outline:2px solid var(--ink-link,var(--link)); outline-offset:2px; }
+.scf .mono { font-family:var(--font-mono,var(--font-ui)); font-variant-numeric:tabular-nums; }
+.scf .scf-code { font:500 var(--fs-micro)/1.4 var(--font-mono,var(--font-ui)); padding:1px 5px; border:1px solid var(--line); border-radius:calc(var(--r-ctl,8px) / 2); background:var(--panel2); color:var(--text); overflow-wrap:anywhere; }
+.scf h2,
+.scf h3 { margin:0; font-weight:720; line-height:1.2; }
+.scf h3 { font-size:var(--fs-h3); }
+.scf .scf-sec-h2 { font-size:var(--fs-h3); margin:0 0 8px; }
+.scf .scf-eyebrow { font-size:var(--fs-label); letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:600; margin:0; }
+.scf .scf-def-lbl { font:600 var(--fs-micro)/1.3 var(--font-ui); color:var(--muted); letter-spacing:.04em; text-transform:uppercase; }
+.scf.scf-foot,
+.scf .scf-foot { font-size:var(--fs-micro); color:var(--muted); margin:8px 0 0; line-height:1.45; }
+.scf.scf-withheld,
+.scf .scf-withheld { color:var(--muted); }
+.scf.scf-na,
+.scf .scf-na { font:600 var(--fs-sm)/1.4 var(--font-ui); color:var(--muted); font-style:italic; }
+.scf .scf-icon { width:14px; height:14px; flex:none; vertical-align:-2px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.scf .scf-icon * { vector-effect:non-scaling-stroke; }
+.scf .scf-chips { display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; }
+.scf.scf-chip,
+.scf .scf-chip { display:inline-flex; align-items:center; gap:6px; font:700 var(--fs-label)/1 var(--font-ui); padding:4px 11px; border-radius:var(--r-pill,999px); white-space:nowrap; background:var(--panel2); border:1px solid var(--line); color:var(--c,var(--text)); }
+.scf.cyc-outline,
+.scf .cyc-outline { background:transparent; border:1px solid var(--ff-tint-muted-40-line); color:var(--muted); }
+.scf .scf-stance { font-weight:700; background:var(--ff-tint-muted-8); border-color:var(--ff-tint-muted-40-line); color:var(--muted); }
+.scf .scf-stance[data-stance="act"],
+.scf .scf-stance[data-stance="get_ready"],
+.scf .scf-stance[data-ink="ok"] { background:var(--esurf-ok-soft); border-color:var(--line); color:var(--ink-ok,var(--ok)); }
+.scf .scf-stance[data-stance="watch"],
+.scf .scf-stance[data-stance="protect"],
+.scf .scf-stance[data-ink="warn"] { background:var(--esurf-warn-soft); border-color:var(--esurf-warn-line); color:var(--ink-warn,var(--warn)); }
+.scf .scf-stance[data-stance="aside"],
+.scf .scf-stance[data-stance="ignore"],
+.scf .scf-stance[data-ink="muted"] { background:var(--ff-tint-muted-8); border-color:var(--ff-tint-muted-40-line); color:var(--muted); }
+.scf .scf-phase-chip[data-phase="trough"] { background:var(--ff-tint-info-12-panel); border-color:var(--ff-tint-info-40-line); color:var(--ink-info); }
+.scf .scf-phase-chip[data-phase="recovery"] { background:var(--ff-tint-muted-8); border-color:var(--ff-tint-muted-40-line); color:var(--muted); }
+.scf .scf-phase-chip[data-phase="expansion"] { background:var(--esurf-ok-soft); border-color:var(--line); color:var(--ink-ok,var(--ok)); }
+.scf .scf-phase-chip[data-phase="peak"] { background:var(--esurf-warn-soft); border-color:var(--esurf-warn-line); color:var(--ink-warn,var(--warn)); }
+.scf .scf-phase-chip[data-phase="downturn"] { background:var(--ff-tint-act-12-panel); border-color:var(--ff-tint-act-30-line); color:var(--ink-act); }
+.scf.cyc-outline[data-overdue="true"],
+.scf .cyc-outline[data-overdue="true"] { border-color:var(--esurf-warn-line); color:var(--ink-warn,var(--warn)); }
+.scf .scf-next[data-past="true"] { background:var(--esurf-warn-soft); border-color:var(--esurf-warn-line); color:var(--ink-warn,var(--warn)); }
+.scf .scf-badge { display:inline-flex; align-items:center; padding:2px 8px; border-radius:calc(var(--r-ctl,8px) / 2); font:800 var(--fs-micro)/1.45 var(--font-ui); letter-spacing:.07em; text-transform:uppercase; white-space:nowrap; }
+.scf .scf-badge[data-source="model"] { background:var(--panel2); border:1px solid var(--line); color:var(--text); }
+.scf .scf-badge[data-source="prior"] { background:transparent; border:1px dashed var(--line); color:var(--muted); }
+.scf.scf-panel,
+.scf .scf-panel,
+.scf.scf-card,
+.scf .scf-card { background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,12px); padding:16px 18px; min-width:0; }
+.scf.scf-card,
+.scf .scf-card { display:flex; flex-direction:column; gap:12px; padding:16px; }
+.scf .scf-card-head { display:flex; flex-direction:column; gap:8px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+.scf .scf-id { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px; min-width:0; }
+.scf .scf-tk { font:700 var(--fs-label)/1.3 var(--font-mono,var(--font-ui)); color:var(--muted); letter-spacing:.04em; }
+.scf .scf-grp { font-size:var(--fs-micro); color:var(--muted); flex-basis:100%; }
+.scf .scf-pos { font:700 var(--fs-sm)/1.3 var(--font-ui); font-variant-numeric:tabular-nums; color:var(--text); margin-left:auto; text-align:right; }
+.scf .scf-pos b { font-size:var(--fs-md); }
+.scf .scf-pos .b { display:block; font:500 var(--fs-micro)/1.3 var(--font-ui); color:var(--muted); }
+.scf.scf-stance-row,
+.scf .scf-stance-row { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; }
+.scf .scf-stance-ttl { font-size:var(--fs-label); color:var(--muted); font-weight:600; }
+.scf .scf-stance-src { font:500 var(--fs-micro)/1.3 var(--font-ui); color:var(--muted); letter-spacing:.02em; }
+.scf .scf-stance-na { font:500 var(--fs-sm)/1.3 var(--font-ui); color:var(--muted); }
+.scf.scf-age,
+.scf .scf-age { margin:0; font-size:var(--fs-sm); color:var(--text); display:flex; align-items:flex-start; gap:6px; line-height:1.4; }
+.scf.scf-age .scf-icon,
+.scf .scf-age .scf-icon { color:var(--muted); margin-top:2px; }
+.scf .scf-clocks { font-weight:600; }
+.scf .scf-clocks-state { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin:0 0 6px; }
+.scf .scf-clocks-sec .scf-clocks-state { margin:0; }
+.scf .scf-clocks-both { font:500 var(--fs-sm)/1.4 var(--font-ui); }
+.scf.scf-sec,
+.scf .scf-sec { display:flex; flex-direction:column; gap:8px; padding-top:10px; border-top:1px solid var(--line); min-width:0; }
+.scf .scf-sec-ttl { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px 10px; }
+.scf .scf-sec-ttl h3 { font-size:var(--fs-md); }
+.scf .scf-read-body { margin:0; font-size:var(--fs-sm); line-height:1.55; color:var(--text); }
+.scf .scf-kv { display:flex; flex-direction:column; margin:0; }
+.scf .scf-kv > div { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr); gap:4px 12px; padding:4px 0; align-items:baseline; min-width:0; }
+/* The kv row grid ties theme.css's html[data-lang="zh"] .l-en rule on specificity and loads later, so a
+   language-scoped row would show in both languages. Re-scope the row here. */
+html[data-lang="zh"] .scf .scf-kv > div.l-en, html:not([data-lang="zh"]) .scf .scf-kv > div.l-zh { display:none; }
+.scf .scf-kv dt { font:600 var(--fs-micro)/1.45 var(--font-ui); color:var(--muted); overflow-wrap:anywhere; }
+.scf .scf-kv dd { margin:0; font:500 var(--fs-sm)/1.45 var(--font-ui); color:var(--text); font-variant-numeric:tabular-nums; overflow-wrap:anywhere; min-width:0; }
+.scf .scf-hz-ladder { display:grid; grid-template-columns:minmax(44px,auto) repeat(3,minmax(0,1fr)); gap:4px; }
+.scf .scf-hz-head { font:700 var(--fs-micro)/1.4 var(--font-ui); letter-spacing:.07em; text-transform:uppercase; color:var(--muted); text-align:center; align-self:center; font-variant-numeric:tabular-nums; }
+.scf .scf-hz-rowlab { font:600 var(--fs-label)/1.4 var(--font-ui); color:var(--muted); align-self:center; }
+.scf .scf-hz-cell { display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 6px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel2); text-align:center; min-width:0; }
+.scf .scf-hz-val { font:700 var(--fs-md)/1.2 var(--font-ui); color:var(--text); font-variant-numeric:tabular-nums; }
+.scf .scf-hz-cell[data-state="muted"] { background:var(--panel); }
+.scf .scf-hz-cell[data-state="muted"] .scf-hz-val,
+.scf .scf-hz-cell[data-state="prior"] .scf-hz-val { color:var(--muted); }
+.scf .scf-hz-cell[data-state="prior"] { border-style:dashed; }
+.scf .scf-hz-cell[data-source="none"] .scf-hz-val { color:var(--muted); font-weight:500; }
+.scf .scf-hz-cell .scf-chip { white-space:normal; text-align:center; justify-content:center; font-size:var(--fs-micro); line-height:1.25; padding:2px 6px; }
+.scf .scf-hz-gap { display:block; width:16px; height:0; margin:9px auto; border-top:1px dashed var(--muted); }
+.scf .scf-hz-note { grid-column:1/-1; font:400 var(--fs-micro)/1.5 var(--font-ui); color:var(--muted); padding-top:4px; }
+.scf .scf-rhythm-row { display:flex; flex-wrap:wrap; gap:6px 8px; align-items:center; }
+.scf .scf-win { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+.scf .scf-win > div { padding:8px 6px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel2); text-align:center; min-width:0; }
+.scf .scf-win > div[data-central] { background:var(--ff-tint-muted-8); }
+.scf .scf-win .k { display:block; font:700 var(--fs-micro)/1.3 var(--font-mono,var(--font-ui)); color:var(--muted); letter-spacing:.04em; }
+.scf .scf-win .v { display:block; font:700 var(--fs-md)/1.25 var(--font-ui); font-variant-numeric:tabular-nums; margin-top:2px; }
+.scf .scf-rs-svg { display:block; width:100%; height:72px; overflow:visible; }
+.scf .scf-rs-zero { stroke:var(--line); stroke-width:1; stroke-dasharray:2 3; vector-effect:non-scaling-stroke; }
+.scf .scf-rs-21 { fill:none; stroke:var(--esurf-ser1); stroke-width:1.5; vector-effect:non-scaling-stroke; }
+.scf .scf-rs-63 { fill:none; stroke:var(--esurf-ser2); stroke-width:1.5; stroke-dasharray:5 3; vector-effect:non-scaling-stroke; }
+.scf .scf-rs-key { display:flex; flex-wrap:wrap; gap:4px 14px; margin:0; font-size:var(--fs-micro); color:var(--muted); }
+.scf .scf-rs-k { display:inline-flex; align-items:center; gap:6px; }
+.scf .scf-rs-sw { width:18px; height:6px; flex:0 0 auto; overflow:visible; }
+.scf .scf-grader-caption { font:400 var(--fs-label)/1.55 var(--font-ui); color:var(--muted); font-variant-numeric:tabular-nums; }
+.scf .scf-grader-body { margin:10px 0 0; font-size:var(--fs-sm); line-height:1.55; color:var(--text); }
+.scf .scf-grades { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:12px; }
+.scf .scf-grade { display:flex; flex-direction:column; gap:6px; padding:12px 14px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel2); min-width:0; }
+.scf .scf-grade-h { font:700 var(--fs-sm)/1.3 var(--font-mono,var(--font-ui)); color:var(--text); letter-spacing:.02em; }
+.scf .scf-grade [data-metric] { display:flex; justify-content:space-between; align-items:baseline; gap:8px; min-width:0; }
+.scf .scf-grade [data-metric] .k { font:500 var(--fs-micro)/1.4 var(--font-ui); color:var(--muted); }
+.scf .scf-grade [data-metric] .v { font:700 var(--fs-sm)/1.3 var(--font-mono,var(--font-ui)); font-variant-numeric:tabular-nums; color:var(--text); text-align:right; }
+.scf.scf-methods,
+.scf .scf-methods { margin-top:16px; }
+/* The default panel is a 12-column grid; the methods card spans all of it. */
+.sc-methods-slot { grid-column:1 / -1; min-width:0; }
+.scf .scf-method-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:12px; }
+.scf .scf-method { display:flex; flex-direction:column; gap:8px; padding:12px 14px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel2); min-width:0; }
+.scf .scf-method .scf-chip { align-self:flex-start; }
+.scf .scf-method p { margin:0; font-size:var(--fs-sm); line-height:1.5; }
+.scf.cyc-prov,
+.scf .cyc-prov { margin-top:12px; border-top:1px solid var(--line); padding-top:6px; }
+.scf.cyc-prov summary,
+.scf .cyc-prov summary { font:600 var(--fs-label)/1.5 var(--font-ui); color:var(--muted); cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px; min-height:32px; }
+.scf.cyc-prov summary::-webkit-details-marker,
+.scf .cyc-prov summary::-webkit-details-marker { display:none; }
+.scf.cyc-prov summary::before,
+.scf .cyc-prov summary::before { content:""; flex:none; width:0; height:0; border-style:solid; border-width:4px 0 4px 6px; border-color:transparent transparent transparent currentColor; transform:translateX(2px); transition:transform .12s; }
+.scf.cyc-prov[open] summary::before,
+.scf .cyc-prov[open] summary::before { transform:rotate(90deg) translateY(-2px); }
+.scf.cyc-prov summary:focus-visible,
+.scf .cyc-prov summary:focus-visible { outline:2px solid var(--ink-link,var(--link)); outline-offset:2px; border-radius:calc(var(--r-ctl,8px) / 2); }
+.scf .cyc-prov-hint { font-weight:500; color:var(--muted); opacity:.85; }
+.scf .cyc-prov-body { display:grid; grid-template-columns:minmax(0,1fr); gap:0; margin:4px 0 0; }
+.scf .cyc-prov-body > div { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr); gap:4px 12px; padding:6px 0; border-top:1px dashed var(--line); align-items:baseline; min-width:0; }
+.scf .cyc-prov-body dt { font:600 var(--fs-micro)/1.45 var(--font-ui); color:var(--muted); overflow-wrap:anywhere; }
+.scf .cyc-prov-body dd { margin:0; font:500 var(--fs-micro)/1.45 var(--font-ui); color:var(--text); overflow-wrap:anywhere; min-width:0; }
+.scf .cyc-prov-body dd .mono,
+.scf .cyc-prov-body dd .scf-code { font:500 var(--fs-micro)/1.45 var(--font-mono,var(--font-ui)); }
+.scf .cyc-prov-read { font:400 var(--fs-micro)/1.5 var(--font-ui); color:var(--muted); }
+html[data-lang="zh"] .scf .scf-eyebrow,
+html[data-lang="zh"] .scf .scf-def-lbl,
+html[data-lang="zh"] .scf .scf-badge,
+html[data-lang="zh"] .scf .scf-hz-head { letter-spacing:.02em; text-transform:none; }
+html[data-lang="zh"] .scf.scf-na,
+html[data-lang="zh"] .scf .scf-na { font-style:normal; }
+@media (max-width:1100px) {
+  .scf .scf-method-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:720px) {
+  .scf .scf-method-grid,
+  .scf .scf-grades { grid-template-columns:minmax(0,1fr); }
+  .scf.scf-card,
+  .scf .scf-card { padding:14px; }
+  .scf .scf-pos { margin-left:0; text-align:left; }
+}
+@media (max-width:480px) {
+  .scf .cyc-prov-body > div,
+  .scf .scf-kv > div { grid-template-columns:minmax(0,1fr); gap:2px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .scf.cyc-prov summary::before,
+  .scf .cyc-prov summary::before { transition:none; }
+}
+/* A2_D30 doctrine ink — stamped doctrine_ink "ok"; tint/hairline via the html-scope --wash-ok/--ring-ok tokens (no inline colour function) */
+.cc-stance.st-ok { color: var(--ink-ok, var(--ok)); border-color: var(--ring-ok, var(--line)); background: var(--wash-ok, transparent); }
+.cc-stance-na { font-size: 11px; color: var(--muted); }

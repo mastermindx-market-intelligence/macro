@@ -277,6 +277,10 @@ html[data-theme="light"] .rv-more{ color:var(--rv); }
 #si-research-entry{ margin-top:18px; }
 #si-research-readback .facet-grp{ align-items:baseline; }
 .si-rb-val{ font-size:13px; color:var(--text); max-width:56ch; overflow-wrap:anywhere; }
+/* SIC-D39: a carried machine id (sector:XLK, sector_central.html) reads as a
+   page-language name; the verbatim value stays beside it in secondary mono ink */
+.si-rb-name{ font-size:13px; font-weight:600; color:var(--text); }
+.si-rb-val.si-rb-raw{ font-family:var(--num); font-size:11.5px; color:var(--muted); }
 #si-research-entry textarea{
   display:block; width:100%; box-sizing:border-box; margin-top:12px; padding:10px 14px;
   border-radius:var(--r-ctl,8px); border:1px solid var(--line); background:var(--panel2); color:var(--text);
@@ -315,8 +319,6 @@ html.rv-awaiting-live .rv-fig .n,html.rv-awaiting-live .rv-web-hd .big,html.rv-a
   transition:transform .2s ease-out, box-shadow .2s, border-color .2s, background .2s; }
 .rep:hover{ transform:translateY(-1px); background:var(--mx5-hover-bg); border-color:var(--mx5-hover-border); box-shadow:var(--mx5-glass-hover); }
 .rep.pick{ border-color:color-mix(in srgb,var(--rv) 34%,var(--mx5-glass-border)); }
-.rep.pick::before{ content:""; position:absolute; top:0; left:0; right:0; height:3px; border-radius:18px 18px 0 0;
-  background:linear-gradient(90deg, var(--rv), var(--rv-2)); }
 .rep-top{ display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
 .rep-logo{ width:30px; height:30px; border-radius:8px; flex:none; display:grid; place-items:center;
   font-family:var(--num); font-weight:700; font-size:11.5px; color:#fff; letter-spacing:-.02em;
@@ -430,8 +432,6 @@ html.rv-lock{ overflow:hidden; }
 .rv-overlay.open .rv-modal{ transform:none; opacity:1; }
 html[data-theme="light"] .rv-modal{ box-shadow:0 32px 88px -26px rgba(20,30,50,.44), inset 0 1px 0 rgba(255,255,255,.72); }
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){ .rv-modal{ background:var(--panel); } }
-.rv-modal::before{ content:""; position:absolute; top:0; left:0; right:0; height:3px; z-index:5;
-  background:linear-gradient(90deg, var(--rv), var(--rv-2), color-mix(in srgb,var(--rv) 20%,transparent)); }
 
 .vh{ grid-column:1 / 3; display:flex; align-items:flex-start; gap:14px; padding:17px 20px 14px;
   border-bottom:1px solid color-mix(in srgb,var(--text) 9%,transparent); }
@@ -716,13 +716,14 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
       <span class="why">{{ t('Carried in by link from the sector surfaces — read back verbatim, never re-typed.', '由板块页面链接携带 —— 原样回读，无需重输。') }}</span>
     </div>
     <div class="rv-facets" id="si-research-readback">
-      <div class="facet-grp"><span class="facet-lbl">{{ t('Subject', '主体') }}</span><span class="si-rb-val" id="si-rb-subject"></span></div>
+      <div class="facet-grp"><span class="facet-lbl">{{ t('Subject', '主体') }}</span><span class="si-rb-name" id="si-rb-subject-name" hidden></span><span class="si-rb-val" id="si-rb-subject"></span></div>
       <div class="facet-grp"><span class="facet-lbl">{{ t('Carried question', '携带问题') }}</span><span class="si-rb-val" id="si-rb-q"></span></div>
       <div class="facet-grp"><span class="facet-lbl">{{ t('Source snapshot', '来源快照') }}</span><span class="si-rb-val" id="si-rb-snap"></span></div>
       <div class="facet-grp"><span class="facet-lbl">{{ t('Observation date', '观察日期') }}</span><span class="si-rb-val" id="si-rb-obs"></span></div>
       <div class="facet-grp"><span class="facet-lbl">{{ t('Evidence mode', '证据模式') }}</span><span class="si-rb-val" id="si-rb-ev"></span></div>
-      <div class="facet-grp"><span class="facet-lbl">{{ t('Origin page', '来源页面') }}</span><span class="si-rb-val" id="si-rb-origin"></span></div>
+      <div class="facet-grp"><span class="facet-lbl">{{ t('Origin page', '来源页面') }}</span><span class="si-rb-name" id="si-rb-origin-name" hidden></span><span class="si-rb-val" id="si-rb-origin"></span></div>
     </div>
+    <p class="si-note" id="si-rb-state" role="status" hidden>{{ t('Partial coverage', '覆盖不完整') }} · {{ t('Subject', '主体') }} + {{ t('Carried question', '携带问题') }}</p>
     <textarea id="si-research-q" rows="4" aria-label="{{ t('Research question', '研究问题') }}"
       data-ph-en="Compose the research question for this subject…"
       data-ph-zh="为此主体拟定研究问题…"
@@ -850,7 +851,8 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
   var island = document.getElementById('si-research-entry');
   if (!island || !fields.subject) return;
 
-  /* readback — textContent only, verbatim; absent optionals read as "—".
+  /* readback — textContent only, verbatim; an absent field reads as the typed
+     unavailable state ("— unavailable" / "— 不可用") in the page's language.
      RI05 MINOR: a carried field that was clipped on arrival says so inline —
      the mark rides the painted text in the page's language and follows a
      language switch (RI05b MINOR 4: the langchange handler repaints the two
@@ -862,14 +864,71 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
   var shortenedMark = currentShortenedMark();
   function paint(id, value) {
     var el = document.getElementById(id);
-    if (el) el.textContent = value || '—';
+    if (el) el.textContent = value || (document.documentElement.getAttribute('data-lang') === 'zh' ? '— 不可用' : '— unavailable');
   }
-  paint('si-rb-subject', fields.subject);
-  paint('si-rb-q', fields.q + (qCarried.shortened ? shortenedMark : ''));
-  paint('si-rb-snap', fields.snap + (snapCarried.shortened ? shortenedMark : ''));
-  paint('si-rb-obs', fields.obs);
-  paint('si-rb-ev', fields.ev);
-  paint('si-rb-origin', fields.origin);
+  /* SIC-D39: subject and origin arrive as machine ids. A name in the page
+     language rides beside each (sector names as engine/news_common.py
+     SECTOR_ETFS, page names as the nav); the verbatim value is still painted
+     by paint() above and only demoted to secondary ink. Unknown ids get the
+     kind word, never a guess. */
+  var SECTOR_NAMES = {
+    XLB: ['Materials', '原材料'], XLC: ['Communication Services', '通信服务'],
+    XLE: ['Energy', '能源'], XLF: ['Financials', '金融'],
+    XLI: ['Industrials', '工业'], XLK: ['Technology', '科技'],
+    XLP: ['Consumer Staples', '必需消费'], XLRE: ['Real Estate', '房地产'],
+    XLU: ['Utilities', '公用事业'], XLV: ['Health Care', '医疗保健'],
+    XLY: ['Consumer Discretionary', '可选消费']
+  };
+  var KIND_NAMES = {
+    sector: ['Sector', '行业'], subsector: ['Subsector', '子行业'],
+    theme: ['Theme', '主题'], stock: ['Stock', '个股']
+  };
+  var ORIGIN_NAMES = {
+    'sector_central.html': ['Sector Intelligence', '行业情报'],
+    'sector_cycles.html': ['U.S. Sector Cycles', '美国行业周期']
+  };
+  function subjectName(lang) {
+    var sector = fields.kind === 'sector' && SECTOR_NAMES[fields.id.toUpperCase()];
+    if (sector) return sector[lang] + ' · ' + fields.id;
+    var kind = KIND_NAMES[fields.kind];
+    return kind ? kind[lang] + ' · ' + fields.id : '';
+  }
+  function originName(lang) {
+    var path = fields.origin.split('#')[0];
+    if (ORIGIN_NAMES[path]) return ORIGIN_NAMES[path][lang];
+    var page = /^sectors\/([A-Za-z0-9]{1,8})\.html$/.exec(path);
+    if (!page) return '';
+    var sector = SECTOR_NAMES[page[1].toUpperCase()];
+    return (sector ? sector[lang] : page[1]) + ' · ' + (lang ? '行业页' : 'sector page');
+  }
+  function paintName(nameId, valueId, name) {
+    var el = document.getElementById(nameId);
+    if (el) { el.textContent = name; el.hidden = !name; }
+    var value = document.getElementById(valueId);
+    if (value) value.classList.toggle('si-rb-raw', !!name);
+  }
+  function paintNames() {
+    var lang = document.documentElement.getAttribute('data-lang') === 'zh' ? 1 : 0;
+    paintName('si-rb-subject-name', 'si-rb-subject', subjectName(lang));
+    paintName('si-rb-origin-name', 'si-rb-origin', originName(lang));
+  }
+  /* all six sinks in one place so a language switch repaints the unavailable
+     state too; a clipped mark rides only a present value */
+  function paintReadback() {
+    paint('si-rb-subject', fields.subject);
+    paint('si-rb-q', fields.q ? fields.q + (qCarried.shortened ? shortenedMark : '') : '');
+    paint('si-rb-snap', fields.snap ? fields.snap + (snapCarried.shortened ? shortenedMark : '') : '');
+    paint('si-rb-obs', fields.obs);
+    paint('si-rb-ev', fields.ev);
+    paint('si-rb-origin', fields.origin);
+    paintNames();
+  }
+  paintReadback();
+
+  /* Question-only state: a subject and a carried question with no snapshot,
+     observation date or evidence mode is named, not left as three bare marks */
+  var rbState = document.getElementById('si-rb-state');
+  if (rbState) rbState.hidden = !(fields.q && !fields.snap && !fields.obs && !fields.ev);
 
   /* composer — prefilled once from si_q; the value is never rewritten */
   var qBox = document.getElementById('si-research-q');
@@ -950,12 +1009,9 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
      dispatches langchange; the switch never reloads the page). */
   document.addEventListener('langchange', function () {
     applyPlaceholder();
-    if (qCarried.shortened || snapCarried.shortened) {
-      // RI05b: the clipped mark follows the page language; the six verbatim values never change
-      shortenedMark = currentShortenedMark();
-      paint('si-rb-q', fields.q + (qCarried.shortened ? shortenedMark : ''));
-      paint('si-rb-snap', fields.snap + (snapCarried.shortened ? shortenedMark : ''));
-    }
+    // RI05b + L7 D9: the clipped mark and the unavailable state follow the page language; the six verbatim values never change
+    shortenedMark = currentShortenedMark();
+    paintReadback();
     if (!statusKey) return;
     var parts = statusKey.split('|');
     paintStatus(parts[0], parts.length > 1 ? parts[1] : undefined);

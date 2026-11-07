@@ -4142,6 +4142,15 @@ def build_sector_pages(env: Environment, site: Path, generated: str,
     tpl = env.get_template("sector.html.j2")
     outdir = site / "sectors"
     outdir.mkdir(parents=True, exist_ok=True)
+    # Sector dossier binder (tabs + Cycles mounts) and the Cycles-family siblings
+    # sectors/<F>.html loads. build_sector_central copies the siblings too, but a
+    # scope that runs build_site without it (engine-render `macro`) would leave the
+    # dossier pointing at missing files; the copies are byte-identical.
+    for _asset in ("sector_dossier.js", "sector_cycles_states.js",
+                   "sector_cycles_face.js", "sector_cycles_states.css"):
+        _asset_src = config.ROOT / "templates" / _asset
+        if _asset_src.exists():
+            site_assets.copy_asset(_asset, _asset_src, site)
     # Policy-shock de-escalation state (PS-R3: display de-escalation only — no sizing/reordering)
     _shock_path = site / "live" / "shock_state.json"
     _shock_state: dict | None = None
@@ -4164,11 +4173,28 @@ def build_sector_pages(env: Environment, site: Path, generated: str,
         if not res.get("ladder"):
             continue
         holdings = []
+        # Every top-10 row in order for the dossier Companies tab, including names
+        # the holdings analysis below skips; an unresolved row stays visible with a
+        # machine reason instead of silently dropping out.
+        members = []
         t10 = latest_top10(fund)
         if t10 is not None:
             for _, r in t10.iterrows():
                 tick = str(r["ticker"]).replace(".", "-")
                 df = store.read("stocks", tick)
+                try:
+                    _mw = float(r.get("weight_pct"))
+                    _mw = _mw if _mw == _mw else None
+                except (TypeError, ValueError):
+                    _mw = None
+                _thin = df is None or len(df) < 300
+                members.append({"ticker": tick,
+                                "name": str(r.get("name", "")).title(),
+                                "weight": _mw,
+                                "resolved": not _thin,
+                                "reason": (None if not _thin else
+                                           "no_price_history" if df is None
+                                           else "insufficient_history")})
                 if df is None or len(df) < 300:
                     continue
                 h = analyze(df["close"], df.get("high"), liquidity=liq,
@@ -4247,6 +4273,7 @@ def build_sector_pages(env: Environment, site: Path, generated: str,
         s = {"fund": fund, "name": SECTOR_NAMES.get(fund, fund),
              "mtf_json": _json2.dumps(res.get("mtf", {})), **res,
              "holdings": holdings,
+             "members": members,
              "rate_infl": (rate_infl or {}).get(fund),  # display-only macro overlay
              "dollar_ctx": _dollar_context(site, fund),  # W3-C4b display-only dollar-lean chip
              "accumulation": accumulation_signals(fund, liquidity=liq,
@@ -4256,6 +4283,7 @@ def build_sector_pages(env: Environment, site: Path, generated: str,
             if _sa:
                 s["alpha_leaders"] = _sa.get("leaders")
         ec = etf["close"].dropna()
+        s["as_of"] = str(ec.index.max().date())  # header date: a stale page must read as stale
         # technical snapshot for the at-a-glance signal-chip strip (same shape the
         # stock analyzer reads from its JSON, so both pages render identical chips)
         from engine.technicals import snapshot as _snap
