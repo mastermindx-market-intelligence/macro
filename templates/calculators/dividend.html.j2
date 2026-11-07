@@ -11,6 +11,13 @@
 
 {% block calc_glyph %}{{ glyphs.glyph('dividend', 'crown') }}{% endblock %}
 
+{% block estate_css %}
+{{ super() }}
+.copy-fallback{flex-basis:100%; margin:4px 0 0;}
+.copy-fallback-l{display:block; font-family:var(--font-ui); font-size:var(--fs-sm); color:var(--warn); margin:0 0 6px; line-height:1.4;}
+.copy-fallback-t{display:block; width:100%; box-sizing:border-box; font-family:var(--num); font-size:var(--fs-sm); line-height:1.5; color:var(--ink-1); background:var(--tile); border:1px solid var(--hair-strong); border-radius:var(--r-md); padding:9px 11px; resize:vertical;}
+{% endblock %}
+
 {% block calc_form %}
 <p class="cc-lede">{{ t('Enter what you’re investing, the share price and the annual dividend per share. You get the yearly and monthly income it throws off — and, if you add a growth rate and a horizon, how that income compounds with reinvestment.',
    '填入你的投资金额、股价与每股年度股息，即可得到它产生的年度与月度收入；再填入增长率与年限，还能看到收入在股息再投资下如何复利增长。') }}</p>
@@ -49,6 +56,10 @@
 <div class="calc-actions">
   <button class="gbtn" id="copy-result" type="button">{{ t('Copy result', '复制结果') }}</button>
   <span class="copied" id="copied" role="status">{{ t('Copied', '已复制') }}</span>
+  <div class="copy-fallback" id="copy-fallback" hidden>
+    <label class="copy-fallback-l" for="copy-fallback-text">{{ t('Could not copy automatically. The text below is selected; press Ctrl+C or ⌘C to copy it.', '未能自动复制。下方文字已选中，请按 Ctrl+C 或 ⌘C 复制。') }}</label>
+    <textarea class="copy-fallback-t" id="copy-fallback-text" readonly rows="4" spellcheck="false"></textarea>
+  </div>
 </div>
 {% endblock %}
 
@@ -182,6 +193,38 @@
     });
   })();
 
+  // Copy attempts own their feedback and any later legacy fallback effect.
+  // An already-issued native write cannot be canceled by input changes.
+  function tryCopyCurrent(text, isCurrent){
+    function legacy(){
+      if(!isCurrent()) return false;
+      var ok = false, ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", ""); document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand("copy") === true; } catch(e){ ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    }
+    var cb = (typeof navigator !== "undefined") ? navigator.clipboard : null, p = null;
+    if (cb && typeof cb.writeText === "function") {
+      try { p = cb.writeText(text); } catch(e){ p = null; }
+    }
+    if (p && typeof p.then === "function") {
+      return p.then(function(){ return true; }, function(){ return legacy(); });
+    }
+    return Promise.resolve(legacy());
+  }
+
+  function showCopyFallback(box, ta, text){
+    ta.value = text;
+    box.hidden = false;
+    ta.rows = 4;
+    while (ta.scrollHeight > ta.clientHeight && ta.rows < 8) ta.rows = ta.rows + 1;
+    try { ta.focus({preventScroll: true}); } catch (e) { ta.focus(); }
+    ta.select();
+    ta.scrollTop = 0;
+    if (box.scrollIntoView) box.scrollIntoView({block: "center"});
+  }
+
   // ── DOM wiring (all reads/writes here; compute stays pure) ─────────────────
   document.addEventListener("DOMContentLoaded", function(){
     var $ = function(id){ return document.getElementById(id); };
@@ -190,7 +233,8 @@
     var outMain=$("out-main"), outPlain=$("out-plain"),
         outYield=$("out-yield"), outMonthly=$("out-monthly"), outShares=$("out-shares"),
         outProjInc=$("out-projincome"), outProjVal=$("out-projvalue"),
-        copyBtn=$("copy-result"), copied=$("copied");
+        copyBtn=$("copy-result"), copied=$("copied"),
+        copyFallback=$("copy-fallback"), copyFallbackText=$("copy-fallback-text");
 
     var reinvest = true;
 
@@ -200,8 +244,16 @@
     function dash(){ outMain.textContent="—";
       [outYield,outMonthly,outShares,outProjInc,outProjVal].forEach(function(e){e.textContent="—"; e.className="";}); }
 
-    var last=null;
+    var last=null, copyEpoch=0, copyTimer=null;
+    function resetCopyFeedback(){
+      copyEpoch += 1;
+      if(copyTimer !== null){ clearTimeout(copyTimer); copyTimer = null; }
+      copied.classList.remove("show");
+      copyFallback.hidden = true;
+      copyFallbackText.value = "";
+    }
     function render(){
+      resetCopyFeedback();
       var inp={
         A:numFrom(els.amount), p:numFrom(els.price), D:numFrom(els.dps),
         g:numFrom(els.growth), n:numFrom(els.years), reinvest:reinvest
@@ -246,12 +298,23 @@
       return s + " — mastermind-x.com";
     }
     copyBtn.addEventListener("click", function(){
+      resetCopyFeedback();
       var line=copyLine(); if(!line) return;
-      var done=function(){ copied.classList.add("show"); setTimeout(function(){copied.classList.remove("show");},1600); };
-      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(line).then(done,done); }
-      else { var ta=document.createElement("textarea"); ta.value=line; document.body.appendChild(ta); ta.select();
-        try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done(); }
+      var attempt=copyEpoch;
+      tryCopyCurrent(line, function(){ return attempt === copyEpoch; }).then(function(ok){
+        if(attempt !== copyEpoch) return;
+        if(ok){
+          copied.classList.add("show");
+          copyTimer=setTimeout(function(){
+            if(attempt !== copyEpoch) return;
+            copied.classList.remove("show"); copyTimer=null;
+          },1600);
+        } else {
+          showCopyFallback(copyFallback, copyFallbackText, line);
+        }
+      });
     });
+    document.addEventListener("langchange", resetCopyFeedback);
 
     if(seg){
       seg.addEventListener("click", function(e){
