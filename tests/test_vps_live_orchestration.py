@@ -1623,6 +1623,10 @@ def test_regime_self_heal_binds_repair_push_to_main(
         target = seed / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(baseline, encoding="utf-8")
+    # Execute the actual shared main-push guard inside the local checkout.
+    policy = seed / "scripts" / "ci" / "push_retry.sh"
+    policy.parent.mkdir(parents=True, exist_ok=True)
+    policy.write_bytes((root / "scripts" / "ci" / "push_retry.sh").read_bytes())
     git("add", ".", cwd=seed)
     git("commit", "-m", "fixture baseline", cwd=seed)
     git("remote", "add", "origin", str(remote), cwd=seed)
@@ -1653,6 +1657,7 @@ def test_regime_self_heal_binds_repair_push_to_main(
     before_status = git("status", "--porcelain=v1", cwd=work)
     output = tmp_path / "github-output"
     env["GITHUB_OUTPUT"] = str(output)
+    env["GITHUB_WORKSPACE"] = str(work)
     result = subprocess.run(
         ["bash", "-c", commit["run"]], cwd=work, env=env,
         capture_output=True, text=True, timeout=30,
