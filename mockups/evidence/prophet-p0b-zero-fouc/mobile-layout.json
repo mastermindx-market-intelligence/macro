@@ -576,7 +576,7 @@
     "site/stocktable.js": "eedfe64934bec3f37aa878ac4b45695f30293cd2ba28a9307c2ebe1fba19b964",
     "site/tablesort.js": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42",
     "site/theme.css": "321eca2fafe69c5aa9d810241a6f7d955a4e328c3f98e706d919a8035a212a82",
-    "site/theme.js": "a52c9467b20f292e057469588a47f0329686dd989515e7e8b7628dd74ea69aca"
+    "site/theme.js": "7d8e467684fae8b7737c3c2e9ffcb4bf31faea66678d0610d43f0cf0b4b79e76"
   },
   "viewport": {
     "width": 390,
@@ -3229,7 +3229,7 @@
           "filename": "owner-empty-hk-watch-only-en-dark-390.png",
           "width": 390,
           "sha256": "1c2204158f4c2fac691f48233071261f81847b520573c0dad8bfb62ac80d5ab2",
-          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-main-20261106/owner-empty-hk-watch-only-en-dark-390.png"
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-fc3c-20261107/owner-empty-hk-watch-only-en-dark-390.png"
         },
         "console_exceptions": [],
         "pass": true
@@ -4613,7 +4613,7 @@
           "filename": "owner-empty-hk-watch-only-en-dark-1440.png",
           "width": 1440,
           "sha256": "b40a32fa441061df9084ebf3124bfd9a5a68c0f3e2a345ca7e2190a64bba329b",
-          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-main-20261106/owner-empty-hk-watch-only-en-dark-1440.png"
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-fc3c-20261107/owner-empty-hk-watch-only-en-dark-1440.png"
         },
         "console_exceptions": [],
         "pass": true
@@ -5997,7 +5997,7 @@
           "filename": "owner-empty-hk-watch-only-en-light-390.png",
           "width": 390,
           "sha256": "0ace436eee66a23d9a17599576e450bab9d8261372bf79e06d60db1f2c5c3781",
-          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-main-20261106/owner-empty-hk-watch-only-en-light-390.png"
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-fc3c-20261107/owner-empty-hk-watch-only-en-light-390.png"
         },
         "console_exceptions": [],
         "pass": true
@@ -7381,7 +7381,7 @@
           "filename": "owner-empty-hk-watch-only-en-light-1440.png",
           "width": 1440,
           "sha256": "c4ee452f3d6d6186ebc455c2d0639ff743ebf0eeb458aae146665af8871b7c08",
-          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-main-20261106/owner-empty-hk-watch-only-en-light-1440.png"
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-fc3c-20261107/owner-empty-hk-watch-only-en-light-1440.png"
         },
         "console_exceptions": [],
         "pass": true
@@ -8765,7 +8765,7 @@
           "filename": "owner-empty-hk-watch-only-zh-dark-390.png",
           "width": 390,
           "sha256": "23ee47f3ba841b058238651d1b431a1f6ab43a9e8b8d4a9d857c011833b118da",
-          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-main-20261106/owner-empty-hk-watch-only-zh-dark-390.png"
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-fc3c-20261107/owner-empty-hk-watch-only-zh-dark-390.png"
         },
         "console_exceptions": [],
         "pass": true
@@ -10149,7 +10149,7 @@
           "filename": "owner-empty-hk-watch-only-zh-dark-1440.png",
           "width": 1440,
           "sha256": "90f53a081d9894dd3686a82dd1ed7928bf0bca7a11e0b5ad76fb24c7fd2c05dd",
-          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-main-20261106/owner-empty-hk-watch-only-zh-dark-1440.png"
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-fc3c-20261107/owner-empty-hk-watch-only-zh-dark-1440.png"
         },
         "console_exceptions": [],
         "pass": true
@@ -11533,7 +11533,7 @@
           "filename": "owner-empty-hk-watch-only-zh-light-390.png",
           "width": 390,
           "sha256": "10f6384e6c435b440015a4535f60e3feb69506fef3a2f4012f977251a229154a",
-          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-main-20261106/owner-empty-hk-watch-only-zh-light-390.png"
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-fc3c-20261107/owner-empty-hk-watch-only-zh-light-390.png"
         },
         "console_exceptions": [],
         "pass": true
@@ -12917,7 +12917,7 @@
           "filename": "owner-empty-hk-watch-only-zh-light-1440.png",
           "width": 1440,
           "sha256": "1ed5e63b902c9ca542197345ed451e15f6b329231ae851ee579c0712780894cc",
-          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-main-20261106/owner-empty-hk-watch-only-zh-light-1440.png"
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/r8-fc3c-20261107/owner-empty-hk-watch-only-zh-light-1440.png"
         },
         "console_exceptions": [],
         "pass": true

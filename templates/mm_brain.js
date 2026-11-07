@@ -27,7 +27,12 @@
  *   onClose: fn()->true when the host restored focus to the exact invoking object.
  *         Called only when focus was inside the Brain at close; returning true keeps
  *         the widget from replacing the host's focus return with launcher focus.
- * Public API: window.MMBrain = { open, close, toggle, expand, mounted:true }
+ * Public API: window.MMBrain = { open, close, toggle, expand, mounted:true,
+ *   submitOptionsQuestion(reference):boolean, clearOptionsQuestion(reference):boolean }
+ *   — stage (or withdraw) an Options Matrix selection question reference
+ *   (options.selection_question/v1). Staging opens the existing composer; the
+ *   turn itself only leaves on the user's explicit send, on one stateless
+ *   authenticated /api/brain/stream request that adopts no thread.
  * ========================================================================== */
 (function () {
   'use strict';
@@ -2207,6 +2212,27 @@
       .catch(function () { return h; });
   }
 
+  // The request selector's principal must equal the actual token session.
+  function authorizeOptionsQuestion(owner) {
+    if (!owner) return Promise.reject(new Error('question session unavailable'));
+    // Terminal's same-origin BFF owns its cookie session; never export its token.
+    // The BFF independently compares this expected principal with its verified user.
+    if (!(window.MDXAuth && window.MDXAuth.client)) {
+      if (API || typeof CFG.authorizeOptionsQuestion !== 'function') return Promise.reject(new Error('question session unavailable'));
+      return Promise.resolve(CFG.authorizeOptionsQuestion(owner)).then(function (matches) {
+        if (matches !== true) throw new Error('question principal mismatch');
+        return { 'Content-Type': 'application/json', 'X-MM-Options-Principal': owner };
+      });
+    }
+    return window.MDXAuth.client().then(function (sb) { return sb.auth.getSession(); })
+      .then(function (r) {
+        var session = r && r.data && r.data.session;
+        if (!session || !session.user || session.user.id !== owner ||
+            typeof session.access_token !== 'string' || !session.access_token.trim()) throw new Error('question principal mismatch');
+        return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token };
+      });
+  }
+
   /* ── quota / me ── */
   /* Always called on boot, even signed-out: /api/brain/me returns tier 'guest' (200) when the
      operator has enabled free guest access, or 401 when it is off. A 'guest' tier flips the
@@ -2363,6 +2389,7 @@
   /* openThread(id, done): `done` fires once the messages are painted — the resume path
      needs it so it can attach a still-running turn to the thread it belongs to. */
   function openThread(id, done) {
+    if (optionsQuestion && optionsQuestion.active()) { ta.value = ""; optionsQuestion.reset(); }
     stopVoice();
     var generation = ++historyOpenGeneration, epoch = historyEpoch;
     abortStream();
@@ -2553,6 +2580,15 @@
     /* Guests may send (Fast lane) without the sign-in modal; only fully-gated (non-guest,
        signed-out) sessions are bounced to sign-in. */
     if (!authed && !guestMode && window.MDXAuth && window.MDXAuth.enabled && window.MDXAuth.enabled()) { window.MDXAuth.open('signin'); return; }
+    /* A staged options selection question routes to the stateless question
+       lane instead of the ordinary thread send. Incompatible companions are
+       rejected BEFORE any send — images and research mode never ride the
+       question path, and the staged reference survives for a clean retry. */
+    if (optionsQuestion.active()) {
+      if (!text || imgs.length || researchMode || !optionsQuestion.staged() || optionsQuestion.busy()) return;
+      sendOptionsQuestionTurn(text);
+      return;
+    }
     /* lang travels with every turn: the server pins the reply AND the follow-up chips to
        it, so a Chinese thread history can never drag an English turn's buttons into
        Chinese. A message typed in the other language still wins (server-side). */
@@ -2574,7 +2610,7 @@
   }
   /* Replay the last user turn on the same thread/lane (client resend, no backend change). */
   function regenerate() {
-    if (streaming || !lastTurn) return;
+    if (streaming || (optionsQuestion && optionsQuestion.active()) || !lastTurn) return;
     refreshCtx();
     runStream({ text: lastTurn.text, imgs: (lastTurn.imgs || []).slice(), lane: lastTurn.lane, mode: lastTurn.mode, sourceSpan: lastTurn.sourceSpan || null,
                 ctx: buildTurnContext() }, false);
@@ -2986,6 +3022,7 @@
     endTurn(T);
   }
   function attachRun(T) {
+    if (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy())) return;
     if (T.stopped || T.epoch !== historyEpoch) return;
     var url = API + '/api/brain/runs/' + encodeURIComponent(T.runId) + '/stream?cursor=' + (T.cursor || 0);
     var ac = (typeof AbortController !== 'undefined') ? new AbortController() : null; streamAbort = ac;
@@ -3201,14 +3238,20 @@
   var resuming = false;   /* open() and visibilitychange can both fire before the status
                              fetch lands; without this the turn attaches twice */
   function resumeStoredRun() {
-    if (streaming || resuming || !panel.classList.contains('open')) return;
+    if (streaming || resuming || (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy())) || !panel.classList.contains('open')) return;
     var epoch = historyEpoch, st = loadRun(); if (!st || !st.id) return;
     if (!st.ts || (Date.now() - st.ts) > RUN_MAX_AGE_MS) { clearRun(); return; }
+    var openGeneration = historyOpenGeneration;
+    var questionGeneration = optionsQuestion ? optionsQuestion.generation() : 0;
+    function resumeCurrent(expectedOpen) {
+      return epoch === historyEpoch && historyOpenGeneration === expectedOpen &&
+        (!optionsQuestion || (!optionsQuestion.active() && !optionsQuestion.busy() && optionsQuestion.generation() === questionGeneration));
+    }
     resuming = true;
-    withAuth().then(function (h) { return fetch(API + '/api/brain/runs/' + encodeURIComponent(st.id), { headers: h, credentials: 'include' }); })
-      .then(function (r) { return r.ok ? r.json() : null; })
+    withAuth().then(function (h) { if (!resumeCurrent(openGeneration)) return null; return fetch(API + '/api/brain/runs/' + encodeURIComponent(st.id), { headers: h, credentials: 'include' }); })
+      .then(function (r) { return r && r.ok ? r.json() : null; })
       .then(function (s) {
-        if (epoch !== historyEpoch) return;
+        if (!resumeCurrent(openGeneration)) return;
         if (!s) { clearRun(); return; }        /* gone — the thread store is the record now */
         if (s.cancelled) { clearRun(); return; }
         if (s.thread_id) {
@@ -3220,7 +3263,7 @@
                assistant turn at the tail means the answer already landed and painting
                the replay too would double it. */
             openThread(s.thread_id, function (msgs) {
-              if (epoch !== historyEpoch) return;
+              if (!resumeCurrent(openGeneration + 1)) return;
               var tail = (msgs && msgs.length) ? msgs[msgs.length - 1] : null;
               if (tail && tail.role === 'assistant') { clearRun(); return; }
               attachFresh(s, 0, st.q);
@@ -3241,6 +3284,7 @@
   /* Build a fresh turn around an existing server run and attach to it. `question` is
      carried so a Retry on the error card can still replay the real turn. */
   function attachFresh(status, cursor, question) {
+    if (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy())) return;
     root.querySelectorAll('.mmb-sugg').forEach(function (n) { n.remove(); });
     var typing = el('div', 'mmb-msg assistant');
     typing.innerHTML = '<div class="mmb-bub"><span class="mmb-orbmark"><svg viewBox="0 0 24 24"><path d="' + ORB_PATH + '"/></svg></span></div>';
@@ -3261,7 +3305,7 @@
   /* Coming back to the tab is the moment to act: a phone that froze the page never ran
      a single line of JS while it was away, and a parked turn has been waiting for this. */
   DOC.addEventListener('visibilitychange', function () {
-    if (DOC.hidden) return;
+    if (DOC.hidden || (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy()))) return;
     if (parked) { var p = parked; parked = null; p.tries = 0; if (!p.doneSeen && !p.stopped) attachRun(p); return; }
     resumeStoredRun();
   });
@@ -3517,8 +3561,8 @@
     }
     if (authed) { loadThreads(); loadQuotas(); }
     else { loadQuotas(); }   /* guests refresh their daily meter; a 401 keeps the gate */
-    restoreDraft();
-    resumeStoredRun();       /* a turn started before a reload is still ours to finish */
+    if (!(optionsQuestion && optionsQuestion.active())) restoreDraft();
+    if (!(optionsQuestion && optionsQuestion.active())) resumeStoredRun();       /* a turn started before a reload is still ours to finish */
     setTimeout(focusPanel, 260);
   }
   /* Move focus INTO the panel once the entry has settled. It cannot just be ta.focus():
@@ -3620,7 +3664,7 @@
     });
   }
   function toggleSide() { panel.classList.toggle('show-side'); }
-  function newChat() { stopVoice(); historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max') || window.innerWidth <= 960) panel.classList.remove('show-side'); }
+  function newChat() { if (optionsQuestion) optionsQuestion.reset(); stopVoice(); historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max') || window.innerWidth <= 960) panel.classList.remove('show-side'); }
 
   /* ── auth wiring ── */
   function onAuth(user) {
@@ -3629,6 +3673,7 @@
       stopVoice();
       if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; }
       abortStream(); resuming = false;
+      optionsQuestion.reset();   /* a principal change withdraws any staged selection question */
       historyOwner = owner; historyEpoch++; historyListGeneration++; historyOpenGeneration++;
       allThreads = []; historyListUnavailable = false; threadId = null;
       clearMsgs(); ta.value = ''; pendingImages = []; renderThumbs(); paintThreads();
@@ -3645,7 +3690,7 @@
       guestMode = false;
       if (gate) gate.remove();
       if (!scroll.querySelector('.mmb-msg') && !$('#mmb-emptystate')) renderEmpty();
-      if (panel.classList.contains('open')) { loadThreads(); loadQuotas(); restoreDraft(); resumeStoredRun(); }
+      if (panel.classList.contains('open')) { loadThreads(); loadQuotas(); restoreDraft(); if (!(optionsQuestion && optionsQuestion.active())) resumeStoredRun(); }
       showChat(true);
     } else {
       /* Signed out: default to the gate, then probe /api/brain/me — if guest access is on it
@@ -3901,7 +3946,9 @@
   }
   /* send is enabled when there's text OR at least one attached image (and not mid-stream) */
   function syncSend() {
-    sendBtn.disabled = (!ta.value.trim() && !pendingImages.length) || streaming;
+    syncOptionsExit();
+    sendBtn.disabled = (!ta.value.trim() && !pendingImages.length) || streaming ||
+      !!(optionsQuestion && optionsQuestion.active() && (!optionsQuestion.staged() || optionsQuestion.busy() || pendingImages.length || researchMode));
     /* the ⌘↵ hint shows exactly while there is something to send — which is also the
        moment a user is about to press Enter and expect it to go. */
     if (boxEl) boxEl.classList.toggle('mmb-typing', !sendBtn.disabled);
@@ -3942,6 +3989,7 @@
   function draftKey() { return historyOwner ? 'mmb_draft_v2:' + encodeURIComponent(historyOwner) + ':' + encodeURIComponent(threadId || 'new') : null; }
   var draftTimer = 0;
   function saveDraft() {
+    if (optionsQuestion && optionsQuestion.active()) return;
     if (draftTimer) clearTimeout(draftTimer);
     var key = draftKey(), value = ta.value, epoch = historyEpoch;
     if (!key) return;  /* no migration from unbound legacy/guest drafts */
@@ -3956,6 +4004,7 @@
     var key = draftKey(); try { if (key) localStorage.removeItem(key); } catch (e) {}
   }
   function restoreDraft() {
+    if (optionsQuestion && optionsQuestion.active()) return;
     var key = draftKey();
     try { var v = key && localStorage.getItem(key); if (v && !ta.value) { ta.value = v; autosize(); syncSend(); updateCounter(); } } catch (e) {}
   }
@@ -4375,12 +4424,445 @@
     else if (Object.prototype.hasOwnProperty.call(CFG, 'principal')) onAuth(CFG.principal ? { id: CFG.principal } : null);
     else window.addEventListener('load', function () { if (window.MDXAuth) window.MDXAuth.onChange(onAuth); else { authed = true; showChat(true); } });
   }
+
+  /* ══ BEGIN options question module (P15.T2.S3) — VM-extractable, host seams only ══
+     The Options Matrix selection question lane: a staged REQUEST SELECTOR
+     (options.selection_question/v1, minted by the Terminal), never an
+     authorization, grant, receipt or source attachment. This module validates
+     the bounded closed envelope, stages an immutable frozen copy, and — only
+     on the user's explicit send — produces exactly ONE stateless request body
+     and hands it to the injected transport after the injected auth seam
+     resolves. It never reads sources, keeps no clock, writes no run record,
+     adopts no thread, retries nothing, and never mutates the ordinary send
+     path. Everything between BEGIN/END runs in a bare VM context with only
+     JSON/TextEncoder/Promise injected; every host capability arrives through
+     env, so tests exercise this exact code without a DOM. */
+  var OPTIONS_QUESTION_SCHEMA = 'options.selection_question/v1';
+  var OPTIONS_QUESTION_MAX_REFERENCE_BYTES = 8192;
+  var OPTIONS_QUESTION_MAX_EVIDENCE_BYTES = 4096;
+  var OPTIONS_QUESTION_MAX_EVIDENCE_KEYS = 16;
+  var OPTIONS_QUESTION_MAX_EVIDENCE_KEY_CHARS = 128;
+  var OPTIONS_QUESTION_MAX_SELECTION_BYTES = 2048;   /* the mint's own selection ceiling */
+
+  /* Realm-agnostic plain-object test: the internal [[Class]] tag survives a
+     VM boundary (the widget host and a test sandbox are different realms),
+     while Date/Map/class instances still refuse. */
+  function isPlainObject(v) {
+    if (typeof v !== 'object' || v === null || Array.isArray(v)) return false;
+    if (Object.getPrototypeOf(v) === null) return true;
+    return Object.prototype.toString.call(v) === '[object Object]';
+  }
+  function utf8Length(value) { return new TextEncoder().encode(value).length; }
+  /* Stable exact request identity: recursive key-sorted JSON. Identity drives
+     staging/withdrawal matching only — it is not a server receipt, admission
+     or persistence key. */
+  function canonicalEnvelope(value) {
+    if (isPlainObject(value)) {
+      var keys = Object.keys(value).sort(), parts = [];
+      for (var i = 0; i < keys.length; i++) {
+        var v = value[keys[i]];
+        if (v === undefined) continue;
+        parts.push(JSON.stringify(keys[i]) + ':' + canonicalEnvelope(v));
+      }
+      return '{' + parts.join(',') + '}';
+    }
+    return JSON.stringify(value === undefined ? null : value);
+  }
+  /* Closed envelope check: exact key set {evidence, schema, selection}, the
+     exact schema string, a bounded plain evidence object of primitive fields,
+     and a bounded non-empty selection string. First defect refuses; nothing
+     is inferred, repaired or defaulted. */
+  function validateOptionsQuestionReference(reference) {
+    try {
+      if (!isPlainObject(reference)) return false;
+      var keys = Object.keys(reference).sort();
+      if (keys.length !== 3) return false;
+      if (keys[0] !== 'evidence' || keys[1] !== 'schema' || keys[2] !== 'selection') return false;
+      if (reference.schema !== OPTIONS_QUESTION_SCHEMA) return false;
+      var evidence = reference.evidence;
+      if (!isPlainObject(evidence)) return false;
+      var ekeys = Object.keys(evidence);
+      if (ekeys.length > OPTIONS_QUESTION_MAX_EVIDENCE_KEYS) return false;
+      for (var i = 0; i < ekeys.length; i++) {
+        var k = ekeys[i];
+        if (!k || k.length > OPTIONS_QUESTION_MAX_EVIDENCE_KEY_CHARS) return false;
+        var v = evidence[k], t = typeof v;
+        if (v === null) continue;
+        if (t !== 'string' && t !== 'number' && t !== 'boolean') return false;
+        if (t === 'number' && !isFinite(v)) return false;
+      }
+      if (utf8Length(canonicalEnvelope(evidence)) > OPTIONS_QUESTION_MAX_EVIDENCE_BYTES) return false;
+      var selection = reference.selection;
+      if (typeof selection !== 'string' || !selection.trim() ||
+          utf8Length(selection) > OPTIONS_QUESTION_MAX_SELECTION_BYTES) return false;
+      if (utf8Length(canonicalEnvelope(reference)) > OPTIONS_QUESTION_MAX_REFERENCE_BYTES) return false;
+      return true;
+    } catch (e) { return false; }   /* a cyclic or exotic input is malformed, never a throw */
+  }
+  /* Deep-copy then deep-freeze so a caller mutating the object after staging
+     cannot change what is serialized and sent. */
+  function freezeCopy(value) {
+    if (isPlainObject(value)) {
+      var out = Object.create(null), keys = Object.keys(value).sort();
+      for (var i = 0; i < keys.length; i++) out[keys[i]] = freezeCopy(value[keys[i]]);
+      return Object.freeze(out);
+    }
+    if (Array.isArray(value)) return Object.freeze(value.map(freezeCopy));
+    return value;
+  }
+  /* Classify one settled stateless response against the gateway's SSE
+     contract: meta, delta*, then done — errors ride done(error, effect_unknown,
+     retry_allowed=false). A stateless question turn adopts no thread and
+     keeps no cursor; a stream that ends without done is a dropped connection,
+     never an answer. */
+  function settleQuestionResponse(res) {
+    if (!res || typeof res !== 'object' || res.ok !== true || typeof res.bodyText !== 'string') return { kind: 'network' };
+    var lines = res.bodyText.split('\n');
+    var text = '', error = null, done = false, sawEvent = false, malformed = false;
+    for (var i = 0; i < lines.length; i++) {
+      var line = String(lines[i]).trim();
+      if (line.indexOf('data:') !== 0) continue;
+      var data = line.slice(5).trim();
+      if (!data) continue;
+      var j; try { j = JSON.parse(data); } catch (e) { malformed = true; continue; }
+      if (!j || typeof j !== 'object' || Array.isArray(j)) continue;
+      sawEvent = true;
+      if (j.type === 'delta' && typeof j.text === 'string') { text += j.text; continue; }
+      if (j.type === 'done') { done = true; if (j.error || j.ok === false || j.quota_exhausted || j.dispatch_state === 'EFFECT_UNKNOWN') error = j; continue; }
+      if (j.type === 'error') { error = j; done = true; continue; }
+      /* meta / context_receipt / status / tool events on this lane: ignored —
+         no thread adoption, no tools, no run bookkeeping. */
+    }
+    if (error) {
+      /* done(error, …) nests the failure payload; a standalone error event
+         carries it at the top level. */
+      var payload = (error.error && typeof error.error === 'object' && !Array.isArray(error.error)) ? error.error : error;
+      if (payload.effect === 'effect_unknown' || payload.dispatch_state === 'EFFECT_UNKNOWN' || payload.error === 'options_question_dispatch_effect_unknown') return { kind: 'unknown', retryAllowed: false };
+      return { kind: 'refused', reason: typeof payload.reason === 'string' ? payload.reason :
+        (typeof payload.code === 'string' ? payload.code : null) };
+    }
+    if (!done || !sawEvent || malformed) return { kind: 'network' };
+    return { kind: 'reply', text: text };
+  }
+  function createOptionsQuestion(env) {
+    var active = false, activeIdentity = null, flight = null;
+    var staged = null;       /* { reference (frozen), identity, owner } */
+    var pending = null;      /* pre-send reservation awaiting the auth seam */
+    var busy = false;        /* one explicit question turn in flight */
+    var generation = 0;      /* bumped by reset(); fences outcomes after reset */
+
+    function ownerNow() {
+      var owner = env.principal();
+      return (typeof owner === 'string' && owner) ? owner : null;
+    }
+    function dropStaged() {
+      if (!staged) return false;
+      staged = null;
+      if (typeof env.onStagedChange === 'function') env.onStagedChange(null);
+      return true;
+    }
+    return {
+      active: function () { return active; },
+      identity: canonicalEnvelope,
+      validate: validateOptionsQuestionReference,
+      staged: function () { return staged; },
+      busy: function () { return busy; },
+      generation: function () { return generation; },
+      /* stage(reference): validate, freeze an exact copy, remember the owning
+         principal. Refuses while another request streams (including a question
+         turn in flight), when signed out or the principal is unknown, and on
+         any envelope defect. A fresh valid stage replaces an earlier one — the
+         stale holder's later clear can no longer match it. */
+      stage: function (reference) {
+        if (env.streaming() || busy) return false;
+        if (!ownerNow()) return false;
+        var frozen, identity;
+        // Snapshot once: validation, identity and transport must see the same values.
+        try { frozen = freezeCopy(reference); }
+        catch (e) { return false; }
+        if (!validateOptionsQuestionReference(frozen)) return false;
+        identity = canonicalEnvelope(frozen);
+        active = true; activeIdentity = identity; generation++;
+        staged = { reference: frozen, identity: identity, owner: ownerNow() };
+        if (typeof env.onStagedChange === 'function') env.onStagedChange(staged);
+        return true;
+      },
+      /* clear(reference): only the exact STILL-STAGED reference owned by the
+         current principal clears. An older holder's cleanup cannot clear a
+         newer staged reference, and a principal change already cleared it. */
+      clear: function (reference) {
+        if (!active || !staged || !ownerNow() || staged.owner !== ownerNow()) return false;
+        var identity;
+        try { identity = canonicalEnvelope(reference); } catch (e) { return false; }
+        if (identity !== activeIdentity) return false;
+        generation++;
+        if (pending) pending.withdrawnGeneration = generation;
+        pending = null; activeIdentity = null;
+        dropStaged();
+        return true;
+      },
+      /* withdrawInFlight(reference): a withdrawal that arrives AFTER the one
+         POST for this exact question has been dispatched. Nothing can be
+         un-sent, so it never aborts, retries or re-labels the request, busy
+         holds until the original request settles, and no "nothing was sent"
+         outcome is produced. It only fences the late answer: generation moves
+         past the flight's, so the settled outcome drops exactly like any
+         other stale one. Accepted only on an exact match of the flight's
+         reference identity, owner AND current generation — a foreign or
+         stale reference, another principal, or a duplicate withdrawal leaves
+         the flight untouched. */
+      withdrawInFlight: function (reference) {
+        if (!flight || !flight.dispatched) return false;
+        var owner = ownerNow();
+        if (!owner || owner !== flight.owner || flight.gen !== generation) return false;
+        var identity;
+        try { identity = canonicalEnvelope(reference); } catch (e) { return false; }
+        if (identity !== flight.identity) return false;
+        generation++;
+        activeIdentity = null;
+        return true;
+      },
+      /* reset(): the principal changed or the owning scope was torn down —
+         drop the staged reference and fence anything awaiting the auth seam. */
+      reset: function () {
+        generation++; active = false; activeIdentity = null;
+        pending = null; flight = null;
+        busy = false;
+        dropStaged();
+      },
+      /* send(text): the EXPLICIT user send. At most one POST, on the exact
+         staged reference, consumed before the first transport attempt. Any
+         refusal returns false with zero transport effects; nothing automatic
+         ever follows a failure. */
+      send: function (text) {
+        var message = String(text == null ? '' : text).trim();
+        if (!message || message.length > env.maxMessage) return false;
+        if (busy || env.streaming()) return false;
+        var owner = ownerNow();
+        if (!owner || !staged || staged.owner !== owner) return false;
+        /* The stateless body: bounded message, lane, chat mode, the exact
+           staged reference, and language context ONLY — no thread id, no
+           history, no images, no company source span, no tools, no research,
+           no source fallback. */
+        var request = {
+          message: message,
+          lane: env.lane() === 'pro' ? 'pro' : 'fast',
+          mode: 'chat',
+          options_question_reference: staged.reference,
+          context: { lang: env.lang() === 'zh' ? 'zh' : 'en' }
+        };
+        var body = JSON.stringify(request);
+        var gen = generation;
+        /* The flight's own identity/owner/generation snapshot: a withdrawal
+           AFTER the POST must match all three, and `dispatched` separates the
+           pre-send withdrawal (stillValid abort) from the in-flight fence. */
+        var reservation = { identity: staged.identity, owner: owner, gen: gen, dispatched: false };
+        pending = reservation; flight = reservation; busy = true;
+        var claim = {
+          identity: reservation.identity,
+          owner: owner,
+          body: body,
+          /* Re-checked AFTER the async auth seam resolves and BEFORE fetch:
+             withdrawal, re-staging, a principal change or a host reset aborts
+             here, before any bytes leave. */
+          stillValid: function () {
+            return gen === generation && pending === reservation &&
+              !!staged && staged.identity === reservation.identity && ownerNow() === owner;
+          },
+          consume: function () {
+            if (pending === reservation) pending = null;
+            dropStaged();   /* consume BEFORE the first transport attempt */
+          },
+          release: function () {
+            if (pending === reservation) pending = null;
+            if (flight === reservation) { flight = null; busy = false; }
+          }
+        };
+        function emit(outcome) {
+          outcome.generation = outcome.kind === 'withdrawn' &&
+            reservation.withdrawnGeneration === generation && ownerNow() === owner
+            ? generation : gen;
+          env.onOutcome(outcome);
+        }
+        function authorizeFailed() {
+          /* No POST. The staged reference stays staged for an explicit retry
+             by the user; nothing automatic happens. */
+          claim.release();
+          emit({ kind: 'network' });
+        }
+        var awaited;
+        try { awaited = env.authorize(owner); } catch (e) { authorizeFailed(); return true; }
+        Promise.resolve(awaited).then(function (headers) {
+          if (!claim.stillValid()) { claim.release(); emit({ kind: 'withdrawn' }); return; }
+          claim.consume();
+          var attempt;
+          try { attempt = env.transport({ headers: headers, body: claim.body }); }
+          catch (e) { claim.release(); emit({ kind: 'network' }); return; }
+          reservation.dispatched = true;   /* the one POST is out — a matched withdrawal may now fence, never abort */
+          Promise.resolve(attempt).then(function (res) {
+            claim.release();
+            emit(settleQuestionResponse(res));
+          }, function () { claim.release(); emit({ kind: 'network' }); });
+        }, function () { authorizeFailed(); });
+        return true;
+      }
+    };
+  }
+  /* ══ END options question module (P15.T2.S3) ══ */
+
+  /* ── options question wiring (P15.T2.S3) — DOM + transport seams ── */
+  /* Staged chip reuses the neutral meta style; it is re-localized in place by
+     relabel() via .mmb-l[data-en] like every other chrome line. Its copy says
+     what the reference IS and is not: membership-only, and no metric or
+     valuation proof travels with it. */
+  var optqChip = el('p', 'mmb-meta mmb-l');
+  optqChip.id = 'mmb-optq';
+  optqChip.setAttribute('role', 'status');
+  optqChip.style.display = 'none';
+  root.querySelector('.mmb-comp').insertBefore(optqChip, root.querySelector('.mmb-box'));
+  var optqExit = el('button', 'mmb-meta mmb-l');
+  optqExit.id = 'mmb-optq-exit'; optqExit.type = 'button';
+  optqExit.setAttribute('data-en', 'Back to ordinary chat');
+  optqExit.setAttribute('data-zh', '返回普通聊天');
+  optqExit.textContent = L('Back to ordinary chat', '返回普通聊天');
+  optqExit.style.display = 'none';
+  root.querySelector('.mmb-comp').insertBefore(optqExit, optqChip);
+  function syncOptionsExit() {
+    if (!optionsQuestion) return;
+    optqExit.style.display = optionsQuestion.active() ? '' : 'none';
+    optqExit.disabled = optionsQuestion.busy();
+  }
+  /* One withdrawal entry for the lane: the still-staged reference clears
+     (pre-send — the send aborts before any POST); a matching already-
+     dispatched question only fences its late answer. Foreign or stale
+     references do neither. */
+  function applyOptionsWithdrawal(reference) {
+    if (!optionsQuestion) return false;
+    if (optionsQuestion.clear(reference)) return true;
+    return optionsQuestion.withdrawInFlight(reference);
+  }
+  optqExit.addEventListener('click', function () {
+    if (optionsQuestion.busy()) return;
+    optionsQuestion.reset(); historyOpenGeneration++; threadId = null;
+    lastTurn = null; priorTurn = null; ta.value = ''; pendingImages = []; renderThumbs();
+    autosize(); syncSend(); updateCounter(); syncOptionsExit();
+    // Keep the displayed answer, but never send it as ordinary history.
+    try { ta.focus(); } catch (e) {}
+  });
+  function paintOptionsStaged(staged) {
+    syncOptionsExit();
+    if (!staged) { optqChip.style.display = 'none'; optqChip.textContent = ''; optqChip.removeAttribute('data-en'); optqChip.removeAttribute('data-zh'); return; }
+    var en = 'Options selection attached — selected contracts only; no metric or valuation proof is included. Type your question and send.';
+    var cn = '已附加期权选择 — 仅包含所选合约，不含指标或估值证明。输入问题后发送。';
+    optqChip.setAttribute('data-en', en); optqChip.setAttribute('data-zh', cn);
+    optqChip.textContent = L(en, cn);
+    optqChip.style.display = '';
+  }
+  /* Outcome notes are muted meta lines, never the generic retry card: this
+     lane has no retry, no run record and no regeneration by design. */
+  var OPTIONS_QUESTION_NOTES = {
+    refused: ['This options question was not answered — the service refused this request. Nothing was retried.',
+              '该期权问题未获得回答 — 服务拒绝了该请求。未进行重试。'],
+    unknown: ['The options question could not be answered right now. Nothing was retried.',
+              '暂时无法回答该期权问题。未进行重试。'],
+    network: ["The request outcome could not be confirmed. Nothing was retried.",
+              '无法确认请求结果。未进行重试。'],
+    withdrawn: ['The attached selection was withdrawn — nothing was sent.',
+                '已附加的选择被撤回 — 未发送任何内容。'],
+    empty: ['The answer came back empty.', '回答内容为空。']
+  };
+  function paintOptionsNote(kind) {
+    var pair = OPTIONS_QUESTION_NOTES[kind] || OPTIONS_QUESTION_NOTES.unknown;
+    var p = el('p', 'mmb-meta mmb-l');
+    p.setAttribute('data-en', pair[0]); p.setAttribute('data-zh', pair[1]);
+    p.setAttribute('role', 'status');
+    p.textContent = L(pair[0], pair[1]);
+    scroll.appendChild(p);
+  }
+  function handleOptionsOutcome(outcome) {
+    if (!outcome || typeof outcome !== 'object') return;
+    /* An outcome from before a reset/principal change/withdrawal fence never
+       paints — but its flight has now settled, so the busy controls release
+       with the original settlement even when the answer itself is fenced. */
+    var current = typeof outcome.generation !== 'number' || outcome.generation === optionsQuestion.generation();
+    if (current) {
+      if (outcome.kind === 'reply' && outcome.text) {
+        var answer = appendMsg('assistant', outcome.text);
+        var regenerateButton = answer.querySelector('.mmb-regen'); if (regenerateButton) regenerateButton.remove();
+      }   /* incumbent safe renderer */
+      else paintOptionsNote(outcome.kind === 'reply' ? 'empty' : (outcome.kind || 'unknown'));
+      stickAfter();
+    }
+    syncSend(); syncOptionsExit();
+  }
+  function sendOptionsQuestionTurn(text) {
+    if (!optionsQuestion.send(text)) { paintOptionsNote('refused'); return; }
+    syncOptionsExit();
+    /* Display only: no thread, no run record, no regenerate/retry state, no
+       ordinary-payload bookkeeping. */
+    root.querySelectorAll('.mmb-sugg').forEach(function (n) { n.remove(); });
+    appendMsg('user', text);
+    ta.value = ''; autosize(); if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; } syncSend(); updateCounter(); closeSlash();
+    boxEl.classList.remove('mmb-sent'); void boxEl.offsetWidth; boxEl.classList.add('mmb-sent');
+    pinned = true; hideJump();
+  }
+  var optionsQuestion = createOptionsQuestion({
+    principal: function () {
+      if (!principalKnown || !authed) return null;
+      return historyOwner || null;
+    },
+    streaming: function () { return streaming || !!parked; },
+    maxMessage: MAXLEN,
+    lane: function () { return lane === 'pro' ? 'pro' : 'fast'; },
+    lang: function () { return zh() ? 'zh' : 'en'; },
+    authorize: authorizeOptionsQuestion,
+    /* Same-origin authenticated gateway, one distinct stateless path. The
+       terminal proxy forwards the exact body with its server-verified bearer. */
+    transport: function (init) {
+      /* No AbortController here by design: this lane has no Stop and no
+         cancellation path — the request either settles once or is a failure. */
+      return fetch(API + '/api/brain/stream', {
+        method: 'POST', headers: init.headers, credentials: 'include', body: init.body
+      }).then(function (res) {
+        if (!res.ok || !res.body) return { ok: false, status: res.status, bodyText: '' };
+        var reader = res.body.getReader(), dec = new TextDecoder(), acc = '';
+        function pump() {
+          return reader.read().then(function (r) {
+            if (r.done) { try { reader.cancel(); } catch (e) {} return acc; }
+            if (acc.length + r.value.byteLength > 1048576) { reader.cancel(); throw new Error("bounded answer exceeded"); }
+            acc += dec.decode(r.value, { stream: true });
+            return pump();
+          });
+        }
+        return pump().then(function (full) { return { ok: true, status: res.status, bodyText: full }; });
+      });
+    },
+    onStagedChange: paintOptionsStaged,
+    onOutcome: handleOptionsOutcome
+  });
+
   boot();
   initExplain();
 
   window.MMBrain = { open: open, close: close, toggle: toggle, explain: explain, setLauncher: setLauncher,
     setPrincipal: function (id) { onAuth(typeof id === 'string' && id ? { id: id } : null); },
     expand: function () { var was = panel.classList.contains('open'); if (!was) open(); if (window.innerWidth > 560 && !panel.classList.contains('max')) setTimeout(toggleMax, was ? 0 : 80); },
+    /* P15.T2.S3: stage a selection question and open the existing composer
+       (never a send), or withdraw the still-owned staged reference. */
+    submitOptionsQuestion: function (reference) {
+      if (!optionsQuestion.stage(reference)) return false;
+      if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; }
+      historyOpenGeneration++; threadId = null; lastTurn = null; priorTurn = null;
+      ta.value = ""; pendingImages = []; renderThumbs(); clearMsgs();
+      syncOptionsExit(); autosize(); syncSend(); updateCounter();
+      if (!panel.classList.contains('open')) open();
+      try { ta.focus(); } catch (e) {}
+      return true;
+    },
+    clearOptionsQuestion: function (reference) {
+      if (!applyOptionsWithdrawal(reference)) return false;
+      ta.value = ""; autosize(); syncSend(); updateCounter(); syncOptionsExit(); return true;
+    },
     mounted: true };
   window.dispatchEvent(new Event('mm-brain-ready'));
 })();
