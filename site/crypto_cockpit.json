@@ -2,17 +2,17 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-11-06",
-  "generated_at": "2026-11-07T01:36:33+00:00",
+  "as_of": "2026-11-07",
+  "generated_at": "2026-11-07T19:15:18+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 75791.9,
-    "change_24h_pct": 0.29,
+    "price": 75786.63,
+    "change_24h_pct": 0.07,
     "stance_en": "RISK-OFF",
     "stance_zh": "偏空",
-    "summary_en": "The big picture reads risk-off. Support comes from fundamentals and miners; the drag comes from momentum and the trend. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向偏空。支撑来自基本面与矿工；拖累来自动量与趋势。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": -30,
+    "summary_en": "The big picture reads risk-off. Support comes from fundamentals and miners; the drag comes from the trend and stablecoin flows. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向偏空。支撑来自基本面与矿工；拖累来自趋势与稳定币资金。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": -27,
     "exposure_pct": 0,
     "gate_active": false
   },
@@ -178,13 +178,13 @@
         },
         {
           "key": "cot",
-          "label_en": "Cot",
-          "label_zh": "cot",
+          "label_en": "CME positioning",
+          "label_zh": "CME 持仓",
           "source": "master.board.cot",
-          "state_en": "Unavailable",
-          "state_zh": "暂无",
-          "tone": "neutral",
-          "grade": null
+          "state_en": "Crowded long",
+          "state_zh": "多头拥挤",
+          "tone": "bear",
+          "grade": "EXTREMES"
         }
       ]
     },
@@ -219,9 +219,9 @@
           "label_en": "Holder spread (STH/LTH)",
           "label_zh": "持有者价差",
           "source": "master.board.holders",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Accumulation",
+          "state_zh": "累积",
+          "tone": "bull",
           "grade": "NEW"
         },
         {
