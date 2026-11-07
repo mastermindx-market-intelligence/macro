@@ -295,6 +295,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2463,6 +2465,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3538,6 +3542,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -8130,6 +8136,11 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "tests/test_options_scenario_http_admission.py"
+      - "app/options_scenario_http_admission.py"
+      - "tests/test_native_capture_participant.py"
+      - "tests/test_investigation_native_capture.py"
+      - "app/investigation_native_capture.py"
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -9238,7 +9249,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_options_scenario_http_admission.py tests/test_scenario_initial_capture.py tests/test_investigation_native_capture.py tests/test_native_capture_participant.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -12367,6 +12378,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -16609,6 +16622,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -30750,6 +30765,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -40530,6 +40547,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -43845,6 +43864,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -45119,6 +45140,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -50311,6 +50334,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
