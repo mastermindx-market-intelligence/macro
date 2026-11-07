@@ -2572,6 +2572,77 @@ def _prompt_self_contradictions(prompt: str) -> list[tuple[str, list[str]]]:
     return out
 
 
+
+_EDITORIAL_NEGATIVE_SCOPE_RE = re.compile(
+    r"^\s*(?:banned(?:\s+outright)?|never|no\b|do not\b|don't\b|must not\b|"
+    r"may not\b|cannot\b|can't\b|forbidden\b)",
+    re.IGNORECASE,
+)
+_EDITORIAL_FIRST_PERSON_GRANT_RES = (
+    re.compile(r"\bmix\s+[\"']?i[\"']?\s+and\s+[\"']?we[\"']?\b", re.IGNORECASE),
+    re.compile(r"\bin the first person\b", re.IGNORECASE),
+    re.compile(
+        r"\b[\"']?we[\"']?\s+for the calls.{0,80}[\"']?i[\"']?\s+for the read\b",
+        re.IGNORECASE,
+    ),
+    re.compile(r"\bshow(?:s)?\s+(?:your|their)\s+own\s+working\b", re.IGNORECASE),
+    re.compile(r"\b(?:puts?|putting)\s+something\s+of\s+ours\s+at\s+risk\b", re.IGNORECASE),
+    re.compile(r"\bchange\s+our\s+mind\b", re.IGNORECASE),
+    re.compile(r"\ba\s+position\s+that\s+hurt\b", re.IGNORECASE),
+    re.compile(
+        r"[\"']i(?:'m| am)\s+not\s+sure\s+yet[\"']\s+is\s+a\s+(?:real|strong)\s+post",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\ban\s+honesty\s+caveat\s+is\s+welcome\s+when\s+it\s+is\s+yours\b",
+        re.IGNORECASE,
+    ),
+    re.compile(r"\bself-deprecation\s+beats\s+spin\b", re.IGNORECASE),
+    re.compile(r"\bour\s+own\s+losses\b", re.IGNORECASE),
+)
+_EDITORIAL_QUESTION_GRANT_RES = (
+    re.compile(
+        r"\ba\s+(?:genuine|real)\s+question(?:\s+to\s+the\s+reader)?\s+is\s+welcome\b",
+        re.IGNORECASE,
+    ),
+    re.compile(r"\b(?:asks?|ask)\s+a\s+question\b", re.IGNORECASE),
+    re.compile(r"\bends?\s+on\s+a\s+question\b", re.IGNORECASE),
+    re.compile(r"\breal\s+question\s+a\s+trader\s+would\s+ask\b", re.IGNORECASE),
+)
+_EDITORIAL_ONE_NUMBER_GRANT_RE = re.compile(
+    r"\b(?:one|1|exactly\s+one)\s+number\s+per\s+post\b",
+    re.IGNORECASE,
+)
+
+
+def _positive_editorial_contract_conflicts(directive: str) -> list[str]:
+    """Positive config/card orders that contradict the v5 writer contract.
+
+    Polarity matters: quoted first-person examples inside a ban are evidence of
+    what not to write, not an operational permission to write it.
+    """
+    conflicts: list[str] = []
+    whole = str(directive or "")
+    whole_is_ban = bool(
+        re.match(r"^\s*BANNED(?:\s+OUTRIGHT)?\s*:", whole, re.IGNORECASE)
+    )
+    clauses = [
+        clause.strip()
+        for clause in re.split(r"(?<=[.;])\s+|\n+", whole)
+        if clause.strip()
+    ]
+    for clause in clauses:
+        if whole_is_ban or _EDITORIAL_NEGATIVE_SCOPE_RE.search(clause):
+            continue
+        if any(pattern.search(clause) for pattern in _EDITORIAL_FIRST_PERSON_GRANT_RES):
+            conflicts.append(f"first_person_grant: {clause}")
+        if any(pattern.search(clause) for pattern in _EDITORIAL_QUESTION_GRANT_RES):
+            conflicts.append(f"question_grant: {clause}")
+        if _EDITORIAL_ONE_NUMBER_GRANT_RE.search(clause):
+            conflicts.append(f"global_one_number_cap: {clause}")
+    return conflicts
+
+
 class TestPromptDoesNotFightItself:
     """Autopsy defect 1: HEDGES MUST BIND prescribed what HARD BANS forbids.
 
@@ -2687,6 +2758,80 @@ class TestPromptDoesNotFightItself:
             if hits:
                 failures.append((pid, hits))
         assert failures == [], failures
+
+
+    def test_positive_v5_contract_guard_is_polarity_aware(self):
+        negative = (
+            'BANNED OUTRIGHT: "I passed", "we stayed out", and "Which is it?". '
+            "Never ask a question. No first person."
+        )
+        assert _positive_editorial_contract_conflicts(negative) == []
+
+        positive = (
+            'Mix "I" and "we". A genuine question to the reader is welcome. '
+            "ONE number per post."
+        )
+        hits = _positive_editorial_contract_conflicts(positive)
+        assert any(hit.startswith("first_person_grant:") for hit in hits), hits
+        assert any(hit.startswith("question_grant:") for hit in hits), hits
+        assert any(hit.startswith("global_one_number_cap:") for hit in hits), hits
+
+    def test_actual_v2_prompt_has_no_positive_v5_contract_grants(self):
+        cfg = self._shipped_copywriter_cfg()
+        failures: list[tuple[str, str]] = []
+        for persona_id, card in self._shipped_cards():
+            prompt = cw._v2_system_prompt(cfg, persona_card=card)
+            assert "NO first person" in prompt, persona_id
+            assert "NO question marks" in prompt, persona_id
+            assert "number_budget" in prompt, persona_id
+            assert "OTHER LAWS (from config, obey exactly)" in prompt, persona_id
+            assert "THIS ACCOUNT'S CARD" in prompt, persona_id
+
+            normalized_prompt = " ".join(prompt.split())
+            directives = list(cfg.get("copy_laws") or []) + [card["voice"]]
+            for directive in directives:
+                normalized_directive = " ".join(str(directive).split())
+                assert normalized_directive in normalized_prompt, (
+                    persona_id,
+                    normalized_directive,
+                )
+                for conflict in _positive_editorial_contract_conflicts(directive):
+                    failures.append((persona_id, conflict))
+        assert failures == [], failures
+
+    def test_shipped_examples_do_not_teach_first_person_or_questions(self):
+        failures: list[tuple[str, str, str]] = []
+        for persona_id, card in self._shipped_cards():
+            for line in card["example_lines"]:
+                for violation in cw.voice_v5_violations(line, {}):
+                    lowered = violation.lower()
+                    if "first person" in lowered or "question mark" in lowered:
+                        failures.append((persona_id, line, violation))
+        assert failures == [], failures
+
+    @pytest.mark.parametrize(("family", "text", "ctx"), [
+        ("caption", "$NVDA reclaimed 209. The summer volume shelf is back underneath.",
+         {"type": "chart", "account": "flagship"}),
+        ("stack", "Semis: 4% below highs\nSoftware: 19%\nBanks: 7%",
+         {"type": "theme_list", "account": "kelly"}),
+        ("list", "1. Claims fell to 199k.\n2. GDPNow held 5.8%.\n"
+         "The data did not confirm the slowdown.",
+         {"type": "macro", "account": "kelly"}),
+        ("wire", "🔴 CPI 2.8% YoY, below 3.0% consensus.",
+         {"type": "breaking", "account": "mastermind_news"}),
+        ("macro", "The 2-year held flat after four dissents. "
+         "The bond market had already priced the meeting.",
+         {"type": "macro", "account": "founder"}),
+        ("receipt", "$QCOM T1 hit 9.6%. The runner stopped at 177. Net positive.",
+         {"type": "receipt", "account": "flagship"}),
+    ])
+    def test_v5_contract_holds_across_output_families(self, family, text, ctx):
+        violations = [
+            violation
+            for violation in cw.voice_v5_violations(text, ctx)
+            if "first person" in violation.lower() or "question mark" in violation.lower()
+        ]
+        assert violations == [], (family, violations)
 
     def test_the_card_paragraph_is_scanned_not_exempted(self):
         """MUTATION CHECK. The card head must NOT be a quoting head: feed a card
@@ -3982,3 +4127,125 @@ class TestVoiceCardDistinctness:
                   if "STACKED FACT LIST" in str(
                       (self._cards().get(d) or {}).get("voice_notes") or "")]
         assert others == [], others
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MX-X recovery B1: one compiled item-level editorial contract projection.
+# The projection must expose what the writer was actually given, including
+# explicit unknowns for source/media state that this owner cannot lawfully infer.
+# ─────────────────────────────────────────────────────────────────────────────
+class TestEditorialBriefProjection:
+    @staticmethod
+    def _payload(*, shape="stack", media_context=None, source_as_of="2026-09-19"):
+        ctx = {
+            "account": "kelly",
+            "type": "macro",
+            "shape": shape,
+            "angle": "macro_read",
+            "as_of": "2026-09-20",
+            "signal_date": "2026-09-18",
+            "source_as_of": source_as_of,
+            "top_facts": [
+                {
+                    "id": "print_jobless_claims",
+                    "text": "Jobless claims fell to 199k.",
+                    "numbers": ["199k"],
+                    "count": {"numerator": 199, "denominator": 1},
+                },
+                {
+                    "id": "gdpnow",
+                    "text": "GDPNow held at 5.8%.",
+                    "numbers": ["5.8%"],
+                },
+            ],
+            "numbers_whitelist": ["199k", "5.8%"],
+            "win_rate_str": "61%",
+        }
+        if media_context is not None:
+            ctx["media_context"] = media_context
+        card = {
+            "name": "Kelly",
+            "voice": "mechanism-first macro desk",
+            "example_lines": ["alpha", "beta", "gamma", "delta"],
+        }
+        return cw._v2_item_payload(
+            ctx,
+            persona_card=card,
+            codex_by_account={},
+            memory_by_account={},
+        )
+
+    def test_compiled_brief_has_revision_digest_and_existing_evidence(self):
+        import hashlib
+        import json
+
+        payload = self._payload(
+            media_context={"state": "image_present", "kind": "chart", "path": "/secret"}
+        )
+        brief = payload["editorial_brief"]
+        assert brief["revision"] == cw.EDITORIAL_BRIEF_REVISION
+        assert brief["medium"] == "x"
+        assert brief["audience"] == "market professionals"
+        assert brief["beat"] == "macro_read"
+        assert brief["takeaway"] == "Jobless claims fell to 199k."
+        assert brief["claims"] == [
+            {
+                "claim_ref": "print_jobless_claims",
+                "text": "Jobless claims fell to 199k.",
+                "count": {"numerator": 199, "denominator": 1},
+            },
+            {"claim_ref": "gdpnow", "text": "GDPNow held at 5.8%."},
+        ]
+        assert brief["display_values"] == ["199k", "5.8%"]
+        assert brief["clocks"] == {
+            "observation_date": "2026-09-20",
+            "source_date": "2026-09-19",
+            "plan_public_date": "2026-09-18",
+        }
+        # The writer gets state/kind only. Local paths/URLs are never projected.
+        assert brief["media"] == {
+            "state": "image_present",
+            "kind": "chart",
+            "required": False,
+        }
+        assert brief["uncertainty"] == {"base_rate": "61%"}
+        assert brief["positive_examples"] == ["alpha", "beta", "gamma"]
+        assert "no_fabricated_facts" in brief["prohibitions"]
+        assert "no_performed_first_person" in brief["prohibitions"]
+        assert "no_questions" in brief["prohibitions"]
+
+        canonical = dict(brief)
+        digest = canonical.pop("digest")
+        expected = hashlib.sha256(
+            json.dumps(canonical, sort_keys=True, separators=(",", ":"),
+                       ensure_ascii=False).encode("utf-8")
+        ).hexdigest()
+        assert digest == expected
+
+    def test_missing_source_and_media_stay_explicit_unknown_not_inferred(self):
+        payload = self._payload(shape="caption", media_context=None, source_as_of=None)
+        brief = payload["editorial_brief"]
+        assert brief["clocks"]["source_date"] is None
+        assert brief["clocks"]["plan_public_date"] == "2026-09-18"
+        assert brief["media"] == {"state": "unknown", "required": True}
+        assert "image_present" not in json.dumps(brief["media"])
+
+    def test_contract_receipt_is_additive_on_pass_and_drop(self):
+        payload = self._payload(media_context={"state": "text_only"})
+        receipt = {
+            "revision": payload["editorial_brief"]["revision"],
+            "digest": payload["editorial_brief"]["digest"],
+        }
+        for result in (
+            {"mode": "llm", "text": "copy"},
+            {"mode": "dropped", "stage": "validate", "reasons": ["bad"]},
+        ):
+            stamped = cw._attach_editorial_contract(result, payload)
+            assert stamped["editorial_contract"] == receipt
+            assert stamped["mode"] == result["mode"]
+
+    def test_live_v2_writer_attaches_the_contract_receipt(self):
+        import inspect
+
+        src = inspect.getsource(cw.write_posts_llm_v2)
+        assert "_attach_editorial_contract(" in src
