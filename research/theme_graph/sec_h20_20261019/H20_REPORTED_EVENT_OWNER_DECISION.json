@@ -1,0 +1,35 @@
+{
+  "schema": "company_intelligence.reported_operating_event_decision/v1",
+  "profile": "NVDA_FY2026_H20_DEMAND_LOSS",
+  "adopted_at": "2026-10-19T16:35:00.123390+00:00",
+  "policy_sha256": "3eb4b90a1c9524e8fbb25a4823dd31ab5515c96ea2b38b9e6dbddeb87118a77e",
+  "source": {
+    "accession": "0001045810-26-000021",
+    "reporting_cik": "0001045810",
+    "archive_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+    "raw_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+    "byte_start": 258290,
+    "byte_end": 258509,
+    "span_sha256": "5eb432e03c7e95667e7356e5adc3b4c0ae8f80919d34cba5e6a33b64f85a296c"
+  },
+  "assertion": {
+    "subject_cik": "0001045810",
+    "kind": "reported_h20_demand_loss",
+    "lifecycle": "reported_event",
+    "product": "H20",
+    "reported_occurrence_period": {
+      "year": 2026,
+      "quarter": 1
+    },
+    "occurrence_at": null,
+    "source_report_period": "FY2026",
+    "counterparty_applicability": "unestablished"
+  },
+  "semantic_review": {
+    "decision": "supported_reported_event_in_selected_filing",
+    "reviewed_at": "2026-10-19T16:35:00.123390+00:00",
+    "reviewer": "MarketOntology A native integration 01a153d0-e457-7772-873e-053697b8f231; root 01a128b5-e26b-7b12-94b5-231bfe0b8036",
+    "source_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+    "span_sha256": "5eb432e03c7e95667e7356e5adc3b4c0ae8f80919d34cba5e6a33b64f85a296c"
+  }
+}

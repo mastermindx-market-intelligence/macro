@@ -414,6 +414,8 @@ _KNOWN_REFUSED_STATUSES = frozenset({
 REFUSAL_ORDER = (
     "plan_not_built",   # cleared every gate; only the plan build itself failed
     "already_open",     # cleared every gate; the name already has a live plan
+    "base_after_event",  # cleared every gate; the base re-formed after the signal fired
+    "validation_failed",  # cleared every gate; origination later failed its own data check
     "not_ready",        # the patience statuses that are ALMOST admitted
     "ran_too_far",      # the anti-chase refusal — must outrank the band it co-occurs with
     "stood_down",       # an explicit avoid/exit/blocked stance
@@ -456,6 +458,10 @@ REFUSAL_COPY = {
                        "各项检查都通过 — 但今晚没能形成完整计划"),
     "already_open":   ("Already has a plan running",
                        "已有在跑的计划"),
+    "base_after_event": ("Passed the board's checks — its base re-formed after the signal fired",
+                         "通过了榜单检查 — 但基底在信号触发后重新形成"),
+    "validation_failed": ("Passed the board's checks — tonight's plan data didn't verify",
+                          "通过了榜单检查 — 但今晚的计划数据未能核验"),
     "not_ready":      ("Setting up, but the entry hasn't come",
                        "形态在走，入场点还没到"),
     "ran_too_far":    ("Ran too far — waiting for a pullback",
@@ -952,6 +958,12 @@ def _resolve_origination_clocks(
         )
 
     return recorded_at, price_basis_date, errors
+
+
+#: The error string `_resolve_candidate_signal_dates` emits when a name's base formed after
+#: the tier event that admitted it; the receipt split reads it back — the two must stay in sync.
+FORMATION_POSTDATES_EVENT_RE = re.compile(
+    r"^formation_date '[^']*' postdates tier_event_date '[^']*'$")
 
 
 def _resolve_candidate_signal_dates(
@@ -1501,6 +1513,8 @@ def refusal_receipts(
     open_keys: Iterable[str] | None = (),
     originated_tickers: Iterable[str] | None = None,
     reconstructed_plans: Iterable[Mapping[str, Any]] | None = None,
+    *,
+    validation_failures: Iterable[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Per-name "why not" receipts for every buy-lane row the intake did NOT plan.
 
@@ -1531,7 +1545,14 @@ def refusal_receipts(
     originated tonight" (build_site's case: it knows the gate, not the origination run),
     and then a row that cleared every gate and holds no open plan produces NO receipt at
     all rather than an invented one.  When a set IS passed (build_prophet's case), a
-    cleared row missing from it is disclosed as ``plan_not_built``.
+    cleared row missing from it is disclosed as ``base_after_event`` when
+    ``validation_failures`` (the intake's own lossless record, ``{"ticker","id","stage",
+    "errors"}``) names it with only the clock-provenance error that says the base's own
+    formation postdates the fired tier event, as ``validation_failed`` when the record
+    names it any other way, and otherwise as ``plan_not_built`` — the plan build said no
+    for a reason the intake recorded, or said nothing at all; the cohorts are distinct
+    and all stay disclosed.  ``None``/absent ``validation_failures`` leaves the
+    split where it was: every non-originated cleared row reads ``plan_not_built``.
 
     ``reconstructed_plans`` — the OPEN plans a call site knows were rebuilt after the
     outage rather than originated live (build_site reads them out of the published index;
@@ -1557,6 +1578,25 @@ def refusal_receipts(
         None if originated_tickers is None
         else {str(t or "").strip().upper() for t in originated_tickers}
     )
+    # The intake's OWN record of origination attempts that failed their data checks
+    # (``intake_stats["validation_failures"]``).  Only build_prophet holds it, which is
+    # why it is keyword-only: build_site keeps the historical behaviour untouched.
+    failed_tickers: set[str] = set()
+    # The NAMED clock-provenance cohort inside that record: every error is the one
+    # string that says the base's own formation postdates the fired tier event, so the
+    # generic "plan data didn't verify" line would be true but not the reason (2026-10-21
+    # census §10, option 8.2c — disclosure vocabulary only, the gate keeps refusing).
+    newbase_tickers: set[str] = set()
+    for failure in validation_failures or ():
+        if isinstance(failure, Mapping):
+            failed_ticker = str(failure.get("ticker") or "").strip().upper()
+            if failed_ticker:
+                failed_tickers.add(failed_ticker)
+                errors = failure.get("errors")
+                if (failure.get("stage") == "clock_provenance" and errors
+                        and all(FORMATION_POSTDATES_EVENT_RE.match(str(error))
+                                for error in errors)):
+                    newbase_tickers.add(failed_ticker)
 
     rows: list[dict[str, Any]] = []
     for row in buys:
@@ -1565,12 +1605,19 @@ def refusal_receipts(
         ticker = str(row.get("ticker") or "").strip()
         codes = _refusal_codes(row)
         if not codes:
-            # Cleared every gate.  It is either already running, or it should have become
-            # a plan tonight and did not — and if this call site cannot tell the two
-            # apart it says nothing rather than guessing.
+            # Cleared every gate.  It is already running, or it should have become a plan
+            # tonight and the build left a recorded failure behind, or it simply did not
+            # come together — and if this call site cannot tell those apart it says
+            # nothing rather than guessing.
             key = ticker.upper()
             if key and key in open_tickers:
                 codes = ["already_open"]
+            elif (originated is not None and key and key not in originated
+                    and key in newbase_tickers):
+                codes = ["base_after_event"]
+            elif (originated is not None and key and key not in originated
+                    and key in failed_tickers):
+                codes = ["validation_failed"]
             elif originated is not None and key and key not in originated:
                 codes = ["plan_not_built"]
             else:
@@ -2442,19 +2489,14 @@ def evaluate_entry_zone(
     price_history: "pd.DataFrame | None",
     asof: str,
 ) -> dict[str, Any]:
-    """Nightly re-evaluation of a plan's zone: filled, still live, expired, converted.
+    """Re-evaluate an observed entry-band visit as of a PIT session close.
 
-    THE CONVERSION (§6.9 R3, operator chart review 2026-08-08): a washout-class zone
-    that was never filled by its expiry does NOT die — it converts to a STARTER stance.
-    V-shaped washout recoveries frequently never revisit the band, and a plan that
-    correctly anticipated the turn should not miss the entire move on a technicality.
-    A pullback-class zone in an intact uptrend expires instead: there, "the reset never
-    came" falsifies the premise rather than confirming it.
-
-    PURE FUNCTION over the plan + its PIT tape.  It writes nothing: plan JSONs are
-    immutable publication records and corrections are an append-only overlay, so the
-    converted stance is DERIVED every night and rendered, never back-written into the
-    originating artifact.
+    The zone is created AT the price-basis close; that day's earlier lows
+    cannot be evidence of a subsequent opportunity. A qualified band visit
+    requires either intersecting observed OHLC [low, high] or an actual close
+    INSIDE the band when OHLC is incomplete. The expiry session is inclusive.
+    This is descriptive OHLC evidence, NOT an order fill, a position, a scalar
+    trigger, or authority to grade the separately owned forward ledger.
     """
     zone = plan.get("entry_zone")
     out: dict[str, Any] = {
@@ -2466,39 +2508,72 @@ def evaluate_entry_zone(
         out["reason"] = "plan carries no entry zone (pre-R3 plan)"
         return out
 
-    high = float(zone["high"])
+    # A one-sided or inverted range does not prove an executable band. Reject
+    # it rather than treating every print below an upper bound as a touch.
+    try:
+        low = float(zone["low"])
+        high = float(zone["high"])
+        if not (math.isfinite(low) and math.isfinite(high) and low <= high):
+            raise ValueError("invalid ordered bounds")
+    except (TypeError, ValueError, KeyError):
+        out["reason"] = "entry zone has incomplete or invalid low/high bounds"
+        return out
+
     start = str(zone.get("price_basis_date") or plan.get("price_basis_date") or "")[:10]
     expiry = str(zone.get("expiry_date") or "")[:10]
     out["stance"] = zone.get("stance")
-
-    # FILLED := the tape traded INTO the band (intraday low at or below the band top)
-    # at any point from the plan's price basis onward.  `low` is the honest column;
-    # a close-only store would systematically under-report fills, so it falls back with
-    # the substitution named rather than pretending precision it does not have.
     filled_date = None
-    basis_col = "low"
-    if price_history is not None and not getattr(price_history, "empty", True):
+    fill_basis = "unavailable"
+
+    # Missing basis date must not activate on arbitrarily old data. All
+    # observations after the relevant issuance close are eligible, up to AND
+    # INCLUDING the zone expiry session. Never read a bar after asof.
+    if not start:
+        out["reason"] = "zone issuance date missing: no post-close visit inferred"
+    elif price_history is not None and not getattr(price_history, "empty", True):
         try:
-            frame = price_history[price_history.index >= pd.Timestamp(start)] if start \
-                else price_history
+            basis_date = pd.Timestamp(start)
+            frame = price_history[price_history.index > basis_date]
             frame = frame[frame.index <= pd.Timestamp(asof)]
-            if "low" not in frame.columns:
-                basis_col = "close"
-            series = frame[basis_col].dropna() if basis_col in frame.columns else None
-            if series is not None and not series.empty:
-                hits = series[series <= high]
-                if not hits.empty:
-                    filled_date = str(pd.Timestamp(hits.index[0]).date())
+            if expiry:
+                frame = frame[frame.index <= pd.Timestamp(expiry)]
+            frame = frame.sort_index()
+
+            has_range = "low" in frame.columns and "high" in frame.columns
+            if has_range:
+                # Intersect the WHOLE band, not only the band ceiling. A candle
+                # completely below the band must not count as having traded
+                # INTO it; malformed OHLC is never accepted as a fill.
+                lows = pd.to_numeric(frame["low"], errors="coerce")
+                highs = pd.to_numeric(frame["high"], errors="coerce")
+                hits = frame[(lows <= highs) & (lows <= high) & (highs >= low)]
+                fill_basis = "ohlc_range"
+            elif "close" in frame.columns:
+                # A recorded close IN the band is observable evidence of a
+                # visit. Anything else on partial OHLC is UNKNOWN, not filled.
+                closes = pd.to_numeric(frame["close"], errors="coerce")
+                hits = frame[(closes >= low) & (closes <= high)]
+                fill_basis = "close"
+            else:
+                hits = frame.iloc[:0]
+            if not hits.empty:
+                filled_date = str(pd.Timestamp(hits.index[0]).date())
         except Exception as exc:  # noqa: BLE001
-            out["reason"] = f"zone fill unreadable: {exc}"
-    out["fill_basis"] = basis_col
+            out["reason"] = f"zone visit unreadable: {exc}"
+    out["fill_basis"] = fill_basis
 
     if filled_date is not None:
-        out.update({"state": "filled", "filled": True, "filled_date": filled_date})
+        out.update({
+            "state": "filled", "filled": True, "filled_date": filled_date,
+            "fill_authority": "observation_only_not_execution",
+            "reason": (
+                "observed PIT price range/close intersected the band; "
+                "no order execution or separate trigger confirmation implied"
+            ),
+        })
         return out
 
-    remaining = _business_days_between(asof, expiry) if expiry else None
-    out["sessions_remaining"] = remaining
+    out["sessions_remaining"] = _business_days_between(asof, expiry) if expiry else None
     expired = bool(expiry) and expiry < str(asof)[:10]
     if not expired:
         out["state"] = "live"
@@ -2507,20 +2582,21 @@ def evaluate_entry_zone(
     out["expired"] = True
     if zone.get("converts_on_expiry"):
         out.update({
-            "state": "converted",
-            "converted": True,
+            "state": "converted", "converted": True,
             "stance": ZONE_STANCE_STARTER,
             "reason": (
-                "washout-class zone unfilled at expiry — a V-shaped recovery does not "
-                "revisit its band; the plan converts to a starter stance"),
+                "no verified in-window band visit before expiry; "
+                "washout-class zone converts to a starter OBSERVATION, "
+                "not an order or graded position"
+            ),
         })
     else:
         out.update({
-            "state": "expired",
-            "stance": ZONE_STANCE_WAIT,
+            "state": "expired", "stance": ZONE_STANCE_WAIT,
             "reason": (
-                "pullback-class zone unfilled at expiry — the reset the plan was "
-                "waiting for did not arrive"),
+                "no verified in-window band visit before expiry; "
+                "pullback window ended without eligible observed touch"
+            ),
         })
     return out
 
@@ -3112,10 +3188,17 @@ def _zone_lines_en(
     band = f"{low}–{high}" if entry_zone.get("low") is not None else high
     state = (zone_state or {}).get("state")
 
+    if state == "filled":
+        return [
+            f"A PIT price range or closing print touched the {band} zone. This is not proof"
+            f" of order execution or of the separate closing trigger confirming.",
+            f"Any position remains conditional on the plan's separate trigger and"
+            f" risk rules, including the {inval_str} invalidation boundary.",
+        ]
     if state == "converted":
         return [
-            f"The {band} zone never filled and the move ran without it. Treat this as a"
-            f" starter-size window, not a full entry.",
+            f"No eligible price-band visit was observed before expiry at {band}."
+            f" The washout setup now describes a starter-size window, not a full entry.",
             f"Keep the first piece small and let any pullback do the adding. Exit on a"
             f" close below {inval_str}.",
         ]
@@ -3174,9 +3257,14 @@ def _zone_lines_zh(
     band = f"{low}–{high}" if entry_zone.get("low") is not None else high
     state = (zone_state or {}).get("state")
 
+    if state == "filled":
+        return [
+            f"可验证的日内价格区间或收盘价曾触及 {band}，但不代表订单成交，也不代表独立的收盘触发条件已确认。",
+            f"是否执行仍须独立核实计划触发条件与风险界限，包括 {inval_str} 的失效位。",
+        ]
     if state == "converted":
         return [
-            f"{band} 区间未被回踩，行情已自行走出。此处按试探性小仓位窗口对待，不是完整建仓。",
+            f"到期前未观察到合资格的 {band} 区间触及。此处只描述试探性小仓位窗口，不代表已建仓。",
             f"首笔保持小仓位，后续回调再加。收盘跌破 {inval_str} 即离场。",
         ]
     if state == "expired":
@@ -4079,6 +4167,46 @@ def _compute_stage_tilt(ticker: str, entry_date: str, tilt_inputs: dict) -> tupl
     return horizon_days, stage_tilt
 
 
+def _plan_source_origin(
+    binding: Mapping[str, Any],
+    positions: dict[int, int],
+    row: Any,
+) -> dict[str, Any] | None:
+    """Project the frozen original-producer binding onto ONE originated plan.
+
+    ``positions`` maps the deep-copied buy row OBJECT to its original ``buy[]``
+    index — identity, never a ticker lookup, so duplicate tickers and non-Featured
+    rows keep the exact positions the original producer published.  The returned
+    block carries the whole self-hashed ``source_binding`` unchanged; it is source
+    ORIGIN metadata only, not native authentication: no candidate_key, digest,
+    security_id, episode_id or generation is invented here, and the source's native
+    identity stays unavailable until a future actual native read.
+    """
+    selection_index = positions.get(id(row))
+    if selection_index is None:
+        return None
+    ordered_rows = binding.get("ordered_rows")
+    if not isinstance(ordered_rows, list) or selection_index >= len(ordered_rows):
+        return None
+    referenced = ordered_rows[selection_index]
+    if not isinstance(referenced, Mapping):
+        return None
+    return {
+        "schema": "prophet.plan_source_origin/v1",
+        "owner_ref": "scripts/build_stock_library.py::main",
+        "receipt_kind": "EXACT_DISPLAYED_SOURCE",
+        "source_binding": {
+            **binding,
+            "ordered_rows": [
+                dict(entry) if isinstance(entry, Mapping) else entry
+                for entry in ordered_rows
+            ],
+        },
+        "selection_index": selection_index,
+        "row_receipt": referenced.get("row_receipt"),
+    }
+
+
 def originate_plans(
     standouts_path: str | Path,
     asof: str,
@@ -4087,6 +4215,8 @@ def originate_plans(
     active_keys: set[str] | None = None,
     intake_stats: dict | None = None,
     standouts_doc: Mapping[str, Any] | None = None,
+    *,
+    source_binding: Mapping[str, Any] | None = None,
 ) -> list[dict]:
     """
     Read us_standouts.json, apply the pick rule, and return new
@@ -4111,6 +4241,18 @@ def originate_plans(
                      status, and per-candidate validation failures so the caller can
                      disclose every disposition in its artifact. Never read, only
                      written.
+    source_binding : optional frozen original-producer binding
+                     (``prophet.today_selection_source_binding/v1``) over the SAME
+                     board bytes ``standouts_doc`` deep-copies.  When supplied, every
+                     new plan is stamped with a ``source_origin`` block naming its
+                     ORIGINAL ``buy[]`` position — resolved by object identity before
+                     selection reorders anything, never by a ticker join, so
+                     duplicate tickers and non-Featured rows keep the positions the
+                     producer published.  A binding that does not cover exactly this
+                     board's buy lane is refused at the boundary.  Origin metadata
+                     only: a whole self-hashed ``source_binding`` is not native
+                     authentication and invents no candidate identity fields.
+
     standouts_doc  : optional already-frozen board object.  When supplied, origination
                      deep-copies this object and never re-reads ``standouts_path``.
                      Production uses this to bind every plan to the exact immutable
@@ -4161,6 +4303,117 @@ def originate_plans(
         source_unknown=staleness.get("unknown"),
         source_basis=staleness.get("basis"),
     )
+
+    # ── Prospective Plan source_origin positions (pre-B1 prerequisite) ──
+    # When the frozen original-producer binding is supplied, pin every buy row's
+    # ORIGINAL ``buy[]`` position by OBJECT IDENTITY before the priority/admission
+    # loop runs.  Selection reorders and the policy skips suppress; neither may
+    # renumber what the original producer published, and no ticker is looked up
+    # here.  A binding that does not cover exactly this board's buy lane is
+    # refused at the boundary; a row whose position cannot be resolved later
+    # carries NO source_origin at all rather than an invented one.
+    source_origin_positions: dict[int, int] | None = None
+    if source_binding is not None:
+        if not isinstance(source_binding, Mapping):
+            raise TypeError("source_binding must be a mapping when supplied")
+        binding_rows = source_binding.get("ordered_rows")
+        if not isinstance(binding_rows, list):
+            raise TypeError("source_binding.ordered_rows must be a list when supplied")
+        board_rows = standouts.get("buy")
+        if not isinstance(board_rows, list) or len(board_rows) != len(binding_rows):
+            board_count = len(board_rows) if isinstance(board_rows, list) else 0
+            raise ValueError(
+                "source_binding.ordered_rows does not cover this board's buy[] lane "
+                f"({len(binding_rows) if isinstance(binding_rows, list) else 0} "
+                f"receipts vs {board_count} buy rows)"
+            )
+        # Receipt identity is established HERE, before any policy, sorting or
+        # mutation runs: every ordered receipt must re-hash — with the original
+        # producer's canonical bytes, using the neutral evidence codec with its
+        # single document newline removed — to the ACTUAL board
+        # row at the SAME original ordinal, and the scalar pins must match this
+        # document wherever this document can represent them.  A same-count board
+        # whose rows were replaced or reordered is therefore REFUSED at the
+        # boundary instead of being renumbered with positions the original
+        # producer never published; so is a binding whose own metadata is
+        # malformed.  The raw-byte ``source_sha256`` is NOT recomputed from this
+        # (possibly reconstructed) document — exact raw-byte identity remains the
+        # UPSTREAM retained-snapshot check's job, which re-verifies the gzip copy
+        # against the frozen board before any binding can exist.
+        import hashlib  # noqa: PLC0415
+        from lib.evidence_foundation import canonical_json_bytes  # noqa: PLC0415
+
+        def source_receipt_bytes(value: object) -> bytes:
+            # The producer hashes compact JSON without a document terminator.
+            try:
+                return canonical_json_bytes(value).removesuffix(b"\n")
+            except (TypeError, ValueError) as exc:
+                raise ValueError(f"value is not canonical JSON: {exc}") from exc
+
+        source_sha256 = source_binding.get("source_sha256")
+        if (not isinstance(source_sha256, str)
+                or not source_sha256.startswith("sha256:")
+                or len(source_sha256) != 71
+                or any(c not in "0123456789abcdef" for c in source_sha256[7:])):
+            raise ValueError(
+                "source_binding.source_sha256 must be 'sha256:<64 lowercase hex>'")
+        doc_session = standouts.get("as_of")
+        if (isinstance(doc_session, str)
+                and source_binding.get("market_session") != doc_session):
+            raise ValueError(
+                "source_binding.market_session "
+                f"{source_binding.get('market_session')!r} is not this board's "
+                f"session {doc_session!r}")
+        doc_emit = standouts.get("emit")
+        if isinstance(doc_emit, Mapping):
+            doc_pair = doc_emit.get("pair_id")
+            if isinstance(doc_pair, str) and source_binding.get("pair_id") != doc_pair:
+                raise ValueError(
+                    "source_binding.pair_id "
+                    f"{source_binding.get('pair_id')!r} is not this board's pair "
+                    f"{doc_pair!r}")
+        for ordinal, receipt_row in enumerate(binding_rows):
+            if not isinstance(receipt_row, Mapping):
+                raise ValueError(
+                    f"source_binding.ordered_rows[{ordinal}] must be a mapping")
+            if receipt_row.get("selection_index") != ordinal:
+                raise ValueError(
+                    "source_binding.ordered_rows must pin each row's original "
+                    "ordinal contiguously from 0; entry "
+                    f"{ordinal} carries selection_index "
+                    f"{receipt_row.get('selection_index')!r}")
+            row_receipt = receipt_row.get("row_receipt")
+            if (not isinstance(row_receipt, str)
+                    or not row_receipt.startswith("sha256:")
+                    or len(row_receipt) != 71
+                    or any(c not in "0123456789abcdef" for c in row_receipt[7:])):
+                raise ValueError(
+                    f"source_binding.ordered_rows[{ordinal}].row_receipt must be "
+                    "'sha256:<64 lowercase hex>'")
+            actual_receipt = "sha256:" + hashlib.sha256(
+                source_receipt_bytes(board_rows[ordinal])).hexdigest()
+            if row_receipt != actual_receipt:
+                raise ValueError(
+                    f"source_binding.ordered_rows[{ordinal}].row_receipt does not "
+                    "hash to the actual board row at that original ordinal — the "
+                    "binding is not over this board's buy lane")
+        expected_selection_receipt = "sha256:" + hashlib.sha256(source_receipt_bytes({
+            "source_sha256": source_sha256,
+            "pair_id": source_binding.get("pair_id"),
+            "market_session": source_binding.get("market_session"),
+            "ordered_rows": [
+                {"selection_index": receipt_row.get("selection_index"),
+                 "row_receipt": receipt_row.get("row_receipt")}
+                for receipt_row in binding_rows
+            ],
+        })).hexdigest()
+        if source_binding.get("selection_receipt") != expected_selection_receipt:
+            raise ValueError(
+                "source_binding.selection_receipt does not match the binding "
+                "material it pins")
+        source_origin_positions = {
+            id(row): index for index, row in enumerate(board_rows)
+        }
 
     # ── Pass 1: full admitted ordering → apply the two policy skips ──
     admission_stats: dict[str, Any] = {}
@@ -4398,15 +4651,19 @@ def originate_plans(
             )
             continue
 
-        # Confidence from conviction score (0-100 → capped at 92 in engine)
-        try:
-            confidence = min(float(conv.get("score", 60)), 92.0)
-        except (TypeError, ValueError):
+        # A board conviction is an ORDINAL intake condition, not the
+        # independently defined Prophet management-confidence baseline. The
+        # scientific WP04 review found no calibration or estimand equivalence.
+        # Preserve this raw score on the existing _conviction_score provenance
+        # field; never inject it into plan.confidence or the management model.
+        source_conviction = conv.get("score", 60)
+        if (isinstance(source_conviction, bool)
+                or not isinstance(source_conviction, (int, float))
+                or not math.isfinite(float(source_conviction))
+                or not 0.0 <= float(source_conviction) <= 100.0):
             _record_failure(
-                ticker=ticker,
-                plan_id=plan_id,
-                stage="plan_inputs",
-                errors=[f"conviction.score {conv.get('score')!r} is not numeric"],
+                ticker=ticker, plan_id=plan_id, stage="plan_inputs",
+                errors=[f"conviction.score {source_conviction!r} is not a finite numeric 0..100"],
             )
             continue
 
@@ -4668,6 +4925,9 @@ def originate_plans(
             "horizon_days": plan_horizon_days,  # PSQ-TILT: 45 base × leash (45 or 56)
             "min_hold_days": MIN_HOLD_DAYS_DEFAULT,  # unchanged (10)
             "tranche": 1,
+            # WP04 scientific ruling: the board's ordinal _conviction_score
+            # remains independent from the established management 60 baseline.
+            # No uncalibrated plan.confidence is originated here.
             "option_contract": opt,
             # PSQ-TILT W1 provenance (provisional; display data field, not copy).
             "stage_tilt": stage_tilt,
@@ -4736,6 +4996,15 @@ def originate_plans(
             "entry_zone": entry_zone,
             "early_turn": early_turn_block,
         }
+
+        # Prospective source_origin: stamped ONLY on this NEW plan dict, BEFORE
+        # the existing validator sees it.  Historical plans never gain the key,
+        # and the binding's own ordered receipt is repeated, never recomputed.
+        if source_origin_positions is not None:
+            source_origin = _plan_source_origin(
+                source_binding, source_origin_positions, b)
+            if source_origin is not None:
+                plan["source_origin"] = source_origin
 
         if government_revenue_ctx:
             plan["government_revenue_context"] = government_revenue_ctx

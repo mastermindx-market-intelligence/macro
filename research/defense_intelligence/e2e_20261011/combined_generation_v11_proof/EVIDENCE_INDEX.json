@@ -1,0 +1,35 @@
+{
+  "schema": "defense.evidence_index.v1",
+  "files": [
+    {
+      "path": "COMMITTED_VERIFY.log",
+      "bytes": 164,
+      "sha256": "2d29b5a601aa0792ebca4ecaa99b4662c4d2ef261da54ad67cc6c35dc47745e0"
+    },
+    {
+      "path": "ROOT_PROOF_ADJUDICATION.json",
+      "bytes": 1155,
+      "sha256": "1a1ad9a773a921f44097897ed45dd3d14dc3af6b5180da3d05d277baf2962d39"
+    },
+    {
+      "path": "final-candidate-proof.log.collection.sealed-62e3a53fd10ebd32",
+      "bytes": 12685,
+      "sha256": "62e3a53fd10ebd3259bbe0bb7690ae739fbf920b367c39615bc2d1b296c57a74"
+    },
+    {
+      "path": "final-candidate-proof.log.sealed-e662859727a9f8b7",
+      "bytes": 9901,
+      "sha256": "e662859727a9f8b7df73dac5abb1724e5465dd327289309805b7d70795b84544"
+    },
+    {
+      "path": "final-candidate-proof.log.xml.sealed-420608473c2f5222",
+      "bytes": 17414,
+      "sha256": "420608473c2f52226f8718ce579e2e1d4a694edb374f53c73be0975b9feff65e"
+    },
+    {
+      "path": "final-candidate-proof.receipt.json",
+      "bytes": 855099,
+      "sha256": "81b542a9689b4cfd3f363428a131c19a585038722a70dd318b7c97798191c107"
+    }
+  ]
+}

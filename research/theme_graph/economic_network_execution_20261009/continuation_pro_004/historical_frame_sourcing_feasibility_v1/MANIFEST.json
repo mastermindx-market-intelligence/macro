@@ -1,0 +1,60 @@
+{
+  "schema": "research.frozen_packet_manifest.v1",
+  "status": "FROZEN_READ_ONLY_RESEARCH_PACKET",
+  "freeze_clock_observed_utc": "2026-10-09T12:00:12Z",
+  "clock_basis": "clock.curr_time observation immediately after final package validation; not source-publication or acquisition evidence",
+  "D": "2026-09-30",
+  "K": "2026-10-09T00:00:00Z",
+  "contents": [
+    {
+      "path": "lanes/historical_frame_sourcing_feasibility_v1/ACQUISITION_BOUNDARY.json",
+      "bytes": 6427,
+      "sha256": "58ee2bb388600736d8c6a5a0a03b6dbcf79bade9dc8a8b1f81a5274b2356beb3"
+    },
+    {
+      "path": "lanes/historical_frame_sourcing_feasibility_v1/ARTIFACT_VALIDATION.json",
+      "bytes": 752,
+      "sha256": "885266c38054f4faceb61310e3188260ff6d4ffb0ec028c683cf9d8cb660ae43"
+    },
+    {
+      "path": "lanes/historical_frame_sourcing_feasibility_v1/FEASIBILITY_MATRIX.json",
+      "bytes": 13709,
+      "sha256": "9ded041e781dbb60dbf2d91073920771956469b31050c273ad05cbe1e0705cdd"
+    },
+    {
+      "path": "lanes/historical_frame_sourcing_feasibility_v1/HISTORICAL_FRAME_SOURCING_FEASIBILITY.md",
+      "bytes": 19423,
+      "sha256": "e725b42de5f577177c3e2cf22944c667b7c12b56aeb2af2477b182f3af13d6ab"
+    },
+    {
+      "path": "lanes/historical_frame_sourcing_feasibility_v1/INPUT_BINDINGS.json",
+      "bytes": 2307,
+      "sha256": "8803a91b5cbfa1b9a555eb3fb7a4e713cf229c6342d9b1a7ed0e37f10aaf7870"
+    },
+    {
+      "path": "lanes/historical_frame_sourcing_feasibility_v1/PRIMARY_SOURCE_REGISTER.json",
+      "bytes": 40690,
+      "sha256": "2cd4982e2d822e7cbd7ea41c86f2d3e6317443c657bae000164606b6e75a394e"
+    },
+    {
+      "path": "lanes/historical_frame_sourcing_feasibility_v1/validate_package.py",
+      "bytes": 3367,
+      "sha256": "2830325a65627efc4800fed01e9f17d23846715ec187024d54be23e743f85427"
+    }
+  ],
+  "manifest_self_hash": "excluded from manifest; compute from final file bytes for handoff",
+  "source_count": 35,
+  "matrix_route_count": 13,
+  "limitations": [
+    "No exact Canadian D eligible frame or count observed",
+    "Customer data entitlement not established",
+    "Primary-provider search-only/blocked originals distinguished",
+    "Current retrieval cannot establish historical public availability by K",
+    "Raw HTTP bytes not retained; raw response hashes null",
+    "Saved excerpts only have representation digests",
+    "Original policy v1 reviewed; corrected/adopted policy must govern future acquisition",
+    "No census, bulk securities/price download, selection, procurement, messaging or native/Git/application mutation"
+  ],
+  "validation_result": "PASS",
+  "next_boundary": "ACQUISITION_BOUNDARY.json: finite existing-owner entitlement and metadata check, then only authorized exact historical witness; not an automatic collector/job"
+}

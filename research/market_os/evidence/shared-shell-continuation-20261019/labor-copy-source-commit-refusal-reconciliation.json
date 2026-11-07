@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-20T15:53:13.237599+00:00",
+  "earlier_pid": 43815,
+  "earlier_exit": 1,
+  "failure": "FileNotFoundError reading labor-copy-proof-lineage.json at source-commit.py line14, before staging or any commit/evidence mutation",
+  "cause": "Commit precondition invoked while lineage process41455 was still completing; no source write occurred.",
+  "lineage_now_complete": {
+    "pid": 41455,
+    "exit": 0,
+    "sha256": "a5a4e0f6b52b61752b70e7d3c63d0d613e8174b4fbc46c9675561ead749c1a31"
+  },
+  "head_unchanged": true,
+  "index_unchanged": true,
+  "source_commit_receipt_absent": true,
+  "next": "Execute unchanged fenced source-commit script once"
+}

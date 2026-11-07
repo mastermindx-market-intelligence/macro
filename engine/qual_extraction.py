@@ -457,6 +457,45 @@ def quote_span_verified(
     return False
 
 
+def propose_quote_units(text: str) -> list[str]:
+    """Propose conservative raw context-unit slices for deterministic selection.
+
+    Append-only helper for the private selector contract.  Candidate slices are
+    cut only where the existing period/terminal predicates declare a sentence or
+    body context boundary, so every proposal is an exact original substring
+    whose internal text is never rewritten, token-joined, normalized, or
+    re-wrapped.  Proposals are candidates only: callers must admit each one
+    independently with the unchanged
+    ``quote_span_verified(text, unit, require_complete_clause=True)`` and must
+    omit any candidate that fails (or that exceeds the caller's quote-length
+    bound) rather than repairing, shortening, or re-splicing it.
+    """
+    if not isinstance(text, str):
+        raise ValueError("text must be a string")
+    units: list[str] = []
+    start = 0
+    index = 0
+    length = len(text)
+    while index < length:
+        char = text[index]
+        ends_unit = (
+            char == "." and _period_ends_context_unit(text, index)
+        ) or (
+            char in _CITATION_CONTEXT_BOUNDARIES
+            and _terminal_ends_context_unit(text, index)
+        )
+        if ends_unit:
+            unit = text[start:index + 1].strip()
+            if unit:
+                units.append(unit)
+            start = index + 1
+        index += 1
+    tail = text[start:].strip()
+    if tail:
+        units.append(tail)
+    return units
+
+
 # --------------------------------------------------------------------------- #
 # reply-cache (sha-keyed, determinism kit — same body → same extraction)
 # --------------------------------------------------------------------------- #

@@ -320,3 +320,86 @@ def test_t13_copy_budgets():
         assert len(tokens) <= 14
         assert "watch" in row["plain_en"].lower() or "don't chase" in row["plain_en"].lower()
         assert len(row["plain_zh"]) <= 20
+
+
+_PREFIX_DIRS = {"WS": "workstreams", "DEC": "decisions", "DSC": "discoveries"}
+
+
+def _copy_registry_sources_to_tmp(tmp_path: Path, data: dict) -> None:
+    cfg = tmp_path / "config"
+    cfg.mkdir(parents=True, exist_ok=True)
+    (cfg / "verdict_preservation_registry.json").write_text(json.dumps(data), encoding="utf-8")
+    for row in data["rows"]:
+        p = tmp_path / row["source_path"]
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text((REPO / row["source_path"]).read_text(encoding="utf-8"), encoding="utf-8")
+
+
+def test_t14_owner_ref_colon_form_resolves():
+    from engine.verdict_preservation import _OWNER_REF_RE
+
+    data = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    for row in data["rows"]:
+        owner_ref = row["owner_ref"]
+        assert _OWNER_REF_RE.fullmatch(owner_ref)
+        prefix, key = owner_ref.split(":", 1)
+        if prefix == "DNR":
+            dnr = (REPO / "research" / "DO_NOT_REBUILD.md").read_text(encoding="utf-8")
+            assert f"| {key} |" in dnr
+            continue
+        subdir = _PREFIX_DIRS[prefix]
+        record_path = REPO / "agentos" / subdir / f"{prefix}-{key}.md"
+        assert record_path.is_file()
+        text = record_path.read_text(encoding="utf-8")
+        assert f"key: {key}" in text.splitlines()
+        if prefix == "WS":
+            parts = text.split("---", 2)
+            assert len(parts) >= 3
+            fm = parts[1]
+            owns = False
+            in_owns = False
+            for line in fm.splitlines():
+                if line.strip() == "owns_paths:":
+                    in_owns = True
+                    continue
+                if in_owns:
+                    if line.startswith("  - "):
+                        prefix_path = line[4:].strip()
+                        if row["source_path"].startswith(prefix_path):
+                            owns = True
+                            break
+                    elif line and not line.startswith(" "):
+                        in_owns = False
+            assert owns
+
+
+def test_t15_owner_ref_invalid_fails_closed(tmp_path: Path):
+    from engine.verdict_preservation import build_verdict_preservation
+
+    data = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    _copy_registry_sources_to_tmp(tmp_path, data)
+    assert build_verdict_preservation(tmp_path)["available"] is True
+
+    bad_values = [
+        "",
+        "macro PR #6805 (Prophet V4 handoff)",
+        "ws:prophet-regime-timeframe-research",
+        "WS:",
+        "WS:PROPHET REGIME",
+    ]
+    for bad in bad_values:
+        trial = json.loads(json.dumps(data))
+        trial["rows"][0]["owner_ref"] = bad
+        _copy_registry_sources_to_tmp(tmp_path, trial)
+        assert build_verdict_preservation(tmp_path) == {"available": False}
+
+
+def test_t16_owner_ref_only_in_receipt():
+    from engine.verdict_preservation import build_verdict_preservation
+
+    needle = "WS:PROPHET-REGIME-TIMEFRAME-RESEARCH"
+    html = _render(verdict_preservation=build_verdict_preservation(REPO))
+    sec = _vp_section(html)
+    assert sec.count(needle) == 8
+    stripped = re.sub(r'<dl class="vp-receipt">.*?</dl>', "", sec, flags=re.DOTALL)
+    assert stripped.count(needle) == 0

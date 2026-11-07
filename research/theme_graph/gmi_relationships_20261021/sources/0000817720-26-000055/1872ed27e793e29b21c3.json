@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-10T21:25:50Z",
+ "accession": "0000817720-26-000055",
+ "cik": "0000817720",
+ "doc_byte_length": 1875971,
+ "doc_sha256": "d8cd914f29821b0d7d4fdc030a185c1d839cbe4f77e078495cc32f50abb2a5bb",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-10",
+ "form": "10-K",
+ "period_of_report": "2026-06-27",
+ "primary_document": "syna-20260627.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 231949,
+  "byte_start": 231664,
+  "normalized": "In January 2025, we acquired certain assets and obtained non-exclusive licenses relating to Broadcom Inc.’s (“Broadcom”) Wi-Fi technology. This transaction is intended to accelerate our Edge AI strategy and next-generation products and technology for the IoT markets.",
+  "normalized_sha256": "3de977a3b5d73044908e54ecc50214ee56069cf3f33d4e23c227cec7a9c32faf",
+  "raw": "In January 2025, we acquired certain assets and obtained non-exclusive licenses relating to Broadcom Inc.&#8217;s (&#8220;Broadcom&#8221;) Wi-Fi technology. This transaction is intended to accelerate our Edge AI strategy and next-generation products and technology for the IoT markets.",
+  "raw_sha256": "1872ed27e793e29b21c309601276d09950bae2442ea55918e58cf81d961ab9ec"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/817720/000081772026000055/syna-20260627.htm",
+ "xbrl_contexts": []
+}
