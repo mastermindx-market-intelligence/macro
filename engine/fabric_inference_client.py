@@ -45,7 +45,7 @@ AUTO_BINDING_SCHEMA = "mastermind.fabric_application_binding.v2"
 EXACT_INSPECTION_SCHEMA = "mastermind.fabric_application_inspection.v3"
 EXACT_BINDING_SCHEMA = "mastermind.fabric_application_binding.v3"
 AUTO_POOLS = frozenset({"go", "bailian", "codex-native", "claude-native",
-                        "glm", "minimax", "grok", "cursor", "ocfree"})
+                        "glm", "minimax", "grok", "cursor", "ocfree", "deepseek"})
 MAX_NATIVE_TOKENS = 10 ** 12
 _CALL_KEYS = frozenset({"model", "messages", "system", "tools", "tool_choice",
                         "max_tokens", "temperature", "stop_sequences", "request_id"})
@@ -639,8 +639,8 @@ def _auto_route_metadata(value, inspection, maximum):
     if ((value["pool"] == "go" and (recipe is not None or value["protocol"] != "chat"))
             or value["pool"] != "go" and (type(recipe) is not str
                 or re.fullmatch(r"[0-9a-f]{64}", recipe) is None)
-            or value["pool"] == "bailian" and value["protocol"] != "responses"
-            or value["pool"] not in {"go", "bailian"} and value["protocol"] != "harness"):
+            or value["pool"] in {"bailian", "deepseek"} and value["protocol"] != "responses"
+            or value["pool"] not in {"go", "bailian", "deepseek"} and value["protocol"] != "harness"):
         _refuse("fabric_auto_route_invalid", unknown=True)
     return json.loads(_canonical_auto(value))
 

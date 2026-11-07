@@ -10,7 +10,7 @@ import pytest
 from admin import server
 from engine import provider_production_modes as owner
 from engine.neuralweb import key_pool
-from tests.test_fabric_admin_pool_view import observation, metadata_binding  # noqa: F401
+from tests.test_fabric_admin_pool_view import observation, metadata_binding, legacy_observation  # noqa: F401
 from tests.test_fabric_application_binding import binding  # noqa: F401
 
 
@@ -44,10 +44,13 @@ def admin(tmp_path, monkeypatch, observation):
     server._clear_response_cache()
 
 
-def test_authentication_precedes_cached_model_desk_and_forced_read(admin):
+@pytest.mark.parametrize("pool_count", [9, 10])
+def test_authentication_precedes_cached_model_desk_and_forced_read(admin, legacy_observation, pool_count):
     _, reader, get = admin
+    if pool_count == 9:
+        reader.read.return_value = legacy_observation
     first = get()
-    assert first[0] == 200 and first[1]["ok"] and len(first[1]["fabric"]["pools"]) == 9
+    assert first[0] == 200 and first[1]["ok"] and len(first[1]["fabric"]["pools"]) == pool_count
     assert get()[2]["X-Admin-Cache"] == "HIT" and reader.read.call_count == 1
     assert get(authenticated=False)[0] == 401
     assert get(authenticated=False, force=True)[0] == 401
@@ -99,7 +102,7 @@ def test_unavailable_metadata_does_not_hide_other_model_desk_evidence(admin):
     reader.read.side_effect = RuntimeError("secret transport detail must not escape")
     code, body, _ = get()
     assert code == 200 and body["ok"] and not body["fabric"]["available"]
-    assert body["lanes"] and len(body["fabric"]["pools"]) == 9
+    assert body["lanes"] and len(body["fabric"]["pools"]) == 10
     assert "secret transport detail" not in json.dumps(body)
 
 

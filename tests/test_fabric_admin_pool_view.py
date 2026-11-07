@@ -47,7 +47,7 @@ def test_projection_preserves_native_clock_and_owns_copied_fields(observation):
     fresh["pools"][0]["models"][0]["ledger_room"] = 99
     assert observation["pools"][0]["models"][0]["ledger_room"] == 1
     unknown = capacity.fabric_admin_pool_projection()
-    assert len(unknown["pools"]) == 9 and not unknown["available"]
+    assert len(unknown["pools"]) == 10 and not unknown["available"]
     assert all(p["configured_accounts"] is None for p in unknown["pools"])
 
 
@@ -139,7 +139,7 @@ def test_recorded_key_snapshot_never_discovers_credentials(tmp_path, monkeypatch
     rows = key_pool.usage_snapshot(tmp_path, recorded_only=True)
     assert rows and all(row["present"] is None for row in rows)
     panel = floor.models(tmp_path)
-    assert panel["ok"] and len(panel["fabric"]["pools"]) == 9
+    assert panel["ok"] and len(panel["fabric"]["pools"]) == 10
     assert not calls.called
 
 
@@ -157,7 +157,7 @@ def test_recorded_cooling_is_independent_of_unknown_presence(tmp_path, monkeypat
 def test_selected_or_invalid_host_remains_exclusive_and_desk_renderable(tmp_path, monkeypatch, selection):
     monkeypatch.setenv("MM_PROVIDER_APPLICATION_MODE", selection)
     panel = floor.models(tmp_path)
-    assert panel["ok"] and len(panel["fabric"]["pools"]) == 9
+    assert panel["ok"] and len(panel["fabric"]["pools"]) == 10
     assert all(row["first_choice"] == "fabric" and row["provider_order"] == ["fabric"]
                and row["fabric_route"]["state"] == "held" for row in panel["lanes"])
 
@@ -213,7 +213,10 @@ def test_metadata_failure_is_bounded_never_unknown_and_never_retried(endpoint, f
     assert time.monotonic() - start < 2.5
 
 
-def test_real_renderer_has_nine_groups_escapes_values_and_never_upgrades_stale(observation):
+@pytest.mark.parametrize("pool_count", [9, 10])
+def test_real_renderer_handles_versioned_groups_and_never_upgrades_stale(observation, legacy_observation, pool_count):
+    if pool_count == 9:
+        observation = legacy_observation
     source = (Path(__file__).resolve().parents[1] / "admin/static/app.js").read_text()
     block = source[source.index("function fabricPoolViewHtml("):source.index("/* ---- X LANES", source.index("function fabricPoolViewHtml("))]
     data = {"ok": True, "lanes": [{"name": "<unsafe>", "first_choice": "fabric",
@@ -232,8 +235,105 @@ process.stdout.write(JSON.stringify({initial,calls,clears}));})();'''
     result = subprocess.run(["node", "-e", script], input=json.dumps(data), text=True, capture_output=True, timeout=10)
     assert result.returncode == 0, result.stderr
     rendered = json.loads(result.stdout)
-    for pool in capacity.FABRIC_ADMIN_POOLS: assert f"<h3>{pool} " in rendered["initial"]
-    assert "stale · 9 pools" in rendered["initial"] and "fresh at last read" not in rendered["initial"]
+    for row in observation["pools"]: assert f'<h3>{row["pool"]} ' in rendered["initial"]
+    assert ("<h3>deepseek " in rendered["initial"]) is (pool_count == 10)
+    assert f"stale · {pool_count} pools" in rendered["initial"] and "fresh at last read" not in rendered["initial"]
     assert "&lt;unsafe&gt;" in rendered["initial"] and "<unsafe>" not in rendered["initial"]
     assert "1970-01-01T00:16:40.000Z" in rendered["initial"]
     assert rendered["calls"] == ["/api/marketing/models", "/api/marketing/models?force=1"] and rendered["clears"] == 1
+
+
+def test_legacy_metadata_retains_nine_pools_without_synthesizing_deepseek(legacy_observation):
+    observation = legacy_observation
+    projected = capacity.fabric_admin_pool_projection(observation, now=1001)
+    assert projected["schema"] == "mastermind.fabric_admin_pool_view.v1"
+    assert tuple(row["pool"] for row in projected["pools"]) == LEGACY_POOL_NAMES
+    assert projected["observed_at"] == observation["observed_at"]
+    projected["pools"][0]["configured_accounts"] = 50
+    assert observation["pools"][0]["configured_accounts"] == 2
+
+
+def test_deepseek_metadata_does_not_promote_unqualified_accounts_or_invent_quota(observation):
+    observation["scope"]["bound_pool"] = "deepseek"
+    projected = capacity.fabric_admin_pool_projection(observation, now=1001)
+    row = projected["pools"][-1]
+    assert projected["schema"] == "mastermind.fabric_admin_pool_view.v2"
+    assert row["pool"] == "deepseek" and row["application_state"] == "unqualified"
+    assert row["models"] == [] and row["model_coverage"] == "unobserved"
+    assert row["blockers"] == ["application_transport_unqualified"]
+    assert projected["execution_authorized"] is False
+    assert projected["requires_fresh_admission"] is True
+    unknown = capacity.fabric_admin_pool_projection()["pools"][-1]
+    assert unknown["pool"] == "deepseek" and unknown["configured"] is None
+    assert unknown["configured_accounts"] is None and unknown["held_leases"] is None
+
+
+@pytest.mark.parametrize("fault", [
+    "v1-ten", "v2-nine", "v1-deepseek-scope", "missing-middle", "duplicate",
+    "reordered", "eleventh", "unknown-successor", "schema-type", "deepseek-ledger",
+])
+def test_versioned_pool_vocabulary_is_closed(observation, fault):
+    if fault == "v1-ten":
+        observation["schema"] = capacity.FABRIC_ADMIN_LEGACY_SCHEMA
+    elif fault == "v2-nine":
+        observation["pools"].pop()
+    elif fault == "v1-deepseek-scope":
+        observation["schema"] = capacity.FABRIC_ADMIN_LEGACY_SCHEMA
+        observation["pools"].pop()
+        observation["scope"]["bound_pool"] = "deepseek"
+    elif fault == "missing-middle":
+        observation["pools"].pop(3)
+    elif fault == "duplicate":
+        observation["pools"][-1] = copy.deepcopy(observation["pools"][0])
+    elif fault == "reordered":
+        observation["pools"][-1], observation["pools"][-2] = observation["pools"][-2:]
+    elif fault == "eleventh":
+        row = copy.deepcopy(observation["pools"][-1])
+        row["pool"] = "future-provider"
+        observation["pools"].append(row)
+    elif fault == "unknown-successor":
+        observation["schema"] = "mastermind.fabric_admin_pool_view.v3"
+    elif fault == "schema-type":
+        observation["schema"] = []
+    else:
+        row = observation["pools"][-1]
+        row["models"] = copy.deepcopy(observation["pools"][0]["models"])
+        row["model_coverage"] = "bound_transport"
+        row["models"][0].update(model="deepseek-flash", protocol="responses")
+    with pytest.raises(ValueError, match="fabric_admin_view_invalid"):
+        capacity.validate_fabric_admin_pool_view(observation)
+
+# Frozen v1 peer document. Do not derive its schema or vocabulary from the
+# current projection: this fixture must continue to represent an older service.
+LEGACY_POOL_NAMES = ("go", "glm", "minimax", "bailian", "grok", "cursor",
+                     "codex-native", "claude-native", "ocfree")
+
+
+@pytest.fixture
+def legacy_observation():
+    pools = [{
+        "pool": pool, "configured": True, "enabled": True,
+        "configured_accounts": 2, "enabled_accounts": 1, "held_leases": 1,
+        "capacity_basis": "account_concurrency", "application_state": "unqualified",
+        "models": [], "model_coverage": "unobserved",
+        "blockers": ["application_transport_unqualified"],
+    } for pool in LEGACY_POOL_NAMES]
+    pools[0].update(application_state="configured", model_coverage="bound_transport",
+        blockers=[], models=[{
+            "model": "fixture-model", "protocol": "chat", "transport_state": "qualified",
+            "capabilities": {"text": True, "tools": True, "vision": False,
+                             "upstream_streaming": False},
+            "application_state": "configured", "ledger_room": 1,
+            "capacity_state": "broker_ledger_only", "blockers": [],
+        }])
+    return {
+        "schema": "mastermind.fabric_admin_pool_view.v1",
+        "observed_at": 1000.0, "stale_after": 1005.0,
+        "execution_authorized": False, "requires_fresh_admission": True,
+        "scope": {"workload": "site_interactive", "bound_pool": "go"},
+        "coverage": {"inventory": "canonical_accounts", "ledger": "held_rows",
+                     "transports": "application_gateway", "provider_quota": "unobserved"},
+        "source": {key: "a" * 64 for key in
+                   ("source_generation", "ingress_sha256", "gateway_sha256", "accounts_sha256")},
+        "pools": pools,
+    }

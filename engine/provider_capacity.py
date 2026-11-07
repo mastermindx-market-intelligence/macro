@@ -23,9 +23,13 @@ SCHEMA = "mastermind.provider_capacity.v1"
 
 # A wire vocabulary for the native owner's aggregate observation, not slots in
 # the legacy capacity schema or an account/model/placement registry.
-FABRIC_ADMIN_SCHEMA = "mastermind.fabric_admin_pool_view.v1"
-FABRIC_ADMIN_POOLS = ("go", "glm", "minimax", "bailian", "grok", "cursor",
-                      "codex-native", "claude-native", "ocfree")
+# Each schema owns its complete ordered vocabulary. Legacy observations are
+# retained verbatim; recognizing a pool never qualifies its transport or grants.
+FABRIC_ADMIN_LEGACY_SCHEMA = "mastermind.fabric_admin_pool_view.v1"
+FABRIC_ADMIN_SCHEMA = "mastermind.fabric_admin_pool_view.v2"
+FABRIC_ADMIN_LEGACY_POOLS = ("go", "glm", "minimax", "bailian", "grok", "cursor",
+                             "codex-native", "claude-native", "ocfree")
+FABRIC_ADMIN_POOLS = FABRIC_ADMIN_LEGACY_POOLS + ("deepseek",)
 _FABRIC_ADMIN_STATES = {"configured", "held", "unqualified", "unobserved"}
 _FABRIC_ADMIN_BLOCKERS = {
     "account_inventory_unobserved", "pool_disabled", "no_configured_accounts",
@@ -58,24 +62,27 @@ def validate_fabric_admin_pool_view(value: Any) -> dict:
 
     require(type(value) is dict and set(value) == {"schema", "observed_at", "stale_after",
         "execution_authorized", "requires_fresh_admission", "scope", "coverage", "source", "pools"})
-    require(value["schema"] == FABRIC_ADMIN_SCHEMA and value["execution_authorized"] is False
-            and value["requires_fresh_admission"] is True)
+    require(member(value["schema"], {FABRIC_ADMIN_LEGACY_SCHEMA, FABRIC_ADMIN_SCHEMA})
+            and value["execution_authorized"] is False and value["requires_fresh_admission"] is True)
+    expected_pools = (FABRIC_ADMIN_LEGACY_POOLS if value["schema"] == FABRIC_ADMIN_LEGACY_SCHEMA
+                      else FABRIC_ADMIN_POOLS)
     for key in ("observed_at", "stale_after"):
         require(type(value[key]) in (int, float) and 0 < value[key] <= 253402300799 and math.isfinite(value[key]))
     require(0 < value["stale_after"] - value["observed_at"] <= 30)
     scope = value["scope"]
     require(type(scope) is dict and set(scope) == {"workload", "bound_pool"}
             and type(scope["workload"]) is str and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", scope["workload"]) is not None
-            and scope["bound_pool"] in ("go", "bailian"))
+            and scope["bound_pool"] in ("go", "bailian", "deepseek")
+            and scope["bound_pool"] in expected_pools)
     require(value["coverage"] == {"inventory": "canonical_accounts", "ledger": "held_rows",
                                    "transports": "application_gateway", "provider_quota": "unobserved"})
     source = value["source"]
     require(type(source) is dict and set(source) == {"source_generation", "ingress_sha256", "gateway_sha256", "accounts_sha256"}
             and all(type(v) is str and re.fullmatch(r"[0-9a-f]{64}", v) is not None for v in source.values()))
     pools = value["pools"]
-    require(type(pools) is list and len(pools) == len(FABRIC_ADMIN_POOLS))
+    require(type(pools) is list and len(pools) == len(expected_pools))
     total_models = 0
-    for expected, row in zip(FABRIC_ADMIN_POOLS, pools):
+    for expected, row in zip(expected_pools, pools):
         require(type(row) is dict and set(row) == {"pool", "configured", "enabled", "configured_accounts",
             "enabled_accounts", "capacity_basis", "held_leases", "application_state", "models", "model_coverage", "blockers"})
         require(row["pool"] == expected and member(row["application_state"], _FABRIC_ADMIN_STATES)
