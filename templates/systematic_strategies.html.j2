@@ -1,0 +1,335 @@
+{# Systematic Strategies — research-only workspace.
+
+   Renders one compiled `systematic_research.v1` artifact projected through the
+   allowlist in `scripts/render_systematic_strategies.py`. Everything shown here
+   is a real contract field: there is no placeholder chart, no sample result and
+   no current recommendation.
+
+   Tier discipline (docs/DESIGN_DOCTRINE.md):
+     Tier 1 GLANCE — title, subtitle, stance, the evidence summary, and each
+       candidate's state / horizon / next unmet prerequisite. Plain words only.
+     Tier 3 STUDY — every measured number lives inside a native <details>
+       disclosure under "View evidence": historical record, forward testing,
+       paper trading, then method and provenance.
+
+   Two timestamps, because they answer different questions and neither implies
+   the other. The INFORMATION CUTOFF is the newest session the record actually
+   saw; GENERATED is when the record was compiled. A page carrying only the
+   generated stamp lets a record compiled yesterday from month-old data read as
+   "up to date", which is the one inference this page must never permit. When the
+   record cannot be read, NEITHER timestamp is printed: stamping the renderer's
+   own clock into a <time datetime=...> would present "now" as the age of a
+   research record that does not exist.
+
+   Every control on this page's own body is a native <details>/<summary>
+   disclosure, which is keyboard-operable and announces its own expanded state.
+   The page adds no script of its own and no inert button; the one <script> tag
+   is the shared theme.js the header requires.
+
+   The shared header ships a language toggle, so every string this page authors
+   carries both languages through t(). Artifact-authored content — reasons,
+   limitations, instruments, blockers — is data written by the producer and is
+   shown verbatim; it is not machine-translated into a language it never had. #}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(navigator.language||'').slice(0,2);if(l==='zh')document.documentElement.setAttribute('data-lang','zh');}catch(e){}</script>
+<title>Systematic Strategies — Research Workspace — MastermindX</title>
+{% include "_seo_head.html.j2" %}
+<link rel="stylesheet" href="theme.css">
+{# The shared header's appearance is owned by navigation-refresh.css (theme.css
+   only raises its z-index), and its behaviour by theme.js. Take all three or the
+   mega-menu renders expanded and every control is dead markup. #}
+<link rel="stylesheet" href="navigation-refresh.css">
+<link rel="stylesheet" href="{{ page_css }}">
+<script src="{{ nav_prefix }}theme.js" defer></script>
+</head>
+<body class="ss-page">
+{% set nav_search_placeholder_en = "Search any stock — US, China, HK, Canada & more…" %}
+{% set nav_search_placeholder_zh = "搜索任意股票 — 美股、A 股、港股、加股等…" %}
+{% include "_site_nav.html.j2" %}
+
+<main class="ss-workspace" id="ss-workspace">
+
+  <header class="ss-head">
+    <div class="ss-head-copy">
+      <p class="ss-eyebrow">{{ t('Research workspace', '研究工作区') }}</p>
+      <h1 class="ss-title">{{ t('Systematic Strategies', '系统化策略') }}</h1>
+      <p class="ss-deck">{{ t('Test small edges. Keep only evidence.', '小额优势，逐一验证。只保留证据。') }}</p>
+    </div>
+    {# An attribute is plain text. t() emits markup, and the dual-span mechanism
+       cannot operate inside an attribute — the spans would be read aloud as
+       literal characters. Attributes stay English-only, exactly as
+       scripts/check_title_i18n.py requires for the rest of the site. #}
+    <div class="ss-stance" role="group" aria-label="Current stance">
+      <p class="ss-stance-label">{{ t('Stance', '立场') }}</p>
+      <p class="ss-stance-word">{{ t(report.stance, report.stance_zh) }}</p>
+      <p class="ss-stance-detail">{{ t(report.stance_detail, report.stance_detail_zh) }}</p>
+    </div>
+  </header>
+
+  {# Two timestamps and one mode stamp (Doctrine Law 4). Both are omitted, not
+     filled in, when the record did not state them. #}
+  <p class="ss-meta">
+    <span class="ss-meta-mode">{{ t(report.mode_label, report.mode_label_zh) }}</span>
+    <span class="ss-meta-dot" aria-hidden="true">·</span>
+    <span>{{ t('Information cutoff', '信息截止') }}
+      {%- if report.as_of_iso %} <time datetime="{{ report.as_of_iso }}">{{ report.as_of_text }}</time>
+      {%- else %} {{ t('Not available', '不可用') }} {%- endif %}</span>
+    <span class="ss-meta-dot" aria-hidden="true">·</span>
+    <span>{{ t('Generated', '生成时间') }}
+      {%- if report.generated_at_iso %} <time datetime="{{ report.generated_at_iso }}">{{ report.generated_at_text }}</time>
+      {%- else %} {{ t('Not available', '不可用') }} {%- endif %}</span>
+    <span class="ss-meta-dot" aria-hidden="true">·</span>
+    <span>{{ t('Live orders disabled', '实盘下单已禁用') }}</span>
+  </p>
+
+  {# Staleness is judged against the published US cash session slate at the
+     explicit reference clock, not against a weekday rule and not against the
+     artifact's own "ready" claim. A stale record stays readable — it is real
+     measured history — but it is labelled as a historical reconstruction and
+     never as current data. #}
+  {% if report.freshness.state == 'stale' %}
+  <section class="ss-panel ss-panel-alert" aria-labelledby="ss-stale-title">
+    <h2 class="ss-panel-title" id="ss-stale-title">{{ t('This record is out of date', '该记录已过期') }}</h2>
+    <p class="ss-panel-lead">{{ t(report.freshness.detail, report.freshness.detail_zh) }}</p>
+    <p class="ss-footnote">{{ t('A historical result may remain visible below, but it is not a current signal and nothing here is approved for capital.', '下方仍可查看历史结果，但它不是当前信号，且此处没有任何内容获得资金批准。') }}</p>
+  </section>
+  {% endif %}
+
+  {% if not report.contract_ok %}
+  {# Fail-closed: the record could not be read, so this page names what is
+     missing instead of showing a candidate it cannot vouch for. #}
+  <section class="ss-panel ss-panel-alert" aria-labelledby="ss-blocked-title">
+    <h2 class="ss-panel-title" id="ss-blocked-title">{{ t('This record could not be read', '无法读取该记录') }}</h2>
+    <p class="ss-panel-lead">{{ t('Nothing is shown until the research record is rebuilt in the format this page reads. No results have been estimated in its place.', '在研究记录按本页可读取的格式重建之前，本页不展示任何内容。也没有以任何估算结果代替。') }}</p>
+    <h3 class="ss-subtitle">{{ t('What is missing', '缺少什么') }}</h3>
+    <ul class="ss-missing">
+      {% for reason in report.blocked_reasons %}
+      <li>{{ t(reason, report.blocked_reasons_zh[loop.index0]) }}</li>
+      {% endfor %}
+      <li>{{ t('A compiled research record stamped at or before the reference clock.', '一份时间戳不晚于参考时钟的已编译研究记录。') }}</li>
+    </ul>
+    <p class="ss-footnote">{{ t('No strategy is approved for capital. This page never presents trading controls.', '没有任何策略获得资金批准。本页从不展示交易控件。') }}</p>
+  </section>
+  {% else %}
+
+  <section class="ss-summary" aria-labelledby="ss-summary-title">
+    <h2 class="ss-visually-hidden" id="ss-summary-title">{{ t('Evidence summary', '证据摘要') }}</h2>
+    <dl class="ss-stats">
+      <div class="ss-stat">
+        <dt>{{ t('Candidates under study', '研究中的候选') }}</dt>
+        <dd>{{ report.candidate_count }}</dd>
+      </div>
+      <div class="ss-stat">
+        <dt>{{ t('Reviewed against past data', '已用历史数据复核') }}</dt>
+        <dd>{{ report.evaluated_count }}</dd>
+      </div>
+      <div class="ss-stat ss-stat-key">
+        <dt>{{ t('Approved for capital', '已批准投入资金') }}</dt>
+        <dd>{{ report.capital_eligible_count }}</dd>
+      </div>
+      <div class="ss-stat">
+        <dt>{{ t('Inputs', '输入数据') }}</dt>
+        {# A record's own "ready" claim is not echoed when the record is out of
+           date: the page must not display healthy current data on the strength
+           of a word the record itself cannot support. #}
+        <dd class="ss-stat-text">{% if report.freshness.state == 'stale' %}{{ t('Stale', '已过期') }}{% else %}{{ t(report.data_health.state_label, report.data_health.state_label_zh) }}{% endif %}</dd>
+      </div>
+      <div class="ss-stat">
+        <dt>{{ t('Latest complete session', '最近完整交易日') }}</dt>
+        <dd class="ss-stat-text">{{ report.data_health.last_session if report.data_health.last_session else t('Not available', '不可用') }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  {# Data-health reasons stay visible whether or not candidates are shown: a
+     stale page that still has cards must still say the inputs are stale. #}
+  {% if report.data_health.reasons %}
+  <section class="ss-notes ss-notes-blocked" aria-labelledby="ss-inputs-title">
+    <h2 class="ss-subtitle" id="ss-inputs-title">{{ t('Why the inputs are blocked', '输入受阻的原因') }}</h2>
+    <ul class="ss-missing">
+      {% for reason in report.data_health.reasons %}<li>{{ reason }}</li>{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if report.data_notes %}
+  <section class="ss-notes" aria-labelledby="ss-notes-title">
+    <h2 class="ss-subtitle" id="ss-notes-title">{{ t('Data quality', '数据质量') }}</h2>
+    <ul class="ss-missing">
+      {% for note in report.data_notes %}
+      <li>{{ note }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if report.strategies %}
+  <section class="ss-candidates" aria-labelledby="ss-candidates-title">
+    <h2 class="ss-section-title" id="ss-candidates-title">{{ t('Candidates', '候选策略') }}</h2>
+    {% for s in report.strategies %}
+    <article class="ss-card" aria-labelledby="ss-card-{{ s.id }}">
+
+      <div class="ss-card-head">
+        <div>
+          <h3 class="ss-card-title" id="ss-card-{{ s.id }}">{{ t(s.label, s.label_zh) }}</h3>
+          <p class="ss-card-why">{{ s.reason }}</p>
+        </div>
+        <span class="ss-chip ss-chip--{{ s.state }}">{{ t(s.state_label, s.state_label_zh) }}</span>
+      </div>
+
+      <dl class="ss-card-facts">
+        <div class="ss-fact">
+          <dt>{{ t('Stance', '立场') }}</dt>
+          <dd>{{ s.stance }}</dd>
+        </div>
+        <div class="ss-fact">
+          <dt>{{ t('Horizon', '持有期') }}</dt>
+          <dd>{{ s.horizon_text }}</dd>
+        </div>
+        <div class="ss-fact ss-fact-wide">
+          <dt>{{ t('Next unmet prerequisite', '下一项未满足的前提') }}</dt>
+          <dd>{{ s.next_prerequisite }}</dd>
+        </div>
+      </dl>
+
+      <details class="ss-evidence">
+        <summary class="ss-evidence-toggle">
+          <span class="ss-evidence-word">{{ t('View evidence', '查看证据') }}</span>
+        </summary>
+
+        <div class="ss-evidence-body">
+
+          {# ── 1. Historical record — the only place measured numbers appear ── #}
+          <section class="ss-detail" aria-labelledby="ss-hist-{{ s.id }}">
+            <h4 class="ss-detail-title" id="ss-hist-{{ s.id }}">{{ t('Historical record', '历史记录') }}</h4>
+            <p class="ss-detail-state">{{ t(s.historical.state_label, s.historical.state_label_zh) }}</p>
+            <dl class="ss-kv">
+              <div><dt>{{ t('Sample start', '样本开始') }}</dt><dd>{{ s.historical.sample_start if s.historical.sample_start else t('Not available', '不可用') }}</dd></div>
+              <div><dt>{{ t('Sample end', '样本结束') }}</dt><dd>{{ s.historical.sample_end if s.historical.sample_end else t('Not available', '不可用') }}</dd></div>
+              <div><dt>{{ t('Observations', '观测数') }}</dt><dd>{{ s.observations }}</dd></div>
+            </dl>
+            <table class="ss-metrics">
+              <caption class="ss-visually-hidden">{{ t('Measured results for', '实测结果：') }} {{ t(s.label, s.label_zh) }}, {{ t('net of the costs shown', '已扣除下列成本') }}</caption>
+              <thead>
+                <tr><th scope="col">{{ t('Measure', '指标') }}</th><th scope="col" class="ss-num">{{ t('Value', '数值') }}</th></tr>
+              </thead>
+              <tbody>
+                {% for row in s.historical.metrics %}
+                <tr{% if not row.available %} class="ss-metric-off"{% endif %}>
+                  <th scope="row"{% if row.note %} title="{{ row.note }}"{% endif %}>{{ t(row.label, row.label_zh) }}</th>
+                  <td class="ss-num">{{ row.value }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {# The convention is stated, not implied: the figure is a bare number
+               and the bare number cannot carry its own unit. #}
+            <p class="ss-detail-note">{{ t(report.turnover_convention, report.turnover_convention_zh) }}</p>
+            {% if s.historical.limitations %}
+            <h5 class="ss-detail-subtitle">{{ t('Costs and limitations', '成本与局限') }}</h5>
+            <ul class="ss-list">
+              {% for item in s.historical.limitations %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+          </section>
+
+          {# ── 2. Forward testing ─────────────────────────────────────────────── #}
+          <section class="ss-detail" aria-labelledby="ss-pros-{{ s.id }}">
+            <h4 class="ss-detail-title" id="ss-pros-{{ s.id }}">{{ t('Forward testing', '前瞻检验') }}</h4>
+            <p class="ss-detail-state">{{ t(s.prospective.state_label, s.prospective.state_label_zh) }}</p>
+            <dl class="ss-kv">
+              <div><dt>{{ t('Forward records registered', '已登记前瞻记录') }}</dt><dd>{{ s.prospective.registered }}</dd></div>
+              <div><dt>{{ t('Forward records graded', '已评级前瞻记录') }}</dt><dd>{{ s.prospective.graded }}</dd></div>
+            </dl>
+            <p class="ss-detail-note">{{ t('A historical result is not a forward result. Nothing here is graded against live outcomes yet.', '历史结果不等于前瞻结果。此处尚无任何内容针对实盘结果进行评级。') }}</p>
+          </section>
+
+          {# ── 3. Paper trading ───────────────────────────────────────────────── #}
+          <section class="ss-detail" aria-labelledby="ss-paper-{{ s.id }}">
+            <h4 class="ss-detail-title" id="ss-paper-{{ s.id }}">{{ t('Paper trading', '模拟交易') }}</h4>
+            <p class="ss-detail-state">{{ t(s.paper.state_label, s.paper.state_label_zh) }}</p>
+            <p class="ss-detail-note">{{ t('No account is connected to this workspace, and no order can be placed from this page.', '本工作区未连接任何账户，且无法从本页下达任何订单。') }}</p>
+          </section>
+
+          {# ── 4. Method and provenance ───────────────────────────────────────── #}
+          <section class="ss-detail" aria-labelledby="ss-method-{{ s.id }}">
+            <h4 class="ss-detail-title" id="ss-method-{{ s.id }}">{{ t('Method and provenance', '方法与来源') }}</h4>
+            <dl class="ss-kv">
+              <div><dt>{{ t('Input name', '输入名称') }}</dt><dd>{{ s.name if s.name else t('Not available', '不可用') }}</dd></div>
+              <div><dt>{{ t('Family', '策略族') }}</dt><dd>{{ s.family if s.family else t('Not available', '不可用') }}</dd></div>
+              <div><dt>{{ t('Model version', '模型版本') }}</dt><dd class="ss-mono">{{ report.versions.code_revision }}</dd></div>
+              <div><dt>{{ t('Data version', '数据版本') }}</dt><dd class="ss-mono">{{ report.versions.data_revision }}</dd></div>
+            </dl>
+            {% if s.instruments %}
+            <h5 class="ss-detail-subtitle">{{ t('Instruments', '标的') }}</h5>
+            <ul class="ss-list ss-list-inline">
+              {% for item in s.instruments %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+            <h5 class="ss-detail-subtitle">{{ t('What would invalidate this', '失效条件') }}</h5>
+            {% if s.invalidation %}
+            <ul class="ss-list">
+              {% for item in s.invalidation %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% else %}
+            <p class="ss-detail-note">{{ t('The record names no invalidator for this candidate.', '该记录未为本候选列出任何失效条件。') }}</p>
+            {% endif %}
+            {% if s.blockers %}
+            <h5 class="ss-detail-subtitle">{{ t('Recorded blockers', '已记录的阻碍') }}</h5>
+            <ul class="ss-list">
+              {% for item in s.blockers %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+          </section>
+
+        </div>
+      </details>
+    </article>
+    {% endfor %}
+  </section>
+  {% else %}
+  {# Useful empty state: name what is missing, never an empty plot. #}
+  <section class="ss-panel ss-panel-empty" aria-labelledby="ss-empty-title">
+    <h2 class="ss-panel-title" id="ss-empty-title">{{ t('No candidates to show', '无可展示的候选') }}</h2>
+    <p class="ss-panel-lead">{{ t('This workspace only shows what the research record actually measured. It does not estimate results when a record is missing.', '本工作区只展示研究记录实际测量的内容。记录缺失时不会估算结果。') }}</p>
+    <h3 class="ss-subtitle">{{ t('What is missing', '缺少什么') }}</h3>
+    {# The input-readiness panel above already lists any data-health reasons, so
+       this list only carries what is still unaccounted for. #}
+    {% if report.data_health.reasons %}
+    <p class="ss-panel-lead">{{ t('The reasons are listed above. Until they clear, this workspace will keep showing candidates as blocked rather than as measured results.', '原因已列于上方。在其消除之前，本工作区会持续将候选显示为受阻，而非实测结果。') }}</p>
+    {% elif report.limitations %}
+    <ul class="ss-missing">
+      {% for item in report.limitations %}<li>{{ item }}</li>{% endfor %}
+    </ul>
+    {% else %}
+    <ul class="ss-missing">
+      <li>{{ t('A compiled research record with at least one evaluated candidate.', '一份至少包含一个已评估候选的已编译研究记录。') }}</li>
+    </ul>
+    {% endif %}
+    <p class="ss-footnote">{{ t('No strategy is approved for capital. This page never presents trading controls.', '没有任何策略获得资金批准。本页从不展示交易控件。') }}</p>
+  </section>
+  {% endif %}
+
+  <section class="ss-panel ss-panel-quiet" aria-labelledby="ss-limits-title">
+    <h2 class="ss-panel-title" id="ss-limits-title">{{ t('What this page does not establish', '本页无法证明的事项') }}</h2>
+    {% if report.limitations %}
+    <ul class="ss-list">
+      {% for item in report.limitations %}<li>{{ item }}</li>{% endfor %}
+    </ul>
+    {% else %}
+    <p class="ss-panel-lead">{{ t('The research record lists no further limitations beyond those shown with each candidate.', '除各候选下方已列出的内容外，研究记录未列出更多局限。') }}</p>
+    {% endif %}
+  </section>
+
+{% endif %}  {# closes: the artifact could not be read #}
+
+</main>
+</body>
+</html>
