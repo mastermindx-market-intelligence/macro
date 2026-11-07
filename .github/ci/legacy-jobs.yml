@@ -16263,6 +16263,8 @@ jobs:
       - "scripts/workflow_run_source.py"
       - "tests/test_append_only_base_fence.py"
       - "tests/test_push_retry.py"
+      - "scripts/check_risk_envelope_pair.py"
+      - "tests/test_risk_envelope_pair.py"
       - "tests/test_options_index_lock_identity.py"
       - "tests/test_qledger_publication.py"
       - "tests/test_qledger_publish_binding.py"
@@ -16350,7 +16352,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml pandas pyarrow requests
       - name: push-retry policy tests (classification, budgets, jitter, real git races)
-        run: python -m pytest tests/test_push_retry.py -q
+        run: python -m pytest tests/test_push_retry.py tests/test_risk_envelope_pair.py -q
       # This is the existing code-gate owner of the shared Git publication
       # index boundary. Execute the M2-heredoc regression and exact inode
       # ownership refusals here; flow-surface retains its data-gate closure.

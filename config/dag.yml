@@ -1123,6 +1123,12 @@ lanes:
       - id: checkpoint_core_gold_render_audit
         module: scripts.audit_china_gold_premium
         args: [--strict-render]
+      - id: checkpoint_core_risk_envelope_worktree
+        module: scripts.check_risk_envelope_pair
+        args: [--root, "."]
+      - id: checkpoint_core_risk_envelope_index
+        module: scripts.check_risk_envelope_pair
+        args: [--root, ".", --git-ref, INDEX]
       - id: checkpoint_core_commodity_recovery
         module: scripts.check_commodity_publication
         args: [--heal-from, "$COMMODITY_ACCEPTED"]
@@ -1138,6 +1144,9 @@ lanes:
       - id: checkpoint_core_commodity_candidate
         module: scripts.check_commodity_publication
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$qledger_push_candidate"]
+      - id: checkpoint_core_risk_envelope_commit
+        module: scripts.check_risk_envelope_pair
+        args: [--root, ".", --git-ref, "$qledger_push_candidate"]
       - id: check_builder_failstreaks
         module: scripts.check_builder_failstreaks
         note: >
@@ -1869,6 +1878,12 @@ lanes:
       - id: publish_final_gold_render_audit
         module: scripts.audit_china_gold_premium
         args: [--strict-render]
+      - id: publish_final_risk_envelope_worktree
+        module: scripts.check_risk_envelope_pair
+        args: [--root, "."]
+      - id: publish_final_risk_envelope_index
+        module: scripts.check_risk_envelope_pair
+        args: [--root, ".", --git-ref, INDEX]
       - id: publish_final_commodity_recovery
         module: scripts.check_commodity_publication
         args: [--heal-from, "$COMMODITY_ACCEPTED"]
@@ -1884,6 +1899,9 @@ lanes:
       - id: publish_final_commodity_candidate
         module: scripts.check_commodity_publication
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$qledger_push_candidate"]
+      - id: publish_final_risk_envelope_commit
+        module: scripts.check_risk_envelope_pair
+        args: [--root, ".", --git-ref, "$qledger_push_candidate"]
       - id: build_feeds
         module: scripts.build_feeds
         note: non-fatal; per-ticker JSON feeds
