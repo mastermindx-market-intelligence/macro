@@ -24,12 +24,22 @@ waves:
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
   Receipt composition is merged in PR9851; reuse it without rebuilding.
-  Remaining acceptance requires lawful settlement of original v4 effects and
-  actual runtime/containment evidence, an original expectation binding for the
-  known-answer/future-dependent output control, and historical PIT availability
-  evidence. Preserve current holds; this record authorizes no replay, new canary,
-  data acquisition or candidate admission.
+  Qualify the implemented RF10758 staged-cycle adapter, private S01 carrier,
+  inert per-plan engine provider and bounded canonical comparison acquisition
+  against protected main on the same source carrier. Retain the protected
+  code/data scanner split and measure the additive packing/closure composition;
+  no held10759/10674 repair bytes or CI waiver. Old-head review and CI do not
+  qualify the changed candidate. Both new Fabric leaves failed terminally;
+  root completed permitted local source work without retrying those operations.
+  After source qualification, complete the original good/bad staged cycle only
+  with actual containment/identity evidence and authentic expectation binding,
+  then unchanged historical/PIT and prospective obligations. Preserve original
+  V4/worktree unknown effects and release holds. Source readiness is not runtime,
+  candidate or scientific acceptance; no replay, canary or acquisition is granted.
 artifacts:
+  - research/research_factory_codegen/2026-10-12/FABLE_MASTERPLAN.md
+  - agentos/handoffs/RESEARCH-FACTORY-CODEGEN-2026-11-05.md
+  - engine/research_factory/adapter_codegen.py
   - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
   - research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.md
   - research/research_factory_codegen/2026-10-12/SOURCE_ACCEPTANCE.md
@@ -60,32 +70,42 @@ landmines:
     the documented protection-read gap. Do not change repository controls or credentials.
 ---
 
-Current programme state — 2026-10-20 (Vancouver).
+Current programme frontier — 5 November 2026 (Vancouver).
 
-Product [PR9463](https://github.com/mastermindx-market-intelligence/macro/pull/9463)
-is merged at3cae8c860468a198f40ed7cc3047b0fed7266613 and deployed. The retained
-production observation proves authenticated experiments200, anonymous401,
-disabled/empty diagnostics, ENdark/ZHlight and no console errors. This is the
-existing admin workflow and access boundary, not a live research-candidate run.
+The original programme remains incomplete. Accepted component work includes
+PR9463 authenticated disabled diagnostics, PR9487 runtime source, PR9938 calendar,
+PR9851 advisory receipt composition, and PR10644 private advisory source inspection.
+Their accepted evidence is retained and must not be redone without an invalidator.
+None proves admitted candidate execution or scientific acceptance.
 
-Runtime source [PR9487](https://github.com/mastermindx-market-intelligence/macro/pull/9487)
-is merged at070e5a5d1531b342bdb94e856f5c7ba90bd18211. Exact-head CI39255429345
-completed successfully; all76 intended paths matched the merge and freshly
-fetched default. Fixed-workload repair and archive/mountinfo source reviews
-were accepted. Chris authorized quarantine of original archive/mountinfo
-reviews and release of those review reservations; their original operations,
-unknowns and refused reads remain preserved. Reuse accepted source evidence.
+The source rebase found a missing producer-to-consumer edge: no source-owned caller
+joins staging accounting, prefix attempts, fixed numerical evaluation and review.
+The source-owned adapter now joins these components. Whole-set accounting precedes
+attempts; actual readback binds each variant; unknown attempts stop progression;
+existing or partially recorded generation requires reconciliation with no replay.
+The default public path refuses before any effect. Initial affected checks passed
+93 tests plus24 subtests, and12 targeted cycle checks passed after replay and
+composition-retention repairs. Independent native Sol review accepted this source
+scope. Source publication, S01 repair, real runtime and P01 acceptance remain separate.
+The S01 carrier is now integrated with108 affected checks and independent source
+review. Both new Fabric source deliveries terminated78 with no result; their original
+evidence is preserved. Root completed source in the existing workspace. No standalone
+metadata release is counted as P01 progress.
 
-Original physical operation rf-fixed-smoke-runsc-01a1333c-v4 ended controller77.
-The exact retained861-byte response was consumed but contains no artifact
-manifest or physical carrier receipt. Provider final, installation, smoke and
-cleanup remain unconfirmed. The1200-second task bound was exceeded at1742seconds;
-no later recovery erases that breach. Chris authorized delivery of the existing
-same-operation retrieval request to the current Fabric owner onOctober20;
-that communication is not retry, transfer, alternate-read or replacement
-permission. Former Fabric Integration is parked and names Fable in Claude6
-as successor; current supported owner delivery is being resolved. No physical
-recovery or absence is claimed from this record.
+The next source connection fixes the concrete engine-lifetime mismatch: distinct
+preflighted prefix plans receive distinct single-use canonical engines, retaining
+the original CID before start and stopping on refused/unknown effects. The actual
+staged synthetic caller uses this provider;253 affected checks pass after independent
+review repairs for shared permission fencing and hostile argv equality. Its executor
+is explicitly injected, never supplied by default, and cannot issue qualification.
+The existing fixed-workload allowlist and generic Docker dormancy are unchanged.
+This is P2.T6.S2 source readiness, not physical candidate execution.
+
+Original physical V4 remains EFFECT_UNKNOWN after controller77 and the recorded
+1200-second commission overrun. No provider final, install/smoke/cleanup or absence
+claim is available. Original workspace creation36875c9c also remains unresolved.
+Neither operation is replayed or replaced. Source work now uses the independently
+assigned protected edd6 checkout; old runtime/lease/refusal custody is unchanged.
 
 The receipt-composition increment is merged in
 [PR9851](https://github.com/mastermindx-market-intelligence/macro/pull/9851)
@@ -100,18 +120,14 @@ producer. No original expectation binding exists for the good/bad output control
 so that control remains NOT_RUN. Physical/resource controls remain NOT_RUN;
 execution, qualification and scientific authority stay disabled.
 
-After lawful incident settlement, accepted host/resource/helper/cleanup
-composition is still required. A recovered fixed-canary PASS is not candidate
-admission. P01 still owes actual staging identities, a known-answer primitive
-and future-dependent refusal control; injected nonfinite output tests prove
-plumbing only. Qualified historical data availability (commercial rights are settled by
-DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023), full counted trial/Vault and
-evaluator composition, an honest historical/null result, naturally accrued
-prospective observations and continuity/rollback remain programme obligations.
-Existing runtime/admission engines remain dormant. No new OS/Fabric owner,
-ledger, Vault, scheduler, data rights or trading authority is created.
+Commercial rights for the named providers remain APPROVED_BY_CHAIRMAN_ATTESTATION.
+Historical/PIT availability, effective identity/protection, containment/resources,
+full accounting/evaluator integration, authentic prospective freeze/maturity and
+scientific inference remain separate unfinished obligations. Draft10264 is held.
+The actual engineering milestone is P01's admitted known-answer primitive and
+expected-cause invalid control, then P02/P03 and R01/R02 under unchanged budgets.
 
-Material operational evidence and original effects remain in the existing
+The original task tree is linked in artifacts. Operational effects, exact child
+returns and source identities remain in the existing root checkpoint at
 `/Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/ROOT_CONTINUATION.json`.
-The source-release verification, original response hash and production observation
-are retained there; this record grants no execution or physical acceptance.
+Agent OS records do not grant execution, transfer custody or establish liveness.

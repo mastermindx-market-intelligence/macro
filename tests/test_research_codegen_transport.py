@@ -19,7 +19,7 @@ import sys
 
 import pytest
 
-from engine.research_codegen import transport
+from engine.research_codegen import transport, plan_engine_provider
 from engine.research_codegen.transport import (
     AttemptState,
     EngineCommandResult,
@@ -159,6 +159,164 @@ class FakeEngine:
 
 def subcommands(engine):
     return [call["argv"][1] for call in engine.calls]
+
+
+def test_plan_provider_selects_distinct_single_use_canonical_engines(plan):
+    selected, receipts = [], []
+    def factory(original):
+        engine = FakeEngine(script={"inspect": [absent(CID)]}, expected_cid=CID)
+        selected.append((original, engine))
+        return engine
+    def retain(original, cid):
+        receipts.append((transport.plan_identity(original), cid))
+        return True
+    provider = plan_engine_provider.PlanBoundEngineProvider(executor_for_plan=factory, retain_container=retain)
+    second = TransportPlan(**plan_kwargs(operation_id="second-prefix"))
+    engines = [provider.engine_for(p) for p in (plan, second)]
+    assert engines[0] is not engines[1]
+    for p, engine in zip((plan, second), engines):
+        result = TransportOrchestrator(engine).execute(TransportSession(p))
+        assert type(result) is TransportAttempt and result.cleanup_confirmed
+        assert result.workload_confirmed and not result.reconciliation_required
+        with pytest.raises(TransportStateError, match="replacement"):
+            provider.engine_for(p)
+    assert len(receipts) == 2
+    assert [e._creates for _, e in selected] == [1, 1]
+
+
+@pytest.mark.parametrize("change", [{}, {"memory_bytes": 1024}])
+def test_plan_provider_cannot_reselect_same_operation_with_changed_plan(plan, change):
+    calls = []
+    provider = plan_engine_provider.PlanBoundEngineProvider(
+        executor_for_plan=lambda p: calls.append(p) or FakeEngine(), retain_container=lambda p, c: True)
+    provider.engine_for(plan)
+    with pytest.raises(TransportStateError):
+        provider.engine_for(TransportPlan(**plan_kwargs(**change)))
+    assert calls == [plan]
+
+
+def test_plan_provider_is_dormant_without_executor_and_retains_failed_selection(plan):
+    with pytest.raises(TransportDormantError):
+        plan_engine_provider.PlanBoundEngineProvider().engine_for(plan)
+    with pytest.raises(TransportPlanError, match="receipt sink"):
+        plan_engine_provider.PlanBoundEngineProvider(executor_for_plan=lambda p: FakeEngine())
+    provider = plan_engine_provider.PlanBoundEngineProvider(
+        executor_for_plan=lambda p: None, retain_container=lambda p, c: True)
+    with pytest.raises(TransportPlanError):
+        provider.engine_for(plan)
+    with pytest.raises(TransportStateError):
+        provider.engine_for(plan)
+
+
+def test_plan_bound_engine_refuses_foreign_commands_and_bounds_before_delegation(plan):
+    fake = FakeEngine()
+    provider = plan_engine_provider.PlanBoundEngineProvider(
+        executor_for_plan=lambda p: fake, retain_container=lambda p, c: True)
+    engine = provider.engine_for(plan)
+    def call(argv, **kwargs):
+        return engine.run(argv, **{"deadline_seconds": 30, "output_cap_bytes": 4096, **kwargs})
+    altered = TransportPlan(**plan_kwargs(memory_bytes=1024))
+    for argv in (build_create_argv(altered), build_start_argv(plan, CID)):
+        with pytest.raises(TransportPlanError): call(argv)
+    for limits in ({"deadline_seconds": 121}, {"deadline_seconds": float("nan")},
+                   {"deadline_seconds": True}, {"output_cap_bytes": 4097}):
+        with pytest.raises(TransportPlanError): call(build_create_argv(plan), **limits)
+    assert fake.calls == []
+    call(build_create_argv(plan))
+    for argv in (build_start_argv(plan, FOREIGN_CID), build_remove_argv(altered, FOREIGN_CID)):
+        with pytest.raises(TransportPlanError): call(argv)
+    with pytest.raises(TransportStateError): call(build_create_argv(plan))
+    assert subcommands(fake) == ["create"]
+    call(build_start_argv(plan, CID))
+    with pytest.raises(TransportStateError): call(build_start_argv(plan, CID))
+
+
+@pytest.mark.parametrize("receipt", [False, "raise", "permission"])
+def test_plan_bound_engine_never_starts_without_caller_cid_receipt(plan, receipt):
+    fake = FakeEngine(script={"inspect": [absent(CID)]})
+    def retain(p, cid):
+        assert cid == CID and subcommands(fake) == ["create"]
+        if receipt == "raise": raise OSError("receipt unavailable")
+        if receipt == "permission": raise PermissionError("receipt denied")
+        return False
+    engine = plan_engine_provider.PlanBoundEngineProvider(
+        executor_for_plan=lambda p: fake, retain_container=retain).engine_for(plan)
+    result = TransportOrchestrator(engine).execute(TransportSession(plan))
+    assert not result.workload_confirmed and result.reconciliation_required
+    assert "start" not in subcommands(fake)
+    assert result.cleanup_confirmed == (receipt != "permission")
+    if receipt == "permission": assert subcommands(fake) == ["create"]
+
+
+@pytest.mark.parametrize("kind", ["uncertain", "lookalike", "wrong_cid", "permission"])
+def test_plan_bound_create_uncertainty_cannot_guess_cid_or_replace_engine(plan, kind):
+    from dataclasses import make_dataclass, fields, asdict
+    result = ok(stdout=CID_STDOUT)
+    if kind == "uncertain": result = EngineCommandResult(None, b"", b"", 30, 4096)
+    if kind == "lookalike":
+        Other = make_dataclass("EngineCommandResult", [(f.name, object) for f in fields(result)])
+        result = Other(**asdict(result))
+    if kind == "wrong_cid": result = ok(stdout=CID_STDOUT, observed=FOREIGN_CID)
+    if kind == "permission":
+        result = EngineCommandResult(1, b"", b"denied", 30, 4096, permission_refused=True)
+    fake = FakeEngine(script={"create": [result]})
+    provider = plan_engine_provider.PlanBoundEngineProvider(
+        executor_for_plan=lambda p: fake, retain_container=lambda p, c: True)
+    engine = provider.engine_for(plan)
+    attempt = TransportOrchestrator(engine).execute(TransportSession(plan))
+    assert attempt.state is AttemptState.CREATE_UNCERTAIN and attempt.container_id is None
+    with pytest.raises(transport.TransportError): provider.engine_for(plan)
+    with pytest.raises(transport.TransportError):
+        engine.run(build_remove_argv(plan, CID), deadline_seconds=30, output_cap_bytes=4096)
+    assert subcommands(fake) == ["create"]
+
+
+def test_plan_bound_commands_reject_hostile_equality_before_delegation(plan):
+    class Hostile(str):
+        def __eq__(self, other):
+            raise AssertionError("user equality must not run")
+        def __hash__(self):
+            raise AssertionError("user hashing must not run")
+    class ObjectHook:
+        def __eq__(self, other):
+            raise AssertionError("object equality must not run")
+    fake = FakeEngine()
+    engine = plan_engine_provider.PlanBoundEngineProvider(
+        executor_for_plan=lambda p: fake, retain_container=lambda p, c: True).engine_for(plan)
+    original = build_create_argv(plan)
+    for bad in (Hostile("/untrusted/executable"), ObjectHook()):
+        with pytest.raises(TransportPlanError, match="plain strings"):
+            engine.run((bad, *original[1:]), deadline_seconds=30, output_cap_bytes=4096)
+    assert fake.calls == []
+
+
+@pytest.mark.parametrize("where", ["factory", "executor", "result", "receipt"])
+def test_plan_provider_permission_refusal_freezes_preselected_siblings_and_future_selection(plan, where):
+    first, sibling = FakeEngine(), FakeEngine()
+    if where == "executor": first.script["create"] = [PermissionError("denied")]
+    if where == "result":
+        first.script["create"] = [EngineCommandResult(1, b"", b"", 30, 4096, permission_refused=True)]
+    def factory(p):
+        if p.operation_id == plan.operation_id and where == "factory":
+            raise transport.TransportPermissionRefusal("selection denied")
+        return first if p.operation_id == plan.operation_id else sibling
+    def retain(p, cid):
+        if where == "receipt": raise transport.TransportPermissionRefusal("receipt denied")
+        return True
+    provider = plan_engine_provider.PlanBoundEngineProvider(executor_for_plan=factory, retain_container=retain)
+    sibling_plan = TransportPlan(**plan_kwargs(operation_id="already-selected-sibling"))
+    sibling_engine = provider.engine_for(sibling_plan)
+    if where == "factory":
+        with pytest.raises(transport.TransportPermissionRefusal): provider.engine_for(plan)
+    else:
+        original = provider.engine_for(plan)
+        outcome = TransportOrchestrator(original).execute(TransportSession(plan))
+        assert outcome.reconciliation_required
+    with pytest.raises(transport.TransportPermissionRefusal):
+        sibling_engine.run(build_create_argv(sibling_plan), deadline_seconds=30, output_cap_bytes=4096)
+    with pytest.raises(transport.TransportPermissionRefusal):
+        provider.engine_for(TransportPlan(**plan_kwargs(operation_id="new-sibling")))
+    assert sibling.calls == []
 
 
 # --------------------------------------------------------------------------

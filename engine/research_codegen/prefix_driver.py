@@ -26,6 +26,7 @@ import time
 
 from . import bridge as bridge_module
 from . import transport as transport_module
+from .plan_engine_provider import PlanBoundEngineProvider
 from .bridge import BoundBytes
 from .output_contract import validate_output_envelope
 
@@ -408,23 +409,16 @@ def _adopt(attempt, plan, identity, task, cap):
     return envelope["rows"][0]
 
 
-def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None):
-    """Run the exact per-decision prefix workload and return grouped owner outputs.
+def prepare_prefix_plans(prepared, *, source, spec, config_sha256=None):
+    """Pure whole-run preflight shared with the staged-cycle owner.
 
-    ``source`` is opaque bounded UTF-8 candidate bytes bound to the retained source
-    identity; it is never imported, compiled or executed here.  ``engine`` is always
-    caller-supplied: with no engine the driver refuses before any I/O and constructs
-    nothing.  Every task is validated and planned before the first attempt, new
-    attempts stop on any uncertain outcome, permission refusal, budget cap or
-    non-adopted receipt, and the exact attempts are retained.  Non-available rows
-    keep their original status; nothing is zero-filled, dropped, salvaged or ranked.
+    Constructs inert plans only. It does not accept an engine, create a session,
+    execute source or grant runtime qualification.
     """
     _require(type(prepared) is bridge_module.PreparedSyntheticInputs,
              "EXACT_PREPARED_INPUTS_REQUIRED")
     _require(type(source) is BoundBytes, "EXACT_BYTE_BINDING_REQUIRED")
     _require(type(spec) is PrefixTransportSpec, "EXACT_TRANSPORT_SPEC_REQUIRED")
-    _require(engine is not None and not callable(engine)
-             and callable(getattr(engine, "run", None)), "TRANSPORT_ENGINE_REQUIRED")
     identity = prepared.identity
     _require(type(identity) is bridge_module.PreparedIdentity, "INVALID_PREPARED_IDENTITY")
     _require(type(config_sha256) is str and len(config_sha256) == 64
@@ -461,6 +455,27 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None):
                       decision_operation_id(prepared, task, carrier)))
     plans = tuple((task, argv, header, carrier, operation, _plan_for(spec, operation, argv))
                   for task, argv, header, carrier, operation in tasks)
+    return plans
+
+
+def run_prefix_driver(prepared, *, source, spec, engine=None, engine_provider=None,
+                      config_sha256=None):
+    """Execute caller-supplied transport after pure whole-run preflight.
+
+    Source bytes remain opaque here. No default engine or qualification is
+    constructed. Uncertain or non-adopted attempts stop the run without salvage.
+    """
+    _require(engine is not None or engine_provider is not None, "TRANSPORT_ENGINE_REQUIRED")
+    _require((engine is None) != (engine_provider is None), "ONE_TRANSPORT_SOURCE_REQUIRED")
+    if engine_provider is not None:
+        _require(type(engine_provider) is PlanBoundEngineProvider,
+                 "EXACT_PLAN_PROVIDER_REQUIRED")
+    else:
+        _require(not callable(engine) and callable(getattr(engine, "run", None)),
+                 "TRANSPORT_ENGINE_REQUIRED")
+    plans = prepare_prefix_plans(prepared, source=source, spec=spec,
+                                 config_sha256=config_sha256)
+    identity = prepared.identity
     started = time.monotonic()
     attempts, rows, reasons = [], [], []
     for task, argv, header, carrier, operation, plan in plans:
@@ -472,7 +487,8 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None):
             reasons.append("WALL_BUDGET_EXHAUSTED")
             break
         try:
-            attempt = transport_module.TransportOrchestrator(engine).execute(
+            selected = engine_provider.engine_for(plan) if engine_provider is not None else engine
+            attempt = transport_module.TransportOrchestrator(selected).execute(
                 transport_module.TransportSession(plan))
         except transport_module.TransportError as exc:
             reasons.append("TRANSPORT_REFUSED:" + type(exc).__name__)
