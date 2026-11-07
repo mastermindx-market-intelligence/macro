@@ -75,9 +75,13 @@ waves:
     status: in_progress
     depends_on: [H0]
     next_action: >
-      Hold #647, #651 and #836 at independent exact-head review. After release, wire R8 recovery plus bounded
-      continuation into Control Room, then add closed successor bootstrap through existing Web-Sol,
-      RuntimeBinding and Capacity owners.
+      S4: #2174/#2178/#2179 merged. Qualify #2188 CI/integration, then native consumer #2195.
+      Keep context disabled until host/mission admission. Prove mission/frontier/pending effects
+      through steering/restart and recipient-to-original-parent consumption on two admitted
+      mixed-provider hosts. Caller targets are empty. Preserve #1318 inspection, #1958 installation,
+      #2172/#2189/#2195 native-action denials and terminal MiniMax; exact receipts are in the dated
+      visibility handoff. Retain #647/#651/#836 specific review/release holds; then wire R8 recovery
+      and bounded continuation into Control Room through Web-Sol, RuntimeBinding and Capacity.
   - id: ASD-F0
     title: Active-Session Dialogue architecture and authority freeze
     status: done
@@ -131,6 +135,8 @@ discoveries:
   - DSC:CCR-MULTILOGIN-CLOUD-SEARCH-501-BLOCKS-NONSEAT-CANARY
   - DSC:CCR-BOUNDED-CONTINUATION-EXPOSED-STALE-FRONTIER
 artifacts:
+  - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-11-06-chatgpt-session-visibility.md
+  - https://github.com/mastermindx-market-intelligence/Mastermind/blob/50adff1969d1b0d2b43d6d99bfff62ccb148faa4/docs/superpowers/plans/2026-11-06-chatgpt-session-observability.md
   - agentos/decisions/DEC-CHAIRMAN-CONTROL-ROOM-P0-ARCHITECTURE-ACCEPTED.md
   - agentos/decisions/DEC-CHAIRMAN-CONTROL-ROOM-ACTIVE-SESSION-DIALOGUE-F0-ACCEPTED.md
   - agentos/decisions/DEC-CCR-P0B-AUTOMATION-OWNED-NONSEAT-CANARY-ONLY.md
@@ -204,7 +210,8 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  Advance SC1 as the current cross-session continuity frontier while leaving P0B and ASD independent.
+  Advance SC1/S4 using the dated chatgpt-session-visibility handoff: #2178/#2179 source-merged;
+  #2188 ordinary CI/integration and qualified native consumption remain. Keep P0B and ASD independent.
   Mastermind #868 is protected/do-not-redo. #647 `00a37df9...` and #651 `3e70694f...` are source-built,
   exact-head CI green and current-base compatible, but both remain Draft pending genuinely independent
   exact-head semantic review. #651's real canonical Agent OS rerun after Macro #7619 now passes the actual
