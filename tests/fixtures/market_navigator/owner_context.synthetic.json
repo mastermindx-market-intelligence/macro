@@ -1,0 +1,741 @@
+{
+  "authority": {
+    "context_only": true,
+    "horizon_role": "context",
+    "may_append_outcome": false,
+    "may_escalate": false,
+    "may_execute": false,
+    "may_gate": false,
+    "may_originate": false,
+    "may_rank": false,
+    "may_select_options_candidate": false,
+    "may_size": false,
+    "may_trade": false,
+    "may_train_prophet": false,
+    "may_write_options_episode": false,
+    "proposal_weight": 0,
+    "tier": "display"
+  },
+  "availability_policy": {
+    "availability_clock_authority": "trusted registered adapter receipt; materializer retains the external integrity anchor",
+    "decision_cutoff": "clocks.as_known_at",
+    "feature_basis_rule": "feature pit_basis cannot outrank weakest source",
+    "feature_dependency_rule": "source role, availability class, transform, missing reason, and quality flags match versioned registries",
+    "future_eod_values_forbidden": true,
+    "identity_rule": "frozen identity, membership validity, and market calendar receipts required",
+    "missingness_clock_rule": "missingness is checked at or after event_time; operational observations also stop at as_known_at",
+    "opaque_provenance_rule": "source vintage and revision IDs are SHA-256 handles; receipt_id hashes immutable source evidence while age_at_cutoff_seconds is a deterministic context projection",
+    "open_interest_eod_rule": "not admissible before its source available_at",
+    "operational_rule": "available_at <= observed_at <= as_known_at",
+    "scalar_clock_rule": "scalar observed_at follows every cited source observed_at",
+    "snapshot_clock_rule": "snapshot as_of covers every cited source measurement_end",
+    "source_rule": "measurement_end <= event_time and available_at <= as_known_at",
+    "staleness_clock_rule": "source quality staleness is fixed at observation; age_at_cutoff_seconds equals as_known_at minus measurement_end"
+  },
+  "clocks": {
+    "as_known_at": "2026-08-07T20:05:00Z",
+    "event_time": "2026-08-07T20:00:00Z",
+    "knowledge_cutoff": "2026-08-07T20:05:00Z"
+  },
+  "context_id": "mmctx_ed22e6fffa2828cb804d461a97696beadd73bf60e37c7b1bb7090060c7c2b63e",
+  "domain_coverage": [
+    {
+      "domain": "macro",
+      "missing_feature_ids": [
+        "macro.regime_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 0,
+      "status": "missing"
+    },
+    {
+      "domain": "rates_credit",
+      "missing_feature_ids": [
+        "rates_credit.curve_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 0,
+      "status": "missing"
+    },
+    {
+      "domain": "breadth_factors",
+      "missing_feature_ids": [
+        "breadth_factors.market_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 0,
+      "status": "missing"
+    },
+    {
+      "domain": "technicals",
+      "missing_feature_ids": [
+        "technicals.point_in_time_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 1,
+      "status": "partial"
+    },
+    {
+      "domain": "options",
+      "missing_feature_ids": [
+        "options.chain_surface_state",
+        "options.flow_campaign_state",
+        "options.gex_volatility_state",
+        "options.open_interest_eod_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 4,
+      "n_observed": 0,
+      "status": "missing"
+    },
+    {
+      "domain": "positioning_flows",
+      "missing_feature_ids": [
+        "positioning_flows.aggregate_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 0,
+      "status": "missing"
+    },
+    {
+      "domain": "dark_pool",
+      "missing_feature_ids": [
+        "dark_pool.aggregate_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 0,
+      "status": "missing"
+    },
+    {
+      "domain": "intraday_microstructure",
+      "missing_feature_ids": [
+        "intraday_microstructure.aggregate_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 0,
+      "status": "missing"
+    },
+    {
+      "domain": "fundamentals",
+      "missing_feature_ids": [
+        "fundamentals.point_in_time_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 0,
+      "status": "missing"
+    },
+    {
+      "domain": "earnings",
+      "missing_feature_ids": [
+        "earnings.point_in_time_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 0,
+      "status": "missing"
+    },
+    {
+      "domain": "news_narrative",
+      "missing_feature_ids": [
+        "news_narrative.publication_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 0,
+      "status": "missing"
+    },
+    {
+      "domain": "alt_data",
+      "missing_feature_ids": [
+        "alt_data.point_in_time_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 0,
+      "status": "missing"
+    },
+    {
+      "domain": "prophet_context",
+      "missing_feature_ids": [
+        "prophet_context.signal_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 0,
+      "status": "missing"
+    },
+    {
+      "domain": "system_health",
+      "missing_feature_ids": [
+        "system_health.capture_state"
+      ],
+      "n_degraded": 0,
+      "n_imputed": 0,
+      "n_missing": 1,
+      "n_observed": 0,
+      "status": "missing"
+    }
+  ],
+  "feature_receipts": [
+    {
+      "domain": "alt_data",
+      "feature_id": "alt_data.point_in_time_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "breadth_factors",
+      "feature_id": "breadth_factors.market_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "dark_pool",
+      "feature_id": "dark_pool.aggregate_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "earnings",
+      "feature_id": "earnings.point_in_time_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "fundamentals",
+      "feature_id": "fundamentals.point_in_time_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "intraday_microstructure",
+      "feature_id": "intraday_microstructure.aggregate_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "macro",
+      "feature_id": "macro.regime_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "news_narrative",
+      "feature_id": "news_narrative.publication_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "options",
+      "feature_id": "options.chain_surface_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "options",
+      "feature_id": "options.flow_campaign_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "options",
+      "feature_id": "options.gex_volatility_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "options",
+      "feature_id": "options.open_interest_eod_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "positioning_flows",
+      "feature_id": "positioning_flows.aggregate_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "technicals",
+      "feature_id": "price.ret_20d",
+      "feature_role": "decision_time_context",
+      "missing_reason": null,
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "live_captured",
+      "quality": {
+        "flags": [],
+        "imputed": false,
+        "staleness_seconds": 300,
+        "status": "ok"
+      },
+      "source_receipt_ids": [
+        "mmsrc_1ec886071413f15bd18c5fb7f9969550a6b95ed3afad9f65390bd7e27029436a"
+      ],
+      "status": "observed",
+      "transform_version": "market_memory.return_20d_transform.v1",
+      "unit": "decimal_return",
+      "value": 0.04
+    },
+    {
+      "domain": "prophet_context",
+      "feature_id": "prophet_context.signal_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "rates_credit",
+      "feature_id": "rates_credit.curve_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "system_health",
+      "feature_id": "system_health.capture_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    },
+    {
+      "domain": "technicals",
+      "feature_id": "technicals.point_in_time_state",
+      "feature_role": "decision_time_context",
+      "missing_reason": "no_point_in_time_vintage",
+      "observed_at": "2026-08-07T20:00:04Z",
+      "pit_basis": "unknown",
+      "quality": {
+        "flags": [
+          "not_captured"
+        ],
+        "imputed": false,
+        "staleness_seconds": null,
+        "status": "missing"
+      },
+      "source_receipt_ids": [],
+      "status": "missing",
+      "transform_version": "market_memory.missing.v1",
+      "unit": "snapshot_ref",
+      "value": null
+    }
+  ],
+  "feature_registry_version": "market_memory.feature_registry.2026-08-09.v1",
+  "identity_receipt": {
+    "available_at": "2026-08-07T00:00:01Z",
+    "calendar_id": "mmcalendar_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "calendar_revision_id": "mmr_3333333333333333333333333333333333333333333333333333333333333333",
+    "calendar_source_receipt_id": "mmsrc_33febc82033a277048285f17f5d97959fa3f5e7877e35d3be126f3b528009485",
+    "calendar_valid_from": "2026-01-01T00:00:00Z",
+    "calendar_valid_through": "2027-01-01T00:00:00Z",
+    "calendar_version": "mmv_cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "effective_at": "2026-08-07T00:00:00Z",
+    "identity_version": "mmidentityv_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "instrument_id": "mmsecurity_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "membership_revision_id": "mmr_2222222222222222222222222222222222222222222222222222222222222222",
+    "membership_source_receipt_id": "mmsrc_ea4931aec9d4ad3c53af3de21b24c83939551825a6ed2c470e051be1bc954bf1",
+    "membership_status": "member",
+    "membership_valid_from": "2026-08-07T00:00:00Z",
+    "membership_valid_through": "2026-08-08T00:00:00Z",
+    "membership_vintage_id": "mmv_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "observed_at": "2026-08-07T00:00:04Z",
+    "pit_basis": "source_vintage",
+    "quality": {
+      "flags": [],
+      "imputed": false,
+      "staleness_seconds": 18907500,
+      "status": "ok"
+    },
+    "receipt_id": "mmidentity_98bb1a277daf34179470b9f0990ea63a627abe780b9dae30073a19b9f09cd42e",
+    "source_receipt_ids": [
+      "mmsrc_33febc82033a277048285f17f5d97959fa3f5e7877e35d3be126f3b528009485",
+      "mmsrc_ea4931aec9d4ad3c53af3de21b24c83939551825a6ed2c470e051be1bc954bf1"
+    ],
+    "subject_id": "mmsecurity_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "universe_id": "mmuniverse_cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "label_policy": {
+    "append_only_after_declared_horizon": true,
+    "horizon_anchor": "clocks.as_known_at",
+    "label_join": "reference_only_by_context_id",
+    "labels_in_context": false,
+    "outcome_owner": "consumer_program"
+  },
+  "mode": "operational_pit",
+  "required_domains": [
+    "macro",
+    "rates_credit",
+    "breadth_factors",
+    "technicals",
+    "options",
+    "positioning_flows",
+    "dark_pool",
+    "intraday_microstructure",
+    "fundamentals",
+    "earnings",
+    "news_narrative",
+    "alt_data",
+    "prophet_context",
+    "system_health"
+  ],
+  "schema": "market_memory.as_known_at.v1",
+  "source_receipts": [
+    {
+      "age_at_cutoff_seconds": 300.0,
+      "artifact_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "availability_class": "session_close",
+      "availability_rule": "session_close_or_vendor_receipt.v1",
+      "available_at": "2026-08-07T20:00:01Z",
+      "event_time": "2026-08-07T20:00:00Z",
+      "identity_binding": null,
+      "market_session": "US_REGULAR",
+      "measurement_end": "2026-08-07T20:00:00Z",
+      "observed_at": "2026-08-07T20:00:03Z",
+      "pit_basis": "live_captured",
+      "quality": {
+        "flags": [],
+        "imputed": false,
+        "staleness_seconds": 3,
+        "status": "ok"
+      },
+      "receipt_id": "mmsrc_1ec886071413f15bd18c5fb7f9969550a6b95ed3afad9f65390bd7e27029436a",
+      "revision_id": "mmr_1111111111111111111111111111111111111111111111111111111111111111",
+      "source_id": "licensed_ohlcv",
+      "source_role": "market_price",
+      "source_schema": "market_memory.source.ohlcv.v1",
+      "valid_from": null,
+      "valid_through": null,
+      "vintage_id": "mmv_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "age_at_cutoff_seconds": 18907500.0,
+      "artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "availability_class": "scheduled_release",
+      "availability_rule": "calendar_publication_receipt.v1",
+      "available_at": "2026-01-01T00:00:01Z",
+      "event_time": "2026-01-01T00:00:00Z",
+      "identity_binding": {
+        "calendar_id": "mmcalendar_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "content_sha256": "8355a6ccf0a5fdadf9511e158af1bb3f6a85df2b168461205c141639a3961256",
+        "market_session": "US_REGULAR",
+        "schema": "market_memory.market_calendar_binding.v1"
+      },
+      "market_session": "US_REGULAR",
+      "measurement_end": "2026-01-01T00:00:00Z",
+      "observed_at": "2026-01-01T00:00:03Z",
+      "pit_basis": "source_vintage",
+      "quality": {
+        "flags": [],
+        "imputed": false,
+        "staleness_seconds": 3,
+        "status": "ok"
+      },
+      "receipt_id": "mmsrc_33febc82033a277048285f17f5d97959fa3f5e7877e35d3be126f3b528009485",
+      "revision_id": "mmr_3333333333333333333333333333333333333333333333333333333333333333",
+      "source_id": "market_calendar",
+      "source_role": "market_calendar",
+      "source_schema": "market_memory.source.market_calendar.v1",
+      "valid_from": "2026-01-01T00:00:00Z",
+      "valid_through": "2027-01-01T00:00:00Z",
+      "vintage_id": "mmv_cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "age_at_cutoff_seconds": 72300.0,
+      "artifact_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "availability_class": "session_close",
+      "availability_rule": "membership_publication_receipt.v1",
+      "available_at": "2026-08-07T00:00:01Z",
+      "event_time": "2026-08-07T00:00:00Z",
+      "identity_binding": {
+        "content_sha256": "e61dd8c2b679dbce378efe79fd2614dcbcc5cc752ab2ddd498a05240ee3400ca",
+        "identity_version": "mmidentityv_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "instrument_id": "mmsecurity_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "membership_status": "member",
+        "schema": "market_memory.security_membership_binding.v1",
+        "subject_id": "mmsecurity_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "universe_id": "mmuniverse_cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "market_session": "US_REGULAR",
+      "measurement_end": "2026-08-07T00:00:00Z",
+      "observed_at": "2026-08-07T00:00:03Z",
+      "pit_basis": "source_vintage",
+      "quality": {
+        "flags": [],
+        "imputed": false,
+        "staleness_seconds": 3,
+        "status": "ok"
+      },
+      "receipt_id": "mmsrc_ea4931aec9d4ad3c53af3de21b24c83939551825a6ed2c470e051be1bc954bf1",
+      "revision_id": "mmr_2222222222222222222222222222222222222222222222222222222222222222",
+      "source_id": "security_master_membership",
+      "source_role": "security_identity_membership",
+      "source_schema": "market_memory.source.security_membership.v1",
+      "valid_from": "2026-08-07T00:00:00Z",
+      "valid_through": "2026-08-08T00:00:00Z",
+      "vintage_id": "mmv_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ],
+  "source_registry_version": "market_memory.source_registry.2026-08-09.v1",
+  "state_snapshot_ref": null,
+  "subject": {
+    "instrument_id": "mmsecurity_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "subject_id": "mmsecurity_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  }
+}
