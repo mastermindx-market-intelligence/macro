@@ -242,13 +242,17 @@ def test_public_summary_generated_at_is_not_publication_evidence(tmp_path: Path)
     )
 
 
-def test_health_suite_is_named_in_engine_render_guards() -> None:
+def test_health_suite_is_named_in_fif_kernel_guards() -> None:
+    # Re-pointed 2026-10-12 by seat ruling: the class-A FIF suites (this one,
+    # the page UI suite and the forensics API suite) moved from the data-gated
+    # engine-render-guards job to fif-kernel-guards (gate: code) so a pull
+    # request runs them before merge. The FastAPI TestClient deps travel with them.
     text = (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
     match = re.search(
-        r"(?ms)^  engine-render-guards:\n.*?(?=^  [A-Za-z0-9_-]+:)",
+        r"(?ms)^  fif-kernel-guards:\n.*?(?=^  [A-Za-z0-9_-]+:)",
         text,
     )
-    assert match is not None, "engine-render-guards job missing from legacy-jobs.yml"
+    assert match is not None, "fif-kernel-guards job missing from legacy-jobs.yml"
     job = match.group(0)
     assert "tests/test_fundamental_forensics_health.py" in job
     assert "tests/test_fundamental_forensics_ui.py" in job

@@ -153,7 +153,9 @@ def _load_source_body(path_text: str) -> str:
             "source body file exceeds the operator boundary",
         )
     try:
-        return path.read_text(encoding="utf-8")
+        # TextIO defaults would rewrite CRLF/CR and invalidate exact W1 identity.
+        with path.open(encoding="utf-8", newline="") as source:
+            return source.read()
     except (OSError, UnicodeDecodeError) as exc:
         raise ResearchIntelligenceStoreError(
             "source_body_invalid",

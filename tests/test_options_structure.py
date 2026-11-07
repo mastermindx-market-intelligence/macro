@@ -12,6 +12,7 @@ Coverage:
 from __future__ import annotations
 
 import copy
+import json
 from datetime import datetime, timezone, timedelta
 
 import pytest
@@ -38,6 +39,8 @@ from engine.options_structure import (
 NOW_ISO = "2026-07-07T20:05:00-04:00"
 SESSION  = "2026-07-07"
 
+_UNSET = object()
+
 
 def _make_event(
     root: str = "SPY",
@@ -47,6 +50,7 @@ def _make_event(
     premium: float = 1_500_000.0,
     ask_share: float | None = 0.80,
     ts: str | None = None,
+    category_proxy_share: object = _UNSET,
 ) -> dict:
     """Build a minimal live_flow.feed/v1 event dict."""
     if ts is None:
@@ -61,6 +65,8 @@ def _make_event(
     }
     if ask_share is not None:
         ev["ask_share"] = ask_share
+    if category_proxy_share is not _UNSET:
+        ev["category_proxy_share"] = category_proxy_share
     return ev
 
 
@@ -775,3 +781,281 @@ class TestAggregateChainHeat:
             "sort bug; timestamps must be parsed to aware datetimes before ordering"
         )
         assert c["span_minutes"] >= 0.0, "span_minutes must never be negative"
+
+
+# ===========================================================================
+# 9. CATEGORY PROXY (additive — side-category mapping, NOT measured NBBO)
+# ===========================================================================
+
+class TestCategoryProxy:
+    """aggregate_chain_heat emits a distinct, additive category_proxy object.
+
+    Contract:
+      * legacy fields/numbers unchanged (including the .5 legacy fallback);
+      * the new share is the side-category mapping over the KNOWN-premium
+        denominator, NOT the legacy ask_share and NOT a measured NBBO;
+      * unknown category keeps its premium in the source denominator with
+        share=None (never a fake neutral);
+      * invalid (nonnegative-finite-violating) amounts are counted, and share
+        degrades to None rather than claiming a complete source mass.
+    """
+
+    def test_legacy_fields_unchanged_no_category_input(self):
+        """No category_proxy_share key → legacy numbers/lean EXACTLY as before."""
+        ev1 = _make_event(premium=2_000_000.0, ask_share=0.91, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, ask_share=0.91, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        # legacy fields untouched
+        assert c["total_premium_mn"] == pytest.approx(4.0, abs=0.01)
+        assert c["alert_count"] == 2
+        assert c["ask_share"] == pytest.approx(0.91)
+        assert c["lean"] == "accumulation"
+        # generic caller still gets an explicitly UNKNOWN proxy
+        cp = c["category_proxy"]
+        assert cp["schema"] == "options_flow.category_proxy/v1"
+        assert cp["basis"] == "side_category"
+        assert cp["share"] is None
+        assert cp["known_premium_usd"] == pytest.approx(0.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["invalid_premium_count"] == 0
+        assert cp["source_certified_accepted"] is False
+
+    def test_unknown_category_share_null_source_retained(self):
+        ev1 = _make_event(premium=2_000_000.0, category_proxy_share=None, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, category_proxy_share=None, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        cp = result[0]["category_proxy"]
+        assert cp["share"] is None
+        assert cp["known_premium_usd"] == pytest.approx(0.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+
+    def test_equal_premium_same_category_different_quotes_proxy_stays_eight_tenths(self):
+        """Equal premium, same category, DIFFERENT legacy quotes → proxy stays .8."""
+        ev1 = _make_event(premium=2_000_000.0, ask_share=0.42,
+                          category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, ask_share=0.91,
+                          category_proxy_share=0.8, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        c = result[0]
+        cp = c["category_proxy"]
+        assert cp["share"] == pytest.approx(0.80)
+        assert cp["known_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(0.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+        # legacy ask_share still averages the (different) legacy quotes
+        assert c["ask_share"] == pytest.approx(0.665, abs=0.001)
+        assert cp["share"] != pytest.approx(c["ask_share"])
+
+    def test_unequal_premium_known_unknown_distinct_denominator(self):
+        """Known premium is the share denominator; unknown is a SEPARATE mass."""
+        ev_known_a = _make_event(premium=3_000_000.0, category_proxy_share=0.8, ts=_ts("10:00"))
+        ev_known_b = _make_event(premium=1_000_000.0, category_proxy_share=0.2, ts=_ts("10:05"))
+        ev_unknown = _make_event(premium=2_000_000.0, category_proxy_share=None, ts=_ts("10:10"))
+        result = aggregate_chain_heat(
+            [ev_known_a, ev_known_b, ev_unknown], min_premium_mn=3.0, min_alerts=2,
+        )
+        assert len(result) == 1
+        cp = result[0]["category_proxy"]
+        # (0.8*3M + 0.2*1M) / (3M + 1M) = 2.6M / 4M = 0.65
+        assert cp["share"] == pytest.approx(0.65)
+        assert cp["known_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(2_000_000.0)
+        assert cp["source_premium_usd"] == pytest.approx(6_000_000.0)
+
+    def test_measured_looking_legacy_ask_share_not_new_measurement(self):
+        """A measured-looking legacy ask_share=.42 cannot become the new proxy."""
+        ev1 = _make_event(premium=2_000_000.0, ask_share=0.42, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, ask_share=0.42, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        c = result[0]
+        assert c["ask_share"] == pytest.approx(0.42)   # legacy value preserved
+        assert c["category_proxy"]["share"] is None     # never promoted to measurement
+        assert c["category_proxy"]["share"] != pytest.approx(0.42)
+
+    def test_mixed_category_remains_known_half_proxy(self):
+        """mixed (.5) is a KNOWN proxy value — never a measured neutral."""
+        ev1 = _make_event(premium=2_000_000.0, category_proxy_share=0.5, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, category_proxy_share=0.5, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        cp = result[0]["category_proxy"]
+        assert cp["share"] == pytest.approx(0.5)
+        assert cp["known_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(0.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+
+    def test_invalid_premium_no_complete_claim(self):
+        """Invalid (negative) amount → explicit count + share=None."""
+        ev1 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:10"))
+        ev_bad = _make_event(premium=-100.0, category_proxy_share=0.8, ts=_ts("10:20"))
+        result = aggregate_chain_heat([ev1, ev2, ev_bad], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        cp = result[0]["category_proxy"]
+        assert cp["invalid_premium_count"] == 1
+        assert cp["share"] is None
+        # invalid premium is excluded from the selected source mass
+        assert cp["known_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(0.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+
+    def test_valid_numeric_legacy_unchanged_and_json_safe(self):
+        """Frozen valid finite numeric path: legacy numbers byte-stable + JSON-safe."""
+        ev1 = _make_event(premium=2_000_000.0, ask_share=0.91,
+                          category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, ask_share=0.91,
+                          category_proxy_share=0.8, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        assert c["total_premium_mn"] == pytest.approx(4.0)
+        assert c["alert_count"] == 2
+        assert c["ask_share"] == pytest.approx(0.91)
+        assert c["lean"] == "accumulation"
+        cp = c["category_proxy"]
+        assert cp["share"] == pytest.approx(0.80)
+        assert cp["known_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(0.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["invalid_premium_count"] == 0
+        json.dumps(c, allow_nan=False)
+
+    def test_zero_premium_is_valid_never_invalid(self):
+        """A numeric zero premium is valid mass — it is NOT an invalid amount."""
+        ev1 = _make_event(premium=0.0, category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:10"))
+        ev3 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:20"))
+        result = aggregate_chain_heat([ev1, ev2, ev3], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        cp = result[0]["category_proxy"]
+        assert cp["invalid_premium_count"] == 0
+        assert cp["share"] == pytest.approx(0.80)
+
+    @pytest.mark.parametrize("bad", [
+        None, True, False, "abc", "", "2000000", 10 ** 400, float("inf"), float("-inf"),
+        float("nan"), -100.0,
+    ])
+    def test_bad_premium_is_invalid_no_mass(self, bad):
+        """None/bool/str/nonfinite/negative premium: no mass, count 1, share None."""
+        ev1 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:10"))
+        ev_bad = {"root": "SPY", "strike": 530.0, "exp": "2026-07-18",
+                  "right": "P", "premium": bad, "ts": _ts("10:20")}
+        result = aggregate_chain_heat([ev1, ev2, ev_bad], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        # invalid premium contributed NO mass: legacy total stays the valid 4M
+        assert c["total_premium_mn"] == pytest.approx(4.0)
+        cp = c["category_proxy"]
+        assert cp["invalid_premium_count"] == 1
+        assert cp["share"] is None
+        assert cp["known_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(0.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+        json.dumps(c, allow_nan=False)
+
+    def test_missing_premium_key_is_invalid_never_zero(self):
+        """A missing premium key is INVALID — never defaulted to zero-as-valid."""
+        ev1 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:10"))
+        ev_bad = {"root": "SPY", "strike": 530.0, "exp": "2026-07-18",
+                  "right": "P", "ts": _ts("10:20")}  # no 'premium' key
+        result = aggregate_chain_heat([ev1, ev2, ev_bad], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        assert c["total_premium_mn"] == pytest.approx(4.0)
+        cp = c["category_proxy"]
+        assert cp["invalid_premium_count"] == 1
+        assert cp["share"] is None
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+        json.dumps(c, allow_nan=False)
+
+    @pytest.mark.parametrize("bad_ask", [
+        True, False, float("nan"), float("inf"), 1.5, -0.1, "abc", "0.8",
+    ])
+    def test_invalid_ask_share_ignored_no_json_poison(self, bad_ask):
+        """bool/nonfinite/out-of-bounds ask_share is ignored — legacy stays JSON-safe."""
+        ev1 = _make_event(premium=2_000_000.0, ask_share=bad_ask,
+                          category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, ask_share=bad_ask,
+                          category_proxy_share=0.8, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        assert c["ask_share"] is None            # ignored, None fallback retained
+        assert c["lean"] == "contested"
+        assert c["category_proxy"]["share"] == pytest.approx(0.80)
+        json.dumps(c, allow_nan=False)           # must not contain Infinity/NaN
+
+    def test_finite_overflow_refuses_whole_campaign(self):
+        """Two finite 1e308 premiums overflow → no campaign, never share=0.0."""
+        ev1 = _make_event(premium=1e308, ask_share=0.91,
+                          category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=1e308, ask_share=0.91,
+                          category_proxy_share=0.8, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        assert result == []
+
+    def test_source_certified_accepted_never_promoted(self):
+        """No generated proxy may claim a certified source."""
+        events = [
+            _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:00")),
+            _make_event(premium=2_000_000.0, category_proxy_share=None, ts=_ts("10:10")),
+            _make_event(premium=2_000_000.0, ask_share=0.42, ts=_ts("10:20")),
+        ]
+        for c in aggregate_chain_heat(events, min_premium_mn=3.0, min_alerts=2):
+            assert c["category_proxy"]["source_certified_accepted"] is False
+
+    @pytest.mark.parametrize("bad_premium", [
+        2 ** 1024,                                   # int too large for a C double
+        10 ** 309,                                   # just over the float ceiling
+        json.loads("9" * 401),                       # 401-digit JSON integer
+    ])
+    def test_oversized_int_premium_invalid_no_mass_two_siblings_retained(
+        self, bad_premium,
+    ):
+        """An int too large to float-convert is INVALID (not a crash): no mass,
+        count 1, share None — the two valid 2M siblings are retained intact."""
+        ev1 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, category_proxy_share=0.8, ts=_ts("10:10"))
+        ev_bad = {"root": "SPY", "strike": 530.0, "exp": "2026-07-18",
+                  "right": "P", "premium": bad_premium, "ts": _ts("10:20")}
+        result = aggregate_chain_heat([ev1, ev2, ev_bad], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        # both valid 2M siblings survive: 4M total; alert_count counts every
+        # event (existing semantics), the invalid one is tallied separately.
+        assert c["total_premium_mn"] == pytest.approx(4.0)
+        assert c["alert_count"] == 3
+        cp = c["category_proxy"]
+        assert cp["invalid_premium_count"] == 1
+        assert cp["share"] is None
+        assert cp["known_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(0.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+        json.dumps(c, allow_nan=False)           # strict JSON must succeed
+
+    def test_oversized_int_ask_share_and_category_share_ignored_json_safe(self):
+        """Oversized-int ask_share/category_proxy_share are not float-convertible:
+        both are ignored → ask_share None / proxy unknown, never a crash, and the
+        resulting campaign is strict-JSON clean."""
+        big = 10 ** 400
+        ev1 = _make_event(premium=2_000_000.0, ask_share=big,
+                          category_proxy_share=big, ts=_ts("10:00"))
+        ev2 = _make_event(premium=2_000_000.0, ask_share=big,
+                          category_proxy_share=big, ts=_ts("10:10"))
+        result = aggregate_chain_heat([ev1, ev2], min_premium_mn=3.0, min_alerts=2)
+        assert len(result) == 1
+        c = result[0]
+        assert c["ask_share"] is None            # ignored, None fallback retained
+        assert c["lean"] == "contested"
+        cp = c["category_proxy"]
+        assert cp["share"] is None               # unknown, not a fake neutral
+        assert cp["invalid_premium_count"] == 0  # premium itself was valid
+        assert cp["known_premium_usd"] == pytest.approx(0.0)
+        assert cp["unknown_premium_usd"] == pytest.approx(4_000_000.0)
+        assert cp["source_premium_usd"] == pytest.approx(4_000_000.0)
+        json.dumps(c, allow_nan=False)           # strict JSON must succeed

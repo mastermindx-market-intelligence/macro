@@ -58,34 +58,47 @@ def _rss(two: bool = False, short: bool = False) -> str:
 
 
 def _model_call(system, user, *, model_id, max_tokens):
-    identity_text = user.split("DOCUMENT IDENTITY:\n", 1)[1].split(
-        "\n\nOUTPUT SHAPE:", 1
-    )[0]
-    shape_text = user.split("OUTPUT SHAPE:\n", 1)[1].split(
-        "\n\nDOCUMENT BODY:", 1
-    )[0]
-    identity = json.loads(identity_text)
-    output = json.loads(shape_text)
-    output["document"] = identity
-    output["claims"][0].update(
-        {
-            "statement": QUOTE,
-            "evidence": [{"quote_span": QUOTE}],
-            "numbers": ["35%"],
-            "entities": ["AMD"],
-            "horizon": "current",
-            "explicit": True,
-        }
+    identity = json.loads(
+        user.split("DOCUMENT IDENTITY:\n", 1)[1].split(
+            "\n\nOUTPUT SHAPE:\n", 1
+        )[0]
     )
-    output["analysis"]["thesis"].update(
-        {
-            "summary": "The article argues that cloud ordering is strengthening AMD server demand.",
-            "direction": "bullish",
-            "mechanism": ["higher cloud orders support server demand"],
-            "conviction": "moderate",
-            "support_claim_indices": [0],
-        }
+    catalog = json.loads(
+        user.split("EVIDENCE CATALOG:\n", 1)[1].split("\n\n", 1)[0]
     )
+    unit = next(unit for unit in catalog["units"] if QUOTE in unit["text"])
+    output = {
+        "selector": catalog["catalog_version"],
+        "document": identity,
+        "catalog_sha256": catalog["catalog_sha256"],
+        "selections": [
+            {
+                "evidence_id": unit["evidence_id"],
+                "numbers": ["35%"],
+                "entities": ["AMD"],
+                "horizon": "current",
+                "explicit": True,
+            }
+        ],
+        "analysis": {
+            "thesis": {
+                "summary": "The article argues that cloud ordering is strengthening AMD server demand.",
+                "direction": "bullish",
+                "mechanism": ["higher cloud orders support server demand"],
+                "conviction": "moderate",
+                "support_claim_indices": [0],
+            },
+            "assumptions": [],
+            "forecasts": [],
+            "catalysts": [],
+            "falsifiers": [],
+            "counterarguments": [],
+            "implications": [],
+            "belief_delta": {"statement": "", "support_claim_indices": []},
+            "consensus_relation": {"statement": "", "support_claim_indices": []},
+            "uncertainties": [],
+        },
+    }
     return json.dumps(output), "fixture-provider", "fixture-model"
 
 
@@ -155,7 +168,10 @@ def test_analysis_uses_shared_grounded_rio_contract():
     assert result["state"] == "ok"
     assert result["rio"]["document"]["id"] == candidate["feed_item"]["id"]
     assert result["rio"]["document"]["source_type"] == "qualitative_article"
-    assert result["rio"]["claims"][0]["statement"] == QUOTE
+    claim = result["rio"]["claims"][0]
+    assert QUOTE in claim["statement"]
+    assert claim["statement"] in candidate["research_body"]
+    assert claim["evidence"][0]["quote_span"] == claim["statement"]
 
 
 def test_zerohedge_rio_persists_through_shared_w2_store(tmp_path):
