@@ -141,3 +141,20 @@
 {"date":"2026-10-30","theme":"Industrial Automation","donor":"automationiot","receiver":"automationautomation","confidence":0.33,"both_confirmed":false}
 {"date":"2026-11-03","theme":"Internet of Things","donor":"iotsecurity","receiver":"iotnetworking","confidence":0.556,"both_confirmed":false}
 {"date":"2026-11-03","theme":"Semiconductors","donor":"semisfoundries","receiver":"semisanalog","confidence":0.296,"both_confirmed":false}
+{"date":"2026-11-04","theme":"Semiconductors","donor":"semisfoundries","receiver":"semisanalog","confidence":0.291,"both_confirmed":false}
+{"date":"2026-11-05","theme":"Cloud Computing","donor":"clouddevops","receiver":"clouddatacenters","confidence":0.628,"both_confirmed":false}
+{"date":"2026-11-05","theme":"Artificial Intelligence","donor":"aidata","receiver":"aiadssearch","confidence":0.546,"both_confirmed":false}
+{"date":"2026-11-05","theme":"Big Data","donor":"bigdataaiplatforms","receiver":"bigdataproviders","confidence":0.535,"both_confirmed":false}
+{"date":"2026-11-05","theme":"Nanotechnology","donor":"nanotechelectronics","receiver":"nanotechmaterials","confidence":0.487,"both_confirmed":false}
+{"date":"2026-11-05","theme":"Social Media","donor":"socialniche","receiver":"socialgaming","confidence":0.431,"both_confirmed":false}
+{"date":"2026-11-05","theme":"Telecommunications","donor":"telecomg","receiver":"telecomwireless","confidence":0.386,"both_confirmed":false}
+{"date":"2026-11-05","theme":"Transportation & Logistics","donor":"transportationmaritime","receiver":"transportationairtravel","confidence":0.349,"both_confirmed":false}
+{"date":"2026-11-06","theme":"Telecommunications","donor":"telecomg","receiver":"telecomwireless","confidence":0.551,"both_confirmed":false}
+{"date":"2026-11-06","theme":"Nanotechnology","donor":"nanotechelectronics","receiver":"nanotechenergy","confidence":0.512,"both_confirmed":false}
+{"date":"2026-11-06","theme":"Cloud Computing","donor":"clouddevops","receiver":"cloudhyperscalers","confidence":0.504,"both_confirmed":false}
+{"date":"2026-11-06","theme":"Social Media","donor":"socialniche","receiver":"socialgaming","confidence":0.465,"both_confirmed":false}
+{"date":"2026-11-06","theme":"Wearables","donor":"wearablesimmersive","receiver":"wearablessmartwatches","confidence":0.338,"both_confirmed":false}
+{"date":"2026-11-06","theme":"Commodities Energy","donor":"commenergyoil","receiver":"commenergybiofuels","confidence":0.288,"both_confirmed":false}
+{"date":"2026-11-06","theme":"Software","donor":"softwaresecurity","receiver":"softwaregaming","confidence":0.76,"both_confirmed":true}
+{"date":"2026-11-06","theme":"Social Media","donor":"socialniche","receiver":"socialadvertising","confidence":0.479,"both_confirmed":true}
+{"date":"2026-11-06","theme":"Wearables","donor":"wearablesimmersive","receiver":"wearablessoftware","confidence":0.328,"both_confirmed":false}

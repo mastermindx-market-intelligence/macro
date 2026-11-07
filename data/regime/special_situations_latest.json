@@ -1,23 +1,23 @@
 {
-  "total": 1491,
+  "total": 1587,
   "n_categories": 17,
-  "cross_border": 489,
+  "cross_border": 545,
   "top_categories": [
     {
       "category": "Capital Returns",
-      "n": 447
-    },
-    {
-      "category": "Acquisitions",
-      "n": 193
+      "n": 475
     },
     {
       "category": "Divestitures",
-      "n": 174
+      "n": 211
+    },
+    {
+      "category": "Acquisitions",
+      "n": 201
     }
   ],
   "floor_musd": 100.0,
-  "built": "2026-11-03 20:07 UTC",
+  "built": "2026-11-07 13:06 UTC",
   "grade_a": 0,
-  "new_today": 404
+  "new_today": 54
 }

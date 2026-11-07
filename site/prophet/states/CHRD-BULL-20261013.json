@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CHRD-BULL-20261013",
-  "asof": "2026-11-03",
+  "asof": "2026-11-07",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 54.1,
-  "raw_confidence": 47.8,
-  "delta_vs_base": -5.9,
+  "management_confidence": 36.9,
+  "raw_confidence": 34.6,
+  "delta_vs_base": -23.1,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 85.5,
+    "validity": 55.0,
     "progress": 0.0,
-    "pace": 52.8,
+    "pace": 29.9,
     "retention": 50.0,
-    "overlay": 53.0
+    "overlay": 39.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.891,
+    "dist_to_stop_r": 0.643,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 31.1,
-    "p1": -0.0729,
-    "p2": -0.0365,
+    "horizon_pct_used": 40.0,
+    "p1": -0.2382,
+    "p2": -0.1191,
     "p3": null,
-    "move_r": -0.109,
+    "move_r": -0.357,
     "mfe_r": 0.135,
-    "mae_r": -0.109
+    "mae_r": -0.449
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 5.930004882812511,
-  "_mae": -4.810000610351551,
+  "_mae": -19.7500030517578,
   "_max_p1": 0.0899303136610936,
   "_first_trigger_ts": "2026-10-21",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 14,
-  "tau": 0.3111
+  "days_elapsed": 18,
+  "tau": 0.4
 }

@@ -1,18 +1,18 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-10-30",
-  "generated_at": "2026-11-03T19:34:17.224563+00:00",
+  "as_of": "2026-11-05",
+  "generated_at": "2026-11-07T12:40:46.047150+00:00",
   "is_context_only": true,
-  "n_snapshots": 1353,
-  "n_days": 46,
+  "n_snapshots": 1387,
+  "n_days": 48,
   "horizons": {
     "5": {
-      "n_matured": 1328,
+      "n_matured": 1353,
       "by_stage": {
         "running": {
-          "n": 1251,
-          "mean_fwd_rel": -0.0052,
-          "hit_rate": 0.431
+          "n": 1275,
+          "mean_fwd_rel": -0.0047,
+          "hit_rate": 0.438
         },
         "coiling": {
           "n": 36,
@@ -20,13 +20,13 @@
           "hit_rate": 0.472
         },
         "coiling_primed": {
-          "n": 41,
-          "mean_fwd_rel": 0.011,
-          "hit_rate": 0.585
+          "n": 42,
+          "mean_fwd_rel": 0.0113,
+          "hit_rate": 0.595
         }
       },
-      "running_ic": -0.0173,
-      "running_ic_t_hac": -0.289,
+      "running_ic": -0.0183,
+      "running_ic_t_hac": -0.312,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -49,18 +49,18 @@
           "hit_rate": 0.488
         }
       },
-      "running_ic": -0.0425,
-      "running_ic_t_hac": -0.853,
+      "running_ic": -0.0422,
+      "running_ic_t_hac": -0.847,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 1191,
+      "n_matured": 1282,
       "by_stage": {
         "running": {
-          "n": 1114,
-          "mean_fwd_rel": -0.033,
-          "hit_rate": 0.311
+          "n": 1205,
+          "mean_fwd_rel": -0.028,
+          "hit_rate": 0.345
         },
         "coiling": {
           "n": 36,
@@ -73,32 +73,32 @@
           "hit_rate": 0.61
         }
       },
-      "running_ic": -0.1047,
-      "running_ic_t_hac": -1.132,
+      "running_ic": -0.0699,
+      "running_ic_t_hac": -1.043,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 535,
+      "n_matured": 585,
       "by_stage": {
         "running": {
-          "n": 471,
-          "mean_fwd_rel": -0.054,
-          "hit_rate": 0.299
+          "n": 519,
+          "mean_fwd_rel": -0.0532,
+          "hit_rate": 0.303
         },
         "coiling": {
-          "n": 32,
-          "mean_fwd_rel": -0.0456,
-          "hit_rate": 0.25
+          "n": 33,
+          "mean_fwd_rel": -0.0445,
+          "hit_rate": 0.242
         },
         "coiling_primed": {
-          "n": 32,
-          "mean_fwd_rel": 0.0085,
-          "hit_rate": 0.531
+          "n": 33,
+          "mean_fwd_rel": 0.0077,
+          "hit_rate": 0.515
         }
       },
-      "running_ic": -0.0521,
-      "running_ic_t_hac": -1.914,
+      "running_ic": -0.0749,
+      "running_ic_t_hac": -2.128,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     }
@@ -116,67 +116,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-10-08",
-      "id": "subsectors:internet-content-information",
-      "name": "Internet Content & Information",
+      "date": "2026-10-15",
+      "id": "nasdaq:semiconductor-equipment-materials",
+      "name": "Semiconductor Equipment & Materials",
       "stage": "running",
-      "fwd_rel": -0.1608,
+      "fwd_rel": -0.2311,
       "horizon_d": 21
     },
     {
-      "date": "2026-10-08",
+      "date": "2026-10-15",
       "id": "nasdaq:internet-content-information",
       "name": "Internet Content & Information",
       "stage": "running",
-      "fwd_rel": -0.1608,
+      "fwd_rel": -0.134,
       "horizon_d": 21
     },
     {
-      "date": "2026-10-08",
-      "id": "nasdaq:communication-equipment",
-      "name": "Communication Equipment",
+      "date": "2026-10-15",
+      "id": "baskets:robotics-automation",
+      "name": "Robotics & Automation",
       "stage": "running",
-      "fwd_rel": -0.1465,
+      "fwd_rel": -0.0377,
       "horizon_d": 21
     },
     {
-      "date": "2026-10-08",
-      "id": "baskets:ai-infra",
-      "name": "AI Infrastructure",
+      "date": "2026-10-15",
+      "id": "baskets:crypto-rails",
+      "name": "Crypto & Digital Rails",
       "stage": "running",
-      "fwd_rel": -0.1405,
+      "fwd_rel": -0.0342,
       "horizon_d": 21
     },
     {
-      "date": "2026-10-08",
-      "id": "baskets:ai-semiconductors",
-      "name": "AI Semiconductors",
+      "date": "2026-10-15",
+      "id": "baskets:mag7",
+      "name": "Magnificent Seven",
       "stage": "running",
-      "fwd_rel": -0.133,
+      "fwd_rel": -0.0303,
       "horizon_d": 21
     },
     {
-      "date": "2026-10-08",
-      "id": "russell:semiconductors",
-      "name": "Semiconductors",
+      "date": "2026-10-15",
+      "id": "russell:packaging-containers",
+      "name": "Packaging & Containers",
       "stage": "running",
-      "fwd_rel": -0.1072,
+      "fwd_rel": -0.0222,
       "horizon_d": 21
     },
     {
-      "date": "2026-10-08",
-      "id": "subsectors:electronic-components",
-      "name": "Electronic Components",
+      "date": "2026-10-15",
+      "id": "baskets:reshoring",
+      "name": "Reshoring & Industrial Capex",
       "stage": "running",
-      "fwd_rel": -0.0937,
+      "fwd_rel": -0.0031,
       "horizon_d": 21
     },
     {
-      "date": "2026-10-08",
-      "id": "baskets:data-center-power",
-      "name": "Data-Center Power & Cooling",
-      "stage": "coiling_primed",
-      "fwd_rel": -0.0866,
+      "date": "2026-10-15",
+      "id": "nasdaq:internet-retail",
+      "name": "Internet Retail",
+      "stage": "running",
+      "fwd_rel": -0.0007,
       "horizon_d": 21
     }
   ],
