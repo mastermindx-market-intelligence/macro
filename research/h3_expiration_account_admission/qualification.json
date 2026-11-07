@@ -1,0 +1,44 @@
+{
+  "completed_at": "2026-11-07T11:44:35.727324+00:00",
+  "exact_inputs_verified": 16,
+  "external_boundary": "Original native _offline_boundary; no unexpected effect observed",
+  "installed": false,
+  "live_provider_proven": false,
+  "manifest_sha256": "fb0ac8b48caffaec3f4efb2a74da0e135bcf92def40cba5c87fbf727f23443d4",
+  "native_preimage_commit": "39bd39aaa8c5fa1f6112fc34c593815323428b2f",
+  "patch_sha256": "a494cb84d86c5592527943d8bb119726949efec62919def65f75cd31701e6ef8",
+  "python": "3.12.14",
+  "qualification": "SOURCE_FIXTURE_ONLY",
+  "results": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "ops/native_fabric/quota_continuity/tests/test_expiry_account_admission.py",
+        "ExpiryAdmissionTests.test_actual_claim_chooses_near_and_retains_complete_evidence"
+      ],
+      "duration_seconds": 0.053,
+      "exit_code": 1,
+      "expected_result_observed": true,
+      "name": "baseline_discriminator",
+      "output": "test_actual_claim_chooses_near_and_retains_complete_evidence (__main__.ExpiryAdmissionTests.test_actual_claim_chooses_near_and_retains_complete_evidence) ... FAIL\n\n======================================================================\nFAIL: test_actual_claim_chooses_near_and_retains_complete_evidence (__main__.ExpiryAdmissionTests.test_actual_claim_chooses_near_and_retains_complete_evidence)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/h3-expiry-proof-2u_fjfq4/baseline/ops/native_fabric/quota_continuity/tests/test_expiry_account_admission.py\", line 146, in test_actual_claim_chooses_near_and_retains_complete_evidence\n    self.assertEqual(result.account, \"zeta-near\")\nAssertionError: 'alpha-far' != 'zeta-near'\n- alpha-far\n+ zeta-near\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.053s\n\nFAILED (failures=1)\n",
+      "tests": 1
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ops/native_fabric/quota_continuity/tests"
+      ],
+      "duration_seconds": 4.038,
+      "exit_code": 0,
+      "expected_result_observed": true,
+      "name": "composed_regression",
+      "output": "...........................................................................................\n----------------------------------------------------------------------\nRan 91 tests in 4.038s\n\nOK\n",
+      "tests": 91
+    }
+  ],
+  "schema": "mastermind.h3_source_qualification.v1"
+}

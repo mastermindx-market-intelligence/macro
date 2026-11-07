@@ -251,6 +251,24 @@ danger_areas:
 
 # Executive Capacity Fabric - OpenCode Go composition checkpoint
 
+## Current continuation: H3, 2026-11-07
+
+Current Chairman assignment: complete [H3 — expiration-aware physical-account admission](https://github.com/mastermindx-market-intelligence/macro/pull/7142#issuecomment-6705878444).
+The original carrier remains `sol/opencode-go-pool`, with source parent `126c32af2f335ca25201dfc53f51745fc8c38613`.
+Governing compatible protected pin: `Mastermind@779fc3be9d07c366bf5b47c650b64e59fc6f3903`.
+The remainder of this record preserves the November6 selector-composition checkpoint and dated archive; its prior-head evidence is not relabeled as current H3 or installed proof.
+
+**Current source result:** [H3 contribution and integration contract](../../../research/h3_expiration_account_admission/README.md), an exact native Broker/cache-consumer/test patch against `Mastermind@39bd39aaa8c5fa1f6112fc34c593815323428b2f` for the existing #2175 composer.
+[Manifest](../../../research/h3_expiration_account_admission/manifest.json) and [machine receipt](../../../research/h3_expiration_account_admission/qualification.json) retain exact inputs and outputs. The [reproducer](../../../scripts/qualify_h3_expiry_admission.py) reads a supplied native source tree without modifying it and runs disposable fixtures.
+
+Executed exact-patch proof: 16 original input blobs verified; original Broker expected-red discriminator selects `alpha-far`; composed source **91 passed** (32 H3, 24 existing admission, 30 existing effects/recovery and 5 existing fairness). The real Broker lease and Gateway terminal receipt retain `zeta-near` in synthetic observations. Independent windows, strict pins, shared aliases/consumers, reserves, stale/revoked inputs, immutable original recovery, cross-reset liabilities and replayed observations are exercised. The original 36 selector/composition tests and source bytes remain unchanged; they were not rerun or counted in 91.
+
+**State: SOURCE_CONTRIBUTION_VERIFIED / INSTALL_UNPROVEN. H3 user outcome remains incomplete.** H2 owns the actual paired observation producer and account/entitlement qualification. This patch's adapter contract is proposed, not a live producer receipt. Existing execution owners must certify enforceable whole-operation ceilings in upstream units. Terminal/legacy/reset coverage and normal retention are not yet production-qualified. The digest recheck is not a publication mutex: existing Broker and native publisher locks must be composed by the original owner before activation. #2175 retains generation composition, required CI/release, installation and a legitimate useful account-bound canary.
+
+Next source-linked action: reconcile H2's exact successor with the adapter, preserve all outstanding liabilities and the actual shared-scope mapping, compose the existing publication/admission boundary and native manifests on #2175, then prove installed selected=leased=dispatched=settled account and useful accepted result. Return source/CI/install/live evidence separately to Mastermind#983/H6. No replacement branch, provider call, credential operation, installed generation change or daemon was created here. #7116's unpublished-source denial and the refused #7142 review effect were not replayed. Actual release/security holds remain; the current Web waiver is not self-approval or merge authority.
+
+## Retained November6 checkpoint
+
 Record identity: `HND/EXECUTIVE-CAPACITY-FABRIC-2026-09-14-OPENCODE-GO-COMPOSITION`,
 filed under `WS:EXECUTIVE-CAPACITY-FABRIC`, created 2026-09-14 - the git add date of
 this path and the date carried in the record key. The 2026-09-14 revision of this

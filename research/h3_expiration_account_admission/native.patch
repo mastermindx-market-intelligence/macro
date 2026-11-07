@@ -1,0 +1,1038 @@
+diff --git a/ops/native_fabric/quota_continuity/candidate/lease_broker.py b/ops/native_fabric/quota_continuity/candidate/lease_broker.py
+--- a/ops/native_fabric/quota_continuity/candidate/lease_broker.py
++++ b/ops/native_fabric/quota_continuity/candidate/lease_broker.py
+@@ -800,7 +800,7 @@
+ }
+ 
+ 
+-def _read_application_accounts(path):
++def _read_accounts_document(path):
+     """Fresh owner document; no mtime fallback, duplicate keys or secret lookup."""
+     try:
+         import yaml
+@@ -823,6 +823,20 @@
+         if len(raw) > 2 * 1024 * 1024:
+             raise ApplicationAdmissionError("invalid_accounts_document")
+         document = yaml.load(raw.decode("utf-8"), Loader=ClosedLoader)
++        if type(document) is not dict or type(document.get("providers")) is not dict:
++            raise ApplicationAdmissionError("invalid_accounts_document")
++        _application_json(document)
++        return document
++    except ApplicationAdmissionError:
++        raise
++    except Exception:
++        raise ApplicationAdmissionError("accounts_unavailable") from None
++
++
++def _read_application_accounts(path):
++    """Validate the existing application grant on a fresh owner document."""
++    try:
++        document = _read_accounts_document(path)
+         if (not isinstance(document, dict)
+                 or document.get("schema") != "mastermind.provider_accounts.v1"
+                 or not isinstance(document.get("providers"), dict)
+@@ -1188,6 +1202,7 @@
+     orchestrator_id: str = ""
+     pool: str = ""
+     quota_blockade: Optional[Dict[str, Any]] = None
++    account_admission: Optional[Dict[str, Any]] = None
+ 
+     def line(self) -> str:
+         if self.ok:
+@@ -1341,6 +1356,20 @@
+             )
+         if "purpose" not in lcols:
+             conn.execute("ALTER TABLE leases ADD COLUMN purpose TEXT NOT NULL DEFAULT 'WORKER'")
++        for field in ("account_admission_json", "account_admission_digest"):
++            if field not in lcols:
++                conn.execute("ALTER TABLE leases ADD COLUMN " + field + " TEXT")
++        conn.execute("""CREATE TRIGGER IF NOT EXISTS account_admission_binding_v1
++            BEFORE UPDATE ON leases WHEN OLD.account_admission_json IS NOT NULL AND (
++                NEW.id IS NOT OLD.id OR NEW.granted_at IS NOT OLD.granted_at
++                OR NEW.task_class IS NOT OLD.task_class
++                OR NEW.account_admission_json IS NOT OLD.account_admission_json
++                OR NEW.account_admission_digest IS NOT OLD.account_admission_digest
++                OR NEW.account IS NOT OLD.account OR NEW.pool IS NOT OLD.pool
++                OR NEW.model IS NOT OLD.model OR NEW.quota_scope IS NOT OLD.quota_scope
++                OR NEW.orchestrator_id IS NOT OLD.orchestrator_id OR NEW.host IS NOT OLD.host
++                OR NEW.purpose IS NOT OLD.purpose)
++            BEGIN SELECT RAISE(ABORT, 'account_admission_binding_immutable'); END""")
+         conn.execute("""CREATE TABLE IF NOT EXISTS application_turns (
+             principal_id TEXT NOT NULL, turn_id TEXT NOT NULL,
+             grant_id TEXT NOT NULL, grant_digest TEXT NOT NULL,
+@@ -2112,6 +2141,213 @@
+                 return w["orchestrator_id"] == orch
+         return True
+ 
++    def _expiry_policy(self, spec, model, task_class):
++        """The account owner supplies a qualified hard claim ceiling, not an estimate."""
++        policy = spec.get("expiry_admission")
++        if policy is None:
++            return None
++        fields = {"schema", "required_windows", "reserve_units", "reserved_slots", "urgent_classes", "claims"}
++        if (type(policy) is not dict or set(policy) != fields
++                or policy["schema"] != "mastermind.expiry_account_admission.v1"):
++            raise ValueError("account_policy_invalid")
++        required = policy["required_windows"]
++        if (type(required) is not list or not 1 <= len(required) <= 8
++                or any(not isinstance(k, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", k) for k in required)
++                or len(set(required)) != len(required)):
++            raise ValueError("account_policy_invalid")
++        reserve = policy["reserve_units"]
++        if (type(reserve) is not dict or set(reserve) != set(required)
++                or any(type(v) is not int or not 0 <= v <= 2**63-1 for v in reserve.values())
++                or type(policy["reserved_slots"]) is not int or not 0 <= policy["reserved_slots"] <= 4096):
++            raise ValueError("account_policy_invalid")
++        urgent = policy["urgent_classes"]
++        if (type(urgent) is not list or len(urgent) > 16 or len(set(urgent)) != len(urgent)
++                or any(not isinstance(k, str) or not re.fullmatch(r"[a-z][a-z0-9_-]{0,63}", k) for k in urgent)):
++            raise ValueError("account_policy_invalid")
++        claim = policy["claims"][model][task_class]
++        if (type(claim) is not dict or set(claim) != {"budget_ref", "units"}
++                or not isinstance(claim["budget_ref"], str) or not 1 <= len(claim["budget_ref"]) <= 256
++                or any(ord(c) < 33 or ord(c) > 126 for c in claim["budget_ref"])
++                or type(claim["units"]) is not dict or set(claim["units"]) != set(required)):
++            raise ValueError("account_claim_budget_unqualified")
++        for value in claim["units"].values():
++            if (type(value) is not dict or set(value) != {"unit", "maximum"}
++                    or not isinstance(value["unit"], str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", value["unit"])
++                    or type(value["maximum"]) is not int or not 0 < value["maximum"] <= 2**63-1):
++                raise ValueError("account_claim_budget_unqualified")
++        return policy, claim
++
++    def _expiry_source_policy(self):
++        # Reuse the qualified existing pool-policy reader and its R31 thresholds.
++        # This read does not call any provider or change pool suitability.
++        import pick
++        snapshot = pick.read_application_policy()
++        document = snapshot.document
++        raw = document.get("routing", {}).get("burn_down", {})
++        if (type(raw) is not dict or ("promote" in raw and type(raw["promote"]) is not bool)
++                or any(k in raw and (type(raw[k]) not in (int, float) or not math.isfinite(raw[k]))
++                       for k in ("hours_before_reset", "min_remaining_pct"))):
++            raise ValueError("account_expiry_policy_invalid")
++        config = pick._burn_down_cfg(document)
++        if (type(config["promote"]) is not bool
++                or not math.isfinite(config["hours_before_reset"]) or config["hours_before_reset"] <= 0
++                or not math.isfinite(config["min_remaining_pct"]) or not 0 <= config["min_remaining_pct"] <= 100):
++            raise ValueError("account_expiry_policy_invalid")
++        return config, snapshot.bytes_sha256
++
++    def _expiry_account_candidates(self, conn, pool, model, task_class, candidates):
++        """Filter and rank under the existing transaction; retain one observation."""
++        import quota_circuit
++        import quota_remote
++        document = self.load_accounts_doc()
++        inventory = []
++        for provider, spec in document["providers"].items():
++            if type(spec) is not dict or type(spec.get("accounts", [])) is not list:
++                raise ValueError("account_inventory_invalid")
++            names = [a.get("name") for a in spec.get("accounts", []) if type(a) is dict]
++            if len(names) != len(spec.get("accounts", [])) or len(names) != len(set(names)):
++                raise ValueError("account_inventory_invalid")
++            for account in spec.get("accounts", []):
++                scope = quota_circuit.scope_for(self, provider, account["name"])
++                inventory.append((provider, spec, account, scope))
++        affected = {scope for _, spec, _, scope in inventory if "expiry_admission" in spec}
++        # Removing a policy or renaming a scope cannot erase the meaning of
++        # reservations already committed by this owner. Source rollback must
++        # preserve this reader until the original liabilities are reconciled.
++        for prior in conn.execute("SELECT DISTINCT pool, account, quota_scope FROM leases "
++                                  "WHERE account_admission_json IS NOT NULL"):
++            affected.add(prior["quota_scope"])
++            affected.add(quota_circuit.scope_for(self, prior["pool"], prior["account"]))
++        if not any(quota_circuit.scope_for(self, pool, a["name"]) in affected for a in candidates):
++            return candidates, {}, None
++        cache, source_digest = quota_remote.read_account_admission_cache()
++        config, policy_digest = self._expiry_source_policy()
++        config_digest = hashlib.sha256(_application_json(document).encode()).hexdigest()
++        out, evidence = [], {}
++        now = self.now()
++        for account in candidates:
++            name = account["name"]
++            scope = quota_circuit.scope_for(self, pool, name)
++            if scope not in affected:
++                out.append(account)
++                continue
++            try:
++                if account.get("enabled", True) is not True:
++                    continue
++                policy, claim = self._expiry_policy(self.provider(pool), model, task_class)
++                obs = quota_remote.account_admission_observation(cache, provider=self.provider_name(pool),
++                    account=name, generation=account["capacity_generation"], quota_scope=scope,
++                    required_windows=policy["required_windows"], now_ts=now)
++                members = [(p, s, a) for p, s, a, q in inventory if q == scope and s.get("enabled", True) is True
++                           and a.get("enabled", True) is True]
++                caps = []
++                for p, spec, member in members:
++                    other = spec.get("expiry_admission")
++                    if (type(other) is not dict or any(other.get(k) != policy[k] for k in
++                            ("schema", "required_windows", "reserve_units", "reserved_slots", "urgent_classes"))):
++                        raise ValueError("shared_scope_policy_unqualified")
++                    paired = quota_remote.account_admission_observation(cache, provider=p,
++                        account=member["name"], generation=member["capacity_generation"], quota_scope=scope,
++                        required_windows=policy["required_windows"], now_ts=now)
++                    if paired["windows"] != obs["windows"] or paired["observed_at"] != obs["observed_at"]:
++                        raise ValueError("shared_scope_observation_disagrees")
++                    cap = self.account_cap(p, member, conn=conn)
++                    if cap is None:
++                        raise ValueError("shared_scope_unavailable")
++                    caps.append(cap)
++                providers = sorted({p for p, _, _ in members})
++                placeholders = ",".join("?" for _ in providers)
++                rows = [dict(r) for r in conn.execute(
++                    "SELECT * FROM leases WHERE (quota_scope=? OR (quota_scope IS NULL AND pool IN (" + placeholders + "))) "
++                    "LIMIT 4097", (scope, *providers))]
++                if len(rows) > 4096:
++                    raise ValueError("shared_scope_history_unqualified")
++                rows = [r for r in rows if (r["quota_scope"] or quota_circuit.scope_for(self, r["pool"], r["account"])) == scope]
++                # A config rename/scope change is not a drain or liability transfer.
++                # The existing publication owner must reconcile these originals.
++                for p, _, member in members:
++                    changed = conn.execute("SELECT 1 FROM leases WHERE pool=? AND account=? "
++                        "AND quota_scope IS NOT NULL AND quota_scope!=? "
++                        "AND (account_admission_json IS NOT NULL OR state IN ('held','rented')) LIMIT 1",
++                        (p, member["name"], scope)).fetchone()
++                    if changed:
++                        raise ValueError("account_scope_change_unreconciled")
++                priors = {}
++                for row in rows:
++                    raw = row["account_admission_json"]
++                    if raw is None:
++                        continue
++                    if hashlib.sha256(raw.encode()).hexdigest() != row["account_admission_digest"]:
++                        raise ValueError("shared_scope_lease_unqualified")
++                    prior = json.loads(raw)
++                    if (prior.get("quota_scope") != scope or prior.get("account") != row["account"]
++                            or prior.get("pool") != row["pool"] or prior.get("model") != row["model"]):
++                        raise ValueError("shared_scope_lease_unqualified")
++                    observed = prior["observation"]
++                    if (obs["observed_at"] < observed["observed_at"]
++                            or (obs["observed_at"] == observed["observed_at"]
++                                and obs["windows"] != observed["windows"])):
++                        raise ValueError("account_observation_regressed")
++                    priors[row["id"]] = prior
++                urgent = task_class in policy["urgent_classes"]
++                slots = 0 if urgent else policy["reserved_slots"]
++                if sum(r["state"] in ("held", "rented") for r in rows) + slots >= min(caps):
++                    continue
++                retained = []
++                deadline = None
++                for kind, window in obs["windows"].items():
++                    bound = claim["units"][kind]
++                    if bound["unit"] != window["unit"]:
++                        raise ValueError("account_budget_unit_mismatch")
++                    committed = 0
++                    for row in rows:
++                        active = row["state"] in ("held", "rented")
++                        if not active and row["id"] in window["accounted_lease_ids"]:
++                            continue
++                        prior = priors.get(row["id"])
++                        if prior is None:
++                            raise ValueError("shared_scope_lease_unqualified")
++                        matching = [w for w in prior["windows"] if w["kind"] == kind]
++                        if len(matching) != 1 or matching[0]["unit"] != window["unit"]:
++                            raise ValueError("shared_scope_lease_unqualified")
++                        previous = matching[0]
++                        if previous["epoch"] != window["epoch"]:
++                            # Terminal does not prove that delayed/cross-reset
++                            # consumption was included. Only H2's exact coverage
++                            # can discharge this original per-window liability.
++                            raise ValueError("shared_scope_window_crossing")
++                        amount = previous["reserved_units"]
++                        if type(amount) is not int or not 0 < amount <= 2**63-1:
++                            raise ValueError("shared_scope_lease_unqualified")
++                        committed += amount
++                    reserve = 0 if urgent else policy["reserve_units"][kind]
++                    available = window["remaining"] - committed - reserve
++                    if available < bound["maximum"]:
++                        raise ValueError("account_window_exhausted")
++                    reset = window["reset_at_epoch"]
++                    if (config["promote"] and reset is not None
++                            and 0 < reset - now <= config["hours_before_reset"] * 3600
++                            and 100 * available / window["limit"] >= config["min_remaining_pct"]):
++                        deadline = min(deadline, reset) if deadline is not None else reset
++                    retained.append({"kind": kind, "epoch": window["epoch"], "unit": window["unit"],
++                        "reserved_units": bound["maximum"], "remaining": window["remaining"],
++                        "committed_units": committed, "reserve_units": reserve,
++                        "starts_at": window["starts_at"], "reset_at": window["reset_at"], "limit": window["limit"]})
++                record = {"schema": "mastermind.account_admission.v1", "pool": self.provider_name(pool),
++                    "account": name, "model": model, "quota_scope": scope,
++                    "capacity_generation": account["capacity_generation"], "observed_at": obs["observed_at"],
++                    "admitted_at": now, "source_digest": source_digest, "config_digest": config_digest,
++                    "policy_digest": policy_digest, "budget_ref": claim["budget_ref"],
++                    "urgent_reserve_used": urgent, "windows": retained, "observation": obs,
++                    "reason": "expiring_allowance" if deadline is not None else "eligible_headroom"}
++                if len(_application_json(record).encode()) > 32768:
++                    raise ValueError("account_evidence_too_large")
++                out.append(dict(account, _expiry_rank=(0, deadline) if deadline is not None else (1, 0)))
++                evidence[name] = record
++            except (KeyError, TypeError, ValueError, OverflowError):
++                continue
++        return out, evidence, (source_digest, config_digest, policy_digest)
++
+     def _pick_account(
+         self,
+         conn: sqlite3.Connection,
+@@ -2152,6 +2388,7 @@
+                         return preferred
+                     return None
+             return None  # stickiness: requested account not grantable
++        expiry = {a["name"]: a.get("_expiry_rank", (1, 0)) for a in grantable}
+         scored: List[Tuple[int, int, str]] = []
+         for a in grantable:
+             name = str(a["name"])
+@@ -2220,11 +2457,11 @@
+                 return max(local_rank, observed)
+ 
+             scored.sort(key=lambda t: (
+-                cooldown_priority(t[2]),
++                cooldown_priority(t[2]), expiry[t[2]],
+                 t[0], -t[1], recent.get(t[2], float("-inf")), t[2]
+             ))
+         else:
+-            scored.sort(key=lambda t: (t[0], -t[1], t[2]))
++            scored.sort(key=lambda t: (expiry[t[2]], t[0], -t[1], t[2]))
+         return scored[0][2]
+ 
+     def _try_acquire(
+@@ -2255,7 +2492,27 @@
+         finally:
+             conn.close()
+ 
+-    def _try_acquire_in_transaction(
++    def _try_acquire_in_transaction(self, conn, orch, pool, account, task_class, host,
++                                    pid, ttl, waiter_id, model="", operator_child_id=None,
++                                    capacity_handoff=False, not_before=None, *, allowed_accounts=None,
++                                    purpose="WORKER"):
++        try:
++            document = _read_accounts_document(self.accounts_path)
++            current = _APPLICATION_ACCOUNTS.get()
++            if current is not None and current != document:
++                raise ValueError("account_configuration_changed")
++        except (ApplicationAdmissionError, ValueError):
++            return (AcquireResult(ok=False, reason="account_configuration_unavailable", pool=pool,
++                                  orchestrator_id=orch), waiter_id, "account_configuration_unavailable")
++        token = _APPLICATION_ACCOUNTS.set(document)
++        try:
++            return self._try_acquire_on_accounts(conn, orch, pool, account, task_class, host,
++                pid, ttl, waiter_id, model, operator_child_id, capacity_handoff, not_before,
++                allowed_accounts=allowed_accounts, purpose=purpose)
++        finally:
++            _APPLICATION_ACCOUNTS.reset(token)
++
++    def _try_acquire_on_accounts(
+         self,
+         conn: sqlite3.Connection,
+         orch: str,
+@@ -2363,8 +2620,15 @@
+                 "priority_wait",
+             )
+ 
++        candidates = self.grantable_accounts(pool, conn=conn) if compatible_accounts is None else compatible_accounts
++        try:
++            candidates, account_evidence, source_fence = self._expiry_account_candidates(
++                conn, pool, model, task_class, candidates)
++        except (OSError, KeyError, ValueError, TypeError, ImportError, ApplicationAdmissionError):
++            return (AcquireResult(ok=False, reason="account_capacity_unqualified", pool=pool,
++                                  orchestrator_id=orch), waiter_id, "account_capacity_unqualified")
+         picked = self._pick_account(conn, pool, account, model=model,
+-                                    grantable_override=compatible_accounts)
++                                    grantable_override=candidates)
+         if not picked:
+             reason = "account_unavailable" if account else "accounts_at_cap"
+             if account and any(self._parked(a, self.now()) for a in (spec.get("accounts") or []) if a.get("name") == account):
+@@ -2403,13 +2667,35 @@
+         if not_before is not None:
+             from commission_deadline import require_not_before
+             require_not_before(not_before)
++        admission = account_evidence.get(picked)
++        if admission is not None:
++            admission = dict(admission, lease_id=lid, orchestrator_id=orch,
++                task_class=task_class, purpose=purpose, admitted_at=now)
++        admission_json = _application_json(admission) if admission is not None else None
++        admission_digest = hashlib.sha256(admission_json.encode()).hexdigest() if admission_json is not None else None
++        if source_fence is not None:
++            try:
++                import quota_remote
++                _, fresh_source = quota_remote.read_account_admission_cache()
++                fresh_config = hashlib.sha256(_application_json(_read_accounts_document(self.accounts_path)).encode()).hexdigest()
++                _, fresh_policy = self._expiry_source_policy()
++                if source_fence != (fresh_source, fresh_config, fresh_policy):
++                    raise ValueError("account_capacity_changed")
++                if admission is not None and not 0 <= self.now() - admission["observed_at"] < quota_remote.FRESH_S:
++                    raise ValueError("account_capacity_stale")
++                if admission is not None and any(w["reset_at_epoch"] is not None and w["reset_at_epoch"] <= self.now()
++                        for w in admission["observation"]["windows"].values()):
++                    raise ValueError("account_capacity_window_changed")
++            except (OSError, KeyError, TypeError, ValueError, ImportError, ApplicationAdmissionError):
++                return (AcquireResult(ok=False, reason="account_capacity_changed", pool=pool,
++                                      orchestrator_id=orch), waiter_id, "account_capacity_changed")
+         conn.execute(
+             "INSERT INTO leases "
+             "(id, orchestrator_id, pool, account, task_class, model, host, pid, "
+-            "granted_at, ttl, last_heartbeat, state, renewable, quota_scope, purpose) "
+-            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
++            "granted_at, ttl, last_heartbeat, state, renewable, quota_scope, purpose, account_admission_json, account_admission_digest) "
++            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+             (lid, orch, pool, picked, task_class, model, host, pid, now, use_ttl, now, state, 1,
+-             __import__("quota_circuit").scope_for(self, pool, picked), purpose),
++             __import__("quota_circuit").scope_for(self, pool, picked), purpose, admission_json, admission_digest),
+         )
+         if operator_child_id is not None:
+             conn.execute("UPDATE operator_child_authorizations SET admitted_lease_id=? WHERE run_id=? AND root=? AND admitted_lease_id IS NULL",
+@@ -2424,6 +2710,7 @@
+                 ok=True,
+                 lease_id=lid,
+                 account=picked,
++                account_admission=admission,
+                 state=state,
+                 orchestrator_id=orch,
+                 pool=pool,
+@@ -2830,6 +3117,13 @@
+             result.update(recipe_digest=turn["recipe_digest"], recipe_json=turn["recipe_json"])
+         if turn["transport_kind"] is not None:
+             result["transport_kind"] = turn["transport_kind"]
++        admission = conn.execute("SELECT account_admission_json, account_admission_digest FROM leases WHERE id=?",
++                                 (turn["lease_id"],)).fetchone()
++        if admission is not None and admission["account_admission_json"] is not None:
++            raw = admission["account_admission_json"]
++            if hashlib.sha256(raw.encode()).hexdigest() != admission["account_admission_digest"]:
++                raise ApplicationAdmissionError("stored_account_admission_invalid")
++            result.update(account_admission_json=raw, account_admission_digest=admission["account_admission_digest"])
+         result.update(selection_json=turn["selection_json"], selection_digest=turn["selection_digest"])
+         return result
+ 
+diff --git a/ops/native_fabric/quota_continuity/candidate/quota_remote.py b/ops/native_fabric/quota_continuity/candidate/quota_remote.py
+--- a/ops/native_fabric/quota_continuity/candidate/quota_remote.py
++++ b/ops/native_fabric/quota_continuity/candidate/quota_remote.py
+@@ -527,6 +527,123 @@
+         return []
+ 
+ 
++
++def read_account_admission_cache():
++    """One bounded, read-only H2 observation from the incumbent cache owner.
++
++    This function never refreshes, resolves credentials or accepts a caller path.
++    A digest binds the retained bytes; it is not a grant or provider attestation.
++    """
++    import hashlib
++    import math
++    import stat
++
++    def object_pairs(pairs):
++        out = {}
++        for key, value in pairs:
++            if key in out:
++                raise ValueError("duplicate_capacity_key")
++            out[key] = value
++        return out
++
++    def invalid_constant(value):
++        raise ValueError("invalid_capacity_number")
++
++    fd = os.open(CACHE_PATH, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0))
++    with os.fdopen(fd, "rb") as source:
++        before = os.fstat(source.fileno())
++        if not stat.S_ISREG(before.st_mode) or before.st_size > 4 * 1024 * 1024:
++            raise ValueError("capacity_source_unavailable")
++        raw = source.read(4 * 1024 * 1024 + 1)
++        after = os.fstat(source.fileno())
++    if (len(raw) > 4 * 1024 * 1024 or
++            (before.st_ino, before.st_size, before.st_mtime_ns) !=
++            (after.st_ino, after.st_size, after.st_mtime_ns)):
++        raise ValueError("capacity_source_changed")
++    document = json.loads(raw.decode("utf-8"), object_pairs_hook=object_pairs,
++                          parse_constant=invalid_constant)
++    if type(document) is not dict:
++        raise ValueError("capacity_source_invalid")
++    return document, hashlib.sha256(raw).hexdigest()
++
++
++def account_admission_observation(cache, *, provider, account, generation,
++                                  quota_scope, required_windows, now_ts):
++    """Validate the qualified H2 envelope; legacy percentages cannot invent it.
++
++    H2's existing producer owns capacity_generation and exact coverage of settled
++    leases. Each window has its own native unit, epoch and remaining balance.
++    Null reset clocks may support headroom; they never establish expiry urgency.
++    """
++    import math
++    import re
++
++    def ident(value):
++        if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", value):
++            raise ValueError("capacity_identity_invalid")
++        return value
++
++    def number(value, *, positive=False, integral=False):
++        if type(value) not in (int, float) or not math.isfinite(value) or value < 0 or (positive and value == 0):
++            raise ValueError("capacity_number_invalid")
++        if integral and (type(value) is not int or value > 2**63-1):
++            raise ValueError("capacity_meter_must_use_exact_integer_units")
++        return value
++
++    def stamp(value):
++        if not isinstance(value, str):
++            raise ValueError("capacity_time_invalid")
++        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
++        if parsed.tzinfo is None:
++            raise ValueError("capacity_time_invalid")
++        return parsed.timestamp()
++
++    number(now_ts, positive=True)
++    ident(generation)
++    envelope = cache[provider]["accounts"][account]["admission"]
++    fields = {"schema", "provider", "account", "capacity_generation", "quota_scope",
++              "source", "observed_at", "windows"}
++    if (type(envelope) is not dict or set(envelope) != fields
++            or envelope["schema"] != "mastermind.account_capacity_observation.v1"
++            or envelope["provider"] != provider or envelope["account"] != account
++            or envelope["capacity_generation"] != generation
++            or envelope["quota_scope"] != quota_scope
++            or envelope["source"] != "PROVIDER_AUTHORITATIVE"):
++        raise ValueError("capacity_binding_unqualified")
++    observed = stamp(envelope["observed_at"])
++    if not 0 <= now_ts - observed < FRESH_S:
++        raise ValueError("capacity_observation_stale")
++    rows = envelope["windows"]
++    if type(rows) is not list or not 1 <= len(rows) <= 8:
++        raise ValueError("capacity_windows_invalid")
++    windows = {}
++    for row in rows:
++        expected = {"kind", "epoch", "unit", "limit", "remaining", "starts_at", "reset_at", "accounted_lease_ids"}
++        if type(row) is not dict or set(row) != expected:
++            raise ValueError("capacity_window_invalid")
++        kind = ident(row["kind"])
++        if kind in windows:
++            raise ValueError("capacity_window_duplicate")
++        ident(row["epoch"])
++        ident(row["unit"])
++        limit = number(row["limit"], positive=True, integral=True)
++        remaining = number(row["remaining"], integral=True)
++        start = stamp(row["starts_at"])
++        reset = None if row["reset_at"] is None else stamp(row["reset_at"])
++        if remaining > limit or start > observed or (reset is not None and reset <= now_ts):
++            raise ValueError("capacity_window_invalid")
++        covered = row["accounted_lease_ids"]
++        if (type(covered) is not list or len(covered) > 256
++                or any(not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{12}", value) for value in covered)
++                or len(set(covered)) != len(covered)):
++            raise ValueError("capacity_coverage_invalid")
++        windows[kind] = dict(row, starts_at_epoch=start, reset_at_epoch=reset)
++    if set(windows) != set(required_windows):
++        raise ValueError("capacity_windows_incomplete")
++    return {"schema": envelope["schema"], "provider": provider, "account": account,
++            "capacity_generation": generation, "quota_scope": quota_scope,
++            "source": envelope["source"], "observed_at": observed, "windows": windows}
++
+ def cached_glm_account_parked(account: str, *, now_ts: Optional[float] = None,
+                               cache_path: Optional[str] = None) -> bool:
+     """Narrow existing admission from a fresh authoritative account observation.
+diff --git a/ops/native_fabric/quota_continuity/tests/test_expiry_account_admission.py b/ops/native_fabric/quota_continuity/tests/test_expiry_account_admission.py
+new file mode 100644
+--- /dev/null
++++ b/ops/native_fabric/quota_continuity/tests/test_expiry_account_admission.py
+@@ -0,0 +1,501 @@
++"""H3 qualification against the exact native Broker and its real SQLite owner.
++
++Provider observations are synthetic. Network, subprocess and credential reads
++are denied. No provider account, live lease, runtime or credential is used.
++"""
++from concurrent.futures import ThreadPoolExecutor
++import copy
++from datetime import datetime, timezone
++import hashlib
++import json
++import os
++from pathlib import Path
++import sqlite3
++import sys
++import tempfile
++from threading import Barrier
++import unittest
++from unittest.mock import patch
++
++SOURCE = Path(os.environ.get("H3_NATIVE_SOURCE", Path(__file__).resolve().parents[1] / "candidate"))
++sys.path[:0] = [str(SOURCE), str(Path(__file__).resolve().parents[1] / "source")]
++from _offline_boundary import acquire as offline_acquire, release as offline_release
++import lease_broker
++import quota_remote
++
++
++def setUpModule():
++    offline_acquire()
++
++
++def tearDownModule():
++    offline_release()
++
++
++def iso(value):
++    return datetime.fromtimestamp(value, timezone.utc).isoformat()
++
++
++class ExpiryAdmissionTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++        self.clock = [1800000000.0]
++        self.cache_file = self.root / "quota.json"
++        self.accounts = self.root / "accounts.json"
++        self.windows = ["5h", "weekly"]
++        claims = {k: {"budget_ref": "fixture:enforced-request-ceiling", "units": {
++            w: {"unit": "requests", "maximum": 1} for w in self.windows}}
++            for k in ("build", "application", "review")}
++        self.policy = {"schema": "mastermind.expiry_account_admission.v1",
++            "required_windows": self.windows, "reserve_units": {w: 0 for w in self.windows},
++            "reserved_slots": 0, "urgent_classes": ["review"],
++            "claims": {"fixture-model": claims, "other-model": copy.deepcopy(claims)}}
++        self.grant = dict(grant_id="fixture-app", purpose="APPLICATION", enabled=True,
++            principal_id="macro", credential_ref="FIXTURE_REFERENCE", admission_root="service:fixture",
++            caller_hosts=["fixture-host"], workloads=["site_interactive"], pool="go",
++            accounts=["alpha-far", "zeta-near"], models=["fixture-model", "other-model"],
++            route="/v1/chat/completions", stream=False, expires_at=self.clock[0]+900,
++            max_turn_seconds=300, max_steps=2, qualification_ref="fixture:qualified",
++            application_permission_ref="fixture:application")
++        self.doc = {"schema": "mastermind.provider_accounts.v1", "providers": {"go": {
++            "enabled": True, "accounts": [{"name": n, "per_account_cap": 4,
++                "capacity_generation": "fixture-generation-1"} for n in self.grant["accounts"]],
++            "expiry_admission": self.policy}}, "application_grants": [self.grant]}
++        self.cache = {"go": {"accounts": {n: {"admission": self.observation(n,
++            self.clock[0] + (60*3600 if n == "alpha-far" else 3600))} for n in self.grant["accounts"]}}}
++        self.save()
++        cache_patch = patch.object(quota_remote, "CACHE_PATH", str(self.cache_file))
++        cache_patch.start()
++        self.addCleanup(cache_patch.stop)
++        # Source policy only is synthetic; the actual parser is separately qualified.
++        self.policy_patch = patch.object(lease_broker.Broker, "_expiry_source_policy", create=True,
++            return_value=({"promote": True, "hours_before_reset": 36.0,
++                           "min_remaining_pct": 15.0}, "a"*64))
++        self.policy_patch.start()
++        self.addCleanup(self.policy_patch.stop)
++        self.br = self.broker()
++        self.assertEqual(Path(lease_broker.__file__).resolve(), SOURCE.resolve()/"lease_broker.py")
++
++    def observation(self, name, reset):
++        return {"schema": "mastermind.account_capacity_observation.v1", "provider": "go",
++            "account": name, "capacity_generation": "fixture-generation-1", "quota_scope": "go:"+name,
++            "source": "PROVIDER_AUTHORITATIVE", "observed_at": iso(self.clock[0]),
++            "windows": [{"kind": kind, "epoch": "fixture-"+kind, "unit": "requests",
++                "limit": 100, "remaining": 80, "starts_at": iso(self.clock[0]-3600),
++                "reset_at": iso(reset) if kind == "weekly" else None,
++                "accounted_lease_ids": []} for kind in self.windows]}
++
++    def save(self):
++        self.accounts.write_text(json.dumps(self.doc))
++        self.cache_file.write_text(json.dumps(self.cache))
++
++    def broker(self):
++        br = lease_broker.Broker(db_path=str(self.root/"leases.sqlite"), lock_path=str(self.root/"leases.lock"),
++            accounts_path=str(self.accounts), now_fn=lambda: self.clock[0], check_pid=False,
++            external_gates=False, this_host="fixture-host", status_json=str(self.root/"status.json"))
++        return br
++
++    def claim(self, root="root", account=None, model="fixture-model", task_class="build", broker=None, pool="go"):
++        return (broker or self.br).acquire(root, pool, account=account, task_class=task_class,
++            host="fixture-host", pid=os.getpid(), model=model, wait=0)
++
++    def rows(self, table="leases"):
++        with sqlite3.connect(self.root/"leases.sqlite") as conn:
++            conn.row_factory = sqlite3.Row
++            return [dict(r) for r in conn.execute("SELECT * FROM "+table)]
++
++    def near(self):
++        return self.cache["go"]["accounts"]["zeta-near"]["admission"]
++
++    def only_near(self, cap=4, remaining=80):
++        self.doc["providers"]["go"]["accounts"] = [{"name": "zeta-near", "per_account_cap": cap,
++                                                    "capacity_generation": "fixture-generation-1"}]
++        self.grant["accounts"] = ["zeta-near"]
++        for w in self.near()["windows"]:
++            w["remaining"] = remaining
++        self.save()
++
++    def refresh_time(self, seconds=1):
++        self.clock[0] += seconds
++        for group in self.cache.values():
++            for row in group["accounts"].values():
++                row["admission"]["observed_at"] = iso(self.clock[0])
++
++    def begin(self, turn="original-turn", broker=None):
++        return (broker or self.br).begin_application_turn(principal_id="macro", caller_host="fixture-host",
++            workload="site_interactive", turn_id=turn, pool="go", model="fixture-model",
++            transport_accounts=set(self.grant["accounts"]))
++
++    def prepared(self):
++        binding = self.begin()
++        request = self.br.prepare_application_request(principal_id="macro", turn_id="original-turn",
++            request_id="original-request", request_digest="b"*64)
++        return binding, request
++
++    def receipt(self, request):
++        return {"dispatch_id": request["dispatch_id"], "request_digest": "b"*64,
++            "lease_id": request["lease_id"], "account": request["account"], "model": "fixture-model",
++            "response_digest": "c"*64, "status_code": 200, "completed_at": self.clock[0],
++            "usage": {"input_tokens": 11, "output_tokens": 7}}
++
++    def test_actual_claim_chooses_near_and_retains_complete_evidence(self):
++        result = self.claim()
++        self.assertTrue(result.ok, result)
++        self.assertEqual(result.account, "zeta-near")
++        lease = self.rows()[0]
++        evidence = json.loads(lease["account_admission_json"])
++        self.assertEqual(hashlib.sha256(lease["account_admission_json"].encode()).hexdigest(), lease["account_admission_digest"])
++        self.assertEqual((lease["account"], evidence["account"], result.account_admission["account"]), ("zeta-near",)*3)
++        self.assertEqual(evidence["reason"], "expiring_allowance")
++        self.assertEqual({w["kind"] for w in evidence["windows"]}, {"5h", "weekly"})
++
++    def test_other_window_exhaustion_beats_expiry(self):
++        self.near()["windows"][0]["remaining"] = 0
++        self.save()
++        self.assertEqual(self.claim().account, "alpha-far")
++
++    def test_stale_future_past_null_and_wrong_generation_observations(self):
++        original = copy.deepcopy(self.near())
++        cases = [lambda x: x.update(observed_at=iso(self.clock[0]-600)),
++                 lambda x: x.update(observed_at=iso(self.clock[0]+1)),
++                 lambda x: x.update(capacity_generation="revoked-generation"),
++                 lambda x: x.update(source="LOCAL_ESTIMATE"),
++                 lambda x: x.update(account="other-account"),
++                 lambda x: x["windows"][1].update(reset_at=iso(self.clock[0])),
++                 lambda x: x["windows"][0].update(remaining=None)]
++        for change in cases:
++            with self.subTest(change=cases.index(change)):
++                self.cache["go"]["accounts"]["zeta-near"]["admission"] = copy.deepcopy(original)
++                change(self.near()); self.save()
++                result = self.claim(root="case-"+str(cases.index(change)))
++                self.assertEqual(result.account, "alpha-far")
++                self.assertTrue(self.br.release(result.lease_id, "case-"+str(cases.index(change))))
++
++    def test_null_clock_is_not_expiry_or_unknown_remaining(self):
++        self.near()["windows"][1]["reset_at"] = None
++        self.save()
++        result = self.claim(account="zeta-near")
++        self.assertTrue(result.ok)
++        self.assertEqual(result.account_admission["reason"], "eligible_headroom")
++
++    def test_missing_h2_envelope_fails_closed(self):
++        for row in self.cache["go"]["accounts"].values():
++            row.pop("admission")
++            row["states"] = [{"remaining_pct": 100, "reset_at": iso(self.clock[0]+1)}]
++        self.save()
++        self.assertFalse(self.claim().ok)
++        self.assertEqual(self.rows(), [])
++
++    def test_unknown_or_zero_claim_ceiling_fails_closed(self):
++        self.only_near()
++        self.policy["claims"]["fixture-model"]["build"]["units"]["weekly"]["maximum"] = 0
++        self.save()
++        self.assertFalse(self.claim().ok)
++        self.assertFalse(self.claim(model="not-enrolled").ok)
++        self.assertEqual(self.rows(), [])
++
++    def test_strict_pin_never_substitutes(self):
++        far = self.claim(account="alpha-far")
++        self.assertEqual(far.account, "alpha-far")
++        self.near()["windows"][0]["remaining"] = 0
++        self.save()
++        refused = self.claim(account="zeta-near")
++        self.assertFalse(refused.ok)
++        self.assertEqual(len(self.rows()), 1)
++
++    def test_revocation_between_preview_and_claim_same_mtime(self):
++        self.br.load_accounts_doc()
++        metadata = self.accounts.stat()
++        self.doc["providers"]["go"]["accounts"][1]["enabled"] = False
++        self.save()
++        os.utime(self.accounts, ns=(metadata.st_atime_ns, metadata.st_mtime_ns))
++        self.assertFalse(self.claim(account="zeta-near").ok)
++        self.assertEqual(self.rows(), [])
++
++    def test_source_change_before_insert_refuses_without_a_lease(self):
++        reader = quota_remote.read_account_admission_cache
++        calls = [0]
++        def changed():
++            calls[0] += 1
++            if calls[0] == 2:
++                self.doc["providers"]["go"]["accounts"][1]["enabled"] = False
++                self.save()
++            return reader()
++        with patch.object(quota_remote, "read_account_admission_cache", side_effect=changed):
++            result = self.claim()
++        self.assertFalse(result.ok)
++        self.assertEqual(result.reason, "account_capacity_changed")
++        self.assertEqual(self.rows(), [])
++
++    def test_two_claims_compete_for_one_window_budget_across_models(self):
++        self.only_near(remaining=1)
++        barrier = Barrier(2)
++        brokers = [self.broker(), self.broker()]
++        def contend(i):
++            barrier.wait(timeout=5)
++            return self.claim(root="child-"+str(i), model=["fixture-model", "other-model"][i], broker=brokers[i])
++        with ThreadPoolExecutor(max_workers=2) as executor:
++            results = list(executor.map(contend, range(2)))
++        self.assertEqual(sum(r.ok for r in results), 1)
++        self.assertEqual(len(self.rows()), 1)
++
++    def test_shared_aliases_and_consumers_do_not_duplicate_budget(self):
++        for a in self.doc["providers"]["go"]["accounts"]:
++            a["quota_scope"] = "shared-account"
++        common = self.observation("alpha-far", self.clock[0]+3600)
++        common["quota_scope"] = "declared:shared-account"
++        for w in common["windows"]:
++            w["remaining"] = 1
++        for name in ("alpha-far", "zeta-near"):
++            self.cache["go"]["accounts"][name]["admission"] = dict(copy.deepcopy(common), account=name)
++        self.save()
++        self.assertTrue(self.claim(root="primary", account="alpha-far").ok)
++        self.assertFalse(self.begin(turn="website")["ok"])
++        self.assertFalse(self.claim(root="child", account="zeta-near", model="other-model").ok)
++        self.assertEqual(len(self.rows()), 1)
++
++    def test_unjoined_shared_alias_cannot_bypass_strict_owner(self):
++        self.only_near()
++        self.doc["providers"]["go"]["accounts"][0]["quota_scope"] = "shared-account"
++        self.near()["quota_scope"] = "declared:shared-account"
++        self.doc["providers"]["other"] = {"enabled": True, "accounts": [{"name": "other-key",
++            "per_account_cap": 10, "quota_scope": "shared-account"}]}
++        self.save()
++        self.assertFalse(self.claim().ok)
++        self.assertFalse(self.claim(pool="other").ok)
++        self.assertEqual(self.rows(), [])
++
++    def test_reserves_survive_expiry_ranking(self):
++        self.only_near(cap=1, remaining=80)
++        self.policy["reserved_slots"] = 1
++        self.save()
++        self.assertFalse(self.claim().ok)
++        self.assertTrue(self.claim(task_class="review").ok)
++
++    def test_cumulative_reserve_is_independent_of_short_window(self):
++        self.only_near(remaining=2)
++        self.policy["reserve_units"]["weekly"] = 2
++        self.save()
++        self.assertFalse(self.claim().ok)
++        self.assertTrue(self.claim(task_class="review").ok)
++
++    def test_release_does_not_replenish_unrefreshed_allowance(self):
++        self.only_near(remaining=1)
++        first = self.claim()
++        self.assertTrue(first.ok)
++        self.assertTrue(self.br.release(first.lease_id, "root"))
++        self.assertFalse(self.claim(root="next").ok)
++        for w in self.near()["windows"]:
++            w["accounted_lease_ids"] = [first.lease_id]
++        self.refresh_time()
++        self.save()
++        self.assertTrue(self.claim(root="next").ok)
++
++    def test_active_claim_cannot_be_acknowledged_away(self):
++        self.only_near(remaining=1)
++        first = self.claim()
++        for w in self.near()["windows"]:
++            w["accounted_lease_ids"] = [first.lease_id]
++        self.save()
++        self.assertFalse(self.claim(root="next").ok)
++
++    def test_original_claim_recovers_after_response_loss_without_reallocation(self):
++        original = self.begin()
++        self.assertEqual(original["account"], "zeta-near")
++        recovered = self.begin(broker=self.broker())
++        self.assertEqual(recovered["lease_id"], original["lease_id"])
++        self.assertEqual(recovered["account_admission_digest"], original["account_admission_digest"])
++        self.assertEqual(len(self.rows()), 1)
++
++    def test_original_usage_settles_on_selected_account_after_unknown_response(self):
++        binding, request = self.prepared()
++        self.br.mark_application_request_unknown(dispatch_id=request["dispatch_id"], reason="response_lost")
++        self.grant["enabled"] = False
++        self.doc["providers"]["go"]["accounts"][1]["capacity_generation"] = "new-generation"
++        self.save()
++        recovered = self.br.recover_application_request(principal_id="macro", turn_id="original-turn",
++            request_id="original-request", request_digest="b"*64)
++        self.assertEqual(recovered["dispatch_id"], request["dispatch_id"])
++        self.assertEqual(len(self.rows()), 1)
++        wrong = dict(self.receipt(request), account="alpha-far")
++        with self.assertRaises(lease_broker.ApplicationAdmissionError):
++            self.br.complete_application_request(dispatch_id=request["dispatch_id"], terminal_receipt=wrong)
++        settled = self.br.complete_application_request(dispatch_id=request["dispatch_id"], terminal_receipt=self.receipt(request))
++        self.assertEqual(settled["terminal_receipt"]["account"], "zeta-near")
++        self.assertEqual(settled["terminal_receipt"]["usage"], {"input_tokens": 11, "output_tokens": 7})
++        self.br.close_application_turn(principal_id="macro", turn_id="original-turn")
++        self.assertEqual(self.rows()[0]["state"], "released")
++
++    def test_lease_binding_is_immutable(self):
++        result = self.claim()
++        self.assertTrue(result.ok)
++        for field, value in [("account", "alpha-far"), ("model", "other-model"),
++                             ("account_admission_json", None), ("quota_scope", "other")]:
++            with self.subTest(field=field), sqlite3.connect(self.root/"leases.sqlite") as conn:
++                with self.assertRaises(sqlite3.IntegrityError):
++                    conn.execute("UPDATE leases SET "+field+"=? WHERE id=?", (value, result.lease_id))
++
++    def test_unconfigured_policy_preserves_incumbent_selection(self):
++        self.doc["providers"]["go"].pop("expiry_admission")
++        self.save()
++        result = self.claim()
++        self.assertTrue(result.ok)
++        self.assertEqual(result.account, "alpha-far")
++        self.assertIsNone(self.rows()[0]["account_admission_json"])
++
++    def test_duplicate_or_nonfinite_cache_is_refused(self):
++        for raw in ('{"go":{},"go":{}}', '{"go":NaN}'):
++            self.cache_file.write_text(raw)
++            self.assertFalse(self.claim().ok)
++            self.assertEqual(self.rows(), [])
++
++    def test_monthly_exhaustion_is_independent_of_near_weekly_reset(self):
++        self.windows.append("monthly")
++        self.policy["reserve_units"]["monthly"] = 0
++        for models in self.policy["claims"].values():
++            for claim in models.values():
++                claim["units"]["monthly"] = {"unit": "requests", "maximum": 1}
++        for name, row in self.cache["go"]["accounts"].items():
++            window = copy.deepcopy(row["admission"]["windows"][1])
++            window.update(kind="monthly", epoch="fixture-monthly", reset_at=iso(self.clock[0]+2000000),
++                          remaining=0 if name == "zeta-near" else 50)
++            row["admission"]["windows"].append(window)
++        self.save()
++        self.assertEqual(self.claim().account, "alpha-far")
++
++    def test_reset_never_discards_a_cross_window_terminal_liability(self):
++        self.only_near(remaining=1)
++        for w in self.near()["windows"]:
++            w["reset_at"] = iso(self.clock[0]+1)
++        self.save()
++        first = self.claim()
++        self.assertTrue(first.ok)
++        self.refresh_time(2)
++        for w in self.near()["windows"]:
++            w.update(epoch="next-"+w["kind"], starts_at=iso(self.clock[0]-1),
++                     reset_at=iso(self.clock[0]+3600), remaining=100)
++        self.save()
++        self.assertFalse(self.claim(root="next").ok)
++        self.assertTrue(self.br.release(first.lease_id, "root"))
++        self.assertFalse(self.claim(root="next").ok)
++        for w in self.near()["windows"]:
++            w["accounted_lease_ids"] = [first.lease_id]
++        self.refresh_time()
++        self.save()
++        self.assertTrue(self.claim(root="next").ok)
++
++    def test_observation_replay_cannot_restore_previous_allowance(self):
++        self.only_near(remaining=2)
++        self.assertTrue(self.claim().ok)
++        self.refresh_time(1)
++        self.save()
++        self.assertTrue(self.claim(root="newer-observation").ok)
++        for w in self.near()["windows"]:
++            w["remaining"] = 100
++        self.near()["observed_at"] = iso(self.clock[0]-1)
++        self.save()
++        self.assertFalse(self.claim(root="replay").ok)
++
++    def test_policy_removal_cannot_bypass_retained_liability(self):
++        self.only_near(remaining=1)
++        first = self.claim()
++        self.assertTrue(first.ok)
++        self.assertTrue(self.br.release(first.lease_id, "root"))
++        self.doc["providers"]["go"].pop("expiry_admission")
++        self.save()
++        self.assertFalse(self.claim(root="after-policy-removal").ok)
++
++    def test_scope_change_cannot_hide_original_account_liability(self):
++        self.only_near(remaining=1)
++        first = self.claim()
++        self.assertTrue(first.ok)
++        self.doc["providers"]["go"]["accounts"][0]["quota_scope"] = "renamed"
++        self.near()["quota_scope"] = "declared:renamed"
++        self.refresh_time()
++        self.save()
++        self.assertFalse(self.claim(root="after-scope-change").ok)
++
++    def test_real_fixed_policy_reader_supplies_existing_r31_thresholds(self):
++        import pick
++        self.policy_patch.stop()
++        path = self.root / "pools.yaml"
++        doc = {"routing": {"burn_down": {"promote": True, "hours_before_reset": 36,
++                                         "min_remaining_pct": 15}},
++               "pools": {"grok": {"windows": {"weekly": {}}}}}
++        path.write_text(json.dumps(doc))
++        with patch.object(pick, "POOLS_YAML", str(path)):
++            result = self.claim()
++        self.assertTrue(result.ok, result)
++        self.assertEqual(result.account, "zeta-near")
++        self.assertEqual(result.account_admission["policy_digest"], hashlib.sha256(path.read_bytes()).hexdigest())
++
++    def test_real_policy_reader_refuses_malformed_promotion(self):
++        import pick
++        self.policy_patch.stop()
++        path = self.root / "pools.yaml"
++        path.write_text(json.dumps({"routing": {"burn_down": {"promote": "false"}},
++                                    "pools": {"grok": {"windows": {"weekly": {}}}}}))
++        with patch.object(pick, "POOLS_YAML", str(path)):
++            self.assertFalse(self.claim().ok)
++        self.assertEqual(self.rows(), [])
++
++    def test_gateway_dispatch_and_terminal_receipt_retain_selected_account(self):
++        from go_lease_gateway import GoLeaseGateway
++        gateway = GoLeaseGateway(str(self.root/"leases.sqlite"), set(self.grant["accounts"]),
++            {"fixture-model", "other-model"}, clock=lambda: self.clock[0], signing_key=b"k"*32,
++            application_broker=self.br)
++        binding = gateway.begin_application({"workload": "site_interactive", "turn_id": "gateway-turn",
++            "pool": "go", "model": "fixture-model"}, principal_id="macro", host="fixture-host")
++        self.assertEqual(binding["account"], "zeta-near")
++        request = gateway.prepare_application(binding["token"], principal_id="macro", host="fixture-host",
++            turn_id="gateway-turn", request_id="original-request", path="/v1/chat/completions",
++            payload={"model": "fixture-model", "messages": [{"role": "user", "content": "fixture"}]})
++        self.assertTrue(request["dispatch_permitted"])
++        self.assertEqual(request["account"], binding["account"])
++        receipt = dict(self.receipt(request), request_digest=request["request_digest"])
++        terminal = gateway.complete_application(request["dispatch_id"], terminal_receipt=receipt)
++        self.assertEqual(terminal["terminal_receipt"]["account"], "zeta-near")
++        self.assertEqual(self.rows("application_requests")[0]["state"], "terminal")
++        self.assertEqual(self.rows()[0]["account"], "zeta-near")
++
++    def test_coverage_is_independent_for_each_window(self):
++        self.only_near(remaining=1)
++        first = self.claim()
++        self.assertTrue(self.br.release(first.lease_id, "root"))
++        self.near()["windows"][0]["accounted_lease_ids"] = [first.lease_id]
++        self.refresh_time()
++        self.save()
++        self.assertFalse(self.claim(root="next").ok)
++
++    def test_fractional_or_boolean_meter_cannot_become_a_hard_budget(self):
++        self.only_near(remaining=1)
++        for value in (0.5, True, 1.0, 2**63):
++            with self.subTest(value=value):
++                self.near()["windows"][0]["remaining"] = value
++                self.save()
++                self.assertFalse(self.claim().ok)
++        self.assertEqual(self.rows(), [])
++
++    def test_legacy_terminal_lease_needs_qualified_migration_coverage(self):
++        self.only_near(remaining=1)
++        policy = self.doc["providers"]["go"].pop("expiry_admission")
++        self.save()
++        first = self.claim()
++        self.assertTrue(self.br.release(first.lease_id, "root"))
++        self.doc["providers"]["go"]["expiry_admission"] = policy
++        self.refresh_time(4000)
++        for w in self.near()["windows"]:
++            w.update(starts_at=iso(self.clock[0]-1), reset_at=iso(self.clock[0]+3600))
++        self.save()
++        self.assertFalse(self.claim(root="next").ok)
++        for w in self.near()["windows"]:
++            w["accounted_lease_ids"] = [first.lease_id]
++        self.refresh_time()
++        self.save()
++        self.assertTrue(self.claim(root="next").ok)
++
++
++if __name__ == "__main__":
++    unittest.main(verbosity=2)
