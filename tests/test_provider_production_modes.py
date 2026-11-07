@@ -126,9 +126,9 @@ def _install(
     return cfg
 
 
-def test_config_is_the_closed_two_mode_set():
+def test_config_has_two_legacy_modes_and_three_inert_modelark_modes():
     modes = ppm.load_modes()
-    assert set(modes) == {"minimax_payg_api", "glm_general_api"}
+    assert set(modes) == {"minimax_payg_api", "glm_general_api", *ppm.MODELARK_MODELS}
 
     minimax = modes["minimax_payg_api"]
     assert minimax.provider_id == "minimax"
@@ -172,7 +172,7 @@ def test_config_is_the_closed_two_mode_set():
     assert ppm.GLM_REQUEST_PROFILE.qualification == ppm.PROFILE_UNQUALIFIED_PENDING_CANARY
 
     # The credential destination table is exactly the two shipped modes.
-    assert set(ppm._MODE_IDENTITY) == {"minimax_payg_api", "glm_general_api"}
+    assert set(ppm._MODE_IDENTITY) == {"minimax_payg_api", "glm_general_api", *ppm.MODELARK_MODELS}
     minimax_identity = ppm._MODE_IDENTITY["minimax_payg_api"]
     assert (minimax_identity.scheme, minimax_identity.authority, minimax_identity.path) == (
         "https", "api.minimax.io", "/anthropic")
@@ -1088,7 +1088,7 @@ def test_capacity_v1_and_7103_semantics_are_untouched():
     assert slot_providers == {"claude", "codex", "deepseek"}
 
     modes = ppm.load_modes()
-    assert len(modes) == 2
+    assert len(modes) == 5
     for mode in modes.values():
         assert mode.cap_id not in slot_cap_ids
         assert mode.cap_id not in key_pool.POOL_CAPABILITY_IDS
