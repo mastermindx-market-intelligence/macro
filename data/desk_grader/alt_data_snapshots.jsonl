@@ -6210,3 +6210,7 @@
 {"date":"2026-11-06","ticker":"NOC","departed":true,"left_desk":"2026-11-06","last_rank":10,"last_score":42}
 {"date":"2026-11-06","ticker":"PH","departed":true,"left_desk":"2026-11-06","last_rank":null,"last_score":19}
 {"date":"2026-11-06","ticker":"TENB","departed":true,"left_desk":"2026-11-06","last_rank":29,"last_score":31}
+{"date":"2026-11-06","ticker":"MCK","rank":27,"score":31,"lean":1,"broken":false}
+{"date":"2026-11-06","ticker":"DHR","rank":29,"score":31,"lean":1,"broken":false}
+{"date":"2026-11-06","ticker":"TXN","rank":null,"score":26,"lean":1,"broken":true}
+{"date":"2026-11-06","ticker":"STX","rank":null,"score":21,"lean":1,"broken":true}
