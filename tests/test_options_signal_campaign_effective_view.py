@@ -1541,3 +1541,46 @@ def test_v1_unchanged_when_inactive(
     assert legacy_checkpoint["checkpoint_id"] == v1_id
     # No correction field in v1.
     assert "correction" not in legacy_checkpoint
+
+
+CONTROLLED_RECEIPT_PATH = Path(
+    'research/options_estate/options_signal_campaign_correction_activation_receipt_v1.json'
+)
+
+
+def test_committed_controlled_correction_receipt_matches_native_contract():
+    from jsonschema import Draft202012Validator
+
+    receipt = json.loads((ROOT / CONTROLLED_RECEIPT_PATH).read_text())
+    schema = json.loads((ROOT / 'contracts/options/options.signal_campaign_correction_activation_receipt.v1.schema.json').read_text())
+    Draft202012Validator(schema).validate(receipt)
+    assert campaign_engine._verify_activation_receipt(
+        receipt, CorrectionPolicy.load_canonical(ROOT)
+    ) == receipt
+    assert receipt['receipt_id'] == 'ocact_sep03_correction_20261019_01a152ce'
+
+
+def test_daily_campaign_explicitly_binds_controlled_correction_receipt():
+    import shlex
+    import yaml
+
+    workflow = yaml.safe_load((ROOT / '.github/workflows/daily.yml').read_text())
+    step = next(s for s in workflow['jobs']['engine']['steps'] if s.get('id') == 'options_signal_campaign')
+    assert shlex.split(step['run']) == [
+        'python', '-m', 'scripts.build_options_signal_campaign',
+        '--correction-activation-receipt', CONTROLLED_RECEIPT_PATH.as_posix(),
+    ]
+    assert step['if'] == "always() && steps.options_signal_episode.outcome == 'success'"
+    assert step['timeout-minutes'] == 10
+    assert step['continue-on-error'] is True
+
+
+@pytest.mark.parametrize('name', CorrectionPolicy.load_canonical(ROOT).activation_preconditions)
+def test_committed_controlled_receipt_cannot_admit_an_uncleared_precondition(name):
+    receipt = json.loads((ROOT / CONTROLLED_RECEIPT_PATH).read_text())
+    receipt['activation_preconditions'][name] = False
+    unsigned = dict(receipt)
+    del unsigned['receipt_sha256']
+    receipt['receipt_sha256'] = _sha256(canonical_bytes(unsigned))
+    with pytest.raises(CampaignContractError, match='precondition is unmet'):
+        campaign_engine._verify_activation_receipt(receipt, CorrectionPolicy.load_canonical(ROOT))
