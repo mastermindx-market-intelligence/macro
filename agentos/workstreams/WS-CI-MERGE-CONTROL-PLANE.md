@@ -353,20 +353,29 @@ waves:
       preserve PR 10674 original uncertain effect and PR 10656 release hold.
       The remaining Macro progression is 10674, then 10745, then incumbent
       sweeper/update-branch reproof of 10735; do not duplicate or bulk-arm it.
-      Current architecture checkpoint is source-linked at
+      Architecture and execution evidence remain source-linked at
+      https://github.com/mastermindx-market-intelligence/Mastermind/pull/2191
+      and the immutable checkpoint
       https://github.com/mastermindx-market-intelligence/Mastermind/blob/10c875b875cc69b19c60d9468ab71de035ea131b/docs/CI_LIGHTNING_ARCHITECTURE.md.
-      Mastermind PR 2065 head 7a49a75341fbccf7cf3dc4898156718e21fcf38c
-      preserves all 466 capacity cases in twelve modules, parallelizes the
-      unchanged 277-case native custody bundle, and repairs the observed
-      original-turn settlement race; thirteen focused cases passed. Current
-      native required/shadow proof remains pending and the explicit gateway
-      Release HOLD is preserved. Terminal PR 1297 is full native green at
+      The preceding continuity PR 10825 was accepted externally as
+      efdf3577bb35607bb02a4a0a1900adb91a3784c6; this is its additional delta.
+      Mastermind PR 2065 baseline 7a49a75341fbccf7cf3dc4898156718e21fcf38c
+      passed required run 42355985590 in 18m12s and shadow 42355985472.
+      Its new head b4406a06d553c1d210d5f5f466290961b5029ee9 divides modules
+      before collection within the same six-job/four-process budget, requires
+      exact child completion, and preserves private diagnostics and full
+      coverage: 2293 modules, zero exclusions. Focused host suites passed
+      710 and 386 cases with overlap; enabled paired Brain composition passed
+      all 23 cases after adopting protected historical-input custody.
+      Native required 42360062449 and shadow 42360062169 have started; neither
+      is acceptance. The independent gateway Release HOLD remains binding.
+      Terminal PR 1297 is full native green at
       689757a5fecab76bac601efbef9178f8115ae01e, still about 64m13s.
       Explicit branch-rule access denials block this session's Macro and
-      Terminal release verification; no cross-carrier fallback or queue action.
-      Next unblocked slice is four prepartitioned pytest children within the
-      existing Mastermind six-job/four-process budget, with exact completion
-      proof and private diagnostics. This is source execution, not a daemon.
+      Terminal release verification; no alternate carrier or queue action.
+      Consume the new native critical path before the next source slice;
+      Terminal runtime profiling and Macro duration calibration remain ready.
+      Preserve the original uncertain effects and existing delivery owners.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
