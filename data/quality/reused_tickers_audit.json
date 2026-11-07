@@ -1,5 +1,5 @@
 {
- "asof": "2026-11-06",
+ "asof": "2026-11-07",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -22,14 +22,14 @@
  "n": 3072,
  "n_failed": 0,
  "fail_pct": 0.0,
- "n_flags": 147,
+ "n_flags": 143,
  "universes": [
   {
    "name": "stocks",
    "n": 257,
    "n_failed": 0,
    "fail_pct": 0.0,
-   "n_flags": 2,
+   "n_flags": 1,
    "skipped": false,
    "note": "",
    "failed": [],
@@ -38,11 +38,6 @@
      "name": "ECHO",
      "kind": "zombie",
      "detail": "dead-registry name advancing 1810d past its 2021-11-22 registry bar; overlap corr -0.139"
-    },
-    {
-     "name": "KVUE",
-     "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-30) but no current NASDAQ/NYSE listing"
     }
    ]
   },
@@ -51,7 +46,7 @@
    "n": 2815,
    "n_failed": 0,
    "fail_pct": 0.0,
-   "n_flags": 145,
+   "n_flags": 142,
    "skipped": false,
    "note": "",
    "failed": [],
@@ -170,11 +165,6 @@
      "name": "CARS",
      "kind": "registry_mismatch",
      "detail": "same instrument as its dead-registry rows (corr 1.0) \u2014 the registry, not the store, carries foreign/live tape"
-    },
-    {
-     "name": "CBZ",
-     "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-30) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "CCRN",
@@ -427,11 +417,6 @@
      "detail": "same instrument as its dead-registry rows (corr 0.9827) \u2014 the registry, not the store, carries foreign/live tape"
     },
     {
-     "name": "KVUE",
-     "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-30) but no current NASDAQ/NYSE listing"
-    },
-    {
      "name": "LOCO",
      "kind": "registry_mismatch",
      "detail": "same instrument as its dead-registry rows (corr 1.0) \u2014 the registry, not the store, carries foreign/live tape"
@@ -585,11 +570,6 @@
      "name": "PUMP",
      "kind": "registry_mismatch",
      "detail": "same instrument as its dead-registry rows (corr 1.0) \u2014 the registry, not the store, carries foreign/live tape"
-    },
-    {
-     "name": "RAMP",
-     "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-30) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "RC",
@@ -799,7 +779,7 @@
   "zombie": 5,
   "rebirth": 3,
   "registry_mismatch": 128,
-  "delisted_printing": 11,
+  "delisted_printing": 7,
   "member_identity": 0
  },
  "stores": [
@@ -825,13 +805,7 @@
    ],
    "rebirth": [],
    "registry_mismatch": [],
-   "delisted_printing": [
-    {
-     "ticker": "KVUE",
-     "store_tip": "2026-10-30",
-     "acked": false
-    }
-   ]
+   "delisted_printing": []
   },
   {
    "store": "baskets/ohlcv",
@@ -2588,11 +2562,6 @@
      "acked": true
     },
     {
-     "ticker": "CBZ",
-     "store_tip": "2026-10-30",
-     "acked": false
-    },
-    {
      "ticker": "GETY",
      "store_tip": "2026-11-06",
      "acked": false
@@ -2608,18 +2577,8 @@
      "acked": false
     },
     {
-     "ticker": "KVUE",
-     "store_tip": "2026-10-30",
-     "acked": false
-    },
-    {
      "ticker": "LXP",
      "store_tip": "2026-11-03",
-     "acked": false
-    },
-    {
-     "ticker": "RAMP",
-     "store_tip": "2026-10-30",
      "acked": false
     },
     {
@@ -2654,13 +2613,9 @@
  "member_identity_acks": {},
  "unacked_zombies": [],
  "unacked_delisted_printing": [
-  "stocks/KVUE",
-  "baskets/ohlcv/CBZ",
   "baskets/ohlcv/GETY",
   "baskets/ohlcv/INDV",
-  "baskets/ohlcv/KVUE",
-  "baskets/ohlcv/LXP",
-  "baskets/ohlcv/RAMP"
+  "baskets/ohlcv/LXP"
  ],
  "unacked_member_identity": [],
  "undeclared_ledger_identities": []
