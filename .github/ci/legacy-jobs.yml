@@ -30460,6 +30460,41 @@ jobs:
       - name: Q15 noise-robust realized variance requirement suite
         run: python -m pytest tests/test_vol_noise_robust_realized.py -q
 
+  retirement-nearzero:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # Retirement near-zero controller regression (2026-11-05, PR #10767). The
+    # near-zero fix and its controller harness
+    # (tests/js/retirement_nearzero.test.mjs) landed together, but NO job
+    # executed that harness, so its 2178-case contract was only ever verified
+    # out-of-band: a later template edit could have shipped a broken controller
+    # green. This job runs the accepted harness against BOTH surfaces it can
+    # break — the authored template AND the committed generated page — so a
+    # template-only edit, and a committed page that drifts from its template,
+    # both fail loudly.
+    # The harness is a plain node script (built-in fs/vm/assert only) that takes
+    # the target path as argv[2]. It is NOT a node:test suite, so it must be run
+    # positionally and never with `node --test`.
+    # gate: code because the verdict is a pure function of the PR tree
+    # (template + generated page + harness): no data, no network, no install.
+    # Declared (non-exclusive) ownership: the three named paths ride the owned
+    # tier, so editing ANY of them re-runs this job.
+    paths:
+      - templates/calculators/retirement.html.j2
+      - site/tools/calculators/retirement.html
+      - tests/js/retirement_nearzero.test.mjs
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: retirement near-zero controller (authored template)
+        run: node tests/js/retirement_nearzero.test.mjs templates/calculators/retirement.html.j2
+      - name: retirement near-zero controller (committed generated page)
+        run: node tests/js/retirement_nearzero.test.mjs site/tools/calculators/retirement.html
+
   free-content-estate:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: data
