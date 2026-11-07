@@ -852,7 +852,7 @@ def test_two_run_cycle_is_admitted_via_real_git(tmp_path):
     first = _run_runner_with_state(
         tmp_path, repo, stub_bin, state_dir=state_dir,
     )
-    assert first.returncode == 0, (first.stdout, first.stderr)
+    assert first.returncode == 0, f"{first.stdout}\n{first.stderr}"
     # Receipt that every B2 step ran in order: refresh → assert clean →
     # hydrate (fetch_r2) → freshness (bypassed) → precheck → accrue →
     # verify → publish (skipped, dry-run).
@@ -871,7 +871,7 @@ def test_two_run_cycle_is_admitted_via_real_git(tmp_path):
     second = _run_runner_with_state(
         tmp_path, repo, stub_bin, state_dir=state_dir,
     )
-    assert second.returncode == 0, (second.stdout, second.stderr)
+    assert second.returncode == 0, f"{second.stdout}\n{second.stderr}"
     assert "checkout refreshed" in second.stdout
     assert "checkout clean" in second.stdout
     assert "done" in second.stdout
