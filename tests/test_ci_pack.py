@@ -4531,6 +4531,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
     "gdelt-news-leaves",
     # Installer simulations own their concrete source/read closure without
@@ -5604,7 +5605,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_916),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_935),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_674),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5613,6 +5614,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR #10727 conflict composition with protected07c55fb9 (2026-11-07):
+    Preserve the receiver's accepted retained-GSC free-content contribution
+    and the new press-account-claim-consumer owner. Add only this PR's
+    already qualified brain-desks composition-suite two planning-weight
+    units to the receiver's 5914/5933/5672: expect 5916/5935/5674.
+    These are source-derived expectations, not fresh planner measurements.
+    Natural current-head contract-delta must qualify this combined source,
+    including the new owner and current GSC command. Keep ceilings137/138/131,
+    ten packs, every existing command, selector, timeout and admission limit.
+    Preserve the separate earlier composition and measurement histories below.
 
     PR #10727 conflict composition with protected335e5cc3 (2026-11-07):
     Preserve both independent enrollments: the receiver's #10710 gateway+2
@@ -5639,6 +5651,17 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     three probes match the hosted contract-delta shape; these estimates are
     not runtime evidence. Sparse filesystem-only measurements are not used.
 
+    P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
+    protected59e035e39607, preserving its gateway and prior provenance
+    histories below. Fresh canonical measurements on the actual composed
+    source are index137/5914, free-content137/5933 and Prophet131/5672,
+    all ten packs. The protected main manifest on that SAME source measures
+    5914/5931/5672 with identical selected job IDs; it is not a historical
+    main-tree baseline. Only the accepted eval-os-a1 GSC suite contributes
+    two free-content planning-weight units. Fund precisely5931->5933;
+    retain incoming index/Prophet ceilings, all job-count and pack bounds,
+    selectors, suites, timeouts and admission limits. No runtime claim.
+
     Current-main composition (2026-11-07, PR10710): preserve the original
     P15.T2.S3 paired measurement below; this paragraph is arithmetic composition,
     not a new planner run or execution-time measurement. Protected main7fdd55fe
@@ -5659,6 +5682,26 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Fund exactly these two measured units, retaining every suite, job-count
     ceiling, selector, ten-pack bound, timeout and admission limit. No padding;
     these are planning weights, not measured execution times.
+
+    P5.T9.S4 (2026-11-07): compose retained-GSC coverage with protected
+    cfdad6581bb2, preserving its provenance coverage below. Canonical
+    measurements on the actual composed source are index137/5912,
+    free-content137/5931 and Prophet131/5670, all ten packs. The protected
+    main manifest measured on that same source is 5912/5929/5670 with
+    identical selected job IDs; this is a same-source counterfactual, not
+    a historical main-tree baseline. Only eval-os-a1's already accepted
+    retained-GSC suite adds two planner-estimate units on free-content.
+    Fund exactly those two units; retain every incoming job and command,
+    job-count ceiling, ten-pack bound, selector and runtime timeout.
+
+    P5.T4.S1 (2026-11-05): candidate 51ed9ea0656bd against canonical
+    a20e6437cc8a8 appends the hermetic retained-GSC consumer suite to the
+    existing eval-os-a1 command. The shared contract census measures only
+    free-content137jobs/5927->5929/10packs, with no newly selected job.
+    Index137/5912 and Prophet131/5668 are unchanged. Account for exactly
+    those two estimator units; preserve all job-count/pack ceilings,
+    selectors, previous commands, runtime timeouts and admission controls.
+    This is a planner workload estimate, not runtime or funding authority.
 
     PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
     contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:
