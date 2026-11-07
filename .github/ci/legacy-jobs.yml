@@ -35389,6 +35389,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/prophet_early_leadership_evidence.py"
+      - "tests/test_prophet_fusion_w3_structural.py"
       - collectors/rate_futures.py
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
@@ -36563,6 +36565,8 @@ jobs:
       # ITP-ES wave 1: deterministic page builder contract.
       - name: expectation surface page builder contract (ITP-ES wave 1)
         run: python -m pytest tests/test_build_expectation_surface.py -q
+      - name: Early Leadership owner identity and outcome-blind research envelope
+        run: python -m pytest tests/test_prophet_fusion_w3_structural.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
@@ -36889,6 +36893,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/prophet_early_leadership_evidence.py"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -37874,7 +37880,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn scipy rjsmin==1.2.5
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn scipy jsonschema==4.26.0 rjsmin==1.2.5
       # 2026-08-15 fusion override (WS:PROPHET-CONDITIONAL-FUSION): the C1 ranker
       # suite rides the step that already owns engine/us_board_rank.py rather than
       # opening a new one — it tests the SAME module's rank authority, and a
