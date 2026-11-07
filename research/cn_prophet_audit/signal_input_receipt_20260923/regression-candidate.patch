@@ -1,0 +1,90 @@
+diff --git a/tests/test_china_board_rank.py b/tests/test_china_board_rank.py
+index c2c32fec1d1f..3fc0e6cf2b06 100644
+--- a/tests/test_china_board_rank.py
++++ b/tests/test_china_board_rank.py
+@@ -606,0 +607,28 @@ def test_partition_is_disjoint_lossless_and_input_order_invariant():
++
++
++@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
++@pytest.mark.parametrize('daily,expected', [(ASOF, True), ('2026-07-28', False),
++                                          ('2026-07-30', False), (None, False)])
++def test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer(serializer_name, daily, expected):
++    import json
++    from engine import signal_gate
++    original = _verdict(asof='2026-07-27', input_asof=daily)
++    signal = json.loads(json.dumps(getattr(signal_gate, serializer_name)(original), allow_nan=False))
++    enriched, = china_board_rank.enrich_and_score_rows(
++        [{**_row('600001.SS'), 'signal': signal}], board_asof=ASOF)
++    assert china_board_rank._signal_is_fresh(enriched) is expected
++    assert enriched['_signal_research'].get('input_asof') == daily
++    assert enriched['signal']['eligible'] == original['eligible']
++    assert enriched['signal']['tier_cascade'] == original['tier_cascade']
++
++
++@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
++def test_cn_consumer_does_not_treat_bucket_only_receipt_as_current(serializer_name):
++    import json
++    from engine import signal_gate
++    original = _verdict()
++    original.pop('input_asof')
++    signal = json.loads(json.dumps(getattr(signal_gate, serializer_name)(original)))
++    enriched, = china_board_rank.enrich_and_score_rows(
++        [{**_row('600001.SS'), 'signal': signal}], board_asof=ASOF)
++    assert china_board_rank._signal_is_fresh(enriched) is False
+diff --git a/tests/test_signal_gate.py b/tests/test_signal_gate.py
+index 57757b87af0b..dc3fe5390742 100644
+--- a/tests/test_signal_gate.py
++++ b/tests/test_signal_gate.py
+@@ -393,0 +394,52 @@ class TestEngineErrorIsDistinguishableFromThinHistory:
++
++
++@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
++@pytest.mark.parametrize('input_asof', ['2026-09-22', '2026-09-21', None])
++def test_signal_serialization_preserves_explicit_daily_input_receipt(serializer_name, input_asof):
++    from copy import deepcopy
++    from engine import signal_gate as sg
++    full = {'eligible': True, 'tier_cascade': 'T2', 'ticks': 1,
++            'asof': '2026-09-18', 'input_asof': input_asof}
++    before = deepcopy(full)
++    out = getattr(sg, serializer_name)(full)
++    assert 'input_asof' in out
++    assert out['input_asof'] == input_asof
++    assert json.loads(json.dumps(out, allow_nan=False))['input_asof'] == input_asof
++    assert sg.is_buyable(out) == sg.is_buyable(full)
++    assert full == before
++    if serializer_name == 'compact':
++        assert out['asof'] == '2026-09-18'  # analytical bucket remains independent
++
++
++@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
++def test_signal_serializer_does_not_invent_a_daily_receipt_from_the_bucket(serializer_name):
++    from engine import signal_gate as sg
++    out = getattr(sg, serializer_name)({'eligible': True, 'tier_cascade': 'T2',
++                                      'asof': '2026-09-22'})
++    assert 'input_asof' not in out  # preserve legacy shape as well as honest absence
++    assert 'input_asof' not in getattr(sg, serializer_name)(None)
++
++
++@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
++@pytest.mark.parametrize('invalid', [True, 20260922, float('nan'), {}, ['2026-09-22']])
++def test_signal_daily_receipt_is_json_safe_without_coercing_unknown_types(serializer_name, invalid):
++    from engine import signal_gate as sg
++    out = getattr(sg, serializer_name)({'eligible': False, 'tier_cascade': None,
++                                      'input_asof': invalid})
++    assert out['input_asof'] is None
++    assert sg.is_buyable(out) is False
++    json.dumps(out, allow_nan=False)
++
++
++@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
++def test_receipt_preservation_never_changes_the_signal_eligibility_decision(serializer_name):
++    from engine import signal_gate as sg
++    serializer = getattr(sg, serializer_name)
++    for eligible in (False, True):
++        for tier in (None, 'T1', 'T2', 'T3', 'T4'):
++            legacy = {'eligible': eligible, 'tier_cascade': tier, 'ticks': 1}
++            enriched = {**legacy, 'input_asof': '2026-09-22'}
++            before, after = serializer(legacy), serializer(enriched)
++            assert after.pop('input_asof') == '2026-09-22'
++            assert after == before
++            assert sg.is_buyable(serializer(enriched)) == sg.is_buyable(legacy)

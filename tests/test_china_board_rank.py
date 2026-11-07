@@ -604,3 +604,31 @@ def test_partition_is_disjoint_lossless_and_input_order_invariant():
     assert len({row["ticker"] for row in all_rows}) == len(rows)
     assert all(row["lane"] in names for row in all_rows)
     assert all(row["score_rank"] >= 1 and row["display_rank"] >= 1 for row in all_rows)
+
+
+@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+@pytest.mark.parametrize('daily,expected', [(ASOF, True), ('2026-07-28', False),
+                                          ('2026-07-30', False), (None, False)])
+def test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer(serializer_name, daily, expected):
+    import json
+    from engine import signal_gate
+    original = _verdict(asof='2026-07-27', input_asof=daily)
+    signal = json.loads(json.dumps(getattr(signal_gate, serializer_name)(original), allow_nan=False))
+    enriched, = china_board_rank.enrich_and_score_rows(
+        [{**_row('600001.SS'), 'signal': signal}], board_asof=ASOF)
+    assert china_board_rank._signal_is_fresh(enriched) is expected
+    assert enriched['_signal_research'].get('input_asof') == daily
+    assert enriched['signal']['eligible'] == original['eligible']
+    assert enriched['signal']['tier_cascade'] == original['tier_cascade']
+
+
+@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+def test_cn_consumer_does_not_treat_bucket_only_receipt_as_current(serializer_name):
+    import json
+    from engine import signal_gate
+    original = _verdict()
+    original.pop('input_asof')
+    signal = json.loads(json.dumps(getattr(signal_gate, serializer_name)(original)))
+    enriched, = china_board_rank.enrich_and_score_rows(
+        [{**_row('600001.SS'), 'signal': signal}], board_asof=ASOF)
+    assert china_board_rank._signal_is_fresh(enriched) is False
