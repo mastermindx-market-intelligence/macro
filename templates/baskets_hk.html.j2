@@ -97,6 +97,85 @@
 
   <!-- prevailing-narrative scorecard → the Narrative Rotation playbook (filled client-side) -->
   <section id="nr-scorecard" data-alloc="allocation_hk.json" data-page="allocation_hk.html"></section>
+  {%- if scorecard and scorecard.n_graded is number and scorecard.n_graded > 0 %}
+  {%- set _stl = {'igniting': ('Igniting','点火'),
+                  'running': ('Running','运行'),
+                  'fading': ('Fading','退潮'), 'idle': ('Idle','静止')} %}
+  <section class="panel pad" id="ignition-reliability">
+    <p class="sub">{{ t(
+      'Ignition scoreboard — graded basket-days from the forward ledger for this market',
+      '点火记分板 — 本市场前瞻台账中已评分的篮子日') }}</p>
+    <table>
+      <thead><tr><th>{{ t('State','状态') }}</th><th>{{ t('Basket-days','篮子日') }}</th>
+        <th>{{ t('Beat the benchmark over the next 4 weeks','其后4周跑赢基准的比例') }}</th></tr></thead>
+      <tbody>
+      {% for st in ['igniting', 'running', 'fading', 'idle'] if st in scorecard.by_state %}
+        {% set r = scorecard.by_state[st] %}
+        <tr><td>{{ t(_stl[st][0], _stl[st][1]) }}</td><td>{{ r.n }}</td>
+          <td>{% if r.beat_rate_4w is number %}{#
+          #}{{ '%.1f'|format(r.beat_rate_4w * 100) }}%{% else %}—{% endif %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% if scorecard.n_alerts is number and scorecard.alert_precision_4w is number %}
+    <p class="muted sm">{{ t(scorecard.n_alerts ~ ' of ' ~ scorecard.n_graded
+      ~ ' graded basket-days were in an alert state (igniting or running); '
+      ~ ('%.1f'|format(scorecard.alert_precision_4w * 100))
+      ~ '% of those beat the benchmark over the next 4 weeks.',
+      '已评分的 ' ~ scorecard.n_graded ~ ' 个篮子日中有 ' ~ scorecard.n_alerts
+      ~ ' 个处于预警状态（点火或运行）；其中 '
+      ~ ('%.1f'|format(scorecard.alert_precision_4w * 100))
+      ~ '% 在其后4周跑赢基准。') }}</p>
+    {% endif %}
+    {% if scorecard.asof_range is sequence and scorecard.asof_range|length == 2 %}
+    <p class="muted sm">{{ t('Graded window ' ~ scorecard.asof_range[0]
+      ~ ' → ' ~ scorecard.asof_range[1]
+      ~ '. A basket-day is graded only after its longest forward horizon'
+      ~ ' (40 sessions) has passed, so the window ends before today.',
+      '评分区间 ' ~ scorecard.asof_range[0] ~ ' → ' ~ scorecard.asof_range[1]
+      ~ '。篮子日须待最长前瞻期（40个交易日）走完才评分，故区间止于今日之前。') }}</p>
+    {% endif %}
+  </section>
+  {%- endif %}
+  {%- if themeobs %}
+  <section class="panel pad" id="theme-observation-coverage">
+    <p class="sub">{{ t(
+      'Theme price coverage — themes read with fewer closes than configured names',
+      '主题价格覆盖 — 有收盘价的成分少于配置成分的主题') }}</p>
+    <div class="ts"><table>
+      <thead><tr><th>{{ t('Theme','主题') }}</th><th>{{ t('Score · desk call','评分 · 台面判断') }}</th>
+        <th>{{ t('Closes / configured','有收盘价 / 配置') }}</th><th>{{ t('Coverage','覆盖率') }}</th>
+        <th>{{ t('Gate','门槛') }}</th><th>{{ t('Read','读数') }}</th>
+        <th>{{ t('Not in the price panel','不在价格面板中') }}</th>
+        <th>{{ t('No close on the as-of date','截至日无收盘价') }}</th></tr></thead>
+      <tbody>
+      {% for r in themeobs %}
+        <tr><td>{{ t(r.name, r.name_zh) }}</td>
+          <td class="num">{% if r.score is number %}{{ '%.0f'|format(r.score) }}{#
+          #}{% if r.reco_en %} · {{ t(r.reco_en, r.reco_zh) }}{% endif %}{% else %}—{% endif %}</td>
+          <td class="num">{{ r.observed_n if r.observed_n is number else '—' }} / {#
+          #}{{ r.configured_n if r.configured_n is number else '—' }}</td>
+          <td class="num">{% if r.coverage is number %}{#
+          #}{{ '%.1f'|format(r.coverage * 100) }}%{% else %}—{% endif %}</td>
+          <td class="num">{% if r.min_members is number and r.min_coverage is number %}{#
+          #}≥{{ r.min_members }} · {#
+          #}≥{{ '%.0f'|format(r.min_coverage * 100) }}%{% else %}—{% endif %}</td>
+          <td class="num">{% if r.scored %}{{ t('Partial — gate passed','部分 — 已过门槛') }}{% else %}{#
+          #}<span class="warn">{{ t('Not scored — below the gate','未评分 — 低于门槛') }}</span>{#
+          #}{% endif %}</td>
+          <td class="num">{{ r.missing_columns|join(', ') if r.missing_columns else '—' }}</td>
+          <td class="num">{{ r.missing_at_asof|join(', ') if r.missing_at_asof else '—' }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table></div>
+    <p class="muted sm">{{ t(
+      'Coverage = names with a close on the as-of date ÷ configured names. A theme at or above'
+      ~ ' its gate (minimum names · minimum coverage) is scored on the names that have a close;'
+      ~ ' a theme below it is left out of the desk.',
+      '覆盖率 = 截至日有收盘价的成分数 ÷ 配置成分数。达到门槛（最少成分数 · 最低覆盖率）的主题'
+      ~ '按有收盘价的成分评分；低于门槛的主题不进入主题台。') }}</p>
+  </section>
+  {%- endif %}
 
   {% include "_baskets_desk.html.j2" %}
 
@@ -139,6 +218,16 @@
     {{ t(
       'Informational only, not investment advice. Baskets are equal-weighted and benchmarked to the Hang Seng Index. Membership is curated, so results are descriptive, not an out-of-sample backtest or buy list.',
       '仅供参考，非投资建议。篮子等权重，并以恒生指数为基准。成分为人工整理，因此结果是描述性信息，不是样本外回测或买入清单。') }}
+    {%- if theme_source and theme_source.status and theme_source.effective_as_of %}
+    {%- if theme_source.status == 'legacy_source_without_receipt' %}
+    {{ t('Theme desk prices dated ' ~ theme_source.effective_as_of
+      ~ ': no observation receipt on file.',
+      '主题台价格日期 ' ~ theme_source.effective_as_of ~ '：无存档的观测回执。') }}
+    {%- else %}
+    {{ t('Theme desk prices dated ' ~ theme_source.effective_as_of ~ '.',
+      '主题台价格日期 ' ~ theme_source.effective_as_of ~ '。') }}
+    {%- endif %}
+    {%- endif %}
     {{ t('Generated', '生成于') }} <span id="gen">{{ generated_utc }}</span>.
   </footer>
 

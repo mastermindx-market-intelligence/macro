@@ -484,7 +484,7 @@ def test_workspace_v2_uses_versioned_cursors_and_rejects_v1_cursor(artifact):
 
     first = api.workspace(cursor=None, limit=1)
     assert first["next_cursor"]
-    assert api._decode_cursor(first["next_cursor"], expected_version="v2") == 1
+    assert api._decode_bound_workspace_cursor(first["next_cursor"], binding=first["reader_identity"]) == 1
     with pytest.raises(HTTPException) as exc:
         api.workspace(cursor=api._encode_cursor(1, version="v1"), limit=1)
     assert exc.value.status_code == 400

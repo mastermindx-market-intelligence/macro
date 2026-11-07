@@ -77,6 +77,11 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import os
+import errno
+import stat
+import threading
+from contextlib import contextmanager
 import hashlib
 import json
 import subprocess
@@ -87,6 +92,11 @@ import re
 from dataclasses import dataclass
 from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from engine.entry_radar.replay.identity_observation_snapshot import IdentitySnapshotRead
+    from engine.neuralweb.market_memory_identity_candidate import ParquetBoundInitialCandidate
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -96,6 +106,7 @@ from lib.dataos.identity import (  # noqa: E402
     BATS,
     XASE,
     ARCX,
+    TXSE,
     alias_binding_sha256,
     XNAS,
     XNYS,
@@ -197,6 +208,7 @@ ALIAS_COLUMNS = (
     "known_at",
     "evidence_sha256",
     "binding_sha256",
+    "alias_kind",
 )
 #: ``reference.issuer_master`` — one row per distinct non-null issuer_id (spec §3).
 ISSUER_MASTER_COLUMNS = (
@@ -242,6 +254,7 @@ SECURITY_MIGRATIONS_COLUMNS = (
 MASTER_DTYPES = {"effective_at": "datetime", "ingested_at": "datetime",
                  "issuer_evidence_snapshot": "date"}
 REFERENCE_ALIAS_COLUMNS = frozenset({"known_at", "evidence_sha256", "binding_sha256"})
+OPTIONAL_ALIAS_COLUMNS = REFERENCE_ALIAS_COLUMNS | {"alias_kind"}
 ALIAS_DTYPES = {"valid_from": "date", "valid_to": "date", "ingested_at": "datetime"}
 ISSUER_MASTER_DTYPES = {"evidence_snapshot": "date", "n_securities": "int"}
 ISSUER_MIGRATIONS_DTYPES = {"evidence_snapshot": "date", "migrated_at": "datetime"}
@@ -325,6 +338,10 @@ VENDOR_THEME_GRAPH_NATIVE = "theme_graph_native"
 #: otherlisted.txt single-character exchange codes, per the legend the collector that
 #: fetches the file records at ``collectors/symbol_directory.py:184-185``:
 #: "A=NYSE MKT (AMEX), N=NYSE, P=NYSE Arca, Z=BATS, V=Investors Exchange".
+#: ``F`` = Texas Stock Exchange (MIC TXSE) is newer than that legend: the CTS Pillar
+#: participant id ``F`` is assigned to TXSE (txse.com alert TXSE-2026-002 / CTA
+#: "CTS Pillar Output Specification"), and the 2026-10-15 otherlisted.txt snapshot
+#: carries ``F`` on exactly the TXSE-listed names (ET, TXS, OILT, ILS, ...).
 #: Only venues with an evidence-backed MIC in ``lib/dataos/identity.KNOWN_MICS`` are mapped.
 #: Arca / IEX remain deliberately ABSENT rather than approximated: a name listed
 #: there is reported unresolved by name, because widening the closed MIC list is a
@@ -334,6 +351,7 @@ EXCHANGE_MIC = {
     "N": XNYS,
     "A": XASE,
     "Z": BATS,
+    "F": TXSE,
 }
 
 #: `exchange:` values used by the exit ledger (`config/delisted_symbols.yml`), which
@@ -499,6 +517,93 @@ RENAME_EVENTS: tuple[RenameEvent, ...] = (
             "and finance.yahoo.com/quote/SKYD (Yahoo serves the new symbol)."
         ),
     ),
+    RenameEvent(
+        old="DOMO",
+        new="HUCK",
+        on=date(2026, 9, 24),
+        # Same shape as PSKY->SKYD minus the venue move: Nasdaq->Nasdaq, so no
+        # supersession entry is needed (same as EQR->VMRK). `yahoo` + `membership`
+        # dated exactly as PSKY's are; `store`/`yahoo_fetch` stay at the committed
+        # DOMO rows until a #4622-protocol store-key migration moves them (out of
+        # scope here). Until then the committed build still reports US-XNAS-DOMO
+        # in resolved_not_rederivable and HUCK in listing_continuity: this event
+        # dates and attributes the rename, it does not by itself clear those rows.
+        vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP),
+        evidence=(
+            "SEC EDGAR CIK 0001505952 Form 8-K accession 0001104659-26-109635 "
+            "(www.sec.gov/Archives/edgar/data/1505952/000110465926109635/"
+            "tm2625825d1_8k.htm): Nasdaq ticker DOMO -> HUCK effective 2026-09-24, "
+            "same registrant/CIK. Corroborated by the 2026-10-15 nasdaqlisted.txt "
+            "snapshot (HUCK listed, DOMO absent)."
+        ),
+    ),
+    RenameEvent(
+        old="YYGH",
+        new="YFOR",
+        on=date(2026, 9, 2),
+        # Nasdaq->Nasdaq symbol change with a name change (YY Group Holding Ltd. is
+        # the formerName under the same CIK). Vendors dated as DOMO->HUCK above.
+        vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP),
+        evidence=(
+            "SEC EDGAR CIK 0001985337 Form 6-K accession 0001185185-26-003874 "
+            "(www.sec.gov/Archives/edgar/data/1985337/000118518526003874/"
+            "yfor6k090726.htm): Nasdaq ticker YYGH -> YFOR effective 2026-09-02, "
+            "same registrant/CIK (formerName YY Group Holding Ltd.). Corroborated by "
+            "the 2026-10-15 nasdaqlisted.txt snapshot (YFOR listed, YYGH absent)."
+        ),
+    ),
+)
+
+
+# ── The curated venue-transfer registry ───────────────────────────────────────
+@dataclass(frozen=True)
+class VenueTransfer:
+    """One SAME-SYMBOL primary-listing transfer between venues (no rename).
+
+    A transfer leaves the symbol directory carrying the security only under its NEW
+    venue, so the resolution re-derives ``US-{to_mic}-{symbol}`` while the committed
+    master row keeps its inception venue ``US-{from_mic}-{symbol}`` — structurally
+    the PSKY->SKYD cross-venue case without a :class:`RenameEvent`. Each entry is
+    paired with an EXACT-listing-key :data:`SECURITY_SUPERSESSIONS` entry (checked
+    by :func:`_venue_transfer_covered_keys`); together they ratify the join onto the
+    one canonical row, never a second mint. Authored data, same evidence law.
+    """
+
+    symbol: str
+    from_mic: str
+    to_mic: str
+    on: date
+    evidence: str
+
+
+VENUE_TRANSFERS: tuple[VenueTransfer, ...] = (
+    VenueTransfer(
+        symbol="KHC",
+        from_mic=XNAS,
+        to_mic=XNYS,
+        on=date(2026, 9, 14),
+        evidence=(
+            "SEC EDGAR CIK 0001637459: Form 8-K accession 0001637459-26-000057 "
+            "(listing-transfer notice, Nasdaq -> NYSE), Form 25 accession "
+            "0001637459-26-000062 (voluntary removal from Nasdaq) and Form 8-A12B "
+            "accession 0001637459-26-000061 (NYSE registration); KHC trades on NYSE "
+            "from 2026-09-14 under the unchanged symbol."
+        ),
+    ),
+    VenueTransfer(
+        symbol="ET",
+        from_mic=XNYS,
+        to_mic=TXSE,
+        on=date(2026, 10, 5),
+        evidence=(
+            "SEC EDGAR CIK 0001276187: Form 8-K accession 0001276187-26-000044 "
+            "(listing-transfer notice, NYSE -> Texas Stock Exchange), Form 25 "
+            "accession 0001276187-26-000058 (voluntary removal from NYSE) and Form "
+            "8-A12B accession 0001276187-26-000056 (TXSE registration); ET trades "
+            "on TXSE from 2026-10-05 under the unchanged symbol (txse.com press "
+            "release; otherlisted.txt exchange code F)."
+        ),
+    ),
 )
 
 
@@ -574,7 +679,44 @@ SECURITY_SUPERSESSIONS: tuple[SecuritySupersession, ...] = (
             "and finance.yahoo.com/quote/SKYD (Yahoo serves the new symbol)."
         ),
     ),
+    SecuritySupersession(
+        listing_key="US-XNYS-KHC",
+        canonical_id="SEC:US-XNAS-KHC",
+        on=date(2026, 9, 14),
+        # The cross-venue half of the KHC VenueTransfer above (same evidence).
+        evidence=VENUE_TRANSFERS[0].evidence,
+    ),
+    SecuritySupersession(
+        listing_key="US-TXSE-ET",
+        canonical_id="SEC:US-XNYS-ET",
+        on=date(2026, 10, 5),
+        # The cross-venue half of the ET VenueTransfer above (same evidence).
+        evidence=VENUE_TRANSFERS[1].evidence,
+    ),
 )
+
+
+def _venue_transfer_covered_keys() -> frozenset[str]:
+    """Symbols a :data:`VENUE_TRANSFERS` entry ratifies for a cross-venue join.
+
+    Fail-closed pairing check: every transfer must have EXACTLY the matching
+    :data:`SECURITY_SUPERSESSIONS` entry (``US-{to}-{sym}`` -> ``SEC:US-{from}-{sym}``)
+    — a transfer without its exact-key supersession, or with a mismatched canonical
+    id, is a curation defect raised here, never a silent join.
+    """
+    by_lk = {e.listing_key: e for e in SECURITY_SUPERSESSIONS}
+    covered: set[str] = set()
+    for t in VENUE_TRANSFERS:
+        lk = f"US-{t.to_mic}-{t.symbol}"
+        want = f"SEC:US-{t.from_mic}-{t.symbol}"
+        entry = by_lk.get(lk)
+        if entry is None or entry.canonical_id != want or t.from_mic == t.to_mic:
+            raise ValueError(
+                f"VENUE_TRANSFERS entry {t!r} lacks its exact SECURITY_SUPERSESSIONS "
+                f"pair {lk} -> {want}"
+            )
+        covered.add(t.symbol)
+    return frozenset(covered)
 
 #: Renames the repo records WITHOUT a citable date.  Fiserv renamed FISV->FI in 2023
 #: and the vendor LAGS it: Yahoo still serves the series under FISV
@@ -1662,6 +1804,11 @@ def _read_existing(path: Path, columns: tuple[str, ...],
     if not path.exists():
         return []
     frame = pd.read_parquet(path)
+    if "alias_kind" in columns and any(
+        name in frame.columns and frame[name].notna().any()
+        for name in ("attempt_id", "alias_family_id", "alias_revision_id")
+    ):
+        raise IdentityError("revisioned alias requires observation history writer; refusing projection")
     missing = [c for c in columns if c not in frame.columns]
     hard_missing = [c for c in missing if c not in allow_missing]
     if hard_missing:
@@ -1672,6 +1819,11 @@ def _read_existing(path: Path, columns: tuple[str, ...],
     present = [c for c in columns if c not in missing]
     rows: list[dict] = []
     for record in frame[present].to_dict("records"):
+        if "alias_kind" in columns and pd.notna(record.get("alias_kind")):
+            # Validate the new namespace BEFORE legacy date/string coercion can
+            # turn a malformed stored value into the tuple its seal describes.
+            raw_alias = {k: None if pd.isna(v) else v for k, v in record.items()}
+            VendorAliasTable.from_records([raw_alias])
         row: dict = {}
         for column in columns:
             if column in missing:
@@ -2022,6 +2174,7 @@ def mint_master_rows(
     gmi_admission_targets: frozenset[str] = frozenset(),
     directory_flags: dict[str, dict] | None = None,
     ambiguous_tickers: frozenset[str] = frozenset(),
+    direct_registrant_inputs: tuple[dict, ...] | list[dict] = (),
 ) -> tuple[list[dict], dict[str, str], list[str], list[dict], list[dict], list[dict],
            list[dict], list[dict]]:
     """``(master rows, {membership key: security_id}, notes, resurrection_refusals,
@@ -2076,6 +2229,28 @@ def mint_master_rows(
       set, or independent CIK evidence, lets the mint proceed (H7: IPOs are not
       collateral damage).
     """
+    # Explicit new captured observations supplement the independence test only.
+    # They never mutate the collector-owned CIK map or feed issuer grouping.
+    direct_ciks = {}
+    if type(direct_registrant_inputs) not in (tuple, list) or len(direct_registrant_inputs) > 3:
+        raise IdentityError("direct registrant intake exceeds the bounded probe set")
+    for source in direct_registrant_inputs:
+        if not _direct_registrant_source_shape(source):
+            raise IdentityError("invalid direct registrant input shape")
+        # Existing writer now is UTC with the offset omitted by _iso_now().
+        clock = datetime.fromisoformat(now.replace("Z", "+00:00"))
+        if clock.tzinfo is None:
+            clock = clock.replace(tzinfo=timezone.utc)
+        prepared = prepare_direct_registrant(**source, decision_at=clock.isoformat())
+        observed = prepared["registrant"]
+        key = observed["symbol"]
+        matching = [res for res in resolutions if res.key == key]
+        if len(matching) != 1 or matching[0] != prepared["resolution"] or key in direct_ciks:
+            raise IdentityError("direct registrant observation does not bind one exact fresh resolution")
+        ordinary = (cik_map or {}).get(key)
+        if key in ambiguous_tickers or (ordinary is not None and ordinary[0] != observed["cik"]):
+            raise IdentityError("direct registrant conflicts with ordinary CIK evidence")
+        direct_ciks[key] = (observed["cik"], observed["title"])
     by_listing_key = {str(row["listing_key"]): dict(row) for row in existing}
     out: dict[str, dict] = {}
     for k, v in by_listing_key.items():
@@ -2110,7 +2285,7 @@ def mint_master_rows(
     supersession_joins: dict[str, str] = {}
     _rename_covered_keys = {
         sym for event in RENAME_EVENTS for sym in (event.old, event.new)
-    }
+    } | _venue_transfer_covered_keys()  # same-symbol transfers: exact-pair checked
     for entry in SECURITY_SUPERSESSIONS:
         if entry.listing_key in by_listing_key:
             continue  # a committed row already owns this key: the stored join below
@@ -2122,6 +2297,9 @@ def mint_master_rows(
         # exists to feed is derived from the RenameEvent (date + evidence law), so a
         # key no event covers never joins — it keeps falling to the fence below
         # exactly as before this bridge existed (the H1/H7 race replays pin that).
+        # A VENUE_TRANSFERS symbol is covered too: a same-symbol transfer has no
+        # dated alias family to feed (the symbol never changes), and its exact
+        # supersession pairing is enforced by _venue_transfer_covered_keys.
         covered = any(
             res.listing_key is not None
             and res.listing_key.render() == entry.listing_key
@@ -2192,7 +2370,7 @@ def mint_master_rows(
                 continue
             if lost_rows:
                 evidence_key = _evidence_join_key(res.inception_code or res.key)
-                candidate_evidence = cik_map.get(evidence_key)
+                candidate_evidence = cik_map.get(evidence_key) or direct_ciks.get(res.key)
                 # AMENDMENT ruling 2 (M2): independent iff the candidate HAS a CIK,
                 # EVERY fence-scoped lost row has a NON-NULL CIK, AND the candidate's
                 # CIK differs from all of them. A null anywhere makes independence
@@ -2488,8 +2666,12 @@ def apply_issuer_correction(
     finally covers its ticker — the contract's own promised self-heal (spec §11 "FI/
     FISV ... self-heals on a later map") was unreachable.  ``RESOLVED``,
     ``DEFERRED_IDENTITY_EXCEPTION`` and ``EVIDENCE_CONFLICT`` rows stay mint-once —
-    never revisited: a later run whose seeds are unchanged sees the SAME pending set
-    (only the unstamped + NO_ISSUER_EVIDENCE rows) and, if none of them can change
+    never revisited (sole exception: an allowlist-refused EVIDENCE_CONFLICT whose
+    issuer_id is still NULL and whose stamped CIK has since been ratified in
+    config/issuer_group_allowlist.yml, and no same-CIK conflicted sibling carries a
+    committed issuer_id — see the reopen below): a later run whose seeds are
+    unchanged sees the SAME pending set (the unstamped, NO_ISSUER_EVIDENCE and
+    AMBIGUOUS rows plus any ratified-reopen rows) and, if none of them can change
     outcome, returns byte-stable rows.  A CIK group that later grows to include an
     already-RESOLVED member ADOPTS that member's existing ``issuer_id`` rather than
     re-running the tie-break ("the id is never re-derived because membership grew",
@@ -2546,9 +2728,35 @@ def apply_issuer_correction(
     # a CIK group, and a future CIK map carrying its old symbol can never trip it into
     # EVIDENCE_CONFLICT (H4).  Its issuer columns stay exactly as committed, frozen.
     _REOPENABLE = (None, "", "NO_ISSUER_EVIDENCE", "AMBIGUOUS")
+    # ALLOWLIST RATIFICATION REOPEN (#9570): a row the FIX 5 gate refused — typed
+    # EVIDENCE_CONFLICT with its stamped issuer_cik — whose CIK has SINCE been
+    # ratified in config/issuer_group_allowlist.yml is re-examined, but ONLY while
+    # its issuer_id is still NULL.  With no committed value there is nothing for
+    # mint-once to protect, and the ratification row IS the review the gate asked
+    # for.  A conflict that carries a committed issuer_id (FIX 1(b), or a refused
+    # legacy row) stays terminal: reopening it would rewrite an assignment.  The
+    # reopen is also ALL-OR-NOTHING per CIK: when any conflicted sibling sharing the
+    # stamped CIK carries a committed issuer_id, NO null member of that CIK reopens —
+    # a partial reopen would tie-break over the null members alone and mint a second
+    # issuer_id for one registrant (the committed sibling is not RESOLVED, so the
+    # adoption index below never sees it).  Such a CIK stays terminal for a human.
+    _committed_conflict_ciks = {
+        r.get("issuer_cik")
+        for r in rows
+        if not r.get("security_state")
+        and r.get("issuer_state") == "EVIDENCE_CONFLICT"
+        and r.get("issuer_id") is not None
+        and r.get("issuer_cik")
+    }
     pending = [
         r for r in rows
-        if r.get("issuer_state") in _REOPENABLE and not r.get("security_state")
+        if not r.get("security_state") and (
+            r.get("issuer_state") in _REOPENABLE
+            or (r.get("issuer_state") == "EVIDENCE_CONFLICT"
+                and r.get("issuer_id") is None
+                and r.get("issuer_cik") in allowed_ciks
+                and r.get("issuer_cik") not in _committed_conflict_ciks)
+        )
     ]
     if not pending:
         return rows, []
@@ -2916,6 +3124,24 @@ def _prune_stale_aliases(
     not a conflict (ordinary merge dedup in :func:`merge_alias_rows` already
     handles those), and this never touches a fresh row's own side.
     """
+    # Root relations are immutable additions, not ordinary symbol refinements.
+    # Validate before the tombstone branch so no malformed/unknown kind disappears.
+    if any(r.get("alias_kind") is not None for r in existing) or any(r.alias_kind is not None for r in fresh):
+        prior = VendorAliasTable.from_records(existing)
+        VendorAliasTable(fresh)
+        roots = [r for r in prior.rows if r.alias_kind == "occ_root"]
+        new_roots = [r for r in fresh if r.alias_kind == "occ_root"]
+        for row in roots:
+            if row.security_id in superseded_ids:
+                raise VendorAliasPruneConflict("option-root tombstone requires explicit evidence curation")
+        # Merge enforces unchanged seals; the table enforces forward uniqueness.
+        root_records = [r for r in existing if r.get("alias_kind") == "occ_root"]
+        VendorAliasTable.from_records(merge_alias_rows(new_roots, root_records, "unused"))
+        ordinary, pruned = _prune_stale_aliases(
+            [r for r in existing if r.get("alias_kind") is None],
+            [r for r in fresh if r.alias_kind is None], superseded_ids)
+        return ordinary + root_records, pruned
+
     fresh_by_vendor_symbol: dict[tuple[str, str], list[AliasRow]] = {}
     fresh_by_vendor_sec: dict[tuple[str, str], list[AliasRow]] = {}
     for row in fresh:
@@ -3002,6 +3228,8 @@ def _as_bound_date(value: str | None) -> date | None:
 
 def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> list[dict]:
     """Append-only on the declared grain; a committed row keeps its ``ingested_at``."""
+    # Check raw root record bounds/types before legacy date normalization.
+    VendorAliasTable.from_records([r for r in existing if r.get("alias_kind") is not None])
     merged: dict[tuple, dict] = {}
     for row in existing:
         key = (
@@ -3010,7 +3238,10 @@ def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> l
             str(row["security_id"]),
             _normalize_bound(row["valid_from"]),
             _normalize_bound(row["valid_to"]),
+            row.get("alias_kind"),
         )
+        if key in merged and row.get("alias_kind") == "occ_root":
+            raise IdentityError("duplicate committed option-root relation")
         merged[key] = {
             "vendor": key[0],
             "vendor_symbol": key[1],
@@ -3018,13 +3249,13 @@ def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> l
             "valid_from": key[3],
             "valid_to": key[4],
             "ingested_at": str(row["ingested_at"]),
-            **{c: row.get(c) for c in REFERENCE_ALIAS_COLUMNS},
+            **{c: row.get(c) for c in OPTIONAL_ALIAS_COLUMNS},
         }
     for row in fresh:
         key = (row.vendor, row.vendor_symbol, row.security_id,
-               _as_iso(row.valid_from), _as_iso(row.valid_to))
+               _as_iso(row.valid_from), _as_iso(row.valid_to), row.alias_kind)
         if key in merged:
-            if row.vendor == "polygon" and merged[key].get("binding_sha256") != row.binding_sha256:
+            if (row.vendor == "polygon" or row.alias_kind == "occ_root") and merged[key].get("binding_sha256") != row.binding_sha256:
                 raise IdentityError("conflicting prospective native alias; revisions not admitted")
             continue
         merged[key] = {
@@ -3037,8 +3268,12 @@ def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> l
             "known_at": row.known_at.isoformat() if isinstance(row.known_at, datetime) else row.known_at,
             "evidence_sha256": row.evidence_sha256,
             "binding_sha256": row.binding_sha256,
+            "alias_kind": row.alias_kind,
         }
-    return [merged[k] for k in sorted(merged, key=lambda k: (k[0], k[1], k[2], str(k[3]), str(k[4])))]
+    rows = [merged[k] for k in sorted(merged, key=lambda k: (k[0], k[1], k[2], str(k[3]), str(k[4]), str(k[5])))]
+    # New root relations never rely on the main caller to catch forward conflicts.
+    VendorAliasTable.from_records([r for r in rows if r.get("alias_kind") is not None])
+    return rows
 
 
 def _normalize_bound(value) -> str | None:
@@ -3081,6 +3316,8 @@ def _write_parquet(rows: list[dict], columns: tuple[str, ...], path: Path,
     """Write the declared columns in the declared order, with the declared dtypes."""
     import pandas as pd
 
+    if "alias_kind" in columns:
+        VendorAliasTable.from_records(rows)
     data: dict[str, object] = {}
     for column in columns:
         values = [row.get(column) for row in rows]
@@ -3189,6 +3426,423 @@ def _reference_json(path: Path) -> tuple[dict, str]:
     return value, hashlib.sha256(raw).hexdigest()
 
 
+# Scoped reentrancy bookkeeping only; fcntl/OS owns exclusion. This is not
+# source authority, a durable lock registry, lease, retry queue or daemon.
+_reference_writer_local = threading.local()
+
+
+def _writer_path(out_dir: Path) -> str:
+    return os.path.abspath(os.fspath(out_dir))
+
+
+def _assert_reference_writer_target(out_dir: Path) -> None:
+    """Detect directory substitution inside our currently held writer scope."""
+    token = getattr(_reference_writer_local, "active", {}).get(_writer_path(out_dir))
+    if token is None or token[0] != os.getpid():
+        return  # Pure read-only legacy guard calls are allowed outside writers.
+    _pid, fd, device, inode = token
+    try:
+        now = os.stat(out_dir, follow_symlinks=False)
+        held = os.fstat(fd)
+    except OSError as exc:
+        raise IdentityError("reference writer target changed or unavailable") from exc
+    if (not stat.S_ISDIR(now.st_mode) or
+            (now.st_dev, now.st_ino) != (device, inode) or
+            (held.st_dev, held.st_ino) != (device, inode)):
+        raise IdentityError("reference writer target changed during transaction")
+
+
+@contextmanager
+def _reference_writer_scope(out_dir: Path):
+    """One nonblocking, cooperative POSIX directory lock for all local writers.
+
+    Manual build and the ENTIRE nightly snapshot/build/rollback hold this same
+    scope. Nested calls in the same process/thread reuse its descriptor; other
+    processes/threads refuse immediately. No lockfile or new data schema.
+    This requires a local filesystem with working flock semantics. It does not
+    coordinate Git pushes, unrelated hosts, old code, or non-cooperating actors.
+    Creating an initial empty output directory is not generation publication.
+    """
+    try:
+        import fcntl
+    except ImportError as exc:
+        raise IdentityError("reference writer locking unsupported on this host") from exc
+    out_dir = Path(out_dir)
+    key = _writer_path(out_dir)
+    active = getattr(_reference_writer_local, "active", None)
+    if active is None:
+        active = {}
+        _reference_writer_local.active = active
+    previous = active.get(key)
+    owner_pid = os.getpid()
+    if previous is not None and previous[0] == owner_pid:
+        _assert_reference_writer_target(out_dir)
+        yield
+        return
+    fd = None
+    acquired = False
+    primary_error: BaseException | None = None
+    try:
+        if out_dir.is_symlink():
+            raise IdentityError("reference writer target is a symlink")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        fd = os.open(out_dir, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+                     | getattr(os, "O_NOFOLLOW", 0))
+        held = os.fstat(fd)
+        if not stat.S_ISDIR(held.st_mode):
+            raise IdentityError("reference writer target is not a directory")
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as exc:
+            if exc.errno in (errno.EACCES, errno.EAGAIN):
+                raise IdentityError("reference writer busy; no files changed") from exc
+            raise IdentityError("reference writer locking unavailable") from exc
+        acquired = True
+        active[key] = (owner_pid, fd, held.st_dev, held.st_ino)
+        _assert_reference_writer_target(out_dir)
+        yield
+    except OSError as exc:
+        if acquired:
+            primary_error = exc
+            raise  # Preserve the original builder/rollback exception contract.
+        primary_error = IdentityError("reference writer target unavailable")
+        raise primary_error from exc
+    except BaseException as exc:
+        primary_error = exc
+        raise
+    finally:
+        cleanup_errors: list[OSError] = []
+        try:
+            if acquired:
+                if previous is None:
+                    active.pop(key, None)
+                else:
+                    active[key] = previous
+                # A forked child must never unlock the parent's open description.
+                if os.getpid() == owner_pid:
+                    try:
+                        fcntl.flock(fd, fcntl.LOCK_UN)
+                    except OSError as exc:
+                        cleanup_errors.append(exc)
+        finally:
+            if fd is not None:
+                try:
+                    os.close(fd)
+                except OSError as exc:
+                    # Do not retry close: the descriptor may already be released.
+                    cleanup_errors.append(exc)
+        if cleanup_errors:
+            # Preserve this scope's original failure, including its errno and
+            # identity. An exception already handled by our caller is unrelated.
+            if primary_error is not None:
+                for error in cleanup_errors:
+                    primary_error.add_note(f"reference writer cleanup: {error}")
+            else:
+                first, *additional = cleanup_errors
+                for error in additional:
+                    first.add_note(f"additional reference writer cleanup: {error}")
+                raise first
+
+
+@dataclass(frozen=True, slots=True)
+class InitialReferencePromotion:
+    """A receipt replacement, directory flush, and actual native read completed.
+
+    The retained preparation's conservative admission/authenticity markers are
+    unchanged. This result is not source qualification or a trading admission.
+    """
+    prepared: "ParquetBoundInitialCandidate"
+    read: "IdentitySnapshotRead"
+    directory_synced: bool
+
+
+class InitialReferencePromotionError(IdentityError):
+    """An attempted rename needs observation, never an automatic second write."""
+
+    def __init__(self, *, prepared, effect_state: str, directory_synced: bool):
+        self.prepared = prepared
+        self.effect_state = effect_state
+        self.directory_synced = directory_synced
+        super().__init__(
+            f"initial reference promotion interrupted: effect_state={effect_state}; "
+            f"directory_synced={directory_synced}; reconcile exact receipt/artifact bytes"
+        )
+
+
+def _initial_reference_path(directory: str | Path) -> Path:
+    if not isinstance(directory, (str, Path)):
+        raise IdentityError("initial reference requires an absolute existing directory")
+    root = Path(directory)
+    if not root.is_absolute() or ".." in root.parts:
+        raise IdentityError("initial reference requires an absolute existing directory")
+    return root
+
+
+def _initial_reference_expected(receipt_sha256: str, artifact_sha256: dict) -> tuple:
+    from engine.entry_radar.replay.identity_observation_snapshot import REFERENCE_ARTIFACTS
+
+    if (type(receipt_sha256) is not str
+            or re.fullmatch(r"[0-9a-f]{64}", receipt_sha256) is None
+            or type(artifact_sha256) is not dict
+            or set(artifact_sha256) != set(REFERENCE_ARTIFACTS)
+            or any(type(value) is not str or re.fullmatch(r"[0-9a-f]{64}", value) is None
+                   for value in artifact_sha256.values())):
+        raise IdentityError("initial reference requires exact six SHA-256 preimages")
+    return tuple((name, artifact_sha256[name]) for name in REFERENCE_ARTIFACTS)
+
+
+def _initial_reference_files(directory_fd: int) -> tuple[bytes, dict[str, bytes]]:
+    # Reuse the actual bounded, no-follow reader. This is not another decoder.
+    from engine.entry_radar.replay.identity_observation_snapshot import (
+        REFERENCE_ARTIFACTS, _read_file,
+    )
+
+    before = _read_file(directory_fd, RECEIPT_NAME, 9 * 1024 * 1024)
+    artifacts = {name: _read_file(directory_fd, name, 64 * 1024 * 1024)
+                 for name in REFERENCE_ARTIFACTS}
+    after = _read_file(directory_fd, RECEIPT_NAME, 9 * 1024 * 1024)
+    if before != after:
+        raise IdentityError("initial reference receipt preimage changed during read")
+    return before, artifacts
+
+
+def _initial_reference_vector(artifacts: dict[str, bytes]) -> tuple:
+    return tuple((name, hashlib.sha256(raw).hexdigest()) for name, raw in artifacts.items())
+
+
+def _inspect_initial_reference_publication(
+    root: Path, original_sha: str, candidate_sha: str, artifacts: tuple,
+    *, expected_directory_identity: tuple | None = None,
+) -> str:
+    """Observe one stable path/byte vector; no locks, writes, retries or repairs."""
+    fd = None
+    state = "EFFECT_UNKNOWN"
+    try:
+        fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+                     | getattr(os, "O_CLOEXEC", 0))
+        held = os.fstat(fd)
+        identity = (held.st_dev, held.st_ino)
+        if (not stat.S_ISDIR(held.st_mode)
+                or (expected_directory_identity is not None
+                    and identity != expected_directory_identity)):
+            return state
+        raw, observed_artifacts = _initial_reference_files(fd)
+        now = os.stat(root, follow_symlinks=False)
+        if (stat.S_ISDIR(now.st_mode) and (now.st_dev, now.st_ino) == identity
+                and _initial_reference_vector(observed_artifacts) == artifacts):
+            digest = hashlib.sha256(raw).hexdigest()
+            if digest == candidate_sha:
+                state = "APPLIED"
+            elif digest == original_sha:
+                state = "NOT_APPLIED"
+    except (OSError, IdentityError):
+        state = "EFFECT_UNKNOWN"
+    finally:
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError:
+                state = "EFFECT_UNKNOWN"  # A close failure is not retried.
+    return state
+
+
+def inspect_initial_reference_publication(
+    out_dir: str | Path, *, original_receipt_sha256: str,
+    candidate_receipt_sha256: str, artifact_sha256: dict[str, str],
+) -> str:
+    """Read-only reconciliation of a possibly interrupted initial promotion.
+
+    APPLIED/NOT_APPLIED mean that the exact candidate/original receipt and all
+    five expected artifact bytes were observed at this path. They do not prove
+    the cause of those bytes, crash durability, source authenticity, or admission.
+    Missing files, a directory change during inspection, torn reads, or
+    unexpected bytes remain EFFECT_UNKNOWN.
+    """
+    root = _initial_reference_path(out_dir)
+    vector = _initial_reference_expected(original_receipt_sha256, artifact_sha256)
+    _initial_reference_expected(candidate_receipt_sha256, artifact_sha256)
+    if candidate_receipt_sha256 == original_receipt_sha256:
+        raise IdentityError("initial reference reconciliation requires distinct receipts")
+    return _inspect_initial_reference_publication(
+        root, original_receipt_sha256, candidate_receipt_sha256, vector)
+
+
+@contextmanager
+def _staged_initial_receipt(directory_fd: int, raw: bytes, mode: int):
+    """Own only a new temporary receipt on the held directory descriptor."""
+    import uuid
+
+    name = f".initial-reference-{uuid.uuid4().hex}.tmp"
+    fd = None
+    created = False
+    primary_error = None
+    try:
+        fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+                     | getattr(os, "O_CLOEXEC", 0), 0o600, dir_fd=directory_fd)
+        created = True
+        offset = 0
+        while offset < len(raw):
+            written = os.write(fd, raw[offset:])
+            if written <= 0:
+                raise OSError(errno.EIO, "initial reference staged write made no progress")
+            offset += written
+        os.fchmod(fd, mode & 0o777)
+        os.fsync(fd)
+        closing, fd = fd, None  # Never retry a failed close on a possibly reused fd.
+        os.close(closing)
+        yield name
+    except BaseException as exc:
+        primary_error = exc
+        raise
+    finally:
+        cleanup_errors = []
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError as exc:
+                cleanup_errors.append(exc)
+        if created:
+            try:
+                os.unlink(name, dir_fd=directory_fd)
+            except FileNotFoundError:
+                pass  # The successful rename consumed our temporary name.
+            except OSError as exc:
+                cleanup_errors.append(exc)
+        if cleanup_errors:
+            if primary_error is not None:
+                for error in cleanup_errors:
+                    primary_error.add_note(f"initial reference stage cleanup: {error}")
+            else:
+                first, *additional = cleanup_errors
+                for error in additional:
+                    first.add_note(f"additional initial reference stage cleanup: {error}")
+                raise first
+
+
+def promote_initial_reference_generation(
+    out_dir: str | Path, *, expected_receipt_sha256: str,
+    expected_artifact_sha256: dict[str, str],
+) -> InitialReferencePromotion:
+    """Explicit initial-only receipt promotion inside the existing Data OS owner.
+
+    The caller must qualify the actual source set and installed writer before
+    canonical invocation. Hashes and the normal code identity do not authenticate
+    its market evidence. There is no caller clock, attestation flag, CLI or nightly
+    activation. All five Parquets remain byte-identical; the accepted R23 decoder
+    and native validator determine the candidate from those physical bytes.
+
+    Hold R25's cooperative local writer lock through preparation, exact preimage
+    recheck, same-directory receipt rename, directory fsync and actual readback.
+    This does not coordinate other hosts or noncooperating filesystem writers.
+    After the native receipt exists, legacy refresh deliberately refuses; this
+    is not a history-preserving successor-generation or rollback publisher.
+    """
+    from engine.entry_radar.replay.identity_observation_snapshot import (
+        _read_file, read_identity_snapshot,
+    )
+    from engine.neuralweb.market_memory_identity_candidate import (
+        build_parquet_bound_initial_candidate,
+    )
+
+    root = _initial_reference_path(out_dir)
+    vector = _initial_reference_expected(expected_receipt_sha256, expected_artifact_sha256)
+    try:
+        existing = os.stat(root, follow_symlinks=False)
+    except OSError as exc:
+        raise IdentityError("initial reference requires an existing directory") from exc
+    if not stat.S_ISDIR(existing.st_mode):
+        raise IdentityError("initial reference target must be an existing directory")
+    directory_identity = (existing.st_dev, existing.st_ino)
+    replace_attempted = False
+    directory_synced = False
+    prepared = None
+    try:
+        with _reference_writer_scope(root):
+            _pid, directory_fd, device, inode = _reference_writer_local.active[_writer_path(root)]
+            if (device, inode) != directory_identity:
+                raise IdentityError("initial reference target changed before writer acquisition")
+            before, artifacts = _initial_reference_files(directory_fd)
+            if (hashlib.sha256(before).hexdigest() != expected_receipt_sha256
+                    or _initial_reference_vector(artifacts) != vector):
+                raise IdentityError("initial reference preimage mismatch")
+            code_version = _git_sha()
+            prepared = build_parquet_bound_initial_candidate(
+                before, artifacts, code_version=code_version)
+            del artifacts
+            _assert_reference_writer_target(root)
+            receipt_stat = os.stat(RECEIPT_NAME, dir_fd=directory_fd, follow_symlinks=False)
+            if not stat.S_ISREG(receipt_stat.st_mode):
+                raise IdentityError("initial reference receipt preimage is no longer regular")
+            raw = prepared.candidate.candidate_receipt_bytes
+            with _staged_initial_receipt(directory_fd, raw, receipt_stat.st_mode) as staged:
+                _assert_reference_writer_target(root)
+                current, current_artifacts = _initial_reference_files(directory_fd)
+                if (current != before or _initial_reference_vector(current_artifacts) != vector):
+                    raise IdentityError("initial reference preimage changed before commit")
+                del current_artifacts
+                if _git_sha() != code_version:
+                    raise IdentityError("initial reference code identity changed before commit")
+                if _read_file(directory_fd, staged, 9 * 1024 * 1024) != raw:
+                    raise IdentityError("initial reference staged receipt changed before commit")
+                _assert_reference_writer_target(root)
+                replace_attempted = True
+                os.replace(staged, RECEIPT_NAME, src_dir_fd=directory_fd, dst_dir_fd=directory_fd)
+                os.fsync(directory_fd)
+                directory_synced = True
+                observed = read_identity_snapshot(root)
+                _assert_reference_writer_target(root)
+                if (observed.snapshot.receipt_bytes != raw
+                        or observed.receipt.receipt_sha256 != prepared.candidate.candidate_receipt_sha256
+                        or observed.receipt.generation_id != prepared.candidate.generation_id
+                        or observed.receipt.artifact_sha256 != vector):
+                    raise IdentityError("initial reference actual readback does not match candidate")
+                result = InitialReferencePromotion(prepared, observed, directory_synced=True)
+        return result
+    except BaseException as exc:
+        if not replace_attempted:
+            raise
+        try:
+            effect = _inspect_initial_reference_publication(
+                root, expected_receipt_sha256, prepared.candidate.candidate_receipt_sha256,
+                vector, expected_directory_identity=directory_identity)
+        except Exception as reconciliation_error:
+            effect = "EFFECT_UNKNOWN"
+            exc.add_note(f"initial reference reconciliation failed: {reconciliation_error}")
+        if isinstance(exc, Exception):
+            raise InitialReferencePromotionError(
+                prepared=prepared, effect_state=effect, directory_synced=directory_synced) from exc
+        # Preserve KeyboardInterrupt/SystemExit, with exact recovery identities.
+        exc.add_note(
+            f"initial reference promotion: effect_state={effect}; directory_synced={directory_synced}; "
+            f"original_receipt_sha256={expected_receipt_sha256}; "
+            f"candidate_receipt_sha256={prepared.candidate.candidate_receipt_sha256}; "
+            f"artifact_sha256={dict(vector)}"
+        )
+        raise
+
+
+def _assert_no_unpreserved_native_generation(out_dir: Path) -> None:
+    """Fail closed before legacy builder rewrites any native identity history.
+
+    The ordinary security-master builder still emits legacy receipt structure;
+    it cannot append authenticated native publication/observation history.
+    Any existing native key, including a partial or malformed one, is a
+    potential generation boundary and MUST NOT be stripped by a successful
+    rebuild. The only lawful remedy is a separate source-owner writer that
+    retains and validates the complete native context. This is not that writer.
+    """
+    _assert_reference_writer_target(out_dir)
+    receipt_path = out_dir / RECEIPT_NAME
+    if not receipt_path.exists():
+        return
+    receipt, _ = _reference_json(receipt_path)
+    if "publication" in receipt or "identity_observations" in receipt:
+        raise IdentityError(
+            "native identity publication/history cannot be preserved by legacy "
+            "security-master builder; refusing regeneration before source writes"
+        )
+
+
 def _reference_ns(value: object, name: str) -> int:
     if type(value) is not int or value <= 0:
         raise IdentityError(f"invalid reference {name}")
@@ -3210,6 +3864,242 @@ def _reference_clock_iso(ns: int) -> str:
     # Ceiling, never float rounding or truncation that advances availability.
     return (datetime(1970, 1, 1, tzinfo=timezone.utc)
             + timedelta(microseconds=(ns + 999) // 1000)).isoformat()
+
+
+_DIRECT_REGISTRANT_KEYS = frozenset({
+    "symbol", "response_body", "capture", "listing_body", "listing_receipt_body",
+})
+_FUND_REFERENCE_KEYS = frozenset({"fund_reference_body", "fund_reference_capture"})
+_FUND_REFERENCE_URL = "https://www.sec.gov/files/company_tickers_mf.json"
+
+
+def _direct_registrant_source_shape(source) -> bool:
+    return (isinstance(source, dict) and set(source) in
+            (_DIRECT_REGISTRANT_KEYS, _DIRECT_REGISTRANT_KEYS | _FUND_REFERENCE_KEYS))
+
+
+def _fund_reference_capture(capture: dict, *, on: date, latest: int) -> int:
+    """Validate one retained official HTTP observation, never invent its clock."""
+    keys = {"url", "final_url", "status", "bytes", "sha256",
+            "request_started_at", "read_completed_at"}
+    if (not isinstance(capture, dict) or set(capture) != keys
+            or capture["url"] != _FUND_REFERENCE_URL
+            or capture["final_url"] != _FUND_REFERENCE_URL
+            or type(capture["status"]) is not int or capture["status"] != 200
+            or type(capture["bytes"]) is not int
+            or not 0 < capture["bytes"] <= _REFERENCE_MAX_BYTES
+            or not isinstance(capture["sha256"], str)
+            or re.fullmatch(r"[0-9a-f]{64}", capture["sha256"]) is None):
+        raise IdentityError("invalid SEC fund-reference capture")
+    started = _reference_clock_ns(capture["request_started_at"])
+    completed = _reference_clock_ns(capture["read_completed_at"])
+    if (not 0 < started <= completed <= latest
+            or _reference_clock_iso(started)[:10] != on.isoformat()
+            or _reference_clock_iso(completed)[:10] != on.isoformat()):
+        raise IdentityError("SEC fund-reference observation clocks disagree")
+    return completed
+
+
+def _validate_fund_reference(link: dict, *, symbol: str, cik: str,
+                             on: date, latest: int) -> int:
+    """Check retained selection/provenance consistency, not HTTP authenticity."""
+    keys = {"schema", "symbol", "cik", "series_id", "class_id",
+            "selection_sha256", "capture"}
+    if (symbol not in {"QQQ", "SMH"} or not isinstance(link, dict)
+            or set(link) != keys or link["schema"] != "mastermind.sec_fund_reference.v1"
+            or link["symbol"] != symbol or link["cik"] != cik
+            or not isinstance(link["series_id"], str)
+            or re.fullmatch(r"S[0-9]{9}", link["series_id"]) is None
+            or not isinstance(link["class_id"], str)
+            or re.fullmatch(r"C[0-9]{9}", link["class_id"]) is None):
+        raise IdentityError("invalid retained SEC fund-reference selection")
+    selected = {k: link[k] for k in ("symbol", "cik", "series_id", "class_id")}
+    if link["selection_sha256"] != _reference_digest(selected):
+        raise IdentityError("SEC fund-reference selection changed")
+    return _fund_reference_capture(link["capture"], on=on, latest=latest)
+
+
+def _prepare_fund_reference(body: bytes, capture: dict, *, symbol: str,
+                            cik: str, on: date, decision: int) -> tuple[dict, int]:
+    """Bind an explicitly captured search-association row to SEC and listing evidence.
+
+    SEC does not guarantee this search file's accuracy/scope. This is one
+    corroborating input to the existing independence fence, not a canonical
+    security, issuer group, vendor alias, or historical identity observation.
+    """
+    if type(body) is not bytes or not 0 < len(body) <= _REFERENCE_MAX_BYTES:
+        raise IdentityError("SEC fund-reference byte bound")
+    completed = _fund_reference_capture(capture, on=on, latest=decision)
+    if capture["bytes"] != len(body) or capture["sha256"] != hashlib.sha256(body).hexdigest():
+        raise IdentityError("SEC fund-reference capture does not bind exact bytes")
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate SEC fund-reference JSON key")
+            result[key] = value
+        return result
+
+    try:
+        value = json.loads(body.decode("utf-8"), object_pairs_hook=pairs,
+            parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)),
+            parse_float=lambda v: (_ for _ in ()).throw(ValueError(v)))
+        if (not isinstance(value, dict) or set(value) != {"fields", "data"}
+                or value["fields"] != ["cik", "seriesId", "classId", "symbol"]
+                or not isinstance(value["data"], list) or not 0 < len(value["data"]) <= 100000):
+            raise ValueError("unsupported SEC fund-reference table")
+        matches = []
+        for row in value["data"]:
+            if (not isinstance(row, list) or len(row) != 4
+                    or type(row[0]) is not int or not 0 < row[0] < 10**10
+                    or not isinstance(row[1], str) or re.fullmatch(r"S[0-9]{9}", row[1]) is None
+                    or not isinstance(row[2], str) or re.fullmatch(r"C[0-9]{9}", row[2]) is None
+                    or not isinstance(row[3], str) or len(row[3]) > 32):
+                raise ValueError("invalid SEC fund-reference row")
+            # SEC can retain an unassigned class with an empty ticker. It is
+            # not a match; conflicting or duplicate requested-symbol rows refuse.
+            if row[3] == symbol:
+                matches.append(row)
+        if len(matches) != 1 or f"{matches[0][0]:010d}" != cik:
+            raise ValueError("fund symbol/registrant missing, ambiguous or conflicting")
+    except (ValueError, TypeError, RecursionError, UnicodeError) as exc:
+        raise IdentityError("invalid SEC fund-reference evidence") from exc
+    selected = dict(symbol=symbol, cik=cik, series_id=matches[0][1], class_id=matches[0][2])
+    link = {"schema": "mastermind.sec_fund_reference.v1", **selected,
+            "selection_sha256": _reference_digest(selected), "capture": dict(capture)}
+    _validate_fund_reference(link, symbol=symbol, cik=cik, on=on, latest=decision)
+    return link, completed
+
+
+def prepare_direct_registrant(*, symbol: str, response_body: bytes, capture: dict,
+                             listing_body: bytes, listing_receipt_body: bytes,
+                             decision_at: str, fund_reference_body: bytes | None = None,
+                             fund_reference_capture: dict | None = None) -> dict:
+    """Prepare a *new* dated ETF observation for the existing mint fence.
+
+    The SEC supplies registrant identity, not a precise venue or issuer grouping.
+    The existing collector receipt supplies the current listing observation, not
+    a SEC binding. Neither ticker equality nor this result is a canonical ID.
+    Only the existing canonical mint may decide independence against its actual
+    lost rows. No old reference disposition is read, replaced or retried here.
+    The caller owns capture provenance; hashes detect changes, not authenticate
+    an HTTP sender. This function reads supplied bytes and publishes nothing.
+    """
+    from lib.symbol_directory_receipts import (
+        ReceiptValidationError, validate_symbol_directory_completion_receipt_bytes,
+    )
+    import pandas as pd
+    import pyarrow.parquet as pq
+    import math
+
+    if not isinstance(symbol, str) or symbol not in {"SPY", "QQQ", "SMH"}:
+        raise IdentityError("direct registrant intake supports only existing ETF probes")
+    if (type(response_body) is not bytes or not response_body
+            or len(response_body) > _REFERENCE_MAX_BYTES
+            or type(listing_body) is not bytes or not listing_body
+            or len(listing_body) > 8 * 1024 * 1024
+            or type(listing_receipt_body) is not bytes or not listing_receipt_body
+            or len(listing_receipt_body) > 512 * 1024):
+        raise IdentityError("direct registrant evidence exceeds its byte bounds")
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate JSON key")
+            result[key] = value
+        return result
+
+    def finite(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError("nonfinite JSON number")
+        return number
+
+    try:
+        sec = json.loads(response_body.decode("utf-8"), object_pairs_hook=pairs,
+                         parse_float=finite,
+                         parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
+        receipt = json.loads(listing_receipt_body.decode("utf-8"), object_pairs_hook=pairs)
+        # Bound decoded row count before the canonical validator reads Parquet.
+        if pq.ParquetFile(io.BytesIO(listing_body)).metadata.num_rows > 200000:
+            raise ValueError("too many listing rows")
+        receipt = validate_symbol_directory_completion_receipt_bytes(
+            receipt, listing_receipt_body, listing_body, expected_kind="listing_snapshot")
+    except (ValueError, TypeError, RecursionError, UnicodeError, ReceiptValidationError) as exc:
+        raise IdentityError("invalid direct registrant or listing evidence") from exc
+    if not isinstance(sec, dict) or not isinstance(capture, dict):
+        raise IdentityError("direct registrant evidence must be objects")
+    cik = sec.get("cik")
+    tickers = sec.get("tickers")
+    title = sec.get("name")
+    if (not isinstance(cik, str) or not re.fullmatch(r"[0-9]{10}", cik) or int(cik) == 0
+            or not isinstance(title, str) or not title.strip() or len(title) > 512
+            or not isinstance(tickers, list)
+            or any(not isinstance(t, str) or not t for t in tickers)
+            or len(tickers) != len(set(tickers))):
+        raise IdentityError("SEC response does not identify the requested registrant")
+    supplied_fund = fund_reference_body is not None or fund_reference_capture is not None
+    if symbol not in tickers:
+        if tickers or symbol not in {"QQQ", "SMH"} or not supplied_fund:
+            raise IdentityError("SEC response does not identify the requested registrant")
+    elif supplied_fund:
+        raise IdentityError("fund-reference extension is only for empty QQQ/SMH ticker arrays")
+    url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+    digest = hashlib.sha256(response_body).hexdigest()
+    if (capture.get("url") != url or capture.get("final_url") != url
+            or type(capture.get("status")) is not int or capture["status"] != 200
+            or type(capture.get("bytes")) is not int or capture["bytes"] != len(response_body)
+            or capture.get("sha256") != digest):
+        raise IdentityError("SEC capture does not bind the exact response")
+    started = _reference_clock_ns(capture.get("request_started_at"))
+    completed = _reference_clock_ns(capture.get("read_completed_at"))
+    decision = _reference_clock_ns(decision_at)
+    listing_completed = _reference_clock_ns(receipt["clocks"]["collector_completed_at"])
+    on = date.fromisoformat(receipt["observation_date"])
+    if (not 0 < started <= completed <= decision or listing_completed > decision
+            or _reference_clock_iso(started)[:10] != on.isoformat()
+            or _reference_clock_iso(completed)[:10] != on.isoformat()):
+        raise IdentityError("direct registrant observation clocks disagree")
+    if receipt["authority"]["listing_identity_observation_eligible"] is not True:
+        raise IdentityError("listing observation is ineligible")
+    frame = pd.read_parquet(io.BytesIO(listing_body))
+    rows = frame.loc[frame["symbol"] == symbol]
+    exchange, venue, _, _ = REFERENCE_PROBES[symbol]
+    if len(rows) != 1:
+        raise IdentityError("listing observation is missing or ambiguous")
+    row = rows.iloc[0]
+    if (row["exchange"] != exchange or not bool(row["etf"])
+            or bool(row["test_issue"]) or bool(row["is_preferred"])):
+        raise IdentityError("listing observation conflicts with the ETF probe")
+    # Reuse the scoped resolver, including rename/venue law. SEC's broad
+    # 'NYSE' label is never translated into XNYS or another MIC here.
+    resolutions = resolve_universe(
+        {symbol: {"sources": ["direct_registrant_observation"], "first_seen": on}},
+        {}, {symbol: exchange}, on.isoformat(), reference_probe_keys=frozenset({symbol}))
+    if (len(resolutions) != 1 or resolutions[0].listing_key is None
+            or resolutions[0].listing_key.mic != venue):
+        raise IdentityError("canonical resolver did not establish the listing")
+    resolution = resolutions[0]
+    fund, fund_completed = None, 0
+    if supplied_fund:
+        fund, fund_completed = _prepare_fund_reference(
+            fund_reference_body, fund_reference_capture, symbol=symbol,
+            cik=cik, on=on, decision=decision)
+    return {"resolution": resolution, "registrant": {
+        "symbol": symbol, "cik": cik, "title": title,
+        "listing_key": resolution.listing_key.render(), "observed_on": on.isoformat(),
+        "known_at": _reference_clock_iso(max(completed, listing_completed, fund_completed)),
+        "response_sha256": digest,
+        "listing_snapshot_sha256": receipt["artifact"]["sha256"],
+        "listing_receipt_sha256": hashlib.sha256(listing_receipt_body).hexdigest(),
+        "capture": {key: capture[key] for key in (
+            "url", "final_url", "status", "bytes", "sha256",
+            "request_started_at", "read_completed_at")},
+        "scope": "pending_transition_independence_only",
+        **({"fund_reference": fund} if fund is not None else {}),
+    }}
 
 
 def _load_reference_input(out_dir: Path, path: Path | None) -> dict | None:
@@ -3403,8 +4293,473 @@ def _reference_aliases(state: dict | None, ids: dict, master_rows: list[dict],
     return aliases
 
 
+def read_direct_registrant_inputs(path: Path) -> list[dict]:
+    """Read one explicit local capture bundle; no network or credential access."""
+    from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate input JSON key")
+            result[key] = value
+        return result
+
+    try:
+        body = _read_regular_file(path, label="direct registrant manifest", limit=512 * 1024)
+        manifest = json.loads(body, object_pairs_hook=pairs,
+                              parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
+        if (not isinstance(manifest, dict) or set(manifest) != {"schema", "sources"}
+                or manifest["schema"] not in {"mastermind.direct_registrant_input.v1",
+                                               "mastermind.direct_registrant_input.v2"}
+                or not isinstance(manifest["sources"], list) or not 1 <= len(manifest["sources"]) <= 3):
+            raise ValueError("invalid direct registrant manifest")
+        inputs = []
+        for record in manifest["sources"]:
+            if (not _direct_registrant_source_shape(record)
+                    or (manifest["schema"] == "mastermind.direct_registrant_input.v1"
+                        and set(record) != _DIRECT_REGISTRANT_KEYS)):
+                raise ValueError("invalid direct registrant source")
+            source = dict(record)
+            files = [("response_body", _REFERENCE_MAX_BYTES),
+                     ("listing_body", 8 * 1024 * 1024),
+                     ("listing_receipt_body", 512 * 1024)]
+            if "fund_reference_body" in source:
+                files.append(("fund_reference_body", _REFERENCE_MAX_BYTES))
+            for key, limit in files:
+                name = source[key]
+                if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", name):
+                    raise ValueError("source must be a sibling filename")
+                source[key] = _read_regular_file(path.parent / name, label=key, limit=limit)
+            inputs.append(source)
+        return inputs
+    except (OSError, ValueError, TypeError, RecursionError, ReceiptValidationError) as exc:
+        raise IdentityError("invalid direct registrant input files") from exc
+
+
+def _direct_registrant_state(out_dir: Path, inputs: tuple[dict, ...] | list[dict],
+                             now: str) -> tuple[dict | None, list[Resolution]]:
+    """Carry decisions inside the existing receipt; never replay retained inputs."""
+    previous = None
+    if (out_dir / RECEIPT_NAME).exists():
+        previous = _reference_json(out_dir / RECEIPT_NAME)[0].get("direct_registrant_intake")
+    if type(inputs) not in (tuple, list) or len(inputs) > 3:
+        raise IdentityError("direct registrant intake exceeds the bounded probe set")
+    if previous is None and not inputs:
+        return None, []
+    clock = datetime.fromisoformat(now.replace("Z", "+00:00"))
+    if clock.tzinfo is None:
+        clock = clock.replace(tzinfo=timezone.utc)
+    state = {"schema": "mastermind.direct_registrant_intake.v1", "observations": {}}
+    if previous is not None:
+        if (not isinstance(previous, dict) or set(previous) != {"schema", "observations", "sha256"}
+                or previous.get("schema") != state["schema"]
+                or not isinstance(previous.get("observations"), dict)
+                or len(previous["observations"]) > 3
+                or previous["sha256"] != _reference_digest({k: previous[k] for k in ("schema", "observations")})):
+            raise IdentityError("invalid retained direct registrant receipt")
+        for key, row in previous["observations"].items():
+            if (key not in {"SPY", "QQQ", "SMH"} or not isinstance(row, dict)
+                    or row.get("symbol") != key or not isinstance(row.get("status"), str)
+                    or row["status"] not in {"BOUND", "REFUSED"}
+                    or row.get("scope") != "pending_transition_independence_only"
+                    or _reference_clock_ns(row.get("known_at")) > _reference_clock_ns(clock.isoformat())):
+                raise IdentityError("invalid retained direct registrant disposition")
+            try:
+                on = date.fromisoformat(row["observed_on"])
+                capture = row["capture"]
+                expected_url = f'https://data.sec.gov/submissions/CIK{row["cik"]}.json'
+                started = _reference_clock_ns(capture["request_started_at"])
+                completed = _reference_clock_ns(capture["read_completed_at"])
+                known = _reference_clock_ns(row["known_at"])
+                listing = parse_listing_key(row["listing_key"])
+                valid = (
+                    on.isoformat() == row["observed_on"]
+                    and isinstance(row["cik"], str)
+                    and re.fullmatch(r"[0-9]{10}", row["cik"]) is not None
+                    and int(row["cik"]) > 0
+                    and isinstance(row["title"], str) and 0 < len(row["title"].strip()) <= 512
+                    and listing.country == DEFAULT_COUNTRY
+                    and listing.mic == REFERENCE_PROBES[key][1]
+                    and listing.code == _inception_code(key, key)
+                    and all(isinstance(row.get(field), str)
+                            and re.fullmatch(r"[0-9a-f]{64}", row[field]) is not None
+                            for field in ("response_sha256", "listing_snapshot_sha256", "listing_receipt_sha256"))
+                    and set(capture) == {"url", "final_url", "status", "bytes", "sha256",
+                                         "request_started_at", "read_completed_at"}
+                    and capture["url"] == capture["final_url"] == expected_url
+                    and type(capture["status"]) is int and capture["status"] == 200
+                    and type(capture["bytes"]) is int and 0 < capture["bytes"] <= _REFERENCE_MAX_BYTES
+                    and capture["sha256"] == row["response_sha256"]
+                    and 0 < started <= completed <= known
+                    and _reference_clock_iso(started)[:10] == on.isoformat()
+                    and _reference_clock_iso(completed)[:10] == on.isoformat()
+                )
+                if row["status"] == "BOUND":
+                    valid = valid and isinstance(row.get("security_id"), str) and bool(row["security_id"])
+                else:
+                    causes = row.get("owner_refusals")
+                    valid = (valid and row.get("code") == "canonical_identity_refused"
+                             and isinstance(causes, list) and bool(causes)
+                             and all(isinstance(cause, dict) and cause.get("symbol") == key
+                                     and isinstance(cause.get("reason"), str) and cause["reason"]
+                                     for cause in causes))
+                if "fund_reference" in row:
+                    _validate_fund_reference(row["fund_reference"], symbol=key,
+                                             cik=row["cik"], on=on, latest=known)
+                if not valid:
+                    raise IdentityError("invalid retained direct registrant fields")
+            except (KeyError, TypeError, ValueError, OverflowError) as exc:
+                raise IdentityError("invalid retained direct registrant fields") from exc
+            state["observations"][key] = dict(row)
+    prepared_resolutions = []
+    for source in inputs:
+        if not _direct_registrant_source_shape(source):
+            raise IdentityError("invalid direct registrant input shape")
+        if not isinstance(source["symbol"], str):
+            raise IdentityError("invalid direct registrant symbol")
+        if source["symbol"] in state["observations"]:
+            raise IdentityError("direct registrant observation already retained; no replay")
+        result = prepare_direct_registrant(**source, decision_at=clock.isoformat())
+        row = result["registrant"]
+        state["observations"][row["symbol"]] = dict(row, status="PENDING")
+        prepared_resolutions.append(result["resolution"])
+    return state, prepared_resolutions
+
+
+def _current_direct_resolution(symbol: str, row: dict, directory: dict, flags: dict,
+                               delisted: dict, snapshot_date: str | None) -> Resolution | None:
+    """Use the current listing rail, never a retained observation as today's venue."""
+    if (snapshot_date is None or snapshot_date < row["observed_on"] or symbol in delisted
+            or directory.get(symbol) != REFERENCE_PROBES[symbol][0]
+            or flags.get(symbol) != {"etf": True, "test_issue": False, "is_preferred": False}):
+        return None
+    resolved = resolve_universe(
+        {symbol: {"sources": [], "first_seen": date.fromisoformat(row["observed_on"])}},
+        delisted, directory, snapshot_date, reference_probe_keys=frozenset({symbol}))
+    # The resolver also emits every exit-ledger key, including unrelated symbols.
+    current = next(r for r in resolved if r.key == symbol)
+    if current.listing_key is None or current.listing_key.render() != row["listing_key"]:
+        return None
+    return current
+
+
+def _retained_direct_resolutions(state: dict | None, existing: list[dict], *,
+                                 directory: dict, directory_flags: dict, delisted: dict,
+                                 snapshot_date: str | None) -> list[Resolution]:
+    """Re-derive stored active IDs only while the current rail still supports them."""
+    results = []
+    for symbol, row in (state["observations"].items() if state else ()):
+        if row["status"] != "BOUND":
+            continue
+        matches = [r for r in existing if r["security_id"] == row.get("security_id")]
+        if len(matches) != 1 or matches[0]["listing_key"] != row["listing_key"]:
+            raise IdentityError("retained direct registrant canonical row is missing or conflicting")
+        stored = matches[0]
+        if stored.get("security_state"):
+            continue  # historical observation retained; never resurrect a tombstone
+        listing = parse_listing_key(stored["listing_key"])
+        if (stored["country"] != listing.country or stored["mic"] != listing.mic
+                or stored["inception_code"] != listing.code):
+            raise IdentityError("retained direct registrant listing fields conflict")
+        current = _current_direct_resolution(symbol, row, directory, directory_flags,
+                                             delisted, snapshot_date)
+        if current is not None:
+            results.append(current)
+    return results
+
+
+def prepare_spy_option_root(sources: dict, *, decision_at: str) -> tuple[AliasRow, dict]:
+    """Prepare one observed-day source inference; no network or publication.
+
+    This profile is deliberately SPY-specific. Capture metadata belongs to the
+    admitted caller and is not authentication. Cboe identifies the actual option
+    product; Theta's v3 contract supplies the namespace semantics; SEC plus the
+    native listing receipt identify the underlying. No name or ticker matching
+    fallback, historical effective date, index admission or source-use grant.
+    """
+    import csv
+    from html.parser import HTMLParser
+    from lib.dataos.identity import option_root_binding_sha256
+
+    urls = {
+        "cboe_reference": "https://cdn.cboe.com/data/us/options/market_statistics/symbol_reference/cone-underlying.csv",
+        "cboe_product": "https://www.cboe.com/tradable_products/sp_500/spx_weekly_options/specifications",
+        "theta_contract": "https://thetadata.net/docs/operations/option_history_eod.html",
+        "registrant": "https://data.sec.gov/submissions/CIK0000884394.json",
+    }
+    if type(sources) is not dict or set(sources) != set(urls) | {"listing_body", "listing_receipt_body"}:
+        raise IdentityError("invalid option-root source bundle")
+    decision = _reference_clock_ns(decision_at)
+    bodies, observations, clocks = {}, {}, []
+    for role, url in urls.items():
+        source = sources[role]
+        if type(source) is not dict or set(source) != {"body", "capture"}:
+            raise IdentityError("invalid option-root source record")
+        body, capture = source["body"], source["capture"]
+        if (type(body) is not bytes or not 0 < len(body) <= _REFERENCE_MAX_BYTES
+                or type(capture) is not dict
+                or set(capture) != {"url", "final_url", "status", "bytes", "sha256",
+                                    "request_started_at", "read_completed_at"}
+                or capture.get("url") != url
+                or capture.get("final_url") != url or type(capture.get("status")) is not int
+                or capture["status"] != 200 or type(capture.get("bytes")) is not int
+                or capture["bytes"] != len(body)
+                or capture.get("sha256") != hashlib.sha256(body).hexdigest()):
+            raise IdentityError("option-root capture does not bind the exact source")
+        started = _reference_clock_ns(capture.get("request_started_at"))
+        completed = _reference_clock_ns(capture.get("read_completed_at"))
+        if not 0 < started <= completed <= decision:
+            raise IdentityError("invalid option-root source clocks")
+        clocks.extend((started, completed))
+        observations[role] = {"url": url, "bytes": len(body), "sha256": capture["sha256"],
+                              "request_started_at": _reference_clock_iso(started),
+                              "read_completed_at": _reference_clock_iso(completed)}
+        bodies[role] = body
+    on = date.fromisoformat(_reference_clock_iso(max(clocks))[:10])
+    if any(_reference_clock_iso(clock)[:10] != on.isoformat() for clock in clocks):
+        raise IdentityError("option-root sources must be observed on one date")
+    if _reference_clock_iso(decision)[:10] != on.isoformat():
+        raise IdentityError("new option-root admission must occur on its observed date")
+
+    class Tables(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.text, self.tables = [], []
+            self.hidden = 0
+            self.rows = self.cells = self.cell = None
+
+        def handle_starttag(self, tag, attrs):
+            if tag in ("script", "style", "template"):
+                self.hidden += 1
+            if self.hidden:
+                return
+            if tag == "table":
+                if self.rows is not None:
+                    raise ValueError("nested source table")
+                self.rows = []
+            if tag == "tr" and self.rows is not None:
+                self.cells = []
+            if tag in ("td", "th") and self.cells is not None:
+                self.cell = []
+
+        def handle_data(self, value):
+            if self.hidden:
+                return
+            self.text.append(value)
+            if self.cell is not None:
+                self.cell.append(value)
+
+        def handle_endtag(self, tag):
+            if self.hidden:
+                if tag in ("script", "style", "template"):
+                    self.hidden -= 1
+                return
+            if tag in ("td", "th") and self.cell is not None:
+                self.cells.append(" ".join(" ".join(self.cell).split()))
+                self.cell = None
+            if tag == "tr" and self.cells is not None:
+                self.rows.append(self.cells)
+                self.cells = None
+            if tag == "table" and self.rows is not None:
+                self.tables.append(self.rows)
+                self.rows = None
+
+    try:
+        reader = csv.DictReader(io.StringIO(bodies["cboe_reference"].decode("utf-8-sig")))
+        if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)):
+            raise ValueError("duplicate reference columns")
+        rows = list(reader)
+        if len(rows) > 20000 or any(None in row or any(v is None for v in row.values()) for row in rows):
+            raise ValueError("invalid reference rows")
+        selected = [r for r in rows if r.get("Symbol") == "SPY"]
+        if len(selected) != 1 or {k: selected[0].get(k) for k in
+                ("Company", "Symbol Type", "Options Type", "Clearing")} != {
+                "Company": "STATE STR SPDR S&P 500 ETF TR TR UNIT", "Symbol Type": "ETF",
+                "Options Type": "Standard", "Clearing": "OCC"}:
+            raise ValueError("SPY reference does not identify the standard ETF product")
+        product = Tables()
+        product.feed(bodies["cboe_product"].decode("utf-8"))
+        matches = [(table, row.index("SPDR ® S&P 500 ® ETF Options")) for table in product.tables
+                   for row in table if row.count("SPDR ® S&P 500 ® ETF Options") == 1]
+        if len(matches) != 1:
+            raise ValueError("ambiguous SPY product column")
+        table, column = matches[0]
+        for label, expected in (("Root Ticker Symbol", "SPY"), ("Options Chain", "SPY"),
+                                ("Settlement Type", "Physical Shares of ETF"), ("Exercise Style", "American")):
+            cells = [r for r in table if r and r[0] == label]
+            if len(cells) != 1 or len(cells[0]) <= column or cells[0][column] != expected:
+                raise ValueError("SPY root/product semantics conflict")
+            if label == "Root Ticker Symbol" and cells[0].count("SPY") != 1:
+                raise ValueError("SPY option root appears in multiple product columns")
+        theta = Tables()
+        theta.feed(bodies["theta_contract"].decode("utf-8"))
+        text = " ".join(" ".join(theta.text).split())
+        if ("/v3/option/history/eod" not in text or
+                "symbol Required - The stock or index symbol, or underlying symbol for options. Type: string" not in text):
+            raise ValueError("Theta v3 symbol contract unavailable")
+    except (UnicodeError, ValueError, TypeError, csv.Error) as exc:
+        raise IdentityError("option-root source semantics invalid") from exc
+
+    direct = prepare_direct_registrant(symbol="SPY", response_body=bodies["registrant"],
+        capture=sources["registrant"]["capture"], listing_body=sources["listing_body"],
+        listing_receipt_body=sources["listing_receipt_body"], decision_at=decision_at)
+    registrant = direct["registrant"]
+    if (registrant["cik"] != "0000884394" or registrant["title"] != "SPDR S&P 500 ETF TRUST"
+            or registrant["observed_on"] != on.isoformat()
+            or registrant["listing_key"] != "US-ARCX-SPY"):
+        raise IdentityError("option-root canonical source identity conflicts")
+    known = _reference_clock_iso(max(*clocks, _reference_clock_ns(registrant["known_at"])))
+    end = on + timedelta(days=1)
+    evidence = {"schema": "mastermind.spy_option_root_sources.v1", "vendor": "thetadata", "root": "SPY",
+        "underlying_id": "SEC:US-ARCX-SPY", "valid_from": on.isoformat(), "valid_to": end.isoformat(),
+        "known_at": known, "sources": observations, "listing": registrant,
+        "scope": "source-specific SPY inference; observed day only; no live Theta or rights assertion",
+        "limits": ["No verified Matrix session for this observed date; root lookup is identity preparation only",
+                   "Consumption uses the Options root/Matrix path; ordinary us_equity excludes ARCX"]}
+    body = (json.dumps(evidence, indent=2, sort_keys=True) + "\n").encode()
+    sha = hashlib.sha256(body).hexdigest()
+    seal = option_root_binding_sha256("thetadata", "SPY", "SEC:US-ARCX-SPY", on, end, known, sha)
+    return AliasRow("thetadata", "SPY", "SEC:US-ARCX-SPY", on, end, known, sha, seal,
+                    alias_kind="occ_root"), evidence
+
+
+def admit_spy_option_root(sources: dict, master_rows: list[dict], *, decision_at: str):
+    """Prepare against exactly one existing active canonical target, before writes."""
+    row, evidence = prepare_spy_option_root(sources, decision_at=decision_at)
+    matches = [r for r in master_rows if r.get("security_id") == row.security_id]
+    if len(matches) != 1:
+        raise IdentityError("option underlying canonical target missing or duplicated")
+    master = matches[0]
+    if (master.get("security_state") is not None or master.get("superseded_by") is not None
+            or [master.get(k) for k in ("listing_key", "country", "mic", "inception_code")] !=
+               ["US-ARCX-SPY", "US", "ARCX", "SPY"]):
+        raise IdentityError("option underlying is inactive or conflicting")
+    def stored_clock(name):
+        # The existing writer reader returns ISO strings from typed UTC Parquet.
+        try:
+            value = datetime.fromisoformat(str(master.get(name)).replace("Z", "+00:00"))
+            if value.tzinfo is None:
+                value = value.replace(tzinfo=timezone.utc)
+            return _reference_clock_ns(value.isoformat())
+        except (ValueError, TypeError) as exc:
+            raise IdentityError("invalid canonical target clock") from exc
+    effective, ingested = stored_clock("effective_at"), stored_clock("ingested_at")
+    if not 0 < effective <= ingested <= _reference_clock_ns(decision_at) or _reference_clock_iso(effective)[:10] > str(row.valid_from):
+        raise IdentityError("option underlying canonical clocks conflict")
+    # Seal the exact canonical record fields used for admission. Consumers also
+    # bind the independently captured master bytes and their availability clock.
+    evidence["canonical_target"] = {key: master.get(key) for key in MASTER_COLUMNS}
+    body = (json.dumps(evidence, indent=2, sort_keys=True, allow_nan=False) + "\n").encode()
+    digest = hashlib.sha256(body).hexdigest()
+    from lib.dataos.identity import option_root_binding_sha256
+    seal = option_root_binding_sha256(row.vendor, row.vendor_symbol, row.security_id,
+        row.valid_from, row.valid_to, row.known_at, digest)
+    return AliasRow(row.vendor, row.vendor_symbol, row.security_id, row.valid_from, row.valid_to,
+                    row.known_at, digest, seal, alias_kind="occ_root"), evidence
+
+
+def read_spy_option_root_input(path: Path) -> dict:
+    """Read the explicit local source bundle with the incumbent bounded reader."""
+    from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate source manifest key")
+            result[key] = value
+        return result
+
+    def read(name, limit):
+        if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", name):
+            raise ValueError("source must be a sibling filename")
+        return _read_regular_file(path.parent / name, label="option-root source", limit=limit)
+
+    try:
+        raw = _read_regular_file(path, label="option-root manifest", limit=512 * 1024)
+        manifest = json.loads(raw, object_pairs_hook=pairs,
+                              parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
+        roles = {"cboe_reference", "cboe_product", "theta_contract", "registrant"}
+        if (type(manifest) is not dict or set(manifest) != {"schema", "sources"}
+                or manifest["schema"] != "mastermind.spy_option_root_input.v1"
+                or type(manifest["sources"]) is not dict
+                or set(manifest["sources"]) != roles | {"listing_body", "listing_receipt_body"}):
+            raise ValueError("invalid option-root manifest")
+        sources = manifest["sources"]
+        for role in roles:
+            if type(sources[role]) is not dict or set(sources[role]) != {"body", "capture"}:
+                raise ValueError("invalid option-root source")
+            sources[role]["body"] = read(sources[role]["body"], _REFERENCE_MAX_BYTES)
+        sources["listing_body"] = read(sources["listing_body"], 8 * 1024 * 1024)
+        sources["listing_receipt_body"] = read(sources["listing_receipt_body"], 512 * 1024)
+        return sources
+    except (OSError, ValueError, TypeError, RecursionError, ReceiptValidationError) as exc:
+        raise IdentityError("invalid option-root input files") from exc
+
+
+def _spy_option_root_state(out_dir: Path, sources: dict | None, master_rows: list[dict], now: str):
+    """Retain one bounded admission in the existing writer receipt, without replay."""
+    previous = (_reference_json(out_dir / RECEIPT_NAME)[0].get("spy_option_root")
+                if (out_dir / RECEIPT_NAME).exists() else None)
+    if sources is not None and previous is not None:
+        raise IdentityError("SPY option-root admission already retained; no replay")
+    if sources is not None:
+        row, evidence = admit_spy_option_root(sources, master_rows, decision_at=now + "Z")
+        return evidence, [row]
+    if previous is not None:
+        if (type(previous) is not dict or previous.get("schema") != "mastermind.spy_option_root_sources.v1"
+                or previous.get("vendor") != "thetadata" or previous.get("root") != "SPY"
+                or previous.get("underlying_id") != "SEC:US-ARCX-SPY"):
+            raise IdentityError("invalid retained SPY root evidence")
+        # Its sealed alias binds the whole retained document below. No source
+        # observation is resubmitted and its historical clock is never refreshed.
+        if _reference_clock_ns(previous.get("known_at")) > _reference_clock_ns(now + "Z"):
+            raise IdentityError("retained SPY source evidence is not yet known")
+    return previous, []
+
+
+def _validate_spy_option_root_retention(evidence: dict | None, alias_rows: list[dict], now: str):
+    roots = [r for r in alias_rows if r.get("alias_kind") == "occ_root"
+             and r["vendor"] == "thetadata" and r["vendor_symbol"] == "SPY"]
+    if evidence is None:
+        if roots:
+            raise IdentityError("SPY root lacks its retained source evidence")
+        return
+    try:
+        start, end = date.fromisoformat(evidence["valid_from"]), date.fromisoformat(evidence["valid_to"])
+        body = (json.dumps(evidence, indent=2, sort_keys=True, allow_nan=False) + "\n").encode()
+        table = VendorAliasTable.from_records(roots)
+        binding = table.resolve_option_underlying("thetadata", "SPY", start,
+                    decision_at=now + "Z", evidence_bytes=body)
+        if (len(roots) != 1 or end != start + timedelta(days=1) or binding is None
+                or binding.security_id != evidence["underlying_id"]
+                or binding.valid_to != end or binding.known_at.isoformat() != evidence["known_at"]):
+            raise IdentityError("retained SPY source/alias mismatch")
+    except (KeyError, ValueError, TypeError, OverflowError) as exc:
+        raise IdentityError("invalid retained SPY root binding") from exc
+
+
 def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = False,
-          reference_evidence_path: Path | None = None) -> dict:
+          reference_evidence_path: Path | None = None,
+          direct_registrant_inputs: tuple[dict, ...] | list[dict] = (),
+          spy_option_root_input: dict | None = None) -> dict:
+    """Preserve the existing API; serialize all actual local writer effects."""
+    kwargs = dict(dry_run=dry_run, allow_missing_evidence=allow_missing_evidence,
+                  reference_evidence_path=reference_evidence_path,
+                  direct_registrant_inputs=direct_registrant_inputs,
+                  spy_option_root_input=spy_option_root_input)
+    if dry_run:
+        return _build_reference_unlocked(out_dir, **kwargs)
+    with _reference_writer_scope(out_dir):
+        return _build_reference_unlocked(out_dir, **kwargs)
+
+
+def _build_reference_unlocked(out_dir: Path, dry_run: bool = False,
+          allow_missing_evidence: bool = False,
+          reference_evidence_path: Path | None = None,
+          direct_registrant_inputs: tuple[dict, ...] | list[dict] = (),
+          spy_option_root_input: dict | None = None) -> dict:
     """Do the whole build and return the receipt payload (written unless ``dry_run``).
 
     ``allow_missing_evidence`` (V4-D2B1 FIX 2 / B2 manual-path hardening): a missing or
@@ -3418,15 +4773,45 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     admission that no CIK evidence exists yet — the correct state on a genuinely bare
     checkout before the first weekly map lands.
     """
+    # Protect native publication/history BEFORE any input reads or writes.
+    # An older builder cannot safely produce a new generation after native
+    # history appears, even when its ordinary data sources have advanced.
+    _assert_no_unpreserved_native_generation(out_dir)
+    if spy_option_root_input is not None and (reference_evidence_path is not None or direct_registrant_inputs):
+        raise IdentityError("option-root intake cannot combine with security admission")
+    now = _iso_now()
+    direct_state, direct_resolutions = _direct_registrant_state(out_dir, direct_registrant_inputs, now)
+    direct_keys = frozenset(direct_state["observations"]) if direct_state else frozenset()
     reference = _load_reference_input(out_dir, reference_evidence_path)
+    for symbol, observation in (direct_state["observations"].items() if direct_state else ()):
+        if observation["status"] != "PENDING" or reference is None:
+            continue
+        prior = reference["probes"].get(symbol)
+        if prior is not None and prior["status"] == "EVIDENCE_READY":
+            raise IdentityError("direct intake cannot supply identity to an unsettled older reference")
+        if prior is not None and _reference_clock_ns(observation["known_at"]) <= _reference_clock_ns(prior["known_at"]):
+            raise IdentityError("direct intake must be newer than the retained reference disposition")
     reference_keys = frozenset(
         symbol for symbol, row in (reference["probes"].items() if reference else ())
         if row["status"] == "EVIDENCE_READY"
     )
-    reference_only_keys = frozenset({"SPY", "QQQ", "SMH"}) if reference else frozenset()
+    reference_only_keys = (frozenset({"SPY", "QQQ", "SMH"}) if reference else frozenset()) | direct_keys
     universe = load_universe()
     delisted = load_delisted()
     directory, directory_flags, snapshot_date, snapshot_path = load_directory()
+    for incoming in direct_resolutions:
+        observation = direct_state["observations"][incoming.key]
+        if (observation["observed_on"] != snapshot_date or snapshot_path is None
+                or _current_direct_resolution(incoming.key, observation, directory,
+                                               directory_flags, delisted, snapshot_date) != incoming):
+            raise IdentityError("direct registrant does not bind the current listing rail")
+        from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+        try:
+            current_bytes = _read_regular_file(snapshot_path, label="current listing", limit=8 * 1024 * 1024)
+        except (OSError, ReceiptValidationError) as exc:
+            raise IdentityError("current listing snapshot unavailable") from exc
+        if hashlib.sha256(current_bytes).hexdigest() != observation["listing_snapshot_sha256"]:
+            raise IdentityError("direct registrant does not bind the current listing bytes")
     fixups, migrations = load_config_maps()
     cik_map, cik_snapshot_date, cik_map_path, ambiguous_tickers = load_cik_map()
     if cik_map_path is None and not allow_missing_evidence:
@@ -3439,8 +4824,14 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
 
     # ETF trust CIKs are not an admitted ETF issuer grouping. This reference lane
     # must not populate or merge their issuer axis, including on later reruns.
+    # Compare independent evidence BEFORE removing ETF keys from the issuer map.
+    for symbol, observation in (direct_state["observations"].items() if direct_state else ()):
+        if observation["status"] not in {"PENDING", "BOUND"}:
+            continue
+        ordinary = cik_map.get(symbol)
+        if symbol in ambiguous_tickers or (ordinary is not None and ordinary[0] != observation["cik"]):
+            raise IdentityError("direct registrant conflicts with ordinary CIK evidence")
     cik_map = {k: v for k, v in cik_map.items() if k not in reference_only_keys}
-    now = _iso_now()
     master_path = out_dir / MASTER_NAME
     aliases_path = out_dir / ALIASES_NAME
     issuer_master_path = out_dir / ISSUER_MASTER_NAME
@@ -3465,8 +4856,28 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         master_path, MASTER_COLUMNS, MASTER_DTYPES,
         allow_missing=ISSUER_AXIS_COLUMNS | SECURITY_AXIS_COLUMNS,
     )
+    spy_root_evidence, spy_root_aliases = _spy_option_root_state(
+        out_dir, spy_option_root_input, existing_master_rows, now)
+    if spy_option_root_input is not None:
+        observed = spy_root_evidence["listing"]
+        if (snapshot_date != observed["observed_on"] or snapshot_path is None
+                or _current_direct_resolution("SPY", observed, directory, directory_flags,
+                                              delisted, snapshot_date) is None
+                or hashlib.sha256(spy_option_root_input["listing_body"]).hexdigest() != observed["listing_snapshot_sha256"]):
+            raise IdentityError("option-root evidence does not bind the current listing")
+        from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+        try:
+            current_listing = _read_regular_file(snapshot_path, label="current listing", limit=8 * 1024 * 1024)
+        except (OSError, ReceiptValidationError) as exc:
+            raise IdentityError("current listing unavailable") from exc
+        if current_listing != spy_option_root_input["listing_body"]:
+            raise IdentityError("option-root evidence does not bind the current listing bytes")
     existing_us_rows = [r for r in existing_master_rows if r.get("country") == "US"]
     existing_cn_hk_rows = [r for r in existing_master_rows if r.get("country") in ("CN", "HK")]
+    direct_resolutions += _retained_direct_resolutions(
+        direct_state, existing_master_rows, directory=directory, directory_flags=directory_flags,
+        delisted=delisted, snapshot_date=snapshot_date)
+    direct_resolution_keys = frozenset(r.key for r in direct_resolutions)
 
     # ── V4-D2B2-US — GMI seed intake + full-population admission accounting ────────
     # AMENDMENT §1 (post-review fix pass) — R1 (blocker), R2, R3, R5, R6, R11.
@@ -3523,7 +4934,12 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     for code in reference_keys:
         reference_directory[code] = REFERENCE_PROBES[code][0]
     resolutions = resolve_universe(universe, delisted, reference_directory, snapshot_date,
-                                   reference_probe_keys=reference_keys)
+                                   reference_probe_keys=reference_keys | direct_resolution_keys)
+    for incoming in direct_resolutions:
+        conflicts = [r for r in resolutions if r.key == incoming.key and r.listing_key != incoming.listing_key]
+        if conflicts:
+            raise IdentityError("direct registrant conflicts with the current listing resolution")
+    resolutions = [r for r in resolutions if r.key not in direct_resolution_keys] + direct_resolutions
     legacy_resolutions = [r for r in resolutions if r.key in legacy_keys]
     resolved = [r for r in legacy_resolutions if r.listing_key is not None]
     unresolved = [r for r in legacy_resolutions if r.listing_key is None]
@@ -3550,9 +4966,10 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         cik_map=cik_map,
         delisted=delisted,
         snapshot_date=cik_snapshot_date,
-        gmi_admission_targets=gmi_us_only_targets - (reference_only_keys & reference_keys),
+        gmi_admission_targets=gmi_us_only_targets - (reference_only_keys & (reference_keys | direct_resolution_keys)),
         directory_flags=directory_flags,
         ambiguous_tickers=ambiguous_tickers,
+        direct_registrant_inputs=direct_registrant_inputs,
     )
 
     # ── V4-D2B2-US — complete per-target accounting (R2, corrected R13) ────────────
@@ -3724,12 +5141,27 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
 
     native_aliases = _reference_aliases(reference, ids, master_rows,
                                         pending_transition_refusals, resurrection_refusals)
+    if direct_state is not None:
+        for symbol, observed in direct_state["observations"].items():
+            if observed["status"] != "PENDING":
+                continue
+            matches = [r for r in master_rows if r["security_id"] == ids.get(symbol)
+                       and r["listing_key"] == observed["listing_key"] and not r.get("security_state")]
+            if len(matches) == 1:
+                observed.update(status="BOUND", security_id=matches[0]["security_id"])
+            else:
+                causes = [r for r in pending_transition_refusals + resurrection_refusals
+                          if r.get("symbol") == symbol]
+                if not causes:
+                    causes = [{"symbol": symbol, "reason": "canonical writer returned no unique active identity"}]
+                observed.update(status="REFUSED", code="canonical_identity_refused", owner_refusals=causes)
+        direct_state["sha256"] = _reference_digest(direct_state)
     fresh_aliases = build_alias_rows(
         [r for r in resolutions if r.key not in reference_only_keys], ids
-    ) + cn_hk_alias_rows + native_aliases
+    ) + cn_hk_alias_rows + native_aliases + spy_root_aliases
     existing_aliases, alias_prunes = _prune_stale_aliases(
         _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES,
-                       allow_missing=REFERENCE_ALIAS_COLUMNS),
+                       allow_missing=OPTIONAL_ALIAS_COLUMNS),
         fresh_aliases, superseded_ids,
     )
     # AMENDMENT ruling 6 (M5) / AMENDMENT §2 — every prune is receipted + a
@@ -4041,7 +5473,21 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     elif any(r.get("vendor") == "polygon" for r in alias_rows):
         raise IdentityError("native aliases require retained prospective evidence")
 
-    if reference_evidence_path is not None:
+    if direct_state is not None:
+        receipt["direct_registrant_intake"] = direct_state
+        # Historical admission is immutable; disclose this build's re-derivation separately.
+        current_direct_ids = {r.key for r in direct_resolutions}
+        receipt["direct_registrant_rederivation"] = {
+            symbol: ("REFUSED" if row["status"] == "REFUSED" else
+                     "RETIRED" if any(r["security_id"] == row.get("security_id") and r.get("security_state")
+                                      for r in master_rows) else
+                     "CURRENT" if symbol in current_direct_ids else "LISTING_UNAVAILABLE")
+            for symbol, row in direct_state["observations"].items()
+        }
+    _validate_spy_option_root_retention(spy_root_evidence, alias_rows, now)
+    if spy_root_evidence is not None:
+        receipt["spy_option_root"] = spy_root_evidence
+    if reference_evidence_path is not None or direct_registrant_inputs or spy_option_root_input is not None:
         def semantic(rows, columns):
             return sorted(_reference_digest({
                 c: (int(row[c]) if c == "n_securities" and row.get(c) is not None else row.get(c))
@@ -4052,12 +5498,16 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         if semantic(projected_existing, MASTER_COLUMNS) != semantic(existing_master_rows, MASTER_COLUMNS):
             raise IdentityError("bounded reference intake would change an existing security row")
         extras = [r for r in master_rows if r["security_id"] not in old_by_id]
-        if any(r["inception_code"] not in reference_only_keys for r in extras):
+        if (spy_option_root_input is not None and extras) or any(r["inception_code"] not in reference_only_keys for r in extras):
             raise IdentityError("bounded reference intake would mint a non-probe security")
         old_aliases = _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES,
-                                     allow_missing=REFERENCE_ALIAS_COLUMNS)
+                                     allow_missing=OPTIONAL_ALIAS_COLUMNS)
         old_native = [r for r in old_aliases if r["vendor"] == "polygon"]
-        new_legacy = [r for r in alias_rows if r["vendor"] != "polygon"]
+        new_legacy = [r for r in alias_rows if r["vendor"] != "polygon"
+                      and not (spy_option_root_input is not None and r.get("alias_kind") == "occ_root"
+                               and r["vendor"] == "thetadata" and r["vendor_symbol"] == "SPY")]
+        if spy_option_root_input is not None and len(alias_rows) != len(old_aliases) + 1:
+            raise IdentityError("option-root intake must add exactly one new relation")
         old_legacy = [r for r in old_aliases if r["vendor"] != "polygon"]
         if semantic(new_legacy, ALIAS_COLUMNS) != semantic(old_legacy, ALIAS_COLUMNS):
             raise IdentityError("bounded reference intake would change non-native aliases")
@@ -4073,6 +5523,10 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
                 raise IdentityError("bounded reference intake would change issuer or migration rows")
 
     if not dry_run:
+        # Recheck immediately before the first write: a native source owner may
+        # have published history while this legacy builder computed its rows.
+        # This is a narrow additional refusal, NOT an atomic writer lock.
+        _assert_no_unpreserved_native_generation(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
         _write_parquet(master_rows, MASTER_COLUMNS, master_path, MASTER_DTYPES)
         _write_parquet(alias_rows, ALIAS_COLUMNS, aliases_path, ALIAS_DTYPES)
@@ -4187,8 +5641,31 @@ def _identity_rail_unreadable(directory: Path) -> bool:
     return False
 
 
+def _legacy_rollback_cannot_replace_native(out_dir: Path) -> bool:
+    """Refuse a stale rollback if current receipt became native or unreadable.
+
+    A newer native publisher may have committed its receipt while this older
+    nightly builder was still processing. Restoring an older legacy receipt
+    would erase genuine owner history. This is fail-closed observed-state
+    protection, NOT a shared interprocess lock or atomic transaction.
+    """
+    try:
+        _assert_no_unpreserved_native_generation(out_dir)
+    except IdentityError as exc:
+        print(
+            "::error title=security-master-native-history-race::"
+            f"{exc} — refusing stale legacy rollback; preserving current "
+            "reference files for canonical source-owner reconciliation",
+            flush=True,
+        )
+        return True
+    return False
+
+
 def _restore_artifacts(out_dir: Path, before: dict[str, bytes | None],
-                       before_receipt: bytes | None) -> None:
+                       before_receipt: bytes | None) -> bool:
+    if _legacy_rollback_cannot_replace_native(out_dir):
+        return False
     for name, content in before.items():
         path = out_dir / name
         if content is None:
@@ -4202,9 +5679,21 @@ def _restore_artifacts(out_dir: Path, before: dict[str, bytes | None],
             receipt_path.unlink()
     else:
         receipt_path.write_bytes(before_receipt)
+    return True
 
 
 def run_nightly_refresh(out_dir: Path) -> int:
+    """Keep one writer lock across old snapshot, build, rollback and cleanup."""
+    try:
+        with _reference_writer_scope(out_dir):
+            return _run_nightly_reference_unlocked(out_dir)
+    except IdentityError as exc:
+        print("::error title=security-master-writer-refusal::"
+              f"{exc} — nightly did not acquire a valid writer transaction", flush=True)
+        return 0
+
+
+def _run_nightly_reference_unlocked(out_dir: Path) -> int:
     """The ``daily.yml`` collect-job seam (spec §7).  Fail-closed refresh laws:
 
       (a) a missing/unreadable identity input -> REFUSE, keep last-good artifacts,
@@ -4292,7 +5781,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
         # restore-and-continue shape as the generic handler, but its own named
         # ::warning so the nightly log says WHAT needs curating rather than a bare
         # "read/parse failure".
-        _restore_artifacts(out_dir, before, before_receipt)
+        if not _restore_artifacts(out_dir, before, before_receipt):
+            return 0
         print(
             f"::warning title=security-master-nightly-prune-conflict::{exc} — "
             "curation required (a new RENAME_EVENTS/SECURITY_SUPERSESSIONS entry, "
@@ -4377,7 +5867,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
         # writes master -> aliases -> issuer_master -> issuer_migrations -> receipt in
         # sequence, and any of those can raise) — restore ALL artifacts to last-good
         # rather than leaving a torn mix of new-and-old bytes.
-        _restore_artifacts(out_dir, before, before_receipt)
+        if not _restore_artifacts(out_dir, before, before_receipt):
+            return 0
         print(
             f"::warning title=security-master-nightly::build failed reading identity "
             f"inputs ({exc}) — keeping last-good artifacts, generated_at not "
@@ -4386,7 +5877,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
         return 0
 
     if receipt.get("notes"):
-        _restore_artifacts(out_dir, before, before_receipt)
+        if not _restore_artifacts(out_dir, before, before_receipt):
+            return 0
         print(
             f"::warning title=security-master-nightly::{'; '.join(receipt['notes'])} — "
             "unmodelled rename or listing-key collision; keeping last-good artifacts, "
@@ -4397,6 +5889,10 @@ def run_nightly_refresh(out_dir: Path) -> int:
     after = {name: _read_bytes_if_exists(out_dir / name) for name in _NIGHTLY_ARTIFACT_NAMES}
     if after == before:
         if before_receipt is not None:
+            # Even a byte-stable legacy build must not reset a newer native
+            # receipt that appeared while its unchanged inputs were checked.
+            if _legacy_rollback_cannot_replace_native(out_dir):
+                return 0
             (out_dir / RECEIPT_NAME).write_bytes(before_receipt)
         _clear_prune_conflict_streak(out_dir)
         print(
@@ -4462,6 +5958,10 @@ def main(argv: list[str] | None = None) -> int:
                         help="build and report, write nothing")
     parser.add_argument("--reference-evidence", type=Path,
                         help="bounded prospective reference observations; no network calls")
+    parser.add_argument("--direct-registrant-evidence", type=Path,
+                        help="new captured SEC/listing observation; no old-input replay or network calls")
+    parser.add_argument("--spy-option-root-evidence", type=Path,
+                        help="bounded captured SPY option sources; existing canonical target required")
     parser.add_argument("--report", action="store_true",
                         help="full census: row counts, rename events, input hashes")
     parser.add_argument(
@@ -4485,8 +5985,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    if args.nightly and args.reference_evidence is not None:
-        parser.error("--reference-evidence is an explicit intake, not a nightly fetch")
+    if args.nightly and (args.reference_evidence is not None or args.direct_registrant_evidence is not None or args.spy_option_root_evidence is not None):
+        parser.error("evidence intake is explicit, not a nightly fetch")
     if args.nightly:
         return run_nightly_refresh(Path(args.out))
 
@@ -4498,7 +5998,11 @@ def main(argv: list[str] | None = None) -> int:
         )
     receipt = build(Path(args.out), dry_run=args.dry_run,
                     allow_missing_evidence=args.allow_missing_evidence,
-                    reference_evidence_path=args.reference_evidence)
+                    reference_evidence_path=args.reference_evidence,
+                    direct_registrant_inputs=(read_direct_registrant_inputs(args.direct_registrant_evidence)
+                                              if args.direct_registrant_evidence is not None else ()),
+                    spy_option_root_input=(read_spy_option_root_input(args.spy_option_root_evidence)
+                                           if args.spy_option_root_evidence is not None else None))
     _report(receipt, verbose=args.report)
     # A NOTE IS A FAILURE, not a warning (adversarial review, 2026-08-13).  `notes`
     # carries exactly two things, and neither may pass: a rename the repo's own maps

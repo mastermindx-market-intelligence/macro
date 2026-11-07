@@ -37,7 +37,11 @@ def _lab():
 def validate_request(raw: Any) -> dict:
     if not isinstance(raw, dict) or not isinstance(raw.get("action"), str):
         raise WorkspaceError("INVALID_REQUEST")
-    if len(json.dumps(raw, allow_nan=False, separators=(",", ":")).encode()) > MAX_REQUEST_BYTES:
+    try:
+        encoded = json.dumps(raw, allow_nan=False, separators=(",", ":")).encode()
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise WorkspaceError("INVALID_REQUEST") from exc
+    if len(encoded) > MAX_REQUEST_BYTES:
         raise WorkspaceError("REQUEST_TOO_LARGE")
     return raw
 
@@ -210,10 +214,34 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
             {"root", "path", "offset", "limit", "expected_directory_version"}, {"root"}))
     if action == "describe":
         return workspace.describe(**_fields(args, {"ref"}, {"ref"}))
+    if action == "read" and "view" in args:
+        return workspace.read_view(**_fields(args,
+            {"ref", "columns", "time_column", "start", "end", "equals", "offset", "limit", "expected_version", "view"},
+            {"ref", "view"}))
     if action == "read":
         return workspace.read(**_fields(args,
             {"ref", "columns", "time_column", "start", "end", "equals", "offset", "limit", "expected_version"},
             {"ref"}))
+    if action == "tiingo_compare_statements":
+        from lib.dataos.tiingo_workspace import compare_statements
+        return compare_statements(workspace, **_fields(args,
+            {"root", "vendor_symbol", "as_reported_capture", "restated_capture",
+             "start", "end", "observed_before", "acknowledge_hindsight", "offset", "limit"},
+            {"root", "vendor_symbol", "as_reported_capture", "restated_capture",
+             "start", "end", "observed_before", "acknowledge_hindsight"}))
+    if action == "history_dossier":
+        from lib.dataos.web_history import history_dossier
+        return history_dossier(workspace, **_fields(args,
+            {"ref", "manifest_sha256", "date", "macro_ref", "macro_sha256", "reveal_outcomes",
+             "filings_ref", "filings_sha256", "filings_offset",
+             "transcripts_ref", "transcripts_version", "transcripts_offset"},
+            {"ref", "manifest_sha256", "date"}))
+    if action == "history_transcript":
+        from lib.dataos.web_history import history_transcript
+        return history_transcript(workspace, **_fields(args,
+            {"ref", "expected_version", "row_position", "expected_metadata_sha256", "paragraph_offset",
+             "character_offset", "max_chars", "expected_record_sha256"},
+            {"ref", "expected_version", "row_position", "expected_metadata_sha256"}))
     if action == "lab_signals":
         return workspace._result(action=action, **_lab().list_signals(
             **_fields(args, {"query", "limit"})))
@@ -226,15 +254,48 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
     if action == "capabilities":
         _fields(args, set())
         return workspace._result(action=action,
-            actions=["search", "browse", "describe", "read", "lab_signals", "lab_plan", "lab_run"],
+            actions=["search", "browse", "describe", "read", "lab_signals", "lab_plan", "lab_run", "history_dossier", "history_transcript", "tiingo_compare_statements"],
+            tiingo_statement_comparison={
+                "root": "existing_host_bound_canonical_tiingo_archive_only",
+                "capture_selection": "exact_day_and_receipt_id_or_source_sha256_per_dimension",
+                "max_rows_per_capture": 20000, "max_keys_per_page": 50,
+                "max_response_bytes": MAX_RESPONSE_BYTES,
+                "mode": "RETROSPECTIVE_EXPLORATORY", "point_in_time_eligible": False,
+                "network": False, "writes": False, "credentials": False,
+            },
             supported_formats=["parquet", "csv", "json", "jsonl", "ndjson"],
             unsupported_formats="metadata only; use the existing owner decoder",
             max_response_bytes=MAX_RESPONSE_BYTES, max_rows_per_read=200,
             max_scan_rows_per_read=100000, max_request_bytes=MAX_REQUEST_BYTES,
+            read_view={"modes": ["CURRENT"], "refused_modes": ["RECONSTRUCT", "REPLAY"],
+                       "refusal_prefix": "VIEW_REFUSED_", "generation_token": "statv1",
+                       "generation_basis": "statv1_file_version_not_a_producer_generation"},
             lab={"max_refs": 8, "max_rows_per_ref": 20000, "max_total_rows": 80000,
                  "wall_limit_seconds": MAX_LAB_WALL_SECONDS,
                  "bar_frequency": "daily", "canonical_annualization_periods": 252,
                  "execution": "canonical catalog recipes only; no arbitrary code or shell"},
+            history={"source_access":"existing_descriptor_confined_roots",
+                     "mode":"RETROSPECTIVE_EXPLORATORY","point_in_time_eligible":False,
+                     "max_proxy_symbols":64,"max_macro_records_per_date":100,
+                     "max_price_file_bytes":256*1024*1024,
+                     "max_decoded_price_file_bytes":64*1024*1024,
+                     "budget_is_peak_process_memory_limit":False,
+                     "provenance":"compact per-source digests; full source detail in the retained manifest",
+                     "required_evidence":"exact manifest digest; paired optional JSON macro reference and digest",
+                     "filings":{"source_kind":"retained_item_202_filing_metadata",
+                                "required_source_filename":"earnings_8k_dates.parquet",
+                                "requires_exact_sha256":True,"max_records_per_date_page":50,
+                                "max_source_bytes":16*1024*1024,"max_decoded_bytes":32*1024*1024,
+                                "max_source_rows":250000,"intraday_publication_time_verified":False,
+                                "identity":"canonical CIK/accession; ticker is an unqualified source label"},
+                     "transcripts":{"required_source_filename":"stock_earning_call_transcripts.parquet",
+                                    "requires_expected_file_version":True,"file_version_is_content_hash":False,
+                                    "default_body_read":False,"date_page_records":50,"source_rows_max":500000,
+                                    "date_basis":"stored_report_date_not_verified_publication_time",
+                                    "body_action":"history_transcript","body_identity":"same_version_row_and_metadata_digest",
+                                    "max_page_chars":12000,"max_page_fragment_json_bytes":48*1024,
+                                    "speaker_roles_verified":False,"point_in_time_eligible":False},
+                     "outcomes":"excluded unless explicitly revealed"},
             freshness="stored data clocks where available; filesystem mtime is not freshness",
             access="host bindings and the existing Studio account-scoped transport")
     raise WorkspaceError("UNKNOWN_ACTION")

@@ -752,6 +752,91 @@ def test_cli_is_a_machine_projection_without_a_new_store(tmp_path):
     assert len(out["grids"]["gex"]) == 2
 
 
+_EXPLICIT_CONVENTIONS = {"r": 0.123, "q": 0.04, "mult": 50.0, "pm": 0.02}
+
+
+def _cli_surface_payload(**overrides):
+    payload = {
+        "root": "SPY",
+        "observed_at": OBS,
+        "spot": SPOT,
+        "price_grid": [95, 100, 105],
+        "horizons_minutes": [0],
+        "contracts": _contracts(),
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _cli_surface_run(tmp_path, payload):
+    src = tmp_path / "scenario-snapshot.json"
+    src.write_text(json.dumps(payload), encoding="utf-8")
+    return subprocess.run(
+        [sys.executable, "scripts/build_options_scenario_surface.py",
+         "--input", str(src), "--output", "-"],
+        capture_output=True,
+        text=True,
+    )
+
+
+def _direct_surface(payload, **conventions):
+    return build_scenario_surface(
+        payload["contracts"],
+        root=payload["root"],
+        observed_at=payload["observed_at"],
+        spot=payload["spot"],
+        price_grid=payload["price_grid"],
+        horizons_minutes=payload["horizons_minutes"],
+        **conventions,
+    )
+
+
+def _json_round_trip(value):
+    return json.loads(json.dumps(value, sort_keys=True, allow_nan=False))
+
+
+def test_cli_forwards_explicit_r_q_mult_and_pm_to_the_engine(tmp_path):
+    payload = _cli_surface_payload(**_EXPLICIT_CONVENTIONS)
+    proc = _cli_surface_run(tmp_path, payload)
+    assert proc.returncode == 0, proc.stderr
+    out = json.loads(proc.stdout)
+    assert out == _json_round_trip(_direct_surface(payload, **_EXPLICIT_CONVENTIONS))
+    # Omitting the fields must be observably different: the values reach the math.
+    assert out != _json_round_trip(_direct_surface(payload))
+
+
+@pytest.mark.parametrize("field", ["r", "q", "mult", "pm"])
+def test_cli_each_omitted_convention_field_falls_back_to_engine_default(tmp_path, field):
+    supplied = {key: value for key, value in _EXPLICIT_CONVENTIONS.items() if key != field}
+    payload = _cli_surface_payload(**supplied)
+    proc = _cli_surface_run(tmp_path, payload)
+    assert proc.returncode == 0, proc.stderr
+    assert json.loads(proc.stdout) == _json_round_trip(_direct_surface(payload, **supplied))
+
+
+def test_cli_without_convention_fields_matches_plain_engine_defaults(tmp_path):
+    payload = _cli_surface_payload()
+    proc = _cli_surface_run(tmp_path, payload)
+    assert proc.returncode == 0, proc.stderr
+    out = json.loads(proc.stdout)
+    assert out == _json_round_trip(_direct_surface(payload))
+    assert out["conventions"]["contract_multiplier"] == 100.0
+    assert out["conventions"]["pct_move"] == 0.01
+
+
+@pytest.mark.parametrize("field,value", [
+    ("r", None), ("q", None), ("mult", None), ("pm", None),
+    ("mult", 0), ("pm", -0.02),
+])
+def test_cli_explicit_invalid_convention_values_reach_engine_validation(tmp_path, field, value):
+    payload = _cli_surface_payload(**_EXPLICIT_CONVENTIONS)
+    payload[field] = value
+    proc = _cli_surface_run(tmp_path, payload)
+    assert proc.returncode != 0
+    assert proc.stdout == ""
+    assert "r/q must be finite and mult/pm must be positive finite" in proc.stderr
+
+
 # ---------------------------------------------------------------------------
 # Integrated order/unknown/future clock controls.
 # Source: review 5399568840 test_scenario_clock_order_review.py

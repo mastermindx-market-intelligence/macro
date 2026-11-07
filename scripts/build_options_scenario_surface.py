@@ -48,6 +48,9 @@ def main() -> int:
 
 
 def _surface(payload: dict) -> dict:
+    # Forward only conventions explicitly present in the payload so absence keeps
+    # engine defaults while explicit nulls still reach the engine's validation.
+    explicit = {key: payload[key] for key in ("r", "q", "mult", "pm") if key in payload}
     return build_scenario_surface(
         payload.get("contracts", []),
         root=payload["root"],
@@ -61,6 +64,7 @@ def _surface(payload: dict) -> dict:
         iv_observed_at=payload.get("iv_observed_at"),
         vol_map=payload.get("vol_map", "sticky_strike"),
         iv_source=payload.get("iv_source", "provided_iv"),
+        **explicit,
     )
 
 
