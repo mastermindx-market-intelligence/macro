@@ -3,8 +3,8 @@
 Programme: https://github.com/mastermindx-market-intelligence/Mastermind/issues/983#issuecomment-6695933514
 
 This proposal is stacked on the original APPLICATION implementation in Macro
-#10740, retaining its `6bd635e90482ffbd9bdeb09f255ae7cc3d63d5d5` source, including
-the qualified native workload policy and audit consumer. Mastermind #2155 supplies
+#10740, retaining its `abab96df55f82cb5c26459a6f51b568d73a6a6f8` source, including
+the exact scoped-model contract, qualified native workload policy and audit consumer. Mastermind #2155 supplies
 the Hermes conversation/tool adapter, original native host composition and finite
 tunnel successor. Mastermind #2186 supplies the native v9 role enrollment on the
 existing APPLICATION publisher in #2175. These are source proposals; the original
@@ -20,7 +20,11 @@ workload. Each factory relation permits its closed fixed Go transport and its
 closed automatic transport. Fixed selection uses `deepseek-v4.1-flash` for the
 initial strict canary. Automatic selection leaves model/provider unset and
 requires the existing owner's committed route scope, selection purpose,
-inspection and binding. The same role capability and credential reference apply
+inspection and binding. Host-authorized exact selection calls the same immutable
+factory's `with_requested_model` before inspection. It uses inspection/binding
+v3 and route v2, preserving the concrete original model and a null routed-request
+digest. Pool/account selection remains with the original scope/picker/Broker.
+The same role capability and credential reference apply
 to both transports; neither grants administrator pool visibility. All new source
 transports remain unqualified and application permission remains held. The
 shipped `application_fabric_modes` remains empty.
@@ -79,11 +83,11 @@ GitHub's merge composition `b679980945a2675622a013485738efa251b4a64b` and includ
 no live provider acceptance. Mastermind #2186's v9 enrollment regression remains
 a separate gate; no installed enrollment is inferred from these source results.
 
-Strict automatic pool selection is limited to an already committed singleton
-pool scope. Fixed-model selection is supported. A concrete model constraint
-inside an automatic route awaits the incumbent APPLICATION owner's exact scoped
-model contract; Hermes must not build its own picker or silently drop that
-constraint. The original request identity and uncertainty survive facade rebuilds
+Strict scoped pool selection is limited to an already committed singleton
+pool scope. Historical fixed selection, null-AUTO v2 and exact-model v3 remain
+distinct contracts. A frozen AUTO inspection cannot be reinterpreted as exact,
+and a frozen concrete model cannot be replaced. No model constraint may silently
+fall back to another route. The original request identity and uncertainty survive facade rebuilds
 and timeouts. Local close is not provider cancellation or settlement proof.
 
 The real canary must join one qualified host admission to one eligible physical

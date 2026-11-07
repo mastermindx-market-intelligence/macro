@@ -42,6 +42,8 @@ NATIVE_SCHEMA = "mastermind.fabric_application.v1"
 AUTO_SCHEMA = "mastermind.fabric_application.v2"
 AUTO_INSPECTION_SCHEMA = "mastermind.fabric_application_inspection.v2"
 AUTO_BINDING_SCHEMA = "mastermind.fabric_application_binding.v2"
+EXACT_INSPECTION_SCHEMA = "mastermind.fabric_application_inspection.v3"
+EXACT_BINDING_SCHEMA = "mastermind.fabric_application_binding.v3"
 AUTO_POOLS = frozenset({"go", "bailian", "codex-native", "claude-native",
                         "glm", "minimax", "grok", "cursor", "ocfree"})
 MAX_NATIVE_TOKENS = 10 ** 12
@@ -252,9 +254,18 @@ def _messages(messages, system):
     return out
 
 
-def _request(kwargs, model, streaming):
-    if set(kwargs) - _CALL_KEYS or "model" not in kwargs or kwargs["model"] != model:
+def _request(kwargs, model, streaming, *, exact_scoped=False):
+    allowed = _CALL_KEYS | ({"reasoning_effort", "stream"} if exact_scoped else set())
+    if set(kwargs) - allowed or "model" not in kwargs or kwargs["model"] != model:
         _refuse()
+    if "stream" in kwargs and (streaming or kwargs["stream"] is not False):
+        _refuse("fabric_native_stream_unsupported")
+    controlled = "reasoning_effort" in kwargs or (exact_scoped and model == "qwen3.8-flash" and "temperature" in kwargs)
+    if controlled and (not exact_scoped or model != "qwen3.8-flash" or streaming
+            or type(kwargs.get("temperature")) not in (int, float) or kwargs["temperature"] != 0
+            or kwargs.get("reasoning_effort") != "none"
+            or any(key in kwargs for key in ("tools", "tool_choice", "stop_sequences"))):
+        _refuse("fabric_qwen_control_invalid")
     request_id = kwargs.get("request_id")
     if not _safe_id(request_id):
         _refuse("fabric_request_identity_invalid")
@@ -299,6 +310,8 @@ def _request(kwargs, model, streaming):
         if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 2:
             _refuse()
         payload["temperature"] = value
+    if controlled:
+        payload["reasoning_effort"] = "none"
     if "stop_sequences" in kw:
         stops = kw["stop_sequences"]
         if not isinstance(stops, list) or len(stops) > 4 or not all(isinstance(x, str) for x in stops):
@@ -573,7 +586,9 @@ def validate_auto_inspection(value):
     fields = {"schema", "requested_model", "route_scope", "route_scope_digest",
               "output_limit_mode", "cap_id", "capability_id", "workload_policy", "transport_identity"}
     if (type(value) is not dict or set(value) != fields
-            or value["schema"] != AUTO_INSPECTION_SCHEMA or value["requested_model"] is not None
+            or value["schema"] not in {AUTO_INSPECTION_SCHEMA, EXACT_INSPECTION_SCHEMA}
+            or (value["schema"] == AUTO_INSPECTION_SCHEMA and value["requested_model"] is not None)
+            or (value["schema"] == EXACT_INSPECTION_SCHEMA and not _safe_id(value["requested_model"]))
             or value["output_limit_mode"] != "hard_maximum"
             or not all(_safe_id(value[key]) for key in ("cap_id", "capability_id"))
             or type(value["workload_policy"]) is not dict):
@@ -599,9 +614,12 @@ def _auto_route_metadata(value, inspection, maximum):
     fields = {"schema", "requested_model", "route_scope", "route_scope_digest", "selection_digest",
               "request_digest", "routed_request_digest", "pool", "selected_model", "mode", "protocol",
               "driver", "profile", "source", "recipe_digest", "output_contract"}
+    exact = inspection["schema"] == EXACT_INSPECTION_SCHEMA
     if (type(value) is not dict or set(value) != fields
-            or value["schema"] != "mastermind.fabric_application_route.v1"
-            or value["requested_model"] is not None
+            or value["schema"] != ("mastermind.fabric_application_route.v2" if exact
+                                   else "mastermind.fabric_application_route.v1")
+            or value["requested_model"] != inspection["requested_model"]
+            or exact and value["selected_model"] != inspection["requested_model"]
             or value["route_scope"] != inspection["route_scope"]
             or value["route_scope_digest"] != inspection["route_scope_digest"]
             or value["pool"] not in inspection["route_scope"]["pools"]
@@ -611,7 +629,10 @@ def _auto_route_metadata(value, inspection, maximum):
             or value["protocol"] not in {"chat", "responses", "harness"}
             or value["output_contract"] != {"mode": "hard_maximum", "max_tokens": maximum}):
         _refuse("fabric_auto_route_invalid", unknown=True)
-    for key in ("selection_digest", "request_digest", "routed_request_digest"):
+    if exact and value["routed_request_digest"] is not None:
+        _refuse("fabric_auto_route_invalid", unknown=True)
+    for key in (("selection_digest", "request_digest") if exact else
+                ("selection_digest", "request_digest", "routed_request_digest")):
         if type(value[key]) is not str or re.fullmatch(r"[0-9a-f]{64}", value[key]) is None:
             _refuse("fabric_auto_route_invalid", unknown=True)
     recipe = value["recipe_digest"]
@@ -625,12 +646,13 @@ def _auto_route_metadata(value, inspection, maximum):
 
 
 def _auto_route(value, inspection, original):
-    if original.get("model") is not None:
+    if "model" not in original or original["model"] != inspection["requested_model"]:
         _refuse("fabric_auto_route_invalid", unknown=True)
     value = _auto_route_metadata(value, inspection, original["max_tokens"])
+    routed = (None if inspection["schema"] == EXACT_INSPECTION_SCHEMA else
+              _auto_request_digest(dict(original, model=value["selected_model"])))
     if (value["request_digest"] != _auto_request_digest(original)
-            or value["routed_request_digest"] != _auto_request_digest(
-                dict(original, model=value["selected_model"]))):
+            or value["routed_request_digest"] != routed):
         _refuse("fabric_auto_request_commitment_invalid", unknown=True)
     return value
 
@@ -902,7 +924,7 @@ class FabricInferenceClient:
         native = protocol == NATIVE_PROTOCOL
         automatic = auto_inspection is not None
         inspection = validate_auto_inspection(auto_inspection) if automatic else None
-        if automatic and (not native or model is not None or native_recipe_digest is not None):
+        if automatic and (not native or model != inspection["requested_model"] or native_recipe_digest is not None):
             _refuse("fabric_auto_binding_invalid")
         if native_recipe_digest is not None and (not native or not isinstance(native_recipe_digest, str)
                 or re.fullmatch(r"[0-9a-f]{64}", native_recipe_digest) is None):
@@ -1125,7 +1147,9 @@ class FabricInferenceClient:
         try:
             if self._native and streaming:
                 _refuse("fabric_native_stream_unsupported")
-            request_id, body = _request(kwargs, self.model, streaming)
+            request_id, body = _request(kwargs, self.model, streaming,
+                exact_scoped=self._auto_inspection is not None
+                    and json.loads(self._auto_inspection)["schema"] == EXACT_INSPECTION_SCHEMA)
             if self._native:
                 validate_native_operation_id(request_id)
                 # Translation can expand user/tool history into more wire rows.
@@ -1257,4 +1281,5 @@ class FabricInferenceClient:
             exchange.close()
             with self._lock:
                 self._active = False
+
 

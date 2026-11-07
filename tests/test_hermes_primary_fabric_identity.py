@@ -102,3 +102,46 @@ def test_auto_role_retains_original_identity_and_null_model(identity, service_id
     assert bound["client"].model is None and bound["client"].auto_inspection == inspected
     assert bound["client"].operation_id == "hermes:original-auto-admission"
     assert events == [("credential", secret_ref), "client"]
+
+
+@pytest.mark.parametrize("service_id", ROLES)
+@pytest.mark.parametrize("pools", [["go"], ["bailian", "go"]])
+def test_exact_role_narrows_original_scope_without_new_identity(identity, service_id, pools):
+    _, _, events, install, qualify, make, _, _ = identity
+    lane, _, secret_ref = ROLES[service_id]
+    relation = owner._SERVICE_FABRIC_RELATIONS[service_id]
+    scope = {"schema": "mastermind.application_route_scope.v1", "pools": pools}
+    transport, row = qualify(relation.automatic_transport_id, route_scope=scope)
+    install({service_id: row}, [{"capability_id": transport.capability_id,
+        "secret_ref": secret_ref, "kill_state": "active", "allowed_lanes": [lane]}])
+    original = make(lane=lane, service_mode_id=service_id)
+    exact = original.with_requested_model("fixture-model")
+    inspected = exact.inspect()
+    assert inspected["schema"] == "mastermind.fabric_application_inspection.v3"
+    assert inspected["requested_model"] == "fixture-model" and inspected["route_scope"] == scope
+    assert original._requested_model is None and events == []
+    frozen = exact.with_inspection(inspected).with_requested_model("fixture-model")
+    bound, _ = frozen._bind_with_workload(operation_id="hermes:original-exact", prior_admission_possible=False)
+    assert bound["schema"] == "mastermind.fabric_application_binding.v3"
+    assert bound["client"].model == "fixture-model" and bound["inspection"] == inspected
+    assert bound["client"].operation_id == "hermes:original-exact"
+    assert events == [("credential", secret_ref), "client"]
+
+
+@pytest.mark.parametrize("service_id", ROLES)
+def test_exact_role_cannot_reinterpret_a_frozen_auto_commitment(identity, service_id):
+    _, _, events, install, qualify, make, _, _ = identity
+    lane, _, secret_ref = ROLES[service_id]
+    relation = owner._SERVICE_FABRIC_RELATIONS[service_id]
+    transport, row = qualify(relation.automatic_transport_id,
+        route_scope={"schema": "mastermind.application_route_scope.v1", "pools": ["go"]})
+    install({service_id: row}, [{"capability_id": transport.capability_id,
+        "secret_ref": secret_ref, "kill_state": "active", "allowed_lanes": [lane]}])
+    original = make(lane=lane, service_mode_id=service_id)
+    auto = original.with_inspection(original.inspect())
+    with pytest.raises(owner.ApplicationFabricBindingError, match="fabric_application_identity_changed"):
+        auto.with_requested_model("fixture-model")
+    exact = original.with_requested_model("fixture-model")
+    with pytest.raises(owner.ApplicationFabricBindingError, match="fabric_application_identity_changed"):
+        exact.with_inspection(exact.inspect()).with_requested_model("other-model")
+    assert events == []
