@@ -463,7 +463,7 @@ def test_builds_and_validates_from_real_owner_artifact() -> None:
     snap = contract.finalize(business_activity.compose(regime, built_at=BUILT_AT))
     contract.validate(snap)  # real-data snapshot satisfies the closed contract
     assert snap["headline"]["state_id"] is None  # always, by design
-    assert snap["generation"]["calculation_as_of"] == (regime.get("business_cycle") or {}).get("asof")
+    assert snap["generation"]["calculation_as_of"] is None
     assert snap["authority"]["can_size"] is False
 
 
@@ -540,3 +540,22 @@ def test_sample_note_stays_off_when_the_producer_does_not_record_it() -> None:
     assert "mq-metric-sample" not in _render_catch_metric(
         _CATCH_TRANSFORMATION, metric_id="recession_signal_in_sample_catch_rate"
     )
+
+
+def test_period_labels_do_not_create_observation_or_calculation_clocks():
+    regime = _base_regime()
+    before = copy.deepcopy(regime)
+    snap = contract.finalize(_compose(regime))
+    contract.validate(snap)
+    assert regime == before
+    assert snap["generation"]["built_at"] == BUILT_AT
+    assert snap["generation"]["calculation_as_of"] is None
+    assert snap["headline"]["effective_date"] == regime["business_cycle"]["asof"]
+    for metric in snap["metrics"]["items"]:
+        assert metric["observed_at"] is None
+        assert metric["calculation_as_of"] is None
+    assert _metric(snap, "leading_tier_index")["reference_period"] == "2026-09-30"
+    assert _metric(snap, "leading_tier_index")["value"] == 95.24
+    assert all(c["source_asof"] is None for c in snap["availability"]["required"])
+    assert snap["availability"]["state"] == "CURRENT"  # unchanged presence classification
+    assert snap["sources"]["items"][0]["reference_period"] == "2026-09-30"
