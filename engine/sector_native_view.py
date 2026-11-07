@@ -41,6 +41,26 @@ _ROW_FIELDS = (
     "reco_why_en", "reco_why_zh", "rs_pctile", "flip_distance",
 )
 _FACTOR_FIELDS = ("chip_en", "chip_zh", "tip_en", "tip_zh", "tone")
+# The optional dated sector dossier is display-only evidence over the frozen
+# eleven-identity native cohort. Its owner is the leadership rotation producer;
+# this module only projects an accepted packet and never composes one.
+_DOSSIER_SCHEMA = "leadership_rotation_context.sector_dossiers/v1"
+_DOSSIER_COHORT_ID = "us_sectors_11"
+_DOSSIER_POPULATION = "eleven_sector_etf_proxies"
+# The closed v1 owner attributes exactly one source family for this dossier.
+_DOSSIER_SOURCE_ROOT = "engine.sector_cycles"
+_DOSSIER_UNITS = "pct"
+_DOSSIER_WINDOWS = (21, 63)
+_DOSSIER_UNAVAILABLE_WINDOWS = (5, 20)
+# The native cohort identities in the owner's native order. This is a frozen
+# contract of eleven sector ETF proxies, not a new cohort and not a data load.
+_DOSSIER_GROUP_IDS = ("XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE",
+                      "XLU", "XLV", "XLY")
+_DOSSIER_AUTHORITY_FLAGS = ("may_rank", "may_gate", "may_size", "may_trade",
+                            "may_escalate")
+_MAX_DOSSIER_GROUPS = 11
+_MAX_DOSSIER_LIST = 64
+_MAX_DOSSIER_TEXT = 160
 
 
 class SectorViewUnavailable(ValueError):
@@ -249,6 +269,418 @@ def _bounded_records(value: Any, limit: int, code: str) -> list:
     return value
 
 
+def _dossier_text(value: Any, code: str) -> str:
+    """A bounded, printable owner string; never echoes the input back."""
+    if (not isinstance(value, str) or not value or len(value) > _MAX_DOSSIER_TEXT
+            or any(ord(char) < 32 for char in value)):
+        raise SectorViewUnavailable(code)
+    return value
+
+
+def _dossier_optional_text(value: Any, code: str) -> str | None:
+    return None if value is None else _dossier_text(value, code)
+
+
+def _dossier_number(value: Any, code: str) -> int | float:
+    """A finite, non-boolean relative-wealth percentage inside its domain."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise SectorViewUnavailable(code)
+    try:
+        number = float(value)
+    except (OverflowError, ValueError):
+        raise SectorViewUnavailable(code) from None
+    # Nonnegative group wealth over positive benchmark wealth cannot produce a
+    # relative-wealth percentage below -100.
+    if not math.isfinite(number) or number < -100.0:
+        raise SectorViewUnavailable(code)
+    return value
+
+
+def _dossier_unavailable_block(doc: Any, code: str) -> dict:
+    """A stated limitation: unavailable status plus its bounded reason."""
+    if not isinstance(doc, dict) or doc.get("status") != "unavailable":
+        raise SectorViewUnavailable(code)
+    return {"status": "unavailable", "reason": _dossier_text(doc.get("reason"), code)}
+
+
+def _sector_dossiers(value: Any, parent: dict, source: str,
+                     parent_ids: set[str]) -> dict:
+    """Project the optional dated dossier carried inside a measured read.
+
+    The dossier is display-only evidence over the frozen eleven-identity sector
+    cohort. It never ranks, gates, sizes or trades, and it never completes a
+    missing measurement: unavailable rows keep their own null reasons instead of
+    being filled from the outer receipt or from another generation. A present but
+    malformed packet fails closed; an absent packet stays absent.
+    """
+    code = "invalid_sector_dossiers"
+    binding = "mixed_sector_dossier_binding"
+    identity = "invalid_sector_dossier_identity"
+    if not isinstance(value, dict) or value.get("schema") != _DOSSIER_SCHEMA:
+        raise SectorViewUnavailable(code)
+    generation = parent.get("generation")
+    cohort = parent.get("cohort")
+    if not isinstance(generation, dict) or not isinstance(cohort, dict):
+        raise SectorViewUnavailable(code)
+    # Fixed contract claims: the cohort, its population, the units and the
+    # existing 21/63 session windows. The 5/20 windows stay explicitly absent.
+    if (value.get("cohort_id") != _DOSSIER_COHORT_ID
+            or value.get("population") != _DOSSIER_POPULATION
+            or value.get("units") != _DOSSIER_UNITS
+            or value.get("windows_sessions") != list(_DOSSIER_WINDOWS)):
+        raise SectorViewUnavailable(code)
+    unavailable_windows = value.get("unavailable_windows")
+    if (not isinstance(unavailable_windows, dict)
+            or unavailable_windows.get("sessions") != list(_DOSSIER_UNAVAILABLE_WINDOWS)
+            or unavailable_windows.get("reason") != "not_supplied_by_owner"):
+        raise SectorViewUnavailable(code)
+
+    # --- parent bindings -------------------------------------------------------
+    # The dossier is a child of this measured read, so it must agree with the
+    # bindings the parent actually makes available.
+    parent_cohort_id = generation.get("cohort_id")
+    if isinstance(parent_cohort_id, str) and parent_cohort_id != value["cohort_id"]:
+        raise SectorViewUnavailable(binding)
+    if value.get("benchmark") != generation.get("benchmark"):
+        raise SectorViewUnavailable(binding)
+    # The compatibility key is a compatibility key, not an immutable generation
+    # identity: it is checked against the parent here and never promoted below.
+    if value.get("compatibility_key") != generation.get("id"):
+        raise SectorViewUnavailable(binding)
+    price_basis = value.get("price_basis")
+    if price_basis is not None:
+        if price_basis != "total_return":
+            raise SectorViewUnavailable(code)
+        parent_basis = generation.get("price_basis")
+        if isinstance(parent_basis, str) and parent_basis != price_basis:
+            raise SectorViewUnavailable(binding)
+    as_of = value.get("as_of")
+    if as_of is not None:
+        if not isinstance(as_of, str):
+            raise SectorViewUnavailable(code)
+        # An unavailable clock stays unavailable; it is never filled from the
+        # outer receipt or promoted to this generation.
+        if as_of != source:
+            raise SectorViewUnavailable(binding)
+
+    # --- groups ----------------------------------------------------------------
+    rows = _bounded_records(value.get("groups"), _MAX_DOSSIER_LIST, code)
+    if len(rows) != _MAX_DOSSIER_GROUPS:
+        raise SectorViewUnavailable(identity)
+    projected, identities = [], []
+    for row, expected_id in zip(rows, _DOSSIER_GROUP_IDS):
+        group_id = row.get("group_id")
+        if not isinstance(group_id, str) or not _SECTOR_TICKER.fullmatch(group_id):
+            raise SectorViewUnavailable(identity)
+        # Every native identity is present exactly once, in the native order.
+        if group_id != expected_id:
+            raise SectorViewUnavailable(identity)
+        identities.append(group_id)
+        relative = row.get("relative_wealth_pct")
+        null_reasons = row.get("null_reasons")
+        if not isinstance(relative, dict) or not isinstance(null_reasons, dict):
+            raise SectorViewUnavailable(code)
+        values, reasons = {}, {}
+        for sessions in _DOSSIER_WINDOWS:
+            field = f"rs_{sessions}d"
+            if field not in relative or field not in null_reasons:
+                raise SectorViewUnavailable(code)
+            number, reason = relative[field], null_reasons[field]
+            if number is None:
+                if not isinstance(reason, str) or not reason or len(reason) > _MAX_DOSSIER_TEXT:
+                    raise SectorViewUnavailable(code)
+                values[field], reasons[field] = None, reason
+            else:
+                if reason is not None:
+                    raise SectorViewUnavailable(code)
+                values[field] = _dossier_number(number, code)
+                reasons[field] = None
+        present = sum(1 for number in values.values() if number is not None)
+        status = ("available" if present == len(_DOSSIER_WINDOWS)
+                  else "partial" if present else "unavailable")
+        if row.get("status") != status:
+            raise SectorViewUnavailable(code)
+        qualification = row.get("qualification_reasons")
+        if (not isinstance(qualification, list) or len(qualification) > _MAX_DOSSIER_LIST
+                or any(not isinstance(item, str) or not item
+                       or len(item) > _MAX_DOSSIER_TEXT for item in qualification)):
+            raise SectorViewUnavailable(code)
+        projected.append({
+            "group_id": group_id,
+            "name_en": _dossier_optional_text(row.get("name_en"), code),
+            "name_zh": _dossier_optional_text(row.get("name_zh"), code),
+            "status": status,
+            "relative_wealth_pct": values,
+            "null_reasons": reasons,
+            "qualification_reasons": list(qualification),
+        })
+    # Every dossier row must have an available parent binding.
+    if set(identities) != parent_ids:
+        raise SectorViewUnavailable(binding)
+
+    # --- measured value binding to the same parent group ------------------------
+    # The owner emits a non-null child measurement only when it equals the
+    # measured read of the SAME parent group in the SAME window. A child that
+    # detaches from its own group, or that publishes a value where that group
+    # has none, is refused. A withheld child null stays null: the owner can
+    # qualify more strictly than the parent, and the projector never completes
+    # a missing measurement.
+    parent_current = {}
+    for row in parent.get("groups") or ():
+        if isinstance(row, dict) and isinstance(row.get("group_id"), str):
+            parent_current[row["group_id"]] = row.get("current")
+    for group in projected:
+        current = parent_current.get(group["group_id"])
+        current = current if isinstance(current, dict) else {}
+        for sessions in _DOSSIER_WINDOWS:
+            field = f"rs_{sessions}d"
+            child = group["relative_wealth_pct"][field]
+            if child is None:
+                # A withheld child value is never completed from the parent.
+                continue
+            owner = current.get(field)
+            if (isinstance(owner, bool) or not isinstance(owner, (int, float))
+                    or owner != child):
+                raise SectorViewUnavailable(binding)
+
+    # --- counts, status and value consistency ----------------------------------
+    counts = value.get("cross_sector_breadth_counts")
+    if not isinstance(counts, dict) or set(counts) != {str(s) for s in _DOSSIER_WINDOWS}:
+        raise SectorViewUnavailable(code)
+    projected_counts = {}
+    for sessions in _DOSSIER_WINDOWS:
+        block = counts[str(sessions)]
+        if not isinstance(block, dict):
+            raise SectorViewUnavailable(code)
+        field = f"rs_{sessions}d"
+        valid = [group["relative_wealth_pct"][field] for group in projected
+                 if group["relative_wealth_pct"][field] is not None]
+        expected_n, measured_n = block.get("expected_n"), block.get("measured_n")
+        positive_n = block.get("positive_n")
+        if (type(expected_n) is not int or type(measured_n) is not int
+                or not 0 <= measured_n <= expected_n <= _MAX_DOSSIER_GROUPS
+                or expected_n != _MAX_DOSSIER_GROUPS or measured_n != len(valid)):
+            raise SectorViewUnavailable(code)
+        positive = sum(1 for number in valid if number > 0) if valid else None
+        if positive is None:
+            if positive_n is not None:
+                raise SectorViewUnavailable(code)
+        elif type(positive_n) is not int or positive_n != positive:
+            raise SectorViewUnavailable(code)
+        projected_counts[str(sessions)] = {
+            "expected_n": expected_n, "measured_n": measured_n, "positive_n": positive_n,
+        }
+    any_values = any(group["relative_wealth_pct"][f"rs_{sessions}d"] is not None
+                     for group in projected for sessions in _DOSSIER_WINDOWS)
+    if value.get("status") != ("partial" if any_values else "unavailable"):
+        raise SectorViewUnavailable(code)
+    all_available = all(group["status"] == "available" for group in projected)
+    measurement_status = ("available" if all_available
+                          else "partial" if any_values else "unavailable")
+    if value.get("measurement_status") != measurement_status:
+        raise SectorViewUnavailable(code)
+
+    # --- authority, forecasts and stated limitations ---------------------------
+    authority = value.get("authority")
+    if (not isinstance(authority, dict)
+            or set(authority) != set(_DOSSIER_AUTHORITY_FLAGS)):
+        raise SectorViewUnavailable(code)
+    if any(authority[flag] is not False for flag in _DOSSIER_AUTHORITY_FLAGS):
+        raise SectorViewUnavailable(code)
+    forecasts = value.get("forecasts")
+    if (not isinstance(forecasts, dict)
+            or set(forecasts) != {"status", "expected_return", "persistence_estimate",
+                                  "allocation_weight"}
+            or forecasts.get("status") != "not_qualified"):
+        raise SectorViewUnavailable(code)
+    if any(forecasts[key] is not None for key in
+           ("expected_return", "persistence_estimate", "allocation_weight")):
+        raise SectorViewUnavailable(code)
+    history = value.get("history")
+    if (not isinstance(history, dict) or history.get("mode") != "reconstructed_price_history"
+            or history.get("naturally_observed") is not False):
+        raise SectorViewUnavailable(code)
+    freshness = value.get("freshness")
+    if not isinstance(freshness, dict) or freshness.get("status") != "unverified":
+        raise SectorViewUnavailable(code)
+    corrections = value.get("corrections")
+    if not isinstance(corrections, dict) or corrections.get("status") != "unavailable":
+        raise SectorViewUnavailable(code)
+    source_generation = value.get("source_generation")
+    if (not isinstance(source_generation, dict)
+            or source_generation.get("status") != "unavailable"
+            or source_generation.get("id") is not None):
+        raise SectorViewUnavailable(code)
+    availability = value.get("availability")
+    if not isinstance(availability, dict):
+        raise SectorViewUnavailable(code)
+    mode = availability.get("mode")
+    if mode not in ("as_known", "dated_snapshot"):
+        raise SectorViewUnavailable(code)
+    cutoff = availability.get("decision_cutoff")
+    if cutoff is not None:
+        cutoff = _dossier_text(cutoff, code)
+        try:
+            parsed = datetime.fromisoformat(cutoff.replace("Z", "+00:00"))
+        except ValueError:
+            raise SectorViewUnavailable(code) from None
+        if parsed.tzinfo is None:
+            raise SectorViewUnavailable(code)
+    # The original availability clock is never filled from the outer receipt and
+    # a dated snapshot is never promoted to historical admissibility.
+    if (availability.get("original_available_at") is not None
+            or availability.get("historically_admissible") is not False):
+        raise SectorViewUnavailable(code)
+    # --- owner qualification invariants ----------------------------------------
+    # The owner withholds EVERY measurement whenever its own qualification
+    # reasons are non-empty. A dated snapshot carries no decision cutoff, and
+    # an as-known request always withholds because the original availability
+    # clock is not supplied. A packet that contradicts its own stated
+    # availability cannot keep a superficially valid status.
+    if mode == "as_known":
+        if any_values:
+            raise SectorViewUnavailable(code)
+    elif cutoff is not None:
+        raise SectorViewUnavailable(code)
+    if any_values:
+        # A measured packet is a qualified one: the owner withholds every
+        # value unless the return basis and the dated clock are supplied.
+        if price_basis != "total_return":
+            raise SectorViewUnavailable(code)
+        if as_of is None:
+            raise SectorViewUnavailable(code)
+        if generation.get("price_basis") != "total_return":
+            raise SectorViewUnavailable(binding)
+    audit = value.get("dependency_audit")
+    if not isinstance(audit, dict):
+        raise SectorViewUnavailable(code)
+    roots = audit.get("source_roots")
+    if (not isinstance(roots, list) or len(roots) > _MAX_DOSSIER_LIST
+            or any(not isinstance(root, str) or not root
+                   or len(root) > _MAX_DOSSIER_TEXT for root in roots)):
+        raise SectorViewUnavailable(code)
+    family_count = audit.get("source_family_count")
+    if type(family_count) is not int or not 0 <= family_count <= _MAX_DOSSIER_LIST:
+        raise SectorViewUnavailable(code)
+    # The closed v1 owner attributes exactly one source family, or none. It
+    # never names a second lineage owner and never counts the same one twice.
+    if list(roots) == [_DOSSIER_SOURCE_ROOT]:
+        expected_families = 1
+    elif not roots:
+        expected_families = 0
+    else:
+        raise SectorViewUnavailable(code)
+    if family_count != expected_families:
+        raise SectorViewUnavailable(code)
+    if (audit.get("independence") != "not_established"
+            or audit.get("shared_rolling_windows") is not True):
+        raise SectorViewUnavailable(code)
+    if not roots and any_values:
+        # Without an attributed source root the owner withholds every
+        # measurement, so a measured packet cannot claim an unattributed one.
+        raise SectorViewUnavailable(code)
+    diagnostics = value.get("diagnostics")
+    if not isinstance(diagnostics, dict):
+        raise SectorViewUnavailable(code)
+    listed = {}
+    for key in ("qualification_reasons", "duplicate_groups", "outside_cohort"):
+        items = diagnostics.get(key)
+        if (not isinstance(items, list) or len(items) > _MAX_DOSSIER_LIST
+                or any(not isinstance(item, str) or not item
+                       or len(item) > _MAX_DOSSIER_TEXT for item in items)):
+            raise SectorViewUnavailable(code)
+        listed[key] = list(items)
+    malformed = {}
+    for key in ("malformed_source_rows", "malformed_measured_rows"):
+        count = diagnostics.get(key)
+        if type(count) is not int or not 0 <= count <= _MAX_DOSSIER_GROUPS:
+            raise SectorViewUnavailable(code)
+        malformed[key] = count
+    mechanism = value.get("mechanism")
+    if not isinstance(mechanism, dict) or mechanism.get("status") != "unavailable":
+        raise SectorViewUnavailable(code)
+    risk = value.get("risk")
+    if (not isinstance(risk, dict) or risk.get("status") != "unavailable"
+            or risk.get("scope") is not None):
+        raise SectorViewUnavailable(code)
+
+    return {
+        "schema": _DOSSIER_SCHEMA,
+        "status": "partial" if any_values else "unavailable",
+        "measurement_status": measurement_status,
+        "cohort_id": _DOSSIER_COHORT_ID,
+        "population": _DOSSIER_POPULATION,
+        "as_of": as_of,
+        "benchmark": value.get("benchmark"),
+        "price_basis": price_basis,
+        "units": _DOSSIER_UNITS,
+        "windows_sessions": list(_DOSSIER_WINDOWS),
+        "unavailable_windows": {
+            "sessions": list(_DOSSIER_UNAVAILABLE_WINDOWS),
+            "reason": "not_supplied_by_owner",
+        },
+        "absolute_returns": _dossier_unavailable_block(value.get("absolute_returns"), code),
+        "compatibility_key": _dossier_optional_text(value.get("compatibility_key"), code),
+        "source_generation": {
+            "status": "unavailable",
+            "reason": _dossier_text(source_generation.get("reason"), code),
+            "id": None,
+        },
+        "availability": {
+            "mode": mode,
+            "decision_cutoff": cutoff,
+            "original_available_at": None,
+            "historically_admissible": False,
+            "reason": _dossier_text(availability.get("reason"), code),
+        },
+        "history": {"mode": "reconstructed_price_history", "naturally_observed": False},
+        "freshness": {
+            "status": "unverified",
+            "reason": _dossier_text(freshness.get("reason"), code),
+        },
+        "corrections": {
+            "status": "unavailable",
+            "reason": _dossier_text(corrections.get("reason"), code),
+        },
+        "authority": {flag: False for flag in _DOSSIER_AUTHORITY_FLAGS},
+        "forecasts": {
+            "status": "not_qualified", "expected_return": None,
+            "persistence_estimate": None, "allocation_weight": None,
+        },
+        "mechanism": {
+            "status": "unavailable",
+            "reason": _dossier_text(mechanism.get("reason"), code),
+            "owner": _dossier_optional_text(mechanism.get("owner"), code),
+        },
+        "risk": {
+            "status": "unavailable",
+            "reason": _dossier_text(risk.get("reason"), code),
+            "owner": _dossier_optional_text(risk.get("owner"), code),
+            "scope": None,
+        },
+        "constituent_breadth": _dossier_unavailable_block(
+            value.get("constituent_breadth"), code),
+        "constituent_concentration": _dossier_unavailable_block(
+            value.get("constituent_concentration"), code),
+        "cross_sector_breadth_counts": projected_counts,
+        "dependency_audit": {
+            "source_roots": list(roots),
+            "source_family_count": family_count,
+            "independence": "not_established",
+            "shared_rolling_windows": True,
+            "constituent_overlap": _dossier_text(audit.get("constituent_overlap"), code),
+        },
+        "diagnostics": {
+            "qualification_reasons": listed["qualification_reasons"],
+            "duplicate_groups": listed["duplicate_groups"],
+            "outside_cohort": listed["outside_cohort"],
+            "malformed_source_rows": malformed["malformed_source_rows"],
+            "malformed_measured_rows": malformed["malformed_measured_rows"],
+        },
+        "groups": projected,
+    }
+
+
 def _measured_read(value: Any, source: str) -> dict:
     code = "invalid_measured_read"
     if (not isinstance(value, dict) or value.get("schema") != _MEASURED_READ_SCHEMA
@@ -260,6 +692,9 @@ def _measured_read(value: Any, source: str) -> dict:
         # This exact outage stub is emitted by the canonical central adapter.
         if value["status"] != "unavailable" or value.get("reason") != "projection_error":
             raise SectorViewUnavailable(code)
+        if "sector_dossiers" in value:
+            # A dossier cannot bind to a stub that carries no generation or cohort.
+            raise SectorViewUnavailable("invalid_sector_dossiers")
         return out
     if not all(key in value for key in containers):
         raise SectorViewUnavailable(code)
@@ -302,6 +737,12 @@ def _measured_read(value: Any, source: str) -> dict:
         out["groups"].append(group)
     if len(seen) != expected or sorted(ranks) != list(range(1, measured + 1)):
         raise SectorViewUnavailable(code)
+    if "sector_dossiers" in value:
+        # The optional dated dossier is a child of this measured read, so it is
+        # checked against the parent that carries it. When it is absent the
+        # projected representation stays exactly as it was before.
+        out["sector_dossiers"] = _sector_dossiers(
+            value["sector_dossiers"], value, source, seen)
     return out
 
 
