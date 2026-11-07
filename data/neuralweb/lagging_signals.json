@@ -6239,7 +6239,7 @@
       ]
     },
     "stock_personality": {
-      "n_recent_fires": 2947,
+      "n_recent_fires": 2948,
       "n_hostile_regime": 0,
       "n_breadth_unconfirmed": 0,
       "n_repeat_fire": 0,
@@ -6247,7 +6247,7 @@
       "flagged": []
     },
     "thematic_desk": {
-      "n_recent_fires": 90,
+      "n_recent_fires": 88,
       "n_hostile_regime": 38,
       "n_breadth_unconfirmed": 56,
       "n_repeat_fire": 46,
@@ -6709,7 +6709,7 @@
       ]
     },
     "track_record": {
-      "n_recent_fires": 2090,
+      "n_recent_fires": 2295,
       "n_hostile_regime": 485,
       "n_breadth_unconfirmed": 1025,
       "n_repeat_fire": 75,
@@ -8933,7 +8933,7 @@
   "gaps": [],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/lagging.py",
-  "produced_at": "2026-11-07T09:59:36Z",
-  "inputs_hash": "sha256:9f19401e1182c9bb54c9976dfb2aafcddd3dad27f5ea80de8f715c910a73934c",
+  "produced_at": "2026-11-07T13:47:14Z",
+  "inputs_hash": "sha256:67dcb2024d4a43e54eb00fefb028ac488b519b5d6b8116f60d46caa999d54740",
   "tier": "infrastructure"
 }

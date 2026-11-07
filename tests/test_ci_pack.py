@@ -5607,9 +5607,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_929),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_670),
+    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_931),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_672),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5617,6 +5617,27 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Current-main composition (2026-11-07, PR10710): preserve the original
+    P15.T2.S3 paired measurement below; this paragraph is arithmetic composition,
+    not a new planner run or execution-time measurement. Protected main7fdd55fe
+    carries index5912/free5929/plan-book5670, including the independent merged
+    free-content contribution. Add only this PR's own measured gateway+2 to
+    each selected probe:5914/5931/5672. Do not import unmerged sibling funding.
+    All job-count ceilings, ten-pack bounds, selectors, timeouts, suites and
+    admission limits remain unchanged; natural current-head CI must qualify
+    the composed source.
+
+    P15.T2.S3 (2026-11-04): paired manifest measurements against protected
+    355527d7d9de at candidate1184ddc9, using the same scope compiler and source
+    tree, have identical selected job IDs (no entrants/exits) for all probes:
+    index137/5912->5914, free-content137/5927->5929, plan-book131/5668->5670.
+    The sole selected-weight delta is unrun-brain-gateway108->110, from adding
+    test_options_question_widget_browser.py to its existing browser command.
+    The separate options-matrix-code39->41 does not select on these probes.
+    Fund exactly these two measured units, retaining every suite, job-count
+    ceiling, selector, ten-pack bound, timeout and admission limit. No padding;
+    these are planning weights, not measured execution times.
 
     PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
     contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:
