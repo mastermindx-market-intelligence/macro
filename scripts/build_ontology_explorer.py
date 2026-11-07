@@ -32,7 +32,8 @@ log = logging.getLogger("build_ontology_explorer")
 TEMPLATE = "ontology.html.j2"
 PAGE = "ontology.html"
 #: non-.j2 assets that ship byte-identically to site/ (paired plain-copy law)
-PAIRED_ASSETS = ("ontology.css", "ontology.js")
+PAIRED_ASSETS = ("ontology.css", "ontology.js", "ontology-company.css", "ontology-company.js",
+                 "ontology-company-contract.js", "ontology-company-controller.js", "ontology-portfolio.js", "ontology-scenario.js", "ontology-theme.js", "ontology-research.js", "ontology-radar-research.js")
 
 
 def build_shell(env: Environment, site: Path) -> None:

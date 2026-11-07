@@ -107,6 +107,7 @@ class ChinaBoardBreadthAdapter(Adapter):
 
     name = "china_board_breadth"
     group = "china_board_breadth"
+    session_calendar = "CN"  # observation dates follow the cash/Connect session
     stale_after_days = 6   # daily plane; tolerant of a Golden Week / Spring Festival close
     # Both planes are external and flaky (Tushare needs a token; Sina rate-limits a
     # 69-page walk). A break must report 'blocked' and leave the heatmap on its

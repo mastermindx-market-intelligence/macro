@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "research_factory.market_memory_e0_registration.v1",
+  "title": "Market Memory E0 registration",
+  "description": "Metadata grammar only. Complete domain manifests, genuine owner installation/publication/independent closure/current access and durable reservations are separately required; passing this schema grants no access.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "research_factory.market_memory_e0_registration.v1",
+      "type": "string"
+    },
+    "authority": {
+      "const": "display_only",
+      "type": "string"
+    },
+    "study_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      }
+    },
+    "registered_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$",
+      "format": "date-time",
+      "minLength": 27,
+      "maxLength": 27
+    },
+    "study_kind": {
+      "const": "retrospective_contextual_evidence",
+      "type": "string"
+    },
+    "corpus": {
+      "type": "object",
+      "properties": {
+        "profile": {
+          "const": "market_memory.trusted.macro_regime_canary.v1",
+          "type": "string"
+        },
+        "store_id": {
+          "const": "mmstore_794a3c80dd160cedf09f1fa510c8b2d0467a05e94e60f72f18bcdf1dde79bf88",
+          "type": "string"
+        },
+        "generation_id": {
+          "const": "mmgeneration_996920d552dcbb140861f2e676c3c2ca65b288ab30c5fa21474f5adbddd77cf8",
+          "type": "string"
+        },
+        "generation_sha256": {
+          "const": "166b2cc30864edbacc7e20b87c0b9ba815efb6a929922bebb43ef563b411f2fc",
+          "type": "string"
+        },
+        "membership_sha256": {
+          "const": "76de9522d40c65c33de0dcde59f581a5c493f4be218df3221adb9c3af1495c8f",
+          "type": "string"
+        },
+        "count": {
+          "const": 109,
+          "type": "integer"
+        },
+        "membership_ref": {
+          "$ref": "#/$defs/ref"
+        }
+      },
+      "required": [
+        "profile",
+        "store_id",
+        "generation_id",
+        "generation_sha256",
+        "membership_sha256",
+        "count",
+        "membership_ref"
+      ],
+      "additionalProperties": false
+    },
+    "tasks_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "source_coverage_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "interval_split_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "design_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "reviewer_plan_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "outcome_definition_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "metrics_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "access_rules_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "allocation": {
+      "type": "object",
+      "properties": {
+        "seed_encoding": {
+          "const": "sha256_hex_as_256bit_integer",
+          "type": "string"
+        },
+        "seed_hex": {
+          "const": "7c8013e1e8092bdf91d4598a73c01d9690199dfb6c08db632b81f564367a4b03",
+          "type": "string"
+        },
+        "algorithm_ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "assignment_ref": {
+          "$ref": "#/$defs/ref"
+        }
+      },
+      "required": [
+        "seed_encoding",
+        "seed_hex",
+        "algorithm_ref",
+        "assignment_ref"
+      ],
+      "additionalProperties": false
+    },
+    "implementation": {
+      "type": "object",
+      "properties": {
+        "method_ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "code_ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "dependencies_ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "baseline_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "method_ref",
+        "code_ref",
+        "dependencies_ref",
+        "baseline_refs"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema",
+    "authority",
+    "study_id",
+    "registered_at",
+    "study_kind",
+    "corpus",
+    "tasks_ref",
+    "source_coverage_ref",
+    "interval_split_ref",
+    "design_ref",
+    "reviewer_plan_ref",
+    "outcome_definition_ref",
+    "metrics_ref",
+    "access_rules_ref",
+    "allocation",
+    "implementation"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "ref": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "minLength": 1,
+          "maxLength": 128,
+          "not": {
+            "pattern": "[^A-Za-z0-9_.:-]"
+          }
+        },
+        "object_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "minLength": 1,
+          "maxLength": 128,
+          "not": {
+            "pattern": "[^A-Za-z0-9_.:-]"
+          }
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        }
+      },
+      "required": [
+        "schema",
+        "object_id",
+        "sha256",
+        "bytes"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
