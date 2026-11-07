@@ -24,6 +24,7 @@ call, edit distance, nickname map, initials expansion or external lookup is perf
 from __future__ import annotations
 
 import re
+import unicodedata
 from typing import Any, Mapping, Sequence
 
 HOUSEKEEPING_ROLES = frozenset({"operator", "ir"})
@@ -247,18 +248,39 @@ def _speaker_mentions(sentence: str, speakers: Sequence[str]) -> list[tuple[int,
     """Locate each revision speaker (or a unique contiguous alias) inside one sentence."""
     hits: list[tuple[int, int, str]] = []
     folded = sentence.casefold()
+    # Case folding can expand a source character. Returned spans must still index the
+    # original sentence, because declaration clauses use those source positions.
+    source_offsets = [
+        position
+        for position, character in enumerate(sentence)
+        for _ in character.casefold()
+    ]
+
+    def name_character(character: str) -> bool:
+        return (
+            character.isalnum()
+            or character in "_'’-"
+            or unicodedata.category(character).startswith("M")
+        )
+
     for speaker in speakers:
         tokens = norm_person(speaker).split()
-        # Try the full name first, then progressively shorter contiguous aliases, so
-        # "Raul Jacob" can bind "Raul Jacob Ruisanchez" without any fuzzy matching.
+        # Try full names before shorter contiguous aliases, preserving source-native
+        # token equality without accepting a prefix or suffix of another person's name.
         for width in range(len(tokens), 1, -1):
             found = False
             for offset in range(len(tokens) - width + 1):
                 needle = " ".join(tokens[offset : offset + width])
                 position = folded.find(needle)
                 while position >= 0:
-                    hits.append((position, position + len(needle), speaker))
-                    found = True
+                    end = position + len(needle)
+                    starts_token = position == 0 or not name_character(folded[position - 1])
+                    ends_token = end == len(folded) or not name_character(folded[end])
+                    if starts_token and ends_token:
+                        hits.append(
+                            (source_offsets[position], source_offsets[end - 1] + 1, speaker)
+                        )
+                        found = True
                     position = folded.find(needle, position + 1)
             if found:
                 break
@@ -420,29 +442,29 @@ def roster(segments: Sequence[Mapping[str, Any]]) -> dict[str, dict[str, Any]]:
 def role_conflict(
     segments: Sequence[Mapping[str, Any]]
 ) -> list[dict[str, Any]]:
-    """Speakers whose explicit segment role is absent from their declared titles."""
+    """Distinct explicit speaker roles absent from their same-revision declared titles."""
     declared = declared_titles(segments)
-    seen: dict[str, str] = {}
+    seen: dict[str, set[str]] = {}
     for segment in segments:
         speaker = speaker_name(segment)
         role = norm(segment.get("role"))
         if not speaker or not role or is_housekeeping(segment):
             continue
-        seen.setdefault(norm_person(speaker), role)
+        seen.setdefault(norm_person(speaker), set()).add(canonical_role(role))
     conflicts: list[dict[str, Any]] = []
-    for key, role in seen.items():
+    for key, roles in seen.items():
         entry = declared.get(key)
         if not entry or not entry["titles"]:
             continue
-        if canonical_role(role) not in entry["titles"]:
+        for role in sorted(roles - entry["titles"]):
             conflicts.append(
                 {
                     "speaker": entry["speaker"],
-                    "segment_role": canonical_role(role),
+                    "segment_role": role,
                     "declared_titles": sorted(entry["titles"]),
                     "declaration_segments": sorted(
                         {d["segment_index"] for d in entry["declarations"]}
                     ),
                 }
             )
-    return sorted(conflicts, key=lambda c: c["speaker"])
+    return sorted(conflicts, key=lambda c: (c["speaker"], c["segment_role"]))

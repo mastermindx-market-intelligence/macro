@@ -280,3 +280,183 @@ def test_module_carries_no_issuer_or_boundary_literal() -> None:
     for ticker in ("AAPL", "GOOGL", "MBLY", "ARRY", "KREF", "SCCO", "COF", "FANG"):
         assert not re.search(rf"\b{ticker}\b", body)
     assert "Apple" not in body and "Alphabet" not in body
+
+
+# --------------------------------------------------------------------------- exact source boundaries
+
+
+@pytest.mark.parametrize(
+    ("roles", "expected"),
+    [
+        (("CEO", "CFO"), ["CFO"]),
+        (("CFO", "CEO"), ["CFO"]),
+        (("Chief Executive Officer", "CFO"), ["CFO"]),
+        (("CEO", "CEO", "CFO"), ["CFO"]),
+        (("CEO", "COO", "CFO"), ["CFO", "COO"]),
+        (("CFO", "CFO", "COO"), ["CFO", "COO"]),
+    ],
+)
+def test_every_explicit_role_is_checked_after_an_earlier_agreement(roles, expected) -> None:
+    segments = _call(
+        _seg("IR", "Avery Lin", "With us is Robin Vale, our Chief Executive Officer."),
+        *(_seg(role, "Robin Vale", "An explicit source turn.") for role in roles),
+    )
+    conflicts = si.role_conflict(segments)
+    assert [item["segment_role"] for item in conflicts] == expected
+    assert all(item["speaker"] == "Robin Vale" for item in conflicts)
+    assert all(item["declared_titles"] == ["CEO"] for item in conflicts)
+    assert all(item["declaration_segments"] == [0] for item in conflicts)
+
+
+@pytest.mark.parametrize(
+    "roles",
+    [
+        ("CEO", "President", "Chief Executive Officer", "President"),
+        ("President", "CEO", "President", "Chief Executive Officer"),
+    ],
+)
+def test_every_supported_declared_role_remains_eligible_in_any_order(roles) -> None:
+    segments = _call(
+        _seg("IR", "Avery Lin", "With us is Robin Vale, our President and Chief Executive Officer."),
+        *(_seg(role, "Robin Vale", "An explicit source turn.") for role in roles),
+    )
+    assert si.role_conflict(segments) == []
+
+
+def test_repeated_aliases_of_one_contradictory_role_do_not_duplicate_evidence() -> None:
+    segments = _call(
+        _seg("IR", "Avery Lin", "With us is Robin Vale, our Chief Executive Officer."),
+        _seg("CFO", "Robin Vale", "First answer."),
+        _seg("Chief Financial Officer", "Robin Vale", "Second answer."),
+        _seg("CFO", "Robin Vale", "Third answer."),
+    )
+    conflicts = si.role_conflict(segments)
+    assert len(conflicts) == 1
+    assert conflicts[0]["segment_role"] == "CFO"
+
+
+@pytest.mark.parametrize(
+    "declared",
+    [
+        "Robin Valez",
+        "NewRobin Vale",
+        "Robin Vale-Smith",
+        "Lena-Robin Vale",
+        "Robin Vale's",
+        "Robin Vale\u0301",
+    ],
+)
+def test_a_partial_name_token_cannot_acquire_another_persons_title(declared) -> None:
+    segments = _call(
+        _seg("IR", "Avery Lin", f"With us is {declared}, our Chief Financial Officer."),
+        _seg("", "Robin Vale", "Good morning."),
+    )
+    assert si.roster(segments) == {}
+    assert si.declared_titles(segments) == {}
+
+
+@pytest.mark.parametrize("speaker", ["Robin Vale", "Robin Vale Santos", "Ari Robin Vale"])
+def test_complete_contiguous_name_tokens_preserve_supported_aliases(speaker) -> None:
+    segments = _call(
+        _seg("IR", "Avery Lin", "With us is Robin Vale, our Chief Financial Officer."),
+        _seg("", speaker, "Good morning."),
+    )
+    assert si.roster(segments)[si.norm_person(speaker)]["role"] == "CFO"
+
+
+def test_casefolded_name_matches_keep_original_source_offsets() -> None:
+    sentence = "With us is Robin Straße, our Chief Financial Officer."
+    declared = "Robin Straße"
+    start = sentence.index(declared)
+    assert si._speaker_mentions(sentence, ["Robin Strasse"]) == [
+        (start, start + len(declared), "Robin Strasse")
+    ]
+    segments = _call(
+        _seg("IR", "Avery Lin", sentence),
+        _seg("", "Robin Strasse", "Good morning."),
+    )
+    assert si.roster(segments)["robin strasse"]["role"] == "CFO"
+
+
+@pytest.mark.parametrize(
+    "declaration",
+    [
+        "With us are Robin Valez, our CFO, and Robin Vale, our CEO.",
+        "With us are our CFO, Robin Valez, and our CEO, Robin Vale.",
+    ],
+)
+def test_an_invalid_partial_mention_does_not_hide_the_later_exact_name(declaration) -> None:
+    segments = _call(
+        _seg("IR", "Avery Lin", declaration),
+        _seg("", "Robin Vale", "Good morning."),
+    )
+    assert si.roster(segments)["robin vale"]["role"] == "CEO"
+
+
+def _reconstruct_synthetic_identity_case(segments):
+    from engine.company_intelligence.qa_reconstruction import reconstruct_qa
+
+    return reconstruct_qa(
+        event_id="synthetic_identity_case",
+        document_id="synthetic_identity_revision",
+        document_sha256="a" * 64,
+        segments=segments,
+    )
+
+
+@pytest.mark.parametrize("late_role", ["CFO", "Chief Financial Officer"])
+def test_reconstruction_refuses_a_late_contradictory_answer_role(late_role) -> None:
+    result = _reconstruct_synthetic_identity_case(_call(
+        _seg("IR", "Avery Lin", "With us is Robin Vale, our Chief Executive Officer."),
+        _seg("CEO", "Robin Vale", "Opening remarks."),
+        _seg("Operator", "Operator", "Our next question comes from Dana Reyes with North Peak."),
+        _seg("", "Dana Reyes", "How is pricing trending?"),
+        _seg(late_role, "Robin Vale", "Pricing is stable."),
+    ))
+    assert result["status"] == "failed"
+    assert result["failure"]["code"] == "management_identity_conflict"
+    assert result["exchanges"] == []
+
+
+@pytest.mark.parametrize("declared", ["Robin Valez", "NewRobin Vale"])
+def test_reconstruction_never_publishes_a_substring_supported_respondent(declared) -> None:
+    result = _reconstruct_synthetic_identity_case(_call(
+        _seg("IR", "Avery Lin", f"With us is {declared}, our Chief Financial Officer."),
+        _seg("Operator", "Operator", "Our next question comes from Dana Reyes with North Peak."),
+        _seg("", "Dana Reyes", "How is pricing trending?"),
+        _seg("", "Robin Vale", "Pricing is stable."),
+    ))
+    assert result["status"] == "failed"
+    assert result["failure"]["code"] == "unexpected_non_housekeeping_speaker"
+    assert result["exchanges"] == []
+
+
+def test_supported_respondent_reconstruction_keeps_source_spans_and_authority() -> None:
+    result = _reconstruct_synthetic_identity_case(_call(
+        _seg("IR", "Avery Lin", "With us is Robin Vale, our Chief Executive Officer."),
+        _seg("Operator", "Operator", "Our next question comes from Dana Reyes with North Peak."),
+        _seg("", "Dana Reyes", "How is pricing trending?"),
+        _seg("", "Robin Vale", "Pricing is stable."),
+    ))
+    assert result["status"] == "ok"
+    assert result["model_calls"] == 0
+    assert result["topic_authority"] == "none"
+    assert result["semantic_status"] == "unresolved"
+    assert len(result["exchanges"]) == 1
+    exchange = result["exchanges"][0]
+    assert [span["segment_index"] for span in exchange["question_spans"]] == [1, 2]
+    assert [span["segment_index"] for span in exchange["answer_spans"]] == [3]
+    assert exchange["respondents"][0]["name"] == "Robin Vale"
+    assert exchange["respondents"][0]["role"] == "CEO"
+
+
+def test_missing_respondent_role_still_refuses_without_inventing_management() -> None:
+    result = _reconstruct_synthetic_identity_case(_call(
+        _seg("IR", "Avery Lin", "Welcome to this synthetic call."),
+        _seg("Operator", "Operator", "Our next question comes from Dana Reyes with North Peak."),
+        _seg("", "Dana Reyes", "How is pricing trending?"),
+        _seg("", "Robin Vale", "Pricing is stable."),
+    ))
+    assert result["status"] == "failed"
+    assert result["failure"]["code"] == "unexpected_non_housekeeping_speaker"
+    assert result["exchanges"] == []
