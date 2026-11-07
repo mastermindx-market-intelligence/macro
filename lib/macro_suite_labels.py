@@ -2556,8 +2556,8 @@ for _disposition, _text in GLT_VIEW_DISPOSITION_TEXT.items():
         "Observed association, not a causal effect. " + _text["en"],
         "观察到的关联，并非因果效应。" + _text["zh"])
 GLT_VIEW_NOTES["glt_view_note.evidence.identified_effect.supported"] = _pair(
-    "Causal-effect study. " + GLT_VIEW_DISPOSITION_TEXT["supported"]["en"],
-    "因果效应研究。" + GLT_VIEW_DISPOSITION_TEXT["supported"]["zh"])
+    "Identification study. " + GLT_VIEW_DISPOSITION_TEXT["supported"]["en"],
+    "识别研究。" + GLT_VIEW_DISPOSITION_TEXT["supported"]["zh"])
 
 
 def glt_view_replay_note(asof: Mapping[str, str],
