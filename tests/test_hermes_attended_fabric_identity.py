@@ -1,4 +1,4 @@
-"""Attended declaration uses the incumbent service owner and stays closed."""
+"""Source-supported attended inference still requires the incumbent enrollment."""
 from __future__ import annotations
 
 import copy
@@ -64,7 +64,7 @@ def test_shipped_declaration_is_strict_inference_and_has_no_enrollment():
     relation = owner._SERVICE_FABRIC_RELATIONS[SERVICE]
     assert (relation.lane, relation.workload, relation.transport_id,
             relation.automatic_transport_id) == (LANE, WORKLOAD, TRANSPORT, None)
-    assert transport.qualified is False and transport.application_allowed is False
+    assert transport.qualified is True and transport.application_allowed is True
     assert transport.metadata_read is False and transport.automatic is False
     assert transport.protocol == "native_application_v1"
     assert transport.execution_surface == "inference"

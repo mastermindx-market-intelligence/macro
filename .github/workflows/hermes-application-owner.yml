@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'config/provider_production_modes.v1.json'
+      - 'config/capability_manifest.yml'
       - 'engine/neuralweb/capability_broker.py'
       - 'engine/fabric_inference_client.py'
       - 'engine/provider_production_modes.py'
@@ -11,6 +12,7 @@ on:
       - 'config/provider_workloads.v1.json'
       - 'tests/test_fabric_service_identity.py'
       - 'tests/test_hermes_attended_fabric_identity.py'
+      - 'tests/test_hermes_application_source_support.py'
       - 'tests/test_fabric_application_binding.py'
       - 'tests/test_fabric_exact_scoped_model_composition.py'
       - 'tests/test_hermes_primary_fabric_*.py'
@@ -56,6 +58,7 @@ jobs:
           set -euo pipefail
           python -B -m pytest -q --tb=short --noconftest -o addopts= \
             --junitxml="$RUNNER_TEMP/fabric-owner-composition.xml" \
+            tests/test_hermes_application_source_support.py \
             tests/test_hermes_primary_fabric_identity.py \
             tests/test_hermes_primary_fabric_endpoint.py \
             tests/test_hermes_attended_fabric_identity.py \
