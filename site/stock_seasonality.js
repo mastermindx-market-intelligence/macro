@@ -666,9 +666,9 @@
      so only one is ever spoken. */
   function announceMode(m) {
     setPair($("sx-mode-live"),
-      m === "catalyst" ? "Catalyst mode. Event coverage is not connected."
-                       : "Calendar clock mode.",
-      m === "catalyst" ? "催化剂模式。事件数据尚未接入。" : "日历时钟模式。");
+      m === "catalyst" ? "Event dates mode. Event coverage is not connected."
+                       : "Calendar pattern mode.",
+      m === "catalyst" ? "事件日期模式。事件数据尚未接入。" : "日历规律模式。");
   }
 
   /* Back returned the MODE but not the READER: at 375px, Back into catalyst from
@@ -829,6 +829,15 @@
     });
   }
 
+  function syncQuickCurrent() {
+    if (!quick) return;
+    Array.prototype.forEach.call(quick.querySelectorAll("button[data-sym]"), function (b) {
+      if (String(b.dataset.sym).toUpperCase() === String(state.symbol).toUpperCase())
+        b.setAttribute("aria-current", "page");
+      else b.removeAttribute("aria-current");
+    });
+  }
+
   function pick(sym) {
     if (!sym || sym === state.symbol) { closePop(); return; }
     note("sx-err", false); note("sx-nocov", false);
@@ -854,6 +863,7 @@
     E = j;
     readScale();
     state.symbol = j.symbol;
+    syncQuickCurrent();
     state.panel = "raw"; state.lookback = 0; state.dragged = false;
     var dw = j.default_window || {};
     DEFAULT_A = state.a = dw.start_doy || 1;
@@ -888,6 +898,7 @@
     if (input) input.placeholder = zh() ? (input.dataset.phZh || PH_EN) : PH_EN;
   }
   syncPlaceholder();
+  syncQuickCurrent();
 
   /* Small multiples collapse on mobile (spec §7.7) — open by default on desktop
      where there is room for them. Only the INITIAL state; the user owns it after. */

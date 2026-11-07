@@ -427,7 +427,7 @@ OTHER_CLOCK_ZH = "其他事件数据源"
 # row's clause is built from the artifact, so it carries None and is filled in
 # below. is_source=False marks the two deliberate non-features.
 AVAIL_ROWS = [
-    ("live_calendar_clock", "Calendar clock", "日历时钟",
+    ("live_calendar_clock", "Calendar pattern", "日历规律",
      "Every complete year drawn from adjusted closing prices.",
      "以复权收盘价绘制每一个完整年份。", True),
     ("live_selection_correction", "Search accounting", "搜索校正",
