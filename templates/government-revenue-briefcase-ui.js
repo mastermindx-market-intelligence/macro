@@ -55,7 +55,7 @@
       select.innerHTML='<option value="">'+esc(tr('Current unsaved view','当前未保存视图'))+'</option>'+views.map(function(view){return'<option value="'+esc(view.id)+'">'+esc(view.name)+'</option>'}).join('');
       select.value=selectedView;
       var view=selectedView?briefcase.getView(selectedView):null;
-      get('savedViewName').value=view?view.name:'';remove.disabled=!view;toggle.disabled=!view;
+      get('savedViewName').value=view?view.name:'';remove.disabled=!view;toggle.disabled=!view||!!(view.cut&&view.cut.contract==='government_revenue_saved_identity.v1');
       var alert=selectedAlert();
       toggle.textContent=alert&&alert.enabled?tr('Disable local alert','停用本地提醒'):tr('Enable local alert','启用本地提醒');
       get('localInboxCount').textContent=briefcase.listInbox().length;
@@ -104,6 +104,73 @@
       if(target){if(typeof target.scrollIntoView==='function')target.scrollIntoView({block:'nearest'});if(typeof target.focus==='function')target.focus({preventScroll:true})}
     }
 
+    function openSavedIdentity(view,cut){
+      var subject=cut.subject,record=cut.record,context=record.archetype_context,ownerAtOpen=ownerId;
+      function meaning(value){
+        var labels={not_established:tr('Not established','尚未确立'),unknown:tr('Unknown','未知'),
+          ordinary_share:tr('Ordinary share','普通股'),adr:tr('ADR / depositary receipt','ADR / 存托凭证'),
+          joint_venture:tr('Joint venture','合资企业'),equity_method:tr('Equity method','权益法'),
+          consolidated:tr('Consolidated basis disclosed','已披露合并口径'),
+          source_supported_current_research:tr('Source-supported current research identity','来源支持的当前研究身份'),
+          government_revenue_identity_context:tr('Government Revenue identity context only','仅用于政府收入研究的身份背景'),
+          current_observation_only:tr('Current observation only','仅为当前观测'),
+          disclosed_snapshot_only:tr('Disclosure snapshot only; later continuity is unestablished','仅为披露快照；其后持续性尚未确立'),
+          direct_edge_interest_not_issuer_capture:tr('Direct ownership interest, not issuer revenue or cash capture','直接所有权权益，不代表发行人收入或现金获取')};
+        return Object.prototype.hasOwnProperty.call(labels,value)?labels[value]:text(value,tr('Not established','尚未确立'));
+      }
+      function fields(lines,source,spec){spec.forEach(function(field){if(source[field[0]]!=null)lines.push(tr(field[1],field[2])+meaning(source[field[0]]))})}
+      function interest(value){return typeof value==='number'&&Number.isFinite(value)?Math.round(value*1000)/10+'%':meaning(value)}
+      var lines=[tr('Subject: ','主体：')+subject.ticker+' · '+record.company_name,
+        tr('Evidence content ID: ','证据内容标识：')+cut.atlas.content_id,
+        tr('Context known at: ','背景获知时间：')+subject.known_at,
+        tr('Source observation known at: ','来源观测获知时间：')+subject.observation_known_at,
+        tr('Research identity known at: ','研究身份获知时间：')+text(subject.research_identity_known_at,tr('Not established','尚未确立')),
+        tr('Source build: ','来源构建时间：')+cut.atlas.generated_at,
+        tr('Device copy: ','设备副本时间：')+cut.saved_at,
+        tr('Saved filters: ','保存的筛选：')+JSON.stringify(cut.filters)];
+      var html='<p class="limit-copy">'+esc(tr('Original device-local source context. This is not the current source, award coverage, revenue capture or trading authority. Current-source navigation remains pinned separately.','原始设备本地来源背景。这并非当前来源、授标覆盖、收入获取或交易权限。当前来源导航另行绑定证据截点。'))+'</p><div class="receipt-code">'+esc(lines.join('\n')).replace(/\n/g,'<br>')+'</div><p class="limit-copy">'+esc(tr(record.attribution_reason_en,record.attribution_reason_zh||record.attribution_reason_en))+'</p>';
+      context.listing_cases.concat(context.ownership_cases).forEach(function(row){
+        var native=row.native_identity||{},research=row.research_identity||{};
+        var details=[tr('Source known at: ','来源获知时间：')+row.known_at,
+          tr('Source period: ','来源期间：')+text(row.source_as_of,tr('Not established','尚未确立')),
+          tr('Effective interval: ','有效区间：')+meaning(row.effective_interval_state),
+          tr('Source reuse rights: ','来源复用权利：')+meaning(row.rights_state)];
+        fields(details,native,[['issuer_name_as_printed','Issuer as printed: ','来源原文发行人：'],
+          ['issuer_registry','Issuer registry: ','发行人登记机关：'],['issuer_native_id','Native issuer identifier: ','原生发行人标识：'],
+          ['venue','Venue: ','交易场所：'],['symbol','Source symbol: ','来源代码：'],['security_kind','Security type: ','证券类型：']]);
+        if(row.ordinary_shares_per_adr!=null)details.push(tr('Ordinary shares per ADR: ','每份 ADR 对应普通股：')+row.ordinary_shares_per_adr);
+        if(row.quote_currency)details.push(tr('Quote currency: ','报价币种：')+row.quote_currency);
+        fields(details,research,[['state','Research identity: ','研究身份：'],['scope','Research scope: ','研究范围：'],
+          ['issuer_cik','SEC filer CIK: ','SEC 披露主体 CIK：'],['filer_name_as_printed','SEC filer as printed: ','SEC 来源原文披露主体：'],
+          ['security_isin','Security ISIN: ','证券 ISIN：'],['underlying_isin','Underlying ISIN: ','标的普通股 ISIN：'],
+          ['underlying_symbol_as_printed','Underlying source symbol: ','标的来源代码：'],['underlying_venue_as_printed','Underlying source venue: ','标的来源交易场所：'],
+          ['depositary_as_printed','Depositary as printed: ','来源原文存托行：'],['sponsorship_as_printed','Sponsorship source code: ','来源保荐状态代码：'],
+          ['mapping_snapshot','Identity observation date: ','身份观测日期：'],['known_at','Research identity known at: ','研究身份获知时间：'],
+          ['effective_interval_state','Research validity: ','研究有效性：']]);
+        if(row.relationship){
+          fields(details,row,[['relationship','Ownership relationship: ','所有权关系：'],['interest_basis','Interest basis: ','权益口径：'],['accounting_basis','Accounting basis: ','会计口径：']]);
+          details.push(tr('Ownership interest: ','所有权权益：')+interest(row.ownership_interest));
+          (row.documentary_counterparties||[]).forEach(function(party){details.push(tr('Same-source counterparty: ','同一来源的交易对方：')+text(party.name_as_printed)+' · '+interest(party.ownership_interest)+' · '+tr('Identity path: ','身份路径：')+meaning(party.identity_path))});
+          details.push(tr('Revenue / workshare / cash capture: ','收入 / 工作份额 / 现金获取：')+[row.revenue_capture,row.workshare,row.cash_capture].map(meaning).join(' / '),
+            tr('Ownership interest is not revenue, workshare or distributable cash.','所有权权益不等于收入、工作份额或可分配现金。'));
+        }
+        details.push(tr('Listing admission / price comparability / recipient attribution / economic capture: ','上市准入 / 价格可比性 / 收款方归属 / 经济获取：')+[row.listing_admission,row.price_comparability,row.recipient_attribution,row.economic_capture].map(meaning).join(' / '));
+        html+='<article class="receipt"><h3>'+esc(native.symbol||row.canonical_name||subject.ticker)+'</h3><div class="receipt-code">'+esc(details.join('\n')).replace(/\n/g,'<br>')+'</div>'+row.evidence.map(function(receipt){var url=savedSource(receipt.url);return url?'<a class="source-link" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(receipt.publisher+' · '+receipt.record_id)+'</a><div class="receipt-code">'+esc(receipt.content_sha256)+'</div>':''}).join('')+'</article>';
+      });
+      if(context.gaps.length)html+='<p class="limit-copy">'+esc(context.gaps.join(' · '))+'</p>';
+      html+='<button class="tool-btn" id="savedIdentityJson" type="button">'+esc(tr('Export this saved JSON','导出此保存窗口 JSON'))+'</button> <button class="tool-btn" id="savedIdentityCsv" type="button">'+esc(tr('Export this saved CSV','导出此保存窗口 CSV'))+'</button>';
+      api.openDrawer({title:tr('Saved source context · ','保存的来源背景 · ')+view.name,html:html,focus:get('savedViewSelect')});
+      [['savedIdentityJson','json'],['savedIdentityCsv','csv']].forEach(function(pair){
+        var button=root.document.getElementById&&root.document.getElementById(pair[0]);
+        if(button)button.addEventListener('click',function(){if(ownerId===ownerAtOpen&&briefcase)exportSavedIdentity(view.id,pair[1])});
+      });
+    }
+
+    function exportSavedIdentity(id,kind){
+      var output=briefcase.buildSavedResearchExport(id,kind),ok=download(output.filename,output.content,output.media_type);
+      status(ok?tr('Original saved source context exported. No current data was substituted.','已导出原始保存来源背景，未替换为当前数据。'):tr('The saved export is unavailable in this browser.','此浏览器无法导出保存窗口。'),!ok);
+    }
+
     function applySaved(){
       if(!briefcase)return;
       var view=briefcase.getView(get('savedViewSelect').value);selectedView=view?view.id:'';
@@ -111,6 +178,11 @@
       var retained=briefcase.getSavedCut(view.id);
       if(!retained.ok&&retained.reason!=='cut_not_captured'){
         render(tr('The original saved evidence window could not be verified. Current data was not substituted.','无法核验原始保存证据窗口，未以当前数据替代。'),true);return;
+      }
+      if(retained.ok&&retained.cut.contract==='government_revenue_saved_identity.v1'){
+        if(typeof api.applyResearchContext==='function')api.applyResearchContext(retained.cut);
+        openSavedIdentity(view,retained.cut);
+        render(tr('Original saved source context reopened; current source may differ or be unavailable.','已重新打开原始保存来源背景；当前来源可能不同或不可用。'),false);return;
       }
       api.applyFilters(view.filters||{});
       if(retained.ok){
@@ -124,7 +196,12 @@
       var name=get('savedViewName').value.trim();
       if(!name){status(tr('Name the current view before saving it.','请先为当前视图命名。'),true);get('savedViewName').focus();return}
       try{
-        var filters=api.getFilters(),input={name:name,filters:filters};
+        var filters=api.getFilters(),input={name:name,filters:filters},ownerAtSave=ownerId,storeAtSave=briefcase;
+        if(filters.mode==='companies'&&typeof api.getResearchContext==='function'){
+          var context=api.getResearchContext();
+          if(context!==undefined)input.research_context=context;
+        }
+        if(ownerAtSave!==ownerId||storeAtSave!==briefcase)return;
         if(['changes','awards','opportunities','recompetes'].indexOf(filters.mode||'changes')>=0&&typeof api.getWorkspace==='function'){
           input.workspace=api.getWorkspace();input.readiness={complete:api.isWorkspaceReady()===true,bundle_matched:api.isWorkspaceReady()===true};
           input.visible_event_ids=typeof api.getVisibleEventIds==='function'?api.getVisibleEventIds():null;
@@ -136,6 +213,8 @@
       }catch(error){
         if(error&&error.code==='saved_cut_too_large')status(tr('Refine the filters before saving this evidence window: at most 100 records and 256 KiB. Nothing was truncated or saved.','请先缩小筛选范围：证据窗口最多包含 100 条记录、256 KiB。未截断或保存任何内容。'),true);
         else if(error&&error.code==='unsupported_view_mode')status(tr('Saving is not available in this view. Choose Changes, Award activity, Opportunities, Recompete watch or Company collection scope.','此视图暂不支持保存。请选择变化、授标动态、机会、再竞争观察或公司采集范围。'),true);
+        else if(error&&error.code==='saved_view_has_alerts')status(tr('This saved view has local alerts. Select Current unsaved view and save the source context separately; existing alerts were preserved.','此保存视图包含本地提醒。请选择当前未保存视图，将来源背景单独保存；现有提醒已保留。'),true);
+        else if(error&&error.code==='research_context_unavailable'||error&&error.code==='invalid_saved_cut')status(tr('The selected source context is unavailable or changed. Nothing was saved or substituted.','所选来源背景不可用或已变化。未保存或替换任何内容。'),true);
         else if(error&&error.code==='workspace_not_ready')status(tr('Wait for the complete verified workspace before saving its original evidence window.','请等待完整且已核验的工作区加载后，再保存原始证据窗口。'),true);
         else status(tr('This view could not be saved.','无法保存此视图。'),true);
       }
@@ -159,6 +238,7 @@
 
     function toggleAlert(){
       if(!briefcase||!selectedView)return;
+      var view=briefcase.getView(selectedView);if(view&&view.cut&&view.cut.contract==='government_revenue_saved_identity.v1')return;
       var alert=selectedAlert();
       try{
         var changed=alert?briefcase.updateAlert(alert.id,{enabled:!alert.enabled}):briefcase.createAlert({view_id:selectedView,type:get('alertType').value});
@@ -181,6 +261,8 @@
     function exportView(kind){
       if(!briefcase)return;
       try{
+        if(selectedView){var view=briefcase.getView(selectedView);if(view&&view.cut&&view.cut.contract==='government_revenue_saved_identity.v1'){exportSavedIdentity(selectedView,kind);return}}
+
         if(kind==='csv'){
           var csv=briefcase.buildCsvExport(api.getWorkspace(),api.getFilters()),csvOk=download(csv.filename,csv.content,csv.media_type);
           status(csvOk?tr('Auditable CSV view exported.','已导出可审计的 CSV 视图。'):tr('CSV export is unavailable in this browser.','此浏览器无法导出 CSV。'),!csvOk);return;

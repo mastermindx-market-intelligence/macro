@@ -941,3 +941,128 @@ def test_legacy_alert_upgrade_does_not_backfill_newly_included_old_records(tmp_p
     assert out['afterUpgrade']['alerts'][0]['membership_contract'] == 'page_filter_membership.v1'
     assert out['repeat']['alerts'] == [] and out['repeat']['rebaselined_alert_ids'] == []
     assert [(x['event_id'], x['notification_kind']) for x in out['next']['alerts']] == [('govws-new-correction', 'correction')]
+
+
+def _identity_context():
+    atlas=json.loads((ROOT/'tests/fixtures/government_revenue/archetypes/source_supported_ui_atlas.json').read_text())
+    record=next(r for r in atlas['issuers'] if r['ticker']=='BAESY')
+    return {'selected_id':'identity:BAESY','atlas':{k:atlas[k] for k in ('contract','content_id','generated_at','authority')},
+        'record':record,'subject':{'ticker':'BAESY','name':record['company_name'],
+        'source_generation_id':atlas['content_id'],'generated_at':atlas['generated_at'],
+        'known_at':'2026-10-13T07:54:08.066798+00:00','observation_known_at':'2026-10-13T05:36:47.904824+00:00',
+        'research_identity_known_at':'2026-10-13T07:54:08.066798+00:00'}}
+
+
+@needs_node
+def test_identity_cut_has_closed_projection_and_formula_safe_same_snapshot_exports(tmp_path):
+    context=_identity_context()
+    context['record']['company_name']='  =FORMULA()'
+    context['record']['private_annotation']='must-not-export'
+    context['subject']['token']='must-not-export'
+    context['record']['archetype_context']['listing_cases'][1]['research_identity']['raw_body']='must-not-export'
+    out=_run_node(tmp_path,"""
+      const store=make(),view=store.createView({name:'Identity',filters:{mode:'companies',ticker:'BAESY'},research_context:CONTEXT}).view;
+      const restored=make(),retained=restored.getSavedCut(view.id);
+      process.stdout.write(JSON.stringify({retained,json:restored.buildSavedResearchExport(view.id,'json'),csv:restored.buildSavedResearchExport(view.id,'csv'),stored:values}));
+    """.replace('CONTEXT',json.dumps(context)))
+    assert out['retained']['ok'] is True
+    assert json.loads(out['json']['content'])==out['retained']['cut']
+    assert 'must-not-export' not in json.dumps(out)
+    assert 'mapping_owner_path' not in json.dumps(out)
+    assert "'=FORMULA()" in out['csv']['content']
+    cases=out['retained']['cut']['record']['archetype_context']['listing_cases']
+    assert cases[1]['ordinary_shares_per_adr']==4
+    assert cases[1]['rights_state']=='unknown'
+    assert cases[1]['economic_capture']=='not_established'
+    assert out['retained']['cut']['atlas']['authority']['can_size'] is False
+
+
+@needs_node
+def test_identity_cut_replacement_failure_is_atomic_and_keeps_original(tmp_path):
+    out=_run_node(tmp_path,"""
+      const app=make(),identitySource=CONTEXT,input={name:'Original',filters:{mode:'companies',ticker:'BAESY'},research_context:identitySource};
+      const view=app.createView(input).view,before=JSON.stringify(app.getView(view.id)),errors=[];
+      const clone=()=>JSON.parse(JSON.stringify(identitySource));
+      const cases=[];let value=clone();value.atlas.content_id='gria1-'+'a'.repeat(24);cases.push(value);
+      value=clone();value.subject.observation_known_at=null;cases.push(value);
+      value=clone();value.record.archetype_context.listing_cases[1].rights_state='denied';cases.push(value);
+      value=clone();value.record.archetype_context.listing_cases[1].evidence[0].url='https://example.test/?token=private';cases.push(value);
+      value=clone();value.record.archetype_context.listing_cases[1].evidence[0].url='https://example.test/?%74oken=private';cases.push(value);
+      value=clone();value.subject.known_at=value.subject.observation_known_at;cases.push(value);
+      value=clone();value.record.private='x'.repeat(300000);cases.push(value);
+      for(const research_context of cases){try{app.updateView(view.id,{...input,name:'Do not rename',research_context})}catch(e){errors.push(e.code)}}
+      process.stdout.write(JSON.stringify({errors,unchanged:before===JSON.stringify(app.getView(view.id))}));
+    """.replace('CONTEXT',json.dumps(_identity_context())))
+    assert out['errors']==['invalid_saved_cut']*6+['saved_cut_too_large']
+    assert out['unchanged'] is True
+
+
+@needs_node
+@pytest.mark.parametrize('tamper', ['generation', 'knowledge_clock'])
+def test_corrupt_saved_identity_is_preserved_but_not_exported(tmp_path, tamper):
+    out=_run_node(tmp_path,"""
+      const app=make(),view=app.createView({name:'Original',filters:{mode:'companies'},research_context:CONTEXT}).view;
+      const key='mastermind.government_revenue.briefcase.v1.user.test-user',state=JSON.parse(values[key]);
+      TAMPER;values[key]=JSON.stringify(state);
+      const original=values[key],restored=make();let error;
+      try{restored.buildSavedResearchExport(view.id,'json')}catch(e){error=e.code}
+      process.stdout.write(JSON.stringify({error,result:restored.getSavedCut(view.id),unchanged:original===values[key]}));
+    """.replace('CONTEXT',json.dumps(_identity_context())).replace('TAMPER',
+        "state.saved_views[0].cut.subject.source_generation_id='gria1-'+'f'.repeat(24)" if tamper=='generation' else
+        "state.saved_views[0].cut.subject.known_at=state.saved_views[0].cut.subject.observation_known_at"))
+    assert out=={'error':'invalid_saved_cut','result':{'ok':False,'reason':'invalid_saved_cut'},'unchanged':True}
+
+
+@needs_node
+def test_identity_capture_and_retained_download_cannot_cross_owner_change(tmp_path):
+    script=r"""
+      const fs=require('fs'),values={},nodes={},listeners={};
+      const storage={getItem:k=>values[k]||null,setItem:(k,v)=>values[k]=v};
+      function node(id){return nodes[id]||(nodes[id]={value:'',innerHTML:'',textContent:'',disabled:false,className:'',addEventListener:(k,f)=>listeners[id+':'+k]=f,focus(){}})}
+      let downloads=0,drawer=null,ownerCallback,switchDuringCapture=false;
+      const document={activeElement:null,getElementById:node,body:{appendChild(){}},createElement:()=>({click(){downloads++},remove(){}})};
+      URL.createObjectURL=()=> 'blob:fixture';URL.revokeObjectURL=()=>{};
+      global.window={localStorage:storage,document};
+      eval(fs.readFileSync(CORE,'utf8'));eval(fs.readFileSync(UI_PATH,'utf8'));
+      const sourceContext=CONTEXT;
+      const api={get:node,tr:(en,zh)=>en,esc:x=>String(x||'').replace(/</g,'&lt;'),text:x=>String(x||''),
+        getFilters:()=>({mode:'companies',ticker:'BAESY'}),applyFilters:()=>{},applyResearchContext:()=>{},
+        getResearchContext:()=>{if(switchDuringCapture)ownerCallback('user-b');return sourceContext},
+        onOwnerChange:cb=>{ownerCallback=cb;cb('user-a')},clearPrivatePresentation:()=>{drawer=null},
+        getWorkspace:()=>({}),isWorkspaceReady:()=>false,openDrawer:value=>drawer=value};
+      window.mountGovernmentRevenueBriefcaseUI(api);
+      node('savedViewName').value='Original A';listeners['saveView:click']();listeners['savedViewSelect:change']();
+      const oldDownload=listeners['savedIdentityJson:click'];oldDownload();
+      const before=downloads;ownerCallback('user-b');oldDownload();
+      const afterSwitch={downloads,drawer,options:node('savedViewSelect').innerHTML};
+      ownerCallback('user-a');node('savedViewName').value='Do not save to B';switchDuringCapture=true;listeners['saveView:click']();
+      process.stdout.write(JSON.stringify({before,afterSwitch,stored:values,currentOptions:node('savedViewSelect').innerHTML}));
+    """.replace('CORE',json.dumps(str(MODULE))).replace('UI_PATH',json.dumps(str(ROOT/'templates/government-revenue-briefcase-ui.js'))).replace('CONTEXT',json.dumps(_identity_context()))
+    path=tmp_path/'identity_owner_change.js';path.write_text(script)
+    result=subprocess.run(['node',str(path)],capture_output=True,text=True,timeout=30)
+    assert result.returncode==0,result.stderr
+    out=json.loads(result.stdout)
+    assert out['before']==1 and out['afterSwitch']['downloads']==1
+    assert out['afterSwitch']['drawer'] is None
+    assert 'Original A' not in out['afterSwitch']['options']
+    assert list(out['stored'])==['mastermind.government_revenue.briefcase.v1.user.user-a']
+    assert len(json.loads(next(iter(out['stored'].values())))['saved_views'])==1
+    assert 'Original A' not in out['currentOptions']
+
+
+@needs_node
+def test_event_alert_view_cannot_be_replaced_by_identity_cut_and_poison_reconciliation(tmp_path):
+    workspace=_workspace(_event('original-event','award_change'))
+    out=_run_node(tmp_path,"""
+      const app=make(),view=app.createView({name:'Existing events',filters:{mode:'changes'},workspace:WORKSPACE,visible_event_ids:['original-event'],readiness:{complete:true,bundle_matched:true}}).view;
+      app.createAlert({view_id:view.id,type:'award_change'});const before=JSON.stringify(app.state());let conversion,unsupported;
+      try{app.updateView(view.id,{name:'Do not replace',filters:{mode:'companies'},research_context:CONTEXT})}catch(e){conversion=e.code}
+      const preserved=before===JSON.stringify(app.state()),checked=app.reconcile(WORKSPACE,{complete:true,bundle_matched:true});
+      const identity=app.createView({name:'Separate identity',filters:{mode:'companies'},research_context:CONTEXT}).view;
+      try{app.createAlert({view_id:identity.id,type:'award_change'})}catch(e){unsupported=e.code}
+      process.stdout.write(JSON.stringify({conversion,preserved,checked,unsupported,alerts:app.listAlerts()}));
+    """.replace('CONTEXT',json.dumps(_identity_context())).replace('WORKSPACE',json.dumps(workspace)))
+    assert out['conversion']=='saved_view_has_alerts' and out['preserved'] is True
+    assert out['checked']['reconciled'] is True
+    assert out['unsupported']=='unsupported_alert_view'
+    assert len(out['alerts'])==1

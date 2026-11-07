@@ -20,7 +20,7 @@ base = importlib.util.module_from_spec(spec); spec.loader.exec_module(base)
 pytestmark = pytest.mark.skipif(shutil.which('node') is None, reason='node required')
 
 
-def run(tmp_path, *, search='?mode=companies&item=identity%3ABAESY&ticker=BAESY', lang='en', status=200, mutate=None, source_supported=False, atlas_input=None, workspace_input=None, actions='', rendered=False):
+def run(tmp_path, *, search='?mode=companies&item=identity%3ABAESY&ticker=BAESY', lang='en', status=200, mutate=None, source_supported=False, atlas_input=None, workspace_input=None, actions='', rendered=False, briefcase=False, briefcase_state=None):
     atlas = copy.deepcopy(atlas_input) if atlas_input is not None else json.loads((ROOT / 'tests/fixtures/government_revenue/archetypes' / ('source_supported_ui_atlas.json' if source_supported else 'ui_atlas.json')).read_text())
     if mutate:
         mutate(atlas)
@@ -29,6 +29,13 @@ def run(tmp_path, *, search='?mode=companies&item=identity%3ABAESY&ticker=BAESY'
     base.TEMPLATE, base.ROOT = template, ROOT
     runtime = (ROOT / 'site/government-revenue-page.js').read_text() if rendered else base._page_runtime_js()
     prefix = "window.fetch=function(url){return Promise.resolve({ok:"+str(status == 200).lower()+",status:"+str(status)+",json:function(){return Promise.resolve("+json.dumps(atlas)+")}})};\n"
+    if briefcase:
+        prefix = ("var savedValues=" + json.dumps(briefcase_state or {}) + ";window.localStorage={getItem:k=>savedValues[k]||null,setItem:(k,v)=>savedValues[k]=v};"
+            "window.document=document;var savedAuthCallbacks=[];window.MDXAuth.onChange=cb=>{savedAuthCallbacks.push(cb);cb({id:'saved-user'})};"
+            "var savedDownloads=[],savedBlobs=[];URL.createObjectURL=blob=>{savedBlobs.push(blob);return 'blob:fixture'};URL.revokeObjectURL=()=>{};"
+            "document.body={appendChild:()=>{}};document.createElement=()=>({click:function(){savedDownloads.push({filename:this.download})},remove:()=>{}});\n"
+            + (ROOT / 'templates/government-revenue-briefcase.js').read_text()
+            + (ROOT / 'templates/government-revenue-briefcase-ui.js').read_text() + prefix)
     base._page_runtime_js = lambda: prefix + runtime
     # Add only observations to the existing harness's output.
     code = inspect.getsource(base._run_runtime).replace(
@@ -280,3 +287,68 @@ def test_normal_generated_assets_preserve_native_clock_and_pinned_copy_contract(
     assert ('Research identity known at: ' if lang == 'en' else '研究身份获知时间：') + '2026-10-13T07:54:08.066798+00:00' in out['inspectorHtml']
     assert parse_qs(urlsplit(out['copiedIdentityLinks'][0]).query)['identity_generation'] == [retained_atlas['content_id']]
     assert 'company:BAESY' not in out['currentUrl']
+
+
+@pytest.mark.parametrize('lang', ['en', 'zh'])
+def test_international_saved_context_survives_remount_and_current_generation_change(tmp_path, retained_atlas, lang):
+    first = run(tmp_path, atlas_input=retained_atlas, briefcase=True, lang=lang, actions="""
+      node('savedViewName').value='BAE original source';node('saveView').fire('click');
+      identityActionsResult={stored:savedValues,status:node('briefcaseStatus').textContent};
+    """)
+    stored = first['identityActions']['stored']
+    state = json.loads(stored['mastermind.government_revenue.briefcase.v1.user.saved-user'])
+    assert len(state['saved_views']) == 1
+    view = state['saved_views'][0]
+    assert view['cut']['selected_id'] == 'identity:BAESY'
+    assert view['cut']['atlas']['content_id'] == retained_atlas['content_id']
+    changed = copy.deepcopy(retained_atlas)
+    changed['content_id'] = 'gria1-' + 'f' * 24
+    changed['generated_at'] = '2026-11-05T12:00:00Z'
+    out = run(tmp_path, atlas_input=changed, briefcase=True, briefcase_state=stored, lang=lang,
+        search='?mode=companies&item=company:LMT', actions="""
+      node('savedViewSelect').value=VIEW_ID;node('savedViewSelect').fire('change');
+      const reopened=node('drawerBody').innerHTML;
+      node('exportViewJson').fire('click');node('exportViewCsv').fire('click');
+      identityActionsResult={reopened:reopened,stored:savedValues,status:node('briefcaseStatus').textContent,
+        json:await savedBlobs[0].text(),csv:await savedBlobs[1].text(),downloads:savedDownloads};
+      savedAuthCallbacks.forEach(cb=>cb({id:'different-user'}));
+      identityActionsResult.afterOwnerChange=node('drawerBody').innerHTML;
+    """.replace('VIEW_ID',json.dumps(view['id'])))
+    result = out['identityActions']
+    exported = json.loads(result['json'])
+    assert exported == view['cut']
+    assert retained_atlas['content_id'] in result['reopened']
+    assert changed['content_id'] not in result['reopened']
+    assert 'US05523R1077' in result['reopened'] and 'GB0002634946' in result['reopened']
+    for label in (['Issuer registry: ', 'Security type: ADR / depositary receipt', 'SEC filer CIK: 0000895564',
+                   'Security ISIN: US05523R1077', 'Underlying ISIN: GB0002634946', 'Research validity: Current observation only']
+                  if lang == 'en' else ['发行人登记机关：', '证券类型：ADR / 存托凭证', 'SEC 披露主体 CIK：0000895564',
+                   '证券 ISIN：US05523R1077', '标的普通股 ISIN：GB0002634946', '研究有效性：仅为当前观测']):
+        assert label in result['reopened']
+    assert 'issuer_registry' not in result['reopened'] and 'security_isin' not in result['reopened']
+    assert '2026-10-13T05:36:47.904824+00:00' in result['reopened']
+    assert '2026-10-13T07:54:08.066798+00:00' in result['reopened']
+    assert retained_atlas['content_id'] in result['csv'] and 'US05523R1077' in result['csv']
+    assert 'mapping_owner_path' not in result['json']
+    assert ('Original device-local source context' if lang=='en' else '原始设备本地来源背景') in result['reopened']
+    assert 'identity%3ABAESY' in out['currentUrl'] and retained_atlas['content_id'] in out['currentUrl']
+    assert result['afterOwnerChange'] == ''
+
+
+@pytest.mark.parametrize('status', [401,403,404])
+def test_saved_international_context_remains_available_without_current_atlas(tmp_path, retained_atlas, status):
+    first=run(tmp_path,atlas_input=retained_atlas,briefcase=True,actions="node('savedViewName').value='Original BAE';node('saveView').fire('click');identityActionsResult={stored:savedValues};")
+    stored=first['identityActions']['stored'];view=json.loads(next(iter(stored.values())))['saved_views'][0]
+    out=run(tmp_path,atlas_input=retained_atlas,briefcase=True,briefcase_state=stored,status=status,
+        actions="node('savedViewSelect').value="+json.dumps(view['id'])+";node('savedViewSelect').fire('change');identityActionsResult={html:node('drawerBody').innerHTML};")
+    assert retained_atlas['content_id'] in out['identityActions']['html']
+    assert 'US05523R1077' in out['identityActions']['html']
+    assert 'BAE Systems plc' not in out['inspectorHtml']
+
+
+def test_mismatched_selection_generation_cannot_save_filter_only_fallback(tmp_path, retained_atlas):
+    out=run(tmp_path,atlas_input=retained_atlas,briefcase=True,
+        search='?mode=companies&item=identity:BAESY&identity_generation=gria1-'+'e'*24,
+        actions="node('savedViewName').value='Do not substitute';node('saveView').fire('click');identityActionsResult={stored:savedValues,status:node('briefcaseStatus').textContent};")
+    assert out['identityActions']['stored']=={}
+    assert 'Nothing was saved or substituted' in out['identityActions']['status']
