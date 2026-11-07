@@ -1,4 +1,7 @@
 # News Intelligence Estate Audit and End-to-End Completion Plan
+
+> **31 October continuation:** Start with [READ_FIRST_2026-10-31.md](READ_FIRST_2026-10-31.md) and the [completion census/design masterplan](COMPLETION_MASTERPLAN_2026-10-31.md). The [machine census](CENSUS_2026-10-31.json) records observed carriers and source rows. This supplements the historical plan with current deltas and open-ended Fable execution choices; it does not commission execution or establish product completion.
+
 ## Fable Meta-CEO → Opus suborchestrators → paid Subagent Fabric
 
 **Prepared for:** Chairman Chris Wong / Mastermind-X
@@ -666,3 +669,4 @@ All sources below were read or inspected in this audit. Source descriptions iden
 **Primary continuation for Fable:** reconcile current original carriers and owner/coverage state, then execute Wave 0 and path-disjoint Wave 1 packages. Preserve the narrower existing #9612 runtime dependency and all original unknown effects. Continue corpus, source semantics, ontology and consumer work independently where eligible.
 
 **Proposed canonical home:** Macro research documentation with a handoff under existing `WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT`, referencing `WS:PROPHET-NEWS-IMPACT`, `WS:MARKET-OS` and existing GMI/earnings/evaluation owners. Do not create an unsupported workstream or another strategic-state owner.
+
