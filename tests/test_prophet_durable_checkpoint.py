@@ -240,7 +240,7 @@ def test_r2_credentials_and_publish_are_absent_from_generation() -> None:
     run = build["run"]
 
     assert "scripts.build_prophet --publish" not in run
-    assert '"$DAILY_ENGINE_PYTHON" -m scripts.build_prophet 2>&1' in run
+    assert "python -m scripts.build_prophet 2>&1" in run
     for secret in (
         "R2_ENDPOINT",
         "R2_ACCESS_KEY_ID",
@@ -655,7 +655,7 @@ def test_legacy_shadow_parts_are_checkpointed_like_the_receipts() -> None:
 def test_origination_receipt_freezes_exact_rows_and_ranked_price_staleness() -> None:
     run = _step(PROPHET_STEP)["run"]
     snapshot_i = run.index('"schema": "prophet.origination_source_snapshot/v1"')
-    build_i = run.index('"$DAILY_ENGINE_PYTHON" -m scripts.build_prophet 2>&1')
+    build_i = run.index("python -m scripts.build_prophet 2>&1")
     receipt_i = run.index('"schema": "prophet.origination_receipt/v1"')
     delta_i = run.index("after = snapshot()", receipt_i)
 
@@ -1165,3 +1165,18 @@ def test_prophet_capture_requires_actual_board_producer_success() -> None:
     confirmation = _step("publish the provisional → nightly confirmation delta (R2 artifact)")
     assert confirmation["if"] == "steps.regime_dashboard.outcome == 'success'"
     assert _step(CHECKPOINT_STEP)["if"] == "steps.prophet_nightly.outputs.succeeded == 'true'"
+
+
+def test_dag_module_spelling_remains_bound_to_qualified_python() -> None:
+    """DAG extraction still sees real module calls, never ambient Python."""
+    for name in ("daily_engine_regime_dashboard.sh", "daily_engine_prophet_nightly.sh"):
+        script = (ROOT / "scripts/ci" / name).read_text()
+        assert 'python() { "$DAILY_ENGINE_PYTHON" "$@"; }' in script
+        assert '"$DAILY_ENGINE_PYTHON" -c ' in script
+    assert "python -m scripts.factor_ic_scorecard --deep" in (
+        ROOT / "scripts/ci/daily_engine_regime_dashboard.sh"
+    ).read_text()
+    assert "python -m scripts.build_ticker_pages" in (
+        ROOT / "scripts/ci/daily_engine_regime_dashboard.sh"
+    ).read_text()
+    assert "python -m scripts.build_prophet 2>&1" in _step(PROPHET_STEP)["run"]

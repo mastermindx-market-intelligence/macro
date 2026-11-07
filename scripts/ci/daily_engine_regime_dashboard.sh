@@ -14,6 +14,10 @@ case "${DAILY_ENGINE_PYTHON:-}" in
   *) echo "::error::qualified DAILY_ENGINE_PYTHON is required"; exit 1 ;;
 esac
 "$DAILY_ENGINE_PYTHON" -c 'import os, sys; expected = os.path.dirname(os.path.dirname(sys.argv[1])); os.path.samefile(sys.prefix, expected) or sys.exit("engine Python prefix does not match its venv"); import rjsmin, rcssmin' "$DAILY_ENGINE_PYTHON"
+# Keep the existing DAG's literal `python -m` module calls visible to its
+# conformance parser. Bash resolves this function before PATH, so no ambient
+# Python can intercept the qualified producer's module calls.
+python() { "$DAILY_ENGINE_PYTHON" "$@"; }
 
 set +e
 # Marker for the libraries-rebuild guard further down. The four non-US search
@@ -27,7 +31,7 @@ touch "$RUNNER_TEMP/engine_libs_marker"
 run_py() {
   local label="$1"; local mod="$2"
   echo "::group::$label"
-  "$DAILY_ENGINE_PYTHON" -m "$mod" > "$RUNNER_TEMP/step.log" 2>&1; local rc=$?
+  python -m "$mod" > "$RUNNER_TEMP/step.log" 2>&1; local rc=$?
   cat "$RUNNER_TEMP/step.log"
   echo "::endgroup::"
   if [ "$rc" -ne 0 ]; then
@@ -52,7 +56,7 @@ run_py "S&P allocation vector (build_spvector)" scripts.build_spvector
 # exits WITHOUT writing, keeping the committed deep scorecard rather than clobbering it with a
 # shallow ~3y run. Regenerate offline: python -m scripts.sue_deep_phase0 (backfill the panel)
 # then python -m scripts.factor_ic_scorecard --deep --start 2011. Additive (never blocks build).
-"$DAILY_ENGINE_PYTHON" -m scripts.factor_ic_scorecard --deep || echo "ic scorecard skipped (additive)"
+python -m scripts.factor_ic_scorecard --deep || echo "ic scorecard skipped (additive)"
 # NOTE: build_factor_series (the ~22-min month-end walk = compute_factors x ~38
 # month-ends x 2 universes) was MOVED to its own parallel `factor_series` job
 # below — it, NOT residual-alpha, was the real engine bottleneck. build_site reads
@@ -119,7 +123,7 @@ run_py "research screener (build_research_screener)" scripts.build_research_scre
 # Ticker dossier pages (v2) — engine-internal, reads fresh site/stockdata/*.json
 # written by build_site above; rides the engine "commit engine outputs" git add.
 # Non-fatal: ::warning on failure, never aborts the render.
-"$DAILY_ENGINE_PYTHON" -m scripts.build_ticker_pages || echo "::warning title=ticker_pages::dossier render failed (non-fatal)"
+python -m scripts.build_ticker_pages || echo "::warning title=ticker_pages::dossier render failed (non-fatal)"
 # Index Leadership rotation board — DEAD-WIRE FIX 2026-07-16: this builder had NO
 # workflow caller since its 2026-07-01 hand-run, so site/marketdata/index_leadership.json
 # (subsectors.html client fetch + group_context's 0.10-weight rotation source + the

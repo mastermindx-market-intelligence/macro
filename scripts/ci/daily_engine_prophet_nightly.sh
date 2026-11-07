@@ -15,6 +15,10 @@ case "${DAILY_ENGINE_PYTHON:-}" in
   *) echo "::error::qualified DAILY_ENGINE_PYTHON is required"; exit 1 ;;
 esac
 "$DAILY_ENGINE_PYTHON" -c 'import os, sys; expected = os.path.dirname(os.path.dirname(sys.argv[1])); os.path.samefile(sys.prefix, expected) or sys.exit("engine Python prefix does not match its venv"); import rjsmin, rcssmin' "$DAILY_ENGINE_PYTHON"
+# Keep the existing DAG's literal `python -m` module calls visible to its
+# conformance parser. Bash resolves this function before PATH, so no ambient
+# Python can intercept the qualified producer's module calls.
+python() { "$DAILY_ENGINE_PYTHON" "$@"; }
 
 set +e
 PROPHET_BASELINE="${RUNNER_TEMP}/prophet-build-${GITHUB_RUN_ID}.before.json"
@@ -172,7 +176,7 @@ if [ "$baseline_rc" -ne 0 ]; then
 fi
 
 echo "::group::build_prophet (plan refresh + ledger advancement)"
-"$DAILY_ENGINE_PYTHON" -m scripts.build_prophet 2>&1; rc=$?
+python -m scripts.build_prophet 2>&1; rc=$?
 echo "::endgroup::"
 if [ "$rc" -eq 0 ]; then
   # Bind every newly-created plan to the exact admitted board row that
