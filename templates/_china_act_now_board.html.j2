@@ -73,13 +73,16 @@
     {# PR-4: compute tag tone for hover card header #}
     {%- set _rptag_cls = 'up' if row.reco in ('accumulate','buy','add') else ('dn' if row.reco in ('avoid','trim','reduce','exit') else 'warn') -%}
     {%- set _continuation = row.get("entry_route") == "continuation" -%}
+    {%- set _theme_enter = row.get("entry_route") == "theme_enter" -%}
     {%- set _unavailable = row.get("theme_decision", {}).get("status") == "UNAVAILABLE" -%}
     {%- set _settling = _unavailable and row.get("theme_decision", {}).get("source_status") == "UNSETTLED" -%}
     {%- if _unavailable -%}{%- set _rptag_cls = "" -%}{%- endif -%}
     {%- set _read_override = (("Session not yet settled", "交易日数据尚待确认") if _settling else (("Current inputs unavailable", "当前输入暂缺") if _unavailable else
-                              (("Leadership continuing", "领先趋势延续") if _continuation else none))) -%}
+                              (("Leadership continuing", "领先趋势延续") if _continuation else
+                               (("Theme entry remains open", "主题建仓判断仍然有效") if _theme_enter else none)))) -%}
     {%- set _takeaway_override = (("Wait for the completed session data. No new entry is confirmed.", "请等待交易日数据确认；暂无法确认新的入场机会。") if _settling else (("Current theme inputs are unavailable. No new buy is confirmed.", "当前主题输入不可用，无法确认新的买入机会。") if _unavailable else
-        (("Trend accumulation remains in favour. Check each stock’s entry separately.", "趋势增持仍获支持，个股入场条件须分别判断。") if _continuation else none))) -%}
+        (("Trend accumulation remains in favour. Check each stock’s entry separately.", "趋势增持仍获支持，个股入场条件须分别判断。") if _continuation else
+         (("Theme recommendation remains ENTER. Individual stock timing is separate; no stock entry is implied.", "主题建议仍为建仓。个股择时独立判断；此处不代表任何个股已获入场许可。") if _theme_enter else none)))) -%}
     <div class="anv2-row" data-rpop data-entry-route="{{ row.get('entry_route') or 'none' }}">
       {# PR-4: hover card payload — cloned by theme.js into a .row-pop overlay #}
       {#- Hover decision card — the SAME component the US board uses
@@ -250,7 +253,8 @@
         {# price-tape chip (W8-R7 rider) — TURNING/CONFIRMED state from basket_turn_cn #}
         {% if row.organ_chip_en %}<span class="anv2-chip anv2-chip-tape">{{ t(row.organ_chip_en, row.organ_chip_zh or tr(row.organ_chip_en)) }}</span>{% endif %}
       </div>
-      {% if _continuation %}<div class="anv2-stat">{{ t('Theme accumulation remains in favour','主题增持条件仍然有效') }}</div>{% endif %}
+      {% if _theme_enter %}<div class="anv2-stat">{{ t('Theme-level entry · stock timing separate','主题层面建仓 · 个股择时独立判断') }}</div>
+      {% elif _continuation %}<div class="anv2-stat">{{ t('Theme accumulation remains in favour','主题增持条件仍然有效') }}</div>{% endif %}
       {# stat line: rel20 for themes, rs_63d+pos for bottoming #}
       {% if lane == 'bot' %}
       <div class="anv2-stat">

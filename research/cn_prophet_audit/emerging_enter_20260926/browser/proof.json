@@ -1,0 +1,863 @@
+{
+  "proof_kind": "synthetic-state component browser; NOT production",
+  "semantic_head": "c0105788547986e4937e3ae187098d979b85a7c7",
+  "host_css_commit": "88a3f1cfd18f391d2802e9086dc00f6fe5545607",
+  "qualification_clock": "2026-09-21T10:00:00+00:00 (synthetic)",
+  "source_sha256": {
+    "engine/china_act_now.py": "036e3f26676b3752e90260136daaa7111dd86dfdd6ddf3a0c4a570c3dcd26281",
+    "templates/_china_act_now_board.html.j2": "c073637b5e9ecf2b26b38c940834277f12abd0c2ea7c27b3e3d79a0329ae5788",
+    "templates/_decision_card.html.j2": "2c67a16a868f40bfced08d96be88571f0a235ca948169c8e9a44de827442ca76",
+    "templates/theme.js": "da988d8ea0ccf558b46c2119b1f29a358b7e0f8aba26cae69737a98b981ecce9",
+    "tests/test_china_act_now.py": "7e13d39360ae6e5d29f6b61c299db0c0c0b99da8bc5655f7bbd270662da94917"
+  },
+  "host_sha256": "ba4a69c753b3bd28780268e6f46c4ab5056c6e59e998c98802b88937dd463440",
+  "css_sha256": {
+    "theme.css": "d58d35e93758ada2123553f88ea6652e66ec11c116b031679a82b80951f8a478",
+    "illus.css": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+    "assets/css/be207544.css": "be207544291af54d67a62f355507f53e3d9b104fc463373bd7bedf0eb9c3abab",
+    "assets/css/f7e9b02b.css": "f7e9b02bae5119c39e3c6694b19fcaf8f54e323c41fc93f24d2651001c036d86",
+    "navigation-refresh.css": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c"
+  },
+  "limitations": [
+    "No historical or current stock recommendation",
+    "No authenticated/full-page production proof",
+    "External requests blocked; existing host CSS reused"
+  ],
+  "captures": [
+    {
+      "state": "continuing-enter",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "file": "continuing-enter-dark-en-1440.png",
+      "sha256": "51c1755595b90f0fb48e98e0b6484baa7d7cdc18103b46f4d8581fc1d5d11281",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "file": "continuing-enter-dark-en-390.png",
+      "sha256": "391b02721897c6490c9a8749d76ac9e1c83525a212d8eae444d8e42ee3eb14a1",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "file": "continuing-enter-dark-zh-1440.png",
+      "sha256": "6c395cd49b0d259c3ca75b465a808f9e6b4c3731da6549cafad8ded741f425ad",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "file": "continuing-enter-dark-zh-390.png",
+      "sha256": "0168b0f26df09fe8c0b29da34a350aafb6546a3578e80ab86b49af37f2e2df4b",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "file": "continuing-enter-light-en-1440.png",
+      "sha256": "5b23007756fee39076cb3667a70e206cb934bc9ae96ac2affcde36009c4501d2",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "file": "continuing-enter-light-en-390.png",
+      "sha256": "9d00d3dd1392a214e6f83b234ba04f1482b01a83046fc58384515334efb500ee",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "file": "continuing-enter-light-zh-1440.png",
+      "sha256": "8d4bbdaea32ee7ad087e824d0035ad00adf1e805e1b298a40822acafce1e7dac",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "file": "continuing-enter-light-zh-390.png",
+      "sha256": "f65a416b3304457900b52f8bdc6f7a941e05b39355b909fcbe39e70d093a11ce",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "file": "initial-entry-dark-en-1440.png",
+      "sha256": "361513595ac1f66baa35351e5b35e382da2dcb83f08116ffcf352cca86d76499",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "file": "initial-entry-dark-en-390.png",
+      "sha256": "5847a67de9053eddc995d40299b11541efb25f4f3d1b0bbca1508c4702f1d56b",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "file": "initial-entry-dark-zh-1440.png",
+      "sha256": "765e3187d246e1179ee0d92041a86e3598f2c5908d38cacee1535264f13b7bcd",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "file": "initial-entry-dark-zh-390.png",
+      "sha256": "cb4e227426c9206e42df2997df66e86ec240019bcfbec17c646cf9efd1fe0be3",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "file": "initial-entry-light-en-1440.png",
+      "sha256": "89d99b88f956042157f3589e6597b7461a6f3259196e4ffd64633479df956503",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "file": "initial-entry-light-en-390.png",
+      "sha256": "569a4f4a1f5ec5dd7ec8784655b833dfab0f940a062e1dab4852e9ac50e6d853",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "file": "initial-entry-light-zh-1440.png",
+      "sha256": "9095d57fe659d019fe09f09e1f0cb482bc725b07e0ec5acd7e27b327480158c0",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "file": "initial-entry-light-zh-390.png",
+      "sha256": "4fa6dea00634ab52c33def8d08b9460a1c4c7e97b5448cf0a07a3b844fea36bd",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "file": "final-hold-dark-en-1440.png",
+      "sha256": "b57c47a949b4a19b7d67a28da3eda53500ec8228a7e7e95f104e24b2fb27b24f",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "file": "final-hold-dark-en-390.png",
+      "sha256": "4728731cb6ca01119fcd623a223324641d33daa25bd14d529898c0344123ee75",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "file": "final-hold-dark-zh-1440.png",
+      "sha256": "d7424ca9103dd1789fb6aaaf93453a11945fb08ee0dc3896aedd1ecd0a858456",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "file": "final-hold-dark-zh-390.png",
+      "sha256": "aabdb5fc58b995dd5395065b289d914f63e097fd67f4ffb8054b7a26306e7fe7",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "file": "final-hold-light-en-1440.png",
+      "sha256": "a97643c5c549653248d262f11c2887ca52ec75d3fc7a23c8de8e140743745bfb",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "file": "final-hold-light-en-390.png",
+      "sha256": "abbef6bf561035a0729a626cfc34a6738b65c008aecd56188fc4a9daa5e82a53",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "file": "final-hold-light-zh-1440.png",
+      "sha256": "e0c2907e5ac2da9863a224b2a922ec72c74cfbf141f79845efa41417a5ae448e",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "file": "final-hold-light-zh-390.png",
+      "sha256": "9edd5d0fc6538218be4930d5dd3ae02899c9ba828a1057aa2e9aef9d6032f7bc",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "file": "unavailable-dark-en-1440.png",
+      "sha256": "165eef2e6290788adc506588d5fe48b9e44eceeeb8f1c384f71c49a63165d24b",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "file": "unavailable-dark-en-390.png",
+      "sha256": "b14a2d3a8413d1ac174b8196a43d1c82e9166a3524cb8f145cda01bec0ddf7de",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "file": "unavailable-dark-zh-1440.png",
+      "sha256": "fd8a1f8b36e2927753c384c4f632164eb8a49c6dbcebbe6509f95c6796f0740f",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "file": "unavailable-dark-zh-390.png",
+      "sha256": "8efba96184eab71947bfdba1da37a1ba73f86649287cbdc8c15dea6d6f4c83fc",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "file": "unavailable-light-en-1440.png",
+      "sha256": "56e8de21c1abd4cd25de47e13ddbcb8262e8ecf5139acdca8a20db13ad552f08",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "file": "unavailable-light-en-390.png",
+      "sha256": "ab1175410c2edc23316917d0370886a73ef9bbc81b68738f4f4b9519df4300bc",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "file": "unavailable-light-zh-1440.png",
+      "sha256": "1c335487cb13a1768754cd6c18db95ac434163b05cdf9ea4f9995f4a6b144cca",
+      "overflow": false,
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "file": "unavailable-light-zh-390.png",
+      "sha256": "5bfbec0c431a54cfe5636b610a60af9f5957b5cb4940e64f42edb52fd1eb8672",
+      "overflow": false,
+      "page_errors": []
+    }
+  ],
+  "popovers": [
+    {
+      "state": "continuing-enter",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-continuing-enter-dark-en-1440.png",
+      "sha256": "a5bc33d7d7c3f00c7af4bba1139bbe00ee35771151899c1f65f4e18c33735c27",
+      "text": "THEME BASKET\nEmerging leader\nENTER\n68\nSCORE\nCURRENT READ\nTheme entry remains open\n10 names\n→\nWHAT MATTERS\nTheme recommendation remains ENTER. Individual stock timing is separate; no stock entry is implied.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 391.5,
+        "y": 163.64756774902344,
+        "width": 344,
+        "height": 281.59376525878906
+      },
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "file": "hover-continuing-enter-dark-en-390.png",
+      "sha256": "3219454956a93d94dd3683c931a0267b05e16e704f805518dfc7d9dab17a713b",
+      "text": "THEME BASKET\nEmerging leader\nENTER\n68\nSCORE\nCURRENT READ\nTheme entry remains open\n10 names\n→\nWHAT MATTERS\nTheme recommendation remains ENTER. Individual stock timing is separate; no stock entry is implied.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 276.1875,
+        "width": 344,
+        "height": 281.59375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-continuing-enter-dark-zh-1440.png",
+      "sha256": "be077d4365f79b15b2e0d54e468e7fc7cc873e64f02b31d1a6770654aeef86e1",
+      "text": "主题篮子\n新兴领涨主题\n建仓\n68\n评分\n当前判读\n主题建仓判断仍然有效\n10 只成分股\n→\n要点\n主题建议仍为建仓。个股择时独立判断；此处不代表任何个股已获入场许可。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 391.5,
+        "y": 164.6875,
+        "width": 344,
+        "height": 281.59375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-continuing-enter-dark-zh-390.png",
+      "sha256": "02eaa98894a0eba9da1c823e188524d5412c8ca62b1ffed125a6862a617cae20",
+      "text": "主题篮子\n新兴领涨主题\n建仓\n68\n评分\n当前判读\n主题建仓判断仍然有效\n10 只成分股\n→\n要点\n主题建议仍为建仓。个股择时独立判断；此处不代表任何个股已获入场许可。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 250.1875,
+        "width": 344,
+        "height": 281.59375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-continuing-enter-light-en-1440.png",
+      "sha256": "a1b76d51e3a0b4ef0ef7aa52832f9221da073cc9076600f1f15dae3a2127ad55",
+      "text": "THEME BASKET\nEmerging leader\nENTER\n68\nSCORE\nCURRENT READ\nTheme entry remains open\n10 names\n→\nWHAT MATTERS\nTheme recommendation remains ENTER. Individual stock timing is separate; no stock entry is implied.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 391.5,
+        "y": 164.6875,
+        "width": 344,
+        "height": 281.59375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "file": "hover-continuing-enter-light-en-390.png",
+      "sha256": "e9dba83e2c2acc455637da356995f9772f6548cf51b23c2cf7a29588d03b0e33",
+      "text": "THEME BASKET\nEmerging leader\nENTER\n68\nSCORE\nCURRENT READ\nTheme entry remains open\n10 names\n→\nWHAT MATTERS\nTheme recommendation remains ENTER. Individual stock timing is separate; no stock entry is implied.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 276.1875,
+        "width": 344,
+        "height": 281.59375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-continuing-enter-light-zh-1440.png",
+      "sha256": "a68eb44b051e2b938ae169e9d2c1bfc7bc4c2283116e0e707fdefc542dccba6f",
+      "text": "主题篮子\n新兴领涨主题\n建仓\n68\n评分\n当前判读\n主题建仓判断仍然有效\n10 只成分股\n→\n要点\n主题建议仍为建仓。个股择时独立判断；此处不代表任何个股已获入场许可。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 391.5,
+        "y": 164.6875,
+        "width": 344,
+        "height": 281.59375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "continuing-enter",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-continuing-enter-light-zh-390.png",
+      "sha256": "ba0d1f7c9b1bb3b052f17ea1ac39c88f9f2347d330d8c5a29695a9516ea53f06",
+      "text": "主题篮子\n新兴领涨主题\n建仓\n68\n评分\n当前判读\n主题建仓判断仍然有效\n10 只成分股\n→\n要点\n主题建议仍为建仓。个股择时独立判断；此处不代表任何个股已获入场许可。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 250.1875,
+        "width": 344,
+        "height": 281.59375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-initial-entry-dark-en-1440.png",
+      "sha256": "1d286f98333e4ce51aef3814d4492cd57fbe3ab926d1976a40096b7fae4c23d8",
+      "text": "THEME BASKET\nEmerging leader\nENTER\n68\nSCORE\nCURRENT READ\nBroad and leading\n10 names\n→\nWHAT MATTERS\nA clean entry is open today.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 391.5,
+        "y": 164.6875,
+        "width": 344,
+        "height": 267.421875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "file": "hover-initial-entry-dark-en-390.png",
+      "sha256": "459fecd29b20441365db23235ccf1a979095c82a5e751144cc49f68dd4bf9d59",
+      "text": "THEME BASKET\nEmerging leader\nENTER\n68\nSCORE\nCURRENT READ\nBroad and leading\n10 names\n→\nWHAT MATTERS\nA clean entry is open today.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 259.6875,
+        "width": 344,
+        "height": 267.421875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-initial-entry-dark-zh-1440.png",
+      "sha256": "29bb62feaa6e3290423d854646c5590d33d682dbe08239feab147d16e851bd12",
+      "text": "主题篮子\n新兴领涨主题\n建仓\n68\n评分\n当前判读\n广泛领先\n10 只成分股\n→\n要点\n今日入场窗口干净。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 391.5,
+        "y": 164.6875,
+        "width": 344,
+        "height": 267.421875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-initial-entry-dark-zh-390.png",
+      "sha256": "80f19142d350fd185f05041aac86baaadc44e9acdeaee2176a523498b526233c",
+      "text": "主题篮子\n新兴领涨主题\n建仓\n68\n评分\n当前判读\n广泛领先\n10 只成分股\n→\n要点\n今日入场窗口干净。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 233.6875,
+        "width": 344,
+        "height": 267.421875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-initial-entry-light-en-1440.png",
+      "sha256": "5337230430899a7bd35e0489607cbe96d17e25b5e6d8b0444c301ec2acfb61a1",
+      "text": "THEME BASKET\nEmerging leader\nENTER\n68\nSCORE\nCURRENT READ\nBroad and leading\n10 names\n→\nWHAT MATTERS\nA clean entry is open today.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 391.5,
+        "y": 164.6875,
+        "width": 344,
+        "height": 267.421875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "file": "hover-initial-entry-light-en-390.png",
+      "sha256": "92dc76440efdd6fa984805a998f7c812af65a7d8ca2c4586466e89f701ecebc2",
+      "text": "THEME BASKET\nEmerging leader\nENTER\n68\nSCORE\nCURRENT READ\nBroad and leading\n10 names\n→\nWHAT MATTERS\nA clean entry is open today.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 259.6875,
+        "width": 344,
+        "height": 267.421875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-initial-entry-light-zh-1440.png",
+      "sha256": "ca3187e12b84bad2e72d9e69081a11cd78e49fd06ec3fa8752e7b7224b5160f3",
+      "text": "主题篮子\n新兴领涨主题\n建仓\n68\n评分\n当前判读\n广泛领先\n10 只成分股\n→\n要点\n今日入场窗口干净。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 391.5,
+        "y": 164.6875,
+        "width": 344,
+        "height": 267.421875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "initial-entry",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-initial-entry-light-zh-390.png",
+      "sha256": "8ba37f802994cd07c47079a7fb0a7a4f6a7f905d18a2312af52028bcb5dd596e",
+      "text": "主题篮子\n新兴领涨主题\n建仓\n68\n评分\n当前判读\n广泛领先\n10 只成分股\n→\n要点\n今日入场窗口干净。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 233.6875,
+        "width": 344,
+        "height": 267.421875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-final-hold-dark-en-1440.png",
+      "sha256": "1127aba3bb537a7b685d944f44758567ac01e3388ea5c23d0339cefb8fa055c0",
+      "text": "THEME BASKET\nEmerging leader\nHOLD\n68\nSCORE\nCURRENT READ\nTrend intact\n10 names\n→\nWHAT MATTERS\nConstructive context; check the specific entry conditions.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 725,
+        "y": 164.6875,
+        "width": 344,
+        "height": 281.59375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "file": "hover-final-hold-dark-en-390.png",
+      "sha256": "acda0c14e14f6dcf7e81bbea00bab39dcf478eec2d3988348cd714df498cf75d",
+      "text": "THEME BASKET\nEmerging leader\nHOLD\n68\nSCORE\nCURRENT READ\nTrend intact\n10 names\n→\nWHAT MATTERS\nConstructive context; check the specific entry conditions.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 340.375,
+        "width": 344,
+        "height": 281.59375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-final-hold-dark-zh-1440.png",
+      "sha256": "c36f99cba33b2f3a255434bcd963b55524cce069a2769696b66a43f652cc1db1",
+      "text": "主题篮子\n新兴领涨主题\n持有\n68\n评分\n当前判读\n趋势完好\n10 只成分股\n→\n要点\n背景仍看好；请查看具体入场条件。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 725,
+        "y": 164.6875,
+        "width": 344,
+        "height": 267.421875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-final-hold-dark-zh-390.png",
+      "sha256": "b1321c9f609e28bbc6df49de746f932f66318e8371816bdfaf88f97831888c1d",
+      "text": "主题篮子\n新兴领涨主题\n持有\n68\n评分\n当前判读\n趋势完好\n10 只成分股\n→\n要点\n背景仍看好；请查看具体入场条件。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 314.375,
+        "width": 344,
+        "height": 267.421875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-final-hold-light-en-1440.png",
+      "sha256": "fa51342fa14abd6173909a16b2ca1febad595eee6464726bb2b08466b1fe11fe",
+      "text": "THEME BASKET\nEmerging leader\nHOLD\n68\nSCORE\nCURRENT READ\nTrend intact\n10 names\n→\nWHAT MATTERS\nConstructive context; check the specific entry conditions.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 725,
+        "y": 164.6875,
+        "width": 344,
+        "height": 281.59375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "file": "hover-final-hold-light-en-390.png",
+      "sha256": "0dcb283403e4d40114816986b453289b428fcd4e29bf5b5de43a77b0f1efbcc3",
+      "text": "THEME BASKET\nEmerging leader\nHOLD\n68\nSCORE\nCURRENT READ\nTrend intact\n10 names\n→\nWHAT MATTERS\nConstructive context; check the specific entry conditions.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 340.375,
+        "width": 344,
+        "height": 281.59375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-final-hold-light-zh-1440.png",
+      "sha256": "f4e8a20700c0fc2b975a65b30e985e08611bc422bd67289d1fcd9633c5714500",
+      "text": "主题篮子\n新兴领涨主题\n持有\n68\n评分\n当前判读\n趋势完好\n10 只成分股\n→\n要点\n背景仍看好；请查看具体入场条件。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 725,
+        "y": 164.6875,
+        "width": 344,
+        "height": 267.421875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "final-hold",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-final-hold-light-zh-390.png",
+      "sha256": "ee812c76f884f5f9251d449abc7eb7f4af0d37d5df06dbe0b230bd9efd550759",
+      "text": "主题篮子\n新兴领涨主题\n持有\n68\n评分\n当前判读\n趋势完好\n10 只成分股\n→\n要点\n背景仍看好；请查看具体入场条件。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 314.375,
+        "width": 344,
+        "height": 267.421875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-unavailable-dark-en-1440.png",
+      "sha256": "34a7e5b442912b2883bdb5a6faf7ea4dedd54e9047565eb7aba753c370a6b3db",
+      "text": "THEME BASKET\nEmerging leader\nDATA UNAVAILABLE\nDATA STATUS\nCurrent inputs unavailable\n→\nWHAT MATTERS\nCurrent theme inputs are unavailable. No new buy is confirmed.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 725,
+        "y": 189.1875,
+        "width": 344,
+        "height": 230.34375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "file": "hover-unavailable-dark-en-390.png",
+      "sha256": "7f68b6fa883ef95ff1aa7b8fd05ef4becba8c01210838d12876da4b238273b7b",
+      "text": "THEME BASKET\nEmerging leader\nDATA UNAVAILABLE\nDATA STATUS\nCurrent inputs unavailable\n→\nWHAT MATTERS\nCurrent theme inputs are unavailable. No new buy is confirmed.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 377.625,
+        "width": 344,
+        "height": 230.34375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-unavailable-dark-zh-1440.png",
+      "sha256": "a0f13a52b809f944020a9453c50c5c7d6edfbd2f7e414cd8afb239d7c57b9d51",
+      "text": "主题篮子\n新兴领涨主题\n数据暂缺\n数据状态\n当前输入暂缺\n→\n要点\n当前主题输入不可用，无法确认新的买入机会。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 725,
+        "y": 189.1875,
+        "width": 344,
+        "height": 216.171875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-unavailable-dark-zh-390.png",
+      "sha256": "a0e73bc7d6e24331b30ff88cc9df2f034fcd50f767abb6e47e12af4f199dfad5",
+      "text": "主题篮子\n新兴领涨主题\n数据暂缺\n数据状态\n当前输入暂缺\n→\n要点\n当前主题输入不可用，无法确认新的买入机会。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 335.125,
+        "width": 344,
+        "height": 216.171875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-unavailable-light-en-1440.png",
+      "sha256": "f6725f5cb7fa19097b558e00f0ead4e823db80546ddfffb8c4850154741acb17",
+      "text": "THEME BASKET\nEmerging leader\nDATA UNAVAILABLE\nDATA STATUS\nCurrent inputs unavailable\n→\nWHAT MATTERS\nCurrent theme inputs are unavailable. No new buy is confirmed.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 725,
+        "y": 189.1875,
+        "width": 344,
+        "height": 230.34375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "file": "hover-unavailable-light-en-390.png",
+      "sha256": "a9d0d0d66a1cb653eee50704c823ebb0dcb16bbe54eccbe2f65d6f5f128d5abe",
+      "text": "THEME BASKET\nEmerging leader\nDATA UNAVAILABLE\nDATA STATUS\nCurrent inputs unavailable\n→\nWHAT MATTERS\nCurrent theme inputs are unavailable. No new buy is confirmed.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 377.625,
+        "width": 344,
+        "height": 230.34375
+      },
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-unavailable-light-zh-1440.png",
+      "sha256": "f8b37e6052a84b087894f887ff726d9fd53e2f8d3d7d51c0021003c0e095aa9a",
+      "text": "主题篮子\n新兴领涨主题\n数据暂缺\n数据状态\n当前输入暂缺\n→\n要点\n当前主题输入不可用，无法确认新的买入机会。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 725,
+        "y": 189.1875,
+        "width": 344,
+        "height": 216.171875
+      },
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-unavailable-light-zh-390.png",
+      "sha256": "6f18024caa57b37b2c12db12db6e535de1e7a85265efd9b19d0e67e43fdc6c97",
+      "text": "主题篮子\n新兴领涨主题\n数据暂缺\n数据状态\n当前输入暂缺\n→\n要点\n当前主题输入不可用，无法确认新的买入机会。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 335.125,
+        "width": 344,
+        "height": 216.171875
+      },
+      "page_errors": []
+    }
+  ],
+  "harness_sha256": "8e90641aef60b72863db7bc43f6f85d4156e5fb16e5f20eeb813dfc5164b8f68"
+}
