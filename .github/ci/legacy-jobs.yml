@@ -35389,6 +35389,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/prophet_cycle_equity.py
+      - tests/fixtures/cash_runway/synthetic_burn.json
+      - tests/test_prophet_cycle_equity.py
       - collectors/rate_futures.py
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
@@ -36535,6 +36538,8 @@ jobs:
         run: >-
           python -m pytest tests/test_prophet_whynot_receipts.py -q
           -k "every_order_code_has_non_empty_bilingual_copy or template_copy_mirrors_the_engine_copy_exactly or plan_not_built_copy_never_claims_every_check_passed or validated_word_is_confined_to_the_exact_negative_disclaimer"
+      - name: Prophet B17 cycle equity funding path and original shareholder arithmetic
+        run: python -m pytest tests/test_prophet_cycle_equity.py -q
       - name: Prophet detector, organ and disposition contracts (one native process)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
       - name: Prophet R7 Wave A refusal receipts and design guards (A3)
