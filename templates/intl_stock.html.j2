@@ -233,14 +233,14 @@
     </div>
     <div class="panel" id="r_fund_panel" style="display:none">
       <h2>{{ t('Fundamentals', '基本面') }} <span class="note" style="text-transform:none">· {{ t('context, not a signal', '背景，而非信号') }}</span>{{ help(
-        'Descriptive valuation, profitability and dividends (from yfinance) — a backdrop to read ALONGSIDE the cycle / relative-strength signals, NOT a buy ranking. "Cheap vs sector" is not validated as a cross-sectional edge here. Fundamentals refresh on a slower cadence than price.',
-        '描述性的估值、盈利与分红（来自 yfinance）—— 作为与周期／相对强度信号并读的背景，而非买入排序。"相对板块便宜"在此并未被验证为有效的横截面优势。基本面的更新频率慢于价格。') }}</h2>
+        'Descriptive valuation, profitability and dividends (from a market data snapshot) — a backdrop to read ALONGSIDE the cycle / relative-strength signals, NOT a buy ranking. "Cheap vs sector" is not validated as a cross-sectional edge here. Fundamentals refresh on a slower cadence than price.',
+        '描述性的估值、盈利与分红（来自市场数据快照）—— 作为与周期／相对强度信号并读的背景，而非买入排序。"相对板块便宜"在此并未被验证为有效的横截面优势。基本面的更新频率慢于价格。') }}</h2>
       <div id="r_fund"></div>
     </div>
     <div class="panel" id="r_analyst_panel" style="display:none">
       <h2>{{ t('Analyst &amp; estimates', '分析师与预期') }} <span class="note" style="text-transform:none">· {{ t('sell-side consensus', '卖方一致预期') }}</span>{{ help(
-        'yfinance sell-side aggregate: the consensus rating, mean price target with its high/low range, the implied upside vs the current price, and coverage breadth. Sell-side opinion shown as coverage context, NOT an endorsement — a target is a forecast, not a validated edge.',
-        'yfinance 卖方汇总：一致评级、目标价中位及其高/低区间、相对现价的隐含上行空间，以及覆盖广度。卖方观点仅说明覆盖范围，并非推荐——目标价是预测，并非有效优势。') }}</h2>
+        'Sell-side aggregate: the consensus rating, mean price target with its high/low range, the implied upside vs the current price, and coverage breadth. Sell-side opinion shown as coverage context, NOT an endorsement — a target is a forecast, not a validated edge.',
+        '卖方汇总：一致评级、目标价中位及其高/低区间、相对现价的隐含上行空间，以及覆盖广度。卖方观点仅说明覆盖范围，并非推荐——目标价是预测，并非有效优势。') }}</h2>
       <div id="r_analyst"></div>
     </div>
     <div class="panel" id="r_earn_panel" style="display:none">
@@ -249,8 +249,8 @@
     </div>
     <div class="panel" id="r_pos_panel" style="display:none">
       <h2>{{ t('Positioning', '持仓与做空') }} <span class="note" style="text-transform:none">· {{ t('short interest &amp; ownership', '空头与持股结构') }}</span>{{ help(
-        'Short interest (shares short + days-to-cover) and insider / institutional ownership, from yfinance. The keyless free read — SEDI Form-4-style insider transactions and IIROC short-interest detail are not machine-readable. Heavy or rising short interest is a caution; high institutional ownership is crowding context. Descriptive, not a signal.',
-        '空头（做空股数＋回补天数）与内部人／机构持股，来自 yfinance。免密钥的免费读法——SEDI 式内部人交易与 IIROC 空头明细不可机读。高或上升的空头是警示；高机构持股是拥挤背景。描述性，非信号。') }}</h2>
+        'Short interest (shares short + days-to-cover) and insider / institutional ownership, from a market data snapshot. The keyless free read — SEDI Form-4-style insider transactions and IIROC short-interest detail are not machine-readable. Heavy or rising short interest is a caution; high institutional ownership is crowding context. Descriptive, not a signal.',
+        '空头（做空股数＋回补天数）与内部人／机构持股，来自市场数据快照。免密钥的免费读法——SEDI 式内部人交易与 IIROC 空头明细不可机读。高或上升的空头是警示；高机构持股是拥挤背景。描述性，非信号。') }}</h2>
       <div id="r_pos"></div>
     </div>
     <div class="panel" id="r_cbeta_panel" style="display:none">
@@ -594,7 +594,7 @@
       ap.style.display = 'block';
     } else { ap.style.display = 'none'; }
 
-    // Fundamentals — descriptive context (yfinance). Additive; absent on ETFs/indices/uncovered.
+    // Fundamentals — descriptive context (market data snapshot). Additive; absent on ETFs/indices/uncovered.
     var fpEl = document.getElementById('r_fund_panel'), f = d.fundamentals;
     if (f && f.valuation) {
       var v = f.valuation;
@@ -623,7 +623,7 @@
 
     var fnum2 = function (x, n) { return x == null ? '—' : (+x).toFixed(n == null ? 1 : n); };
 
-    // Analyst & estimates — yfinance sell-side consensus (additive)
+    // Analyst & estimates — sell-side consensus (additive)
     var anEl = document.getElementById('r_analyst_panel'), an = (d.fundamentals || {}).consensus;
     if (an && (an.n_analysts || an.target_mean != null)) {
       var rk = (an.rating || '').toLowerCase();

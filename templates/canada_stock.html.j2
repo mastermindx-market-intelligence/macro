@@ -234,14 +234,14 @@
     </div>
     <div class="panel" id="r_fund_panel" style="display:none">
       <h2>{{ t('Fundamentals', '基本面') }} <span class="note" style="text-transform:none">· {{ t('context, not a signal', '背景，而非信号') }}</span>{{ help(
-        'Descriptive valuation, profitability and dividends (from yfinance) — a backdrop to read ALONGSIDE the cycle / relative-strength signals, NOT a buy ranking. "Cheap vs sector" is not validated as a cross-sectional edge here. Fundamentals refresh on a slower cadence than price.',
-        '描述性的估值、盈利与分红（来自 yfinance）—— 作为与周期／相对强度信号并读的背景，而非买入排序。"相对板块便宜"在此并未被验证为有效的横截面优势。基本面的更新频率慢于价格。') }}</h2>
+        'Descriptive valuation, profitability and dividends (from a market data snapshot) — a backdrop to read ALONGSIDE the cycle / relative-strength signals, NOT a buy ranking. "Cheap vs sector" is not validated as a cross-sectional edge here. Fundamentals refresh on a slower cadence than price.',
+        '描述性的估值、盈利与分红（来自市场数据快照）—— 作为与周期／相对强度信号并读的背景，而非买入排序。"相对板块便宜"在此并未被验证为有效的横截面优势。基本面的更新频率慢于价格。') }}</h2>
       <div id="r_fund"></div>
     </div>
     <div class="panel" id="r_analyst_panel" style="display:none">
       <h2>{{ t('Analyst &amp; estimates', '分析师与预期') }} <span class="note" style="text-transform:none">· {{ t('sell-side consensus', '卖方一致预期') }}</span>{{ help(
-        'yfinance sell-side aggregate: the consensus rating, mean price target with its high/low range, the implied upside vs the current price, and coverage breadth. Sell-side opinion shown as coverage context, NOT an endorsement — a target is a forecast, not a validated edge.',
-        'yfinance 卖方汇总：一致评级、目标价中位及其高/低区间、相对现价的隐含上行空间，以及覆盖广度。卖方观点仅说明覆盖范围，并非推荐——目标价是预测，并非有效优势。') }}</h2>
+        'Sell-side aggregate: the consensus rating, mean price target with its high/low range, the implied upside vs the current price, and coverage breadth. Sell-side opinion shown as coverage context, NOT an endorsement — a target is a forecast, not a validated edge.',
+        '卖方汇总：一致评级、目标价中位及其高/低区间、相对现价的隐含上行空间，以及覆盖广度。卖方观点仅说明覆盖范围，并非推荐——目标价是预测，并非有效优势。') }}</h2>
       <div id="r_analyst"></div>
     </div>
     <div class="panel" id="r_earn_panel" style="display:none">
@@ -250,14 +250,14 @@
     </div>
     <div class="panel" id="r_pos_panel" style="display:none">
       <h2>{{ t('Positioning', '持仓与做空') }} <span class="note" style="text-transform:none">· {{ t('short interest &amp; ownership', '空头与持股结构') }}</span>{{ help(
-        'Short interest (shares short + days-to-cover) and insider / institutional ownership, from yfinance. Heavy or rising short interest is a caution; high institutional ownership is crowding context. This is the ownership SNAPSHOT — actual insider buy/sell filings are in the Insider activity panel below. Descriptive, not a signal.',
-        '空头（做空股数＋回补天数）与内部人／机构持股，来自 yfinance。高或上升的空头是警示；高机构持股是拥挤背景。这是持股快照——实际的内部人买卖披露见下方"内部人交易"面板。描述性，非信号。') }}</h2>
+        'Short interest (shares short + days-to-cover) and insider / institutional ownership, from a market data snapshot. Heavy or rising short interest is a caution; high institutional ownership is crowding context. This is the ownership SNAPSHOT — actual insider buy/sell filings are in the Insider activity panel below. Descriptive, not a signal.',
+        '空头（做空股数＋回补天数）与内部人／机构持股，来自市场数据快照。高或上升的空头是警示；高机构持股是拥挤背景。这是持股快照——实际的内部人买卖披露见下方"内部人交易"面板。描述性，非信号。') }}</h2>
       <div id="r_pos"></div>
     </div>
     <div class="panel" id="r_insider_panel" style="display:none">
-      <h2>{{ t('Insider activity', '内部人交易') }} <span class="note" style="text-transform:none">· {{ t('SEDI open-market filings (yfinance)', 'SEDI 公开市场披露（yfinance）') }}</span>{{ help(
-        'Personal insider open-market buys / sells from SEDI (Canada\'s insider-filing system), via yfinance — issuer buybacks and option exercises are excluded. CONTEXT, not a validated signal: SEDI filings lag the trade by up to ~5 days and TSX insider breadth is thin, so read net buying / selling as a conviction tell, not a timing trigger. Coverage is best-effort per name.',
-        '来自 SEDI（加拿大内部人披露系统）的个人内部人公开市场买入／卖出，经 yfinance 获取——已剔除公司回购与期权行权。背景，而非已验证信号：SEDI 披露相对交易最多滞后约5天，且 TSX 内部人样本稀疏，故净买入／卖出应作为信念参考，而非择时触发。覆盖为尽力而为，逐名而定。') }}</h2>
+      <h2>{{ t('Insider activity', '内部人交易') }} <span class="note" style="text-transform:none">· {{ t('SEDI open-market filings', 'SEDI 公开市场披露') }}</span>{{ help(
+        'Personal insider open-market buys / sells from SEDI (Canada\'s insider-filing system) — issuer buybacks and option exercises are excluded. CONTEXT, not a validated signal: SEDI filings lag the trade by up to ~5 days and TSX insider breadth is thin, so read net buying / selling as a conviction tell, not a timing trigger. Coverage is best-effort per name.',
+        '来自 SEDI（加拿大内部人披露系统）的个人内部人公开市场买入／卖出——已剔除公司回购与期权行权。背景，而非已验证信号：SEDI 披露相对交易最多滞后约5天，且 TSX 内部人样本稀疏，故净买入／卖出应作为信念参考，而非择时触发。覆盖为尽力而为，逐名而定。') }}</h2>
       <div id="r_insider"></div>
     </div>
     <div class="panel" id="r_cbeta_panel" style="display:none">
@@ -613,7 +613,7 @@
       ap.style.display = 'block';
     } else { ap.style.display = 'none'; }
 
-    // Fundamentals — descriptive context (yfinance). Additive; absent on ETFs/indices/uncovered.
+    // Fundamentals — descriptive context (market data snapshot). Additive; absent on ETFs/indices/uncovered.
     var fpEl = document.getElementById('r_fund_panel'), f = d.fundamentals;
     if (f && f.valuation) {
       var v = f.valuation;
@@ -642,7 +642,7 @@
 
     var fnum2 = function (x, n) { return x == null ? '—' : (+x).toFixed(n == null ? 1 : n); };
 
-    // Analyst & estimates — yfinance sell-side consensus (additive)
+    // Analyst & estimates — sell-side consensus (additive)
     var anEl = document.getElementById('r_analyst_panel'), an = (d.fundamentals || {}).consensus;
     if (an && (an.n_analysts || an.target_mean != null)) {
       var rk = (an.rating || '').toLowerCase();
@@ -700,7 +700,7 @@
       posEl.style.display = 'block';
     } else { posEl.style.display = 'none'; }
 
-    // Insider activity — SEDI open-market personal trades via yfinance (additive)
+    // Insider activity — SEDI open-market personal trades (additive)
     var insEl = document.getElementById('r_insider_panel'), ins = d.insider;
     if (ins && (ins.n_buys || ins.n_sells)) {
       var insMoney = function (x) {
