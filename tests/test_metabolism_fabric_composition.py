@@ -1159,3 +1159,231 @@ def test_standout_legacy_path_cannot_publish_after_late_selection(metabolism, mo
     assert not list((state.root/"data/standout_audit/pick_autopsies/us").glob("*.json"))
     assert not (state.root/"data/standout_audit/us_audit_state.json").exists()
     assert not state.native.posts and not state.closes and not usages(state)
+
+
+# ── The saved original: lookup before selection, inspection, secret and nonce ──
+
+def _dream_inspection(profile="lobe_analysis"):
+    policy = {"schema": "mastermind.provider_workload_decision.v1", "policy_revision": 2,
+              "policy_hash": "a" * 64, "profiles": [profile],
+              "execution_surface": "inference", "allowed_order": ["fabric"],
+              "denied_order": []}
+    return {"provider": "fabric", "model": "fixture-model", "cap_id": "metabolism-dream",
+            "capability_id": "metabolism_dream", "cost_basis": "fixture",
+            "workload_policy": policy, "transport_identity": "b" * 64}
+
+
+def _receipt(operation_id, inspection, text, *, close, effect_unknown):
+    return {"operation_id": operation_id, "provider": inspection["provider"],
+            "requested_model": inspection["model"], "served_model": inspection["model"],
+            "observation": {"request_id": operation_id + ":brain:0",
+                            "serving_model": inspection["model"],
+                            "input_tokens": None, "output_tokens": None},
+            "usage": {"input_tokens": None, "output_tokens": None,
+                      "completed_input_tokens": 0, "completed_output_tokens": 0,
+                      "usage_state": "unknown"},
+            "close": close, "effect_unknown": effect_unknown}
+
+
+def _complete_dream(root, unit="unit-a", logical=None, scope=None):
+    logical = {"source": "fixture-v1"} if logical is None else logical
+    scope = ["lessons"] if scope is None else scope
+    inspection = _dream_inspection()
+    operation = journal.FabricInvocation(root, "dream", unit, logical, scope,
+        "Explain this bounded fixture.", "The supplied fixture has one observation.", 800,
+        inspection=inspection, selection={"mode": "fixture", "host_profile": None})
+    text = "Bounded fixture summary."
+    observed = copy.deepcopy(operation.record)
+    observed.update(state="observed", text=text, text_digest=journal.fabric_digest(text),
+                    receipt=_receipt(operation.record["operation_id"], inspection, text,
+                                     close=None, effect_unknown=True), error=None)
+    operation.save(observed)
+    known = copy.deepcopy(operation.record)
+    known.update(state="known",
+                 receipt=_receipt(operation.record["operation_id"], inspection, text,
+                                  close={"disposition": "local_only", "closed": False,
+                                         "effect_unknown": False, "attempted": False},
+                                  effect_unknown=False))
+    operation.save(known)
+    operation.publication_intent({"owner": "fixture"})
+    operation.complete({"status": "fixture"})
+    return operation
+
+
+def test_completed_original_reopens_before_any_selection_inspection_or_nonce(tmp_path):
+    """A completed original is found before the factory, the inspection or a nonce."""
+    original = _complete_dream(tmp_path)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("a completed original must not reach a factory or a nonce")
+
+    with patch.object(journal, "selected_factory", side_effect=forbidden), \
+         patch.object(journal.secrets, "token_hex", side_effect=forbidden):
+        reopened = journal.FabricInvocation(tmp_path, "dream", "unit-a",
+            {"source": "fixture-v1"}, ["lessons"], "system", "user", 800)
+    assert reopened.reused
+    assert reopened.record["operation_id"] == original.record["operation_id"]
+    assert reopened.record["attempt_nonce"] == original.record["attempt_nonce"]
+    assert reopened.record["state"] == "complete"
+    with pytest.raises(journal.FabricHeld, match="metabolism_send_not_owned"):
+        reopened.call()
+
+
+def test_incomplete_original_is_never_recoverable_by_sending_again(tmp_path):
+    """A claimed original stays claimed; it is never recovered by sending again."""
+    inspection = _dream_inspection()
+    operation = journal.FabricInvocation(tmp_path, "dream", "unit-a",
+        {"source": "fixture-v1"}, ["lessons"], "system", "user", 800,
+        inspection=inspection, selection={"mode": "fixture", "host_profile": None})
+    assert operation.record["state"] == "claimed"
+    with pytest.raises(journal.FabricHeld, match="metabolism_original_held"):
+        journal.FabricInvocation(tmp_path, "dream", "unit-a", {"source": "fixture-v1"},
+            ["lessons"], "system", "user", 800, inspection=inspection,
+            selection={"mode": "fixture", "host_profile": None})
+    # A changed scope cannot replace an incomplete overlapping original either.
+    with pytest.raises(journal.FabricHeld, match="metabolism_original_held"):
+        journal.FabricInvocation(tmp_path, "dream", "unit-a", {"source": "fixture-v1"},
+            ["lessons", "other"], "system", "user", 800, inspection=inspection,
+            selection={"mode": "fixture", "host_profile": None})
+    assert journal.read_owner_state(tmp_path, "journal", "unit-a")[
+        journal._FABRIC_KEY]["records"][operation.record["operation_id"]] == operation.record
+
+
+def test_a_changed_request_cannot_reuse_an_unrelated_completed_original(tmp_path):
+    """A changed request is a different original; the old one keeps its evidence."""
+    original = _complete_dream(tmp_path)
+    reopened = journal.FabricInvocation(tmp_path, "dream", "unit-a",
+        {"source": "fixture-v2"}, ["lessons"], "system", "user", 800,
+        inspection=_dream_inspection(), selection={"mode": "fixture", "host_profile": None})
+    assert not reopened.reused
+    records = journal._records(journal.read_owner_state(tmp_path, "journal", "unit-a"))
+    assert len(records) == 2
+    assert records[original.record["operation_id"]]["state"] == "complete"
+
+
+def test_native_purpose_receipt_is_accepted_without_an_inference_relabel(tmp_path):
+    """A native-purpose decision keeps its own surface and its empty orders."""
+    policy = {"schema": "mastermind.provider_workload_decision.v1", "policy_revision": 2,
+              "policy_hash": "a" * 64, "profiles": ["development_agent"],
+              "execution_surface": "native_agent", "allowed_order": [], "denied_order": []}
+    inspection = {"provider": "fabric", "model": "native-model", "cap_id": "metabolism-audit",
+                  "capability_id": "metabolism_audit", "cost_basis": "native",
+                  "workload_policy": policy, "transport_identity": "b" * 64}
+    journal._inspection(inspection, "development_agent")
+    record = journal.operation_record(tmp_path, "audit", "42", {"source": "fixture"},
+        ["pr:42"], "system", "user", 800, None, {}, inspection=inspection,
+        selection={"mode": "fixture", "host_profile": None})
+    assert record["inspection"]["workload_policy"]["execution_surface"] == "native_agent"
+    # An inference consumer keeps its exact accepted form.
+    journal._inspection(_dream_inspection(), "lobe_analysis")
+    # Any other surface or order is refused rather than relabeled.
+    for broken in ({"execution_surface": "native_cli"}, {"execution_surface": "inference"},
+                   {"allowed_order": ["fabric"]}, {"denied_order": ["oauth"]}):
+        bad = {**inspection, "workload_policy": {**policy, **broken}}
+        with pytest.raises(journal.FabricHeld, match="metabolism_workload_receipt_invalid"):
+            journal._inspection(bad, "development_agent")
+
+
+# ── The owners: the claim authority, the audit grammar and the durable event ───
+
+def test_the_guard_exempts_only_the_callers_own_claim(tmp_path):
+    """A caller's own in-flight claim is not a hold against that caller."""
+    inspection = _dream_inspection()
+    operation = journal.FabricInvocation(tmp_path, "dream", "unit-a",
+        {"source": "fixture-v1"}, ["lessons"], "system", "user", 800,
+        inspection=inspection, selection={"mode": "fixture", "host_profile": None})
+    # The owner's own claim is recognised, with its identity and its nonce.
+    journal.guard_saved(tmp_path, "journal", "unit-a", "dream", ["lessons"],
+                        owned=operation.record)
+    # Any other caller is held by the very same claim.
+    with pytest.raises(journal.FabricHeld, match="metabolism_original_held"):
+        journal.guard_saved(tmp_path, "journal", "unit-a", "dream", ["lessons"])
+    # A claim that is not the stored one is never borrowed.
+    with pytest.raises(journal.FabricHeld, match="metabolism_owned_claim_changed"):
+        journal.guard_saved(tmp_path, "journal", "unit-a", "dream", ["lessons"],
+                            owned={**operation.record, "attempt_nonce": "0" * 32})
+    with pytest.raises(journal.FabricHeld, match="metabolism_owned_claim_changed"):
+        journal.guard_saved(tmp_path, "journal", "unit-a", "dream", ["lessons"],
+                            owned={**operation.record, "operation_id": "metabolism:other"})
+    # A claim of another kind, unit or scope is not this caller's claim.
+    for broken in ({**operation.record, "owner": "audit"},
+                   {**operation.record, "unit": "unit-b"},
+                   {**operation.record, "scope": ["other"]},
+                   {**operation.record, "state": "known"}):
+        with pytest.raises(journal.FabricHeld, match="metabolism_owned_claim_invalid"):
+            journal.guard_saved(tmp_path, "journal", "unit-a", "dream", ["lessons"],
+                                owned=broken)
+
+
+def test_the_audit_record_uses_the_audit_grammar_not_an_identifier_label(tmp_path):
+    """The audit bounds are the audit grammar: 64 findings, 2048 each, 8192."""
+    record = {"schema": "metabolism.audit.v1", "pr_number": 1, "proposal_id": "p1",
+              "head_sha": "sha1", "verdict": "approve", "deterministic_ok": True,
+              "llm_verdict": "approve", "confidence": 0.9,
+              "findings": ["f" * 2048], "rationale": "r" * 8192,
+              "ts": "2026-11-07T00:00:00+00:00"}
+    assert journal.validate_audit_record(record, 1) is record
+    for field, value in (("findings", ["f" * 2049]), ("rationale", "r" * 8193),
+                         ("confidence", 1.5), ("confidence", True), ("verdict", "maybe"),
+                         ("findings", [42]), ("findings", [""]), ("rationale", ""),
+                         ("head_sha", ""), ("pr_number", 0)):
+        with pytest.raises(journal.FabricHeld, match="metabolism_audit_record_invalid"):
+            journal.validate_audit_record({**record, field: value}, 1)
+    # A record for another PR never validates as this PR's record.
+    with pytest.raises(journal.FabricHeld, match="metabolism_audit_record_invalid"):
+        journal.validate_audit_record(record, 2)
+
+
+def test_the_governance_append_is_durable_and_never_duplicated(tmp_path):
+    """A durable append acknowledges the exact correlated row, once."""
+    from engine.neuralweb import governance
+    ts = "2026-11-07T00:00:00.000000+00:00"
+    event_id = governance.event_identity("metabolism_audit", "metabolism_pr:1", ts)
+    ledger = tmp_path / "data/neuralweb/governance.jsonl"
+    common = {"event_type": "metabolism_audit", "target": "metabolism_pr:1",
+              "authored_by": "metabolism_audit", "root": tmp_path,
+              "event_id": event_id, "ts": ts, "durable": True}
+    assert governance.append_event(**common, evidence={"verdict": "approve"},
+                                   note="ok") is True
+    rows = ledger.read_text().splitlines()
+    assert len(rows) == 1
+    assert json.loads(rows[0])["event_id"] == event_id
+    assert json.loads(rows[0])["evidence"] == {"verdict": "approve"}
+    # The same event is acknowledged again and never appended twice.
+    assert governance.append_event(**common, evidence={"verdict": "approve"},
+                                   note="ok") is True
+    assert len(ledger.read_text().splitlines()) == 1
+    # A different event under the same identity is refused, never appended.
+    assert governance.append_event(**common, evidence={"verdict": "reject"},
+                                   note="other") is False
+    assert len(ledger.read_text().splitlines()) == 1
+
+
+def test_the_audit_publication_intent_is_owned_before_the_append(tmp_path):
+    """The exact request, verdict and intent are owned before any append."""
+    record = {
+        "schema": "metabolism.audit.v1", "pr_number": 1, "proposal_id": "p1",
+        "head_sha": "sha1", "verdict": "reject", "deterministic_ok": False,
+        "llm_verdict": None, "confidence": None, "findings": ["foreign_file:other.py"],
+        "rationale": "A deterministic containment finding.",
+        "ts": "2026-11-07T00:00:00.000000+00:00",
+    }
+    logical = audit._audit_logical(1, {"proposal_id": "p1"}, "diff", "sha1")
+    intent = audit._audit_intent(record, 1)
+    owned = journal.audit_publication_intent(
+        tmp_path, 1, intent, logical=logical, record=record)
+    assert owned["state"] == "pending" and owned["record"] == record
+    document = journal.read_owner_state(tmp_path, "audit", "1")
+    assert document["publication"]["current"]["intent"] == intent
+    later = {**record, "ts": "2026-11-07T01:00:00.000000+00:00"}
+    again = journal.audit_publication_intent(
+        tmp_path, 1, audit._audit_intent(later, 1), logical=logical, record=later)
+    assert again["record"] == record
+    other = {**record, "head_sha": "sha2"}
+    other_logical = audit._audit_logical(1, {"proposal_id": "p1"}, "different diff", "sha2")
+    with pytest.raises(journal.FabricHeld, match="metabolism_audit_publication_held"):
+        journal.audit_publication_intent(
+            tmp_path, 1, audit._audit_intent(other, 1), logical=other_logical, record=other)
+    with pytest.raises(journal.FabricHeld, match="metabolism_audit_publication_missing"):
+        journal.audit_publication_commit(
+            tmp_path, 1, record, event_id="d" * 16, receipt={"event_id": "d" * 16})

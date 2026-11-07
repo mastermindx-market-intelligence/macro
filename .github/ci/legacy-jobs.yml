@@ -42272,7 +42272,7 @@ jobs:
             native_target="$fabric_fixture_root/$native_relative"
             mkdir -p "$(dirname "$native_target")"
             curl --fail --silent --show-error --proto '=https' --tlsv1.2 --max-time 45 \
-              "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/1fc6ebfc1ed340861feca069540d89a5a3288c27/$native_relative" \
+              "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/f4bd27d91468176ec2fbb0eb83946824f7c35185/$native_relative" \
               -o "$native_target"
           done
           MM_FABRIC_GATEWAY_SOURCE_ROOT="$fabric_fixture_root" python -m pytest \
@@ -45782,6 +45782,20 @@ jobs:
     # rather than running, which reads as a pack failure rather than a missing dep.
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
     gate: code
+    # Bind the hermetic worker credential/control contract to ordinary PR CI.
+    # Keep transitive inference and the broader nightly data owners unchanged.
+    paths:
+      - "ops/bootstrap_earnings_worker.sh"
+      - "ops/launchd/com.mastermind.earnings-worker.plist"
+      - "ops/launchd/run_earnings_worker.sh"
+      - "tools/earnings_worker/README.md"
+      - "tests/test_earnings_worker_launchd.py"
+      - "tests/test_edgar_filing_identity_join.py"
+      - "tests/test_earnings_release_binding.py"
+      - "tests/test_edgar_earnings_8k.py"
+      - "tests/test_marketing_edgar_earnings_wire.py"
+      - "ops/earnings_worker_requirements.txt"
+      - "config/earnings_qual.yml"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -45797,7 +45811,8 @@ jobs:
           tests/test_edgar_filing_identity_join.py
           tests/test_earnings_release_binding.py
           tests/test_edgar_earnings_8k.py
-          tests/test_marketing_edgar_earnings_wire.py -q -rs
+          tests/test_marketing_edgar_earnings_wire.py
+          tests/test_earnings_worker_launchd.py -q -rs
 
   market-memory-contract:
     # Public-safe temporal-context and product-shell contract. Private captures,
@@ -50508,9 +50523,133 @@ jobs:
       - name: Market OS rates & curves — curve-shape hero, ceiling, byte preservation
         run: python -m pytest tests/test_macro_rates_curves_route.py -q
       - name: Market OS macro suite pages — shell, labels, view model, builder
-        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py tests/test_macro_command_shell.py tests/test_macro_command_copy_law.py tests/test_macro_command_read_strip.py tests/test_macro_command_panels.py tests/test_macro_command_empty_states.py tests/test_macro_command_p4_copy.py tests/test_macro_command_capture_guards.py -q
+        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py tests/test_macro_command_shell.py tests/test_macro_command_copy_law.py tests/test_macro_command_read_strip.py tests/test_macro_command_panels.py tests/test_macro_command_empty_states.py tests/test_macro_command_p4_copy.py tests/test_macro_command_capture_guards.py -q -m "not data_gate"
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
+
+  market-os-macro-suite-pages-data:
+    if: ${{ false }}  # executed inside data-health packs; keep the legacy status definition runner-free
+    gate: data
+    # S1 (2026-11-05, Mastermind #917 checkpoint 13): the copy-law tests that
+    # scan the NIGHTLY-RENDERED site/macro_*.html for content quality (every
+    # .l-zh span translated, zero plain-fallback sentences, no machine text,
+    # machine floats or refusal vocabulary in visible text, relocated needles
+    # kept inside Details) grade the data the nightly committed, not the code
+    # under test. On 2026-11-05 the nightly committed a
+    # macro_business_activity.html carrying an unpaired `Contraction` label,
+    # market-os-macro-suite-pages went red on main at 04:41Z, and the
+    # merge-on-green main-red circuit breaker held every ordinary merge for
+    # 18 hours while no open PR could have caused or cured it. Those tests
+    # carry `@pytest.mark.data_gate`: the code job deselects them and this
+    # job runs exactly them on the data lane (data-health.yml, after each
+    # nightly), the same split as workflow-yaml / options-estate-guards and
+    # stock-dashboard-first-frame / engine-render-guards. The code gate keeps
+    # the fixture-rendered, synthetic and template-bound copy law (the
+    # template halves of the split M2 and trace-row tests included), so a
+    # template, label-table or builder change still proves the law before
+    # merge; the p4_copy scanner over the committed monetary page and the
+    # read_strip shipped-artifact check over the nightly macrodata ride the
+    # same marker and this job's run line. Pinned by
+    # tests/test_ci_pack.py::
+    # test_macro_suite_copy_law_site_scanners_run_on_the_data_gate.
+    #
+    # CURATED SCOPE: `scope: exclusive` with the parent job's declaration
+    # (tests/test_macro_command_copy_law.py's closure is a subset of it: the
+    # guard, the builder, the label/parity tables, the P5 capture helpers and
+    # the fourteen committed pages). Paths on a `gate: data` job never select
+    # it on the code gate; they exist so the closure-coverage audit can name
+    # an uncovered import by file.
+    scope: exclusive
+    paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
+      - "engine/__init__.py"
+      - "engine/market_os/**"
+      - "templates/_macro_suite_shell.html.j2"
+      - "templates/macro_liquidity_regime.html.j2"
+      - "templates/macro_growth_real_economy.html.j2"
+      - "templates/macro_business_activity.html.j2"
+      - "templates/macro_labor_markets.html.j2"
+      - "templates/macro_inflation_system.html.j2"
+      - "templates/macro_monetary_policy.html.j2"
+      - "templates/macro_financial_conditions.html.j2"
+      - "templates/macro_liquidity_central_banks.html.j2"
+      - "templates/macro_capital_structure.html.j2"
+      - "templates/macro_housing_real_estate.html.j2"
+      - "templates/macro_consumer_payments.html.j2"
+      - "templates/macro_national_debt_liabilities.html.j2"
+      - "templates/macro_rates_curves.html.j2"
+      - "templates/macro_trade_flows.html.j2"
+      - "templates/macro_suite.css"
+      - "templates/macro_suite.js"
+      - "templates/macro_suite_boot.js"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/macro_suite_disclosure.py"
+      - "lib/macro_suite_labels.py"
+      - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
+      - "lib/pages.py"
+      - "scripts/__init__.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "site/macrodata/workspaces/**"
+      - "tests/test_macro_suite_pages.py"
+      - "templates/_macro_command_macros.html.j2"
+      - "templates/_macro_command_figures.html.j2"
+      - "templates/_macro_command_fragment.html.j2"
+      - "templates/macro_command.css"
+      - "templates/macro_command.js"
+      - "scripts/check_macro_command_copy.py"
+      - "scripts/capture_macro_command_p3.py"
+      - "scripts/capture_macro_command_p4.py"
+      - "scripts/macro_command_capture_guards.py"
+      - "scripts/capture_macro_command_p5.py"
+      - "scripts/count_macro_command_machine_text.py"
+      - "tests/test_macro_command_shell.py"
+      - "tests/test_macro_command_copy_law.py"
+      - "tests/test_macro_command_capture_guards.py"
+      - "tests/test_macro_command_read_strip.py"
+      - "tests/test_macro_command_panels.py"
+      - "site/macro_financial_conditions.html"
+      - "site/macro_monetary_policy.html"
+      - "tests/test_macro_command_empty_states.py"
+      - "tests/test_macro_command_p4_copy.py"
+      - "site/macro_rates_curves.html"
+      - "site/macro_monetary.html"
+      - "templates/_site_nav.html.j2"
+      - "templates/theme.css"
+      - "tests/test_macro_workspace_prior_publication.py"
+      - "templates/macro_monetary.html.j2"
+      - "templates/_macro_suite_nav.html.j2"
+      - "tests/test_macro_monetary_hub.py"
+      - "templates/_curve_panel.html.j2"
+      - "tests/test_macro_rates_curves_route.py"
+      - "tests/fixtures/macro_suite_t11/**"
+      - "site/macro_liquidity_regime.html"
+      - "site/macro_growth_real_economy.html"
+      - "site/macro_business_activity.html"
+      - "site/macro_labor_markets.html"
+      - "site/macro_inflation_system.html"
+      - "site/macro_liquidity_central_banks.html"
+      - "site/macro_capital_structure.html"
+      - "site/macro_housing_real_estate.html"
+      - "site/macro_consumer_payments.html"
+      - "site/macro_national_debt_liabilities.html"
+      - "site/macro_trade_flows.html"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install suite-page test dependencies
+        # Same line as the parent job: the scanners import the copy guard and
+        # the page builder; pillow stays for the stitched-band helpers' import.
+        run: pip install pytest jinja2 pyyaml jsonschema==4.26.0 pillow
+      - name: Market OS macro suite pages — copy law over the nightly-rendered pages
+        run: python -m pytest tests/test_macro_command_copy_law.py tests/test_macro_command_p4_copy.py tests/test_macro_command_read_strip.py -m data_gate -q
 
   markets-regime-strip:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -53622,6 +53761,8 @@ jobs:
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/contracts.py"
       - "engine/intelligence_workspace/entity.py"
+      - engine/intelligence_workspace/registry.py
+      - engine/intelligence_workspace/resolver.py
       - "engine/llm_auth.py"
       - "engine/metabolism/__init__.py"
       - "engine/metabolism/budget_gate.py"
@@ -53676,6 +53817,8 @@ jobs:
       - "site/basketdata/critical_minerals_supply.json"
       - "site/commodities.html"
       - "site/theme.css"
+      - site/product-nav-icons.css
+      - site/navigation-refresh.css
       - "templates/_commodity_decision_workspace.html.j2"
       - "templates/_china_gold_premium.html.j2"
       - "templates/commodities.html.j2"
@@ -53696,6 +53839,7 @@ jobs:
       - "templates/theme.css"
       - "tests/__init__.py"
       - "tests/conftest.py"
+      - tests/commodity_workspace_ui_fixture.py
       - "tests/test_commodity_decision_workspace.py"
       - "tests/test_china_gold_premium.py"
       - "tests/test_commodity_publication.py"
@@ -53715,7 +53859,7 @@ jobs:
         with:
           node-version: "20"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests jsonschema==4.26.0
       - name: install pinned DOM test dependency
         run: npm install --no-save --package-lock=false --prefix "${RUNNER_TEMP:?}/commodity-dom" jsdom@26.1.0
       - name: commodity research projection and physical-balance contracts

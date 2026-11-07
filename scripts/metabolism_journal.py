@@ -70,6 +70,36 @@ _OWNERS = {
     "attention": "journal", "dream": "journal", "audit": "audit",
     "standout": "market", "pick_autopsies": "market", "trade_memory": "private_row",
 }
+# The strict top-level fields an audit owner may publish. They are the only
+# verdict fields an audit original may commit, and the only ones a consumer
+# may read back as an audited result.
+_AUDIT_RECORD_FIELDS = ("schema", "pr_number", "proposal_id", "head_sha", "verdict",
+                        "deterministic_ok", "llm_verdict", "confidence", "findings",
+                        "rationale", "ts")
+# The audit owner document also carries the publication custody of the verdict
+# it holds: the exact governance event that was appended for it, and the
+# acknowledgement that event received. It is never a verdict field and it is
+# never readable as one.
+_AUDIT_PUBLICATION_KEY = "publication"
+# The closed field set of one publication custody record. A pending
+# publication carries exactly the intent fields; an acknowledged publication
+# additionally carries the durable receipt of its governance event. Anything
+# else in the owner document is a foreign shape and is never readable as
+# publication custody.
+_AUDIT_PUBLICATION_FIELDS = frozenset({
+    "event_type", "target", "event_id", "ts", "head_sha", "proposal_id",
+    "verdict", "deterministic_ok", "llm_verdict", "confidence",
+    "decision_digest", "state", "receipt",
+})
+_AUDIT_PUBLICATION_BASE_FIELDS = _AUDIT_PUBLICATION_FIELDS - {"receipt"}
+# The incumbent audit reply grammar. These are the audit text/type/count
+# bounds, not identifier bounds: a finding is a paragraph and the rationale is
+# a paragraph, so the identifier label limit would make valid historical
+# verdicts unreadable. The owner of the audit record owns its grammar.
+_AUDIT_REPLY_BYTE_LIMIT = 64 * 1024
+_AUDIT_FINDING_LIMIT = 64
+_AUDIT_FINDING_CHAR_LIMIT = 2 * 1024
+_AUDIT_RATIONALE_CHAR_LIMIT = 8 * 1024
 
 
 class FabricHeld(ValueError):
@@ -334,7 +364,10 @@ def _state_document(snapshot, owner, unit):
     for record in _records(value).values():
         if record["owner"] != owner or record["unit"] != unit:
             raise FabricHeld("metabolism_foreign_operation")
+    if owner == "audit":
+        _audit_publications(value, unit)
     return value
+
 
 
 def read_owner_state(root, owner, unit):
@@ -352,12 +385,552 @@ def update_owner_state(root, owner, unit, updates):
         return _merge_owner_state(file, owner, unit, updates)
 
 
+def _validated_audit_reply(value):
+    """The native/legacy response is data; malformed fields cannot grant approval."""
+    import math
+
+    if (type(value) is not dict
+            or set(value) != {"verdict", "confidence", "findings", "rationale"}
+            or type(value["verdict"]) is not str
+            or value["verdict"] not in {"approve", "reject"}):
+        return None
+    confidence = value["confidence"]
+    if (type(confidence) not in (int, float) or not 0 <= confidence <= 1
+            or not math.isfinite(confidence)):
+        return None
+    findings, rationale = value["findings"], value["rationale"]
+    if (type(findings) is not list or len(findings) > _AUDIT_FINDING_LIMIT
+            or type(rationale) is not str or not rationale.strip()
+            or len(rationale) > _AUDIT_RATIONALE_CHAR_LIMIT):
+        return None
+    if any(type(f) is not str or not f.strip() or len(f) > _AUDIT_FINDING_CHAR_LIMIT
+           for f in findings):
+        return None
+    for text in [*findings, rationale]:
+        if any(ord(c) < 32 and c not in "\n\t" or ord(c) == 127 for c in text):
+            return None
+        try:
+            text.encode("utf-8")
+        except UnicodeError:
+            return None
+    return {
+        "verdict": value["verdict"], "confidence": confidence,
+        "findings": list(findings), "rationale": rationale,
+    }
+
+
+def _slice_braced(s):
+    i, j = s.find("{"), s.rfind("}")
+    if 0 <= i < j:
+        return s[i:j + 1]
+    return ""
+
+
+def _parse_llm_reply(text, *, strict=False):
+    """Decode a bounded typed verdict; native originals use strict whole-JSON mode."""
+    if type(text) is not str or not text:
+        return None
+    try:
+        if len(text.encode("utf-8")) > _AUDIT_REPLY_BYTE_LIMIT:
+            return None
+    except UnicodeError:
+        return None
+    s = text.strip()
+    # Legacy formatting remains readable. A selected native original must
+    # validate the actual entire result and cannot repair a partial response.
+    if not strict and s.startswith("```"):
+        s = re.sub(r"^```[a-zA-Z]*\n?", "", s)
+        s = re.sub(r"\n?```$", "", s).strip()
+
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate audit member")
+            result[key] = value
+        return result
+
+    def nonfinite(_value):
+        raise ValueError("nonfinite audit value")
+
+    for candidate in ((s,) if strict else (s, _slice_braced(s))):
+        if not candidate:
+            continue
+        try:
+            data = json.loads(candidate, object_pairs_hook=unique, parse_constant=nonfinite)
+        except (ValueError, TypeError, RecursionError):
+            continue
+        validated = _validated_audit_reply(data)
+        if validated is not None:
+            return validated
+    return None
+
+
+def validate_audit_record(record, pr_number=None):
+    """Validate one owned audit verdict. A malformed record is never a verdict.
+
+    The bounds are the incumbent audit grammar: up to 64 findings of up to 2048
+    characters each and a rationale of up to 8192 characters. The identifier
+    label limit is not the audit grammar and would make valid historical
+    verdicts unreadable.
+    """
+    if (type(record) is not dict or not set(record) <= set(_AUDIT_RECORD_FIELDS)
+            or not {"schema", "pr_number", "head_sha", "verdict", "deterministic_ok",
+                    "llm_verdict", "confidence", "findings", "rationale", "ts"} <= set(record)
+            or record["schema"] != "metabolism.audit.v1"
+            or type(record["pr_number"]) is not int or record["pr_number"] < 1
+            or pr_number is not None and record["pr_number"] != pr_number
+            or not _label(record["head_sha"])
+            or record["verdict"] not in ("approve", "reject")
+            or type(record["deterministic_ok"]) is not bool
+            or record["llm_verdict"] is not None and not _label(record["llm_verdict"])
+            or record["confidence"] is not None and (type(record["confidence"]) not in (int, float)
+                or not 0 <= record["confidence"] <= 1)
+            or type(record["findings"]) is not list
+            or len(record["findings"]) > _AUDIT_FINDING_LIMIT
+            or any(type(f) is not str or not f.strip() or len(f) > _AUDIT_FINDING_CHAR_LIMIT
+                   for f in record["findings"])
+            or type(record["rationale"]) is not str or not record["rationale"].strip()
+            or len(record["rationale"]) > _AUDIT_RATIONALE_CHAR_LIMIT
+            or not _label(record["ts"])
+            or "proposal_id" in record and not (record["proposal_id"] == "" or _label(record["proposal_id"]))):
+        raise FabricHeld("metabolism_audit_record_invalid")
+    return record
+
+
+def _audit_original_verdict(original):
+    """The typed verdict an original actually holds, parsed from its own text.
+
+    The strict whole-response parse is the only accepted reading of a retained
+    original. A reply that does not decode as one bounded typed verdict is not
+    a verdict at all.
+    """
+    text = original.get("text")
+    if type(text) is not str or not text:
+        return None
+    return _parse_llm_reply(text, strict=True)
+
+
+def _audit_outcome_matches(outcome, parsed):
+    """True when a publication outcome is exactly the parsed original verdict."""
+    if type(outcome) is not dict or parsed is None:
+        return False
+    return (outcome.get("verdict") == parsed["verdict"]
+            and outcome.get("llm_verdict") == parsed["verdict"]
+            and outcome.get("confidence") == parsed["confidence"]
+            and outcome.get("rationale") == parsed["rationale"]
+            and outcome.get("findings") == list(parsed["findings"]))
+
+
+
+_AUDIT_PUBLICATION_SCHEMA = "metabolism.audit_publications.v1"
+_AUDIT_ENTRY_FIELDS = frozenset({
+    "logical", "record", "intent", "state", "original_operation_id",
+})
+_AUDIT_EVIDENCE_FIELDS = (
+    "head_sha", "proposal_id", "verdict", "deterministic_ok", "llm_verdict", "confidence",
+)
+
+
+def _audit_same(left, right):
+    """Compare typed canonical values; bools are not interchangeable with ints."""
+    return fabric_json(left) == fabric_json(right)
+
+
+def _audit_logical_valid(logical, pr_number):
+    facts = logical.get("facts") if type(logical) is dict else None
+    if (type(logical) is not dict or set(logical) != {"facts", "prompt_version"}
+            or logical["prompt_version"] != "audit-fence-v1"
+            or type(facts) is not dict
+            or set(facts) != {"pr_number", "head_sha", "proposal_digest",
+                              "diff_digest", "response_contract"}
+            or type(facts["pr_number"]) is not int or facts["pr_number"] != pr_number
+            or not _label(facts["head_sha"])
+            or not _digest(facts["proposal_digest"]) or not _digest(facts["diff_digest"])
+            or facts["response_contract"] != "complete-text-v1"):
+        raise FabricHeld("metabolism_audit_publication_logical_invalid")
+
+
+def _audit_expected_intent(record):
+    from engine.neuralweb.governance import event_identity
+    target = f"metabolism_pr:{record['pr_number']}"
+    return {
+        "event_type": "metabolism_audit", "target": target,
+        "event_id": event_identity("metabolism_audit", target, record["ts"]),
+        "ts": record["ts"],
+        **{key: record[key] for key in _AUDIT_EVIDENCE_FIELDS},
+        "decision_digest": audit_publication_decision_digest(record),
+    }
+
+
+def _audit_expected_receipt(record, intent):
+    return {key: intent[key] for key in ("event_id", "event_type", "target", "ts")} | {
+        "evidence": {key: record[key] for key in _AUDIT_EVIDENCE_FIELDS}}
+
+
+def _audit_entry_key(entry):
+    if entry.get("legacy") is True:
+        return "legacy:" + entry["intent"]["event_id"]
+    return fabric_digest(entry["logical"])
+
+
+def _audit_validate_entry(entry, pr_number, records, *, legacy_allowed=False):
+    if type(entry) is not dict:
+        raise FabricHeld("metabolism_audit_publication_entry_invalid")
+    legacy = entry.get("legacy") is True
+    expected = set(_AUDIT_ENTRY_FIELDS)
+    if entry.get("state") == "acknowledged":
+        expected.add("receipt")
+    elif entry.get("state") != "pending":
+        raise FabricHeld("metabolism_audit_publication_entry_invalid")
+    if legacy:
+        expected.add("legacy")
+    if set(entry) != expected or legacy and not legacy_allowed:
+        raise FabricHeld("metabolism_audit_publication_entry_invalid")
+    record = validate_audit_record(entry["record"], pr_number)
+    if set(record) != set(_AUDIT_RECORD_FIELDS):
+        raise FabricHeld("metabolism_audit_publication_record_incomplete")
+    if legacy:
+        if (entry["logical"] is not None or entry["original_operation_id"] is not None
+                or entry["state"] != "acknowledged"):
+            raise FabricHeld("metabolism_audit_legacy_publication_invalid")
+    else:
+        _audit_logical_valid(entry["logical"], pr_number)
+        if entry["logical"]["facts"]["head_sha"] != record["head_sha"]:
+            raise FabricHeld("metabolism_audit_publication_head_mismatch")
+    intent = _audit_expected_intent(record)
+    if not _audit_same(entry["intent"], intent):
+        raise FabricHeld("metabolism_audit_publication_intent_mismatch")
+    if entry["state"] == "acknowledged" and not _audit_same(
+            entry["receipt"], _audit_expected_receipt(record, intent)):
+        raise FabricHeld("metabolism_audit_publication_receipt_mismatch")
+    original_id = entry["original_operation_id"]
+    if original_id is None:
+        if (record["verdict"] != "reject" or record["llm_verdict"] is not None
+                or record["confidence"] is not None):
+            raise FabricHeld("metabolism_audit_zero_model_verdict_invalid")
+        if not legacy and any(
+                item["kind"] == "audit" and _audit_same(item["logical"], entry["logical"])
+                for item in records.values()):
+            raise FabricHeld("metabolism_audit_zero_model_original_conflict")
+        return entry
+    if not _label(original_id) or original_id not in records:
+        raise FabricHeld("metabolism_audit_publication_original_missing")
+    original = records[original_id]
+    if (original["kind"] != "audit" or original["unit"] != str(pr_number)
+            or not _audit_same(original["logical"], entry["logical"])
+            or original["business"] is None
+            or not _audit_same(original["business"]["intent"], intent)
+            or record["deterministic_ok"] is not True):
+        raise FabricHeld("metabolism_audit_publication_original_mismatch")
+    parsed = _audit_original_verdict(original)
+    if parsed is None or not _audit_same(
+            {key: record[key] for key in ("verdict", "confidence", "findings", "rationale")},
+            {key: parsed[key] for key in ("verdict", "confidence", "findings", "rationale")}
+    ) or record["llm_verdict"] != parsed["verdict"]:
+        raise FabricHeld("metabolism_audit_publication_original_unreadable")
+    if entry["state"] == "pending":
+        if original["state"] not in ("publishing", "held"):
+            raise FabricHeld("metabolism_audit_publication_original_state")
+    else:
+        receipt = original["receipt"] or {}
+        outcome = {
+            "governance": "metabolism_audit", "target": intent["target"],
+            "event_id": intent["event_id"],
+            **{key: record[key] for key in (
+                "verdict", "llm_verdict", "confidence", "findings", "rationale",
+                "ts", "head_sha", "proposal_id")},
+            "provider": receipt.get("provider"), "served_model": receipt.get("served_model"),
+        }
+        if original["state"] != "complete" or not _audit_same(
+                original["business"]["outcome"], outcome):
+            raise FabricHeld("metabolism_audit_publication_outcome_mismatch")
+    return entry
+
+
+def _audit_legacy_entry(document, publication, pr_number, records):
+    """Retain genuine scalar acknowledgements without inventing request facts."""
+    if (type(publication) is not dict or set(publication) != _AUDIT_PUBLICATION_FIELDS
+            or publication.get("state") != "acknowledged"):
+        raise FabricHeld("metabolism_audit_legacy_publication_held")
+    record = {key: document[key] for key in _AUDIT_RECORD_FIELDS if key in document}
+    validate_audit_record(record, pr_number)
+    if "proposal_id" not in record:
+        raise FabricHeld("metabolism_audit_legacy_publication_incomplete")
+    intent = {key: publication[key] for key in _AUDIT_PUBLICATION_BASE_FIELDS - {"state"}}
+    matches = [
+        item for item in records.values()
+        if item["kind"] == "audit" and item["state"] == "complete"
+        and type(item["business"]) is dict
+        and type(item["business"].get("outcome")) is dict
+        and item["business"]["outcome"].get("event_id") == intent.get("event_id")
+    ]
+    if len(matches) > 1:
+        raise FabricHeld("metabolism_audit_legacy_original_ambiguous")
+    original = matches[0] if matches else None
+    entry = {
+        "logical": copy.deepcopy(original["logical"]) if original else None,
+        "record": copy.deepcopy(record), "intent": intent, "state": "acknowledged",
+        "original_operation_id": original["operation_id"] if original else None,
+        "receipt": copy.deepcopy(publication["receipt"]),
+    }
+    if original is None:
+        entry["legacy"] = True
+        if any(item["state"] != "complete" for item in records.values()
+               if item["kind"] == "audit"):
+            raise FabricHeld("metabolism_audit_original_held")
+    return _audit_validate_entry(entry, pr_number, records, legacy_allowed=True)
+
+
+def _audit_publications(document, unit):
+    if _AUDIT_PUBLICATION_KEY not in document:
+        return None
+    publication = document[_AUDIT_PUBLICATION_KEY]
+    records = _records(document)
+    pr_number = int(unit)
+    if type(publication) is dict and "schema" not in publication:
+        current = _audit_legacy_entry(document, publication, pr_number, records)
+        return {"schema": _AUDIT_PUBLICATION_SCHEMA, "current": current, "completed": {}}
+    if (type(publication) is not dict
+            or set(publication) != {"schema", "current", "completed"}
+            or publication["schema"] != _AUDIT_PUBLICATION_SCHEMA
+            or type(publication["completed"]) is not dict
+            or len(publication["completed"]) >= 128):
+        raise FabricHeld("metabolism_state_publication_invalid")
+    current = _audit_validate_entry(
+        publication["current"], pr_number, records, legacy_allowed=True)
+    if current["state"] == "acknowledged":
+        projected = {key: document[key] for key in _AUDIT_RECORD_FIELDS if key in document}
+        if not _audit_same(projected, current["record"]):
+            raise FabricHeld("metabolism_audit_projection_mismatch")
+    seen = {_audit_entry_key(current)}
+    for key, entry in publication["completed"].items():
+        _audit_validate_entry(entry, pr_number, records, legacy_allowed=True)
+        if (type(key) is not str or key != _audit_entry_key(entry)
+                or key in seen or entry["state"] != "acknowledged"):
+            raise FabricHeld("metabolism_audit_publication_history_invalid")
+        seen.add(key)
+    return publication
+
+
+def _audit_lookup_publication(document, unit, logical):
+    _audit_logical_valid(logical, int(unit))
+    publications = _audit_publications(document, unit)
+    if publications is None:
+        return None
+    entries = [publications["current"], *publications["completed"].values()]
+    for entry in entries:
+        if entry.get("legacy") is not True and _audit_same(entry["logical"], logical):
+            return copy.deepcopy(entry)
+    if any(entry["record"]["head_sha"] == logical["facts"]["head_sha"] for entry in entries):
+        raise FabricHeld("metabolism_audit_request_changed_for_head")
+    if publications["current"]["state"] != "acknowledged":
+        raise FabricHeld("metabolism_audit_publication_held")
+    return None
+
+
+def audit_saved_publication(root, pr_number, logical):
+    """Read a complete frozen publication before rediscovering mutable policy."""
+    document = read_owner_state(root, "audit", str(pr_number))
+    entry = _audit_lookup_publication(document, str(pr_number), logical)
+    if entry is not None and entry["state"] == "pending" and entry["original_operation_id"] is not None:
+        raise FabricHeld("metabolism_original_held")
+    return entry
+
+
+def _audit_claim_fence(document, unit, logical):
+    if _audit_lookup_publication(document, unit, logical) is not None:
+        raise FabricHeld("metabolism_audit_publication_already_owned")
+
+
+def audit_publication_entry(record, logical, *, original_operation_id=None,
+                            state="pending", receipt=None):
+    validate_audit_record(record)
+    _audit_logical_valid(logical, record["pr_number"])
+    entry = {
+        "logical": copy.deepcopy(logical), "record": copy.deepcopy(record),
+        "intent": _audit_expected_intent(record), "state": state,
+        "original_operation_id": original_operation_id,
+    }
+    if state == "acknowledged":
+        entry["receipt"] = copy.deepcopy(receipt)
+    return entry
+
+
+def _audit_publication_transition(document, unit, entry, *, original=None):
+    """One publication transition under the incumbent audit owner lock."""
+    records = _records(document)
+    incoming_records = dict(records)
+    if original is not None:
+        incoming_records[original["operation_id"]] = original
+    _audit_validate_entry(entry, int(unit), incoming_records)
+    if any(item["kind"] == "audit" and item["state"] != "complete"
+           and item["operation_id"] != entry["original_operation_id"]
+           for item in records.values()):
+        raise FabricHeld("metabolism_original_held")
+    publications = _audit_publications(document, unit)
+    if publications is None:
+        if entry["state"] != "pending":
+            raise FabricHeld("metabolism_audit_publication_missing")
+        publications = {"schema": _AUDIT_PUBLICATION_SCHEMA,
+                        "current": copy.deepcopy(entry), "completed": {}}
+    else:
+        publications = copy.deepcopy(publications)
+        current = publications["current"]
+        key = _audit_entry_key(entry)
+        if key == _audit_entry_key(current):
+            fixed = lambda value: {k: v for k, v in value.items() if k not in ("state", "receipt")}
+            if not _audit_same(fixed(current), fixed(entry)):
+                raise FabricHeld("metabolism_audit_publication_conflict")
+            if current["state"] == "acknowledged":
+                if not _audit_same(current, entry):
+                    raise FabricHeld("metabolism_audit_publication_conflict")
+            elif entry["state"] not in ("pending", "acknowledged"):
+                raise FabricHeld("metabolism_audit_publication_conflict")
+            publications["current"] = copy.deepcopy(entry)
+        else:
+            if current["state"] != "acknowledged":
+                raise FabricHeld("metabolism_audit_publication_held")
+            if entry["state"] != "pending" or key in publications["completed"]:
+                raise FabricHeld("metabolism_audit_publication_stale")
+            if any(old["record"]["head_sha"] == entry["record"]["head_sha"]
+                   for old in [current, *publications["completed"].values()]):
+                raise FabricHeld("metabolism_audit_request_changed_for_head")
+            if len(publications["completed"]) >= 127:
+                raise FabricHeld("metabolism_audit_publication_bound")
+            publications["completed"][_audit_entry_key(current)] = current
+            publications["current"] = copy.deepcopy(entry)
+    document[_AUDIT_PUBLICATION_KEY] = publications
+    return copy.deepcopy(publications["current"])
+
+
+def audit_owner_result(root, pr_number):
+    """Read only the current fully acknowledged audit and its exact original."""
+    empty = {"status": "absent", "record": None, "original": None,
+             "reason": "metabolism_audit_record_absent"}
+    held_original = None
+    try:
+        document = read_owner_state(root, "audit", str(pr_number))
+        originals = _records(document)
+        held_original = next(iter(originals.values()), None)
+        publications = _audit_publications(document, str(pr_number))
+        owned = {key: document[key] for key in _AUDIT_RECORD_FIELDS if key in document}
+        if not owned:
+            if originals or publications is not None:
+                raise FabricHeld("metabolism_audit_verdict_missing")
+            return empty
+        record = validate_audit_record(owned, pr_number)
+        if publications is None:
+            if originals:
+                raise FabricHeld("metabolism_audit_publication_missing")
+            # Genuine historical records predate retained operation/publication
+            # metadata. A malformed modern document cannot reach this branch.
+            return {"status": "audited", "record": record, "original": None,
+                    "reason": "metabolism_audit_record_present"}
+        entry = publications["current"]
+        if entry["state"] != "acknowledged":
+            raise FabricHeld("metabolism_audit_publication_unacknowledged")
+        if not _audit_same(record, entry["record"]):
+            raise FabricHeld("metabolism_audit_projection_mismatch")
+        original_id = entry["original_operation_id"]
+        original = originals[original_id] if original_id is not None else None
+        return {"status": "audited", "record": copy.deepcopy(entry["record"]),
+                "original": copy.deepcopy(original),
+                "reason": "metabolism_audit_record_present"}
+    except (FabricHeld, ValueError, TypeError, KeyError) as exc:
+        return {"status": "held", "record": None, "original": copy.deepcopy(held_original), "reason": str(exc)}
+
+
+
+def audit_publication_decision_digest(record):
+    """The identity of one published audit decision.
+
+    The publication time is not part of the decision identity: a retried
+    publication of the same decision must reuse the same governance event
+    instead of appending a second one.
+    """
+    return fabric_digest({key: record.get(key) for key in
+                          ("pr_number", "proposal_id", "head_sha", "verdict",
+                           "deterministic_ok", "llm_verdict", "confidence",
+                           "findings", "rationale")})
+
+
+def audit_publication_intent(root, pr_number, intent, *, logical, record):
+    """Freeze a zero-model verdict before its append using this owner's CAS."""
+    unit = str(pr_number)
+    entry = audit_publication_entry(record, logical)
+    if not _audit_same(intent, entry["intent"]):
+        raise FabricHeld("metabolism_audit_publication_intent_mismatch")
+    with owned_bytes(root, "audit", unit) as file:
+        before = file.read()
+        document = _state_document(before, "audit", unit)
+        existing = _audit_lookup_publication(document, unit, logical)
+        if existing is not None:
+            if (existing["original_operation_id"] is not None
+                    or not _audit_same(
+                        {key: value for key, value in record.items() if key != "ts"},
+                        {key: value for key, value in existing["record"].items() if key != "ts"})):
+                raise FabricHeld("metabolism_audit_publication_conflict")
+            return existing
+        retained = _audit_publication_transition(document, unit, entry)
+        _state_document({"raw": fabric_json(document)}, "audit", unit)
+        file.replace(before, (fabric_json(document) + "\n").encode())
+        return retained
+
+
+
+def audit_publication_commit(root, pr_number, record, *, event_id, receipt):
+    """Acknowledge exactly the current frozen zero-model entry and verdict."""
+    unit = str(pr_number)
+    with owned_bytes(root, "audit", unit) as file:
+        before = file.read()
+        document = _state_document(before, "audit", unit)
+        publications = _audit_publications(document, unit)
+        if publications is None:
+            raise FabricHeld("metabolism_audit_publication_missing")
+        current = publications["current"]
+        if (current["intent"]["event_id"] != event_id
+                or current["original_operation_id"] is not None
+                or current.get("legacy") is True):
+            raise FabricHeld("metabolism_audit_publication_missing")
+        if not _audit_same(record, current["record"]):
+            raise FabricHeld("metabolism_audit_publication_conflict")
+        acknowledged = {**copy.deepcopy(current), "state": "acknowledged",
+                        "receipt": copy.deepcopy(receipt)}
+        _audit_publication_transition(document, unit, acknowledged)
+        if current["state"] == "acknowledged":
+            if not _audit_same(
+                    {key: document.get(key) for key in _AUDIT_RECORD_FIELDS}, record):
+                raise FabricHeld("metabolism_audit_projection_mismatch")
+            return True
+        document.update(copy.deepcopy(record))
+        _state_document({"raw": fabric_json(document)}, "audit", unit)
+        file.replace(before, (fabric_json(document) + "\n").encode())
+    return True
+
+
+
+def host_profile():
+    """The incumbent host workload profile.
+
+    The journal owns the selection of a retained original, so it also owns the
+    one host-profile read the shared owners need. Consumers never read the
+    environment for it themselves.
+    """
+    return os.environ.get("MM_PROVIDER_WORKLOAD_PROFILE")
+
+
 def _merge_owner_state(file, owner, unit, updates):
     """Merge through an already held transaction of this incumbent owner."""
     if type(updates) is not dict:
         raise FabricHeld("metabolism_state_update_invalid")
     before = file.read()
     current = _state_document(before, owner, unit)
+    if owner == "audit" and (_AUDIT_PUBLICATION_KEY in current or _records(current)):
+        protected_fields = set(_AUDIT_RECORD_FIELDS) | {_AUDIT_PUBLICATION_KEY}
+        if any(key in protected_fields and not _audit_same(current.get(key), value)
+               for key, value in updates.items()):
+            raise FabricHeld("metabolism_audit_custody_owned")
     protected = copy.deepcopy(current.get(_FABRIC_KEY))
     updated = {**current, **copy.deepcopy(updates)}
     if owner == "journal":
@@ -389,14 +962,98 @@ def _inspection(value, purpose):
             or not _digest(policy["policy_hash"]) or type(policy["profiles"]) is not list
             or any(not _label(p) for p in policy["profiles"])
             or len(set(policy["profiles"])) != len(policy["profiles"])
-            or purpose not in policy["profiles"] or policy["execution_surface"] != "inference"
-            or policy["allowed_order"] != ["fabric"] or policy["denied_order"] != []):
+            or purpose not in policy["profiles"]):
+        raise FabricHeld("metabolism_workload_receipt_invalid")
+    # Two genuine workload classifications are admitted, and neither is
+    # relabeled as the other. An inference consumer keeps its exact form; a
+    # native-purpose consumer keeps its own empty-order decision. The transport
+    # kind (native_cli, fabric, oauth) is not a workload classification, and
+    # every other surface or order is refused.
+    surface = policy["execution_surface"]
+    if surface == "inference":
+        if policy["allowed_order"] != ["fabric"] or policy["denied_order"] != []:
+            raise FabricHeld("metabolism_workload_receipt_invalid")
+    elif surface == "native_agent":
+        if policy["allowed_order"] != [] or policy["denied_order"] != []:
+            raise FabricHeld("metabolism_workload_receipt_invalid")
+    else:
         raise FabricHeld("metabolism_workload_receipt_invalid")
 
 
 def _operation_identity(record):
     return {k: record[k] for k in ("root", "owner", "unit", "kind", "logical", "scope",
                                   "request", "inspection", "selection")}
+
+
+def _served_model_matches(served, inspection):
+    """True when the model that actually served is the one that was requested.
+
+    A fabric claim is served by exactly the model its recipe pinned. A legacy
+    inference waterfall reports a dated variant of the requested model family;
+    the family must still be the requested one.
+    """
+    requested = inspection["model"]
+    if served == requested:
+        return True
+    return (inspection["cost_basis"] == "incumbent_inference" and type(served) is str
+            and bool(requested) and served.startswith(requested + "-"))
+
+
+def _original_identity(record):
+    """The immutable consumer facts that identify one logical original.
+
+    The current policy (inspection/selection) is deliberately absent: a
+    selector removal, a workload-policy revision or a changed route must not
+    make a saved original unreachable. The literal request text is absent too
+    because a consumer may freeze a per-attempt marker inside it; the frozen
+    request-determining facts belong in ``logical``.
+    """
+    return {k: record[k] for k in ("root", "owner", "unit", "kind", "logical", "scope")}
+
+
+def saved_original(records, kind, identity):
+    """Find the retained original for one immutable consumer identity.
+
+    Returns the saved record when it may still be used, or None when this
+    identity has no saved original yet. A retained original that is claimed,
+    observed, held or ambiguously publishing is never handed back for a new
+    call: it stays held until it is reconciled by its own owner.
+    """
+    matches = [record for record in records.values()
+               if record["kind"] == kind and _original_identity(record) == identity]
+    if not matches:
+        return None
+    complete = [record for record in matches if record["state"] == "complete"]
+    if complete:
+        if len({record["text_digest"] for record in complete}) != 1:
+            raise FabricHeld("metabolism_original_ambiguous")
+        return sorted(complete, key=lambda record: record["operation_id"])[0]
+    resumable = [record for record in matches if record["state"] == "known"]
+    if len(resumable) == 1:
+        return resumable[0]
+    if len(resumable) > 1:
+        raise FabricHeld("metabolism_original_ambiguous")
+    # Claimed, observed, publishing and held originals are never recoverable
+    # by sending again; an ambiguous publication stays held.
+    raise FabricHeld("metabolism_original_held")
+
+
+def original_identity(root, kind, unit, logical, scope):
+    """The immutable consumer identity of one logical original."""
+    return {"root": str(_physical_path(root)), "owner": _OWNERS[kind], "unit": str(unit),
+            "kind": kind, "logical": copy.deepcopy(logical), "scope": list(scope)}
+
+
+def saved_original_for(root, kind, unit, logical, scope):
+    """Read the retained original of one identity through its own owner.
+
+    Returns None when this identity has no saved original. A held, claimed,
+    observed or ambiguous original raises instead: it is never handed back for
+    a new call.
+    """
+    identity = original_identity(root, kind, unit, logical, scope)
+    document = read_owner_state(root, _OWNERS[kind], str(unit))
+    return saved_original(_records(document), kind, identity)
 
 
 def _operation_key(record, identity):
@@ -448,13 +1105,23 @@ def validate_operation(record):
             raise FabricHeld("metabolism_claim_invalid")
         return
     receipt = record["receipt"]
-    if (type(receipt) is not dict or set(receipt) != {"operation_id", "provider", "requested_model",
-            "served_model", "observation", "usage", "close", "effect_unknown"}
+    receipt_keys = {"operation_id", "provider", "requested_model", "served_model",
+                    "observation", "usage", "close", "effect_unknown"}
+    if (type(receipt) is not dict or not receipt_keys <= set(receipt)
+            or not set(receipt) <= receipt_keys | {"response"}
             or receipt["operation_id"] != record["operation_id"]
-            or receipt["provider"] != record["inspection"]["provider"]
+            or (receipt["provider"] != record["inspection"]["provider"]
+                and record["inspection"]["cost_basis"] != "incumbent_inference")
             or receipt["requested_model"] != record["inspection"]["model"]
             or receipt["served_model"] is not None and not _label(receipt["served_model"])
             or type(receipt["effect_unknown"]) is not bool):
+        raise FabricHeld("metabolism_response_receipt_invalid")
+    response = receipt.get("response")
+    if response is not None and (type(response) is not dict
+            or set(response) != {"stop_reason", "content_shape"}
+            or response["stop_reason"] is not None and not _label(response["stop_reason"])
+            or type(response["content_shape"]) is not list
+            or any(not _label(kind) for kind in response["content_shape"])):
         raise FabricHeld("metabolism_response_receipt_invalid")
     observation, usage, close = receipt["observation"], receipt["usage"], receipt["close"]
     if usage is None and (observation is not None or receipt["served_model"] is not None or record["text"] is not None):
@@ -470,12 +1137,15 @@ def validate_operation(record):
             or usage["usage_state"] not in ("known", "unknown")
             or any(not _count(usage[k]) for k in ("completed_input_tokens", "completed_output_tokens"))
             or any(usage[k] is not None and not _count(usage[k]) for k in ("input_tokens", "output_tokens"))
-            or usage["usage_state"] == "known" and any(usage[k] != usage["completed_"+k] for k in ("input_tokens", "output_tokens"))
-            or usage["usage_state"] == "unknown" and any(usage[k] is not None for k in ("input_tokens", "output_tokens"))):
+            or any(usage[k] is not None and usage[k] != usage["completed_"+k]
+                   for k in ("input_tokens", "output_tokens"))
+            or usage["usage_state"] == "known" and any(usage[k] is None for k in ("input_tokens", "output_tokens"))
+            or usage["usage_state"] == "unknown" and all(usage[k] is not None for k in ("input_tokens", "output_tokens"))):
         raise FabricHeld("metabolism_usage_invalid")
     if observation is not None and usage is not None:
-        pair = all(observation[k] is not None for k in ("input_tokens", "output_tokens"))
-        if any(usage["completed_" + k] != (observation[k] if pair else 0) for k in ("input_tokens", "output_tokens")):
+        if any(usage["completed_" + k] !=
+               (observation[k] if observation[k] is not None else 0)
+               for k in ("input_tokens", "output_tokens")):
             raise FabricHeld("metabolism_usage_observation_mismatch")
     if close is None:
         if not receipt["effect_unknown"]:
@@ -492,7 +1162,7 @@ def validate_operation(record):
         if (record["error"] is not None or not record["text"] or not record["text"].strip()
                 or receipt["effect_unknown"] or close is None
                 or close["disposition"] not in ("closed", "local_only") or close["effect_unknown"]
-                or receipt["served_model"] != record["inspection"]["model"]
+                or not _served_model_matches(receipt["served_model"], record["inspection"])
                 or observation is None or observation["serving_model"] != receipt["served_model"]
                 or usage is None):
             raise FabricHeld("metabolism_known_result_invalid")
@@ -553,10 +1223,34 @@ def _owner_operations(root, owner, unit):
     return result
 
 
-def guard_saved(root, owner, unit, kind, scope):
-    """Read original holds before config, model discovery, force or mutable caps."""
-    for record in _owner_operations(root, owner, unit):
-        if record["kind"] == kind and record["state"] != "complete" and set(record["scope"]).intersection(scope):
+def guard_saved(root, owner, unit, kind, scope, *, owned=None):
+    """Read original holds before config, model discovery, force or mutable caps.
+
+    ``owned`` is the caller's own in-flight claim. It is exempt from the hold
+    only when the owner still stores exactly that claim: its identity, its
+    attempt nonce, its frozen scope and its current stored content must all
+    match. Every other incomplete original that overlaps the scope still
+    holds, so a foreign or concurrent claim is never borrowed.
+    """
+    records = _owner_operations(root, owner, unit)
+    owned_id = None
+    if owned is not None:
+        if (type(owned) is not dict or owned.get("owner") != owner
+                or owned.get("unit") != str(unit) or owned.get("kind") != kind
+                or owned.get("state") != "claimed"
+                or owned.get("root") != str(_physical_path(root))
+                or type(owned.get("scope")) is not list
+                or not set(owned["scope"]).intersection(scope)
+                or not _label(owned.get("operation_id"))):
+            raise FabricHeld("metabolism_owned_claim_invalid")
+        owned_id = owned["operation_id"]
+        current = [record for record in records if record["operation_id"] == owned_id]
+        if not current or current[0] != owned:
+            raise FabricHeld("metabolism_owned_claim_changed")
+    for record in records:
+        if (record["kind"] == kind and record["state"] != "complete"
+                and set(record["scope"]).intersection(scope)
+                and record["operation_id"] != owned_id):
             raise FabricHeld("metabolism_original_held")
 
 
@@ -568,9 +1262,10 @@ def native_publication_guard(root, owner, unit, kind, scope):
         yield file
 
 
-def guard_legacy_route(root, kind, unit, scope, *, cfg=None, providers=None, reason=None):
+def guard_legacy_route(root, kind, unit, scope, *, cfg=None, providers=None, reason=None,
+                       owned=None):
     """An entered legacy path cannot change routes or adopt a selected recipe."""
-    guard_saved(root, _OWNERS[kind], str(unit), kind, scope)
+    guard_saved(root, _OWNERS[kind], str(unit), kind, scope, owned=owned)
     from engine import llm_auth
     try:
         if (llm_auth.application_mode_id(cfg) is not None
@@ -612,17 +1307,20 @@ def selected_factory(root, kind, cfg=None):
 
 
 def guard_native_route(root, kind, unit, scope, *, cfg=None, model_requested=True,
-                       providers=None, reason=None):
+                       providers=None, reason=None, owned=None):
     """Consult the real purpose policy before any incumbent native model path.
 
     Structural, zero-model work stays available. A selected native-agent purpose
     must never fall through to an injected provider, credential preflight, or an
     inference workload relabel. The original owner is inspected even after the
     selector disappears. This boundary does not claim a native job was admitted.
+
+    ``owned`` is the caller's own in-flight claim; it never exempts another
+    original from the hold.
     """
     if kind not in {"propose", "adjudicate", "agenda", "attention", "audit"}:
         raise FabricHeld("metabolism_native_kind_invalid")
-    guard_saved(root, _OWNERS[kind], str(unit), kind, scope)
+    guard_saved(root, _OWNERS[kind], str(unit), kind, scope, owned=owned)
     if not model_requested:
         return
     try:
@@ -643,27 +1341,34 @@ def guard_native_route(root, kind, unit, scope, *, cfg=None, model_requested=Tru
     raise FabricHeld("metabolism_native_operation_binding_required")
 
 
-def native_provider_call(root, kind, unit, scope, providers, invoke, *, context, cfg=None):
+def native_provider_call(root, kind, unit, scope, providers, invoke, *, context, cfg=None,
+                         owned=None):
     """Guard the incumbent call before/after its actual shared-auth boundary."""
     from engine import llm_auth
-    guard_native_route(root, kind, unit, scope, cfg=cfg, providers=providers)
+    guard_native_route(root, kind, unit, scope, cfg=cfg, providers=providers, owned=owned)
     try:
         result = llm_auth.make_call(providers, invoke, context=context)
     except llm_auth.FabricProviderError as exc:
         raise FabricHeld("metabolism_selected_recipe_requires_original") from exc
-    guard_native_route(root, kind, unit, scope, cfg=cfg, providers=providers, reason=result[1])
+    guard_native_route(root, kind, unit, scope, cfg=cfg, providers=providers, reason=result[1],
+                       owned=owned)
     return result
 
 
-def operation_record(root, kind, unit, logical, scope, system, user, max_tokens, factory, cfg):
+def operation_record(root, kind, unit, logical, scope, system, user, max_tokens, factory, cfg,
+                     *, inspection=None, selection=None):
     from engine import llm_auth
-    inspection = factory.inspect(cfg)
+    if inspection is None:
+        inspection = factory.inspect(cfg)
+    if selection is None:
+        selection = {"mode": llm_auth.application_mode_id(cfg),
+                     "host_profile": os.environ.get("MM_PROVIDER_WORKLOAD_PROFILE")}
     record = {"schema": "mastermind.metabolism_fabric_operation.v1", "operation_id": "",
         "attempt_nonce": secrets.token_hex(16), "root": str(_physical_path(root)),
         "owner": _OWNERS[kind], "unit": str(unit), "kind": kind, "logical": copy.deepcopy(logical),
         "scope": list(scope), "request": {"system": system, "user": user, "max_tokens": max_tokens,
             "response_contract": "complete-text-v1"}, "inspection": inspection,
-        "selection": {"mode": llm_auth.application_mode_id(cfg), "host_profile": os.environ.get("MM_PROVIDER_WORKLOAD_PROFILE")},
+        "selection": copy.deepcopy(selection),
         "identity_digest": "", "state": "claimed", "text": None, "text_digest": None,
         "receipt": None, "business": None, "error": None}
     record["identity_digest"] = fabric_digest(_operation_identity(record))
@@ -695,17 +1400,44 @@ def validate_transition(old, new):
 
 class FabricInvocation:
     """One original operation inside one existing file owner; no resume sends."""
-    def __init__(self, root, kind, unit, logical, scope, system, user, max_tokens, *, cfg=None):
+    def __init__(self, root, kind, unit, logical, scope, system, user, max_tokens, *,
+                 cfg=None, inspection=None, selection=None):
         self.root, self.kind, self.unit = _physical_path(root), kind, str(unit)
+        if kind not in _PURPOSES:
+            raise FabricHeld("metabolism_kind_invalid")
         self.owner = _OWNERS[kind]
-        guard_saved(self.root, self.owner, self.unit, kind, scope)
-        self.factory, self.cfg = selected_factory(self.root, kind, cfg)
-        if self.factory is None:
-            raise FabricHeld("metabolism_selection_required")
-        record = operation_record(self.root, kind, self.unit, logical, scope,
-                                  system, user, max_tokens, self.factory, self.cfg)
+        self.factory = None
+        self.cfg = copy.deepcopy(cfg) if cfg is not None else {}
         self.reused = False
         self._send_started = False
+        identity = original_identity(self.root, kind, unit, logical, scope)
+        # A saved original is looked up BEFORE any selection, inspection,
+        # secret, nonce or admission happens. A completed original therefore
+        # reopens with zero provider, credential and governance effect.
+        with owned_bytes(self.root, self.owner, self.unit) as file:
+            document = _state_document(file.read(), self.owner, self.unit)
+            records = _records(document)
+            saved = saved_original(records, kind, identity)
+            if saved is not None:
+                self.record = copy.deepcopy(saved)
+                self.reused = True
+                return
+            if self.owner == "audit":
+                _audit_claim_fence(document, self.unit, logical)
+            # A different original that still overlaps this scope stays held.
+            guard_saved(self.root, self.owner, self.unit, kind, scope)
+        if inspection is None:
+            self.factory, self.cfg = selected_factory(self.root, kind, cfg)
+            if self.factory is None:
+                raise FabricHeld("metabolism_selection_required")
+            record = operation_record(self.root, kind, self.unit, logical, scope,
+                                      system, user, max_tokens, self.factory, self.cfg)
+        else:
+            # A consumer that already owns its transport presents its own
+            # inspected receipt; no factory and no credential are involved.
+            record = operation_record(self.root, kind, self.unit, logical, scope,
+                                      system, user, max_tokens, None, self.cfg,
+                                      inspection=inspection, selection=selection)
         with owned_bytes(self.root, self.owner, self.unit) as file:
             before = file.read()
             document = _state_document(before, self.owner, self.unit)
@@ -719,6 +1451,13 @@ class FabricInvocation:
                     raise FabricHeld("metabolism_foreign_operation")
                 if previous["kind"] == kind and previous["state"] != "complete" and set(previous["scope"]).intersection(scope):
                     raise FabricHeld("metabolism_original_held")
+            # A concurrent caller that finished first owns this original.
+            saved = saved_original(records, kind, identity)
+            if saved is not None:
+                self.record, self.reused = copy.deepcopy(saved), True
+                return
+            if self.owner == "audit":
+                _audit_claim_fence(document, self.unit, logical)
             previous = records.get(record["operation_id"])
             if previous is not None:
                 if previous["state"] != "complete" or _operation_identity(previous) != _operation_identity(record):
@@ -732,6 +1471,32 @@ class FabricInvocation:
             file.replace(before, (fabric_json(document) + "\n").encode())
             self.record = copy.deepcopy(record)
 
+    @classmethod
+    def reopen(cls, root, kind, unit, logical, scope):
+        """Bind the retained original of one identity without a request.
+
+        A saved original is reopened before any selection, inspection, secret,
+        nonce or admission happens. Nothing here can send: the retained
+        original already owns its own outcome.
+        """
+        self = cls.__new__(cls)
+        self.root, self.kind, self.unit = _physical_path(root), kind, str(unit)
+        if kind not in _PURPOSES:
+            raise FabricHeld("metabolism_kind_invalid")
+        self.owner = _OWNERS[kind]
+        self.factory = None
+        self.cfg = {}
+        self.reused = True
+        self._send_started = False
+        identity = original_identity(self.root, kind, unit, logical, scope)
+        with owned_bytes(self.root, self.owner, self.unit) as file:
+            document = _state_document(file.read(), self.owner, self.unit)
+            saved = saved_original(_records(document), kind, identity)
+            if saved is None:
+                raise FabricHeld("metabolism_original_absent")
+            self.record = copy.deepcopy(saved)
+        return self
+
     def save(self, updated, *, owner_updates=None, expected_owner_values=None):
         validate_transition(self.record, updated)
         with owned_bytes(self.root, self.owner, self.unit) as file:
@@ -741,20 +1506,48 @@ class FabricInvocation:
             if records.get(self.record["operation_id"]) != self.record:
                 raise FabricHeld("metabolism_operation_cas_failed")
             if owner_updates is not None:
-                allowed = {"last_audit_graded_as_of", "last_postmortem_cycle_id", "last_run_utc"}
-                if (self.owner != "market" or updated["state"] != "complete"
-                        or type(owner_updates) is not dict or not set(owner_updates) <= allowed
+                if self.owner == "market":
+                    allowed = {"last_audit_graded_as_of", "last_postmortem_cycle_id", "last_run_utc"}
+                    permitted = updated["state"] == "complete"
+                elif self.owner == "audit":
+                    allowed = set(_AUDIT_RECORD_FIELDS) | {_AUDIT_PUBLICATION_KEY}
+                    permitted = (updated["state"] == "complete"
+                                 or (updated["state"] == "publishing"
+                                     and set(owner_updates) <= {_AUDIT_PUBLICATION_KEY}))
+                else:
+                    allowed, permitted = set(), False
+                if (not permitted or type(owner_updates) is not dict
+                        or not set(owner_updates) <= allowed
                         or type(expected_owner_values) is not dict
                         or not set(expected_owner_values) <= allowed
-                        or any(document.get(key) != value for key, value in expected_owner_values.items())):
+                        or any(not _audit_same(document.get(key), value)
+                               for key, value in expected_owner_values.items())):
                     raise FabricHeld("metabolism_cursor_cas_failed")
-                document.update(copy.deepcopy(owner_updates))
+                if self.owner == "audit":
+                    entry = owner_updates.get(_AUDIT_PUBLICATION_KEY)
+                    fields = {key: value for key, value in owner_updates.items()
+                              if key in _AUDIT_RECORD_FIELDS}
+                    expected_state = "acknowledged" if updated["state"] == "complete" else "pending"
+                    if (type(entry) is not dict
+                            or entry.get("original_operation_id") != self.record["operation_id"]
+                            or entry.get("state") != expected_state
+                            or (expected_state == "acknowledged"
+                                and not _audit_same(fields, entry.get("record")))):
+                        raise FabricHeld("metabolism_audit_publication_original_mismatch")
+                    _audit_publication_transition(document, self.unit, entry, original=updated)
+                    document.update(copy.deepcopy(fields))
+                else:
+                    document.update(copy.deepcopy(owner_updates))
             records[self.record["operation_id"]] = copy.deepcopy(updated)
+            _state_document({"raw": fabric_json(document)}, self.owner, self.unit)
             file.replace(before, (fabric_json(document) + "\n").encode())
             self.record = copy.deepcopy(updated)
 
+
     def call(self):
         if self.reused or self._send_started or self.record["state"] != "claimed":
+            raise FabricHeld("metabolism_send_not_owned")
+        if self.factory is None:
             raise FabricHeld("metabolism_send_not_owned")
         self._send_started = True
         return execute_claimed_model(self.record, self.factory, self.cfg, self.save, self.confirm_claim)
@@ -764,17 +1557,20 @@ class FabricInvocation:
             document = _state_document(file.read(), self.owner, self.unit)
             if _records(document).get(self.record["operation_id"]) != self.record:
                 raise FabricHeld("metabolism_claim_changed_before_bind")
+            if self.owner == "audit":
+                _audit_claim_fence(document, self.unit, self.record["logical"])
 
-    def publication_intent(self, intent):
+    def publication_intent(self, intent, *, owner_updates=None):
         updated = copy.deepcopy(self.record)
         updated.update(state="publishing", business={"intent": copy.deepcopy(intent), "outcome": None})
-        self.save(updated)
+        self.save(updated, owner_updates=owner_updates, expected_owner_values={})
 
     def complete(self, outcome, *, owner_updates=None, expected_owner_values=None):
         updated = copy.deepcopy(self.record)
         updated["state"] = "complete"
         updated["business"]["outcome"] = copy.deepcopy(outcome)
-        self.save(updated, owner_updates=owner_updates, expected_owner_values=expected_owner_values)
+        self.save(updated, owner_updates=owner_updates,
+                  expected_owner_values=expected_owner_values or {})
 
     def hold(self, reason):
         if self.record["state"] in ("known", "publishing"):

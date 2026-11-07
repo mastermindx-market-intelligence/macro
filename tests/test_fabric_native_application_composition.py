@@ -1,6 +1,6 @@
 """Actual Macro owner/client -> pinned native B/A -> synthetic loopback upstream.
 
-Set MM_FABRIC_GATEWAY_SOURCE_ROOT to Mastermind8af48bc. The test reuses its
+Set MM_FABRIC_GATEWAY_SOURCE_ROOT to Mastermindf4bd27d91468176ec2fbb0eb83946824f7c35185. The test reuses its
 real Broker/SQLite/gateway/handler fixture; only credentials, qualification,
 provider responses and lifecycle helpers are synthetic. No deployment claim.
 """
@@ -24,21 +24,21 @@ from engine import provider_production_modes as owner
 from tests.test_fabric_application_binding import binding  # noqa: F401
 
 SOURCE_ROOT = os.environ.get("MM_FABRIC_GATEWAY_SOURCE_ROOT")
-pytestmark = pytest.mark.skipif(not SOURCE_ROOT, reason="paired Mastermind8af checkout required")
+pytestmark = pytest.mark.skipif(not SOURCE_ROOT, reason="paired Mastermind APPLICATION checkout required")
 MODEL = "fixture-model"
 PINS = {
     "candidate/commission_deadline.py": "fade630ed75c1b93334a5711a6df7a554fbd24ee",
-    "candidate/go_shim.py": "2c7bb5a9719f4a94bd57a30b5c1bc90d171573df",
-    "candidate/lease_broker.py": "166930f1b91753b764c4f6561ec309830f2cb332",
-    "candidate/go_lease_gateway.py": "b9fa884e88481e9f0e80a18b19dd79d343130bd1",
-    "candidate/go_lease_capability.py": "4224b4988a7b13e1a3b703f2e3fe7ddbbac88a03",
-    "candidate/provider_outcome.py": "4236303eb3abfa7c9dcad4d3e1a5454f15600c98",
-    "candidate/quota_circuit.py": "b119865ba77908eaf971e86e923075d7da365ffc",
+    "candidate/go_shim.py": "066d87cd23275204fb6d30af45ac03db1d4dbb4f",
+    "candidate/lease_broker.py": "d8577c6ee5cc9bd3e7fc22905530f4755b860ae0",
+    "candidate/go_lease_gateway.py": "e21b6d6a4e4230fce5f55d90820c6391d4b79324",
+    "candidate/go_lease_capability.py": "38856700331b3fb3a7706a5745e23fb7b3d18cf0",
+    "candidate/provider_outcome.py": "981f35a01183e83fdb9f0b8a4175b290cdeb85f8",
+    "candidate/quota_circuit.py": "1583a6ba773e56dbc3f295b65ffc08dea2d31d48",
     "source/model_tier.py": "96093c2747d2dda69b3f2255cb84e656355c87ea",
     "source/pool_status.py": "02922043357d63b4bcfa3791899df27a5c42be12",
     "tests/_offline_boundary.py": "e511ab65fe1cd30bf4d2addac6700ca43c3468da",
     "tests/test_go_application_handler_composition.py": "13ebd6bcee5167926807d7ccdc63bcabed0cf1b1",
-    "tests/test_application_turn_admission.py": "efe876eec40dc8885dbc0059915f2401146be969",
+    "tests/test_application_turn_admission.py": "4cc542888358bf6b46a1e78c581af5ef2f7178aa",
 }
 
 

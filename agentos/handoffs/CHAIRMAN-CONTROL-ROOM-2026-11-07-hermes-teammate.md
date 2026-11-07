@@ -3,136 +3,94 @@ workstream: WS:CHAIRMAN-CONTROL-ROOM
 session: sol/hermes-teammate-continuity-20261107-c3
 model: sol
 ended_because: ci_handoff
-mission: Implement the Chairman's Hermes always-on teammate directive through existing Mastermind owners.
-  This is an active source milestone, not mission completion, runtime admission, a writer transfer or
-  a new program.
-state_before: 'The researched plan was retained in Mastermind PR #2159 but not linked from Agent OS. The
-  native runtime remained on original PR #2134; recall, computer environment safety and learning measurement
-  had concrete implementation gaps.'
+mission: Implement the Chairman's Hermes always-on teammate directive through existing Mastermind owners. This is an active source milestone, not mission completion, runtime admission, a writer transfer or a new program.
+state_before: The researched plan and initial recall/computer/grounding source existed, but the adopted compiler had no authenticated native memory consumer and the original source releases were still being reconciled.
 changed:
-- path: mastermind:integrations/hermes_harness/agentos_memory_provider.py
-  what: 'PR #2163 at 62c0d6397b671a201d151600bfa0083bdcbec3e2 implements scoped read-only owner recall,
-    repairs default native thread use and freshness/currentness, and permits explicit trusted-host rendered
-    capacity up to 128 KiB while retaining 32 KiB default.'
-- path: mastermind:integrations/hermes_qualification/computer_env_guard
-  what: 'PR #2165 at 1c8a4391cad243f860c25431e8adf849ecf5f6f7 qualifies the exact upstream environment
-    repair and collects its 18 tests in existing CI; it installs nothing.'
-- path: mastermind:scripts/agent_eval/hermes_memory_grounding.py
-  what: 'PR #2167 at 79133a7f6a17a26f77a580bdb2621dd22bdf9bf5 adds pure exact-output grounding measurement
-    through existing EVAL graph and scorer-pass owners, preserving invalid execution evidence.'
+- path: mastermind:integrations/hermes_harness
+  what: Scoped Agent OS recall and authenticated native context transport are implemented; the original recall source is merged and transport PR2188 is in its original protected queue.
+- path: mastermind:integrations/hermes_runtime
+  what: PR2195 at 29c4376c01c77e6ec7551a67f4e8a3d08842707d binds actual Hermes memory activation and current-turn prompt evidence to the original admitted claim, session, instance and authority.
+- path: mastermind:docs/hermes/NATIVE_AGENTOS_MEMORY.md
+  what: Exact native owner/lifecycle, staged evidence and installed acceptance are documented at Git blob 95f5fabff6d4afb2031885e68c81d8fbeac0dad9.
+- path: mastermind:research/HERMES_TEAMMATE_EVOLUTION_MASTERPLAN_2026-11-06.md
+  what: Cumulative source/effect frontier is recorded through section27 at commit 3c8f4d2d9c3d6388c8714b17ee738c2481040bc7.
 verified:
-- claim: The final recall source passes all 69 focused tests including 9 actual upstream interface cases.
-  command: 'On original M1 worktree: /opt/homebrew/bin/python3.12 -m unittest -q integrations.hermes_harness.tests.test_agentos_memory_provider'
-  result: 69 passed, zero failures/skips, process 44579 terminal rc 0. Upstream 1c0cd667746d3395fe9e1b6c74f8f85952486f18;
-    MemoryProvider SHA256 ac81dcf489c698891f0edebfe26845a75c50d2bde77ec3be8d7938a85c79f1fc.
-- claim: The default native thread can deliver a real owner bundle verbatim under the explicit larger
-    envelope.
-  command: 'Original M1 process 45125: create_provider against actual upstream, actual read_context for
-    WS:CHAIRMAN-CONTROL-ROOM, prepare_context/readiness then prefetch; synthetic qualification binding
-    only.'
-  result: Macro local revision c3d7f1d4149176e35abf6077c18c96513abe6600; 59,933 raw / 61,065 rendered
-    bytes; 12.214 s; suffix match; 6 sections, 3 degraded, 24 excluded, 46 omitted. No runtime grant,
-    selected provider or model request.
-- claim: Computer fallback repair is source-qualified, and grounded scoring rejects unsupported success.
-  command: python -m unittest discover -v -s integrations/hermes_qualification/tests -p 'test_computer_env_guard.py';
-    python -m unittest -v tests.test_agent_eval_hermes_memory_grounding
-  result: '18 computer tests and 22 scorer tests passed separately. Exact code/readback evidence is in
-    Mastermind #2159 section 18 and the individual PRs. No live desktop or learning efficacy claim.'
-- claim: Original native runtime source is recovered and published on its original carrier.
-  command: 'Original M2 workspace exact-source checks, pending-merge reconciliation and typed exact-head
-    publication; GitHub PR #2134 readback.'
-  result: Head 7a3160fa76ceae58726eacd27d741872273d3828; tree 3ddb5de3275c798c1d5eebc2210f1c86d7349163.
-    Both protected and feature behaviors retained. 316 Python cases, TypeScript check, 67 UI cases, native
-    build and 16 native Rust cases passed; one existing signed-HTTP fixture ignored. Typed push APPLIED,
-    clean local=remote. New exact-head auto request enabled 2026-11-07T01:34:08Z; CI pending, no merge
-    claim.
-- claim: Recall and grounded scoring are merged into protected Mastermind source.
-  command: 'Original Studio process 96845: GitHub GraphQL state, mergedAt, mergeCommit, head and status
-    checks for PR #2163 and PR #2167.'
-  result: 'PR #2163 MERGED at 5ca25e561ffaeacb4ef94bb08f507617f80d0607; PR #2167 MERGED at 78d8cb693888579808f02de0934c18f4915fd042;
-    both 2026-11-07T01:17:19Z, head checks SUCCESS. These are source merges, not installed acceptance.'
+- claim: Original vendor, adopted receiver and original-observation release effects have merged.
+  command: Original Studio GraphQL readback of PR2171, PR2178 and PR2181.
+  result: PR2171 merge d2f72b2d0d3066502adef103afa847904a70b18d; PR2178 merge 23c9b011e30a4acc6892a59d67a629f74b07a491; PR2181 merge 1d86f77633100e7c8fe2be4c3dcc4d8ff8c735bf. Source merges only.
+- claim: The authenticated context transport passed its ordinary required CI and entered its single original protected queue.
+  command: Exact-head check and protection read, head-leased SQUASH request through Studio66445, original readback66658.
+  result: PR2188 head d5cebb3f81114c018912f805890d7b77015ea7c6; required CI42343112652 SUCCESS; queue entry MQE_lQDOTotz3c8AAAABNdpVVc4ABAiKzgPMmAQ QUEUED at the recorded boundary. No merge or installation claim.
+- claim: The native memory source is published with the current protected overlap preserved.
+  command: Canonical master-tree reconstruction, exact API tree comparison, commit/branch/PR publication and immutable document readback.
+  result: Draft PR2195 head29c4376c01c77e6ec7551a67f4e8a3d08842707d; tree1412673115e2cfe3177e07d3922f830281ee752f; parents d5cebb3 and protected5f8c13d. All40 intervening protected changes retained, including the exact original-admission equality check.
+- claim: Native claim, loader, provider and current-turn boundary cases execute against actual pinned upstream source.
+  command: Python3.12 pytest on tests/test_hermes_native_agentos_memory.py and the protected original-admission mismatch case.
+  result: 71 passed,134 deselected,23.98s. Includes70 new cases, Secretary/Meta isolated preparation, actual upstream memory collector/lifecycle, late-worker/readback/lock-waiter edges, claim/publication/session changes, expiry and audit coverage. Controlled fixtures are not installed custody proof.
+- claim: Existing source and owner boundaries remain qualified without a new memory or authorization owner.
+  command: Focused native/bootstrap/identity checks; exact-source pin and D8 review; original fixture hash/license verification.
+  result: Preceding235 passed/81 deselected and198 passed/20 skipped/30 subtests are overlapping groups, not a sum. Fourteen unmodified MIT upstream fixtures retain source provenance. No guard exemption or alternate queue.
 unverified:
 - claim: The full always-on Hermes teammate is installed and accepted.
-  what_would_verify: Authenticated native role/context/tool binding, original C26 result reconciliation,
-    admitted child START and parent consumption, restart/revocation/endurance and complete original journeys.
+  what_would_verify: Exact released native installation, genuine receiving-owner context enrollment, same-process capability readback, original admitted context/prompt/terminal evidence and complete restart/revocation/endurance/fleet journeys.
 - claim: Mastermind grants and safely uses a website vault account.
-  what_would_verify: Existing owner-issued backend/account/item/origin permission plus actual secret-safe
-    owned-page fill transport, disposable login proof, revocation and no secret-bearing action tokens.
+  what_would_verify: Existing owner-issued backend/account/item/origin permission, real secret-safe owned-page fill, disposable account journey, revocation and absence of secrets in action tokens or traces.
+- claim: The observed prompt was dispatched to the identified provider and model.
+  what_would_verify: Genuine original request/dispatch and provider identity evidence; API-message assembly alone is insufficient.
 - claim: Memory or a changed skill improves held-out outcomes.
-  what_would_verify: Prospective technically valid matched native EVAL runs; separate memory and skill
-    comparisons; genuine holdout; suspected discovery and source-backed skill adoption/rollback.
+  what_would_verify: Prospective technically valid matched native EVAL runs, distinct memory/skill comparisons, a genuine holdout and source-backed skill adoption/rollback through existing owners.
 unresolved:
-- 'The computer guard PR #2165 remains OPEN with its original auto request enabled, no queue entry and
-  one existing CI shard still in progress at the last boundary. Recall #2163 and grounding #2167 are merged;
-  actual installation and production composition remain open.'
-- Original Ubuntu1 C26 journal read was denied under the present user connection. Its original authorized
-  root/admin connection must be restored; no alternate-carrier/account replay.
-- 'Native install admits only clean selected upstream source. Explicit qualified vendor derivation belongs
-  in the existing release/source-preparation/install owner on #2134, not another installer.'
-- Inspected Workbench browser composers supply no persistent-profile grants; credential readiness is not
-  website-account authority. Generic Hermes vault discovery/list/unlock is not enrolled.
-- Original paid memory repair published source but ended rc 1 on a provider session-title error; Fabric
-  acceptance remains unset. Parent separately verified and continued the same source worktree.
-- The distinct vendor-derivation Fabric child hermes-teammate-vendor-derive-20261107-c3-01 has original
-  controller 17269. Last status is ACTIVE_OR_WAITING with worker START/root lineage unproven; preserve
-  its original effect and do not create a replacement writer. Its scope is the existing recipe/source-preparation/installer;
-  not live installation.
+- PR2188 original queue and PR2195 required CI/release must be consumed on the same carriers. No PR2195 release request exists at this milestone.
+- Original Ubuntu1 C26 journal read was denied under the present user connection. Restore its original authorized root/admin connection and reconcile the retained effect before installed continuation; no alternate carrier or account replay.
+- The separate local AF_UNIX socket-creation denial is unretried. Ordinary CI is not installed Control-socket proof.
+- Website vault/account/origin enrollment and secret-safe browser-fill composition remain open. Credential readiness alone supplies no account authority.
+- Original paid Fabric failures/refusals remain unretried and are not accepted worker labor. Parent-direct source work is recorded explicitly; native agents supplied principal judgment only.
 next_actions:
-- 'Consume original PR #2134 release effects at head 7a3160fa76ceae58726eacd27d741872273d3828. Source
-  repair is complete; do not edit while armed without reconciling its release effect. Continue original
-  installed qualification only after the exact C26 authorization gate is restored.'
-- 'Consume the original protected release effect for Mastermind #2165; do not re-arm the already merged
-  #2163 or #2167. Integrate only qualified immutable source and read installed identity before any installation
-  claim.'
-- Compose real native role/context/tool bindings and explicit vendor derivation through existing owners.
-  At restored original C26 authorization, reconcile its retained result before installed continuation.
-- Implement existing-owner account/item permission plus one real secret-safe login fill, then execute
-  matched native memory/skill evaluation and original endurance acceptance.
+- Consume PR2188's original queue receipt and PR2195's ordinary CI. Repair only concrete failed gates on the original source carrier, then use one exact-head protected queue request when eligible.
+- Prepare the exact installed v2 publication and genuine receiving-owner enrollment through incumbent owners; actual activation requires the original C26 authorized connection and retained-effect reconciliation.
+- Complete existing-owner vault/account/origin and secret-safe browser-fill composition, then real dispatch/EVAL and original recovery/endurance/fleet acceptance.
+- Preserve prior Control Room/R2 obligations; this Hermes milestone does not close their original journeys or declaration.
 do_not_redo:
-- 'Reuse the source research and original plan #2159; no new runtime, queue, memory store, authorization
-  owner, publisher or learning promotion service.'
-- Do not relabel source tests, CI, armed/queued PRs, compiler reads or synthetic qualification bindings
-  as production acceptance.
-- Preserve current M2 OMH and restore exact prior provider/configuration on rollback; do not blindly switch
-  to builtin.
-- Do not redispatch reconciled refused computer/grounding Fabric runs, repair the already-fixed native
-  shadowing bug again, or replay Ubuntu1's explicit denial.
-- Prior Control Room/R2 obligations and held source carriers remain controlling; these Hermes tests do
-  not satisfy the 48-obligation R2 declaration.
+- Reuse Mastermind plan2159, existing Executive/Agent OS/Workbench/EVAL/Harness2/Fabric owners and accepted source; add no duplicate lifecycle, memory, auth, queue, publisher or learning-promotion service.
+- Do not relabel component tests, CI, queues, source merges or fixture bindings as installed acceptance.
+- Do not replay the original C26 or local AF_UNIX denials or the original Fabric refusals under new names or carriers.
+- Outcome Learning398 remains held; C69/C70 and prior accepted work remain accepted.
+- No Slack/email delivery, worker start, daemon, account grant or credential collection is authorized by this continuity record.
 danger_areas:
-- Actual owner bundles exceed the advisory compiler token budget. Preserve all bytes and accounting; model-window
-  fit and first-turn readiness are separate host obligations.
-- The M1 and M2 Macro copies were different revisions and produced different bundle sizes; a successful
-  local read is not fleet-wide source freshness.
-- Hermes has one external memory-provider slot. Browser page-backend false can trigger native CDP fallback.
-  HMAC action references are plaintext, not a place for passwords.
-- Native install rejects both dirty patched upstream source and unqualified derivative commits; merging
-  the computer patch bundle alone cannot install it.
+- Owner bundles exceed advisory compiler budgets; preserve exact bytes and accounting. Context READY, provider return, native-manager delivery, prompt inclusion, dispatch and held-out efficacy are different claims.
+- Reused agents, session compaction, publication replacement, expiry and late callbacks must remain joined to the original claim and epoch.
+- Hermes has one external memory-provider slot. The v2 path disables independent MEMORY.md and USER.md stores; Agent OS stays authoritative.
+- Browser backend fallback and persistent-profile/account authority require the existing resource and action owners. HMAC action references are not secret containers.
 ---
 
-
-# Hermes teammate implementation milestone
+# Hermes teammate implementation frontier
 
 ## §0 State — what is true right now
 
-**MISSION_COMPLETE: false. Overall capability: BUILT_NOT_PROVEN.** The assigned principal is continuing the original implementation. Three useful source components now have focused executable proof. Recall and grounded scoring are merged into protected source; the computer guard remains in its original release process. Authenticated production composition and the original outcome remain open. This record updates only the Hermes-related continuation. It does not close or replace prior Control Room/R2 waves or acceptance contracts.
+**MISSION_COMPLETE: false. Overall capability: BUILT_NOT_PROVEN.** This is a source milestone in the same continuing implementation, not a handback or background-execution claim. It updates only the Hermes-related continuation and preserves every independent Control Room/R2 obligation.
 
-The complete source task tree and cumulative receipts are [Mastermind plan #2159, commit 594f3dcf](https://github.com/mastermindx-market-intelligence/Mastermind/blob/594f3dcff63a069270833d5bfc34624bd271b3cc/research/HERMES_TEAMMATE_EVOLUTION_MASTERPLAN_2026-11-06.md), particularly sections 17–19. That plan retains the researched mechanisms, adoption decisions and original staged acceptance.
+The full source tree, researched adoption decisions, original effects and cumulative evidence are in [Mastermind plan #2159, section27 at commit3c8f4d2](https://github.com/mastermindx-market-intelligence/Mastermind/blob/3c8f4d2d9c3d6388c8714b17ee738c2481040bc7/research/HERMES_TEAMMATE_EVOLUTION_MASTERPLAN_2026-11-06.md). Historical sections remain evidence; section27 supersedes their pending-source frontier.
 
 ## §1 What is left — in order
 
-Consume the recovered original [native runtime #2134](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2134) through operation `meta-ceo-byok-followon-parent-20261106-c35-01`, its original branch and M2 workspace `/Volumes/Mastermind 2/agent-workspaces/web/meta-ceo-byok-followon-parent-20261106-c35-01`. Its recovered head is `7a3160fa76ceae58726eacd27d741872273d3828`, with an original exact-head auto request enabled at `2026-11-07T01:34:08Z`. Source conflict repair is complete. Use its typed publisher; reconcile an armed/queued effect before editing. The original Ubuntu1 C26 admin denial separately gates installed continuation and cannot be bypassed.
+Consume the original [authenticated-context PR2188](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2188) queue and [native-memory PR2195](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2195) required CI. Neither queue state nor source publication proves activation. Keep each original carrier, preserve failed/uncertain effects and use the normal protected release path.
 
-The canonical source merge receipts are `5ca25e561ffaeacb4ef94bb08f507617f80d0607` for recall and `78d8cb693888579808f02de0934c18f4915fd042` for grounding. Consume the remaining original computer-guard release and use the existing source PRs: [recall #2163](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2163), [computer guard #2165](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2165), and [grounding #2167](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2167). Then connect the native owners, prove the complete account-scoped browser/vault journey, and execute the prospective learning and endurance acceptance.
+Next, prepare the exact native v2 publication and actual receiving-owner enrollment. Its original installed operation remains `meta-ceo-byok-followon-parent-20261106-c35-01`, original M2 workspace `/Volumes/Mastermind 2/agent-workspaces/web/meta-ceo-byok-followon-parent-20261106-c35-01`. The original Ubuntu1 C26 denial requires restoration of that original authorized connection and retained-effect reconciliation. Source preparation can proceed independently; denied runtime access cannot be replayed through another carrier.
+
+The product frontier still includes genuine vault/account/origin permission and secret-safe browser fill, provider-dispatch/model identity evidence, valid held-out memory/skill EVAL, and original recovery/endurance/fleet journeys.
 
 ## §2 What will bite the next receiver
 
-Source identity, actual runtime admission and user-visible success are distinct. Native source and M2's attended home use different Hermes revisions. The selected clean-vendor requirement blocks an unqualified patch installation. Neither a synthetic host binding nor a credential-readiness projection grants account use. Keep all original denied and unknown effects on their original carrier.
+Actual Hermes memory construction precedes native agent adoption, and session recovery/compaction can occur afterwards. PR2195 therefore uses the actual loader/collector, per-claim binding and a late barrier after compaction. A generic plugin registration hook or an idle READY snapshot does not prove delivery. Late workers, readback races, expired snapshots and lost owned-agent scope refuse.
+
+The local source composition preserves protected5f8c13d by exact tree identity, including every unrelated current blob. The relevant overlap is materialized locally and tested; ordinary CI qualifies the complete integrated tree. No installed claim follows from a valid source pin.
 
 ## §3 What was decided and found
 
-Agent OS remains the organizational memory owner; Hermes consumes its exact context. Host delivery capacity may be explicitly raised without rewriting the compiler. The existing release owner must prepare a frozen vendor derivation. The existing Workbench/Executive owner must supply real account/item permissions and the actual secret-safe page transport. Existing EVAL and Harness2 own measurement/refinement; Outcome Learning #398 remains held. Detailed rationale and falsifiers remain in the linked source plan, not a parallel knowledge store.
+Agent OS owns durable organizational memory. Hermes consumes the exact adopted bundle through the incumbent authenticated COO/App/Control path and original MCP connection. Executive OS retains admission and mission permissions. The actual native process owns transient memory readiness; it supplies only scoped evidence, never new authority.
+
+The existing Workbench owner must supply genuine account/item/origin permissions and secret-safe transport. Existing EVAL and Harness2 own measurement and refinement. Outcome Learning #398 remains held. The architecture and falsifiers stay in the source-linked program plan, rather than an independent knowledge or learning service.
 
 ## §4 Not in scope for this record — do not adopt
 
-This handoff creates no program, execution commission, daemon, watcher, account grant, skill publication or acceptance. No Slack messages were sent and no post-turn wake is asserted. The source plan's component states do not alter independent Control Room/R2 obligations. Protected release and actual original host authorization remain binding.
+This record creates no program, execution commission, daemon, watcher, account grant, skill publication, trade authority or acceptance. No Slack message or future wake is asserted. The installed host's actual authorization and every protected release rule remain binding.
