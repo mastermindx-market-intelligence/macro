@@ -82,6 +82,7 @@ jobs:
     runs-on: [self-hosted, macstudio]
     timeout-minutes: 120
     env:
+      RISK_ENVELOPE_RENDER_READ_ONLY: "1" # this lane publishes provisional source pointers, not a settled envelope pair
       CLOSINGBELL: "1"
       RENDER_NO_DRIP: "1"
       # COLLECT_LANE deliberately UNSET — every engine ledger writer self-gates on it;
