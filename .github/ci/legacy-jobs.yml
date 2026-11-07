@@ -49738,9 +49738,10 @@ jobs:
           python-version: "3.12"
       - name: install synthetic guard test dependency
         run: pip install pytest
+      # StructuralGuardsTest is a unittest suite; retain its exact script entrypoint.
       - name: archived predecessor fixtures (reproduction only)
         run: >-
-          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          PYTHONDONTWRITEBYTECODE=1 python
           research/factor_atlas/session6/source/test_structural_guards.py -q
       - name: repaired structural and corruption guards (not scientific admission)
         run: >-
