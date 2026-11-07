@@ -189,6 +189,31 @@ def test_reference_parser_rejects_duplicate_keys_and_alias_cycles():
             agentos.parse_project_discovery_reference_text(text)
 
 
+@pytest.mark.parametrize("marker", [{"supersedes": []}, {"supersedes": {}}, None, "malformed"])
+def test_malformed_unrelated_backlink_is_bounded_and_excluded(tmp_path, marker):
+    ws, old = workstream(), discovery(); req = request(ws, old)
+    result = build(req, ws, old)
+    sibling = agentos.parse_project_discovery_reference_text(discovery("UNRELATED"))
+    sibling["project_correction"] = marker
+    images = result["postimages"] + [{"path": "agentos/discoveries/DSC-UNRELATED.md",
+        "content_utf8": record(sibling)}]
+    for image in images:
+        target = tmp_path / image["path"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(image["content_utf8"], encoding="utf-8")
+    def run(*args):
+        return subprocess.run([sys.executable, str(ROOT / "scripts/agentos.py"), *args,
+            "--root", str(tmp_path / "agentos")], text=True, capture_output=True, cwd=tmp_path, timeout=20)
+    invalid = run("validate")
+    assert invalid.returncode == 1 and "project-correction-scope" in invalid.stdout
+    assert "Traceback" not in invalid.stderr
+    current = run("compile-context", "--workstream", "ALPHA", "--now", "2026-11-07T12:00:00Z")
+    assert current.returncode == 0, current.stdout + current.stderr
+    bundle = json.loads(current.stdout)
+    assert new_ref(req) not in {item["key"] for section in bundle["sections"] for item in section["items"]}
+    assert any(row.get("key") == new_ref(req) and "malformed" in row.get("reason", "") for row in bundle["excluded"])
+
+
 def test_full_validator_and_actual_current_context_preserve_and_follow_correction(tmp_path):
     ws, old = workstream(), discovery(); req = request(ws, old)
     result = build(req, ws, old); root = tmp_path / "agentos"

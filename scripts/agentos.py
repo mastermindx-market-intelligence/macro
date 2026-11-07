@@ -1667,6 +1667,8 @@ def qualify_project_discovery_correction(
                 raise ProjectDiscoveryCorrectionScopeError(tip, ident)
             named = {"DSC:" + key for key in names}
             marker = rec.get("project_correction")
+            if "project_correction" in rec and _project_correction_error(marker):
+                raise ProjectDiscoveryCorrectionScopeError(tip, ident)
             back = marker.get("supersedes") if type(marker) is dict else None
             if (named & refs or back in refs) and ident not in chain:
                 raise ProjectDiscoveryCorrectionScopeError(tip, ident)
