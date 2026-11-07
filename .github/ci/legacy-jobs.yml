@@ -15591,6 +15591,27 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      # Exact transitive inputs exposed by the original #10615 regression path.
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/indicators.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "site/factordata/basket_washout_state.json"
       - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
       - "lib/dataos/identity.py"
       - "lib/economic_propagation.py"

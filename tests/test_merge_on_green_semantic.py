@@ -507,7 +507,10 @@ def test_concrete_historical_run_with_no_v1_uses_exact_legacy_block(monkeypatch)
         "semantic_evidence_for_head",
         lambda *_a, **_k: SimpleNamespace(mode="legacy_absent", evidence=None),
     )
-    monkeypatch.setattr(MOG, "live_inherited_red", lambda *_a, **_k: None)
+    # A positive legacy annotation diagnostic cannot replace absent v1 proof.
+    monkeypatch.setattr(
+        MOG, "live_inherited_red", lambda *_a, **_k: "matching legacy annotations"
+    )
     monkeypatch.setattr(MOG, "live_authorized_pull", lambda *_a, **_k: (_pull(), "ok"))
     comments = []
     monkeypatch.setattr(

@@ -525,6 +525,85 @@ OPEN_PULL_PAGE_CAP = 10
 # `_semantic_pull_paths` does for an oversized files inventory.
 HOLD_COMMENT_PAGE_CAP = 5
 
+# --- planner mirrors -------------------------------------------------------------
+#
+# These are MIRRORS of `scripts/run_ci_pack.py`, not imports: the sweeper's sparse
+# checkout does not carry the planner's own imports (`ci_scope_dependencies.py`),
+# so importing it here raised ImportError in every real sweep and suppressed
+# legacy annotation diagnostics for every pull request. Planner parity is tested;
+# this scheduling inventory is not the canonical semantic authority boundary.
+MANIFEST_GLOBAL_INVALIDATORS = (
+    ".github/workflows/**",
+    ".github/ci/**",
+    ".github/ci/legacy-jobs.yml",
+    ".github/workflows/ci.yml",
+    "scripts/run_ci_pack.py",
+    "scripts/ci_scope_dependencies.py",
+    "scripts/check_ci_trigger_closure.py",
+    "scripts/audit_unrun_tests.py",
+    "config/dag.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
+    "config/synapse.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
+    "conftest.py",
+    "**/conftest.py",
+    "requirements*.txt",
+    "**/requirements*.txt",
+    "constraints*.txt",
+    "**/constraints*.txt",
+    "pyproject.toml",
+    "**/pyproject.toml",
+    "setup.cfg",
+    "**/setup.cfg",
+    "setup.py",
+    "**/setup.py",
+    "tox.ini",
+    "**/tox.ini",
+    "pytest.ini",
+    "**/pytest.ini",
+    "package.json",
+    "**/package.json",
+    "package-lock.json",
+    "**/package-lock.json",
+    "uv.lock",
+    "**/uv.lock",
+    "poetry.lock",
+    "**/poetry.lock",
+)
+_MANIFEST_GLOB_CACHE: dict[str, re.Pattern[str]] = {}
+
+
+def _manifest_glob_regex(pattern: str) -> re.Pattern[str]:
+    """`run_ci_pack._glob_to_regex`: `**` crosses `/`, a single `*` does not."""
+    cached = _MANIFEST_GLOB_CACHE.get(pattern)
+    if cached is not None:
+        return cached
+    source = pattern + "**" if pattern.endswith("/") else pattern
+    out: list[str] = []
+    index = 0
+    while index < len(source):
+        char = source[index]
+        if source.startswith("**/", index):
+            out.append("(?:.*/)?")
+            index += 3
+        elif source.startswith("**", index):
+            out.append(".*")
+            index += 2
+        elif char == "*":
+            out.append("[^/]*")
+            index += 1
+        elif char == "?":
+            out.append("[^/]")
+            index += 1
+        else:
+            out.append(re.escape(char))
+            index += 1
+    compiled = re.compile("^" + "".join(out) + "$")
+    _MANIFEST_GLOB_CACHE[pattern] = compiled
+    return compiled
+
+
+def _manifest_matches_any(patterns: Any, path: str) -> bool:
+    return any(_manifest_glob_regex(pattern).match(path) for pattern in patterns)
+
 
 def _annotate(level: str, title: str, message: str) -> None:
     """Emit a GitHub Actions annotation.
@@ -4958,15 +5037,18 @@ class MainProof:
     source: str
     # Names main FAILED on the same proof run. Empty when the run was unreadable
     # or when every considered job passed. Used by the base-inherited refresh
-    # (a PR whose reds are a subset of main's *clean* names). Live-inherited
-    # red waives on ``failed_legacy_jobs``, not these pack names — packs rebalance.
+    # (a PR whose reds are a subset of main's *clean* names). Legacy annotation
+    # diagnostics use ``failed_steps``, not these pack names — packs rebalance.
     failed_names: frozenset[str] = frozenset()
     # Legacy job ids parsed from ``::error title=legacy-job-<id>`` annotations
     # on failed ``ci-pack-*`` jobs of this proof. Empty means "could not read"
-    # OR the run passed every pack — both fail-close the live-inherited path.
-    # Pack *names* are not a stable identity (they rebalance on the selected
-    # job set); this set is the waiver's load-bearing half.
+    # OR the run passed every pack. Pack *names* are not a stable identity (they
+    # rebalance on the selected job set). Feeds the waiver-blind diagnostics.
     failed_legacy_jobs: frozenset[str] = frozenset()
+    # The exact ``<id>: step '<name>' exited <rc>`` messages under those titles —
+    # for diagnostic comparison only, never permission to merge. An infrastructure
+    # or timeout red says nothing about a step that failed on the pull request.
+    failed_steps: frozenset[str] = frozenset()
 
     def age_hours(self, now: dt.datetime | None = None) -> float | None:
         """How old the proof is, in hours. None when it could not be dated."""
@@ -5038,10 +5120,29 @@ def _newest_concluded_main_run(
 
 
 _PACK_RUNNER_STEP_MARKER = ": step "
-_SHALLOW_CLONE_FENCE_TEXT = "could not determine changed files"
-_SHALLOW_CLONE_MARKERS_TEXT = (
-    "cannot classify files changed from",
-    "fatal: bad revision",
+#: PR-content fences: legacy jobs with a step that judges THIS head's diff (the
+#: changed-file list, a merge-base or base-ref comparison). Never waived. A
+#: step-level match does not save them: ``run_ci_pack`` stops a job at its first
+#: failed step, so main red on an earlier step means the diff step never ran on
+#: this head either, and ``self-mod-fence`` runs unrelated contract suites before
+#: its live check. The list is pinned against ``.github/ci/legacy-jobs.yml``.
+_PR_CONTENT_FENCE_JOBS = frozenset(
+    {
+        "board-contradictions",
+        "conflict-markers",
+        "design-governance",
+        "international-dislocation-explorer",
+        "international-workspace-browser",
+        "p0b-receipt-closure",
+        "ruling-graph",
+        "self-mod-fence",
+        "signal-gate-pair-coherence",
+    }
+)
+#: The runner's own step-failure message (``run_ci_pack``'s per-job failure). The
+#: step name is a Python repr, so either quote style may appear.
+_STEP_FAILURE_RE = re.compile(
+    r"(?P<job>[^\s:/]+): step (?:'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\") exited -?\d+"
 )
 
 
@@ -5075,39 +5176,6 @@ def _legacy_job_ids_from_annotations(annotations: list[Any]) -> set[str]:
     return ids
 
 
-def _shallow_clone_false_red_ids(
-    annotations: list[Any], known_ids: set[str]
-) -> set[str]:
-    """#5564 ``fetch-depth:1`` infra reds, not the pull request's own jobs.
-
-    ``self-mod-fence`` prints a distinctive ``could not determine changed files``
-    annotation. ``conflict-markers``'s pack-runner annotation is only
-    ``step ... exited 2``, which is also how a real marker hit looks, so that
-    job counts as the same shallow-clone incident only when the fence sibling
-    fired on this head or the classify-failure string is itself on an
-    annotation (measured 2026-08-13 fleet: they co-occur; unique product reds
-    such as ``marketing-data`` / ``tier-gate`` are not in this set).
-    """
-    blob = "\n".join(
-        f"{item.get('title') or ''}\n{item.get('message') or ''}"
-        for item in annotations
-        if isinstance(item, dict)
-    )
-    out: set[str] = set()
-    fence_infra = (
-        "self-mod-fence" in known_ids and _SHALLOW_CLONE_FENCE_TEXT in blob
-    )
-    if fence_infra:
-        out.add("self-mod-fence")
-        if "conflict-markers" in known_ids:
-            out.add("conflict-markers")
-    if "conflict-markers" in known_ids and any(
-        marker in blob for marker in _SHALLOW_CLONE_MARKERS_TEXT
-    ):
-        out.add("conflict-markers")
-    return out
-
-
 def _annotation_check_run_id(entry: dict[str, Any]) -> Any:
     """The annotations API takes a *check-run* id, not a workflow *job* id.
 
@@ -5127,22 +5195,126 @@ def _annotation_check_run_id(entry: dict[str, Any]) -> Any:
     return entry.get("id")
 
 
-def _legacy_identities_from_runs(
-    repo: str, runs: list[dict[str, Any]], token: str
-) -> tuple[frozenset[str], frozenset[str]]:
-    """``(legacy_job_ids, shallow_clone_false_red_ids)``.
+#: GitHub keeps at most 10 error annotations per step (50 per job) and drops the
+#: rest silently. The pack step echoes every child's output live, so a child's
+#: own ``::error`` lines spend that budget before a later ``legacy-job-*`` title.
+_ANNOTATION_STEP_ERROR_CAP = 10
+_ANNOTATION_JOB_CAP = 50
 
-    Fail closed: any unreadable failed pack yields two empty sets. The
-    live-inherited path treats that as "do not waive".
+
+def _error_annotation_count(annotations: list[Any]) -> int:
+    """Failure-level annotations; a missing or unknown level counts as one."""
+    return sum(
+        1
+        for item in annotations
+        if isinstance(item, dict)
+        and str(item.get("annotation_level") or "failure").lower()
+        not in {"notice", "warning"}
+    )
+
+
+def _step_failures_from_annotations(annotations: list[Any]) -> tuple[set[str], bool]:
+    """``(step failures, saw another legacy-job failure)`` for one pack.
+
+    A step failure is a ``legacy-job-<id>`` title whose message is exactly the
+    runner's ``<id>: step '<name>' exited <rc>``. The runner stops a job at its
+    first failed step, so that message names the step that decided the red; two
+    heads red on the same job id at different steps are different failures. Any
+    other message under a ``legacy-job-*`` title (infrastructure, a timeout,
+    browser setup, something unparseable) sets the flag instead.
     """
+    steps: set[str] = set()
+    other = False
+    for item in annotations:
+        if not isinstance(item, dict):
+            continue
+        title = str(item.get("title") or "")
+        if not title.startswith(_LEGACY_JOB_TITLE_PREFIX):
+            continue
+        job_id = title[len(_LEGACY_JOB_TITLE_PREFIX) :].strip()
+        message = str(item.get("message") or "").strip()
+        match = _STEP_FAILURE_RE.fullmatch(message)
+        if match and match.group("job") == job_id:
+            steps.add(message)
+        else:
+            other = True
+    return steps, other
+
+
+#: ``run_ci_pack`` prints this notice once, after its job loop, listing every
+#: job it failed. A pack that died mid-loop (OOM, a lost runner, an escaped
+#: exception) never prints it, and the titles it did print cover only the jobs
+#: it reached.
+_PACK_COMPLETE_TITLE = "ci-pack-complete"
+
+
+def _pack_complete_job_ids(annotations: list[Any]) -> frozenset[str] | None:
+    """The job ids one finished pack says it failed; None if it never said so.
+
+    Exactly one notice-level ``ci-pack-complete`` annotation whose message is a
+    JSON list of distinct strings. Anything else (missing, repeated, another
+    level, malformed) is None.
+    """
+    found = [
+        item
+        for item in annotations
+        if isinstance(item, dict)
+        and str(item.get("title") or "") == _PACK_COMPLETE_TITLE
+    ]
+    if len(found) != 1:
+        return None
+    if str(found[0].get("annotation_level") or "").lower() != "notice":
+        return None
+    try:
+        ids = json.loads(str(found[0].get("message") or ""))
+    except (ValueError, RecursionError):
+        return None
+    if (
+        not isinstance(ids, list)
+        or not all(isinstance(job_id, str) for job_id in ids)
+        or len(set(ids)) != len(ids)
+    ):
+        return None
+    return frozenset(ids)
+
+
+def _pack_failures_from_runs(
+    repo: str,
+    runs: list[dict[str, Any]],
+    token: str,
+    *,
+    pull_side: bool = False,
+) -> tuple[frozenset[str], frozenset[str]]:
+    """``(legacy job ids, step failures)`` over failed packs. Fails closed.
+
+    Any unreadable failed pack, or one whose annotations name no job, yields two
+    empty sets: there is no complete annotation diagnostic to report.
+
+    ``pull_side`` is the PR's own read, where hidden reds would mislead. It also
+    yields nothing for:
+      * a pack at GitHub's annotation cap (10 failure-level per step, 50 per
+        job). A dropped ``legacy-job-*`` title would make the PR's reds look
+        like a smaller subset of main's than they are;
+      * any job id that is not explained by a step failure (infrastructure, a
+        timeout, browser setup, an untitled fallback). Such a red is not
+        comparable to anything main proved;
+      * a pack without exactly the ``ci-pack-complete`` notice, or whose notice
+        names other jobs than its titles. Without it the pack may have died
+        before running every job, so its titles are a partial list. A
+        workspace-restore failure lists ``ci-pack`` there and is refused too.
+    Main's read keeps every job id for diagnostics; truncation can only shrink
+    the set of matching messages. No annotation or completion notice, including
+    an apparently complete one, authorizes a merge or authenticates its emitter.
+    """
+    empty: tuple[frozenset[str], frozenset[str]] = (frozenset(), frozenset())
     if not runs:
-        return frozenset(), frozenset()
+        return empty
     ids: set[str] = set()
-    collected: list[Any] = []
+    steps: set[str] = set()
     for run in runs:
         check_id = _annotation_check_run_id(run)
         if check_id is None:
-            return frozenset(), frozenset()
+            return empty
         try:
             status, payload = _request(
                 "GET",
@@ -5151,44 +5323,44 @@ def _legacy_identities_from_runs(
                 token,
             )
         except Exception:
-            return frozenset(), frozenset()
+            return empty
         if status >= 400:
-            return frozenset(), frozenset()
+            return empty
         if isinstance(payload, dict):
             payload = payload.get("annotations")
         if not isinstance(payload, list):
-            return frozenset(), frozenset()
+            return empty
+        if pull_side and (
+            len(payload) >= _ANNOTATION_JOB_CAP
+            or _error_annotation_count(payload) >= _ANNOTATION_STEP_ERROR_CAP
+        ):
+            return empty
         parsed = _legacy_job_ids_from_annotations(payload)
         if not parsed:
-            return frozenset(), frozenset()
+            return empty
+        pack_steps, other = _step_failures_from_annotations(payload)
+        if pull_side and (
+            other
+            or {step.split(":", 1)[0] for step in pack_steps} != parsed
+            or _pack_complete_job_ids(payload) != parsed
+        ):
+            return empty
         ids |= parsed
-        collected.extend(payload)
-    shallow = _shallow_clone_false_red_ids(collected, ids)
-    return frozenset(ids), frozenset(shallow)
-
-
-def _legacy_job_ids_from_runs(
-    repo: str, runs: list[dict[str, Any]], token: str
-) -> frozenset[str]:
-    """Fail closed: any unreadable failed pack yields an empty set."""
-    ids, _shallow = _legacy_identities_from_runs(repo, runs, token)
-    return ids
+        steps |= pack_steps
+    return frozenset(ids), frozenset(steps)
 
 
 def _touches_ci_control_plane(paths: list[str]) -> bool:
-    """A control-plane edit can change what any pack means; never waive those.
+    """Exclude planner invalidators from legacy annotation diagnostics.
 
-    Fail closed: if the pack runner cannot be imported (sparse-checkout miss),
-    treat the diff as a control-plane touch so live-inherited red cannot fire.
+    This scheduling mirror is not the canonical semantic authority boundary.
+
+    Reads the planner MIRROR, not `run_ci_pack` itself: importing the planner in
+    the sweeper's sparse checkout always failed, which made every diff look like
+    a control-plane touch.  An unknown diff still fails closed in the caller
+    (`pull_files` returns None for an unreadable or truncated inventory).
     """
-    try:
-        from scripts.run_ci_pack import GLOBAL_INVALIDATORS, _matches_any
-    except ImportError:
-        try:
-            from run_ci_pack import GLOBAL_INVALIDATORS, _matches_any  # type: ignore[no-redef]
-        except ImportError:
-            return True
-    return any(_matches_any(GLOBAL_INVALIDATORS, path) for path in paths if path)
+    return any(_manifest_matches_any(MANIFEST_GLOBAL_INVALIDATORS, path) for path in paths if path)
 
 
 def _live_inherited_extras(bad_names: set[str]) -> set[str]:
@@ -5197,7 +5369,7 @@ def _live_inherited_extras(bad_names: set[str]) -> set[str]:
     ``ci-pack-N`` numbers are not a stable identity: ``partition_jobs`` balances
     the *selected* job set, so the same ``unrun-foo`` is pack-7 on a scoped 114-job
     PR and pack-5 on main's full-suite dispatch. ``ci-gate`` is implied by those
-    pack failures — it is not an extra name that blocks the waiver.
+    pack failures — it is not an extra name for this diagnostic.
     """
     return {
         name
@@ -5226,48 +5398,61 @@ def live_inherited_red(
     freshness: "ProofFreshness",
     token: str,
 ) -> str | None:
-    """Reason string if this red is main's current weather; None to fail closed.
+    """Describe matching legacy annotations for diagnostics, never permission.
 
-    Waive on ``legacy-job-*`` annotation identity only. Pack names rebalance on
-    the selected job set, so a PR's ``ci-pack-7`` is not comparable to main's
-    ``ci-pack-5``. ``ci-gate`` is the aggregate of those identities, not an extra
-    name. A CI global invalidator is ineligible — it can change what any pack
-    means.
+    Pack numbers rebalance, so this compares nonempty job/step/exit messages.
+    Missing/truncated annotations, incomplete packs, PR-content fences and
+    planner invalidators remain too ambiguous even for that diagnostic.
 
-    After #5564, every PR pack also fails ``self-mod-fence`` / ``conflict-markers``
-    on a shallow clone. Those are not on main (main's live check is
-    dispatch-armed). Subtract that infra before the subset check; what remains
-    must be nonempty and ⊆ ``proof.failed_legacy_jobs``. A fence-only head
-    (nothing left) is not main's weather and stays blocked. Unique product
-    reds (``marketing-data``, ``tier-gate``, …) stay extras.
+    Matching text does not identify a test failure at the candidate's exact
+    base, and a child can emit the same workflow-command completion notice as
+    the pack runner. Only the existing canonical semantic classifier may
+    establish inherited failures; callers must still apply its anchors,
+    authority, freshness and recorded-hold guards.
     """
-    if not bad_names or not proof.failed_legacy_jobs:
+    if not bad_names or not proof.failed_steps:
         return None
     if _live_inherited_extras(bad_names):
         return None
     failed_pack_runs = _failed_pack_runs(runs)
     if not failed_pack_runs:
         return None
-    pr_jobs, shallow = _legacy_identities_from_runs(
-        repo, failed_pack_runs, token
+    # Every red pack name must be a pack whose annotations get read below. Both
+    # lists use the same filters today; this keeps a drift between them from
+    # describing a pack nobody read.
+    if {
+        name for name in bad_names if _PACK_CHECK_RE.match(name)
+    } - {str(run.get("name") or "") for run in failed_pack_runs}:
+        return None
+    if any(
+        str(run.get("conclusion") or "").lower() != "failure"
+        for run in failed_pack_runs
+    ):
+        return None
+    own, own_steps = _pack_failures_from_runs(
+        repo, failed_pack_runs, token, pull_side=True
     )
-    own = pr_jobs - shallow
-    if not own or not own <= proof.failed_legacy_jobs:
+    if not own_steps or own & _PR_CONTENT_FENCE_JOBS:
+        return None
+    if not own_steps <= proof.failed_steps:
         return None
     files = freshness.pull_files(pull.get("number"))
     if files is None or _touches_ci_control_plane(files):
         return None
     return (
-        "live-inherited red: "
+        "legacy annotation match: "
         + ", ".join(sorted(own))
-        + " already failing on main"
+        + " has matching job/step/exit text on main"
     )
 
 
 def _run_clean_jobs(
     repo: str, run_id: Any, token: str
 ) -> tuple[
-    tuple[frozenset[str], frozenset[str], frozenset[str], dt.datetime | None] | None,
+    tuple[
+        frozenset[str], frozenset[str], frozenset[str], frozenset[str], dt.datetime | None
+    ]
+    | None,
     str,
 ]:
     """``(resolved, why)``. ``resolved`` is None ONLY when the run could not be READ.
@@ -5341,12 +5526,12 @@ def _run_clean_jobs(
             continue
         clean.add(name)
         clean_stamps.append(when)
-    legacy = _legacy_job_ids_from_runs(repo, failed_pack_jobs, token)
+    legacy, steps = _pack_failures_from_runs(repo, failed_pack_jobs, token)
     dating = clean_stamps if clean else considered_stamps
     if not dating or any(stamp is None for stamp in dating):
-        return (frozenset(clean), frozenset(failed), legacy, None), ""
+        return (frozenset(clean), frozenset(failed), legacy, steps, None), ""
     dated = max(stamp for stamp in dating if stamp is not None)
-    return (frozenset(clean), frozenset(failed), legacy, dated), ""
+    return (frozenset(clean), frozenset(failed), legacy, steps, dated), ""
 
 
 def main_proof(repo: str, token: str) -> MainProof:
@@ -5407,6 +5592,7 @@ def main_proof(repo: str, token: str) -> MainProof:
         names: set[str] = set()
         failed_names: set[str] = set()
         failed_legacy: set[str] = set()
+        failed_steps: set[str] = set()
         stamps: list[dt.datetime | None] = []
         sources: list[str] = []
         head_sha = ""
@@ -5418,10 +5604,17 @@ def main_proof(repo: str, token: str) -> MainProof:
             resolved, why = _run_clean_jobs(repo, run.get("id"), token)
             if resolved is None:
                 return MainProof(frozenset(), None, "", f"{workflow} {why}")
-            workflow_names, workflow_failed, workflow_legacy, workflow_at = resolved
+            (
+                workflow_names,
+                workflow_failed,
+                workflow_legacy,
+                workflow_steps,
+                workflow_at,
+            ) = resolved
             names |= set(workflow_names)
             failed_names |= set(workflow_failed)
             failed_legacy |= set(workflow_legacy)
+            failed_steps |= set(workflow_steps)
             stamps.append(workflow_at)
             sources.append(
                 f"{workflow}@{run_sha[:12] or '?'}"
@@ -5444,6 +5637,7 @@ def main_proof(repo: str, token: str) -> MainProof:
             " + ".join(sources),
             frozenset(failed_names),
             frozenset(failed_legacy),
+            frozenset(failed_steps),
         )
     except Exception as exc:  # noqa: BLE001 — a diagnostic must never fail a sweep
         return MainProof(frozenset(), None, "", f"main proof lookup raised {exc!r}"[:200])
@@ -5511,7 +5705,7 @@ def ensure_main_baseline(
 
       1. the proof is undatable or older than MAIN_PROOF_MAX_AGE_HOURS, OR it has
          no ``failed_legacy_jobs`` while this sweep blocked a pack or ``ci-gate``.
-         A clock-fresh green proof cannot feed the live-inherited waiver, and
+         A clock-fresh green proof cannot explain matching red diagnostics, and
          ``ci.yml`` has no ``push`` trigger — skip-ci tape ticks never refresh it.
          This is NOT a per-commit dispatch: (2) and (3) still bind it;
       2. at least one pull request this sweep evaluated was blocked on a non-spurious
@@ -5593,7 +5787,7 @@ def ensure_main_baseline(
             # proof's own `source` is the thing that distinguishes them, so print it.
             aged = f"undated ({proof.source})" if age is None else f"{age:.1f}h old"
             weather = (
-                " and has no legacy-job-* weather for the live-inherited waiver"
+                " and has no legacy-job-* weather for annotation diagnostics"
                 if not proof.failed_legacy_jobs
                 else ""
             )
@@ -7377,32 +7571,34 @@ def sweep_pull(
             repo, pull, runs, bad_names, proof, freshness, read_token
         )
         if inherited_live:
-            # Main is still red on exactly these packs/jobs. This pull request
-            # did not introduce them and did not touch a CI invalidator, so
-            # blocking it hostages the merge train on weather it cannot change.
-            # Fall through to the clean merge path (freshness, clobber, squash).
-            print(f"PR #{number}: {inherited_live} — merging.", flush=True)
-        else:
-            if blocked_names is not None:
-                # What this sweep could not answer, for `ensure_main_baseline`.
-                blocked_names |= bad_names
-
-            live_pull, authorization = live_authorized_pull(repo, pull, read_token)
-            if live_pull is None:
-                return authorization
-            pull = live_pull
-            added = mark_blocked(repo, pull, red_check_comment(names), merge_token)
-            _annotate(
-                "warning",
-                "merge-on-green",
-                f"PR #{number}: red checks ({', '.join(names[:6])}); "
-                + (
-                    "marker written."
-                    if added
-                    else "no new marker (already labeled, or both writes failed above)."
-                ),
+            # Job/step/exit text and completion notices share the child-output
+            # channel. They cannot establish exact-base failure causality or
+            # replace the canonical semantic gate and required proof anchors.
+            print(
+                f"PR #{number}: {inherited_live} — diagnostic only; "
+                "canonical exact-base semantic proof is required to excuse red.",
+                flush=True,
             )
-            return verdict
+        if blocked_names is not None:
+            # What this sweep could not answer, for `ensure_main_baseline`.
+            blocked_names |= bad_names
+
+        live_pull, authorization = live_authorized_pull(repo, pull, read_token)
+        if live_pull is None:
+            return authorization
+        pull = live_pull
+        added = mark_blocked(repo, pull, red_check_comment(names), merge_token)
+        _annotate(
+            "warning",
+            "merge-on-green",
+            f"PR #{number}: red checks ({', '.join(names[:6])}); "
+            + (
+                "marker written."
+                if added
+                else "no new marker (already labeled, or both writes failed above)."
+            ),
+        )
+        return verdict
 
     if semantic_mode and semantic_gate is not None and semantic_gate.inherited:
         inherited = "; ".join(_semantic_unit_lines(semantic_gate.inherited))
@@ -7413,8 +7609,9 @@ def sweep_pull(
             flush=True,
         )
 
-    # Every check concluded clean, or the reds are main's current weather.
-    # proven but WHICH exact main SHA its pull_request event tested. GitHub records
+    # Checks are clean, or canonical semantic proof established inherited reds.
+    # Freshness still needs the exact main SHA the pull_request event tested.
+    # GitHub records
     # that SHA on the check run itself; timestamps are not proof identity. An
     # unavailable identity defers without mutation because update-branch cannot
     # repair a control-plane read failure.
@@ -8293,7 +8490,7 @@ def mark_only_pass(
                     f"({', '.join(sorted(bad_names)[:6])}) are also currently red on "
                     "main, so this may be a live-inherited red rather than this pull "
                     "request's. Deferred to the full sweep, which owns the "
-                    "merge-vs-block decision; nothing marked.",
+                    "canonical proof and blocking decision; nothing marked.",
                     flush=True,
                 )
                 tally["live-red-deferred"] = tally.get("live-red-deferred", 0) + 1
