@@ -36464,6 +36464,8 @@ jobs:
       # board-as-of and capture-target laws (w3 pulls the grades reader).
       - "engine/us_prophet_grades.py"
       - "engine/us_prophet_w3.py"
+      - "engine/prophet_live/r2io.py"
+      - "lib/nyse_calendar.py"
       - "scripts/capture_prophet_b4_same_read.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"

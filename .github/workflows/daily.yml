@@ -6248,6 +6248,28 @@ jobs:
         # rewrite of a frozen key fails closed.
         if: always()
         run: python -m scripts.accrue_us_prophet_w3 --nightly
+      - name: Prophet B4 — ingest the VPS same-read capture spool (capture-only, ZERO authority)
+        # Entry Timing B4 (preregistration #7751, amendment A1). The capture's facts live
+        # on two hosts: the committed tree (here) and the native live plane
+        # /var/lib/macro-live (VPS only, which writes NOTHING under data/ — LEDGER LAW
+        # G0.2). So the VPS timer macro-live-b4capture publishes ONE object per session to
+        # the R2 spool live_flow/prophet_b4_capture/<stamp_date>/ and THIS step is the sole
+        # durable advancer: it validates every object and row against the write fence
+        # BEFORE any write, then keep-first merges into
+        # data/us_prophet_rank/b4_capture/<YYYY-MM>/<day>.jsonl (a conflicting frozen-key
+        # rewrite fails closed, exit 2). Same shape as macro-live-prophet ->
+        # reconcile_prophet_live. An EMPTY spool is a valid state (VPS lane not enrolled
+        # yet, or a holiday) and exits 0 with a notice; missing R2 credentials is a typed
+        # refusal (exit 3), never a silent no-op. Nightly-only (COLLECT_LANE=nightly).
+        # No verdict is persisted; no rank/gate/size/board/plan consumer, ever
+        # (tests/test_capture_prophet_b4_same_read.py pins that).
+        if: always()
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.capture_prophet_b4_same_read --nightly --from-spool
       - name: Prophet miss-audit (why don't the winners surface? ops telemetry, ZERO authority)
         # Prophet US trend-intelligence W0 (masterplan
         # research/PROPHET_US_TREND_INTELLIGENCE_MASTERPLAN_BY_FABLE.md): the nightly
@@ -6276,13 +6298,14 @@ jobs:
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Every path below is written ONLY by the six steps above (no other lane writes
+          # Every path below is written ONLY by the seven steps above (no other lane writes
           # them), so the add list is exact rather than a broad `git add data/`: this job
           # must never carry another lane's stray runner-tree bytes to main.
           git add data/prophet_doors 2>/dev/null || true
           git add data/us_prophet_rank/episodes 2>/dev/null || true
           git add data/us_prophet_rank/grades 2>/dev/null || true
           git add data/us_prophet_rank/w3 2>/dev/null || true
+          git add data/us_prophet_rank/b4_capture 2>/dev/null || true
           git add data/prophet_miss_audit 2>/dev/null || true
           if git diff --cached --quiet; then echo "no prophet ledger changes"; exit 0; fi
           push_staged_heal data/ || exit 1

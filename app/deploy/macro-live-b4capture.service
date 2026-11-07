@@ -1,0 +1,41 @@
+# Prophet B4 same-read CAPTURE pass — the VPS half of a two-host stream (seat ruling
+# 2026-10-31; scripts/capture_prophet_b4_same_read.py header "TWO HOSTS, ONE STREAM").
+#
+# The B4 capture must read two things that live on two machines: the committed repo
+# tree (candidates store, board as_of, B1 episode HEAD, alias reference — present in
+# /opt/macro, pulled nightly by macro-update) and the native live plane this box owns
+# (/var/lib/macro-live/state/quotes_full.json + public/live/prophet_live.json). This
+# box writes NOTHING under data/ and runs no git command (LEDGER LAW G0.2), so the pass
+# publishes exactly ONE object per run to the R2 capture spool
+# (live_flow/prophet_b4_capture/<stamp_date>/<captured_at>.json) and the Mac nightly
+# (daily.yml us_prophet_ledgers, --nightly --from-spool) is the sole durable advancer —
+# the same shape as macro-live-prophet -> prophet_live_events -> reconcile_prophet_live.
+# An unpublished pass exits 3 (typed refusal SPOOL_NOT_PUBLISHED), never 0: the spool
+# is this pass's only output. Capture-only, ZERO authority: no verdict is persisted.
+#
+# Caps mirror macro-live-prophet (same tier, same inputs, one pass per session instead
+# of ~85): a single read of the quote snapshot + the live payload + the candidates
+# parquet + one R2 PUT. TimeoutStartSec 120 bounds a wedged R2 call; the timer fires
+# once a day so passes can never overlap.
+[Unit]
+Description=Mastermind Prophet B4 same-read capture pass (publishes one spool object per US session)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/macro
+EnvironmentFile=-/etc/macro-live.env
+ExecStart=/opt/macro/.venv/bin/python -m scripts.capture_prophet_b4_same_read --spool
+TimeoutStartSec=120
+Nice=10
+CPUWeight=20
+CPUQuota=60%
+MemoryHigh=256M
+MemoryMax=512M
+IOWeight=20
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

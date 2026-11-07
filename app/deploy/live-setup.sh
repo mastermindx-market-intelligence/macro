@@ -13,6 +13,11 @@
 #                       provisional board from R2 to the GATED
 #                       live/us_board_provisional.json. Pure transport — it never
 #                       computes. Needs R2_* in /etc/macro-live.env.
+#   macro-live-b4capture once per US session (15:05Z): the Prophet B4 same-read
+#                       capture pass — reads the live plane + /opt/macro, writes
+#                       NOTHING under data/, publishes ONE object to the R2 capture
+#                       spool that the Mac nightly ingests (--nightly --from-spool).
+#                       Capture-only, ZERO authority. Needs R2_* in /etc/macro-live.env.
 #   macro-live-breadth  every ~2m across the US session: the live intraday
 #                       market-breadth poller (adv/dec/pa50/pa200/net_nh),
 #                       writing the CANONICAL live/breadth.json this box serves.
@@ -130,7 +135,7 @@ done
 chmod 0600 /etc/macro-live.env
 log "R2 credential seed: ${R2_SEEDED_COUNT} key(s) newly copied from /etc/macro-api.env"
 if [ "${#R2_SEED_MISSING[@]}" -gt 0 ]; then
-  log "WARNING: R2 credentials are INCOMPLETE — macro-live-prophet and macro-live-closepass will read the public mirror and publish NOTHING until this is fixed (this exact gap produced the 2026-07-30..08-26 force-majeure: 27 days dark, exit 0 throughout)."
+  log "WARNING: R2 credentials are INCOMPLETE — macro-live-prophet, macro-live-closepass and macro-live-b4capture will read the public mirror and publish NOTHING until this is fixed (this exact gap produced the 2026-07-30..08-26 force-majeure: 27 days dark, exit 0 throughout)."
   log "WARNING: missing key(s), absent from BOTH /etc/macro-live.env and /etc/macro-api.env: ${R2_SEED_MISSING[*]}"
   log "WARNING: OPERATOR ACTION REQUIRED — add the missing key(s) to /etc/macro-api.env (preferred; shared with the API's own R2 reads) or directly to /etc/macro-live.env (must stay mode 0600), then re-run this script."
 fi
@@ -143,7 +148,8 @@ for unit in \
   macro-live-bars.service macro-live-bars.timer \
   macro-live-prophet.service macro-live-prophet.timer \
   macro-live-closepass.service macro-live-closepass.timer \
-  macro-live-breadth.service macro-live-breadth.timer
+  macro-live-breadth.service macro-live-breadth.timer \
+  macro-live-b4capture.service macro-live-b4capture.timer
 do
   unit_sources+=("$APP_DIR/app/deploy/$unit")
 done
@@ -175,8 +181,9 @@ test -s "$LIVE_DIR/quotes.json"
   "$LIVE_DIR/quotes.json"
 
 log "[5/6] enable replacement timers"
-# macro-live-prophet, macro-live-closepass and macro-live-breadth are armed here too,
-# but none of the three is part of the fail-safe smoke transaction above: they consume
+# macro-live-prophet, macro-live-closepass, macro-live-breadth and macro-live-b4capture
+# are armed here too, but none of the four is part of the fail-safe smoke transaction
+# above: they consume
 # what the three lanes publish (or, for breadth, the nightly-baked close caches) and
 # write only their own runtime artifacts, so a fault in any of them can never take the
 # served site down.
@@ -186,7 +193,8 @@ systemctl enable --now \
   macro-live-bars.timer \
   macro-live-prophet.timer \
   macro-live-closepass.timer \
-  macro-live-breadth.timer >/dev/null
+  macro-live-breadth.timer \
+  macro-live-b4capture.timer >/dev/null
 
 log "[6/6] retire legacy cron writer"
 tmp_cron=$(mktemp)
@@ -201,5 +209,6 @@ log "DONE — live plane installed"
 systemctl list-timers \
   macro-live-fast.timer macro-live-snapshot.timer macro-live-bars.timer \
   macro-live-prophet.timer macro-live-closepass.timer macro-live-breadth.timer \
+  macro-live-b4capture.timer \
   --no-pager
 log "After production freshness is verified, set GitHub repository variable VPS_LIVE_PRIMARY=true."
