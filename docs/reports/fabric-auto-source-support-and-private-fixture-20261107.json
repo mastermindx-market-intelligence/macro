@@ -1,0 +1,131 @@
+{
+  "schema": "macro.fabric-application-source-support.v1",
+  "base_head": "c2261cb826d1bd76c2e980efb68edb9ed7d0829c",
+  "source_custody": "https://github.com/mastermindx-market-intelligence/macro/pull/10740#issuecomment-6707954668",
+  "mission": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/983#issuecomment-6708011059",
+  "changes": {
+    "application": "Enable source support for the existing eight AUTO descriptors only; operational data and capability authority remain required on every inspection/binding.",
+    "privacy": "Exact synthetic test path/token classifications for the original pack6 failure. No checker or public-output rule was relaxed; public paths, near names and wrong tokens still refuse.",
+    "composition": "Positive named and workload AUTO fixtures now use the actual source-qualified declarations without replacing their qualification or application permission flags."
+  },
+  "source_qualified_descriptors": [
+    "native_fabric_application_auto_v1",
+    "native_fabric_mastermind_text_auto_v1",
+    "native_fabric_mastermind_chat_auto_v1",
+    "native_fabric_macro_brain_auto_v1",
+    "native_fabric_macro_ask_auto_v1",
+    "native_fabric_macro_batch_auto_v1",
+    "native_fabric_macro_analysis_auto_v1",
+    "native_fabric_macro_portfolio_auto_v1"
+  ],
+  "paths": [
+    {
+      "path": "data/neuralweb/ruling_conflicts_allowlist.json",
+      "git_blob": "7677e8f823dd44f3c7f52ed3776be72718fdd440",
+      "sha256": "b4b84b844b9e1a1ca83cfcb3798d34245a1fe3e4629e692929e0899e026208b0"
+    },
+    {
+      "path": "tests/test_ruling_graph.py",
+      "git_blob": "5d93b483cc1e728aa421dfb8c9b3d8908691a6f2",
+      "sha256": "4867e4b6790dffff06b782b24a657211d4f81a271d7ca2439f81e9d0a7911fc3"
+    },
+    {
+      "path": "engine/provider_production_modes.py",
+      "git_blob": "a8d1b7a8d86946eb9870c56a54e1599eae5fa5c5",
+      "sha256": "d753ac54c28c20a1796d0dd8f0ea4107ef04523173128e755e756934be9fea9e"
+    },
+    {
+      "path": "tests/test_fabric_application_binding.py",
+      "git_blob": "75c152e1b6d3f3ff894395ba8c1e4d0ee702e58a",
+      "sha256": "2e9498842b82a441952296d06ea83435b299a3b920510ab64dcf437a54becafd"
+    },
+    {
+      "path": "tests/test_fabric_service_auto_composition.py",
+      "git_blob": "5ccb16b814db5cfd936bc86c2253e1d771605464",
+      "sha256": "33281ee7ca63ac9ac862e3bab0e491e52787d5af3aa78b1486b5afe4bbe2bd8c"
+    },
+    {
+      "path": "tests/test_fabric_workload_auto_composition.py",
+      "git_blob": "9d8e71209f790b5cbaa8ac4db6cd9a33f0e0e70c",
+      "sha256": "5b88dcff03b9dcbefa8b995f06468bfebde102104287f9a36cc879cab3bba700"
+    }
+  ],
+  "accepted_cases": {
+    "ruling_graph": 24,
+    "binding_and_inspection": 195,
+    "native_AUTO_and_admin_metadata": 54
+  },
+  "actual_conflict_checker": {
+    "returncode": 0,
+    "diff_base": "5c8d02f78ca2fe317e861d69169733e56237cbcc",
+    "findings_preserved": true
+  },
+  "native_input_blobs": {
+    "candidate/commission_deadline.py": "fade630ed75c1b93334a5711a6df7a554fbd24ee",
+    "candidate/go_shim.py": "969ffaf84e23ef2d1c0398761943093c9b5c9456",
+    "candidate/lease_broker.py": "3c1360866b6a4fcdc2f9d72732d0439361e3d0c7",
+    "candidate/go_lease_gateway.py": "9a30985f744be11b8ce3f2514baef5b494b4471a",
+    "candidate/go_lease_capability.py": "38856700331b3fb3a7706a5745e23fb7b3d18cf0",
+    "candidate/provider_outcome.py": "981f35a01183e83fdb9f0b8a4175b290cdeb85f8",
+    "candidate/quota_circuit.py": "1583a6ba773e56dbc3f295b65ffc08dea2d31d48",
+    "source/model_tier.py": "96093c2747d2dda69b3f2255cb84e656355c87ea",
+    "source/pool_status.py": "02922043357d63b4bcfa3791899df27a5c42be12",
+    "tests/_offline_boundary.py": "e511ab65fe1cd30bf4d2addac6700ca43c3468da",
+    "tests/test_go_application_handler_composition.py": "13ebd6bcee5167926807d7ccdc63bcabed0cf1b1",
+    "tests/test_application_turn_admission.py": "8487163bb0904f8b95f0a9b326efa1622cd0ad0e",
+    "tests/test_application_cross_pool_auto.py": "a4844fa37548f31027b5041c35e540cd50e51ce3"
+  },
+  "receipts": {
+    "macro-private-fixture-qualification-v3": {
+      "restored": {
+        "path": "data/experiments/registry_seed.json",
+        "sha256": "63b5210038d3df67a3ea3f32cfb6b3572a7af527ebb3427d6d6ffd6c3c83f13f"
+      },
+      "returncode": 0,
+      "log": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/macro-private-fixture-classification-v3.log",
+      "log_sha256": "59541b05ead81c6758b7bc0869644e2606820be599a207882ed0caf2d81bf579"
+    },
+    "macro-private-fixture-real-guard-v1": {
+      "returncode": 0,
+      "seconds": 1.316,
+      "base": "5c8d02f78ca2fe317e861d69169733e56237cbcc",
+      "log": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/macro-private-fixture-real-guard-v1.log",
+      "log_sha256": "9d43d24587df609806a24ff088746a547d246b5771a1b59442ba6284dd84f88a"
+    },
+    "auto-source-support-binding-v2": {
+      "returncode": 0,
+      "tests": [
+        "tests/test_fabric_application_binding.py",
+        "tests/test_fabric_application_inspection.py"
+      ],
+      "log": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/auto-source-support-binding-v2.log",
+      "log_sha256": "ea1894a260d2c5a888b5cf3bdf2d87378a7db660f71dd7e6737a2967250d067c",
+      "binding_test_sha256": "2e9498842b82a441952296d06ea83435b299a3b920510ab64dcf437a54becafd"
+    },
+    "auto-source-support-real-composition-v1": {
+      "returncode": 0,
+      "seconds": 12.829,
+      "tests": [
+        "tests/test_fabric_service_auto_composition.py",
+        "tests/test_fabric_workload_auto_composition.py",
+        "tests/test_fabric_admin_pool_view.py"
+      ],
+      "fixture": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/macro-current-paired-fixture-20261107",
+      "log": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/auto-source-support-real-composition-v1.log",
+      "log_sha256": "5daf41b1f791355421d62b2355ef4c1dcc022cd9d33341edb411d8e1afa3b451"
+    }
+  },
+  "operational_state": {
+    "application_fabric_modes": "UNCHANGED_EMPTY",
+    "capabilities": "UNCHANGED_NOT_ENROLLED",
+    "credentials": "NOT_CREATED_OR_READ",
+    "provider_calls": "NONE",
+    "runtime_effects": [],
+    "live_acceptance": "NOT_PERFORMED"
+  },
+  "held_preparation_decision": "Keep application configuration empty until the exact native enrollment route scopes and account qualification evidence exist. Do not create placeholder production scope or canary references.",
+  "failed_iterations_retained": [
+    "macro-private-fixture-qualification-v2.json (missing sparse registry fixture; restored exact tracked file)",
+    "auto-source-support-binding-v1.json (generic test fixture omitted host AUTO selector; final tests establish a valid baseline before each refusal)"
+  ]
+}

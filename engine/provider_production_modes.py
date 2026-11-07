@@ -762,46 +762,56 @@ _APPLICATION_FABRIC_TRANSPORTS = {
         metadata_read=False,
     ),
 
+    # Source support does not enroll applications: current data qualification,
+    # capability authority and native admission are still required for every call.
     "native_fabric_application_auto_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.1:50142/v1", secret_ref="MACRO_FABRIC_APPLICATION_TOKEN",
         provider_id=None, model=None, cost_basis="unknown",
         cap_id="fabric:go_application", capability_id="fabric_application_go",
-        protocol="native_application_v1", metadata_read=True, automatic=True),
+        protocol="native_application_v1", metadata_read=True, automatic=True,
+        qualified=True, application_allowed=True),
     "native_fabric_mastermind_text_auto_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.1:50142/v1", secret_ref="MASTERMIND_FABRIC_APPLICATION_TOKEN",
         provider_id=None, model=None, cost_basis="unknown",
         cap_id="fabric:go_mastermind_text", capability_id="fabric_application_go_mastermind_text",
-        protocol="native_application_v1", automatic=True),
+        protocol="native_application_v1", automatic=True,
+        qualified=True, application_allowed=True),
     "native_fabric_mastermind_chat_auto_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.1:50142/v1", secret_ref="MASTERMIND_FABRIC_CHAT_TOKEN",
         provider_id=None, model=None, cost_basis="unknown",
         cap_id="fabric:go_mastermind_chat", capability_id="fabric_application_go_mastermind_chat",
-        protocol="native_application_v1", automatic=True),
+        protocol="native_application_v1", automatic=True,
+        qualified=True, application_allowed=True),
     "native_fabric_macro_brain_auto_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.1:50142/v1", secret_ref="MACRO_BRAIN_FABRIC_APPLICATION_TOKEN",
         provider_id=None, model=None, cost_basis="unknown",
         cap_id="fabric:go_macro_brain", capability_id="fabric_application_go_macro_brain",
-        protocol="native_application_v1", automatic=True),
+        protocol="native_application_v1", automatic=True,
+        qualified=True, application_allowed=True),
     "native_fabric_macro_ask_auto_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.1:50142/v1", secret_ref="MACRO_ASK_FABRIC_APPLICATION_TOKEN",
         provider_id=None, model=None, cost_basis="unknown",
         cap_id="fabric:go_macro_ask", capability_id="fabric_application_go_macro_ask",
-        protocol="native_application_v1", automatic=True),
+        protocol="native_application_v1", automatic=True,
+        qualified=True, application_allowed=True),
     "native_fabric_macro_batch_auto_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.1:50142/v1", secret_ref="MACRO_BATCH_FABRIC_APPLICATION_TOKEN",
         provider_id=None, model=None, cost_basis="unknown",
         cap_id="fabric:macro_batch", capability_id="fabric_application_macro_batch",
-        protocol="native_application_v1", automatic=True),
+        protocol="native_application_v1", automatic=True,
+        qualified=True, application_allowed=True),
     "native_fabric_macro_analysis_auto_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.1:50142/v1", secret_ref="MACRO_ANALYSIS_FABRIC_APPLICATION_TOKEN",
         provider_id=None, model=None, cost_basis="unknown",
         cap_id="fabric:macro_analysis", capability_id="fabric_application_macro_analysis",
-        protocol="native_application_v1", automatic=True),
+        protocol="native_application_v1", automatic=True,
+        qualified=True, application_allowed=True),
     "native_fabric_macro_portfolio_auto_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.1:50142/v1", secret_ref="MACRO_PORTFOLIO_FABRIC_APPLICATION_TOKEN",
         provider_id=None, model=None, cost_basis="unknown",
         cap_id="fabric:macro_portfolio", capability_id="fabric_application_macro_portfolio",
-        protocol="native_application_v1", automatic=True),
+        protocol="native_application_v1", automatic=True,
+        qualified=True, application_allowed=True),
     # Hermes primary turns use the same APPLICATION owner and exact native
     # protocol. These are distinct internal service identities, not provider
     # keys or enrollment. Ordinary application qualification remains held.

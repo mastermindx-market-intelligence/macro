@@ -123,7 +123,7 @@ def auto_services(binding, auto_native, monkeypatch):
         base = owner._APPLICATION_FABRIC_TRANSPORTS[transport_id]
         selected = replace(base, base_url=f"http://127.0.0.1:{native.server.server_port}/v1",
             secret_ref=secret_ref, provider_id=None, model=None,
-            protocol=transport.NATIVE_PROTOCOL, qualified=True, application_allowed=True,
+            protocol=transport.NATIVE_PROTOCOL,
             metadata_read=(service_mode_id is None and base.metadata_read))
         monkeypatch.setitem(owner._APPLICATION_FABRIC_TRANSPORTS, transport_id, selected)
         entry = records[record_id]
