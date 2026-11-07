@@ -311,3 +311,107 @@ def test_service_startup_selection_preserves_presence_and_never_reads_a_secret(b
     assert selected is (value is not None)
     assert (type(factory) is owner.ApplicationFabricFactory) is (value == "shared_fabric")
     assert events == []
+
+
+@pytest.fixture
+def native_purpose_binding(binding, monkeypatch):
+    """Synthetic source qualification; no shipped transport is promoted."""
+    root, row, document, manifest, events, save, make, transport = binding
+    selected = dataclasses.replace(transport, protocol="native_application_v1",
+        native_recipe_digest="a" * 64, execution_surface="native_agent")
+    monkeypatch.setitem(owner._APPLICATION_FABRIC_TRANSPORTS, "fixture_v1", selected)
+    return binding, selected
+
+
+def test_native_purpose_uses_original_owner_and_empty_inference_allowlist(native_purpose_binding, monkeypatch):
+    from engine import llm_auth
+
+    binding, selected = native_purpose_binding
+    root, _, _, _, events, _, make, _ = binding
+    monkeypatch.setenv("MM_PROVIDER_WORKLOAD_PROFILE", "fable_orchestration")
+    monkeypatch.setattr(client_module, "_NativeConnection",
+        lambda *args, **kwargs: pytest.fail("factory attempted admission or network"))
+    factory = make({"workload_profile": "development_agent", "provider_order": ["fabric"],
+                    "client_timeout_s": 17})
+    caller = {"workload_profile": "lobe_maintenance", "client_timeout_s": 9}
+    inspection = factory.inspect(caller)
+    receipt = inspection["workload_policy"]
+    assert receipt["execution_surface"] == "native_agent"
+    assert receipt["profiles"] == ["fable_orchestration", "development_agent", "lobe_maintenance"]
+    assert receipt["allowed_order"] == [] and receipt["denied_order"] == []
+    assert events == []
+    provider = llm_auth.build_fabric_provider(factory.with_inspection(inspection),
+        request_id="native-purpose-original-1", workload_cfg=caller)
+    assert provider["workload_policy"] == receipt
+    bound_client = provider["client"]._client
+    assert bound_client.operation_id == "native-purpose-original-1"
+    assert bound_client._native_recipe_digest == selected.native_recipe_digest
+    assert bound_client._timeout == 9
+    assert events == ["credential", "client"]
+    policy = json.loads((root / "config/provider_workloads.v1.json").read_text())
+    assert all(policy["profiles"][name]["allowed_providers"] == [] for name in receipt["profiles"])
+
+
+@pytest.mark.parametrize("profile", ["development_agent", "fable_orchestration", "lobe_maintenance"])
+def test_native_wire_protocol_and_recipe_do_not_promote_inference_source(binding, monkeypatch, profile):
+    _, _, _, _, events, _, make, transport = binding
+    selected = dataclasses.replace(transport, protocol="native_application_v1", native_recipe_digest="a" * 64)
+    monkeypatch.setitem(owner._APPLICATION_FABRIC_TRANSPORTS, "fixture_v1", selected)
+    with pytest.raises(ValueError):
+        make({"workload_profile": profile, "provider_order": ["fabric"],
+              "execution_surface": "native_agent"}).inspect()
+    assert events == []
+    assert make().inspect()["workload_policy"]["execution_surface"] == "inference"
+
+
+@pytest.mark.parametrize("host,caller", [("site_interactive", "development_agent"),
+    ("development_agent", "site_batch"), ("fable_orchestration", None),
+    ("lobe_maintenance", ""), ("development_agent", "unregistered-purpose")])
+def test_native_purpose_keeps_host_and_caller_intersection_closed(native_purpose_binding, monkeypatch, host, caller):
+    binding, _ = native_purpose_binding
+    _, _, _, _, events, _, make, _ = binding
+    monkeypatch.setenv("MM_PROVIDER_WORKLOAD_PROFILE", host)
+    factory = make({"workload_profile": "development_agent", "provider_order": ["fabric"]})
+    with pytest.raises(ValueError):
+        factory._bind_with_workload({"workload_profile": caller}, operation_id="native-purpose-refused")
+    assert events == []
+
+
+@pytest.mark.parametrize("change", [{"native_recipe_digest": None}, {"native_recipe_digest": "bad"},
+    {"protocol": "openai_chat_v1"}, {"automatic": True}, {"execution_surface": "unrecognized"}])
+def test_native_purpose_requires_exact_source_recipe_before_secret(native_purpose_binding, monkeypatch, change):
+    binding, selected = native_purpose_binding
+    _, _, _, _, events, _, make, _ = binding
+    monkeypatch.setitem(owner._APPLICATION_FABRIC_TRANSPORTS, "fixture_v1", dataclasses.replace(selected, **change))
+    with pytest.raises(ValueError):
+        make({"workload_profile": "development_agent", "provider_order": ["fabric"]}).inspect()
+    assert events == []
+
+
+@pytest.mark.parametrize("change", ["expired", "unqualified", "permission", "capability", "policy"])
+def test_native_purpose_rechecks_existing_qualification_and_policy(native_purpose_binding, change):
+    binding, _ = native_purpose_binding
+    root, row, _, manifest, events, save, make, _ = binding
+    factory = make({"workload_profile": "development_agent", "provider_order": ["fabric"]})
+    factory.inspect()
+    if change == "expired": row["qualified_until"] = 1
+    if change == "unqualified": row["qualification"] = owner.PROFILE_UNQUALIFIED_PENDING_CANARY
+    if change == "permission": row["application_allowed"] = False
+    if change == "capability": manifest["capabilities"][0]["kill_state"] = "killed"
+    if change == "policy":
+        path = root / "config/provider_workloads.v1.json"
+        policy = json.loads(path.read_text())
+        policy["profiles"]["development_agent"]["allowed_providers"] = ["fabric"]
+        path.write_text(json.dumps(policy))
+    save()
+    with pytest.raises(ValueError):
+        factory._bind_with_workload(operation_id="native-purpose-revoked")
+    assert events == []
+
+
+def test_native_purpose_cannot_be_set_in_an_owner_configuration_record(binding):
+    _, row, _, _, events, save, make, _ = binding
+    row["execution_surface"] = "native_agent"
+    save()
+    with pytest.raises(owner.ApplicationFabricBindingError): make().inspect()
+    assert events == []
