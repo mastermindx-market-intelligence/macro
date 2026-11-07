@@ -19250,6 +19250,7 @@ jobs:
       - engine/altdata_confirmers.py
       - engine/altdata_ledger.py
       - engine/altdata_models.py
+      - research/intelligence_network/demand_audit.py
       - engine/altdata_picks.py
       - engine/altdata_signals.py
       - engine/analyst_revisions.py

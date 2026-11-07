@@ -1,0 +1,57 @@
+{
+  "availability": {
+    "available_rows": 178845,
+    "excluded_after_cutoff": 0,
+    "excluded_bad_or_future_snapshot": 0,
+    "excluded_unknown_clock": 0,
+    "input_rows": 178845,
+    "observed_by": "2026-09-19T02:00:00+00:00"
+  },
+  "comparisons": {
+    "COHORT_CHANGED": 1,
+    "COMPARABLE_INCREASE": 110,
+    "COMPARABLE_UNCHANGED": 669,
+    "COUNTER_DECREASE": 14,
+    "PRIOR_ONLY": 1
+  },
+  "identity_basis": "provider ticker/app/publisher labels; not resolved issuer/app IDs",
+  "legacy": {
+    "display_count": 15,
+    "display_limit": 15,
+    "eligible_ticker_keys": 731,
+    "function_sha256": "f1c63161c3b273aa085d56e1873699aeac0e293d0c11cfb446ea42e13eb572f5",
+    "state": "REPRODUCED",
+    "strong_all": 312,
+    "strong_displayed": 15,
+    "strong_hidden_by_cap": 297
+  },
+  "limitations": [
+    "Not a source-health or commercial-rights attestation",
+    "Review counters are not users, downloads, sales, or stock returns",
+    "No scoring, ranking, sizing, or trade authority"
+  ],
+  "provenance": {
+    "auditor_sha256": "c4b398efff7d5f0de6bc9f91ba3f7daa9efca5bf4b55b280cf32969e368b3b31",
+    "blob_sha": "507c9fb0f356ac4117dbe47d117c2e1c98b6f4d0",
+    "bytes": 1678931,
+    "data_sha256": "bd85935799fdaab537c54440a0fc9eea0299b89a0ade96870a0ce13ef83cb3cb",
+    "dataset": "data/quiver/appratings.parquet",
+    "pandas_version": "3.0.5",
+    "python_version": "3.14.7",
+    "source_commit": "a1334a1a6c154b9b49664ee892d9710742fc6018"
+  },
+  "quality": {
+    "conflicting_snapshot_keys": 0,
+    "duplicate_rows": 0,
+    "invalid_measurement_rows": 0,
+    "missing_identity_rows": 0,
+    "unrated_rows": 22948
+  },
+  "schema": "intelligence_network.demand_audit.v1",
+  "snapshot_dates": {
+    "latest": "2026-09-18",
+    "prior": "2026-09-17"
+  },
+  "state": "OBSERVATIONS_AVAILABLE",
+  "use": "internal_research_only"
+}
