@@ -16615,6 +16615,10 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      # TTI-D1: bind the existing synthetic minute reader/resolver suite to
+      # its current CODE consumer owner; the older signal-contract copy is DATA.
+      - "engine/entry_radar/minute_resolution.py"
+      - "tests/test_entry_radar_w4_c3_reader.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -17961,7 +17965,7 @@ jobs:
       - name: ontology research case — native evidence and existing live episode projection
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py tests/test_entry_radar_w4_live.py -k 'opportunity_case or research_case' -q
       - name: native earnings context, retained identity and published Radar read
-        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py tests/test_entry_radar_candidate_provenance.py tests/test_entry_radar_quote_lineage_read.py -q
+        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py tests/test_entry_radar_candidate_provenance.py tests/test_entry_radar_quote_lineage_read.py -q tests/test_entry_radar_w4_c3_reader.py
       - name: captured native DRL event and evidence composition
         run: python -m pytest tests/test_price_pressure_research.py tests/test_h20_supplier_conditional.py tests/test_gmi_native_disclosure_propagation.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
