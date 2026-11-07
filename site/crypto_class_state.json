@@ -2,9 +2,9 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-11-06",
+  "as_of": "2026-11-07",
   "universe_coverage": {
-    "as_of": "2026-11-06",
+    "as_of": "2026-11-07",
     "listed": 50,
     "requested": 50,
     "excluded": [
@@ -17,11 +17,11 @@
         "reason": "OLDER_SNAPSHOT"
       },
       {
-        "file": "market_btw.parquet",
-        "symbol": "BTW",
-        "id": "bitway",
+        "file": "market_buidl.parquet",
+        "symbol": "BUIDL",
+        "id": "blackrock-usd-institutional-digital-liquidity-fund",
         "source": "CoinGecko",
-        "as_of": "2026-10-30",
+        "as_of": "2026-11-06",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -54,6 +54,14 @@
         "id": "mantle",
         "source": "CoinGecko",
         "as_of": "2026-10-01",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_ondo.parquet",
+        "symbol": "ONDO",
+        "id": "ondo-finance",
+        "source": "CoinGecko",
+        "as_of": "2026-11-06",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -170,7 +178,7 @@
       "pages_declared": false
     },
     "breadth": {
-      "as_of": "2026-11-06",
+      "as_of": "2026-11-07",
       "eligible": 3,
       "required": 10,
       "excluded": 47,
@@ -513,26 +521,26 @@
         "to_label_en": "direct total",
         "to_label_zh": "直接总量",
         "support_before": 2,
-        "support_after": 4,
+        "support_after": 5,
         "level_ratio": 0.9940386306533618,
         "regime_treatment": "continuity_adjusted"
       }
     ]
   },
   "flows": {
-    "etf": "Unavailable",
-    "stablecoins": "Unavailable",
+    "etf": "Falling",
+    "stablecoins": "Falling",
     "volume": "Quiet tape"
   },
   "flow_kinds": {
     "etf": {
       "kind": "subscription",
-      "observation": "stale",
+      "observation": "pending",
       "expected_cadence": "us_business_day"
     },
     "stablecoins": {
       "kind": "issuance",
-      "observation": "stale",
+      "observation": "current",
       "expected_cadence": "calendar_day"
     },
     "volume": {
@@ -552,13 +560,13 @@
       "trend": "Range",
       "risk": "Stressed",
       "relative": "Tracking Bitcoin",
-      "coverage": "3,811 daily observations from Coinbase daily OHLCV."
+      "coverage": "3,812 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
       "trend": "Range",
       "risk": "Stressed",
       "relative": "Tracking Bitcoin",
-      "coverage": "1,969 daily observations from Coinbase daily OHLCV."
+      "coverage": "1,970 daily observations from Coinbase daily OHLCV."
     }
   }
 }
