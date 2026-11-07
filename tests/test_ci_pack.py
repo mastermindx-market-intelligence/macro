@@ -5605,7 +5605,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_935),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_672),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5614,6 +5614,61 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-07 second conflict composition for Macro #7352, main0e48e731:
+    Preserve current main's accepted P5.T9.S5 GSC contribution and every
+    other current owner and provenance record. Its ceilings are now
+    index5914/free5933/plan-book5672. Add only this unchanged benchmark
+    source's previously measured two free-content units:5933->5935.
+    This is arithmetic composition, not a new planner or runtime measure.
+    No #7350/#7385 sibling allowance is imported. Keep all job-count
+    ceilings, ten-pack bounds, selectors, suites, timeouts and admission
+    limits. Preceding90f8 passed its own natural42395289016 proof; that
+    does not prove this new combined source. Natural CI must qualify it.
+
+    Earlier same-carrier provenance, at its recorded source identities:
+    2026-11-07 conflict composition for Macro #7352 against main0c02daa5:
+    retain the current accepted #10710 source, owner enrollment and measured
+    index/free/Prophet ceilings 5,914/5,931/5,672. Add only this carrier's
+    already measured +2 free-content contribution, yielding 5,914/5,933/5,672.
+    This is arithmetic composition, not a new paired execution measurement.
+    Natural current-head CI must qualify it. No unmerged sibling funding,
+    job-count, ten-pack, runtime, selector or admission limit is imported.
+    The preceding carrier-specific measurements below keep their dated bases.
+
+    2026-11-07 current-main composition for Macro #7352: retain the dated
+    November 6 benchmark-only paired measurement below. Main already includes
+    #8899's independently measured free-content contribution. Compose this
+    benchmark's own +2 only on that current 5,929 ceiling, yielding 5,931;
+    index 5,912 and Prophet 5,670 remain unchanged. This arithmetic composition
+    is not a new paired execution measurement. Natural current-head CI must
+    validate it. No unmerged #7285, #7320, #7327, #7350 or #7385 allowance is
+    imported; every existing job/count/pack/control limit stays unchanged.
+
+    2026-11-06 Macro #7352 offline grounded-extraction benchmark: the new
+    tests/test_research_intelligence_benchmark.py is enrolled ONCE in the
+    incumbent research-vault CODE job's existing pytest invocation — its
+    incumbent owner — and that same job's curated scope is widened by the
+    three new paths its own command now reads (the manifest fails to load
+    without them; see _scope_coverage_findings). Native paired measurement on
+    2026-11-06, base 0bb81c727ada4f09814afcf587238d089714109e against the
+    candidate working tree, with this same run_ci_pack blob and
+    scripts/check_contract_delta.py --base 0bb81c72:
+
+        templates/index.html          137 jobs / 5,912 weight / 10 packs
+        scripts/build_free_content.py 137 jobs / 5,927 -> 5,929 weight / 10 packs
+        engine/prophet/plan_book.py   131 jobs / 5,668 weight / 10 packs
+
+    Identical selected job IDs on both sides — newly selected: none, no
+    entrant and no exit. The sole definition delta is the incumbent
+    research-vault job's own estimated weight 91 -> 93, from the one added
+    `tests/test_` reference inside its EXISTING pytest command; that job is
+    already selected by the free-content probe, so the probe's aggregate
+    moves by exactly +2. Re-base only that one weight ceiling, to its
+    measured 5,929, with no padding. The free-content job-count ceiling
+    (138), the pack bound (10), the other two weight ceilings, every
+    selector and every suite stay unchanged. These are planner estimates,
+    not measured execution times.
 
     P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
     protected59e035e39607, preserving its gateway and prior provenance
