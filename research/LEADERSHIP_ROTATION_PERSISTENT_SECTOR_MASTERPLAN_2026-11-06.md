@@ -158,3 +158,52 @@ Source qualification and consumer admission details: [source audit](LEADERSHIP_R
 - Source publication/readback is verified for all three original carriers. Sector Central generation, visible Terminal adoption, native source-clock/correction contracts, mechanism/risk qualification, required release and production/browser proof remain unverified. Existing held legacy-reader, serializer, snapshot and design repairs were not replayed.
 - Existing LR-W1–W5 acceptance and LR-W6 scientific embargo remain unchanged. There are no live child workers or watcher loops. No merge, release, deployment or production-acceptance claim is made.
 - Next material action: qualify the exact current heads of #10806, Terminal #1332 and Mastermind #2157 through their existing required checks and protected release paths; repair concrete findings on those same carriers. Then reconcile #10780 native generation and the accepted Sector Central/Terminal design writers, adopt the already-qualified dossier through those incumbent paths, and prove one natural generation at all consumers. Source mapping/clock/rights obligations from the audit still precede mechanism/history admission. The current receiver owns these actions; no archived author or invented review ceremony is a dependency.
+
+
+## 9. Continuing implementation — 2026-11-07 UTC
+
+Chairman's current instruction is to resume implementation and finish integration. The acceptance ruler in section 1 remains in force. The old first-slice custody fence is not a permanent prohibition on a later independently admitted adoption change.
+
+### Source custody and release reconciliation
+
+- Governing protected Mastermind pin is now `d2f72b2d0d3066502adef103afa847904a70b18d`, compatible Sol 1.0.1/bootstrap 1. The changed delivery law was read; unchanged law blobs were compared at the same pin.
+- Mastermind [#2157](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2157) merged from head `21775669516630a183817f1ef334be0ff7d4aba2` into actual merge commit `ad6275a9c4d237bce75e52d0d6a8f41264b4ded5` at 2026-11-06T23:50:42Z. Source integration is proven; runtime deployment and natural dossier availability are not.
+- Macro [#10806](https://github.com/mastermindx-market-intelligence/macro/pull/10806), head `5b4962a381711328cc01dbe788f9ca4b5f4f7e4d`, was armed once through the incumbent `merge-on-green` controller. Binding candidate checks passed; the inactive Codex queue pilot is not a gate. Full sweep [42340200527](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42340200527), job 128305957178, deferred this exact PR because main commit `b2780954b1f4` changed check definitions and the global CI workload cap had no free slot. This is a stale-proof refresh dependency, not merge or release acceptance. No cap change, duplicate dispatch or direct merge.
+- Terminal [#1332](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1332), head `260002504a80e2ce297cec2a82b2f5c73290816c`, passed all 23 checks and entered the existing native merge queue once. Queue readback: `MQE_lQDOTOzwKM8AAAABNbL2Rc4ABTs-zgPMb78`, QUEUED position 1. Open/unmerged at last readback; no resubmission or deployment.
+- Initial source workspaces were already clean and released. The installed owner has no recover-existing-branch path. A new **sequential adoption phase**, operation `persistent-sector-leadership-adoption-20261107-c4`, was acquired from exact input `5b4962a381711328cc01dbe788f9ca4b5f4f7e4d`. Its initial acquisition callback was unqualified while hydration continued; original-owner status subsequently proved the correct lock, branch, base and clean tree. No acquisition retry or replacement. Workspace: `/Volumes/Mastermind/agent-workspaces/macro/web/persistent-sector-leadership-adoption-20261107-c4`; branch `sol/web-persistent-sector-leadership-adoption-20261107-c4`.
+- This follow-on branch must reconcile the actual #10806 merge/current main before opening its additive adoption PR. It is not a second publication of the initial dossier contract.
+
+### Producer adoption implemented and verified
+
+The existing `engine/sector_central.py::_measured_read` now requests `include_sector_dossiers=True` from the incumbent pure reader. The established Central document and builder remain the only publication path. The default pure reader, source fixture, raw inputs, existing failure stub and legacy fields remain unchanged.
+
+The existing enrolled test file now checks the real Central seam and `compute()` publication: all eleven identities, literal zero, exact 21/63 values, thin/missing reasons, disabled authority and the provenance limits. Unqualified source metadata keeps its legacy measurements while the new dossier values are withheld. Parent direct work uses **PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD** for this small producer integration and its custody-sensitive composition.
+
+Validation: `python3 -m pytest -q tests/test_leadership_measured_read.py tests/test_sector_central_measured_panel.py` → **137 passed in 10.32s**, Studio process 45358 exit 0. `git diff --check` clean. This is local candidate proof; no producer/runtime release has been performed.
+
+### Visible consumer implementation in the original paid Fabric carriers
+
+Two disjoint bounded UI builds were requested through native Fabric AUTO admission. Request/controller creation is not a verified worker START or accepted artifact.
+
+| Surface | Original root / run | Controller | Granted source scope |
+|---|---|---|---|
+| Terminal detail Overview | root `persistent-sector-leadership-20261106-c4`; run `psl3-visible-dossier-20261107-c4` | PID 23389 | New dossier component/styles, narrow Workspace mount, additive EN/ZH lexicon, focused tests/browser receipts |
+| Macro measured selected detail | same root; run `psl4-macro-evidence-20261107-c4` | PID 44523 | Additive evidence rendering/styles in existing template and existing enrolled measured-panel tests |
+
+Parent retains source integration, design adjudication and release. Terminal worker input is head `260002504a80e2ce297cec2a82b2f5c73290816c`; Macro input is `5b4962a381711328cc01dbe788f9ca4b5f4f7e4d`. Neither worker may modify initial release branches, producer code, held writers, runtime, gateway/auth, policy or publication. The original root/run/PID must be reconciled; no duplicate or shadow build while an effect is live or uncertain.
+
+The accepted journey is the existing selected-sector Overview/detail. Show exact native 21/63-session evidence, zeros and native null reasons, coverage, explicit missing explanation/risk, and progressive source details in EN/ZH. Preserve selection/history/back, source withdrawal, all eleven identities including a valid all-null dossier, native tokens and responsive accessibility. Fixture/browser proof and natural authenticated production proof remain distinct.
+
+C3 custody inspection found no blanket Workspace/template exclusion. Preserve Terminal #1232 breadth and #1244 refused shell assets; #1249 History/chart hold; Macro #10703 history/router and unpublished basket-cycle work; #10707 refused compact source and uncertain Paper effects. No held code is copied or publication retried.
+
+### Generation and evidence obligations
+
+The original Macro #10780 publisher status now confirms local/remote published head `334b26b540ea82fc2593ab3a723ceda65be32b3b` with retained dirty source. That worktree was not edited, committed, pushed or released. Published #10780 changes Central to accept captured `rotation_payload`; eventual composition must retain that exact-input argument and add the dossier flag, not restore an ambient read.
+
+Its native-view allowlist currently omits `sector_dossiers`; current raw-document consumers and that future native API must be distinguished. Parent is resolving the actual deployment/read path from current owners before altering any additional consumer or generation seam.
+
+PSL-2 native evidence mappings and clocks remain unqualified unless a specific current native contract proves otherwise. The missingness slots are not a completed fundamental explanation. Forecasts, ranking, gating, sizing, trade and escalation authority remain disabled; LR-W6 and the accepted negative findings remain untouched.
+
+### Immediate continuation
+
+Consume both original UI results and exact source artifacts, integrate only granted changes into the admitted follow-on sources, run the necessary actual-path checks, consume original #10806/#1332 release effects, then publish the additive adoption candidate through its exact-head owner. Advance the existing natural producer/consumer path only when its actual source/runtime gates are satisfied. The mission is **MORE_WORK_EXISTS**, not accepted or completed by this milestone.
