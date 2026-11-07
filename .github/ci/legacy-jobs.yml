@@ -295,6 +295,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - engine/portfolio_money.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2463,6 +2464,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - engine/portfolio_money.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3538,6 +3540,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - engine/portfolio_money.py
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -8130,6 +8133,7 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - engine/portfolio_money.py
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -12368,6 +12372,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/portfolio_money.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -16610,6 +16615,7 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - engine/portfolio_money.py
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -30776,6 +30782,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/portfolio_money.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -40558,6 +40565,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/portfolio_money.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -45148,6 +45156,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/portfolio_money.py
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -50340,6 +50349,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - engine/portfolio_money.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
