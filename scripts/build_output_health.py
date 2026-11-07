@@ -81,6 +81,7 @@ from engine.output_health import (  # noqa: E402
 )
 from scripts.build_intelligence_registry import (  # noqa: E402
     _READ_CACHE,
+    _is_repo_relative,
     _tracked_file_exists,
     build as build_registry,
     read_tracked,
@@ -531,12 +532,14 @@ def observe(
     trust_mtime: bool,
     git_ok: bool,
     head_blobs: frozenset[str] | None = None,
+    head_inventory_complete: bool = False,
 ) -> dict[str, Any]:
     """One storage-aware observation of one artifact. No verdicts — evidence only.
 
-    *head_blobs* is the optional batched HEAD inventory (:func:`_head_blobs`). It only
-    ever short-circuits a POSITIVE presence answer; every negative still goes through
-    ``_tracked_file_exists``. Omitting it changes the runtime and nothing else.
+    *head_blobs* alone is a positive presence hint, potentially partial. A caller that
+    obtained the complete :func:`_head_blobs` result may explicitly certify completeness
+    to answer canonical negative paths too. Noncanonical paths and unavailable Git
+    retain the individual probe; omission preserves the original observation semantics.
     """
     rel = str(entry.get("path") or "")
     storage = str(entry.get("storage") or "")
@@ -577,6 +580,10 @@ def observe(
         return obs
     elif head_blobs is not None and rel in head_blobs:
         obs["exists"] = True
+        obs["presence_source"] = "git_head"
+    elif (head_inventory_complete and head_blobs is not None and git_ok
+          and rel == Path(rel).as_posix() and _is_repo_relative(root, rel)):
+        obs["exists"] = False
         obs["presence_source"] = "git_head"
     elif _tracked_file_exists(root, rel):
         obs["exists"] = True
@@ -971,7 +978,8 @@ def build_with_registry(
         )
     observations = {
         aid: observe(
-            root, entry, trust_mtime=trust_mtime, git_ok=git_ok, head_blobs=head_blobs
+            root, entry, trust_mtime=trust_mtime, git_ok=git_ok, head_blobs=head_blobs,
+            head_inventory_complete=head_blobs is not None,
         )
         for aid, entry in sorted(artifacts.items())
         if wanted is None or aid in wanted

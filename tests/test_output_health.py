@@ -2058,3 +2058,60 @@ def test_content_fallback_bad_worktree_still_uses_complete_head(monkeypatch, tmp
     assert CLI._content_text(tmp_path, "data/target.json") == ("head\n", None)
     assert process.stdout.closed and process.returncode == 0
     assert not CLI._READ_CACHE
+
+
+def test_complete_presence_inventory_preserves_real_git_observations(tmp_path, monkeypatch):
+    root = _git_fixture_root(tmp_path)
+    (root / "data/a.json").unlink()  # tracked but not materialized
+    (root / "inside.json").symlink_to(root / "data/b.json")
+    outside = tmp_path / "outside.json"
+    outside.write_text("{}")
+    (root / "outside-link.json").symlink_to(outside)
+    CLI.reset_caches()
+    inventory = CLI._head_blobs(root)
+    assert inventory is not None
+    paths = [
+        "data/a.json", "data/b.json", "data/missing.json", "data", "data/",
+        "inside.json", "outside-link.json", "../outside.json", str(outside),
+        "./data/a.json", "data//a.json", "data/a.json/", "data/missing with spaces.json",
+    ]
+    entries = [artifact(path, producer=PRODUCER_A, asof_field=None) for path in paths]
+    expected = [CLI.observe(root, entry, trust_mtime=False, git_ok=True)
+                for entry in entries]
+    actual = [CLI.observe(root, entry, trust_mtime=False, git_ok=True,
+                          head_blobs=inventory, head_inventory_complete=True)
+              for entry in entries]
+    assert actual == expected
+
+
+@pytest.mark.parametrize("inventory,complete,git_ok", [
+    (frozenset(), False, True), (None, True, True), (frozenset(), True, False),
+])
+def test_incomplete_presence_inventory_keeps_individual_probe(
+    tmp_path, monkeypatch, inventory, complete, git_ok,
+):
+    calls = []
+    monkeypatch.setattr(CLI, "_tracked_file_exists", lambda root, rel: calls.append(rel) or True)
+    result = CLI.observe(tmp_path, artifact("data/exists.json", producer=PRODUCER_A,
+                                           asof_field=None),
+                         trust_mtime=False, git_ok=git_ok, head_blobs=inventory,
+                         head_inventory_complete=complete)
+    assert calls == ["data/exists.json"]
+    assert result["exists"] is True
+
+
+def test_complete_presence_inventory_avoids_one_git_process_per_missing_output(tmp_path, monkeypatch):
+    root = _git_fixture_root(tmp_path)
+    CLI.reset_caches()
+    inventory = CLI._head_blobs(root)
+    assert inventory is not None
+    entries = [artifact(f"data/missing-{i}.json", producer=PRODUCER_A, asof_field=None)
+               for i in range(100)]
+    expected = [CLI.observe(root, entry, trust_mtime=False, git_ok=True) for entry in entries]
+    def no_probe(*args):
+        pytest.fail("complete HEAD inventory should answer canonical negative presence")
+    monkeypatch.setattr(CLI, "_tracked_file_exists", no_probe)
+    actual = [CLI.observe(root, entry, trust_mtime=False, git_ok=True,
+                          head_blobs=inventory, head_inventory_complete=True)
+              for entry in entries]
+    assert actual == expected
