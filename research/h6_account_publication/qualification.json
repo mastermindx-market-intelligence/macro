@@ -1,0 +1,111 @@
+{
+  "completed_at": "2026-11-07T13:51:49.156807+00:00",
+  "exact_inputs_verified": 19,
+  "external_boundary": "Incumbent native _offline_boundary guarded all runs; no unexpected effect observed",
+  "h2_preimage_commit": "69ead1bdc1b7f6e1b62ef186d955d07cbd718dce",
+  "h3_source_commit": "ef95049fa2e1f8c981497c8a21b643fcbe59f25b",
+  "installed": false,
+  "live_provider_proven": false,
+  "manifest_sha256": "6f39480547abf9b95b6e2dbfeb104c76fdb53c15448c6ac8552abc5066eb0e72",
+  "native_preimage_commit": "cd557dc05e26b70f2d8f56ad0da2df76a15d74ca",
+  "negative_discriminators": 4,
+  "parent_mission_complete": false,
+  "patch_sha256": "06d4bb2d027c7807685c6c5a38a7526777fd0114d9cac02b3dbf6437dc375ffd",
+  "positive_tests": 147,
+  "python": "3.12.14",
+  "qualification": "SOURCE_FIXTURE_ONLY",
+  "results": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "test_h6_quota_publication.NativeAdmissionPublicationTests.test_publication_contention_refuses_new_worker_and_application_without_allocating"
+      ],
+      "duration_seconds": 0.065,
+      "exit_code": 1,
+      "expected_result_observed": true,
+      "name": "native_lock_before_claim",
+      "output": "F\n======================================================================\nFAIL: test_publication_contention_refuses_new_worker_and_application_without_allocating (test_h6_quota_publication.NativeAdmissionPublicationTests.test_publication_contention_refuses_new_worker_and_application_without_allocating)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/h6-publication-proof-qxot9_e6/before-join/ops/native_fabric/quota_continuity/tests/test_h6_quota_publication.py\", line 116, in test_publication_contention_refuses_new_worker_and_application_without_allocating\n    self.assertFalse(result.ok)\nAssertionError: True is not false\n\n----------------------------------------------------------------------\nRan 1 test in 0.065s\n\nFAILED (failures=1)\n",
+      "output_sha256": "ccd68903ca2fe30af8d8aae8e979be1dc2f5a3cddae4d4123502dc0acf2102dc",
+      "tests": 1
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "test_h6_quota_publication.NativeAdmissionPublicationTests.test_h2_pending_or_failed_refresh_cannot_leave_h3_old_envelope_admissible"
+      ],
+      "duration_seconds": 0.058,
+      "exit_code": 1,
+      "expected_result_observed": true,
+      "name": "pending_refresh_blocks_old_envelope",
+      "output": "F\n======================================================================\nFAIL: test_h2_pending_or_failed_refresh_cannot_leave_h3_old_envelope_admissible (test_h6_quota_publication.NativeAdmissionPublicationTests.test_h2_pending_or_failed_refresh_cannot_leave_h3_old_envelope_admissible)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/h6-publication-proof-qxot9_e6/before-join/ops/native_fabric/quota_continuity/tests/test_h6_quota_publication.py\", line 205, in test_h2_pending_or_failed_refresh_cannot_leave_h3_old_envelope_admissible\n    self.assertEqual(first.account, \"alpha-far\")\nAssertionError: 'zeta-near' != 'alpha-far'\n- zeta-near\n+ alpha-far\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.058s\n\nFAILED (failures=1)\n",
+      "output_sha256": "9e6d2b5f3bce8b75e1e88a3da3b76128503db2f86a1eeb1a5ba78f76095ca6f6",
+      "tests": 1
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "test_h6_quota_publication.QuotaPublicationTests.test_original_attempt_cannot_complete_after_its_pending_marker_is_removed"
+      ],
+      "duration_seconds": 0.007,
+      "exit_code": 1,
+      "expected_result_observed": true,
+      "name": "original_pending_marker_required",
+      "output": "F\n======================================================================\nFAIL: test_original_attempt_cannot_complete_after_its_pending_marker_is_removed (test_h6_quota_publication.QuotaPublicationTests.test_original_attempt_cannot_complete_after_its_pending_marker_is_removed)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/h6-publication-proof-qxot9_e6/before-join/ops/native_fabric/quota_continuity/tests/test_h6_quota_publication.py\", line 73, in test_original_attempt_cannot_complete_after_its_pending_marker_is_removed\n    self.assertEqual(self.path.read_bytes(), before)\nAssertionError: b'{\\n[24 chars]s\": {\\n      \"a\": {\\n        \"binding\": {\\n   [1848 chars]n}\\n' != b'{\\n[24 chars]s\": {}\\n  }\\n}\\n'\n\n----------------------------------------------------------------------\nRan 1 test in 0.007s\n\nFAILED (failures=1)\n",
+      "output_sha256": "e4a6bd174471854d338458bd0b27075f384604dbdb32396a03c342db48809c28",
+      "tests": 1
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "test_h6_quota_publication.QuotaPublicationTests.test_fsync_failure_after_replace_requires_reconciliation_with_visible_postimage"
+      ],
+      "duration_seconds": 0.005,
+      "exit_code": 1,
+      "expected_result_observed": true,
+      "name": "directory_fsync_required",
+      "output": "F\n======================================================================\nFAIL: test_fsync_failure_after_replace_requires_reconciliation_with_visible_postimage (test_h6_quota_publication.QuotaPublicationTests.test_fsync_failure_after_replace_requires_reconciliation_with_visible_postimage)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/h6-publication-proof-qxot9_e6/before-join/ops/native_fabric/quota_continuity/tests/test_h6_quota_publication.py\", line 90, in test_fsync_failure_after_replace_requires_reconciliation_with_visible_postimage\n    with self.assertRaisesRegex(q.QuotaCacheWriteError, \"reconciliation required\"):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuotaCacheWriteError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.005s\n\nFAILED (failures=1)\n",
+      "output_sha256": "aa9fef6424db09688d36550aa979a0af81a4035737b0b89ca6a107c9344df200",
+      "tests": 1
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ops/native_fabric/quota_continuity/tests"
+      ],
+      "duration_seconds": 6.574,
+      "exit_code": 0,
+      "expected_result_observed": true,
+      "name": "composed_native_regression",
+      "output": "........................................................................................................\n----------------------------------------------------------------------\nRan 104 tests in 6.574s\n\nOK\n",
+      "output_sha256": "ab998cb13fb7b6a8703812057a38dbe379a4671ee0e8c6e7d31bbb9604643ce3",
+      "tests": 104
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-c",
+        "import sys, unittest\nsys.path[:0] = ['ops/native_fabric/quota_continuity/candidate', 'ops/native_fabric/quota_continuity/source', 'ops/native_fabric/quota_continuity/tests']\nfrom _offline_boundary import acquire, release\nacquire()\ntry:\n    unittest.main(module=None, argv=['unittest', 'discover', '-s', 'tests'])\nfinally:\n    release()\n"
+      ],
+      "duration_seconds": 0.163,
+      "exit_code": 0,
+      "expected_result_observed": true,
+      "name": "current_h2_regression",
+      "output": "...........................................\n----------------------------------------------------------------------\nRan 43 tests in 0.163s\n\nOK\n",
+      "output_sha256": "8d2960b593d7dff6d4b2255dd1ab144f0b8748f6760ef69e6a22db83ce87be38",
+      "tests": 43
+    }
+  ],
+  "schema": "mastermind.h6_account_publication_qualification.v1"
+}

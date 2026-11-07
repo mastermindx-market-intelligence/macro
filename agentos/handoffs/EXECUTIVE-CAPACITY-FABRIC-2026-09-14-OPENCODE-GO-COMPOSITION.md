@@ -251,6 +251,55 @@ danger_areas:
 
 # Executive Capacity Fabric - OpenCode Go composition checkpoint
 
+## H6 source integration continuation, 2026-11-07
+
+**MISSION_COMPLETE: false. Capability: SOURCE_CONTRIBUTION_VERIFIED / INSTALL_UNPROVEN.**
+This is the latest bounded integration addition to the H3 source record below,
+under the Chairman's [H6 assignment](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2175#issuecomment-6705879262).
+
+[Full H6 brief](../../research/h6_account_publication/README.md),
+[exact composition patch](../../research/h6_account_publication/native.patch),
+[19-input / five-output manifest](../../research/h6_account_publication/manifest.json),
+[qualification receipt](../../research/h6_account_publication/qualification.json) and
+[reproducer](../../scripts/qualify_h6_account_publication.py) are retained on this
+original #7142 contribution carrier. No new final branch or control plane was created.
+
+The composition preserves H3 `ef95049fa2e1f8c981497c8a21b643fcbe59f25b`, consumes
+H2 `69ead1bdc1b7f6e1b62ef186d955d07cbd718dce`, and targets the exact native inputs
+of #2175 `cd557dc05e26b70f2d8f56ad0da2df76a15d74ca`.
+Patch SHA256: `06d4bb2d027c7807685c6c5a38a7526777fd0114d9cac02b3dbf6437dc375ffd`.
+This combined patch includes H3 already; do not apply both contributions separately.
+
+**Verified delta:** new native claims hold the original native admission lock
+through SQLite commit/rollback, sharing the actual compatible policy and quota
+publisher's lock. H2 pending/failure/refusal state fences H3's old capacity envelope.
+Exact refresh completion identity, canonical cache aliases and file/directory
+durability are retained. Original recovery/settlement/release stay available during
+publication contention. Four earlier-composition negative controls failed as
+expected; composed proof passed **104 native + 43 H2 = 147 tests** with all nineteen
+input blobs and five output hashes verified under the incumbent offline boundary.
+No provider, credential, selected runtime, native install or useful live turn was
+executed. This is SELF_REVIEWED source evidence, not mandatory hosted CI or approval.
+
+**Preserved holds:** the live #2175 final writer's builder/CI effects, the original
+J95731 UNKNOWN, #7116 unpublished-source denial and the refused #7142 review remain
+on their original owners. The bounded reasoning advisor is ACCEPTED/STOP, and no
+worker, watcher or unattended continuation is claimed. Source proof does not
+advance programme or runtime acceptance.
+
+**Remaining evidence:** installed caller lock order and every mutable configuration
+publisher's participation; actual integer account/window observations, entitlement,
+whole-operation no-overage enforcement and settlement coverage; mixed-window and
+retention qualification; original final manifests/required CI/release/install;
+the ten original H6 primary/worker/physical-account/OS acceptance rows.
+
+**Next action:** the currently assigned #2175 integrator reconciles the active
+builder/CI effects, consumes this exact combined source after input verification,
+regenerates its original native manifests and runs required exact-head CI. It then
+qualifies the installed original owners and one lawful account/budget for the first
+useful primary vertical. This checkpoint does not transfer live or unknown effects
+and does not require the Chairman to relay routine implementation work.
+
 ## Current continuation: H3, 2026-11-07
 
 Current Chairman assignment: complete [H3 — expiration-aware physical-account admission](https://github.com/mastermindx-market-intelligence/macro/pull/7142#issuecomment-6705878444).
