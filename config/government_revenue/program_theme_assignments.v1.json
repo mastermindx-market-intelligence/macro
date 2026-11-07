@@ -592,5 +592,16 @@
     "shipbuilding/funding_stage/0": "fddb75dc4c7a4e8935af5184b5ec0049440a674ca563ce2bac03c5beb801e6c9",
     "shipbuilding/market_context/0": "add814de5c6c6e41e6a224ca6c4fb85a7afb180d4da6a227e7bba9ebab3d96bb",
     "shipbuilding/next_event/0": "3c218954c756b3fad8819b4d037ec40a2abf8f83969d5f79a7e11498f13cce3f"
+  },
+  "commercial_space_context": {
+    "basket_id": "space_economy",
+    "source_commit": "24c59413bbc41bce5ef0b8a2f423330da557e1bd",
+    "verified_at": "2026-10-31T05:48:21+00:00",
+    "decision_ref": "assigned:T1/A33:01a13300-c75b-79c3-83f9-79b3b4c01dc7:commercial-space-context-only",
+    "sources": {
+      "data/baskets/membership.json": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae",
+      "site/basketdata/pulse.json": "156447c18779184bbe02ada343a8e6ae8379b09538d29c17a84c19f2c67971e0",
+      "site/basketdata/baskets.json": "5eb115a86d0262fd888801d3684a2fafcbec3885799171539a3b0a96c90a2c3f"
+    }
   }
 }
