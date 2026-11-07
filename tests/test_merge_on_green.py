@@ -5461,7 +5461,10 @@ def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
         (_census(served_runs=3), 16, 0),
         (_census(sampled_runs=1, served_runs=1), 10, 2),
         (_census(refused_jobs=1, served_runs=2), 8, 0),
-        (_census(slow_jobs=1, served_runs=3), 8, 0),
+        # S9: a slow pickup collapses the adaptive cap to the flat 8 (unchanged) but
+        # is not refusal, so the saturation floor still admits one lease-serialized
+        # refresh while fewer than REFRESH_FLOOR_PROOF_CEILING proofs are in flight.
+        (_census(slow_jobs=1, served_runs=3), 8, 1),
         (_census(queued_runs=1), 8, 0),
         (_census(sampled_runs=0, served_runs=0), 8, 0),
         (None, 8, 0),
@@ -5472,7 +5475,7 @@ def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
         "served-pool-full",
         "one-served-run-cap-12",
         "refused-job-flat-cap",
-        "slow-pickup-flat-cap",
+        "slow-pickup-flat-cap-floor-one",
         "queued-run-flat-cap",
         "no-witness-flat-cap",
         "census-unreadable-flat-cap",
@@ -5565,6 +5568,125 @@ def test_adaptive_census_exception_degrades_to_the_flat_cap_without_deferring(
     assert allowances == [1]
     out = capsys.readouterr().out
     assert "global cap 8 (census failed (core budget exhausted): flat cap)" in out
+    assert "Sweep deferred" not in out
+
+
+@pytest.mark.parametrize(
+    "census,active,expected,needle",
+    [
+        (None, 12, 0, "census not read"),
+        (_census(queued_runs=1, served_runs=0), 12, 0, "refused 1 queued run(s)"),
+        (_census(refused_jobs=2, served_runs=1), 12, 0, "2 waiting hosted job(s)"),
+        (_census(sampled_runs=0, served_runs=0), 12, 0, "no hosted pickup witnessed"),
+        # Sampled but neither served nor slow: no later-wave hosted job was seen
+        # starting, so there is no capacity witness either way -- floor closed.
+        (_census(sampled_runs=2, served_runs=0), 9, 0, "2 mature run(s) sampled, none served or slow"),
+        (_census(sampled_runs=1, served_runs=1), 9, 1, "saturation floor: 1 lease-serialized"),
+        (_census(slow_jobs=1, served_runs=2), 12, 0, "at or above the floor ceiling 12"),
+        (_census(slow_jobs=1, served_runs=2), 40, 0, "at or above the floor ceiling 12"),
+        (_census(slow_jobs=1, served_runs=2), 11, 1, "saturation floor: 1 lease-serialized"),
+        (_census(slow_jobs=3, served_runs=0), 9, 1, "3 slow pickup(s), no refusal in 3"),
+    ],
+)
+def test_s9_refresh_floor_is_one_slot_under_a_hard_ceiling_without_refusal(
+    census, active, expected, needle
+):
+    """The repealed 'fair refresh' clamp raised a negative allowance to eight at 49
+    proofs in flight. The floor is one, only below the half-headroom ceiling, and
+    never on refusal evidence (a queued run or a waiting hosted job)."""
+    slots, detail = MOG.refresh_floor_allowance(census, active)
+    assert (slots, needle in detail) == (expected, True), detail
+    assert MOG.REFRESH_FLOOR_PER_SWEEP == 1
+    assert MOG.REFRESH_FLOOR_PROOF_CEILING == 12
+
+
+@pytest.mark.parametrize(
+    "census,active,expected_allowance,needle",
+    [
+        # The overnight deadlock shape: slow pickups only, 12 proofs, flat cap 8 -> 0.
+        # 12 is AT the ceiling, so the floor stays closed; one proof fewer opens it.
+        (_census(slow_jobs=1, served_runs=2), 12, 0, "floor withheld: 12 proof(s)"),
+        (_census(slow_jobs=1, served_runs=2), 11, 1, "[saturation floor: 1"),
+        (_census(queued_runs=1, served_runs=0), 9, 0, "floor withheld: hosted pool refused"),
+        # Ordinary headroom is untouched: the floor only acts on a zero allowance.
+        (_census(served_runs=3), 9, 7, "global cap 16"),
+    ],
+    ids=("deadlock-at-ceiling", "deadlock-under-ceiling", "refusal", "headroom-untouched"),
+)
+def test_s9_floor_grants_one_lease_serialized_slot_when_the_census_zeroes_the_sweep(
+    monkeypatch, capsys, census, active, expected_allowance, needle
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: census)
+    seen: list[tuple[int, bool]] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        seen.append((budget.max_refreshes, budget.requires_refresh_lease))
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert seen == [(expected_allowance, expected_allowance == 1)]
+    out = capsys.readouterr().out
+    assert needle in out, out
+    if expected_allowance == 1:
+        assert "(durable lease required)" in out
+
+
+def test_s9_floor_never_reads_a_second_census_and_stays_closed_past_the_widest_cap(
+    monkeypatch, capsys
+):
+    """At 16+ proofs the adaptive census is skipped; the floor must not open a new
+    read of its own and must stay closed (the ceiling is 12)."""
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 16)
+
+    def never(*_a, **_k):
+        raise AssertionError("census read although no headroom could be used")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", never)
+    seen: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        seen.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert seen == [0]
+    assert "[floor withheld: hosted pool census not read]" in capsys.readouterr().out
+
+
+def test_s9_floor_stays_closed_when_the_census_read_itself_failed(monkeypatch, capsys):
+    """A RateLimited census degrades to the flat cap (unchanged); at 9 proofs that
+    is zero, and a floor without job-level evidence would be the repealed clamp.
+    9 is UNDER the floor ceiling, so only the missing census keeps it closed."""
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 9)
+
+    def rate_limited(*_a, **_k):
+        raise MOG.RateLimited("core budget exhausted")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", rate_limited)
+    seen: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        seen.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert seen == [0]
+    out = capsys.readouterr().out
+    assert "census failed (core budget exhausted): flat cap" in out
+    assert "[floor withheld: hosted pool census not read]" in out
     assert "Sweep deferred" not in out
 
 

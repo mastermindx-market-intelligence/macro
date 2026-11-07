@@ -395,7 +395,9 @@ MAX_REFRESHES_PER_SWEEP = 8
 # sweep per minute.  Each refreshed pull request launches one ci.yml run with 12
 # hosted jobs (plus fences), and on 2026-08-11 the shared pool was already pinned at
 # 180/180.  Count every active pull-request ci.yml run — ordinary session work and
-# controller re-proofs alike — and add no refreshes above this repo-wide ceiling.
+# controller re-proofs alike — and add no ordinary refreshes above this repo-wide
+# ceiling (the S9 saturation floor below is the one bounded exception: a single
+# lease-serialized refresh under its own hard ceiling, never a raised allowance).
 # Eight proof runs are roughly half the hosted pool, leaving real capacity for the
 # sessions the controller exists to serve.  This is intentionally conservative:
 # an ordinary in-flight proof consumes the same runners as a controller-created one.
@@ -406,6 +408,9 @@ MAX_IN_FLIGHT_PR_PROOFS = 8
 # advertised eight new refresh slots because the former "fair refresh" clamp raised
 # a negative allowance back to eight.  That directly defeated the repo-wide circuit
 # breaker and re-created the CI stampede it was meant to stop.
+# The S9 saturation floor below is NOT that clamp: it is one lease-serialized
+# refresh, granted only under a hard in-flight ceiling and only while the job-level
+# census shows no refusal (see REFRESH_FLOOR_PER_SWEEP).
 HIGH_LOAD_LEASE_THRESHOLD = 1
 ACTIVE_PR_PROOF_STATUSES = ("queued", "in_progress", "pending", "requested", "waiting")
 # Adaptive headroom ABOVE the flat cap, never a flat raise.  The flat 8 was sized
@@ -459,6 +464,30 @@ ADAPTIVE_SERVED_RUNS_FULL_HEADROOM = 2
 ADAPTIVE_PICKUP_GRACE_SECONDS = 120
 ADAPTIVE_HOSTED_LABEL_PREFIXES = ("ubuntu-", "windows-", "macos-")
 ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
+# S9 (2026-11-07) saturation floor.  Sweep 42339359763 (2026-11-07 04:39Z) read 12
+# indexed proofs against the flat cap of 8, the census reported slow pickups (no
+# queued run, no refused job), the adaptive headroom was therefore 0, and the
+# allowance was 0 -- while EVERY armed pull request was stale because main had
+# changed the check definitions (~70 refresh-deferred per sweep).  Ordinary session
+# pushes kept the in-flight count above the cap, so the controller never refreshed
+# anything and nothing merged overnight.  A pool that is merely slow is still
+# serving; a pool that REFUSES (queued run or waiting hosted job) is not.  When the
+# ordinary allowance is zero, admit ONE refresh per sweep, serialized by the durable
+# lease (one slot is inside HIGH_LOAD_LEASE_THRESHOLD, so racing sweep generations
+# cannot both spend it), only while (a) the census was actually read and witnessed
+# the hosted pool picking work up (a served later-wave job, or a slow pickup -- a
+# slow job HAS started; a mature run with neither is no evidence of capacity),
+# (b) it shows no refusal evidence, and (c) fewer than REFRESH_FLOOR_PROOF_CEILING
+# proofs are in flight -- the same half-headroom cap the adaptive policy grants on
+# a single served run.  Controller refreshes count toward that ceiling like any
+# other proof, so the floor can never push the pool past it.  Because the lease is
+# held until its owner's proof settles (or the lease max age), the floor drains at
+# one controller proof per proof LIFETIME, not one per sweep -- enough to keep the
+# queue moving when sessions' own pushes alone would hold the allowance at zero.
+REFRESH_FLOOR_PER_SWEEP = 1
+REFRESH_FLOOR_PROOF_CEILING = MAX_IN_FLIGHT_PR_PROOFS + (
+    ADAPTIVE_PROOF_CAP_MAX - MAX_IN_FLIGHT_PR_PROOFS
+) // 2
 # The rotation advances by the live pull cap every bucket, so every armed pull
 # request enters the window within ceil(N / cap) buckets — ~40 minutes for a
 # 93-PR backlog. Ten minutes matches the recovery cron; the sweeper keeps NO state
@@ -3260,6 +3289,40 @@ def adaptive_proof_cap(census: HostedPoolCensus | None) -> tuple[int, str]:
         min(ADAPTIVE_PROOF_CAP_MAX, MAX_IN_FLIGHT_PR_PROOFS + headroom),
     )
     return cap, f"+{headroom} adaptive: {why}"
+
+
+def refresh_floor_allowance(
+    census: HostedPoolCensus | None, effective_proofs: int
+) -> tuple[int, str]:
+    """``(slots, detail)`` for a sweep whose ordinary allowance came out at zero.
+
+    Never more than ``REFRESH_FLOOR_PER_SWEEP``; zero without a readable census
+    that witnessed a pickup (served run or slow job), on any refusal evidence, or
+    at/above ``REFRESH_FLOOR_PROOF_CEILING``.
+    """
+    if census is None:
+        return 0, "floor withheld: hosted pool census not read"
+    if census.queued_runs > 0 or census.refused_jobs > 0:
+        return 0, (
+            f"floor withheld: hosted pool refused {census.queued_runs} queued "
+            f"run(s), {census.refused_jobs} waiting hosted job(s)"
+        )
+    if census.sampled_runs <= 0 or (census.served_runs <= 0 and census.slow_jobs <= 0):
+        return 0, (
+            "floor withheld: no hosted pickup witnessed "
+            f"({census.sampled_runs} mature run(s) sampled, none served or slow)"
+        )
+    if effective_proofs >= REFRESH_FLOOR_PROOF_CEILING:
+        return 0, (
+            f"floor withheld: {effective_proofs} proof(s) in flight, at or above "
+            f"the floor ceiling {REFRESH_FLOOR_PROOF_CEILING}"
+        )
+    return REFRESH_FLOOR_PER_SWEEP, (
+        f"saturation floor: {REFRESH_FLOOR_PER_SWEEP} lease-serialized refresh "
+        f"({effective_proofs} proof(s) in flight under ceiling "
+        f"{REFRESH_FLOOR_PROOF_CEILING}, {census.slow_jobs} slow pickup(s), "
+        f"no refusal in {census.sampled_runs} mature run(s))"
+    )
 
 
 def refresh_lease_reservation_count(
@@ -8503,6 +8566,7 @@ def main() -> int:
     # It degrades to the flat cap on ANY census problem, including a RateLimited
     # read: it must never route the sweep into the deferred path.
     proof_cap, adaptive_detail = MAX_IN_FLIGHT_PR_PROOFS, "census skipped: flat cap"
+    pool_census: HostedPoolCensus | None = None
     effective_proofs = int(effective_active_proofs or 0)
     if (
         active_pr_proofs is not None
@@ -8524,6 +8588,13 @@ def main() -> int:
         available_refreshes = max(
             0, proof_cap - int(effective_active_proofs or 0)
         )
+        floor_detail = ""
+        if available_refreshes == 0 and budget.max_refreshes > 0:
+            # S9: a saturated-but-serving pool must not freeze every stale proof
+            # indefinitely. One lease-serialized refresh, under a hard ceiling.
+            available_refreshes, floor_detail = refresh_floor_allowance(
+                pool_census, effective_proofs
+            )
         budget.max_refreshes = min(budget.max_refreshes, available_refreshes)
         budget.requires_refresh_lease = (
             0 < budget.max_refreshes <= HIGH_LOAD_LEASE_THRESHOLD
@@ -8534,6 +8605,7 @@ def main() -> int:
             f"reservation(s), global cap "
             f"{proof_cap} ({adaptive_detail}), {budget.max_refreshes} CI workload slot(s) "
             "available this sweep"
+            + (f" [{floor_detail}]" if floor_detail else "")
             + (" (durable lease required)" if budget.requires_refresh_lease else "")
         )
     budget.refresh_context = refresh_load_detail
