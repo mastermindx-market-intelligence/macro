@@ -75,18 +75,13 @@ waves:
     status: in_progress
     depends_on: [H0]
     next_action: >
-      S4 integration: #2174, #2178 and #2179 are source-merged. Consume #2188 head 851f250d's
-      ordinary CI and protected integration, then original native consumer #2195; the profile stays
-      disabled until explicit
-      host/mission qualification. Then prove original mission/frontier/pending-effect continuity,
-      scoped recipient consumption and return to the original parent on two admitted mixed-provider
-      hosts. Current authenticated target projection is empty. Preserve #1318's production
-      inspection denial, #1958 NO INSTALL, historical terminal MiniMax and #836 action-scoped
-      holds, #2172's native admission hold and #2189's denied protected Control read. Exact receipts
-      and next actions are in the dated chatgpt-session-visibility handoff.
-      Hold #647, #651 and #836 at independent exact-head review. After release, wire R8 recovery plus bounded
-      continuation into Control Room, then add closed successor bootstrap through existing Web-Sol,
-      RuntimeBinding and Capacity owners.
+      S4: #2174/#2178/#2179 merged. Qualify #2188 CI/integration, then native consumer #2195.
+      Keep context disabled until host/mission admission. Prove mission/frontier/pending effects
+      through steering/restart and recipient-to-original-parent consumption on two admitted
+      mixed-provider hosts. Caller targets are empty. Preserve #1318 inspection, #1958 installation,
+      #2172/#2189/#2195 native-action denials and terminal MiniMax; exact receipts are in the dated
+      visibility handoff. Retain #647/#651/#836 specific review/release holds; then wire R8 recovery
+      and bounded continuation into Control Room through Web-Sol, RuntimeBinding and Capacity.
   - id: ASD-F0
     title: Active-Session Dialogue architecture and authority freeze
     status: done
