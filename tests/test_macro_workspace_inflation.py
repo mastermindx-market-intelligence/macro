@@ -23,6 +23,8 @@ if str(ROOT) not in sys.path:
 
 from engine.market_os.macro_workspaces import contract, inflation  # noqa: E402
 
+from lib import macro_suite_view  # noqa: E402
+
 BUILT_AT = "2026-09-04T00:00:00Z"
 REAL_ARTIFACT = ROOT / "data" / "release_forecast" / "inflation_intelligence.json"
 
@@ -162,6 +164,124 @@ def test_stale_required_source_is_typed_stale_not_healthy() -> None:
     assert r["freshness"] == "STALE_SOURCE"
     assert snap["availability"]["state"] == "STALE_SOURCE"
     assert snap["availability"]["state"] != "LATE_WITHIN_TOLERANCE"
+
+
+def _reader_view(intel=None, *, freshness_override=None, keep_ids=None):
+    """Present a composed inflation snapshot the way the page does."""
+    snap = _compose(_base_intel() if intel is None else intel)
+    required = snap["availability"]["required"]
+    if freshness_override:
+        for row in required:
+            token = freshness_override.get(row["component_id"])
+            if token is not None:
+                row["freshness"] = token
+    if keep_ids is not None:
+        by_id = {row["component_id"]: row for row in required}
+        snap["availability"]["required"] = [by_id[cid] for cid in keep_ids]
+    return macro_suite_view.build_view(
+        snap,
+        page_built_at=BUILT_AT,
+        artifact={
+            "path": "fixture",
+            "manifest_path": "fixture",
+            "sha256": "fixture",
+            "bytes": 1,
+            "min_client_contract": "1",
+        },
+    )
+
+
+def _diag_titled(view, en_title: str) -> list[dict]:
+    return [item for item in view["diagnostics"] if item["title"]["en"] == en_title]
+
+
+def _diag_copy(view) -> tuple[str, str]:
+    en = "\n".join(
+        item["title"]["en"] + "\n" + item["body"]["en"] for item in view["diagnostics"])
+    zh = "\n".join(
+        item["title"]["zh"] + "\n" + item["body"]["zh"] for item in view["diagnostics"])
+    return en, zh
+
+
+def _joined_labels(rows: list[dict]) -> tuple[str, str]:
+    return (
+        ", ".join(row["label"]["en"] for row in rows),
+        "、".join(row["label"]["zh"] for row in rows),
+    )
+
+
+def test_late_within_tolerance_is_named_late_not_degraded() -> None:
+    view = _reader_view()
+    rows = view["context"]["required"]
+    assert rows
+    assert {row["freshness_state"] for row in rows} == {"LATE_WITHIN_TOLERANCE"}
+    names_en, names_zh = _joined_labels(rows)
+    late = _diag_titled(view, "Required source late, within tolerance")
+    assert len(late) == 1
+    assert late[0]["tone"] == "warn"
+    assert late[0]["title"]["zh"] == "必需数据源延迟，仍在容差内"
+    assert late[0]["body"]["en"] == f"Late within tolerance: {names_en}."
+    assert late[0]["body"]["zh"] == f"延迟但仍在容差内：{names_zh}。"
+    en, zh = _diag_copy(view)
+    assert "Required source not current" not in en
+    assert "Degraded required components" not in en
+    assert "必需数据源并非最新" not in zh
+    assert "降级的必需分项" not in zh
+
+
+def test_stale_and_late_required_sources_are_named_on_separate_lines() -> None:
+    stale_id = "core_cpi_annualized_3m"
+    late_id = "headline_cpi_annualized_3m"
+    view = _reader_view(
+        freshness_override={stale_id: "STALE_SOURCE"},
+        keep_ids=(stale_id, late_id),
+    )
+    by_id = {row["component_id"]: row for row in view["context"]["required"]}
+    assert set(by_id) == {stale_id, late_id}
+    assert by_id[stale_id]["freshness_state"] == "STALE_SOURCE"
+    assert by_id[late_id]["freshness_state"] == "LATE_WITHIN_TOLERANCE"
+    stale_en, stale_zh = _joined_labels([by_id[stale_id]])
+    late_en, late_zh = _joined_labels([by_id[late_id]])
+    degraded = _diag_titled(view, "Required source not current")
+    late = _diag_titled(view, "Required source late, within tolerance")
+    assert len(degraded) == 1
+    assert len(late) == 1
+    assert degraded[0]["tone"] == "warn"
+    assert late[0]["tone"] == "warn"
+    assert degraded[0]["title"]["zh"] == "必需数据源并非最新"
+    assert late[0]["title"]["zh"] == "必需数据源延迟，仍在容差内"
+    assert degraded[0]["body"]["en"] == f"Degraded required components: {stale_en}."
+    assert degraded[0]["body"]["zh"] == f"降级的必需分项：{stale_zh}。"
+    assert late[0]["body"]["en"] == f"Late within tolerance: {late_en}."
+    assert late[0]["body"]["zh"] == f"延迟但仍在容差内：{late_zh}。"
+    assert late_en not in degraded[0]["body"]["en"]
+    assert stale_en not in late[0]["body"]["en"]
+    assert late_zh not in degraded[0]["body"]["zh"]
+    assert stale_zh not in late[0]["body"]["zh"]
+
+
+def test_only_stale_required_sources_keep_the_degraded_wording() -> None:
+    reg = _base_intel()
+    reg["released_state"]["core"]["freshness_status"] = "stale"
+    reg["released_state"]["headline"]["freshness_status"] = "stale"
+    for leg in ("sticky", "flexible"):
+        reg["released_state"]["underlying_proxies"][leg]["freshness_status"] = "stale"
+    view = _reader_view(reg)
+    rows = view["context"]["required"]
+    assert rows
+    assert {row["freshness_state"] for row in rows} == {"STALE_SOURCE"}
+    names_en, names_zh = _joined_labels(rows)
+    degraded = _diag_titled(view, "Required source not current")
+    assert len(degraded) == 1
+    assert degraded[0]["tone"] == "warn"
+    assert degraded[0]["title"]["zh"] == "必需数据源并非最新"
+    assert degraded[0]["body"]["en"] == f"Degraded required components: {names_en}."
+    assert degraded[0]["body"]["zh"] == f"降级的必需分项：{names_zh}。"
+    en, zh = _diag_copy(view)
+    assert "Required source late, within tolerance" not in en
+    assert "Late within tolerance" not in en
+    assert "必需数据源延迟，仍在容差内" not in zh
+    assert "延迟但仍在容差内" not in zh
 
 
 def test_axis_below_coverage_floor_refuses_no_neutral_default() -> None:

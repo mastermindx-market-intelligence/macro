@@ -1,0 +1,92 @@
+{
+  "schema": "mastermind.shared_shell.r22_qualification.v1",
+  "status": "BUILT_NOT_PROVEN",
+  "applied_to_paper": false,
+  "live_pages_enabled": [],
+  "source_inspection_commit": "dea858959c6f37122fd500dd673c44b271f19fa9",
+  "publication_base": "7630295d0caf7287bc67a146fcd51dde2cca1bd7",
+  "node_tests": {
+    "passed": 70,
+    "failed": 0,
+    "kind": "recording-DOM and source projection; not browser"
+  },
+  "template_tests": {
+    "passed": 20,
+    "failed": 0,
+    "kind": "Jinja plus static contracts; controlled nav fixture"
+  },
+  "mutation_tests": {
+    "caught": 10,
+    "total": 10,
+    "first_attempt_caught": 8,
+    "semantic_assertions_strengthened": 2
+  },
+  "browser_runs": 0,
+  "native_writes": 0,
+  "production_ci_registered": false,
+  "source_files": {
+    "README.md": {
+      "bytes": 10710,
+      "sha256": "8d61d3d898deeebbd6100698cdfc6cd157f8792102dadbace670d4472a5d8da8",
+      "git_blob": "ddc89a85a701005bfa176984583c870e990e44f5"
+    },
+    "shared-header.patch": {
+      "bytes": 157,
+      "sha256": "c712a6f05e1333d66a93d00d392247967b08ef3184946c130c7a6b6cbbd5d9ae",
+      "git_blob": "44b80f21c83234712097078909e72a002e566d01"
+    },
+    "src/all-tools.js": {
+      "bytes": 19929,
+      "sha256": "fb0d93119b85c04c87f2d8fe3ce6b3e9b4e195f56e04c7f7a5a5f2e699c9a736",
+      "git_blob": "78e5ad34eb296df6413a3fa8dff952e6a125d598"
+    },
+    "src/all-tools.css": {
+      "bytes": 10729,
+      "sha256": "4ce5ac5d244050815003b7bb42aa00244975e50c9dc5e55bb0174f15a9c83b86",
+      "git_blob": "956b6cb6a8f06e6c8ee7498aab5ee19d07ee1643"
+    },
+    "src/_all_tools_menu.html.j2": {
+      "bytes": 3554,
+      "sha256": "b5e24ad2e69e7b75bf102c08e156ef06441421aa2b282c33aa6f445d5601fe4e",
+      "git_blob": "ed520cba526ce1028a9e476b81cae128df31b2a8"
+    },
+    "source/_site_nav.html.j2": {
+      "bytes": 3388,
+      "sha256": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482",
+      "git_blob": "9848b9366d43553f9d69997ecdb0a07e15e4ad2b"
+    },
+    "tests/navigation.test.cjs": {
+      "bytes": 4056,
+      "sha256": "760063139d9b26c830c79b8055ae0ce96a0bd9f5096a3a001af1529f0a296c07",
+      "git_blob": "59ce7eb93c5bad4e6745a8c555ce54e68fe89871"
+    },
+    "tests/controller.test.cjs": {
+      "bytes": 12810,
+      "sha256": "1817fe14fc8fb1a39831229978594368d6ded2bc3d29683f22d93f4620ebad59",
+      "git_blob": "7cacbc283c30fb41a5cc77e14af916433c9f544b"
+    },
+    "tests/dom.cjs": {
+      "bytes": 7221,
+      "sha256": "87fdf7e9ab244fce2d94d2b031d28d3b3839b4bf0af0b4111c34978cca09b2f3",
+      "git_blob": "2406fa4ff069a5537b1a1dbb4bffc7517e8fe741"
+    },
+    "tests/template-contract.py": {
+      "bytes": 6791,
+      "sha256": "9b21cde68c4036cfe29ba0ee5c522c24193351cdc0fb4c885c2356d24fdb5b6f",
+      "git_blob": "0d95b64898308d5bc3325acc1a45d594766d7213"
+    },
+    "tests/mutation-check.py": {
+      "bytes": 2364,
+      "sha256": "e4c0529256a87790d97263f46b8dd1c7aa5580af9af69b3e1d8f77d783fe9f28",
+      "git_blob": "6867f28881f2929162d4e3a5bcb357a1b40d0348"
+    }
+  },
+  "remaining": [
+    "source-owner adoption into existing assets and serving classifications",
+    "test registration in existing product-chrome/navigation owner",
+    "actual three-page source-population, focus, key, scroll and cross-overlay proof",
+    "native M1 action permission and Paper application",
+    "visual, accessibility, real device and cold-reader acceptance",
+    "separate existing R18/R19 source failures remain"
+  ]
+}
