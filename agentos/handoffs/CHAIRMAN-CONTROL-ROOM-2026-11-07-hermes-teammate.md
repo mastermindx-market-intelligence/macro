@@ -38,13 +38,14 @@ verified:
     python -m unittest -v tests.test_agent_eval_hermes_memory_grounding
   result: '18 computer tests and 22 scorer tests passed separately. Exact code/readback evidence is in
     Mastermind #2159 section 18 and the individual PRs. No live desktop or learning efficacy claim.'
-- claim: Original native runtime publication remains on its original carrier, with a real integration
-    conflict.
-  command: 'Studio studio_git_publish_status for meta-ceo-byok-followon-parent-20261106-c35-01; native
-    gh GraphQL #2134; git merge-tree ae40096acf4f911babb2a9b51e5c7e48c3d29a2e 650b81344a7cf5790cdf617dff6e1e2175742037'
-  result: Publisher APPLIED, clean local=remote ae40096. Sole conflict is the exact auth.rs identity row
-    in tests/executive_fabric_release_identity_review.py. Existing auto request was disabled and absence
-    read back before repair; no replacement carrier.
+- claim: Original native runtime source is recovered and published on its original carrier.
+  command: 'Original M2 workspace exact-source checks, pending-merge reconciliation and typed exact-head
+    publication; GitHub PR #2134 readback.'
+  result: Head 7a3160fa76ceae58726eacd27d741872273d3828; tree 3ddb5de3275c798c1d5eebc2210f1c86d7349163.
+    Both protected and feature behaviors retained. 316 Python cases, TypeScript check, 67 UI cases, native
+    build and 16 native Rust cases passed; one existing signed-HTTP fixture ignored. Typed push APPLIED,
+    clean local=remote. New exact-head auto request enabled 2026-11-07T01:34:08Z; CI pending, no merge
+    claim.
 - claim: Recall and grounded scoring are merged into protected Mastermind source.
   command: 'Original Studio process 96845: GitHub GraphQL state, mergedAt, mergeCommit, head and status
     checks for PR #2163 and PR #2167.'
@@ -72,9 +73,14 @@ unresolved:
   website-account authority. Generic Hermes vault discovery/list/unlock is not enrolled.
 - Original paid memory repair published source but ended rc 1 on a provider session-title error; Fabric
   acceptance remains unset. Parent separately verified and continued the same source worktree.
+- The distinct vendor-derivation Fabric child hermes-teammate-vendor-derive-20261107-c3-01 has original
+  controller 17269. Last status is ACTIVE_OR_WAITING with worker START/root lineage unproven; preserve
+  its original effect and do not create a replacement writer. Its scope is the existing recipe/source-preparation/installer;
+  not live installation.
 next_actions:
-- 'The current assigned receiver continues original #2134 source/release recovery in its registered M2
-  workspace and typed publisher, protecting any actual live writer and uncertain effect; no old-chat handback.'
+- 'Consume original PR #2134 release effects at head 7a3160fa76ceae58726eacd27d741872273d3828. Source
+  repair is complete; do not edit while armed without reconciling its release effect. Continue original
+  installed qualification only after the exact C26 authorization gate is restored.'
 - 'Consume the original protected release effect for Mastermind #2165; do not re-arm the already merged
   #2163 or #2167. Integrate only qualified immutable source and read installed identity before any installation
   claim.'
@@ -104,17 +110,18 @@ danger_areas:
   the computer patch bundle alone cannot install it.
 ---
 
+
 # Hermes teammate implementation milestone
 
 ## §0 State — what is true right now
 
 **MISSION_COMPLETE: false. Overall capability: BUILT_NOT_PROVEN.** The assigned principal is continuing the original implementation. Three useful source components now have focused executable proof. Recall and grounded scoring are merged into protected source; the computer guard remains in its original release process. Authenticated production composition and the original outcome remain open. This record updates only the Hermes-related continuation. It does not close or replace prior Control Room/R2 waves or acceptance contracts.
 
-The complete source task tree and cumulative receipts are [Mastermind plan #2159, commit cda7f3e0](https://github.com/mastermindx-market-intelligence/Mastermind/blob/cda7f3e0f9d1badef4d16e94803ce9bf517a6ae5/research/HERMES_TEAMMATE_EVOLUTION_MASTERPLAN_2026-11-06.md), particularly sections 17–18. That plan retains the researched mechanisms, adoption decisions and original staged acceptance.
+The complete source task tree and cumulative receipts are [Mastermind plan #2159, commit 594f3dcf](https://github.com/mastermindx-market-intelligence/Mastermind/blob/594f3dcff63a069270833d5bfc34624bd271b3cc/research/HERMES_TEAMMATE_EVOLUTION_MASTERPLAN_2026-11-06.md), particularly sections 17–19. That plan retains the researched mechanisms, adoption decisions and original staged acceptance.
 
 ## §1 What is left — in order
 
-Recover and compose [native runtime #2134](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2134) through operation `meta-ceo-byok-followon-parent-20261106-c35-01`, its original branch and M2 workspace `/Volumes/Mastermind 2/agent-workspaces/web/meta-ceo-byok-followon-parent-20261106-c35-01`. Use its typed publisher; reconcile an armed/queued effect before editing. Source recovery is authorized ordinary work. The original Ubuntu1 C26 admin denial separately gates installed continuation and cannot be bypassed.
+Consume the recovered original [native runtime #2134](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2134) through operation `meta-ceo-byok-followon-parent-20261106-c35-01`, its original branch and M2 workspace `/Volumes/Mastermind 2/agent-workspaces/web/meta-ceo-byok-followon-parent-20261106-c35-01`. Its recovered head is `7a3160fa76ceae58726eacd27d741872273d3828`, with an original exact-head auto request enabled at `2026-11-07T01:34:08Z`. Source conflict repair is complete. Use its typed publisher; reconcile an armed/queued effect before editing. The original Ubuntu1 C26 admin denial separately gates installed continuation and cannot be bypassed.
 
 The canonical source merge receipts are `5ca25e561ffaeacb4ef94bb08f507617f80d0607` for recall and `78d8cb693888579808f02de0934c18f4915fd042` for grounding. Consume the remaining original computer-guard release and use the existing source PRs: [recall #2163](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2163), [computer guard #2165](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2165), and [grounding #2167](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2167). Then connect the native owners, prove the complete account-scoped browser/vault journey, and execute the prospective learning and endurance acceptance.
 
