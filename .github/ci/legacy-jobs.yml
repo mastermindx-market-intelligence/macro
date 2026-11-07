@@ -21159,6 +21159,13 @@ jobs:
       - "tests/test_check_runtime_style_injection.py"
       - "tests/test_check_ui_visual_evidence.py"
       - "tests/test_freshness_chips_language_invariant.py"
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - ".claude/agents/builder.md"
+      - ".claude/agents/designer.md"
+      - ".claude/agents/reviewer.md"
+      - "docs/DESIGN_DOCTRINE.md"
+      - "research/SECTOR_INTELLIGENCE_CONSOLIDATED_EXPERIENCE_2026-09-26.md"
     # TP-0 theme-parity governance (research/THEME_PARITY_RATCHET_PRESENTATION_CONVERGENCE_ARCHITECTURE.md).
     # Three forward-only gates so NEW user-facing presentation debt fails closed
     # without reddening the ~19k inherited findings in templates/:
