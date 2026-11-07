@@ -1,0 +1,29 @@
+name: admin-analytics-regression
+
+# The legacy CI pack selector does not own tests/test_analytics_exclusions.py.
+# Keep this focused, credential-free analytics read-path regression check explicit.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+    paths:
+      - "admin/analytics_first_party.py"
+      - "tests/test_analytics_exclusions.py"
+      - ".github/workflows/admin-analytics-regression.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  first-party-reader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install minimal offline-test dependencies
+        run: python -m pip install --disable-pip-version-check pytest requests PyYAML
+      - name: Verify admin analytics filtering and candidate identity contracts
+        run: python -m pytest tests/test_analytics_exclusions.py -q -p no:cacheprovider
