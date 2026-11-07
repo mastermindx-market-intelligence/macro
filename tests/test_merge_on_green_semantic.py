@@ -87,7 +87,7 @@ class _Fresh:
     def pull_files(self, _number):
         return list(self._paths)
 
-    def stale_for(self, _pull, _runs):
+    def stale_for(self, _pull, _runs, **_kwargs):
         self.stale_calls += 1
         return self._stale
 

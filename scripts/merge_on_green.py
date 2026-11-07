@@ -472,6 +472,16 @@ ROTATION_BUCKET_SECONDS = 600
 # existing green still describes the checks that would run now. Always re-prove,
 # whatever the PR's own footprint is.
 CI_DEFINITION_TREES = (".github/ci/",)
+# The ONE definitions file whose edits can be scoped to a head (X1, 2026-11-05).
+# Every other definition file (ci.yml, fences.yml, a PR-triggered workflow)
+# changes the pack harness itself and still re-proves every armed head.
+LEGACY_MANIFEST_PATH = ".github/ci/legacy-jobs.yml"
+# Manifest keys that decide WHETHER a `scope: exclusive` job selects a diff.
+# Under exclusive scope the declared `paths:` replace step inference, so an
+# edit that leaves these four keys alone cannot make the job select a head
+# it did not select before. A non-exclusive job's scope is inferred from its
+# steps, so ANY edit to it may widen it; such edits stay conservative.
+MANIFEST_SELECTION_KEYS = ("paths", "scope", "gate", "if")
 # Stable proof publishers remain definitions even if the commit being classified
 # removed or broke their `pull_request` trigger. Dynamic gates below add future PR
 # workflows; this registry preserves historical identity for the two proofs the
@@ -2152,6 +2162,17 @@ class ProofFreshness:
         # not expose the exact pull_request base SHA used by the primary path below.
         self._merge_bases: dict[str, str | None] = {}
         self._proof_bound_sha: str | None = None
+        # X1 manifest scoping. Commit sha -> manifest blob sha ('' when absent),
+        # commit sha -> parsed `jobs`, blob sha -> parsed `jobs` (the frozen tip
+        # is parsed once per sweep), (PR number, head sha) -> the exact proof's
+        # Final evidence: its selected legacy jobs and the SEALED base its pack runner
+        # read the manifest at (each None when the plan cannot be read).
+        self._manifest_blob_shas: dict[str, str] = {}
+        self._manifest_jobs: dict[str, dict[str, dict[str, Any]] | None] = {}
+        self._parsed_manifests: dict[str, dict[str, dict[str, Any]] | None] = {}
+        self._proof_plans: dict[
+            tuple[Any, str], tuple[frozenset[str] | None, str | None]
+        ] = {}
         self.commit_file_reads = 0
         self._commit_file_page_reads = 0
 
@@ -2863,8 +2884,266 @@ class ProofFreshness:
                 surface.update(ownership_matches(name, gate["patterns"]))
         return surface
 
+    # -- X1: scope a legacy-manifest edit to the jobs a head actually ran -------
+
+    def manifest_blob_sha(self, commit_sha: str) -> str | None:
+        """Object id of the legacy manifest at one commit, or None when absent.
+
+        Three bounded (non-recursive) tree hops, each cached by object id, so the
+        frozen main tip costs one walk per sweep however many heads ask.
+        """
+        cached = self._manifest_blob_shas.get(commit_sha)
+        if cached is not None:
+            return cached or None
+        entries = self._root_tree(self._commit_tree_sha(commit_sha))
+        parts = LEGACY_MANIFEST_PATH.split("/")
+        for part in parts[:-1]:
+            entry = entries.get(part)
+            if entry is None or entry[0] != "tree" or not entry[2]:
+                entries = {}
+                break
+            entries = self._root_tree(entry[2])
+        leaf = entries.get(parts[-1])
+        blob_sha = leaf[2] if leaf is not None and leaf[0] == "blob" else ""
+        self._manifest_blob_shas[commit_sha] = blob_sha
+        return blob_sha or None
+
+    def manifest_jobs_at(self, commit_sha: str) -> dict[str, dict[str, Any]] | None:
+        """The manifest's ``jobs`` mapping at one commit; None when unreadable."""
+        if commit_sha in self._manifest_jobs:
+            return self._manifest_jobs[commit_sha]
+        blob_sha = self.manifest_blob_sha(commit_sha)
+        jobs: dict[str, dict[str, Any]] | None = None
+        if blob_sha:
+            if blob_sha in self._parsed_manifests:
+                jobs = self._parsed_manifests[blob_sha]
+            else:
+                jobs = _manifest_jobs_from_bytes(self._blob(blob_sha))
+                self._parsed_manifests[blob_sha] = jobs
+        self._manifest_jobs[commit_sha] = jobs
+        return jobs
+
+    def proof_plan_of(
+        self,
+        pull: dict[str, Any],
+        runs: list[dict[str, Any]],
+        semantic_evidence: Any | None = None,
+    ) -> tuple[frozenset[str] | None, str | None]:
+        """This head's exact final evidence: ``(selected jobs, sealed base)``.
+
+        The sealed base is ``base_sha`` of the same evidence that carries the
+        inventory: ``ci.yml`` seals the tested merge commit's first parent (main at
+        run time), and the loader binds it to the parents GitHub confirms.  It is
+        the commit whose manifest the pack runner read when it selected those
+        jobs.  The check run's ``pull_requests[].base`` is NOT that commit: it is
+        GitHub's lazily refreshed PR snapshot and lags main whenever main moved
+        between PR creation and the run (PR #8844, 28 minutes).  Comparing the
+        manifest from that older base to the tip misses a revert-shaped edit
+        inside the lag (independent review of #10764, 2026-11-05).
+
+        A green head keeps its zero-artifact fast path everywhere else in the
+        sweep; this read happens only once a manifest edit is in the window,
+        where the alternative is update-branch plus twelve packs.  Keyed by
+        head: a transient read failure on one head never answers for another.
+        """
+        number = pull.get("number")
+        head_sha = str((pull.get("head") or {}).get("sha") or "").lower()
+        key = (number, head_sha)
+        if key in self._proof_plans:
+            return self._proof_plans[key]
+        answer: tuple[frozenset[str] | None, str | None] = (None, None)
+        try:
+            loaded = semantic_evidence
+            if loaded is None:
+                loaded = semantic_evidence_for_head(
+                    self.repo,
+                    head_sha,
+                    self.token,
+                    check_runs=runs,
+                    expected_base_sha=_semantic_pr_base_sha(runs, head_sha, number),
+                )
+            evidence = getattr(loaded, "evidence", None)
+            if getattr(loaded, "mode", None) == "semantic" and isinstance(evidence, dict):
+                # Revalidate caller-supplied evidence through its existing owner.
+                # The final artifact has no embedded plan: its complete jobs
+                # inventory includes failed, inherited, blocked and not-run jobs.
+                evidence = semantic_proof.load_semantic_evidence(
+                    evidence,
+                    advertised=True,
+                    expected_subject_head_sha=head_sha,
+                    expected_role="pr_head",
+                    expected_workflow="ci",
+                    expected_event="pull_request",
+                ).evidence
+                assert evidence is not None
+                jobs = evidence["jobs"]
+                # An empty successful plan proves no work. An empty planner
+                # failure does not establish that zero jobs were selected.
+                if jobs or evidence["status"] == "clear":
+                    answer = (
+                        frozenset(job["logical_job_id"] for job in jobs),
+                        str(evidence["base_sha"]).lower(),
+                    )
+        except RateLimited:
+            raise
+        except (semantic_proof.SemanticProofError, RuntimeError, ValueError, OSError):
+            answer = (None, None)
+        self._proof_plans[key] = answer
+        return answer
+
+    def manifest_delta_stales(
+        self,
+        pull: dict[str, Any],
+        runs: list[dict[str, Any]],
+        base_sha: str | None,
+        *,
+        semantic_evidence: Any | None = None,
+    ) -> tuple[bool, str]:
+        """Does main's legacy-manifest edit since the proof bear on THIS head?
+
+        Before X1 (2026-11-05) one ``legacy-jobs.yml`` edit on main, for any
+        job, returned stale for EVERY armed head: each went through
+        update-branch and twelve packs on the single render-heavy runner for
+        a definition it never ran. The manifest at the proof's SEALED base
+        (the commit its pack runner read, from the same final evidence that names the
+        selected jobs) and at the frozen tip are compared job by job; the edit
+        is current for this head only when every changed job is one its proof
+        did not run AND cannot newly select it (exclusive scope on both sides
+        with its selection keys untouched, incumbent order kept). Every
+        unknown — unreadable manifest, no final inventory or sealed base, a sealed base
+        the window cannot place, a head that edits the manifest itself, an
+        added job — stays stale. ``base_sha`` is the window's reported base;
+        the sealed base must sit at or after it and never outside a window
+        that contains it.
+        """
+        number = pull.get("number")
+        tip_sha = str((self.commits[0].get("sha") if self.commits else "") or "")
+        if not base_sha or not tip_sha:
+            return True, (
+                "the proof base or the frozen main tip is unknown, so the edit "
+                "cannot be scoped"
+            )
+        pr_files = self.pull_files(number)
+        if pr_files is None:
+            return True, (
+                "this pull request's own changed files could not be established, "
+                "so the edit cannot be scoped"
+            )
+        if LEGACY_MANIFEST_PATH in pr_files:
+            return True, (
+                "this pull request edits the manifest itself, so its tested "
+                "manifest is not main's"
+            )
+        eligible, sealed_base = self.proof_plan_of(pull, runs, semantic_evidence)
+        if eligible is None:
+            return True, (
+                "the proof's selected legacy jobs could not be read from v1 "
+                "semantic evidence, so the edit cannot be scoped"
+            )
+        if not sealed_base:
+            return True, (
+                "the proof's sealed base could not be read from v1 semantic "
+                "evidence, so the manifest it ran against is unknown"
+            )
+        positions = {
+            str(commit.get("sha") or "").lower(): index
+            for index, commit in enumerate(self.commits)
+        }
+        reported_index = positions.get(str(base_sha).lower())
+        sealed_index = positions.get(sealed_base)
+        if reported_index is not None and sealed_index is None:
+            return True, (
+                f"the proof's sealed base {sealed_base[:12]} is outside the frozen "
+                f"main window that holds its reported base {base_sha[:12]}, so the "
+                "manifest it ran against cannot be placed"
+            )
+        if (
+            reported_index is not None
+            and sealed_index is not None
+            and sealed_index > reported_index
+        ):
+            return True, (
+                f"the proof's sealed base {sealed_base[:12]} predates its reported "
+                f"base {base_sha[:12]}, so the manifest it ran against cannot be placed"
+            )
+        try:
+            base_blob = self.manifest_blob_sha(sealed_base)
+            tip_blob = self.manifest_blob_sha(tip_sha)
+        except RateLimited:
+            raise  # a quota refusal on a manifest read defers the head, never re-proves it
+        except (RuntimeError, OSError, ValueError) as exc:
+            return True, f"the manifest could not be read at both ends of the window ({exc})"
+        if not base_blob or not tip_blob:
+            return True, "the manifest is absent at one end of the window"
+        if base_blob == tip_blob:
+            return False, (
+                f"the legacy manifest at the frozen tip {tip_sha[:12]} is "
+                f"byte-identical to the sealed proof base's {sealed_base[:12]}, so "
+                "the checks it ran are the checks that run now"
+            )
+        try:
+            base_jobs = self.manifest_jobs_at(sealed_base)
+            tip_jobs = self.manifest_jobs_at(tip_sha)
+        except RateLimited:
+            raise
+        except (RuntimeError, OSError, ValueError) as exc:
+            return True, f"the manifest could not be parsed at both ends of the window ({exc})"
+        if base_jobs is None or tip_jobs is None:
+            return True, (
+                "the manifest does not parse as a jobs mapping at one end of the window"
+            )
+        changed = sorted(
+            job_id
+            for job_id in set(base_jobs) | set(tip_jobs)
+            if _canonical_definition(base_jobs.get(job_id))
+            != _canonical_definition(tip_jobs.get(job_id))
+        )
+        for job_id in changed:
+            before = base_jobs.get(job_id)
+            after = tip_jobs.get(job_id)
+            if before is None:
+                return True, (
+                    f"legacy job {job_id!r} was added, and an unproven job may "
+                    "select this pull request"
+                )
+            if job_id in eligible:
+                return True, (
+                    f"legacy job {job_id!r} changed, and this pull request's proof ran it"
+                )
+            if after is None:
+                continue  # a removed job this proof never ran
+            if before.get("scope") != "exclusive" or after.get("scope") != "exclusive":
+                return True, (
+                    f"legacy job {job_id!r} changed and its scope is inferred from "
+                    "its steps, so it may now select this pull request"
+                )
+            if any(before.get(key) != after.get(key) for key in MANIFEST_SELECTION_KEYS):
+                return True, (
+                    f"legacy job {job_id!r} changed its declared scope, so it may "
+                    "now select this pull request"
+                )
+        # The pack runner freezes incumbent relative order (a reorder is a
+        # repartition it fails closed on); the sweeper is no looser.
+        common_before = [job_id for job_id in base_jobs if job_id in tip_jobs]
+        common_after = [job_id for job_id in tip_jobs if job_id in base_jobs]
+        if common_before != common_after:
+            return True, (
+                "the legacy manifest's job order changed, which repartitions the "
+                "packs this pull request's proof ran"
+            )
+        return False, (
+            f"{len(changed)} legacy job definition(s) changed between the sealed "
+            f"proof base {sealed_base[:12]} and the frozen tip {tip_sha[:12]}, none "
+            f"of them a job this pull request's proof ran ({len(eligible)} selected) "
+            "and none able to select it now"
+        )
+
     def stale_for(
-        self, pull: dict[str, Any], runs: list[dict[str, Any]]
+        self,
+        pull: dict[str, Any],
+        runs: list[dict[str, Any]],
+        *,
+        semantic_evidence: Any | None = None,
     ) -> tuple[bool | None, str]:
         """Freshness verdict for one clean head.
 
@@ -2874,6 +3153,9 @@ class ProofFreshness:
         """
         number = pull.get("number")
         proof_base, metadata_problem = self.exact_proof_base(pull, runs)
+        # The commit whose manifest the proof ran against (X1): the exact
+        # base, or the conservative included base on the fallback path.
+        definitions_base: str | None = proof_base or None
         if proof_base:
             for index, commit in enumerate(self.commits):
                 if str(commit.get("sha") or "").lower() != proof_base:
@@ -2899,6 +3181,7 @@ class ProofFreshness:
             # extra update, but once that update is in H it cannot self-invalidate
             # again.  An unreadable/out-of-window ancestry answer still defers.
             included_base = self.included_main_base(pull)
+            definitions_base = included_base or None
             if included_base:
                 for index, commit in enumerate(self.commits):
                     if str(commit.get("sha") or "").lower() != included_base.lower():
@@ -2921,6 +3204,7 @@ class ProofFreshness:
 
         candidates: set[str] = set()
         product_commits = 0
+        manifest_commits: list[str] = []
         for commit in window:
             message = str(commit.get("message") or "")
             if skip_ci_in_message(message):
@@ -2943,15 +3227,22 @@ class ProofFreshness:
                     f"proof, more than the {MAIN_COMMIT_FILE_CAP} this sweep will "
                     "classify"
                 )
-            if any(
-                name.startswith(CI_DEFINITION_TREES)
-                or name in self.ci_definition_files
+            definition_edits = [
+                name
                 for name in files
-            ):
-                return True, (
-                    f"main commit {commit['sha'][:12]} changed the check definitions "
-                    "themselves, so no existing green describes the checks that run now"
-                )
+                if name.startswith(CI_DEFINITION_TREES)
+                or name in self.ci_definition_files
+            ]
+            if definition_edits:
+                if any(name != LEGACY_MANIFEST_PATH for name in definition_edits):
+                    return True, (
+                        f"main commit {commit['sha'][:12]} changed the check definitions "
+                        "themselves, so no existing green describes the checks that run now"
+                    )
+                # A manifest-only commit is scoped once the window is classified:
+                # which jobs changed, and whether THIS head ran them, is one
+                # comparison per head, not one verdict per commit (X1).
+                manifest_commits.append(str(commit.get("sha") or ""))
             if files and all(name.startswith(PIPELINE_TREES) for name in files):
                 continue  # a render/nightly bake, not an edit
             for name in files:
@@ -2970,10 +3261,25 @@ class ProofFreshness:
                 if not matched_specific:
                     continue
 
+        definitions_note = ""
+        if manifest_commits:
+            first = manifest_commits[-1][:12]  # window is newest-first
+            stale_definitions, why = self.manifest_delta_stales(
+                pull, runs, definitions_base, semantic_evidence=semantic_evidence
+            )
+            if stale_definitions:
+                return True, (
+                    f"main commit {first} changed the check definitions: {why}"
+                )
+            definitions_note = (
+                f"; main commit {first} changed the check definitions, but {why}"
+            )
+
         if not candidates:
             return False, (
                 f"main took {len(window)} commit(s) since the proof, none of them "
                 "inside any gate's path filter"
+                + definitions_note
             )
 
         surface = self.surface_of(number)
@@ -2994,6 +3300,7 @@ class ProofFreshness:
                 f"pull request's tested surface — its {file_count} changed file(s) own "
                 "no path-filtered gate entry, so the exact-head checks that ran are "
                 "the whole proof"
+                + definitions_note
             )
         hit = sorted(candidates & surface)
         if hit:
@@ -3004,7 +3311,36 @@ class ProofFreshness:
         return False, (
             f"main took {len(window)} commit(s) since the proof, none inside this "
             "pull request's tested surface"
+            + definitions_note
         )
+
+
+def _manifest_jobs_from_bytes(raw: bytes) -> dict[str, dict[str, Any]] | None:
+    """Parse the legacy manifest's ``jobs`` mapping; None for any other shape."""
+    try:
+        import yaml  # local: the sweeper is the only caller and it installs it
+    except ImportError:  # pragma: no cover - environment, not logic
+        return None
+    try:
+        payload = yaml.safe_load(raw.decode("utf-8"))
+    except (UnicodeDecodeError, yaml.YAMLError):
+        return None
+    jobs = payload.get("jobs") if isinstance(payload, dict) else None
+    if not isinstance(jobs, dict) or not jobs:
+        return None
+    if any(
+        not isinstance(key, str) or not isinstance(value, dict)
+        for key, value in jobs.items()
+    ):
+        return None
+    return dict(jobs)
+
+
+def _canonical_definition(definition: Any) -> str | None:
+    """One comparable form per job definition; None means the job is absent."""
+    if definition is None:
+        return None
+    return json.dumps(definition, sort_keys=True, separators=(",", ":"), default=str)
 
 
 def labeled_pulls(repo: str, token: str) -> list[dict[str, Any]]:
@@ -7196,6 +7532,7 @@ def sweep_pull(
     semantic_mode = False
     semantic_gate = None
     semantic_refusal = ""
+    candidate_evidence: Any | None = semantic_evidence
     # Green heads retain the zero-artifact-call fast path. A red/ambiguous head,
     # or a candidate already loaded for the semantic main-red overlap decision,
     # must use v1 when present. Claimed malformed v1 is a hard refusal and cannot
@@ -7212,6 +7549,7 @@ def sweep_pull(
                 check_runs=runs,
                 expected_base_sha=_semantic_pr_base_sha(runs, head_sha, number),
             )
+            candidate_evidence = loaded
             semantic_gate = _semantic_gate(loaded)
             if semantic_gate is not None:
                 semantic_mode = True
@@ -7419,7 +7757,9 @@ def sweep_pull(
     # unavailable identity defers without mutation because update-branch cannot
     # repair a control-plane read failure.
     try:
-        stale, reason = freshness.stale_for(pull, runs)
+        stale, reason = freshness.stale_for(
+            pull, runs, semantic_evidence=candidate_evidence
+        )
     except Exception as exc:  # a broken read must never become permission to merge
         stale, reason = None, f"the tested-surface check itself failed ({exc})"
     if stale is None:

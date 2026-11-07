@@ -83,6 +83,9 @@ def test_merge_control_hosted_canary_is_read_only_main_pinned_and_non_acting() -
         "scripts/ci_authority_paths.py",
         "scripts/gh_path_filter.py",
         "scripts/run_ci_pack.py",
+        "scripts/ci_scope_dependencies.py",
+        "scripts/audit_unrun_tests.py",
+        "scripts/workflow_run_source.py",
         ".github/workflows",
     }
 
