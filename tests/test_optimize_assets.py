@@ -498,3 +498,95 @@ def test_a_hand_written_query_is_never_judged(tmp_path):
     )
     assert check(tmp_path, fix=True) == ["page.html"]
     assert check.refused == [], "a hand-written query was audited as our stamp"
+
+def test_prunes_live_js_only_when_page_has_no_live_consumer():
+    from lib import pages as pages_lib
+
+    page = (
+        '<html><body>'
+        '<script src="../live_config.js?v=12345678" defer></script>'
+        '<script src="../live.js?v=abcdef12" defer></script>'
+        '<script src="../theme.js?v=aaaa1111" defer></script>'
+        '</body></html>'
+    )
+    out = pages_lib.prune_unused_live_js_text(page)
+    assert 'live_config.js?v=12345678' in out
+    assert 'theme.js?v=aaaa1111' in out
+    assert 'live.js' not in out
+    assert pages_lib.prune_unused_live_js_text(out) == out
+
+
+def test_keeps_live_js_for_every_supported_live_consumer_shape():
+    from lib import pages as pages_lib
+
+    live_tag = '<script src="live.js?v=abcdef12" defer></script>'
+    consumers = (
+        '<span class="nb-px" data-sym="SPY"></span>',
+        '<span class="nb-chg" data-sym="SPY"></span>',
+        '<span data-live-label></span>',
+        '<span id="sbx-stamp"></span>',
+        '<script>window.LiveQuotes && window.LiveQuotes.refresh()</script>',
+        '<script>window.LIVE_POLL_SEC = 60</script>',
+        '<script>var p = document.createElement("span"); p.className = "nb-px";</script>',
+        '<script src="heatmap.js"></script>',
+        '<script src="globe-deck.js"></script>',
+        '<script src="canada-stock-v36.js"></script>',
+    )
+    for consumer in consumers:
+        page = f'<html><body>{consumer}{live_tag}</body></html>'
+        assert live_tag in pages_lib.prune_unused_live_js_text(page), consumer
+
+
+def test_optimize_sweep_prunes_live_js_from_nonconsumer_page_only(tmp_path):
+    site = tmp_path / "site"
+    site.mkdir()
+    (site / "live.js").write_bytes(b"window.LiveQuotes = {}")
+    (site / "live_config.js").write_bytes(b"window.LIVE_ENABLED = true")
+
+    scripts = (
+        '<script src="live_config.js"></script>'
+        '<script src="live.js"></script>'
+    )
+    (site / "quiet.html").write_text(f"<html><body>{scripts}<p>research</p></body></html>")
+    (site / "prices.html").write_text(
+        f'<html><body><span class="nb-px" data-sym="SPY"></span>{scripts}</body></html>'
+    )
+
+    assert optimize(site) == 2
+    quiet = (site / "quiet.html").read_text()
+    prices = (site / "prices.html").read_text()
+
+    assert "live_config.js?v=" in quiet
+    assert "live.js" not in quiet
+    assert "live_config.js?v=" in prices
+    assert "live.js?v=" in prices
+    assert 'class="nb-px"' in prices
+    assert optimize(site) == 0
+
+def test_live_pruning_keeps_external_noncanonical_and_data_src_tags():
+    from lib.pages import prune_unused_live_js_text
+
+    tags = (
+        '<script src="https://cdn.example/live.js"></script>',
+        '<script src=" //cdn.example/live.js"></script>',
+        '<script src="vendor/live.js"></script>',
+        '<script data-src="live.js"></script>',
+        '<script data-src="live.js" src="theme.js"></script>',
+        '<script href="live.js"></script>',
+        '<script src="live.js/"> </script>',
+        '<script src="live.js">window.otherBoot = true;</script>',
+        "<script src='live.js'></script>",
+    )
+    for tag in tags:
+        assert prune_unused_live_js_text(tag) == tag, tag
+
+
+def test_live_pruning_accepts_canonical_relative_paths_only():
+    from lib.pages import prune_unused_live_js_text
+
+    for path in ("live.js", "/live.js", "./live.js", "../live.js", "../../live.js?v=12345678"):
+        tag = f'<script src="{path}" defer></script>'
+        assert prune_unused_live_js_text(tag) == "", path
+
+    assert prune_unused_live_js_text('  <script src="live.js"></script>\n') == "\n"
+    assert prune_unused_live_js_text('lead <script src="live.js"></script>after') == "lead after"
