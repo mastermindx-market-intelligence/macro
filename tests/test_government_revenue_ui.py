@@ -2038,7 +2038,8 @@ for(const id of ['savedViewName','savedViewSelect','alertType'])elements[id].set
 el('inspectSource',inspector);
 for(const id of ['drawerClose','sourceLink','collapsedSource'])el(id,drawer);
 elements.collapsedSource.hidden=true;
-let state={drawer:false,q:''},lastFocus=null,filterRuns=0;
+let state={drawer:false,q:''},lastFocus=null,filterRuns=0,historySyncs=0;
+function syncUrl(){historySyncs++}
 function $(id){return elements[id]}
 function tr(en,zh){return LANG==='zh'?zh:en}
 function obj(value){return !!value&&typeof value==='object'&&!Array.isArray(value)}
@@ -2089,7 +2090,7 @@ assert.equal(document.body.style.overflow,'auto');assert.equal(document.activeEl
         "desktop_search_escape": r"""
 window.innerWidth=1440;elements.deskSearch.focus();elements.deskSearch.value='LMT';state.q='LMT';
 let escape=key('Escape');deskSearchKey.call(elements.deskSearch,escape);pageKeys(escape);
-assert.equal(state.q,'');assert.equal(elements.deskSearch.value,'');assert.equal(filterRuns,1);
+assert.equal(state.q,'');assert.equal(elements.deskSearch.value,'');assert.equal(filterRuns,1);assert.equal(historySyncs,1);
 assert.equal(document.activeElement.id,'deskSearch');
 """,
         "empty_panel": r"""

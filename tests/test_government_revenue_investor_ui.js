@@ -22,3 +22,50 @@ test('ZH context siblings render without English fallback leaking into action co
 
 test('qualified reported financial facts are visible at rest with source period and units',async()=>{environment();global.location.href='https://local.test/government_revenue.html?issuer=NOC';const h=host(),c=ui.create({host:()=>h,fetch:async()=>({ok:true,json:async()=>copy()})});await c.load();assert.match(h.innerHTML,/gr-investor-primary/);assert.match(h.innerHTML,/2093 USD millions/);assert.match(h.innerHTML,/Reported segment sales · 2026Q2/);assert.match(h.innerHTML,/Limits and contrary evidence/);});
 test('saved issuer select method replaces only issuer and rejects unknown input',async()=>{environment();let replaced='';global.history.replaceState=(_a,_b,url)=>{replaced=url;global.location.href=new URL(url,global.location.href).href;};const c=ui.create({host:()=>host(),fetch:async()=>({ok:true,json:async()=>copy()})});assert.equal(c.select('LHX',{history:'replace'}),true);assert.match(replaced,/issuer=LHX/);assert.match(replaced,/ticker=IRDM/);assert.match(replaced,/agency=Navy/);assert.equal(c.state().ticker,'LHX');assert.equal(c.select('UNKNOWN'),false);assert.equal(c.state().ticker,'LHX');});
+
+// Exercise the real issuer controller with the page's real history functions.
+function historyJourney(){
+  const vm=require('node:vm'),page=fs.readFileSync(path.join(__dirname,'../templates/government-revenue-page.js.j2'),'utf8');
+  let url=new URL('https://local.test/government_revenue.html?mode=awards&ticker=LMT&issuer=LMT&item=award%3Akept&agency=Navy&campaign=read#source'),focus='',position=0;
+  const initial={foreign:{kept:true},governmentRevenue:{schema:1,q:'Navy',truth:'official'}},entries=[{url:url.href,state:initial}],listeners=[];
+  const location={get href(){return url.href},get search(){return url.search},get pathname(){return url.pathname},get hash(){return url.hash}};
+  const history={get state(){return entries[position].state},pushState(state,_title,next){url=new URL(next,url);entries.splice(++position);entries.push({url:url.href,state})},replaceState(state,_title,next){url=new URL(next,url);entries[position]={url:url.href,state}}};
+  const controls={};function control(id){return controls[id]||(controls[id]={value:'',focus(){focus=id}})}
+  const row={dataset:{row:'award:kept'},focus(){focus='row'}},tab={dataset:{mode:'awards'},focus(){focus='tab'}};
+  const button=t=>({focus(){focus='issuer:'+t}});
+  const document={activeElement:null,documentElement:{getAttribute(){return'en'}},querySelectorAll(selector){return selector==='.queue-row'?[row]:selector==='.mode-tab'?[tab]:[]},querySelector(selector){const match=selector.match(/^#defenseInvestor \[data-investor-ticker="(LMT|RTX|NOC|LHX)"\]$/);return match?button(match[1]):null}};
+  const ctx={URL,URLSearchParams,console,document,location,history,state:{q:'Navy',truth:'official',mode:'awards',ticker:'LMT',agency:'Navy',selected:'award:kept'},pendingSelection:'',missingCandidateSelection:'',identityGeneration:null,$:control,preserveFilterValue(){},closeTopOverlay(){},overlaySurface(){return null},applyFilters(){},activateMode(){},addEventListener(type,fn){if(type==='popstate')listeners.push(fn)}};
+  vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(__dirname,'../templates/government-revenue-investor.js'),'utf8'),ctx);
+  const h=host();ctx.investorUI=ctx.createGovernmentRevenueInvestor({host:()=>h});ctx.investorUI.mount();
+  for(const name of ['syncUrl','deskSearchKey','restoreUrl','restoreHistoryView']){const start=page.indexOf('  function '+name+'('),end=page.indexOf('\n  function ',start+1);assert.ok(start>=0&&end>start);vm.runInContext(page.slice(start,end),ctx);}
+  listeners.push(ctx.restoreHistoryView);
+  return {ctx,entries,initial,get focus(){return focus},get url(){return url},move(delta){position+=delta;url=new URL(entries[position].url);listeners.forEach(fn=>fn())}};
+}
+test('quartet Back/Forward preserves real desk snapshot and restores issuer focus',()=>{
+  const j=historyJourney(),c=j.ctx.investorUI;
+  c.select('RTX',{history:'push'});c.select('NOC',{history:'push'});j.move(-1);
+  assert.equal(c.state().ticker,'RTX');assert.equal(j.ctx.state.q,'Navy');assert.equal(j.ctx.state.truth,'official');assert.equal(j.ctx.state.mode,'awards');assert.equal(j.ctx.state.ticker,'LMT');assert.equal(j.ctx.state.selected,'award:kept');assert.equal(j.focus,'issuer:RTX');
+  assert.deepEqual(j.entries[1].state.foreign,{kept:true});assert.equal(j.initial.governmentRevenueInvestor,undefined);assert.notEqual(j.entries[1].state,j.initial);
+  assert.equal(j.url.searchParams.get('campaign'),'read');assert.equal(j.url.hash,'#source');j.move(1);assert.equal(c.state().ticker,'NOC');assert.equal(j.focus,'issuer:NOC');
+});
+test('workspace entries clear inherited issuer focus ownership and preserve return context',()=>{
+  const j=historyJourney();j.ctx.investorUI.select('RTX',{history:'push'});const issuerState=j.ctx.history.state;
+  j.ctx.state.selected='award:next';j.ctx.syncUrl(true);assert.equal(j.ctx.history.state.governmentRevenueInvestor,undefined);assert.equal(issuerState.governmentRevenueInvestor.ticker,'RTX');
+  j.move(-1);assert.equal(j.focus,'issuer:RTX');assert.equal(j.ctx.state.selected,'award:kept');j.move(1);assert.equal(j.ctx.state.selected,'award:next');assert.equal(j.focus,'tab');assert.equal(j.ctx.state.q,'Navy');assert.equal(j.ctx.state.truth,'official');
+  assert.deepEqual(j.ctx.history.state.foreign,{kept:true});
+});
+test('replace, silent selection and invalid issuer preserve their history contracts',()=>{
+  const j=historyJourney(),c=j.ctx.investorUI;c.select('LHX',{history:'replace'});assert.equal(j.entries.length,1);assert.equal(j.ctx.history.state.governmentRevenue.q,'Navy');assert.equal(j.initial.governmentRevenueInvestor,undefined);
+  const state=j.ctx.history.state,url=j.url.href;c.select('RTX',{history:'none'});assert.equal(j.ctx.history.state,state);assert.equal(j.url.href,url);assert.equal(c.select('UNKNOWN',{history:'push'}),false);assert.equal(j.entries.length,1);assert.equal(c.state().ticker,'RTX');
+});
+test('ordinary workspace history restores row focus and absent snapshot remains an honest default',()=>{
+  const j=historyJourney();j.ctx.restoreHistoryView();assert.equal(j.focus,'row');
+  j.ctx.history.replaceState(null,'',j.url.href);j.ctx.restoreHistoryView();assert.equal(j.ctx.state.q,'');assert.equal(j.ctx.state.truth,'all');assert.equal(j.focus,'row');
+});
+
+test('Escape-cleared desk search stays cleared across repeated issuer Back/Forward',()=>{
+  const j=historyJourney(),search=j.ctx.$('deskSearch');search.value='Navy';let prevented=false;
+  j.ctx.deskSearchKey.call(search,{key:'Escape',preventDefault(){prevented=true}});assert.equal(prevented,true);assert.equal(search.value,'');assert.equal(j.ctx.state.q,'');
+  j.ctx.investorUI.select('RTX',{history:'push'});j.ctx.investorUI.select('NOC',{history:'push'});j.move(-1);
+  assert.equal(j.ctx.state.q,'');assert.equal(search.value,'');assert.equal(j.ctx.state.truth,'official');assert.equal(j.focus,'issuer:RTX');j.move(1);assert.equal(j.ctx.state.q,'');assert.equal(j.focus,'issuer:NOC');
+});
