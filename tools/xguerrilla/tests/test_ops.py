@@ -1,8 +1,7 @@
-"""Contract tests for the harness ops layer (profiles, shadow, supervisor, CLI).
+"""Synthetic model and unavailable runtime-CLI contracts.
 
-No network, no browser, no git. A fake driver stands in for the worker; the
-CLI is exercised as a real subprocess so the JSON contract is tested end to end.
-"""
+Fake drivers and temporary fixtures only. The actual CLI main function is
+called in process; no browser, proxy configuration or subprocess is used."""
 from __future__ import annotations
 
 import datetime
@@ -17,7 +16,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.xguerrilla import cli, profiles, selector_shadow  # noqa: E402
-from tools.xguerrilla.supervisor import ChildState, Supervisor  # noqa: E402
+from tools.xguerrilla.supervisor import ChildState, SimulationSupervisor  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -42,7 +41,7 @@ class FakeDriver:
 # profiles
 # ---------------------------------------------------------------------------
 def test_profile_round_trip_and_prune(tmp_path):
-    store = profiles.Store(tmp_path / "store")
+    store = profiles.SimulationProfileStore(tmp_path / "store")
     hd = Path(store.init("kid01", slot="aws-00", chrome_version="131.0"))
     profile = hd / "profile"
     assert profile.is_dir()
@@ -83,7 +82,7 @@ def test_profile_round_trip_and_prune(tmp_path):
 
 
 def test_verify_detects_a_mutated_file(tmp_path):
-    store = profiles.Store(tmp_path / "store")
+    store = profiles.SimulationProfileStore(tmp_path / "store")
     hd = Path(store.init("kid02"))
     (hd / "profile" / "Cookies").write_bytes(b"original")
     store.snapshot("kid02")
@@ -96,7 +95,7 @@ def test_verify_detects_a_mutated_file(tmp_path):
 
 
 def test_needs_login_flips_past_ttl():
-    store = profiles.Store(Path("/tmp/does-not-matter"))
+    store = profiles.SimulationProfileStore(Path("/tmp/does-not-matter"))
     now = datetime.datetime.now(datetime.timezone.utc)
     assert store.needs_login("kid03", now - datetime.timedelta(days=20)) is False
     assert store.needs_login("kid03", now - datetime.timedelta(days=22)) is True
@@ -113,7 +112,7 @@ def test_shadow_quarantines_one_step_without_touching_state(tmp_path):
         selector_shadow.Step("post-button", {"id": "post-button"}),
     ]
     shots = tmp_path / "shots"
-    result = selector_shadow.check(driver, steps, shots)
+    result = selector_shadow.simulation_check(driver, steps, shots)
 
     assert result["ok"] is False
     assert result["drifted"] == ["post-button"]
@@ -123,11 +122,11 @@ def test_shadow_quarantines_one_step_without_touching_state(tmp_path):
     assert methods == {"locate", "screenshot"}  # no click, no navigate, no type
 
     ledger = tmp_path / "store"
-    selector_shadow.quarantine(ledger, "kid04", "post-button", "shadow drift")
-    assert selector_shadow.is_quarantined(ledger, "kid04", "post-button") is True
-    assert selector_shadow.is_quarantined(ledger, "kid04", "open-composer") is False
+    selector_shadow.simulation_quarantine(ledger, "kid04", "post-button", "shadow drift")
+    assert selector_shadow.simulation_is_quarantined(ledger, "kid04", "post-button") is True
+    assert selector_shadow.simulation_is_quarantined(ledger, "kid04", "open-composer") is False
 
-    sup = Supervisor(tmp_path / "state.db")
+    sup = SimulationSupervisor(tmp_path / "state.db", personas={})
     sup.activate("kid04")
     ok, _ = sup.can_run("kid04", now=time.time())
     assert ok is True  # a quarantined STEP does not quarantine the CHILD
@@ -144,7 +143,7 @@ def _supervisor(tmp_path):
         "bc1": SimpleNamespace(role="broadcast"),
         "bc2": SimpleNamespace(role="broadcast"),
     }
-    return Supervisor(tmp_path / "state.db", personas=personas)
+    return SimulationSupervisor(tmp_path / "state.db", personas=personas)
 
 
 def test_degraded_mode_drops_broadcast_children(tmp_path):
@@ -202,34 +201,23 @@ def test_retire_is_sticky(tmp_path):
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
-def test_cli_status_exits_zero_with_json(tmp_path):
-    import subprocess
-
+def test_cli_status_refuses_without_creating_state(tmp_path, capsys):
     db = tmp_path / "state.db"
-    proc = subprocess.run(
-        [sys.executable, "-m", "tools.xguerrilla.cli", "status",
-         "--db", str(db), "--store", str(tmp_path / "store"),
-         "--personas", str(tmp_path / "personas")],
-        cwd=str(ROOT), capture_output=True, text=True, timeout=60,
-    )
-    assert proc.returncode == 0, proc.stderr
-    payload = json.loads(proc.stdout)
-    assert payload["ok"] is True
-    assert payload["health"]["effective"] == "healthy"
-    assert payload["counts"]["children"] == 0
+    assert cli.main(["status", "--db", str(db),
+                     "--personas", str(tmp_path / "none")]) == 3
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["ok"] is False
+    assert payload["status"] == "runtime_binding_unavailable"
+    assert payload["runtime_binding_available"] is False
+    assert not db.exists()
 
 
-def test_cli_degrade_then_recover(tmp_path):
-    import subprocess
-
-    base = [sys.executable, "-m", "tools.xguerrilla.cli"]
-    common = ["--db", str(tmp_path / "s.db"), "--personas", str(tmp_path / "none")]
-    proc = subprocess.run(base + ["degrade", *common, "--reason", "outage"],
-                          cwd=str(ROOT), capture_output=True, text=True, timeout=60)
-    assert proc.returncode == 0, proc.stderr
-    assert json.loads(proc.stdout)["health"]["effective"] == "degraded"
-
-    proc = subprocess.run(base + ["recover", *common],
-                          cwd=str(ROOT), capture_output=True, text=True, timeout=60)
-    assert proc.returncode == 0, proc.stderr
-    assert json.loads(proc.stdout)["health"]["effective"] == "healthy"
+def test_cli_degrade_and_recover_cannot_create_local_health(tmp_path, capsys):
+    db = tmp_path / "s.db"
+    for command in ("degrade", "recover"):
+        assert cli.main([command, "--db", str(db),
+                         "--personas", str(tmp_path / "none")]) == 3
+        payload = json.loads(capsys.readouterr().out)
+        assert payload["status"] == "runtime_binding_unavailable"
+        assert payload["ok"] is False
+    assert not db.exists()

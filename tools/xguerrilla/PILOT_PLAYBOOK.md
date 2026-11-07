@@ -1,3 +1,17 @@
+# Prospective real pilot and historical planning notes
+
+**NOT ACTIVE: runtime binding is unavailable.** The accepted current masterplan
+and RUNBOOK.md govern. No command, local lease, profile procedure, degraded
+continuation or file-based escalation described below is currently an execution
+instruction. Existing owners must supply the real account, approved action,
+original holder, settled receipt, profile permission and health boundaries.
+
+A simulated period, source test or green CI does not satisfy the real section
+26.9 gate. The original cohort/observation/restart/outage journey remains
+prospective; it has not been executed or accepted by this source repair.
+
+## Historical draft (retained for design provenance)
+
 # Pilot playbook — 14 days, three children, one gate
 
 Nine more children stay cold until this run holds. The gate is §26.9's done

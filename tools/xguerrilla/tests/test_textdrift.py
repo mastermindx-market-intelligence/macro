@@ -228,26 +228,25 @@ def test_audit_takes_the_cell_off_the_persona_row():
 
 
 # ---------------------------------------------------------------------------
-# 6. the real rows, and the brief that gets written into the next prompt
+# 6. explicit synthetic rows and a model divergence brief
 # ---------------------------------------------------------------------------
 
 
 @pytest.fixture(scope="module")
-def personas() -> dict:
-    # Pure audit cases do not load persona/proxy/runtime configuration.
+def personas(synthetic_xg_config) -> dict:
     from xguerrilla import config
-    return config.load_personas()
+    return config.load_personas(str(synthetic_xg_config.personas),
+                                str(synthetic_xg_config.links))
 
 
 def _history_for(persona, n: int = 20) -> list[str]:
-    """Synthetic posts from a real row's own beat, phrases, opinions."""
+    """Synthetic posts from an explicit fixture row."""
     seeds = [persona.beat] + list(persona.pet_phrases) + list(persona.opinions)
     return [seeds[i % len(seeds)] for i in range(n)]
 
 
-def test_audit_runs_over_the_five_real_personas(personas):
-    """Real rows, synthetic histories. In production every child has its own
-    cell, so nothing is comparable; forced into one cell, the report is real."""
+def test_audit_runs_over_five_synthetic_personas(personas):
+    """Synthetic rows have distinct cells; forcing one cell creates comparisons."""
     assert len(personas) == 5
     assert len({p.cell for p in personas.values()}) == 5
     history = {handle: _history_for(p) for handle, p in personas.items()}

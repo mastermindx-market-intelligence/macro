@@ -1,31 +1,9 @@
-#!/usr/bin/env python3
-"""The §26.9 pilot gate.
+"""Synthetic harness regression gate; no runtime or live acceptance.
 
-Three subcommands, no browser, no third-party imports:
-
-``sim``
-    run the fourteen-day dry run and print one JSON document. Exit 0 when every
-    §26.9 criterion holds, 1 when any of them fails, 2 when the harness itself
-    blew up (so a green gate is never confused with a crashed one).
-
-``criteria``
-    print the §26.9 checklist as JSON, each item with the pass state from a
-    fresh simulation.
-
-``drill``
-    fire the deliberate failures: a verification wall, a cold session, a worker
-    outage, and a drifted selector. Each drill asserts the *response* is the one
-    the masterplan asks for and exits 0 only if all of them behaved.
-
-Usage, from the repository root::
-
-    python3 -m tools.xguerrilla.gate sim
-    python3 -m tools.xguerrilla.gate criteria
-    python3 -m tools.xguerrilla.gate drill
-
-What is proved is harness behaviour over simulated days. Nothing here talks to
-X and nothing here starts Chrome; see GATE.md.
-"""
+sim, criteria and drill evaluate the historical model with FakeDriver.
+Exit 0 concerns model checks only; exit 1 is a model failure and exit 2 is
+a model exception. Every output labels synthetic evidence, unavailable runtime
+binding and an unsatisfied live gate. See GATE.md for the prospective real scope."""
 from __future__ import annotations
 
 import argparse
@@ -52,6 +30,8 @@ def _fresh(children=None, **kwargs) -> pilot_sim.Report:
 
 
 def _emit(doc: dict) -> None:
+    doc = {**doc, "evidence_scope": "synthetic_model",
+           "runtime_binding_available": False, "live_gate_satisfied": False}
     json.dump(doc, sys.stdout, indent=2, sort_keys=True)
     sys.stdout.write("\n")
 
@@ -190,7 +170,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub = p.add_subparsers(dest="cmd", required=True)
     for name, fn, help_ in (
             ("sim", cmd_sim, "run the 14-day simulation and print the evidence"),
-            ("criteria", cmd_criteria, "print the §26.9 checklist and its pass state"),
+            ("criteria", cmd_criteria, "print model criteria; never a live acceptance result"),
             ("drill", cmd_drill, "run the deliberate-failure drills")):
         sp = sub.add_parser(name, help=help_)
         sp.set_defaults(fn=fn)

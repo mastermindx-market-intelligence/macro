@@ -100,7 +100,7 @@ def tmp_profile(tmp_path):
     Mirrors what ``xguerrilla snapshot``/``restore`` operate on, so profile
     tests can run without touching ``~/.xguerrilla`` or a child's real store.
     """
-    store = profiles.Store(tmp_path / "store")
+    store = profiles.SimulationProfileStore(tmp_path / "store")
     handle = "kid.audit"
     store.init(
         handle,
@@ -117,14 +117,67 @@ def tmp_profile(tmp_path):
 
 
 @pytest.fixture(scope="session")
-def net_slots():
-    """The shipped slot table (no network: this only parses proxies.yml)."""
-    slots = net.load()
-    if not slots:
-        pytest.skip("no slots configured in proxies.yml")
-    return slots
+def net_slots(synthetic_proxy_path):
+    """Synthetic slots parsed by the actual loader; no private-path fallback."""
+    return net.load(str(synthetic_proxy_path))
 
 
 @pytest.fixture(scope="session")
 def _net_module():
     return net
+
+@pytest.fixture(scope="session")
+def synthetic_proxy_path(tmp_path_factory):
+    """Explicit fake pool; the actual YAML parser remains under test."""
+    import yaml
+    root = tmp_path_factory.mktemp("xg-synthetic-slots")
+    path = root / "synthetic-slots.yml"
+    path.write_text(yaml.safe_dump({
+        "pool": "synthetic-pool",
+        "inventory": [
+            f"proxy-{i:02d}.invalid:{10000+i}:fake-user:fake-password-{i:02d}"
+            for i in range(16)
+        ],
+    }))
+    return path
+
+
+@pytest.fixture(scope="session")
+def synthetic_xg_config(tmp_path_factory):
+    """Five explicit schema specimens, never the deployed persona roster."""
+    import yaml
+    root = tmp_path_factory.mktemp("xg-synthetic-rows")
+    rows = root / "rows"
+    rows.mkdir()
+    handles = ["wren.mp4", "harperbuilds", "lowlit.austin", "mila.lifts", "desk.and.dusk"]
+    roles = ["lead", "conversation", "conversation", "lead", "broadcast"]
+    speeds = ["fluent", "average", "slow", "average", "fluent"]
+    casing = ["lower", "lower_sometimes", "mixed", "sentence", "sentence"]
+    lengths = [140, 220, 180, 160, 200]
+    hours = [[8, 23], [7, 22], [6, 21], [5, 20], [9, 24]]
+    beats = ["camera exposure", "coffee grinder", "patio evenings", "squat progression", "desk reading"]
+    phrases = [
+        ["flash on", "one more frame", "bar light"],
+        ["grind finer", "tastes like the bag smells", "dial it in"],
+        ["on the patio", "one drink", "the line was gone"],
+        ["legs day again", "one more set", "knees felt fine"],
+        ["lamp on", "phone face down", "page one"],
+    ]
+    for i, handle in enumerate(handles):
+        row = {
+            "handle": handle, "cell": f"synthetic-cell-{i}", "role": roles[i],
+            "beat": beats[i], "city": f"synthetic-city-{i}", "tz": "America/Chicago",
+            "speed_class": speeds[i], "casing": casing[i], "max_chars": lengths[i],
+            "hours": hours[i], "idle_day_p": 0.0, "seed": i + 11,
+            "pet_phrases": phrases[i],
+            "opinions": [f"{beats[i]} needs patience", f"{beats[i]} takes practice",
+                         f"{beats[i]} works slowly"],
+            "doesnt_care_about": [f"synthetic-topic-{i}-a", f"synthetic-topic-{i}-b"],
+            "links_per_week": 3, "actions_per_day": 18,
+        }
+        (rows / f"row-{i}.yml").write_text(yaml.safe_dump(row))
+    links = root / "synthetic-links.yml"
+    links.write_text(yaml.safe_dump({
+        "slots": {h: "https://links.example.com/xg/" + h.replace(".", "-") for h in handles}
+    }))
+    return SimpleNamespace(personas=rows, links=links)

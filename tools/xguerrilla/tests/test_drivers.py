@@ -34,6 +34,7 @@ from tools.xguerrilla.drivers.base import (  # noqa: E402
     is_challenge,
     parse_coords,
 )
+from tools.xguerrilla.runtime_boundary import RuntimeBindingUnavailable
 from tools.xguerrilla.drivers.cdp import CdpDriver  # noqa: E402
 from tools.xguerrilla.drivers.choose import choose  # noqa: E402
 from tools.xguerrilla.drivers.peekaboo import PeekabooDriver  # noqa: E402
@@ -132,6 +133,18 @@ class Shim:
         self.rmtree = real.rmtree
 
 
+def _synthetic_started(driver, profile):
+    """Private test state only; every process seam is replaced by FakeRunner.
+
+    No production activation method is called, unlocked or monkeypatched.
+    """
+    driver.profile_dir = str(profile)
+    driver._started = True
+    driver.focused = True
+    driver.pid = int(PID)
+    return driver
+
+
 @pytest.fixture()
 def runner(monkeypatch, tmp_path):
     """A PeekabooDriver wired to a fake CLI, already started on a temp profile."""
@@ -141,7 +154,7 @@ def runner(monkeypatch, tmp_path):
     driver = PeekabooDriver()
     sleeps: list[float] = []
     monkeypatch.setattr(driver, "_sleep_ms", lambda ms: sleeps.append(float(ms)))
-    driver.start(str(tmp_path / "profile"))
+    _synthetic_started(driver, str(tmp_path / "profile"))
     driver.pid = int(PID)  # as _await_focus would leave it on a live box
     fake.calls.clear()
     return driver, fake, sleeps, str(tmp_path / "profile")
@@ -233,42 +246,27 @@ def test_chunk_delay_is_the_rounded_median():
 # ---------------------------------------------------------------- peekaboo argv shape
 
 
-def test_start_launches_chrome_on_the_profile_and_waits_for_focus(monkeypatch, tmp_path):
-    """``start()`` passes ``--user-data-dir`` and returns only after ``app focus``."""
+def test_start_refuses_before_launch_or_profile_creation(monkeypatch, tmp_path):
     fake = FakeRunner()
     monkeypatch.setattr(peekaboo_mod.subprocess, "run", fake)
-    monkeypatch.setattr(peekaboo_mod, "shutil", Shim("/opt/homebrew/bin/peekaboo"))
+    monkeypatch.setattr(peekaboo_mod, "shutil", Shim("/synthetic/peekaboo"))
     profile = tmp_path / "profile-3"
-    driver = PeekabooDriver()
-    driver.start(str(profile), proxy_url="http://user:pw@gate.example:8000")
-
-    launch = fake.argvs(("open",))[0]
-    focus = fake.argvs(("peekaboo", "app", "focus"))[0]
-    assert launch[:4] == ["open", "-n", "-a", APP]
-    assert f"--user-data-dir={profile}" in launch
-    assert "--proxy-server=http://gate.example:8000" in launch, "credentials must not reach argv"
-    assert focus == [
-        "peekaboo",
-        "app",
-        "focus",
-        APP,
-        "--foreground",
-        "--json",
-    ], "Peekaboo 4.6 refuses focus without --foreground consent"
-    assert driver.focused is True
-    assert all(call["timeout"] for call in fake.calls), "every CLI call needs a timeout"
+    with pytest.raises(RuntimeBindingUnavailable, match="runtime_binding_unavailable"):
+        PeekabooDriver().start(str(profile), proxy_url="http://fake.invalid:8000")
+    assert fake.calls == []
+    assert not profile.exists()
 
 
-def test_start_refuses_headless_and_a_missing_cli(monkeypatch, tmp_path):
-    """There is no window to type into headless, and no CLI means no OS typing."""
-    monkeypatch.setattr(peekaboo_mod.subprocess, "run", FakeRunner())
-    monkeypatch.setattr(peekaboo_mod, "shutil", Shim("/opt/homebrew/bin/peekaboo"))
-    with pytest.raises(DriverError, match="headless"):
-        PeekabooDriver().start(str(tmp_path / "p"), headless=True)
-
-    monkeypatch.setattr(peekaboo_mod, "shutil", Shim(None))
-    with pytest.raises(DriverError, match="not on PATH"):
-        PeekabooDriver().start(str(tmp_path / "p"))
+def test_unbound_start_never_uses_headless_or_missing_cli_as_a_fallback(monkeypatch, tmp_path):
+    fake = FakeRunner()
+    monkeypatch.setattr(peekaboo_mod.subprocess, "run", fake)
+    for available in ("/synthetic/peekaboo", None):
+        monkeypatch.setattr(peekaboo_mod, "shutil", Shim(available))
+        for headless in (False, True):
+            with pytest.raises(RuntimeBindingUnavailable, match="runtime_binding_unavailable"):
+                PeekabooDriver().start(str(tmp_path / "p"), headless=headless)
+    assert fake.calls == []
+    assert not (tmp_path / "p").exists()
 
 
 def test_type_plan_types_bursts_with_exact_argv_and_paced_sleeps(runner):
@@ -375,13 +373,13 @@ def test_snapshot_never_reports_an_empty_envelope_as_a_clean_page(monkeypatch, t
     monkeypatch.setattr(peekaboo_mod.subprocess, "run", fake)
     monkeypatch.setattr(peekaboo_mod, "shutil", Shim("/opt/homebrew/bin/peekaboo"))
     driver = PeekabooDriver()
-    driver.start(str(tmp_path / "p"))
+    _synthetic_started(driver, str(tmp_path / "p"))
     with pytest.raises(DriverError, match="no elements"):
         driver.snapshot()
     sees = [c for c in fake.calls if c["argv"][:2] == ["peekaboo", "see"]]
     assert len(sees) == 4, "three retries, then give up"
-    # a retry focus on attempts 1 and 3, plus the one start() did
-    assert sum(c["argv"][:3] == ["peekaboo", "app", "focus"] for c in fake.calls) == 3
+    # Fake started state performs no activation focus; retries 1 and 3 focus.
+    assert sum(c["argv"][:3] == ["peekaboo", "app", "focus"] for c in fake.calls) == 2
 
 
 def test_run_tolerates_the_dispatched_unverified_exit(monkeypatch, tmp_path):
@@ -398,7 +396,7 @@ def test_run_tolerates_the_dispatched_unverified_exit(monkeypatch, tmp_path):
     monkeypatch.setattr(peekaboo_mod.subprocess, "run", fake)
     monkeypatch.setattr(peekaboo_mod, "shutil", Shim("/opt/homebrew/bin/peekaboo"))
     driver = PeekabooDriver()
-    driver.start(str(tmp_path / "p"))
+    _synthetic_started(driver, str(tmp_path / "p"))
     driver._type_text("hi", 60.0)
     assert driver.unverified == 1
 
@@ -411,7 +409,7 @@ def test_run_tolerates_the_dispatched_unverified_exit(monkeypatch, tmp_path):
 
     driver2 = PeekabooDriver()
     monkeypatch.setattr(peekaboo_mod.subprocess, "run", Bad())
-    driver2.start(str(tmp_path / "p2"))
+    _synthetic_started(driver2, str(tmp_path / "p2"))
     with pytest.raises(DriverError, match="boom"):
         driver2._type_text("hi", 60.0)
 
@@ -444,7 +442,7 @@ def test_run_tolerates_the_dispatched_but_unverified_shapes(monkeypatch, tmp_pat
     monkeypatch.setattr(peekaboo_mod.subprocess, "run", Runner())
     monkeypatch.setattr(peekaboo_mod, "shutil", Shim("/opt/homebrew/bin/peekaboo"))
     driver = PeekabooDriver()
-    driver.start(str(tmp_path / "p"))
+    _synthetic_started(driver, str(tmp_path / "p"))
     driver._type_text("hi", 60.0)
     assert driver.unverified == 1
 
@@ -455,7 +453,7 @@ def test_snapshot_raises_driver_error_with_the_cli_words(monkeypatch, tmp_path):
     monkeypatch.setattr(peekaboo_mod.subprocess, "run", fake)
     monkeypatch.setattr(peekaboo_mod, "shutil", Shim("/opt/homebrew/bin/peekaboo"))
     driver = PeekabooDriver()
-    driver.start(str(tmp_path / "p"))
+    _synthetic_started(driver, str(tmp_path / "p"))
     with pytest.raises(DriverError, match="boom"):
         driver.snapshot()
 
@@ -515,7 +513,7 @@ def test_parse_coords_accepts_the_three_written_shapes():
 
 
 def test_both_backends_satisfy_the_protocol():
-    """The seam is real: either driver can be handed to the worker loop."""
+    """Method shape only: both runtime activation paths remain unavailable."""
     assert isinstance(PeekabooDriver(), Driver)
     assert isinstance(CdpDriver(), Driver)
     assert PeekabooDriver.name == "peekaboo"
@@ -527,21 +525,24 @@ def test_cdp_does_not_import_playwright_at_module_import():
     assert "playwright.sync_api" not in sys.modules
 
 
-def test_choose_prefers_peekaboo_and_forces_cdp_when_headless(monkeypatch):
-    """``auto`` uses OS typing when the CLI exists; ``headless`` always means CDP."""
-    monkeypatch.setattr(choose_mod.shutil, "which", lambda name: "/opt/homebrew/bin/peekaboo")
-    assert isinstance(choose("auto"), PeekabooDriver)
-    assert isinstance(choose("auto", headless=True), CdpDriver)
-    assert isinstance(choose("cdp"), CdpDriver)
-    assert isinstance(choose("peekaboo"), PeekabooDriver)
+def test_choose_refuses_without_probing_or_constructing_a_backend(monkeypatch):
+    calls = []
+    monkeypatch.setattr(choose_mod.shutil, "which", lambda name: calls.append(name))
+    for backend, headless in (("auto", False), ("auto", True),
+                              ("cdp", False), ("peekaboo", False)):
+        with pytest.raises(RuntimeBindingUnavailable, match="runtime_binding_unavailable"):
+            choose(backend, headless)
+    assert calls == []
 
+
+def test_resolve_remains_descriptive_without_activating_a_backend(monkeypatch):
+    monkeypatch.setattr(choose_mod.shutil, "which", lambda name: "/synthetic/peekaboo")
+    assert choose_mod.resolve("auto") == "peekaboo"
+    assert choose_mod.resolve("auto", True) == "cdp"
     monkeypatch.setattr(choose_mod.shutil, "which", lambda name: None)
-    assert isinstance(choose("auto"), CdpDriver)
-
+    assert choose_mod.resolve("auto") == "cdp"
     with pytest.raises(DriverError):
-        choose("selenium")  # type: ignore[arg-type]
-    with pytest.raises(DriverError):
-        choose("peekaboo", headless=True)
+        choose_mod.resolve("selenium")
 
 
 # ---------------------------------------------------------------- paste contract

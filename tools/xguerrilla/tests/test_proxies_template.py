@@ -18,7 +18,6 @@ from tools.xguerrilla import net
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 TEMPLATE = HERE / "proxies.example.yml"
-LIVE = HERE / "proxies.yml"
 CRED = re.compile(r"^(\s*- )([0-9.]+:\d+):([^:]+):(.+)$")
 
 
@@ -64,15 +63,17 @@ def test_bind_still_exclusive_over_template(monkeypatch):
         net.bind(slots, [f"child.{i}" for i in range(17)])
 
 
-def test_live_pool_is_gitignored(tmp_path):
-    """If the live file exists, Git must ignore it. Skipped outside a work tree."""
-    if not LIVE.exists():
-        pytest.skip("no live proxies.yml on this box")
-    r = subprocess.run(
-        ["git", "check-ignore", "-q", str(LIVE)],
-        cwd=str(HERE.parent.parent),
-        capture_output=True,
+def test_live_pool_path_is_ignored_and_untracked_without_reading_it():
+    """Check repository policy/index metadata even when the private file is absent."""
+    root = HERE.parents[1]
+    relative = "tools/xguerrilla/proxies.yml"
+    ignored = subprocess.run(
+        ["git", "check-ignore", "--no-index", "-q", "--", relative],
+        cwd=str(root), capture_output=True, text=True, timeout=15,
     )
-    if r.returncode not in (0, 1):
-        pytest.skip("not a git work tree")
-    assert r.returncode == 0, "tools/xguerrilla/proxies.yml must be gitignored"
+    assert ignored.returncode == 0, "private proxy path must be ignored"
+    tracked = subprocess.run(
+        ["git", "ls-files", "--error-unmatch", "--", relative],
+        cwd=str(root), capture_output=True, text=True, timeout=15,
+    )
+    assert tracked.returncode == 1, "private proxy path must not be tracked"

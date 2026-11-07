@@ -1,9 +1,7 @@
-"""Tests for the §26.9 pilot gate.
+"""Synthetic pilot-model regressions, not the real section 26.9 gate.
 
-The simulation runs entirely in memory on a simulated clock, so these are real
-assertions against real harness code (scheduler, leases, supervisor, validators,
-typing, telemetry) with only the browser faked.
-"""
+Temporary generated persona/link files pass through the actual loader. Fake
+clock/driver/model results confer no live or incumbent runtime authority."""
 from __future__ import annotations
 
 import json
@@ -13,13 +11,22 @@ import pytest
 
 from tools.xguerrilla import config, gate, pilot_sim, telemetry
 from tools.xguerrilla.drivers import base
-from tools.xguerrilla.lease import LeaseStore
+from tools.xguerrilla.lease import SimulationLeaseStore
 from tools.xguerrilla.typing import plan
 
 DRIVER_METHODS = ("start", "goto", "snapshot", "find", "click", "type_plan",
                   "paste", "key", "screenshot", "stop")
 CHILD = "harperbuilds"
 
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _synthetic_configuration(synthetic_xg_config):
+    """Redirect the actual loader's dynamic paths, not the loader or its result."""
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(config, "PERSONAS_DIR", str(synthetic_xg_config.personas))
+        patch.setattr(config, "LINKS_PATH", str(synthetic_xg_config.links))
+        yield
 
 @pytest.fixture(scope="module")
 def clean(tmp_path_factory):
@@ -200,8 +207,8 @@ def test_repeated_drift_streak_keeps_the_child_working(tmp_path):
 # --------------------------------------------------------------------------
 def test_two_workers_race_and_exactly_one_wins(tmp_path):
     db = tmp_path / "leases.db"
-    a = LeaseStore(str(db), clock=lambda: pilot_sim.START.timestamp())
-    b = LeaseStore(str(db), clock=lambda: pilot_sim.START.timestamp())
+    a = SimulationLeaseStore(str(db), clock=lambda: pilot_sim.START.timestamp())
+    b = SimulationLeaseStore(str(db), clock=lambda: pilot_sim.START.timestamp())
     assert a.acquire(CHILD, 60) is True
     assert b.acquire(CHILD, 60) is False
     token = a.held_by(CHILD)
@@ -250,6 +257,9 @@ def test_gate_sim_exits_zero_on_a_clean_run(capsys, store_dir):
     assert gate.main(["sim", "--store-dir", store_dir]) == gate.EXIT_OK
     doc = json.loads(capsys.readouterr().out)
     assert doc["ok"] is True and doc["days"] == 14
+    assert doc["evidence_scope"] == "synthetic_model"
+    assert doc["runtime_binding_available"] is False
+    assert doc["live_gate_satisfied"] is False
 
 
 def test_gate_criteria_names_every_criterion(capsys, store_dir):

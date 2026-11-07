@@ -1,4 +1,5 @@
-"""xguerrilla — the child-account harness (§26 of the X guerrilla masterplan).
+"""xguerrilla pure helpers and synthetic models.
 
-Build order follows §26.9. Nothing here talks to X unless a driver is attached.
+Public runtime interfaces refuse until the actual incumbent owners are bound.
+Model evidence never satisfies the real pilot or grants account authority.
 """

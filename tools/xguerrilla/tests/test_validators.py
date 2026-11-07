@@ -1,8 +1,7 @@
-"""Gate tests: one clean pass, one failure per rule, and the persona set itself.
+"""Validator and explicit synthetic persona-schema regression cases.
 
-Every rule in validators.py has a case here. If a rule is added without a case,
-the table stops being the contract.
-"""
+The actual persona/link parsers consume temporary inputs. These assertions
+qualify model/schema behavior, not the deployed persona roster or live pool."""
 from __future__ import annotations
 
 import sys
@@ -37,8 +36,9 @@ CLEAN = {
 
 
 @pytest.fixture(scope="module")
-def personas():
-    return config.load_personas()
+def personas(synthetic_xg_config):
+    return config.load_personas(str(synthetic_xg_config.personas),
+                                str(synthetic_xg_config.links))
 
 
 def clean_draft(text: str = BASE, kind: str = "post", **kw) -> Draft:
@@ -206,7 +206,7 @@ ROLES = {
 }
 
 
-def test_five_personas_load(personas):
+def test_five_synthetic_personas_load(personas):
     assert set(personas) == HANDLES
     assert len(personas) == 5
 
@@ -246,18 +246,18 @@ def test_every_persona_passes_a_clean_draft(personas):
         assert problems == [], f"{handle}: {problems}"
 
 
-def test_persona_set_seats_on_the_pool(personas):
-    assert config.check_capacity(personas) == []
+def test_synthetic_persona_set_seats_on_the_pool(personas, net_slots):
+    assert config.check_capacity(personas, slots=net_slots) == []
 
 
-def test_capacity_refuses_more_children_than_slots():
+def test_capacity_refuses_more_children_than_slots(net_slots):
     crowd = {f"child{i}": Persona(handle=f"child{i}", cell=f"cell{i}") for i in range(17)}
-    problems = config.check_capacity(crowd)
+    problems = config.check_capacity(crowd, slots=net_slots)
     assert problems and "slots are exclusive" in problems[0]
 
 
-def test_capacity_uses_given_slots(personas):
-    assert config.check_capacity(personas, slots=config.net.load()[:5]) == []
+def test_capacity_uses_given_slots(personas, net_slots):
+    assert config.check_capacity(personas, slots=net_slots[:5]) == []
 
 
 def test_paths_resolve_under_the_package():

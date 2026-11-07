@@ -1,10 +1,7 @@
-"""Regression laws for ``xguerrilla.net`` — proxy slots.
+"""Synthetic proxy schema, assignment and secrecy regression laws.
 
-The slot pool is the one piece of the harness that cannot be regenerated: a
-child's address is its reputation, and moving a child to another slot throws
-that reputation away. These tests hold the invariants that make the pool
-stable across restarts, and that keep the pool's secrets out of logs.
-"""
+All slots come from explicit temporary YAML through the actual parser. These
+assertions do not qualify a real pool, account identity or runtime allocation."""
 
 from __future__ import annotations
 
@@ -16,8 +13,8 @@ SLOT_COUNT = 16
 
 
 @pytest.fixture(scope="module")
-def slots():
-    return net.load()
+def slots(synthetic_proxy_path):
+    return net.load(str(synthetic_proxy_path))
 
 
 @pytest.fixture(scope="module")
@@ -63,7 +60,7 @@ def test_slot_names_are_unique_and_ordered(slots):
 # 2. assignment is stable
 # ---------------------------------------------------------------------------
 
-def test_assign_is_stable_for_a_handle(slots, handles):
+def test_assign_is_stable_for_a_handle(slots, handles, synthetic_proxy_path):
     """The same handle resolves to the same slot on every call and every load.
 
     This is the law a restart depends on: if assign() drifted, a child would
@@ -72,7 +69,7 @@ def test_assign_is_stable_for_a_handle(slots, handles):
     for handle in handles:
         first = net.assign(slots, handle)
         assert net.assign(slots, handle) is first or net.assign(slots, handle) == first
-    reloaded = net.load()
+    reloaded = net.load(str(synthetic_proxy_path))
     for handle in handles:
         assert net.assign(reloaded, handle).name == net.assign(slots, handle).name
 

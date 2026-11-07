@@ -1,28 +1,15 @@
-"""The §26.9 pilot gate as a dry run (§26.9).
+"""Synthetic regression model for the historical child-harness design.
 
-§26.9 says the pilot is done when three children run fourteen days on the
-harness with zero challenges, IKI histograms inside band, at least two labels
-in each child's thirty posts, one restart survived without a re-login, and one
-deliberate worker outage fallen through to degraded mode and recovered.
+The fake clock and FakeDriver exercise scheduling, validators, typing and
+telemetry. SimulationLeaseStore and SimulationSupervisor are model state, not
+incumbent ownership, permission or health. Historical model continuation after
+a simulated outage is not live policy or a recovery grant.
 
-Prose cannot fail. This module makes the *whole fourteen days* executable
-without a browser: it schedules real slots from ``scheduler.plan_day``, serialises
-them through the real ``LeaseStore``, asks the real ``Supervisor`` whether the
-child may run, composes and validates real drafts, folds a real
-``typing.plan`` through a ``FakeDriver`` that implements ``drivers.base.Driver``,
-and writes every step to the real telemetry file. Only the browser is fake.
-
-What the simulation is worth:
-
-* it proves *harness* behaviour — ordering, leases, state machine, validators,
-  keystroke folding, telemetry shape — and nothing about X itself;
-* the clock is simulated, so fourteen days finish in seconds and never sleep;
-* every run is deterministic for a fixed seed, so a red gate is reproducible.
-
-Known seam: ``supervisor.py``'s docstring still describes a
-login/session/locate/act driver contract that ``drivers/base.py`` does not
-implement. This module codes against ``base.py``; see GATE.md.
-"""
+Every report declares synthetic_model evidence and live_gate_satisfied=False.
+No result here proves the real section 26.9 pilot. Runtime entry points remain
+unbound and unavailable. Explicit synthetic configuration must be supplied for
+a bounded offline qualification; default persona loading is not itself such
+qualification. See GATE.md and RUNBOOK.md."""
 from __future__ import annotations
 
 import random
@@ -36,9 +23,9 @@ from statistics import median
 
 from . import config, scheduler, telemetry, typing as typing_mod, validators
 from .drivers.base import Driver, DriverError, is_challenge
-from .lease import LeaseStore
+from .lease import SimulationLeaseStore
 from .validators import Draft
-from .supervisor import Supervisor
+from .supervisor import SimulationSupervisor
 
 #: One lead, one conversation, one broadcast — the three roles §26.9 names. The
 #: broadcast child is the one a worker outage is allowed to drop.
@@ -105,7 +92,7 @@ class SimClock:
 
 
 
-def heartbeat(sup: Supervisor, when: datetime) -> None:
+def heartbeat(sup: SimulationSupervisor, when: datetime) -> None:
     """Re-stamp the supervisor's health row.
 
     ``supervisor.py`` has no ``heartbeat()`` — ``degrade``/``recover`` are the
@@ -310,6 +297,9 @@ class Report:
 
     def to_dict(self) -> dict:
         out = {
+            "evidence_scope": "synthetic_model",
+            "runtime_binding_available": False,
+            "live_gate_satisfied": False,
             "days": self.days,
             "children": list(self.children),
             "seed": self.seed,
@@ -469,8 +459,8 @@ def run_pilot(children=None, days: int = 14, *, seed: int = 7,
     report.labels = {h: {} for h in handles}
     report.iki = {h: {"n": 0, "median": 0.0, "cv": 0.0, "skew": 0.0} for h in handles}
 
-    sup = Supervisor(db, personas={h: personas[h] for h in handles})
-    leases = [LeaseStore(db, clock=lambda: clock.now().timestamp()) for _ in range(2)]
+    sup = SimulationSupervisor(db, personas={h: personas[h] for h in handles})
+    leases = [SimulationLeaseStore(db, clock=lambda: clock.now().timestamp()) for _ in range(2)]
     drivers: dict[str, FakeDriver] = {}
     history: dict[str, list[Draft]] = {h: [] for h in handles}
     links_used: dict[str, list[datetime]] = {h: [] for h in handles}

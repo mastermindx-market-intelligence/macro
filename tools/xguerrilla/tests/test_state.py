@@ -1,4 +1,4 @@
-"""State-layer contracts: leases, cadence, reaction budget, telemetry."""
+"""Synthetic state models and pure cadence/budget/telemetry contracts."""
 from __future__ import annotations
 import random
 import statistics
@@ -44,7 +44,7 @@ def make_persona(**kw) -> Persona:
 
 def test_two_acquires_cannot_both_win(tmp_path):
     db = tmp_path / "leases.db"
-    a, b = lease.LeaseStore(db), lease.LeaseStore(db)
+    a, b = lease.SimulationLeaseStore(db), lease.SimulationLeaseStore(db)
     assert a.owner != b.owner
 
     assert a.acquire("child_07", 120, {"pid": 1}) is True
@@ -55,14 +55,14 @@ def test_two_acquires_cannot_both_win(tmp_path):
 
 
 def test_same_store_cannot_re_acquire_a_live_lease(tmp_path):
-    s = lease.LeaseStore(tmp_path / "l.db")
+    s = lease.SimulationLeaseStore(tmp_path / "l.db")
     assert s.acquire("h", 60) is True
     assert s.acquire("h", 60) is False
 
 
 def test_release_only_by_owner(tmp_path):
     db = tmp_path / "l.db"
-    a, b = lease.LeaseStore(db), lease.LeaseStore(db)
+    a, b = lease.SimulationLeaseStore(db), lease.SimulationLeaseStore(db)
     a.acquire("h", 60)
     assert b.release("h") is False
     assert a.release("h") is True
@@ -73,8 +73,8 @@ def test_release_only_by_owner(tmp_path):
 def test_expired_lease_is_reacquired(tmp_path):
     db = tmp_path / "l.db"
     clock = Clock()
-    a = lease.LeaseStore(db, clock=clock)
-    b = lease.LeaseStore(db, clock=clock)
+    a = lease.SimulationLeaseStore(db, clock=clock)
+    b = lease.SimulationLeaseStore(db, clock=clock)
     assert a.acquire("h", 10) is True
     clock.advance(11)
     assert a.held_by("h") is None
@@ -85,7 +85,7 @@ def test_expired_lease_is_reacquired(tmp_path):
 
 def test_renew_extends_only_while_live(tmp_path):
     clock = Clock()
-    s = lease.LeaseStore(tmp_path / "l.db", clock=clock)
+    s = lease.SimulationLeaseStore(tmp_path / "l.db", clock=clock)
     assert s.acquire("h", 10) is True
     clock.advance(8)
     assert s.renew("h", 30) is True
@@ -98,7 +98,7 @@ def test_renew_extends_only_while_live(tmp_path):
 
 def test_sweep_drops_expired_rows(tmp_path):
     clock = Clock()
-    s = lease.LeaseStore(tmp_path / "l.db", clock=clock)
+    s = lease.SimulationLeaseStore(tmp_path / "l.db", clock=clock)
     assert s.acquire("a", 5) and s.acquire("b", 5)
     s.acquire("c", 600)
     assert s.sweep() == 0
@@ -109,7 +109,7 @@ def test_sweep_drops_expired_rows(tmp_path):
 
 
 def test_ttl_must_be_positive(tmp_path):
-    s = lease.LeaseStore(tmp_path / "l.db")
+    s = lease.SimulationLeaseStore(tmp_path / "l.db")
     with pytest.raises(ValueError):
         s.acquire("h", 0)
 

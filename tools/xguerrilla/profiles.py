@@ -1,18 +1,9 @@
-"""Profile store (§26.3): a child's accumulated trust, on disk and versioned.
+"""Synthetic profile-store algorithms and an unavailable runtime interface.
 
-Layout::
-
-    BASE_DIR/
-      HANDLE/
-        manifest.json          # created_at, slot, chrome_version, notes, hashes
-        profile/               # Chromium user-data dir: cookies, localStorage, ...
-      snapshots/
-        HANDLE-<utc>.tar.gz    # last 7 kept, each with a sha256 in the manifest
-
-A profile is the account's trust. Losing it means a fresh login from a fresh
-browser, which is the most suspicious state an account can be in, so snapshots
-are cheap and restoring one is a first-class operation rather than a rescue.
-"""
+SimulationProfileStore is for explicit temporary synthetic fixtures only.
+Its manifests and snapshots do not establish incumbent account/profile
+ownership. Store, ProfileStore and all module-level runtime wrappers refuse
+before profile access; there is no runtime activation flag."""
 from __future__ import annotations
 
 import hashlib
@@ -21,6 +12,11 @@ import os
 import tarfile
 import datetime
 from pathlib import Path
+
+try:
+    from .runtime_boundary import refuse_runtime
+except ImportError:  # direct-script import
+    from runtime_boundary import refuse_runtime
 
 KEEP_SNAPSHOTS = 7
 MANIFEST = "manifest.json"
@@ -76,12 +72,8 @@ def _save(handle_dir: Path, manifest: dict) -> None:
 DEFAULT_ROOT = os.environ.get("XG_PROFILE_STORE", "~/.xguerrilla/profiles")
 
 
-class Store:
-    """A profile store rooted at one base directory.
-
-    Functions in this module are thin wrappers over ``Store`` so callers may use
-    either the module-level contract or an explicit base directory.
-    """
+class SimulationProfileStore:
+    """Profile algorithms for explicit temporary synthetic fixtures only."""
 
     def __init__(self, base_dir: str | os.PathLike):
         self.base = Path(base_dir).expanduser().resolve()
@@ -285,6 +277,13 @@ def _rmtree(top: Path) -> None:
 # Module-level contract. A base dir may be passed explicitly; otherwise the
 # store root comes from XG_PROFILE_STORE (or ~/.xguerrilla/profiles).
 # ---------------------------------------------------------------------------
+class Store:
+    """Unavailable runtime profile interface; no path is read or resolved."""
+
+    def __init__(self, base_dir):
+        refuse_runtime("profile_store")
+
+
 ProfileStore = Store
 
 

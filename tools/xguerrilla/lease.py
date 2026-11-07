@@ -1,14 +1,9 @@
-"""Leases (§26.4): one child holds a handle at a time, and a crash cannot wedge it.
+"""Synthetic lease algorithm and an unavailable runtime interface.
 
-Every store instance carries an owner token minted at construction, so "who
-holds this" is answerable after the fact from the row itself. Acquisition is a
-single upsert whose DO UPDATE only fires when the incumbent row is already
-expired — the loser of a race sees no row back and returns False, which is the
-whole crash-safety story: a killed process stops renewing and its lease lapses
-on TTL with no cleanup path to get wrong.
-
-One connection per call, WAL on, no long-lived handles.
-"""
+SimulationLeaseStore preserves the local SQLite regression model for explicit
+temporary synthetic fixtures. Its UUID, TTL and rows are not incumbent
+ownership or evidence that an uncertain action can be retried. LeaseStore
+refuses before converting a path, opening SQLite or minting a local holder."""
 from __future__ import annotations
 import json
 import os
@@ -16,6 +11,11 @@ import sqlite3
 import time
 import uuid
 from contextlib import contextmanager
+
+try:
+    from .runtime_boundary import refuse_runtime
+except ImportError:
+    from runtime_boundary import refuse_runtime
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS leases (
@@ -44,7 +44,7 @@ RETURNING owner
 """
 
 
-class LeaseStore:
+class SimulationLeaseStore:
     def __init__(self, db_path, *, clock=time.time):
         self.db_path = str(db_path)
         self.owner = uuid.uuid4().hex
@@ -119,3 +119,10 @@ class LeaseStore:
                 (handle, self._clock()),
             ).fetchone()
         return json.loads(row[0]) if row and row[0] else None
+
+
+class LeaseStore:
+    """Unavailable runtime lease interface; no local owner is created."""
+
+    def __init__(self, db_path, *, clock=time.time):
+        refuse_runtime("lease")

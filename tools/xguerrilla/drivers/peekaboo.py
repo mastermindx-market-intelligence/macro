@@ -1,4 +1,9 @@
-"""OS-level driver: keystrokes posted at the window server by the ``peekaboo`` CLI.
+"""Runtime activation and cleanup are unavailable until incumbent binding.
+
+The retained method bodies support isolated fake-object regressions.
+They do not provide a supported way to attach a real browser or profile.
+
+OS-level driver: keystrokes posted at the window server by the ``peekaboo`` CLI.
 
 This is the preferred backend on the runtime box because the site sees what a
 Mac sees: real key events arriving at a real Chrome window, not synthesized
@@ -22,8 +27,7 @@ for a build without it and they are pressed one at a time instead.
 
 Everything is namespaced per profile: ``start()`` launches Chrome with
 ``--user-data-dir=PROFILE_DIR`` so two slots never share cookies, and ``stop()``
-kills only the process tree rooted at that directory.
-"""
+kills only the process tree rooted at that directory."""
 from __future__ import annotations
 
 import glob
@@ -35,6 +39,8 @@ import subprocess
 import tempfile
 import time
 from urllib.parse import urlsplit
+
+from ..runtime_boundary import refuse_runtime
 
 from .base import DriverError, Key, collapse, is_challenge, parse_coords
 from .segment import chunk_delay_ms, median, segment
@@ -143,74 +149,12 @@ class PeekabooDriver:
     # ------------------------------------------------------------------ lifecycle
 
     def start(self, profile_dir: str, proxy_url: str = "", headless: bool | None = None) -> None:
-        """Launch Chrome on ``profile_dir`` and return only once it can take input.
-
-        ``profile_dir`` becomes Chrome's ``--user-data-dir``, so the profile's
-        cookies, storage and cache are the account's alone. ``open -n -a`` forces
-        a fresh instance even when another slot already has Chrome running; the
-        window is then focused through ``peekaboo app focus``, and this method
-        does not return until that succeeds.
-        """
-        if headless is None:
-            headless = self.headless
-        if headless:
-            raise DriverError("peekaboo types into a real window; use backend='cdp' for headless=True")
-        if not self._binary_available():
-            raise DriverError(
-                f"the {self.binary!r} CLI is not on PATH — install peekaboo or use backend='cdp'"
-            )
-        if self._started:
-            self.stop()
-
-        self.profile_dir = os.path.abspath(os.path.expanduser(str(profile_dir or "")))
-        if not self.profile_dir:
-            raise DriverError("start() needs a profile directory")
-        os.makedirs(self.profile_dir, exist_ok=True)
-        self.proxy_url = (proxy_url or "").strip()
-        self.headless = False
-
-        # Kill any tree still holding this profile first. A leftover instance
-        # that has lost its window keeps the profile lock and answers
-        # ``app focus`` with refusal_reason=target_unavailable forever, so a
-        # "fresh instance" has to start from zero.
-        subprocess.run(
-            ["pkill", "-f", "--", f"--user-data-dir={self.profile_dir}"],
-            capture_output=True,
-            text=True,
-            timeout=15,
-        )
-        time.sleep(1.0)
-
-        argv = [
-            self.launcher,
-            "-n",
-            "-a",
-            self.app,
-            "--args",
-            f"--user-data-dir={self.profile_dir}",
-            "--no-first-run",
-            "--no-default-browser-check",
-        ]
-        if self.proxy_url:
-            argv.append(f"--proxy-server={self._proxy_server()}")
-        self._run(argv, timeout=self.launch_timeout_s)
-        self._await_focus()
-        self._started = True
+        """Refuse unbound activation before import, launch or cleanup."""
+        refuse_runtime("PeekabooDriver.start")
 
     def stop(self) -> None:
-        """Kill the Chrome tree (and so the profile lock) that ``start()`` created."""
-        if self.profile_dir:
-            try:
-                subprocess.run(
-                    ["pkill", "-f", f"--user-data-dir={self.profile_dir}"],
-                    capture_output=True,
-                    text=True,
-                    timeout=15,
-                )
-            except (OSError, subprocess.SubprocessError):
-                pass
-        self._started = False
-        self.focused = False
+        """Unbound cleanup cannot close or kill an original owner."""
+        refuse_runtime("PeekabooDriver.stop")
 
     # ----------------------------------------------------------------- navigation
 

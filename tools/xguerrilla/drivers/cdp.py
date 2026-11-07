@@ -1,4 +1,9 @@
-"""Headless-capable driver: Chrome through Playwright's sync API over the DevTools Protocol.
+"""Runtime activation and cleanup are unavailable until incumbent binding.
+
+The retained method bodies support isolated fake-object regressions.
+They do not provide a supported way to attach a real browser or profile.
+
+Headless-capable driver: Chrome through Playwright's sync API over the DevTools Protocol.
 
 Two design notes:
 
@@ -15,8 +20,7 @@ Two design notes:
   than a text mutation.
 
 The context is persistent and pinned to ``PROFILE_DIR``, so a slot's cookies
-survive a restart exactly as they would in a real Chrome profile.
-"""
+survive a restart exactly as they would in a real Chrome profile."""
 from __future__ import annotations
 
 import base64
@@ -25,6 +29,8 @@ import re
 import subprocess
 import time
 from urllib.parse import unquote, urlsplit
+
+from ..runtime_boundary import refuse_runtime
 
 from .base import DriverError, Key, collapse, is_challenge, parse_coords, to_cdp
 
@@ -98,73 +104,12 @@ class CdpDriver:
     # ------------------------------------------------------------------ lifecycle
 
     def start(self, profile_dir: str, proxy_url: str = "", headless: bool | None = None) -> None:
-        """Launch a persistent Chrome context on ``profile_dir`` and open a CDP session.
-
-        Playwright is imported here on purpose: a box without it still imports
-        this module and still runs every driver test that does not need a browser.
-        """
-        if headless is None:
-            headless = self.headless
-        self.headless = bool(headless)
-        try:
-            from playwright.sync_api import sync_playwright
-        except ImportError as exc:  # pragma: no cover - depends on the box
-            raise DriverError(
-                "playwright is not installed; run `pip install playwright && playwright install chromium`"
-            ) from exc
-
-        if self._started:
-            self.stop()
-        self.profile_dir = os.path.abspath(os.path.expanduser(str(profile_dir or "")))
-        if not self.profile_dir:
-            raise DriverError("start() needs a profile directory")
-        os.makedirs(self.profile_dir, exist_ok=True)
-        self.proxy_url = (proxy_url or "").strip()
-
-        launch = {
-            "user_data_dir": self.profile_dir,
-            "headless": self.headless,
-            "args": list(_LAUNCH_ARGS),
-            "ignore_default_args": ["--enable-automation"],
-            "viewport": (
-                {"width": int(self.viewport[0]), "height": int(self.viewport[1])}
-                if (self.headless and self.viewport)
-                else None
-            ),
-        }
-        if self.channel:
-            launch["channel"] = self.channel
-        if self.proxy_url:
-            launch["proxy"] = _proxy_config(self.proxy_url)
-            launch["args"].append("--force-webrtc-ip-handling-policy=disable_non_proxied_udp")
-
-        self._pw = sync_playwright().start()
-        try:
-            self._ctx = self._pw.chromium.launch_persistent_context(**launch)
-            self._page = self._ctx.pages[0] if self._ctx.pages else self._ctx.new_page()
-            self._page.set_default_timeout(self.timeout_ms)
-            self._cdp = self._ctx.new_cdp_session(self._page)
-        except Exception as exc:  # playwright.Error, missing browser build, bad proxy
-            self.stop()
-            raise DriverError(f"could not launch Chrome on {self.profile_dir}: {exc}") from exc
-        self._started = True
+        """Refuse unbound activation before import, launch or cleanup."""
+        refuse_runtime("CdpDriver.start")
 
     def stop(self) -> None:
-        """Close the tab, the context and the Playwright driver, in that order."""
-        for closer in (
-            lambda: self._cdp.detach() if self._cdp else None,
-            lambda: self._ctx.close() if self._ctx else None,
-            lambda: self._pw.stop() if self._pw else None,
-        ):
-            try:
-                closer()
-            except Exception:
-                pass
-        self._cdp = None
-        self._ctx = None
-        self._page = None
-        self._pw = None
-        self._started = False
+        """Unbound cleanup cannot close or kill an original owner."""
+        refuse_runtime("CdpDriver.stop")
 
     # ----------------------------------------------------------------- navigation
 

@@ -1,30 +1,9 @@
-"""Supervisor: children are rows, never processes.
+"""Synthetic child-state model and an unavailable runtime interface.
 
-One row per child plus one global health row. A worker outage makes children
-*quiet*, not silent: ``pick`` keeps lead/conversation children on the rail and
-drops the broadcast tail until health returns. A drifted selector quarantines
-the step, never the child.
-
-Driver Protocol
----------------
-No drivers/base.py yet; this docstring is the contract the supervisor (and
-selector_shadow) expects once it lands. A driver is a dumb executor: it
-receives steps and reports facts, it decides nothing.
-
-    driver.login(handle)       -> None    # a human does this once
-    driver.session(handle)     -> Session # context manager, one child at a time
-    driver.locate(spec: dict)  -> bool    # resolve only; no click, no navigation
-    driver.act(step, persona)  -> Result  # one write step, paced by the persona
-    driver.screenshot(path)    -> str | bytes | None
-    driver.logged_in()         -> bool
-    driver.chrome_version()    -> str
-    driver.health()            -> dict    # {"ok": bool, "detail": str}
-    driver.close()             -> None
-
-The supervisor calls none of these today: it schedules handles and owns state.
-The worker resolves a handle with ``can_run``, asks the driver for one step at a
-time, and reports back with ``degrade``/``recover``/``cool``/``quarantine``.
-"""
+SimulationSupervisor preserves the local state-machine regression specimen.
+Its healthy/ACTIVE defaults, degraded continuation and local recovery apply
+only to explicit synthetic inputs and temporary fixtures. They do not decide
+whether a real account may run. Supervisor refuses before state or persona I/O."""
 from __future__ import annotations
 
 import os
@@ -34,9 +13,9 @@ from enum import Enum
 from pathlib import Path
 
 try:
-    from . import persona as persona_mod
-except ImportError:  # python3 tools/xguerrilla/supervisor.py
-    import persona as persona_mod  # type: ignore
+    from .runtime_boundary import refuse_runtime
+except ImportError:  # direct-script import
+    from runtime_boundary import refuse_runtime
 
 STALE_HEALTH_S = 900
 DEGRADED_ROLES = ("lead", "conversation")
@@ -56,8 +35,10 @@ def _ts(now=None) -> float:
     return float(now.timestamp()) if hasattr(now, "timestamp") else float(now)
 
 
-class Supervisor:
-    def __init__(self, db_path, personas=None):
+class SimulationSupervisor:
+    def __init__(self, db_path, personas):
+        if not isinstance(personas, dict):
+            raise TypeError("simulation personas must be an explicit mapping")
         self.db_path = str(db_path)
         Path(self.db_path).expanduser().parent.mkdir(parents=True, exist_ok=True)
         self.conn = sqlite3.connect(self.db_path)
@@ -78,21 +59,14 @@ class Supervisor:
         self._roles = self._load_roles(personas)
 
     def _load_roles(self, personas) -> dict[str, str]:
-        if personas is None:
-            local = Path(__file__).with_name("personas")
-            if local.is_dir():
-                try:
-                    personas = persona_mod.load_dir(str(local))
-                except Exception:
-                    personas = {}
-        if isinstance(personas, (str, os.PathLike)) and Path(personas).is_dir():
-            personas = persona_mod.load_dir(str(personas))
+        """Roles supplied explicitly by the synthetic caller; no file discovery."""
+        if not isinstance(personas, dict):
+            raise TypeError("simulation personas must be an explicit mapping")
         roles: dict[str, str] = {}
-        if isinstance(personas, dict):
-            for handle, p in personas.items():
-                role = p.get("role") if isinstance(p, dict) else getattr(p, "role", None)
-                if role:
-                    roles[str(handle)] = str(role)
+        for handle, p in personas.items():
+            role = p.get("role") if isinstance(p, dict) else getattr(p, "role", None)
+            if role:
+                roles[str(handle)] = str(role)
         return roles
 
     def role(self, handle: str) -> str:
@@ -192,8 +166,16 @@ class Supervisor:
         health = self._health(now)
         counts = {s.lower(): sum(1 for r in rows if r["state"] == s.value) for s in ChildState}
         counts.update(children=len(rows), runnable=sum(1 for r in rows if r["runnable"]))
-        return {"db": self.db_path, "health": health, "degraded": health["effective"] != "healthy",
+        return {"evidence_scope": "synthetic_model", "runtime_binding_available": False,
+                "db": self.db_path, "health": health, "degraded": health["effective"] != "healthy",
                 "children": rows, "counts": counts}
 
     def close(self) -> None:
         self.conn.close()
+
+
+class Supervisor:
+    """Unavailable runtime health/child interface; no state is initialized."""
+
+    def __init__(self, db_path, personas=None):
+        refuse_runtime("supervisor")

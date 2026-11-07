@@ -1,19 +1,8 @@
-"""Selector shadow run (§26.8): a broken selector quarantines the step, not the child.
+"""Synthetic selector/ledger models and unavailable runtime entry points.
 
-After an X deploy a locator can drift. The weekly shadow run resolves every
-write step against a live page and touches nothing: no click, no navigation, no
-composer, no state change on the child. A step that no longer resolves is
-screenshotted and written to the quarantine ledger, so the next scheduled run
-skips that one step while the child keeps breathing.
-
-Driver surface used here (the narrowest possible)::
-
-    driver.locate(spec: dict) -> bool      # resolve only, never act
-    driver.screenshot(path: str) -> str | bytes | None
-
-Both are optional-safe: a locate error counts as drift; a screenshot error is
-recorded but does not hide the drift.
-"""
+The simulation_* functions operate only on explicit fake drivers and temporary
+fixture data. They do not grant continuation, recovery or production quarantine.
+Public check/quarantine/read interfaces refuse before driver or ledger effects."""
 from __future__ import annotations
 
 import datetime
@@ -22,6 +11,11 @@ import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
+
+try:
+    from .runtime_boundary import refuse_runtime
+except ImportError:  # direct-script import
+    from runtime_boundary import refuse_runtime
 
 
 @dataclass(frozen=True)
@@ -57,12 +51,12 @@ def _screenshot(driver, step: Step, screenshots_dir: Path) -> str | None:
     return str(path) if path.exists() else None
 
 
-def check(driver, steps: list[Step], screenshots_dir: str | os.PathLike) -> dict:
-    """Resolve every step against a live driver; screenshot each drift.
+def simulation_check(driver, steps: list[Step], screenshots_dir: str | os.PathLike) -> dict:
+    """Model resolution with an explicitly injected fake driver.
 
-    Read-only by construction: only ``locate`` and ``screenshot`` are called,
-    so child state (cookies, session, composer) cannot be mutated by a shadow
-    run. Missing steps are drift; a locate exception is drift with its error.
+    Only locate and screenshot are invoked on that fake; missing steps and
+    locate exceptions become modeled drift. This helper grants no live
+    browser, continuation or quarantine authority.
     """
     shots_dir = Path(screenshots_dir)
     drifted: list[str] = []
@@ -93,7 +87,7 @@ def _ledger(store_path: str | os.PathLike) -> Path:
     return Path(store_path) / "quarantine.jsonl"
 
 
-def quarantine(store_path: str | os.PathLike, handle: str, step_name: str, reason: str) -> str:
+def simulation_quarantine(store_path: str | os.PathLike, handle: str, step_name: str, reason: str) -> str:
     """Append one quarantine record. Never edits the child's profile or state."""
     path = _ledger(store_path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -103,7 +97,7 @@ def quarantine(store_path: str | os.PathLike, handle: str, step_name: str, reaso
     return str(path)
 
 
-def is_quarantined(store_path: str | os.PathLike, handle: str, step_name: str) -> bool:
+def simulation_is_quarantined(store_path: str | os.PathLike, handle: str, step_name: str) -> bool:
     path = _ledger(store_path)
     if not path.exists():
         return False
@@ -121,7 +115,7 @@ def is_quarantined(store_path: str | os.PathLike, handle: str, step_name: str) -
     return False
 
 
-def quarantined_steps(store_path: str | os.PathLike, handle: str) -> list[str]:
+def simulation_quarantined_steps(store_path: str | os.PathLike, handle: str) -> list[str]:
     """Every step currently quarantined for one child, oldest first."""
     path = _ledger(store_path)
     if not path.exists():
@@ -136,3 +130,19 @@ def quarantined_steps(store_path: str | os.PathLike, handle: str) -> list[str]:
             if rec.get("handle") == handle and rec.get("step") not in out:
                 out.append(rec.get("step"))
     return out
+
+def check(driver, steps: list[Step], screenshots_dir: str | os.PathLike) -> dict:
+    """Unavailable until driver and original action ownership are bound."""
+    refuse_runtime("selector_shadow.check")
+
+
+def quarantine(store_path: str | os.PathLike, handle: str, step_name: str, reason: str) -> str:
+    refuse_runtime("selector_shadow.quarantine")
+
+
+def is_quarantined(store_path: str | os.PathLike, handle: str, step_name: str) -> bool:
+    refuse_runtime("selector_shadow.is_quarantined")
+
+
+def quarantined_steps(store_path: str | os.PathLike, handle: str) -> list[str]:
+    refuse_runtime("selector_shadow.quarantined_steps")

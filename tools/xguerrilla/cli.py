@@ -6,7 +6,7 @@
 
 Every subcommand prints exactly one JSON document to stdout. Exit 0 means the
 operation succeeded (for ``shadow``: no drift); 1 means it ran and found a
-problem; 2 is argparse usage; 3 means the requested driver is unavailable.
+problem; 2 is argparse usage; 3 means the requested runtime binding is unavailable.
 """
 from __future__ import annotations
 
@@ -22,6 +22,7 @@ import yaml  # only third-party import allowed here
 try:
     from . import net, persona, profiles, selector_shadow
     from .supervisor import Supervisor
+    from .runtime_boundary import RuntimeBindingUnavailable, refuse_runtime
 except ImportError:  # python3 tools/xguerrilla/cli.py
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import net  # type: ignore
@@ -29,6 +30,7 @@ except ImportError:  # python3 tools/xguerrilla/cli.py
     import profiles  # type: ignore
     import selector_shadow  # type: ignore
     from supervisor import Supervisor  # type: ignore
+    from runtime_boundary import RuntimeBindingUnavailable, refuse_runtime  # type: ignore
 
 DEFAULT_STORE = os.environ.get("XG_PROFILE_STORE", "~/.xguerrilla/profiles")
 DEFAULT_DB = os.environ.get("XG_STATE_DB", "~/.xguerrilla/state.db")
@@ -51,12 +53,7 @@ def _common(p: argparse.ArgumentParser) -> None:
 
 
 def cmd_status(args) -> int:
-    sup = Supervisor(args.db, personas=args.personas or DEFAULT_PERSONAS)
-    try:
-        _emit({"ok": True, **sup.status()})
-    finally:
-        sup.close()
-    return 0
+    refuse_runtime("status")
 
 
 def cmd_personas(args) -> int:
@@ -74,69 +71,34 @@ def cmd_net_check(args) -> int:
 
 
 def cmd_shadow(args) -> int:
+    if not args.dry_run:
+        refuse_runtime("shadow")
     raw = json.loads(Path(args.steps).read_text())
     steps = [selector_shadow.Step(name=s["name"], locate=s["locate"]) for s in raw]
-    if args.dry_run:
-        _emit({"ok": True, "dry_run": True, "checked": 0,
-               "steps": [s.name for s in steps]})
-        return 0
-    if not args.driver:
-        _emit({"ok": False, "error": "no driver: pass --driver module:factory or --dry-run"})
-        return 3
-    mod_name, _, fn_name = args.driver.partition(":")
-    factory = getattr(importlib.import_module(mod_name), fn_name or "driver")
-    driver = factory(args.handle)
-    try:
-        result = selector_shadow.check(driver, steps, args.screenshots)
-    finally:
-        close = getattr(driver, "close", None)
-        if callable(close):
-            close()
-    reason = f"shadow: selector did not resolve ({args.handle})"
-    for name in result["drifted"]:
-        selector_shadow.quarantine(args.store, args.handle, name, reason)
-    result["quarantined"] = result["drifted"]
-    _emit({"ok": result["ok"], **result})
-    return 0 if result["ok"] else 1
+    _emit({"ok": True, "dry_run": True, "checked": 0,
+           "runtime_binding_available": False,
+           "steps": [s.name for s in steps]})
+    return 0
 
 
 def cmd_snapshot(args) -> int:
-    path = profiles.Store(args.store).snapshot(args.handle)
-    _emit({"ok": True, "handle": args.handle, "archive": path})
-    return 0
+    refuse_runtime("snapshot")
 
 
 def cmd_restore(args) -> int:
-    profiles.Store(args.store).restore(args.handle, args.archive)
-    _emit({"ok": True, "handle": args.handle, "archive": args.archive,
-           "verify": profiles.Store(args.store).verify(args.handle)})
-    return 0
+    refuse_runtime("restore")
 
 
 def cmd_verify(args) -> int:
-    res = profiles.Store(args.store).verify(args.handle)
-    _emit({"ok": bool(res.get("ok")), **res})
-    return 0 if res.get("ok") else 1
+    refuse_runtime("verify")
 
 
 def cmd_degrade(args) -> int:
-    sup = Supervisor(args.db, personas=args.personas or DEFAULT_PERSONAS)
-    try:
-        sup.degrade(args.reason)
-        _emit({"ok": True, "health": sup.status()["health"]})
-    finally:
-        sup.close()
-    return 0
+    refuse_runtime("degrade")
 
 
 def cmd_recover(args) -> int:
-    sup = Supervisor(args.db, personas=args.personas or DEFAULT_PERSONAS)
-    try:
-        sup.recover()
-        _emit({"ok": True, "health": sup.status()["health"]})
-    finally:
-        sup.close()
-    return 0
+    refuse_runtime("recover")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -183,13 +145,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--store", default=DEFAULT_STORE)
     p.set_defaults(func=cmd_verify)
 
-    p = sub.add_parser("degrade", help="mark the worker layer degraded (rail-only)")
+    p = sub.add_parser("degrade", help="unavailable without incumbent health binding")
     _common(p)
     p.add_argument("--reason", default="worker outage")
     p.add_argument("--personas", default=DEFAULT_PERSONAS)
     p.set_defaults(func=cmd_degrade)
 
-    p = sub.add_parser("recover", help="mark the worker layer healthy again")
+    p = sub.add_parser("recover", help="unavailable without incumbent recovery binding")
     _common(p)
     p.add_argument("--personas", default=DEFAULT_PERSONAS)
     p.set_defaults(func=cmd_recover)
@@ -200,6 +162,10 @@ def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
     try:
         return int(args.func(args))
+    except RuntimeBindingUnavailable as exc:
+        _emit({"ok": False, "status": exc.code, "operation": exc.operation,
+               "runtime_binding_available": False, "error": str(exc)})
+        return 3
     except Exception as exc:
         return _fail(exc)
 

@@ -1,18 +1,13 @@
-"""Backend selection (§26.6): the one place the harness decides where keys land.
+"""Backend inspection and an unavailable activation factory.
 
-The default is OS-level typing because that is what the site actually sees — a
-real Chrome window receiving real key events from the window server. CDP is the
-fallback: it is the only option when there is no window at all (``headless``)
-and the right tool when a slot needs throughput rather than fidelity.
-
-Nothing above this module may branch on backend names; it asks for a
-:class:`..base.Driver` and the seam decides.
-"""
+resolve and peekaboo_available describe local selection only. choose refuses
+before any probe or fallback; no backend is an alternative admission route."""
 from __future__ import annotations
 
 import shutil
 
 from .base import Driver, DriverError
+from ..runtime_boundary import refuse_runtime
 from .cdp import CdpDriver
 from .peekaboo import PeekabooDriver
 
@@ -42,13 +37,5 @@ def resolve(backend: str = "auto", headless: bool = False) -> str:
 
 
 def choose(backend: str = "auto", headless: bool = False) -> Driver:
-    """Build and return the driver for ``backend``.
-
-    ``auto`` picks :class:`PeekabooDriver` when the CLI is installed and
-    :class:`CdpDriver` otherwise; ``headless=True`` always means CDP, since there
-    is no window to type into. The caller still owns ``start()``/``stop()``.
-    """
-    name = resolve(backend, headless)
-    if name == "peekaboo":
-        return PeekabooDriver()
-    return CdpDriver()
+    """Refuse unbound activation before probing or choosing a fallback."""
+    refuse_runtime("driver.choose")

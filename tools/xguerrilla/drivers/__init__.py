@@ -1,19 +1,7 @@
-"""Browser drivers: one narrow interface, two very different ways to press keys.
+"""Unbound real-driver interfaces and pure shared helpers.
 
-The worker loop never knows whether a keystroke went out as an accessibility
-event at the window server or as a DevTools protocol frame. It asks the seam for
-a driver (:func:`choose`), calls the twelve methods of :class:`base.Driver`, and
-reads back a snapshot. Everything about *how* the browser is touched lives here.
-
-    from xguerrilla.drivers import choose
-
-    driver = choose("auto")            # peekaboo if installed, else CDP
-    driver.start("/tmp/profile-3", proxy_url=proxy, headless=False)
-    driver.goto("https://example.com")
-    driver.type_plan(plan)
-    print(driver.snapshot()["challenge"])
-    driver.stop()
-"""
+Both start and stop refuse before effects; choose refuses before selection.
+Protocol conformance and synthetic method tests do not grant runtime authority."""
 from __future__ import annotations
 
 from .base import Driver, DriverError
