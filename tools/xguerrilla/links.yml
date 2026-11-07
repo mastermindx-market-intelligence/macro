@@ -1,0 +1,9 @@
+# One link slot per persona (§26.4). A draft may carry a link only to its own
+# slot; the weekly cap is on the persona row, and the validator enforces both.
+# Placeholder hosts: the real redirects land with the pilot, one per child.
+slots:
+  wren.mp4: https://links.example.com/xg/wren-mp4
+  harperbuilds: https://links.example.com/xg/harperbuilds
+  lowlit.austin: https://links.example.com/xg/lowlit-austin
+  mila.lifts: https://links.example.com/xg/mila-lifts
+  desk.and.dusk: https://links.example.com/xg/desk-and-dusk
