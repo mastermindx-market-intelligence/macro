@@ -385,6 +385,7 @@ def test_universe_hard_max_still_fail_closes_above_cap(tmp_path: Path) -> None:
     assert str(MAX_UNIVERSE_ISSUERS) in err.value.detail
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("data")
 def test_live_canonical_parquet_binds_under_hard_max() -> None:
     path = ROOT / UNIVERSE_RELATIVE_PATH
@@ -982,15 +983,26 @@ def test_cli_recovery_requires_exact_ratified_anchor(capsys: pytest.CaptureFixtu
     assert payload["reason_code"] == "recovery_plan_invalid"
 
 
-def test_broad_sec_suite_is_named_in_engine_render_guards() -> None:
+def _legacy_job(name: str) -> str:
     text = (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
     match = re.search(
-        r"(?ms)^  engine-render-guards:\n.*?(?=^  [A-Za-z0-9_-]+:)",
+        rf"(?ms)^  {re.escape(name)}:\n.*?(?=^  [A-Za-z0-9_-]+:)",
         text,
     )
-    assert match is not None
-    job = match.group(0)
-    assert "tests/test_fundamental_forensics_broad_sec.py" in job
+    assert match is not None, name
+    return match.group(0)
+
+
+def test_broad_sec_suite_is_named_in_engine_render_guards() -> None:
+    # The committed-data assertion stays on engine-render-guards; the
+    # hermetic half also runs on the existing FIF code owner.
+    assert "tests/test_fundamental_forensics_broad_sec.py" in _legacy_job("engine-render-guards")
+
+
+def test_broad_sec_hermetic_suites_are_named_in_fif_kernel_guards() -> None:
+    # The hermetic broad SEC lane and EDGAR index suites moved to
+    # fif-kernel-guards (gate: code) on 2026-10-12 so a pull request runs them.
+    job = _legacy_job("fif-kernel-guards")
     assert "tests/test_filing_forensics_broad_sec_lane.py" in job
     assert "tests/test_fundamental_forensics_edgar_index.py" in job
 
@@ -4617,3 +4629,262 @@ def test_rebound_source_rows_refuses_a_truncated_object(tmp_path: Path) -> None:
             )
             is None
         ), label
+
+
+# Current-source repair: literal correction spelling and carried evidence.
+@pytest.mark.parametrize(
+    "prior,current",
+    [
+        ("2026-06-02T16:37:27.5Z", "2026-06-02T20:37:27.500Z"),
+        ("2026-06-02T16:37:27.500Z", "2026-06-02T20:37:27.5Z"),
+        ("2026-06-02T16:37:27Z", "2026-06-02T20:37:27.000Z"),
+        ("2026-06-02T16:37:27.000Z", "2026-06-02T20:37:27Z"),
+    ],
+    ids=["padded_fraction", "trimmed_fraction", "added_fraction", "removed_fraction"],
+)
+def test_acceptance_correction_requires_identical_raw_fractional_spelling(
+    tmp_path: Path, prior: str, current: str
+) -> None:
+    assert broad_sec_store._derive_edgar_wall_clock_correction(prior, current) is None
+    entries, admitted = _derive_rost(tmp_path, prior_accepted=prior, current_accepted=current)
+    assert entries == [] and admitted == frozenset()
+
+
+@pytest.mark.parametrize("fraction", ["", ".5", ".500", ".000"])
+def test_acceptance_correction_preserves_matching_raw_fractional_spelling(
+    tmp_path: Path, fraction: str
+) -> None:
+    prior = f"2026-06-02T16:37:27{fraction}Z"
+    current = f"2026-06-02T20:37:27{fraction}Z"
+    entries, admitted = _derive_rost(tmp_path, prior_accepted=prior, current_accepted=current)
+    assert len(entries) == 1 and len(admitted) == 1
+    assert entries[0]["prior_value"] == prior
+    assert entries[0]["current_value"] == current
+    assert entries[0]["applied_offset_seconds"] == 14400
+
+
+@pytest.mark.parametrize("withheld_value", [ROST_PRIOR_ACCEPTED, ROST_CURRENT_ACCEPTED, None])
+def test_correction_carry_prior_withheld_refuses_even_without_current_other_rows(
+    tmp_path: Path, withheld_value: str | None
+) -> None:
+    entries, admitted = _derive_rost(
+        tmp_path,
+        prior_accepted=ROST_PRIOR_ACCEPTED,
+        current_accepted=ROST_CURRENT_ACCEPTED,
+        prior_manifest={"withheld_filings": [
+            {"accession_number": ROST_ACCESSION, "acceptance_datetime": withheld_value}
+        ]},
+        other_rows=[],
+    )
+    assert entries == [] and admitted == frozenset()
+
+
+def test_correction_carry_unrelated_withheld_does_not_block_two_source_correction(
+    tmp_path: Path,
+) -> None:
+    entries, admitted = _derive_rost(
+        tmp_path,
+        prior_accepted=ROST_PRIOR_ACCEPTED,
+        current_accepted=ROST_CURRENT_ACCEPTED,
+        prior_manifest={"withheld_filings": [
+            {"accession_number": "0000745732-26-000099", "acceptance_datetime": None}
+        ]},
+        other_rows=[],
+    )
+    assert len(entries) == 1 and len(admitted) == 1
+
+
+def test_correction_carry_historical_component_refuses_before_source_reads(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    store, prior, prior_rows, current_rows, current_sha, components = _rost_case(
+        tmp_path, prior_accepted=ROST_PRIOR_ACCEPTED, current_accepted=ROST_CURRENT_ACCEPTED
+    )
+    # Even a genuinely unrelated retained shard is not excluded by the
+    # adjudicator's metadata-only boundary. Do not infer absence or fetch it.
+    body = _submissions_bytes(
+        ROST_CIK,
+        [_filing("0000745732-26-000099", "10-Q", accepted=ROST_PRIOR_ACCEPTED,
+                 filed="2026-06-02", document="other.htm")],
+    )
+    digest, _ = broad_sec_store.admit_source_bytes(store, body)
+    historical = _rost_component(digest, body, "2026-06-03T01:00:00Z")
+    historical.update({
+        "source_kind": "historical",
+        "source_name": _historical_name(ROST_CIK),
+        "url": historical_submissions_url(ROST_CIK, _historical_name(ROST_CIK)),
+        "filing_from": "2026-06-01",
+        "filing_to": "2026-06-30",
+    })
+    prior["submissions_components"].append(historical)
+    prior["submissions_source_set_sha256"] = _component_identity(prior["submissions_components"])
+
+    def unexpected_read(*args, **kwargs):
+        raise AssertionError("an unqualified carried component must refuse before object reads")
+
+    monkeypatch.setattr(store, "get_bytes_strict_bounded", unexpected_read)
+    entries, admitted = broad_sec_store._derive_filing_corrections(
+        store=store, cik=ROST_CIK, ticker="ROST",
+        prior_manifest=prior, prior_rows=prior_rows, current_rows=current_rows,
+        other_rows=[], current_sha=current_sha, current_components=components,
+        current_source_set_sha256=_component_identity(components),
+        current_retrieved_at="2026-06-04T02:00:00Z",
+        selection_cutoff_at=_ROST_SELECTION_CUTOFF, recovery_from=None,
+    )
+    assert entries == [] and admitted == frozenset()
+
+
+def _correction_carry_poll_fixture(tmp_path: Path, mode: str, carry: str):
+    """Bind real synthetic sources/manifests before either actual poll caller."""
+    cik, ticker = "0000100000", "R0000"
+    accession = f"{cik}-26-000001"
+    if mode == "recovery":
+        repo, universe, store, fake, ciks = _seed_ff1r_recovery_anchor(
+            tmp_path, candidate_count=1
+        )
+        assert ciks == [cik]
+    else:
+        repo, universe, store = _layout(tmp_path, [(ticker, int(cik))])
+        fake = FakeSec()
+        assert _poll(store, universe, fake, _clocks(POLL_1), repo_root=repo).exit_code == 0
+
+    preserved: dict[str, bytes] = {}
+
+    def install(accepted, retrieved_at, *, previous=None, carried_withheld=(), historical=False):
+        body = _submissions_bytes(
+            cik, [_filing(accession, "10-Q", accepted=accepted, filed="2026-07-20")]
+        )
+        digest, _ = broad_sec_store.admit_source_bytes(store, body)
+        rows, withheld, _ = broad_sec_store.parse_relevant_filings(
+            json.loads(body), cik=cik, ticker=ticker,
+            selection_cutoff_at=POLL_2, recovery_from=None,
+        )
+        manifest = _manifest_transport_fixture(cik, ticker, previous_manifest_id=previous)
+        recent = dict(manifest["submissions_components"][0])
+        recent.update({
+            "sha256": digest, "bytes": len(body), "object_key": object_key(digest),
+            "retrieved_at": retrieved_at,
+        })
+        components = [recent]
+        if historical:
+            # Different immutable object, same parsed periodic row and instant.
+            payload = json.loads(body)
+            payload["name"] = "CARRIED HISTORICAL TEST SOURCE"
+            historical_body = canonical_json(payload).encode()
+            historical_sha, _ = broad_sec_store.admit_source_bytes(store, historical_body)
+            historical_rows, historical_withheld, _ = broad_sec_store.parse_relevant_filings(
+                payload, cik=cik, ticker=ticker,
+                selection_cutoff_at=POLL_2, recovery_from=None,
+            )
+            assert historical_rows == rows and historical_withheld == []
+            component = dict(recent)
+            component.update({
+                "source_kind": "historical", "source_name": _historical_name(cik),
+                "url": historical_submissions_url(cik, _historical_name(cik)),
+                "sha256": historical_sha, "bytes": len(historical_body),
+                "object_key": object_key(historical_sha),
+                "filing_from": "2026-07-01", "filing_to": "2026-07-31",
+            })
+            components.append(component)
+            preserved[object_key(historical_sha)] = store.get_bytes_strict(object_key(historical_sha))
+        manifest.update({
+            "submissions_sha256": digest,
+            "submissions_object_key": object_key(digest),
+            "submissions_retrieved_at": retrieved_at,
+            "submissions_components": components,
+            "submissions_source_set_sha256": _component_identity(components),
+            "relevant_filings": rows,
+            "withheld_filings": [*carried_withheld, *withheld],
+            "cumulative_relevant_accessions": sorted({row["accession_number"] for row in rows}),
+            "recorded_at": retrieved_at,
+            "sec_accepted_at": max((row["acceptance_datetime"] for row in rows), default=None),
+            "filed_on": max((row["filing_date"] for row in rows), default=None),
+        })
+        installed, pointer, raw = _install_manifest(store, manifest)
+        preserved[pointer["manifest_key"]] = raw
+        preserved[object_key(digest)] = store.get_bytes_strict(object_key(digest))
+        return installed, pointer
+
+    previous, carried = None, []
+    if carry == "withheld":
+        earlier, _ = install(None, "2026-08-15T01:00:00Z")
+        assert earlier["relevant_filings"] == [] and len(earlier["withheld_filings"]) == 1
+        assert earlier["withheld_filings"][0]["withheld_cause"] == "unevaluable_acceptance"
+        previous, carried = earlier["manifest_id"], earlier["withheld_filings"]
+    prior, pointer = install(
+        "2026-07-20T14:00:00Z", "2026-08-16T01:00:00Z",
+        previous=previous, carried_withheld=carried, historical=carry == "historical",
+    )
+    fake.set_index([_idx_row(cik, "10-Q", "2026-07-20", accession)])
+    fake.facts[cik] = _facts_bytes(cik)
+    assert all(isinstance(value, bytes) for value in preserved.values())
+    return repo, universe, store, fake, cik, accession, prior, pointer, preserved
+
+
+@pytest.mark.parametrize("mode", ["incremental", "recovery"])
+@pytest.mark.parametrize(
+    "case",
+    ["refuse_historical", "refuse_withheld", "admit_two_sources",
+     "same_instant_historical", "same_instant_withheld"],
+)
+def test_correction_carry_public_poll_preserves_bound_evidence(
+    tmp_path: Path, mode: str, case: str
+) -> None:
+    carry = "historical" if case.endswith("historical") else (
+        "withheld" if case.endswith("withheld") else "none"
+    )
+    repo, universe, store, fake, cik, accession, prior, pointer, preserved = (
+        _correction_carry_poll_fixture(tmp_path, mode, carry)
+    )
+    current_value = (
+        "2026-07-20T14:00:00.000Z" if case.startswith("same_instant")
+        else "2026-07-20T18:00:00Z"
+    )
+    current_body = _submissions_bytes(
+        cik, [_filing(accession, "10-Q", accepted=current_value, filed="2026-07-20")]
+    )
+    fake.submissions[cik] = current_body
+    pointer_before = store.get_bytes_strict(issuer_latest_key(cik))
+    complete_before = store.get_bytes_strict(latest_complete_key())
+    clocks = _clocks(POLL_2, recovery_from=RECOVERY_FROM if mode == "recovery" else None)
+    result = _poll(
+        store, universe, fake, clocks, repo_root=repo, mode=mode,
+        now=SequenceClock("2026-08-17T04:00:01Z"),
+    )
+    _validate_run(result.receipt)
+    assert fake.submissions_fetches == [cik]
+    assert fake.historical_fetches == []
+    assert store.get_bytes_strict(object_key(sha256(current_body).hexdigest())) is not None
+    for key, original_bytes in preserved.items():
+        assert store.get_bytes_strict(key) == original_bytes, key
+
+    if case.startswith("refuse"):
+        assert result.exit_code == 1, result.receipt
+        assert result.receipt["reason_code"] == "historical_submissions_conflict"
+        assert result.receipt["coverage"]["failed_issuers"] == 1
+        assert fake.facts_fetches == []
+        assert store.get_bytes_strict(issuer_latest_key(cik)) == pointer_before
+        assert store.get_bytes_strict(latest_complete_key()) == complete_before
+        assert _load_json(store, pointer["manifest_key"]).get("filing_corrections", []) == []
+        if mode == "recovery":
+            continuation = _load_gzip_json(
+                store, _load_json(store, recovery_continuation_pointer_key())["object_key"]
+            )
+            assert continuation["next_ordinal"] == 0
+            assert continuation["backlog_count"] == 1
+            assert result.receipt["recovery"]["completed_total"] == 0
+    else:
+        assert result.exit_code == 0, result.receipt
+        current_pointer = _load_json(store, issuer_latest_key(cik))
+        current = _load_json(store, current_pointer["manifest_key"])
+        rows = {row["accession_number"]: row for row in current["relevant_filings"]}
+        if case == "admit_two_sources":
+            assert rows[accession]["acceptance_datetime"] == current_value
+            assert len(current["filing_corrections"]) == 1
+        else:
+            assert rows[accession]["acceptance_datetime"] == "2026-07-20T14:00:00Z"
+            assert current.get("filing_corrections", []) == []
+            assert current["withheld_filings"] == prior["withheld_filings"]
+            for component in prior["submissions_components"]:
+                if component["source_kind"] == "historical":
+                    assert component in current["submissions_components"]

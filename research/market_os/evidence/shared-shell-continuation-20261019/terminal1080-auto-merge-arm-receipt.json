@@ -1,0 +1,46 @@
+{
+  "observed_at": "2026-10-19T23:56:07.200443+00:00",
+  "head": "5f4965b5668209036842b1ad8b4d0db12b919b5b",
+  "command": [
+    "gh",
+    "pr",
+    "merge",
+    "1080",
+    "--repo",
+    "mastermindx-market-intelligence/mastermind-terminal",
+    "--auto",
+    "--squash",
+    "--delete-branch",
+    "--match-head-commit",
+    "5f4965b5668209036842b1ad8b4d0db12b919b5b"
+  ],
+  "exit": 0,
+  "stdout": "",
+  "stderr": "",
+  "readback": {
+    "autoMergeRequest": {
+      "authorEmail": null,
+      "commitBody": null,
+      "commitHeadline": null,
+      "mergeMethod": "SQUASH",
+      "enabledAt": "2026-10-19T23:56:06Z",
+      "enabledBy": {
+        "id": "U_kgDOE-Q03g",
+        "is_bot": false,
+        "login": "mastermindxryan",
+        "name": ""
+      }
+    },
+    "headRefOid": "5f4965b5668209036842b1ad8b4d0db12b919b5b",
+    "isDraft": false,
+    "labels": [
+      {
+        "id": "LA_kwDOTOzwKM8AAAACvf_Y4A",
+        "name": "merge-on-green",
+        "description": "Ready for the fail-closed green-check merge controller",
+        "color": "1f883d"
+      }
+    ],
+    "state": "OPEN"
+  }
+}

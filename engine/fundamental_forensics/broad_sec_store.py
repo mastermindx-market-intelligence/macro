@@ -1972,12 +1972,14 @@ def _derive_edgar_wall_clock_correction(prior: str, current: str) -> tuple[int, 
     """
 
     try:
-        prior_base, prior_fraction = _iso_order_key(prior)
-        current_base, current_fraction = _iso_order_key(current)
+        prior_base, _ = _iso_order_key(prior)
+        current_base, _ = _iso_order_key(current)
     except ValueError:
         return None
-    # A fractional-spelling difference belongs to the same-instant rule, never here.
-    if prior_fraction != current_fraction:
+    # The correction discriminator requires literal spelling, including whether
+    # a fractional separator exists. The same-instant comparison key deliberately
+    # normalizes trailing zeroes, so it cannot establish this separate condition.
+    if prior[:-1].partition(".")[1:] != current[:-1].partition(".")[1:]:
         return None
     zone = ZoneInfo(EDGAR_WALL_CLOCK_TZ)
     try:
@@ -2140,6 +2142,11 @@ def _derive_filing_corrections(
     empty: tuple[list[dict[str, Any]], frozenset[tuple[str, str, str, str]]] = ([], frozenset())
     if prior_manifest is None:
         return empty
+    prior_withheld = prior_manifest.get("withheld_filings", [])
+    if not isinstance(prior_withheld, list) or any(
+        not isinstance(row, Mapping) for row in prior_withheld
+    ):
+        return empty
 
     candidates: list[tuple[str, str, dict[str, Any], dict[str, Any]]] = []
     for field in sorted(_CORRECTABLE_FIELDS):
@@ -2170,7 +2177,7 @@ def _derive_filing_corrections(
             # correction entry does not record. Refuse instead.
             if any(
                 row.get("accession_number") == accession
-                for group in (other_rows or [])
+                for group in (prior_withheld, *(other_rows or []))
                 for row in group
             ):
                 continue
@@ -2195,6 +2202,15 @@ def _derive_filing_corrections(
         or not isinstance(prior_manifest_id, str)
         or not isinstance(prior_retrieved_at, str)
         or not isinstance(current_retrieved_at, str)
+    ):
+        return empty
+    # Both poll callers carry prior historical components without rebinding their
+    # rows here. Absence from other_rows therefore cannot exclude this accession.
+    # Refuse before object reads; do not infer non-overlap or add unbounded I/O.
+    # This deliberately also withholds when a retained shard may be unrelated.
+    if any(
+        not isinstance(component, Mapping) or component.get("source_kind") == "historical"
+        for component in prior_components
     ):
         return empty
     # D9: the prior source must be strictly older than the admitting source.
@@ -4643,21 +4659,28 @@ def live_fetchers(
     submissions_session: Any = None,
     companyfacts_fetcher: Any = None,
     retrieved_at: str | None = None,
+    pacer: Any = None,
 ) -> tuple[FetchBytes, FetchHistorical, FetchCompanyFacts, FetchIndex]:
-    from collectors.edgar_forensics import SecForensicsCollector
+    from collectors.edgar_forensics import SecForensicsCollector, SecRequestPacer
     from collectors.fundamental_forensics_companyfacts import SecCompanyFactsCollector
 
     del retrieved_at
+    # ONE incumbent SEC request pacer for the whole poll (A20): both collectors
+    # acquire the same budget object so concurrent fetch paths in this process
+    # cannot multiply the per-interval SEC request rate.
+    shared_pacer = pacer if pacer is not None else SecRequestPacer()
     submissions = SecForensicsCollector(
         scratch_root,
         user_agent=user_agent,
         session=submissions_session,
         max_response_bytes=MAX_SUBMISSIONS_BYTES,
+        pacer=shared_pacer,
     )
     facts = SecCompanyFactsCollector(
         user_agent=user_agent,
         fetcher=companyfacts_fetcher,
         max_attempts=4,
+        pacer=shared_pacer,
     )
 
     def fetch_submissions(cik: str) -> tuple[bytes, Mapping[str, str | None]]:

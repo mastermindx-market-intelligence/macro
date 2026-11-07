@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T00:26:16Z",
+ "accession": "0001193125-26-072523",
+ "cik": "0001517228",
+ "doc_byte_length": 5973097,
+ "doc_sha256": "5a4921b39020ba2f8cb67203272fb9beb0acbc386086160cd8708b9849d3e9f1",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "visn-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 377161,
+  "byte_start": 376569,
+  "normalized": "Our customers include substantially all the leading global telecommunications operators, data center managers, cable television providers or MSOs and thousands of enterprise customers, including many Fortune 500 companies. Major customers and distributors include companies such as Comcast Corporation (Comcast); TD SYNNEX Corporation; Charter Communications, Inc.; WAV, LLC; Rogers Communication Inc.; Optimum Communications, Inc.; and Exclusive Networks USA, Inc. For the year ended December 31, 2025, we derived approximately 35% of our consolidated net sales from our top direct customer.",
+  "normalized_sha256": "9e14ac7c3bb80397622c79296e3c7ee3e79ee97cd335acfdd7b199c2f422173a",
+  "raw": "Our customers include substantially all the leading global telecommunications operators, data center managers, cable television providers or MSOs and thousands of enterprise customers, including many Fortune 500 companies. Major customers and distributors include companies such as Comcast Corporation (Comcast); TD SYNNEX Corporation; Charter Communications, Inc.; WAV, LLC; Rogers Communication Inc.; Optimum Communications, Inc.; and Exclusive Networks USA, Inc. For the year ended December 31, 2025, we derived approximately 35% of our consolidated net sales from our top direct customer.",
+  "raw_sha256": "9e14ac7c3bb80397622c79296e3c7ee3e79ee97cd335acfdd7b199c2f422173a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1517228/000119312526072523/visn-20251231.htm",
+ "xbrl_contexts": []
+}

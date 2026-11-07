@@ -20,6 +20,12 @@ Verdict rules
                    (loop complete but grades not matured yet)
   LOG-ONLY       : no grader module references this ledger path
 
+grey_deer_pullback_forward_log is the one exception. n_graded there is the
+number of distinct grade keys that also match an issued row, and the verdict
+is GRADER-STARVED while any matured issued key still has no such grade
+(n_owed_ungraded). Maturity is one session of grace before today. Every
+other ledger keeps the rules above.
+
 Writes:
   data/governance/grading_closure.json   (git-committed, single-writer)
   docs/GRADING_CLOSURE.md                (regenerated from json)
@@ -39,9 +45,12 @@ import json
 import logging
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 log = logging.getLogger("audit_grading_closure")
 
@@ -312,6 +321,20 @@ INVENTORY: list[dict[str, Any]] = [
         "tune_step": True,
         "storage_note": None,
     },
+    {
+        # Grey Deer pullback prospective lane (O7/W5): issue rows are immutable;
+        # grades append to the forward_log_graded.jsonl sidecar (see the sidecar
+        # lookup in audit_entry). Seeded by the first nightly after the runner lands.
+        "key": "grey_deer_pullback_forward_log",
+        "path": "data/grey_deer_pullback/forward_log.jsonl",
+        "format": "jsonl",
+        "graders": ["engine/grey_deer_pullback_forward_grade.py",
+                    "scripts/grey_deer_pullback_nightly.py"],
+        "grade_field": None,     # grades live in forward_log_graded.jsonl
+        "grade_ts_field": None,
+        "tune_step": False,
+        "storage_note": "absent-by-design: seeded by the first nightly grey_deer_pullback_nightly run",
+    },
     # ── Market state ─────────────────────────────────────────────────────────
     {
         "key": "market_state_forward_log",
@@ -509,11 +532,22 @@ def _grader_wired(graders: list[str]) -> str:
     return ("Y:" + ",".join(graders)) if graders else "N"
 
 
-def _read_jsonl(path: Path) -> list[dict]:
-    """Load a JSONL file; return empty list on any failure."""
+def _read_jsonl(path: Path, *, qledger_claims: bool = False) -> list[dict]:
+    """Keep legacy failure policy; native claims integrity failures propagate."""
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+
     try:
-        lines = path.read_text().splitlines()
+        if qledger_claims:
+            from engine.qledger_store import read_raw_lines
+
+            lines = read_raw_lines(path, missing_ok=False, encoding=None)
+        else:
+            lines = path.read_text().splitlines()
         return [json.loads(l) for l in lines if l.strip()]
+    except SnapshotIntegrityError:
+        if qledger_claims:
+            raise
+        return []
     except Exception:
         return []
 
@@ -557,12 +591,130 @@ def _verdict(entry: dict, graders: list[str], n_logged: int, n_graded: int) -> s
     return "GRADER-STARVED"
 
 
+_GD_KEY_FIELDS = ("asof", "ticker", "horizon", "config_id")
+
+
+def _grey_deer_fields_present(src: object) -> bool:
+    """True when src holds all four key fields (a present bool horizon counts)."""
+    if not isinstance(src, dict):
+        return False
+    return all(src.get(name) is not None for name in _GD_KEY_FIELDS)
+
+
+def _grey_deer_yield_key(src: dict) -> tuple[str, str, int, str] | None:
+    """The key src yields, or None when a present field has the wrong type."""
+    asof = src.get("asof")
+    ticker = src.get("ticker")
+    horizon = src.get("horizon")
+    config_id = src.get("config_id")
+    if not isinstance(asof, str) or not isinstance(ticker, str) or not isinstance(config_id, str):
+        return None
+    # bool is a subclass of int; a flag is not a horizon.
+    if isinstance(horizon, bool) or not isinstance(horizon, int):
+        return None
+    return (asof, ticker, horizon, config_id)
+
+
+def _grey_deer_row_key(row: object) -> tuple[str, str, int, str] | None:
+    """(asof, ticker, horizon, config_id) for one issued or grade row.
+
+    Top-level fields win when all four are present. Otherwise a nested
+    ``key`` dict of the same shape is the older grade-row form. A source
+    that is present but whose horizon is not an int yields no key.
+    """
+    if not isinstance(row, dict):
+        return None
+    if _grey_deer_fields_present(row):
+        return _grey_deer_yield_key(row)
+    nested = row.get("key")
+    if isinstance(nested, dict) and _grey_deer_fields_present(nested):
+        return _grey_deer_yield_key(nested)
+    return None
+
+
+def _grey_deer_keep_first(rows: list) -> dict[tuple[str, str, int, str], dict]:
+    """First row per key. Rows with no key are ignored."""
+    found: dict[tuple[str, str, int, str], dict] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        key = _grey_deer_row_key(row)
+        if key is not None and key not in found:
+            found[key] = row
+    return found
+
+
+def _grey_deer_closure(
+    issued_rows: list,
+    grade_rows: list,
+    today: date,
+) -> tuple[int, str | None, int]:
+    """Matched-grade count, last counted graded_at, and owed-but-ungraded keys.
+
+    An issued key is owed when its maturity session is strictly before the
+    last NYSE session on or before ``today`` (one session of grace). An
+    asof that does not parse, or a calendar call that raises, is not owed.
+    That failure is logged once for the entry.
+    """
+    issued = _grey_deer_keep_first(issued_rows)
+    graded = _grey_deer_keep_first(grade_rows)
+    matched = {key: row for key, row in graded.items() if key in issued}
+    stamps = [row.get("graded_at") for row in matched.values() if row.get("graded_at")]
+    last_graded_at = max(stamps) if stamps else None
+
+    warned = False
+
+    def warn_once() -> None:
+        nonlocal warned
+        if warned:
+            return
+        warned = True
+        log.warning(
+            "audit_grading_closure: grey_deer_pullback_forward_log ignored an "
+            "issued key whose asof did not parse or whose maturity session "
+            "could not be resolved"
+        )
+
+    floor: date | None = None
+    forward = None
+    try:
+        from lib.nyse_calendar import last_session_on_or_before, session_n_forward
+        forward = session_n_forward
+        floor = last_session_on_or_before(today)
+    except Exception:  # noqa: BLE001 — a broken calendar is not a crash
+        warn_once()
+        floor = None
+
+    n_owed_ungraded = 0
+    for key in issued:
+        asof, _ticker, horizon, _config_id = key
+        try:
+            issued_day = date.fromisoformat(asof)
+        except (TypeError, ValueError):
+            warn_once()
+            continue
+        if floor is None or forward is None:
+            continue
+        try:
+            matured = forward(issued_day, horizon)
+        except Exception:  # noqa: BLE001
+            warn_once()
+            continue
+        if matured is not None and matured < floor and key not in matched:
+            n_owed_ungraded += 1
+    return len(matched), last_graded_at, n_owed_ungraded
+
+
 # ---------------------------------------------------------------------------
 # CORE AUDIT
 # ---------------------------------------------------------------------------
 
-def audit_entry(spec: dict, root: Path) -> dict:
-    """Audit one ledger entry; return a result dict."""
+def audit_entry(spec: dict, root: Path, *, _today: date | None = None) -> dict:
+    """Audit one ledger entry; return a result dict.
+
+    ``_today`` is the UTC date the Grey Deer owed-grade window is measured
+    against. Other ledgers ignore it. Default is today's UTC date.
+    """
     key = spec["key"]
     rel = spec["path"]
     fmt = spec["format"]
@@ -574,15 +726,28 @@ def audit_entry(spec: dict, root: Path) -> dict:
 
     p = root / rel
 
+    from engine.qledger_store import uses_native_claims
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+
+    native_claims = (
+        fmt == "jsonl"
+        and p == root / "data" / "qledger" / "claims.jsonl"
+        and uses_native_claims(p)
+    )
+
     # --- storage status ---
-    if fmt == "parquet_dir":
+    if native_claims:
+        # This is a logical read candidate, not a claim about a local file.
+        # Only the successful complete read below can publish native presence.
+        exists = True
+    elif fmt == "parquet_dir":
         exists = p.is_dir() and any(p.glob("*.jsonl"))
     else:
         exists = p.is_file()
 
     if not exists:
         storage = storage_note if storage_note else "absent-locally"
-        return {
+        absent = {
             "key": key,
             "path": rel,
             "storage": storage,
@@ -594,15 +759,22 @@ def audit_entry(spec: dict, root: Path) -> dict:
             "tune_step": "Y" if tune_step else "N",
             "verdict": "LOG-ONLY" if not graders else "GRADER-STARVED",
         }
+        if key == "grey_deer_pullback_forward_log":
+            absent["n_owed_ungraded"] = 0
+        return absent
 
     # --- count logged / graded ---
     n_logged = 0
     n_graded = 0
     last_graded_at = None
+    rows: list = []
+    n_owed_ungraded = 0
 
     try:
         if fmt == "jsonl":
-            rows = _read_jsonl(p)
+            rows = _read_jsonl(
+                p, qledger_claims=(p == root / "data" / "qledger" / "claims.jsonl")
+            )
             n_logged = len(rows)
             if grade_field:
                 # non-null / truthy graded field = graded
@@ -636,6 +808,24 @@ def audit_entry(spec: dict, root: Path) -> dict:
             except Exception:
                 n_logged = 1  # file exists, parseable count uncertain
 
+    except SnapshotIntegrityError as exc:
+        log.warning("audit_grading_closure: claims integrity failed for %s: %s", key, exc)
+        return {
+            "key": key,
+            "path": rel,
+            "storage": "integrity-error",
+            "grader_wired": _grader_wired(graders),
+            "graders": graders,
+            "n_logged": None,
+            "n_graded": None,
+            "last_graded_at": None,
+            "tune_step": "Y" if tune_step else "N",
+            "verdict": "STORAGE-ERROR",
+            "logical_snapshot_complete": False,
+            "physical_local_inventory": "not-inspected",
+            "storage_error": str(exc),
+            "storage_error_code": exc.code,
+        }
     except Exception as exc:  # noqa: BLE001
         log.warning("audit_grading_closure: ledger read failed for %s: %s", key, exc)
 
@@ -648,6 +838,16 @@ def audit_entry(spec: dict, root: Path) -> dict:
             n_graded = len(grade_rows)
             ts_vals = [r.get("graded_at") for r in grade_rows if r.get("graded_at")]
             last_graded_at = max(ts_vals) if ts_vals else None
+
+    # grey_deer_pullback_forward_log: count only grade keys that match an
+    # issued row, and starve while a matured issued key is still ungraded.
+    if key == "grey_deer_pullback_forward_log":
+        grades_p = root / "data" / "grey_deer_pullback" / "forward_log_graded.jsonl"
+        grade_rows = _read_jsonl(grades_p) if grades_p.is_file() else []
+        today = _today if _today is not None else datetime.now(timezone.utc).date()
+        n_graded, last_graded_at, n_owed_ungraded = _grey_deer_closure(
+            rows, grade_rows, today,
+        )
 
     # foresight_log: look up graded count from track_record.json
     if key == "foresight_log":
@@ -698,11 +898,14 @@ def audit_entry(spec: dict, root: Path) -> dict:
                 n_graded = 1  # scorecard exists but unreadable — grader has run
 
     verdict = _verdict(spec, graders, n_logged, n_graded)
+    if key == "grey_deer_pullback_forward_log" and n_owed_ungraded > 0:
+        verdict = "GRADER-STARVED"
 
-    return {
+    result = {
         "key": key,
         "path": rel,
-        "storage": "present" if exists else (storage_note or "absent-locally"),
+        "storage": ("verified-native-snapshot" if native_claims
+                    else ("present" if exists else (storage_note or "absent-locally"))),
         "grader_wired": _grader_wired(graders),
         "graders": graders,
         "n_logged": n_logged,
@@ -711,6 +914,12 @@ def audit_entry(spec: dict, root: Path) -> dict:
         "tune_step": "Y" if tune_step else "N",
         "verdict": verdict,
     }
+    if key == "grey_deer_pullback_forward_log":
+        result["n_owed_ungraded"] = n_owed_ungraded
+    if native_claims:
+        result["logical_snapshot_complete"] = True
+        result["physical_local_inventory"] = "not-inspected"
+    return result
 
 
 def run(root: Path | None = None, write: bool = True) -> dict:

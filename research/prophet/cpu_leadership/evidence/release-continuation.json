@@ -1,0 +1,104 @@
+{
+  "procedure_pin": "3e66e43258f34db240d5bff76f54148c7af84ee4",
+  "carrier_pr": 7572,
+  "parent_head": "51eeb9b1fdd794e2aae382ab00fccdba33323b20",
+  "source_delta": "Existing rerender also observes same-session changes to the allowlisted candidate view; no new publication/identity/control owner.",
+  "red": {
+    "failed": 3,
+    "passed": 1,
+    "cause": "Actual production predicate false for changed reasons, membership and unavailability on the same source date."
+  },
+  "green_focused": {
+    "passed": 5
+  },
+  "release_contract_suite": {
+    "passed": 183,
+    "failed": 0,
+    "skipped": 7,
+    "skip_basis": "Seven shipped-page/premium-payload checks require baked artifacts absent in this isolated checkout; not suppressed failures."
+  },
+  "baseline_repair_map": {
+    "plan_candidate_population_conflation": 2,
+    "retired_subtitle_count": 2,
+    "retired_stage_controls": 2,
+    "relocated_theme_tape": 2,
+    "fresh_grid_variable": 1,
+    "heading_additional_attributes": 1
+  },
+  "source_clock_dependency": {
+    "pr": 7180,
+    "head": "f83c3603f74591db8920b25c7a5b4b9d9b80b7bf",
+    "source_untouched": true,
+    "archive_durability_not_fixed": true
+  },
+  "china_repair": {
+    "base": "2042b2f4ca5bcd84da47f0937f3b6a1e3d488b77",
+    "head": "a51bae222eedd4c53f4101998f3a3c4bc103f554",
+    "tree": "57b7d4f665b4c733a249898913e3039fc683c088",
+    "integration_commit": "7137a0cf3f0198a0974113f0f151e3aad9f01108",
+    "source_branch_modified": false,
+    "procedure_pin": "3e66e43258f34db240d5bff76f54148c7af84ee4",
+    "review_scope": "Independent current-base integration and source-contract test execution only; not natural-data replay or serving activation.",
+    "tests": {
+      "passed": 169,
+      "skipped": 0,
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python3 -m pytest -q tests/test_china_intel_interest.py tests/test_china_board_rank.py tests/test_china_board_rank_v3.py tests/test_china_board_rank_v4.py tests/test_china_prophet_shadow.py",
+      "log_sha256": "834013b8309eb5b8e7cf4ab7330ab7238e91b6da3dc3a5a0b14f57e98b5d0971"
+    },
+    "source_writer_transfer": false,
+    "production_activation": false,
+    "original_raw_witness_cache_recovered": false
+  },
+  "writer_gate": {
+    "accepted_integration_id": null,
+    "authority_effect": "NONE",
+    "branch": "claude/prophet-cn-interest-input-parity-20260908-sol-001",
+    "branch_head_sha": "a51bae222eedd4c53f4101998f3a3c4bc103f554",
+    "bypass_actors": [],
+    "defects": [
+      "RULES_ABSENT"
+    ],
+    "enforcing_ruleset_ids": [],
+    "fence_authorized": false,
+    "legacy_branch_protected": false,
+    "merge_authorized": false,
+    "operation_key": "prophet-cn-interest-input-parity-20260908-sol-001",
+    "receipt_digest": "e8b34a893489bb442cdee12897776dad73f7a8a9f89da50d63ce5cc7892e3204",
+    "receipt_version": "v1",
+    "receiver_transfer_authorized": false,
+    "repository": "mastermindx-market-intelligence/macro",
+    "rule_types": [],
+    "schema": "mastermind.source_continuity_writer_gate/v1",
+    "state": "TECHNICAL_WRITER_GATE_UNAVAILABLE",
+    "verified_at": "2026-09-21T04:29:08Z",
+    "writer_release_authorized": false
+  },
+  "authority_changes": {
+    "ranking_formula": false,
+    "eligible_population": false,
+    "entry_gates": false,
+    "sector_caps": false,
+    "portfolio_sizing": false,
+    "plan_origination": false,
+    "historical_archive": false
+  },
+  "production_deployed": false,
+  "mission_complete": false,
+  "independent_release_approval": false,
+  "evidence_sha256": {
+    "release-contract-tests.txt": "6ab6802e86f050365e1f6694e92d8aaa7a6c478a6655d218df9af81b9dea8bab",
+    "release-shipped-skip-reasons.txt": "60de58c7c85a2303f9ec3f7bb8a701547d2033ed27abc9932a1b3cac6610cb97",
+    "same-session-refresh-red.txt": "d3f1e6af77903aec237d9d6ff0038d7d19685165d350c5ad0f49fdbe44eff2e0",
+    "same-session-refresh-green.txt": "367e8f271bb2f17c3a239c92c1ba879ea06324232c74445492a17f2570a2eb4a",
+    "cn-6992-current-integration.json": "c52e260a3854237728a061fb50269b8d62c816648a7d7b02740162d81c5b0c4b",
+    "cn-6992-current-tests.txt": "834013b8309eb5b8e7cf4ab7330ab7238e91b6da3dc3a5a0b14f57e98b5d0971",
+    "cn-6992-writer-gate.json": "daf0a48ca68754bdab4f9588c6d9078c8fb22f8dbca22ebb1930e8ea6ab2c80f"
+  },
+  "agent_os_validation": {
+    "records": 1160,
+    "errors": 0,
+    "warnings": 286
+  },
+  "python_compile": "passed",
+  "diff_hygiene": "passed"
+}

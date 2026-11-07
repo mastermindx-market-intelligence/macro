@@ -165,3 +165,41 @@ fail closed with no pruning path. That bound is acceptable for a source wave tha
 mutates nothing, and a repeatedly-restated issuer is itself a signal worth
 stopping on, but the production proof wave must decide whether corrections are
 ever compacted and, if so, how a compaction preserves lineage.
+
+
+## 2026-11-07: literal spelling and carried-source qualification
+
+The correction-only fractional discriminator now compares the original suffix,
+including whether a decimal separator exists. Shifted `.5` versus `.500`, or
+an absent fraction versus `.000`, refuses even when their fractional values are
+numerically equal. The accepted same-instant comparator, stored source text and
+normalized comparison keys are unchanged.
+
+The earlier `other_rows` guard covered newly supplied third-source rows, but
+both poll callers also retain historical components and prior withheld rows.
+The shared adjudicator now inspects carried withheld rows directly and refuses
+any candidate whose accession appears there, regardless of the withheld value.
+It also refuses a timezone correction when a prior historical component remains
+bound without qualification that it excludes the accession. This check happens
+before the two existing source-object reads and adds no object or provider I/O.
+
+This is deliberately conservative: even a carried shard that might concern a
+different accession, or was separately fetched again, can withhold correction.
+Its filename, date span and absence from a caller's new-row list do not prove
+that exclusion. Availability remains withheld until a separately qualified
+source path can establish it; no component, row or prior receipt is discarded.
+Ordinary equal/same-instant duplicates and polls needing no correction retain
+their existing behavior.
+
+The regressions distinguish the two omissions. Historical cases bind a real
+retained shard; withheld cases use recent-only components and an earlier valid
+manifest whose actual source produced the withheld row. Both incremental and
+recovery paths use synthetic immutable objects and valid content-addressed
+manifests. A refusal must preserve the prior accepted issuer state and recovery
+cursor, while allowing truthful failure receipts and newly fetched immutable
+objects. Two-source correction and same-instant carry controls remain required.
+
+These are source corrections within the original production-inert boundary.
+They do not admit R2 mutation, a schedule, a recovery dispatch, a live canary or
+ledger compaction. The production-wave limits and frozen recovery state above
+remain controlling.

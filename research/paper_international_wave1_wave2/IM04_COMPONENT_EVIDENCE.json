@@ -1,0 +1,23 @@
+{
+  "schema": "paper.im04.component.evidence.v1",
+  "status": "SCOPED_SOURCE_ACCEPTED",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_hashes": {
+    "engine/intl_regime.py": "d7d4cb5af6a71e9381045297d807bb6db76af592aca34b0fd1b64f4c0a74949b",
+    "engine/intl_run.py": "8db309d67394247a1a7569fd92eb2e0ccaa7539aa4f466f7148c78eb864d4730",
+    "tests/test_intl_cycle_component_evidence.py": "3ba4f7653402993dd280634bd76876399c31da7265342b6aa9d3a3263713872f"
+  },
+  "review": {
+    "run": "paper-01a1101f-im04-component-review-r1",
+    "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM04_COMPONENT_REVIEW_R1.json",
+    "sha256": "8d94c7fc993b491d856f6513c78813b6c7745f3168c7563c39b6e81638a22f9e",
+    "result": "19author+9independentPASS; actual baseline classify and country_record parity proved"
+  },
+  "parent": "19focusedPASS; all supplied dependency hashes match productcarrier. Frozen timezone countercaseFAIL, one-line native-row timestamp repairPASS.",
+  "before_after": "Existing country_record now attaches current-only native component evidence from its already-computed exact classifier row; old record fields and persisted history unchanged.",
+  "limits": [
+    "Not a source-currentness/disclosure grant or economic diagnosis.",
+    "No historical component/vintage evidence promised.",
+    "Macro projection/mount and real-source journey remain separate gates."
+  ]
+}

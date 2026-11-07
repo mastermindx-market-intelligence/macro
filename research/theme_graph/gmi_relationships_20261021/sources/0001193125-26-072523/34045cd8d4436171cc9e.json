@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-02-26T00:26:16Z",
+ "accession": "0001193125-26-072523",
+ "cik": "0001517228",
+ "doc_byte_length": 5973097,
+ "doc_sha256": "5a4921b39020ba2f8cb67203272fb9beb0acbc386086160cd8708b9849d3e9f1",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "visn-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 5492872,
+  "byte_start": 5491392,
+  "normalized": "Net sales to Charter Communications, Inc. (Charter) accounted for approximately 13% and 14% for the years ended December 31, 2024 and 2023, respectively.",
+  "normalized_sha256": "216c7468eeb2be05677ceefb37d4909ee32a31c46440b92b05949374c53005eb",
+  "raw": " Net sales to </span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">Charter Communications, Inc. (Charter)</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> accounted for approximately </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_d06855c0-4f58-48a8-81ef-8d72319a2d64\" contextRef=\"C_f393ca6c-54cf-4c20-9af7-8494a8de3b80\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">13</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">% and </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_30ebc2b7-1491-4bb7-964d-d87d2466a03f\" contextRef=\"C_1da340d6-e2bf-46d3-ac98-2b65c7e3e9cf\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">14</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">% for the years ended December 31, 2024 and 2023, respectively.",
+  "raw_sha256": "34045cd8d4436171cc9ee7916041d7b7f0f3c4ed31438bbd6dbbe4717a874ae1"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1517228/000119312526072523/visn-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 100937,
+   "byte_start": 100231,
+   "context_ref": "C_f393ca6c-54cf-4c20-9af7-8494a8de3b80",
+   "raw": "<xbrli:context id=\"C_f393ca6c-54cf-4c20-9af7-8494a8de3b80\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001517228</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">visn:CharterCommunicationsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "9764cb33e46b4bba56f59019e0d84c8961daf0468cfd678a75290de6a86207fe"
+  },
+  {
+   "byte_end": 128050,
+   "byte_start": 127344,
+   "context_ref": "C_1da340d6-e2bf-46d3-ac98-2b65c7e3e9cf",
+   "raw": "<xbrli:context id=\"C_1da340d6-e2bf-46d3-ac98-2b65c7e3e9cf\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001517228</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">visn:CharterCommunicationsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "4104d24ece9e64316b6c04e131707dccaab70793005513753cee82207b335562"
+  }
+ ]
+}

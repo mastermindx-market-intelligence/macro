@@ -1,0 +1,48 @@
+{
+  "schema": "gmi.economic_context_deploy_restart_repair/v1",
+  "operation_id": "gmi-economic-context-projection-20261015-sol-001",
+  "recovery_session": "01a1468f-b66c-707c-80cc-b66b7553b0cd",
+  "source_before": "c292d8bc5c3ca839806e5ba61344094baf577d62",
+  "observed_on": "2026-10-16",
+  "problem": {
+    "workflow_run": 38703034741,
+    "job_id": 116317007975,
+    "job": "biocatalyst-deploy-integration",
+    "test": "tests/test_deploy_update_self_heal.py::test_api_load_time_import_closure_is_covered_by_restart_regex",
+    "failure": "The economic_context and issuer_economic_context modules are import-cached by macro-api but absent from its deployment restart regex."
+  },
+  "change": {
+    "file": "app/deploy/update.sh",
+    "added_restart_modules": [
+      "engine/theme_graph/economic_context.py",
+      "engine/theme_graph/issuer_economic_context.py"
+    ],
+    "semantic_projection_changed": false
+  },
+  "workspace": {
+    "registered_repository": "macro",
+    "head_published_before_edit": true,
+    "clean_before_edit": true,
+    "observed_cwd_processes_before_edit": 0,
+    "source_custody": "Existing managed branch retained; no second PR or source writer."
+  },
+  "validation": {
+    "command": "python3 -m pytest -q tests/test_deploy_update_self_heal.py tests/test_gmi_native_economic_context.py tests/test_gmi_issuer_economic_context.py tests/test_gmi_issuer_economic_context_api.py",
+    "passed": 411,
+    "failed": 0,
+    "warnings": 7,
+    "duration_seconds": 24.08,
+    "platform": "M2 Studio; Python 3.14",
+    "scope": "Complete originally failing deployment suite plus native/issuer/API economic-context suites.",
+    "hosted_current_head_ci": "PENDING"
+  },
+  "preserved": {
+    "native_semantics": "product_integration / planned; unknown magnitudes null; authenticated native-owner read projection",
+    "earlier_review": "https://github.com/mastermindx-market-intelligence/macro/pull/9423#issuecomment-6187698631",
+    "denied_8793_release": "NOT_RETRIED",
+    "c01_generation": "040b accepted publication unchanged",
+    "f04_api_524_effects": "UNKNOWN, not replayed"
+  },
+  "production_proof": false,
+  "mission_complete": false
+}

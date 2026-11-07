@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-10-14T09:46:43.070616+00:00",
+  "a1": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+  "source_main": "bbfd64b2ba58b5c44ad8ba38a05bcd319f13708c",
+  "merge_base": "c3ade6fe509b6b3f0eb8bb0120d77a3574cf57e2",
+  "expected_runtime_file_count": 17,
+  "upstream_changed_runtime_files": [
+    "app/deploy/update.sh",
+    "templates/theme.css"
+  ],
+  "upstream_diffstat": " app/deploy/update.sh | 2 +-\n templates/theme.css  | 3 +++\n 2 files changed, 4 insertions(+), 1 deletion(-)\n",
+  "scope": "Read-only refresh-impact preflight. No branch update/merge or release acceptance; incumbent controller owns actual refresh."
+}
