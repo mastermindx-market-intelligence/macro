@@ -223,6 +223,153 @@ def source_binding(manifest: dict[str, Any]) -> str | None:
     if isinstance(value, str) and _SOURCE_BINDING_RE.fullmatch(value):
         return value
     return None
+
+
+# --- F02-006-FIXBIND-01: --finalize-only refuses malformed fixture/image bindings ---
+
+_CELL_ALIASES = ("cells", "cells.rest", "cells.interaction")
+_HEX64_RE = re.compile(r"[0-9a-f]{64}")
+_FIXTURE_ROUTE_RE = re.compile(r"[a-z0-9][a-z0-9_\-]*\.html")
+
+
+def _is_byte_count(value: Any) -> bool:
+    """A recorded byte length: a non-negative int, never a bool (True == 1 in Python)."""
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def _is_expected_miss(state: dict[str, Any]) -> bool:
+    """finalize_manifest's own test for a row it moves into `excluded` — it needs no PNG."""
+    return bool(state.get("force_state")) and state.get("captured") is not True
+
+
+def _cell_target(out_dir: Path, ref: Any) -> tuple[Path | None, str | None]:
+    """(on-disk image, None) for a state's `file`, or (None, defect).
+
+    Only `cells/<name>` and the two stitch aliases (`cells.rest/<name>`,
+    `cells.interaction/<name>`) are recognized — finalize_manifest rewrites all three
+    to `cells/<name>`. Containment is checked AFTER that recognition on the resolved
+    path, so an absolute, traversing, nested, foreign-prefix or symlinked reference
+    fails even when `cells/` holds a valid image of the same basename (finalize would
+    otherwise silently re-point the row at it)."""
+    if not isinstance(ref, str) or not ref:
+        return None, f"no image reference (`file` = {ref!r})"
+    if ref.startswith("/") or "\\" in ref or re.match(r"[A-Za-z]:", ref):
+        return None, f"image reference {ref!r} is absolute or not a POSIX relative path"
+    parts = ref.split("/")
+    if ".." in parts:
+        return None, f"image reference {ref!r} traverses out of the evidence directory"
+    if len(parts) != 2 or parts[0] not in _CELL_ALIASES or parts[1] in ("", "."):
+        return None, (f"image reference {ref!r} is not cells/<name> "
+                      "(or a cells.rest/ / cells.interaction/ alias)")
+    cells = out_dir / "cells"
+    target = cells / parts[1]
+    if cells.is_symlink() or target.is_symlink():
+        return None, f"image reference {ref!r} is a symlink"
+    # Exact-name membership, not just is_file(): a case-insensitive filesystem (macOS
+    # APFS) opens `cells/A.png` for an on-disk `a.png`, but finalize would then record a
+    # name that is missing on a case-sensitive host (Linux CI, the VPS).
+    if not target.is_file() or parts[1] not in os.listdir(cells):
+        return None, f"image {ref!r} is missing on disk ({target})"
+    if cells.resolve() != out_dir.resolve() / "cells" or target.resolve().parent != cells.resolve():
+        return None, f"image reference {ref!r} resolves outside the evidence directory"
+    return target, None
+
+
+def fixture_binding_defects(manifest: dict[str, Any], out_dir: Path) -> list[str]:
+    """Every structural fixture/page/route binding defect and every referenced-image
+    integrity defect in an existing receipt, in a stable order; [] when sound.
+
+    F02-006-FIXBIND-01 (CEO A D81/D82/D90 on #6819): `--finalize-only` re-shapes the
+    receipt of record, so a fixture/page/route binding that is absent or malformed
+    relative to the committed receipt's shape, an image that is missing or resolves
+    outside the evidence directory, or an image whose bytes no longer match the
+    recorded sha256 / length is refused before any byte is written. Scope is
+    structure + file integrity only: nothing here proves the pixels came from the
+    declared fixture, and no image-row provenance field is invented. Rows that
+    finalize_manifest moves into `excluded` need no PNG."""
+    defects: list[str] = []
+    fixtures = manifest.get("fixture_pages")
+    if not isinstance(fixtures, dict) or not fixtures:
+        return [f"`fixture_pages` is absent or not a non-empty mapping ({type(fixtures).__name__})"]
+    routes: dict[str, str] = {}
+    for fid, fx in fixtures.items():
+        if not isinstance(fx, dict):
+            defects.append(f"fixture_pages[{fid!r}] is not a mapping")
+            continue
+        route = fx.get("route")
+        if isinstance(route, str) and _FIXTURE_ROUTE_RE.fullmatch(route):
+            routes[fid] = "/" + route
+        else:
+            defects.append(f"fixture_pages[{fid!r}].route {route!r} is not a bare <name>.html")
+        if not (isinstance(fx.get("sha256"), str) and _HEX64_RE.fullmatch(fx["sha256"])):
+            defects.append(f"fixture_pages[{fid!r}].sha256 {fx.get('sha256')!r} is not 64 lowercase hex")
+        if not _is_byte_count(fx.get("bytes")):
+            defects.append(f"fixture_pages[{fid!r}].bytes {fx.get('bytes')!r} is not a byte count")
+
+    pages = manifest.get("pages")
+    if not isinstance(pages, list) or not pages:
+        defects.append(f"`pages` is absent or not a non-empty list ({type(pages).__name__})")
+        return defects
+    seen: set[str] = set()
+    for i, page in enumerate(pages):
+        if not isinstance(page, dict):
+            defects.append(f"pages[{i}] is not a mapping")
+            continue
+        pid = page.get("page_id")
+        if not isinstance(pid, str) or pid not in fixtures:
+            defects.append(f"pages[{i}].page_id {pid!r} names no fixture page")
+            continue
+        if pid in seen:
+            defects.append(f"pages[{i}].page_id {pid!r} is duplicated")
+        seen.add(pid)
+        if pid in routes and page.get("route") != routes[pid]:
+            defects.append(f"pages[{i}] ({pid}) route {page.get('route')!r} != fixture route {routes[pid]!r}")
+        states = page.get("states")
+        if not isinstance(states, list):
+            defects.append(f"pages[{i}] ({pid}) `states` is not a list")
+            continue
+        for j, state in enumerate(states):
+            where = f"pages[{i}] ({pid}) states[{j}]"
+            if not isinstance(state, dict):
+                defects.append(f"{where} is not a mapping")
+                continue
+            if _is_expected_miss(state):
+                continue
+            if state.get("captured") is not True:
+                defects.append(f"{where} is kept in the receipt but not captured "
+                               f"(`captured` = {state.get('captured')!r})")
+                continue
+            target, defect = _cell_target(out_dir, state.get("file"))
+            if defect:
+                defects.append(f"{where}: {defect}")
+                continue
+            sha, n = state.get("sha256"), state.get("bytes")
+            if not (isinstance(sha, str) and _HEX64_RE.fullmatch(sha)):
+                defects.append(f"{where}: recorded sha256 {sha!r} is not 64 lowercase hex")
+                continue
+            if not _is_byte_count(n):
+                defects.append(f"{where}: recorded bytes {n!r} is not a byte count")
+                continue
+            data = target.read_bytes()
+            if len(data) != n:
+                defects.append(f"{where}: {state['file']} is {len(data)} bytes on disk, recorded {n}")
+            elif _sha256_hex(data) != sha:
+                defects.append(f"{where}: {state['file']} sha256 {_sha256_hex(data)[:12]} on disk "
+                               f"!= recorded {sha[:12]}")
+    unbound = sorted(set(fixtures) - seen)
+    if unbound:
+        defects.append(f"fixture page(s) {unbound} have no pages[] row")
+
+    excluded = manifest.get("excluded")
+    if excluded is not None and not isinstance(excluded, list):
+        defects.append(f"`excluded` is not a list ({type(excluded).__name__})")
+    for k, row in enumerate(excluded if isinstance(excluded, list) else []):
+        pid = row.get("page_id") if isinstance(row, dict) else None
+        if not isinstance(pid, str) or pid not in fixtures:
+            defects.append(f"excluded[{k}].page_id {pid!r} names no fixture page")
+        elif pid in routes and row.get("route") != routes[pid]:
+            defects.append(f"excluded[{k}] ({pid}) route {row.get('route')!r} != fixture route {routes[pid]!r}")
+    return defects
 _LANES = [
     "MO-PAID-006_PAGE_EVIDENCE_R2 (MiniMax lane on mini2 — the R2 receipt)",
     "CEO A seat-direct R4 / R4b / R4c under L.7 on mini2 (lane dead, no worker on the artifact)",
@@ -774,6 +921,15 @@ def main() -> int:
             print(f"  ✗ --finalize-only refused: {path} carries no 40-hex `source_commit` binding "
                   f"({current.get('source_commit')!r}) — a finalize-only pass never substitutes the current "
                   "HEAD for a missing or invalid source; recapture instead (R4e)", flush=True)
+            return 2
+        # F02-006-FIXBIND-01: after the R4e binding check, before any git read or write.
+        defects = fixture_binding_defects(current, OUT_DIR)
+        if defects:
+            print(f"  ✗ --finalize-only refused: {path} has {len(defects)} fixture/image binding "
+                  "defect(s); nothing was written — repair or recapture the receipt (F02-006-FIXBIND-01):",
+                  flush=True)
+            for defect in defects:
+                print(f"    - {defect}", flush=True)
             return 2
         tpl_at_source = _git("rev-parse", f"{template_commit}:{_TEMPLATE_REL}", cwd=_REPO).decode().strip()
         if tpl_at_source != tpl_wt and not args.allow_dirty_template:

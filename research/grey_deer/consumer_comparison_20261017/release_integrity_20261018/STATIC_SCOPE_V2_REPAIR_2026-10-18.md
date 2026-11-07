@@ -1,0 +1,213 @@
+# Static scope catalogue v2 — bounded repair and synthetic evidence
+
+**Status: prepared for root review. Both reviewed defects were reproduced with the preserved original, and five successor controls passed on a private synthetic Git fixture. No Mastermind repository was catalogued or executed.** This is an own-tool result, not release admission, native compatibility evidence, pytest, or production acceptance.
+
+## Source and review identities
+
+The initiating review is [STATIC_SCOPE_CATALOGUE_REVIEW_2026-10-18.md](STATIC_SCOPE_CATALOGUE_REVIEW_2026-10-18.md), SHA256 `70d3d03198f15f529ce785efd2096719f810f6261984b7aa4d9c72eb415e9c9e`.
+
+| Artifact | Bytes | SHA256 |
+|---|---:|---|
+| Preserved [candidate_scope_static.py](candidate_scope_static.py.txt) | 16,836 | `1ccb858a4f41ee62e909cc651c64d4ecc5aa525051432b45883854f6d0216c17` |
+| Separately named [candidate_scope_static_v2.py](candidate_scope_static_v2.py.txt) | 18,653 | `2f1f78e12cac9f6dfc219ba20c5d61d97bed29d4109cc9fc93eb3eea5123e103` |
+| One-shot [static_scope_v2_fixture_20261018.py](static_scope_v2_fixture_20261018.py.txt) | 9,643 | `b563134a1ccb51a67031adb2ccbd9b4b8134a4af7888a7dfd569679c76069716` |
+| [STATIC_SCOPE_V2_FIXTURE_RECEIPT_2026-10-18.json](STATIC_SCOPE_V2_FIXTURE_RECEIPT_2026-10-18.json) | 21,725 | `8f4cdc61230430c1a38e3c181266b6bd0d715142d9ec89ec8a42213df589d34f` |
+
+The original and both new Python files parsed successfully through the standard-library AST parser before fixture execution. The runner confirms all three source identities remained unchanged across its run. Frozen deployment helper/tests, existing reports, and the pending companion proposal were not modified.
+
+## Minimal changes
+
+**F1: preserve recognized alias meanings.** Each recognized loader alias now maps to a set. All recognized interpretations are processed in deterministic order. A cross-scope collision adds a `recognized_loader_alias_ambiguous` record containing the alias and possible loaders. The builtin `__import__` fromlist edge therefore survives an unrelated nested alias to `import_module`. This deliberately avoids building a Python scope interpreter; it retains the plausible edge and reports the ambiguity.
+
+**F2: bind the output guard to actual Git context.** Three read-only `git rev-parse --path-format=absolute` queries identify the actual worktree root, absolute per-worktree Git directory, and common Git directory. The supplied resolved `--repo` must equal that root. Output is refused beneath any of those resolved directories, including metadata whose basename is not `.git`. The previous literal `.git` check is retained as an additional restriction. The report records the three actual context paths. Schema advances to `static-python-scope-v2` to distinguish the corrected output.
+
+The description and limitations now call this a partial static aid. Lexical over-inclusion and unknown dynamic loading remain separate limitations. Fixed object IDs, object-content verification, AST-only source handling, exclusive report creation, Git transport restrictions, and error retention remain as before.
+
+## Exact bounded execution
+
+Executed from `/workspace/scratch/da452a3ea08d`:
+
+```sh
+python3 release_review/static_scope_v2_fixture_20261018.py
+```
+
+Observed interval: **2026-10-18 08:55:37.569985–08:55:38.089657 UTC**. Python: **3.12.14**. A separate read-only `git --version` check reported **2.51.1**. The receipt contains the exact argument arrays, working directories, exit codes, stdout and stderr for every fixture Git command and catalogue invocation; it also records fixture source text, commit IDs, report hashes, reached paths, dynamic sites and parser errors. These are standard-library fixture assertions, not pytest results.
+
+The runner created a fresh private fixture at `/tmp/rr-static-scope-v2-8fzwvrfh`, with a separate metadata directory named `object-store`, two synthetic commits, and a linked worktree. It used an empty hooks directory and disabled global/system Git configuration for fixture setup. It did not access any native repository, application data, provider, installer or production endpoint. Its catalogue invocations only parsed the synthetic tracked source; the fixture entry contains an unconditional `raise` and was never imported.
+
+Synthetic predecessor: `7ea15c7bbcd92e02b3c0964dd7d2fbd55706c4f3`. Synthetic candidate: `15332143d9d6620195486c41e6a02ec6bf00343d`. These are fixture identities, unrelated to Mastermind release commits.
+
+To reproduce, place exact copies of the preserved original, successor, and runner under their recorded basenames in a new directory, then run the runner. It creates a fresh private fixture and a new sibling receipt. It refuses to overwrite an existing receipt; preserve this dated result.
+
+## Results and counterexamples
+
+| Case | Process exit | Observed result | Disposition |
+|---|---:|---|---|
+| Original F1: outer builtin loader, unused nested `import_module` alias | 0 | `pkg/child.py` omitted; no dynamic ambiguity recorded | Original defect reproduced; not an acceptance pass |
+| v2 F1: same entry and changed child source | 0 | Child included in reached changed source; both loader meanings recorded in explicit ambiguity | Pass |
+| Original F2: `--repo worktree/nested`, output in actual worktree | 0 | Created output outside supplied subdirectory but inside actual worktree | Original defect reproduced; not an acceptance pass |
+| v2 F2: same nested repository argument | 2 | Explicit actual-root refusal; no output created | Pass |
+| v2 F2: output beneath separate `object-store` metadata | 2 | Explicit metadata refusal; no output created; path has no `.git` component | Pass |
+| v2 F2: valid linked worktree, external output | 0 | Correct actual root, distinct per-worktree Git directory, and shared common directory recorded | Pass |
+| v2 F2: linked-worktree output under common metadata but outside per-worktree metadata | 2 | Explicit metadata refusal; no output created | Pass |
+
+**Attribution: two original counterexamples reproduced; five v2 controls passed.** Successful report controls had no parser/object errors. Negative controls assert both helper-owned refusal messages and output absence. A process exit of zero from the original counterexamples is the demonstrated defect, not a successful safety check.
+
+## Remaining limits and next gate
+
+All-scope alias union can produce extra edges and does not resolve rebinding, arbitrary wrappers, import hooks, `eval`/`exec`, runtime-generated names, or alternate import roots. Unknown loaders can still hide dependencies. An unreached path does not establish inertness or complete release scope. The output boundary covers the selected repository's actual worktree and reported Git metadata; it does not inventory unrelated repositories, external object alternates, or provide a guarantee against concurrent adversarial directory replacement. Native Git support for the context query is not yet exercised; query failure refuses completion.
+
+This version has not run against the proposed Mastermind candidate, the observed live commit, native source, or data. Root review of this delta precedes any native read-only metadata catalogue. Source CI, companion-test custody, release applicability, runtime compatibility and production acceptance remain separate unresolved gates.
+
+## Full source delta
+
+The following diff is between the unchanged original and separately named v2. No production helper or application-source delta is included.
+
+```diff
+--- candidate_scope_static.py
++++ candidate_scope_static_v2.py
+@@ -1,8 +1,9 @@
+ #!/usr/bin/env python3
+-"""Catalogue a fixed commit's Python import closure without importing its code.
+-
+-Reads Git objects only. The sole write is a new JSON report outside --repo.
+-This is a conservative static aid, not release admission or runtime validation.
++"""Catalogue a fixed commit's Python imports without importing its code.
++
++Reads Git objects and context. The sole write is a new JSON report outside the
++actual worktree and its Git metadata. This partial static aid is not release
++admission or runtime validation.
+ """
+ 
+ import argparse
+@@ -24,9 +25,11 @@
+     "Installed packages, gitlinks, compiled modules, generated/untracked files, alternate source roots, "
+     "sys.path/__path__ changes and environment-specific import hooks are not resolved.",
+     "All lexical scopes and branches are included, including deferred functions, dead branches and "
+-    "TYPE_CHECKING blocks. Reachability is an over-approximation, not proof of execution.",
++    "TYPE_CHECKING blocks. Lexical inclusion can overstate runtime reachability; unknown loading "
++    "can still hide paths.",
+     "Recognized dynamic names are direct/aliased importlib.import_module and __import__ calls. "
+-    "Aliases are collected without scope or rebinding analysis. Reflection, wrappers, eval/exec and "
++    "Recognized alias meanings are unioned across scopes, with collisions explicitly reported; "
++    "scope and rebinding are not resolved. Reflection, wrappers, eval/exec and "
+     "unrecognized loaders can hide imports. Reported dynamic sites cover parsed reached files only.",
+     "From-import names may be attributes rather than submodules; both local possibilities are retained. "
+     "Star exports and nonliteral dynamic names/fromlists remain unresolved.",
+@@ -34,6 +37,8 @@
+     "startup effects, service wiring, data/schema dependencies and non-Python consumers.",
+     "Unreached does not mean inert. This graph does not prove runtime compatibility, complete release "
+     "scope, current branch identity, writer custody, deployment permission or production acceptance.",
++    "The output guard uses the selected repository's worktree, Git directory and common Git directory. "
++    "It does not catalogue unrelated repositories or provide an adversarial-filesystem race guarantee.",
+ ]
+ UNRESOLVED_LOADERS = {"spec_from_file_location", "spec_from_loader", "module_from_spec",
+                       "exec_module", "load_module"}
+@@ -66,6 +71,18 @@
+             raise RuntimeError("git " + args[0] + " failed: " +
+                                result.stderr.decode("utf-8", "replace")[:1500])
+         return result.stdout
++
++    def context(self):
++        context = {}
++        for label, option in (("worktree_root", "--show-toplevel"),
++                              ("git_directory", "--absolute-git-dir"),
++                              ("git_common_directory", "--git-common-dir")):
++            raw = self.git("rev-parse", "--path-format=absolute", option)
++            path = Path(os.fsdecode(raw.removesuffix(b"\n")))
++            if not path.is_absolute() or not path.is_dir():
++                raise RuntimeError("Git context is not an existing absolute directory: " + label)
++            context[label] = path.resolve(strict=True)
++        return context
+ 
+     def read(self, kind, oid):
+         key = (kind, oid)
+@@ -207,18 +224,18 @@
+     def scan(self, module, path, parsed):
+         package = module if path.endswith("/__init__.py") else module.rpartition(".")[0]
+         nodes = list(ast.walk(parsed))
+-        importlib_names, loader_names = {"importlib"}, {"__import__": "__import__"}
++        importlib_names, loader_names = {"importlib"}, {"__import__": {"__import__"}}
+         for node in nodes:
+             if isinstance(node, ast.Import):
+                 importlib_names.update(a.asname or a.name for a in node.names if a.name == "importlib")
+             if isinstance(node, ast.ImportFrom) and node.level == 0:
+                 for alias in node.names:
+                     if node.module == "importlib" and alias.name == "import_module":
+-                        loader_names[alias.asname or alias.name] = "import_module"
++                        loader_names.setdefault(alias.asname or alias.name, set()).add("import_module")
+                     if node.module == "builtins" and alias.name == "__import__":
+-                        loader_names[alias.asname or alias.name] = "__import__"
++                        loader_names.setdefault(alias.asname or alias.name, set()).add("__import__")
+                     if node.module and node.module.startswith("importlib") and alias.name in UNRESOLVED_LOADERS:
+-                        loader_names[alias.asname or alias.name] = alias.name
++                        loader_names.setdefault(alias.asname or alias.name, set()).add(alias.name)
+         for node in nodes:
+             site = {"source_module": module, "path": path, "line": getattr(node, "lineno", 0),
+                     "column": getattr(node, "col_offset", 0)}
+@@ -236,17 +253,23 @@
+                     for alias in node.names:
+                         self.member(base, alias.name, site)
+             elif isinstance(node, ast.Call):
+-                loader = loader_names.get(node.func.id) if isinstance(node.func, ast.Name) else None
++                loaders = set(loader_names.get(node.func.id, ())) if isinstance(node.func, ast.Name) else set()
+                 if isinstance(node.func, ast.Attribute):
+                     if node.func.attr == "import_module" and isinstance(node.func.value, ast.Name) and node.func.value.id in importlib_names:
+-                        loader = "import_module"
++                        loaders.add("import_module")
+                     elif node.func.attr in UNRESOLVED_LOADERS:
+-                        loader = node.func.attr
+-                if loader in UNRESOLVED_LOADERS:
+-                    self.dynamic.append({**site, "loader": loader, "reason": "loader_semantics_unresolved",
++                        loaders.add(node.func.attr)
++                if len(loaders) > 1:
++                    self.dynamic.append({**site, "loader_alias": node.func.id,
++                                         "possible_loaders": sorted(loaders),
++                                         "reason": "recognized_loader_alias_ambiguous",
+                                          "literal_name": literal_string(argument(node, "name", 0))})
+-                elif loader:
+-                    self.dynamic_call(node, loader, site, package)
++                for loader in sorted(loaders):
++                    if loader in UNRESOLVED_LOADERS:
++                        self.dynamic.append({**site, "loader": loader, "reason": "loader_semantics_unresolved",
++                                             "literal_name": literal_string(argument(node, "name", 0))})
++                    else:
++                        self.dynamic_call(node, loader, site, package)
+ 
+     def run(self, root):
+         root_resolved = self.reach(root, {"kind": "root", "path": None, "line": None})
+@@ -277,11 +300,16 @@
+     parser.add_argument("--output", required=True, type=Path)
+     args = parser.parse_args()
+     repo, output = args.repo.resolve(strict=True), args.output.resolve()
+-    if not repo.is_dir() or output.is_relative_to(repo) or ".git" in output.parts:
+-        parser.error("--repo must be a directory; --output must be outside it and outside Git metadata")
++    if not repo.is_dir():
++        parser.error("--repo must be a directory")
++    objects = Objects(repo)
++    context = objects.context()
++    if repo != context["worktree_root"]:
++        parser.error("--repo must equal Git's actual worktree root")
++    if any(output.is_relative_to(path) for path in context.values()) or ".git" in output.parts:
++        parser.error("--output must be outside the actual worktree and its Git metadata")
+     if output.exists() or not output.parent.is_dir():
+         parser.error("--output must be a new file in an existing directory")
+-    objects = Objects(repo)
+     candidate, previous = objects.revision(args.revision), objects.revision(args.compare)
+     tree, old_tree = objects.tree(args.revision), objects.tree(args.compare)
+     changes = {path: {"status": "added" if path not in old_tree else "deleted" if path not in tree else "modified",
+@@ -291,10 +319,11 @@
+     root_resolved = graph.run(args.root)
+     python_changes = {path: change for path, change in changes.items() if path.endswith(".py")}
+     report = {
+-        "schema": "static-python-scope-v1", "observed_at": datetime.now(timezone.utc).isoformat(),
++        "schema": "static-python-scope-v2", "observed_at": datetime.now(timezone.utc).isoformat(),
+         "analyzer": {"path": str(Path(__file__).resolve()), "sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                      "python": sys.version, "first_party_imports_executed": False},
+-        "source": {"repo": str(repo), "revision": candidate, "compare": previous},
++        "source": {"repo": str(repo), "repository_context": {key: str(path) for key, path in context.items()},
++                   "revision": candidate, "compare": previous},
+         "root": args.root, "root_resolved": root_resolved,
+         "counts": {"changed_paths": len(changes), "changed_python_paths": len(python_changes),
+                    "reached_modules": len(graph.modules), "reached_source_paths": len(graph.sources)},
+```

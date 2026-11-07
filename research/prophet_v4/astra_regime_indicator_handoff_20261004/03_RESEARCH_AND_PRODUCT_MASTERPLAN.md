@@ -81,8 +81,8 @@ Variants (bullish event = RSI-MACD line crosses above its signal on bar close; `
 1. `1D` native;
 2. `2D.p0`, `2D.p1` native 2-session bars, phases 0/1;
 3. `3D.p0`, `3D.p1`, `3D.p2` native 3-session bars, phases 0/1/2;
-4. `1D.M2`, `1D.M3` — 1D grain with every smoother's alpha transformed to match 2D / 3D elapsed memory (`alpha_new = 1 − (1 − alpha)^k`, k = 2, 3; RSI RMA alpha = 1/14 transformed likewise);
-5. `3D.K1` — 3D grain with every alpha transformed to 1D memory (`k = 1/3`), phase 0 only.
+4. `1D.M2`, `1D.M3` — 1D grain with every smoother's alpha transformed to match 2D / 3D elapsed memory (`alpha_new = 1 − (1 − alpha)^k`, **k = 1/2, 1/3** — amended 2026-10-04 per `DEC:B1-MEMORY-FACTOR-DIRECTION`; the frozen text said k = 2, 3, which SHORTENS memory; RSI RMA alpha = 1/14 transformed likewise);
+5. `3D.K1` — 3D grain with every alpha transformed to 1D memory (**`k = 3`** — amended 2026-10-04, was `k = 1/3`), phase 0 only.
 Outcomes per event: entry = next session close after the bar closes; SPY-excess at H5/H10/H21; close-based MFE/MAE over 21 sessions; sessions-to-MFE.
 Confirmation pairs: for each `1D` event, the first `2D.p` and `3D.p` event (each phase) within 10 sessions after it → `delay_sessions`, `confirmation_cost_pct` (confirmation entry / 1D entry − 1), `mfe21_consumed_frac` (fraction of the 1D event's 21-session MFE already realised at the confirmation entry); `no_confirmation` flag if none within 10 sessions.
 Statistics: per variant N, months, names, mean excess H10/H21 (cost-adjusted) with month-cluster bootstrap 95% CI, hit rate, median MFE/MAE. Phase dispersion: range of mean excess across phases and pairwise Jaccard of event-date sets; "phase-fragile" if the cross-phase range exceeds the pooled CI width. Grain-vs-memory contrasts: Δ(3D.p − 1D), Δ(3D.p − 1D.M3) [grain at matched memory], Δ(1D.M3 − 1D) [memory at fixed grain], Δ(3D.K1 − 3D.p0). Era split 2014–2019 / 2020–2026.

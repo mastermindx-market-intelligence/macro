@@ -1,0 +1,2 @@
+PREREG.md sha256=51c58c377f7b12aa4df00076ab44d3f2906eaae71ae97e5a4be122bb67bc6fb0 frozen_utc=2026-10-09T10:29:16Z (date -u) note=frozen before any evaluation outcome; only baseline_repro.py support-only run (RUNS.log record 1) preceded it
+PREREG_AMENDMENT.md sha256=bd5133975f703b9c9d37f0eb98df0fd2ce40a7df2046a1a5b2e4961bc21077a8 frozen_utc=2026-10-09T10:52:53Z (date -u) note=amendment 1 (independent-audit diagnostic fixes) recorded before the authorized re-run of evaluate.py; no new outcome read

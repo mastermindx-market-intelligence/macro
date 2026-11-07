@@ -83,6 +83,7 @@ def _render_aibrief_full(scratch: Path, am_edition_panel: dict) -> Path:
     """Render the FULL templates/aibrief.html.j2 (with _site_nav, theme.css etc.)
     into scratch space. We then serve scratch via http.server so the page loads
     its real CSS — letting the theme toggle actually paint two art directions."""
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 
     env = Environment(
@@ -104,7 +105,7 @@ def _render_aibrief_full(scratch: Path, am_edition_panel: dict) -> Path:
         as_of=as_of,
         **panels,
     )
-    out.write_text(html, encoding="utf-8")
+    write_unshimmed_html(out, html, encoding="utf-8")
     return out
 
 
