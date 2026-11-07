@@ -154,6 +154,7 @@ ZH_PARITY: dict[str, str] = {
     "6m change of ratio": "比率的6个月变化",
     "Recession signal state": "衰退信号状态",
     "Off": "关闭",
+    "On": "开启",
     "Three ds rule": "三项门槛规则",
     "Recession signal depth": "衰退信号深度",
     "Leading mom6 below threshold": "领先6个月动能低于门槛",

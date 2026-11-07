@@ -224,6 +224,11 @@ def _component_availability(bc: Any, tname: str, asof: str | None, required: boo
 # --------------------------------------------------------------------------- #
 # metric builder (mirrors liquidity_regime._metric)
 # --------------------------------------------------------------------------- #
+# The owner clock's closed phase vocabulary (`engine.business_cycle._phase`).
+# "unknown" is the clock's refusal to classify and is deliberately NOT a phase.
+BUSINESS_CYCLE_PHASES = frozenset({"expansion", "slowdown", "contraction", "recovery"})
+
+
 def _metric(metric_id, value, value_type, unit, basis, direction, owner_ref,
             owner_field, reference_period, freshness, *, source_refs=None,
             transformation=None, status="PRESENT", null_reason=None,
@@ -694,8 +699,17 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
                            asof, rs_fresh, null_reason=_rs_null(months_val)))
 
     # ---- 4-phase cycle clock ------------------------------------------------ #
+    # `engine.business_cycle._phase` has a fifth, non-phase output: ("unknown",
+    # "未知") when either momentum leg is None while the owner artifact is still
+    # `available: True`. That is the clock REFUSING to classify, not a reading,
+    # so it is published as a typed absence (COMPUTATION_REFUSED) rather than a
+    # present categorical: a present "unknown" would reach the suite page as a
+    # fabricated "Unknown" reading with no reviewed ZH pair (copy-law red,
+    # #10759 review F2).
     phase = _get(bc, "phase") if bc_available else None
     phase_en = phase.get("label") if isinstance(phase, Mapping) else None
+    if phase_en not in BUSINESS_CYCLE_PHASES:
+        phase_en = None
     metrics.append(_metric("business_cycle_phase", phase_en, "categorical", None, "leading_x_coincident_momentum_sign",
                            "n/a", "engine.business_cycle", "business_cycle.phase.label", asof,
                            "CURRENT" if bc_available else "SOURCE_FAILED",

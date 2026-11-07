@@ -540,3 +540,76 @@ def test_sample_note_stays_off_when_the_producer_does_not_record_it() -> None:
     assert "mq-metric-sample" not in _render_catch_metric(
         _CATCH_TRANSFORMATION, metric_id="recession_signal_in_sample_catch_rate"
     )
+
+
+def test_unknown_clock_phase_is_a_typed_absence_not_a_present_reading() -> None:
+    """`_phase` returns ("unknown", "未知") when a momentum leg is None while the
+    owner artifact is still available. The workspace must publish that as
+    ABSENT/COMPUTATION_REFUSED, never as a present categorical: a present
+    "unknown" deslugs to an untranslated "Unknown" ZH span on the suite page
+    (#10759 review F2)."""
+    import copy
+
+    from engine.market_os.macro_workspaces import business_activity as mod
+
+    regime = copy.deepcopy(_base_regime())
+    regime["business_cycle"]["phase"] = {"label": "unknown", "label_zh": "未知"}
+    snap = _compose(regime)
+    phase = next(m for m in snap["metrics"]["items"] if m["metric_id"] == "business_cycle_phase")
+    assert phase["value"] is None
+    assert phase["status"] == "ABSENT"
+    assert phase["null_reason"] == "COMPUTATION_REFUSED"
+    assert phase["freshness"] == "CURRENT"
+    # The clock-read implication quotes the raw token in both languages, so a
+    # refused read must not emit it either.
+    assert "phase_clock_read" not in {i["implication_id"] for i in snap["implications"]["items"]}
+    assert mod.BUSINESS_CYCLE_PHASES == {"expansion", "slowdown", "contraction", "recovery"}
+    # The four real phases are still published as present readings with the read.
+    for label in sorted(mod.BUSINESS_CYCLE_PHASES):
+        regime["business_cycle"]["phase"] = {"label": label}
+        snap = _compose(regime)
+        phase = next(m for m in snap["metrics"]["items"] if m["metric_id"] == "business_cycle_phase")
+        assert phase["value"] == label and phase["status"] == "PRESENT" and phase["null_reason"] is None
+        assert "phase_clock_read" in {i["implication_id"] for i in snap["implications"]["items"]}
+
+
+def test_business_cycle_phase_vocabulary_matches_the_producer() -> None:
+    """The closed vocabulary is checked against the producer, not against the
+    constant under test: the literal pairs `engine.business_cycle._phase`
+    returns are the phases, and `unknown` is its refusal. The producer module
+    imports numpy and the collectors, which the workspace job's environment
+    never installs and whose import closure its curated scope must not carry
+    (#10774 contract-delta: 18 uncovered files), so the pin reads the
+    producer's SOURCE through the AST rather than importing it. The one file
+    it reads is declared in the job's `paths:`, so a clock change re-proves
+    the workspace."""
+    import ast
+
+    source = (ROOT / "engine" / "business_cycle.py").read_text(encoding="utf-8")  # ci-trigger-closure: data - this test checks the producer's text, not its imports; the job's paths: list it
+    phase_fn = next(
+        node for node in ast.walk(ast.parse(source))
+        if isinstance(node, ast.FunctionDef) and node.name == "_phase"
+    )
+    vocabulary: dict[str, str] = {}
+    for node in ast.walk(phase_fn):
+        if isinstance(node, ast.Return) and isinstance(node.value, ast.Tuple):
+            en, zh = (elt.value for elt in node.value.elts)
+            assert isinstance(en, str) and isinstance(zh, str), ast.dump(node)
+            vocabulary[en] = zh
+    assert vocabulary.pop("unknown") == "未知", vocabulary
+    assert set(vocabulary) == business_activity.BUSINESS_CYCLE_PHASES, vocabulary
+    assert all(not zh.isascii() for zh in vocabulary.values()), vocabulary
+
+
+def test_recession_signal_state_tokens_have_reviewed_zh_pairs() -> None:
+    """`recession_signal_state` publishes the producer's raw `on`/`off` token as
+    a present categorical. Both must resolve to a non-ASCII ZH label, or the
+    first nightly on which the 3-D's rule fires puts an untranslated "On" span
+    on the suite page (#10774 review F1, same class as the `unknown` phase)."""
+    from lib.macro_suite_labels import value_pair
+
+    for token in ("on", "off"):
+        pair = value_pair(token)
+        assert pair["en"] and pair["zh"], token
+        assert any(ord(ch) > 127 for ch in pair["zh"]), (token, pair)
+

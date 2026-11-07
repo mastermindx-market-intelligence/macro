@@ -46516,6 +46516,12 @@ jobs:
       - "engine/global_liquidity_knowledge_time.py"
       - "engine/global_liquidity_outlook.py"
       - "engine/global_liquidity_views.py"
+      # #10774 (2026-11-05): the business-activity suite pins the workspace's
+      # closed phase vocabulary to the cycle clock's `_phase` return literals
+      # by reading this file's SOURCE (AST), never importing it — the module
+      # imports numpy and the collectors, which this job neither installs nor
+      # owns. A clock change re-proves the workspace through this path.
+      - "engine/business_cycle.py"
       - "scripts/build_macro_workspaces.py"
       - "tests/test_macro_workspace_build.py"
       - "tests/test_macro_workspace_business_activity.py"
