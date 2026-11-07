@@ -94,7 +94,7 @@
       card.appendChild(meta);var title=node("h3","tn-title");title.appendChild(link(row.url,row.title));card.appendChild(title);
       if(row.teaser)card.appendChild(node("p","tn-teaser",row.teaser));
       if(row.item_count>1){
-        var details=node("details","tn-group"),summary=node("summary","",tx(row.item_count+" reports · "+row.source_count+" publisher"+(row.source_count===1?"":"s"),row.item_count+" 篇报道 · "+row.source_count+" 个来源"));
+        var details=node("details","tn-group"),publishers=Number.isSafeInteger(row.publisher_count)?row.publisher_count:row.source_count,shared=row.source_count<publishers,summary=node("summary","",tx(row.item_count+" reports · "+publishers+" publisher"+(publishers===1?"":"s")+(shared?" · "+row.source_count+" after merging identical headlines":""),row.item_count+" 篇报道 · "+publishers+" 个来源"+(shared?" · 合并相同标题后 "+row.source_count+" 个":"")));
         details.appendChild(summary);if(comparisonInfo)details.appendChild(node("p","tn-comparison-note",comparisonInfo.note));details.appendChild(node("div","tn-members"));details.addEventListener("toggle",function(){if(!details.open){var c=groupRequests.get(details);if(c)c.abort();groupRequests.delete(details);}else loadGroup(details,row);});card.appendChild(details);
       }return card;
     }
@@ -108,6 +108,7 @@
         ["source","source_item_id","title","url","teaser","publisher"].every(function(k){return typeof p[k]==="string";})&&
         p.title.length>0&&Number.isSafeInteger(p.item_count)&&p.item_count>0&&
         Number.isSafeInteger(p.source_count)&&p.source_count>0&&p.source_count<=p.item_count&&
+        (!own("publisher_count")||Number.isSafeInteger(p.publisher_count)&&p.publisher_count>=p.source_count&&p.publisher_count<=p.item_count)&&
         ["published_at","updated_at","received_at"].every(nullableTime)&&
         ["not_compared","reports_differ","no_material_difference","comparison_limited"].includes(p.reporting_state)&&
         own("quality")&&(p.quality===null||typeof p.quality==="object"&&!Array.isArray(p.quality)&&
@@ -117,7 +118,7 @@
     function projection(p){
       var row={sequence:p.projection_sequence};
       ["story_id","source","source_item_id","title","url","teaser","publisher","provider","source_count",
-        "item_count","published_at","updated_at","received_at","observed_at","universe_revision",
+        "publisher_count","item_count","published_at","updated_at","received_at","observed_at","universe_revision",
         "quality","annotation","reporting_state"].forEach(function(k){if(Object.prototype.hasOwnProperty.call(p,k))row[k]=p[k];});
       return row;
     }

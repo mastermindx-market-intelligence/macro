@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-18T21:35:16Z",
+ "accession": "0001376139-26-000014",
+ "cik": "0001376139",
+ "doc_byte_length": 2736240,
+ "doc_sha256": "fb353306ec4b381f080fe4e04ee0d0d2fb9eb0afcef7b8d290165b7ad446b4a9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-18",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cvi-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2638740,
+  "byte_start": 2638511,
+  "normalized": "On-Site Product Supply Agreement among Coffeyville Resources Nitrogen Fertilizers, LLC and Messer LLC dated as of July 31, 2020 (incorporated by reference to Exhibit 10.1 to the Company’s Form 10-Q filed on August 4, 2020).",
+  "normalized_sha256": "1632f4258f7bd6b4ad891a8cc8c18844706ad7899732c1aa7ec72047bd3e3b52",
+  "raw": "On-Site Product Supply Agreement among Coffeyville Resources Nitrogen Fertilizers, LLC and Messer LLC dated as of July 31, 2020 (incorporated by reference to Exhibit 10.1 to the Company&#8217;s Form 10-Q filed on August 4, 2020).",
+  "raw_sha256": "9ea72ed8b3ee8c6f32d7115fbc39361d29d46261de739a52fa93d13e8fac3074"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1376139/000137613926000014/cvi-20251231.htm",
+ "xbrl_contexts": []
+}

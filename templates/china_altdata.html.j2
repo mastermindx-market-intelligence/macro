@@ -197,7 +197,7 @@
   <section class="cad-hero">
     <p class="cad-eyebrow"><span class="dot"></span>{{ t('Alternative Data · China desk', '另类数据 · 中国台') }}</p>
     <h1 class="cad-h1">{{ t('China Alternative-Data Desk', '中国另类数据台') }}</h1>
-    <p class="cad-dek">{{ t('An institutional read on A-shares from data beyond price — who controls the tape, where independent smart-money feeds agree, limit-up momentum, narrative rotation and event catalysts. Context only, no validated edge: a watchlist seed, never a size.', '用价格之外的数据审视A股——谁在主导盘面、独立主力数据源在何处一致、涨停动能、题材轮动与事件催化。仅供参考、不声称已验证优势：自选股种子，绝非仓位。') }}</p>
+    <p class="cad-dek">{{ t('An institutional read on A-shares from data beyond price — who controls the tape, where independent smart-money feeds agree, limit-up momentum, narrative rotation and event catalysts. Context only, no proven edge: a watchlist seed, never a size.', '用价格之外的数据审视A股——谁在主导盘面、独立主力数据源在何处一致、涨停动能、题材轮动与事件催化。仅供参考、不声称已被证实的优势：自选股种子，绝非仓位。') }}</p>
 
     {% if tape %}
     {%- set arc = 175.9 -%}{%- set fill = tape.score/100.0*arc -%}{%- set ndeg = tape.score/100.0*180.0 - 90.0 -%}
@@ -297,7 +297,7 @@
     <a href="#lab">{{ t('Signal Lab','信号实验室') }}</a>
   </nav>
 
-  <div class="cad-callout warn">{{ t('No validated edge is claimed anywhere on this page. Every panel is a display JOIN of independent free feeds — where they agree, not a backtest. A-share cross-sectional value has a negative Sharpe and sell-side ratings are near-universally "buy". Treat everything here as a watchlist seed and a research candidate, never a sizer or a trade.', '本页任何部分均不声称已验证优势。每个面板都是独立免费数据源的展示性合并——展示其一致之处，而非回测。A股横截面价值的夏普为负、卖方评级近乎全为“买入”。请将此处一切视为自选股种子与研究候选，绝非仓位或交易。') }}</div>
+  <div class="cad-callout warn">{{ t('No proven edge is claimed anywhere on this page. Every panel is a display JOIN of independent free feeds — where they agree, not a backtest. A-share cross-sectional value has a negative Sharpe and sell-side ratings are near-universally "buy". Treat everything here as a watchlist seed and a research candidate, never a sizer or a trade.', '本页任何部分均不声称已被证实的优势。每个面板都是独立免费数据源的展示性合并——展示其一致之处，而非回测。A股横截面价值的夏普为负、卖方评级近乎全为“买入”。请将此处一切视为自选股种子与研究候选，绝非仓位或交易。') }}</div>
 
   {# ==================== 1 · CONVERGENCE (core signature) ==================== #}
   <section class="cad-sec" id="convergence">

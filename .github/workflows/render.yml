@@ -147,6 +147,8 @@ on:
       - "scripts/build_consumer_cyclical_plnt_page.py"
       - "scripts/build_forex.py"
       - "scripts/build_gex_board.py"
+      - "scripts/build_gmi_explorer.py"
+      - "scripts/gmi_explorer/**"
       - "scripts/build_hk.py"
       - "scripts/build_hk_library.py"
       - "scripts/build_impulse.py"
@@ -830,6 +832,7 @@ jobs:
             run_py "policy-lever card (build_policy_lever)" scripts.build_policy_lever
             run_py "macro dashboard + US stocks (build_site)" scripts.build_site
             run_py "ontology shell" scripts.build_ontology_explorer
+            run_py "GMI explorer (build_gmi_explorer)" scripts.build_gmi_explorer
             run_py "research screener (build_research_screener)" scripts.build_research_screener
             run_py "congressional trades desk (build_congress)" scripts.build_congress
           }
