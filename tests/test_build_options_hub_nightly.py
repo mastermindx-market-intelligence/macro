@@ -20,6 +20,8 @@ from __future__ import annotations
 
 import json
 
+import pandas as pd
+
 from scripts.build_options_hub_nightly import (
     _attach_gex_history,
     _nulled_nonfinite,
@@ -228,3 +230,178 @@ def test_write_json_publishes_a_payload_containing_a_nan(tmp_path):
     assert written["rows"][0]["d_oi_pct"] is None
     assert written["asof"] == "2026-08-06"
     assert "NaN" not in path.read_text()   # never the invalid JSON literal
+
+# ── MOVES current-source fallback / stale-object clearing ─────────────────────
+from scripts.build_options_hub_nightly import (  # noqa: E402
+    resolve_moves_inputs,
+    _moves_publishable,
+    _build_moves_payload,
+)
+from engine.moves_engine import moves_payload  # noqa: E402
+
+
+def _theta_snapshot(*, root="INTC", asof="2026-09-17", spot=107.02, iv=0.6252):
+    # One exact-30-DTE expiry is enough to pin the canonical compute_vol ATM-IV path.
+    return pd.DataFrame([
+        {
+            "root": root,
+            "expiration": pd.Timestamp("2026-10-17"),
+            "strike": 107.0,
+            "right": "C",
+            "snapshot_ts": pd.Timestamp(f"{asof} 16:00:00"),
+            "implied_vol": iv,
+            "underlying_price": spot,
+        },
+        {
+            "root": root,
+            "expiration": pd.Timestamp("2026-10-17"),
+            "strike": 108.0,
+            "right": "P",
+            "snapshot_ts": pd.Timestamp(f"{asof} 15:59:59"),
+            "implied_vol": iv,
+            "underlying_price": spot,
+        },
+    ])
+
+
+def test_moves_inputs_prefer_same_session_thetadata_eod_pair():
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17",
+        {"spot_ref": 108.0}, {"atm_iv": 55.0},
+        snapshot_loader=lambda _root: _theta_snapshot(),
+    )
+    assert got == {
+        "spot": 108.0, "atm_iv_pct": 55.0,
+        "input_source": "thetadata_eod", "asof": "2026-09-17",
+    }
+
+
+def test_moves_inputs_fall_back_to_same_session_thetadata_snapshot():
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17",
+        {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: _theta_snapshot(),
+    )
+    assert got == {
+        "spot": 107.02, "atm_iv_pct": 62.52,
+        "input_source": "thetadata_snapshot", "asof": "2026-09-17",
+    }
+
+
+def test_moves_inputs_accept_newer_vendor_stamped_snapshot_than_settled_eod():
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17",
+        {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: _theta_snapshot(
+            asof="2026-09-18", spot=108.92, iv=0.638986,
+        ),
+    )
+    assert got == {
+        "spot": 108.92, "atm_iv_pct": 63.8986,
+        "input_source": "thetadata_snapshot", "asof": "2026-09-18",
+    }
+
+
+def test_moves_inputs_refuse_snapshot_older_than_settled_eod():
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17",
+        {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: _theta_snapshot(asof="2026-09-16"),
+        snapshot_asof_ceiling="2026-09-18",
+    )
+    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+
+
+def test_moves_inputs_refuse_snapshot_beyond_latest_settled_session():
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17",
+        {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: _theta_snapshot(asof="2026-09-19"),
+        snapshot_asof_ceiling="2026-09-18",
+    )
+    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+
+
+def test_moves_inputs_refuse_cross_root_snapshot():
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17",
+        {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: _theta_snapshot(root="AAPL"),
+    )
+    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+
+
+def test_moves_inputs_malformed_snapshot_degrades_to_current_null_instead_of_raising():
+    malformed = _theta_snapshot()
+    malformed["strike"] = "not-a-number"
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17",
+        {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: malformed,
+        snapshot_asof_ceiling="2026-09-18",
+    )
+    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+
+
+def test_current_null_moves_payload_is_publishable_to_clear_stale_r2_object():
+    payload = moves_payload("INTC", "2026-09-17", None, None, input_source=None)
+    assert payload["expected_move"] is None
+    assert _moves_publishable(payload, "INTC", "2026-09-17") is True
+
+
+def test_build_moves_payload_turns_newer_intc_theta_snapshot_into_fresh_band():
+    payload = _build_moves_payload(
+        "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        calibration=None, learned_band_mult={"sticky": 1.1, "all": 1.3}, regime="sticky",
+        snapshot_loader=lambda _root: _theta_snapshot(
+            asof="2026-09-18", spot=108.92, iv=0.638986,
+        ),
+        snapshot_asof_ceiling="2026-09-18",
+    )
+    assert payload["asof"] == "2026-09-18"
+    assert payload["input_source"] == "thetadata_snapshot"
+    assert payload["regime"] is None
+    assert payload["learned_band_mult"]["value"] == 1.3
+    assert payload["spot_ref"] == 108.92
+    assert payload["atm_iv"] == 63.8986
+    assert payload["expected_move"] == {
+        "band_mult": 1.96, "horizon_days": 1.0, "pct": 7.8895,
+        "lo": 100.3268, "hi": 117.5132,
+    }
+    assert "no_data_reason" not in payload
+    assert _moves_publishable(payload, "INTC", "2026-09-17") is True
+
+
+def test_historical_replay_ceiling_refuses_newer_snapshot_and_clears_stale_band():
+    payload = _build_moves_payload(
+        "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        calibration=None, learned_band_mult=None, regime=None,
+        snapshot_loader=lambda _root: _theta_snapshot(asof="2026-09-18"),
+        snapshot_asof_ceiling="2026-09-17",
+    )
+    assert payload["asof"] == "2026-09-17"
+    assert payload["input_source"] is None
+    assert payload["expected_move"] is None
+    assert payload["no_data_reason"] == "no_current_spot_iv_pair"
+
+
+def test_build_moves_payload_publishes_current_null_when_every_current_input_is_absent():
+    payload = _build_moves_payload(
+        "WBS", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        calibration=None, learned_band_mult=None, regime=None,
+        snapshot_loader=lambda _root: None,
+    )
+    assert payload["asof"] == "2026-09-17"
+    assert payload["input_source"] is None
+    assert payload["expected_move"] is None
+    assert payload["no_data_reason"] == "no_current_spot_iv_pair"
+    assert _moves_publishable(payload, "WBS", "2026-09-17") is True
+
+
+def test_moves_publishable_rejects_cross_root_or_regressing_session():
+    p = moves_payload("INTC", "2026-09-17", 107.02, 62.52, input_source="thetadata_snapshot")
+    assert not _moves_publishable(p, "AAPL", "2026-09-17")
+    assert not _moves_publishable(p, "INTC", "2026-09-18")
+    assert _moves_publishable(p, "INTC", "2026-09-16")
+    malformed = {**p, "asof": "9999-99-99"}
+    assert not _moves_publishable(malformed, "INTC", "2026-09-17")
