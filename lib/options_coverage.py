@@ -166,3 +166,113 @@ def coverage_object(*, universe_name_en: str, universe_name_zh: str,
         "status": _status(asof, expected_session),
         "sources": list(sources or []),
     }
+
+
+def _source_session_date(value):
+    """Parse a published session DATE, never guess an instant's market date."""
+    import re
+    from datetime import date, datetime
+
+    import pandas as pd
+    from lib import nyse_calendar
+
+    if not pd.api.types.is_scalar(value):
+        return "invalid", None
+    if value is None or pd.isna(value):
+        return "missing", None
+    if isinstance(value, str):
+        value = value.strip()
+        if not value or value.lower() in {"nat", "nan", "none", "<na>"}:
+            return "missing", None
+        if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+            return "invalid", None
+        try:
+            value = date.fromisoformat(value)
+        except ValueError:
+            return "invalid", None
+    if isinstance(value, datetime):
+        # Parquet may store a session DATE as a naive midnight timestamp. An
+        # aware or non-midnight value is an instant requiring an explicit owner
+        # conversion, never a reason to guess a date here.
+        if value.tzinfo is not None or any((value.hour, value.minute, value.second,
+                                           value.microsecond, getattr(value, "nanosecond", 0))):
+            return "invalid", None
+        value = value.date()
+    if not isinstance(value, date):
+        return "invalid", None
+    if not nyse_calendar.is_session(value):
+        return "invalid", None
+    return "dated", value
+
+
+def source_session_coverage(frame, *, comparison_session, date_columns) -> dict:
+    """Count source-date alignment per UNIQUE ticker in an existing state table.
+
+    Additive audit metadata only. A matching date does not certify provider SLA
+    freshness, optionability, complete chains, Greek validity, or feature quality.
+    Duplicate identical observations collapse; differing dates (including a null
+    beside a dated row) stay conflicts, never latest-row-wins. No input is changed.
+    """
+    import pandas as pd
+
+    kind, comparison = _source_session_date(comparison_session)
+    if kind != "dated":
+        raise ValueError("comparison_session must be a valid exchange-session date")
+    if (not isinstance(date_columns, (tuple, list)) or not date_columns
+            or any(not isinstance(c, str) or not c.startswith("src_")
+                   or not c.endswith("_asof") for c in date_columns)
+            or len(set(date_columns)) != len(date_columns)):
+        raise ValueError("date_columns must name distinct explicit source-date columns")
+    report = {
+        "basis": "source_session_alignment_only",
+        "comparison_session": comparison.isoformat(),
+        "status": "unavailable",
+        "n_rows": None, "n_tickers": None, "n_invalid_ticker_rows": None,
+        "n_duplicate_tickers": None, "n_all_source_dates_matching": None,
+        "qualified_ticker_count": None,
+        "sources": {},
+        "note": "Source dates are reported independently; matching dates do not qualify data. "
+                "Older dates are relative to the comparison session, not a provider SLA verdict.",
+    }
+    if not isinstance(frame, pd.DataFrame) or "ticker" not in frame.columns:
+        report["reason"] = "state_or_ticker_column_unavailable"
+        return report
+    if not frame.columns.is_unique:
+        report["reason"] = "ambiguous_columns"
+        return report
+
+    groups: dict[str, list[dict]] = {}
+    invalid = 0
+    # No symbol alias conversion: class-share punctuation remains part of identity.
+    for row in frame.to_dict(orient="records"):
+        ticker = row.get("ticker")
+        if not isinstance(ticker, str) or not ticker.strip():
+            invalid += 1
+            continue
+        groups.setdefault(ticker.strip().upper(), []).append(row)
+    report.update(status="measured", n_rows=len(frame), n_tickers=len(groups),
+                  n_invalid_ticker_rows=invalid,
+                  n_duplicate_tickers=sum(len(rows) > 1 for rows in groups.values()))
+    all_matching = set(groups)
+    statuses = ("matching_session", "older_session", "future_session", "missing", "invalid", "conflict")
+    for column in date_columns:
+        buckets: dict[str, list[str]] = {status: [] for status in statuses}
+        for ticker in sorted(groups):
+            dates = {_source_session_date(row.get(column)) for row in groups[ticker]}
+            if len(dates) != 1:
+                status = "conflict"
+            else:
+                kind, value = next(iter(dates))
+                status = kind
+                if kind == "dated":
+                    status = ("matching_session" if value == comparison else
+                              "older_session" if value < comparison else "future_session")
+            buckets[status].append(ticker)
+        all_matching.intersection_update(buckets["matching_session"])
+        report["sources"][column] = {
+            "column_present": column in frame.columns,
+            "counts": {status: len(tickers) for status, tickers in buckets.items()},
+            "tickers_by_status": buckets,
+        }
+    report["n_all_source_dates_matching"] = len(all_matching)
+    return report

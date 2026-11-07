@@ -376,3 +376,178 @@ def test_screener_assembles_the_object_into_its_coverage_dict():
         "M8: len(rows) on both sides published a fabricated 100%"
     )
     assert "covered_n=len(rows)" in body
+
+
+# Source-clock alignment is not qualification, and row as_of cannot replace it.
+def _session_report(frame, *, comparison="2026-09-28", columns=("src_gex_asof", "src_skew_asof")):
+    assert hasattr(options_coverage, "source_session_coverage"), "source-session coverage missing"
+    return options_coverage.source_session_coverage(
+        frame, comparison_session=comparison, date_columns=columns)
+
+
+def test_source_sessions_do_not_inherit_newer_row_or_generation_dates():
+    frame = pd.DataFrame([
+        {"ticker": "AAPL", "as_of": "2026-09-29", "src_gex_asof": "2026-09-28",
+         "src_skew_asof": "2026-09-23"},
+        {"ticker": "MU", "as_of": "2026-09-28", "src_gex_asof": None,
+         "src_skew_asof": "2026-09-28"},
+    ])
+    before = frame.copy(deep=True)
+    report = _session_report(frame)
+    assert report["sources"]["src_gex_asof"]["tickers_by_status"]["matching_session"] == ["AAPL"]
+    assert report["sources"]["src_gex_asof"]["tickers_by_status"]["missing"] == ["MU"]
+    assert report["sources"]["src_skew_asof"]["tickers_by_status"]["older_session"] == ["AAPL"]
+    assert report["n_all_source_dates_matching"] == 0
+    assert report["qualified_ticker_count"] is None
+    assert report["basis"] == "source_session_alignment_only"
+    pd.testing.assert_frame_equal(frame, before)
+
+
+def test_source_sessions_deduplicate_identical_rows_but_refuse_conflicting_dates():
+    frame = pd.DataFrame([
+        {"ticker": " aapl ", "src_gex_asof": "2026-09-28"},
+        {"ticker": "AAPL", "src_gex_asof": "2026-09-28"},
+        {"ticker": "MU", "src_gex_asof": "2026-09-28"},
+        {"ticker": "MU", "src_gex_asof": "2026-09-25"},
+        {"ticker": "ARM", "src_gex_asof": "2026-09-28"},
+        {"ticker": "ARM", "src_gex_asof": None},
+    ])
+    report = _session_report(frame, columns=("src_gex_asof",))
+    source = report["sources"]["src_gex_asof"]
+    assert report["n_tickers"] == 3
+    assert report["n_duplicate_tickers"] == 3
+    assert source["counts"]["matching_session"] == 1
+    assert source["tickers_by_status"]["conflict"] == ["ARM", "MU"]
+    assert sum(source["counts"].values()) == 3
+    assert report["n_all_source_dates_matching"] == 1
+
+
+@pytest.mark.parametrize("clock,status", [
+    ("2026-09-29", "future_session"), ("2026-09-27", "invalid"),
+    ("20260928", "invalid"), (True, "invalid"), (20260928, "invalid"),
+    ("2026-09-28T23:00:00-04:00", "invalid"), ("not-a-date", "invalid"),
+    (None, "missing"), (float("nan"), "missing"), (pd.NaT, "missing"),
+    (date(2026, 9, 28), "matching_session"),
+])
+def test_source_sessions_classify_bad_missing_future_and_native_date_values(clock, status):
+    result = _session_report(pd.DataFrame({"ticker": ["AAPL"], "src_gex_asof": [clock]}),
+                             columns=("src_gex_asof",))
+    assert result["sources"]["src_gex_asof"]["counts"][status] == 1
+    assert result["qualified_ticker_count"] is None
+
+
+def test_source_sessions_missing_column_never_falls_back_to_row_asof():
+    result = _session_report(pd.DataFrame({"ticker": ["AAPL"], "as_of": ["2026-09-28"]}))
+    assert result["sources"]["src_gex_asof"]["column_present"] is False
+    assert result["sources"]["src_gex_asof"]["counts"]["missing"] == 1
+    assert result["n_all_source_dates_matching"] == 0
+
+
+def test_source_sessions_unavailable_input_is_not_zero_observed_coverage():
+    for frame in (None, pd.DataFrame({"as_of": ["2026-09-28"]})):
+        result = _session_report(frame)
+        assert result["status"] == "unavailable"
+        assert result["n_tickers"] is None
+        assert result["n_all_source_dates_matching"] is None
+    result = _session_report(pd.DataFrame({"ticker": [], "src_gex_asof": []}))
+    assert result["status"] == "measured"
+    assert result["n_tickers"] == 0
+
+
+def test_source_sessions_invalid_tickers_never_inflate_unique_coverage():
+    frame = pd.DataFrame({"ticker": [None, "", True, "BRK.B", "BRK-B"],
+                          "src_gex_asof": ["2026-09-28"] * 5})
+    result = _session_report(frame, columns=("src_gex_asof",))
+    assert result["n_invalid_ticker_rows"] == 3
+    assert result["n_tickers"] == 2
+    assert result["sources"]["src_gex_asof"]["tickers_by_status"]["matching_session"] == ["BRK-B", "BRK.B"]
+
+
+def test_source_sessions_reject_invalid_comparison_and_empty_source_set():
+    frame = pd.DataFrame({"ticker": ["AAPL"]})
+    with pytest.raises(ValueError, match="comparison_session"):
+        _session_report(frame, comparison="2026-09-27")
+    with pytest.raises(ValueError, match="date_columns"):
+        _session_report(frame, columns=())
+
+
+def test_source_sessions_real_audit_writer_preserves_inputs_and_uses_settled_session(tmp_path, monkeypatch):
+    import json
+    from datetime import datetime, timezone
+    import scripts.audit_options_entry_coverage as audit
+
+    class MondayMorning(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            instant = cls(2026, 9, 28, 14, 0, tzinfo=timezone.utc)
+            return instant.astimezone(tz) if tz is not None else instant.replace(tzinfo=None)
+
+    monkeypatch.setattr(audit, "datetime", MondayMorning)
+    state = tmp_path / "data" / "options_entry" / "state.parquet"
+    state.parent.mkdir(parents=True)
+    pd.DataFrame({"ticker": ["AAPL", "MU"], "as_of": ["2026-09-28"] * 2,
+                  "gex_confirm_verdict": ["confirm", "neutral"],
+                  "src_gex_asof": ["2026-09-25", "2026-09-23"],
+                  "src_skew_asof": ["2026-09-23", "2026-09-25"],
+                  "src_ivspread_asof": ["2026-09-25"] * 2,
+                  "src_flow_asof": ["2026-09-25"] * 2}).to_parquet(state, index=False)
+    before = state.read_bytes()
+    result = audit.run(root=tmp_path, write=True)
+    assert "source_session_coverage" in result, "real coverage writer lacks source-clock section"
+    section = result["source_session_coverage"]
+    assert section["comparison_session"] == "2026-09-25"
+    assert section["sources"]["src_gex_asof"]["counts"]["matching_session"] == 1
+    assert section["sources"]["src_gex_asof"]["tickers_by_status"]["older_session"] == ["MU"]
+    assert section["n_all_source_dates_matching"] == 0
+    assert section["qualified_ticker_count"] is None
+    feature = next(row for row in result["feature_coverage"]["features"]
+                   if row["feature"] == "gex_confirm_verdict")
+    assert feature["n_nonnull"] == 2  # preserved presence is not qualified coverage
+    assert json.loads((state.parent / "coverage.json").read_text())["source_session_coverage"] == section
+    assert state.read_bytes() == before
+
+
+def test_source_sessions_absent_audit_inputs_report_unknown_without_writes(tmp_path):
+    import scripts.audit_options_entry_coverage as audit
+    result = audit.run(root=tmp_path, write=False)
+    assert "source_session_coverage" in result
+    assert result["source_session_coverage"]["n_tickers"] is None
+    assert result["source_session_coverage"]["qualified_ticker_count"] is None
+    assert not (tmp_path / "data").exists()
+
+
+def test_source_sessions_non_scalar_clock_cells_are_invalid_not_a_crash():
+    import numpy as np
+    for clock in (["2026-09-28"], {"date": "2026-09-28"},
+                  np.array(["2026-09-28", "2026-09-25"]),
+                  pd.Series(["2026-09-28", "2026-09-25"])):
+        frame = pd.DataFrame({"ticker": ["AAPL"], "src_gex_asof": [None]})
+        frame.at[0, "src_gex_asof"] = clock
+        result = _session_report(frame, columns=("src_gex_asof",))
+        assert result["sources"]["src_gex_asof"]["counts"]["invalid"] == 1
+
+
+@pytest.mark.parametrize("clock,status", [
+    (pd.Timestamp("2026-09-28"), "matching_session"),
+    (pd.Timestamp("2026-09-28T16:00:00"), "invalid"),
+    (pd.Timestamp("2026-09-28T00:00:00Z"), "invalid"),
+])
+def test_source_sessions_naive_midnight_storage_is_not_an_instant_conversion(clock, status):
+    frame = pd.DataFrame({"ticker": ["AAPL"], "src_gex_asof": [clock]})
+    result = _session_report(frame, columns=("src_gex_asof",))
+    assert result["sources"]["src_gex_asof"]["counts"][status] == 1
+
+
+def test_source_sessions_duplicate_columns_report_unknown():
+    frame = pd.DataFrame([["AAPL", "2026-09-28", "2026-09-25"]],
+                         columns=["ticker", "src_gex_asof", "src_gex_asof"])
+    report = _session_report(frame)
+    assert report["status"] == "unavailable"
+    assert report["reason"] == "ambiguous_columns"
+    assert report["n_tickers"] is None
+
+
+def test_source_sessions_row_order_does_not_change_the_report():
+    frame = pd.DataFrame({"ticker": ["MU", "AAPL", "MU"],
+                          "src_gex_asof": ["2026-09-28", "2026-09-25", "2026-09-23"]})
+    assert _session_report(frame) == _session_report(frame.iloc[::-1].reset_index(drop=True))

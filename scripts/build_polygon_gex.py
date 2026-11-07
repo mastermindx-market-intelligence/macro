@@ -987,9 +987,10 @@ def accrue(as_of=None, *, force: bool = False, _now: datetime | None = None) -> 
         return {"status": "no_key"}
 
     asof = _resolve_session(as_of)
-    from engine.options_universe import baskets_universe, gex_symbols
+    from engine.options_universe import baskets_universe, legacy_gex_symbols
     gx_cfg = cfg.get("gex") or {}
-    symbols = gex_symbols(gx_cfg)
+    # ThetaData expansion is not permission to widen legacy snapshot requests.
+    symbols = legacy_gex_symbols(gx_cfg)
     log.info("polygon: snapshotting %d underlyings for session %s "
              "(%d anchors + baskets=%s)", len(symbols), asof,
              len(gx_cfg.get("symbols") or []), gx_cfg.get("include_baskets", False))

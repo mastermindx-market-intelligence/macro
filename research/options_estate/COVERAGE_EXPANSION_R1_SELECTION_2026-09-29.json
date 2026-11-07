@@ -1,0 +1,92 @@
+{
+  "code_sha256": {
+    "engine/options_universe.py": "08fa331092952cdf46093d92c938a597e64aa1f1ee5f79174f1187765634d832",
+    "scripts/plan_options_coverage.py": "b56306200806218f41811ee6dfa636745849a94e944c75e6e6aa5e5faa58558c",
+    "tests/test_options_universe_expansion.py": "331403858bba087bd7dcfcec16e10409d14c5d643eb1fbad7fa3094f94ffb67b"
+  },
+  "comparison_session": "2026-09-28",
+  "input_hashes": {
+    "baskets/membership.json": {
+      "bytes": 305944,
+      "sha256": "b968e9812f60494bd02bbc0d5ad4b8dc67dcb90a939426728e9db6befba9678a"
+    },
+    "universe/membership.parquet": {
+      "bytes": 78300,
+      "sha256": "602f0cf393331653175e199a3249785ee40040c871501625d9dfc4b56a9b7556"
+    }
+  },
+  "production_changes": false,
+  "proof_class": "COMMITTED_INPUT_SELECTION_ONLY",
+  "provider_calls": 0,
+  "results": [
+    {
+      "added_roots": 707,
+      "argv": [
+        "--as-of",
+        "2026-09-28",
+        "--target-stocks",
+        "1000",
+        "--max-total-roots",
+        "1500",
+        "--priority",
+        "MU",
+        "--priority",
+        "ARM",
+        "--priority",
+        "INTC"
+      ],
+      "collection_started": false,
+      "exit_code": 0,
+      "membership_stock_count": 2859,
+      "ordered_symbols_sha256": "f8949e51147087aff9dac32577a001112c3f7f5f13fa3d40b20fae7a7c42b05f",
+      "priorities": [
+        "MU",
+        "ARM",
+        "INTC"
+      ],
+      "qualified_stock_count": null,
+      "retained_legacy_count": 375,
+      "roots_not_classified_as_stocks": 82,
+      "selected_root_count": 1082,
+      "selected_stock_count": 1000,
+      "status": "selection_ready",
+      "target_stocks": 1000,
+      "uncovered_priorities": []
+    },
+    {
+      "added_roots": 1207,
+      "argv": [
+        "--as-of",
+        "2026-09-28",
+        "--target-stocks",
+        "1500",
+        "--max-total-roots",
+        "2000",
+        "--priority",
+        "MU",
+        "--priority",
+        "ARM",
+        "--priority",
+        "INTC"
+      ],
+      "collection_started": false,
+      "exit_code": 0,
+      "membership_stock_count": 2859,
+      "ordered_symbols_sha256": "89fc75eb784f229f9616f7360e30ba405681db69f5e8fa08793685e9514be535",
+      "priorities": [
+        "MU",
+        "ARM",
+        "INTC"
+      ],
+      "qualified_stock_count": null,
+      "retained_legacy_count": 375,
+      "roots_not_classified_as_stocks": 82,
+      "selected_root_count": 1582,
+      "selected_stock_count": 1500,
+      "status": "selection_ready",
+      "target_stocks": 1500,
+      "uncovered_priorities": []
+    }
+  ],
+  "source_commit": "d5e20a62b5da656f62b3cc06a7c7675c43f0de1a"
+}
