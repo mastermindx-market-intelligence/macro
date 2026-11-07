@@ -1,3 +1,4 @@
+# CODE_HEAD: 61f3ebad371da1b8308cb46237646d47d6e9cc24
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
   - templates/_valuation_scenario.html.j2
