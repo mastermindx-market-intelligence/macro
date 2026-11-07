@@ -521,9 +521,9 @@ def test_record_fields_are_escaped_and_history_is_separated():
 # Visual receipt: the committed shots depict the source under test.
 # ---------------------------------------------------------------------------
 
-# November 5 integrated71971 exact-source browser recapture. Prior October 31,
-# November 4 and November 5 C2 screenshots and receipts remain immutable.
-EVIDENCE = ROOT / "research" / "evidence" / "ew_p4_descriptive_ui_20261105_integrated71971"
+# November 7 r8main exact-source browser recapture. All prior screenshots
+# and receipts remain immutable; this receipt binds the current render inputs.
+EVIDENCE = ROOT / "research" / "evidence" / "ew_p4_descriptive_ui_20261107_r8main"
 
 
 @pytest.mark.parametrize("key", ["values", "source_as_of"])
