@@ -14514,6 +14514,29 @@ jobs:
       - name: THS collection receipts — offline source-boundary refusal
         run: python -m pytest tests/test_ths_collection_receipts.py -q
 
+  template-edge-stripe-guard:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    # Chairman design rule 2026-10-18 (docs/DESIGN_DOCTRINE.md §3): no colored
+    # container-edge stripe in the page templates migrated one family per PR
+    # (china first). Browser-free regex over the template bytes; the suite's
+    # load closure is exactly the templates in its FILES tuple, declared here.
+    # Exclusive so its scan roots never smear onto the shared render jobs.
+    scope: exclusive
+    paths:
+      - templates/china.html.j2
+      - tests/test_template_edge_stripes.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: template edge-stripe guard (no pseudo bars / inset stripes / colored single edges)
+        run: python -m pytest tests/test_template_edge_stripes.py -q
+
   china-mechanics-display:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
     gate: code

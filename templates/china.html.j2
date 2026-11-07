@@ -167,8 +167,6 @@
   /* sector washout→turn boost: row tint + chip (display re-rank only, never a filter) */
   .sb-table tr.sbt2 td { background:color-mix(in srgb,var(--up) 9%,transparent); }
   .sb-table tr.sbt1 td { background:color-mix(in srgb,var(--up) 4.5%,transparent); }
-  .sb-table tr.sbt2 td:first-child { box-shadow:inset 3px 0 0 var(--up); }
-  .sb-table tr.sbt1 td:first-child { box-shadow:inset 3px 0 0 color-mix(in srgb,var(--up) 45%,transparent); }
   .sbt-chip { display:inline-block; font-size:9px; font-weight:700; line-height:1.5;
               padding:0 6px; border-radius:999px; margin-left:6px; white-space:nowrap;
               background:color-mix(in srgb,var(--up) 14%,transparent); color:var(--ink-up, var(--up));
@@ -193,7 +191,7 @@
       content:"Rank"; font-size:9px; font-weight:700; letter-spacing:.04em;
     }
     html[data-lang="zh"] #standouts .nbgrid[data-showmore-rows] .pv-edl::after{ content:"序"; }
-    .nbgrid[data-showmore-rows] .nbcard{ padding:0; gap:0; }
+    .nbgrid[data-showmore-rows] .nbcard{ padding:3px 0 0; gap:0; } /* 3px = retired stripe's height */
     .nbgrid[data-showmore-rows] .nb-tk{ font-size:14px; }
     .nbgrid[data-showmore-rows] .nb-px{ font-size:12px; }
     .nbgrid[data-showmore-rows] .nb-nm{ font-size:10px; }
@@ -205,7 +203,7 @@
     .nbgrid[data-showmore-rows] .nb-conv-top{ padding:4px 7px; }
     .nbgrid[data-showmore-rows] .nb-conv-top .nb-verdict{ font-size:9.5px; }
     .nbgrid[data-showmore-rows] .nb-conv-top .nb-cscore{ font-size:11px; }
-    .nbgrid[data-showmore-rows] .nb-entry{ padding:4px 7px 5px; }
+    .nbgrid[data-showmore-rows] .nb-entry{ padding:5px 7px 5px; } /* +1px for the thinner top edge */
     /* On 2-up narrow cards the buy zone + cycle STAY VISIBLE (primary action info —
        adjudicated; the judged V2 mockup hid them and that was ruled a blocker).
        They compact instead: smaller type, tighter gaps, window text dropped. */
@@ -218,7 +216,7 @@
     .nbgrid[data-showmore-rows] .nb-rip-nm{ font-size:9.5px; }
   }
   a.nbcard { background:var(--panel2,var(--panel)); border:1px solid var(--line); border-radius:10px;
-             padding:0; display:flex;
+             padding:3px 0 0; display:flex;
              flex-direction:column; gap:0; min-width:0; overflow:hidden;
              transition:transform .12s, box-shadow .12s, border-color .12s; }
   /* every flex child may shrink below its content width AND never exceed the card —
@@ -226,14 +224,9 @@
      the whole auto-fill grid) hundreds of px wide. The single most important rule here. */
   a.nbcard > * { min-width:0; max-width:100%; }
   a.nbcard:hover { transform:translateY(-2px); box-shadow:0 5px 18px rgba(0,0,0,.22); border-color:var(--link); }
-  /* state accent as a TOP gradient stripe (RIPENING-shelf idiom) — not a left border.
-     class-scoped (not a.nbcard) so div.nbcard scorecards (coiled/washout grid) get
-     their state stripe too — an in-flow block child, safe on non-flex divs. */
-  .nbcard::before { content:""; display:block; flex:none; height:3px;
-                     background:linear-gradient(90deg,var(--muted),transparent); opacity:.6; }
-  .nbcard.nb-up::before      { background:linear-gradient(90deg,var(--up),color-mix(in srgb,var(--up) 30%,transparent)); opacity:1; }
-  .nbcard.nb-down::before    { background:linear-gradient(90deg,var(--down),color-mix(in srgb,var(--down) 30%,transparent)); opacity:1; }
-  .nbcard.nb-caution::before { background:linear-gradient(90deg,var(--warn),color-mix(in srgb,var(--warn) 30%,transparent)); opacity:1; }
+  /* no state stripe (design doctrine §3, 2026-10-18): the 3px top padding above holds
+     the card height the retired in-flow ::before bar used to take; state rides the
+     labeled verdict ink inside the card. */
 
   /* ── IDENTITY ZONE ─────────────────────────────────────────────────────── */
   .nb-id { padding:8px 11px 7px; background:color-mix(in srgb,var(--muted) 7%,transparent);
@@ -278,12 +271,7 @@
 
   /* Entry gauge fused inside conv block */
   .nb-conv .nb-entry { margin:0; border:none; border-radius:0; background:transparent;
-                       padding:6px 8px 6px; border-top:2px solid var(--muted); }
-  .nb-conv .nbe-buy_now, .nb-conv .nbe-partial { border-top-color:var(--up); background:color-mix(in srgb,var(--up) 5%,transparent); }
-  .nb-conv .nbe-buy_soon, .nb-conv .nbe-watch { border-top-color:var(--g-cold,var(--link)); }
-  .nb-conv .nbe-wait_pullback, .nb-conv .nbe-hold, .nb-conv .nbe-bounce_wait { border-top-color:var(--warn); }
-  .nb-conv .nbe-extended, .nb-conv .nbe-topping { border-top-color:var(--warn); }
-  .nb-conv .nbe-exit, .nb-conv .nbe-avoid, .nb-conv .nbe-blocked { border-top-color:var(--down); background:color-mix(in srgb,var(--down) 5%,transparent); }
+                       padding:7px 8px 6px; border-top:1px solid var(--line); }
 
   /* ── CONTEXT STRIP ──────────────────────────────────────────────────────── */
   .nb-ctx { padding:4px 11px 6px; display:flex; align-items:center; gap:4px 5px; flex-wrap:wrap;
@@ -315,15 +303,14 @@
   .nb-state { font-size:10px; font-weight:800; letter-spacing:.02em; padding:1px 7px; border-radius:8px; }
   /* ---- Entry-timing gauge (inside nb-conv fused block) ---- */
   /* standalone nb-entry (outside nb-conv) still possible on non-zoned cards — keep base rules */
-  .nb-entry { margin:5px 0 1px; padding:5px 7px; border-radius:8px;
-              background:var(--panel); border:1px solid var(--line); border-top:2px solid var(--muted); }
-  .nbe-buy_now, .nbe-partial { border-top-color:var(--up);
+  .nb-entry { margin:5px 0 1px; padding:6px 7px 5px; border-radius:var(--r-ctl,8px);
+              background:var(--panel); border:1px solid var(--line); }
+  /* the fused .nb-conv entries share these state tints: same specificity, later in source */
+  .nbe-buy_now, .nbe-partial, .nb-conv .nbe-buy_now, .nb-conv .nbe-partial {
               background:color-mix(in srgb,var(--up) 8%,var(--panel)); }
-  .nbe-buy_soon, .nbe-watch { border-top-color:var(--g-cold); }
-  .nbe-wait_pullback, .nbe-hold, .nbe-bounce_wait { border-top-color:var(--warn); }
-  .nbe-extended, .nbe-topping { border-top-color:var(--warn);
+  .nbe-extended, .nbe-topping {
               background:color-mix(in srgb,var(--warn) 9%,var(--panel)); }
-  .nbe-exit, .nbe-avoid, .nbe-blocked { border-top-color:var(--down);
+  .nbe-exit, .nbe-avoid, .nbe-blocked, .nb-conv .nbe-exit, .nb-conv .nbe-avoid, .nb-conv .nbe-blocked {
               background:color-mix(in srgb,var(--down) 8%,var(--panel)); }
   .nbe-head { display:flex; align-items:center; gap:5px; }
   .nbe-dot { width:7px; height:7px; border-radius:50%; background:var(--muted); flex:none; }
@@ -387,7 +374,7 @@
     pointer-events:none;
   }
   .nb-cau-pop .cau-row { display:block; padding:2px 0; }
-  .nb-cau-pop .cau-row + .cau-row { border-top:1px solid color-mix(in srgb,var(--warn) 20%,var(--line)); padding-top:4px; margin-top:2px; }
+  .nb-cau-pop .cau-row + .cau-row { border-top:1px solid var(--line); padding-top:4px; margin-top:2px; }
   /* Show on hover/focus (desktop) */
   .nb-cau:hover .nb-cau-pop,
   .nb-cau:focus-within .nb-cau-pop,
@@ -571,13 +558,10 @@
   table.sortable th.sorted .sarrow { opacity: .9; color: var(--ink-link, var(--link)); }
   .foot { margin-top: 26px; color: var(--muted); font-size: 12px; text-align: center; line-height: 1.7; }
   /* ---- fired alerts (ported from the US dashboard) -------------------------- */
-  .alert { display: block; padding: 10px 13px; border-radius: 8px; margin: 8px 0;
-           background: var(--panel2); border-left: 3px solid var(--muted);
+  .alert { display: block; padding: 9px 12px 9px 15px; border-radius: var(--r-ctl,8px); margin: 8px 0;
+           background: var(--panel2); border: 1px solid var(--line);
            color: var(--text); transition: transform .12s, box-shadow .12s; }
   a.alert:hover { transform: translateX(2px); box-shadow: 0 3px 14px rgba(0,0,0,.22); }
-  .alert-high { border-left-color: var(--down); }
-  .alert-warn { border-left-color: var(--warn); }
-  .alert-info { border-left-color: var(--info); }
   .alert-head { display: flex; align-items: baseline; gap: 8px; }
   .alert-ico { font-size: 15px; flex: none; line-height: 1; }
   .alert-head b { font-size: 13.5px; color: var(--text); }
@@ -770,11 +754,6 @@
   /* row accents by stage */
   .st-row-entry td { background:color-mix(in srgb,var(--up) 4%,transparent); }
   .st-row-entry td.st-sticky-col { background:color-mix(in srgb,var(--up) 8%,var(--panel)); }
-  .st-row-entry td:first-child { box-shadow:inset 3px 0 0 var(--up); }
-  .st-row-ran td:first-child { box-shadow:inset 3px 0 0 var(--muted); }
-  .st-row-ready td:first-child { box-shadow:inset 3px 0 0 var(--link); }
-  .st-row-basing td:first-child { box-shadow:inset 3px 0 0 color-mix(in srgb,var(--link) 45%,var(--muted)); }
-  .st-row-falling td:first-child { box-shadow:inset 3px 0 0 var(--down); }
   .st-row-falling td { color:var(--muted); }
 
   /* sort arrow */
@@ -1597,7 +1576,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
      no translated text in attributes (check_title_i18n). #}
   {% set _cn_stale = board_staleness if board_staleness is defined else none %}
   {% if _cn_stale and _cn_stale.get('delayed') and _cn_stale.get('price_through') %}
-  <div class="panel span12" style="border-left:3px solid var(--warn);background:color-mix(in srgb,var(--warn) 7%,var(--panel));padding:9px 13px;font-size:12px;line-height:1.55">
+  <div class="panel span12" style="background:var(--surface-warn-subtle);padding:9px 13px 9px 15px;font-size:12px;line-height:1.55">
     <span class="l-en"><strong>⚠ BOARD DELAYED</strong> — prices as of {{ _cn_stale.get('price_through') }}{% if _cn_stale.get('age_days') is not none %} ({{ _cn_stale.get('age_days') }}d behind){% endif %}. Data is stale; {{ 'entry signals' if mode == 'stocks' else 'readings on this page' }} may not reflect latest prices. Check a live quote before acting.</span><span class="l-zh"><strong>⚠ 数据延迟</strong> — 价格截至 {{ _cn_stale.get('price_through') }}{% if _cn_stale.get('age_days') is not none %}（落后 {{ _cn_stale.get('age_days') }} 天）{% endif %}。当前数据过期，{{ '入场信号' if mode == 'stocks' else '本页读数' }}可能不反映最新价格，操作前请确认最新报价。</span>
   </div>
   {% endif %}
@@ -1749,7 +1728,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     {% set _rs_act_en = {'risk-off':'trade smaller','elevated':'trade smaller','caution':'avoid chasing','calm':'normal sizing'}.get(_rs, '') %}
     {% set _rs_act_zh = {'risk-off':'减小仓位','elevated':'减小仓位','caution':'谨慎追高','calm':'正常仓位'}.get(_rs, '') %}
     {% set _rs_idx = {'calm':0,'caution':1,'elevated':2,'risk-off':3}.get(_rs, 1) %}
-    <div style="margin:11px 0 0;padding:7px 11px;border-radius:8px;font-size:11.5px;line-height:1.5;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;border:1px solid var(--line);border-left:3px solid {{ _rs_col }};background:color-mix(in srgb,{{ _rs_col }} 6%,var(--panel))">
+    <div style="margin:11px 0 0;padding:7px 11px 7px 13px;border-radius:var(--r-ctl,8px);font-size:11.5px;line-height:1.5;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;border:1px solid var(--line);background:var(--panel)">
       <span style="font-weight:600;color:var(--muted)"><span class="l-en">Risk backdrop</span><span class="l-zh">风险背景</span></span>
       <span aria-hidden="true" style="display:inline-flex;gap:3px;align-items:center">{% for _i in range(4) %}<span style="width:{{ 15 if _i == _rs_idx else 9 }}px;height:6px;border-radius:3px;background:{{ _rs_col if _i == _rs_idx else 'var(--line)' }}"></span>{% endfor %}</span>
       <span style="color:{{ _rs_col }};font-weight:700"><span class="l-en">{{ _rs_en }} — {{ _rs_act_en }}</span><span class="l-zh">{{ _rs_zh }} — {{ _rs_act_zh }}</span></span>

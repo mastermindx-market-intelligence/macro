@@ -5319,6 +5319,10 @@ CURATED_EXCLUSIVE = {
     # exact 55-file non-wildcard import closure plus the eight Jinja templates the
     # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
     "global-liquidity-transmission",
+    # Edge-stripe family sweep (2026-11-04, design doctrine §3): the strict
+    # template guard reads only the migrated templates named in its FILES
+    # tuple; exclusive so a stdlib regex suite never joins a render pack.
+    "template-edge-stripe-guard",
 }
 
 
