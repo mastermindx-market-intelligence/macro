@@ -409,7 +409,8 @@ def build_fabric_provider(factory, *, request_id: str, workload_cfg=None,
     except Exception:
         raise FabricProviderError("fabric_binding_unavailable") from None
     automatic = (type(bound) is dict
-                 and bound.get("schema") == "mastermind.fabric_application_binding.v2")
+                 and bound.get("schema") in {"mastermind.fabric_application_binding.v2",
+                                             "mastermind.fabric_application_binding.v3"})
     auto_identity = None
     if automatic:
         from engine.fabric_inference_client import FabricInferenceClient, validate_auto_inspection
@@ -417,13 +418,15 @@ def build_fabric_provider(factory, *, request_id: str, workload_cfg=None,
             raise FabricProviderError("fabric_binding_invalid")
         try:
             auto_identity = validate_auto_inspection(bound["inspection"])
+            if bound["schema"].rsplit(".", 1)[1] != auto_identity["schema"].rsplit(".", 1)[1]:
+                raise ValueError("binding version mismatch")
         except Exception:
             raise FabricProviderError("fabric_binding_invalid") from None
         client = bound["client"]
         if (type(client) is not FabricInferenceClient or client.auto_inspection != auto_identity
-                or client.model is not None or client.operation_id != request_id):
+                or client.model != auto_identity["requested_model"] or client.operation_id != request_id):
             raise FabricProviderError("fabric_binding_invalid")
-        bound = {"client": client, "model": None, "provider": None,
+        bound = {"client": client, "model": auto_identity["requested_model"], "provider": None,
                  "cost_basis": "unknown", "cap_id": auto_identity["cap_id"]}
     elif not isinstance(bound, dict) or set(bound) != _FABRIC_BINDING_KEYS:
         raise FabricProviderError("fabric_binding_invalid")
@@ -483,8 +486,19 @@ def fabric_request_kwargs(provider: dict, kwargs: dict) -> dict:
         raise FabricProviderError("fabric_operation_closed")
     if provider.get("_fabric_pending"):
         raise FabricProviderError("fabric_step_unsettled", effect_unknown=True)
-    if set(kwargs) - _FABRIC_CALL_KEYS or "model" not in kwargs or kwargs["model"] != provider["model"]:
+    identity = json.loads(provider["_fabric_auto_inspection"]) if provider.get("_fabric_auto_inspection") is not None else None
+    exact = identity is not None and identity["schema"] == "mastermind.fabric_application_inspection.v3"
+    allowed = _FABRIC_CALL_KEYS | ({"reasoning_effort", "stream"} if exact else set())
+    if set(kwargs) - allowed or "model" not in kwargs or kwargs["model"] != provider["model"]:
         raise FabricProviderError("fabric_request_invalid")
+    if "stream" in kwargs and kwargs["stream"] is not False:
+        raise FabricProviderError("fabric_native_stream_unsupported")
+    controlled = "reasoning_effort" in kwargs or (exact and provider["model"] == "qwen3.8-flash" and "temperature" in kwargs)
+    if controlled and (not exact or provider["model"] != "qwen3.8-flash"
+            or type(kwargs.get("temperature")) not in (int, float) or kwargs["temperature"] != 0
+            or kwargs.get("reasoning_effort") != "none"
+            or any(key in kwargs for key in ("tools", "tool_choice", "stop_sequences"))):
+        raise FabricProviderError("fabric_qwen_control_invalid")
     if provider["_fabric_step"] >= 256:
         raise FabricProviderError("fabric_step_bound")
     out = _fabric_plain(kwargs)
@@ -514,7 +528,7 @@ def fabric_request_kwargs(provider: dict, kwargs: dict) -> dict:
 def _fabric_routed_observation(provider, value, request_id):
     if provider.get("_fabric_auto_inspection") is None:
         return None
-    from engine.fabric_inference_client import ApplicationObservation
+    from engine.fabric_inference_client import ApplicationObservation, validate_auto_observation
     if type(value) is not ApplicationObservation:
         return None
     try:
@@ -528,8 +542,12 @@ def _fabric_routed_observation(provider, value, request_id):
                 or route["route_scope_digest"] != identity["route_scope_digest"]
                 or route["pool"] not in identity["route_scope"]["pools"]):
             return None
+        validate_auto_observation(document, identity, operation_id=provider["_fabric_request_id"],
+            request_id=request_id, request_digest=route["request_digest"],
+            routed_request_digest=route["routed_request_digest"],
+            max_tokens=route["output_contract"]["max_tokens"])
         return value
-    except (ValueError, TypeError, KeyError):
+    except (ValueError, TypeError, KeyError, RuntimeError):
         return None
 
 

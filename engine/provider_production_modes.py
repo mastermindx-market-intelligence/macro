@@ -967,11 +967,25 @@ class ApplicationFabricFactory:
     service_mode_id: str | None = None
     _inspection_commitment: str | None = None
     _timeout_cap: float | None = None
+    _requested_model: str | None = None
 
     def __post_init__(self):
         _validate_service_fabric_relation(
             self.mode_id, self.lane, self.service_mode_id,
             self._profile_present, self._profile)
+
+    def with_requested_model(self, model: str) -> "ApplicationFabricFactory":
+        """Pure immutable narrowing; fresh inspection proves the existing scope."""
+        if type(model) is not str or _APPLICATION_ID.fullmatch(model) is None:
+            _application_refuse("fabric_application_requested_model_invalid")
+        if self._requested_model is not None and self._requested_model != model:
+            _application_refuse("fabric_application_identity_changed")
+        if self._inspection_commitment is not None:
+            frozen = json.loads(self._inspection_commitment)
+            if (frozen.get("schema") != "mastermind.fabric_application_inspection.v3"
+                    or frozen.get("requested_model") != model):
+                _application_refuse("fabric_application_identity_changed")
+        return replace(self, _requested_model=model)
 
     def _effective_record_id(self) -> str:
         _validate_service_fabric_relation(
@@ -1071,6 +1085,10 @@ class ApplicationFabricFactory:
                     ("fabric",), (),
                 )
         transport = mode.transport
+        if self._requested_model is not None and (not transport.automatic
+                or type(self._requested_model) is not str
+                or _APPLICATION_ID.fullmatch(self._requested_model) is None):
+            _application_refuse("fabric_application_requested_model_invalid")
         if (transport.automatic and caller_cfg is not None
                 and "workload_profile" in caller_cfg
                 and (not self._profile_present or caller_cfg["workload_profile"] != self._profile)):
@@ -1119,7 +1137,7 @@ class ApplicationFabricFactory:
             _application_refuse("fabric_application_metadata_not_permitted")
         decision = self.workload_decision()
         self._capability(transport)
-        return mode, transport, self._commit_inspection(self._inspection_identity(transport, decision, mode.route_scope))
+        return mode, transport, self._commit_inspection(self._inspection_identity(transport, decision, mode.route_scope, self._requested_model))
 
     def prepare_admin_pool_reader(self):
         """Trusted startup only: resolve through the incumbent secret boundary once."""
@@ -1133,14 +1151,17 @@ class ApplicationFabricFactory:
             FabricPoolViewReader(base_url=transport.base_url, proxy_token=credential))
 
     @staticmethod
-    def _inspection_identity(transport, decision, route_scope=None) -> dict:
+    def _inspection_identity(transport, decision, route_scope=None, requested_model=None) -> dict:
         if transport.automatic:
-            from engine.fabric_inference_client import AUTO_INSPECTION_SCHEMA, validate_auto_route_scope
+            from engine.fabric_inference_client import (
+                AUTO_INSPECTION_SCHEMA, EXACT_INSPECTION_SCHEMA, validate_auto_route_scope,
+            )
             scope, digest = validate_auto_route_scope(route_scope)
             private = {**{key: getattr(transport, key) for key in _APPLICATION_IDENTITY_FIELDS},
-                "protocol": transport.protocol, "requested_model": None,
+                "protocol": transport.protocol, "requested_model": requested_model,
                 "route_scope": scope, "output_limit_mode": "hard_maximum"}
-            return {"schema": AUTO_INSPECTION_SCHEMA, "requested_model": None,
+            return {"schema": (AUTO_INSPECTION_SCHEMA if requested_model is None else EXACT_INSPECTION_SCHEMA),
+                "requested_model": requested_model,
                 "route_scope": scope, "route_scope_digest": digest, "output_limit_mode": "hard_maximum",
                 "cap_id": transport.cap_id, "capability_id": transport.capability_id,
                 "workload_policy": decision.receipt(),
@@ -1168,7 +1189,8 @@ class ApplicationFabricFactory:
         # A snapshot only narrows an already eligible owner. It grants nothing.
         fields = {"provider", "model", "cap_id", "capability_id", "cost_basis",
                   "workload_policy", "transport_identity"}
-        if type(identity) is dict and identity.get("schema") == "mastermind.fabric_application_inspection.v2":
+        if type(identity) is dict and identity.get("schema") in {
+                "mastermind.fabric_application_inspection.v2", "mastermind.fabric_application_inspection.v3"}:
             from engine.fabric_inference_client import validate_auto_inspection
             try:
                 identity = validate_auto_inspection(identity)
@@ -1203,7 +1225,7 @@ class ApplicationFabricFactory:
         Missing credentials may still prevent that later fill.
         """
         mode, transport, decision = self._eligibility(caller_cfg)
-        identity = self._inspection_identity(transport, decision, mode.route_scope)
+        identity = self._inspection_identity(transport, decision, mode.route_scope, self._requested_model)
         if (self._inspection_commitment is not None
                 and self._inspection_commitment != self._commit_inspection(identity)):
             _application_refuse("fabric_application_identity_changed")
@@ -1216,7 +1238,7 @@ class ApplicationFabricFactory:
         mode, transport, decision = self._eligibility(caller_cfg)
         if (self._inspection_commitment is not None
                 and self._inspection_commitment != self._commit_inspection(
-                    self._inspection_identity(transport, decision, mode.route_scope))):
+                    self._inspection_identity(transport, decision, mode.route_scope, self._requested_model))):
             _application_refuse("fabric_application_identity_changed")
         from engine.fabric_inference_client import (
             FabricInferenceClient, NATIVE_PROTOCOL, validate_native_operation_id,
@@ -1235,8 +1257,9 @@ class ApplicationFabricFactory:
             _application_refuse("fabric_application_unconfigured")
 
         client = FabricInferenceClient(
-            base_url=transport.base_url, proxy_token=credential, model=transport.model,
-            **({"auto_inspection": self._inspection_identity(transport, decision, mode.route_scope)}
+            base_url=transport.base_url, proxy_token=credential,
+            model=self._requested_model if transport.automatic else transport.model,
+            **({"auto_inspection": self._inspection_identity(transport, decision, mode.route_scope, self._requested_model)}
                if transport.automatic else {}),
             **({"timeout_s": timeout} if timeout is not None else {}),
             **({"protocol": NATIVE_PROTOCOL, "operation_id": operation_id,
@@ -1245,8 +1268,9 @@ class ApplicationFabricFactory:
                    if transport.native_recipe_digest is not None else {})} if native else {}),
         )
         if transport.automatic:
-            return ({"schema": "mastermind.fabric_application_binding.v2", "client": client,
-                     "inspection": self._inspection_identity(transport, decision, mode.route_scope)}, decision)
+            return ({"schema": ("mastermind.fabric_application_binding.v2" if self._requested_model is None
+                                else "mastermind.fabric_application_binding.v3"), "client": client,
+                     "inspection": self._inspection_identity(transport, decision, mode.route_scope, self._requested_model)}, decision)
         return ({"client": client, "model": transport.model,
                  "provider": transport.provider_id, "cost_basis": transport.cost_basis,
                  "cap_id": transport.cap_id}, decision)
