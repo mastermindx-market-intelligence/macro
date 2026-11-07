@@ -10,8 +10,8 @@ context, which is why these tests read it from the registration rather than
 retyping it.
 
 L1:  The include sits after `<a class="back">` and before `<div id="app">`, exactly
-     once, and is the ONLY line of basket_detail.html.j2 that changes (`git diff
-     --numstat` = `1\\t0`).
+     once. Its first introduction is the ONLY changed template line (`git diff
+     --numstat` = `1\\t0`); an inherited mount keeps its complete seam unchanged.
 L2:  Optional verticals never break the incumbent page — `ignore missing` everywhere.
 L3:  The base render's asset order is preserved: every <script>/<link> present in the
      base stays in the same relative order; theme.js stays LAST. New assets are
@@ -31,6 +31,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 from pathlib import Path
 
 import pytest
@@ -39,20 +40,12 @@ REPO_ROOT = Path(__file__).parent.parent
 
 
 def _integration_base() -> str | None:
-    """The commit this branch's template contribution is measured AGAINST.
+    """Resolve the integrated main for first-introduction or inherited-seam proof.
 
-    DERIVED, never hardcoded. The claim under test is "*this branch* adds one
-    line to a template frozen by #7669 and deletes nothing", so the base has to
-    be the main this branch integrated — the merge-base. A literal SHA pinned
-    inside our own history silently changes the claim to "the template differs
-    from that commit by exactly one line", which also counts every edit MAIN
-    has made to the same file since, and reports an owner's work as our
-    regression. That is exactly what happened: the previous base
-    ``b256aa6a756a`` began failing when main's #8519 and #8297 touched
-    basket_detail.html.j2.
-
-    Returns None when no base resolves (shallow clone, no remote ref), which
-    the caller turns into an honest skip rather than a false regression.
+    The merge base determines whether this branch introduced the mount or
+    inherited it. A literal old SHA would also count unrelated later main edits
+    as this branch's contribution. Missing history returns None for the existing
+    explicit history-only skip; current-tree guards still run.
     """
     for ref in ("origin/main", "main", "origin/HEAD"):
         got = subprocess.run(
@@ -272,25 +265,75 @@ def test_common_template_has_exactly_one_aggregator_include_outside_app():
 
 
 # ---------------------------------------------------------------------------
-# 2 — L1 (diff): the only change to basket_detail.html.j2 is the new include line
+# 2 — L1: first introduction is one line; an inherited seam stays unchanged
 # ---------------------------------------------------------------------------
 
-def test_basket_detail_diff_is_exactly_one_inserted_line():
-    """`git diff --numstat` of basket_detail.html.j2 vs. the pre-T10b head must
-    be exactly `1\\t0` — one inserted line, zero deleted lines.
+def _guarded_mount_seam(src: str) -> str:
+    targets = [m.group(1) for m in _INCLUDE_RE.finditer(src)
+               if 'basket_intelligence_mounts' in m.group(1)]
+    assert targets == ['_basket_intelligence_mounts.html.j2'], 'exactly one guarded aggregator is required'
+    back, inc, app = _back_app_marker_lines(src)
+    assert 0 < back < inc < app, 'the guarded include must remain between back link and app'
+    return ''.join(src.splitlines(keepends=True)[back - 1:app])
 
-    This is the one assertion in this suite that needs *history* rather than
-    working-tree content. The added line and its position are already pinned
-    from the tree by ``test_common_template_has_exactly_one_aggregator_include
-    _outside_app``; what only a diff can show is the ``-0`` — that nothing else
-    in a template frozen by #7669 moved. A checkout that does not carry
-    an integration base cannot evaluate that claim at all: git answers
-    ``fatal: bad revision`` with exit 128, which a bare returncode assertion
-    reports as a template regression that did not happen. Resolve the base
-    first (see ``_integration_base``) and skip honestly when it is absent.
-    Once the contribution is integrated into that base (a main push, or a PR
-    that leaves this template alone), the diff is empty; the claim then applies
-    only if the base itself lacks the include, so skip when the base carries it.
+
+@pytest.mark.parametrize("mutation", ["unchanged", "outside", "missing", "duplicate", "moved", "back", "inside", "missing_guard"])
+def test_inherited_mount_guard_preserves_the_complete_seam(monkeypatch, tmp_path, mutation):
+    """An inherited include keeps its seam, without claiming a new insertion."""
+    before = ('<p>before</p>\n<a class="back" href="../baskets_canada.html">Back</a>\n'
+              '{% include "_basket_intelligence_mounts.html.j2" ignore missing %}\n'
+              '<div id="app"></div>\n<p>after</p>\n')
+    include = '{% include "_basket_intelligence_mounts.html.j2" ignore missing %}\n'
+    changes = {
+        "unchanged": before,
+        "outside": before.replace('<p>after</p>', '<p>source metadata correction</p>'),
+        "missing": before.replace(include, ''),
+        "duplicate": before + include,
+        "moved": before.replace(include, '').replace('<p>after</p>', include + '<p>after</p>'),
+        "back": before.replace('../baskets_canada.html', '../baskets.html'),
+        "inside": before.replace('<div id="app">', '<p>extra seam content</p>\n<div id="app">'),
+        "missing_guard": before.replace(' ignore missing', ''),
+    }
+    (tmp_path / 'templates').mkdir()
+    (tmp_path / 'templates/basket_detail.html.j2').write_text(changes[mutation])
+    monkeypatch.setattr(sys.modules[__name__], 'REPO_ROOT', tmp_path)
+    monkeypatch.setattr(sys.modules[__name__], '_integration_base', lambda: 'controlled-base')
+    monkeypatch.setattr(subprocess, 'run', lambda argv, **kwargs: SimpleNamespace(
+        returncode=0, stderr='', stdout=before if 'show' in argv else '4\t2\ttemplates/basket_detail.html.j2\n',
+    ))
+    if mutation in ('unchanged', 'outside'):
+        test_basket_detail_diff_is_exactly_one_inserted_line()
+    else:
+        with pytest.raises(AssertionError):
+            test_basket_detail_diff_is_exactly_one_inserted_line()
+
+
+@pytest.mark.parametrize("numstat, allowed", [('1\t0', True), ('2\t0', False), ('1\t1', False)])
+def test_new_mount_still_requires_the_original_one_line_contribution(monkeypatch, tmp_path, numstat, allowed):
+    """The original pre-mount branch contract remains exact, including no deletion."""
+    (tmp_path / 'templates').mkdir()
+    (tmp_path / 'templates/basket_detail.html.j2').write_text('<div id="app"></div>\n')
+    monkeypatch.setattr(sys.modules[__name__], 'REPO_ROOT', tmp_path)
+    monkeypatch.setattr(sys.modules[__name__], '_integration_base', lambda: 'controlled-base')
+    monkeypatch.setattr(subprocess, 'run', lambda argv, **kwargs: SimpleNamespace(
+        returncode=0, stderr='', stdout='<div id="app"></div>\n' if 'show' in argv else numstat + '\ttemplates/basket_detail.html.j2\n',
+    ))
+    if allowed:
+        test_basket_detail_diff_is_exactly_one_inserted_line()
+    else:
+        with pytest.raises(AssertionError):
+            test_basket_detail_diff_is_exactly_one_inserted_line()
+
+
+def test_basket_detail_diff_is_exactly_one_inserted_line():
+    """First introduction is exactly +1/-0; an inherited mount keeps its seam.
+
+    The resolved integration base determines which claim is applicable. An
+    already-landed mount must retain its complete back-link/include/app source
+    seam byte for byte. A branch introducing the mount still adds only that one
+    line and deletes nothing. All current-tree render and asset-order guards
+    remain independently enforced. Missing history keeps the existing explicit
+    skip; a resolvable inherited base is asserted, never skipped.
     """
     base = _integration_base()
     if base is None:
@@ -300,6 +343,23 @@ def test_basket_detail_diff_is_exactly_one_inserted_line():
             "tree-content half is covered by "
             "test_common_template_has_exactly_one_aggregator_include_outside_app"
         )
+    base_source = subprocess.run(
+        ['git', 'show', f'{base}:templates/basket_detail.html.j2'],
+        capture_output=True, text=True, cwd=str(REPO_ROOT),
+    )
+    assert base_source.returncode == 0, (
+        f"git show {base}:templates/basket_detail.html.j2 failed:\n"
+        f"STDERR={base_source.stderr}"
+    )
+    # #10656 recognizes an already-integrated mount. Preserve that branch,
+    # and apply the reviewed seam assertion instead of skipping its safety.
+    if any(m.group(1) == '_basket_intelligence_mounts.html.j2'
+           for m in _INCLUDE_RE.finditer(base_source.stdout)):
+        current = (REPO_ROOT / 'templates/basket_detail.html.j2').read_text(encoding='utf-8')
+        assert _guarded_mount_seam(current) == _guarded_mount_seam(base_source.stdout), (
+            'the inherited back-link/include/app seam must remain byte-identical to its integration base'
+        )
+        return
     result = subprocess.run(
         ["git", "diff", "--numstat", base, "--",
          "templates/basket_detail.html.j2"],
@@ -309,28 +369,6 @@ def test_basket_detail_diff_is_exactly_one_inserted_line():
         f"git diff failed:\nSTDOUT={result.stdout}\nSTDERR={result.stderr}"
     )
     line = result.stdout.strip()
-    if not line:
-        shown = subprocess.run(
-            ["git", "show", f"{base}:templates/basket_detail.html.j2"],
-            capture_output=True, text=True, cwd=str(REPO_ROOT),
-        )
-        assert shown.returncode == 0, (
-            f"git show {base}:templates/basket_detail.html.j2 failed:\n"
-            f"STDERR={shown.stderr}"
-        )
-        # The same include the sibling L1 test pins: its regex, its target filter.
-        in_base = [
-            m.group(1) for m in _INCLUDE_RE.finditer(shown.stdout)
-            if "basket_intelligence_mounts" in m.group(1)
-        ]
-        if len(in_base) == 1:
-            pytest.skip(
-                f"basket_detail.html.j2 is unchanged vs the integration base "
-                f"{base[:12]} because this branch's aggregator include is already "
-                "integrated into it; the +1/-0 claim applies only before "
-                "integration, and the content half is pinned by "
-                "test_common_template_has_exactly_one_aggregator_include_outside_app"
-            )
     assert line, (
         f"basket_detail.html.j2 is unchanged vs the integration base {base}: "
         f"the aggregator include this suite exists to pin is absent from the diff"

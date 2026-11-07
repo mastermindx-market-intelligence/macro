@@ -1,7 +1,7 @@
 /**
  * Node replica of templates/stockdata.js index/ticker cache resilience (site20 S3).
  *
- * Four properties this suite pins, all inside the existing stockdata.js owner:
+ * Five properties this suite pins, all inside the existing stockdata.js owner:
  *   S3-02  the US index is validated OFF TO THE SIDE and published atomically — a
  *          malformed payload (non-array top level, or non-object rows such as null)
  *          is never cached as success and never poisons the lookup; every object row
@@ -15,6 +15,12 @@
  *   S3-03  per-ticker negative entries classify the failure: transient (thrown fetch,
  *          5xx/408/429) gets the short TTL or the server's Retry-After clamped to
  *          [30 s, 10 min]; 404/410 and 401/403 keep the long TTL exactly as before.
+ *   S3-05  a rich per-ticker payload is a success only when it carries the EXACT
+ *          requested identity (`ticker`): another symbol's record, an error envelope
+ *          or a non-object body is never cached as a positive success — it degrades
+ *          through the existing null/30 s negative-TTL path. The search index keeps
+ *          its own `t` shorthand on a different plane, and a legitimate LIMITED
+ *          record (no price object, zero values, optional nulls) stays valid.
  *
  * The module runs in a `vm` context with a fake fetch, a mutable clock and no
  * browser. Set STOCKDATA_JS to run the same suite against another build of the
@@ -30,6 +36,8 @@ import vm from 'node:vm';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const MODULE_PATH = process.env.STOCKDATA_JS || join(ROOT, 'templates', 'stockdata.js');
 const SOURCE = readFileSync(MODULE_PATH, 'utf8');
+// The real per-market router, loaded only by the cases that need a market store.
+const BOOKS_PATH = join(ROOT, 'templates', 'market_books.js');
 
 const US_INDEX = 'stockdata/index.json';
 const HK_INDEX = 'hkstockdata/index.json';
@@ -61,20 +69,27 @@ function makeResponse(status, body, headers) {
 const respond = (status, body, headers) => Promise.resolve(makeResponse(status, body, headers));
 
 // One fresh module instance per test: fake fetch + mutable clock, real Date.parse.
-function makeCtx(route) {
+// `router: true` also loads the REAL market router (templates/market_books.js), so a
+// per-market store is exercised instead of the US-only fallback.
+function makeCtx(route, opts) {
   const clock = { t: 1700000000000 };
   const calls = [];
+  const router = !!(opts && opts.router);
   const sandbox = {
     window: {},
-    document: { documentElement: { getAttribute: () => 'en' } },
+    document: router
+      ? { readyState: 'loading', documentElement: { getAttribute: () => 'en' }, addEventListener() {} }
+      : { documentElement: { getAttribute: () => 'en' } },
     console,
     fetch: (url) => { calls.push(String(url)); return route(String(url)); },
     __clock: clock,
   };
+  if (router) sandbox.localStorage = { getItem: () => null, setItem: () => {} };
   const ctx = vm.createContext(sandbox);
   vm.runInContext('Date.now = function () { return __clock.t; };', ctx);
+  if (router) vm.runInContext(readFileSync(BOOKS_PATH, 'utf8'), ctx, { filename: 'market_books.js' });
   vm.runInContext(SOURCE, ctx);
-  return { SD: sandbox.window.SD, clock, calls };
+  return { SD: sandbox.window.SD, MB: sandbox.window.MB, clock, calls };
 }
 
 const US_ROWS = [{ t: 'AAA', n: 'Alpha' }, { t: 'BBB', n: 'Beta' }];
@@ -372,7 +387,7 @@ test('S3-03a: ticker 503 — null now, one new fetch at +31s resolves the object
   const route = (url) => {
     if (url === tickerUrl('AAA')) {
       if (fail) { fail = false; return respond(503); }
-      return respond(200, { t: 'AAA' });
+      return respond(200, { ticker: 'AAA' });
     }
     return respond(404, {});
   };
@@ -381,7 +396,7 @@ test('S3-03a: ticker 503 — null now, one new fetch at +31s resolves the object
   assert.equal(count(calls, tickerUrl('AAA')), 1);
   clock.t += 31000;
   const j = await SD.loadTicker('AAA');
-  assert.deepEqual(plain(j), { t: 'AAA' });
+  assert.deepEqual(plain(j), { ticker: 'AAA' });
   assert.equal(count(calls, tickerUrl('AAA')), 2, 'exactly one new fetch after the transient window');
 });
 
@@ -390,7 +405,7 @@ test('S3-03b: ticker 404 — long TTL: no fetch at +31s, refetch at +10 min + 1s
   const route = (url) => {
     if (url === tickerUrl('AAA')) {
       if (gone) { gone = false; return respond(404, {}); }
-      return respond(200, { t: 'AAA' });
+      return respond(200, { ticker: 'AAA' });
     }
     return respond(404, {});
   };
@@ -409,7 +424,7 @@ test('S3-03c: ticker 503 with Retry-After 120 — no fetch at +60s, fetch at +12
   const route = (url) => {
     if (url === tickerUrl('AAA')) {
       if (fail) { fail = false; return respond(503, {}, { 'Retry-After': '120' }); }
-      return respond(200, { t: 'AAA' });
+      return respond(200, { ticker: 'AAA' });
     }
     return respond(404, {});
   };
@@ -428,7 +443,7 @@ test('S3-03d: ticker 503 with Retry-After 5 — floored to 30 s: no fetch at +10
   const route = (url) => {
     if (url === tickerUrl('AAA')) {
       if (fail) { fail = false; return respond(503, {}, { 'Retry-After': '5' }); }
-      return respond(200, { t: 'AAA' });
+      return respond(200, { ticker: 'AAA' });
     }
     return respond(404, {});
   };
@@ -448,7 +463,7 @@ test('S3-03e: ticker 503 with an HTTP-date Retry-After (+120 s) — no fetch at 
   const route = (url) => {
     if (url === tickerUrl('AAA')) {
       if (fail) { fail = false; return respond(503, {}, { 'Retry-After': at }); }
-      return respond(200, { t: 'AAA' });
+      return respond(200, { ticker: 'AAA' });
     }
     return respond(404, {});
   };
@@ -468,7 +483,7 @@ test('S3-03f: 429 retries short; 403 and 401 keep the long TTL and never resolve
   const route = (url) => {
     for (const t of ['AAA', 'BBB', 'CCC']) {
       if (url === tickerUrl(t)) {
-        if (state[statusOf(t)]) return respond(200, { t });
+        if (state[statusOf(t)]) return respond(200, { ticker: t });
         state[statusOf(t)] = true;
         return respond(statusOf(t), {});
       }
@@ -485,8 +500,8 @@ test('S3-03f: 429 retries short; 403 and 401 keep the long TTL and never resolve
   assert.equal(count(calls, tickerUrl('BBB')), 1, '403 gets the long TTL');
   assert.equal(count(calls, tickerUrl('CCC')), 1, '401 gets the long TTL');
   clock.t += 10 * 60 * 1000 + 1000;
-  assert.deepEqual(plain(await SD.loadTicker('BBB')), { t: 'BBB' });
-  assert.deepEqual(plain(await SD.loadTicker('CCC')), { t: 'CCC' });
+  assert.deepEqual(plain(await SD.loadTicker('BBB')), { ticker: 'BBB' });
+  assert.deepEqual(plain(await SD.loadTicker('CCC')), { ticker: 'CCC' });
   assert.equal(count(calls, tickerUrl('BBB')), 2);
   assert.equal(count(calls, tickerUrl('CCC')), 2);
 });
@@ -496,7 +511,7 @@ test('S3-03g: a huge Retry-After (999999 s) is capped at 10 min — fetch at +10
   const route = (url) => {
     if (url === tickerUrl('AAA')) {
       if (fail) { fail = false; return respond(503, {}, { 'Retry-After': '999999' }); }
-      return respond(200, { t: 'AAA' });
+      return respond(200, { ticker: 'AAA' });
     }
     return respond(404, {});
   };
@@ -517,7 +532,7 @@ test('S3-03h preservation: after the failure window expires, three concurrent ca
     if (url === tickerUrl('AAA')) {
       if (!failed) { failed = true; return respond(503); }
       if (!d) d = deferred();
-      return d.promise.then(() => makeResponse(200, { t: 'AAA' }));
+      return d.promise.then(() => makeResponse(200, { ticker: 'AAA' }));
     }
     return respond(404, {});
   };
@@ -530,7 +545,7 @@ test('S3-03h preservation: after the failure window expires, three concurrent ca
   await Promise.resolve();
   d.resolve();
   const [r1, r2, r3] = await Promise.all([p1, p2, p3]);
-  assert.deepEqual(plain(r1), { t: 'AAA' });
+  assert.deepEqual(plain(r1), { ticker: 'AAA' });
   assert.equal(r2, r1);
   assert.equal(r3, r1);
   assert.equal(count(calls, tickerUrl('AAA')), 2, 'one refetch serves all three waiters');
@@ -538,16 +553,16 @@ test('S3-03h preservation: after the failure window expires, three concurrent ca
 
 test('S3-03i: loadTickers degrades exactly the failed row and resolves the batch', async () => {
   const route = (url) => {
-    if (url === tickerUrl('AAA')) return respond(200, { t: 'AAA' });
+    if (url === tickerUrl('AAA')) return respond(200, { ticker: 'AAA' });
     if (url === tickerUrl('BBB')) return respond(503);
-    if (url === tickerUrl('CCC')) return respond(200, { t: 'CCC' });
+    if (url === tickerUrl('CCC')) return respond(200, { ticker: 'CCC' });
     return respond(404, {});
   };
   const { SD } = makeCtx(route);
   const seen = {};
   await SD.loadTickers(['AAA', 'BBB', 'CCC'], (t, j) => { seen[t] = j; });
-  assert.deepEqual(plain(seen.AAA), { t: 'AAA' });
-  assert.deepEqual(plain(seen.CCC), { t: 'CCC' });
+  assert.deepEqual(plain(seen.AAA), { ticker: 'AAA' });
+  assert.deepEqual(plain(seen.CCC), { ticker: 'CCC' });
   assert.equal(seen.BBB, null);
 });
 
@@ -558,4 +573,319 @@ test('S3-03j: a thrown fetch gets the short TTL — null now, one new fetch at +
   clock.t += 31000;
   assert.equal(await SD.loadTicker('AAA'), null);
   assert.equal(count(calls, tickerUrl('AAA')), 2, 'network errors are retried after 30 s');
+});
+
+// ---------------------------------------- S3-05: rich per-ticker identity ----
+//
+// The loader accepted ANY successfully parsed 200 body as the rich record for the
+// symbol that was asked for: another symbol's record, an error envelope, a bare
+// array, a string or a null body all became a POSITIVE cached success for the
+// requested name and were served for the rest of the session. The rich per-ticker
+// identity is `ticker` — the five library builders emit it on ordinary AND LIMITED
+// records — while the search index keeps the `t` shorthand on a DIFFERENT plane,
+// untouched by this guard.
+//
+// These cases pin ONE guard: a rich payload is accepted only when it carries the
+// EXACT requested identity. Anything else degrades to null through the EXISTING
+// catch / 30 s negative-TTL path — no new cache, no new retry owner, no new
+// entitlement plane, no alias table, no price/field requirement. A legitimate
+// record (a LIMITED record with no price object, a zero price, optional nulls) is
+// accepted and cached exactly as before.
+
+// The rich record lives in the market's own store; `=`/`^` become `_` in the
+// filename (stockdata.js safeTicker). The search index is a different plane.
+const richUrl = (dir, t) => `${dir}/${String(t).replace(/[=^]/g, '_')}.json`;
+
+const MALFORMED_RICH = [
+  ['null body', null],
+  ['empty array', []],
+  ['array of records', [{ ticker: 'AAA' }]],
+  ['empty object', {}],
+  ['error envelope', { error: 'temporarily unavailable' }],
+  ['string body', 'temporarily unavailable'],
+  ['boolean body', false],
+  ['numeric body', 0],
+  ['non-string ticker', { ticker: 123 }],
+  ['another symbol', { ticker: 'BBB', tech: { price: 900 } }],
+  ['search-index shorthand only', { t: 'AAA', tech: { price: 900 } }],
+];
+
+for (const [name, bad] of MALFORMED_RICH) {
+  test(`S3-05a: a 200 body that is not this ticker's rich record (${name}) is not a success`, async () => {
+    let healthy = false;
+    const route = (url) => (url === tickerUrl('AAA')
+      ? respond(200, healthy ? { ticker: 'AAA', tech: { price: 42 } } : bad)
+      : respond(404, {}));
+    const { SD, clock, calls } = makeCtx(route);
+    assert.equal(await SD.loadTicker('AAA'), null, 'a malformed 200 must not reach the caller');
+    healthy = true;
+    clock.t += 5000;
+    assert.equal(await SD.loadTicker('AAA'), null, 'the existing short failure window still holds');
+    assert.equal(count(calls, tickerUrl('AAA')), 1, 'no retry storm inside the window');
+    clock.t += 26000;
+    const recovered = await SD.loadTicker('AAA');
+    assert.equal(recovered.ticker, 'AAA');
+    assert.equal(recovered.tech.price, 42);
+    assert.equal(count(calls, tickerUrl('AAA')), 2, 'one read after the existing short window');
+  });
+}
+
+test('S3-05b: the exact requested identity is served and session-cached, for every symbol spelling', async () => {
+  for (const symbol of ['AAA', 'DX=F', '^GSPC', 'BRK-B', '0700.HK', '7203.T', '600519.SS', 'RY.TO']) {
+    const good = { ticker: symbol, limited: true, ladder: { state: 'LIMITED' }, tech: { price: 0 }, optional: null };
+    const { SD, calls } = makeCtx(() => respond(200, good));
+    const got = await SD.loadTicker(symbol);
+    assert.deepEqual(plain(got), plain(good), 'the rich record is served verbatim');
+    assert.equal(got.tech.price, 0, 'a zero price is a legitimate value');
+    assert.equal(got.optional, null, 'optional nulls survive');
+    assert.equal(await SD.loadTicker(symbol), got, 'a valid record is session-cached');
+    assert.equal(calls.length, 1, 'exactly one read');
+    assert.equal(calls[0], richUrl('stockdata', symbol), 'the filename keeps the existing sanitization');
+  }
+});
+
+test('S3-05c: three concurrent asks share one malformed read and one rejection', async () => {
+  const d = deferred();
+  let healthy = false;
+  const route = (url) => {
+    if (url !== tickerUrl('AAA')) return respond(404, {});
+    if (healthy) return respond(200, { ticker: 'AAA' });
+    return d.promise.then(() => makeResponse(200, { ticker: 'BBB' }));
+  };
+  const { SD, clock, calls } = makeCtx(route);
+  const waits = [SD.loadTicker('AAA'), SD.loadTicker('AAA'), SD.loadTicker('AAA')];
+  d.resolve();
+  assert.deepEqual(await Promise.all(waits), [null, null, null], 'one rejection serves every waiter');
+  assert.equal(count(calls, tickerUrl('AAA')), 1, 'exactly one read');
+  healthy = true;
+  clock.t += 31000;
+  const recovered = await Promise.all([SD.loadTicker('AAA'), SD.loadTicker('AAA')]);
+  assert.equal(recovered[0].ticker, 'AAA');
+  assert.equal(recovered[0], recovered[1], 'one recovery read serves both waiters');
+  assert.equal(count(calls, tickerUrl('AAA')), 2);
+});
+
+test('S3-05d: a wrong-identity row degrades to null and never relabels another ticker', async () => {
+  const route = (url) => {
+    if (url === tickerUrl('AAA')) return respond(200, { ticker: 'BBB', tech: { price: 900 } });
+    if (url === tickerUrl('CCC')) return respond(200, { ticker: 'CCC', tech: { price: 2 } });
+    return respond(404, {});
+  };
+  const { SD, calls } = makeCtx(route);
+  const seen = {};
+  await SD.loadTickers(['AAA', 'CCC'], (t, j) => { seen[t] = j; });
+  assert.equal(seen.AAA, null, 'the mismatched row degrades to null');
+  assert.equal(seen.CCC.ticker, 'CCC', 'the valid peer keeps its own identity');
+  assert.equal(seen.CCC.tech.price, 2);
+  assert.equal(count(calls, tickerUrl('AAA')), 1);
+  assert.equal(count(calls, tickerUrl('CCC')), 1);
+});
+
+test('S3-05e: a legitimate LIMITED record with no price object is accepted — no invented schema requirement', async () => {
+  const good = {
+    ticker: 'AAA', name: 'Alpha', sector: 'Tech', asof: '2026-11-04', listed: '2026-11-02',
+    history_days: 3, limited: true, ladder: { state: 'LIMITED' },
+  };
+  const { SD, calls } = makeCtx(() => respond(200, good));
+  const got = await SD.loadTicker('AAA');
+  assert.deepEqual(plain(got), plain(good));
+  assert.equal(Object.hasOwn(got, 'tech'), false, 'no price object is required');
+  assert.equal(got.ladder.state, 'LIMITED');
+  assert.equal(got.history_days, 3);
+  assert.equal(await SD.loadTicker('AAA'), got, 'the valid record is session-cached');
+  assert.equal(calls.length, 1);
+});
+
+test('S3-05f: the search index keeps its `t` shorthand — the rich guard does not touch the index plane', async () => {
+  const { SD } = makeCtx((url) => (url === US_INDEX ? respond(200, US_ROWS) : respond(404, {})));
+  const res = await SD.loadIndex();
+  assert.deepEqual(plain(res.list).map((x) => x.t), ['AAA', 'BBB']);
+  assert.equal(res.byTicker.AAA.n, 'Alpha');
+  assert.equal(Object.hasOwn(res.byTicker.AAA, 'ticker'), false, 'index rows keep the `t` shorthand');
+});
+
+// ---- the five library producers (docket #8757) -------------------------------
+//
+// The guard reads ONE field: `ticker`. These cases pin that field against the
+// producers that own the rich records, so a future producer change cannot silently
+// flip the identity key (or reintroduce the `t` shorthand) without this suite going
+// red. The record SHAPE is extracted from each producer's own `_limited_rec`
+// source, so the fixture cannot drift from the contract it claims to model; only
+// the VALUES are synthetic — no frozen production payload is asserted here.
+const PRODUCERS = [
+  { market: 'us', file: 'scripts/build_stock_library.py', dir: 'stockdata', symbols: ['IPO', 'BRK-B', 'DX=F', '^GSPC'] },
+  { market: 'cn', file: 'scripts/build_china_library.py', dir: 'chinastockdata', symbols: ['600519.SS', '000001.SZ', '830001.BJ'] },
+  { market: 'hk', file: 'scripts/build_hk_library.py', dir: 'hkstockdata', symbols: ['0700.HK', '0005.HK', '9999.HK'] },
+  { market: 'ca', file: 'scripts/build_canada_library.py', dir: 'canadastockdata', symbols: ['RY.TO', 'GIB-A.TO', 'SAMPLE.V'] },
+  { market: 'intl', file: 'scripts/build_intl_library.py', dir: 'intlstockdata', symbols: ['7203.T', 'ASML.AS', 'VOD.L', '005930.KS', 'SAMPLE.SW'] },
+];
+
+// The source of one top-level Python function (from its `def` to the next
+// column-0 statement).
+function pythonDefBlock(text, name) {
+  const m = new RegExp(`^def ${name}\\(`, 'm').exec(text);
+  if (!m) return null;
+  const lines = text.slice(m.index).split('\n');
+  const out = [lines[0]];
+  for (let i = 1; i < lines.length; i++) {
+    if (/^\S/.test(lines[i])) break;
+    out.push(lines[i]);
+  }
+  return out.join('\n');
+}
+
+// The top-level keys of the dict literal a function returns. Depth-aware, so a
+// NESTED literal (the `ladder`: {"state": "LIMITED"} of every producer, HK's
+// `chart`) never contributes its own keys; string-aware, so a value is never
+// mistaken for a key.
+function dictLiteralKeys(block) {
+  const at = block.indexOf('return {');
+  if (at < 0) return null;
+  let i = at + 'return '.length;
+  const keys = [];
+  let depth = 0;
+  let expectKey = true;
+  while (i < block.length) {
+    const ch = block[i];
+    if (ch === '{' || ch === '[' || ch === '(') { depth++; i++; continue; }
+    if (ch === '}' || ch === ']' || ch === ')') {
+      depth--;
+      i++;
+      if (depth === 0) break;
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      const quote = ch;
+      let j = i + 1;
+      let text = '';
+      while (j < block.length) {
+        if (block[j] === '\\') { text += block[j] + block[j + 1]; j += 2; continue; }
+        if (block[j] === quote) break;
+        text += block[j];
+        j++;
+      }
+      const after = j + 1;
+      if (expectKey && depth === 1) {
+        let k = after;
+        while (k < block.length && /\s/.test(block[k])) k++;
+        if (block[k] === ':') { keys.push(text); expectKey = false; }
+      }
+      i = after;
+      continue;
+    }
+    if (ch === ',') { if (depth === 1) expectKey = true; i++; continue; }
+    i++;
+  }
+  return keys;
+}
+
+let _contracts = null;
+function producerContracts() {
+  if (_contracts) return _contracts;
+  _contracts = PRODUCERS.map((p) => {
+    const text = readFileSync(join(ROOT, p.file), 'utf8');
+    const block = pythonDefBlock(text, '_limited_rec');
+    assert.ok(block, `${p.file} must still define _limited_rec`);
+    const keys = dictLiteralKeys(block);
+    assert.ok(Array.isArray(keys) && keys.length, `${p.file} _limited_rec must still return a dict literal`);
+    return { ...p, keys, source: text };
+  });
+  return _contracts;
+}
+
+// A synthetic record with exactly the producer's own top-level key set. The
+// VALUES are placeholders; the SHAPE is the producer's.
+function limitedRecord(symbol, keys) {
+  const rec = {};
+  for (const k of keys) {
+    switch (k) {
+      case 'ticker': rec[k] = symbol; break;
+      case 'name': rec[k] = 'Synthetic issuer'; break;
+      case 'sector': rec[k] = 'Test sector'; break;
+      case 'tv': rec[k] = symbol; break;
+      case 'asof': rec[k] = '2026-11-04'; break;
+      case 'listed': rec[k] = '2026-11-02'; break;
+      case 'history_days': rec[k] = 3; break;
+      case 'limited': rec[k] = true; break;
+      case 'ladder': rec[k] = { state: 'LIMITED' }; break;
+      case 'chart': rec[k] = { t: ['2026-11-02', '2026-11-03', '2026-11-04'], c: [10, 0, 12.126], anchor: { era: 'SYNTHETIC_TEST_ANCHOR', b3: [0] } }; break;
+      case 'flag': rec[k] = 'TEST'; break;
+      case 'market': rec[k] = 'TEST'; break;
+      default: rec[k] = null; break;   // an unknown optional field stays null — still a legal record
+    }
+  }
+  return rec;
+}
+
+test('S3-05g: every library producer emits the rich identity key `ticker` and never the index shorthand `t`', () => {
+  for (const p of producerContracts()) {
+    assert.ok(p.keys.includes('ticker'), `${p.file} _limited_rec must emit the rich identity key "ticker"`);
+    assert.equal(p.keys.includes('t'), false, `${p.file} _limited_rec must not emit the index shorthand "t"`);
+    assert.ok(p.keys.includes('limited'), `${p.file} _limited_rec must keep the LIMITED contract`);
+    assert.ok(p.keys.includes('ladder'), `${p.file} _limited_rec must keep the ladder sentinel`);
+    assert.ok(/"t":/.test(p.source), `${p.file} must still emit search-index rows with the "t" shorthand`);
+  }
+});
+
+test('S3-05h: a legitimate LIMITED record from every library producer is served from its own market store', async () => {
+  for (const p of producerContracts()) {
+    for (const symbol of p.symbols) {
+      const rec = limitedRecord(symbol, p.keys);
+      const { SD, MB, calls } = makeCtx(() => respond(200, rec), { router: true });
+      assert.equal(MB.storeOf(symbol), p.dir, `${symbol} routes to ${p.dir}`);
+      const got = await SD.loadTicker(symbol);
+      assert.deepEqual(plain(got), plain(rec), `${p.market} ${symbol}: the producer record is served verbatim`);
+      assert.equal(Object.hasOwn(got, 'tech'), false, `${p.market} ${symbol}: a LIMITED record needs no price object`);
+      assert.equal(got.ladder.state, 'LIMITED');
+      assert.equal(await SD.loadTicker(symbol), got, `${p.market} ${symbol}: the valid record is session-cached`);
+      assert.deepEqual(calls, [richUrl(p.dir, symbol)], `${p.market} ${symbol}: one read from its own store`);
+    }
+  }
+});
+
+for (const p of PRODUCERS) {
+  for (const symbol of p.symbols) {
+    for (const fault of ['another ticker', 'index shorthand only']) {
+      test(`S3-05i: the ${p.market} producer record for ${symbol} is rejected when it carries ${fault}, then recovers`, async () => {
+        const contract = producerContracts().find((c) => c.market === p.market);
+        const rec = limitedRecord(symbol, contract.keys);
+        const bad = plain(rec);
+        if (fault === 'another ticker') bad.ticker = 'WRONG-IDENTITY';
+        else { bad.t = bad.ticker; delete bad.ticker; }
+        let healthy = false;
+        const { SD, clock, calls } = makeCtx(() => respond(200, healthy ? rec : bad), { router: true });
+        assert.equal(await SD.loadTicker(symbol), null, 'never deliver a different or missing rich identity');
+        healthy = true;
+        clock.t += 29000;
+        assert.equal(await SD.loadTicker(symbol), null, 'the existing short failure window still holds');
+        assert.equal(calls.length, 1, 'no retry storm inside the window');
+        clock.t += 2000;
+        const recovered = await SD.loadTicker(symbol);
+        assert.deepEqual(plain(recovered), plain(rec), 'the same producer payload recovers');
+        assert.equal(calls.length, 2, 'one read after the existing short window');
+      });
+    }
+  }
+}
+
+test('S3-05j: a five-store batch isolates one wrong identity and preserves every valid peer', async () => {
+  const contracts = producerContracts();
+  const picks = ['IPO', '600519.SS', '0700.HK', 'RY.TO', '7203.T'];
+  const recs = {};
+  const byUrl = {};
+  for (const p of contracts) {
+    const symbol = picks.find((s) => p.symbols.includes(s));
+    if (!symbol) continue;
+    recs[symbol] = limitedRecord(symbol, p.keys);
+    byUrl[richUrl(p.dir, symbol)] = recs[symbol];
+  }
+  byUrl[richUrl('hkstockdata', '0700.HK')] = { ...recs['0700.HK'], ticker: '9999.HK' };
+  const { SD, calls } = makeCtx((url) => respond(200, byUrl[url]), { router: true });
+  const seen = {};
+  await SD.loadTickers(picks, (t, j) => { seen[t] = j; }, { concurrency: 2 });
+  assert.equal(calls.length, 5, 'one read per requested symbol');
+  assert.equal(seen['0700.HK'], null, 'the mismatched row degrades to null');
+  for (const symbol of picks.filter((s) => s !== '0700.HK')) {
+    assert.deepEqual(plain(seen[symbol]), plain(recs[symbol]), `${symbol} keeps its own record`);
+  }
 });

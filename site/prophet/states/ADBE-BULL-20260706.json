@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ADBE-BULL-20260706",
-  "asof": "2026-11-03",
+  "asof": "2026-11-06",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 43.2,
@@ -11,26 +11,26 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 19.1,
+    "progress": 23.7,
     "pace": 0.0,
-    "retention": 19.0,
-    "overlay": 53.0
+    "retention": 25.5,
+    "overlay": 32.8
   },
   "geometry": {
-    "dist_to_stop_r": 1.275,
-    "dist_to_t1_r": 1.225,
-    "dist_to_t2_r": 2.725,
-    "horizon_pct_used": 248.9,
-    "p1": 0.1836,
-    "p2": 0.0918,
+    "dist_to_stop_r": 1.368,
+    "dist_to_t1_r": 1.132,
+    "dist_to_t2_r": 2.632,
+    "horizon_pct_used": 255.6,
+    "p1": 0.2456,
+    "p2": 0.1228,
     "p3": null,
-    "move_r": 0.275,
+    "move_r": 0.368,
     "mfe_r": 1.447,
     "mae_r": -0.14
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-07-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 112,
-  "tau": 2.4889,
+  "days_elapsed": 115,
+  "tau": 2.5556,
   "closed": true,
   "outcome": "EXPIRED"
 }

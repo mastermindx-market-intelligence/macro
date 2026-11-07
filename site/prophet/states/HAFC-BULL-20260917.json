@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HAFC-BULL-20260917",
-  "asof": "2026-11-03",
+  "asof": "2026-11-06",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 40.4,
@@ -11,26 +11,26 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 14.2,
-    "pace": 28.7,
-    "retention": 100.0,
-    "overlay": 53.0
+    "progress": 5.4,
+    "pace": 24.7,
+    "retention": 27.3,
+    "overlay": 32.8
   },
   "geometry": {
-    "dist_to_stop_r": 1.186,
-    "dist_to_t1_r": 1.314,
-    "dist_to_t2_r": 2.814,
-    "horizon_pct_used": 102.2,
-    "p1": 0.124,
-    "p2": 0.062,
+    "dist_to_stop_r": 1.051,
+    "dist_to_t1_r": 1.449,
+    "dist_to_t2_r": 2.949,
+    "horizon_pct_used": 108.9,
+    "p1": 0.0338,
+    "p2": 0.0169,
     "p3": null,
-    "move_r": 0.186,
+    "move_r": 0.051,
     "mfe_r": 0.186,
     "mae_r": -0.442
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Window Elapsed \u2014 Awaiting Close",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-10-30",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 46,
-  "tau": 1.0222,
+  "days_elapsed": 49,
+  "tau": 1.0889,
   "closed": true,
   "outcome": "EXPIRED"
 }
