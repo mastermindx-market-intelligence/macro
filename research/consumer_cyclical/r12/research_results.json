@@ -1,0 +1,697 @@
+[
+  {
+    "authority": {
+      "can_gate": false,
+      "can_open_entry": false,
+      "can_originate": false,
+      "can_rank": false,
+      "can_size": false
+    },
+    "case_key": "EX-PASS-THROUGH",
+    "derived": {
+      "fund_expense_change": {
+        "input_refs": [
+          "fund_expense_new",
+          "fund_expense_old"
+        ],
+        "periods": [
+          {
+            "event": "example:q2",
+            "input_ref": "fund_expense_new",
+            "period_end": "2030-06-30",
+            "period_kind": "quarter",
+            "period_start": "2030-04-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:prior-q2",
+            "input_ref": "fund_expense_old",
+            "period_end": "2029-06-30",
+            "period_kind": "quarter",
+            "period_start": "2029-04-01",
+            "published_at": "2029-07-20T13:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "1",
+          "rounding": "derived_from_reported_values"
+        },
+        "reason": null,
+        "scale_power10": 3,
+        "sign_convention": "signed",
+        "status": "ready",
+        "unit": "USD",
+        "value_text": "9"
+      },
+      "fund_net_change": {
+        "input_refs": [
+          "fund_revenue_new",
+          "fund_revenue_old",
+          "fund_expense_new",
+          "fund_expense_old"
+        ],
+        "periods": [
+          {
+            "event": "example:q2",
+            "input_ref": "fund_revenue_new",
+            "period_end": "2030-06-30",
+            "period_kind": "quarter",
+            "period_start": "2030-04-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:prior-q2",
+            "input_ref": "fund_revenue_old",
+            "period_end": "2029-06-30",
+            "period_kind": "quarter",
+            "period_start": "2029-04-01",
+            "published_at": "2029-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:q2",
+            "input_ref": "fund_expense_new",
+            "period_end": "2030-06-30",
+            "period_kind": "quarter",
+            "period_start": "2030-04-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:prior-q2",
+            "input_ref": "fund_expense_old",
+            "period_end": "2029-06-30",
+            "period_kind": "quarter",
+            "period_start": "2029-04-01",
+            "published_at": "2029-07-20T13:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "1",
+          "rounding": "derived_from_reported_values"
+        },
+        "reason": null,
+        "scale_power10": 3,
+        "sign_convention": "signed",
+        "status": "ready",
+        "unit": "USD",
+        "value_text": "-1"
+      },
+      "fund_revenue_change": {
+        "input_refs": [
+          "fund_revenue_new",
+          "fund_revenue_old"
+        ],
+        "periods": [
+          {
+            "event": "example:q2",
+            "input_ref": "fund_revenue_new",
+            "period_end": "2030-06-30",
+            "period_kind": "quarter",
+            "period_start": "2030-04-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:prior-q2",
+            "input_ref": "fund_revenue_old",
+            "period_end": "2029-06-30",
+            "period_kind": "quarter",
+            "period_start": "2029-04-01",
+            "published_at": "2029-07-20T13:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "1",
+          "rounding": "derived_from_reported_values"
+        },
+        "reason": null,
+        "scale_power10": 3,
+        "sign_convention": "signed",
+        "status": "ready",
+        "unit": "USD",
+        "value_text": "8"
+      },
+      "fund_share_of_revenue_change_pct": {
+        "input_refs": [
+          "revenue_new",
+          "revenue_old",
+          "fund_revenue_new",
+          "fund_revenue_old"
+        ],
+        "periods": [
+          {
+            "event": "example:q2",
+            "input_ref": "revenue_new",
+            "period_end": "2030-06-30",
+            "period_kind": "quarter",
+            "period_start": "2030-04-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:prior-q2",
+            "input_ref": "revenue_old",
+            "period_end": "2029-06-30",
+            "period_kind": "quarter",
+            "period_start": "2029-04-01",
+            "published_at": "2029-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:q2",
+            "input_ref": "fund_revenue_new",
+            "period_end": "2030-06-30",
+            "period_kind": "quarter",
+            "period_start": "2030-04-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:prior-q2",
+            "input_ref": "fund_revenue_old",
+            "period_end": "2029-06-30",
+            "period_kind": "quarter",
+            "period_start": "2029-04-01",
+            "published_at": "2029-07-20T13:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "0.01",
+          "rounding": "ROUND_HALF_UP"
+        },
+        "reason": null,
+        "scale_power10": 0,
+        "sign_convention": "signed",
+        "status": "ready",
+        "unit": "percent",
+        "value_text": "40.00"
+      },
+      "revenue_change": {
+        "input_refs": [
+          "revenue_new",
+          "revenue_old"
+        ],
+        "periods": [
+          {
+            "event": "example:q2",
+            "input_ref": "revenue_new",
+            "period_end": "2030-06-30",
+            "period_kind": "quarter",
+            "period_start": "2030-04-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:prior-q2",
+            "input_ref": "revenue_old",
+            "period_end": "2029-06-30",
+            "period_kind": "quarter",
+            "period_start": "2029-04-01",
+            "published_at": "2029-07-20T13:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "1",
+          "rounding": "derived_from_reported_values"
+        },
+        "reason": null,
+        "scale_power10": 3,
+        "sign_convention": "signed",
+        "status": "ready",
+        "unit": "USD",
+        "value_text": "20"
+      },
+      "revenue_change_excluding_fund": {
+        "input_refs": [
+          "revenue_new",
+          "revenue_old",
+          "fund_revenue_new",
+          "fund_revenue_old"
+        ],
+        "periods": [
+          {
+            "event": "example:q2",
+            "input_ref": "revenue_new",
+            "period_end": "2030-06-30",
+            "period_kind": "quarter",
+            "period_start": "2030-04-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:prior-q2",
+            "input_ref": "revenue_old",
+            "period_end": "2029-06-30",
+            "period_kind": "quarter",
+            "period_start": "2029-04-01",
+            "published_at": "2029-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:q2",
+            "input_ref": "fund_revenue_new",
+            "period_end": "2030-06-30",
+            "period_kind": "quarter",
+            "period_start": "2030-04-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:prior-q2",
+            "input_ref": "fund_revenue_old",
+            "period_end": "2029-06-30",
+            "period_kind": "quarter",
+            "period_start": "2029-04-01",
+            "published_at": "2029-07-20T13:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "1",
+          "rounding": "derived_from_reported_values"
+        },
+        "reason": null,
+        "scale_power10": 3,
+        "sign_convention": "signed",
+        "status": "ready",
+        "unit": "USD",
+        "value_text": "12"
+      }
+    },
+    "evidence_status": "INVENTED_RESEARCH_EXAMPLE",
+    "explanation": {
+      "counterevidence": "Other operating costs and business contributions are not supplied by this example.",
+      "economic_meaning": "Fund contribution change: -1 \u00d7 10^3 USD. Revenue change excluding fund: 12 \u00d7 10^3 USD. Fund share of revenue change: 40.00 percent. Unavailable values remain suppressed rather than inferred.",
+      "next_observation": "A matched recurring-contribution bridge for the non-fund business.",
+      "what_changed": "Reported revenue change: 20 \u00d7 10^3 USD; fund revenue change: 8 \u00d7 10^3 USD; fund expense change: 9 \u00d7 10^3 USD."
+    },
+    "omissions": [],
+    "production_ready": false,
+    "recipe": "pass_through",
+    "section_status": "ready",
+    "source_references": [
+      {
+        "document": "https://example.invalid/example-q2",
+        "locator": "table/revenue_new",
+        "revision": "example-revision:example:q2"
+      },
+      {
+        "document": "https://example.invalid/example-prior-q2",
+        "locator": "table/revenue_old",
+        "revision": "example-revision:example:prior-q2"
+      },
+      {
+        "document": "https://example.invalid/example-q2",
+        "locator": "table/fund_revenue_new",
+        "revision": "example-revision:example:q2"
+      },
+      {
+        "document": "https://example.invalid/example-prior-q2",
+        "locator": "table/fund_revenue_old",
+        "revision": "example-revision:example:prior-q2"
+      },
+      {
+        "document": "https://example.invalid/example-q2",
+        "locator": "table/fund_expense_new",
+        "revision": "example-revision:example:q2"
+      },
+      {
+        "document": "https://example.invalid/example-prior-q2",
+        "locator": "table/fund_expense_old",
+        "revision": "example-revision:example:prior-q2"
+      }
+    ]
+  },
+  {
+    "authority": {
+      "can_gate": false,
+      "can_open_entry": false,
+      "can_originate": false,
+      "can_rank": false,
+      "can_size": false
+    },
+    "case_key": "EX-CASH",
+    "derived": {
+      "issuer_defined_total": {
+        "input_refs": [
+          "operating_cash",
+          "capital_cash",
+          "asset_proceeds",
+          "issuer_defined_total"
+        ],
+        "periods": [
+          {
+            "event": "example:q2",
+            "input_ref": "operating_cash",
+            "period_end": "2030-06-30",
+            "period_kind": "half_year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:q2",
+            "input_ref": "capital_cash",
+            "period_end": "2030-06-30",
+            "period_kind": "half_year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:q2",
+            "input_ref": "asset_proceeds",
+            "period_end": "2030-06-30",
+            "period_kind": "half_year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:q2",
+            "input_ref": "issuer_defined_total",
+            "period_end": "2030-06-30",
+            "period_kind": "half_year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "1",
+          "rounding": "derived_from_reported_values"
+        },
+        "reason": null,
+        "scale_power10": 3,
+        "sign_convention": "signed",
+        "status": "ready",
+        "unit": "USD",
+        "value_text": "40"
+      },
+      "pre_asset_proceeds": {
+        "input_refs": [
+          "operating_cash",
+          "capital_cash"
+        ],
+        "periods": [
+          {
+            "event": "example:q2",
+            "input_ref": "operating_cash",
+            "period_end": "2030-06-30",
+            "period_kind": "half_year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:q2",
+            "input_ref": "capital_cash",
+            "period_end": "2030-06-30",
+            "period_kind": "half_year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "1",
+          "rounding": "derived_from_reported_values"
+        },
+        "reason": null,
+        "scale_power10": 3,
+        "sign_convention": "signed",
+        "status": "ready",
+        "unit": "USD",
+        "value_text": "-30"
+      },
+      "reconciliation_residual": {
+        "input_refs": [
+          "operating_cash",
+          "capital_cash",
+          "asset_proceeds",
+          "issuer_defined_total"
+        ],
+        "periods": [
+          {
+            "event": "example:q2",
+            "input_ref": "operating_cash",
+            "period_end": "2030-06-30",
+            "period_kind": "half_year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:q2",
+            "input_ref": "capital_cash",
+            "period_end": "2030-06-30",
+            "period_kind": "half_year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:q2",
+            "input_ref": "asset_proceeds",
+            "period_end": "2030-06-30",
+            "period_kind": "half_year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          },
+          {
+            "event": "example:q2",
+            "input_ref": "issuer_defined_total",
+            "period_end": "2030-06-30",
+            "period_kind": "half_year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T13:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "1",
+          "rounding": "derived_from_reported_values"
+        },
+        "reason": null,
+        "scale_power10": 3,
+        "sign_convention": "signed",
+        "status": "ready",
+        "unit": "USD",
+        "value_text": "0"
+      }
+    },
+    "evidence_status": "INVENTED_RESEARCH_EXAMPLE",
+    "explanation": {
+      "counterevidence": "Growth versus maintenance allocation and future property obligations remain unresolved.",
+      "economic_meaning": "Reconciliation residual: 0 \u00d7 10^3 USD. Signed reported scale is preserved; missing or inconsistent legs suppress only dependent reconciliation results.",
+      "next_observation": "Cohort cash returns after ramp-up and the obligations created by the property transaction.",
+      "what_changed": "Pre-asset-proceeds cash subtotal: -30 \u00d7 10^3 USD; reconciled issuer-defined total: 40 \u00d7 10^3 USD."
+    },
+    "omissions": [],
+    "production_ready": false,
+    "recipe": "cash_bridge",
+    "section_status": "ready",
+    "source_references": [
+      {
+        "document": "https://example.invalid/example-q2",
+        "locator": "table/operating_cash",
+        "revision": "example-revision:example:q2"
+      },
+      {
+        "document": "https://example.invalid/example-q2",
+        "locator": "table/capital_cash",
+        "revision": "example-revision:example:q2"
+      },
+      {
+        "document": "https://example.invalid/example-q2",
+        "locator": "table/asset_proceeds",
+        "revision": "example-revision:example:q2"
+      },
+      {
+        "document": "https://example.invalid/example-q2",
+        "locator": "table/issuer_defined_total",
+        "revision": "example-revision:example:q2"
+      }
+    ]
+  },
+  {
+    "authority": {
+      "can_gate": false,
+      "can_open_entry": false,
+      "can_originate": false,
+      "can_rank": false,
+      "can_size": false
+    },
+    "case_key": "EX-OUTLOOK",
+    "derived": {
+      "high_change": {
+        "input_refs": [
+          "prior_high",
+          "new_high"
+        ],
+        "periods": [
+          {
+            "event": "example:q1-release",
+            "input_ref": "prior_high",
+            "period_end": "2030-12-31",
+            "period_kind": "year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-04-20T08:00:00-04:00"
+          },
+          {
+            "event": "example:q2-release",
+            "input_ref": "new_high",
+            "period_end": "2030-12-31",
+            "period_kind": "year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T08:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "1",
+          "rounding": "derived_from_reported_values"
+        },
+        "reason": null,
+        "scale_power10": 3,
+        "sign_convention": "signed",
+        "status": "ready",
+        "unit": "USD",
+        "value_text": "-150"
+      },
+      "low_change": {
+        "input_refs": [
+          "prior_low",
+          "new_low"
+        ],
+        "periods": [
+          {
+            "event": "example:q1-release",
+            "input_ref": "prior_low",
+            "period_end": "2030-12-31",
+            "period_kind": "year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-04-20T08:00:00-04:00"
+          },
+          {
+            "event": "example:q2-release",
+            "input_ref": "new_low",
+            "period_end": "2030-12-31",
+            "period_kind": "year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T08:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "1",
+          "rounding": "derived_from_reported_values"
+        },
+        "reason": null,
+        "scale_power10": 3,
+        "sign_convention": "signed",
+        "status": "ready",
+        "unit": "USD",
+        "value_text": "-100"
+      },
+      "new_upper_minus_prior_lower": {
+        "input_refs": [
+          "prior_low",
+          "new_high"
+        ],
+        "periods": [
+          {
+            "event": "example:q1-release",
+            "input_ref": "prior_low",
+            "period_end": "2030-12-31",
+            "period_kind": "year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-04-20T08:00:00-04:00"
+          },
+          {
+            "event": "example:q2-release",
+            "input_ref": "new_high",
+            "period_end": "2030-12-31",
+            "period_kind": "year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T08:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "1",
+          "rounding": "derived_from_reported_values"
+        },
+        "reason": null,
+        "scale_power10": 3,
+        "sign_convention": "signed",
+        "status": "ready",
+        "unit": "USD",
+        "value_text": "-50"
+      },
+      "range_relation": {
+        "input_refs": [
+          "prior_low",
+          "prior_high",
+          "new_low",
+          "new_high"
+        ],
+        "periods": [
+          {
+            "event": "example:q1-release",
+            "input_ref": "prior_low",
+            "period_end": "2030-12-31",
+            "period_kind": "year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-04-20T08:00:00-04:00"
+          },
+          {
+            "event": "example:q1-release",
+            "input_ref": "prior_high",
+            "period_end": "2030-12-31",
+            "period_kind": "year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-04-20T08:00:00-04:00"
+          },
+          {
+            "event": "example:q2-release",
+            "input_ref": "new_low",
+            "period_end": "2030-12-31",
+            "period_kind": "year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T08:00:00-04:00"
+          },
+          {
+            "event": "example:q2-release",
+            "input_ref": "new_high",
+            "period_end": "2030-12-31",
+            "period_kind": "year",
+            "period_start": "2030-01-01",
+            "published_at": "2030-07-20T08:00:00-04:00"
+          }
+        ],
+        "precision": {
+          "display_quantum": "1",
+          "rounding": "not_applicable"
+        },
+        "reason": null,
+        "scale_power10": 0,
+        "sign_convention": "not_applicable",
+        "status": "ready",
+        "unit": "classification",
+        "value_text": "new_range_below_prior_range"
+      }
+    },
+    "evidence_status": "INVENTED_RESEARCH_EXAMPLE",
+    "explanation": {
+      "counterevidence": "No actual result or market-expectation history is included.",
+      "economic_meaning": "Range relationship: new_range_below_prior_range. These are ordered management outlook events for the same target, not an actual result or consensus surprise.",
+      "next_observation": "A later compatible outlook or the actual result for this same target.",
+      "what_changed": "Low-bound change: -100 \u00d7 10^3 USD; high-bound change: -150 \u00d7 10^3 USD; new upper minus prior lower: -50 \u00d7 10^3 USD."
+    },
+    "omissions": [],
+    "production_ready": false,
+    "recipe": "outlook_revision",
+    "section_status": "ready",
+    "source_references": [
+      {
+        "document": "https://example.invalid/example-q1-release",
+        "locator": "table/prior_low",
+        "revision": "example-revision:example:q1-release"
+      },
+      {
+        "document": "https://example.invalid/example-q1-release",
+        "locator": "table/prior_high",
+        "revision": "example-revision:example:q1-release"
+      },
+      {
+        "document": "https://example.invalid/example-q2-release",
+        "locator": "table/new_low",
+        "revision": "example-revision:example:q2-release"
+      },
+      {
+        "document": "https://example.invalid/example-q2-release",
+        "locator": "table/new_high",
+        "revision": "example-revision:example:q2-release"
+      }
+    ]
+  }
+]
