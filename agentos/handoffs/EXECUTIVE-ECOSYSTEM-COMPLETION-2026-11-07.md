@@ -256,3 +256,55 @@ has headroom but no discovered native dsh launcher and a registry ceiling of
 two; it must not be silently promoted into a 32-worker host. Keep 25/50/100
 production measurements unproven until original owner admission and bounded
 service/resource behavior are demonstrated.
+
+### Installed provenance and exact access boundary
+
+A separate read-only provenance observation (Studio PID3655, 11:16 UTC)
+resolved the Ubuntu1/2/3 dsh links into the existing global
+@deepseek-ai/dsh package, version 0.2.1-rc.2. All three 11,772-byte lib/bin.js
+entries have SHA256
+80112efe368efb1a39720c7ada0af00442e5131fb2744edaaff8a3e8bb499e6f.
+The package has no gitHead and is not a Git worktree. The clean adopted donor
+also declares version 0.2.1-rc.2 at 687f282e8625c6b8d11ff58211a90524be2e4317,
+but matching version/entry bytes does not attest the whole closure or installed
+Mastermind profile. No dsh command or model was executed. systemd-detect-virt
+returned none on these three hosts; physical identity remains a separate proof.
+
+The active Ubuntu1 gateway runs as _mastermind_exec from the existing release
+b1a4a30ade71b3991639658a0847fcbfba3dd77e and its
+scripts/executive_os_remote_worker_gateway.py. The failed Hermes service runs as
+mmsecretary through release 6fa7838d811e305c10035f6531e75d8e547d9d03 and the
+existing release_manifest.py. These differing installed source carriers must be
+reconciled with the original current APPLICATION release; neither was replaced.
+
+The gateway's actual cgroup and its system.slice ancestor both report
+cpu.max=max 100000, memory.max=max and memory.high=max. The service pids.max is
+70698; the ancestor pids.max is max. This is evidence that the inspected gateway
+chain has no finite CPU/memory quota, not a measurement of a future native
+worker's cost or proof that an arbitrary worker cgroup will inherit a qualified
+envelope.
+
+The first ordinary-user read of
+/etc/mastermind-executive/remote-worker-gateway/host-observation.json
+returned PERMISSION_DENIED at the original Ubuntu1 target (Studio PID10923).
+The action ended. No sudo, other account, alternate carrier or path was used to
+replay it. Actual RuntimeBinding/enrollment remains unread, so the
+UNENROLLED_HOST_REF description is a lead rather than an authoritative binding
+verdict. If this exact installed evidence is needed next, the administrator must
+supply the non-secret binding/qualification receipt or legitimately grant that
+specific read; no broad credential disclosure is needed.
+
+The protected source resource-policy module is storeless and already owns the
+accounting predicates. Its production loader is
+executive_physical_admission.load_admitted_policy, whose sealed composer binds
+the schema, canonical Runtime, host and boot. A synthetic caller context cannot
+qualify it. No parallel capacity calculator was created; no fabricated runtime
+request or policy flip was used to manufacture an admission result.
+
+The original #2177 writer's current local frontier was read, without edits.
+It retains its 502-case native OHF laboratory qualification and disabled native
+conversation profile, and explicitly keeps Runtime per-turn sealing,
+historical-result/successor-generation separation, authenticated foreground
+Send/resume/Stop and installed company/account/capability/confinement observations
+as remaining joins. Eighteen tracked local paths were still changed at that
+observation. The published head is not authority to overwrite that active work.
