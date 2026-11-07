@@ -14,8 +14,9 @@ authorization plane.
 
 All three modes ship `enabled=false`. Each source request profile is
 `UNQUALIFIED_PENDING_CANARY`; enabling a config record alone cannot read a
-credential or invoke the transport. A genuine private provider canary and
-separately reviewed qualification must precede any live call. The transport
+credential or invoke the transport. Commercial production use requires a
+genuine private provider canary, owner-bound transport/account qualification,
+and any actually applicable protected review and release requirements. The transport
 uses `BYTEPLUS_MODELARK_API_KEY` only at the existing credential boundary
 and the pinned commercial endpoint
 `https://ark.ap-southeast.bytepluses.com/api/v3`.
@@ -113,13 +114,21 @@ The downstream contracts were checked at immutable source heads:
 
 | Owner | Source | Required boundary |
 | --- | --- | --- |
-| Shared Model Pool Control | Mastermind #2109, `1b3065981ef4e44f1727c150fdc682a34297c44a` | Logical model routing is separate from physical pool/account enrollment. Native Fabric retains selection, account eligibility, quota and admission; Macro retains application inference and provider-usage accounting. |
-| Application admission and settlement | Mastermind #2175, `17dccc6300439fafa08dcc472c68319b024fb3b4` | A startup-registered transport and its exact recipe/account grants must exist before a route is offered. Selection is not execution authority. The incumbent broker atomically admits the turn/request, and the original handler settles the dispatch or preserves its unknown effect. |
-| Commercial consumer | Mastermind #1824, `f559d9d188ab8905bd84779ed01b26a867f36ab9` | The advisory projection and provider aliases do not establish native registration, a production caller, account eligibility, or live capacity. The retained source repair remains unapplied behind its original write hold. |
+| Shared Model Pool Control | Mastermind #2109, `8dc8eb42df7ed1f3c79f434da30df9ad12dafe14` | Logical model routing is separate from physical pool/account enrollment. Native Fabric retains selection, account eligibility, quota and admission; Macro retains application inference and provider-usage accounting. |
+| Application admission and settlement | Mastermind #2175, `312be66141bf58c564a11818d63ddd3f958ca0c0` | A startup-registered transport and its exact recipe/account grants must exist before a route is offered. Selection is not execution authority. The incumbent broker atomically admits the turn/request, and the original handler settles the dispatch or preserves its unknown effect. |
+| Commercial source | Mastermind #1824, merged `1e5f77a4e7aa5131ecbaef9bb00487882dec4d79` | Original source access was restored, the retained P2 repair applied, and current protected Capacity source integrated. The protected queue merged it at 2026-11-07T05:37:19Z; all 18 owned postimages were verified in the merged tree. Native commercial enrollment and consumer acceptance remain unproven. |
+| Application consumer composition | Macro #10740, `abab96df55f82cb5c26459a6f51b568d73a6a6f8` | The existing application Fabric factory/client narrows an exact model within an already authorized route scope and validates its exact-request receipt. Native admission and account claims remain in the Capacity owner; narrowing does not enroll ModelArk. Compose this provider transport and temporal usage settlement with that owner without adding a lease, retry or second usage ledger. |
 
 At those heads, #2175 has no registered BytePlus ModelArk application pool
-or commercial transport recipe. Its existing native `glm` pool must not be
-reinterpreted as a commercial BytePlus account. Likewise, the three Macro
+or commercial transport recipe. Its native HTTP broker admits Bailian, while
+the sealed HTTP projection permits only the reviewed Bailian/MiniMax
+subscription drivers. The commercial realm requires a deliberate successor
+contract and real account qualification; inert registration is not admission.
+The merged ordinary Codex Worker adapter also explicitly refuses commercial
+ModelArk START, even if transport registry membership is changed. Its eventual
+successor must consume actual owner-bound Executive admission facts.
+
+The existing native `glm` pool in #2175 must not be reinterpreted as a commercial BytePlus account. Likewise, the three Macro
 mode IDs above must not be advertised as enrolled Fabric capacity merely
 because their source records exist. The BytePlus commercial identity and
 Personal Coding Plan identity remain separate, with their own eligibility,
@@ -146,5 +155,7 @@ modes remain OFF and the live enrollment hold remains explicit.
 Source references:
 - https://github.com/mastermindx-market-intelligence/Mastermind/pull/2109
 - https://github.com/mastermindx-market-intelligence/Mastermind/pull/2175
-- https://github.com/mastermindx-market-intelligence/Mastermind/pull/1824#issuecomment-6702456337
+- https://github.com/mastermindx-market-intelligence/Mastermind/pull/1824#issuecomment-6702909104
+- https://github.com/mastermindx-market-intelligence/Mastermind/blob/1e5f77a4e7aa5131ecbaef9bb00487882dec4d79/docs/runbooks/BYTEPLUS_MODELARK_COMMERCIAL_CANARY_HANDOFF.md
+- https://github.com/mastermindx-market-intelligence/macro/pull/10740
 
