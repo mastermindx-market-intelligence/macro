@@ -5473,7 +5473,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_915),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_668),
 )
@@ -5483,6 +5483,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR #10679 (2026-11-07): contract-delta run 42322109666 / job
+    128248836979 measured source c85797511aed on tested merge 4e39ed84a42e
+    against base 53ce2316134a: index 137 jobs / 5,912 -> 5,915 weight,
+    free-content 137 / 5,927 -> 5,927, Prophet 131 / 5,668 -> 5,668,
+    ten packs each, no newly selected jobs. The standalone public-HTML
+    timeout test adds three planning units to the existing regwall-boundary
+    step set; site-access-boundary keeps its isolated contract. Fund only
+    index 5,912 -> 5,915 above the separately recorded P12.T32.S3 baseline.
+    These are planner estimates, not runtime receipts. Job/pack limits,
+    suite selection, runner admission and all other ceilings are unchanged.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same

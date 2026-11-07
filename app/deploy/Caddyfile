@@ -411,6 +411,13 @@
 			reverse_proxy 127.0.0.1:8000 {
 				method GET
 				rewrite /api/gate/check
+				# This public HTML IP/country gate is not an authentication boundary;
+				# its existing error path serves the shell when the API is unavailable.
+				# Bound an accepted-but-stalled upstream instead of waiting indefinitely.
+				transport http {
+					dial_timeout 300ms
+					response_header_timeout 900ms
+				}
 
 				# 2xx (204 allow): empty handle_response → CONTINUE to file_server.
 				@allow status 2xx
