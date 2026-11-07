@@ -1,0 +1,95 @@
+{
+  "schema": "pb_d.return_manifest.v1",
+  "operation_key": "PB-D-T2-EVENT-QUALITY-20261007",
+  "status": "RESEARCH_COMPLETE_FROZEN_DESIGN_NOT_ENROLLED",
+  "branch": "research/pb-d-t2-event-quality-20261007",
+  "base_main": "007e0cccbd06f089605ba122efc658f406043dd3",
+  "write_scope": "research/policy_behavior/pro_returns/PB-D/",
+  "self_excluded": true,
+  "files": [
+    {
+      "path": "PB_D_ACCEPTANCE.md",
+      "bytes": 4963,
+      "sha256": "709d08e9a9dbcb4434972b52a85ec9aaa189e19009d240876ff7a666e3623838",
+      "git_blob": "b3b33d3b75adb44257edbf770398db70025c7ac0"
+    },
+    {
+      "path": "PB_D_EVENT_QUALITY_LABEL_SPEC.md",
+      "bytes": 16308,
+      "sha256": "23430f5038535efec968d94dbf5a1f0b5881168da0eba62481c0039b6abc59c9",
+      "git_blob": "ff0e867226be8bf75a84e7fa85f49d12b14eaa21"
+    },
+    {
+      "path": "PB_D_PB_G_HANDOFF.md",
+      "bytes": 5345,
+      "sha256": "7ab5d76df8ad008ec60661ea0b71532cfe74b51d3a37a6c3eb743a1b7eab1b2d",
+      "git_blob": "45abf153add6b27c6c11bd627201b4dafa8cb56c"
+    },
+    {
+      "path": "PB_D_PINNED_SOURCES.json",
+      "bytes": 2671,
+      "sha256": "e69b08fce8f9901805816e68f3c3ff95834699a8b444c488de379cbd9af15619",
+      "git_blob": "beee294486aa4b19c331466cc7509544d428518b"
+    },
+    {
+      "path": "PB_D_POWER_AND_LIMITATIONS.md",
+      "bytes": 13549,
+      "sha256": "95a88b501fa833a61589c433f5751142b1f4d2dff0f7653a6c9ed96998beb34b",
+      "git_blob": "67b5b26ba520f8efa3b31368009c0a7a768a2f52"
+    },
+    {
+      "path": "PB_D_PROSPECTIVE_PREREG.md",
+      "bytes": 26963,
+      "sha256": "d5140c7b40e1bf8a94203ca3d097b4760b9b9433fb407cfbec2c8b7fa308c407",
+      "git_blob": "39a31ea73b8d9955b21d93a52b6d7ec29b137638"
+    },
+    {
+      "path": "PB_D_REPRODUCTION.md",
+      "bytes": 22665,
+      "sha256": "7e6febee4882aa5386eaafa741672653304a066e94bfadf19bf0a17025dff8e9",
+      "git_blob": "54f904a6cd0b3c59ec9076815ee66f712f6f14ef"
+    },
+    {
+      "path": "PB_D_REPRODUCTION_RESULTS.json",
+      "bytes": 508293,
+      "sha256": "6a9991e78d4d0345a64cdf44e41e36cb8519f89259a38ebb6aec50ab1067cb8f",
+      "git_blob": "fd5cf89c99e68c0188d2f82f6f409be5d92c8847"
+    },
+    {
+      "path": "PB_D_SOURCE_AUDIT.json",
+      "bytes": 12589,
+      "sha256": "decaf5beb21728f827c860c4b67588af7f6cf02a699e12a3e0922f5c75d38aba",
+      "git_blob": "b85f3afa51c98bb538e64ce5e48d5f4d81ac1abb"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6085,
+      "sha256": "64d7e738bd1208036110449d40f34f96428970bd7c27cd32a348d158748bd853",
+      "git_blob": "2e327be7187612382a3aa5dcbcc56759ef146c78"
+    },
+    {
+      "path": "audit_archived_sources.py",
+      "bytes": 6053,
+      "sha256": "3a4286037d31b716eda6bc73740fc8391bca19f19f2c06748d6e5ccd9b3c3a61",
+      "git_blob": "93a2c7fbfe4a96eabb2438cb642946065dae627e"
+    },
+    {
+      "path": "fetch_inputs.py",
+      "bytes": 1743,
+      "sha256": "09915a67a33a0041fc3ebecb20809d50f1df1c92867c129f212f205284bf7d78",
+      "git_blob": "a0444e34477a9e6aec03b3fb75100202bc6e93c3"
+    },
+    {
+      "path": "reproduce_pb_d.py",
+      "bytes": 17272,
+      "sha256": "4843e8bd3b78588c4b3525b2b2b39ee45829c30335ab5a58dd3b1c29cd971005",
+      "git_blob": "e602753af707147a76553cbfe713437cf61b05c6"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 57,
+      "sha256": "7e19cdf48d34ad47f115ac10b81a1daaa069ad12293da03ff95d544a39e5eff2",
+      "git_blob": "33ce98fc5db3aec9f3f6234eb1100d6c8a7a3966"
+    }
+  ]
+}
