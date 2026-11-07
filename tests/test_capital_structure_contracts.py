@@ -490,6 +490,19 @@ def test_document_term_requires_decimal_strings_and_cannot_tunnel_an_issuer_stat
     _invalid(name, record, "'amount' was expected")
 
 
+def test_document_term_scope_allows_row_and_total_but_nothing_else():
+    name = "capital_structure_document_term_observation.schema.json"
+    _validate(name, _document_term())
+
+    total = _document_term()
+    total["term"]["scope"] = "registration_fee_table_total"
+    _validate(name, total)
+
+    forged = _document_term()
+    forged["term"]["scope"] = "registration_fee_table"
+    _invalid(name, forged, "is not one of")
+
+
 def test_document_term_schema_binds_security_class_to_amount_and_price_dimensions():
     name = "capital_structure_document_term_observation.schema.json"
 

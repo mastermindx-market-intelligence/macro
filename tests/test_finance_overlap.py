@@ -245,6 +245,27 @@ def test_market_factor_overlap_cosine_in_unit_interval():
     assert -1.0 <= v <= 1.0
 
 
+def test_market_factor_overlap_none_loading_is_missing_not_typeerror():
+    # A None loading is missing data: it must not reach float(None). With
+    # rates_beta skipped, no comparable key remains -> None (never 0.0).
+    assert market_factor_overlap({"rates_beta": None}, {"rates_beta": 0.5}) is None
+
+
+def test_market_factor_overlap_none_and_numeric_other_key():
+    # rates_beta is dropped as None; credit_beta is the sole comparable key
+    # and an identical 1-D vector, so the existing cosine math
+    # dot/(norm_a*norm_b) in finance_overlap.py gives exactly
+    # 1.0/(1.0*1.0) == 1.0.
+    assert market_factor_overlap(
+        {"rates_beta": None, "credit_beta": 1.0},
+        {"credit_beta": 1.0},
+    ) == 1.0
+
+
+def test_market_factor_overlap_none_on_right_side():
+    assert market_factor_overlap({"rates_beta": 0.5}, {"rates_beta": None}) is None
+
+
 # ---------------------------------------------------------------------------
 # ownership_hierarchy_report
 # ---------------------------------------------------------------------------

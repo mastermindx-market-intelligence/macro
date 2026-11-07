@@ -1,5 +1,5 @@
 schema: house_law_checks.v1
-updated: "2026-09-28"
+updated: "2026-10-21"
 
 # Canonical registry of every house law and its enforcement status.
 # Maintained by scripts/check_house_law_registry.py (meta-guard).
@@ -149,6 +149,49 @@ checks:
       guard shipped with each got their own emitter fix, and
       tests/test_check_site_asset_refs.py ratchets the empty state so a re-pin has
       to be argued in review rather than riding in with a fresh 404.
+
+  - law_id: ui.commodity_publication_integrity
+    summary: >
+      Commodities publishers must retain a supported display-only workspace and
+      export-only research contract. Recovery may copy only one qualified pinned
+      accepted page; the exact committed push candidate and its local CSS/JS
+      references must pass independently before publication.
+    source_ref:
+      - scripts/check_commodity_publication.py
+      - tests/test_commodity_publication.py
+      - research/COMMODITIES_PUBLICATION_GUARD_2026-10-20.md
+      - "PRs #9878 #9926"
+    severity: hard
+    check_script: scripts/check_commodity_publication.py
+    ci_wiring:
+      - workflow: .github/workflows/render.yml
+        job: render
+        lane: render
+      - workflow: .github/workflows/engine-render.yml
+        job: engine-render
+        lane: render
+      - workflow: .github/workflows/daily.yml
+        job: engine
+        lane: scheduled
+    selftest: false
+    selftest_exempt_reason: >
+      The existing Commodities PR code job runs tests/test_commodity_publication.py:
+      malformed and duplicate payloads, unsupported versions, unsafe paths,
+      missing assets, exact committed-candidate checks, real stale-render rebase
+      recovery, and canonical-theme publication normalization fixtures.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - Publication structure does not establish economic freshness, builder
+        success, served artifact identity, authentication or browser behavior.
+      - Local CSS/JS existence is checked separately from the full-site reference
+        guard and does not authorize asset restoration or collector execution.
+    owner_program: commodities-dashboard
+    notes: >
+      Normal metadata replay, normal and express porcelain rebases, and the nightly
+      output helper validate their actual push candidate. Worktree healing cannot
+      certify a failed or skipped repair commit. Receipts keep freshness_verified
+      false; covering-render and authenticated live acceptance remain separate.
 
   - law_id: ui.government_revenue_projection_integrity
     summary: >
@@ -1291,6 +1334,39 @@ checks:
     notes: >
       Measured 2026-08-08→08-14: dedicated PutObject AccessDenied froze
       source_manifest at 1,258 while both nightly jobs stayed green.
+
+  - law_id: cs.reference_dossier_traceability
+    summary: >
+      Every expected value in the six Capital Structure reference dossiers
+      (research/capital_structure/e2e_20261013/reference/) must trace to exact
+      permitted evidence: each operand resolves to a served EvidenceRef in the
+      state bundle evidence_index or to a qualified, sha-pinned span of the
+      reference pack. An untraceable expectation exits 1, so the A0 harness can
+      never prove the engine agrees with itself.
+    source_ref:
+      - scripts/check_capital_structure_reference_dossiers.py
+      - tests/test_capital_structure_reference_dossiers.py
+      - tests/test_capital_structure_a0_reference_lineage.py
+      - "PR #9748"
+    severity: manual
+    check_script: scripts/check_capital_structure_reference_dossiers.py
+    ci_wiring: []
+    selftest: false
+    selftest_exempt_reason: >
+      Operand-traceability check over the committed dossiers and the served
+      state bundle; behavioral coverage is tests/test_capital_structure_reference_dossiers.py
+      and tests/test_capital_structure_a0_reference_lineage.py (registered in
+      legacy-jobs.yml), including the untraceable-operand and absent-bundle
+      (exit 3) paths.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The real state bundle is produced only by the nightly cs_state step;
+        on a tree without it the script exits 3 by design, so the A0-2
+        traceability proof runs after the first natural nightly.
+    owner_program: capital-structure-intelligence
+    notes: >
+      A0-0 (SPEC_A0 §2 + §7). Never fetches and never writes.
 
   - law_id: ops.builder_failstreaks
     summary: >
@@ -3217,26 +3293,25 @@ checks:
       instead of reporting the gap.
   - law_id: ui.p0b_receipt_closure
     summary: >
-      A change to any path pinned by the Prophet P0B browser receipts
-      (construction_inputs, loaded_assets, the verifier script, or
-      rendered-fixture.json's recipe inputs) must remint those receipts in the
-      same diff. #7603 changed templates/hk.html.j2 without reminting
-      mobile-layout*.json (still pinning 1ae1c8ed…); #7500 did the same with
-      site/navigation-refresh.css (healed by #7597). The class reddens
-      test_stock_dashboard_first_frame.py on every fresh merge-ref until the
-      closure is a GATE. The pin set is derived FROM the receipts at runtime
-      and is never hardcoded. Exception (digest-only tier): a loaded script
-      named in the gate's REFRESHABLE_LOADED_ASSETS closes with a browser-free
-      `--refresh-digests` sidecar under digest-refresh/ instead of a remint,
-      because tests/test_stock_dashboard_first_frame.py executes its bytes
-      against every measured page and reds if it reaches the first frame.
+      Changes to paths pinned by the Prophet P0B browser receipts require
+      same-diff receipt closure. Pins are derived from the receipts and their
+      fixture recipe. Construction inputs, verifier, fonts, CSS, callers and
+      unknown helper revisions remain strict. A digest sidecar may close only
+      one explicitly qualified complete helper source vector and exact raw
+      receipt scene from QUALIFIED_DIGEST_SCENES. The initial historical record
+      is captured-helper byte identity and grants no changed-helper exception.
+      Unknown scenes use strict current receipt bindings without an overlay.
+      Future qualification requires an ordinary source-policy amendment;
+      passing the finite diagnostic never grants eligibility.
     source_ref:
       - scripts/check_p0b_receipt_closure.py
       - tests/test_check_p0b_receipt_closure.py
+      - tests/test_stock_dashboard_first_frame.py
       - mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
       - mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
       - "PR #7597"
       - "PR #7603"
+      - "PR #8925"
     severity: hard
     check_script: scripts/check_p0b_receipt_closure.py
     ci_wiring:
@@ -3248,38 +3323,41 @@ checks:
     ratchet: null
     known_limits:
       - >-
-        File-list closure only: a receipt file present in the diff satisfies
-        the gate even if its hashes were not actually reminted. The receipt
-        tests in tests/test_stock_dashboard_first_frame.py still bind live
-        bytes and catch a touch-only companion.
+        File-list closure alone accepts a receipt path present in the diff;
+        tests/test_stock_dashboard_first_frame.py still bind the actual
+        current receipt, fixture, verifier, loaded inputs and font bytes.
+        A path touch does not establish a new browser execution.
       - >-
-        Derives pins from committed receipts at HEAD, not from the incoming
-        diff's new receipt bytes. A PR that adds a newly pinned path and the
-        receipts in the same diff is judged against the pre-change pin set
-        for that path (the new pin takes effect on the next PR).
+        The finite exact-source Node diagnostic checks its declared fixture
+        trace only. It does not replay browser screenshots or the 64-case
+        matrices and does not establish equivalence for future helper edits,
+        arbitrary event roots, unsupported APIs or asynchronous work.
+      - >-
+        A qualified digest sidecar explicitly says its new bytes were not
+        browser-measured. A changed scene deactivates the old exemption.
+        Strict retirement may only delete recognized owned sidecars after
+        every current strict binding and applicable loaded asset matches;
+        it cannot create an exemption or certify a new browser run.
+      - >-
+        Complete planning and immediate input/target rechecks precede refresh
+        effects, but are not an atomic filesystem transaction or a lock
+        against an uncontrolled concurrent writer.
       - >-
         REFUSES on a sparse checkout that omits mockups/ rather than reporting
         a vacuous pass over receipts it cannot see.
-      - >-
-        Digest-only inertness is a fixture-scope claim: the probe proves a
-        tier script leaves the RENDERED FIXTURE's first frame alone (e.g. the
-        fixture's HK sector table is empty, so tablesort enhances nothing
-        there); it says nothing about production pages with fuller data.
     owner_program: prophet-us-eyes-open
     notes: >
-      Its own legacy job, p0b-receipt-closure (gate: code, scope: exclusive,
-      fetch-depth 0), since the #6872 postmortem (2026-09-24). It first shipped
-      as trailing steps on design-governance (#7613), which failed twice on
-      #6872: run_ci_pack.py skips a logical job's remaining steps after the
-      first failing one, so the design ratchet's own red hid this verdict; and
-      "unscoped" is not always-on — inference derives a scope from the job's
-      commands and mockups/ sits outside every opaque scan root, so a diff
-      touching only the rendered fixture or a receipt input skipped the job.
-      The curated paths name the roots every pin lives under and are bound to
-      the committed receipts by tests/test_ci_pack.py::
-      test_p0b_receipt_closure_job_owns_every_receipt_pinned_path. The gate
-      step runs first in the job. The checker never shells out to git; the
-      caller hands it `git diff --name-only`.
+      The existing p0b-receipt-closure job remains a hard code gate with
+      exclusive scope, fetch-depth 0, its gate step first, its existing
+      selftest and unit command, and its ten-minute limit. Curated paths
+      cover every receipt pin and checker import. No path-only allowlist,
+      severity downgrade, browser-proof substitution or separate owner is
+      introduced. Tablesort remains strict. New helper eligibility requires
+      explicit complete-vector and raw-scene policy disposition. Fresh
+      receipt scenes can be strictly valid while the historical exemption
+      is inactive. The original two-argument file-list API is preserved.
+      A canonical sidecar identifies only its own asset and receipt scene;
+      sibling unions still require explicit complete-vector qualification.
   - law_id: data.append_only_assertions
     summary: >
       A historical assertion over an append-only store must not become false

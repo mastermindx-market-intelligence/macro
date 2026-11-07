@@ -160,10 +160,13 @@ def test_additional_history_registry_is_proposed_with_exact_raw_lineage():
         assert view.storage.startswith("/Volumes/Mastermind/market-data/tiingo/normalized/")
 
 
-def test_tiingo_registration_never_marks_fixture_data_as_produced():
+def test_tiingo_registration_distinguishes_verified_corpus_from_fixture_only_products():
     from lib.dataos.registry import load_registry, DatasetStatus, validate_registry
     registry = load_registry()
     ids = [name for name in registry.ids() if name.startswith("vendor.tiingo.")]
     assert len(ids) == 24
-    assert all(registry.get(name).status is DatasetStatus.PROPOSED for name in ids)
+    produced = {"vendor.tiingo.raw.equity_eod", "vendor.tiingo.raw.fundamentals",
+                "vendor.tiingo.research.eod", "vendor.tiingo.research.fundamentals"}
+    assert {name for name in ids if registry.get(name).status is DatasetStatus.PRODUCED} == produced
+    assert all(registry.get(name).status is DatasetStatus.PROPOSED for name in set(ids) - produced)
     assert validate_registry(registry) == []

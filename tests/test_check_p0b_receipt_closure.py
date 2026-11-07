@@ -233,6 +233,48 @@ def test_a_main_role_event_relaxes_only_the_null_token(tmp_path: Path) -> None:
         guard.parse_changed_paths("[oops", null_is_no_diff=True)
 
 
+FONT_MANIFEST = f"{EVIDENCE}/inputs/browser-data/p0b-font-pin/font-pin.json"
+
+
+def _pin_fonts_and_browser(root: Path, version: str) -> None:
+    for receipt in (HK_RECEIPT, CA_RECEIPT):
+        path = root / receipt
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload["browser"] = {"engine": "chromium", "version": version}
+        payload["font_pin"] = {"manifest": {"path": FONT_MANIFEST, "sha256": "9" * 64}}
+        _write_json(path, payload)
+
+
+def test_font_pin_manifest_alone_fails(tmp_path: Path) -> None:
+    """Changing the pinned fonts moves glyph metrics, so both receipts re-mint."""
+    _plant_receipts(tmp_path)
+    _pin_fonts_and_browser(tmp_path, "1.2.3.4")
+    findings = _eval(tmp_path, {FONT_MANIFEST})
+    assert findings
+    assert any(HK_RECEIPT in row for row in findings)
+    assert any(CA_RECEIPT in row for row in findings)
+    assert _eval(tmp_path, {FONT_MANIFEST, HK_RECEIPT, CA_RECEIPT}) == []
+
+
+def test_environment_hint_names_the_receipt_browser_pin_and_fonts(tmp_path: Path) -> None:
+    _plant_receipts(tmp_path)
+    _pin_fonts_and_browser(tmp_path, "1.2.3.4")
+    verifier = tmp_path / guard.DEFAULT_VERIFIER
+    verifier.parent.mkdir(parents=True, exist_ok=True)
+    verifier.write_text('const CHROMIUM_PIN = "1.2.3.4";\n', encoding="utf-8")
+    hint = guard.environment_hint(tmp_path)
+    assert "measured on chromium 1.2.3.4" in hint
+    assert "pins Chromium 1.2.3.4" in hint
+    assert FONT_MANIFEST in hint
+
+
+def test_environment_hint_survives_receipts_without_a_browser(tmp_path: Path) -> None:
+    """Receipts minted before the pin carry no browser block; the hint still prints."""
+    _plant_receipts(tmp_path)
+    hint = guard.environment_hint(tmp_path)
+    assert hint.startswith("re-mint environment:")
+
+
 def test_cli_red_then_green(tmp_path: Path) -> None:
     _plant_receipts(tmp_path)
     red_list = tmp_path / "red.txt"
@@ -284,6 +326,7 @@ RECIPE = "scripts/render_stock_dashboard_fixture.py"
 # Layout tier: anything that can move the measured first frame. Stylesheets,
 # fonts, chrome scripts and composers, every one of which a receipt loads.
 LAYOUT_ASSETS = [
+    "site/tablesort.js",
     "site/stock-dashboard.css",
     "site/fonts/Inter-400.woff2",
     "site/theme.js",
@@ -297,11 +340,28 @@ LAYOUT_ASSETS = [
 ]
 DIGEST_ASSETS = sorted(guard.REFRESHABLE_LOADED_ASSETS)
 CHARTS = "site/charts.js"
-TABLESORT = "site/tablesort.js"
+MTF = "site/mtf.js"
 
 
 def _digest(root: Path, rel: str) -> str:
     return guard.sha256_file(root / rel) or ""
+
+
+
+@pytest.fixture(autouse=True)
+def _isolate_synthetic_qualification(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(guard, "QUALIFIED_DIGEST_SCENES", (), raising=False)
+
+
+def _approve_synthetic(root: Path) -> None:
+    """Declare one exact unit-fixture vector/scene, never browser evidence or auto-discovery."""
+    row = {
+        "basis": "synthetic_unit_fixture_not_browser_evidence",
+        "receipts": {p: _digest(root, p) for p in (HK_RECEIPT, CA_RECEIPT)},
+        "assets": {p: _digest(root, p) for p in guard.REFRESHABLE_LOADED_ASSETS},
+    }
+    if row not in guard.QUALIFIED_DIGEST_SCENES:
+        guard.QUALIFIED_DIGEST_SCENES += (row,)
 
 
 def _remint(root: Path) -> None:
@@ -313,6 +373,7 @@ def _remint(root: Path) -> None:
         for key in ("verifier", "fixture_receipt"):
             payload[key]["sha256"] = _digest(root, payload[key]["path"])
         (root / rel).write_text(json.dumps(payload) + "\n", encoding="utf-8")
+    _approve_synthetic(root)
 
 
 def _real_tree(root: Path) -> Path:
@@ -352,9 +413,11 @@ def _rows(root: Path, changed: set[str]) -> list[tuple[str, str]]:
     return guard.evaluate_rows(changed, pin_sets, root)
 
 
-def _append(root: Path, rel: str, text: str = "/* moved */\n") -> None:
+def _append(root: Path, rel: str, text: str = "/* moved */\n", *, qualify: bool = True) -> None:
     with (root / rel).open("a", encoding="utf-8") as handle:
         handle.write(text)
+    if qualify and rel in guard.REFRESHABLE_LOADED_ASSETS:
+        _approve_synthetic(root)
 
 
 def _snapshot(root: Path) -> dict[str, bytes]:
@@ -420,7 +483,7 @@ def test_template_plus_a_forged_sidecar_is_still_red(tmp_path: Path) -> None:
     rows = _rows(root, {"site/theme.js", forged})
     tiers = {tier for tier, _ in rows}
     assert "layout" in tiers and "sidecar" in tiers, rows
-    assert any("ORPHAN SIDECAR" in finding for _, finding in rows)
+    assert any("UNQUALIFIED SIDECAR SCENE" in finding for _, finding in rows)
 
 
 @pytest.mark.parametrize("asset", DIGEST_ASSETS)
@@ -456,7 +519,7 @@ def test_original_two_argument_contract_is_unchanged(tmp_path: Path) -> None:
     assert guard.evaluate({CHARTS, sidecar}, pin_sets, root) == []
 
 
-@pytest.mark.parametrize("order", [(CHARTS, TABLESORT), (TABLESORT, CHARTS)])
+@pytest.mark.parametrize("order", [(CHARTS, MTF), (MTF, CHARTS)])
 def test_sibling_digest_only_prs_merge_in_either_order_without_a_browser(
     tmp_path: Path, order: tuple[str, str]
 ) -> None:
@@ -481,6 +544,12 @@ def test_sibling_digest_only_prs_merge_in_either_order_without_a_browser(
     # The second PR's merge ref: main (with the first) plus its own diff.
     _apply(main, base_bytes, branches[second])
     second_diff = _changed(main_after_first, _snapshot(main))
+    before_qualification = _snapshot(main)
+    assert guard.refresh_digests(main)[0] == 2
+    assert _snapshot(main) == before_qualification
+    _approve_synthetic(main)  # Explicitly qualify this union; no automatic vector mixing.
+    assert guard.refresh_digests(main)[0] == 0
+    assert _snapshot(main) == before_qualification, "A qualified sibling union must retain both exact sidecar bytes"
     assert guard.sidecar_relpath(second) in second_diff
     assert _rows(main, second_diff) == []
     assert guard.sidecar_findings(main) == []
@@ -494,8 +563,8 @@ def test_sibling_digest_only_prs_merge_in_either_order_without_a_browser(
     assert _snapshot(main) == merged
 
 
-def test_digest_sibling_survives_a_layout_siblings_remint(tmp_path: Path) -> None:
-    """A browser re-mint cut from the old base keeps the digest sibling's sidecar valid."""
+def test_layout_sibling_requires_scene_and_union_requalification(tmp_path: Path) -> None:
+    """A layout sibling's new captured scene cannot inherit an old sidecar qualification."""
     base = _real_tree(tmp_path / "base")
     base_bytes = _snapshot(base)
     digest_branch = tmp_path / "digest"
@@ -514,6 +583,12 @@ def test_digest_sibling_survives_a_layout_siblings_remint(tmp_path: Path) -> Non
     _apply(main, base_bytes, _snapshot(digest_branch))
     after_digest = _snapshot(main)
     _apply(main, base_bytes, _snapshot(layout_branch))
+    before = _snapshot(main)
+    assert guard.refresh_digests(main)[0] == 2
+    assert _snapshot(main) == before
+    assert guard.sidecar_findings(main)
+    _approve_synthetic(main)
+    assert guard.refresh_digests(main)[0] == 0
     assert _rows(main, _changed(after_digest, _snapshot(main))) == []
     assert guard.sidecar_findings(main) == []
 
@@ -602,11 +677,11 @@ def test_cli_refresh_digests_exit_codes(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     root = _real_tree(tmp_path)
-    _append(root, TABLESORT)
+    _append(root, MTF)
     assert guard.main(["--repo-root", str(root), "--refresh-digests"]) == 0
-    assert f"wrote {guard.sidecar_relpath(TABLESORT)}" in capsys.readouterr().out
+    assert f"wrote {guard.sidecar_relpath(MTF)}" in capsys.readouterr().out
     green = tmp_path / "green.txt"
-    green.write_text(f"{TABLESORT}\n{guard.sidecar_relpath(TABLESORT)}\n", encoding="utf-8")
+    green.write_text(f"{MTF}\n{guard.sidecar_relpath(MTF)}\n", encoding="utf-8")
     assert guard.main(["--repo-root", str(root), "--diff-file", str(green)]) == 0
     red = tmp_path / "red.txt"
     red.write_text(f"{HK_TEMPLATE}\n", encoding="utf-8")
@@ -618,3 +693,451 @@ def test_cli_refresh_digests_exit_codes(
     assert any(
         ln.startswith("::error title=p0b-receipt-closure::REFUSED") for ln in out.splitlines()
     ), out
+
+
+def _bind_synthetic_font_manifest(root: Path, path: str = FONT_MANIFEST) -> None:
+    """A temporary guard fixture, never a browser or committed font receipt."""
+    manifest = root / path
+    if not manifest.exists():
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text('{"synthetic_font_control": true}\n', encoding="utf-8")
+    for rel in (HK_RECEIPT, CA_RECEIPT):
+        payload = json.loads((root / rel).read_text(encoding="utf-8"))
+        payload["font_pin"] = {"manifest": {"path": path, "sha256": _digest(root, path)}}
+        _write_json(root / rel, payload)
+
+
+def test_font_manifest_drift_refuses_all_sidecar_writes(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path)
+    _bind_synthetic_font_manifest(root)
+    _append(root, CHARTS)
+    _append(root, FONT_MANIFEST)
+    before = _snapshot(root)
+    code, lines = guard.refresh_digests(root)
+    assert code == 2, lines
+    assert any(FONT_MANIFEST in line for line in lines)
+    assert _snapshot(root) == before
+    assert not (root / guard.DIGEST_REFRESH_DIR_REL).exists()
+
+
+def test_font_manifest_path_is_never_refreshable(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path)
+    _bind_synthetic_font_manifest(root, CHARTS)
+    assert CHARTS not in guard.refreshable_measurements(root)
+    _append(root, CHARTS)
+    before = _snapshot(root)
+    rows = _rows(root, {CHARTS})
+    assert rows and {tier for tier, _ in rows} == {"layout"}, rows
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+
+@pytest.mark.parametrize("digest", [None, "not-a-digest", "g" * 64])
+def test_font_manifest_missing_or_invalid_digest_refuses_refresh(
+    tmp_path: Path, digest: str | None
+) -> None:
+    root = _real_tree(tmp_path)
+    _bind_synthetic_font_manifest(root)
+    path = root / HK_RECEIPT
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["font_pin"]["manifest"]["sha256"] = digest
+    _write_json(path, payload)
+    _append(root, CHARTS)
+    before = _snapshot(root)
+    code, lines = guard.refresh_digests(root)
+    assert code == 2, lines
+    assert any("font_pin.manifest" in line for line in lines)
+    assert _snapshot(root) == before
+
+
+def test_tablesort_change_stays_layout_tier(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path)
+    asset = "site/tablesort.js"
+    _append(root, asset)
+    rows = _rows(root, {asset})
+    assert rows and {tier for tier, _ in rows} == {"layout"}, rows
+    before = _snapshot(root)
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+# A future source edit never earns the exception by fooling the finite diagnostic.
+@pytest.mark.parametrize("edit", [
+    "/* even a harmless comment is a new source revision */\n",
+    "if (window.innerWidth > 1000) document.body.remove();\n",
+    "if (typeof unknownViewport !== 'undefined') document.body.remove();\n",
+    "if ('unknownViewport' in window) document.body.remove();\n",
+    "Object.getOwnPropertyDescriptor(window, 'unknownViewport');\n",
+    "Reflect.ownKeys(window);\n",
+    "if (matchMedia('(min-width: 1000px)').matches) document.body.remove();\n",
+    "if (getComputedStyle(document.body).display) document.body.remove();\n",
+    "Array.prototype.push = function () {};\n",
+    "Object.defineProperty(Array.prototype, Symbol.iterator, {value: function () {}});\n",
+    "Object.setPrototypeOf(Array.prototype, {});\n",
+    "const old = Array.prototype.push; Array.prototype.push = function () {}; Array.prototype.push = old;\n",
+    "setInterval(function () {}, 1);\n",
+    "function again() { setTimeout(again, 1); } again();\n",
+    "Promise.resolve().then(function () { document.body.remove(); });\n",
+])
+def test_unknown_helper_bytes_are_strict_before_any_refresh_effect(tmp_path: Path, edit: str) -> None:
+    root = _real_tree(tmp_path)
+    _append(root, CHARTS, edit, qualify=False)
+    before = _snapshot(root)
+    assert guard.refreshable_measurements(root) == {}
+    assert {tier for tier, _ in _rows(root, {CHARTS})} == {"layout"}
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+
+def test_unknown_scene_refuses_even_orphan_pruning(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path)
+    orphan = root / guard.sidecar_relpath("site/retired.js")
+    orphan.parent.mkdir(parents=True)
+    orphan.write_text(guard.render_sidecar({"schema": guard.SIDECAR_SCHEMA, "path": "site/retired.js"}))
+    payload = json.loads((root / HK_RECEIPT).read_text())
+    payload["unqualified_annotation"] = "declared file hashes still match"
+    _write_json(root / HK_RECEIPT, payload)
+    before = _snapshot(root)
+    assert guard.refreshable_measurements(root) == {}
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+
+def test_later_unknown_asset_does_not_partially_refresh_an_earlier_qualified_one(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path)
+    _append(root, CHARTS)
+    _append(root, MTF, "/* unqualified second helper */\n", qualify=False)
+    before = _snapshot(root)
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+    assert not (root / guard.DIGEST_REFRESH_DIR_REL).exists()
+
+
+def test_missing_qualification_cannot_be_replaced_by_a_sidecar_claim(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path)
+    _append(root, CHARTS)
+    assert guard.refresh_digests(root)[0] == 0
+    guard.QUALIFIED_DIGEST_SCENES = ()
+    before = _snapshot(root)
+    assert guard.refreshable_measurements(root) == {}
+    assert guard.sidecar_findings(root)
+    assert guard.effective_loaded_assets(root, HK_RECEIPT, json.loads((root / HK_RECEIPT).read_text()))[CHARTS] != _digest(root, CHARTS)
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+
+def test_conflicting_qualification_refuses_without_changes(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path)
+    _append(root, CHARTS)
+    duplicate = dict(guard.QUALIFIED_DIGEST_SCENES[-1])
+    duplicate["basis"] = "conflicting synthetic qualification"
+    guard.QUALIFIED_DIGEST_SCENES += (duplicate,)
+    before = _snapshot(root)
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+
+def test_invalid_extra_receipt_refuses_without_changes(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path)
+    (root / EVIDENCE / "mobile-layout-extra.json").write_text('{"schema":"wrong"}\n')
+    before = _snapshot(root)
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+
+def test_strict_caller_change_invalidates_the_complete_qualification(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path)
+    _append(root, CHARTS)
+    _append(root, "site/theme.js", "document.body.innerHTML = '<div data-mtf></div>';\n")
+    before = _snapshot(root)
+    assert guard.refreshable_measurements(root) == {}
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+def test_input_change_during_planning_refuses_before_any_effect(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    root = _real_tree(tmp_path)
+    _append(root, CHARTS)
+    original = guard.build_sidecar
+    def drift_after_plan(*args, **kwargs):
+        result = original(*args, **kwargs)
+        _append(root, MTF, "/* concurrent unknown input */\n", qualify=False)
+        return result
+    monkeypatch.setattr(guard, "build_sidecar", drift_after_plan)
+    code, lines = guard.refresh_digests(root)
+    assert code == 2, lines
+    assert not (root / guard.DIGEST_REFRESH_DIR_REL).exists()
+
+def test_known_sidecar_directory_refuses_before_an_earlier_write(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path)
+    _append(root, CHARTS)
+    _append(root, MTF)
+    occupied = root / guard.sidecar_relpath(MTF)
+    occupied.mkdir(parents=True)
+    before = _snapshot(root)
+    code, lines = guard.refresh_digests(root)
+    assert code == 2, lines
+    assert _snapshot(root) == before
+    assert occupied.is_dir()
+    assert not (root / guard.sidecar_relpath(CHARTS)).exists()
+
+
+def test_symlinked_sidecar_directory_cannot_write_outside_the_fixture(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path / "repo")
+    _append(root, CHARTS)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    canary = tmp_path / "external-canary"
+    canary.write_text("unchanged")
+    (root / guard.DIGEST_REFRESH_DIR_REL).symlink_to(outside, target_is_directory=True)
+    before = _snapshot(root)
+    code, lines = guard.refresh_digests(root)
+    assert code == 2, lines
+    assert _snapshot(root) == before
+    assert list(outside.iterdir()) == []
+    assert canary.read_text() == "unchanged"
+
+
+def test_known_sidecar_symlink_refuses_before_an_earlier_write(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path / "repo")
+    _append(root, CHARTS)
+    _append(root, MTF)
+    canary = tmp_path / "external-canary"
+    canary.write_text("unchanged")
+    target = root / guard.sidecar_relpath(MTF)
+    target.parent.mkdir(parents=True)
+    target.symlink_to(canary)
+    before = _snapshot(root)
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+    assert canary.read_text() == "unchanged"
+    assert not (root / guard.sidecar_relpath(CHARTS)).exists()
+
+
+def test_transient_asset_change_during_planning_cannot_leave_a_stale_sidecar(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _real_tree(tmp_path)
+    _append(root, CHARTS)
+    before = _snapshot(root)
+    original_status = guard.qualification_status
+    original_digest = guard.sha256_file
+    calls = 0
+    changed = False
+    restored = False
+    original_bytes = (root / CHARTS).read_bytes()
+    def move_after_preflight(*args, **kwargs):
+        nonlocal calls, changed
+        result = original_status(*args, **kwargs)
+        calls += 1
+        if calls == 2:
+            (root / CHARTS).write_bytes(original_bytes + b"/* transient input */\n")
+            changed = True
+        return result
+    def read_then_restore(path):
+        nonlocal restored
+        result = original_digest(path)
+        if changed and not restored and path == root / CHARTS:
+            (root / CHARTS).write_bytes(original_bytes)
+            restored = True
+        return result
+    monkeypatch.setattr(guard, "qualification_status", move_after_preflight)
+    monkeypatch.setattr(guard, "sha256_file", read_then_restore)
+    assert guard.refresh_digests(root)[0] == 2
+    assert changed and restored
+    assert _snapshot(root) == before
+
+
+def test_replaced_receipt_cannot_pair_new_raw_hash_with_old_measurements(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _real_tree(tmp_path)
+    _append(root, CHARTS)
+    receipt = root / HK_RECEIPT
+    original_bytes = receipt.read_bytes()
+    replacement = json.loads(original_bytes)
+    replacement["loaded_assets"][CHARTS] = "b" * 64
+    _write_json(receipt, replacement)
+    replacement_bytes = receipt.read_bytes()
+    _approve_synthetic(root)
+    receipt.write_bytes(original_bytes)
+    original_load = guard.load_browser_receipts
+    switched = False
+    def old_payload_then_new_bytes(path):
+        nonlocal switched
+        result = original_load(path)
+        if not switched:
+            receipt.write_bytes(replacement_bytes)
+            switched = True
+        return result
+    monkeypatch.setattr(guard, "load_browser_receipts", old_payload_then_new_bytes)
+    code, lines = guard.refresh_digests(root)
+    assert code == 2, lines
+    assert switched and receipt.read_bytes() == replacement_bytes
+    assert not (root / guard.DIGEST_REFRESH_DIR_REL).exists()
+    assert any("receipt payload changed" in line for line in lines)
+
+
+def test_sidecar_change_during_planning_is_preserved_without_earlier_write(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _real_tree(tmp_path)
+    _append(root, CHARTS)
+    _append(root, MTF)
+    directory = root / guard.DIGEST_REFRESH_DIR_REL
+    directory.mkdir(parents=True)
+    canary = directory / Path(guard.sidecar_relpath(MTF)).name
+    canary.write_text("original sidecar")
+    original_build = guard.build_sidecar
+    def concurrent_sidecar(*args, **kwargs):
+        result = original_build(*args, **kwargs)
+        canary.write_text("another writer")
+        return result
+    monkeypatch.setattr(guard, "build_sidecar", concurrent_sidecar)
+    assert guard.refresh_digests(root)[0] == 2
+    assert canary.read_text() == "another writer"
+    assert not (root / guard.sidecar_relpath(CHARTS)).exists()
+
+
+def _remint_without_qualifying(root: Path) -> None:
+    previous = guard.QUALIFIED_DIGEST_SCENES
+    _remint(root)
+    guard.QUALIFIED_DIGEST_SCENES = previous
+
+
+def _retirement_tree(root: Path) -> tuple[Path, Path]:
+    root = _real_tree(root)
+    asset = "site/charts.js"
+    _append(root, asset)
+    assert guard.refresh_digests(root)[0] == 0
+    sidecar = root / guard.sidecar_relpath(asset)
+    assert sidecar.is_file()
+    _append(root, asset, "/* later captured revision */\n", qualify=False)
+    _remint_without_qualifying(root)
+    assert guard.refreshable_measurements(root) == {}
+    return root, sidecar
+
+
+def test_inactive_scene_without_sidecars_keeps_raw_bindings(tmp_path: Path) -> None:
+    root = _real_tree(tmp_path)
+    payload = json.loads((root / HK_RECEIPT).read_text())
+    payload["new_capture_metadata"] = "strict current scene"
+    _write_json(root / HK_RECEIPT, payload)
+    assert guard.refreshable_measurements(root) == {}
+    assert guard.sidecar_findings(root) == []
+    for rel, receipt in guard.load_browser_receipts(root):
+        assert guard.effective_loaded_assets(root, rel, receipt) == receipt["loaded_assets"]
+    before = _snapshot(root)
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+
+def test_strict_retirement_removes_only_owned_redundant_overlays(tmp_path: Path) -> None:
+    root, sidecar = _retirement_tree(tmp_path)
+    assert guard.sidecar_findings(root), "inactive old sidecar is not a valid overlay"
+    for rel, receipt in guard.load_browser_receipts(root):
+        assert guard.effective_loaded_assets(root, rel, receipt) == receipt["loaded_assets"]
+    before = _snapshot(root)
+    code, lines = guard.refresh_digests(root)
+    assert code == 0 and any("qualification remains inactive" in line for line in lines)
+    assert _changed(before, _snapshot(root)) == {str(sidecar.relative_to(root))}
+    assert not sidecar.exists()
+    assert guard.refreshable_measurements(root) == {}
+    assert guard.sidecar_findings(root) == []
+
+
+@pytest.mark.parametrize("block", ["construction_inputs", "loaded_assets", "verifier", "fixture_receipt"])
+def test_strict_retirement_refuses_missing_required_receipt_blocks(tmp_path: Path, block: str) -> None:
+    root, _sidecar = _retirement_tree(tmp_path)
+    payload = json.loads((root / HK_RECEIPT).read_text())
+    del payload[block]
+    _write_json(root / HK_RECEIPT, payload)
+    before = _snapshot(root)
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+
+@pytest.mark.parametrize("damage", ["missing_market", "empty_inputs", "malformed_input"])
+def test_strict_retirement_refuses_incomplete_recipe_inventory(tmp_path: Path, damage: str) -> None:
+    root, _sidecar = _retirement_tree(tmp_path)
+    fixture = json.loads((root / FIXTURE).read_text())
+    if damage == "missing_market":
+        fixture["markets"] = {}
+    elif damage == "empty_inputs":
+        fixture["markets"]["hk"]["inputs"] = []
+    else:
+        fixture["markets"]["hk"]["inputs"] = [{}]
+    _write_json(root / FIXTURE, fixture)
+    _remint_without_qualifying(root)
+    before = _snapshot(root)
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+
+def test_strict_retirement_requires_a_current_loading_receipt(tmp_path: Path) -> None:
+    root, _sidecar = _retirement_tree(tmp_path)
+    for rel in (HK_RECEIPT, CA_RECEIPT):
+        payload = json.loads((root / rel).read_text())
+        del payload["loaded_assets"]["site/charts.js"]
+        _write_json(root / rel, payload)
+    before = _snapshot(root)
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+
+def test_strict_retirement_refuses_missing_historical_receipt(tmp_path: Path) -> None:
+    root, _sidecar = _retirement_tree(tmp_path)
+    (root / CA_RECEIPT).unlink()
+    before = _snapshot(root)
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+
+@pytest.mark.parametrize("damage", ["foreign", "forged", "strict_drift", "uncovered_helper"])
+def test_strict_retirement_validates_every_input_and_target_before_deleting(tmp_path: Path, damage: str) -> None:
+    root, sidecar = _retirement_tree(tmp_path)
+    if damage == "foreign":
+        (sidecar.parent / "foreign.txt").write_text("preserve this file\n")
+    elif damage == "forged":
+        doc = json.loads(sidecar.read_text())
+        doc["claim"] = "not the canonical tool-owned identity"
+        sidecar.write_text(guard.render_sidecar(doc))
+    elif damage == "strict_drift":
+        _append(root, "site/theme.js", qualify=False)
+    else:
+        _append(root, "site/mtf.js", qualify=False)
+    before = _snapshot(root)
+    assert guard.refresh_digests(root)[0] == 2
+    assert _snapshot(root) == before
+
+
+def test_strict_retirement_rechecks_targets_before_deleting(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    root, sidecar = _retirement_tree(tmp_path)
+    original = guard._sidecar_inventory
+    calls = 0
+    def changed_inventory(where):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            sidecar.write_text(sidecar.read_text() + " ")
+        return original(where)
+    monkeypatch.setattr(guard, "_sidecar_inventory", changed_inventory)
+    code, _lines = guard.refresh_digests(root)
+    assert code == 2
+    assert sidecar.exists() and sidecar.read_text().endswith(" ")
+    assert not (root / guard.sidecar_relpath("site/mtf.js")).exists()
+
+
+def test_strict_retirement_rechecks_receipts_before_deleting(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    root, sidecar = _retirement_tree(tmp_path)
+    original = guard._receipt_inventory
+    calls = 0
+    def changed_inventory(where, expected=None):
+        nonlocal calls
+        calls += 1
+        if calls == 3:
+            payload = json.loads((root / HK_RECEIPT).read_text())
+            payload["late_update"] = True
+            _write_json(root / HK_RECEIPT, payload)
+        return original(where, expected)
+    monkeypatch.setattr(guard, "_receipt_inventory", changed_inventory)
+    assert guard.refresh_digests(root)[0] == 2
+    assert sidecar.exists()

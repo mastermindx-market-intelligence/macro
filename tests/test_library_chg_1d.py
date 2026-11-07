@@ -120,7 +120,7 @@ def test_us_builder_gets_chg_1d_from_the_rich_enrich():
 def test_us_enrich_merge_is_rich_last():
     # the assertion above is only meaningful while the builder merges in this order
     src = (_SCRIPTS / "build_stock_library.py").read_text()
-    assert 'rec["tech"] = {**(rec.get("tech") or {}), **rich}' in src, \
+    assert 'rec["tech"] = _bind_price_clock({**prior, **rich}, source_close)' in src, \
         "US tech enrich no longer merges the rich snapshot last — chg_1d may not ship"
 
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import logging
 
 import pytest
 
@@ -769,3 +770,151 @@ def test_exact_number_context_keeps_supported_tokens_lossless(helper, trapped, t
                 expected = (("2026-10-16", "999999999999.12345678", "call"),)
             assert getattr(retention, helper)(ref, raw) == expected
         assert repr(context) == before
+
+
+# Published R2 head session precondition (D03-R1). History reads stay on Store.
+_R2_HEAD = "options_structure/matrix/SPY.json"
+
+
+class _HeadKeyStore(Store):
+    """Fault only the matrix head key so history GET/PUT still succeed."""
+
+    def __init__(self, *, deny=False, length=None):
+        super().__init__()
+        self._deny = deny
+        self._length = length
+
+    def get_object(self, *, Bucket, Key):
+        if Key == _R2_HEAD and self._deny:
+            self.calls.append(("get", Key))
+            raise S3Error("AccessDenied")
+        saved = self.length_override
+        if Key == _R2_HEAD and self._length is not None:
+            # A store-wide length_override would fail history readback before
+            # _upload_r2, hiding whether the head itself was refused.
+            self.length_override = self._length
+        try:
+            return super().get_object(Bucket=Bucket, Key=Key)
+        finally:
+            self.length_override = saved
+
+
+class _ChunkBounded(ShortBody):
+    def read(self, size=-1):
+        assert isinstance(size, int) and not isinstance(size, bool) and 0 < size <= 64 * 1024
+        return super().read(size)
+
+
+def test_r2_head_newer_session_is_never_regressed_without_local_head(monkeypatch, tmp_path, caplog):
+    caplog.set_level(logging.ERROR)
+    store = Store()
+    head = encoded(session="2026-10-09")
+    store.objects[_R2_HEAD] = head
+    assert not (tmp_path / "SPY.json").exists()
+    with pytest.raises(SystemExit) as error:
+        _run_builder(monkeypatch, tmp_path, store, payload(session="2026-10-08"))
+    assert error.value.code == 1
+    assert store.objects[_R2_HEAD] == head
+    assert ("put", _R2_HEAD) not in store.calls
+    assert "resolved session 2026-10-08 older than R2 head 2026-10-09" in caplog.text
+    # Local head and history may advance; only the published head is protected.
+    assert json.loads((tmp_path / "SPY.json").read_text())["session"] == "2026-10-08"
+
+
+def test_r2_head_read_access_denied_fails_closed(monkeypatch, tmp_path):
+    store = _HeadKeyStore(deny=True)
+    store.objects[_R2_HEAD] = encoded(session="2026-10-09")
+    with pytest.raises(SystemExit) as error:
+        _run_builder(monkeypatch, tmp_path, store, payload(session="2026-10-08"))
+    assert error.value.code == 1
+    assert ("put", _R2_HEAD) not in store.calls
+    assert ("get", _R2_HEAD) in store.calls
+    assert store.objects[_R2_HEAD] == encoded(session="2026-10-09")
+
+
+@pytest.mark.parametrize("raw", [
+    b"{not-json",
+    (
+        b'{"schema":"options_structure.matrix/v1","root":"SPY","root":"SPY",'
+        b'"session":"2026-10-09","spot":1,"cells":[{}]}'
+    ),
+    json.dumps({**payload(session="2026-10-09"), "schema": "options_structure.matrix/v0"}).encode(),
+    encoded(root="QQQ", session="2026-10-09"),
+    json.dumps({
+        "schema": "options_structure.matrix/v1", "root": "SPY", "spot": 500.0,
+        "cells": [{"strike": 500.0, "expiry": "2026-10-16", "gex": 1}],
+    }).encode(),
+], ids=["invalid-json", "duplicate-keys", "schema-mismatch", "root-qqq", "usable-without-session"])
+def test_r2_head_corrupt_or_wrong_identity_fails_closed(monkeypatch, tmp_path, raw):
+    store = Store()
+    store.objects[_R2_HEAD] = raw
+    with pytest.raises(SystemExit) as error:
+        _run_builder(monkeypatch, tmp_path, store, payload(session="2026-10-08"))
+    assert error.value.code == 1
+    assert ("put", _R2_HEAD) not in store.calls
+    assert store.objects[_R2_HEAD] == raw
+
+
+def test_r2_head_oversize_fails_closed_with_bounded_read(monkeypatch, tmp_path):
+    store = _HeadKeyStore(length=retention.MAX_MATRIX_BYTES + 1)
+    store.body_factory = _ChunkBounded
+    head = encoded(session="2026-10-09")
+    store.objects[_R2_HEAD] = head
+    with pytest.raises(SystemExit) as error:
+        _run_builder(monkeypatch, tmp_path, store, payload(session="2026-10-08"))
+    assert error.value.code == 1
+    assert ("put", _R2_HEAD) not in store.calls
+    assert ("get", _R2_HEAD) in store.calls
+    assert store.objects[_R2_HEAD] == head
+    assert all(body.closed for body in store.streams)
+
+
+def test_r2_head_missing_publishes(monkeypatch, tmp_path):
+    store = Store()
+    _run_builder(monkeypatch, tmp_path, store, payload(session="2026-10-08"))
+    assert ("put", _R2_HEAD) in store.calls
+    assert store.objects[_R2_HEAD] == (tmp_path / "SPY.json").read_bytes()
+
+
+def test_r2_head_older_self_heals(monkeypatch, tmp_path):
+    store = Store()
+    store.objects[_R2_HEAD] = encoded(session="2026-10-08")
+    (tmp_path / "SPY.json").write_bytes(encoded(session="2026-10-09"))
+    _run_builder(monkeypatch, tmp_path, store, payload(session="2026-10-09"))
+    candidate = (tmp_path / "SPY.json").read_bytes()
+    assert ("put", _R2_HEAD) in store.calls
+    assert store.objects[_R2_HEAD] == candidate
+    assert b"2026-10-09" in candidate
+
+
+def test_r2_head_equal_session_republishes(monkeypatch, tmp_path):
+    store = Store()
+    store.objects[_R2_HEAD] = encoded(session="2026-10-09")
+    _run_builder(monkeypatch, tmp_path, store, payload(session="2026-10-09"))
+    assert ("put", _R2_HEAD) in store.calls
+    assert store.objects[_R2_HEAD] == (tmp_path / "SPY.json").read_bytes()
+
+
+def test_r2_head_legacy_empty_is_replaceable(monkeypatch, tmp_path):
+    store = Store()
+    store.objects[_R2_HEAD] = json.dumps({"cells": [], "spot": None}).encode()
+    _run_builder(monkeypatch, tmp_path, store, payload(session="2026-10-09"))
+    assert ("put", _R2_HEAD) in store.calls
+    assert store.objects[_R2_HEAD] == (tmp_path / "SPY.json").read_bytes()
+
+
+def test_r2_head_stream_is_closed(monkeypatch, tmp_path):
+    refused = Store()
+    refused.objects[_R2_HEAD] = encoded(session="2026-10-09")
+    with pytest.raises(SystemExit) as error:
+        _run_builder(monkeypatch, tmp_path, refused, payload(session="2026-10-08"))
+    assert error.value.code == 1
+    assert refused.streams
+    assert all(body.closed for body in refused.streams)
+
+    (tmp_path / "SPY.json").unlink()
+    published = Store()
+    _run_builder(monkeypatch, tmp_path, published, payload(session="2026-10-08"))
+    assert ("put", _R2_HEAD) in published.calls
+    assert published.streams
+    assert all(body.closed for body in published.streams)

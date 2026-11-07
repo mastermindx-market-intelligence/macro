@@ -1,69 +1,46 @@
 #!/usr/bin/env python3
-"""Gate: a P0B construction-input change must remint the browser receipts.
+"""Gate changes to the inputs bound by the committed P0B browser receipts.
 
-#7603 changed templates/hk.html.j2 without reminting
-mockups/evidence/prophet-p0b-zero-fouc/mobile-layout*.json (still pinning the
-prior digest), the same class as #7500 / site/navigation-refresh.css (healed
-by #7597). Pure main then fails the receipt tests in
-tests/test_stock_dashboard_first_frame.py, and every fresh merge-ref inherits
-it. This guard is the GATE for that class.
+The live pin set comes from the receipts and their rendered-fixture recipe.
+Construction inputs, browser/verifier/fixture bindings, fonts, CSS, callers and
+unknown helper revisions remain strict: their receipt bindings must close the
+change. Tablesort is always strict.
 
-The pinned set is derived at runtime FROM the committed receipts: each
-mobile-layout*.json file's construction_inputs keys, loaded_assets keys, and
-verifier.path, plus rendered-fixture.json's recipe input paths and the
-fixture path the receipts bind. Template names are never hardcoded as the
-live pin set.
+An optional digest-refresh exception requires one explicit complete helper
+source vector and the exact raw receipt scene in QUALIFIED_DIGEST_SCENES.
+The initial record contains only bytes already captured by its historical
+receipts; it grants no exception to a changed helper. Future qualification is
+an ordinary source-policy amendment, never an inference from a passing model.
+The finite Node diagnostic is a regression aid, not a browser execution or a
+universal proof of JavaScript equivalence.
 
-Given a diff file-list: if any pinned path changed without a same-diff change
-to every receipt that pins it, exit 1 naming the path and the remint command.
-Exit 0 otherwise.
+A qualified sidecar explicitly records that its new bytes were not measured by
+the browser. Unknown scenes use the raw receipt bindings without any overlay.
+A proper new capture or accepted receipt composition can therefore deactivate
+an old exception without requiring a new policy record. Full current receipt
+self-binding tests still apply.
 
-What the receipts PROVE vs what they PIN.  A receipt proves one browser run:
-zero-FOUC first-frame layout, owner/degraded states and screenshots, measured
-from the bytes it names.  It pins every one of those bytes, but the pins are
-of two kinds.  LAYOUT-TIER pins can move what was measured: construction
-inputs, the verifier, the rendered fixture and its recipe inputs, every CSS
-file and font, the browser-data JSON, the composers, and every script that
-writes into the page chrome or the first frame (theme, live, stocktable,
-dashboard icons, the nav/account/logo scripts).  Moving one needs a browser
-re-mint, and the gate keeps demanding it.  DIGEST-ONLY pins are the few
-loaded scripts in REFRESHABLE_LOADED_ASSETS that have no write target in the
-rendered fixture (each entry carries its reason, and
-tests/test_stock_dashboard_first_frame.py re-proves the absence of every
-target on each run).  #8763 (charts.js) and #8765 (tablesort.js) each spent
-a full browser lane re-minting one of these digests; no layout measurement
-moved in either (only the browser version and host-dependent screenshot
-digests), yet each forced its siblings to merge main and re-mint again.
-
-A digest-only change is closed without a browser by
-`--refresh-digests`: it writes one sidecar per moved asset under
-digest-refresh/, recording the new bytes next to the digest each receipt
-actually measured.  The receipts are never edited, so they keep reporting
-exactly what their browser run loaded, and the manifest digests over them do
-not move.  Honest gap, kept visible in-tree: a sidecar asset's new bytes were
-NOT browser-measured.  The sidecar says so (proof_class
-digest_refresh_not_browser_measured), and the next browser re-mint retires it
-(the gate reds a sidecar the receipts have caught up with until
---refresh-digests prunes it).  One file per asset means two sibling PRs that
-touch different refreshable assets never conflict and merge in either order.
-`--refresh-digests` refuses, writing nothing, while any layout-tier byte
-differs from what the receipts measured.
+--refresh-digests plans every effect before writing. An inactive scene refuses
+creation or rewriting. It may only retire a complete set of recognized owned
+sidecars when all current strict input bindings match and every sidecar asset
+is directly loaded with its current hash by at least one current receipt.
+Foreign files, missing inputs, uncertain ownership and drift refuse all effects.
+Pre-application checks are not a filesystem lock or an atomic I/O transaction.
 
 Usage:
     python3 scripts/check_p0b_receipt_closure.py --diff-file /tmp/changed.txt
-    git diff --name-only "$MB" HEAD | python3 scripts/check_p0b_receipt_closure.py --diff-file -
     python3 scripts/check_p0b_receipt_closure.py --refresh-digests
     python3 scripts/check_p0b_receipt_closure.py --selftest
-Exit codes: 0 = closed / nothing pinned moved / refreshed / selftest passed
-            1 = pinned path moved without its receipts or sidecar / selftest failed
-            2 = cannot derive the pin set (missing receipts / sparse refuse), or
-                --refresh-digests refused (layout-tier drift / foreign file)
+Exit codes: 0 = closed / no relevant change / refreshed / retired / selftest passed
+            1 = unclosed receipt or sidecar / selftest failed
+            2 = missing or malformed inventory / sparse tree / refused refresh
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -78,6 +55,8 @@ RECEIPT_GLOB = "mobile-layout*.json"
 FIXTURE_NAME = "rendered-fixture.json"
 RECEIPT_SCHEMA = "mastermind.stock_dashboard_mobile_layout.v1"
 FIXTURE_SCHEMA = "mastermind.stock_dashboard_rendered_fixture.v1"
+DEFAULT_VERIFIER = "scripts/verify_stock_dashboard_mobile_layout.cjs"
+CHROMIUM_PIN_RE = re.compile(r'^const CHROMIUM_PIN = "([^"]+)";$', re.MULTILINE)
 
 # Events whose plan legitimately publishes the planner's `null` token: the
 # main-role events in run_ci_pack.SUPPORTED_PLAN_ROLE_EVENTS (a main proof is a
@@ -92,22 +71,12 @@ NO_DIFF_SUBJECT_EVENTS = frozenset(
     {"workflow_dispatch", "workflow_run", "schedule", "base_replay"}
 )
 
-# Digest-only tier.  A loaded script belongs here only when the rendered
-# fixture gives it nothing to write into, so its bytes cannot move the first
-# frame, the owner/degraded states, or the screenshots the receipts measure.
-# Every reason below is re-proved against the rendered fixture by
-# tests/test_stock_dashboard_first_frame.py, which also executes each script's
-# bytes under node against a recording model of every measured page
-# (test_digest_only_scripts_are_inert_on_every_measured_page).  An entry whose
-# target appears in the fixture, or a script edit that writes to the page,
-# reads past the model, claims a global or throws, reds that test, and the
-# entry must then leave this table.
-# Anything not named here (CSS, fonts, composers, chrome scripts, data) stays
-# layout tier and still needs a browser re-mint.  Digest-only is a statement
-# about the fixture the receipts measured, not about production: on the live
-# HK page tablesort.js does enhance the populated sector table, but the
-# fixture renders that table empty, so no receipt ever measured the effect,
-# before or after a refresh.
+# Candidate helper roles, not a path-only exemption. Each active qualification
+# binds all four source hashes and the exact outer receipt set. Unknown bytes,
+# changed callers or scene inputs receive no exemption. The exact-source
+# diagnostic covers a declared target-free fixture trace only; it cannot
+# qualify arbitrary revisions, event roots, browser APIs or asynchronous work.
+# CSS, fonts, composers, chrome scripts, data and tablesort remain strict.
 REFRESHABLE_LOADED_ASSETS: dict[str, str] = {
     "site/charts.js": (
         "Plotly range-selector and locale helper: it acts only on "
@@ -121,12 +90,6 @@ REFRESHABLE_LOADED_ASSETS: dict[str, str] = {
         "Plotly is loaded; the rendered fixture has no such div and loads "
         "no Plotly."
     ),
-    "site/tablesort.js": (
-        "initAll enhances tables once, at DOMContentLoaded, and skips .tip, "
-        ".sb-table, .st-table and tables with under two data rows; the "
-        "rendered fixture has no eligible table, and composer tables exist "
-        "only in the modal built on click, after initAll has run."
-    ),
     "site/mtf.js": (
         "Paints only [data-mtf] nodes; the rendered fixture has none. theme.js "
         "re-runs hydrateMTF on a theme or language flip, which still finds "
@@ -139,6 +102,23 @@ REFRESHABLE_LOADED_ASSETS: dict[str, str] = {
         "ilxMount or ilxReveal."
     ),
 }
+
+
+# A qualification names one complete source vector and one exact recorded scene.
+# This first record is baseline byte identity with the browser's captured helpers:
+# no changed-helper equivalence or new browser measurement is claimed. A future
+# edit, even a comment-only edit, is strict layout until an ordinary source-policy
+# amendment qualifies the complete vector against the same captured scene.
+# Passing the diagnostic VM never creates or extends this policy. Unknown scenes
+# forbid new overlays. Only a separately validated strict retirement may delete
+# recognized redundant sidecars; it never extends qualification.
+QUALIFIED_DIGEST_SCENES: tuple[dict, ...] = ({'assets': {'site/chart_i18n.js': '23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315',
+             'site/charts.js': '84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c',
+             'site/illus.js': '8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620',
+             'site/mtf.js': 'b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0'},
+  'basis': 'captured_helper_byte_identity_20261107',
+  'receipts': {'mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json': 'e0f6abed4c32ef07fb4b8046070b442b369eff2d396ac76ef6a3e68d334c22bb',
+               'mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json': '550f6453121b29822a74fcc6fb43e13552b0601bf2e1401a248e51654919462b'}},)
 
 DIGEST_REFRESH_DIR_REL = f"{EVIDENCE_DIR_REL}/digest-refresh"
 SIDECAR_SCHEMA = "mastermind.p0b_receipt_digest_refresh.v1"
@@ -292,6 +272,9 @@ def derive_pin_sets(root: Path) -> tuple[dict[str, set[str]], str | None]:
         verifier = payload.get("verifier")
         if isinstance(verifier, dict) and isinstance(verifier.get("path"), str):
             pins.add(verifier["path"])
+        manifest = font_pin_manifest(payload)
+        if manifest:
+            pins.add(manifest)
         fixture_row = payload.get("fixture_receipt")
         fixture_path = None
         if isinstance(fixture_row, dict) and isinstance(fixture_row.get("path"), str):
@@ -313,7 +296,7 @@ def derive_pin_sets(root: Path) -> tuple[dict[str, set[str]], str | None]:
 def remint_command(root: Path) -> str:
     """Name the remint recipe from the receipts themselves when possible."""
     receipts = load_browser_receipts(root)
-    verifier = "scripts/verify_stock_dashboard_mobile_layout.cjs"
+    verifier = DEFAULT_VERIFIER
     fixture = f"{EVIDENCE_DIR_REL}/{FIXTURE_NAME}"
     recipe = "scripts/render_stock_dashboard_fixture.py"
     historical_head = None
@@ -358,28 +341,75 @@ def remint_command(root: Path) -> str:
     )
 
 
-def environment_hint(root: Path) -> str:
-    """What a browser re-mint must reproduce, from the receipts themselves.
+def font_pin_manifest(payload: dict) -> str | None:
+    font_pin = payload.get("font_pin")
+    if not isinstance(font_pin, dict):
+        return None
+    manifest = font_pin.get("manifest")
+    if isinstance(manifest, dict) and isinstance(manifest.get("path"), str):
+        return manifest["path"] or None
+    return None
 
-    The verifier already fixes its own rasterisation flags (no GPU, no LCD
-    text, no subpixel positioning, no font hinting).  What it cannot fix is
-    the browser build and the system fonts, and both move the layout numbers.
-    """
+
+
+def verifier_chromium_pin(root: Path, verifier: str) -> str | None:
+    try:
+        text = (root / verifier).read_text(encoding="utf-8")
+    except OSError:
+        return None
+    match = CHROMIUM_PIN_RE.search(text)
+    return match.group(1) if match else None
+
+
+
+def describe_browser(browser: dict) -> str:
+    """One receipt's browser block as text: build, binary, Playwright, host."""
+    text = f"{browser.get('engine', '?')} {browser.get('version', '?')}"
+    extra = []
+    executable = browser.get("executable")
+    if isinstance(executable, dict) and executable.get("name"):
+        extra.append(f"{executable['name']} sha256 {executable.get('sha256', '?')}")
+    if browser.get("playwright"):
+        extra.append(f"Playwright {browser['playwright']}")
+    if browser.get("platform"):
+        extra.append(f"{browser['platform']}/{browser.get('arch', '?')}")
+    return f"{text} ({', '.join(extra)})" if extra else text
+
+
+
+def environment_hint(root: Path) -> str:
+    """Name the browser build and fonts a re-mint must reproduce."""
+    receipts = load_browser_receipts(root)
     versions = sorted(
         {
-            f"{b.get('engine', '?')} {b.get('version', '?')}"
-            for _rel, payload in load_browser_receipts(root)
-            if isinstance(b := payload.get("browser"), dict)
+            describe_browser(browser)
+            for _rel, payload in receipts
+            if isinstance(browser := payload.get("browser"), dict)
         }
     )
+    verifier = DEFAULT_VERIFIER
+    for _rel, payload in receipts:
+        v = payload.get("verifier")
+        if isinstance(v, dict) and isinstance(v.get("path"), str):
+            verifier = v["path"]
+    manifests = sorted({m for _rel, payload in receipts if (m := font_pin_manifest(payload))})
     built = ", ".join(versions) or "the build the receipts record"
-    return (
-        f"re-mint environment: the committed receipts were measured on {built}; "
-        "layout numbers and screenshot digests reproduce only on that build with "
-        "DejaVu Sans as the system sans font plus a CJK fallback, so pin both "
-        "(--browser names the executable). After the re-mint, run "
-        f"{REFRESH_TOOL} to prune the digest-refresh sidecars it retires."
-    )
+    parts = [f"re-mint environment: the committed receipts were measured on {built}"]
+    pin = verifier_chromium_pin(root, verifier)
+    if pin:
+        parts.append(
+            f"{verifier} pins Chromium {pin}, its headless-shell binary, the "
+            "Playwright release and the host platform, and refuses anything else "
+            "(pass --browser with that build's chrome-headless-shell if Playwright "
+            "resolves a different one)"
+        )
+    if manifests:
+        parts.append(
+            f"it serves only the fonts committed in {', '.join(manifests)} and "
+            "refuses a receipt if any glyph falls back to a platform font "
+            "(regenerate the subsets with scripts/build_p0b_font_pin.py)"
+        )
+    return "; ".join(parts)
 
 
 def sha256_file(path: Path) -> str | None:
@@ -410,6 +440,9 @@ def _layout_pins(root: Path, payload: dict, fixture_cache: dict[str, dict | None
     verifier = payload.get("verifier")
     if isinstance(verifier, dict) and isinstance(verifier.get("path"), str):
         pins.add(verifier["path"])
+    manifest = font_pin_manifest(payload)
+    if manifest:
+        pins.add(manifest)
     fixture_path = _receipt_fixture_path(payload)
     pins.add(fixture_path)
     if fixture_path not in fixture_cache:
@@ -418,38 +451,99 @@ def _layout_pins(root: Path, payload: dict, fixture_cache: dict[str, dict | None
     return pins
 
 
-def refreshable_measurements(
+def _receipt_inventory(
     root: Path, receipts: list[tuple[str, dict]] | None = None
-) -> dict[str, dict[str, str]]:
-    """``{asset: {receipt path: digest that receipt measured}}``, digest-only tier.
+) -> tuple[list[tuple[str, dict]], dict[str, str], list[str]]:
+    """Parse and hash the same complete raw inventory; reject omitted bad files."""
+    # Parse and hash the same bytes. A supplied earlier payload is only an
+    # expected snapshot; it cannot be paired with another receipt's raw hash.
+    expected_payloads = None if receipts is None else dict(receipts)
+    bound_receipts: list[tuple[str, dict]] = []
+    current_receipts: dict[str, str] = {}
+    for path in sorted((root / EVIDENCE_DIR_REL).glob(RECEIPT_GLOB)):
+        if (path.is_symlink() or not path.is_file()
+                or not path.resolve().is_relative_to(root.resolve())):
+            return [], {}, ["unqualified receipt inventory: nonregular or escaping receipt"]
+        try:
+            raw = path.read_bytes()
+            payload = json.loads(raw)
+        except (OSError, ValueError, UnicodeDecodeError):
+            return [], {}, ["unqualified receipt inventory: unreadable or malformed browser receipt"]
+        if not isinstance(payload, dict) or payload.get("schema") != RECEIPT_SCHEMA:
+            return [], {}, ["unqualified receipt inventory: malformed or extra browser receipt"]
+        rel = path.relative_to(root).as_posix()
+        current_receipts[rel] = hashlib.sha256(raw).hexdigest()
+        bound_receipts.append((rel, payload))
+    if not current_receipts:
+        return [], {}, ["unqualified receipt inventory: no browser receipts"]
+    if expected_payloads is not None and (
+        expected_payloads != dict(bound_receipts) or len(receipts or []) != len(bound_receipts)
+    ):
+        return [], {}, ["receipt payload changed between parsing and qualification; no effects allowed"]
+    return bound_receipts, current_receipts, []
 
-    A (receipt, asset) pair is digest-only when the asset is in
-    REFRESHABLE_LOADED_ASSETS, the receipt loaded it, and the receipt does not
-    also pin it as a construction input, verifier, fixture, or recipe input.
-    """
-    if receipts is None:
-        receipts = load_browser_receipts(root)
+
+def qualification_status(
+    root: Path, receipts: list[tuple[str, dict]] | None = None
+) -> tuple[dict[str, dict[str, str]], dict | None, list[str]]:
+    """Exact source-vector/scene eligibility; inactivity always means strict pins."""
+    receipts, current_receipts, errors = _receipt_inventory(root, receipts)
+    if errors:
+        return {}, None, errors
+    current_assets = {path: sha256_file(root / path) for path in REFRESHABLE_LOADED_ASSETS}
+    if any(not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value)
+           for value in [*current_receipts.values(), *current_assets.values()]):
+        return {}, None, ["unqualified source or scene: an exact input is absent or unreadable"]
+    matches = [
+        row for row in QUALIFIED_DIGEST_SCENES
+        if isinstance(row, dict)
+        and row.get("receipts") == current_receipts
+        and row.get("assets") == current_assets
+        and isinstance(row.get("basis"), str) and row["basis"]
+    ]
+    if len(matches) != 1:
+        return {}, None, [
+            "unqualified source or receipt scene: expected one exact approved "
+            "complete helper vector and outer receipt set, found " + str(len(matches))
+        ]
+    record = matches[0]
     fixture_cache: dict[str, dict | None] = {}
-    out: dict[str, dict[str, str]] = {}
+    measurements: dict[str, dict[str, str]] = {}
     for relpath, payload in receipts:
         loaded = payload.get("loaded_assets")
         if not isinstance(loaded, dict):
-            continue
+            return {}, None, [f"{relpath}: malformed loaded_assets"]
         layout = _layout_pins(root, payload, fixture_cache)
         for asset in REFRESHABLE_LOADED_ASSETS:
             digest = loaded.get(asset)
-            if isinstance(digest, str) and asset not in layout:
-                out.setdefault(asset, {})[relpath] = digest
-    return out
+            if isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest) and asset not in layout:
+                measurements.setdefault(asset, {})[relpath] = digest
+    drift = _receipt_drift(root, receipts, measurements)
+    if drift:
+        return {}, None, drift
+    return measurements, record, []
 
 
-def build_sidecar(asset: str, current: str, measured_by: dict[str, str]) -> dict:
+def refreshable_measurements(
+    root: Path, receipts: list[tuple[str, dict]] | None = None
+) -> dict[str, dict[str, str]]:
+    """Only exact qualified vectors in their unchanged captured scene are eligible."""
+    return qualification_status(root, receipts)[0]
+
+
+def build_sidecar(asset: str, current: str, measured_by: dict[str, str], qualification: dict) -> dict:
+    # Whole-vector eligibility was already checked. A sibling asset does not
+    # change this asset sidecar identity once their union is explicitly qualified.
+    binding = {"receipts": qualification["receipts"],
+               "asset": {asset: qualification["assets"][asset]}}
+    qualified_bytes = json.dumps(binding, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return {
         "schema": SIDECAR_SCHEMA,
         "proof_class": SIDECAR_PROOF_CLASS,
         "path": asset,
         "sha256": current,
         "measured_by": dict(sorted(measured_by.items())),
+        "qualification_sha256": hashlib.sha256(qualified_bytes.encode("utf-8")).hexdigest(),
         "claim": SIDECAR_CLAIM,
         "rationale": REFRESHABLE_LOADED_ASSETS[asset],
         "tool": REFRESH_TOOL,
@@ -461,6 +555,27 @@ def render_sidecar(doc: dict) -> str:
     return json.dumps(doc, sort_keys=True, indent=2, ensure_ascii=False) + "\n"
 
 
+def _sidecar_inventory(root: Path) -> tuple[dict[str, str] | None, str | None]:
+    """Preflight every existing entry, including recognized sidecar names."""
+    directory = root / DIGEST_REFRESH_DIR_REL
+    if directory.is_symlink() or not directory.resolve().is_relative_to(root.resolve()):
+        return None, "sidecar directory is a symlink or escapes the repository"
+    if not directory.exists():
+        return {}, None
+    if not directory.is_dir():
+        return None, "sidecar directory is not a directory"
+    inventory: dict[str, str] = {}
+    for path in sorted(directory.iterdir()):
+        if (path.is_symlink() or not path.is_file()
+                or not path.resolve().is_relative_to(root.resolve())):
+            return None, f"sidecar target is not a contained regular file: {path.name}"
+        digest = sha256_file(path)
+        if digest is None:
+            return None, f"sidecar target is unreadable: {path.name}"
+        inventory[path.name] = digest
+    return inventory, None
+
+
 def _sidecar_status(root: Path) -> tuple[dict[str, dict], list[str]]:
     """Valid sidecars by asset, plus a finding for every file that is not one.
 
@@ -470,9 +585,15 @@ def _sidecar_status(root: Path) -> tuple[dict[str, dict], list[str]]:
     pruned, so retired debt cannot linger).
     """
     directory = root / DIGEST_REFRESH_DIR_REL
-    if not directory.exists():
+    _inventory, shape_error = _sidecar_inventory(root)
+    if shape_error:
+        return {}, ["INVALID SIDECAR TARGET: " + shape_error]
+    if not _inventory:
         return {}, []
-    measurements = refreshable_measurements(root)
+    measurements, qualification, errors = qualification_status(root)
+    if errors:
+        return {}, ["UNQUALIFIED SIDECAR SCENE: " + error for error in errors]
+    assert qualification is not None
     by_name = {sidecar_relpath(asset): asset for asset in measurements}
     valid: dict[str, dict] = {}
     findings: list[str] = []
@@ -502,7 +623,7 @@ def _sidecar_status(root: Path) -> tuple[dict[str, dict], list[str]]:
                 f"current bytes of {asset}; run {REFRESH_TOOL} to prune it"
             )
             continue
-        doc = build_sidecar(asset, current, measured)
+        doc = build_sidecar(asset, current, measured, qualification)
         try:
             text = path.read_text(encoding="utf-8")
         except OSError:
@@ -597,14 +718,20 @@ def evaluate(
     return [finding for _tier, finding in evaluate_rows(changed, pin_sets, root)]
 
 
-def _browser_drift(root: Path, receipts: list[tuple[str, dict]]) -> list[str]:
+def _receipt_drift(root: Path, receipts: list[tuple[str, dict]],
+                   measurements: dict[str, dict[str, str]]) -> list[str]:
     """Layout-tier bytes that differ from what the receipts measured."""
-    measurements = refreshable_measurements(root, receipts)
     drift: list[str] = []
     seen_fixtures: set[str] = set()
 
     def check(path: str, digest: object, owner: str) -> None:
-        if not isinstance(digest, str):
+        candidate = Path(path) if isinstance(path, str) else None
+        if (candidate is None or candidate.is_absolute() or ".." in candidate.parts
+                or candidate.as_posix() != path or not (root / candidate).resolve().is_relative_to(root.resolve())):
+            drift.append(f"{owner}: noncanonical or escaping input path {path!r}")
+            return
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+            drift.append(f"{path}: {owner} has no valid SHA-256 input binding")
             return
         current = sha256_file(root / path)
         if current != digest:
@@ -616,7 +743,8 @@ def _browser_drift(root: Path, receipts: list[tuple[str, dict]]) -> list[str]:
     for relpath, payload in receipts:
         for key in ("construction_inputs", "loaded_assets"):
             block = payload.get(key)
-            if not isinstance(block, dict):
+            if not isinstance(block, dict) or not block:
+                drift.append(f"{relpath}: missing or malformed {key}")
                 continue
             for path, digest in sorted(block.items()):
                 if key == "loaded_assets" and relpath in measurements.get(path, {}):
@@ -626,28 +754,120 @@ def _browser_drift(root: Path, receipts: list[tuple[str, dict]]) -> list[str]:
             row = payload.get(key)
             if isinstance(row, dict) and isinstance(row.get("path"), str):
                 check(row["path"], row.get("sha256"), relpath)
+            else:
+                drift.append(f"{relpath}: missing or malformed {key}")
+        font_pin = payload.get("font_pin")
+        if font_pin is not None:
+            manifest = font_pin.get("manifest") if isinstance(font_pin, dict) else None
+            path = font_pin_manifest(payload)
+            digest = manifest.get("sha256") if isinstance(manifest, dict) else None
+            if not path or not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+                drift.append(f"{relpath}: malformed font_pin.manifest; cannot establish layout bytes")
+            else:
+                check(path, digest, relpath)
         fixture_path = _receipt_fixture_path(payload)
         if fixture_path in seen_fixtures:
             continue
         seen_fixtures.add(fixture_path)
         fixture = load_fixture(root, fixture_path)
-        for market in ((fixture or {}).get("markets") or {}).values():
-            if not isinstance(market, dict):
+        if fixture is None:
+            drift.append(f"{fixture_path}: missing or malformed recipe inventory")
+        markets = (fixture or {}).get("markets")
+        if not isinstance(markets, dict) or not markets:
+            drift.append(f"{fixture_path}: missing or malformed recipe markets")
+            continue
+        for market in markets.values():
+            inputs = market.get("inputs") if isinstance(market, dict) else None
+            if not isinstance(inputs, list) or not inputs:
+                drift.append(f"{fixture_path}: missing or malformed recipe inputs")
                 continue
-            for item in market.get("inputs") or []:
-                if isinstance(item, dict) and isinstance(item.get("path"), str):
-                    check(item["path"], item.get("sha256"), fixture_path)
+            for item in inputs:
+                if not isinstance(item, dict) or not isinstance(item.get("path"), str):
+                    drift.append(f"{fixture_path}: malformed recipe input")
+                    continue
+                check(item["path"], item.get("sha256"), fixture_path)
     return sorted(set(drift))
 
 
-def refresh_digests(root: Path) -> tuple[int, list[str]]:
-    """Browser-free, deterministic: re-mint only the digest-only tier.
+def _browser_drift(root: Path, receipts: list[tuple[str, dict]]) -> list[str]:
+    """Explicit qualification failures and strict byte drift; neither permits writes."""
+    measurements, _record, errors = qualification_status(root, receipts)
+    return sorted(set(errors + _receipt_drift(root, receipts, measurements)))
 
-    Writes or updates one sidecar per digest-only asset whose bytes moved,
-    deletes sidecars the receipts have caught up with, and refuses (writing
-    nothing) when any layout-tier byte moved or a foreign file sits in the
-    sidecar directory.
-    """
+
+def _retire_strict_sidecars(
+    root: Path, receipts: list[tuple[str, dict]], qualification_errors: list[str]
+) -> tuple[int, list[str]]:
+    """Deletion-only retirement under complete current strict receipt bindings."""
+    def refuse(reason: str) -> tuple[int, list[str]]:
+        return 2, ["REFUSED: " + reason + "; nothing was written or pruned"]
+
+    inventory, shape_error = _sidecar_inventory(root)
+    if shape_error:
+        return refuse(shape_error)
+    if not inventory:
+        return 2, ["REFUSED: inactive qualification; no refresh effects allowed", *qualification_errors]
+    current, raw_hashes, errors = _receipt_inventory(root, receipts)
+    errors += _receipt_drift(root, current, {})
+    if errors:
+        return 2, ["REFUSED: strict retirement inputs are not closed; nothing was written or pruned", *errors]
+    directory = root / DIGEST_REFRESH_DIR_REL
+    plan: list[Path] = []
+    for path in sorted(directory.iterdir()):
+        try:
+            text = path.read_text(encoding="utf-8")
+            doc = json.loads(text)
+        except (OSError, ValueError, UnicodeDecodeError):
+            return refuse(f"unrecognized sidecar {path.name}")
+        asset = doc.get("path") if isinstance(doc, dict) else None
+        measured = doc.get("measured_by") if isinstance(doc, dict) else None
+        if (not isinstance(asset, str) or asset not in REFRESHABLE_LOADED_ASSETS
+                or path.relative_to(root).as_posix() != sidecar_relpath(asset)
+                or not isinstance(measured, dict) or not measured
+                or not all(isinstance(p, str) and isinstance(d, str) and re.fullmatch(r"[0-9a-f]{64}", d)
+                           for p, d in measured.items())):
+            return refuse(f"unrecognized owned sidecar {path.name}")
+        recognized = []
+        for row in QUALIFIED_DIGEST_SCENES:
+            if not isinstance(row, dict) or not isinstance(row.get("receipts"), dict) or not isinstance(row.get("assets"), dict):
+                continue
+            historical_hash = row["assets"].get(asset)
+            if (not isinstance(historical_hash, str) or not re.fullmatch(r"[0-9a-f]{64}", historical_hash)
+                    or not set(measured) <= set(row["receipts"])):
+                continue
+            if text == render_sidecar(build_sidecar(asset, historical_hash, measured, row)):
+                recognized.append(row)
+        if not recognized:
+            return refuse(f"sidecar {path.name} has no retained canonical qualification identity")
+        if not any(set(row["receipts"]) <= set(raw_hashes) for row in recognized):
+            return refuse(f"current receipt inventory is incomplete for {path.name}")
+        loaded = [payload["loaded_assets"][asset] for _rel, payload in current if asset in payload["loaded_assets"]]
+        actual = sha256_file(root / asset)
+        if not loaded or any(digest != actual for digest in loaded):
+            return refuse(f"{asset} is not directly covered by every applicable current receipt")
+        plan.append(path)
+    # Validate the complete current strict scene and all deletion targets again.
+    confirmed, confirmed_hashes, errors = _receipt_inventory(root)
+    errors += _receipt_drift(root, confirmed, {})
+    inventory_after, shape_error = _sidecar_inventory(root)
+    if (errors or confirmed_hashes != raw_hashes or dict(confirmed) != dict(current)
+            or shape_error or inventory_after != inventory):
+        return refuse("strict inputs or sidecar identities changed while planning")
+    lines = []
+    for path in plan:
+        path.unlink()
+        lines.append(f"retired {DIGEST_REFRESH_DIR_REL}/{path.name}")
+    if directory.exists() and not any(directory.iterdir()):
+        directory.rmdir()
+    lines.append(
+        f"p0b digest retirement: {len(plan)} owned sidecar(s) retired under current strict receipt bindings; "
+        "qualification remains inactive; receipts untouched; no browser run"
+    )
+    return 0, lines
+
+
+def refresh_digests(root: Path) -> tuple[int, list[str]]:
+    """Validate a complete qualified refresh or a strict deletion-only retirement."""
     sparse = _sparse_refusal(root)
     if sparse:
         return 2, [f"REFUSED: cannot refresh P0B digests ({sparse})"]
@@ -656,6 +876,9 @@ def refresh_digests(root: Path) -> tuple[int, list[str]]:
         return 2, [
             f"REFUSED: no {RECEIPT_SCHEMA} receipts under {EVIDENCE_DIR_REL}/{RECEIPT_GLOB}"
         ]
+    _measurements, active, qualification_errors = qualification_status(root, receipts)
+    if active is None or qualification_errors:
+        return _retire_strict_sidecars(root, receipts, qualification_errors)
     drift = _browser_drift(root, receipts)
     if drift:
         return 2, [
@@ -666,7 +889,12 @@ def refresh_digests(root: Path) -> tuple[int, list[str]]:
             environment_hint(root),
         ]
     directory = root / DIGEST_REFRESH_DIR_REL
-    measurements = refreshable_measurements(root, receipts)
+    measurements, qualification, errors = qualification_status(root, receipts)
+    if errors or qualification is None:
+        return 2, ["REFUSED: source/scene qualification changed; nothing was written", *errors]
+    inventory_before, shape_error = _sidecar_inventory(root)
+    if shape_error:
+        return 2, ["REFUSED: " + shape_error + "; nothing was written"]
     by_name = {sidecar_relpath(asset): asset for asset in measurements}
     orphans: list[Path] = []
     if directory.exists():
@@ -690,18 +918,26 @@ def refresh_digests(root: Path) -> tuple[int, list[str]]:
     plan: list[tuple[str, Path, str | None]] = []
     for asset, measured in sorted(measurements.items()):
         current = sha256_file(root / asset)
-        if current is None:
-            return 2, [f"REFUSED: {asset} is pinned by a receipt but missing; nothing was written"]
+        if current != qualification["assets"].get(asset):
+            return 2, [f"REFUSED: {asset} changed after qualification; nothing was written"]
         target = root / sidecar_relpath(asset)
         if all(digest == current for digest in measured.values()):
             plan.append(("pruned" if target.exists() else "", target, None))
             continue
-        text = render_sidecar(build_sidecar(asset, current, measured))
+        text = render_sidecar(build_sidecar(asset, current, measured, qualification))
         try:
             existing = target.read_text(encoding="utf-8")
         except OSError:
             existing = None
         plan.append(("unchanged" if existing == text else "wrote", target, text))
+    # Re-read the complete qualification after planning and before any write or prune.
+    # This is a validation boundary, not a replacement repository lock or I/O journal.
+    _current, confirmed, errors = qualification_status(root)
+    if errors or confirmed != qualification or _current != measurements:
+        return 2, ["REFUSED: source/scene changed while planning; nothing was written", *errors]
+    inventory_after, shape_error = _sidecar_inventory(root)
+    if shape_error or inventory_after != inventory_before:
+        return 2, ["REFUSED: sidecar targets changed while planning; nothing was written", shape_error or "inventory changed"]
     lines: list[str] = []
     for verb, target, text in plan:
         rel = _posix(target, root) if target.exists() else f"{DIGEST_REFRESH_DIR_REL}/{target.name}"
@@ -735,6 +971,11 @@ def run_selftest() -> int:
     ca_receipt = evidence / "mobile-layout-canada.json"
     fixture = evidence / FIXTURE_NAME
     pinned = "templates/zz-selftest.html.j2"
+    font_manifest = f"{EVIDENCE_DIR_REL}/inputs/browser-data/p0b-font-pin/font-pin.json"
+    (tmp / "scripts").mkdir()
+    (tmp / DEFAULT_VERIFIER).write_text(
+        'const CHROMIUM_PIN = "1.2.3.4";\n', encoding="utf-8"
+    )
     fixture.write_text(
         json.dumps(
             {
@@ -766,6 +1007,8 @@ def run_selftest() -> int:
                     "path": "scripts/verify_stock_dashboard_mobile_layout.cjs",
                     "sha256": "d" * 64,
                 },
+                "browser": {"engine": "chromium", "version": "1.2.3.4"},
+                "font_pin": {"manifest": {"path": font_manifest, "sha256": "9" * 64}},
                 "fixture_receipt": {
                     "path": f"{EVIDENCE_DIR_REL}/{FIXTURE_NAME}",
                     "sha256": "e" * 64,
@@ -809,6 +1052,17 @@ def run_selftest() -> int:
         print("selftest FAIL: pinned-path-only diff unexpectedly passed")
         return 1
 
+    # RED: a font-pin manifest edit moves glyph metrics, so it remints too.
+    if not evaluate({font_manifest}, pin_sets):
+        print("selftest FAIL: font-pin manifest change unexpectedly passed")
+        return 1
+
+    hint = environment_hint(tmp)
+    for needle in ("chromium 1.2.3.4", "pins Chromium 1.2.3.4", font_manifest):
+        if needle not in hint:
+            print(f"selftest FAIL: environment hint lacks {needle!r}: {hint}")
+            return 1
+
     # GREEN: pinned path plus every receipt that pins it (recipe inputs bind both).
     green = evaluate(
         {
@@ -851,18 +1105,31 @@ def run_selftest() -> int:
 
 
 def _selftest_digest_tier() -> str | None:
+    """Temporary synthetic policy declarations never escape the selftest."""
+    global QUALIFIED_DIGEST_SCENES
+    saved = QUALIFIED_DIGEST_SCENES
+    QUALIFIED_DIGEST_SCENES = ()
+    try:
+        return _selftest_digest_tier_fixture()
+    finally:
+        QUALIFIED_DIGEST_SCENES = saved
+
+
+def _selftest_digest_tier_fixture() -> str | None:
     """Digest-only tier on a temp tree whose receipts carry real digests."""
     tmp = Path(tempfile.mkdtemp(prefix="check_p0b_receipt_closure_digest_selftest_"))
     evidence = tmp / EVIDENCE_DIR_REL
     template = "templates/zz-selftest.html.j2"
     css = "site/zz-selftest.css"
-    charts, tablesort = "site/charts.js", "site/tablesort.js"
+    charts, mtf = "site/charts.js", "site/mtf.js"
     files = {
         template: "<main>selftest</main>\n",
         css: "main{display:block}\n",
         charts: "/* charts */\n",
-        tablesort: "/* tablesort */\n",
+        mtf: "/* mtf */\n",
         "scripts/verify_stock_dashboard_mobile_layout.cjs": "// verifier\n",
+        "site/chart_i18n.js": "/* synthetic chart i18n */\n",
+        "site/illus.js": "/* synthetic illus */\n",
     }
     for rel, text in files.items():
         (tmp / rel).parent.mkdir(parents=True, exist_ok=True)
@@ -890,7 +1157,7 @@ def _selftest_digest_tier() -> str | None:
                 {
                     "schema": RECEIPT_SCHEMA,
                     "construction_inputs": {template: digest(template)},
-                    "loaded_assets": {rel_: digest(rel_) for rel_ in (css, charts, tablesort)},
+                    "loaded_assets": {rel_: digest(rel_) for rel_ in (css, charts, mtf)},
                     "verifier": {
                         "path": "scripts/verify_stock_dashboard_mobile_layout.cjs",
                         "sha256": digest("scripts/verify_stock_dashboard_mobile_layout.cjs"),
@@ -901,6 +1168,14 @@ def _selftest_digest_tier() -> str | None:
             + "\n",
             encoding="utf-8",
         )
+    def qualify_synthetic() -> None:
+        global QUALIFIED_DIGEST_SCENES
+        row = {"basis": "synthetic_selftest_not_browser_evidence",
+               "receipts": {p: digest(p) for p in receipt_rels},
+               "assets": {p: digest(p) for p in REFRESHABLE_LOADED_ASSETS}}
+        if row not in QUALIFIED_DIGEST_SCENES:
+            QUALIFIED_DIGEST_SCENES += (row,)
+    qualify_synthetic()
     pin_sets, refuse = derive_pin_sets(tmp)
     if refuse:
         return f"digest tier: could not derive pin sets: {refuse}"
@@ -911,6 +1186,8 @@ def _selftest_digest_tier() -> str | None:
     def append(rel: str, text: str) -> None:
         with (tmp / rel).open("a", encoding="utf-8") as handle:
             handle.write(text)
+        if rel in REFRESHABLE_LOADED_ASSETS:
+            qualify_synthetic()
 
     if gate(set()) or refresh_digests(tmp)[0] != 0 or (tmp / DIGEST_REFRESH_DIR_REL).exists():
         return "digest tier: a clean tree was not clean, or refresh wrote into it"
@@ -942,17 +1219,17 @@ def _selftest_digest_tier() -> str | None:
     sidecar_a = sidecar_relpath(charts)
     if gate({charts, sidecar_a}):
         return f"digest tier: charts.js plus its sidecar still red: {gate({charts, sidecar_a})}"
-    append(tablesort, "/* sibling B */\n")
+    append(mtf, "/* sibling B */\n")
     if refresh_digests(tmp)[0] != 0:
         return "digest tier: refresh refused the second sibling"
-    sidecar_b = sidecar_relpath(tablesort)
-    union = gate({charts, sidecar_a, tablesort, sidecar_b})
+    sidecar_b = sidecar_relpath(mtf)
+    union = gate({charts, sidecar_a, mtf, sidecar_b})
     if union or sidecar_findings(tmp):
         return f"digest tier: the sibling union is red: {union}"
     for rel in receipt_rels:
         payload = json.loads((tmp / rel).read_text(encoding="utf-8"))
         effective = effective_loaded_assets(tmp, rel, payload)
-        if effective.get(charts) != digest(charts) or effective.get(tablesort) != digest(tablesort):
+        if effective.get(charts) != digest(charts) or effective.get(mtf) != digest(mtf):
             return "digest tier: effective digests do not reach the current bytes"
 
     # A hand-edited sidecar is not a sidecar.
@@ -966,8 +1243,9 @@ def _selftest_digest_tier() -> str | None:
     # leaving them behind reds until --refresh-digests prunes them.
     for rel in receipt_rels:
         payload = json.loads((tmp / rel).read_text(encoding="utf-8"))
-        payload["loaded_assets"] = {rel_: digest(rel_) for rel_ in (css, charts, tablesort)}
+        payload["loaded_assets"] = {rel_: digest(rel_) for rel_ in (css, charts, mtf)}
         (tmp / rel).write_text(json.dumps(payload) + "\n", encoding="utf-8")
+    qualify_synthetic()
     if not gate(set(receipt_rels)):
         return "digest tier: a re-mint that left retired sidecars behind passed"
     if refresh_digests(tmp)[0] != 0 or (tmp / DIGEST_REFRESH_DIR_REL).exists():

@@ -20,7 +20,7 @@ import pytest
 from bs4 import BeautifulSoup
 from jinja2 import Environment
 
-import scripts.check_p0b_receipt_closure as receipt_closure
+from scripts import check_p0b_receipt_closure as receipt_closure
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,6 +28,11 @@ BROWSER_RECEIPT = ROOT / "scripts" / "verify_stock_dashboard_mobile_layout.cjs"
 FIXTURE_RECIPE = ROOT / "scripts" / "render_stock_dashboard_fixture.py"
 EVIDENCE_DIR = ROOT / "mockups" / "evidence" / "prophet-p0b-zero-fouc"
 FIXTURE_ASSETS = EVIDENCE_DIR / "inputs" / "browser-data"
+FONT_PIN = FIXTURE_ASSETS / "p0b-font-pin"
+BROWSER_RECEIPTS = {
+    "hk": EVIDENCE_DIR / "mobile-layout.json",
+    "ca": EVIDENCE_DIR / "mobile-layout-canada.json",
+}
 
 MARKETS = {
     "hk": {
@@ -1587,16 +1592,12 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
     assert browser["construction_inputs"][f"templates/{template}"] == _sha256(
         ROOT / "templates" / template
     )
-    # A digest-only asset (receipt_closure.REFRESHABLE_LOADED_ASSETS) may have
-    # moved since the browser run when a committed digest-refresh sidecar
-    # vouches for its current bytes; every other loaded asset must match the
-    # receipt exactly.
-    effective = receipt_closure.effective_loaded_assets(
-        ROOT, f"{receipt_closure.EVIDENCE_DIR_REL}/{receipt_name}", browser
+    effective_assets = receipt_closure.effective_loaded_assets(
+        ROOT, BROWSER_RECEIPTS[market].relative_to(ROOT).as_posix(), browser
     )
-    assert set(effective) == set(browser["loaded_assets"])
-    for relative, digest in effective.items():
-        assert _sha256(ROOT / relative) == digest, relative
+    assert set(effective_assets) == set(browser["loaded_assets"])
+    for relative, digest in effective_assets.items():
+        assert _sha256(ROOT / relative) == digest
     assert browser["loaded_assets"]["site/stock-dashboard.css"] == _sha256(
         ROOT / "site" / "stock-dashboard.css"
     )
@@ -1656,7 +1657,11 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
             "live/quotes.json",
         },
     }
-    assert loaded_fixture_assets == expected_frozen_assets[market]
+    pinned_fonts = {
+        str((FONT_PIN / name).relative_to(FIXTURE_ASSETS))
+        for name in json.loads(_read(FONT_PIN / "font-pin.json"))["files"]
+    }
+    assert loaded_fixture_assets == expected_frozen_assets[market] | pinned_fonts
     assert {row["state"] for row in browser["states"]} >= {
         "en-dark",
         "en-light",
@@ -1995,22 +2000,20 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
     assert all("screenshot" not in row for row in browser["states"])
 
 
-# Digest-only tier of scripts/check_p0b_receipt_closure.py.  A loaded script
-# may leave the browser re-mint set only while the rendered fixture gives it
-# nothing to write into.  The tests below re-prove that on every run, from the
-# fixture bytes and the pinned sources, so the allowlist cannot outlive its
-# reasons.
-DIGEST_ONLY_ASSETS = {
-    "site/charts.js",
-    "site/chart_i18n.js",
-    "site/tablesort.js",
-    "site/mtf.js",
-    "site/illus.js",
-}
 
-# Every handle a digest-only script is reached through: the DOM targets it
-# writes into and the globals other scripts call it by.  `ilx` is the bare
-# class name (not ilx-in, ilxReveal, or hkx-ilx).
+# Finite digest-refresh qualification. The policy is an exact complete helper
+# vector plus the exact outer browser receipts, never a path-only exemption.
+# The initial vector is byte-identical to the captured helpers. This diagnostic
+# does not qualify future source edits or replay the receipts' 64-case matrices.
+DIGEST_ONLY_ASSETS = {
+    "site/charts.js", "site/chart_i18n.js", "site/mtf.js", "site/illus.js",
+}
+DIGEST_ONLY_EXPORTS = {
+    "site/charts.js": set(),
+    "site/chart_i18n.js": set(),
+    "site/mtf.js": {"hydrateMTF", "renderMTF"},
+    "site/illus.js": {"ilxMount", "ilxReveal"},
+}
 DIGEST_ONLY_TOKENS = {
     "js-plotly-plot": re.compile(r"js-plotly-plot"),
     "Plotly": re.compile(r"Plotly"),
@@ -2021,574 +2024,454 @@ DIGEST_ONLY_TOKENS = {
     "ilxMount": re.compile(r"ilxMount"),
     "ilxReveal": re.compile(r"ilxReveal"),
     "ilx": re.compile(r"(?<![\w-])ilx(?![\w-])"),
-    "data-tablesort": re.compile(r"data-tablesort"),
 }
-
-# The only pinned layout-tier sources allowed to name one.  theme.js re-themes
-# Plotly divs (only when Plotly is loaded) and re-runs hydrateMTF on a theme or
-# language flip; the templates replay ilx charts with ilxReveal and style the
-# class.  Each is inert on the fixture because the probe below finds no target.
 DIGEST_ONLY_TOKEN_ALLOWANCE = {
     "site/theme.js": {"js-plotly-plot", "Plotly", "hydrateMTF"},
     "templates/hk.html.j2": {"ilxReveal", "ilx"},
     "templates/canada.html.j2": {"ilxReveal", "ilx"},
 }
-
-TABLE_CONSTRUCTION = re.compile(r"""<table|createElement\(\s*['"]table""")
+PROBE_PHASES = ["load", "DOMContentLoaded", "load-event", "reached-exports", "other-events"]
+RECEIPT_PAGES = {"mobile-layout.json": "hk_", "mobile-layout-canada.json": "canada_"}
+DIALOG_ROOT_SELECTOR = ".hkx-dlg, .cax-dlg, dialog, [role=dialog]"
 
 
 def _receipt_payloads() -> dict[str, dict]:
-    return {
-        name: json.loads(_read(EVIDENCE_DIR / name))
-        for name in ("mobile-layout.json", "mobile-layout-canada.json")
-    }
+    return {name: json.loads(_read(EVIDENCE_DIR / name)) for name in RECEIPT_PAGES}
 
 
 def _pinned_sources() -> set[str]:
-    sources: set[str] = set()
-    for payload in _receipt_payloads().values():
-        for block in ("construction_inputs", "loaded_assets"):
-            sources.update(
-                path for path in payload[block] if path.endswith((".js", ".j2", ".html"))
-            )
-    return sources
+    return {
+        path
+        for payload in _receipt_payloads().values()
+        for block in ("construction_inputs", "loaded_assets")
+        for path in payload[block]
+        if path.endswith((".js", ".j2", ".html"))
+    }
 
 
-def _tablesort_eligible(table) -> bool:
-    """site/tablesort.js initAll's skip rules, applied to parsed fixture HTML.
+def _diagnostic_qualification() -> dict | None:
+    """Select an exact recorded scene; a historical policy may legitimately be inactive."""
+    receipts = {
+        (EVIDENCE_DIR / name).relative_to(ROOT).as_posix(): _sha256(EVIDENCE_DIR / name)
+        for name in RECEIPT_PAGES
+    }
+    assets = {path: _sha256(ROOT / path) for path in DIGEST_ONLY_ASSETS}
+    matches = [
+        row for row in receipt_closure.QUALIFIED_DIGEST_SCENES
+        if row["receipts"] == receipts and row["assets"] == assets
+    ]
+    assert len(matches) <= 1, "conflicting source/receipt qualifications"
+    return matches[0] if matches else None
 
-    Rows are counted generously (every <tr> directly under the table or under
-    any of its own <tbody>), so a doubtful table reads as eligible and reds.
-    """
-    node = table
-    while node is not None and getattr(node, "name", None):
-        if "tip" in (node.get("class") or []):
-            return False
-        node = node.parent
-    classes = table.get("class") or []
-    if "sb-table" in classes or "st-table" in classes:
-        return False
-    if table.get("data-tablesort") == "1":
-        return False
-    rows = table.find_all("tr", recursive=False)
-    for body in table.find_all("tbody", recursive=False):
-        rows.extend(body.find_all("tr", recursive=False))
-    if table.find("thead", recursive=False) is None:
-        rows = rows[1:]
-    return len(rows) >= 2
+
+def _assert_inactive_qualification_is_strict() -> None:
+    """A positive fallback assertion, not a skipped or simulated diagnostic run."""
+    measurements, record, errors = receipt_closure.qualification_status(ROOT)
+    assert measurements == {} and record is None and errors
+    assert receipt_closure.refreshable_measurements(ROOT) == {}
+    for name, payload in _receipt_payloads().items():
+        rel = (EVIDENCE_DIR / name).relative_to(ROOT).as_posix()
+        assert receipt_closure.effective_loaded_assets(ROOT, rel, payload) == payload["loaded_assets"]
 
 
 @pytest.fixture(scope="module")
 def rendered_fixture_pages(tmp_path_factory: pytest.TempPathFactory) -> dict[str, str]:
-    """Every page the browser receipts measure, rendered fresh from the recipe."""
-    out_dir = tmp_path_factory.mktemp("p0b-digest-only-probe")
+    """Run the unchanged public recipe and reproduce all six recorded HTML hashes."""
+    out_dir = tmp_path_factory.mktemp("p0b-qualified-helper-fixture")
     receipt = out_dir / "rendered-fixture.json"
     run = subprocess.run(
-        [
-            sys.executable,
-            str(FIXTURE_RECIPE),
-            "--market",
-            "all",
-            "--out-dir",
-            str(out_dir),
-            "--receipt",
-            str(receipt),
-        ],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        timeout=60,
-        check=False,
+        [sys.executable, str(FIXTURE_RECIPE), "--market", "all",
+         "--out-dir", str(out_dir), "--receipt", str(receipt)],
+        cwd=ROOT, capture_output=True, text=True, timeout=60, check=False,
     )
     assert run.returncode == 0, run.stderr
-    payload = json.loads(receipt.read_text(encoding="utf-8"))
-    outputs: set[str] = set()
-    for row in payload["markets"].values():
-        outputs.add(row["output"])
-        outputs.update(case["output"] for case in row["owner_cases"].values())
+    actual = json.loads(receipt.read_text(encoding="utf-8"))
+    recorded = json.loads(_read(EVIDENCE_DIR / "rendered-fixture.json"))
+    assert actual["markets"] == recorded["markets"]
+    assert actual["runtime"] == recorded["runtime"]
+    outputs = {
+        row["output"]: row["output_sha256"]
+        for market in recorded["markets"].values()
+        for row in market["owner_cases"].values()
+    }
     assert len(outputs) == 6
+    for name, digest in outputs.items():
+        assert _sha256(out_dir / name) == digest, name
     return {name: (out_dir / name).read_text(encoding="utf-8") for name in sorted(outputs)}
 
 
-def test_digest_only_allowlist_is_the_reviewed_set() -> None:
-    """Widening the digest-only tier is a reviewed change to this suite too."""
+def test_digest_qualification_starts_with_captured_helper_byte_identity() -> None:
+    """Retain the historical baseline record without requiring its scene to stay active."""
     assert set(receipt_closure.REFRESHABLE_LOADED_ASSETS) == DIGEST_ONLY_ASSETS
-    assert all(
-        len(reason) > 40 for reason in receipt_closure.REFRESHABLE_LOADED_ASSETS.values()
-    )
+    assert "site/tablesort.js" not in DIGEST_ONLY_ASSETS
+    initial = [row for row in receipt_closure.QUALIFIED_DIGEST_SCENES
+               if row["basis"] == "captured_helper_byte_identity_20261107"]
+    assert len(initial) == 1
+    assert set(initial[0]["assets"]) == DIGEST_ONLY_ASSETS
+    record = _diagnostic_qualification()
+    if record is None:
+        _assert_inactive_qualification_is_strict()
+        return
+    if record != initial[0]:
+        return  # Later policy records carry their own source qualification.
     loaded = set()
     for payload in _receipt_payloads().values():
-        loaded.update(payload["loaded_assets"])
-        # A digest-only asset is never also a construction input.
         assert not DIGEST_ONLY_ASSETS & set(payload["construction_inputs"])
-    assert DIGEST_ONLY_ASSETS <= loaded
+        for asset in DIGEST_ONLY_ASSETS & set(payload["loaded_assets"]):
+            assert record["assets"][asset] == payload["loaded_assets"][asset]
+            loaded.add(asset)
+    assert loaded == DIGEST_ONLY_ASSETS
 
 
-def test_rendered_fixture_gives_digest_only_scripts_nothing_to_touch(
+def test_qualified_receipt_scene_binds_all_actual_layout_inputs() -> None:
+    """Full checkout CI validates binary inputs whether qualification is active or inactive."""
+    diagnostic = _diagnostic_qualification()
+    measurements, record, errors = receipt_closure.qualification_status(ROOT)
+    if diagnostic is None:
+        _assert_inactive_qualification_is_strict()
+        receipts, _hashes, inventory_errors = receipt_closure._receipt_inventory(ROOT)
+        assert inventory_errors == [], inventory_errors
+        strict_errors = receipt_closure._receipt_drift(ROOT, receipts, {})
+        assert strict_errors == [], strict_errors
+    else:
+        assert errors == [], errors
+        assert record == diagnostic
+        assert set(measurements) == DIGEST_ONLY_ASSETS
+
+
+def test_rendered_fixture_gives_qualified_helpers_no_static_targets(
     rendered_fixture_pages: dict[str, str],
 ) -> None:
-    """Each digest-only reason, re-proved on all six measured pages."""
+    if _diagnostic_qualification() is None:
+        _assert_inactive_qualification_is_strict()
+        return
     for name, html in rendered_fixture_pages.items():
         soup = BeautifulSoup(html, "html.parser")
-        assert soup.select(".js-plotly-plot") == [], f"{name}: charts.js / chart_i18n.js target"
+        assert soup.select(".js-plotly-plot, [data-mtf], .ilx") == [], name
         assert soup.find_all("script", src=re.compile("plotly", re.I)) == [], name
-        assert soup.select("[data-mtf]") == [], f"{name}: mtf.js target"
-        assert soup.select(".ilx") == [], f"{name}: illus.js target"
-        eligible = [
-            str(table)[:120] for table in soup.find_all("table") if _tablesort_eligible(table)
-        ]
-        assert eligible == [], f"{name}: tablesort.js would enhance {eligible}"
+        # Every actual dialog is a subtree of this same target-free page.
+        for dialog in soup.select(DIALOG_ROOT_SELECTOR):
+            assert dialog.select(".js-plotly-plot, [data-mtf], .ilx") == [], name
 
 
-def test_tablesort_eligibility_mirror_is_not_vacuous() -> None:
-    """The mirror above must call a real sortable table eligible."""
-    soup = BeautifulSoup(
-        "<table id=a><thead><tr><th>x</th></tr></thead><tbody>"
-        "<tr><td>1</td></tr><tr><td>2</td></tr></tbody></table>"
-        "<table id=b><tr><th>x</th></tr><tr><td>1</td></tr><tr><td>2</td></tr></table>"
-        "<table id=c><tr><th>x</th></tr><tr><td>1</td></tr></table>"
-        "<div class=tip><table id=d><tr><th>x</th></tr><tr><td>1</td></tr>"
-        "<tr><td>2</td></tr></table></div>"
-        "<table id=e class=st-table><thead><tr><th>x</th></tr></thead><tbody>"
-        "<tr><td>1</td></tr><tr><td>2</td></tr></tbody></table>",
-        "html.parser",
-    )
-    verdict = {t["id"]: _tablesort_eligible(t) for t in soup.find_all("table")}
-    assert verdict == {"a": True, "b": True, "c": False, "d": False, "e": False}
-
-
-def test_digest_only_scripts_are_reached_only_through_reviewed_handles() -> None:
-    """No layout-tier source can hand a digest-only script a target unreviewed."""
+def test_qualified_helpers_keep_the_recorded_caller_closure() -> None:
+    """A regression aid for these exact bytes, not a universal JS call-graph proof."""
+    if _diagnostic_qualification() is None:
+        _assert_inactive_qualification_is_strict()
+        return
     sources = _pinned_sources()
     assert DIGEST_ONLY_ASSETS <= sources
-    verifier = BROWSER_RECEIPT.read_text(encoding="utf-8")
-    for asset in sorted(DIGEST_ONLY_ASSETS):
-        assert Path(asset).name not in verifier, f"verifier names {asset}"
+    verifier = _read(BROWSER_RECEIPT)
+    for asset in DIGEST_ONLY_ASSETS:
+        assert Path(asset).name not in verifier
     for relative in sorted(sources - DIGEST_ONLY_ASSETS):
-        text = _read(ROOT / relative)
-        found = {name for name, rx in DIGEST_ONLY_TOKENS.items() if rx.search(text)}
-        allowed = DIGEST_ONLY_TOKEN_ALLOWANCE.get(relative, set())
-        assert found <= allowed, f"{relative} names {sorted(found - allowed)}"
-    # Composer tables are modal panes, built on click after tablesort's single
-    # initAll pass; StockTable builds an .st-table, which tablesort skips. Any
-    # other script-built table could be enhanced in the measured first frame.
-    for relative in sorted(sources - DIGEST_ONLY_ASSETS):
-        if not relative.startswith("site/"):
-            continue
-        lines = _read(ROOT / relative).splitlines()
-        hits = [n for n, line in enumerate(lines) if TABLE_CONSTRUCTION.search(line)]
-        if relative == "site/stocktable.js":
-            assert len(hits) == 1
-            assert "table.className = 'st-table';" in "\n".join(lines[hits[0] : hits[0] + 3])
-            continue
-        for n in hits:
-            assert "modal" in lines[n], f"{relative}:{n + 1} builds a non-modal table"
+        found = {name for name, rx in DIGEST_ONLY_TOKENS.items() if rx.search(_read(ROOT / relative))}
+        assert found <= DIGEST_ONLY_TOKEN_ALLOWANCE.get(relative, set()), (relative, found)
+    theme = _read(ROOT / "site/theme.js")
+    assert theme.count("if(window.hydrateMTF)window.hydrateMTF();") == 3
+    assert "new CustomEvent('langchange',{detail:lg})" in theme
+    for market, target in (("hk", "d"), ("canada", "el")):
+        source = _read(ROOT / "templates" / f"{market}.html.j2")
+        assert "if(window.ilxReveal){ ilxReveal(document); }" in source
+        assert "setTimeout(go,60)" in source
+        assert f"setTimeout(function(){{ilxReveal({target});}},340)" in source
 
 
 def test_digest_refresh_sidecars_are_consistent() -> None:
-    """Every committed sidecar is exactly what --refresh-digests would write."""
     assert receipt_closure.sidecar_findings(ROOT) == []
 
 
-def test_both_receipts_were_measured_by_one_browser_build() -> None:
-    """The remaining browser-dependent fields come from a single declared build."""
-    payloads = list(_receipt_payloads().values())
-    browsers = [payload["browser"] for payload in payloads]
-    assert browsers[0] == browsers[1]
-    assert set(browsers[0]) >= {"engine", "version"}
-    assert browsers[0]["version"] in receipt_closure.environment_hint(ROOT)
-
-
-# Inertness by execution.  The checks above re-prove the reasons in prose; the
-# probe below runs each digest-only script's actual bytes under node against a
-# recording model of every measured page, in both languages, through load,
-# DOMContentLoaded, window load, its own exported entry points and every other
-# event it listens for.  The model answers only what the fixture makes true:
-# `document.querySelectorAll('table')` returns the page's real tables, every
-# other query returns nothing and is re-checked against the fixture here, and
-# any write to a page node, unmodelled read, new global, prototype patch or
-# throw is reported.  A script edit that acts in the first frame therefore
-# fails here and must drop out of REFRESHABLE_LOADED_ASSETS and re-mint.
-DIGEST_ONLY_EXPORTS = {
-    "site/charts.js": set(),
-    "site/chart_i18n.js": set(),
-    "site/tablesort.js": set(),
-    "site/mtf.js": {"hydrateMTF", "renderMTF"},
-    "site/illus.js": {"ilxMount", "ilxReveal"},
-}
-PROBE_PHASES = ["load", "DOMContentLoaded", "load-event", "reached-exports", "other-events"]
-RECEIPT_PAGES = {"mobile-layout.json": "hk_", "mobile-layout-canada.json": "canada_"}
-
+# Only the exact qualified source may enter this finite model. Unsupported
+# observations and asynchronous work refuse; they never receive invented browser
+# values. Final prototype descriptor snapshots are diagnostic, not a claim to
+# detect all transient JS effects. The source/scene policy is the eligibility gate.
 INERTNESS_PROBE = r"""'use strict';
-// Runs one script's real bytes against a recording model of one rendered
-// fixture page. Every read the model cannot answer truthfully, every write to
-// a page node, every global the script leaves behind and every selector it
-// asks for is reported; the Python side judges the report.
 const vm = require('vm');
 const fs = require('fs');
+const crypto = require('crypto');
+const BUILTINS = ['Array','Object','String','Number','Boolean','RegExp','Date','Math','JSON',
+  'isFinite','parseFloat','parseInt','NaN','Infinity','undefined'];
 
-const BUILTIN_PROTOS = ['Array', 'Object', 'String', 'Number', 'Function', 'Promise',
-  'Element', 'Node', 'EventTarget'];
-
-function protoKeys(g) {
-  const keys = {};
-  for (const name of BUILTIN_PROTOS) {
-    const ctor = g[name];
-    if (ctor && ctor.prototype) keys[name] = Object.getOwnPropertyNames(ctor.prototype).sort().join(',');
+function prototypeState(intrinsics) {
+  const out = new Map();
+  for (const [name, ctor] of Object.entries(intrinsics)) {
+    if (!ctor || !ctor.prototype) continue;
+    const proto = ctor.prototype;
+    out.set(name, {proto, parent: Object.getPrototypeOf(proto),
+      entries: Reflect.ownKeys(proto).map(key => [key, Object.getOwnPropertyDescriptor(proto, key)])});
   }
-  return keys;
+  return out;
+}
+function changedPrototype(before, after) {
+  if (!after || before.proto !== after.proto || before.parent !== after.parent ||
+      before.entries.length !== after.entries.length) return true;
+  return before.entries.some(([key, value], i) => {
+    const [otherKey, other] = after.entries[i];
+    return key !== otherKey || ['value','get','set','writable','enumerable','configurable']
+      .some(field => value[field] !== other[field]);
+  });
 }
 
-async function probe(run) {
-  const rep = {page: run.page, asset: run.asset, lang: run.lang, mutations: [], unmodeled: [],
-    errors: [], queries: [], exports: [], tablesTouched: 0, phases: []};
-  const listeners = [];
-  let timers = [];
-  let readyState = 'loading';
-  const htmlAttrs = Object.assign({}, run.htmlAttrs, {'data-lang': run.lang});
-
-  // A page node: known reads answer from the fixture, writes are mutations,
-  // anything else is unmodeled.
-  function pageNode(label, model, extra) {
-    const attrs = Object.assign({}, model.attrs || {});
-    const classes = (model.classes || []).slice();
-    const base = Object.assign({
-      nodeType: 1,
-      tagName: (model.tag || 'div').toUpperCase(),
-      nodeName: (model.tag || 'div').toUpperCase(),
-      id: model.id || '',
-      getAttribute: (n) => (n in attrs ? attrs[n] : null),
-      hasAttribute: (n) => n in attrs,
-      classList: {
-        contains: (c) => classes.includes(c),
-        add: () => rep.mutations.push(label + '.classList.add'),
-        remove: () => rep.mutations.push(label + '.classList.remove'),
-        toggle: () => rep.mutations.push(label + '.classList.toggle'),
-        replace: () => rep.mutations.push(label + '.classList.replace'),
-      },
-      closest: (sel) => closest(label, model, sel),
-      matches: (sel) => matchSimple(label, {tag: model.tag, classes, id: model.id}, sel),
-      querySelectorAll: (sel) => { rep.queries.push({scope: label, kind: 'qsa', sel}); return []; },
-      querySelector: (sel) => { rep.queries.push({scope: label, kind: 'qs', sel}); return null; },
-      addEventListener: (type, fn) => listeners.push({target: label, type, fn}),
-      removeEventListener: () => {},
-    }, extra || {});
-    for (const m of ['setAttribute', 'removeAttribute', 'toggleAttribute', 'appendChild',
-      'insertBefore', 'removeChild', 'replaceChild', 'append', 'prepend', 'before', 'after',
-      'remove', 'replaceWith', 'insertAdjacentHTML', 'insertAdjacentElement',
-      'insertAdjacentText', 'replaceChildren', 'attachShadow', 'animate', 'focus', 'scrollIntoView']) {
-      base[m] = () => rep.mutations.push(label + '.' + m);
-    }
-    const style = new Proxy({}, {
-      get: (t, p) => (p === 'setProperty' || p === 'removeProperty'
-        ? () => rep.mutations.push(label + '.style.' + p)
-        : p === 'getPropertyValue' ? () => '' : typeof p === 'symbol' ? undefined : ''),
-      set: (t, p) => { rep.mutations.push(label + '.style.' + String(p)); return true; },
-    });
-    base.style = style;
-    return strict(label, base);
-  }
-
-  function strict(label, base) {
-    return new Proxy(base, {
-      get(t, p) {
-        if (typeof p === 'symbol') return t[p];
-        if (p in t) return t[p];
-        rep.unmodeled.push('read ' + label + '.' + p);
-        return undefined;
-      },
-      set(t, p, v) { rep.mutations.push('set ' + label + '.' + String(p)); t[p] = v; return true; },
-      deleteProperty(t, p) { rep.mutations.push('delete ' + label + '.' + String(p)); return true; },
-      defineProperty(t, p) { rep.mutations.push('define ' + label + '.' + String(p)); return true; },
-    });
-  }
-
-  // Only the selector shapes these scripts use are answered: .a, tag, #id, tag.a
-  function matchSimple(label, node, sel) {
-    const m = /^([a-z][a-z0-9]*)?(?:\.([A-Za-z_][\w-]*))?(?:#([A-Za-z_][\w-]*))?$/.exec(sel.trim());
-    if (!m || (!m[1] && !m[2] && !m[3])) {
-      rep.unmodeled.push('selector ' + label + ' ' + sel);
-      return false;
-    }
-    if (m[1] && m[1] !== (node.tag || '').toLowerCase()) return false;
-    if (m[2] && !(node.classes || []).includes(m[2])) return false;
-    if (m[3] && m[3] !== node.id) return false;
-    return true;
-  }
-
-  function closest(label, model, sel) {
-    const chain = [{tag: model.tag, classes: model.classes, id: model.id}].concat(model.ancestors || []);
-    for (const node of chain) {
-      if (matchSimple(label, node, sel)) return pageNode(label + '.closest(' + sel + ')', node);
-    }
-    return null;
-  }
-
-  function rowNodes(label, n) {
-    const rows = [];
-    for (let i = 0; i < n; i++) rows.push(pageNode(label + '.tr' + i, {tag: 'tr'}));
-    return rows;
-  }
-
-  const tables = (run.tables || []).map((t, i) => {
-    const label = 'table#' + i;
-    const tHead = t.theadRows === null ? null
-      : strict(label + '.tHead', {rows: rowNodes(label + '.thead', t.theadRows)});
-    const tBodies = t.tbodies.map((n, k) => strict(label + '.tBodies' + k, {rows: rowNodes(label + '.tbody' + k, n)}));
-    const all = [].concat(tHead ? tHead.rows : [], ...tBodies.map((b) => b.rows));
-    const model = Object.assign({tag: 'table', isTable: true}, t);
-    let touched = false;
-    const node = pageNode(label, model, {tHead, tBodies, rows: all});
-    return new Proxy(node, {get(target, p) {
-      if (!touched && typeof p === 'string') { touched = true; rep.tablesTouched++; }
-      return target[p];
-    }});
-  });
-
-  function detached(tag) {
-    const el = {
-      tagName: String(tag).toUpperCase(), nodeType: 1, style: {}, dataset: {}, children: [],
-      attributes: {}, textContent: '', innerHTML: '', className: '',
-      classList: {add() {}, remove() {}, toggle() {}, contains: () => false},
-      setAttribute(n, v) { this.attributes[n] = String(v); },
-      getAttribute(n) { return n in this.attributes ? this.attributes[n] : null; },
-      removeAttribute(n) { delete this.attributes[n]; },
-      appendChild(c) { this.children.push(c); return c; },
-      append(...c) { this.children.push(...c); },
-      insertBefore(c) { this.children.push(c); return c; },
-      addEventListener() {}, removeEventListener() {},
-      querySelector: () => null, querySelectorAll: () => [],
-    };
-    return el;
-  }
-
-  const html = pageNode('html', {tag: 'html', attrs: htmlAttrs});
-  const head = pageNode('head', {tag: 'head'});
-  const body = pageNode('body', {tag: 'body', classes: run.bodyClasses || []});
-
-  const document = strict('document', {
-    get readyState() { return readyState; },
-    documentElement: html, head, body,
-    querySelectorAll(sel) {
-      rep.queries.push({scope: 'document', kind: 'qsa', sel});
-      return sel.trim() === 'table' ? tables.slice() : [];
-    },
-    querySelector(sel) { rep.queries.push({scope: 'document', kind: 'qs', sel}); return null; },
-    getElementById(id) { rep.queries.push({scope: 'document', kind: 'id', sel: id}); return null; },
-    getElementsByClassName(c) { rep.queries.push({scope: 'document', kind: 'class', sel: c}); return []; },
-    getElementsByTagName(t) { rep.queries.push({scope: 'document', kind: 'tag', sel: t}); return []; },
-    createElement: (tag) => detached(tag),
-    createElementNS: (ns, tag) => detached(tag),
-    createTextNode: (text) => ({nodeType: 3, textContent: String(text)}),
-    createDocumentFragment: () => detached('#fragment'),
-    addEventListener: (type, fn) => listeners.push({target: 'document', type, fn}),
-    removeEventListener: () => {},
-    write: () => rep.mutations.push('document.write'),
-    writeln: () => rep.mutations.push('document.writeln'),
-    open: () => rep.mutations.push('document.open'),
-  });
-
-  function observerClass(kind) {
-    return class {
-      constructor(cb, opts) { this.cb = cb; this.opts = opts; }
-      observe(target) { rep.unmodeled.push(kind + '.observe on a page node'); }
-      unobserve() {}
-      disconnect() {}
-      takeRecords() { return []; }
-    };
-  }
-
-  const win = {
-    document,
-    navigator: {userAgent: 'p0b-inertness-probe', language: run.lang === 'zh' ? 'zh-CN' : 'en-US', languages: []},
-    location: {href: 'https://fixture.invalid/' + run.page, pathname: '/' + run.page, search: '', hash: '', origin: 'https://fixture.invalid'},
-    innerWidth: 390, innerHeight: 844, devicePixelRatio: 3,
-    console: {log() {}, info() {}, warn() {}, error() {}, debug() {}},
-    getComputedStyle: () => ({getPropertyValue: () => ''}),
-    matchMedia: (q) => ({matches: false, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}}),
-    setTimeout: (fn, ms) => { timers.push({fn, every: 0}); return timers.length; },
-    clearTimeout: () => {},
-    setInterval: (fn, ms) => { timers.push({fn, every: 3}); return timers.length; },
-    clearInterval: () => {},
-    requestAnimationFrame: (fn) => { timers.push({fn, every: 0}); return timers.length; },
-    cancelAnimationFrame: () => {},
-    MutationObserver: observerClass('MutationObserver'),
-    IntersectionObserver: observerClass('IntersectionObserver'),
-    ResizeObserver: observerClass('ResizeObserver'),
-    addEventListener: (type, fn) => listeners.push({target: 'window', type, fn}),
-    removeEventListener: () => {},
-  };
-  const absent = new Set(run.absentGlobals || []);
-  const SELF = new Set(['window', 'self', 'globalThis']);
-  const context = vm.createContext({});
-  const ctxGlobal = vm.runInContext('this', context);
-  const windowProxy = new Proxy(win, {
-    has(t, p) { return p in t || SELF.has(p) || (typeof p === 'string' && absent.has(p)); },
-    get(t, p) {
-      if (SELF.has(p)) return windowProxy;
-      if (typeof p === 'symbol') return t[p];
-      if (p in t) return t[p];
-      if (absent.has(p)) return undefined;
-      if (p in ctxGlobal) return ctxGlobal[p];
-      rep.unmodeled.push('read window.' + p);
-      return undefined;
-    },
-    set(t, p, v) { rep.exports.push(String(p)); t[p] = v; return true; },
-  });
-  ctxGlobal.__win = windowProxy;
-  const globalsBefore = new Set(Object.getOwnPropertyNames(ctxGlobal));
-  const protosBefore = protoKeys(ctxGlobal);
-
-  async function settle(phase) {
-    rep.phases.push(phase);
-    for (let round = 0; round < 20; round++) {
-      await new Promise((r) => setImmediate(r));
-      const due = timers;
-      timers = [];
-      if (!due.length) break;
-      for (const t of due) {
-        try { t.fn(0); } catch (e) { rep.errors.push(phase + ' timer: ' + e); }
-        if (t.every > 1) timers.push({fn: t.fn, every: t.every - 1});
-      }
-    }
-  }
-  function dispatch(target, type, detail) {
-    for (const l of listeners.slice()) {
-      if (l.target !== target || l.type !== type) continue;
-      const ev = {type, detail: detail || {}, target: target === 'window' ? windowProxy : document,
-        preventDefault() {}, stopPropagation() {}};
-      try { l.fn.call(ev.target, ev); } catch (e) { rep.errors.push(type + ' on ' + target + ': ' + e); }
-    }
-  }
-
+function probe(run) {
+  const rep = {page:run.page, asset:run.asset, lang:run.lang, theme:run.theme,
+    viewport:run.viewport, initialReadyState:run.readyState, mutations:[], unmodeled:[],
+    errors:[], queries:[], exports:[], phases:[], calls:[], pending:[]};
   const source = fs.readFileSync(run.path, 'utf8');
+  const actual = crypto.createHash('sha256').update(source, 'utf8').digest('hex');
+  if (actual !== run.expectedSha256) {
+    rep.unmodeled.push('unqualified source digest; script was not executed');
+    return rep;
+  }
+  const listeners = [];
+  const pending = new Map();
+  let timerId = 0, readyState = run.readyState;
+  const attrs = Object.assign({}, run.htmlAttrs);
+  function unsupported(label) {
+    rep.unmodeled.push(label);
+    throw new Error('unsupported observation/work: ' + label);
+  }
+  function strict(label, value) {
+    return new Proxy(value, {
+      get(t, p) {
+        if (p === Symbol.unscopables) return undefined;
+        if (Object.prototype.hasOwnProperty.call(t, p)) return t[p];
+        return unsupported('read ' + label + '.' + String(p));
+      },
+      has(t, p) {
+        if (Object.prototype.hasOwnProperty.call(t, p)) return true;
+        return unsupported('has ' + label + '.' + String(p));
+      },
+      ownKeys() { return unsupported('ownKeys ' + label); },
+      getOwnPropertyDescriptor() { return unsupported('descriptor ' + label); },
+      getPrototypeOf() { return unsupported('prototype read ' + label); },
+      set(t,p) { rep.mutations.push('set ' + label + '.' + String(p)); return true; },
+      defineProperty(t,p) { rep.mutations.push('define ' + label + '.' + String(p)); return true; },
+      deleteProperty(t,p) { rep.mutations.push('delete ' + label + '.' + String(p)); return true; },
+      setPrototypeOf() { rep.mutations.push('prototype write ' + label); return false; },
+    });
+  }
+  function listen(target, type, fn) {
+    if (!['DOMContentLoaded','load','langchange'].includes(type) || typeof fn !== 'function')
+      return unsupported('listener ' + target + ':' + type);
+    listeners.push({target,type,fn});
+  }
+  function unlisten(target, type, fn) {
+    for (let i=listeners.length-1;i>=0;i--)
+      if (listeners[i].target===target && listeners[i].type===type && listeners[i].fn===fn)
+        listeners.splice(i,1);
+  }
+  function query(scope, kind, sel) {
+    rep.queries.push({scope,kind,sel:String(sel)});
+    return kind === 'qsa' ? [] : null;
+  }
+  function pageNode(label, nodeAttrs, tag) {
+    const own = Object.assign({}, nodeAttrs);
+    const value = {
+      nodeType:1, nodeName:tag.toUpperCase(), tagName:tag.toUpperCase(),
+      getAttribute:n => Object.prototype.hasOwnProperty.call(own,n) ? own[n] : null,
+      hasAttribute:n => Object.prototype.hasOwnProperty.call(own,n),
+      querySelectorAll:sel => query(label,'qsa',sel),
+      querySelector:sel => query(label,'qs',sel),
+      addEventListener:(type,fn) => listen(label,type,fn),
+      removeEventListener:(type,fn) => unlisten(label,type,fn),
+    };
+    for (const name of ['setAttribute','removeAttribute','appendChild','removeChild','append',
+      'prepend','remove','replaceChildren','insertAdjacentHTML','replaceWith'])
+      value[name] = () => { rep.mutations.push(label + '.' + name); };
+    return strict(label,value);
+  }
+  // Root attributes are the verifier-served language/theme axes, including font insertion
+  // on the Python query side. No geometry, media, computed style or font API is fabricated.
+  const htmlValue = {
+    getAttribute:n => Object.prototype.hasOwnProperty.call(attrs,n) ? attrs[n] : null,
+    hasAttribute:n => Object.prototype.hasOwnProperty.call(attrs,n),
+    querySelectorAll:sel => query('html','qsa',sel),
+    querySelector:sel => query('html','qs',sel),
+  };
+  const html = strict('html',htmlValue);
+  const head = pageNode('head',run.headAttrs || {},'head');
+  const body = pageNode('body',run.bodyAttrs || {},'body');
+  const dialogs = (run.dialogs || []).map((d,i) => pageNode('dialog#'+i,d.attrs,d.tag));
+  const docValue = {
+    get readyState() { return readyState; },
+    documentElement:html, head, body,
+    querySelectorAll:sel => query('document','qsa',sel),
+    querySelector:sel => query('document','qs',sel),
+    getElementById:id => query('document','id',id),
+    addEventListener:(type,fn) => listen('document',type,fn),
+    removeEventListener:(type,fn) => unlisten('document',type,fn),
+  };
+  const document = strict('document',docValue);
+  function schedule(name, fn, delay) {
+    const id = ++timerId;
+    pending.set(id, {name, delay});
+    unsupported(name + ': scheduling is outside the empty-target qualification');
+    return id;
+  }
+  function clear(id) { pending.delete(id); }
+  function IntersectionObserver() {
+    return strict('IntersectionObserver', {
+      observe:() => unsupported('IntersectionObserver.observe requires a real target'),
+      unobserve:() => unsupported('IntersectionObserver.unobserve'),
+      disconnect:() => unsupported('IntersectionObserver.disconnect'),
+      takeRecords:() => unsupported('IntersectionObserver.takeRecords'),
+    });
+  }
+  const win = {
+    document, IntersectionObserver,
+    setTimeout:(fn,ms) => schedule('setTimeout',fn,ms), clearTimeout:clear,
+    setInterval:(fn,ms) => schedule('setInterval',fn,ms), clearInterval:clear,
+    requestAnimationFrame:fn => schedule('requestAnimationFrame',fn,null),
+    cancelAnimationFrame:clear,
+    queueMicrotask:() => unsupported('queueMicrotask'),
+    getComputedStyle:() => unsupported('getComputedStyle'),
+    matchMedia:() => unsupported('matchMedia'),
+    addEventListener:(type,fn) => listen('window',type,fn),
+    removeEventListener:(type,fn) => unlisten('window',type,fn),
+  };
+  const context = vm.createContext({}, {codeGeneration:{strings:false,wasm:false}, microtaskMode:'afterEvaluate'});
+  const intrinsics = vm.runInContext('({' + BUILTINS.join(',') + '})',context);
+  const selfNames = new Set(['window','self','globalThis']);
+  const absent = new Set(['Plotly']);
+  let windowProxy;
+  windowProxy = new Proxy(win, {
+    // Intercept unknown bare names too, including typeof. Unknown does not mean absent.
+    has(t,p) {
+      if (p === 'IntersectionObserver' || selfNames.has(p) ||
+          Object.prototype.hasOwnProperty.call(t,p) ||
+          Object.prototype.hasOwnProperty.call(intrinsics,p) || absent.has(p)) return true;
+      unsupported('has window.' + String(p));
+      return true;
+    },
+    get(t,p) {
+      if (p === Symbol.unscopables) return undefined;
+      if (selfNames.has(p)) return windowProxy;
+      if (Object.prototype.hasOwnProperty.call(t,p)) return t[p];
+      if (absent.has(p)) return undefined;
+      if (Object.prototype.hasOwnProperty.call(intrinsics,p)) return intrinsics[p];
+      return unsupported('read window.' + String(p));
+    },
+    set(t,p,v) { rep.exports.push(String(p)); t[p]=v; return true; },
+    ownKeys() { return unsupported('ownKeys window'); },
+    getOwnPropertyDescriptor() { return unsupported('descriptor window'); },
+    getPrototypeOf() { return unsupported('prototype read window'); },
+    defineProperty(t,p) { rep.mutations.push('define window.'+String(p)); return false; },
+    deleteProperty(t,p) { rep.mutations.push('delete window.'+String(p)); return false; },
+    setPrototypeOf() { rep.mutations.push('prototype write window'); return false; },
+  });
+  context.__win = windowProxy;
+  const before = prototypeState(intrinsics);
+  function invoke(fn, receiver, args, label) {
+    context.__callback=fn; context.__receiver=receiver; context.__args=args;
+    try {
+      const result=vm.runInContext('__callback.apply(__receiver,__args)',context,{timeout:1000});
+      if (result && typeof result.then === 'function') unsupported('unowned asynchronous return: '+label);
+    } catch(e) { rep.errors.push(label + ': ' + String(e)); }
+  }
+  function dispatch(target,type,detail) {
+    for (const l of listeners.slice()) if (l.target===target && l.type===type)
+      invoke(l.fn,target==='window'?windowProxy:document,
+        [{type,detail,target:target==='window'?windowProxy:document}],target+':'+type);
+  }
+  function phase(name) {
+    rep.phases.push(name);
+    if (pending.size) rep.unmodeled.push('pending work at '+name);
+  }
   try {
-    vm.runInContext('with (__win) { ' + source + '\n}', context, {filename: run.asset});
-  } catch (e) {
-    rep.errors.push('load: ' + e);
+    vm.runInContext('(function(){with(__win){\n'+source+'\n}}).call(__win)',context,
+      {filename:run.asset,timeout:1000});
+  } catch(e) { rep.errors.push('load: '+String(e)); }
+  phase('load');
+  if (readyState==='loading') {
+    readyState='interactive'; dispatch('document','DOMContentLoaded',undefined);
   }
-  await settle('load');
-  readyState = 'interactive';
-  dispatch('document', 'DOMContentLoaded');
-  await settle('DOMContentLoaded');
-  readyState = 'complete';
-  dispatch('window', 'load');
-  await settle('load-event');
-  for (const name of run.reachedExports || []) {
-    if (typeof win[name] !== 'function') continue;
-    for (const args of [[], [document]]) {
-      try { win[name](...args); } catch (e) { rep.errors.push(name + ': ' + e); }
-    }
+  phase('DOMContentLoaded');
+  readyState='complete'; dispatch('window','load',undefined);
+  phase('load-event');
+  if (typeof win.hydrateMTF==='function') {
+    rep.calls.push({name:'hydrateMTF',root:'default'});
+    invoke(win.hydrateMTF,windowProxy,[],'hydrateMTF()');
   }
-  await settle('reached-exports');
-  htmlAttrs['data-lang'] = run.lang === 'zh' ? 'en' : 'zh';
-  const fired = new Set(['DOMContentLoaded', 'load']);
-  for (const l of listeners.slice()) {
-    const key = l.target + ':' + l.type;
-    if (fired.has(l.type) || fired.has(key)) continue;
-    fired.add(key);
-    dispatch(l.target, l.type, {lang: htmlAttrs['data-lang']});
+  if (typeof win.ilxReveal==='function') {
+    rep.calls.push({name:'ilxReveal',root:'document'});
+    invoke(win.ilxReveal,windowProxy,[document],'ilxReveal(document)');
+    dialogs.forEach((d,i) => {
+      rep.calls.push({name:'ilxReveal',root:'dialog#'+i});
+      invoke(win.ilxReveal,windowProxy,[d],'ilxReveal(dialog#'+i+')');
+    });
   }
-  await settle('other-events');
-
-  for (const name of Object.getOwnPropertyNames(ctxGlobal)) {
-    if (!globalsBefore.has(name)) rep.exports.push(name);
-  }
-  const protosAfter = protoKeys(ctxGlobal);
-  for (const name of Object.keys(protosAfter)) {
-    if (protosAfter[name] !== protosBefore[name]) rep.mutations.push(name + '.prototype');
-  }
-  rep.exports = [...new Set(rep.exports)].sort();
+  phase('reached-exports');
+  attrs['data-lang']=run.lang==='zh'?'en':'zh';
+  attrs.lang=attrs['data-lang']==='zh'?'zh-CN':'en';
+  dispatch('document','langchange',attrs['data-lang']); // actual payload is a string
+  if (typeof win.hydrateMTF==='function')
+    invoke(win.hydrateMTF,windowProxy,[],'theme/language hydrateMTF()');
+  phase('other-events');
+  const after=prototypeState(intrinsics);
+  for (const [name,state] of before)
+    if (changedPrototype(state,after.get(name))) rep.mutations.push(name+'.prototype final descriptors');
+  rep.pending=[...pending.values()];
+  rep.exports=[...new Set(rep.exports)].sort();
   return rep;
 }
-
-(async () => {
-  const spec = JSON.parse(fs.readFileSync(0, 'utf8'));
-  const out = [];
-  for (const run of spec.runs) out.push(await probe(run));
-  process.stdout.write(JSON.stringify(out));
-})().catch((e) => { process.stderr.write(String(e && e.stack || e)); process.exit(2); });
+const spec=JSON.parse(fs.readFileSync(0,'utf8'));
+process.stdout.write(JSON.stringify(spec.runs.map(probe)));
 """
 
 
 def _attrs(tag) -> dict[str, str]:
-    return {k: " ".join(v) if isinstance(v, list) else v for k, v in tag.attrs.items()}
+    return {key: " ".join(value) if isinstance(value, list) else value for key, value in tag.attrs.items()}
 
 
-def _probe_table(table) -> dict:
-    ancestors = []
-    node = table.parent
-    while node is not None and node.name not in (None, "[document]"):
-        ancestors.append({"tag": node.name, "classes": node.get("class") or [], "id": node.get("id") or ""})
-        node = node.parent
-    thead = table.find("thead", recursive=False)
-    # html.parser adds no implicit <tbody>: a run of bare rows is one.
-    tbodies, bare = [], 0
-    for child in table.children:
-        if child.name == "tr":
-            bare += 1
-        elif child.name in ("thead", "tbody", "tfoot"):
-            if bare:
-                tbodies.append(bare)
-                bare = 0
-            if child.name == "tbody":
-                tbodies.append(len(child.find_all("tr", recursive=False)))
-    if bare:
-        tbodies.append(bare)
-    return {
-        "tag": "table",
-        "classes": table.get("class") or [],
-        "id": table.get("id") or "",
-        "attrs": _attrs(table),
-        "ancestors": ancestors,
-        "theadRows": None if thead is None else len(thead.find_all("tr", recursive=False)),
-        "tbodies": tbodies,
-    }
+def _served_probe_soup(html: str, lang: str, theme: str):
+    """Represent the existing verifier's declared static axes and font insertion."""
+    soup = BeautifulSoup(html, "html.parser")
+    assert soup.html is not None and soup.head is not None
+    soup.html["lang"] = "zh-CN" if lang == "zh" else "en"
+    soup.html["data-lang"] = lang
+    soup.html["data-theme"] = theme
+    link = soup.new_tag("link", rel="stylesheet", href="/p0b-font-pin/pin.css")
+    soup.head.insert(0, link)
+    return soup
 
 
 def _digest_only_scripts(soup) -> set[str]:
-    loaded = set()
-    for script in soup.find_all("script", src=True):
-        asset = "site/" + script["src"].split("?")[0].rsplit("/", 1)[-1]
-        if asset in DIGEST_ONLY_ASSETS:
-            loaded.add(asset)
-    return loaded
+    return {
+        asset for node in soup.find_all("script", src=True)
+        if (asset := "site/" + node["src"].split("?")[0].rsplit("/", 1)[-1]) in DIGEST_ONLY_ASSETS
+    }
 
 
-def _probe_runs(page: str, soup, sources: dict[str, Path] | None = None) -> list[dict]:
-    root = soup.find("html")
-    body = soup.find("body")
-    tables = [_probe_table(table) for table in soup.find_all("table")]
-    return [
-        {
-            "page": page,
-            "asset": asset,
-            "lang": lang,
-            "path": str((sources or {}).get(asset, ROOT / asset)),
-            "htmlAttrs": _attrs(root) if root else {},
-            "bodyClasses": (body.get("class") or []) if body else [],
-            "tables": tables,
-            # Truthful: the fixture loads no Plotly (asserted above).
-            "absentGlobals": ["Plotly"],
-            "reachedExports": ["hydrateMTF", "ilxMount", "ilxReveal"],
-        }
-        for asset in sorted(_digest_only_scripts(soup))
-        for lang in ("en", "zh")
-    ]
+def _probe_runs(page: str, html: str, sources: dict[str, Path] | None = None) -> list[dict]:
+    qualification = _diagnostic_qualification()
+    assert qualification is not None, "finite diagnostic is not applicable to this scene"
+    runs = []
+    for lang in ("en", "zh"):
+        for theme in ("dark", "light"):
+            soup = _served_probe_soup(html, lang, theme)
+            dialogs = [{"tag": node.name, "attrs": _attrs(node)} for node in soup.select(DIALOG_ROOT_SELECTOR)]
+            for width, height in ((390, 844), (1440, 900)):
+                for ready_state in ("loading", "complete"):
+                    for asset in sorted(_digest_only_scripts(soup)):
+                        runs.append({
+                            "page": page, "asset": asset, "lang": lang, "theme": theme,
+                            "viewport": {"width": width, "height": height, "device_scale_factor": 1},
+                            "readyState": ready_state, "path": str((sources or {}).get(asset, ROOT / asset)),
+                            "expectedSha256": qualification["assets"][asset],
+                            "htmlAttrs": _attrs(soup.html), "headAttrs": _attrs(soup.head),
+                            "bodyAttrs": _attrs(soup.body), "dialogs": dialogs,
+                        })
+    return runs
 
 
 def _run_probe(runs: list[dict], tmp_path: Path) -> list[dict]:
     node = shutil.which("node")
     assert node, "node is required for the stock-dashboard code gate"
-    script = tmp_path / "p0b_inertness_probe.cjs"
+    script = tmp_path / "p0b_qualified_helper_probe.cjs"
     script.write_text(INERTNESS_PROBE, encoding="utf-8")
     run = subprocess.run(
-        [node, str(script)],
-        input=json.dumps({"runs": runs}),
-        capture_output=True,
-        text=True,
-        timeout=120,
-        check=False,
+        [node, str(script)], input=json.dumps({"runs": runs}),
+        capture_output=True, text=True, timeout=120, check=False,
     )
     assert run.returncode == 0, run.stderr
     reports = json.loads(run.stdout)
@@ -2596,137 +2479,95 @@ def _run_probe(runs: list[dict], tmp_path: Path) -> list[dict]:
     return reports
 
 
-def _query_root(soup, scope: str):
-    if scope in ("document", "html"):
-        return soup
-    if scope in ("head", "body"):
-        return soup.find(scope)
-    match = re.match(r"table#(\d+)", scope)
-    return soup.find_all("table")[int(match.group(1))] if match else None
-
-
 def _probe_findings(report: dict, soup) -> list[str]:
-    where = f"{report['page']} {report['asset']} {report['lang']}"
-    findings = [f"{where}: {kind} {item}" for kind in ("errors", "mutations", "unmodeled") for item in report[kind]]
+    where = f"{report['page']} {report['asset']} {report['lang']} {report['theme']} {report['viewport']['width']} {report['initialReadyState']}"
+    findings = [
+        f"{where}: {kind} {item}"
+        for kind in ("errors", "mutations", "unmodeled", "pending")
+        for item in report[kind]
+    ]
     if report["phases"] != PROBE_PHASES:
         findings.append(f"{where}: phases {report['phases']}")
-    exports = set(report["exports"])
-    if exports != DIGEST_ONLY_EXPORTS[report["asset"]]:
-        findings.append(f"{where}: globals {sorted(exports)}")
+    if set(report["exports"]) != DIGEST_ONLY_EXPORTS[report["asset"]]:
+        findings.append(f"{where}: globals {report['exports']}")
     for query in report["queries"]:
-        if query == {"scope": "document", "kind": "qsa", "sel": "table"}:
-            continue
-        root = _query_root(soup, query["scope"])
-        sel = query["sel"]
+        scope = query["scope"]
+        if scope == "document":
+            root = soup
+        elif scope in ("html", "head", "body"):
+            root = soup.find(scope)
+        elif scope.startswith("dialog#"):
+            root = soup.select(DIALOG_ROOT_SELECTOR)[int(scope.removeprefix("dialog#"))]
+        else:
+            root = None
         try:
-            if root is None:
-                raise ValueError("unknown scope")
-            if query["kind"] in ("qsa", "qs"):
-                hits = root.select(sel)
-            elif query["kind"] == "id":
-                hits = soup.find_all(id=sel)
-            elif query["kind"] == "class":
-                hits = root.select("." + ".".join(sel.split()))
-            else:
-                hits = root.find_all(sel)
-        except Exception as exc:  # an unanswerable query fails closed
-            findings.append(f"{where}: query {query} unanswerable ({exc})")
-            continue
-        if hits:
-            findings.append(f"{where}: query {query} matches {len(hits)} fixture node(s)")
+            assert root is not None
+            hits = soup.find_all(id=query["sel"]) if query["kind"] == "id" else root.select(query["sel"])
+        except Exception as exc:
+            findings.append(f"{where}: unanswerable selector {query}: {exc}")
+        else:
+            if hits:
+                findings.append(f"{where}: selector {query} matches {len(hits)} actual node(s)")
     return findings
 
 
-def test_digest_only_scripts_are_inert_on_every_measured_page(
-    rendered_fixture_pages: dict[str, str], tmp_path: Path
+def test_qualified_helpers_complete_the_declared_empty_target_trace(
+    rendered_fixture_pages: dict[str, str], tmp_path: Path,
 ) -> None:
-    """Execute every digest-only script on every page each receipt measures."""
-    soups = {name: BeautifulSoup(html, "html.parser") for name, html in rendered_fixture_pages.items()}
-    # Probe coverage is exactly the receipts' digest-only loaded assets.
+    """Exact-source diagnostics across six pages and declared axes; no browser replay."""
+    if _diagnostic_qualification() is None:
+        _assert_inactive_qualification_is_strict()
+        return
     for receipt, payload in _receipt_payloads().items():
-        pinned = DIGEST_ONLY_ASSETS & set(payload["loaded_assets"])
-        pages = [soup for name, soup in soups.items() if name.startswith(RECEIPT_PAGES[receipt])]
-        assert len(pages) == 3, receipt
-        for soup in pages:
-            assert _digest_only_scripts(soup) == pinned, receipt
-    runs = [run for name, soup in soups.items() for run in _probe_runs(name, soup)]
-    assert {run["asset"] for run in runs} == DIGEST_ONLY_ASSETS
+        pages = [html for name, html in rendered_fixture_pages.items() if name.startswith(RECEIPT_PAGES[receipt])]
+        assert len(pages) == 3
+        for html in pages:
+            assert _digest_only_scripts(BeautifulSoup(html, "html.parser")) == (
+                DIGEST_ONLY_ASSETS & set(payload["loaded_assets"])
+            )
+        assert payload["viewport"]["device_scale_factor"] == 1
+        assert payload["desktop_viewport"]["device_scale_factor"] == 1
+    runs = [run for name, html in rendered_fixture_pages.items() for run in _probe_runs(name, html)]
+    assert len(runs) == (3 * 3 + 3 * 4) * 2 * 2 * 2 * 2
     reports = _run_probe(runs, tmp_path)
-    findings = [f for report in reports for f in _probe_findings(report, soups[report["page"]])]
-    assert findings == [], (
-        "a digest-only script acts on the measured first frame; drop it from "
-        "REFRESHABLE_LOADED_ASSETS and re-mint the browser receipts:\n" + "\n".join(findings)
-    )
-    # Not vacuous: tablesort walked every real table it was handed.
-    for report in reports:
-        if report["asset"] == "site/tablesort.js":
-            assert report["tablesTouched"] == len(soups[report["page"]].find_all("table"))
-    assert sum(r["tablesTouched"] for r in reports) > 0
+    soups = {
+        (name, lang, theme): _served_probe_soup(html, lang, theme)
+        for name, html in rendered_fixture_pages.items()
+        for lang in ("en", "zh") for theme in ("dark", "light")
+    }
+    findings = [
+        item for report in reports
+        for item in _probe_findings(report, soups[(report["page"], report["lang"], report["theme"])])
+    ]
+    assert findings == [], "\n".join(findings)
+    dialog_calls = [call for report in reports for call in report["calls"] if call["root"].startswith("dialog#")]
+    assert dialog_calls, "actual template dialog callers must be exercised"
+    for report, run in zip(reports, runs):
+        if report["asset"] == "site/illus.js":
+            assert len([c for c in report["calls"] if c["root"].startswith("dialog#")]) == len(run["dialogs"])
 
 
-PROBE_MUTANTS = {
-    "enhances-a-measured-table": (
-        "site/tablesort.js",
-        lambda src: src.replace("dataRows(t).length < 2", "dataRows(t).length < 0"),
-        "mutations",
-    ),
-    "injects-a-stylesheet": (
-        "site/charts.js",
-        lambda src: "document.head.appendChild(document.createElement('style'));\n" + src,
-        "mutations",
-    ),
-    "queries-a-fixture-node": (
-        "site/mtf.js",
-        lambda src: "document.querySelectorAll('div');\n" + src,
-        "matches",
-    ),
-    "claims-a-global": (
-        "site/illus.js",
-        lambda src: "window.StockTable = null;\n" + src,
-        "globals",
-    ),
-    "reads-the-unmodelled-page": (
-        "site/charts.js",
-        lambda src: "document.body.children;\n" + src,
-        "unmodeled",
-    ),
-    "observes-the-page": (
-        "site/charts.js",
-        lambda src: "new MutationObserver(function () {}).observe(document.body, {childList: true});\n" + src,
-        "unmodeled",
-    ),
-    "writes-from-a-timer": (
-        "site/mtf.js",
-        lambda src: "setTimeout(function () { document.documentElement.classList.add('x'); }, 50);\n" + src,
-        "mutations",
-    ),
-    "writes-on-language-flip": (
-        "site/illus.js",
-        lambda src: "document.addEventListener('langchange', function () { document.body.style.minHeight = '1px'; });\n" + src,
-        "mutations",
-    ),
-    "patches-a-builtin": (
-        "site/tablesort.js",
-        lambda src: "Array.prototype.p0bProbe = 1;\n" + src,
-        "mutations",
-    ),
-    "throws-at-load": ("site/charts.js", lambda src: "null.x;\n" + src, "errors"),
-}
-
-
-@pytest.mark.parametrize("mutant", sorted(PROBE_MUTANTS))
-def test_inertness_probe_reds_on_a_first_frame_effect(
-    mutant: str, rendered_fixture_pages: dict[str, str], tmp_path: Path
+@pytest.mark.parametrize("prefix", [
+    "throw new Error('would execute an unqualified revision');\n",
+    "const old=Array.prototype.push; Array.prototype.push=function(){}; Array.prototype.push=old;\n",
+    "setInterval(function(){ document.body.remove(); },1);\n",
+    "if (getComputedStyle(document.body).display) document.body.remove();\n",
+])
+def test_diagnostic_rejects_unknown_bytes_before_executing_them(
+    prefix: str, tmp_path: Path,
 ) -> None:
-    """Red-first: each way a digest-only edit could reach the first frame."""
-    asset, mutate, kind = PROBE_MUTANTS[mutant]
-    copy = tmp_path / Path(asset).name
-    copy.write_text(mutate(_read(ROOT / asset)), encoding="utf-8")
-    soup = BeautifulSoup(rendered_fixture_pages["hk_stocks.html"], "html.parser")
-    runs = [run for run in _probe_runs("hk_stocks.html", soup, {asset: copy}) if run["asset"] == asset]
-    assert runs
-    findings = [f for report in _run_probe(runs, tmp_path) for f in _probe_findings(report, soup)]
-    assert any(kind in finding for finding in findings), findings
+    asset = "site/charts.js"
+    copy = tmp_path / "unqualified-charts.js"
+    copy.write_text(prefix + _read(ROOT / asset), encoding="utf-8")
+    initial = next(row for row in receipt_closure.QUALIFIED_DIGEST_SCENES
+                   if row["basis"] == "captured_helper_byte_identity_20261107")
+    runs = [{"page": "hk_stocks.html", "asset": asset, "lang": "en", "theme": "dark",
+             "viewport": {"width": 390, "height": 844, "device_scale_factor": 1},
+             "readyState": "loading", "path": str(copy),
+             "expectedSha256": initial["assets"][asset]}]
+    report = _run_probe(runs, tmp_path)[0]
+    assert report["unmodeled"] == ["unqualified source digest; script was not executed"]
+    assert report["errors"] == report["mutations"] == report["queries"] == report["exports"] == report["phases"] == []
 
 
 def test_visual_manifest_preserves_history_and_appends_bounded_repair() -> None:
@@ -2916,6 +2757,110 @@ def test_hk_mobile_owner_surfaces_cannot_widen_the_document() -> None:
     assert "content: attr(data-label-zh);" in css
     assert 'data-label-en="' in template
     assert 'data-label-zh="' in template
+
+
+def test_both_receipts_were_measured_by_one_browser_build() -> None:
+    """Layout numbers and screenshot bytes move with the Chromium build, so
+    both receipts name one build and the closure check tells a re-minter it.
+    """
+    from scripts import check_p0b_receipt_closure as receipt_closure
+
+    browsers = [json.loads(_read(path))["browser"] for path in BROWSER_RECEIPTS.values()]
+    assert browsers[0] == browsers[1]
+    assert {"engine", "version"} <= set(browsers[0])
+    assert browsers[0]["version"] in receipt_closure.environment_hint(ROOT)
+
+
+def test_verifier_refuses_any_chromium_but_the_receipts_build() -> None:
+    """The version string alone does not name a binary: the receipts also pin
+    the launched headless shell's sha256, the Playwright release and the host.
+    """
+    source = _read(BROWSER_RECEIPT)
+    pin = re.search(r'^const CHROMIUM_PIN = "([^"]+)";$', source, re.M)
+    playwright = re.search(r'^const PLAYWRIGHT_PIN = "([^"]+)";$', source, re.M)
+    host = re.search(r'^const HOST_PIN = \{platform: "([^"]+)", arch: "([^"]+)"\};$', source, re.M)
+    executable = re.search(
+        r'^const BROWSER_EXECUTABLE_PIN = \{\n  name: "([^"]+)",\n  sha256: "([0-9a-f]{64})",\n\};$',
+        source,
+        re.M,
+    )
+    assert pin and playwright and host and executable
+    for guard in (
+        "browserVersion !== CHROMIUM_PIN",
+        "browserExecutable.name !== BROWSER_EXECUTABLE_PIN.name",
+        "browserExecutable.sha256 !== BROWSER_EXECUTABLE_PIN.sha256",
+        "playwrightVersion !== PLAYWRIGHT_PIN",
+        "process.platform !== HOST_PIN.platform",
+        "process.arch !== HOST_PIN.arch",
+    ):
+        assert guard in source, guard
+    for path in BROWSER_RECEIPTS.values():
+        assert json.loads(_read(path))["browser"] == {
+            "engine": "chromium",
+            "version": pin.group(1),
+            "executable": {"name": executable.group(1), "sha256": executable.group(2)},
+            "playwright": playwright.group(1),
+            "platform": host.group(1),
+            "arch": host.group(2),
+        }
+
+
+@pytest.mark.parametrize("market", BROWSER_RECEIPTS)
+def test_browser_receipts_were_measured_with_only_committed_fonts(market: str) -> None:
+    """System fonts differ between hosts; every glyph comes from a pinned file."""
+    receipt = json.loads(_read(BROWSER_RECEIPTS[market]))
+    manifest_path = FONT_PIN / "font-pin.json"
+    manifest = json.loads(_read(manifest_path))
+    pin = receipt["font_pin"]
+    assert pin["manifest"] == {
+        "path": str(manifest_path.relative_to(ROOT)),
+        "sha256": _sha256(manifest_path),
+    }
+    assert pin["stylesheet"] == manifest["stylesheet"] == "/p0b-font-pin/pin.css"
+    assert pin["platform_fonts"] == []
+    assert pin["audited_pages"] > 0
+    assert pin["audited_nodes"] > 0
+    verifier = _read(BROWSER_RECEIPT)
+    assert "FONT_AUDIT.unanswered.size" in verifier
+    # A walk waits out structural DOM churn, so a slower host is not refused
+    # for a node an interaction removed mid-walk.
+    for event in ("DOM.childNodeRemoved", "DOM.pseudoElementRemoved", "DOM.childNodeInserted"):
+        assert f'"{event}"' in verifier
+    # Two separate guards: the settle loop re-fetches until a quiet window, and a
+    # walk the document changed under is retried rather than counted.
+    assert "} while (structuralEvents !== seen && Date.now() < deadline);" in verifier
+    assert "changed = structuralEvents !== seen;" in verifier
+    assert "if (missing.length || changed) continue;" in verifier
+    for name, digest in manifest["files"].items():
+        assert _sha256(FONT_PIN / name) == digest
+        assert receipt["loaded_assets"][str((FONT_PIN / name).relative_to(ROOT))] == digest
+    for name, digest in manifest["site_faces"].items():
+        assert _sha256(ROOT / "site" / name) == digest
+    stylesheet = _read(FONT_PIN / "pin.css")
+    assert "local(" not in stylesheet
+    served = set(re.findall(r'url\("/([^"]+)"\)', stylesheet))
+    assert served == {f"p0b-font-pin/{name}" for name in manifest["files"] if name != "pin.css"} | set(
+        manifest["site_faces"]
+    )
+
+
+def test_font_pin_gives_platform_ui_families_san_francisco_line_metrics() -> None:
+    """Inter stands in for SF; ``line-height: normal`` must keep SF's box height.
+
+    Without the overrides the Canada desktop action panel grows to 240.45px and
+    fails its <= 240 acceptance bound, which was set against macOS rendering.
+    """
+    manifest = json.loads(_read(FONT_PIN / "font-pin.json"))
+    sf = manifest["sf_metric_families"]
+    assert sf["families"] == ["-apple-system", "system-ui", "SF Pro Text", "SF Pro Display"]
+    assert sf["descriptors"] == (
+        "ascent-override:96.6796875%;descent-override:21.09375%;line-gap-override:0%"
+    )
+    faces = re.findall(r"@font-face\{([^}]*)\}", _read(FONT_PIN / "pin.css"))
+    for face in faces:
+        family = re.search(r'font-family:"([^"]+)"', face).group(1)
+        base = re.search(r'url\("/fonts/Inter-\d+\.woff2"\)', face)
+        assert (sf["descriptors"] in face) == bool(base and family in sf["families"]), face
 
 
 def test_mobile_layout_receipt_has_valid_javascript() -> None:

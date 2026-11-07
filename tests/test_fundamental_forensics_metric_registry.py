@@ -197,6 +197,9 @@ def test_unknown_formula_dependency_and_formula_cycle_are_rejected() -> None:
             "expression": "cash_to_total_debt * stockholders_equity",
         }
     )
+    # The shipped qualified_sum policy refuses a non-sum expression first; drop
+    # it so this case still reaches the cycle check it exists to pin.
+    _formula(formulas, "total_debt").pop("not_presented_policy")
     with pytest.raises(ValueError, match="contains a cycle"):
         _registry((catalog, mappings, formulas))
 
