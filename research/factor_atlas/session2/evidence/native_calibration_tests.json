@@ -1,0 +1,64 @@
+{
+  "actual_equity_tape_admitted": false,
+  "earlier_scoped_test_passed": 164,
+  "host": "m2studio",
+  "logs": {
+    "calibration-release-green.txt": {
+      "bytes": 260,
+      "sha256": "689b45bab7d0fc7b1d6c308e2418b0e9af8a9c3200a2f57f14925727d897da7c"
+    },
+    "quote-calibration-basis-red.txt": {
+      "bytes": 2041,
+      "sha256": "41e7e550e80e4456b1625a651c62c7a9f42044f8e4ee45daa610242671c6ffde"
+    },
+    "quote-calibration-prefix-red.txt": {
+      "bytes": 1722,
+      "sha256": "16f7f017c737a182c9f7f8a295c00e89412cedc49156a1510cb1df9c21b02a33"
+    }
+  },
+  "may_alert": false,
+  "may_publish": false,
+  "may_trade": false,
+  "new_comparator_tests": 20,
+  "observed_at_utc": "2026-10-09T04:53:44.602923+00:00",
+  "paths": {
+    "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
+      "bytes": 78583,
+      "sha256": "cd4987371fae9d2cbc5c06e0d9be7e16a8ff682ceeebb0d7bda0eca1b9f47429"
+    },
+    "session2/QUOTE_CALIBRATION_PROTOCOL.md": {
+      "bytes": 7187,
+      "sha256": "e828c4b7e0f31bced61fb77ff6404befe5caa9e5752a95806bf967e8e6bf41bd"
+    },
+    "session2/QUOTE_REFERENCE_PROTOCOL.md": {
+      "bytes": 5830,
+      "sha256": "7f3e9a0e47acf39a20f34aa6a3020265e865aaa96441d6945c92db6b1516e874"
+    },
+    "session2/prototype/quote_calibration.py": {
+      "bytes": 8683,
+      "sha256": "eb8351ff669447738e65a7ce8dfee45187cfbc7459caca4e3468e6851cc091dc"
+    },
+    "session2/prototype/quote_reference.py": {
+      "bytes": 11148,
+      "sha256": "ac361bf4bdf1ce8e1ecf3d2aee66284b85a12008d3823ac727b9fe718a755eac"
+    },
+    "session2/prototype/test_quote_calibration.py": {
+      "bytes": 7357,
+      "sha256": "b34a7fdccbed26d4809a1012dcc36f627faafeb465c90694ce4967d5dc9b9072"
+    },
+    "session2/prototype/test_quote_reference.py": {
+      "bytes": 10233,
+      "sha256": "a7eb61319530ac81c50214dfe69fd0b62051af488d65656254894dc616cb040e"
+    }
+  },
+  "protected_mastermind": "ad362ef45def043ee5970c2b131be9825fcea1ae",
+  "quote_aggressor_truth": false,
+  "quote_specific_tests": 48,
+  "red_basis_fields": 2,
+  "red_future_prefix": 1,
+  "run_class": "CONTROLLED_FIXTURES_ONLY",
+  "schema": "factor_atlas.native_quote_calibration_receipt.v1",
+  "scoped_test_passed": 184,
+  "source_head_parent": "e630173d49437e76247c07103e198c038f337052",
+  "source_rights_attested": false
+}

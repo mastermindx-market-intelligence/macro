@@ -1,0 +1,75 @@
+{
+  "attempted_calculation_patch_status": "DENIED_BY_PLATFORM_BEFORE_DISPATCH_DO_NOT_RETRY",
+  "calculation_integrity_unresolved_failures": 4,
+  "controlled_fixtures": {
+    "fixture": {
+      "bytes": 6914,
+      "sha256": "3bf7717ad0e52fb1b2d5a9b4405643d134972791ada12597ed61a44bad059e71"
+    },
+    "negative_proof": {
+      "bytes": 1238,
+      "sha256": "6de471cd76f2ffcf4e679bfc3a713ca59e0fc11eb4e6ffe1819f8af40a4ec7b9"
+    },
+    "schema": {
+      "bytes": 19142,
+      "sha256": "7a0d4c9758417fb26617281f8464c23afbcb4a203acfd20f8a277d777dd2b7fd"
+    }
+  },
+  "customer_publication_authorized": false,
+  "local_nine_registered_suite_tests_passed": 250,
+  "market_pilot_admitted": false,
+  "new_schema_tests_passed": 24,
+  "original_parent_head": "f87300c835be44abb7689e0976ce9c1e6ff4fa9a",
+  "pinned_jsonschema": "4.26.0",
+  "protected_mastermind": "7d82b9adb839d54e4ab25378ca333e498dd83fcc",
+  "python": "3.12",
+  "recorded_at_utc": "2026-10-09T09:56:06.448337+00:00",
+  "runtime_logs": {
+    "candidate_tests": {
+      "bytes": 99,
+      "sha256": "5e90cfb5772bed005c0ae7e129ecb76312f79e40e4b50a098abf4fcc90b6ce03"
+    },
+    "nine_suite_green": {
+      "bytes": 340,
+      "sha256": "12164d3eb68e75f795539fd359a2bff3198b55685d56984ae3c5000469546d54"
+    },
+    "uncommitted_integrity_red": {
+      "bytes": 3277,
+      "sha256": "c436cf8d09883543ad1f1b9a0bdd54a6d3aec1291e9cdf5ac54f9013ce8603dd"
+    }
+  },
+  "schema": "factor_atlas.native_read_contract_candidate_receipt.v1",
+  "schema_candidate_only": true,
+  "skillpack": "mastermind.sol_skillpack.v1/1.0.1/bootstrap1",
+  "source_test": {
+    "bytes": 3674,
+    "sha256": "e6a914384683558cbb6c49dbd59acd2a3de5a7b91ad593f4c16b2cbaaaed7570"
+  },
+  "strict_structural_negative_rejections": 15,
+  "strict_structural_positive": 1,
+  "uncommitted_calculation_files_not_part_of_manifest": {
+    "session2/prototype/factor_read_model.py": {
+      "bytes": 18940,
+      "sha256": "1ba24a632b5cb7cff8efa79ab4f1396e17282bfb11a0b01784adf7d6a27af3a8"
+    },
+    "session2/prototype/test_factor_read_model.py": {
+      "bytes": 12219,
+      "sha256": "926f081610b933efdc11e90aa8e316cabcaf2e86f40929ead26b2a8dc44dd32d"
+    }
+  },
+  "workflow": {
+    "named_suites": [
+      "research/factor_atlas/session2/prototype/test_disclosed_profile.py",
+      "research/factor_atlas/session2/prototype/test_pressure.py",
+      "research/factor_atlas/session2/prototype/test_quote_calibration.py",
+      "research/factor_atlas/session2/prototype/test_quote_reference.py",
+      "research/factor_atlas/session2/prototype/test_read_contract_schema.py",
+      "research/factor_atlas/session2/prototype/test_source_preflight.py",
+      "research/factor_atlas/session2/prototype/test_window_pipeline.py",
+      "research/factor_atlas/session2/prototype/test_window_pressure.py",
+      "research/factor_atlas/session2/prototype/test_witnesses.py"
+    ],
+    "path": ".github/workflows/factor-atlas-reference.yml",
+    "sha256": "020989390f0c51228614785c7012aa862c27be55196898da5ecad8405f5ce4b0"
+  }
+}

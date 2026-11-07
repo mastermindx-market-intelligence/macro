@@ -1,0 +1,65 @@
+{
+  "customer_publishable": false,
+  "earlier_input_digest": "5f19d51e3b4c7fd91f2b2124cc3cfca29d231e86cad885ef6cb9b92d5936c1a7",
+  "earlier_matured_matched_slots": 19,
+  "earlier_status": "INSUFFICIENT_HOLDOUT_SESSIONS",
+  "future_first_seen_receipt_utc_s": 1772838800,
+  "input_class": "FABRICATED_UNQUALIFIED_RESIDUAL_OUTCOMES",
+  "model_freeze_authenticated": false,
+  "original_published_parent_head": "8de7a138f6a9db52722078fb315db5aa64a73c69",
+  "real_training_data_used": false,
+  "schema": "factor_atlas.oos_future_outcome_prefix_falsifier.v1",
+  "six_later_unavailable_outcome_mutations": [
+    {
+      "case": "nan",
+      "earlier_digest_equal": true,
+      "earlier_matured_slots": 19,
+      "earlier_status": "INSUFFICIENT_HOLDOUT_SESSIONS",
+      "future_value_disclosed": false,
+      "value_checked_when_receipt_matures": true
+    },
+    {
+      "case": "positive_inf",
+      "earlier_digest_equal": true,
+      "earlier_matured_slots": 19,
+      "earlier_status": "INSUFFICIENT_HOLDOUT_SESSIONS",
+      "future_value_disclosed": false,
+      "value_checked_when_receipt_matures": true
+    },
+    {
+      "case": "negative_inf",
+      "earlier_digest_equal": true,
+      "earlier_matured_slots": 19,
+      "earlier_status": "INSUFFICIENT_HOLDOUT_SESSIONS",
+      "future_value_disclosed": false,
+      "value_checked_when_receipt_matures": true
+    },
+    {
+      "case": "out_of_research_bounds",
+      "earlier_digest_equal": true,
+      "earlier_matured_slots": 19,
+      "earlier_status": "INSUFFICIENT_HOLDOUT_SESSIONS",
+      "future_value_disclosed": false,
+      "value_checked_when_receipt_matures": true
+    },
+    {
+      "case": "invalid_future_string",
+      "earlier_digest_equal": true,
+      "earlier_matured_slots": 19,
+      "earlier_status": "INSUFFICIENT_HOLDOUT_SESSIONS",
+      "future_value_disclosed": false,
+      "value_checked_when_receipt_matures": true
+    },
+    {
+      "case": "boolean_future",
+      "earlier_digest_equal": true,
+      "earlier_matured_slots": 19,
+      "earlier_status": "INSUFFICIENT_HOLDOUT_SESSIONS",
+      "future_value_disclosed": false,
+      "value_checked_when_receipt_matures": true
+    }
+  ],
+  "source_evaluation_cutoff_utc_s": 1772834800,
+  "source_market_admitted": false,
+  "trade_authority": false
+}

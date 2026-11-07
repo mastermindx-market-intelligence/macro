@@ -1,0 +1,99 @@
+{
+  "canonical_identity_written": false,
+  "customer_publishable": false,
+  "documentation_read_date_utc": "2026-10-12",
+  "full_macro_ci_success_claimed": false,
+  "independent_scientific_review_accepted": false,
+  "logs": {
+    "full": {
+      "bytes": 660,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 570,
+      "path": ".session2-proof/reference-basis-full-20261012.log",
+      "result_summary": "570 passed in 5.57s",
+      "sha256": "d331f0e72c137abbbab8ed07bb9b906e57c760f73e15a19b33ff42a9368f1145"
+    },
+    "green": {
+      "bytes": 179,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 96,
+      "path": ".session2-proof/reference-basis-green-20261012.log",
+      "result_summary": "96 passed in 1.22s",
+      "sha256": "cd539ee7f8e73b471b4e7270e5035523cc59f02f423a2349e0c6a2022bd84960"
+    },
+    "red": {
+      "bytes": 12760,
+      "exit_code": 1,
+      "failed": 9,
+      "passed": 87,
+      "path": ".session2-proof/reference-basis-red-20261012.log",
+      "result_summary": "9 failed, 87 passed in 1.45s",
+      "sha256": "223cd6724e42f8629551668ef8e6b66611318f9592621cd930d78f2b2dcf0dd3"
+    }
+  },
+  "market_pilot_admitted": false,
+  "native_scoped_tests_passed": 570,
+  "new_market_pressure_computed": false,
+  "new_synthetic_cases": 13,
+  "prepared_at_utc": "2026-10-12T01:31:22.941726+00:00",
+  "preserved_holds": [
+    "Original S2-P4 and S2-P6 denied repairs remain held",
+    "Original independent reviewer summon EFFECT_UNKNOWN",
+    "Original source/right/identity and consumer release gates remain held"
+  ],
+  "protected_mastermind_pin": "85807cf48e29e2fe5df19534d6b181fc25b9746f",
+  "public_documentation": [
+    {
+      "finding": "Current vendor documentation identifies mixed quote-mid/trade-print reference prices as REST OHLC inputs; liquidity spread is a statistical estimate.",
+      "url": "https://www.tiingo.com/documentation/websockets/equity-realtime-stock-data"
+    },
+    {
+      "finding": "Historical bar volume is interval shares; snapshot volume is day-level. Documentation is not a historical capture-specific Data OS basis receipt.",
+      "url": "https://www.tiingo.com/documentation/equity-realtime-stock-data"
+    },
+    {
+      "finding": "Public individual license terms do not establish the actual Mastermind agreement.",
+      "url": "https://www.tiingo.com/pricing"
+    }
+  ],
+  "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "real_tiingo_archive_recollected": false,
+  "registered_suites": 17,
+  "schema": "factor_atlas.session2.native_tiingo_reference_basis_tests.v1",
+  "source_discovery_scope": "Current public semantics only; no original October 9 per-row lineage authenticated",
+  "source_files": {
+    "prototype/test_tiingo_preflight_bridge.py": {
+      "bytes": 13623,
+      "sha256": "f77749d26d10fba6f9964387ebfd3e4dd444d75f6df809a9c94308bf045b46c2"
+    },
+    "prototype/test_tiingo_source_fitness.py": {
+      "bytes": 34735,
+      "sha256": "c87f3bdd39bb519ec08e6b82b6e5a0367d73b1f2b194dc49add9ca0d693661c1"
+    },
+    "prototype/tiingo_preflight_bridge.py": {
+      "bytes": 9738,
+      "sha256": "54812bfcf9707a51efd8d5cff72d50bda7716f61fb3db0d46327dc90838b503f"
+    },
+    "prototype/tiingo_source_fitness.py": {
+      "bytes": 27165,
+      "sha256": "a25c5d9f1800cc953e8634d8eaf432019faaceef0a9bc06d58bfff04b08e8da7"
+    }
+  },
+  "source_owner": "Macro PR #8677 / claude/factor-atlas-capital-pressure-20261008",
+  "source_parent": "d7e8b9560bb2cb47dbbaaf894bf60f729939a6ab",
+  "source_rights_admitted": false,
+  "synthetic_witness": {
+    "bytes": 8499,
+    "path": "session2/evidence/tiingo_reference_basis_synthetic.json",
+    "sha256": "789a34f86365d9a6f2ded1a0b7d0bfb7f7de3c7bd35a1802e04f1f5b16169444"
+  },
+  "test_first": true,
+  "workflow": {
+    "bytes": 3226,
+    "modified": false,
+    "path": ".github/workflows/factor-atlas-reference.yml",
+    "sha256": "68b9933111dcfa337e9801251c580ffb069eeaea26a86733e5384fa3d0474133"
+  }
+}

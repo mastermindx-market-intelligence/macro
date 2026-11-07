@@ -1,0 +1,53 @@
+{
+  "actual_equity_quote_tape_replayed": false,
+  "files": {
+    "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
+      "bytes": 74479,
+      "sha256": "7314d4bddcbe130f91c4828c8d26ab194b38b4871d79a6971f414d2c5b15ad07"
+    },
+    "session2/QUOTE_REFERENCE_PROTOCOL.md": {
+      "bytes": 5830,
+      "sha256": "7f3e9a0e47acf39a20f34aa6a3020265e865aaa96441d6945c92db6b1516e874"
+    },
+    "session2/prototype/quote_reference.py": {
+      "bytes": 11001,
+      "sha256": "f3b487c815e7123c0edb92fad123743434a9b1e201a8b914a7d48ac9ac034250"
+    },
+    "session2/prototype/test_quote_reference.py": {
+      "bytes": 10233,
+      "sha256": "a7eb61319530ac81c50214dfe69fd0b62051af488d65656254894dc616cb040e"
+    }
+  },
+  "historical_scoped_tests": 116,
+  "input_dependencies": {
+    "incumbent_signer": "engine/flow_signing.py",
+    "incumbent_signer_sha256": "ff4e8cd9359cdd0760d9391684bb2b3bd8f6ca08daed056b397278e7f218ba2e"
+  },
+  "institutional_identity_known": false,
+  "logs": {
+    "quote_native_green": {
+      "bytes": 260,
+      "sha256": "550bd854fea275e285f357eb79c87c044dc4e0a6344d178e34be6a06348bf874"
+    },
+    "quote_precision_red": {
+      "bytes": 7032,
+      "sha256": "bcb42541a4ea6d68d9ac2155e6f3f5e5bbd89cd46679372a1d3136c7f1b44b6b"
+    }
+  },
+  "may_publish": false,
+  "may_rank": false,
+  "may_trade": false,
+  "native_host": "M2 Studio",
+  "observed_at_utc": "2026-10-09T04:46:31.266069+00:00",
+  "parent_head": "6ec65baf50cb06349197a92782e63c603d265e73",
+  "protected_mastermind": "ad362ef45def043ee5970c2b131be9825fcea1ae",
+  "python": "3.14.7",
+  "quote_rule_parity_on_ordinary_prices": 6,
+  "quote_specific_tests": 48,
+  "schema": "factor_atlas.quote_reference_native_receipt.v1",
+  "scope": "CONTROLLED_FIXTURES_ONLY",
+  "scoped_prototype_tests": 164,
+  "skillpack": "mastermind.sol_skillpack.v1/1.0.1",
+  "source_input_rights_proven": false,
+  "targeted_precision_red_failed": 4
+}

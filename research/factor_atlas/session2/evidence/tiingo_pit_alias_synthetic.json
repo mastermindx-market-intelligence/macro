@@ -1,0 +1,146 @@
+{
+  "actual_PIT_alias_authentication": false,
+  "actual_current_snapshot_negative_state": {
+    "all_four_temporally_applicable_claims": false,
+    "can_publish": false,
+    "input_digest": "031dfb71073532f4e3333ac222eab5a4d56ab1aeb9a1e05c67f3d53239da16b6",
+    "late_known_symbols": [],
+    "market_pilot_admitted": false,
+    "missing_known_at_symbols": [],
+    "missing_tiingo_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "missing_valid_from_symbols": [],
+    "owner_alias_authenticated": false,
+    "registered_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "selected_candidate_symbols": [],
+    "spot_ETF_unselected": true,
+    "status": "NO_SELECTED_TIINGO_ALIASES"
+  },
+  "actual_four_name_capital_pressure_pilot": false,
+  "actual_source_data_vendor_OHLCV_exported": false,
+  "actual_vendor_rights": false,
+  "actual_vendor_tiingo_alias_matches_for_four_names": 0,
+  "original_alias_source_rows_mirrored": false,
+  "original_dataos_identity_source_blob": "ea8485596e57fd1e686bfdb9d75708a3a3845fda",
+  "original_tiingo_merged_source_head": "2a08250fe61aa59ad3e1581149f0b93e9d5a17cf",
+  "reference_SPY_listing_selection_present": false,
+  "reference_alias_rows_examined": 6046,
+  "reference_generated_at_without_timezone_claim": "2026-10-09T05:05:32",
+  "reference_snapshot_receipt_sha256": "a7481353bc7e21f8420772c7223749b971fb23e706ddd9cc244cf31bf2163b2b",
+  "schema": "factor_atlas.tiingo_pit_alias_nonadmission_witness.v1",
+  "synthetic_alias_known_after_decision_refused": {
+    "all_four_temporally_applicable_claims": false,
+    "can_publish": false,
+    "input_digest": "4cd1b394e0561169d97c3146bbf82d3062bdd6913c2a52132b4e42ff127658f0",
+    "late_known_symbols": [
+      "AAPL"
+    ],
+    "market_pilot_admitted": false,
+    "missing_known_at_symbols": [],
+    "missing_tiingo_symbols": [],
+    "missing_valid_from_symbols": [],
+    "owner_alias_authenticated": false,
+    "registered_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "selected_candidate_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "spot_ETF_unselected": false,
+    "status": "SELECTED_ALIASES_NOT_KNOWN_AT_DECISION"
+  },
+  "synthetic_controls_have_invented_SPY_ID_not_used_for_any_positive_qualification": true,
+  "synthetic_four_self_sealed_candidate_not_admitted": {
+    "all_four_temporally_applicable_claims": true,
+    "can_publish": false,
+    "input_digest": "eedd33ec4d31e6cbb848f0cbb8a039cf8fda4239615d745de4a37a604f613fc5",
+    "late_known_symbols": [],
+    "market_pilot_admitted": false,
+    "missing_known_at_symbols": [],
+    "missing_tiingo_symbols": [],
+    "missing_valid_from_symbols": [],
+    "owner_alias_authenticated": false,
+    "registered_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "selected_candidate_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "spot_ETF_unselected": false,
+    "status": "OWNER_PIT_CANDIDATES_NOT_AUTHENTICATED"
+  },
+  "synthetic_nanosecond_known_at_rounding_refused": {
+    "all_four_temporally_applicable_claims": false,
+    "can_publish": false,
+    "input_digest": "e6d381718f7481282a6ff32b5414b3355115a5ce1c65e2f688fd1bddf9e67177",
+    "late_known_symbols": [
+      "AAPL"
+    ],
+    "market_pilot_admitted": false,
+    "missing_known_at_symbols": [],
+    "missing_tiingo_symbols": [],
+    "missing_valid_from_symbols": [],
+    "owner_alias_authenticated": false,
+    "registered_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "selected_candidate_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "spot_ETF_unselected": false,
+    "status": "SELECTED_ALIASES_NOT_KNOWN_AT_DECISION"
+  },
+  "synthetic_three_other_canonical_candidates": {
+    "all_four_temporally_applicable_claims": false,
+    "can_publish": false,
+    "input_digest": "16602b8f53593e3b2e8754c638f7f917f8964e884400cb3cd9915ed8a104906e",
+    "late_known_symbols": [],
+    "market_pilot_admitted": false,
+    "missing_known_at_symbols": [],
+    "missing_tiingo_symbols": [
+      "SPY"
+    ],
+    "missing_valid_from_symbols": [],
+    "owner_alias_authenticated": false,
+    "registered_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "selected_candidate_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA"
+    ],
+    "spot_ETF_unselected": true,
+    "status": "NO_SELECTED_TIINGO_ALIASES"
+  }
+}
