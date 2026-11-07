@@ -343,188 +343,166 @@ waves:
       staleness rule), X2 (adaptive in-flight cap) and X3 (native queue
       premise re-test) are sequenced after PR 10652 and PR 10682.
       Current continuation: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-11-04-ACCELERATION.md.
-      Chairman recommissioned end-to-end acceleration on 2026-11-07. The mission
-      remains all three repositories at lightning speed with truthful inputs, full
-      selected coverage, original journeys and release authority preserved.
-      Latest source-linked frontier: 2026-11-07 21:36 UTC. This supersedes the
-      earlier current snapshots retained at69a46209 and the architecture commits;
-      it does not erase their failed trials or unsettled effects.
+      Chairman recommissioned all-three-repository acceleration on 2026-11-07.
+      Preserve truthful source/input bindings, all selected coverage, original
+      product journeys and release authority. Current lifecycle MORE_WORK_EXISTS;
+      no five-minute p95 or completed production upgrade is claimed.
+      This milestone supersedes the 21:36 current snapshot retained at528eb8e;
+      historical failed trials and uncertain effects are not erased.
 
-      Compatible law pin66780ab7e3e9fdbfd40713bb5791fb1888529f7c remains usable.
-      Complete66780-to-5abd delta15commits/131files and5abd-to-24263 delta3/14
-      had no material law changes; new24263-to-0d68434 delta4/41 likewise has
-      no AGENTS/sol_skills/law/workflow change. Existing Phase4 and this wave
-      own acceleration; #6351 remains the incumbent pack-materialization owner.
-      No new scheduler, queue, watcher, identity, retry or runtime authority.
+      Governing pin66780ab7e3e9fdbfd40713bb5791fb1888529f7c remains compatible.
+      The latest complete20e17-to-f4f8ddc552866d2ab4bb2c7f229b0f2be283485c
+      census covers10commits/32paths with no governing guide change. Macro
+      AGENTS3d18585b and delivery guide220d23a9 are unchanged atabab066 versus
+      ca9277. Existing Phase4/this wave and #6351 own the work; no new scheduler,
+      queue, retry/identity owner, watcher or runtime authority is commissioned.
+      Fabric roots remain exhausted/blocked; recorded attended-parent execution
+      continues. Native children perform bounded C3 read-only judgment only.
 
-      Master architecture remains original Mastermind PR2191 at
-      https://github.com/mastermindx-market-intelligence/Mastermind/blob/c727c97c715f4916ef588e56c2f8b17993d53b6b/docs/CI_LIGHTNING_ARCHITECTURE.md.
-      Its exact c727 native PR CI42409545529 passed. Native queue
-      MQE_lQDOTotz3c8AAAABNdzYLM4ABAiKzgPOg34 was enqueued20:40:07,
-      now position1/AWAITING_CHECKS; no merge is claimed and no rearm is owed.
-      Document136c4e521af42919b9bab1c22e385550bbcffea2 and controlled-pair
-      artifactd66a4328f204141b0abc55ec4eb4448d67d4f359 have exact readbacks.
-      Targets remain p95docs90s/ordinary180s/full300s, interim full600s,
-      with at least30 successive eligible observations per populated class.
-      None is accepted. New measurements require the next document revision:
-      three explicit Mastermind qualification lanes and12-job proof contract;
-      Macro independent767s contract command and actual267s full checkout;
-      Terminal capture698s and Vitest408s each need material reduction.
+      Master architecture2191 is protected-merged as
+      accb4a6bcc1f721b93b10f43881cda67eca104ea. Follow-up2251 publishes
+      fdb5c952344cfdda85223759b4ab7a7b2970e518 and has entered native merge queue.
+      GitHub refused an update while queued; original ref remains exactlyfdb5.
+      Latest prepared evidence revision is immutable commit
+      57b19290fa53767a0a4e3f89e2a4907aa4c6e32f,
+      docs/CI_LIGHTNING_ARCHITECTURE.md blob6d9c3e4277b32531ab5465fbc2dc92d110302eb5.
+      That object is NOT attached to the queued branch or accepted into main.
+      Preserve queue custody; reconcile its actual outcome before the next
+      ordinary document continuation. Do not dequeue or bypass the queue guard.
+      Targets remain docs p95<=90s, ordinary<=180s, full<=300s, interim full<=600s,
+      over at least30 successive natural eligible observations per populated class.
 
-      Mastermind2065 original branch now publishes
-      2b36c2877d9609ea398bbb75fe1d4aad4e49eb66,
-      treea757f0a16b3ddc19719c2002993acd506d687c6a.
-      It includes original ce38 plus protected24263 composition837d, followed
-      by the six-file cold compiler repair. Pure capability helpers moved
-      verbatim/AST-identically to existing executive_mcp_entry; updater
-      imports/re-exports them, preserving both CLI bootstraps/security joins.
-      Control Room canonical default-root resolution moved into its existing
-      gather branch. Three fresh-child compiler cases and two root-selection
-      regressions now pass. Whole qualification:801collected/800PASS/0fail/error,
-      one unchanged actual-root credential skip. Direct -I -S -B updater CLI
-      from unrelated private cwd returns expected usage64. No privilege change.
-      Receipt:/tmp/ci-lightning-mm2065-cold-compile-repair-adjudication-receipt.json.
-      Original commit/push APPLIED; exact PR body and source refs read back.
+      Mastermind2065 original branch publishes
+      e6737ba03a254310e5eddb28dbe0839713b72694. Required42419148121 and
+      RWE42419148128 both SUCCESS, testing exact merge
+      9c73e295dc2f659db899d4d5dda11734994980c2,
+      treee0363dfd2aa864d6719a79533f763df188749c20, parents20e17 plus e673.
+      Both complete2374modules/72084collected=invoked=finished cases with
+      identical per-module identity/outcome hashes, zero evidence errors,
+      deselection or incomplete modules. Required24children return0 with valid
+      completion; six RWE receipt ZIPs match published digests, exit0, match
+      plan, pass pip-check and have no degraded entries. Native cold guard passes.
+      Required exact12-job DAG: scopePASS, fastSKIP, sixpytestPASS,
+      threequalificationPASS, aggregatePASS. Core/Fabric/native203/254/219s.
+      Whole required25m05 versus RWE34m43 are different dependency profiles,
+      not a controlled process-count speedup. Required limiting shard waits427s
+      after scope then runs1048s; last-dependency-to-final-aggregate14s.
+      Shard3's limiting child accumulates840.89s reported service; the accepted
+      Trend split is not on that final child. Market-view fixture105.34s is
+      the next safe attribution candidate, preserving all54cases/real calendars.
+      Native correctness does not release H1/Gateway/initializer holds.
+      Earlier local800/271/791/137 cohorts remain tied to their exact source;
+      prior d264 and ce38 failures are retained, never relabeled or rerun by habit.
 
-      ce38 required42410396607 failed in15m58; RWE42410396564 passed33m15.
-      Both completed2358 unique modules and71571collected=invoked=finished
-      cases with matching identity/count inventories;2357 outcome hashes agree,
-      only cold os_gateway_publication differs. Not a controlled speedup.
-      Six RWE environments/locks/plans/exit0/pipchecks were verified.
-      Aggregate waited158s after its last shard and executed4s.
-      All old d264 and9e36 trials are consumed; do not rerun them.
+      Macro10764 now publishes original-carrier
+      d39ef2f0fba5a620f1cf855c30ce3e78b193460a,
+      tree45d62b686099b9297f3338d7db5d32e1632c7ef1, parents99c6f46e+ca9277.
+      It fixes the nonexistent embedded-plan/nonproduction-mode reader using
+      the real public semantic loader and complete jobs[].logical_job_id.
+      Exact head/role/workflow/event, sealed-base provenance, cache isolation,
+      clear-no-work versus empty-failure and quota deferral remain.
+      All725complete controller/semantic/canary tests pass, including21actual
+      schema boundary cases; all440other test/helper definitions are preserved.
+      Natural42422937641 runs. ArmLast MOG was removed before the source push,
+      merge-blocked retained; qualify new native proof/holds before rearming.
+      Do not claim old Business data assertions passed; accepted10781 preserves
+      their assertion bodies in the data gate.
 
-      Current2b36 full CI did not start: native PR is dirty against newer main,
-      with only dynamic CodeQL42415930017 observed. Native ref/master is
-      0d68434c37692507f9f1a77152c32b1e11bb4388; API PR base field still24263.
-      Original workspace remains clean except preserved mastermind.egg-info/.
-      Fetch and merge-tree diagnosis completed without HEAD/index/worktree edit:
-      seven conflicts, tree983650d82cdffafc01f4e769fa445527cbadec33,
-      receipt:/tmp/ci-lightning-mm2065-0d68434-merge-diagnostic.json.
-      Accepted2224 introduces exact Broker quiescence and sparse-advice source
-      successors; compose its actual-capture checks with both exact2065 observer
-      histories. Do not select one old manifest hash or widen a guard.
-      The derived combined107 manifest is28e4c5049a99f28cbb43459ad07e9b2b5bad8a28a3ff0228c15a84360fc16d1f;
-      it differs from24263 only in observer/Broker/executor members.
-      This is composition planning, not completed qualification or publication.
+      Macro10788 at5e7a585fee0650ee53f6727b229322a9f015c5d6 has complete
+      native42412023592 SUCCESS in63m22:321jobs/694passedsteps, zeroinfra,
+      evidencef83861a98d792b630016c986ad49df4c7fb1130dc5d956b525931598778c5dca.
+      All120FIF modules execute once across44/37/39siblings:
+      A1368PASS/629.906s; B1169PASS/820.212s; C1716PASS/1SKIP/765.374s.
+      Exact module launches, not a collected-node parity claim.
+      Keep unarmed until10764protected merge per existing6674602501/6682993935.
+      New International10PASS does not settle its older timed-out descendants.
+      Macro10658dc90 native42408989367 remains SUCCESS47m11,97jobs/290steps;
+      Macro10752 prior319jobs/691steps succeeds89m20. Both retain existing MOG.
+      No manual refresh, bulk rearm, cap change or speed-target claim.
 
-      Next2065 source phase, after that composition, splits existing qualification
-      into explicit composition/Fabric/native jobs. Preserve the nine-step
-      bootstrap, all original command objects, private native-root trap and
-      375-case unittest prelude source closure. Workflow ci.yml, strict
-      scripts/ci_parallel_shard.py and ci_postmerge_proof.py must advance
-      together: six shards+three qualification jobs+scope+fast+test=12.
-      Stable required test must require all3success on full and all3skipped on
-      eligible fast routes; missing/canceled/unknown fails. Six contract owners,
-      the pure initializer workflow-shape selector and two upload compatibility
-      selectors qualify this change. Both H1 execution blocks remain unchanged.
-      The prior800passes do not qualify the later DAG. No new worker pool.
+      Macro8094 head372935854f3ec3db858af6e655441937b5db7fc6 now has
+      native42415102365 SUCCESS:319jobs/692passedsteps, noUNKNOWN/inherited
+      excuses/infra, authority_changed=true and clear. Testedmerge
+      52fa11da6011ba3c91a25f884a43c7cc47cc5b42, base60dbeffbc7100752863572f4e426316cead7e3d6,
+      evidence87f1dc6a6f32d9aeaa0ec82a45f399699bb0b0a0ca868279c89f5aeea925baa3.
+      Current shared code journeys pass; historical3UNKNOWN and data-health
+      assertions are not retrocleared. Current main changes CI catalog since
+      the tested base, so the incumbent freshness owner still owes current proof.
+      Automatic approval review REJECTED the attempted scoped source-release/
+      merge-admission hold disposition, explicitly requiring user authorization.
+      Canonical readback remains9comments with no release posted. Keep Draft,
+      original6698103282hold and unarmed state. Do not rephrase, move the release
+      into a body, switch carrier or mark Ready/arm to bypass the refusal.
+      Long benchmark/Fabric denial6596581286 remains fenced; no replay/substitute.
 
-      Macro10658 dc90e19d8b2764a8a5592cf5f2d0f15849403cb8 passed
-      42408989367 in47m11:97of319 selected logical jobs,290/290 semantic
-      proofsteps, no infrastructure findings. Actual testedmerge9842603411317571aa2ec81fb3eb9c05f17533cf,
-      base35f6c48f361894d360505b7223260195bd073814,
-      evidenceae341eae79e684145ff1afbb4a9082b6263cffd16d5fdb86feac55d290824d90.
-      Pack0 took40m01;120-file FIF group33m40.853,4253pass/1skip.
-      Existing MOG owner remains; no rearm, dispatch or speed-target claim.
+      W4/#6351 first input-identity slice publishes Macro10843 at
+      f0f9315f9d69d50f3635ae216c37afbbb1d3918d, parentabab066981e46860b1be51dcb05883aed1a6b5b0.
+      Original operationci-lightning-macro-execution-input-identity-20261107-c2.
+      Source81828c66126d34eef3cd5a85fd8b60cd6d106ae6/testd542cc9f8a5bc51027c1b6564f68449c61cd8f96.
+      33focused contracts PASS, no skips/failures,10.824s; log
+      72a762fcff7dd67d5e6b3ff23dd07c1b9bb3c28a48edfe5f8d8aa7c6259ca3a0.
+      Every old source byte is preserved. This has no production caller and
+      enrolls no job: it binds explicit path/mode/type/OID, exact commit/root tree
+      and digest, with independent expected commit+path validation and no lazy
+      acquisition/replacement overrides. Identity is NOT complete closure,
+      materialized-blob availability, execution eligibility or speed proof.
+      Future work: complete closure compiler, full-default producer/consumer
+      compatibility, actual protected executor/control-bundle adoption, then
+      earnings-economic-dossier enrollment with exact case/outcome/skip parity,
+      cleanup and full independently pinned base replay. Candidate combined
+      producer/consumer code alone cannot establish protected adoption.
+      Preserve10803's finite history helper and holds;6505/P3B-B is already merged.
 
-      Macro10788 original source5e7a585fee0650ee53f6727b229322a9f015c5d6,
-      tree12ee576b0d0ff04dd4479369f2816eb98dc3eac6, is now published APPLIED,
-      not local-only. It composes the incumbent120-file fresh-interpreter helper
-      with three siblings44/37/39 and preserves other390 catalog definitions.
-      Corrected66 affected contracts pass with zero skips/failures after the
-      earlier570pass/1closurefailure/2existing skips plus10subtests.
-      Native42412023592 runs321/321 logical jobs,12packs; testedmerge
-      1aadfe404d99f456a8adae2b0541541231f68b07,
-      base74873cdaf3c8a3f305ddcac732975f815a7e87fa,
-      plan26926098d468f3ed59b0cce9a5d8086f21131e394ad51830fa0d89b9ca05e3ab.
-      At21:21 planner/contractdelta/packs2,3,11 passed, nine packs executing.
-      All12 actual runner receipts are GitHub Actions/ubuntu-latest/direct.
-      International full chain passed including IM14 browser10/10,0skip,70.078s.
-      This new source-bound hosted proof does not settle old timed-out descendants.
-      FIF3 aggregate completion and native final semantic closure remain owed.
+      Terminal1338 remains accepted as69c3893169a991b15fe7934b53122d55fd4eaaec.
+      Original1341 native42414479074 unitPASS20424/50SKIP/3TODO,48Node contracts,
+      1158filesPASS/6SKIP, records-mode PL6/VI/Options consumersPASS.
+      Eleven browser jobs pass; tablet1fails one superseded-drawing fixture
+      among505selected=370PASS/134SKIP/1FAIL. Verified artifact13592533058
+      SHA038b94fd295a49eacb9d4ead012e32f26f1ce39620465521dd686c67c42f7ff6
+      proves automatic recovery GET arrived463.988ms after poll failure.
+      Original2GET/1PUT and expected Review state appear; later user choice had
+      not run. No product-loss conclusion or causal runtime claim is inferred.
 
-      10788 completed pack3 checkout took267s:173.013s fetch plus93.552s
-      full working-tree materialization,147038 paths. It already uses depth1,
-      no filter/tags/LFS/submodules, and no checkout error/retry was observed.
-      Pack0/1 checkout metadata reports22m11/15m42, internal attribution pending
-      their terminal logs. Do not claim depth1 as new or infer network/CPU cause.
-      Restore_workspace also restores full exact tree between logical jobs.
-      #6351/W-SELFHOSTED-BRIDGE owns this permanent boundary, not productPRs.
-      Current linked10803 source1c7ed6e4b8cc0f93c1f4e8697591cacde3c67192
-      owns finite provided-actions history; its original686pass/3semanticUNKNOWN
-      delivery gap remains. Do not duplicate that helper or reopen closedW3.
-      A depth2 planner has an existing positive ancestry regression, but current
-      workflow/test still pins full history; it is a distinct future owner slice.
+      Terminal1341 now publishes d71c569a64c5346419494afc3ca988bd06a56a73.
+      Exact event handshakes replace the premature poll, preserving timeout,
+      request counts, route failures and Review/cloud-count/Use-cloud/outbox path.
+      Repaired+adjacent casesPASS6 across all3projects, zero retries/skips/failures;
+      JSON3e36c252f18684fe8d872c05eab1bcb5b20a741f192937b729126533432c2253.
+      Both capture blobs unchanged. New natural42422916742 runs. Existing
+      nativeauto/MOG remains; no reenrollment or manual diagnostic-label clear.
 
-      Macro8094 original carrier is now source-composed and published
-      372935854f3ec3db858af6e655441937b5db7fc6 over acceptedbddf192c,
-      treeba6652f0191e93740594106d5b143c37aacfaa45.
-      Exactly2files+113/-2; authored runnercad2a724/tests000a0067 are unchanged.
-      Full manifest validation precedes curated-only inference. Ordinary
-      planning/otherfive census classes remain; unused ordinary exceptions are
-      not promised equivalent. Natural42415102365 running; fences/authoritypass.
-      Draft/unarmed, no long benchmark, local substitute, rerun or dispatch.
-      Original benchmark/Fabric explicit refusals6596581286 stay fenced.
-      Old42299098545 semantic3UNKNOWN6698103282 not retrocleared.
-      Accepted shared code-owner blocks match10752qualified64807eeb and include
-      10834commodity repair; retained data_gate assertions require their distinct
-      data-health evidence and are not proved by a green code gate.
-      Actual10658 contractdelta14m43 includes767.4s command, with closure band
-      478/439s already head/base concurrent.8094 removes only part of that work.
-      No measured live speedup; natural postmerge consumer still owed.
+      Terminal1344 publishes78047d04b20dbd2bf0366ddf9252411e8a7cff4e,
+      tickerblob2a927447d9b91fb8d993eb4a8de1baaee01b9604.
+      Full before/after browser proof matches21case/project identities,
+      14PASS/seven identical expectedSKIP/zeroRETRY. All78otherexpectations,
+      skip/timeout/appearance policies, helper bodies and test titles preserved.
+      Actual network documents and navigation actions both prove74to57:
+      matrix13to12, unavailable6to4, recovery15to12, grouped2to1, held2to1,
+      editorial3to3, CN/HK33to24. Local497.216to448.966s is one ordered sample,
+      not native causal speedup/p95. Comparison99e3785a198023464ac215779bb5a121fe9d20dd688a21d478152bf6feabae71.
+      Natural42422373914 runs; original1344unarmed. Preserve1223held topology.
+      Further unit partition must delay capture-dependent imports only on the
+      capture=true route; legitimate planner-authorized merge-group legacy
+      remains separate. Failed/unknown planning cannot become legacy success.
 
-      Macro10752 head5e23be9cd4f73bfb298206ddd79886ef9d9e168e remains
-      under its existing MOG enrollment. Full319/691 native42397007951 passed
-      89m20; selected-consumer benefit remains owed. Earlier sweeps explicitly
-      cap-deferred it; later42411350309 logs truncated deferred IDs, so no new
-      per-PR classification is inferred. No cap change/manualrefresh/rearm.
+      Original holds remain: H1run42394477066 missingATT1/processsettlement;
+      Gateway6704040875/initializer-actuator cause; International42390957332
+      whole-descendant settlement; Macro10674 originalC4PID26751 unbound
+      publisher/installed-recovery interface; Terminal1223 original createcommit
+      tree8a95165da4779cbbee961f6fc903de02afd1e27f, unknown original effect.
+      Closed bounded searches are not repeated. Prior protection/admin403s,
+      #2065comment denial and now #8094hold-release denial stay scoped.
+      No old-author handback, denied-action replay, alternate publisher,
+      extra Fabric root, generic kill/cleanup, Slack/email or daemon claim.
 
-      Terminal1338 MERGED20:05:38 as69c3893169a991b15fe7934b53122d55fd4eaaec,
-      exact qualifiedtree69c7ae0e0a160fdb4401e0bbac8dda5a0701a3b3.
-      Integrated42407566693 succeeded:6pass/2intentionaldedupskip.
-      Unit21m37 includes capture11m38,Vitest408.45,20420pass/50skip/3todo.
-      Prior full browser4693selected=3690pass/999skip/4flaky/0finalfailure.
-      No reopen/rearm; production deployment and product acceptance are distinct.
-
-      Terminal1341 new independent original source05a567b8b79df517ff1c6ff87e6247badad75e07
-      reuses writeComposition's already complete validated return, removing one
-      immediate redundant producer read. Only capture_ci_evidence.cjs and its
-      test changed; writer/security/readers/workflow/held1223 surfaces untouched.
-      48Node contracts pass. Actual local PL6capture24 andVIcapture30 complete;
-      selected50 composition and all5 downstream Vitest consumer cases pass.
-      Canonical compositionf2585e78e62d8985ca3496c028bfc33c2c8f1e153196768e66e0303e0f35a8e1.
-      Read-only redundant traversal12.933s is one local observation, not hosted
-      saving/p95. LocalNode26.5/M2 differs from hostedNode20/Linux.
-      Native42414479074 running with no observed failure at21:28.
-      MOGlabel+full-head nativeauto reconciled once21:28:13, no queueentry yet;
-      do not reenroll. Persistent postwriter changes still fail downstream;
-      producer-alone earlier mutation detection and atomicity are not claimed.
-      Owned122 capture/generated files retained with byte inventory and archive
-      508fff059b5960a8e2e52b4193d1095e05764a104bdeb994091749e02b605cd8,
-      source workspace clean. Temporary EXDEV move failed before any file moved;
-      verified copy+unlink completed on the same owned artifacts.
-
-      Original holds remain: H1run42394477066 missingATT1/processsettlement,
-      Gateway6704040875 and initializer/actuator cause; Macro International
-      42390957332 unknown descendants; Macro10674 originalC4PID26751 binding
-      unresolved after closed bounded search; Terminal1223 createcommit
-      unknown tree8a95165da4779cbbee961f6fc903de02afd1e27f under original
-      mastermind-queue-clearance-20261104-c1. No alternate carrier, lookup loop,
-      generic kill/cleanup, originalheldworkspace access or reviewer replacement.
-      Prior protection403s,Terminaladmin denial,2065comment denial stay scoped.
-      Fabric roots consumed/blocked; recorded parent integration exception applies.
-      Native agents provide C3 judgment only. Source/PR-body writes are permitted.
-      No external messages, extra roots, backgroundrunner or daemon claim.
-
-      MORE_WORK_EXISTS. Exact next work: compose0d security-source histories in
-      original2065, run bounded complete owner proofs and publish once; implement
-      and qualify three-lane/12-job DAG; consume current native1341/10788/8094
-      results at meaningful milestones; let2191/10752 existing controllers work.
-      Advance capture/Vitest/browser and Macro contract/materialization through
-      their existing owners, prove whole critical paths under admitted capacity,
-      then collect the natural cohort. All original journeys and failure behavior
-      remain part of completion, not just green infrastructure.
+      Next: consume current exact native10764/1341/1344/10843 results at material
+      boundaries; complete original permitted delivery without bulk arming.
+      Reconcile2251queue outcome and publish the retained evidence revision
+      through a legitimate subsequent source boundary. Advance W4's complete
+      closure/compatible consumer and Terminal unit/capture isolation; attribute
+      the market-view fixture before a source change. Preserve all original
+      journeys and failure behavior, then qualify total capacity and natural
+      delivery cohorts. CI running alone is not durable autonomous execution.
 
 
 next_action: >
@@ -547,10 +525,11 @@ next_action: >
   repairs into product PRs or reopen them here outside the #6351 sequence.
   P3A-R and its repaired direct-main dispatch are accepted; run 33024021850 is
   a closed diagnostic receipt, not a retry candidate. P3B-A is accepted on main.
-  Complete the separate P3B-B carrier: make the exact protected-main zero-input
-  call for same-repository PRs, retain the hosted fork implementation and hosted
-  planner/anchors/ci-gate, and prove the new route on its own exact PR tree before
-  P4 natural traffic.
+  P3B-B is already merged through #6505 as
+  4b9c9ece8593a2483997432e25f233bfe7af8779; do not repeat it.
+  Continue W4 under #6351: exact input identity, complete execution closures,
+  compatible full-default planning/execution and verified protected-consumer
+  adoption before enrollment, then original-case parity and natural traffic.
 owns_paths:
   - ".github/workflows/ci.yml"
   - ".github/workflows/merge-on-green.yml"
