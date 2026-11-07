@@ -7,7 +7,7 @@ Follow the [shared agent review rule](AGENTS.md#session-owned-technical-reviews-
 
 ## Reuse-first implementation
 
-Before bespoke work on proven infrastructure or chart/UI plumbing, check the existing owner and maintained open-source candidates; use narrow integration/extension where sound. Protect unique quant logic, license/security compatibility and consumer proof. See the [shared engineering policy](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/REUSE_FIRST_ENGINEERING.md) after its protected acceptance; do not add a survey or approval step for small repairs.
+Before bespoke work on proven infrastructure or chart/UI plumbing, check the existing owner and maintained open-source candidates; use narrow integration/extension where sound. Protect unique quant logic, existing security boundaries and consumer proof. See the [shared engineering policy](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/REUSE_FIRST_ENGINEERING.md) after its protected acceptance; do not add a survey or approval step for small repairs.
 
 ## Source authoring on M2: GitHub-native versus host-local
 

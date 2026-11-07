@@ -7,6 +7,6 @@ alwaysApply: true
 
 Before implementing substantial established infrastructure, charts, agent harnesses or UI, first inspect the existing system owner and credible maintained open-source libraries/templates. Prefer a thin adapter, composition or extension over duplicating mature machinery. Reserve custom engineering for unique intelligence and quantitatively validated strategy logic, or cases where the candidates fail fit/security/economics.
 
-Check commercial license, maintenance, dependency risk, security, data rights and actual consumer tests. Stay compatible with the canonical Executive/Agent OS/Fabric/source owners; do not copy proprietary competitor implementations or create another control plane. Timebox the options scan to what changes the choice; no mandatory procurement report or new approval stage.
+Check maintenance, dependency fit, existing security and data boundaries, and actual consumer tests when material. Stay compatible with the canonical Executive/Agent OS/Fabric/source owners; do not copy proprietary competitor implementations or create another control plane. Timebox the options scan to what changes the choice; no mandatory procurement report or new approval stage.
 
 Canonical policy (after protected acceptance): https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/REUSE_FIRST_ENGINEERING.md. A linked PR alone is not an installed change.
