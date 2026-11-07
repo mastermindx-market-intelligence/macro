@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CVSA-BULL-20261013",
-  "asof": "2026-11-01",
+  "asof": "2026-11-06",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 42.7,
-  "raw_confidence": 38.6,
-  "delta_vs_base": -17.3,
+  "management_confidence": 30.5,
+  "raw_confidence": 24.0,
+  "delta_vs_base": -29.5,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 68.0,
+    "validity": 9.8,
     "progress": 0.0,
-    "pace": 29.9,
+    "pace": 10.1,
     "retention": 50.0,
-    "overlay": 52.9
+    "overlay": 32.8
   },
   "geometry": {
-    "dist_to_stop_r": 0.751,
+    "dist_to_stop_r": 0.204,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 40.0,
-    "p1": -0.1659,
-    "p2": -0.0829,
+    "horizon_pct_used": 51.1,
+    "p1": -0.5306,
+    "p2": -0.2653,
     "p3": null,
-    "move_r": -0.249,
+    "move_r": -0.796,
     "mfe_r": 0.112,
-    "mae_r": -0.249
+    "mae_r": -0.796
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Nearing Invalidation",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.32000732421875,
-  "_mae": -5.1699981689453125,
+  "_mae": -16.540000915527344,
   "_max_p1": 0.07443077716454126,
   "_first_trigger_ts": "2026-10-20",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 18,
-  "tau": 0.4
+  "days_elapsed": 23,
+  "tau": 0.5111
 }

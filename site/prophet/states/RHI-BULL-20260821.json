@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "RHI-BULL-20260821",
-  "asof": "2026-11-01",
+  "asof": "2026-11-06",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 36.2,
@@ -10,21 +10,21 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 93.6,
+    "validity": 89.0,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 58.9
+    "overlay": 32.8
   },
   "geometry": {
-    "dist_to_stop_r": 0.952,
+    "dist_to_stop_r": 0.917,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 160.0,
-    "p1": -0.0319,
-    "p2": -0.0159,
+    "horizon_pct_used": 171.1,
+    "p1": -0.055,
+    "p2": -0.0275,
     "p3": null,
-    "move_r": -0.048,
+    "move_r": -0.083,
     "mfe_r": 0.053,
     "mae_r": -0.557
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-31",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 72,
-  "tau": 1.6,
+  "days_elapsed": 77,
+  "tau": 1.7111,
   "closed": true,
   "outcome": "EXPIRED"
 }

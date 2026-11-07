@@ -74,6 +74,7 @@ import os
 import re
 import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from http import HTTPStatus
 from pathlib import Path
 from types import MappingProxyType
@@ -1242,7 +1243,14 @@ def _emit_usage(
     state the receipt reports can never disagree.
     """
     try:
-        estimate = ai_costs.estimate_cost_usd(model, input_tokens, output_tokens)
+        # Observe the pricing instant at the existing receipt owner. ModelArk
+        # DeepSeek's temporal rate must not be guessed by the rate library;
+        # passing no instant made a successful canary permanently unpriced.
+        # The exact estimate is passed to the incumbent usage writer below.
+        estimate = ai_costs.estimate_cost_usd(
+            model, input_tokens, output_tokens,
+            as_of_utc=datetime.now(timezone.utc),
+        )
     except Exception as exc:  # noqa: BLE001 — pricing telemetry must not cost a call
         log.warning("provider_production_modes: cost estimate failed (%s)", exc)
         estimate = None
@@ -1422,3 +1430,4 @@ def call_mode(
         latency_ms=latency_ms,
         price_state=price_state,
     )
+

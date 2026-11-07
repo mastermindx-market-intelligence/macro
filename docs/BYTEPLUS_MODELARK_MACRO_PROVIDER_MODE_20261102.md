@@ -97,3 +97,54 @@ References:
 - https://docs.byteplus.com/en/docs/modelark/create-model-responses-api
 - https://docs.byteplus.com/en/docs/modelark/model-list
 - https://github.com/mastermindx-market-intelligence/Mastermind/pull/1824#issuecomment-6570322461
+
+## Capacity contract reconciliation (2026-11-07 UTC)
+
+This integration preserves the existing commercial transport and price owners.
+The provider receipt now supplies its timezone-aware observation instant to
+`lib.ai_costs.estimate_cost_usd`, including the DeepSeek temporal price owner.
+The same estimate is passed to the existing usage writer; a known estimate
+does not assert an observed provider debit. Peak and off-peak regression tests
+exercise the real rate owner and one temporary usage-ledger row through an
+injected, explicitly unverified canary transport. The three ModelArk test
+suites are included in the existing provider CI job.
+
+The downstream contracts were checked at immutable source heads:
+
+| Owner | Source | Required boundary |
+| --- | --- | --- |
+| Shared Model Pool Control | Mastermind #2109, `1b3065981ef4e44f1727c150fdc682a34297c44a` | Logical model routing is separate from physical pool/account enrollment. Native Fabric retains selection, account eligibility, quota and admission; Macro retains application inference and provider-usage accounting. |
+| Application admission and settlement | Mastermind #2175, `17dccc6300439fafa08dcc472c68319b024fb3b4` | A startup-registered transport and its exact recipe/account grants must exist before a route is offered. Selection is not execution authority. The incumbent broker atomically admits the turn/request, and the original handler settles the dispatch or preserves its unknown effect. |
+| Commercial consumer | Mastermind #1824, `f559d9d188ab8905bd84779ed01b26a867f36ab9` | The advisory projection and provider aliases do not establish native registration, a production caller, account eligibility, or live capacity. The retained source repair remains unapplied behind its original write hold. |
+
+At those heads, #2175 has no registered BytePlus ModelArk application pool
+or commercial transport recipe. Its existing native `glm` pool must not be
+reinterpreted as a commercial BytePlus account. Likewise, the three Macro
+mode IDs above must not be advertised as enrolled Fabric capacity merely
+because their source records exist. The BytePlus commercial identity and
+Personal Coding Plan identity remain separate, with their own eligibility,
+credential boundary, quota and settlement evidence. No second pool controller,
+Hermes-side selector, quota registry or usage ledger is introduced here.
+
+Source release and live acceptance are separate. The existing credential
+owner must first establish the commercial account, region, activated issuer
+model and private key availability, authorize the bounded issuer canary,
+and reconcile its authentic served-model/account/usage evidence. The
+incumbent Capacity owners must then qualify and register the corresponding
+transport recipe and exact grants through their existing publication and
+admission path. Any uncertain request is reconciled on its original account
+and dispatch before further execution; no provider fallback or replay is
+authorized by this document.
+
+Completion still requires a real canonical Fabric selection, its original
+admitted consumer turn, a bounded successful commercial response, and
+settlement against the same account/request with authentic provider usage.
+The offline tests, source CI, merged code, or configured aliases cannot
+substitute for those receipts. Until that evidence exists, all commercial
+modes remain OFF and the live enrollment hold remains explicit.
+
+Source references:
+- https://github.com/mastermindx-market-intelligence/Mastermind/pull/2109
+- https://github.com/mastermindx-market-intelligence/Mastermind/pull/2175
+- https://github.com/mastermindx-market-intelligence/Mastermind/pull/1824#issuecomment-6702456337
+

@@ -4,6 +4,8 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import json
+import types
+from datetime import datetime, timezone
 
 import pytest
 
@@ -152,3 +154,49 @@ def test_cli_without_execute_is_nonbillable(capsys):
     output = json.loads(capsys.readouterr().out)
     assert output["canary_observation_passed"] is False
     assert output["reason"] == "CANARY_EXECUTE_FLAG_REQUIRED"
+
+
+@pytest.mark.parametrize("hour,expected_cost", [(1, 0.0000096), (4, 0.0000048)])
+def test_deepseek_canary_preserves_observed_price_and_one_usage_row(
+    monkeypatch, hour, expected_cost,
+):
+    """Use the real rate owner at a peak/off-peak boundary, never a provider."""
+    instant = datetime(2026, 11, 2, hour, tzinfo=timezone.utc)
+    clock = types.SimpleNamespace(now=lambda tz: instant)
+    monkeypatch.setattr(canary, "datetime", clock)
+    # The production receipt must supply its own observed instant; the rate
+    # owner deliberately refuses a time-variable model without one.
+    monkeypatch.setattr(ppm, "datetime", clock)
+    mode = "modelark_deepseek_flash_api"
+    calls = []
+
+    def transport(**kwargs):
+        calls.append(kwargs)
+        return ppm.TransportOutcome(
+            text="CANARY_OK", input_tokens=12, output_tokens=5, status_code=200,
+        )
+
+    result = canary.run_canary(
+        mode_id=mode, armed_mode=mode, expected_source_sha256=_sha(),
+        execute=True, env={"BYTEPLUS_MODELARK_API_KEY": TEST_KEY},
+        transport=transport,
+    )
+
+    assert len(calls) == 1
+    assert result["price_state"] == "known"
+    assert result["accounting_known"] is True
+    assert result["injected_transport_rehearsal_passed"] is True
+    assert result["canary_observation_passed"] is False
+    assert result["provider_billing_debit_verified"] is False
+    assert result["production_activation"] is False
+    rows = ppm.ai_costs.read_usage()
+    assert len(rows) == 1
+    assert rows[0]["model"] == ppm.MODELARK_MODELS[mode]
+    assert rows[0]["provider"] == "byteplus"
+    assert rows[0]["cost_basis"] == "metered"
+    assert rows[0]["key_id"] == "prod_api:byteplus"
+    assert rows[0]["input_tokens"] == 12
+    assert rows[0]["output_tokens"] == 5
+    assert rows[0]["est_cost_usd"] == pytest.approx(expected_cost)
+    assert not any(item.enabled for item in ppm.load_modes().values())
+
