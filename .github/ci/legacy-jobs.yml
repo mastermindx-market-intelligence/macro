@@ -15119,7 +15119,6 @@ jobs:
       - "tests/test_intelligence_registry.py"
       - "tests/test_output_health.py"
       - "tests/test_equity_revisions_src_a1_acceptance.py"
-      - "tests/test_revisions_drip_offrender.py"
       - "scripts/sparse_guard.py"
       - "contracts/theme_graph/selection_cohort_read.v1.schema.json"
       - "contracts/theme_graph/selection_cohort_source.v1.schema.json"
@@ -15197,14 +15196,6 @@ jobs:
         run: python -m pytest tests/test_output_health.py -q
       - name: "SRC-A1 native lineage, failure preservation and legacy compatibility"
         run: python -m pytest --noconftest tests/test_equity_revisions_src_a1_acceptance.py -q
-      # 2026-11-07 (#7646): the drip moved off the engine job's render path into
-      # collect_tail. Pins the ownership guard the stock library consults, the CLI's
-      # config-cap default (a bare `python -m collectors.equity_revisions` must drip the
-      # nightly cap, not the old 50-name smoke default) and the per-25-name checkpoint
-      # that makes a step-timeout-truncated night resumable. Same deps as SRC-A1 above.
-      - name: "revisions drip ownership, CLI cap and checkpointed persistence"
-        run: python -m pytest --noconftest tests/test_revisions_drip_offrender.py -q
-
       - name: "EXP1 deterministic K3E expectation query consumer"
         run: |
           python scripts/query_k3e_expectation_surface.py --help
@@ -16196,13 +16187,6 @@ jobs:
         run: python scripts/check_dag_conformance.py --verbose
       - name: complete existing dag-conformance contracts
         run: python -m pytest tests/test_dag_conformance.py tests/test_tech_lab_offrender_budget.py tests/test_nightly_timings.py tests/test_daily_et_gate.py tests/test_workflow_file_size.py tests/test_daily_graph_shadow_state_step.py tests/test_nightly_liveness.py tests/test_runner_queue_hostage.py -q
-      # 2026-11-07 (#7646): the analyst-revision drip is a collect_tail accrual step,
-      # off the engine job's render path. Pins the engine job's MACRO_REVISIONS_DRIP
-      # hand-off, the bare step-bounded CLI invocation placed last before the commit,
-      # its timings band, and that the tail commit still covers data/revisions/.
-      # stdlib + pyyaml (reads daily.yml text only).
-      - name: revisions drip is a collect_tail step, off the render path
-        run: python -m pytest tests/test_revisions_drip_offrender_wiring.py -q
       # Same family, one layer down: dag.yml pins WHAT the nightly lane runs,
       # this pins that the lane's timeout still lets it finish. tech_lab_offrender
       # was cancelled at its 40m cap every night 2026-07-19→07-26 — the declared
@@ -16283,7 +16267,6 @@ jobs:
       - "tests/test_qledger_publish_binding.py"
       - "scripts/ci/qledger_carve.sh"
       - "tests/test_qledger_carve.py"
-      - "tests/test_revisions_drip_offrender_wiring.py"
       # Read closure of tests/test_crypto_publication_contract.py.
       # .github/workflows/** and scripts/ci/*.sh are already declared above.
       - "app/__init__.py"
@@ -49664,6 +49647,46 @@ jobs:
         run: pip install pytest fastapi pandas numpy pyarrow pyyaml jsonschema==4.26.0
       - name: c19-wp28-cs-leg-qualification
         run: python -m pytest tests/test_c19_wp28_cs_leg_qualification.py -q -p no:cacheprovider
+
+  nightly-revisions-drip-offrender:
+    # 2026-11-07 (#7646 root cause): the analyst-revision yfinance drip moved off
+    # the engine job's render path into collect_tail. Two suites: the collector's
+    # ownership guard, CLI config cap, atomic 25-name checkpoints, wall-clock
+    # deadline and interrupt flush; and the daily.yml wiring (engine hand-off env,
+    # bare step-bounded CLI last before the tail commit, its timings band, the
+    # deadline keyed to the job-start stamp). As steps in intelligence-registry
+    # and dag-conformance they moved all three packing probes (index 5,915 >
+    # 5,912, free-content 5,932 > 5,929, plan-book 5,676 > 5,670). scope:
+    # exclusive with the static import closure below plus the workflow the
+    # wiring suite reads as text; no ceiling moves.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - ".github/workflows/daily.yml"
+      - "collectors/__init__.py"
+      - "collectors/equity_revisions.py"
+      - "config.yml"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_revisions_drip_offrender.py"
+      - "tests/test_revisions_drip_offrender_wiring.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas pyarrow pyyaml
+      - name: revisions drip ownership, CLI cap, checkpoints, deadline and interrupt flush
+        run: python -m pytest --noconftest tests/test_revisions_drip_offrender.py -q -p no:cacheprovider
+      - name: revisions drip is a collect_tail step, off the render path
+        run: python -m pytest tests/test_revisions_drip_offrender_wiring.py -q -p no:cacheprovider
 
   grey-deer-pboc-liquidity:
     # Grey Deer GD-4C: the typed PBOC liquidity state that reads an OMO window.
