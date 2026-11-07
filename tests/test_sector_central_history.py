@@ -252,9 +252,11 @@ def test_both_shell_loaders_set_the_flag_before_injecting_cycles() -> None:
     injected — sector_cycles.js reads the flag at its own boot, not at focus
     time, so a flag that lands after the inject calls binds the listeners
     anyway. The China hub shipped without it (RI09 MAJOR)."""
-    for name, router in (("si_workspace.js", _router()),
-                         ("si_workspace_china.js", _china_router())):
-        lc = _code(router).split("function loadCycles()", 1)[1] \
+    for name, router, signature in (
+        ("si_workspace.js", _router(), "function loadCycles(view)"),
+        ("si_workspace_china.js", _china_router(), "function loadCycles()"),
+    ):
+        lc = _code(router).split(signature, 1)[1] \
                            .split("function loadAssets", 1)[0]
         flag = lc.find("window.SC_LAZY_EXTRAS=true")
         assert flag >= 0, f"{name} loadCycles does not set SC_LAZY_EXTRAS"

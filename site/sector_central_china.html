@@ -10902,20 +10902,40 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
   
   
   
-<section id="forming-narratives"></section>
-<script src="forming_narratives.js?v=df6bf5cc" defer></script>
+<section id="forming-narratives" data-render-state="pending"></section>
+<script id="forming-narratives-runtime" src="forming_narratives.js?v=f7e609db" defer></script>
 <script>
-  // This optional asset may be denied to an anonymous visitor (HTTP 401).
-  // Leave the server's access policy unchanged and do not throw from a missing
-  // global; authenticated pages still execute the same renderer exactly once.
-  // optimize_assets stamps this external module with defer; a synchronous
-  // typeof check happens BEFORE a successful deferred asset has executed.
-  // DOMContentLoaded fires after deferred scripts, even when an asset is 401.
-  document.addEventListener("DOMContentLoaded", function () {
+(function () {
+  var sec = document.getElementById('forming-narratives');
+  var runtime = document.getElementById('forming-narratives-runtime');
+  var called = false;
+  function unavailable() {
+    if (!sec || called) return;
+    sec.setAttribute('data-render-state', 'unavailable');
+    sec.innerHTML = '<p class="ne-shell-state panel pad muted sm" role="status" aria-live="polite">'
+      + '<span class="l-en">Forming narratives are temporarily unavailable. Sign in if you have access, or try again later.</span>'
+      + '<span class="l-zh">成形叙事暂不可用。如已有权限请登录，或稍后重试。</span></p>';
+  }
+  function render() {
+    if (called) return;
     if (typeof window.renderFormingNarratives === "function") {
+      called = true;
+      if (sec) sec.setAttribute('data-render-state', 'ready');
       window.renderFormingNarratives({ base: "chinabasketdata/" });
-    }
-  }, { once: true });
+    } else unavailable();
+  }
+  // Deferred load and DOM readiness share one invocation; neither retries the asset.
+  function renderWhenReady() {
+    if (document.readyState !== "loading") render();
+  }
+  if (runtime && (runtime.defer || runtime.hasAttribute('defer'))) {
+    runtime.addEventListener('load', renderWhenReady, { once: true });
+    runtime.addEventListener('error', unavailable, { once: true });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", render, { once: true });
+  } else render();
+})();
 </script>
   
   <div id="content">

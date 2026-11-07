@@ -912,3 +912,41 @@ def test_portfolio_state_cache_migration_covers_every_served_consumer():
             assert url == bare + "?v=" + digest, (page.relative_to(SITE), url)
             consumers.add(str(page.relative_to(SITE)))
     assert {"watchlist.html", "ontology.html"} <= consumers
+
+
+def test_sector_interactive_shell_code_is_public_but_payloads_stay_gated():
+    """Anonymous Sector Intelligence gets its execution shell, never its paid payloads."""
+    shell = {"/si_workspace.js", "/forming_narratives.js"}
+    protected = {
+        "/sector_central_data.js",
+        "/sector_cycles_data.js",
+        "/mm_charts.js",
+        "/sector_cycles.js",
+        "/basketdata/narrative_emergence.json",
+        "/chinabasketdata/narrative_emergence.json",
+        "/hkbasketdata/narrative_emergence.json",
+        "/canadabasketdata/narrative_emergence.json",
+        "/intlbasketdata/narrative_emergence.json",
+    }
+    public_exact = set(POLICY["public"]["exact"])
+
+    assert shell <= public_exact
+    assert protected.isdisjoint(public_exact)
+    assert shell <= _caddy_public_exclusions()
+
+    error_matcher = re.search(
+        r"@reg_asset_err\s*\{\s*not path ([^\n]+)", CADDY, flags=re.S
+    )
+    assert error_matcher, "Caddy matcher @reg_asset_err missing"
+    assert shell <= set(shlex.split(error_matcher.group(1)))
+
+    for matcher in ("public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, f"Caddy matcher @{matcher} missing"
+        paths = {
+            token
+            for path_line in re.findall(r"^\s*path\s+([^\n]+)", block.group(1), flags=re.M)
+            for token in shlex.split(path_line)
+        }
+        assert shell <= paths
+        assert protected.isdisjoint(paths)

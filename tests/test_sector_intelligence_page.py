@@ -10,6 +10,7 @@ Charter: research/SECTOR_INTELLIGENCE_CONSOLIDATION_MASTERPLAN_BY_FABLE.md §0.
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -185,7 +186,7 @@ def test_shared_forming_narratives_fails_closed_when_asset_requires_sign_in() ->
     and authorized render path unchanged; make missing-script init fail soft.
     """
     src = _read(TPL / "_forming_narratives.html.j2")
-    assert '<script src="forming_narratives.js"></script>' in src
+    assert '<script id="forming-narratives-runtime" src="forming_narratives.js"></script>' in src
     assert 'typeof window.renderFormingNarratives === "function"' in src
     assert 'window.renderFormingNarratives({ base:' in src
     assert 'renderFormingNarratives({ base:' in src
@@ -199,7 +200,7 @@ def test_forming_narratives_initializer_waits_for_deferred_asset() -> None:
     remain error-free, without changing the protected asset URL.
     """
     src = _read(TPL / "_forming_narratives.html.j2")
-    assert '<script src="forming_narratives.js"></script>' in src
+    assert '<script id="forming-narratives-runtime" src="forming_narratives.js"></script>' in src
     assert 'document.addEventListener("DOMContentLoaded"' in src
     assert 'typeof window.renderFormingNarratives === "function"' in src
 
@@ -209,8 +210,8 @@ def test_generated_forming_narratives_matches_deferred_init_contract() -> None:
     sector build can pass the independent market-vintage publication gate.
     """
     html = _read(ROOT / "site" / "sector_central.html")
-    assert html.count('<section id="forming-narratives"></section>') == 1
-    part = html.split('<section id="forming-narratives"></section>', 1)[1]
+    assert html.count('<section id="forming-narratives" data-render-state="pending"></section>') == 1
+    part = html.split('<section id="forming-narratives" data-render-state="pending"></section>', 1)[1]
     part = part.split('<!-- W2a:', 1)[0]
     assert 'forming_narratives.js?v=' in part
     assert ' defer></script>' in part
@@ -904,3 +905,221 @@ def test_unclosed_html_comment_hides_data_si_attrs(tmp_path: Path) -> None:
     assert any(
         "missing data-si-as-of" in error for error in report["errors"]
     ), report
+
+
+def test_forming_narratives_missing_renderer_fails_soft_with_visible_state() -> None:
+    """A missing optional renderer must not throw and abort the rest of the shell."""
+    partial = _read(TPL / "_forming_narratives.html.j2")
+    assert 'typeof window.renderFormingNarratives === "function"' in partial
+    assert "data-render-state" in partial
+    assert "runtime.defer" in partial
+    assert "addEventListener('load', render" in partial
+    assert "addEventListener('error', unavailable" in partial
+    assert "temporarily unavailable" in partial
+    assert "暂不可用" in partial
+
+
+def test_forming_narratives_generated_hosts_keep_the_deferred_guard() -> None:
+    """The optimized site adds defer, so every committed host must wait for runtime load."""
+    pages = {
+        "baskets_canada.html": "canadabasketdata/",
+        "baskets_hk.html": "hkbasketdata/",
+        "baskets_intl.html": "intlbasketdata/",
+        "sector_central.html": "basketdata/",
+        "sector_central_china.html": "chinabasketdata/",
+    }
+    for name, base in pages.items():
+        html = _read(ROOT / "site" / name)
+        assert 'id="forming-narratives-runtime"' in html
+        assert 'data-render-state="pending"' in html
+        assert "runtime.addEventListener('load', render" in html
+        assert "runtime.addEventListener('error', unavailable" in html
+        assert f'window.renderFormingNarratives({{ base: "{base}" }});' in html
+
+
+def test_forming_narratives_data_failure_is_not_empty_success() -> None:
+    """Denied, delayed, malformed, and transport failures stay visible and typed."""
+    renderer = _read(TPL / "forming_narratives.js")
+    assert "shellState(sec, 'loading'" in renderer
+    assert "aria-busy" in renderer
+    assert "r.status === 401" in renderer
+    assert "r.status === 403" in renderer
+    assert "'signin-required'" in renderer
+    assert "'entitlement-unavailable'" in renderer
+    assert "Sign in to view forming narratives." in renderer
+    assert "not included in your current access" in renderer
+    assert "r.status === 404" in renderer
+    assert "emptyState(sec)" in renderer
+    assert ".catch(() => shellState(sec, 'unavailable'" in renderer
+    assert ".catch(() => { sec.style.display = 'none'; })" not in renderer
+    assert (TPL / "forming_narratives.js").read_bytes() == (
+        ROOT / "site" / "forming_narratives.js"
+    ).read_bytes()
+
+
+def test_forming_narratives_delayed_denied_and_error_states_execute() -> None:
+    """Exercise the renderer without a browser: pending fetch stays loading, then fails visibly."""
+    harness = r"""
+const fs = require('fs');
+const vm = require('vm');
+const path = process.argv[1];
+const sec = {
+  style: {},
+  attrs: {},
+  innerHTML: '',
+  setAttribute(k, v) { this.attrs[k] = String(v); },
+  removeAttribute(k) { delete this.attrs[k]; }
+};
+global.window = global;
+global.document = { getElementById(id) { return id === 'forming-narratives' ? sec : null; } };
+vm.runInThisContext(fs.readFileSync(path, 'utf8'), { filename: path });
+const flush = () => new Promise(resolve => setImmediate(resolve));
+(async () => {
+  let resolveFetch;
+  global.fetch = () => new Promise(resolve => { resolveFetch = resolve; });
+  window.renderFormingNarratives({ base: 'fixture/' });
+  if (sec.attrs['data-render-state'] !== 'loading' || sec.attrs['aria-busy'] !== 'true') throw new Error('delayed-not-loading');
+  resolveFetch({ status: 401, ok: false });
+  await flush(); await flush();
+  if (sec.attrs['data-render-state'] !== 'signin-required' || sec.attrs['aria-busy']) throw new Error('signin-not-visible');
+  if (!sec.innerHTML.includes('Sign in to view forming narratives.')) throw new Error('signin-copy-wrong');
+
+  global.fetch = () => Promise.resolve({ status: 403, ok: false });
+  window.renderFormingNarratives({ base: 'fixture/' });
+  await flush(); await flush();
+  if (sec.attrs['data-render-state'] !== 'entitlement-unavailable' || sec.attrs['aria-busy']) throw new Error('forbidden-not-visible');
+  if (!sec.innerHTML.includes('not included in your current access')) throw new Error('forbidden-copy-wrong');
+
+  global.fetch = () => Promise.reject(new Error('offline'));
+  window.renderFormingNarratives({ base: 'fixture/' });
+  await flush(); await flush();
+  if (sec.attrs['data-render-state'] !== 'unavailable' || sec.style.display === 'none') throw new Error('error-hidden');
+
+  global.fetch = () => Promise.resolve({ status: 404, ok: false });
+  window.renderFormingNarratives({ base: 'fixture/' });
+  await flush(); await flush();
+  if (sec.attrs['data-render-state'] !== 'empty' || sec.style.display !== 'none') throw new Error('absent-not-empty');
+
+  const malformed = [null, {}, [], false, 0, 'oops', {as_of:'2026-09-18'},
+    {narratives:null}, {narratives:{}}, {narratives:{length:0}}];
+  for (const payload of malformed) {
+    global.fetch = () => Promise.resolve({ status: 200, ok: true, json: () => Promise.resolve(payload) });
+    window.renderFormingNarratives({ base: 'fixture/' });
+    await flush(); await flush();
+    if (sec.attrs['data-render-state'] !== 'unavailable' || sec.style.display === 'none') {
+      throw new Error('malformed-payload-hidden-as-empty');
+    }
+  }
+  global.fetch = () => Promise.resolve({
+    status: 200, ok: true, json: () => Promise.resolve({narratives: []})
+  });
+  window.renderFormingNarratives({ base: 'fixture/' });
+  await flush(); await flush();
+  if (sec.attrs['data-render-state'] !== 'empty' || sec.style.display !== 'none') throw new Error('valid-empty-not-empty');
+})().catch(err => { console.error(err.stack || err); process.exit(1); });
+"""
+    subprocess.run(
+        ["node", "-e", harness, str(TPL / "forming_narratives.js")],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+
+def test_forming_narratives_hosts_use_current_content_hash() -> None:
+    """The immutable URL must advance with the renderer body."""
+    import hashlib
+
+    digest = hashlib.sha256((ROOT / "site" / "forming_narratives.js").read_bytes()).hexdigest()[:8]
+    for name in (
+        "baskets_canada.html",
+        "baskets_hk.html",
+        "baskets_intl.html",
+        "sector_central.html",
+        "sector_central_china.html",
+    ):
+        assert f"forming_narratives.js?v={digest}" in _read(ROOT / "site" / name)
+
+
+def test_forming_narratives_initializer_load_and_dom_ready_execute() -> None:
+    """Deferred success, visible failure and both event orders share one renderer call."""
+    harness = r"""
+const fs = require('fs'), vm = require('vm');
+const source = fs.readFileSync(process.argv[1], 'utf8')
+  .replaceAll("{{ ne_base | default('basketdata/') }}", 'fixture/');
+const inline = Array.from(source.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi))
+  .map(m => m[1]).find(s => s.includes('window.renderFormingNarratives'));
+if (!inline) throw Error('initializer-missing');
+function make(options = {}) {
+  const calls = [], documentEvents = {}, runtimeEvents = {};
+  const sec = {attrs:{'data-render-state':'pending'}, innerHTML:'',
+    setAttribute(k,v){this.attrs[k]=String(v)}};
+  function listen(table, name, fn, options) {
+    (table[name] ||= []).push({fn, once:!!(options && options.once)});
+  }
+  function fire(table, name) {
+    const pending = [...(table[name] || [])];
+    table[name] = (table[name] || []).filter(x => !x.once);
+    pending.forEach(x => x.fn());
+  }
+  const runtime = options.runtime === false ? null : {
+    defer:true, hasAttribute:k=>k==='defer',
+    addEventListener:(name,fn,opts)=>listen(runtimeEvents,name,fn,opts)
+  };
+  const document = {readyState:options.ready || 'loading',
+    getElementById:id=>id==='forming-narratives' ? sec
+      : id==='forming-narratives-runtime' ? runtime : null,
+    addEventListener:(name,fn,opts)=>listen(documentEvents,name,fn,opts)};
+  const ctx = {document, console};
+  ctx.window = ctx;
+  const install = () => {ctx.renderFormingNarratives = opts => calls.push(String(opts.base));};
+  if (options.initial) install();
+  vm.runInNewContext(inline,ctx,{timeout:1000});
+  return {sec,calls,install,ready:()=>{document.readyState='interactive'},
+    dom:()=>fire(documentEvents,'DOMContentLoaded'),
+    load:()=>fire(runtimeEvents,'load'),error:()=>fire(runtimeEvents,'error')};
+}
+function count(r,n,label) {
+  if(r.calls.length!==n) throw Error(label+': '+r.calls.length);
+  if(r.calls.some(x=>x!=='fixture/')) throw Error('initializer-base-changed');
+}
+function unavailable(r,label) {
+  if(r.sec.attrs['data-render-state']!=='unavailable') throw Error(label);
+  for(const text of ['role="status"','aria-live="polite"','Forming narratives are temporarily unavailable',
+                    '成形叙事暂不可用']) {
+    if(!r.sec.innerHTML.includes(text)) throw Error('failure-copy-or-accessibility-missing');
+  }
+}
+let r=make();
+count(r,0,'early-render');
+r.install(); r.ready(); r.dom(); count(r,1,'dcl-fallback-missing');
+r.load(); r.dom(); count(r,1,'dcl-then-load-duplicated');
+
+r=make(); r.install(); r.ready(); r.load(); count(r,1,'load-event-lost');
+r.dom(); r.load(); count(r,1,'load-then-dcl-duplicated');
+
+r=make(); r.install(); r.load(); count(r,0,'rendered-during-parsing');
+r.ready(); r.dom(); count(r,1,'parsing-load-stranded');
+
+r=make({initial:true}); count(r,0,'eager-rendered-during-parsing');
+r.ready(); r.dom(); r.load(); count(r,1,'eager-render-duplicated');
+
+r=make(); r.error(); unavailable(r,'script-error-hidden');
+r.ready(); r.dom(); count(r,0,'failed-runtime-called'); unavailable(r,'missing-global-hidden');
+
+r=make({runtime:false}); r.ready(); r.dom();
+count(r,0,'missing-runtime-called'); unavailable(r,'missing-runtime-hidden');
+
+r=make({ready:'complete',initial:true}); count(r,1,'late-initializer-stranded');
+r.dom(); r.load(); count(r,1,'late-initializer-duplicated');
+
+r=make(); r.ready(); r.dom(); unavailable(r,'dcl-missing-global-hidden');
+r.install(); r.load(); r.dom(); count(r,1,'late-real-load-not-recovered');
+console.log(JSON.stringify({initializer_scenarios:8, passed:8}));
+"""
+    subprocess.run(
+        ["node", "-e", harness, str(TPL / "_forming_narratives.html.j2")],
+        check=True,
+        capture_output=True,
+        text=True,
+    )

@@ -306,6 +306,9 @@ public:
     # runtime publishable token it renders deterministic local monograms.
     - /stock-logos.js
     - /theme.js
+    # Sector Intelligence UI code only; its signal JSON keeps the existing gate.
+    - /si_workspace.js
+    - /forming_narratives.js
     # Public Help build-age clock; UI-only, no data requests or account actions.
     - /help_refresh.js
     # Presentation/runtime code required by the three public dashboard shells.
