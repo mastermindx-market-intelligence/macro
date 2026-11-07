@@ -1,0 +1,306 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_memory/alfred_revision_source_context.v1.schema.json",
+  "title": "Market Memory ALFRED revision source context v1",
+  "description": "Closed SOURCE_ONLY retrospective source context projected from one published, generation-pinned ALFRED CPIAUCSL source receipt. Display-only, internal, unregistered. Every claim is false; units are not retained and conversion is not performed. Structural validation is not source authentication: source authentication is owned by the sealed producer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "mode",
+    "authority",
+    "audience",
+    "knowledge_cutoff",
+    "source",
+    "clocks",
+    "availability_evidence",
+    "quality",
+    "units",
+    "conversion",
+    "accounting",
+    "periods",
+    "claims",
+    "limitations",
+    "source_ref",
+    "context_id"
+  ],
+  "properties": {
+    "schema": {"const": "market_memory.alfred_revision_source_context.v1"},
+    "mode": {"const": "SOURCE_ONLY_RETROSPECTIVE_EVIDENCE"},
+    "authority": {"const": "display_only"},
+    "audience": {"const": "internal_unregistered"},
+    "knowledge_cutoff": {"$ref": "#/$defs/utcTimestamp"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "series_id",
+        "source_output_type",
+        "store_id",
+        "generation_id",
+        "receipt_id",
+        "receipt_sha256",
+        "capture_id",
+        "vintage_id",
+        "revision_id",
+        "upstream_sha256",
+        "upstream_bytes"
+      ],
+      "properties": {
+        "source_id": {"const": "fred_alfred:CPIAUCSL"},
+        "series_id": {"const": "CPIAUCSL"},
+        "source_output_type": {"const": 2},
+        "store_id": {"pattern": "^mmsstore_[a-f0-9]{64}$", "type": "string"},
+        "generation_id": {"pattern": "^mmsgen_[a-f0-9]{64}$", "type": "string"},
+        "receipt_id": {"pattern": "^mmsrc_[a-f0-9]{64}$", "type": "string"},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "capture_id": {"pattern": "^mmscapture_[a-f0-9]{64}$", "type": "string"},
+        "vintage_id": {"pattern": "^mmsvintage_[a-f0-9]{64}$", "type": "string"},
+        "revision_id": {"pattern": "^mmsrevision_[a-f0-9]{64}$", "type": "string"},
+        "upstream_sha256": {"$ref": "#/$defs/sha256"},
+        "upstream_bytes": {
+          "minimum": 1,
+          "maximum": 33554432,
+          "type": "integer"
+        }
+      }
+    },
+    "clocks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_date",
+        "availability_lower_bound",
+        "availability_upper_bound",
+        "available_at",
+        "observed_at",
+        "collector_started_at",
+        "collector_completed_at"
+      ],
+      "properties": {
+        "source_date": {"$ref": "#/$defs/date"},
+        "availability_lower_bound": {"$ref": "#/$defs/utcTimestamp"},
+        "availability_upper_bound": {"$ref": "#/$defs/utcTimestamp"},
+        "available_at": {"$ref": "#/$defs/utcTimestamp"},
+        "observed_at": {
+          "$ref": "#/$defs/utcTimestamp",
+          "description": "This snapshot's native house observation after stable reading, not series-first-ever knowledge or exact durable publication time."
+        },
+        "collector_started_at": {"$ref": "#/$defs/utcTimestamp"},
+        "collector_completed_at": {
+          "oneOf": [
+            {"$ref": "#/$defs/utcTimestamp"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "availability_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "precision",
+        "timestamp_inferred",
+        "rule",
+        "operational_cutoff_uses"
+      ],
+      "properties": {
+        "precision": {"const": "date"},
+        "timestamp_inferred": {"const": false},
+        "rule": {"const": "source_date_upper_bound.v1"},
+        "operational_cutoff_uses": {"const": "observed_at"}
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reconstruction_only",
+        "source_evidence_eligible",
+        "feature_projection_eligible",
+        "training_eligible",
+        "promotion_eligible"
+      ],
+      "properties": {
+        "status": {"const": "complete"},
+        "reconstruction_only": {"const": false},
+        "source_evidence_eligible": {"const": true},
+        "feature_projection_eligible": {"const": false},
+        "training_eligible": {"const": false},
+        "promotion_eligible": {"const": false}
+      }
+    },
+    "units": {"const": "not_retained"},
+    "conversion": {"const": "not_performed"},
+    "accounting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "matrix_rows",
+        "matrix_periods",
+        "matrix_source_dates",
+        "periods_with_changed_values",
+        "maximum_vintages",
+        "requested_periods",
+        "observed_requested_periods",
+        "absent_requested_periods",
+        "returned_rows",
+        "omitted_rows"
+      ],
+      "properties": {
+        "matrix_rows": {"minimum": 1, "type": "integer"},
+        "matrix_periods": {"minimum": 1, "type": "integer"},
+        "matrix_source_dates": {"minimum": 1, "type": "integer"},
+        "periods_with_changed_values": {"minimum": 0, "type": "integer"},
+        "maximum_vintages": {"minimum": 1, "maximum": 32, "type": "integer"},
+        "requested_periods": {"minimum": 1, "maximum": 8, "type": "integer"},
+        "observed_requested_periods": {"minimum": 0, "type": "integer"},
+        "absent_requested_periods": {"minimum": 0, "type": "integer"},
+        "returned_rows": {"minimum": 0, "type": "integer"},
+        "omitted_rows": {"minimum": 0, "type": "integer"}
+      }
+    },
+    "periods": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {"$ref": "#/$defs/period"}
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feature_projection_eligible",
+        "fit_eligible",
+        "training_eligible",
+        "promotion_eligible",
+        "operational_study_admission",
+        "action_admitted",
+        "customer_disclosure_admitted",
+        "historical_intraday_availability",
+        "forecast_skill_established",
+        "independent_episodes_established",
+        "source_authenticated_by_fresh_provider",
+        "source_activated"
+      ],
+      "properties": {
+        "feature_projection_eligible": {"const": false},
+        "fit_eligible": {"const": false},
+        "training_eligible": {"const": false},
+        "promotion_eligible": {"const": false},
+        "operational_study_admission": {"const": false},
+        "action_admitted": {"const": false},
+        "customer_disclosure_admitted": {"const": false},
+        "historical_intraday_availability": {"const": false},
+        "forecast_skill_established": {"const": false},
+        "independent_episodes_established": {"const": false},
+        "source_authenticated_by_fresh_provider": {"const": false},
+        "source_activated": {"const": false}
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "source_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_owner_module",
+        "source_owner_sha256",
+        "normalizer_module",
+        "normalizer_sha256",
+        "producer_module",
+        "producer_sha256",
+        "assurance"
+      ],
+      "properties": {
+        "source_owner_module": {"const": "engine.neuralweb.market_memory_sources"},
+        "source_owner_sha256": {"$ref": "#/$defs/sha256"},
+        "normalizer_module": {"const": "engine.release_target_truth"},
+        "normalizer_sha256": {"$ref": "#/$defs/sha256"},
+        "producer_module": {
+          "const": "engine.neuralweb.market_memory_alfred_revision_evidence"
+        },
+        "producer_sha256": {"$ref": "#/$defs/sha256"},
+        "assurance": {"const": "imported_source_bytes_not_external_runtime_attestation"}
+      }
+    },
+    "context_id": {
+      "pattern": "^mmalfredrevision_[a-f0-9]{64}$",
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "sha256": {"pattern": "^[a-f0-9]{64}$", "type": "string"},
+    "date": {
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "type": "string"
+    },
+    "utcTimestamp": {
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?(?:Z|\\+00:00)$",
+      "type": "string"
+    },
+    "period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "period",
+        "status",
+        "selection_rule",
+        "total_vintages",
+        "returned_vintages",
+        "omitted_vintages",
+        "source_value_change_count",
+        "unchanged_vintages_omitted",
+        "omitted_change_rows",
+        "source_distinct_values",
+        "returned_distinct_values",
+        "revision_value_change_observed",
+        "rows"
+      ],
+      "properties": {
+        "period": {"pattern": "^[0-9]{4}-(?:0[1-9]|1[0-2])-01$", "type": "string"},
+        "status": {"enum": ["OBSERVED", "ABSENT"]},
+        "selection_rule": {"const": "first_observation_then_value_changes.v1"},
+        "total_vintages": {"minimum": 0, "type": "integer"},
+        "returned_vintages": {"minimum": 0, "type": "integer"},
+        "omitted_vintages": {"minimum": 0, "type": "integer"},
+        "source_value_change_count": {"minimum": 0, "type": "integer"},
+        "unchanged_vintages_omitted": {"minimum": 0, "type": "integer"},
+        "omitted_change_rows": {"minimum": 0, "type": "integer"},
+        "source_distinct_values": {"minimum": 0, "type": "integer"},
+        "returned_distinct_values": {"minimum": 0, "type": "integer"},
+        "revision_value_change_observed": {"type": "boolean"},
+        "rows": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {"$ref": "#/$defs/row"}
+        }
+      }
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_date",
+        "source_valid_through_date",
+        "value",
+        "row_sha256"
+      ],
+      "properties": {
+        "source_date": {"$ref": "#/$defs/date"},
+        "source_valid_through_date": {"$ref": "#/$defs/date"},
+        "value": {"type": "number"},
+        "row_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

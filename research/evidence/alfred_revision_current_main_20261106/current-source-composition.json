@@ -1,0 +1,152 @@
+{
+  "schema": "c4.alfred.current-source-composition.v1",
+  "published_head": "15e96ba9aee817351fa0468e39a1704700749ab1",
+  "integration_base": "ede58e46e40d454613b06ef0fbf1fb0f139d24a9",
+  "manifest_after_blob": "63c6081c7afd73a1e59295956af8e3e21a5876bc",
+  "manifest_sha256": "98c34644ffe9f06449b2c175d21e9123c3e648345847a1f245ad2f9cf4fbc0ec",
+  "retained_feature_dependency_additions": {
+    "bea-gvc-current-descriptive-consumer": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "live-flow-recovery-guards": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "c19-wp32-integrated-answer-correction-denial-pins": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "c19-wp22-dhi-traversal": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "options-matrix-code": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "flow-surface": [
+      "engine/release_target_truth.py"
+    ],
+    "fif-kernel-guards": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "ontology-explorer": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "market-memory-e0-contract": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "qledger-cluster-honest-ci": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "nw-lobe-unfreeze": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "biocatalyst-serving": [
+      "engine/release_target_truth.py"
+    ],
+    "biocatalyst-history": [
+      "engine/release_target_truth.py"
+    ],
+    "crypto-assistant-context": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "unrun-government-revenue-candidate-projection": [
+      "engine/release_target_truth.py"
+    ],
+    "washout-turn-organ": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "unrun-picks-boards": [
+      "engine/release_target_truth.py"
+    ],
+    "unrun-government-revenue-grader": [
+      "engine/release_target_truth.py"
+    ],
+    "research-price-panel": [
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "dataos-web-workspace": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "dataos-verification": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "dataos-foundation": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "ticker-news-qbus": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "catalyst-loop-integrated": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_source_kernel.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ],
+    "eval-os-a1": [
+      "engine/release_target_truth.py",
+      "engine/neuralweb/market_memory_sources.py",
+      "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+    ]
+  },
+  "feature_dependency_owner_count": 25,
+  "feature_dependency_count": 75,
+  "focused_suite_steps_retained_from_published": true,
+  "all_other_job_metadata_exact_current_main": true,
+  "current_main_path_order_and_duplicates_retained": true,
+  "job_count": 388,
+  "new_current_main_job_retained": "earnings-worker-systemd",
+  "all_four_product_blobs_unchanged": true,
+  "source_blobs": {
+    "contracts/market_memory/alfred_revision_source_context.v1.schema.json": "02b90778f00bb8ce78d07529fa37de685a7db340",
+    "engine/neuralweb/brain_analogues.py": "f8b05b1b0d87358fe108d60ff306c955dcd56bcc",
+    "engine/neuralweb/market_memory_alfred_revision_evidence.py": "8152fb18f55a0e6a9a2389d33e4ac50ae3cdcaf3",
+    "tests/test_market_memory_alfred_revision_evidence.py": "85535c10e400f35a92f5a0e9e5479216882e3a82",
+    ".github/ci/legacy-jobs.yml": "63c6081c7afd73a1e59295956af8e3e21a5876bc"
+  },
+  "unrun_picks_gate": "data",
+  "diff_check_exit_code": 0,
+  "private_source_or_runtime_effects": false
+}
