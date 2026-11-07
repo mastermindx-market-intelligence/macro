@@ -393,51 +393,68 @@
   // Never returns NaN/Infinity.
   function compute(inp){
     var G=inp.G, P=inp.P, r=inp.r;
-    if(!(G>0)) return {ok:false, msg:"Enter a goal amount above zero."};
-    if(!(P>=0)) return {ok:false, msg:"Enter your current savings (0 if starting from nothing)."};
+    if(!isFinite(G) || !(G>0)) return {ok:false, msg:"Enter a goal amount above zero."};
+    if(!isFinite(P) || !(P>=0)) return {ok:false, msg:"Enter your current savings (0 if starting from nothing)."};
     if(!isFinite(r) || r<0) return {ok:false, msg:"Enter an expected annual return of zero or more."};
     var i = r/100/12;
 
     if(inp.mode === "date"){
       var n = inp.n;
-      if(!(n>0)) return {ok:false, msg:"Enter a target horizon in years."};
+      if(!isFinite(n) || !(n>0)) return {ok:false, msg:"Enter a target horizon in years."};
       var m = n*12;
+      if(!isFinite(m) || m<=0) return {ok:false, msg:"That combination doesn't resolve — check your inputs."};
       // already met?
       if(P >= G) return {ok:false, msg:"Your current savings already meet the goal — nothing more to save."};
       var c;
       if(i === 0){
         c = (G - P) / m;
       } else {
-        var f = Math.pow(1+i, m);
-        c = (G - P*f) * i / (f - 1);
+        var logRate = Math.log1p(i), exponent = m*logRate;
+        var growthFactor = Math.expm1(exponent), cashMonthly = (G-P)/m;
+        // Overflow cannot prove that growth alone covers the goal.
+        if(!isFinite(growthFactor)) return {ok:false, msg:"That combination doesn't resolve — check your inputs."};
+        // Factored ratios retain fractional horizons even for subnormal rates.
+        var correction = exponent === 0 ? 1 : exponent/growthFactor;
+        c = isFinite(cashMonthly) && isFinite(exponent) ?
+          cashMonthly*(i/logRate)*correction - P*i : (G-P)*(i/growthFactor) - P*i;
       }
-      if(!isFinite(c)) return {ok:false, msg:"That combination doesn't resolve — check your inputs."};
+      if(!isFinite(c) || (c === 0 && (i === 0 || P === 0))) return {ok:false, msg:"That combination doesn't resolve — check your inputs."};
       if(c < 0) c = 0; // growth alone already overshoots the goal within the horizon
       var contributed = P + c*m;
       var growth = G - contributed;
+      if(!isFinite(contributed) || !isFinite(growth)) return {ok:false, msg:"That combination doesn't resolve — check your inputs."};
+      // Nonnegative returns cannot require more deposits than the goal.
+      if(contributed > G){ contributed=G; growth=0; }
       return {
         ok:true, mode:"date", monthly:c, gap:(G-P), months:m,
         contributed:contributed, growth:growth
       };
     } else {
       var cc = inp.c;
-      if(!(cc>0)) return {ok:false, msg:"Enter a monthly contribution above zero."};
+      if(!isFinite(cc) || !(cc>0)) return {ok:false, msg:"Enter a monthly contribution above zero."};
       if(P >= G) return {ok:false, msg:"Your current savings already meet the goal — nothing more to save."};
       var months;
       if(i === 0){
         months = (G - P) / cc;
       } else {
-        var num = G*i + cc, den = P*i + cc;
-        if(!(num>0) || !(den>0) || num<=den){
+        var den = P*i + cc;
+        if(!isFinite(den) || !(den>0)){
           return {ok:false, msg:"At this rate the goal isn't reachable — raise the contribution."};
         }
-        months = Math.log(num/den) / Math.log(1+i);
+        var increment = (G-P)*i/den;
+        var logRate = Math.log1p(i);
+        // At underflow, log1p(x)/x has the exact limiting value 1.
+        var cashMonths = (G-P)/den;
+        var correction = increment === 0 ? 1 : Math.log1p(increment)/increment;
+        months = isFinite(cashMonths) ? cashMonths*(i/logRate)*correction : Math.log1p(increment)/logRate;
       }
       if(!isFinite(months) || months<=0){
         return {ok:false, msg:"At this rate the goal isn't reachable — raise the contribution."};
       }
       var totContrib = P + cc*months;
       var grw = G - totContrib;
+      if(!isFinite(totContrib) || !isFinite(grw)) return {ok:false, msg:"That combination doesn't resolve — check your inputs."};
+      if(totContrib > G){ totContrib=G; grw=0; }
       return {
         ok:true, mode:"contrib", months:months, monthly:cc, gap:(G-P),
         contributed:totContrib, growth:grw
@@ -478,7 +495,7 @@
     function money(n){ return "$" + n.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:0}); }
     function money2(n){ return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }
     function timeText(months){
-      var whole = Math.round(months*10)/10;
+      var whole = months <= Number.MAX_VALUE/10 ? Math.round(months*10)/10 : months;
       var yrs = Math.floor(months/12), mo = Math.round(months - yrs*12);
       if(mo === 12){ yrs += 1; mo = 0; }
       var parts=[];

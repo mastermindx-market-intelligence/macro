@@ -30559,6 +30559,9 @@ jobs:
       - tests/js/calculator_input_integrity.test.mjs
       - templates/calculators/cagr.html.j2
       - tests/test_cagr_copy_feedback.py
+      - templates/calculators/savings_goal.html.j2
+      - site/tools/calculators/savings-goal.html
+      - tests/js/savings_goal_arithmetic.test.mjs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30573,7 +30576,10 @@ jobs:
       - name: CAGR truthful copy feedback
         run: python -m pytest tests/test_cagr_copy_feedback.py -q
       - name: calculator input, chart, language and copy integrity
-        run: node --test tests/js/calculator_input_integrity.test.mjs
+        run: |
+          node --test tests/js/calculator_input_integrity.test.mjs
+          node tests/js/savings_goal_arithmetic.test.mjs templates/calculators/savings_goal.html.j2
+          node tests/js/savings_goal_arithmetic.test.mjs site/tools/calculators/savings-goal.html
 
   public-render-fastlane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
