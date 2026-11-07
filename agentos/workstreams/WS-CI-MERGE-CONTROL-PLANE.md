@@ -358,44 +358,44 @@ waves:
       the preceding immutable checkpoint is
       https://github.com/mastermindx-market-intelligence/Mastermind/blob/6c490b1bdd16d03c538d8703fc487fd1e5375511/docs/CI_LIGHTNING_ARCHITECTURE.md.
       Accepted continuity PR 10825 remains efdf3577bb35607bb02a4a0a1900adb91a3784c6.
-      The b440 first-precollection required and shadow runs both failed only
-      the old main-command expectation. Its repair and three measured inner
-      placements are published in original PR 2065 as
-      d6f21633b3ffdb60a05a14042d22e28545c7ae34. Focused proof passed486cases.
-      Required run42363117005 succeeded in18m48s on integrated
-      d0816673c522bbc2386a3eccd38940ac30b6c2dc with protected base
-      93861e9ab2e75176108bb357bd9e81b54307981d. All24child receipts were
-      complete;2298modules were selected with zero exclusions and69573case
-      occurrences. No prior runtime module disappeared; six new boundary
-      cases and238accepted-base cases explain the increase. Shard0 improved
-      from968s to512s, but shard3 took777s and started252s after job creation.
-      Source qualification took656s. Overall speed acceptance is not established.
-      Shadow42363117019 was last running. Gateway Release HOLD remains binding.
-      A same-source local native-custody scheduling experiment passed375unittests
-      and277cases under each four-worker mode: loadfile263.983s versus load224.879s.
-      Exact case multiset matched; no workflow scheduling change is published.
-      Terminal PR1334 publishes204db79b72ea23f824bce77e89ca7108c4b51121:
-      one News fixture navigation with unchanged test bodies and87-case inventory.
-      All responsive projects passed75cases with12expected skips and zero
-      failures; mobile reproduced all24named crops. Local mobile candidate200.638s
-      versus baseline230.111s and warm control284.867s is variable-load evidence,
-      not hosted p95 proof. Native run42364524142 is pending. Preserve green1297,
-      held1223 original create-commit uncertainty and existing delivery owners.
-      Macro10788 exact-head run42204345843 already measured FIF kernel siblings
-      at957.34s,1644.98s,1302.98s with4250passes and1skip in total. All three
-      containing packs passed, but the full318-job run failed elsewhere.
-      The current three closures contain1139paths, including8ancestor imports
-      absent from the old1131path closure. The120kernel modules are preserved.
-      Checkout steps took211s,419s,432s and materialized145069files. Fetch alone
-      took125.635s,355.961s,368.497s. Existing6351/W-SELFHOSTED-BRIDGE owns
-      pack materialization; do not substitute planner sparse paths into packs.
-      Next decisions use explicit300s critical-path budgets, measured task
-      granularity, current fetch/fixture costs and admitted capacity. Dev runtime
-      remains the accepted Terminal full-suite path; compiled authority parity
-      and broader reuse receive no unproved latency credit. Five-minute p95 and
-      full three-repository acceptance remain open. Preserve10674operation26751
-      EFFECT_UNKNOWN,10656hold/main-admissionOFF and Macro/Terminal rule-read403s.
-      No self-merge, queue request, alternate denied lookup or messaging occurred.
+      The b440 required and shadow runs both failed only the old main-command
+      expectation. Its repair and three measured inner placements are published
+      in original PR 2065 as d6f21633b3ffdb60a05a14042d22e28545c7ae34.
+      Focused proof passed 486 cases. Required run 42363117005 succeeded in
+      18m48s on integrated d0816673c522bbc2386a3eccd38940ac30b6c2dc, with base
+      93861e9ab2e75176108bb357bd9e81b54307981d. All 24 child receipts were
+      complete; 2,298 modules were selected with zero exclusions and 69,573 case
+      occurrences. No prior runtime module disappeared; six new boundary cases
+      and 238 accepted-base cases explain the increase. Shard 0 improved from
+      968s to 512s, but shard 3 took 777s and started 252s after job creation.
+      Source qualification took 656s. Shadow 42363117019 also passed in 36m44s.
+      Whole-verdict speed acceptance is unproved; Gateway Release HOLD remains.
+      A local native-custody scheduling experiment passed 375 unittests and
+      277 cases under each four-worker mode: loadfile 263.983s versus load
+      224.879s. Exact case multiset matched; no workflow change is published.
+      Terminal PR 1334 publishes 204db79b72ea23f824bce77e89ca7108c4b51121:
+      one News navigation with unchanged test bodies and an 87-case inventory.
+      All responsive projects passed 75 cases with 12 expected skips and zero
+      failures; mobile reproduced all 24 named crops. Local mobile candidate
+      200.638s versus controls 230.111s and 284.867s is variable-load evidence,
+      not hosted p95 proof. Native run 42364524142 is pending. Preserve green
+      PR 1297, held PR 1223's original uncertain effect and existing delivery owners.
+      Macro PR 10788 exact-head run 42204345843 measured FIF kernel siblings at
+      957.34s, 1644.98s and 1302.98s, totaling 4,250 passes and one skip. Those
+      three packs passed; the full 318-job run failed elsewhere. Current sibling
+      closures contain 1,139 paths, including eight ancestor imports absent from
+      the old 1,131-path closure. The same 120 kernel modules are preserved.
+      Checkout steps took 211s, 419s and 432s and materialized 145,069 files.
+      Fetch alone took 125.635s, 355.961s and 368.497s. Existing issue 6351 and
+      W-SELFHOSTED-BRIDGE own materialization; planner sparse paths are not packs.
+      Next decisions use explicit 300s critical-path budgets, inner unittest
+      inventory/timing, current fetch/fixture costs and admitted capacity.
+      Dev runtime remains Terminal's accepted full-suite path; compiled authority
+      parity and broader reuse receive no unproved latency credit. Five-minute
+      p95 and full three-repository acceptance remain open. Preserve original
+      operation 26751 for PR 10674 as EFFECT_UNKNOWN, PR 10656's hold and main
+      admission OFF, plus Macro/Terminal rule-read 403s. No self-merge, queue
+      request, alternate denied lookup or messaging occurred.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
