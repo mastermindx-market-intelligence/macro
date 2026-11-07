@@ -403,8 +403,17 @@ class PeekabooDriver:
                     self._type_text("".join(getattr(k, "text", "") or "" for k in run), delay)
             self.typed_keys += len(chunk)
 
-    def paste(self, text: str) -> None:
-        """Put ``text`` on the clipboard (``pbcopy``) and press ``cmd+v``."""
+    def paste(self, text: str, target: str | None = None) -> str:
+        """Put ``text`` on the clipboard (``pbcopy``) and press ``cmd+v``.
+
+        This backend drives a real window through the accessibility CLI, which
+        cannot read a field back, so a caller that wants proof must use the CDP
+        driver: asked to verify, this raises instead of pretending.
+        """
+        if target is not None:
+            raise DriverError(
+                "peekaboo cannot read a field back; verify with the cdp driver or a screenshot"
+            )
         self._require_started()
         payload = str(text or "")
         if payload:

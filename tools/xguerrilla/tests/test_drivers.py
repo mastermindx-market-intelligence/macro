@@ -542,3 +542,115 @@ def test_choose_prefers_peekaboo_and_forces_cdp_when_headless(monkeypatch):
         choose("selenium")  # type: ignore[arg-type]
     with pytest.raises(DriverError):
         choose("peekaboo", headless=True)
+
+
+# ---------------------------------------------------------------- paste contract
+
+
+class _Store:
+    """A page field that only changes when something really writes into it."""
+
+    def __init__(self, value: str = "") -> None:
+        self.value = value
+        self.reads = 0
+
+    def locator(self, target: str):
+        store = self
+
+        class _Loc:
+            def input_value(self, timeout=None):
+                store.reads += 1
+                return store.value
+
+        return _Loc()
+
+
+class _Cdp:
+    """Records CDP sends; optionally honours ``Input.insertText`` like a page would."""
+
+    def __init__(self, store: _Store | None = None, lands: bool = True) -> None:
+        self.sent: list[tuple[str, dict]] = []
+        self.store = store
+        self.lands = lands
+
+    def send(self, method, params=None):
+        self.sent.append((method, params or {}))
+        if method == "Input.insertText" and self.store is not None and self.lands:
+            self.store.value += params["text"]
+        return {}
+
+
+class _Keyboard:
+    def __init__(self) -> None:
+        self.pressed: list[str] = []
+
+    def press(self, chord: str) -> None:
+        self.pressed.append(chord)
+
+
+class _Page:
+    def __init__(self) -> None:
+        self.keyboard = _Keyboard()
+
+
+def _cdp_driver(store: _Store, cdp: _Cdp) -> CdpDriver:
+    driver = CdpDriver()
+    driver._started = True
+    driver._page = _Page()
+    driver._cdp = cdp
+    driver._locate = store.locator  # type: ignore[assignment]
+    return driver
+
+
+def test_cdp_paste_inserts_the_text_and_reads_it_back():
+    """insertText is the route that lands: the page's own value proves it."""
+    store = _Store()
+    cdp = _Cdp(store)
+    driver = _cdp_driver(store, cdp)
+
+    assert driver.paste("guerrilla bootstrap 4711", target="#q") == "guerrilla bootstrap 4711"
+    assert cdp.sent == [("Input.insertText", {"text": "guerrilla bootstrap 4711"})]
+    assert store.reads == 1
+
+
+def test_cdp_paste_raises_when_the_field_stays_empty():
+    """The clipboard route's silent failure mode: the page takes nothing, nobody notices."""
+    store = _Store()
+    driver = _cdp_driver(store, _Cdp(store, lands=False))
+
+    with pytest.raises(DriverError, match="holds 0"):
+        driver.paste("this never arrives", target="#q")
+
+
+def test_cdp_paste_without_a_target_does_not_read_back():
+    """Legacy callers keep the old shape: paste, no verification, no surprise."""
+    store = _Store()
+    driver = _cdp_driver(store, _Cdp(store))
+
+    assert driver.paste("plain") == ""
+    assert store.reads == 0
+
+
+def test_clipboard_paste_reports_what_the_field_really_holds(monkeypatch):
+    """``pbcopy`` + Meta+V fires a paste the page may ignore; never claim it landed."""
+    from tools.xguerrilla.drivers import cdp as cdp_mod
+
+    seen: list[dict] = []
+
+    class _Run:
+        def __init__(self, argv, **kw):
+            seen.append({"argv": list(argv), **kw})
+
+    monkeypatch.setattr(cdp_mod.subprocess, "run", _Run)
+    store = _Store()
+    driver = _cdp_driver(store, _Cdp(store))
+
+    assert driver.clipboard_paste("anything", target="#q") == ""
+    assert seen and seen[0]["check"] is True
+    assert driver._page.keyboard.pressed == ["Meta+V"]
+
+
+def test_peekaboo_paste_refuses_to_pretend_it_verified():
+    """A GUI backend cannot read a field back, so it raises instead of guessing."""
+    with pytest.raises(DriverError, match="cdp driver"):
+        PeekabooDriver().paste("text", target="#q")

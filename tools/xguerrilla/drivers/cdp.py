@@ -357,8 +357,46 @@ class CdpDriver:
         except Exception as exc:
             raise DriverError(f"could not read text of {target!r}: {exc}") from exc
 
-    def paste(self, text: str) -> None:
-        """Put ``text`` on the clipboard and press ``Meta+V`` in the page."""
+    def paste(self, text: str, target: str | None = None) -> str:
+        """Insert ``text`` into the focused field, and prove it when ``target`` is given.
+
+        ``Input.insertText`` is the default route because it is the only one
+        measured to deliver the payload under headless Chromium on the worker box.
+        The clipboard route (:meth:`clipboard_paste`) fires a real ``paste`` event
+        whose data is empty there, so the field stays blank and nothing raises —
+        the worst possible failure, because the harvester would record a post that
+        never existed.
+
+        Pass ``target`` to have the page read the field back; a mismatch raises
+        :class:`DriverError` instead of being reported as a successful paste.
+        """
+        self._require_started()
+        payload = str(text or "")
+        if payload:
+            if self._cdp is not None:
+                try:
+                    self._cdp.send("Input.insertText", {"text": payload})
+                except Exception as exc:
+                    raise DriverError(f"insertText failed: {exc}") from exc
+            else:  # no CDP handle: the clipboard is all that is left
+                self.clipboard_paste(payload)
+        if target is None:
+            return ""
+        observed = self.read_value(target)
+        if observed != payload:
+            raise DriverError(
+                f"pasted {len(payload)} chars but {target!r} holds {len(observed)}: {observed[:60]!r}"
+            )
+        return observed
+
+    def clipboard_paste(self, text: str, target: str | None = None) -> str:
+        """Put ``text`` on the system clipboard (``pbcopy``) and press ``Meta+V``.
+
+        Kept for pages that only accept a genuine ``paste`` event. Measured on
+        mini1 with headless Chromium 156: the page sees ``paste`` fire and the
+        field stays empty, so this returns what the field really holds rather than
+        claiming success.
+        """
         page = self._require_started()
         payload = str(text or "")
         if payload:
@@ -372,6 +410,7 @@ class CdpDriver:
             page.keyboard.press("Meta+V")
         except Exception as exc:
             raise DriverError(f"paste failed: {exc}") from exc
+        return self.read_value(target) if target is not None else ""
 
     def key(self, name: str) -> None:
         """Press one key or chord: ``enter``, ``tab``, ``cmd+enter``."""

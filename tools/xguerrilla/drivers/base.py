@@ -118,8 +118,13 @@ class Driver(Protocol):
         """Type a persona keystroke plan, chunked and paced as planned."""
         ...
 
-    def paste(self, text: str) -> None:
-        """Put ``text`` on the clipboard and paste it into the focused field."""
+    def paste(self, text: str, target: str | None = None) -> str:
+        """Paste ``text`` into the focused field; read ``target`` back when given.
+
+        Returns the value the page reports after the paste, or ``""`` when no
+        target was named. A backend that cannot read a field back must raise
+        rather than return a value it did not observe.
+        """
         ...
 
     def key(self, name: str) -> None:

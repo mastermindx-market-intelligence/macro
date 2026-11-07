@@ -113,5 +113,12 @@ per lease span), `skipped` (why a slot did nothing) and `telemetry` (JSONL path)
 - **`typing.py` is in flux.** Another change is editing the keystroke planner, so
   the tests assert on the folded text and on the IKI band, never on a keystroke
   count.
+- **Paste transports are not interchangeable.** `Input.insertText` delivers text
+  but a page sees `input`, not `paste`; `pbcopy` + `Meta+V` fires a real `paste`
+  whose payload is empty under headless Chromium on the worker box, so the field
+  stays blank and nothing raises. `CdpDriver.paste()` therefore uses
+  `insertText` and verifies through `target`; `clipboard_paste()` keeps the
+  genuine-event route and returns what the field actually holds. Never call
+  either without a `target` in a path that records a post.
 - **Absolute paths leak into the JSON.** `store_dir` and `telemetry` differ
   between two runs; everything else is byte-identical for a fixed seed.
