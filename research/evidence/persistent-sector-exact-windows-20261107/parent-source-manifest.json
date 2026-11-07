@@ -1,0 +1,16 @@
+{
+  "head": "f55dda94ca7fe283e7066ceaad2d9438956062d9",
+  "tree": "e02f5323f418f5333634f3c16e4e970e15b0943a",
+  "paths": [
+    "engine/leadership_rotation_context.py",
+    "tests/fixtures/leadership_rotation/sector_window_measurements.complete.v1.json",
+    "tests/fixtures/leadership_rotation/sector_window_measurements.unavailable.v1.json",
+    "tests/test_leadership_measured_read.py"
+  ],
+  "file_hashes": {
+    "engine/leadership_rotation_context.py": "43b1cf3a19d3f73dc6a29a319bcc81f3745cda153c3419e492396b48b9068c61",
+    "tests/fixtures/leadership_rotation/sector_window_measurements.complete.v1.json": "6b33895711742dee8cb1366baab5572a6aef31d6ca9ca6d0f81e32ab879e6dae",
+    "tests/fixtures/leadership_rotation/sector_window_measurements.unavailable.v1.json": "e4419e3a4d7dabce4ad4fd760c1fc37d05b8fe1111102ac5b0bb13b1a980f17e",
+    "tests/test_leadership_measured_read.py": "77e6e124cb0168e9d7e90ba1a9e3df0a5ca46b8b2d6cf5cda0eaddae5068d3f3"
+  }
+}

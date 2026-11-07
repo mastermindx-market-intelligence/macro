@@ -1,0 +1,271 @@
+FFFFFFFFFF.                                                              [100%]
+=================================== FAILURES ===================================
+_____________________ test_w25_complete_fixture_is_frozen ______________________
+
+    def test_w25_complete_fixture_is_frozen():
+        """The representative COMPLETE measurement is frozen byte-for-byte."""
+        calendar, closes, tickers = _psl_frozen_panel()
+        out = _psl_measure(closes, calendar=calendar)
+        assert out["status"] == "available"
+        assert PSL_COMPLETE_FIXTURE.exists(), f"missing frozen fixture: {PSL_COMPLETE_FIXTURE}"
+>       assert PSL_COMPLETE_FIXTURE.read_text(encoding="utf-8") == _serialize(out)
+E       assert '{\n "authori...  63\n ]\n}\n' == '{\n "authori...  63\n ]\n}\n'
+E         
+E         Skipping 14773 identical leading characters in diff, use -v to show
+E         Skipping 97 identical trailing characters in diff, use -v to show
+E         -  "2026-08-07",
+E         ?            -
+E         +  "2026-08-10",
+E         ?           +
+E              "st
+
+tests/test_leadership_measured_read.py:1384: AssertionError
+____________________ test_w26_unavailable_fixture_is_frozen ____________________
+
+    def test_w26_unavailable_fixture_is_frozen():
+        """The representative UNAVAILABLE measurement is frozen byte-for-byte."""
+        calendar = _psl_calendar()
+        closes = _psl_panel(calendar, us_sector_cohort())
+        closes.append({"session": "2026-11-06", _PSL_BENCHMARK: 101.0})
+        out = _psl_measure(closes, calendar=calendar)
+        assert out["status"] == "unavailable"
+        assert PSL_UNAVAILABLE_FIXTURE.exists(), f"missing frozen fixture: {PSL_UNAVAILABLE_FIXTURE}"
+>       assert PSL_UNAVAILABLE_FIXTURE.read_text(encoding="utf-8") == _serialize(out)
+E       assert '{\n "authori...  63\n ]\n}\n' == '{\n "authori...  63\n ]\n}\n'
+E         
+E         Skipping 15231 identical leading characters in diff, use -v to show
+E         Skipping 99 identical trailing characters in diff, use -v to show
+E         -  "2026-08-07",
+E         ?            -
+E         +  "2026-08-10",
+E         ?           +
+E              "st
+
+tests/test_leadership_measured_read.py:1398: AssertionError
+_ test_w32_a_finite_fraction_that_overflows_the_percent_scale_is_published_as_null _
+
+    def test_w32_a_finite_fraction_that_overflows_the_percent_scale_is_published_as_null():
+        """A FINITE return fraction can still overflow when it is scaled to PERCENT
+        (1e307 * 100 is an infinity). The publication is null with the stable
+        non-finite reason, and the block still encodes as strict JSON."""
+        calendar = _psl_calendar()
+        closes = _psl_panel(calendar, us_sector_cohort())
+        end_index = calendar.index(_PSL_END)
+        for row in closes:
+            if row["session"] == calendar[end_index - 5]:
+                row["XLK"] = 1.0            # a finite, ordinary start price
+            if row["session"] == _PSL_END:
+                row["XLK"] = 1e307          # a finite end price: the RATIO is finite
+        # the raw fraction is FINITE: this is NOT the already-infinite case
+        assert (1e307 / 1.0 - 1.0) < 1.8e308
+        assert (1e307 / 1.0 - 1.0) * 100.0 == float("inf")
+        out = _psl_measure(closes, calendar=calendar)
+        cell = _psl_cell(out, "XLK", "5")
+>       assert cell["absolute_return_pct"] is None
+E       assert inf is None
+
+tests/test_leadership_measured_read.py:1555: AssertionError
+________ test_w33_the_companion_must_be_bound_to_the_parent_generation _________
+
+    def test_w33_the_companion_must_be_bound_to_the_parent_generation():
+        """The companion block is published INSIDE the parent read, so it must
+        describe the SAME generation. A composition whose session end is not the
+        parent's session end is a PROGRAMMER error, never a silently attached
+        companion."""
+        cyc, rot = _build_fixture_payload()
+        calendar = _psl_calendar()
+        # the parent names AS_OF; the companion names _PSL_END -> unbound
+>       with pytest.raises(ValueError, match="cannot be bound"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_leadership_measured_read.py:1605: Failed
+_ test_w34_an_unbound_composition_is_never_attached[benchmark-companion benchmark] _
+
+case = 'benchmark', fragment = 'companion benchmark'
+
+    @pytest.mark.parametrize("case, fragment", [
+        ("benchmark", "companion benchmark"),
+        ("population", "native sector cohort"),
+        ("windows", "exact 5/20/63-session windows"),
+        ("unknown_parent", "no known session end"),
+        ("unknown_parent_benchmark", "no known benchmark"),
+    ])
+    def test_w34_an_unbound_composition_is_never_attached(case, fragment):
+        """Every way a composition can fail to describe the parent's generation
+        is a programmer error: it is never attached, never dropped and never
+        restamped."""
+        cyc, rot = _build_fixture_payload()
+        calendar = _psl_calendar(end=AS_OF)
+        overrides = {}
+        if case == "unknown_parent":
+            cyc = {"meta": {}, "sectors": []}
+        elif case == "unknown_parent_benchmark":
+            cyc = {"meta": {"asOf": AS_OF}, "sectors": []}
+        elif case == "benchmark":
+            overrides["benchmark"] = "QQQ"
+        elif case == "population":
+            overrides["population"] = ("AAA", "BBB")
+        elif case == "windows":
+            overrides["windows"] = (5, 20)
+>       with pytest.raises(ValueError, match=fragment):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_leadership_measured_read.py:1641: Failed
+_ test_w34_an_unbound_composition_is_never_attached[population-native sector cohort] _
+
+case = 'population', fragment = 'native sector cohort'
+
+    @pytest.mark.parametrize("case, fragment", [
+        ("benchmark", "companion benchmark"),
+        ("population", "native sector cohort"),
+        ("windows", "exact 5/20/63-session windows"),
+        ("unknown_parent", "no known session end"),
+        ("unknown_parent_benchmark", "no known benchmark"),
+    ])
+    def test_w34_an_unbound_composition_is_never_attached(case, fragment):
+        """Every way a composition can fail to describe the parent's generation
+        is a programmer error: it is never attached, never dropped and never
+        restamped."""
+        cyc, rot = _build_fixture_payload()
+        calendar = _psl_calendar(end=AS_OF)
+        overrides = {}
+        if case == "unknown_parent":
+            cyc = {"meta": {}, "sectors": []}
+        elif case == "unknown_parent_benchmark":
+            cyc = {"meta": {"asOf": AS_OF}, "sectors": []}
+        elif case == "benchmark":
+            overrides["benchmark"] = "QQQ"
+        elif case == "population":
+            overrides["population"] = ("AAA", "BBB")
+        elif case == "windows":
+            overrides["windows"] = (5, 20)
+>       with pytest.raises(ValueError, match=fragment):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_leadership_measured_read.py:1641: Failed
+_ test_w34_an_unbound_composition_is_never_attached[windows-exact 5/20/63-session windows] _
+
+case = 'windows', fragment = 'exact 5/20/63-session windows'
+
+    @pytest.mark.parametrize("case, fragment", [
+        ("benchmark", "companion benchmark"),
+        ("population", "native sector cohort"),
+        ("windows", "exact 5/20/63-session windows"),
+        ("unknown_parent", "no known session end"),
+        ("unknown_parent_benchmark", "no known benchmark"),
+    ])
+    def test_w34_an_unbound_composition_is_never_attached(case, fragment):
+        """Every way a composition can fail to describe the parent's generation
+        is a programmer error: it is never attached, never dropped and never
+        restamped."""
+        cyc, rot = _build_fixture_payload()
+        calendar = _psl_calendar(end=AS_OF)
+        overrides = {}
+        if case == "unknown_parent":
+            cyc = {"meta": {}, "sectors": []}
+        elif case == "unknown_parent_benchmark":
+            cyc = {"meta": {"asOf": AS_OF}, "sectors": []}
+        elif case == "benchmark":
+            overrides["benchmark"] = "QQQ"
+        elif case == "population":
+            overrides["population"] = ("AAA", "BBB")
+        elif case == "windows":
+            overrides["windows"] = (5, 20)
+>       with pytest.raises(ValueError, match=fragment):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_leadership_measured_read.py:1641: Failed
+_ test_w34_an_unbound_composition_is_never_attached[unknown_parent-no known session end] _
+
+case = 'unknown_parent', fragment = 'no known session end'
+
+    @pytest.mark.parametrize("case, fragment", [
+        ("benchmark", "companion benchmark"),
+        ("population", "native sector cohort"),
+        ("windows", "exact 5/20/63-session windows"),
+        ("unknown_parent", "no known session end"),
+        ("unknown_parent_benchmark", "no known benchmark"),
+    ])
+    def test_w34_an_unbound_composition_is_never_attached(case, fragment):
+        """Every way a composition can fail to describe the parent's generation
+        is a programmer error: it is never attached, never dropped and never
+        restamped."""
+        cyc, rot = _build_fixture_payload()
+        calendar = _psl_calendar(end=AS_OF)
+        overrides = {}
+        if case == "unknown_parent":
+            cyc = {"meta": {}, "sectors": []}
+        elif case == "unknown_parent_benchmark":
+            cyc = {"meta": {"asOf": AS_OF}, "sectors": []}
+        elif case == "benchmark":
+            overrides["benchmark"] = "QQQ"
+        elif case == "population":
+            overrides["population"] = ("AAA", "BBB")
+        elif case == "windows":
+            overrides["windows"] = (5, 20)
+>       with pytest.raises(ValueError, match=fragment):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_leadership_measured_read.py:1641: Failed
+_ test_w34_an_unbound_composition_is_never_attached[unknown_parent_benchmark-no known benchmark] _
+
+case = 'unknown_parent_benchmark', fragment = 'no known benchmark'
+
+    @pytest.mark.parametrize("case, fragment", [
+        ("benchmark", "companion benchmark"),
+        ("population", "native sector cohort"),
+        ("windows", "exact 5/20/63-session windows"),
+        ("unknown_parent", "no known session end"),
+        ("unknown_parent_benchmark", "no known benchmark"),
+    ])
+    def test_w34_an_unbound_composition_is_never_attached(case, fragment):
+        """Every way a composition can fail to describe the parent's generation
+        is a programmer error: it is never attached, never dropped and never
+        restamped."""
+        cyc, rot = _build_fixture_payload()
+        calendar = _psl_calendar(end=AS_OF)
+        overrides = {}
+        if case == "unknown_parent":
+            cyc = {"meta": {}, "sectors": []}
+        elif case == "unknown_parent_benchmark":
+            cyc = {"meta": {"asOf": AS_OF}, "sectors": []}
+        elif case == "benchmark":
+            overrides["benchmark"] = "QQQ"
+        elif case == "population":
+            overrides["population"] = ("AAA", "BBB")
+        elif case == "windows":
+            overrides["windows"] = (5, 20)
+>       with pytest.raises(ValueError, match=fragment):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_leadership_measured_read.py:1641: Failed
+________ test_w36_the_source_binding_is_bounded_and_published_detached _________
+
+    def test_w36_the_source_binding_is_bounded_and_published_detached():
+        """The binding carries METADATA only: short control-free strings, aware
+        clocks, and a receipt that is finite, bounded and cycle-free JSON. The
+        published receipt is DETACHED from the caller's object."""
+        calendar = _psl_calendar()
+        closes = _psl_panel(calendar, us_sector_cohort())
+        base = {"closes": closes, "benchmark": _PSL_BENCHMARK, "end_session": _PSL_END,
+                "source_session": _PSL_END, "reference_sessions": calendar}
+    
+        # a NaN inside the receipt is refused
+>       with pytest.raises(ValueError, match="non-finite"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_leadership_measured_read.py:1680: Failed
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_leadership_measured_read.py::test_w25_complete_fixture_is_frozen
+FAILED tests/test_leadership_measured_read.py::test_w26_unavailable_fixture_is_frozen
+FAILED tests/test_leadership_measured_read.py::test_w32_a_finite_fraction_that_overflows_the_percent_scale_is_published_as_null
+FAILED tests/test_leadership_measured_read.py::test_w33_the_companion_must_be_bound_to_the_parent_generation
+FAILED tests/test_leadership_measured_read.py::test_w34_an_unbound_composition_is_never_attached[benchmark-companion benchmark]
+FAILED tests/test_leadership_measured_read.py::test_w34_an_unbound_composition_is_never_attached[population-native sector cohort]
+FAILED tests/test_leadership_measured_read.py::test_w34_an_unbound_composition_is_never_attached[windows-exact 5/20/63-session windows]
+FAILED tests/test_leadership_measured_read.py::test_w34_an_unbound_composition_is_never_attached[unknown_parent-no known session end]
+FAILED tests/test_leadership_measured_read.py::test_w34_an_unbound_composition_is_never_attached[unknown_parent_benchmark-no known benchmark]
+FAILED tests/test_leadership_measured_read.py::test_w36_the_source_binding_is_bounded_and_published_detached
+10 failed, 1 passed, 113 deselected in 1.86s
