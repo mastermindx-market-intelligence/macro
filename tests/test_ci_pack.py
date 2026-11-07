@@ -5604,8 +5604,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_918),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_674),
+    ("scripts/build_free_content.py", 138, 5_935),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_676),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5613,6 +5613,15 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Prophet #9495 current-main composition (2026-11-07): paired canonical
+    measurements on identical c060 product/source graph retain main cfdad's
+    provenance enrollment and the six original Prophet registration units.
+    Index 137 jobs / 5912 -> 5918, free-content 137 / 5929 -> 5935, and
+    Plan 131 / 5670 -> 5676; all ten packs with identical selected job IDs.
+    Raise only the two stale weight ceilings by two. This is an estimator
+    composition, not measured runtime; preserve all job/pack/time bounds,
+    selectors and suites. Proof: ci-weight-calibration-20261107/paired.json.
 
     Prophet #9495 CI registration (2026-11-05): canonical paired manifests
     at f3c79cfed262 and parent39f792bb3d09 on their identical product/source
