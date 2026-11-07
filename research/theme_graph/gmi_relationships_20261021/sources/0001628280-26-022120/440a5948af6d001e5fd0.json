@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-30T22:10:25Z",
+ "accession": "0001628280-26-022120",
+ "cik": "0001756607",
+ "doc_byte_length": 338355,
+ "doc_sha256": "a20c32c7f517443f4082a015cbc06b478496043065cb1550b2410186fdde9623",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "eqxaif2026-final.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 25514,
+  "byte_start": 24824,
+  "normalized": "Prior to October 20, 2026, the Company may not redeem the 2023 Convertible Notes, except upon the occurrence of certain changes to the laws governing Canadian withholding taxes. On October 31, 2023, the Company closed a gold purchase agreement with Versamet Royalties Corporation (Versamet, previously Sandbox Royalties Corp.) and Regal Partners Royalties A PTY Limited (Regal and together with Versamet, the Purchasers). Under the agreement, the Company received a payment of $75 million in exchange for monthly deliveries to the Purchasers equal to the greater of: a) 500 gold ounces from any mines, and b) gold ounces equal to 1.8% of the monthly gold production from Greenstone.",
+  "normalized_sha256": "25ce5d842f34d5d2dfef0f870023015ddb278d3dbf5847661ef95926e625f4a1",
+  "raw": " Prior to October 20, 2026, the Company  may not redeem the 2023 Convertible Notes, except upon the occurrence of certain changes to the laws governing  Canadian withholding taxes.  On October 31, 2023, the Company closed a gold purchase agreement with Versamet Royalties Corporation  (Versamet, previously Sandbox Royalties Corp.) and Regal Partners Royalties A PTY Limited (Regal and together with  Versamet, the Purchasers). Under the agreement, the Company received a payment of $75 million in exchange for  monthly deliveries to the Purchasers equal to the greater of: a) 500 gold ounces from any mines, and b) gold ounces  equal to 1.8% of the monthly gold production from Greenstone.",
+  "raw_sha256": "440a5948af6d001e5fd08cf7f52f5c677ca5369240aa488a4dec00c06ae4dbed"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1756607/000162828026022120/eqxaif2026-final.htm",
+ "xbrl_contexts": []
+}

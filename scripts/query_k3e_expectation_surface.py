@@ -73,7 +73,11 @@ def load_frozen_source(repository, revision):
         raw, entry = _read_verified_blob(root, revision, path)
         inputs[path] = entry
         try:
-            frame = pd.read_parquet(io.BytesIO(raw))
+            # Git already supplied these bytes. Avoid background column reads
+            # and prefetch against a Python stream at CLI interpreter teardown.
+            frame = pd.read_parquet(
+                io.BytesIO(raw), engine="pyarrow", use_threads=False, pre_buffer=False
+            )
             # Pandas nan/NA represent parquet nulls; convert them without
             # converting genuine zero into missingness.
             frames[path] = frame.astype(object).where(pd.notna(frame), None)
@@ -108,7 +112,10 @@ def load_frozen_aliases(repository, revision):
         raise QueryRefusal("PARQUET_READER_UNAVAILABLE") from exc
     raw, entry = _read_verified_blob(root, revision, ALIASES_PATH)
     try:
-        frame = pd.read_parquet(io.BytesIO(raw))
+        # Match the synchronous in-memory capture decode above.
+        frame = pd.read_parquet(
+            io.BytesIO(raw), engine="pyarrow", use_threads=False, pre_buffer=False
+        )
         frame = frame.astype(object).where(pd.notna(frame), None)
     except Exception as exc:
         raise QueryRefusal("INVALID_PARQUET_INPUT") from exc

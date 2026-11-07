@@ -831,6 +831,16 @@ def test_a09_bad_native_unit_invalidates_whole_cost_cohort(other):
     assert not any(s["key"] == "exposure" for s in brief["sections"])
     # Per-name signals/events remain useful without inventing cost weights.
     assert brief["data"]["book"]["n"] == 2
+    # Coverage remains distinct from the two held names even without weights.
+    expected_covered = 1 if other["ticker"] == "NOT_COVERED" else 2
+    expected_uncovered = ["NOT_COVERED"] if expected_covered == 1 else []
+    assert brief["book"]["covered"] == expected_covered
+    assert brief["book"]["uncovered"] == expected_uncovered
+    assert brief["data"]["book"]["covered"] == expected_covered
+    assert brief["data"]["book"]["unmodeled"] == expected_uncovered
+    noun = "name" if expected_covered == 1 else "names"
+    assert f"{expected_covered} covered {noun}" in brief["headline"]["en"]
+    assert f"{expected_covered} 只已覆盖个股" in brief["headline"]["zh"]
     json.dumps(brief, allow_nan=False)
 
 

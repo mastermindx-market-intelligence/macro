@@ -557,7 +557,9 @@ def test_uuid_fold_preserves_two_exact_duplicate_lots_and_is_idempotent():
 def test_page_wires_pure_contract_before_store_and_ui_after_portfolio():
     page = (ROOT / "templates" / "watchlist.html.j2").read_text(encoding="utf-8")
     assert 'id="pf_import"' in page and 'id="dlg-import"' in page
-    assert 'src="watchstore.js?v=12"' in page and 'src="portfolio.js?v=12"' in page
+    # A09 composes the accepted read-only store with monetary-unit guards.
+    # Both changed consumers need fresh pins; preserve the separate state stamp.
+    assert 'src="watchstore.js?v=13"' in page and 'src="portfolio.js?v=12"' in page
     assert 'src="portfolio_import_ui.js?v=2"' in page
     assert page.index('src="portfolio_import.js') < page.index('src="watchstore.js')
     assert page.index('src="portfolio.js') < page.index('src="portfolio_import_ui.js')

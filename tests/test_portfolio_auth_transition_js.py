@@ -3107,6 +3107,8 @@ def test_a09_stale_ps_cannot_publish_snapshot_book_read_or_factor_money():
     its old monetary methods must never be called, even with populated prices.
     """
     out = _run("""
+      // Keep unrelated context loading deferred while testing the stale money API.
+      window.requestIdleCallback=function(){};
       localStorage.setItem('mdash.pf.v1', JSON.stringify({v:1,rows:[
         {id:'stale-a',ticker:'NVDA',shares:1,entry_price:100,status:'open'},
         {id:'stale-b',ticker:'AVGO',shares:3,entry_price:100,status:'open'}]}));

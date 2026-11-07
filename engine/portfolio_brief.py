@@ -998,10 +998,11 @@ def compose_brief(ctx: dict, holdings: list[dict], today: str,
                    f"{read_clause_zh}。"),
         }
     else:
+        covered_n = len(covered)
         base["headline"] = {
-            "en": (f"{lead_en}: {n} covered "
-                   f"{'name' if n == 1 else 'names'}{ew_en}{read_clause_en}."),
-            "zh": f"{lead_zh}{ew_zh}：{n} 只已覆盖个股{read_clause_zh}。",
+            "en": (f"{lead_en}: {covered_n} covered "
+                   f"{'name' if covered_n == 1 else 'names'}{ew_en}{read_clause_en}."),
+            "zh": f"{lead_zh}{ew_zh}：{covered_n} 只已覆盖个股{read_clause_zh}。",
         }
 
     base["sections"] = sections
