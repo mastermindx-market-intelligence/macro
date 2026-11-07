@@ -2005,6 +2005,10 @@ def test_identity_is_resolved_before_current_manifest_discovery() -> None:
     calls: list[str] = []
 
     class OrderedMaster:
+        def issuer_of_security(self, security_id: str) -> str | None:
+            calls.append(f"binding:{security_id}")
+            return _d5_master().issuer_of_security(security_id)
+
         def cik_of_issuer(self, issuer_id: str) -> str:
             calls.append(f"identity:{issuer_id}")
             return "0000320193"
@@ -2014,7 +2018,10 @@ def test_identity_is_resolved_before_current_manifest_discovery() -> None:
         return "evt_cik0000320193_2026q3_results"
 
     _build_d5(issuer_master=OrderedMaster(), find_event_id=discover)
-    assert calls == ["identity:ISS:US:320193", "discover:cik:0000320193"]
+    assert calls == [
+        "binding:SEC:US-XNAS-AAPL", "identity:ISS:US:320193",
+        "discover:cik:0000320193",
+    ]
 
 
 def test_unresolved_identity_never_discovers_or_claims_healthy_empty_coverage() -> None:
@@ -2036,6 +2043,9 @@ def test_ambiguous_identity_is_conflicted_and_never_discovers() -> None:
     calls: list[str] = []
 
     class AmbiguousMaster:
+        def issuer_of_security(self, security_id: str) -> str | None:
+            return _d5_master().issuer_of_security(security_id)
+
         def cik_of_issuer(self, issuer_id: str) -> str:
             raise IdentityError(f"conflicting current issuer CIK observations for {issuer_id}")
 
@@ -2778,6 +2788,9 @@ def test_validator_correction_state_matrix_for_healthy_present_evidence(
 
 def test_validator_accepts_every_builder_emitted_correction_outcome() -> None:
     class AmbiguousMaster:
+        def issuer_of_security(self, security_id: str) -> str | None:
+            return _d5_master().issuer_of_security(security_id)
+
         def cik_of_issuer(self, issuer_id: str) -> str:
             raise IdentityError(
                 f"conflicting current issuer CIK observations for {issuer_id}"
@@ -3261,6 +3274,9 @@ def test_validator_derives_coverage_from_closed_owner_lane_dispositions(
 
 def test_validator_rejects_current_state_mutation_across_noncurrent_builder_outcomes() -> None:
     class AmbiguousMaster:
+        def issuer_of_security(self, security_id: str) -> str | None:
+            return _d5_master().issuer_of_security(security_id)
+
         def cik_of_issuer(self, issuer_id: str) -> str:
             raise IdentityError(
                 f"conflicting current issuer CIK observations for {issuer_id}"
