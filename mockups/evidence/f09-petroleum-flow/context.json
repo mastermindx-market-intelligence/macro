@@ -1,0 +1,12 @@
+{
+  "state": "stale",
+  "common_period": "2026-10-02",
+  "evaluated_on": "2026-10-20",
+  "age_days": 18,
+  "values": {
+    "crude_production": 13979.0,
+    "refinery_inputs": 16480.0,
+    "gasoline_supplied": 8769.0,
+    "distillate_supplied": 3650.0
+  }
+}

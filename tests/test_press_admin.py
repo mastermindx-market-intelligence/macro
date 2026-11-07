@@ -165,9 +165,49 @@ def test_overview_reports_an_error_shape_rather_than_raising(monkeypatch, tmp_pa
     assert out["ok"] is False and "boom" in out["error"]
 
 
+
+
+def _claim_response(identity="press-brief-1", count=0):
+    return {"publication_id": identity, "published_at": "2026-07-26T13:20:00+00:00",
+            "observed_at": "2026-11-05T12:00:00Z", "active_accounts_claiming_content": count,
+            "earliest_signup_at": "2026-07-26T13:20:00Z" if count else None,
+            "latest_signup_at": "2026-11-04T20:00:00Z" if count else None}
+
+
+def test_signup_claims_join_exact_identity_and_preserve_base_state(tmp_path):
+    root = _seed(tmp_path)
+    baseline = A.overview(root=root)
+    calls = []
+    def query(sql):
+        calls.append(sql)
+        return [_claim_response(count=3)]
+    out = A.overview(root=root, audience_query=query)
+    assert {k: v for k, v in out.items() if k != "signup_claims"} == baseline
+    a = out["signup_claims"]
+    assert a["status"] == "available" and a["rows"][0]["active_accounts_claiming_content"] == 3
+    assert a["rows"][0]["desk"] == "brief" and a["rows"][0]["slug"] == "a-published-note"
+    assert len(calls) == 1 and "LEFT JOIN auth.users" in calls[0]
+    assert "u.created_at >= p.published_at" in calls[0] and "u.created_at < now()" in calls[0]
+    assert "jsonb_typeof(u.raw_user_meta_data->'utm'->'utm_content')='string'" in calls[0]
+    from admin.users import _ACTIVE
+    assert _ACTIVE in calls[0]
+    assert all(x not in a["rows"][0] for x in ("email", "user_id", "raw_user_meta_data"))
+
+
+
+
+def test_signup_claims_backend_failure_preserves_native_press_state(tmp_path):
+    def fail(sql):
+        raise TimeoutError("PRIVATE_BACKEND_PAYLOAD")
+    out=A.overview(root=_seed(tmp_path),audience_query=fail)
+    assert out["ok"] is True and len(out["quarantine"]) == 1
+    assert out["signup_claims"]["status"] == "unavailable"
+    assert "PRIVATE_BACKEND_PAYLOAD" not in json.dumps(out)
+
+
 def test_route_is_wired_into_the_admin_server():
     src = (F.REPO / "admin" / "server.py").read_text(encoding="utf-8")
     assert 'if path == "/api/press/overview":' in src
-    assert "press.overview()" in src
+    assert "press.overview(audience_query=users._query)" in src
     # One route line, one import — the panel is a minimal diff by contract.
     assert src.count("/api/press/overview") == 1
