@@ -2280,7 +2280,7 @@
       // Request one overflow row and the exact owner count. A server cap or a
       // partial response must never turn an incomplete book into a false zero.
       var query = client.from('portfolio_positions')
-        .select('id,user_id,ticker,shares,entry_price,entry_date,status,created_at', { count: 'exact' })
+        .select('id,user_id,ticker,shares,entry_price,entry_currency,entry_currency_basis,entry_date,status,created_at', { count: 'exact' })
         .eq('user_id', ownerId).order('created_at').limit(501);
       if (typeof query.abortSignal === 'function') query = query.abortSignal(controller.signal);
       var response = await query;
@@ -2305,8 +2305,11 @@
         });
         // Copy only the selected position fields. Private notes are not needed
         // for exposure, and are neither queried nor forwarded by this method.
+        var entryCurrency = pfEntryCurrency(row);
         return { id: row.id, ticker: row.ticker, shares: row.shares,
           entry_price: row.entry_price, entry_date: row.entry_date,
+          entry_currency: entryCurrency,
+          entry_currency_basis: entryCurrency ? { ticker: row.ticker, price: row.entry_price } : null,
           status: row.status, created_at: row.created_at };
       });
       await owner(client, token);
