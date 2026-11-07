@@ -1,0 +1,11 @@
+{
+  "seed": 20261006,
+  "bootstrap_replicates": 10000,
+  "input_digests": {
+    "boards_latest.json": "599a96d4ba23e2aabe81caa9fb434fabd2652d700d0c48093ffee12c3478d889",
+    "boards_first.json": "060d56804c96601ac8f86f4f5c826105a2509c7e584673b5b0b4dbddc3240289"
+  },
+  "script_sha256": "6b3f8f9d207ef3efd442d9d79beaa958db83864d3f04433651509257bdab827f",
+  "production_effects": "NONE",
+  "prospective_evidence": "NONE"
+}

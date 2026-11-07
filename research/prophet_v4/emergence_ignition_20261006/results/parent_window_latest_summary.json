@@ -1,0 +1,5838 @@
+{
+  "baseline_exclusions": {
+    "already_tier_T1_T2": 35
+  },
+  "board_sessions": [
+    "2026-08-17",
+    "2026-08-18",
+    "2026-08-19",
+    "2026-08-20",
+    "2026-08-21",
+    "2026-08-24",
+    "2026-08-25",
+    "2026-08-26",
+    "2026-08-27",
+    "2026-08-28",
+    "2026-08-31",
+    "2026-09-03",
+    "2026-09-04",
+    "2026-09-08",
+    "2026-09-09",
+    "2026-09-10",
+    "2026-09-11",
+    "2026-09-14",
+    "2026-09-16",
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25"
+  ],
+  "end": "2026-09-25",
+  "exposed_dates": {
+    "2026-08-18": 3,
+    "2026-08-20": 2,
+    "2026-08-27": 1,
+    "2026-08-28": 2,
+    "2026-08-31": 1,
+    "2026-09-03": 1,
+    "2026-09-04": 3,
+    "2026-09-10": 1,
+    "2026-09-14": 1,
+    "2026-09-16": 2,
+    "2026-09-17": 1
+  },
+  "exposed_sectors": {
+    "Communication Services": 1,
+    "Consumer Discretionary": 2,
+    "Consumer Staples": 1,
+    "Financials": 2,
+    "Health Care": 1,
+    "Industrials": 3,
+    "Information Technology": 8
+  },
+  "exposure_definition": "FIRST_TICKER_UNRESOLVED_WATCH_LEGACY_GE2_NOT_VALIDATED_FAMILY_EXPOSURE",
+  "horizons": {
+    "10": {
+      "raw_buy_tier": {
+        "median_observed_sessions_to_conversion": 8.0,
+        "n_baselines": 18,
+        "n_complete_followups": 5,
+        "n_gapped_or_unknown_no_observed_conversion": 8,
+        "n_horizon_mature": 14,
+        "n_mature_observed_conversions": 3,
+        "n_observed_conversions": 4,
+        "n_observed_nonconversions": 3,
+        "n_right_censored_no_observed_conversion": 3,
+        "observed_capture_fraction": 0.21428571428571427,
+        "total_observed_candidate_sessions": 101,
+        "true_conversion_risk_bounds": [
+          0.21428571428571427,
+          0.7857142857142857
+        ]
+      },
+      "raw_technical": {
+        "median_observed_sessions_to_conversion": 8.0,
+        "n_baselines": 18,
+        "n_complete_followups": 5,
+        "n_gapped_or_unknown_no_observed_conversion": 8,
+        "n_horizon_mature": 14,
+        "n_mature_observed_conversions": 3,
+        "n_observed_conversions": 4,
+        "n_observed_nonconversions": 3,
+        "n_right_censored_no_observed_conversion": 3,
+        "observed_capture_fraction": 0.21428571428571427,
+        "total_observed_candidate_sessions": 101,
+        "true_conversion_risk_bounds": [
+          0.21428571428571427,
+          0.7857142857142857
+        ]
+      },
+      "valid_availability": {
+        "median_observed_sessions_to_conversion": null,
+        "n_baselines": 18,
+        "n_complete_followups": 5,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 14,
+        "n_mature_observed_conversions": 0,
+        "n_observed_conversions": 0,
+        "n_observed_nonconversions": 5,
+        "n_right_censored_no_observed_conversion": 4,
+        "observed_capture_fraction": 0.0,
+        "total_observed_candidate_sessions": 101,
+        "true_conversion_risk_bounds": [
+          0.0,
+          0.6428571428571429
+        ]
+      },
+      "valid_buy_tier": {
+        "median_observed_sessions_to_conversion": 6.0,
+        "n_baselines": 18,
+        "n_complete_followups": 5,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 14,
+        "n_mature_observed_conversions": 1,
+        "n_observed_conversions": 2,
+        "n_observed_nonconversions": 4,
+        "n_right_censored_no_observed_conversion": 3,
+        "observed_capture_fraction": 0.07142857142857142,
+        "total_observed_candidate_sessions": 101,
+        "true_conversion_risk_bounds": [
+          0.07142857142857142,
+          0.7142857142857143
+        ]
+      },
+      "valid_technical": {
+        "median_observed_sessions_to_conversion": 6.0,
+        "n_baselines": 18,
+        "n_complete_followups": 5,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 14,
+        "n_mature_observed_conversions": 1,
+        "n_observed_conversions": 2,
+        "n_observed_nonconversions": 4,
+        "n_right_censored_no_observed_conversion": 3,
+        "observed_capture_fraction": 0.07142857142857142,
+        "total_observed_candidate_sessions": 101,
+        "true_conversion_risk_bounds": [
+          0.07142857142857142,
+          0.7142857142857143
+        ]
+      }
+    },
+    "12": {
+      "raw_buy_tier": {
+        "median_observed_sessions_to_conversion": 9,
+        "n_baselines": 18,
+        "n_complete_followups": 4,
+        "n_gapped_or_unknown_no_observed_conversion": 7,
+        "n_horizon_mature": 13,
+        "n_mature_observed_conversions": 3,
+        "n_observed_conversions": 5,
+        "n_observed_nonconversions": 3,
+        "n_right_censored_no_observed_conversion": 3,
+        "observed_capture_fraction": 0.23076923076923078,
+        "total_observed_candidate_sessions": 116,
+        "true_conversion_risk_bounds": [
+          0.23076923076923078,
+          0.7692307692307693
+        ]
+      },
+      "raw_technical": {
+        "median_observed_sessions_to_conversion": 9,
+        "n_baselines": 18,
+        "n_complete_followups": 4,
+        "n_gapped_or_unknown_no_observed_conversion": 7,
+        "n_horizon_mature": 13,
+        "n_mature_observed_conversions": 3,
+        "n_observed_conversions": 5,
+        "n_observed_nonconversions": 3,
+        "n_right_censored_no_observed_conversion": 3,
+        "observed_capture_fraction": 0.23076923076923078,
+        "total_observed_candidate_sessions": 116,
+        "true_conversion_risk_bounds": [
+          0.23076923076923078,
+          0.7692307692307693
+        ]
+      },
+      "valid_availability": {
+        "median_observed_sessions_to_conversion": 11,
+        "n_baselines": 18,
+        "n_complete_followups": 4,
+        "n_gapped_or_unknown_no_observed_conversion": 8,
+        "n_horizon_mature": 13,
+        "n_mature_observed_conversions": 1,
+        "n_observed_conversions": 1,
+        "n_observed_nonconversions": 4,
+        "n_right_censored_no_observed_conversion": 5,
+        "observed_capture_fraction": 0.07692307692307693,
+        "total_observed_candidate_sessions": 116,
+        "true_conversion_risk_bounds": [
+          0.07692307692307693,
+          0.6923076923076923
+        ]
+      },
+      "valid_buy_tier": {
+        "median_observed_sessions_to_conversion": 7,
+        "n_baselines": 18,
+        "n_complete_followups": 4,
+        "n_gapped_or_unknown_no_observed_conversion": 8,
+        "n_horizon_mature": 13,
+        "n_mature_observed_conversions": 2,
+        "n_observed_conversions": 3,
+        "n_observed_nonconversions": 3,
+        "n_right_censored_no_observed_conversion": 4,
+        "observed_capture_fraction": 0.15384615384615385,
+        "total_observed_candidate_sessions": 116,
+        "true_conversion_risk_bounds": [
+          0.15384615384615385,
+          0.7692307692307693
+        ]
+      },
+      "valid_technical": {
+        "median_observed_sessions_to_conversion": 7,
+        "n_baselines": 18,
+        "n_complete_followups": 4,
+        "n_gapped_or_unknown_no_observed_conversion": 8,
+        "n_horizon_mature": 13,
+        "n_mature_observed_conversions": 2,
+        "n_observed_conversions": 3,
+        "n_observed_nonconversions": 3,
+        "n_right_censored_no_observed_conversion": 4,
+        "observed_capture_fraction": 0.15384615384615385,
+        "total_observed_candidate_sessions": 116,
+        "true_conversion_risk_bounds": [
+          0.15384615384615385,
+          0.7692307692307693
+        ]
+      }
+    },
+    "20": {
+      "raw_buy_tier": {
+        "median_observed_sessions_to_conversion": 9.5,
+        "n_baselines": 18,
+        "n_complete_followups": 0,
+        "n_gapped_or_unknown_no_observed_conversion": 4,
+        "n_horizon_mature": 5,
+        "n_mature_observed_conversions": 1,
+        "n_observed_conversions": 6,
+        "n_observed_nonconversions": 0,
+        "n_right_censored_no_observed_conversion": 8,
+        "observed_capture_fraction": 0.2,
+        "total_observed_candidate_sessions": 136,
+        "true_conversion_risk_bounds": [
+          0.2,
+          1.0
+        ]
+      },
+      "raw_technical": {
+        "median_observed_sessions_to_conversion": 9.5,
+        "n_baselines": 18,
+        "n_complete_followups": 0,
+        "n_gapped_or_unknown_no_observed_conversion": 4,
+        "n_horizon_mature": 5,
+        "n_mature_observed_conversions": 1,
+        "n_observed_conversions": 6,
+        "n_observed_nonconversions": 0,
+        "n_right_censored_no_observed_conversion": 8,
+        "observed_capture_fraction": 0.2,
+        "total_observed_candidate_sessions": 136,
+        "true_conversion_risk_bounds": [
+          0.2,
+          1.0
+        ]
+      },
+      "valid_availability": {
+        "median_observed_sessions_to_conversion": 13,
+        "n_baselines": 18,
+        "n_complete_followups": 0,
+        "n_gapped_or_unknown_no_observed_conversion": 4,
+        "n_horizon_mature": 5,
+        "n_mature_observed_conversions": 1,
+        "n_observed_conversions": 3,
+        "n_observed_nonconversions": 0,
+        "n_right_censored_no_observed_conversion": 11,
+        "observed_capture_fraction": 0.2,
+        "total_observed_candidate_sessions": 136,
+        "true_conversion_risk_bounds": [
+          0.2,
+          1.0
+        ]
+      },
+      "valid_buy_tier": {
+        "median_observed_sessions_to_conversion": 7,
+        "n_baselines": 18,
+        "n_complete_followups": 0,
+        "n_gapped_or_unknown_no_observed_conversion": 5,
+        "n_horizon_mature": 5,
+        "n_mature_observed_conversions": 0,
+        "n_observed_conversions": 3,
+        "n_observed_nonconversions": 0,
+        "n_right_censored_no_observed_conversion": 10,
+        "observed_capture_fraction": 0.0,
+        "total_observed_candidate_sessions": 136,
+        "true_conversion_risk_bounds": [
+          0.0,
+          1.0
+        ]
+      },
+      "valid_technical": {
+        "median_observed_sessions_to_conversion": 7,
+        "n_baselines": 18,
+        "n_complete_followups": 0,
+        "n_gapped_or_unknown_no_observed_conversion": 5,
+        "n_horizon_mature": 5,
+        "n_mature_observed_conversions": 0,
+        "n_observed_conversions": 3,
+        "n_observed_nonconversions": 0,
+        "n_right_censored_no_observed_conversion": 10,
+        "observed_capture_fraction": 0.0,
+        "total_observed_candidate_sessions": 136,
+        "true_conversion_risk_bounds": [
+          0.0,
+          1.0
+        ]
+      }
+    },
+    "3": {
+      "raw_buy_tier": {
+        "median_observed_sessions_to_conversion": null,
+        "n_baselines": 18,
+        "n_complete_followups": 9,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 18,
+        "n_mature_observed_conversions": 0,
+        "n_observed_conversions": 0,
+        "n_observed_nonconversions": 9,
+        "n_right_censored_no_observed_conversion": 0,
+        "observed_capture_fraction": 0.0,
+        "total_observed_candidate_sessions": 36,
+        "true_conversion_risk_bounds": [
+          0.0,
+          0.5
+        ]
+      },
+      "raw_technical": {
+        "median_observed_sessions_to_conversion": null,
+        "n_baselines": 18,
+        "n_complete_followups": 9,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 18,
+        "n_mature_observed_conversions": 0,
+        "n_observed_conversions": 0,
+        "n_observed_nonconversions": 9,
+        "n_right_censored_no_observed_conversion": 0,
+        "observed_capture_fraction": 0.0,
+        "total_observed_candidate_sessions": 36,
+        "true_conversion_risk_bounds": [
+          0.0,
+          0.5
+        ]
+      },
+      "valid_availability": {
+        "median_observed_sessions_to_conversion": null,
+        "n_baselines": 18,
+        "n_complete_followups": 9,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 18,
+        "n_mature_observed_conversions": 0,
+        "n_observed_conversions": 0,
+        "n_observed_nonconversions": 9,
+        "n_right_censored_no_observed_conversion": 0,
+        "observed_capture_fraction": 0.0,
+        "total_observed_candidate_sessions": 36,
+        "true_conversion_risk_bounds": [
+          0.0,
+          0.5
+        ]
+      },
+      "valid_buy_tier": {
+        "median_observed_sessions_to_conversion": null,
+        "n_baselines": 18,
+        "n_complete_followups": 9,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 18,
+        "n_mature_observed_conversions": 0,
+        "n_observed_conversions": 0,
+        "n_observed_nonconversions": 9,
+        "n_right_censored_no_observed_conversion": 0,
+        "observed_capture_fraction": 0.0,
+        "total_observed_candidate_sessions": 36,
+        "true_conversion_risk_bounds": [
+          0.0,
+          0.5
+        ]
+      },
+      "valid_technical": {
+        "median_observed_sessions_to_conversion": null,
+        "n_baselines": 18,
+        "n_complete_followups": 9,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 18,
+        "n_mature_observed_conversions": 0,
+        "n_observed_conversions": 0,
+        "n_observed_nonconversions": 9,
+        "n_right_censored_no_observed_conversion": 0,
+        "observed_capture_fraction": 0.0,
+        "total_observed_candidate_sessions": 36,
+        "true_conversion_risk_bounds": [
+          0.0,
+          0.5
+        ]
+      }
+    },
+    "5": {
+      "raw_buy_tier": {
+        "median_observed_sessions_to_conversion": 5,
+        "n_baselines": 18,
+        "n_complete_followups": 9,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 18,
+        "n_mature_observed_conversions": 1,
+        "n_observed_conversions": 1,
+        "n_observed_nonconversions": 8,
+        "n_right_censored_no_observed_conversion": 0,
+        "observed_capture_fraction": 0.05555555555555555,
+        "total_observed_candidate_sessions": 56,
+        "true_conversion_risk_bounds": [
+          0.05555555555555555,
+          0.5555555555555556
+        ]
+      },
+      "raw_technical": {
+        "median_observed_sessions_to_conversion": 5,
+        "n_baselines": 18,
+        "n_complete_followups": 9,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 18,
+        "n_mature_observed_conversions": 1,
+        "n_observed_conversions": 1,
+        "n_observed_nonconversions": 8,
+        "n_right_censored_no_observed_conversion": 0,
+        "observed_capture_fraction": 0.05555555555555555,
+        "total_observed_candidate_sessions": 56,
+        "true_conversion_risk_bounds": [
+          0.05555555555555555,
+          0.5555555555555556
+        ]
+      },
+      "valid_availability": {
+        "median_observed_sessions_to_conversion": null,
+        "n_baselines": 18,
+        "n_complete_followups": 9,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 18,
+        "n_mature_observed_conversions": 0,
+        "n_observed_conversions": 0,
+        "n_observed_nonconversions": 9,
+        "n_right_censored_no_observed_conversion": 0,
+        "observed_capture_fraction": 0.0,
+        "total_observed_candidate_sessions": 56,
+        "true_conversion_risk_bounds": [
+          0.0,
+          0.5
+        ]
+      },
+      "valid_buy_tier": {
+        "median_observed_sessions_to_conversion": 5,
+        "n_baselines": 18,
+        "n_complete_followups": 9,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 18,
+        "n_mature_observed_conversions": 1,
+        "n_observed_conversions": 1,
+        "n_observed_nonconversions": 8,
+        "n_right_censored_no_observed_conversion": 0,
+        "observed_capture_fraction": 0.05555555555555555,
+        "total_observed_candidate_sessions": 56,
+        "true_conversion_risk_bounds": [
+          0.05555555555555555,
+          0.5555555555555556
+        ]
+      },
+      "valid_technical": {
+        "median_observed_sessions_to_conversion": 5,
+        "n_baselines": 18,
+        "n_complete_followups": 9,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 18,
+        "n_mature_observed_conversions": 1,
+        "n_observed_conversions": 1,
+        "n_observed_nonconversions": 8,
+        "n_right_censored_no_observed_conversion": 0,
+        "observed_capture_fraction": 0.05555555555555555,
+        "total_observed_candidate_sessions": 56,
+        "true_conversion_risk_bounds": [
+          0.05555555555555555,
+          0.5555555555555556
+        ]
+      }
+    }
+  },
+  "leave_one_out": {
+    "ACMR": {
+      "n_matched_exposed": 11,
+      "observed_capture_difference": 0.07792207792207793
+    },
+    "AMAT": {
+      "n_matched_exposed": 10,
+      "observed_capture_difference": 0.08571428571428573
+    },
+    "AMG": {
+      "n_matched_exposed": 10,
+      "observed_capture_difference": 0.08571428571428573
+    },
+    "BAC": {
+      "n_matched_exposed": 10,
+      "observed_capture_difference": 0.08571428571428573
+    },
+    "COCO": {
+      "n_matched_exposed": 11,
+      "observed_capture_difference": 0.07792207792207793
+    },
+    "FIX": {
+      "n_matched_exposed": 11,
+      "observed_capture_difference": 0.07792207792207793
+    },
+    "FORM": {
+      "n_matched_exposed": 10,
+      "observed_capture_difference": -0.014285714285714277
+    },
+    "GOOG": {
+      "n_matched_exposed": 11,
+      "observed_capture_difference": 0.07792207792207793
+    },
+    "HUBG": {
+      "n_matched_exposed": 10,
+      "observed_capture_difference": 0.08571428571428573
+    },
+    "INDV": {
+      "n_matched_exposed": 10,
+      "observed_capture_difference": 0.08571428571428573
+    },
+    "LFUS": {
+      "n_matched_exposed": 11,
+      "observed_capture_difference": 0.07792207792207793
+    },
+    "MPWR": {
+      "n_matched_exposed": 10,
+      "observed_capture_difference": 0.08571428571428573
+    },
+    "NVDA": {
+      "n_matched_exposed": 10,
+      "observed_capture_difference": 0.08571428571428572
+    },
+    "PWR": {
+      "n_matched_exposed": 10,
+      "observed_capture_difference": 0.08571428571428573
+    },
+    "ROST": {
+      "n_matched_exposed": 11,
+      "observed_capture_difference": 0.07792207792207793
+    },
+    "SNDK": {
+      "n_matched_exposed": 10,
+      "observed_capture_difference": 0.1
+    },
+    "TPR": {
+      "n_matched_exposed": 10,
+      "observed_capture_difference": 0.08571428571428573
+    },
+    "WDC": {
+      "n_matched_exposed": 11,
+      "observed_capture_difference": 0.07792207792207793
+    }
+  },
+  "matched": {
+    "10_raw_date": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 64.85374111403792,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        0.006045552423459405,
+        0.39376436085185373
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1
+        },
+        "kish_effective_clusters": 6.533333333333333,
+        "max_share": 0.21428571428571427
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 21.76271585680973,
+          "exposed_mean": 33.607142857142854,
+          "mean_standardized_difference": 0.44310414151782995,
+          "pairs": 14
+        },
+        "alpha": {
+          "control_mean": 0.85163904481162,
+          "exposed_mean": 1.3257142857142856,
+          "mean_standardized_difference": 0.539038417094259,
+          "pairs": 14
+        },
+        "ext_z": {
+          "control_mean": -0.7131706894526662,
+          "exposed_mean": -1.73375,
+          "mean_standardized_difference": -0.9343863824463481,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -16.49830154514925,
+          "exposed_mean": -20.407142857142855,
+          "mean_standardized_difference": -0.3303814497211717,
+          "pairs": 14
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.25785950888755654,
+          "exposed_mean": 0.171424256701206,
+          "mean_standardized_difference": -0.37350637620369304,
+          "pairs": 14
+        },
+        "setup": {
+          "control_mean": 1.0578277387357082,
+          "exposed_mean": 1.3135714285714286,
+          "mean_standardized_difference": 0.2629142589332804,
+          "pairs": 14
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 35.665738543771724,
+          "exposed_mean": 46.528571428571425,
+          "mean_standardized_difference": 0.6288004567660813,
+          "pairs": 14
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 3.253530422120893,
+        "exposed": 3.7857142857142856
+      },
+      "n_control_unique_tickers": 102,
+      "n_dates": 8,
+      "n_matched_exposed": 14,
+      "observed_capture_controls": 0.061147411232493475,
+      "observed_capture_difference": 0.1531383030532208,
+      "observed_capture_exposed": 0.21428571428571427,
+      "observed_capture_odds_ratio": 4.187433300388643,
+      "observed_capture_relative_risk": 3.5044118788767915,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 7
+        },
+        "kish_effective_clusters": 3.0625,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.4514945255160797,
+        0.7245668744817922
+      ],
+      "unmatched_tickers": []
+    },
+    "10_raw_date_sector": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 37.51307677667492,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.01893939393939394,
+        0.3400974025974026
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1
+        },
+        "kish_effective_clusters": 6.533333333333333,
+        "max_share": 0.21428571428571427
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 26.305102040816326,
+          "exposed_mean": 33.607142857142854,
+          "mean_standardized_difference": 0.3021442422134587,
+          "pairs": 14
+        },
+        "alpha": {
+          "control_mean": 1.008025664811379,
+          "exposed_mean": 1.3257142857142856,
+          "mean_standardized_difference": 0.35849381496891297,
+          "pairs": 14
+        },
+        "ext_z": {
+          "control_mean": -1.0900426136363637,
+          "exposed_mean": -1.73375,
+          "mean_standardized_difference": -0.5729883750591361,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -20.081350494743354,
+          "exposed_mean": -20.407142857142855,
+          "mean_standardized_difference": 0.011825016889737262,
+          "pairs": 14
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.23687313527154502,
+          "exposed_mean": 0.171424256701206,
+          "mean_standardized_difference": -0.27799304149106724,
+          "pairs": 14
+        },
+        "setup": {
+          "control_mean": 1.3155762987012987,
+          "exposed_mean": 1.3135714285714286,
+          "mean_standardized_difference": -0.0033950712602667304,
+          "pairs": 14
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 42.62305194805195,
+          "exposed_mean": 46.528571428571425,
+          "mean_standardized_difference": 0.2646329890852767,
+          "pairs": 14
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 3.270408163265306,
+        "exposed": 3.7857142857142856
+      },
+      "n_control_unique_tickers": 59,
+      "n_dates": 8,
+      "n_matched_exposed": 14,
+      "observed_capture_controls": 0.07467532467532467,
+      "observed_capture_difference": 0.1396103896103896,
+      "observed_capture_exposed": 0.21428571428571427,
+      "observed_capture_odds_ratio": 3.379446640316205,
+      "observed_capture_relative_risk": 2.869565217391304,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 7
+        },
+        "kish_effective_clusters": 3.0625,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.451917130488559,
+        0.711038961038961
+      ],
+      "unmatched_tickers": []
+    },
+    "10_raw_date_sector_state": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 18.943977089672455,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.021978021978021976,
+        0.28214285714285714
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1
+        },
+        "kish_effective_clusters": 6.545454545454546,
+        "max_share": 0.25
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 34.18345238095238,
+          "exposed_mean": 31.883333333333336,
+          "mean_standardized_difference": -0.09055166502071821,
+          "pairs": 12
+        },
+        "alpha": {
+          "control_mean": 1.055904761904762,
+          "exposed_mean": 1.3316666666666668,
+          "mean_standardized_difference": 0.30587860397550576,
+          "pairs": 12
+        },
+        "ext_z": {
+          "control_mean": -1.1000892857142857,
+          "exposed_mean": -1.73375,
+          "mean_standardized_difference": -0.5547262116157882,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -19.6905753968254,
+          "exposed_mean": -21.616666666666664,
+          "mean_standardized_difference": -0.14772710733394848,
+          "pairs": 12
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.21978761278089787,
+          "exposed_mean": 0.17273297133216026,
+          "mean_standardized_difference": -0.1792689126553034,
+          "pairs": 12
+        },
+        "setup": {
+          "control_mean": 1.2725019841269842,
+          "exposed_mean": 1.3233333333333335,
+          "mean_standardized_difference": 0.03145807622433062,
+          "pairs": 12
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 43.96267857142857,
+          "exposed_mean": 42.93333333333334,
+          "mean_standardized_difference": 0.006996966133545074,
+          "pairs": 12
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 2.2376984126984127,
+        "exposed": 3.6666666666666665
+      },
+      "n_control_unique_tickers": 29,
+      "n_dates": 8,
+      "n_matched_exposed": 12,
+      "observed_capture_controls": 0.16964285714285712,
+      "observed_capture_difference": 0.08035714285714288,
+      "observed_capture_exposed": 0.25,
+      "observed_capture_odds_ratio": 1.6315789473684212,
+      "observed_capture_relative_risk": 1.473684210526316,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 6
+        },
+        "kish_effective_clusters": 3.130434782608696,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.4162698412698413,
+        0.6636904761904762
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "10_raw_date_sector_state_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 19.636363636363637,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        0.0,
+        0.2
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1
+        },
+        "kish_effective_clusters": 6.545454545454546,
+        "max_share": 0.25
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 32.31944444444444,
+          "exposed_mean": 31.883333333333336,
+          "mean_standardized_difference": -0.04530059734650264,
+          "pairs": 12
+        },
+        "alpha": {
+          "control_mean": 1.0644444444444445,
+          "exposed_mean": 1.3316666666666668,
+          "mean_standardized_difference": 0.2965805051824458,
+          "pairs": 12
+        },
+        "ext_z": {
+          "control_mean": -1.1525,
+          "exposed_mean": -1.73375,
+          "mean_standardized_difference": -0.494411430560865,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -21.191666666666666,
+          "exposed_mean": -21.616666666666664,
+          "mean_standardized_difference": -0.007705394350385498,
+          "pairs": 12
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.2179730494935783,
+          "exposed_mean": 0.17273297133216026,
+          "mean_standardized_difference": -0.17003808855017177,
+          "pairs": 12
+        },
+        "setup": {
+          "control_mean": 1.331388888888889,
+          "exposed_mean": 1.3233333333333335,
+          "mean_standardized_difference": -0.026223900002987587,
+          "pairs": 12
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 45.791666666666664,
+          "exposed_mean": 42.93333333333334,
+          "mean_standardized_difference": -0.10097218354895825,
+          "pairs": 12
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 2.25,
+        "exposed": 3.6666666666666665
+      },
+      "n_control_unique_tickers": 26,
+      "n_dates": 8,
+      "n_matched_exposed": 12,
+      "observed_capture_controls": 0.19444444444444445,
+      "observed_capture_difference": 0.05555555555555555,
+      "observed_capture_exposed": 0.25,
+      "observed_capture_odds_ratio": 1.380952380952381,
+      "observed_capture_relative_risk": 1.2857142857142856,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 6
+        },
+        "kish_effective_clusters": 3.130434782608696,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.4166666666666667,
+        0.638888888888889
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "10_raw_issuer_disjoint_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 15.0,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        0.0,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 1,
+          "2026-08-31": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1
+        },
+        "kish_effective_clusters": 5.555555555555555,
+        "max_share": 0.3
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 33.14,
+          "exposed_mean": 34.06,
+          "mean_standardized_difference": 0.012385393352350588,
+          "pairs": 10
+        },
+        "alpha": {
+          "control_mean": 0.9906666666666666,
+          "exposed_mean": 1.133,
+          "mean_standardized_difference": 0.1543809488417714,
+          "pairs": 10
+        },
+        "ext_z": {
+          "control_mean": -1.123888888888889,
+          "exposed_mean": -1.6900000000000002,
+          "mean_standardized_difference": -0.4876757301567811,
+          "pairs": 6
+        },
+        "off_high": {
+          "control_mean": -19.71333333333333,
+          "exposed_mean": -18.35,
+          "mean_standardized_difference": 0.1464059151109502,
+          "pairs": 10
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.22913522695986152,
+          "exposed_mean": 0.1991714574904842,
+          "mean_standardized_difference": -0.09418696578058149,
+          "pairs": 10
+        },
+        "setup": {
+          "control_mean": 1.2103333333333333,
+          "exposed_mean": 1.228,
+          "mean_standardized_difference": -0.006305019947463833,
+          "pairs": 10
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 44.65333333333333,
+          "exposed_mean": 37.660000000000004,
+          "mean_standardized_difference": -0.3167455563319627,
+          "pairs": 10
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 1.8666666666666667,
+        "exposed": 4.1
+      },
+      "n_control_unique_tickers": 20,
+      "n_dates": 7,
+      "n_matched_exposed": 10,
+      "observed_capture_controls": 0.2,
+      "observed_capture_difference": 0.0,
+      "observed_capture_exposed": 0.2,
+      "observed_capture_odds_ratio": 1.0,
+      "observed_capture_relative_risk": 1.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 4
+        },
+        "kish_effective_clusters": 3.8461538461538463,
+        "max_share": 0.4
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.4666666666666666,
+        0.6
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "SNDK:already_enrolled_as_control",
+        "FORM:already_enrolled_as_control"
+      ]
+    },
+    "10_valid_date": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 64.85374111403792,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.06942784627218121,
+        0.2232863649124668
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1
+        },
+        "kish_effective_clusters": 6.533333333333333,
+        "max_share": 0.21428571428571427
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 21.76271585680973,
+          "exposed_mean": 33.607142857142854,
+          "mean_standardized_difference": 0.44310414151782995,
+          "pairs": 14
+        },
+        "alpha": {
+          "control_mean": 0.85163904481162,
+          "exposed_mean": 1.3257142857142856,
+          "mean_standardized_difference": 0.539038417094259,
+          "pairs": 14
+        },
+        "ext_z": {
+          "control_mean": -0.7131706894526662,
+          "exposed_mean": -1.73375,
+          "mean_standardized_difference": -0.9343863824463481,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -16.49830154514925,
+          "exposed_mean": -20.407142857142855,
+          "mean_standardized_difference": -0.3303814497211717,
+          "pairs": 14
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.25785950888755654,
+          "exposed_mean": 0.171424256701206,
+          "mean_standardized_difference": -0.37350637620369304,
+          "pairs": 14
+        },
+        "setup": {
+          "control_mean": 1.0578277387357082,
+          "exposed_mean": 1.3135714285714286,
+          "mean_standardized_difference": 0.2629142589332804,
+          "pairs": 14
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 35.665738543771724,
+          "exposed_mean": 46.528571428571425,
+          "mean_standardized_difference": 0.6288004567660813,
+          "pairs": 14
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 3.253530422120893,
+        "exposed": 3.7857142857142856
+      },
+      "n_control_unique_tickers": 102,
+      "n_dates": 8,
+      "n_matched_exposed": 14,
+      "observed_capture_controls": 0.049351918013290676,
+      "observed_capture_difference": 0.02207665341528075,
+      "observed_capture_exposed": 0.07142857142857142,
+      "observed_capture_odds_ratio": 1.4817413077592207,
+      "observed_capture_relative_risk": 1.4473312143478478,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 7
+        },
+        "kish_effective_clusters": 3.0625,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.5841795517773963,
+        0.6649337962724235
+      ],
+      "unmatched_tickers": []
+    },
+    "10_valid_date_sector": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 37.51307677667492,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.09878472222222222,
+        0.19725716991341968
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1
+        },
+        "kish_effective_clusters": 6.533333333333333,
+        "max_share": 0.21428571428571427
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 26.305102040816326,
+          "exposed_mean": 33.607142857142854,
+          "mean_standardized_difference": 0.3021442422134587,
+          "pairs": 14
+        },
+        "alpha": {
+          "control_mean": 1.008025664811379,
+          "exposed_mean": 1.3257142857142856,
+          "mean_standardized_difference": 0.35849381496891297,
+          "pairs": 14
+        },
+        "ext_z": {
+          "control_mean": -1.0900426136363637,
+          "exposed_mean": -1.73375,
+          "mean_standardized_difference": -0.5729883750591361,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -20.081350494743354,
+          "exposed_mean": -20.407142857142855,
+          "mean_standardized_difference": 0.011825016889737262,
+          "pairs": 14
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.23687313527154502,
+          "exposed_mean": 0.171424256701206,
+          "mean_standardized_difference": -0.27799304149106724,
+          "pairs": 14
+        },
+        "setup": {
+          "control_mean": 1.3155762987012987,
+          "exposed_mean": 1.3135714285714286,
+          "mean_standardized_difference": -0.0033950712602667304,
+          "pairs": 14
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 42.62305194805195,
+          "exposed_mean": 46.528571428571425,
+          "mean_standardized_difference": 0.2646329890852767,
+          "pairs": 14
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 3.270408163265306,
+        "exposed": 3.7857142857142856
+      },
+      "n_control_unique_tickers": 59,
+      "n_dates": 8,
+      "n_matched_exposed": 14,
+      "observed_capture_controls": 0.05925324675324676,
+      "observed_capture_difference": 0.012175324675324666,
+      "observed_capture_exposed": 0.07142857142857142,
+      "observed_capture_odds_ratio": 1.221285563751317,
+      "observed_capture_relative_risk": 1.2054794520547942,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 7
+        },
+        "kish_effective_clusters": 3.0625,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.5882807668521954,
+        0.6550324675324675
+      ],
+      "unmatched_tickers": []
+    },
+    "10_valid_date_sector_state": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 18.943977089672455,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.24175824175824176,
+        0.25
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1
+        },
+        "kish_effective_clusters": 6.545454545454546,
+        "max_share": 0.25
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 34.18345238095238,
+          "exposed_mean": 31.883333333333336,
+          "mean_standardized_difference": -0.09055166502071821,
+          "pairs": 12
+        },
+        "alpha": {
+          "control_mean": 1.055904761904762,
+          "exposed_mean": 1.3316666666666668,
+          "mean_standardized_difference": 0.30587860397550576,
+          "pairs": 12
+        },
+        "ext_z": {
+          "control_mean": -1.1000892857142857,
+          "exposed_mean": -1.73375,
+          "mean_standardized_difference": -0.5547262116157882,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -19.6905753968254,
+          "exposed_mean": -21.616666666666664,
+          "mean_standardized_difference": -0.14772710733394848,
+          "pairs": 12
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.21978761278089787,
+          "exposed_mean": 0.17273297133216026,
+          "mean_standardized_difference": -0.1792689126553034,
+          "pairs": 12
+        },
+        "setup": {
+          "control_mean": 1.2725019841269842,
+          "exposed_mean": 1.3233333333333335,
+          "mean_standardized_difference": 0.03145807622433062,
+          "pairs": 12
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 43.96267857142857,
+          "exposed_mean": 42.93333333333334,
+          "mean_standardized_difference": 0.006996966133545074,
+          "pairs": 12
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 2.2376984126984127,
+        "exposed": 3.6666666666666665
+      },
+      "n_control_unique_tickers": 29,
+      "n_dates": 8,
+      "n_matched_exposed": 12,
+      "observed_capture_controls": 0.1369047619047619,
+      "observed_capture_difference": -0.05357142857142856,
+      "observed_capture_exposed": 0.08333333333333333,
+      "observed_capture_odds_ratio": 0.5731225296442688,
+      "observed_capture_relative_risk": 0.6086956521739131,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 6
+        },
+        "kish_effective_clusters": 3.130434782608696,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.5621031746031746,
+        0.6130952380952381
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "10_valid_date_sector_state_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 19.636363636363637,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.1875,
+        0.3
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1
+        },
+        "kish_effective_clusters": 6.545454545454546,
+        "max_share": 0.25
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 32.31944444444444,
+          "exposed_mean": 31.883333333333336,
+          "mean_standardized_difference": -0.04530059734650264,
+          "pairs": 12
+        },
+        "alpha": {
+          "control_mean": 1.0644444444444445,
+          "exposed_mean": 1.3316666666666668,
+          "mean_standardized_difference": 0.2965805051824458,
+          "pairs": 12
+        },
+        "ext_z": {
+          "control_mean": -1.1525,
+          "exposed_mean": -1.73375,
+          "mean_standardized_difference": -0.494411430560865,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -21.191666666666666,
+          "exposed_mean": -21.616666666666664,
+          "mean_standardized_difference": -0.007705394350385498,
+          "pairs": 12
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.2179730494935783,
+          "exposed_mean": 0.17273297133216026,
+          "mean_standardized_difference": -0.17003808855017177,
+          "pairs": 12
+        },
+        "setup": {
+          "control_mean": 1.331388888888889,
+          "exposed_mean": 1.3233333333333335,
+          "mean_standardized_difference": -0.026223900002987587,
+          "pairs": 12
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 45.791666666666664,
+          "exposed_mean": 42.93333333333334,
+          "mean_standardized_difference": -0.10097218354895825,
+          "pairs": 12
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 2.25,
+        "exposed": 3.6666666666666665
+      },
+      "n_control_unique_tickers": 26,
+      "n_dates": 8,
+      "n_matched_exposed": 12,
+      "observed_capture_controls": 0.08333333333333333,
+      "observed_capture_difference": 0.0,
+      "observed_capture_exposed": 0.08333333333333333,
+      "observed_capture_odds_ratio": 1.0,
+      "observed_capture_relative_risk": 1.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 6
+        },
+        "kish_effective_clusters": 3.130434782608696,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.5,
+        0.6666666666666666
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "10_valid_issuer_disjoint_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 15.0,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.23076923076923078,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 1,
+          "2026-08-31": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1
+        },
+        "kish_effective_clusters": 5.555555555555555,
+        "max_share": 0.3
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 33.14,
+          "exposed_mean": 34.06,
+          "mean_standardized_difference": 0.012385393352350588,
+          "pairs": 10
+        },
+        "alpha": {
+          "control_mean": 0.9906666666666666,
+          "exposed_mean": 1.133,
+          "mean_standardized_difference": 0.1543809488417714,
+          "pairs": 10
+        },
+        "ext_z": {
+          "control_mean": -1.123888888888889,
+          "exposed_mean": -1.6900000000000002,
+          "mean_standardized_difference": -0.4876757301567811,
+          "pairs": 6
+        },
+        "off_high": {
+          "control_mean": -19.71333333333333,
+          "exposed_mean": -18.35,
+          "mean_standardized_difference": 0.1464059151109502,
+          "pairs": 10
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.22913522695986152,
+          "exposed_mean": 0.1991714574904842,
+          "mean_standardized_difference": -0.09418696578058149,
+          "pairs": 10
+        },
+        "setup": {
+          "control_mean": 1.2103333333333333,
+          "exposed_mean": 1.228,
+          "mean_standardized_difference": -0.006305019947463833,
+          "pairs": 10
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 44.65333333333333,
+          "exposed_mean": 37.660000000000004,
+          "mean_standardized_difference": -0.3167455563319627,
+          "pairs": 10
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 1.8666666666666667,
+        "exposed": 4.1
+      },
+      "n_control_unique_tickers": 20,
+      "n_dates": 7,
+      "n_matched_exposed": 10,
+      "observed_capture_controls": 0.1,
+      "observed_capture_difference": -0.1,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 4
+        },
+        "kish_effective_clusters": 3.8461538461538463,
+        "max_share": 0.4
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.5666666666666667,
+        0.6
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "SNDK:already_enrolled_as_control",
+        "FORM:already_enrolled_as_control"
+      ]
+    },
+    "12_raw_date": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 63.53586359074061,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.06257014590347924,
+        0.4251882940907331
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3
+        },
+        "kish_effective_clusters": 5.827586206896552,
+        "max_share": 0.23076923076923078
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 21.30457056493642,
+          "exposed_mean": 29.684615384615384,
+          "mean_standardized_difference": 0.3422893948736169,
+          "pairs": 13
+        },
+        "alpha": {
+          "control_mean": 0.8332499194572366,
+          "exposed_mean": 1.2584615384615385,
+          "mean_standardized_difference": 0.48197632478317487,
+          "pairs": 13
+        },
+        "ext_z": {
+          "control_mean": -0.7047864357864357,
+          "exposed_mean": -1.662857142857143,
+          "mean_standardized_difference": -0.849849626413538,
+          "pairs": 7
+        },
+        "off_high": {
+          "control_mean": -16.459172683684876,
+          "exposed_mean": -19.253846153846155,
+          "mean_standardized_difference": -0.21784630038000374,
+          "pairs": 13
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.26179670918167686,
+          "exposed_mean": 0.1835712369464131,
+          "mean_standardized_difference": -0.33079465478508363,
+          "pairs": 13
+        },
+        "setup": {
+          "control_mean": 1.041345793772623,
+          "exposed_mean": 1.323076923076923,
+          "mean_standardized_difference": 0.28919554472089737,
+          "pairs": 13
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 35.72213703640533,
+          "exposed_mean": 46.08461538461539,
+          "mean_standardized_difference": 0.5948891146001266,
+          "pairs": 13
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 4.1490799173726005,
+        "exposed": 4.923076923076923
+      },
+      "n_control_unique_tickers": 91,
+      "n_dates": 7,
+      "n_matched_exposed": 13,
+      "observed_capture_controls": 0.06978983076544053,
+      "observed_capture_difference": 0.16097940000379024,
+      "observed_capture_exposed": 0.23076923076923078,
+      "observed_capture_odds_ratio": 3.9986205398359855,
+      "observed_capture_relative_risk": 3.3066311844892193,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 6
+        },
+        "kish_effective_clusters": 3.3137254901960786,
+        "max_share": 0.46153846153846156
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.48811094054996496,
+        0.6994409384653287
+      ],
+      "unmatched_tickers": []
+    },
+    "12_raw_date_sector": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 37.697052255856256,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.0836038961038961,
+        0.3875
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3
+        },
+        "kish_effective_clusters": 5.827586206896552,
+        "max_share": 0.23076923076923078
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 24.112487512487515,
+          "exposed_mean": 29.684615384615384,
+          "mean_standardized_difference": 0.2547341109164987,
+          "pairs": 13
+        },
+        "alpha": {
+          "control_mean": 0.977943722943723,
+          "exposed_mean": 1.2584615384615385,
+          "mean_standardized_difference": 0.31493470567182985,
+          "pairs": 13
+        },
+        "ext_z": {
+          "control_mean": -1.0495292207792208,
+          "exposed_mean": -1.662857142857143,
+          "mean_standardized_difference": -0.5268006589535869,
+          "pairs": 7
+        },
+        "off_high": {
+          "control_mean": -19.6617340992341,
+          "exposed_mean": -19.253846153846155,
+          "mean_standardized_difference": 0.08671267455847263,
+          "pairs": 13
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.24274613332903613,
+          "exposed_mean": 0.1835712369464131,
+          "mean_standardized_difference": -0.24500381013719078,
+          "pairs": 13
+        },
+        "setup": {
+          "control_mean": 1.2578933566433566,
+          "exposed_mean": 1.323076923076923,
+          "mean_standardized_difference": 0.06093788524562273,
+          "pairs": 13
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 42.39195804195804,
+          "exposed_mean": 46.08461538461539,
+          "mean_standardized_difference": 0.25337642364820623,
+          "pairs": 13
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 4.178613053613054,
+        "exposed": 4.923076923076923
+      },
+      "n_control_unique_tickers": 55,
+      "n_dates": 7,
+      "n_matched_exposed": 13,
+      "observed_capture_controls": 0.09090909090909091,
+      "observed_capture_difference": 0.13986013986013987,
+      "observed_capture_exposed": 0.23076923076923078,
+      "observed_capture_odds_ratio": 3.0000000000000004,
+      "observed_capture_relative_risk": 2.5384615384615383,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 6
+        },
+        "kish_effective_clusters": 3.3137254901960786,
+        "max_share": 0.46153846153846156
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.5004162504162504,
+        0.6783216783216783
+      ],
+      "unmatched_tickers": []
+    },
+    "12_raw_date_sector_state": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 18.42925970056468,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.02857142857142857,
+        0.3650793650793651
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3
+        },
+        "kish_effective_clusters": 5.761904761904762,
+        "max_share": 0.2727272727272727
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 30.950129870129874,
+          "exposed_mean": 27.09090909090909,
+          "mean_standardized_difference": -0.14040514156759232,
+          "pairs": 11
+        },
+        "alpha": {
+          "control_mean": 1.0243961038961038,
+          "exposed_mean": 1.2527272727272727,
+          "mean_standardized_difference": 0.24997429881811042,
+          "pairs": 11
+        },
+        "ext_z": {
+          "control_mean": -1.0008163265306123,
+          "exposed_mean": -1.662857142857143,
+          "mean_standardized_difference": -0.5689317619313384,
+          "pairs": 7
+        },
+        "off_high": {
+          "control_mean": -18.53062770562771,
+          "exposed_mean": -20.363636363636363,
+          "mean_standardized_difference": -0.13500884554613904,
+          "pairs": 11
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.22799516807875184,
+          "exposed_mean": 0.18720746749749176,
+          "mean_standardized_difference": -0.144865624098225,
+          "pairs": 11
+        },
+        "setup": {
+          "control_mean": 1.2434112554112553,
+          "exposed_mean": 1.3354545454545454,
+          "mean_standardized_difference": 0.0694153791237252,
+          "pairs": 11
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 43.357012987012986,
+          "exposed_mean": 42.08181818181818,
+          "mean_standardized_difference": -0.0017453107379043916,
+          "pairs": 11
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 3.1054112554112554,
+        "exposed": 4.818181818181818
+      },
+      "n_control_unique_tickers": 28,
+      "n_dates": 7,
+      "n_matched_exposed": 11,
+      "observed_capture_controls": 0.11688311688311687,
+      "observed_capture_difference": 0.15584415584415584,
+      "observed_capture_exposed": 0.2727272727272727,
+      "observed_capture_odds_ratio": 2.8333333333333335,
+      "observed_capture_relative_risk": 2.3333333333333335,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 5
+        },
+        "kish_effective_clusters": 3.4571428571428573,
+        "max_share": 0.45454545454545453
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.3995670995670996,
+        0.7012987012987013
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "12_raw_date_sector_state_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 19.105263157894736,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        0.0,
+        0.3095238095238096
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3
+        },
+        "kish_effective_clusters": 5.761904761904762,
+        "max_share": 0.2727272727272727
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 31.71212121212121,
+          "exposed_mean": 27.09090909090909,
+          "mean_standardized_difference": -0.17722628930587137,
+          "pairs": 11
+        },
+        "alpha": {
+          "control_mean": 1.0175757575757576,
+          "exposed_mean": 1.2527272727272727,
+          "mean_standardized_difference": 0.25846262057084707,
+          "pairs": 11
+        },
+        "ext_z": {
+          "control_mean": -0.9942857142857143,
+          "exposed_mean": -1.662857142857143,
+          "mean_standardized_difference": -0.5695272246745545,
+          "pairs": 7
+        },
+        "off_high": {
+          "control_mean": -18.927272727272726,
+          "exposed_mean": -20.363636363636363,
+          "mean_standardized_difference": -0.1032477787643166,
+          "pairs": 11
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.23082727430421482,
+          "exposed_mean": 0.18720746749749176,
+          "mean_standardized_difference": -0.1579307966356179,
+          "pairs": 11
+        },
+        "setup": {
+          "control_mean": 1.2878787878787878,
+          "exposed_mean": 1.3354545454545454,
+          "mean_standardized_difference": 0.02545530468669814,
+          "pairs": 11
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 43.127272727272725,
+          "exposed_mean": 42.08181818181818,
+          "mean_standardized_difference": 0.01750626745564703,
+          "pairs": 11
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 3.272727272727273,
+        "exposed": 4.818181818181818
+      },
+      "n_control_unique_tickers": 25,
+      "n_dates": 7,
+      "n_matched_exposed": 11,
+      "observed_capture_controls": 0.1212121212121212,
+      "observed_capture_difference": 0.1515151515151515,
+      "observed_capture_exposed": 0.2727272727272727,
+      "observed_capture_odds_ratio": 2.7187499999999996,
+      "observed_capture_relative_risk": 2.25,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 5
+        },
+        "kish_effective_clusters": 3.4571428571428573,
+        "max_share": 0.45454545454545453
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.3939393939393939,
+        0.696969696969697
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "12_raw_issuer_disjoint_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 14.294117647058822,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        0.0,
+        0.25
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 1,
+          "2026-08-31": 1,
+          "2026-09-04": 3
+        },
+        "kish_effective_clusters": 4.764705882352941,
+        "max_share": 0.3333333333333333
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 32.488888888888894,
+          "exposed_mean": 28.444444444444443,
+          "mean_standardized_difference": -0.1424475645203386,
+          "pairs": 9
+        },
+        "alpha": {
+          "control_mean": 0.9251851851851851,
+          "exposed_mean": 1.0144444444444445,
+          "mean_standardized_difference": 0.09199247250085361,
+          "pairs": 9
+        },
+        "ext_z": {
+          "control_mean": -0.8966666666666667,
+          "exposed_mean": -1.582,
+          "mean_standardized_difference": -0.5914907018351296,
+          "pairs": 5
+        },
+        "off_high": {
+          "control_mean": -16.78148148148148,
+          "exposed_mean": -16.455555555555556,
+          "mean_standardized_difference": 0.046755368545182835,
+          "pairs": 9
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.24608618811355987,
+          "exposed_mean": 0.2198001179323698,
+          "mean_standardized_difference": -0.0709612620217278,
+          "pairs": 9
+        },
+        "setup": {
+          "control_mean": 1.1437037037037037,
+          "exposed_mean": 1.232222222222222,
+          "mean_standardized_difference": 0.05907166134609914,
+          "pairs": 9
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 41.27037037037037,
+          "exposed_mean": 36.03333333333333,
+          "mean_standardized_difference": -0.19591337985777904,
+          "pairs": 9
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 2.9259259259259256,
+        "exposed": 5.555555555555555
+      },
+      "n_control_unique_tickers": 19,
+      "n_dates": 6,
+      "n_matched_exposed": 9,
+      "observed_capture_controls": 0.1111111111111111,
+      "observed_capture_difference": 0.1111111111111111,
+      "observed_capture_exposed": 0.2222222222222222,
+      "observed_capture_odds_ratio": 2.2857142857142856,
+      "observed_capture_relative_risk": 2.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 3
+        },
+        "kish_effective_clusters": 4.2631578947368425,
+        "max_share": 0.3333333333333333
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.4444444444444444,
+        0.6666666666666666
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "SNDK:already_enrolled_as_control",
+        "FORM:already_enrolled_as_control"
+      ]
+    },
+    "12_valid_date": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 63.53586359074061,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.04877946127946128,
+        0.3240530303030303
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3
+        },
+        "kish_effective_clusters": 5.827586206896552,
+        "max_share": 0.23076923076923078
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 21.30457056493642,
+          "exposed_mean": 29.684615384615384,
+          "mean_standardized_difference": 0.3422893948736169,
+          "pairs": 13
+        },
+        "alpha": {
+          "control_mean": 0.8332499194572366,
+          "exposed_mean": 1.2584615384615385,
+          "mean_standardized_difference": 0.48197632478317487,
+          "pairs": 13
+        },
+        "ext_z": {
+          "control_mean": -0.7047864357864357,
+          "exposed_mean": -1.662857142857143,
+          "mean_standardized_difference": -0.849849626413538,
+          "pairs": 7
+        },
+        "off_high": {
+          "control_mean": -16.459172683684876,
+          "exposed_mean": -19.253846153846155,
+          "mean_standardized_difference": -0.21784630038000374,
+          "pairs": 13
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.26179670918167686,
+          "exposed_mean": 0.1835712369464131,
+          "mean_standardized_difference": -0.33079465478508363,
+          "pairs": 13
+        },
+        "setup": {
+          "control_mean": 1.041345793772623,
+          "exposed_mean": 1.323076923076923,
+          "mean_standardized_difference": 0.28919554472089737,
+          "pairs": 13
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 35.72213703640533,
+          "exposed_mean": 46.08461538461539,
+          "mean_standardized_difference": 0.5948891146001266,
+          "pairs": 13
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 4.1490799173726005,
+        "exposed": 4.923076923076923
+      },
+      "n_control_unique_tickers": 91,
+      "n_dates": 7,
+      "n_matched_exposed": 13,
+      "observed_capture_controls": 0.048043284628650484,
+      "observed_capture_difference": 0.10580286921750337,
+      "observed_capture_exposed": 0.15384615384615385,
+      "observed_capture_odds_ratio": 3.6026479141938097,
+      "observed_capture_relative_risk": 3.2022405427793776,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 6
+        },
+        "kish_effective_clusters": 3.3137254901960786,
+        "max_share": 0.46153846153846156
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.552412492656395,
+        0.7211874846021188
+      ],
+      "unmatched_tickers": []
+    },
+    "12_valid_date_sector": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 37.697052255856256,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.0472027972027972,
+        0.3068181818181818
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3
+        },
+        "kish_effective_clusters": 5.827586206896552,
+        "max_share": 0.23076923076923078
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 24.112487512487515,
+          "exposed_mean": 29.684615384615384,
+          "mean_standardized_difference": 0.2547341109164987,
+          "pairs": 13
+        },
+        "alpha": {
+          "control_mean": 0.977943722943723,
+          "exposed_mean": 1.2584615384615385,
+          "mean_standardized_difference": 0.31493470567182985,
+          "pairs": 13
+        },
+        "ext_z": {
+          "control_mean": -1.0495292207792208,
+          "exposed_mean": -1.662857142857143,
+          "mean_standardized_difference": -0.5268006589535869,
+          "pairs": 7
+        },
+        "off_high": {
+          "control_mean": -19.6617340992341,
+          "exposed_mean": -19.253846153846155,
+          "mean_standardized_difference": 0.08671267455847263,
+          "pairs": 13
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.24274613332903613,
+          "exposed_mean": 0.1835712369464131,
+          "mean_standardized_difference": -0.24500381013719078,
+          "pairs": 13
+        },
+        "setup": {
+          "control_mean": 1.2578933566433566,
+          "exposed_mean": 1.323076923076923,
+          "mean_standardized_difference": 0.06093788524562273,
+          "pairs": 13
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 42.39195804195804,
+          "exposed_mean": 46.08461538461539,
+          "mean_standardized_difference": 0.25337642364820623,
+          "pairs": 13
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 4.178613053613054,
+        "exposed": 4.923076923076923
+      },
+      "n_control_unique_tickers": 55,
+      "n_dates": 7,
+      "n_matched_exposed": 13,
+      "observed_capture_controls": 0.052447552447552455,
+      "observed_capture_difference": 0.1013986013986014,
+      "observed_capture_exposed": 0.15384615384615385,
+      "observed_capture_odds_ratio": 3.2848484848484842,
+      "observed_capture_relative_risk": 2.933333333333333,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 6
+        },
+        "kish_effective_clusters": 3.3137254901960786,
+        "max_share": 0.46153846153846156
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.5581085581085581,
+        0.7167832167832168
+      ],
+      "unmatched_tickers": []
+    },
+    "12_valid_date_sector_state": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 18.42925970056468,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.031746031746031744,
+        0.3333333333333333
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3
+        },
+        "kish_effective_clusters": 5.761904761904762,
+        "max_share": 0.2727272727272727
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 30.950129870129874,
+          "exposed_mean": 27.09090909090909,
+          "mean_standardized_difference": -0.14040514156759232,
+          "pairs": 11
+        },
+        "alpha": {
+          "control_mean": 1.0243961038961038,
+          "exposed_mean": 1.2527272727272727,
+          "mean_standardized_difference": 0.24997429881811042,
+          "pairs": 11
+        },
+        "ext_z": {
+          "control_mean": -1.0008163265306123,
+          "exposed_mean": -1.662857142857143,
+          "mean_standardized_difference": -0.5689317619313384,
+          "pairs": 7
+        },
+        "off_high": {
+          "control_mean": -18.53062770562771,
+          "exposed_mean": -20.363636363636363,
+          "mean_standardized_difference": -0.13500884554613904,
+          "pairs": 11
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.22799516807875184,
+          "exposed_mean": 0.18720746749749176,
+          "mean_standardized_difference": -0.144865624098225,
+          "pairs": 11
+        },
+        "setup": {
+          "control_mean": 1.2434112554112553,
+          "exposed_mean": 1.3354545454545454,
+          "mean_standardized_difference": 0.0694153791237252,
+          "pairs": 11
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 43.357012987012986,
+          "exposed_mean": 42.08181818181818,
+          "mean_standardized_difference": -0.0017453107379043916,
+          "pairs": 11
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 3.1054112554112554,
+        "exposed": 4.818181818181818
+      },
+      "n_control_unique_tickers": 28,
+      "n_dates": 7,
+      "n_matched_exposed": 11,
+      "observed_capture_controls": 0.10389610389610389,
+      "observed_capture_difference": 0.07792207792207793,
+      "observed_capture_exposed": 0.18181818181818182,
+      "observed_capture_odds_ratio": 1.9166666666666667,
+      "observed_capture_relative_risk": 1.7500000000000002,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 5
+        },
+        "kish_effective_clusters": 3.4571428571428573,
+        "max_share": 0.45454545454545453
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.4904761904761905,
+        0.7142857142857143
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "12_valid_date_sector_state_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 19.105263157894736,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        0.0,
+        0.3333333333333333
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3
+        },
+        "kish_effective_clusters": 5.761904761904762,
+        "max_share": 0.2727272727272727
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 31.71212121212121,
+          "exposed_mean": 27.09090909090909,
+          "mean_standardized_difference": -0.17722628930587137,
+          "pairs": 11
+        },
+        "alpha": {
+          "control_mean": 1.0175757575757576,
+          "exposed_mean": 1.2527272727272727,
+          "mean_standardized_difference": 0.25846262057084707,
+          "pairs": 11
+        },
+        "ext_z": {
+          "control_mean": -0.9942857142857143,
+          "exposed_mean": -1.662857142857143,
+          "mean_standardized_difference": -0.5695272246745545,
+          "pairs": 7
+        },
+        "off_high": {
+          "control_mean": -18.927272727272726,
+          "exposed_mean": -20.363636363636363,
+          "mean_standardized_difference": -0.1032477787643166,
+          "pairs": 11
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.23082727430421482,
+          "exposed_mean": 0.18720746749749176,
+          "mean_standardized_difference": -0.1579307966356179,
+          "pairs": 11
+        },
+        "setup": {
+          "control_mean": 1.2878787878787878,
+          "exposed_mean": 1.3354545454545454,
+          "mean_standardized_difference": 0.02545530468669814,
+          "pairs": 11
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 43.127272727272725,
+          "exposed_mean": 42.08181818181818,
+          "mean_standardized_difference": 0.01750626745564703,
+          "pairs": 11
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 3.272727272727273,
+        "exposed": 4.818181818181818
+      },
+      "n_control_unique_tickers": 25,
+      "n_dates": 7,
+      "n_matched_exposed": 11,
+      "observed_capture_controls": 0.09090909090909091,
+      "observed_capture_difference": 0.09090909090909091,
+      "observed_capture_exposed": 0.18181818181818182,
+      "observed_capture_odds_ratio": 2.2222222222222223,
+      "observed_capture_relative_risk": 2.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 5
+        },
+        "kish_effective_clusters": 3.4571428571428573,
+        "max_share": 0.45454545454545453
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.4848484848484848,
+        0.7272727272727273
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "12_valid_issuer_disjoint_nn3": {
+      "bootstrap_status": "DEGENERATE_OBSERVED_CONTRAST_NOT_PRECISE_NULL",
+      "control_weight_effective_n": 14.294117647058822,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        0.0,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 1,
+          "2026-08-31": 1,
+          "2026-09-04": 3
+        },
+        "kish_effective_clusters": 4.764705882352941,
+        "max_share": 0.3333333333333333
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 32.488888888888894,
+          "exposed_mean": 28.444444444444443,
+          "mean_standardized_difference": -0.1424475645203386,
+          "pairs": 9
+        },
+        "alpha": {
+          "control_mean": 0.9251851851851851,
+          "exposed_mean": 1.0144444444444445,
+          "mean_standardized_difference": 0.09199247250085361,
+          "pairs": 9
+        },
+        "ext_z": {
+          "control_mean": -0.8966666666666667,
+          "exposed_mean": -1.582,
+          "mean_standardized_difference": -0.5914907018351296,
+          "pairs": 5
+        },
+        "off_high": {
+          "control_mean": -16.78148148148148,
+          "exposed_mean": -16.455555555555556,
+          "mean_standardized_difference": 0.046755368545182835,
+          "pairs": 9
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.24608618811355987,
+          "exposed_mean": 0.2198001179323698,
+          "mean_standardized_difference": -0.0709612620217278,
+          "pairs": 9
+        },
+        "setup": {
+          "control_mean": 1.1437037037037037,
+          "exposed_mean": 1.232222222222222,
+          "mean_standardized_difference": 0.05907166134609914,
+          "pairs": 9
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 41.27037037037037,
+          "exposed_mean": 36.03333333333333,
+          "mean_standardized_difference": -0.19591337985777904,
+          "pairs": 9
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 2.9259259259259256,
+        "exposed": 5.555555555555555
+      },
+      "n_control_unique_tickers": 19,
+      "n_dates": 6,
+      "n_matched_exposed": 9,
+      "observed_capture_controls": 0.1111111111111111,
+      "observed_capture_difference": 0.0,
+      "observed_capture_exposed": 0.1111111111111111,
+      "observed_capture_odds_ratio": 1.0,
+      "observed_capture_relative_risk": 1.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 3
+        },
+        "kish_effective_clusters": 4.2631578947368425,
+        "max_share": 0.3333333333333333
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.5555555555555556,
+        0.6666666666666666
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "SNDK:already_enrolled_as_control",
+        "FORM:already_enrolled_as_control"
+      ]
+    },
+    "20_raw_date": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 50.98187311178248,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.06666666666666667,
+        0.2888888888888889
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2
+        },
+        "kish_effective_clusters": 1.9230769230769231,
+        "max_share": 0.6
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 17.78177777777778,
+          "exposed_mean": 33.660000000000004,
+          "mean_standardized_difference": 0.7122668414163026,
+          "pairs": 5
+        },
+        "alpha": {
+          "control_mean": 0.7934666666666667,
+          "exposed_mean": 1.388,
+          "mean_standardized_difference": 0.704952462449251,
+          "pairs": 5
+        },
+        "ext_z": {
+          "control_mean": -0.5928888888888889,
+          "exposed_mean": -1.355,
+          "mean_standardized_difference": -0.7656469842188598,
+          "pairs": 2
+        },
+        "off_high": {
+          "control_mean": -15.859555555555556,
+          "exposed_mean": -17.04,
+          "mean_standardized_difference": -0.12236420177696346,
+          "pairs": 5
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.27104237675901954,
+          "exposed_mean": 0.15435664672305893,
+          "mean_standardized_difference": -0.5004240683260697,
+          "pairs": 5
+        },
+        "setup": {
+          "control_mean": 1.0245777777777776,
+          "exposed_mean": 1.672,
+          "mean_standardized_difference": 0.6513348841589462,
+          "pairs": 5
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 38.512888888888895,
+          "exposed_mean": 54.96,
+          "mean_standardized_difference": 0.8764405804552666,
+          "pairs": 5
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 7.675555555555556,
+        "exposed": 10.2
+      },
+      "n_control_unique_tickers": 56,
+      "n_dates": 2,
+      "n_matched_exposed": 5,
+      "observed_capture_controls": 0.05333333333333333,
+      "observed_capture_difference": 0.14666666666666667,
+      "observed_capture_exposed": 0.2,
+      "observed_capture_odds_ratio": 4.437500000000001,
+      "observed_capture_relative_risk": 3.7500000000000004,
+      "sector_concentration": {
+        "counts": {
+          "Financials": 1,
+          "Industrials": 1,
+          "Information Technology": 3
+        },
+        "kish_effective_clusters": 2.272727272727273,
+        "max_share": 0.6
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.6,
+        0.9466666666666667
+      ],
+      "unmatched_tickers": []
+    },
+    "20_raw_date_sector": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 19.444444444444446,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.125,
+        0.3333333333333333
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2
+        },
+        "kish_effective_clusters": 1.9230769230769231,
+        "max_share": 0.6
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 19.580000000000002,
+          "exposed_mean": 33.660000000000004,
+          "mean_standardized_difference": 0.6678538527526519,
+          "pairs": 5
+        },
+        "alpha": {
+          "control_mean": 1.004547619047619,
+          "exposed_mean": 1.388,
+          "mean_standardized_difference": 0.45723532230408315,
+          "pairs": 5
+        },
+        "ext_z": {
+          "control_mean": -1.3775,
+          "exposed_mean": -1.355,
+          "mean_standardized_difference": 0.02260439048029142,
+          "pairs": 2
+        },
+        "off_high": {
+          "control_mean": -22.178571428571427,
+          "exposed_mean": -17.04,
+          "mean_standardized_difference": 0.5178645787162693,
+          "pairs": 5
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.25057595763702634,
+          "exposed_mean": 0.15435664672305893,
+          "mean_standardized_difference": -0.40782934506673796,
+          "pairs": 5
+        },
+        "setup": {
+          "control_mean": 1.2428333333333332,
+          "exposed_mean": 1.672,
+          "mean_standardized_difference": 0.43088492902060793,
+          "pairs": 5
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 53.37261904761905,
+          "exposed_mean": 54.96,
+          "mean_standardized_difference": 0.15252300131181928,
+          "pairs": 5
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 7.428571428571429,
+        "exposed": 10.2
+      },
+      "n_control_unique_tickers": 24,
+      "n_dates": 2,
+      "n_matched_exposed": 5,
+      "observed_capture_controls": 0.05,
+      "observed_capture_difference": 0.15000000000000002,
+      "observed_capture_exposed": 0.2,
+      "observed_capture_odds_ratio": 4.75,
+      "observed_capture_relative_risk": 4.0,
+      "sector_concentration": {
+        "counts": {
+          "Financials": 1,
+          "Industrials": 1,
+          "Information Technology": 3
+        },
+        "kish_effective_clusters": 2.272727272727273,
+        "max_share": 0.6
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.6595238095238095,
+        0.95
+      ],
+      "unmatched_tickers": []
+    },
+    "20_raw_date_sector_state": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 5.4,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.16666666666666666,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2
+        },
+        "kish_effective_clusters": 1.8,
+        "max_share": 0.6666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 30.76666666666667,
+          "exposed_mean": 26.8,
+          "mean_standardized_difference": -0.13514010552755154,
+          "pairs": 3
+        },
+        "alpha": {
+          "control_mean": 0.9600000000000001,
+          "exposed_mean": 1.4533333333333331,
+          "mean_standardized_difference": 0.5950020380033698,
+          "pairs": 3
+        },
+        "ext_z": {
+          "control_mean": -1.51,
+          "exposed_mean": -1.355,
+          "mean_standardized_difference": 0.15571913441978563,
+          "pairs": 2
+        },
+        "off_high": {
+          "control_mean": -22.433333333333337,
+          "exposed_mean": -19.633333333333333,
+          "mean_standardized_difference": 0.28255070346595534,
+          "pairs": 3
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.32454591996576726,
+          "exposed_mean": 0.148213098594778,
+          "mean_standardized_difference": -0.7268096851333471,
+          "pairs": 3
+        },
+        "setup": {
+          "control_mean": 1.1388888888888888,
+          "exposed_mean": 1.95,
+          "mean_standardized_difference": 0.808476783407808,
+          "pairs": 3
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 64.43333333333332,
+          "exposed_mean": 46.199999999999996,
+          "mean_standardized_difference": -0.8792555498225397,
+          "pairs": 3
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 4.111111111111112,
+        "exposed": 10.333333333333334
+      },
+      "n_control_unique_tickers": 7,
+      "n_dates": 2,
+      "n_matched_exposed": 3,
+      "observed_capture_controls": 0.1111111111111111,
+      "observed_capture_difference": -0.1111111111111111,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Financials": 1,
+          "Information Technology": 2
+        },
+        "kish_effective_clusters": 1.8,
+        "max_share": 0.6666666666666666
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.888888888888889,
+        0.888888888888889
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "20_raw_date_sector_state_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 5.4,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.16666666666666666,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2
+        },
+        "kish_effective_clusters": 1.8,
+        "max_share": 0.6666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 30.766666666666666,
+          "exposed_mean": 26.8,
+          "mean_standardized_difference": -0.13514010552755143,
+          "pairs": 3
+        },
+        "alpha": {
+          "control_mean": 0.96,
+          "exposed_mean": 1.4533333333333331,
+          "mean_standardized_difference": 0.5950020380033699,
+          "pairs": 3
+        },
+        "ext_z": {
+          "control_mean": -1.5100000000000002,
+          "exposed_mean": -1.355,
+          "mean_standardized_difference": 0.15571913441978572,
+          "pairs": 2
+        },
+        "off_high": {
+          "control_mean": -22.433333333333337,
+          "exposed_mean": -19.633333333333333,
+          "mean_standardized_difference": 0.2825507034659553,
+          "pairs": 3
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.32454591996576726,
+          "exposed_mean": 0.148213098594778,
+          "mean_standardized_difference": -0.7268096851333471,
+          "pairs": 3
+        },
+        "setup": {
+          "control_mean": 1.1388888888888888,
+          "exposed_mean": 1.95,
+          "mean_standardized_difference": 0.8084767834078082,
+          "pairs": 3
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 64.43333333333334,
+          "exposed_mean": 46.199999999999996,
+          "mean_standardized_difference": -0.8792555498225404,
+          "pairs": 3
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 4.111111111111111,
+        "exposed": 10.333333333333334
+      },
+      "n_control_unique_tickers": 7,
+      "n_dates": 2,
+      "n_matched_exposed": 3,
+      "observed_capture_controls": 0.1111111111111111,
+      "observed_capture_difference": -0.1111111111111111,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Financials": 1,
+          "Information Technology": 2
+        },
+        "kish_effective_clusters": 1.8,
+        "max_share": 0.6666666666666666
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.8888888888888888,
+        0.888888888888889
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "20_raw_issuer_disjoint_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 5.4,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.16666666666666666,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2
+        },
+        "kish_effective_clusters": 1.8,
+        "max_share": 0.6666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 30.766666666666666,
+          "exposed_mean": 26.8,
+          "mean_standardized_difference": -0.13514010552755143,
+          "pairs": 3
+        },
+        "alpha": {
+          "control_mean": 0.96,
+          "exposed_mean": 1.4533333333333331,
+          "mean_standardized_difference": 0.5950020380033699,
+          "pairs": 3
+        },
+        "ext_z": {
+          "control_mean": -1.5100000000000002,
+          "exposed_mean": -1.355,
+          "mean_standardized_difference": 0.15571913441978572,
+          "pairs": 2
+        },
+        "off_high": {
+          "control_mean": -22.433333333333337,
+          "exposed_mean": -19.633333333333333,
+          "mean_standardized_difference": 0.2825507034659553,
+          "pairs": 3
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.32454591996576726,
+          "exposed_mean": 0.148213098594778,
+          "mean_standardized_difference": -0.7268096851333471,
+          "pairs": 3
+        },
+        "setup": {
+          "control_mean": 1.1388888888888888,
+          "exposed_mean": 1.95,
+          "mean_standardized_difference": 0.8084767834078082,
+          "pairs": 3
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 64.43333333333334,
+          "exposed_mean": 46.199999999999996,
+          "mean_standardized_difference": -0.8792555498225404,
+          "pairs": 3
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 4.111111111111111,
+        "exposed": 10.333333333333334
+      },
+      "n_control_unique_tickers": 7,
+      "n_dates": 2,
+      "n_matched_exposed": 3,
+      "observed_capture_controls": 0.1111111111111111,
+      "observed_capture_difference": -0.1111111111111111,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Financials": 1,
+          "Information Technology": 2
+        },
+        "kish_effective_clusters": 1.8,
+        "max_share": 0.6666666666666666
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.8888888888888888,
+        0.888888888888889
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "20_valid_date": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 50.98187311178248,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.044444444444444446,
+        -0.022222222222222223
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2
+        },
+        "kish_effective_clusters": 1.9230769230769231,
+        "max_share": 0.6
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 17.78177777777778,
+          "exposed_mean": 33.660000000000004,
+          "mean_standardized_difference": 0.7122668414163026,
+          "pairs": 5
+        },
+        "alpha": {
+          "control_mean": 0.7934666666666667,
+          "exposed_mean": 1.388,
+          "mean_standardized_difference": 0.704952462449251,
+          "pairs": 5
+        },
+        "ext_z": {
+          "control_mean": -0.5928888888888889,
+          "exposed_mean": -1.355,
+          "mean_standardized_difference": -0.7656469842188598,
+          "pairs": 2
+        },
+        "off_high": {
+          "control_mean": -15.859555555555556,
+          "exposed_mean": -17.04,
+          "mean_standardized_difference": -0.12236420177696346,
+          "pairs": 5
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.27104237675901954,
+          "exposed_mean": 0.15435664672305893,
+          "mean_standardized_difference": -0.5004240683260697,
+          "pairs": 5
+        },
+        "setup": {
+          "control_mean": 1.0245777777777776,
+          "exposed_mean": 1.672,
+          "mean_standardized_difference": 0.6513348841589462,
+          "pairs": 5
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 38.512888888888895,
+          "exposed_mean": 54.96,
+          "mean_standardized_difference": 0.8764405804552666,
+          "pairs": 5
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 7.675555555555556,
+        "exposed": 10.2
+      },
+      "n_control_unique_tickers": 56,
+      "n_dates": 2,
+      "n_matched_exposed": 5,
+      "observed_capture_controls": 0.03111111111111111,
+      "observed_capture_difference": -0.03111111111111111,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Financials": 1,
+          "Industrials": 1,
+          "Information Technology": 3
+        },
+        "kish_effective_clusters": 2.272727272727273,
+        "max_share": 0.6
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.7777777777777778,
+        0.9688888888888888
+      ],
+      "unmatched_tickers": []
+    },
+    "20_valid_date_sector": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 19.444444444444446,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.125,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2
+        },
+        "kish_effective_clusters": 1.9230769230769231,
+        "max_share": 0.6
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 19.580000000000002,
+          "exposed_mean": 33.660000000000004,
+          "mean_standardized_difference": 0.6678538527526519,
+          "pairs": 5
+        },
+        "alpha": {
+          "control_mean": 1.004547619047619,
+          "exposed_mean": 1.388,
+          "mean_standardized_difference": 0.45723532230408315,
+          "pairs": 5
+        },
+        "ext_z": {
+          "control_mean": -1.3775,
+          "exposed_mean": -1.355,
+          "mean_standardized_difference": 0.02260439048029142,
+          "pairs": 2
+        },
+        "off_high": {
+          "control_mean": -22.178571428571427,
+          "exposed_mean": -17.04,
+          "mean_standardized_difference": 0.5178645787162693,
+          "pairs": 5
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.25057595763702634,
+          "exposed_mean": 0.15435664672305893,
+          "mean_standardized_difference": -0.40782934506673796,
+          "pairs": 5
+        },
+        "setup": {
+          "control_mean": 1.2428333333333332,
+          "exposed_mean": 1.672,
+          "mean_standardized_difference": 0.43088492902060793,
+          "pairs": 5
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 53.37261904761905,
+          "exposed_mean": 54.96,
+          "mean_standardized_difference": 0.15252300131181928,
+          "pairs": 5
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 7.428571428571429,
+        "exposed": 10.2
+      },
+      "n_control_unique_tickers": 24,
+      "n_dates": 2,
+      "n_matched_exposed": 5,
+      "observed_capture_controls": 0.05,
+      "observed_capture_difference": -0.05,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Financials": 1,
+          "Industrials": 1,
+          "Information Technology": 3
+        },
+        "kish_effective_clusters": 2.272727272727273,
+        "max_share": 0.6
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.8595238095238095,
+        0.95
+      ],
+      "unmatched_tickers": []
+    },
+    "20_valid_date_sector_state": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 5.4,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.16666666666666666,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2
+        },
+        "kish_effective_clusters": 1.8,
+        "max_share": 0.6666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 30.76666666666667,
+          "exposed_mean": 26.8,
+          "mean_standardized_difference": -0.13514010552755154,
+          "pairs": 3
+        },
+        "alpha": {
+          "control_mean": 0.9600000000000001,
+          "exposed_mean": 1.4533333333333331,
+          "mean_standardized_difference": 0.5950020380033698,
+          "pairs": 3
+        },
+        "ext_z": {
+          "control_mean": -1.51,
+          "exposed_mean": -1.355,
+          "mean_standardized_difference": 0.15571913441978563,
+          "pairs": 2
+        },
+        "off_high": {
+          "control_mean": -22.433333333333337,
+          "exposed_mean": -19.633333333333333,
+          "mean_standardized_difference": 0.28255070346595534,
+          "pairs": 3
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.32454591996576726,
+          "exposed_mean": 0.148213098594778,
+          "mean_standardized_difference": -0.7268096851333471,
+          "pairs": 3
+        },
+        "setup": {
+          "control_mean": 1.1388888888888888,
+          "exposed_mean": 1.95,
+          "mean_standardized_difference": 0.808476783407808,
+          "pairs": 3
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 64.43333333333332,
+          "exposed_mean": 46.199999999999996,
+          "mean_standardized_difference": -0.8792555498225397,
+          "pairs": 3
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 4.111111111111112,
+        "exposed": 10.333333333333334
+      },
+      "n_control_unique_tickers": 7,
+      "n_dates": 2,
+      "n_matched_exposed": 3,
+      "observed_capture_controls": 0.1111111111111111,
+      "observed_capture_difference": -0.1111111111111111,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Financials": 1,
+          "Information Technology": 2
+        },
+        "kish_effective_clusters": 1.8,
+        "max_share": 0.6666666666666666
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.888888888888889,
+        0.888888888888889
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "20_valid_date_sector_state_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 5.4,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.16666666666666666,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2
+        },
+        "kish_effective_clusters": 1.8,
+        "max_share": 0.6666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 30.766666666666666,
+          "exposed_mean": 26.8,
+          "mean_standardized_difference": -0.13514010552755143,
+          "pairs": 3
+        },
+        "alpha": {
+          "control_mean": 0.96,
+          "exposed_mean": 1.4533333333333331,
+          "mean_standardized_difference": 0.5950020380033699,
+          "pairs": 3
+        },
+        "ext_z": {
+          "control_mean": -1.5100000000000002,
+          "exposed_mean": -1.355,
+          "mean_standardized_difference": 0.15571913441978572,
+          "pairs": 2
+        },
+        "off_high": {
+          "control_mean": -22.433333333333337,
+          "exposed_mean": -19.633333333333333,
+          "mean_standardized_difference": 0.2825507034659553,
+          "pairs": 3
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.32454591996576726,
+          "exposed_mean": 0.148213098594778,
+          "mean_standardized_difference": -0.7268096851333471,
+          "pairs": 3
+        },
+        "setup": {
+          "control_mean": 1.1388888888888888,
+          "exposed_mean": 1.95,
+          "mean_standardized_difference": 0.8084767834078082,
+          "pairs": 3
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 64.43333333333334,
+          "exposed_mean": 46.199999999999996,
+          "mean_standardized_difference": -0.8792555498225404,
+          "pairs": 3
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 4.111111111111111,
+        "exposed": 10.333333333333334
+      },
+      "n_control_unique_tickers": 7,
+      "n_dates": 2,
+      "n_matched_exposed": 3,
+      "observed_capture_controls": 0.1111111111111111,
+      "observed_capture_difference": -0.1111111111111111,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Financials": 1,
+          "Information Technology": 2
+        },
+        "kish_effective_clusters": 1.8,
+        "max_share": 0.6666666666666666
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.8888888888888888,
+        0.888888888888889
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "20_valid_issuer_disjoint_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 5.4,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.16666666666666666,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2
+        },
+        "kish_effective_clusters": 1.8,
+        "max_share": 0.6666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 30.766666666666666,
+          "exposed_mean": 26.8,
+          "mean_standardized_difference": -0.13514010552755143,
+          "pairs": 3
+        },
+        "alpha": {
+          "control_mean": 0.96,
+          "exposed_mean": 1.4533333333333331,
+          "mean_standardized_difference": 0.5950020380033699,
+          "pairs": 3
+        },
+        "ext_z": {
+          "control_mean": -1.5100000000000002,
+          "exposed_mean": -1.355,
+          "mean_standardized_difference": 0.15571913441978572,
+          "pairs": 2
+        },
+        "off_high": {
+          "control_mean": -22.433333333333337,
+          "exposed_mean": -19.633333333333333,
+          "mean_standardized_difference": 0.2825507034659553,
+          "pairs": 3
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.32454591996576726,
+          "exposed_mean": 0.148213098594778,
+          "mean_standardized_difference": -0.7268096851333471,
+          "pairs": 3
+        },
+        "setup": {
+          "control_mean": 1.1388888888888888,
+          "exposed_mean": 1.95,
+          "mean_standardized_difference": 0.8084767834078082,
+          "pairs": 3
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 64.43333333333334,
+          "exposed_mean": 46.199999999999996,
+          "mean_standardized_difference": -0.8792555498225404,
+          "pairs": 3
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 4.111111111111111,
+        "exposed": 10.333333333333334
+      },
+      "n_control_unique_tickers": 7,
+      "n_dates": 2,
+      "n_matched_exposed": 3,
+      "observed_capture_controls": 0.1111111111111111,
+      "observed_capture_difference": -0.1111111111111111,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Financials": 1,
+          "Information Technology": 2
+        },
+        "kish_effective_clusters": 1.8,
+        "max_share": 0.6666666666666666
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.8888888888888888,
+        0.888888888888889
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX"
+      ]
+    },
+    "3_raw_date": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 69.99362454144256,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.044351938931716926,
+        -0.009002976923708637
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-14": 1,
+          "2026-09-16": 2,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 9.0,
+        "max_share": 0.16666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 23.03273522869713,
+          "exposed_mean": 38.06111111111111,
+          "mean_standardized_difference": 0.5427493052864709,
+          "pairs": 18
+        },
+        "alpha": {
+          "control_mean": 0.8995795264359737,
+          "exposed_mean": 1.363888888888889,
+          "mean_standardized_difference": 0.5273974447355547,
+          "pairs": 18
+        },
+        "ext_z": {
+          "control_mean": -0.8320262508809021,
+          "exposed_mean": -1.7466666666666668,
+          "mean_standardized_difference": -0.8541635341498103,
+          "pairs": 12
+        },
+        "off_high": {
+          "control_mean": -17.19551960806782,
+          "exposed_mean": -21.72222222222222,
+          "mean_standardized_difference": -0.39014331647577954,
+          "pairs": 18
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.24847478926798716,
+          "exposed_mean": 0.15822184474320025,
+          "mean_standardized_difference": -0.40001085836659916,
+          "pairs": 18
+        },
+        "setup": {
+          "control_mean": 1.0641466026305788,
+          "exposed_mean": 1.4655555555555555,
+          "mean_standardized_difference": 0.384671817524736,
+          "pairs": 18
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 36.39035837355085,
+          "exposed_mean": 44.61666666666667,
+          "mean_standardized_difference": 0.49335263689180286,
+          "pairs": 18
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.7123218063282348,
+        "exposed": 1.0
+      },
+      "n_control_unique_tickers": 113,
+      "n_dates": 11,
+      "n_matched_exposed": 18,
+      "observed_capture_controls": 0.024182885768251623,
+      "observed_capture_difference": -0.024182885768251623,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Communication Services": 1,
+          "Consumer Discretionary": 2,
+          "Consumer Staples": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 8
+        },
+        "kish_effective_clusters": 3.857142857142857,
+        "max_share": 0.4444444444444444
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.39269478359571003,
+        0.4758171142317484
+      ],
+      "unmatched_tickers": []
+    },
+    "3_raw_date_sector": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 39.58608992184856,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.043055555555555555,
+        -0.006666666666666667
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-14": 1,
+          "2026-09-16": 2,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 9.0,
+        "max_share": 0.16666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 28.205079365079364,
+          "exposed_mean": 38.06111111111111,
+          "mean_standardized_difference": 0.38472675019209546,
+          "pairs": 18
+        },
+        "alpha": {
+          "control_mean": 0.9969088504088504,
+          "exposed_mean": 1.363888888888889,
+          "mean_standardized_difference": 0.41432193125026345,
+          "pairs": 18
+        },
+        "ext_z": {
+          "control_mean": -0.9731950757575758,
+          "exposed_mean": -1.7466666666666668,
+          "mean_standardized_difference": -0.7303749741942878,
+          "pairs": 12
+        },
+        "off_high": {
+          "control_mean": -19.44382816257816,
+          "exposed_mean": -21.72222222222222,
+          "mean_standardized_difference": -0.16944434045010756,
+          "pairs": 18
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.23049827681710314,
+          "exposed_mean": 0.15822184474320025,
+          "mean_standardized_difference": -0.31657525732976177,
+          "pairs": 18
+        },
+        "setup": {
+          "control_mean": 1.21222601010101,
+          "exposed_mean": 1.4655555555555555,
+          "mean_standardized_difference": 0.22949116768886085,
+          "pairs": 18
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 40.20070707070707,
+          "exposed_mean": 44.61666666666667,
+          "mean_standardized_difference": 0.28202959621209406,
+          "pairs": 18
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.6077982202982203,
+        "exposed": 1.0
+      },
+      "n_control_unique_tickers": 68,
+      "n_dates": 11,
+      "n_matched_exposed": 18,
+      "observed_capture_controls": 0.025,
+      "observed_capture_difference": -0.025,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Communication Services": 1,
+          "Consumer Discretionary": 2,
+          "Consumer Staples": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 8
+        },
+        "kish_effective_clusters": 3.857142857142857,
+        "max_share": 0.4444444444444444
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.32935305435305434,
+        0.47500000000000003
+      ],
+      "unmatched_tickers": []
+    },
+    "3_raw_date_sector_state": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 21.682721252257675,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.19113636363636344,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-16": 1,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 8.166666666666666,
+        "max_share": 0.21428571428571427
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 34.25795918367347,
+          "exposed_mean": 29.150000000000002,
+          "mean_standardized_difference": -0.17647550254306202,
+          "pairs": 14
+        },
+        "alpha": {
+          "control_mean": 1.1007040816326532,
+          "exposed_mean": 1.397142857142857,
+          "mean_standardized_difference": 0.33005440068708836,
+          "pairs": 14
+        },
+        "ext_z": {
+          "control_mean": -1.0585714285714285,
+          "exposed_mean": -1.7489999999999999,
+          "mean_standardized_difference": -0.6245990061477797,
+          "pairs": 10
+        },
+        "off_high": {
+          "control_mean": -20.193350340136053,
+          "exposed_mean": -22.7,
+          "mean_standardized_difference": -0.20346759591467553,
+          "pairs": 14
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.20621130044251165,
+          "exposed_mean": 0.15742113932809473,
+          "mean_standardized_difference": -0.19424600210045423,
+          "pairs": 14
+        },
+        "setup": {
+          "control_mean": 1.394715986394558,
+          "exposed_mean": 1.4457142857142855,
+          "mean_standardized_difference": 0.03291615272405751,
+          "pairs": 14
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 43.67586734693877,
+          "exposed_mean": 42.785714285714285,
+          "mean_standardized_difference": 0.012149126864900953,
+          "pairs": 14
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.4479591836734694,
+        "exposed": 1.0
+      },
+      "n_control_unique_tickers": 32,
+      "n_dates": 10,
+      "n_matched_exposed": 14,
+      "observed_capture_controls": 0.08571428571428572,
+      "observed_capture_difference": -0.08571428571428572,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 2,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 7
+        },
+        "kish_effective_clusters": 3.161290322580645,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.3360544217687075,
+        0.41428571428571426
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "GOOG",
+        "COCO"
+      ]
+    },
+    "3_raw_date_sector_state_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 22.188679245283016,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.17647058823529413,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-16": 1,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 8.166666666666666,
+        "max_share": 0.21428571428571427
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 31.648809523809522,
+          "exposed_mean": 29.150000000000002,
+          "mean_standardized_difference": -0.10647476009076111,
+          "pairs": 14
+        },
+        "alpha": {
+          "control_mean": 1.001309523809524,
+          "exposed_mean": 1.397142857142857,
+          "mean_standardized_difference": 0.44484544799474923,
+          "pairs": 14
+        },
+        "ext_z": {
+          "control_mean": -1.0955,
+          "exposed_mean": -1.7489999999999999,
+          "mean_standardized_difference": -0.5811667756751733,
+          "pairs": 10
+        },
+        "off_high": {
+          "control_mean": -20.42142857142857,
+          "exposed_mean": -22.7,
+          "mean_standardized_difference": -0.17769155975710998,
+          "pairs": 14
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.2305890364150279,
+          "exposed_mean": 0.15742113932809473,
+          "mean_standardized_difference": -0.3191021499832275,
+          "pairs": 14
+        },
+        "setup": {
+          "control_mean": 1.3104761904761906,
+          "exposed_mean": 1.4457142857142855,
+          "mean_standardized_difference": 0.09937948838843956,
+          "pairs": 14
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 42.975,
+          "exposed_mean": 42.785714285714285,
+          "mean_standardized_difference": 0.043668449729667165,
+          "pairs": 14
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.4404761904761905,
+        "exposed": 1.0
+      },
+      "n_control_unique_tickers": 29,
+      "n_dates": 10,
+      "n_matched_exposed": 14,
+      "observed_capture_controls": 0.07142857142857142,
+      "observed_capture_difference": -0.07142857142857142,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 2,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 7
+        },
+        "kish_effective_clusters": 3.161290322580645,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.29761904761904756,
+        0.42857142857142855
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "GOOG",
+        "COCO"
+      ]
+    },
+    "3_raw_issuer_disjoint_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 18.782608695652172,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.2,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 1,
+          "2026-08-31": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-16": 1,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 7.2,
+        "max_share": 0.25
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 32.22083333333333,
+          "exposed_mean": 30.508333333333336,
+          "mean_standardized_difference": -0.06859879496575984,
+          "pairs": 12
+        },
+        "alpha": {
+          "control_mean": 1.0130555555555556,
+          "exposed_mean": 1.2425,
+          "mean_standardized_difference": 0.25471320626842137,
+          "pairs": 12
+        },
+        "ext_z": {
+          "control_mean": -1.0060416666666667,
+          "exposed_mean": -1.72,
+          "mean_standardized_difference": -0.649614476142508,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -19.14027777777778,
+          "exposed_mean": -20.158333333333335,
+          "mean_standardized_difference": -0.07054844028662169,
+          "pairs": 12
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.2224739959376527,
+          "exposed_mean": 0.1769012391260205,
+          "mean_standardized_difference": -0.18080377513878762,
+          "pairs": 12
+        },
+        "setup": {
+          "control_mean": 1.3086111111111112,
+          "exposed_mean": 1.3866666666666667,
+          "mean_standardized_difference": 0.048723843708506964,
+          "pairs": 12
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 42.44861111111111,
+          "exposed_mean": 38.36666666666667,
+          "mean_standardized_difference": -0.1607996536351506,
+          "pairs": 12
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.34722222222222227,
+        "exposed": 1.1666666666666667
+      },
+      "n_control_unique_tickers": 24,
+      "n_dates": 9,
+      "n_matched_exposed": 12,
+      "observed_capture_controls": 0.08333333333333333,
+      "observed_capture_difference": -0.08333333333333333,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 2,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 5
+        },
+        "kish_effective_clusters": 3.789473684210526,
+        "max_share": 0.4166666666666667
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.2916666666666667,
+        0.5
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "SNDK:already_enrolled_as_control",
+        "FORM:already_enrolled_as_control",
+        "GOOG",
+        "COCO"
+      ]
+    },
+    "3_valid_date": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 69.99362454144256,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.019932369572613472,
+        -0.005258467023172906
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-14": 1,
+          "2026-09-16": 2,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 9.0,
+        "max_share": 0.16666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 23.03273522869713,
+          "exposed_mean": 38.06111111111111,
+          "mean_standardized_difference": 0.5427493052864709,
+          "pairs": 18
+        },
+        "alpha": {
+          "control_mean": 0.8995795264359737,
+          "exposed_mean": 1.363888888888889,
+          "mean_standardized_difference": 0.5273974447355547,
+          "pairs": 18
+        },
+        "ext_z": {
+          "control_mean": -0.8320262508809021,
+          "exposed_mean": -1.7466666666666668,
+          "mean_standardized_difference": -0.8541635341498103,
+          "pairs": 12
+        },
+        "off_high": {
+          "control_mean": -17.19551960806782,
+          "exposed_mean": -21.72222222222222,
+          "mean_standardized_difference": -0.39014331647577954,
+          "pairs": 18
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.24847478926798716,
+          "exposed_mean": 0.15822184474320025,
+          "mean_standardized_difference": -0.40001085836659916,
+          "pairs": 18
+        },
+        "setup": {
+          "control_mean": 1.0641466026305788,
+          "exposed_mean": 1.4655555555555555,
+          "mean_standardized_difference": 0.384671817524736,
+          "pairs": 18
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 36.39035837355085,
+          "exposed_mean": 44.61666666666667,
+          "mean_standardized_difference": 0.49335263689180286,
+          "pairs": 18
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.7123218063282348,
+        "exposed": 1.0
+      },
+      "n_control_unique_tickers": 113,
+      "n_dates": 11,
+      "n_matched_exposed": 18,
+      "observed_capture_controls": 0.012847307766006953,
+      "observed_capture_difference": -0.012847307766006953,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Communication Services": 1,
+          "Consumer Discretionary": 2,
+          "Consumer Staples": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 8
+        },
+        "kish_effective_clusters": 3.857142857142857,
+        "max_share": 0.4444444444444444
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.38135920559346537,
+        0.48715269223399305
+      ],
+      "unmatched_tickers": []
+    },
+    "3_valid_date_sector": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 39.58608992184856,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.03472373188405797,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-14": 1,
+          "2026-09-16": 2,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 9.0,
+        "max_share": 0.16666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 28.205079365079364,
+          "exposed_mean": 38.06111111111111,
+          "mean_standardized_difference": 0.38472675019209546,
+          "pairs": 18
+        },
+        "alpha": {
+          "control_mean": 0.9969088504088504,
+          "exposed_mean": 1.363888888888889,
+          "mean_standardized_difference": 0.41432193125026345,
+          "pairs": 18
+        },
+        "ext_z": {
+          "control_mean": -0.9731950757575758,
+          "exposed_mean": -1.7466666666666668,
+          "mean_standardized_difference": -0.7303749741942878,
+          "pairs": 12
+        },
+        "off_high": {
+          "control_mean": -19.44382816257816,
+          "exposed_mean": -21.72222222222222,
+          "mean_standardized_difference": -0.16944434045010756,
+          "pairs": 18
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.23049827681710314,
+          "exposed_mean": 0.15822184474320025,
+          "mean_standardized_difference": -0.31657525732976177,
+          "pairs": 18
+        },
+        "setup": {
+          "control_mean": 1.21222601010101,
+          "exposed_mean": 1.4655555555555555,
+          "mean_standardized_difference": 0.22949116768886085,
+          "pairs": 18
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 40.20070707070707,
+          "exposed_mean": 44.61666666666667,
+          "mean_standardized_difference": 0.28202959621209406,
+          "pairs": 18
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.6077982202982203,
+        "exposed": 1.0
+      },
+      "n_control_unique_tickers": 68,
+      "n_dates": 11,
+      "n_matched_exposed": 18,
+      "observed_capture_controls": 0.019444444444444445,
+      "observed_capture_difference": -0.019444444444444445,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Communication Services": 1,
+          "Consumer Discretionary": 2,
+          "Consumer Staples": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 8
+        },
+        "kish_effective_clusters": 3.857142857142857,
+        "max_share": 0.4444444444444444
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.3237974987974988,
+        0.48055555555555557
+      ],
+      "unmatched_tickers": []
+    },
+    "3_valid_date_sector_state": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 21.682721252257675,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.17647058823529413,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-16": 1,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 8.166666666666666,
+        "max_share": 0.21428571428571427
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 34.25795918367347,
+          "exposed_mean": 29.150000000000002,
+          "mean_standardized_difference": -0.17647550254306202,
+          "pairs": 14
+        },
+        "alpha": {
+          "control_mean": 1.1007040816326532,
+          "exposed_mean": 1.397142857142857,
+          "mean_standardized_difference": 0.33005440068708836,
+          "pairs": 14
+        },
+        "ext_z": {
+          "control_mean": -1.0585714285714285,
+          "exposed_mean": -1.7489999999999999,
+          "mean_standardized_difference": -0.6245990061477797,
+          "pairs": 10
+        },
+        "off_high": {
+          "control_mean": -20.193350340136053,
+          "exposed_mean": -22.7,
+          "mean_standardized_difference": -0.20346759591467553,
+          "pairs": 14
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.20621130044251165,
+          "exposed_mean": 0.15742113932809473,
+          "mean_standardized_difference": -0.19424600210045423,
+          "pairs": 14
+        },
+        "setup": {
+          "control_mean": 1.394715986394558,
+          "exposed_mean": 1.4457142857142855,
+          "mean_standardized_difference": 0.03291615272405751,
+          "pairs": 14
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 43.67586734693877,
+          "exposed_mean": 42.785714285714285,
+          "mean_standardized_difference": 0.012149126864900953,
+          "pairs": 14
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.4479591836734694,
+        "exposed": 1.0
+      },
+      "n_control_unique_tickers": 32,
+      "n_dates": 10,
+      "n_matched_exposed": 14,
+      "observed_capture_controls": 0.07142857142857142,
+      "observed_capture_difference": -0.07142857142857142,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 2,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 7
+        },
+        "kish_effective_clusters": 3.161290322580645,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.3217687074829932,
+        0.42857142857142855
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "GOOG",
+        "COCO"
+      ]
+    },
+    "3_valid_date_sector_state_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 22.188679245283016,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.17647058823529413,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-16": 1,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 8.166666666666666,
+        "max_share": 0.21428571428571427
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 31.648809523809522,
+          "exposed_mean": 29.150000000000002,
+          "mean_standardized_difference": -0.10647476009076111,
+          "pairs": 14
+        },
+        "alpha": {
+          "control_mean": 1.001309523809524,
+          "exposed_mean": 1.397142857142857,
+          "mean_standardized_difference": 0.44484544799474923,
+          "pairs": 14
+        },
+        "ext_z": {
+          "control_mean": -1.0955,
+          "exposed_mean": -1.7489999999999999,
+          "mean_standardized_difference": -0.5811667756751733,
+          "pairs": 10
+        },
+        "off_high": {
+          "control_mean": -20.42142857142857,
+          "exposed_mean": -22.7,
+          "mean_standardized_difference": -0.17769155975710998,
+          "pairs": 14
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.2305890364150279,
+          "exposed_mean": 0.15742113932809473,
+          "mean_standardized_difference": -0.3191021499832275,
+          "pairs": 14
+        },
+        "setup": {
+          "control_mean": 1.3104761904761906,
+          "exposed_mean": 1.4457142857142855,
+          "mean_standardized_difference": 0.09937948838843956,
+          "pairs": 14
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 42.975,
+          "exposed_mean": 42.785714285714285,
+          "mean_standardized_difference": 0.043668449729667165,
+          "pairs": 14
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.4404761904761905,
+        "exposed": 1.0
+      },
+      "n_control_unique_tickers": 29,
+      "n_dates": 10,
+      "n_matched_exposed": 14,
+      "observed_capture_controls": 0.07142857142857142,
+      "observed_capture_difference": -0.07142857142857142,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 2,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 7
+        },
+        "kish_effective_clusters": 3.161290322580645,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.29761904761904756,
+        0.42857142857142855
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "GOOG",
+        "COCO"
+      ]
+    },
+    "3_valid_issuer_disjoint_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 18.782608695652172,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.2,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 1,
+          "2026-08-31": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-16": 1,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 7.2,
+        "max_share": 0.25
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 32.22083333333333,
+          "exposed_mean": 30.508333333333336,
+          "mean_standardized_difference": -0.06859879496575984,
+          "pairs": 12
+        },
+        "alpha": {
+          "control_mean": 1.0130555555555556,
+          "exposed_mean": 1.2425,
+          "mean_standardized_difference": 0.25471320626842137,
+          "pairs": 12
+        },
+        "ext_z": {
+          "control_mean": -1.0060416666666667,
+          "exposed_mean": -1.72,
+          "mean_standardized_difference": -0.649614476142508,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -19.14027777777778,
+          "exposed_mean": -20.158333333333335,
+          "mean_standardized_difference": -0.07054844028662169,
+          "pairs": 12
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.2224739959376527,
+          "exposed_mean": 0.1769012391260205,
+          "mean_standardized_difference": -0.18080377513878762,
+          "pairs": 12
+        },
+        "setup": {
+          "control_mean": 1.3086111111111112,
+          "exposed_mean": 1.3866666666666667,
+          "mean_standardized_difference": 0.048723843708506964,
+          "pairs": 12
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 42.44861111111111,
+          "exposed_mean": 38.36666666666667,
+          "mean_standardized_difference": -0.1607996536351506,
+          "pairs": 12
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.34722222222222227,
+        "exposed": 1.1666666666666667
+      },
+      "n_control_unique_tickers": 24,
+      "n_dates": 9,
+      "n_matched_exposed": 12,
+      "observed_capture_controls": 0.08333333333333333,
+      "observed_capture_difference": -0.08333333333333333,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 2,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 5
+        },
+        "kish_effective_clusters": 3.789473684210526,
+        "max_share": 0.4166666666666667
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.2916666666666667,
+        0.5
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "SNDK:already_enrolled_as_control",
+        "FORM:already_enrolled_as_control",
+        "GOOG",
+        "COCO"
+      ]
+    },
+    "5_raw_date": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 69.99362454144256,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.05158741041443223,
+        0.16922381384391272
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-14": 1,
+          "2026-09-16": 2,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 9.0,
+        "max_share": 0.16666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 23.03273522869713,
+          "exposed_mean": 38.06111111111111,
+          "mean_standardized_difference": 0.5427493052864709,
+          "pairs": 18
+        },
+        "alpha": {
+          "control_mean": 0.8995795264359737,
+          "exposed_mean": 1.363888888888889,
+          "mean_standardized_difference": 0.5273974447355547,
+          "pairs": 18
+        },
+        "ext_z": {
+          "control_mean": -0.8320262508809021,
+          "exposed_mean": -1.7466666666666668,
+          "mean_standardized_difference": -0.8541635341498103,
+          "pairs": 12
+        },
+        "off_high": {
+          "control_mean": -17.19551960806782,
+          "exposed_mean": -21.72222222222222,
+          "mean_standardized_difference": -0.39014331647577954,
+          "pairs": 18
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.24847478926798716,
+          "exposed_mean": 0.15822184474320025,
+          "mean_standardized_difference": -0.40001085836659916,
+          "pairs": 18
+        },
+        "setup": {
+          "control_mean": 1.0641466026305788,
+          "exposed_mean": 1.4655555555555555,
+          "mean_standardized_difference": 0.384671817524736,
+          "pairs": 18
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 36.39035837355085,
+          "exposed_mean": 44.61666666666667,
+          "mean_standardized_difference": 0.49335263689180286,
+          "pairs": 18
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 1.374939379297481,
+        "exposed": 1.8888888888888888
+      },
+      "n_control_unique_tickers": 113,
+      "n_dates": 11,
+      "n_matched_exposed": 18,
+      "observed_capture_controls": 0.0329945162853085,
+      "observed_capture_difference": 0.022561039270247052,
+      "observed_capture_exposed": 0.05555555555555555,
+      "observed_capture_odds_ratio": 1.7240039229778652,
+      "observed_capture_relative_risk": 1.683781482812428,
+      "sector_concentration": {
+        "counts": {
+          "Communication Services": 1,
+          "Consumer Discretionary": 2,
+          "Consumer Staples": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 8
+        },
+        "kish_effective_clusters": 3.857142857142857,
+        "max_share": 0.4444444444444444
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.4357632383582469,
+        0.522561039270247
+      ],
+      "unmatched_tickers": []
+    },
+    "5_raw_date_sector": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 39.58608992184856,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.06833333333333333,
+        0.14667647058823516
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-14": 1,
+          "2026-09-16": 2,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 9.0,
+        "max_share": 0.16666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 28.205079365079364,
+          "exposed_mean": 38.06111111111111,
+          "mean_standardized_difference": 0.38472675019209546,
+          "pairs": 18
+        },
+        "alpha": {
+          "control_mean": 0.9969088504088504,
+          "exposed_mean": 1.363888888888889,
+          "mean_standardized_difference": 0.41432193125026345,
+          "pairs": 18
+        },
+        "ext_z": {
+          "control_mean": -0.9731950757575758,
+          "exposed_mean": -1.7466666666666668,
+          "mean_standardized_difference": -0.7303749741942878,
+          "pairs": 12
+        },
+        "off_high": {
+          "control_mean": -19.44382816257816,
+          "exposed_mean": -21.72222222222222,
+          "mean_standardized_difference": -0.16944434045010756,
+          "pairs": 18
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.23049827681710314,
+          "exposed_mean": 0.15822184474320025,
+          "mean_standardized_difference": -0.31657525732976177,
+          "pairs": 18
+        },
+        "setup": {
+          "control_mean": 1.21222601010101,
+          "exposed_mean": 1.4655555555555555,
+          "mean_standardized_difference": 0.22949116768886085,
+          "pairs": 18
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 40.20070707070707,
+          "exposed_mean": 44.61666666666667,
+          "mean_standardized_difference": 0.28202959621209406,
+          "pairs": 18
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 1.1662157287157287,
+        "exposed": 1.8888888888888888
+      },
+      "n_control_unique_tickers": 68,
+      "n_dates": 11,
+      "n_matched_exposed": 18,
+      "observed_capture_controls": 0.043055555555555555,
+      "observed_capture_difference": 0.012499999999999997,
+      "observed_capture_exposed": 0.05555555555555555,
+      "observed_capture_odds_ratio": 1.3074003795066413,
+      "observed_capture_relative_risk": 1.2903225806451613,
+      "sector_concentration": {
+        "counts": {
+          "Communication Services": 1,
+          "Consumer Discretionary": 2,
+          "Consumer Staples": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 8
+        },
+        "kish_effective_clusters": 3.857142857142857,
+        "max_share": 0.4444444444444444
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.3641474266474266,
+        0.5125
+      ],
+      "unmatched_tickers": []
+    },
+    "5_raw_date_sector_state": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 21.682721252257675,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.18888888888888888,
+        0.21666666666666667
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-16": 1,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 8.166666666666666,
+        "max_share": 0.21428571428571427
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 34.25795918367347,
+          "exposed_mean": 29.150000000000002,
+          "mean_standardized_difference": -0.17647550254306202,
+          "pairs": 14
+        },
+        "alpha": {
+          "control_mean": 1.1007040816326532,
+          "exposed_mean": 1.397142857142857,
+          "mean_standardized_difference": 0.33005440068708836,
+          "pairs": 14
+        },
+        "ext_z": {
+          "control_mean": -1.0585714285714285,
+          "exposed_mean": -1.7489999999999999,
+          "mean_standardized_difference": -0.6245990061477797,
+          "pairs": 10
+        },
+        "off_high": {
+          "control_mean": -20.193350340136053,
+          "exposed_mean": -22.7,
+          "mean_standardized_difference": -0.20346759591467553,
+          "pairs": 14
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.20621130044251165,
+          "exposed_mean": 0.15742113932809473,
+          "mean_standardized_difference": -0.19424600210045423,
+          "pairs": 14
+        },
+        "setup": {
+          "control_mean": 1.394715986394558,
+          "exposed_mean": 1.4457142857142855,
+          "mean_standardized_difference": 0.03291615272405751,
+          "pairs": 14
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 43.67586734693877,
+          "exposed_mean": 42.785714285714285,
+          "mean_standardized_difference": 0.012149126864900953,
+          "pairs": 14
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.9909863945578231,
+        "exposed": 1.8571428571428572
+      },
+      "n_control_unique_tickers": 32,
+      "n_dates": 10,
+      "n_matched_exposed": 14,
+      "observed_capture_controls": 0.09999999999999999,
+      "observed_capture_difference": -0.028571428571428567,
+      "observed_capture_exposed": 0.07142857142857142,
+      "observed_capture_odds_ratio": 0.6923076923076923,
+      "observed_capture_relative_risk": 0.7142857142857143,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 2,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 7
+        },
+        "kish_effective_clusters": 3.161290322580645,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.41054421768707483,
+        0.4714285714285714
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "GOOG",
+        "COCO"
+      ]
+    },
+    "5_raw_date_sector_state_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 22.188679245283016,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.16666666666666666,
+        0.25
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-16": 1,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 8.166666666666666,
+        "max_share": 0.21428571428571427
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 31.648809523809522,
+          "exposed_mean": 29.150000000000002,
+          "mean_standardized_difference": -0.10647476009076111,
+          "pairs": 14
+        },
+        "alpha": {
+          "control_mean": 1.001309523809524,
+          "exposed_mean": 1.397142857142857,
+          "mean_standardized_difference": 0.44484544799474923,
+          "pairs": 14
+        },
+        "ext_z": {
+          "control_mean": -1.0955,
+          "exposed_mean": -1.7489999999999999,
+          "mean_standardized_difference": -0.5811667756751733,
+          "pairs": 10
+        },
+        "off_high": {
+          "control_mean": -20.42142857142857,
+          "exposed_mean": -22.7,
+          "mean_standardized_difference": -0.17769155975710998,
+          "pairs": 14
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.2305890364150279,
+          "exposed_mean": 0.15742113932809473,
+          "mean_standardized_difference": -0.3191021499832275,
+          "pairs": 14
+        },
+        "setup": {
+          "control_mean": 1.3104761904761906,
+          "exposed_mean": 1.4457142857142855,
+          "mean_standardized_difference": 0.09937948838843956,
+          "pairs": 14
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 42.975,
+          "exposed_mean": 42.785714285714285,
+          "mean_standardized_difference": 0.043668449729667165,
+          "pairs": 14
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.9642857142857143,
+        "exposed": 1.8571428571428572
+      },
+      "n_control_unique_tickers": 29,
+      "n_dates": 10,
+      "n_matched_exposed": 14,
+      "observed_capture_controls": 0.07142857142857142,
+      "observed_capture_difference": 0.0,
+      "observed_capture_exposed": 0.07142857142857142,
+      "observed_capture_odds_ratio": 1.0,
+      "observed_capture_relative_risk": 1.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 2,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 7
+        },
+        "kish_effective_clusters": 3.161290322580645,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.369047619047619,
+        0.5
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "GOOG",
+        "COCO"
+      ]
+    },
+    "5_raw_issuer_disjoint_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 18.782608695652172,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.2,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 1,
+          "2026-08-31": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-16": 1,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 7.2,
+        "max_share": 0.25
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 32.22083333333333,
+          "exposed_mean": 30.508333333333336,
+          "mean_standardized_difference": -0.06859879496575984,
+          "pairs": 12
+        },
+        "alpha": {
+          "control_mean": 1.0130555555555556,
+          "exposed_mean": 1.2425,
+          "mean_standardized_difference": 0.25471320626842137,
+          "pairs": 12
+        },
+        "ext_z": {
+          "control_mean": -1.0060416666666667,
+          "exposed_mean": -1.72,
+          "mean_standardized_difference": -0.649614476142508,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -19.14027777777778,
+          "exposed_mean": -20.158333333333335,
+          "mean_standardized_difference": -0.07054844028662169,
+          "pairs": 12
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.2224739959376527,
+          "exposed_mean": 0.1769012391260205,
+          "mean_standardized_difference": -0.18080377513878762,
+          "pairs": 12
+        },
+        "setup": {
+          "control_mean": 1.3086111111111112,
+          "exposed_mean": 1.3866666666666667,
+          "mean_standardized_difference": 0.048723843708506964,
+          "pairs": 12
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 42.44861111111111,
+          "exposed_mean": 38.36666666666667,
+          "mean_standardized_difference": -0.1607996536351506,
+          "pairs": 12
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.8472222222222222,
+        "exposed": 2.1666666666666665
+      },
+      "n_control_unique_tickers": 24,
+      "n_dates": 9,
+      "n_matched_exposed": 12,
+      "observed_capture_controls": 0.08333333333333333,
+      "observed_capture_difference": -0.08333333333333333,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 2,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 5
+        },
+        "kish_effective_clusters": 3.789473684210526,
+        "max_share": 0.4166666666666667
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.4583333333333333,
+        0.5
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "SNDK:already_enrolled_as_control",
+        "FORM:already_enrolled_as_control",
+        "GOOG",
+        "COCO"
+      ]
+    },
+    "5_valid_date": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 69.99362454144256,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.02424246619014061,
+        0.18340151515151515
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-14": 1,
+          "2026-09-16": 2,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 9.0,
+        "max_share": 0.16666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 23.03273522869713,
+          "exposed_mean": 38.06111111111111,
+          "mean_standardized_difference": 0.5427493052864709,
+          "pairs": 18
+        },
+        "alpha": {
+          "control_mean": 0.8995795264359737,
+          "exposed_mean": 1.363888888888889,
+          "mean_standardized_difference": 0.5273974447355547,
+          "pairs": 18
+        },
+        "ext_z": {
+          "control_mean": -0.8320262508809021,
+          "exposed_mean": -1.7466666666666668,
+          "mean_standardized_difference": -0.8541635341498103,
+          "pairs": 12
+        },
+        "off_high": {
+          "control_mean": -17.19551960806782,
+          "exposed_mean": -21.72222222222222,
+          "mean_standardized_difference": -0.39014331647577954,
+          "pairs": 18
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.24847478926798716,
+          "exposed_mean": 0.15822184474320025,
+          "mean_standardized_difference": -0.40001085836659916,
+          "pairs": 18
+        },
+        "setup": {
+          "control_mean": 1.0641466026305788,
+          "exposed_mean": 1.4655555555555555,
+          "mean_standardized_difference": 0.384671817524736,
+          "pairs": 18
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 36.39035837355085,
+          "exposed_mean": 44.61666666666667,
+          "mean_standardized_difference": 0.49335263689180286,
+          "pairs": 18
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 1.374939379297481,
+        "exposed": 1.8888888888888888
+      },
+      "n_control_unique_tickers": 113,
+      "n_dates": 11,
+      "n_matched_exposed": 18,
+      "observed_capture_controls": 0.017927176217968428,
+      "observed_capture_difference": 0.03762837933758713,
+      "observed_capture_exposed": 0.05555555555555555,
+      "observed_capture_odds_ratio": 3.222425491435468,
+      "observed_capture_relative_risk": 3.098957408577942,
+      "sector_concentration": {
+        "counts": {
+          "Communication Services": 1,
+          "Consumer Discretionary": 2,
+          "Consumer Staples": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 8
+        },
+        "kish_effective_clusters": 3.857142857142857,
+        "max_share": 0.4444444444444444
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.42195852455353305,
+        0.5376283793375871
+      ],
+      "unmatched_tickers": []
+    },
+    "5_valid_date_sector": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 39.58608992184856,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.04021739130434783,
+        0.16
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 3,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-14": 1,
+          "2026-09-16": 2,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 9.0,
+        "max_share": 0.16666666666666666
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 28.205079365079364,
+          "exposed_mean": 38.06111111111111,
+          "mean_standardized_difference": 0.38472675019209546,
+          "pairs": 18
+        },
+        "alpha": {
+          "control_mean": 0.9969088504088504,
+          "exposed_mean": 1.363888888888889,
+          "mean_standardized_difference": 0.41432193125026345,
+          "pairs": 18
+        },
+        "ext_z": {
+          "control_mean": -0.9731950757575758,
+          "exposed_mean": -1.7466666666666668,
+          "mean_standardized_difference": -0.7303749741942878,
+          "pairs": 12
+        },
+        "off_high": {
+          "control_mean": -19.44382816257816,
+          "exposed_mean": -21.72222222222222,
+          "mean_standardized_difference": -0.16944434045010756,
+          "pairs": 18
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.23049827681710314,
+          "exposed_mean": 0.15822184474320025,
+          "mean_standardized_difference": -0.31657525732976177,
+          "pairs": 18
+        },
+        "setup": {
+          "control_mean": 1.21222601010101,
+          "exposed_mean": 1.4655555555555555,
+          "mean_standardized_difference": 0.22949116768886085,
+          "pairs": 18
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 40.20070707070707,
+          "exposed_mean": 44.61666666666667,
+          "mean_standardized_difference": 0.28202959621209406,
+          "pairs": 18
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 1.1662157287157287,
+        "exposed": 1.8888888888888888
+      },
+      "n_control_unique_tickers": 68,
+      "n_dates": 11,
+      "n_matched_exposed": 18,
+      "observed_capture_controls": 0.03194444444444444,
+      "observed_capture_difference": 0.02361111111111111,
+      "observed_capture_exposed": 0.05555555555555555,
+      "observed_capture_odds_ratio": 1.782608695652174,
+      "observed_capture_relative_risk": 1.7391304347826086,
+      "sector_concentration": {
+        "counts": {
+          "Communication Services": 1,
+          "Consumer Discretionary": 2,
+          "Consumer Staples": 1,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 3,
+          "Information Technology": 8
+        },
+        "kish_effective_clusters": 3.857142857142857,
+        "max_share": 0.4444444444444444
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.3585918710918711,
+        0.5236111111111111
+      ],
+      "unmatched_tickers": []
+    },
+    "5_valid_date_sector_state": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 21.682721252257675,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.16666666666666666,
+        0.25
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-16": 1,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 8.166666666666666,
+        "max_share": 0.21428571428571427
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 34.25795918367347,
+          "exposed_mean": 29.150000000000002,
+          "mean_standardized_difference": -0.17647550254306202,
+          "pairs": 14
+        },
+        "alpha": {
+          "control_mean": 1.1007040816326532,
+          "exposed_mean": 1.397142857142857,
+          "mean_standardized_difference": 0.33005440068708836,
+          "pairs": 14
+        },
+        "ext_z": {
+          "control_mean": -1.0585714285714285,
+          "exposed_mean": -1.7489999999999999,
+          "mean_standardized_difference": -0.6245990061477797,
+          "pairs": 10
+        },
+        "off_high": {
+          "control_mean": -20.193350340136053,
+          "exposed_mean": -22.7,
+          "mean_standardized_difference": -0.20346759591467553,
+          "pairs": 14
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.20621130044251165,
+          "exposed_mean": 0.15742113932809473,
+          "mean_standardized_difference": -0.19424600210045423,
+          "pairs": 14
+        },
+        "setup": {
+          "control_mean": 1.394715986394558,
+          "exposed_mean": 1.4457142857142855,
+          "mean_standardized_difference": 0.03291615272405751,
+          "pairs": 14
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 43.67586734693877,
+          "exposed_mean": 42.785714285714285,
+          "mean_standardized_difference": 0.012149126864900953,
+          "pairs": 14
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.9909863945578231,
+        "exposed": 1.8571428571428572
+      },
+      "n_control_unique_tickers": 32,
+      "n_dates": 10,
+      "n_matched_exposed": 14,
+      "observed_capture_controls": 0.07142857142857142,
+      "observed_capture_difference": 0.0,
+      "observed_capture_exposed": 0.07142857142857142,
+      "observed_capture_odds_ratio": 1.0,
+      "observed_capture_relative_risk": 1.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 2,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 7
+        },
+        "kish_effective_clusters": 3.161290322580645,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.39625850340136054,
+        0.5
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "GOOG",
+        "COCO"
+      ]
+    },
+    "5_valid_date_sector_state_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 22.188679245283016,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.16666666666666666,
+        0.25
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-16": 1,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 8.166666666666666,
+        "max_share": 0.21428571428571427
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 31.648809523809522,
+          "exposed_mean": 29.150000000000002,
+          "mean_standardized_difference": -0.10647476009076111,
+          "pairs": 14
+        },
+        "alpha": {
+          "control_mean": 1.001309523809524,
+          "exposed_mean": 1.397142857142857,
+          "mean_standardized_difference": 0.44484544799474923,
+          "pairs": 14
+        },
+        "ext_z": {
+          "control_mean": -1.0955,
+          "exposed_mean": -1.7489999999999999,
+          "mean_standardized_difference": -0.5811667756751733,
+          "pairs": 10
+        },
+        "off_high": {
+          "control_mean": -20.42142857142857,
+          "exposed_mean": -22.7,
+          "mean_standardized_difference": -0.17769155975710998,
+          "pairs": 14
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.2305890364150279,
+          "exposed_mean": 0.15742113932809473,
+          "mean_standardized_difference": -0.3191021499832275,
+          "pairs": 14
+        },
+        "setup": {
+          "control_mean": 1.3104761904761906,
+          "exposed_mean": 1.4457142857142855,
+          "mean_standardized_difference": 0.09937948838843956,
+          "pairs": 14
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 42.975,
+          "exposed_mean": 42.785714285714285,
+          "mean_standardized_difference": 0.043668449729667165,
+          "pairs": 14
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.9642857142857143,
+        "exposed": 1.8571428571428572
+      },
+      "n_control_unique_tickers": 29,
+      "n_dates": 10,
+      "n_matched_exposed": 14,
+      "observed_capture_controls": 0.07142857142857142,
+      "observed_capture_difference": 0.0,
+      "observed_capture_exposed": 0.07142857142857142,
+      "observed_capture_odds_ratio": 1.0,
+      "observed_capture_relative_risk": 1.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 2,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 7
+        },
+        "kish_effective_clusters": 3.161290322580645,
+        "max_share": 0.5
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.369047619047619,
+        0.5
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "GOOG",
+        "COCO"
+      ]
+    },
+    "5_valid_issuer_disjoint_nn3": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 18.782608695652172,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        -0.2,
+        0.0
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-18": 1,
+          "2026-08-20": 2,
+          "2026-08-27": 1,
+          "2026-08-28": 1,
+          "2026-08-31": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1,
+          "2026-09-16": 1,
+          "2026-09-17": 1
+        },
+        "kish_effective_clusters": 7.2,
+        "max_share": 0.25
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 32.22083333333333,
+          "exposed_mean": 30.508333333333336,
+          "mean_standardized_difference": -0.06859879496575984,
+          "pairs": 12
+        },
+        "alpha": {
+          "control_mean": 1.0130555555555556,
+          "exposed_mean": 1.2425,
+          "mean_standardized_difference": 0.25471320626842137,
+          "pairs": 12
+        },
+        "ext_z": {
+          "control_mean": -1.0060416666666667,
+          "exposed_mean": -1.72,
+          "mean_standardized_difference": -0.649614476142508,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -19.14027777777778,
+          "exposed_mean": -20.158333333333335,
+          "mean_standardized_difference": -0.07054844028662169,
+          "pairs": 12
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.2224739959376527,
+          "exposed_mean": 0.1769012391260205,
+          "mean_standardized_difference": -0.18080377513878762,
+          "pairs": 12
+        },
+        "setup": {
+          "control_mean": 1.3086111111111112,
+          "exposed_mean": 1.3866666666666667,
+          "mean_standardized_difference": 0.048723843708506964,
+          "pairs": 12
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 42.44861111111111,
+          "exposed_mean": 38.36666666666667,
+          "mean_standardized_difference": -0.1607996536351506,
+          "pairs": 12
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 0.8472222222222222,
+        "exposed": 2.1666666666666665
+      },
+      "n_control_unique_tickers": 24,
+      "n_dates": 9,
+      "n_matched_exposed": 12,
+      "observed_capture_controls": 0.08333333333333333,
+      "observed_capture_difference": -0.08333333333333333,
+      "observed_capture_exposed": 0.0,
+      "observed_capture_odds_ratio": 0.0,
+      "observed_capture_relative_risk": 0.0,
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 2,
+          "Financials": 2,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 5
+        },
+        "kish_effective_clusters": 3.789473684210526,
+        "max_share": 0.4166666666666667
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.4583333333333333,
+        0.5
+      ],
+      "unmatched_tickers": [
+        "LFUS",
+        "FIX",
+        "SNDK:already_enrolled_as_control",
+        "FORM:already_enrolled_as_control",
+        "GOOG",
+        "COCO"
+      ]
+    }
+  },
+  "n_control_date_ticker_rows": 1132,
+  "n_control_unique_tickers": 163,
+  "n_exposed_first_ticker_baselines": 18,
+  "n_parent_legacy_first_watch_baselines": 20,
+  "parent_compatibility": {
+    "10": {
+      "median_observed_sessions_to_conversion": 7,
+      "n_baselines": 20,
+      "n_complete_followups": 5,
+      "n_gapped_or_unknown_no_observed_conversion": 8,
+      "n_horizon_mature": 14,
+      "n_mature_observed_conversions": 3,
+      "n_observed_conversions": 5,
+      "n_observed_nonconversions": 3,
+      "n_right_censored_no_observed_conversion": 4,
+      "observed_capture_fraction": 0.21428571428571427,
+      "total_observed_candidate_sessions": 102,
+      "true_conversion_risk_bounds": [
+        0.21428571428571427,
+        0.7857142857142857
+      ]
+    },
+    "12": {
+      "median_observed_sessions_to_conversion": 8.0,
+      "n_baselines": 20,
+      "n_complete_followups": 4,
+      "n_gapped_or_unknown_no_observed_conversion": 7,
+      "n_horizon_mature": 13,
+      "n_mature_observed_conversions": 3,
+      "n_observed_conversions": 6,
+      "n_observed_nonconversions": 3,
+      "n_right_censored_no_observed_conversion": 4,
+      "observed_capture_fraction": 0.23076923076923078,
+      "total_observed_candidate_sessions": 117,
+      "true_conversion_risk_bounds": [
+        0.23076923076923078,
+        0.7692307692307693
+      ]
+    },
+    "20": {
+      "median_observed_sessions_to_conversion": 9,
+      "n_baselines": 20,
+      "n_complete_followups": 0,
+      "n_gapped_or_unknown_no_observed_conversion": 4,
+      "n_horizon_mature": 5,
+      "n_mature_observed_conversions": 1,
+      "n_observed_conversions": 7,
+      "n_observed_nonconversions": 0,
+      "n_right_censored_no_observed_conversion": 9,
+      "observed_capture_fraction": 0.2,
+      "total_observed_candidate_sessions": 137,
+      "true_conversion_risk_bounds": [
+        0.2,
+        1.0
+      ]
+    },
+    "3": {
+      "median_observed_sessions_to_conversion": 1,
+      "n_baselines": 20,
+      "n_complete_followups": 9,
+      "n_gapped_or_unknown_no_observed_conversion": 9,
+      "n_horizon_mature": 18,
+      "n_mature_observed_conversions": 0,
+      "n_observed_conversions": 1,
+      "n_observed_nonconversions": 9,
+      "n_right_censored_no_observed_conversion": 1,
+      "observed_capture_fraction": 0.0,
+      "total_observed_candidate_sessions": 37,
+      "true_conversion_risk_bounds": [
+        0.0,
+        0.5
+      ]
+    },
+    "5": {
+      "median_observed_sessions_to_conversion": 3.0,
+      "n_baselines": 20,
+      "n_complete_followups": 9,
+      "n_gapped_or_unknown_no_observed_conversion": 9,
+      "n_horizon_mature": 18,
+      "n_mature_observed_conversions": 1,
+      "n_observed_conversions": 2,
+      "n_observed_nonconversions": 8,
+      "n_right_censored_no_observed_conversion": 1,
+      "observed_capture_fraction": 0.05555555555555555,
+      "total_observed_candidate_sessions": 57,
+      "true_conversion_risk_bounds": [
+        0.05555555555555555,
+        0.5555555555555556
+      ]
+    }
+  },
+  "start": "2026-08-17",
+  "strict_PIT_independent_family_exposure_n": null,
+  "strict_PIT_independent_family_exposure_status": "NOT_IDENTIFIABLE_FROM_LEGACY_FLAGS",
+  "temporal_slices": {
+    "after_Sep10": {
+      "median_observed_sessions_to_conversion": 7,
+      "n_baselines": 4,
+      "n_complete_followups": 0,
+      "n_gapped_or_unknown_no_observed_conversion": 0,
+      "n_horizon_mature": 0,
+      "n_mature_observed_conversions": 0,
+      "n_observed_conversions": 1,
+      "n_observed_nonconversions": 0,
+      "n_right_censored_no_observed_conversion": 3,
+      "observed_capture_fraction": null,
+      "total_observed_candidate_sessions": 14,
+      "true_conversion_risk_bounds": null
+    },
+    "through_Sep10": {
+      "median_observed_sessions_to_conversion": 8.0,
+      "n_baselines": 14,
+      "n_complete_followups": 4,
+      "n_gapped_or_unknown_no_observed_conversion": 8,
+      "n_horizon_mature": 13,
+      "n_mature_observed_conversions": 2,
+      "n_observed_conversions": 2,
+      "n_observed_nonconversions": 3,
+      "n_right_censored_no_observed_conversion": 1,
+      "observed_capture_fraction": 0.15384615384615385,
+      "total_observed_candidate_sessions": 102,
+      "true_conversion_risk_bounds": [
+        0.15384615384615385,
+        0.7692307692307693
+      ]
+    }
+  },
+  "window": "parent_window_latest"
+}

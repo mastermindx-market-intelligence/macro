@@ -1,0 +1,533 @@
+{
+  "canonical_episode_count": 1060,
+  "cautions": [
+    "B1 relation is exact source-event to accepted canonical episode, not ticker/date episode synthesis.",
+    "Current registry can prove a later exact relation; it is not proof that relation existed at historical decision cut.",
+    "UNAVAILABLE does not mean NOT_YET_ANCHORED; only explicit MISSING_STRUCTURAL_ANCHOR supports that classification.",
+    "No exact source-event relation means missing coverage, not absence of an episode elsewhere.",
+    "No live runtime was queried and no runtime RP1 absence is asserted beyond these committed artifacts."
+  ],
+  "exposed_b03_pool_historical_unavailable": 0,
+  "exposed_b03_pool_present": 3,
+  "exposed_baseline_count": 21,
+  "exposed_relation_counts": {
+    "PRESENT": 6,
+    "UNAVAILABLE_IDENTITY_UNRESOLVED": 2,
+    "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 13
+  },
+  "exposed_relation_recorded_by_selected_commit": 6,
+  "generation_id": "peg:2303e8ef44ffb17b8b2411e6daffacd20bf228797e6b5b524fe8c274843b8042",
+  "generation_manifest_sha256": "860daadf2fe326fe42adf25d9067168343222c5331bb4d2e355945e6e92c4e0c",
+  "latest_reconcile_receipt": {
+    "counts": {
+      "appended_events": 1021,
+      "input": 4924,
+      "ledger_suppressions": 46890,
+      "mapped": 1021,
+      "new_events": 10085,
+      "old_events": 9064,
+      "suppressed": 3903
+    },
+    "definition_era": "candidate-episode-v1-2026-08-25",
+    "durable_write": true,
+    "gate": {
+      "nightly_advance_enabled": true,
+      "nightly_requested": true
+    },
+    "ledger_sha256": "sha256:a0a905d811f478478b177b22269effe20ac40826763ed5b708b21cf28d9e4751",
+    "mode": "nightly",
+    "projection_hashes": {
+      "all_candidates.json": "sha256:316be075818129dfe026aa2e31e978a78a2e5fd0a151e67e35f175d7dd84e1f7",
+      "current.parquet": "sha256:78b3685dee96eceb5cccde5431db5e48718908847967b5127814fa7ed7b0013a"
+    },
+    "recorded_at": "2026-10-04T10:35:45Z",
+    "schema": "prophet.candidate_episode_reconcile_receipt/v1",
+    "source_counts": {
+      "candidate": {
+        "input": 4543,
+        "mapped": 1005,
+        "suppressed": 3538
+      },
+      "doors": {
+        "input": 7,
+        "mapped": 7,
+        "suppressed": 0
+      },
+      "entry_radar": {
+        "input": 0,
+        "mapped": 0,
+        "suppressed": 0
+      },
+      "turn_watch": {
+        "input": 374,
+        "mapped": 9,
+        "suppressed": 365
+      }
+    },
+    "source_hashes": {
+      "data/prophet_doors/flags.jsonl": "sha256:86e3d7e4470bf57aaf601ce14e8827cc4635be56bcd39d7813f8aba323c7080b",
+      "data/reference/security_master.parquet": "sha256:ed45e4a4f9e17cc91da1a382ebeffbb1e73ae4d9fb2556036eb4efedb5b30158",
+      "data/reference/vendor_aliases.parquet": "sha256:4e05844f541d04da8c507b0294cd810728fbb0b295869ea7f1d9eaf345d6a5a9",
+      "data/us_prophet_rank/candidates/2026-07.parquet": "sha256:1890fed2039d86203f4557c324912a429c729c713444c6ddb4e5fb1be984cf33",
+      "data/us_prophet_rank/candidates/2026-08.parquet": "sha256:690aa6c02961743217e767758dc0e525d3dd4fa4a0895dc58213589a860ccdc0",
+      "data/us_prophet_rank/candidates/2026-09.parquet": "sha256:7fcafb328bfe74e54af3eb92f158ce4846f7928e05e60dc91a38287c17a29db2",
+      "data/us_prophet_rank/candidates/2026-10.parquet": "sha256:5330df5c076e10816d5a79070ae8486c0f1b12c3a992661eeda4fb14ab68e902",
+      "data/us_prophet_rank/episode_inputs/turn_watch/2026-10-02.json": "sha256:cf2b1729b31754f8b1e66d269430bf544e93519c4c1601ec2954ee331b2ed4a5"
+    },
+    "source_receipts": [
+      {
+        "files": [
+          {
+            "path": "data/us_prophet_rank/episode_inputs/turn_watch/2026-10-02.json",
+            "sha256": "sha256:cf2b1729b31754f8b1e66d269430bf544e93519c4c1601ec2954ee331b2ed4a5"
+          }
+        ],
+        "rows": 374,
+        "source": "turn_watch",
+        "status": "ok"
+      },
+      {
+        "files": [
+          {
+            "path": "data/us_prophet_rank/candidates/2026-07.parquet",
+            "sha256": "sha256:1890fed2039d86203f4557c324912a429c729c713444c6ddb4e5fb1be984cf33"
+          },
+          {
+            "path": "data/us_prophet_rank/candidates/2026-08.parquet",
+            "sha256": "sha256:690aa6c02961743217e767758dc0e525d3dd4fa4a0895dc58213589a860ccdc0"
+          },
+          {
+            "path": "data/us_prophet_rank/candidates/2026-09.parquet",
+            "sha256": "sha256:7fcafb328bfe74e54af3eb92f158ce4846f7928e05e60dc91a38287c17a29db2"
+          },
+          {
+            "path": "data/us_prophet_rank/candidates/2026-10.parquet",
+            "sha256": "sha256:5330df5c076e10816d5a79070ae8486c0f1b12c3a992661eeda4fb14ab68e902"
+          }
+        ],
+        "rows": 4543,
+        "source": "candidate",
+        "status": "ok"
+      },
+      {
+        "files": [
+          {
+            "path": "data/prophet_doors/flags.jsonl",
+            "sha256": "sha256:86e3d7e4470bf57aaf601ce14e8827cc4635be56bcd39d7813f8aba323c7080b"
+          }
+        ],
+        "rows": 7,
+        "source": "doors",
+        "status": "ok"
+      },
+      {
+        "reason": "MISSING_SOURCE_FILE",
+        "source": "entry_radar",
+        "status": "degraded"
+      }
+    ]
+  },
+  "pin": "731a23fb64b9f6f1a321c77618f927f1a58d2d41",
+  "pool_coverage": [
+    {
+      "as_of": "2026-08-10",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 93
+      },
+      "definition": "us_prophet_v2",
+      "eligible": 93,
+      "pool_rows": 93,
+      "source_sha256": "a24f39fdc7d0e11ba04599492fe86fd157d15d82a0090a5b597ecaf91d7a2f99"
+    },
+    {
+      "as_of": "2026-08-12",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 95
+      },
+      "definition": "us_prophet_v2",
+      "eligible": 95,
+      "pool_rows": 95,
+      "source_sha256": "23cf7a5f74f58a9ebe9619e7e3a60f699e622d2c28bf170d7433e0535b684094"
+    },
+    {
+      "as_of": "2026-08-13",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 77
+      },
+      "definition": "us_prophet_v2",
+      "eligible": 77,
+      "pool_rows": 77,
+      "source_sha256": "3d540fa65eab45f0dd94544d0007edf6a2f7182db03960c3910cee8552eafbfc"
+    },
+    {
+      "as_of": "2026-08-14",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 79
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 79,
+      "pool_rows": 79,
+      "source_sha256": "67f15f138e9e046dc78bf727249967c9b33b6dd72d56ec310e7fe7dc3895e06a"
+    },
+    {
+      "as_of": "2026-08-17",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 75
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 75,
+      "pool_rows": 75,
+      "source_sha256": "039e9065ab154d4e2658eeadf0dc6b3659115eef524cdf7abdb92bbf9b1639de"
+    },
+    {
+      "as_of": "2026-08-18",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 66
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 66,
+      "pool_rows": 66,
+      "source_sha256": "639667e7e64a093fced7d934868e17cde3105a37d5381ebb59585bf8449ef437"
+    },
+    {
+      "as_of": "2026-08-19",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 69
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 69,
+      "pool_rows": 69,
+      "source_sha256": "0970ce5b8c522d602b4633642480cf6c69d6bd1f002e70f9f1d23ead5814f871"
+    },
+    {
+      "as_of": "2026-08-20",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 46
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 46,
+      "pool_rows": 46,
+      "source_sha256": "8c2503e4fdfe0001b3b2765ccf6598734a1a70526daa63026d9af25e9602c7f8"
+    },
+    {
+      "as_of": "2026-08-21",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 76
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 76,
+      "pool_rows": 76,
+      "source_sha256": "6e49bf1c9ec11c14cfabb254fc3a819a414e326b50eff5b4f8749acef8bd273d"
+    },
+    {
+      "as_of": "2026-08-24",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 76
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 76,
+      "pool_rows": 76,
+      "source_sha256": "69e745c84f9560c50b1e960671164fc9052a072560683872bbba93da57353ee7"
+    },
+    {
+      "as_of": "2026-08-25",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 74
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 74,
+      "pool_rows": 74,
+      "source_sha256": "0006d24fdcb7c22aa8ec4410c5bcad76244efcbe00ec70ce2addc6b0350bffbc"
+    },
+    {
+      "as_of": "2026-08-26",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 74
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 74,
+      "pool_rows": 74,
+      "source_sha256": "9869a4c9e6fa87f1fe197bbd9a0e37a4929f4bdfd40d07d36c13baadc44503f9"
+    },
+    {
+      "as_of": "2026-08-27",
+      "counts": {
+        "NOT_YET_ANCHORED": 15,
+        "PRESENT": 24,
+        "UNAVAILABLE_IDENTITY_UNRESOLVED": 28
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 67,
+      "pool_rows": 67,
+      "source_sha256": "8e09f59ffdde1363478aaf20137404453dce332fec78b64c3912da732f7a8e0e"
+    },
+    {
+      "as_of": "2026-08-28",
+      "counts": {
+        "NOT_YET_ANCHORED": 10,
+        "PRESENT": 19,
+        "UNAVAILABLE_IDENTITY_UNRESOLVED": 34
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 63,
+      "pool_rows": 63,
+      "source_sha256": "92b7f1ef998201a06954de1b853314e995c847fde32209307f5a2bef5fac5ec2"
+    },
+    {
+      "as_of": "2026-08-31",
+      "counts": {
+        "NOT_YET_ANCHORED": 10,
+        "PRESENT": 12,
+        "UNAVAILABLE_IDENTITY_UNRESOLVED": 20
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 42,
+      "pool_rows": 42,
+      "source_sha256": "5f25f4ae1ba3564368bdef47439550d6569c5564975188c6e199c85b2f25fbc8"
+    },
+    {
+      "as_of": "2026-09-03",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 93
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 93,
+      "pool_rows": 93,
+      "source_sha256": "723c5941cd150a043a7c67bda7915fa02f215f605ee33ee1832dbe48cfebcf6e"
+    },
+    {
+      "as_of": "2026-09-04",
+      "counts": {
+        "NOT_YET_ANCHORED": 13,
+        "PRESENT": 32,
+        "UNAVAILABLE_IDENTITY_UNRESOLVED": 53
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 98,
+      "pool_rows": 98,
+      "source_sha256": "51fa2854e201fa29dc9c3db14c08b0e73a65913b3f3f80fb871d70b57057302a"
+    },
+    {
+      "as_of": "2026-09-08",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 98
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 98,
+      "pool_rows": 98,
+      "source_sha256": "f955e8bd2487c55aa36acabf26168ddfd063d39c75dc0ab642fc07d33d9acc4b"
+    },
+    {
+      "as_of": "2026-09-09",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 76
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 76,
+      "pool_rows": 76,
+      "source_sha256": "ff075fcd125b4aac66d53f6ac1e9f981d468f5b4b9d38326456dad89cbf986c9"
+    },
+    {
+      "as_of": "2026-09-10",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 51
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 51,
+      "pool_rows": 51,
+      "source_sha256": "d4bb47688a4c8902dee8c9cfe0d54725a5b5307de0f2923ad47e51e3f7457e3c"
+    },
+    {
+      "as_of": "2026-09-11",
+      "counts": {
+        "NOT_YET_ANCHORED": 3,
+        "PRESENT": 35,
+        "UNAVAILABLE_IDENTITY_UNRESOLVED": 24
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 62,
+      "pool_rows": 62,
+      "source_sha256": "f09252864712d9fb31bba487863407e6afedcb2b7f25922a899570ad040751a3"
+    },
+    {
+      "as_of": "2026-09-14",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 56
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 56,
+      "pool_rows": 56,
+      "source_sha256": "35b2922db3ab12b1e6bf87cff43059f23fbc23f95c3d960de0ac2663e8efac7b"
+    },
+    {
+      "as_of": "2026-09-16",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 47
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 47,
+      "pool_rows": 47,
+      "source_sha256": "47710f2291c0e9b7a65fcd75d1af61702358bdd9ce55ccafb1bc8467d01ae0b3"
+    },
+    {
+      "as_of": "2026-09-17",
+      "counts": {
+        "NOT_YET_ANCHORED": 4,
+        "PRESENT": 42,
+        "UNAVAILABLE_IDENTITY_UNRESOLVED": 27
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 73,
+      "pool_rows": 73,
+      "source_sha256": "d7635771a62e78827e400e915fbb38e2195ad4a36fe69b4a208ac5a81fb9452f"
+    },
+    {
+      "as_of": "2026-09-18",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 66
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 66,
+      "pool_rows": 66,
+      "source_sha256": "00a7f306f713d5d87009779de78714374e29e251c9d627c6e7bfc2c93957b359"
+    },
+    {
+      "as_of": "2026-09-21",
+      "counts": {
+        "NOT_YET_ANCHORED": 4,
+        "PRESENT": 55,
+        "UNAVAILABLE_IDENTITY_UNRESOLVED": 26
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 85,
+      "pool_rows": 85,
+      "source_sha256": "f97e95ed2c5b377b58c247a52ce0d769d2839183b1b550608123feb21404e7df"
+    },
+    {
+      "as_of": "2026-09-22",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 86
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 86,
+      "pool_rows": 86,
+      "source_sha256": "3b9584cd2b5d8bc643f01c8cd28c72c4bd7d3489b7d801dff7f5c1eaea463318"
+    },
+    {
+      "as_of": "2026-09-23",
+      "counts": {
+        "NOT_YET_ANCHORED": 4,
+        "PRESENT": 61,
+        "UNAVAILABLE_IDENTITY_UNRESOLVED": 26
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 91,
+      "pool_rows": 91,
+      "source_sha256": "059b4c420727549a55d6506ddaac4889c83911a9e265707da71b530a8d424e85"
+    },
+    {
+      "as_of": "2026-09-24",
+      "counts": {
+        "NOT_YET_ANCHORED": 4,
+        "PRESENT": 67,
+        "UNAVAILABLE_IDENTITY_UNRESOLVED": 46
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 117,
+      "pool_rows": 117,
+      "source_sha256": "efce181065cdea6320a980acd0b0d32f10973128753313c2d646d12552055b86"
+    },
+    {
+      "as_of": "2026-09-25",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 148
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 148,
+      "pool_rows": 148,
+      "source_sha256": "1a9bee34331b7444ee51236a035a1c93b53b949aded5833f28551e10c5975afc"
+    },
+    {
+      "as_of": "2026-09-30",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 100
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 100,
+      "pool_rows": 100,
+      "source_sha256": "10b3fb8c867714dfe7e75d3fa414103db31e60eca85be35a8156176d03f8e1ce"
+    },
+    {
+      "as_of": "2026-10-01",
+      "counts": {
+        "NOT_YET_ANCHORED": 3,
+        "PRESENT": 56,
+        "UNAVAILABLE_IDENTITY_UNRESOLVED": 76
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 135,
+      "pool_rows": 135,
+      "source_sha256": "0cd89076f55e297cb6c32dbebf073658a60d2f00f090d2e6e2f49bdb6e8ab764"
+    },
+    {
+      "as_of": "2026-10-02",
+      "counts": {
+        "NOT_YET_ANCHORED": 5,
+        "PRESENT": 62,
+        "UNAVAILABLE_IDENTITY_UNRESOLVED": 87
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 154,
+      "pool_rows": 154,
+      "source_sha256": "72a82e3cbececb4c757c6c853f5d077b3c62f6307920341c1219ba0f249cd3bc"
+    },
+    {
+      "as_of": "2026-10-05",
+      "counts": {
+        "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": 125
+      },
+      "definition": "us_prophet_v3",
+      "eligible": 125,
+      "pool_rows": 125,
+      "source_sha256": "df884a0cbef1c9247cdb11a5d44487714b6ef8ae0acbecca35a31f0d4916e3bb"
+    }
+  ],
+  "relation_outcome_association": {
+    "PRESENT": {
+      "later_observed_valid_confirmations": 1,
+      "n": 6
+    },
+    "UNAVAILABLE_IDENTITY_UNRESOLVED": {
+      "later_observed_valid_confirmations": 0,
+      "n": 2
+    },
+    "UNAVAILABLE_NO_EXACT_SOURCE_RELATION": {
+      "later_observed_valid_confirmations": 7,
+      "n": 13
+    }
+  },
+  "rp1_committed_ledger_state": {
+    "forward_rows_appended": 0,
+    "forward_rows_total": 0,
+    "live_forward_epoch": "2026-08-15T08:58:10Z",
+    "live_forward_rows": 0,
+    "live_forward_start": null,
+    "observed_spool_events": 0,
+    "qledger": {
+      "failed": 0,
+      "registered": 0,
+      "rejected": 0
+    },
+    "schema": "entry_radar.w5_ledger_state/v1",
+    "session": "2026-10-05",
+    "spool_dir": null,
+    "state": "WAITING_FOR_LIVE_SOURCE",
+    "updated_at": "2026-10-05T10:08:52.994624+00:00"
+  },
+  "rp1_empirical_orthogonality": {
+    "not_assumed_zero": true,
+    "observed_correlation": null,
+    "status": "NOT_ESTIMABLE_NO_EXACT_JOINABLE_RP1_OBJECTS"
+  },
+  "rp1_exact_objects_in_selected_board_snapshots": 0
+}

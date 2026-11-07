@@ -1,0 +1,675 @@
+{
+  "caveats": [
+    "Source adjusted-price histories are final vintages at parent PR8495 head 770918cb266b5d884978e31d61670b4efd789eaf; not proven original adjustment vintages.",
+    "RS21 and 21-session momentum differ by the same-date SPY constant; only RS21 enters distance to avoid double-counting.",
+    "Incomplete joins excluded explicitly; none filled as zero.",
+    "Matching uses fixed nearest-three same-date, sector and entry-status controls and baseline covariates only.",
+    "No independent industry or market-cap PIT covariate is available. Dollar-volume liquidity is a proxy, not market cap.",
+    "Capture outcome remains subject to disappearance/unknown-state censoring; effects are not calibrated conversion probabilities."
+  ],
+  "control_rows_price_join": 1047,
+  "control_rows_total": 1269,
+  "exposed_price_join": 16,
+  "exposed_total": 21,
+  "input_sha256": {
+    "boards_latest.json": "599a96d4ba23e2aabe81caa9fb434fabd2652d700d0c48093ffee12c3478d889",
+    "extended_window_latest_control_baselines.csv": "563621f6b8dc408aabec27198722b1d0a0c36af753a3237b6ba336f685d0290e",
+    "extended_window_latest_exposed_baselines.csv": "cd0450098ec373b012f5442ae6391cdf7f1cafb3ddda00690156a86cb5e22c8e",
+    "price_controls_2026-10-06.csv": "b1bb57b9313562555893669c44c109fddde5a98ecc71ee6be3bcdad840eccef5"
+  },
+  "methods": {
+    "issuer_disjoint_plus_RS21_and_liquidity": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 13.714285714285714,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        0.0,
+        0.5
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3
+        },
+        "kish_effective_clusters": 4.0,
+        "max_share": 0.375
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 31.27916666666667,
+          "exposed_mean": 27.2,
+          "mean_standardized_difference": -0.15644765526310828,
+          "pairs": 8
+        },
+        "alpha": {
+          "control_mean": 1.1283333333333334,
+          "exposed_mean": 1.1775,
+          "mean_standardized_difference": 0.031508650012249936,
+          "pairs": 8
+        },
+        "ext_z": {
+          "control_mean": -0.952,
+          "exposed_mean": -1.786,
+          "mean_standardized_difference": -0.7180328511027578,
+          "pairs": 5
+        },
+        "log_mean_dollar_volume_21": {
+          "control_mean": 19.037785584025173,
+          "exposed_mean": 20.52851132012197,
+          "mean_standardized_difference": 0.907402525419589,
+          "pairs": 8
+        },
+        "off_high": {
+          "control_mean": -18.520833333333332,
+          "exposed_mean": -20.6375,
+          "mean_standardized_difference": -0.1674826497570964,
+          "pairs": 8
+        },
+        "prior_rs_spy_21": {
+          "control_mean": -0.0900222184457981,
+          "exposed_mean": -0.08035428535583769,
+          "mean_standardized_difference": 0.14212718173790087,
+          "pairs": 8
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.17466176116011162,
+          "exposed_mean": 0.20183035583600945,
+          "mean_standardized_difference": 0.15008990613092205,
+          "pairs": 8
+        },
+        "setup": {
+          "control_mean": 1.31875,
+          "exposed_mean": 1.105,
+          "mean_standardized_difference": -0.24358544046451527,
+          "pairs": 8
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 37.2125,
+          "exposed_mean": 40.5375,
+          "mean_standardized_difference": 0.23869439987524557,
+          "pairs": 8
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 3.6666666666666665,
+        "exposed": 4.875
+      },
+      "n_control_unique_tickers": 18,
+      "n_dates": 5,
+      "n_matched_exposed": 8,
+      "observed_capture_controls": 0.125,
+      "observed_capture_difference": 0.125,
+      "observed_capture_exposed": 0.25,
+      "observed_capture_odds_ratio": 2.3333333333333335,
+      "observed_capture_relative_risk": 2.0,
+      "records": [
+        {
+          "c": 0.0,
+          "c_gap": 4.0,
+          "control_n": 1,
+          "date": "2026-08-27",
+          "lower_difference": -1.0,
+          "sector": "Industrials",
+          "t": 0.0,
+          "t_gap": 6,
+          "ticker": "HUBG",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 4.666666666666667,
+          "control_n": 3,
+          "date": "2026-08-28",
+          "lower_difference": -0.6666666666666666,
+          "sector": "Information Technology",
+          "t": 0.0,
+          "t_gap": 3,
+          "ticker": "SNDK",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 3.0,
+          "control_n": 3,
+          "date": "2026-08-28",
+          "lower_difference": -0.3333333333333333,
+          "sector": "Consumer Discretionary",
+          "t": 0.0,
+          "t_gap": 0,
+          "ticker": "TPR",
+          "upper_difference": 0.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 5.0,
+          "control_n": 1,
+          "date": "2026-08-31",
+          "lower_difference": -1.0,
+          "sector": "Health Care",
+          "t": 0.0,
+          "t_gap": 8,
+          "ticker": "INDV",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 2.6666666666666665,
+          "control_n": 3,
+          "date": "2026-09-03",
+          "lower_difference": 0.6666666666666667,
+          "sector": "Information Technology",
+          "t": 1.0,
+          "t_gap": 0,
+          "ticker": "FORM",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 4.333333333333333,
+          "control_n": 3,
+          "date": "2026-09-04",
+          "lower_difference": -0.6666666666666666,
+          "sector": "Financials",
+          "t": 0.0,
+          "t_gap": 10,
+          "ticker": "BAC",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 1.0,
+          "c_gap": 0.0,
+          "control_n": 1,
+          "date": "2026-09-04",
+          "lower_difference": 0.0,
+          "sector": "Information Technology",
+          "t": 1.0,
+          "t_gap": 5,
+          "ticker": "NVDA",
+          "upper_difference": 0.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 5.666666666666667,
+          "control_n": 3,
+          "date": "2026-09-04",
+          "lower_difference": -1.0,
+          "sector": "Industrials",
+          "t": 0.0,
+          "t_gap": 7,
+          "ticker": "PWR",
+          "upper_difference": 1.0
+        }
+      ],
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 1,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 3
+        },
+        "kish_effective_clusters": 4.0,
+        "max_share": 0.375
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.5,
+        0.75
+      ],
+      "unmatched_tickers": [
+        "WDC:already_enrolled_as_control",
+        "GOOG"
+      ]
+    },
+    "same_overlap_board_native_matching": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 15.677419354838708,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        0.0,
+        0.5
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1
+        },
+        "kish_effective_clusters": 4.764705882352941,
+        "max_share": 0.3333333333333333
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 33.85925925925926,
+          "exposed_mean": 33.577777777777776,
+          "mean_standardized_difference": -0.03595286552720431,
+          "pairs": 9
+        },
+        "alpha": {
+          "control_mean": 1.1712962962962963,
+          "exposed_mean": 1.2911111111111113,
+          "mean_standardized_difference": 0.115888675745364,
+          "pairs": 9
+        },
+        "ext_z": {
+          "control_mean": -1.0999999999999999,
+          "exposed_mean": -1.86,
+          "mean_standardized_difference": -0.6663921537613806,
+          "pairs": 6
+        },
+        "off_high": {
+          "control_mean": -21.10185185185185,
+          "exposed_mean": -22.27777777777778,
+          "mean_standardized_difference": -0.08008108537922443,
+          "pairs": 9
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.16551515906924838,
+          "exposed_mean": 0.180906262244621,
+          "mean_standardized_difference": 0.09129959717050504,
+          "pairs": 9
+        },
+        "setup": {
+          "control_mean": 1.3872222222222224,
+          "exposed_mean": 1.1144444444444443,
+          "mean_standardized_difference": -0.2959196545946588,
+          "pairs": 9
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 39.394444444444446,
+          "exposed_mean": 41.84444444444444,
+          "mean_standardized_difference": 0.18103600696548022,
+          "pairs": 9
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 3.4814814814814814,
+        "exposed": 4.333333333333333
+      },
+      "n_control_unique_tickers": 20,
+      "n_dates": 6,
+      "n_matched_exposed": 9,
+      "observed_capture_controls": 0.16666666666666666,
+      "observed_capture_difference": 0.16666666666666666,
+      "observed_capture_exposed": 0.3333333333333333,
+      "observed_capture_odds_ratio": 2.5,
+      "observed_capture_relative_risk": 2.0,
+      "records": [
+        {
+          "c": 0.0,
+          "c_gap": 4.0,
+          "control_n": 1,
+          "date": "2026-08-27",
+          "lower_difference": -1.0,
+          "sector": "Industrials",
+          "t": 0.0,
+          "t_gap": 6,
+          "ticker": "HUBG",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 4.666666666666667,
+          "control_n": 3,
+          "date": "2026-08-28",
+          "lower_difference": -0.6666666666666666,
+          "sector": "Information Technology",
+          "t": 0.0,
+          "t_gap": 3,
+          "ticker": "SNDK",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 3.0,
+          "control_n": 3,
+          "date": "2026-08-28",
+          "lower_difference": -0.3333333333333333,
+          "sector": "Consumer Discretionary",
+          "t": 0.0,
+          "t_gap": 0,
+          "ticker": "TPR",
+          "upper_difference": 0.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 5.0,
+          "control_n": 1,
+          "date": "2026-08-31",
+          "lower_difference": -1.0,
+          "sector": "Health Care",
+          "t": 0.0,
+          "t_gap": 8,
+          "ticker": "INDV",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 2.6666666666666665,
+          "control_n": 3,
+          "date": "2026-09-03",
+          "lower_difference": 0.6666666666666667,
+          "sector": "Information Technology",
+          "t": 1.0,
+          "t_gap": 0,
+          "ticker": "FORM",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 4.333333333333333,
+          "control_n": 3,
+          "date": "2026-09-04",
+          "lower_difference": -0.6666666666666666,
+          "sector": "Financials",
+          "t": 0.0,
+          "t_gap": 10,
+          "ticker": "BAC",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 1.0,
+          "c_gap": 0.0,
+          "control_n": 1,
+          "date": "2026-09-04",
+          "lower_difference": 0.0,
+          "sector": "Information Technology",
+          "t": 1.0,
+          "t_gap": 5,
+          "ticker": "NVDA",
+          "upper_difference": 0.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 5.666666666666667,
+          "control_n": 3,
+          "date": "2026-09-04",
+          "lower_difference": -1.0,
+          "sector": "Industrials",
+          "t": 0.0,
+          "t_gap": 7,
+          "ticker": "PWR",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.5,
+          "c_gap": 2.0,
+          "control_n": 2,
+          "date": "2026-09-10",
+          "lower_difference": 0.5,
+          "sector": "Information Technology",
+          "t": 1.0,
+          "t_gap": 0,
+          "ticker": "WDC",
+          "upper_difference": 0.5
+        }
+      ],
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 1,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 4
+        },
+        "kish_effective_clusters": 3.5217391304347827,
+        "max_share": 0.4444444444444444
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.3888888888888889,
+        0.7222222222222222
+      ],
+      "unmatched_tickers": [
+        "GOOG"
+      ]
+    },
+    "same_overlap_plus_RS21_and_liquidity": {
+      "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+      "control_weight_effective_n": 15.677419354838708,
+      "date_cluster_bootstrap_capture_difference_95ci": [
+        0.0,
+        0.5
+      ],
+      "date_concentration": {
+        "counts": {
+          "2026-08-27": 1,
+          "2026-08-28": 2,
+          "2026-08-31": 1,
+          "2026-09-03": 1,
+          "2026-09-04": 3,
+          "2026-09-10": 1
+        },
+        "kish_effective_clusters": 4.764705882352941,
+        "max_share": 0.3333333333333333
+      },
+      "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+      "feature_balance": {
+        "alignment_quality": {
+          "control_mean": 33.85925925925926,
+          "exposed_mean": 33.577777777777776,
+          "mean_standardized_difference": -0.03595286552720431,
+          "pairs": 9
+        },
+        "alpha": {
+          "control_mean": 1.1712962962962963,
+          "exposed_mean": 1.2911111111111113,
+          "mean_standardized_difference": 0.115888675745364,
+          "pairs": 9
+        },
+        "ext_z": {
+          "control_mean": -1.0999999999999999,
+          "exposed_mean": -1.86,
+          "mean_standardized_difference": -0.6663921537613806,
+          "pairs": 6
+        },
+        "log_mean_dollar_volume_21": {
+          "control_mean": 19.064055492913784,
+          "exposed_mean": 20.670269452862325,
+          "mean_standardized_difference": 0.9739018398322004,
+          "pairs": 9
+        },
+        "off_high": {
+          "control_mean": -21.10185185185185,
+          "exposed_mean": -22.27777777777778,
+          "mean_standardized_difference": -0.08008108537922443,
+          "pairs": 9
+        },
+        "prior_rs_spy_21": {
+          "control_mean": -0.09069126640768665,
+          "exposed_mean": -0.06371734773174081,
+          "mean_standardized_difference": 0.3155466049740135,
+          "pairs": 9
+        },
+        "sector_rank_fraction": {
+          "control_mean": 0.16551515906924838,
+          "exposed_mean": 0.180906262244621,
+          "mean_standardized_difference": 0.09129959717050504,
+          "pairs": 9
+        },
+        "setup": {
+          "control_mean": 1.3872222222222224,
+          "exposed_mean": 1.1144444444444443,
+          "mean_standardized_difference": -0.2959196545946588,
+          "pairs": 9
+        },
+        "signal_proximity": {
+          "control_mean": null,
+          "exposed_mean": null,
+          "mean_standardized_difference": null,
+          "pairs": 0
+        },
+        "vol_ann_pct": {
+          "control_mean": 39.394444444444446,
+          "exposed_mean": 41.84444444444444,
+          "mean_standardized_difference": 0.18103600696548022,
+          "pairs": 9
+        }
+      },
+      "mean_unobserved_or_unknown_followup_sessions": {
+        "control": 3.4814814814814814,
+        "exposed": 4.333333333333333
+      },
+      "n_control_unique_tickers": 20,
+      "n_dates": 6,
+      "n_matched_exposed": 9,
+      "observed_capture_controls": 0.16666666666666666,
+      "observed_capture_difference": 0.16666666666666666,
+      "observed_capture_exposed": 0.3333333333333333,
+      "observed_capture_odds_ratio": 2.5,
+      "observed_capture_relative_risk": 2.0,
+      "records": [
+        {
+          "c": 0.0,
+          "c_gap": 4.0,
+          "control_n": 1,
+          "date": "2026-08-27",
+          "lower_difference": -1.0,
+          "sector": "Industrials",
+          "t": 0.0,
+          "t_gap": 6,
+          "ticker": "HUBG",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 4.666666666666667,
+          "control_n": 3,
+          "date": "2026-08-28",
+          "lower_difference": -0.6666666666666666,
+          "sector": "Information Technology",
+          "t": 0.0,
+          "t_gap": 3,
+          "ticker": "SNDK",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 3.0,
+          "control_n": 3,
+          "date": "2026-08-28",
+          "lower_difference": -0.3333333333333333,
+          "sector": "Consumer Discretionary",
+          "t": 0.0,
+          "t_gap": 0,
+          "ticker": "TPR",
+          "upper_difference": 0.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 5.0,
+          "control_n": 1,
+          "date": "2026-08-31",
+          "lower_difference": -1.0,
+          "sector": "Health Care",
+          "t": 0.0,
+          "t_gap": 8,
+          "ticker": "INDV",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 2.6666666666666665,
+          "control_n": 3,
+          "date": "2026-09-03",
+          "lower_difference": 0.6666666666666667,
+          "sector": "Information Technology",
+          "t": 1.0,
+          "t_gap": 0,
+          "ticker": "FORM",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 4.333333333333333,
+          "control_n": 3,
+          "date": "2026-09-04",
+          "lower_difference": -0.6666666666666666,
+          "sector": "Financials",
+          "t": 0.0,
+          "t_gap": 10,
+          "ticker": "BAC",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 1.0,
+          "c_gap": 0.0,
+          "control_n": 1,
+          "date": "2026-09-04",
+          "lower_difference": 0.0,
+          "sector": "Information Technology",
+          "t": 1.0,
+          "t_gap": 5,
+          "ticker": "NVDA",
+          "upper_difference": 0.0
+        },
+        {
+          "c": 0.0,
+          "c_gap": 5.666666666666667,
+          "control_n": 3,
+          "date": "2026-09-04",
+          "lower_difference": -1.0,
+          "sector": "Industrials",
+          "t": 0.0,
+          "t_gap": 7,
+          "ticker": "PWR",
+          "upper_difference": 1.0
+        },
+        {
+          "c": 0.5,
+          "c_gap": 2.0,
+          "control_n": 2,
+          "date": "2026-09-10",
+          "lower_difference": 0.5,
+          "sector": "Information Technology",
+          "t": 1.0,
+          "t_gap": 0,
+          "ticker": "WDC",
+          "upper_difference": 0.5
+        }
+      ],
+      "sector_concentration": {
+        "counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 1,
+          "Health Care": 1,
+          "Industrials": 2,
+          "Information Technology": 4
+        },
+        "kish_effective_clusters": 3.5217391304347827,
+        "max_share": 0.4444444444444444
+      },
+      "true_conversion_difference_identification_bounds": [
+        -0.3888888888888889,
+        0.7222222222222222
+      ],
+      "unmatched_tickers": [
+        "GOOG"
+      ]
+    }
+  },
+  "missing_exposed": [
+    "LFUS",
+    "FIX",
+    "AMG",
+    "AMAT",
+    "MPWR"
+  ],
+  "status": "RETROSPECTIVE_FINAL_PRICE_VINTAGE_SENSITIVITY_NOT_PIT_VALIDATION"
+}
