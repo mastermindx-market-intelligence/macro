@@ -1,0 +1,18 @@
+{
+  "status": "SYNTHETIC_FOLLOWUP_PROTOCOL_NOT_MARKET_REGISTRATION",
+  "purpose": "Test the proposed month-resampling percentile interval itself after simpler block-Student diagnostics exposed remaining dependence",
+  "seed": 2026100917,
+  "replications": 1000,
+  "sessions": 252,
+  "factors": 40,
+  "common_share": 0.6,
+  "loss_scale": 0.03,
+  "horizons": [1, 21],
+  "resamples": 2000,
+  "blocks": "12 equally sized consecutive blocks of 21 synthetic sessions; not an exact exchange-month calendar",
+  "primary_diagnostic": "fraction of true-zero means excluded by the two-sided 95% percentile interval resampling 12 whole blocks with replacement",
+  "controls": ["known_covariance_normal", "nonoverlapping_H_spaced_origin_Student"],
+  "no_model_selection": true,
+  "no_real_outcomes": true,
+  "limitation": "This is a controlled counterexample, not the false-positive rate of the full Factor Intelligence or S6 production pipeline. No FDR or practical-effect gate is modeled."
+}

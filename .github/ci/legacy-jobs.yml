@@ -49883,6 +49883,35 @@ jobs:
           python tests/test_options_pilot_study_adapter.py
           python tests/test_options_pilot_chronology.py
 
+  factor-atlas-s6-structural-guards:
+    # Synthetic research guards only; no source admission or empirical activation.
+    # Separate processes keep archived and repaired same-name modules isolated.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - research/factor_atlas/06_EMPIRICAL_VALIDATION_AND_ACCEPTANCE.md
+      - research/factor_atlas/session6/**
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install synthetic guard test dependency
+        run: pip install pytest
+      # StructuralGuardsTest is a unittest suite; retain its exact script entrypoint.
+      - name: archived predecessor fixtures (reproduction only)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python
+          research/factor_atlas/session6/source/test_structural_guards.py -q
+      - name: repaired structural and corruption guards (not scientific admission)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          research/factor_atlas/session6/prototype/test_structural_guards.py
+          research/factor_atlas/session6/prototype/test_deep_guards.py -q
+
   commodities-research-workspace:
     if: ${{ false }}  # Executed by the required PR pack runner.
     gate: code
