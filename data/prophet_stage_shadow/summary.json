@@ -3,23 +3,23 @@
   "is_context_only": true,
   "display_only": true,
   "authority_tier": "display",
-  "generated_asof": "2026-11-06",
-  "generated_utc": "2026-11-06T12:16:24.706421+00:00",
+  "generated_asof": "2026-11-07",
+  "generated_utc": "2026-11-07T08:01:42.430404+00:00",
   "spec": "research/PROPHET_STAGE_FUSION_PREREG.md",
   "accrual_disclaimer": "accruing \u2014 first 126-day cohort matures ~2026-12; n is tiny until then; NOT yet decisive. The 2022-26 backtest on the T-cascade confluence proxy found no CI-clean win-rate edge (a quality right-shift only) \u2014 this forward-shadow is the definitive on-Prophet check, tagging Prophet's ACTUAL entries from go-live. Display / shadow tier only: it NEVER gates, ranks, or alters any Prophet decision.",
   "n_entries": 878,
   "n_tagged": 689,
   "n_stageable": 689,
   "n_matured": {
-    "21": 427,
-    "63": 62,
+    "21": 436,
+    "63": 96,
     "126": 0,
     "clean15_126": 0,
-    "clean8_21": 427
+    "clean8_21": 436
   },
   "integrity_projection": {
     "raw_rows": 878,
-    "revision_rows": 427,
+    "revision_rows": 436,
     "effective_rows": 878,
     "quarantined_excluded": 0,
     "quarantined_ids": [],
@@ -33,8 +33,8 @@
     "path": "data/earnings_calls/history.parquet",
     "tier": "r2_history",
     "generation": {
-      "generation_id": "07b8fc60c438c1a80266ba56",
-      "published_at": "2026-11-06T07:44:21.592831+00:00",
+      "generation_id": "39f78eebd3dd9a3ca25f3ddb",
+      "published_at": "2026-11-07T04:40:47.739737+00:00",
       "rows": 50982
     },
     "reason": null
@@ -48,9 +48,9 @@
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 193,
+        "n_matured": 194,
         "n_win": 44,
-        "win_rate": 0.22797927461139897
+        "win_rate": 0.2268041237113402
       }
     },
     "rest": {
@@ -61,9 +61,9 @@
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 234,
-        "n_win": 77,
-        "win_rate": 0.32905982905982906
+        "n_matured": 242,
+        "n_win": 80,
+        "win_rate": 0.3305785123966942
       }
     },
     "fresh_stage2": {
@@ -87,9 +87,9 @@
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 43,
-        "n_win": 18,
-        "win_rate": 0.4186046511627907
+        "n_matured": 47,
+        "n_win": 19,
+        "win_rate": 0.40425531914893614
       }
     }
   },
