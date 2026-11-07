@@ -6323,6 +6323,8 @@ jobs:
       - "engine/marketing/state.py"
       - "engine/session_anchor.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
+      - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_score.py"
       - "engine/stock_view.py"
@@ -8142,6 +8144,9 @@ jobs:
       - "tests/test_native_capture_participant.py"
       - "tests/test_investigation_native_capture.py"
       - "app/investigation_native_capture.py"
+      - "engine/neuralweb/options_selection_context.py"
+      - "tests/test_options_selection_context.py"
+      - "tests/fixtures/options_selection_question/terminal-mint-v1.json"
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -9250,7 +9255,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_options_scenario_http_admission.py tests/test_scenario_initial_capture.py tests/test_investigation_native_capture.py tests/test_native_capture_participant.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_selection_context.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py tests/test_options_scenario_http_admission.py tests/test_investigation_native_capture.py tests/test_native_capture_participant.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -10650,6 +10655,24 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
       - "tests/intl_gs_dislocations_fixture.py"
@@ -11002,6 +11025,24 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11373,6 +11414,24 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -14905,6 +14964,24 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/rotation_observation_notification.py"
@@ -15938,8 +16015,8 @@ jobs:
       # step named it, so the guard for that fix was itself dark from the hour
       # it landed. Same class the unrun-* lanes close; caught by
       # scripts/audit_unrun_tests.py on the very next census.
-      - name: render-lane scope contract (intl must stay in the publish scopes)
-        run: python -m pytest tests/test_render_intl_scope.py -q
+      - name: render-lane intl scope and durable publication contracts
+        run: python -m pytest tests/test_render_intl_scope.py tests/test_intl_durable_publication.py tests/test_render_intl_durable.py tests/test_intl_durable_native_inputs.py tests/test_intl_native_read_observer.py -q
       # A run: scalar over GitHub's length cap makes GitHub DE-REGISTER the workflow.
       # render.yml vanished from the registry on 2026-07-27 (#3826) and the express lane
       # was dead ~1h. yaml.safe_load, check_workflow_yaml.py and actionlint ALL pass on an
@@ -16651,6 +16728,7 @@ jobs:
       - "engine/marketing/market_clock.py"
       - "engine/marketing/movers_source.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
       - "engine/stocks_hub.py"
       - "engine/liquidity_currency.py"
       - "engine/liquidity_source_availability.py"
@@ -19096,6 +19174,24 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -19726,6 +19822,7 @@ jobs:
       - engine/signal_stack.py
       - engine/smart_money.py
       - engine/sp500_heatmap.py
+      - "engine/sector_breadth_close.py"
       - engine/special_arb.py
       - engine/special_situations.py
       - engine/special_situations_premium.py
@@ -23205,6 +23302,24 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -23644,6 +23759,24 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -23979,6 +24112,24 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -24765,6 +24916,7 @@ jobs:
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
+      - "engine/sector_breadth_close.py"
       - "engine/smart_money.py"
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
@@ -28055,6 +28207,7 @@ jobs:
       - "engine/signal_archive.py"
       - "engine/signal_frontier_docket.py"
       - "engine/signal_gate.py"
+      - "engine/sector_breadth_close.py"
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
@@ -35397,6 +35550,24 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - collectors/rate_futures.py
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
@@ -36052,6 +36223,7 @@ jobs:
       - "engine/signal_stack.py"
       - "engine/smart_money.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
@@ -37476,6 +37648,7 @@ jobs:
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
       - "engine/smart_money.py"
+      - "engine/sector_breadth_close.py"
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
@@ -38680,7 +38853,7 @@ jobs:
         timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_financial_browser.py tests/test_brain_financial_standalone.py tests/test_brain_financial_widget.py tests/test_brain_chart_widget.py tests/test_brain_chart_price_controls.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_options_question_widget_browser.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_financial_browser.py tests/test_brain_financial_standalone.py tests/test_brain_financial_widget.py tests/test_brain_chart_widget.py tests/test_brain_chart_price_controls.py -q
 
   ric-y0-yield-momentum:
     if: ${{ false }}
@@ -50500,6 +50673,24 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - "app/options_scenario_http_admission.py"
       - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -51478,6 +51669,7 @@ jobs:
       - "engine/signal_foundry/transforms.py"
       - "engine/signal_frontier_docket.py"
       - "engine/signal_gate.py"
+      - "engine/sector_breadth_close.py"
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"

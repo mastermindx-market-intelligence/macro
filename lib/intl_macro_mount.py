@@ -214,13 +214,13 @@ def _eligible_policy(section):
 
 
 def attach_macros(workspace, *, registry, measures, cycle_evidence, destinations,
-                  source_notice=None):
+                  source_notice=None, field_evidence=None):
     """Publish detached Macro sidecars without changing the owner workspace."""
     if workspace is None:
         _bound(source_notice)
         _notice(source_notice)
         return None
-    for value in (workspace, registry, measures, cycle_evidence, destinations, source_notice):
+    for value in (workspace, registry, measures, cycle_evidence, destinations, source_notice, field_evidence):
         _bound(value)
     if type(workspace) is not dict or "macros" in workspace:
         _fail()
@@ -236,6 +236,10 @@ def attach_macros(workspace, *, registry, measures, cycle_evidence, destinations
     contexts = _contexts(panels, workspace["config"], version, generation)
 
     notice = _notice(source_notice)
+    eurostat_evidence = {}
+    if field_evidence is not None:
+        from lib.intl_eurostat_publication import project_field_evidence
+        eurostat_evidence = project_field_evidence(field_evidence, measures)
     safe_inputs = {
         "registry": deepcopy(registry),
         "measures": deepcopy(measures),
@@ -249,6 +253,7 @@ def attach_macros(workspace, *, registry, measures, cycle_evidence, destinations
         notice = None
     if version == 1:
         projected_measures, projected_cycle = {}, {}
+        eurostat_evidence = {}
     elif notice is None and "EZ.policy_rate" in safe_inputs["measures"]:
         projected_measures = deepcopy(safe_inputs["measures"])
         del projected_measures["EZ.policy_rate"]
@@ -256,6 +261,17 @@ def attach_macros(workspace, *, registry, measures, cycle_evidence, destinations
     else:
         projected_measures = safe_inputs["measures"]
         projected_cycle = safe_inputs["cycle_evidence"]
+    # A numeric Eurostat field also owes its separate clock and attribution
+    # disclosure. Static failed/missing descriptors need no dynamic source data.
+    for field in ("EZ.gdp_yoy", "EZ.cpi_yoy"):
+        metric = projected_measures.get(field)
+        if (type(metric) is dict and metric.get("value") is not None
+                and type(metric.get("instrument")) is dict
+                and metric["instrument"].get("id") in {
+                    "NAMQ_10_GDP/Q/CLV_PCH_SM/SCA/B1GQ/EA21", "PRC_HICP_MINR/M/RCH_A/TOTAL/EA21"}
+                and field not in eurostat_evidence):
+            projected_measures = deepcopy(projected_measures)
+            del projected_measures[field]
 
     sections = []
     for panel in panels:
@@ -282,6 +298,8 @@ def attach_macros(workspace, *, registry, measures, cycle_evidence, destinations
         }
         if version == 2:
             macro["generation"] = panel["generation"]
+            if eurostat_evidence:
+                macro["field_evidence"] = deepcopy(eurostat_evidence)
         macros.append(macro)
     result["macros"] = macros
     return result
