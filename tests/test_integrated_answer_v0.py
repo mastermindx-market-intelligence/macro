@@ -35,6 +35,7 @@ TOP_LEVEL_KEYS = frozenset({
     "footer",
     "coverage_note",
     "legs",
+    "provenance",
 })
 LEG_KEYS = frozenset({"leg", "status", "ref", "payload", "degraded_reason", "copy"})
 REF_KEYS = frozenset({"route", "as_of", "generation_id", "owner_hash", "content_hash"})
