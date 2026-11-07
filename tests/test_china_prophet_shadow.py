@@ -704,3 +704,112 @@ def test_intel_columns_append_onto_a_pre_pr0b_fixture_parquet(shadow_store):
     new = stored.loc["600096.SS"]
     assert new["intel_score"] == pytest.approx(77.0)
     assert new["intel_basis"] == "measured"
+
+
+
+def test_peer_evidence_excludes_the_candidate_and_freezes_with_the_original_row(shadow_store):
+    import json
+    from datetime import date
+    from engine.china_prophet_peer_context import build_context
+    from lib.cn_calendar import session_n_back
+
+    asof = "2026-11-02"
+    dates = pd.DatetimeIndex([session_n_back(date.fromisoformat(asof), n) for n in range(20, -1, -1)])
+    bench = pd.Series(100.0, index=dates)
+    series = lambda daily: [100.0 * (1 + daily) ** i for i in range(21)]
+    tickers = ["stock", "a", "b", "c", "d", "e"]
+    closes = pd.DataFrame({t: series(-0.01) for t in tickers}, index=dates)
+    closes["stock"] = series(0.02)
+    membership = {("theme", "one"): tickers, ("sector", "s1"): tickers}
+    central = {"as_of": "2026-10-30", "market": {"tone": "off", "validated": True, "any_stale": False}}
+    row = build_context(["stock"], closes, bench, asof, membership, central)["stock"]
+    assert row["interpretation"] == "isolated_leader"
+    assert row["market_tone"] == "off" and row["central_as_of"] == "2026-10-30"
+    assert len(row["groups"]) == 2
+    for g in row["groups"]:
+        assert (g["observed"], g["total"], g["advancing"], g["breadth_pct"]) == (5, 5, 0, 0)
+        assert g["stock_vs_peer_20d_pp"] > 0
+
+    candidate = _candidate("stock", eligible=False)
+    candidate["peer_context"] = row
+    assert shadow.append_candidates([candidate], asof, lane="asia") == 1
+    candidate["peer_context"] = dict(row, interpretation="mixed")
+    assert shadow.append_candidates([candidate], asof, lane="asia") == 1
+    assert json.loads(pd.read_parquet(shadow._store_path()).iloc[0].peer_context_json) == row
+
+    spike = closes.copy()
+    spike["stock"] = [100.0] * 20 + [170.0]
+    one_day = build_context(["stock"], spike, bench, asof, membership, central)["stock"]
+    assert one_day["interpretation"] != "isolated_leader"
+
+    closes["a"] = closes["a"].mask(closes.index == dates[-2])
+    missing = build_context(["stock"], closes, bench, asof, membership, central)["stock"]
+    assert missing["interpretation"] == "unavailable"
+    assert all((g["observed"], g["total"]) == (4, 5) for g in missing["groups"])
+
+    closes["stock"] = series(-0.02)
+    future = dict(central, as_of="2026-11-03")
+    falling = build_context(["stock"], closes, bench, asof, membership, future)["stock"]
+    assert falling["interpretation"] == "falling_watch" and falling["market_tone"] is None
+    closes.loc[pd.Timestamp("2026-11-03")] = 100000
+    assert build_context(["stock"], closes, bench, asof, membership, future)["stock"] == falling
+
+
+def test_peer_breadth_pivot_and_mixed_theme_do_not_create_a_leader():
+    from datetime import date
+    from engine.china_prophet_peer_context import build_context
+    from lib.cn_calendar import session_n_back
+
+    asof = "2026-11-02"
+    dates = pd.DatetimeIndex([session_n_back(date.fromisoformat(asof), n) for n in range(20, -1, -1)])
+    # Peers have recovered over the last five sessions but still trail CSI 300 over twenty.
+    path = [100] * 11 + [98, 96, 94, 92, 90, 91, 92, 93, 94, 95]
+    frame = pd.DataFrame({str(i): path for i in range(6)}, index=dates)
+    frame["0"] = list(range(100, 121))
+    bench = pd.Series(100, index=dates)
+    groups = {("sector", "s"): list(frame.columns)}
+    result = build_context(["0"], frame, bench, asof, groups, {})["0"]
+    peer = result["groups"][0]
+    assert result["interpretation"] == "rotation_watch"
+    assert (peer["breadth_pct"], peer["breadth_change_5d_pp"]) == (100, 100)
+    # Strong names in another theme do not count twice or erase a conflicting peer read.
+    for i in range(6, 11):
+        frame[str(i)] = list(range(100, 79, -1))
+    groups["theme", "against"] = ["0", "6", "7", "8", "9", "10"]
+    mixed = build_context(["0"], frame, bench, asof, groups, {})["0"]
+    assert mixed["interpretation"] == "mixed"
+    assert {g["state"] for g in mixed["groups"]} == {"isolated_leader", "emerging_rotation"}
+    stale_bench = bench.drop(dates[-1])
+    blind = build_context(["0"], frame, stale_bench, asof, groups, {})["0"]
+    assert blind["interpretation"] == "unavailable" and blind["stock_20d_pct"] > 0
+    assert blind["stock_vs_csi300_20d_pp"] is None
+    assert blind["groups"][0]["breadth_pct"] == 100
+
+
+def test_peer_source_membership_uses_first_observation_and_keeps_theme_overlap(tmp_path):
+    import json
+    from engine.china_prophet_peer_context import load_sources
+
+    (tmp_path / "china_sectors").mkdir()
+    rows = [
+        {"ticker": t, "l1_code": c, "start_date": "2020-01-01", "end_date": end, "collected_at": seen}
+        for t, c, seen, end in [
+            ("valid", "one", "2026-10-01", None),
+            ("future", "one", "2026-11-03", None),
+            ("bad_clock", "one", "broken", None),
+            ("expired", "one", "2026-10-01", "2026-11-02"),
+            ("conflict", "one", "2026-10-01", None),
+            ("conflict", "two", "2026-10-01", None),
+        ]
+    ]
+    pd.DataFrame(rows).to_parquet(tmp_path / "china_sectors" / "membership.parquet")
+    (tmp_path / "baskets_china").mkdir()
+    members = [{"ticker": "valid", "added": "2026-10-01"},
+               {"ticker": "future", "added": "2026-11-03"},
+               {"ticker": "expired", "added": "2026-10-01", "removed": "2026-11-02"}]
+    (tmp_path / "baskets_china" / "membership.json").write_text(json.dumps(
+        {"baskets": {key: {"members": members} for key in ["one", "two"]}}))
+    groups, central = load_sources(tmp_path, tmp_path, "2026-11-02")
+    assert groups == {("sector", "one"): ["valid"], ("theme", "one"): ["valid"],
+                      ("theme", "two"): ["valid"]}
+    assert central == {}

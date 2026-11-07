@@ -2496,6 +2496,7 @@ def main(alpha: dict | None = None) -> dict | None:
     # or stale name is NaN on that row and falls out of both counts instead of silently
     # contributing a different session's move. Initialised before the try so the guard
     # 2,000 lines below always finds it defined (blind reads as None, never as green).
+    _uni_closes = None
     _tape_adv: int | None = None
     _tape_dec: int | None = None
     try:
@@ -3461,6 +3462,20 @@ def main(alpha: dict | None = None) -> dict | None:
         micro_asof=_micro_doc.get("as_of"),
         board_asof=_board_asof,
     )
+    # Observe the full pre-cap population. Peer context has no score or gate input.
+    if _board_asof:
+        from engine import china_prophet_peer_context as peer_context
+
+        try:
+            peer_groups, peer_central = peer_context.load_sources(config.data_dir(), site, _board_asof)
+            peer_by_ticker = peer_context.build_context(
+                (r["ticker"] for r in _scored_candidates), _uni_closes, _csi_close,
+                _board_asof, peer_groups, peer_central,
+            )
+            for row in _scored_candidates:
+                row["peer_context"] = peer_by_ticker[row["ticker"]]
+        except Exception as exc:  # optional evidence must never suppress the incumbent board
+            log.warning("China Prophet peer context unavailable: %s", exc)
     eligible_rows = [
         r for r in _scored_candidates if (r.get("signal") or {}).get("eligible")
     ]

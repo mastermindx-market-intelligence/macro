@@ -110,7 +110,7 @@ def _standout_setups(buy=None) -> dict:
     }
 
 
-def _render_standout_header() -> str:
+def _render_standout_header(ranking=None) -> str:
     """Render the standout panel header (W-FCT partition anchor → data-outage banner).
 
     Extraction starts at the W-FCT comment (~L3143) — the same anchor the w1c suite
@@ -150,7 +150,10 @@ def _render_standout_header() -> str:
         loader=ChoiceLoader([DictLoader({"blk": full}), FileSystemLoader(str(ROOT / "templates"))]),
         autoescape=False,
     )
-    return env.get_template("blk").render(setups=_standout_setups())
+    setups = _standout_setups()
+    if ranking:
+        setups["ranking"] = ranking
+    return env.get_template("blk").render(setups=setups)
 
 
 def test_template_parses_without_errors() -> None:
@@ -205,11 +208,11 @@ def test_standout_h2_selective_v2_copy_present_and_old_subtitle_gone() -> None:
     the receipt line where DESIGN_DOCTRINE Law 5 puts them. Selectivity and the
     weights are still stated; only the vocabulary changed.
     """
-    html = _render_standout_header()
+    html = _render_standout_header({"formula_points": {"signal": 30, "theme_timing": 15}})
     assert "Only the ready ones" in html, "explainer no longer states selective admission"
     for criterion in ("Signal", "Entry", "Tradable", "Not chased"):
         assert f">{criterion}</span>" in html, f"admission criterion '{criterion}' missing"
-    assert "signal 35%" in html.lower(), "priority weights missing from the receipt line"
+    assert "signal 30%" in html.lower() and "theme timing 15%" in html.lower()
     # Old subtitle chip strings must NOT come back.
     assert "cycle-aligned bottoming" not in html, (
         "Old 'cycle-aligned bottoming' subtitle chip still present"

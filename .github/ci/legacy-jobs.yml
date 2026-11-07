@@ -6906,6 +6906,15 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
+      - "engine/hk_southbound_stocks.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25147,6 +25156,15 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
+      - "engine/hk_southbound_stocks.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35283,6 +35301,14 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -36466,6 +36492,22 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
+      - "engine/hk_southbound_stocks.py"
+      - "templates/china.html.j2"
+      - "templates/_track_record_dlg.html.j2"
+      - "templates/_lens.html.j2"
+      - "templates/_cn_prophet_peer_context.html.j2"
+      - "templates/sector_central_china.html.j2"
+      - "tests/test_china_prophet_shadow.py"
+      - "tests/test_cn_board_unified_grid.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -36560,6 +36602,8 @@ jobs:
       - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
         run: python -m pytest tests/test_cn_live_pack_archive.py -q
 
+      - name: A-share Prophet peer participation and bilingual disclosure
+        run: python -m pytest tests/test_china_prophet_shadow.py tests/test_cn_board_unified_grid.py -k peer -q
       # ITP-ES wave 1: deterministic page builder contract.
       - name: expectation surface page builder contract (ITP-ES wave 1)
         run: python -m pytest tests/test_build_expectation_surface.py -q
@@ -37866,6 +37910,14 @@ jobs:
       - "engine/theme_graph/materialize.py"
       # W2F-X closure widening: the observation seam widened these import closures
       - "engine/intl_global_observation.py"
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
