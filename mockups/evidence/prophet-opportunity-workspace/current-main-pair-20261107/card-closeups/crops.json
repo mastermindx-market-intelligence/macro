@@ -1,0 +1,26 @@
+[
+  {
+    "file": "1440-light-en.png",
+    "source": "/Volumes/Mastermind/evidence/prophet-r6-local-20261008-01a11e89/prophet-end-to-end-resumption-20261012/paper-to-product-20261014/product-reset-20261015/acceptance-447b5d6d/main-integration-20261104/card-sources-20261106/r8-anatomy-native/current-main-de06-20261107/public-capture/normal-page-1440-light-en.png",
+    "source_sha256": "c47bf9290c81eba1037536203d01bbaba2dc1067301239321a999429c263d968",
+    "crop_box": [
+      37,
+      686,
+      371,
+      1352
+    ],
+    "scope": "Pixel crop of original native screenshot, no content or styling alteration; anonymous local source only."
+  },
+  {
+    "file": "390-dark-zh.png",
+    "source": "/Volumes/Mastermind/evidence/prophet-r6-local-20261008-01a11e89/prophet-end-to-end-resumption-20261012/paper-to-product-20261014/product-reset-20261015/acceptance-447b5d6d/main-integration-20261104/card-sources-20261106/r8-anatomy-native/current-main-de06-20261107/public-capture/normal-page-390-dark-zh.png",
+    "source_sha256": "0ebb45e2864018ab400f72fc7fdd8fd212e8018c8f441793fce4552616ce6202",
+    "crop_box": [
+      15,
+      751,
+      375,
+      1368
+    ],
+    "scope": "Pixel crop of original native screenshot, no content or styling alteration; anonymous local source only."
+  }
+]
