@@ -1,6 +1,6 @@
 {
   "schema": "winner_autopsy_panel.v1",
-  "generated_at": "2026-11-07T10:05:23Z",
+  "generated_at": "2026-11-07T13:53:46Z",
   "display_only": true,
   "horizon_role": "hold_thesis",
   "census": {
@@ -6859,6 +6859,25 @@
         }
       },
       {
+        "ticker": "TIPS",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 104.99,
+        "excess_42d_pp": 503.32,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.64,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [
+          "extended_after_vertical_move"
+        ],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
         "ticker": "IVPR",
         "sector": "",
         "benchmark": "SPY",
@@ -6872,25 +6891,6 @@
         "hazards": [
           "extended_after_vertical_move",
           "chase_risk_elevated"
-        ],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "TIPS",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 104.99,
-        "excess_42d_pp": 503.32,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.64,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [
-          "extended_after_vertical_move"
         ],
         "context": {
           "context_only": true,
@@ -22462,6 +22462,23 @@
         }
       },
       {
+        "ticker": "APYX",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 25.69,
+        "excess_42d_pp": 4.39,
+        "new_high_63d": false,
+        "dollar_vol_z21": 4.15,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
         "ticker": "ANGI",
         "sector": "",
         "benchmark": "SPY",
@@ -22475,23 +22492,6 @@
         "hazards": [
           "chase_risk_elevated"
         ],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "APYX",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 25.69,
-        "excess_42d_pp": 4.39,
-        "new_high_63d": false,
-        "dollar_vol_z21": 4.15,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
         "context": {
           "context_only": true,
           "note": ""
@@ -26587,7 +26587,7 @@
         }
       },
       {
-        "ticker": "BF.A",
+        "ticker": "BF-A",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -26604,7 +26604,7 @@
         }
       },
       {
-        "ticker": "BF-A",
+        "ticker": "BF.A",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -32805,23 +32805,6 @@
         }
       },
       {
-        "ticker": "AVNI",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 5.69,
-        "excess_42d_pp": 104.07,
-        "new_high_63d": false,
-        "dollar_vol_z21": 0.0,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
         "ticker": "AMBIQ",
         "sector": "",
         "benchmark": "SPY",
@@ -32847,6 +32830,23 @@
         "excess_42d_pp": 104.07,
         "new_high_63d": false,
         "dollar_vol_z21": -0.34,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "AVNI",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 5.69,
+        "excess_42d_pp": 104.07,
+        "new_high_63d": false,
+        "dollar_vol_z21": 0.0,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -33196,6 +33196,23 @@
         }
       },
       {
+        "ticker": "CETXP",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 4.99,
+        "excess_42d_pp": 36.51,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.25,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
         "ticker": "NPACY",
         "sector": "",
         "benchmark": "SPY",
@@ -33238,23 +33255,6 @@
         "excess_42d_pp": 103.32,
         "new_high_63d": true,
         "dollar_vol_z21": 0.97,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "CETXP",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 4.99,
-        "excess_42d_pp": 36.51,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.25,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -40846,7 +40846,7 @@
         }
       },
       {
-        "ticker": "PBR.A",
+        "ticker": "PBR-A",
         "sector": "",
         "benchmark": "SPY",
         "state": "failed",
@@ -40863,7 +40863,7 @@
         }
       },
       {
-        "ticker": "PBR-A",
+        "ticker": "PBR.A",
         "sector": "",
         "benchmark": "SPY",
         "state": "failed",
