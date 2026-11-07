@@ -210,7 +210,8 @@
     var N = Math.round(yrs * f);
     if(!(N>0)) return {ok:false, field:"years", msg:{en:"That horizon is too short to make a single contribution.", zh:"这个期限太短，连一次投入都无法完成。"}};
     var i = r / 100 / f;
-    var fv = (i === 0) ? (c * N) : (c * (Math.pow(1 + i, N) - 1) / i);
+    var num = (i > -1) ? Math.expm1(N * Math.log1p(i)) : (Math.pow(1 + i, N) - 1);
+    var fv = (i === 0) ? (c * N) : (c * num / i);
     var invested = c * N;
     var gain = fv - invested;
     var returnPct = invested > 0 ? (100 * gain / invested) : 0;
