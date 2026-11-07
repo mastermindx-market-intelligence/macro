@@ -8,7 +8,8 @@ WHY THIS EXISTS
 `data/signal_archive/track_record.parquet` carries six candidate regime axes stamped on each
 signal (`regime_at_entry`, `quad_hard_label`, `vol_regime`, `fused_risk_label`,
 `rate_pressure`, `risk_radar_state`). Five of the six were added by the W0-stageB vector
-stamping and are therefore present on only the newest rows. As of the 2026-08 audit:
+stamping and are therefore present on only the newest rows. Historical 2026-08 audit
+snapshot (kept here for context — not refreshed by this revision):
 
     regime_at_entry   100.0% coverage, 1962-2026, 3 states   <- estimable
     quad_hard_label     0.4% coverage, 2026-07 only, 2 states
@@ -17,22 +18,30 @@ stamping and are therefore present on only the newest rows. As of the 2026-08 au
     fused_risk_label    0.4% coverage, 2026-07 only, 4 states
     risk_radar_state    0.4% coverage, 2026-07 only, 2 states
 
+See ``research/macro_regime_intelligence/research_readiness_20261002.json`` for the
+current measurable picture; the snapshot above is a 2026-08 reference, not a
+live reading.
+
 An axis observed in ONE state cannot support a conditional statement: E[outcome | regime]
 is undefined off the observed cell, and a table built on it reads as a comparison while
 being a constant. This is the trap the meter exists to make visible — a future study can
 otherwise compute a confident-looking 6x4 reliability grid from 235 rows in a single month
 and nothing in the stack would object.
 
-THE HONEST UNIT IS MONTHS, NOT ROWS. A board ledger with 2,282 rows across 18 trading days
-carries ~18 independent observations, not 2,282: same-day rows share the same market. Every
-count this module reports is a DISTINCT-MONTH count alongside the raw row count, and the
-gate binds on months.
+THE HONEST UNIT IS MONTHS, NOT ROWS — but a distinct-month count does NOT prove
+independence. A board ledger with 2,282 rows across 18 trading days carries ~18
+independent observations, not 2,282: same-day rows share the same market. Every count
+this module reports is a DISTINCT-MONTH count alongside the raw row count, the gate
+binds on months, and that gate is a row-pseudoreplication cap, not a statement about
+whether the months themselves are independent. Months derive from the signal ``date``,
+never from a vector's ``as-of`` date, so a vector stamped on the last day of one month
+contributes to the next month's count.
 
 GATE THRESHOLDS (frozen; changing them is a v2, not an edit)
 ------------------------------------------------------------
 MIN_COVERAGE      = 0.20  an axis stamped on <20% of the record cannot describe the record
 MIN_STATES        = 2     one observed state is a constant, not a condition
-MIN_MONTHS_STATE  = 12    per-state independent months; mirrors the ">=10 contributing
+MIN_MONTHS_STATE  = 12    distinct months per state; mirrors the ">=10 contributing
                           months" floor pre-registered for H1 in
                           research/factor_intelligence/PREREGISTRATION.md, rounded up to a
                           calendar year so a verdict cannot rest on one season
@@ -46,7 +55,10 @@ VERDICTS
 
 Consumers must treat anything other than "estimable" as a hard NO on regime-conditional
 claims for that axis. The meter never returns a reliability number and never ranks axes by
-outcome — it reports only what the sample can support.
+outcome — it reports only what the sample can support. A date-level repetition of a
+US-context axis (e.g. a vector whose ``as-of`` lags the signal ``date`` by 0-3 days) does
+not by itself establish cross-date independence; the verdict binds on months, not on the
+absence of same-day repeats.
 
 Reference: reports/regime-reliability-phase0.md (the measured null this meter generalizes).
 """
@@ -73,6 +85,23 @@ CANDIDATE_AXES = (
     "risk_radar_state",
 )
 
+# These are declared column meanings from engine.track_record._IDENTITY_COLS,
+# not a classification inferred from state values. The long per-name SMA200
+# history is not US macro-regime history. Custom axes remain unspecified.
+_AXIS_SCOPES = {
+    "regime_at_entry": "security_price_trend",
+    "quad_hard_label": "us_market_context",
+    "vol_regime": "us_market_context",
+    "fused_risk_label": "us_market_context",
+    "rate_pressure": "us_market_context",
+    "risk_radar_state": "us_market_context",
+}
+_SCOPE_LABELS = {
+    "security_price_trend": "per-stock price trend",
+    "us_market_context": "US market context",
+    "unspecified": "unspecified scope",
+}
+
 #: Values that are present-but-meaningless as a regime state.
 _NULL_TOKENS = {"", "none", "nan", "null", "unknown", "na", "n/a"}
 
@@ -90,6 +119,9 @@ def assess_axis(df: pd.DataFrame, axis: str, date_col: str = "date") -> dict:
     n_rows = int(len(df))
     base = {
         "axis": axis, "n_rows_total": n_rows, "n_rows_stamped": 0, "coverage": 0.0,
+        "axis_scope": _AXIS_SCOPES.get(axis, "unspecified"),
+        "axis_scope_basis": ("declared_track_record_column_contract"
+                             if axis in _AXIS_SCOPES else "unrecognized_column"),
         "n_states": 0, "states": {}, "months_total": 0, "min_state_months": 0,
         "verdict": "insufficient_coverage", "estimable": False, "reason": "",
     }
@@ -166,19 +198,28 @@ def assess(df: pd.DataFrame, axes: tuple[str, ...] = CANDIDATE_AXES,
         return {"axes": {}, "estimable_axes": [], "any_estimable": False,
                 "n_rows": int(len(df)) if df is not None else 0,
                 "status": "unavailable",
+                "estimable_axes_by_scope": {scope: [] for scope in _SCOPE_LABELS},
+                "qualification_basis": "coverage_and_state_contrast_only",
+                "historical_availability": "not_assessed",
                 "note": "assessment raised; treat every axis as NOT estimable"}
 
     ok = [a for a, r in per.items() if r["estimable"]]
+    by_scope = {scope: [a for a in ok if per[a]["axis_scope"] == scope]
+                for scope in _SCOPE_LABELS}
     return {
         "axes": per,
         "estimable_axes": ok,
+        "estimable_axes_by_scope": by_scope,
+        "qualification_basis": "coverage_and_state_contrast_only",
+        "historical_availability": "not_assessed",
         "any_estimable": bool(ok),
         "n_rows": int(len(df)),
         "status": "ok",
         "gates": {"min_coverage": MIN_COVERAGE, "min_states": MIN_STATES,
                   "min_months_per_state": MIN_MONTHS_STATE},
-        "note": ("months, not rows, are the independent unit; an axis that is not "
-                 "'estimable' cannot carry a regime-conditional claim"),
+        "note": ("Distinct-month counts limit row pseudoreplication; they do not prove "
+                 "independence. Coverage and contrast apply to each declared axis scope, "
+                 "not to historical availability or predictive value."),
     }
 
 
@@ -195,7 +236,21 @@ def format_report(report: dict) -> str:
         lines.append(f"  [{mark}] {axis:18s} cov={100 * r['coverage']:5.1f}%  "
                      f"states={r['n_states']}  min_state_months={r['min_state_months']:3d}"
                      f"{span}")
+        scope = _SCOPE_LABELS.get(r.get("axis_scope"), "scope unavailable in saved report")
+        lines.append(f"         declared scope: {scope}")
         lines.append(f"         {r['verdict']}: {r['reason']}")
     lines.append("")
     lines.append(f"  estimable axes: {report['estimable_axes'] or 'NONE'}")
+    groups = report.get("estimable_axes_by_scope")
+    if isinstance(groups, dict):
+        for scope, label in _SCOPE_LABELS.items():
+            values = groups.get(scope)
+            # A historical report without a group has unknown scope coverage,
+            # not an affirmative absence inferred from its axis names.
+            value = (values or "NONE") if isinstance(values, list) else "not recorded"
+            lines.append(f"  {label}: {value}")
+    else:
+        lines.append("  scope unavailable in saved report")
+    lines.append("  Coverage/contrast only; historical availability not assessed; "
+                 "predictive value not assessed.")
     return "\n".join(lines)

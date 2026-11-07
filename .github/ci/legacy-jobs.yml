@@ -39319,6 +39319,8 @@ jobs:
         run: python -m pytest tests/test_etf_partial_nav_sleeve.py -q
       - name: sector_central board order — fast-lens rotation rank, failing open to conviction
         run: python -m pytest tests/test_sector_central.py -q
+      - name: regime sample scope and frozen coverage thresholds
+        run: python -m pytest tests/test_regime_conditioning_coverage.py -q
       # SIC-D-B02/B03/B07 (macro #7646): generation guard, dated membership coverage,
       # grader v2 — their own step so the pinned sector_central line above stays byte-exact.
       - name: sector_central D-wave suites — generation guard, membership coverage, grader v2

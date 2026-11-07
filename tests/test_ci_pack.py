@@ -5604,9 +5604,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_672),
+    ("templates/index.html", 137, 5_917),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_936),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_675),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5614,6 +5614,22 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR8301 current-main composition (2026-11-07): retain its accepted
+    unrun-scoring-engine coverage command. The current owner is byte-identical
+    to the accepted owner after removing only that two-line step; unchanged
+    packer3cbed589 therefore retains the accepted accounting: commands16->17,
+    test-path occurrences20->21, joined command text1125->1188 characters,
+    no observed-duration override, fallback estimated weight57->60 (+3).
+    Own CI42318149338/contract128235817813 and gate128249908464 qualified
+    that source contribution; the owning coverage step actually passed29tests.
+    Protected mainf55fa485eba3 now carries ceilings5914/5933/5672. Preserve
+    its accepted GSC/gateway provenance and fund only this PR's own +3:
+    5917/5936/5675. This is arithmetic composition, not a new planner run
+    or runtime measurement. No unmerged sibling contribution is included.
+    Keep every assertion, job-count ceiling137/138/131, ten-pack bound,
+    selector, suite, timeout and runtime/admission limit. Natural successor
+    CI must qualify the new shared-CI composition.
 
     P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
     protected59e035e39607, preserving its gateway and prior provenance
