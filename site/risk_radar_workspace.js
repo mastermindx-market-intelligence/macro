@@ -1,6 +1,11 @@
 /* Risk Radar: progressive presentation of server-owned readings.
  * No network requests, timers, risk calculation, or new state/alert authority.
  * Moving (never cloning) live-hook nodes preserves the existing envelope consumer.
+ *
+ * Paper parity: the overview is one continuous instrument panel. Every native
+ * source-owned panel has a named slot; the panel is MOVED into that slot and
+ * moved back to the SAME slot when a detail view closes. No node is cloned, so
+ * a source that updates its own DOM keeps updating the live panel.
  */
 (function () {
   'use strict';
@@ -71,8 +76,8 @@
   var vault = one('.rkw-vault');
   var contextNav = one('.rkw-context-nav');
   var mobile = window.matchMedia('(max-width:900px)');
-  var mobileContext = el('div', 'rkw-mobile-context');
-  inspector.insertBefore(mobileContext, contextNav);
+  var liveContext = el('div', 'rkw-live-context');
+  inspector.insertBefore(liveContext, contextNav);
   var originals = Array.prototype.slice.call(body.children).filter(function (node) { return node !== config && node !== template; });
   /* Check all mount prerequisites before changing the legacy, readable dialog. */
   body.appendChild(layout);
@@ -106,7 +111,10 @@
   }
   move('.riskdlg-authority', '.rkw-authority-slot');
   var score = move('.riskdlg-score', '.rkw-score-slot');
-  if (!score) one('.rkw-index').hidden = true;
+  if (!score) {
+    one('.rkw-index').hidden = true;
+    one('.rkw-index-block').hidden = true;
+  }
   dialog.dataset.rkwState = legacyBrief.dataset.rkState || 'unknown';
   var mainTitle = one('.mx5-dlg-title', dialog);
   if (mainTitle) {
@@ -128,10 +136,10 @@
   var current = null, origin = null, overviewScroll = 0, selectedDay = 21;
   var views = Object.create(null), driverKeys = [];
   var sourceBand = one('#risk-envelope-band', vault);
-  var sourceSlot = one('.rkw-internals-slot');
+  var bandSlot = one('.rkw-band-slot');
   var sourcesView = el('div', 'rkw-sources');
   if (sourceBand) {
-    sourceSlot.appendChild(sourceBand);
+    bandSlot.appendChild(sourceBand);
     var disclosure = one('.gde-disc', sourceBand);
     if (disclosure) {
       disclosure.open = true;
@@ -157,22 +165,68 @@
     var settledOddsEvidence = one('.gde-prob-evidence', sourceBand);
     if (settledOddsEvidence) sourcesView.appendChild(settledOddsEvidence);
   } else {
-    sourceSlot.appendChild(words(el('div', 'rkw-empty'), 'Market internals unavailable.', '市场内部数据暂无读数。'));
+    bandSlot.appendChild(words(el('div', 'rkw-empty'), 'Market internals unavailable.', '市场内部数据暂无读数。'));
   }
-  var putView = function (key, en, zh, node, description) {
+  /* A view may own a slot in the overview. Its node lives in that slot until a
+     detail view borrows it, and returns to the SAME slot when the detail closes.
+     The node itself is never cloned or re-rendered. */
+  var putView = function (key, en, zh, node, description, home) {
     if (!node) {
-      node = words(el('div', 'rkw-empty'), 'No current reading is available for this view.', '此视图暂无当前读数。');
+      node = words(el('div', 'rkw-empty'), 'No current reading is available.', '暂无当前读数。');
     }
-    views[key] = { node: node, en: en, zh: zh, description: description };
-    vault.appendChild(node);
+    views[key] = { node: node, en: en, zh: zh, description: description, home: home || null };
+    (views[key].home || vault).appendChild(node);
+  };
+  var restore = function (view) {
+    if (!view || !view.node) return;
+    (view.home || vault).appendChild(view.node);
+    (view.metadata || []).forEach(function (meta) { meta.home.appendChild(meta.node); });
   };
   putView('signals', 'All risk signals', '全部风险信号', one('.riskdlg-ladder', dialog),
-    ['Each signal uses its own 0–100 index. A higher reading means more pressure, not a probability.', '各信号使用自身的 0–100 指数。读数越高表示压力越大，并非发生概率。']);
+    ['Each signal uses its own 0–100 index. A higher reading means more pressure, not a probability.', '各信号使用自身的 0–100 指数。读数越高表示压力越大，并非发生概率。'],
+    one('.rkw-ladder-slot'));
   var sentiment = one('.riskdlg-sentiment', dialog);
+  /* Each independent gauge keeps an adjacent copy of the source's static scale.
+     Only bilingual axis text is copied; source values and live IDs are not. */
+  var moodAxis = sentiment && one('.rkc-mood-axis', sentiment);
+  var moodLenses = sentiment ? all('.rkc-mood-lens', sentiment) : [];
+  if (moodAxis && moodLenses.length) {
+    moodLenses.forEach(function (lens, index) {
+      if (!index) { lens.appendChild(moodAxis); return; }
+      var axis = el('div', 'rkc-mood-axis rsx-axis-labels');
+      Array.prototype.forEach.call(moodAxis.children, function (tick) {
+        var copy = el('span');
+        bilingualCopy(tick, copy);
+        axis.appendChild(copy);
+      });
+      lens.appendChild(axis);
+    });
+  }
   putView('sentiment', 'Market sentiment', '市场情绪', sentiment && one('#sentiment-regime', sentiment) ? sentiment : null,
-    ['Risk appetite, sentiment and speculative pressure.', '风险偏好、市场情绪与投机压力。']);
-  putView('leadership', 'Market leadership', '市场领涨结构', one('.riskdlg-leadership', dialog),
-    ['Current leaders and the separately tracked damage cohort.', '当前领涨板块与单独跟踪的受损群组。']);
+    ['Risk appetite, sentiment and speculative pressure.', '风险偏好、市场情绪与投机压力。'],
+    one('.rkw-sentiment-slot'));
+  /* The native sentiment heading repeats the panel title. Keep the source's own
+     scale explainer (the help affordance) and drop the duplicate label. */
+  var sentimentHeading = sentiment && one('.riskdlg-sec-h', sentiment);
+  var sentimentHelp = sentimentHeading && one('.help', sentimentHeading);
+  var sentimentTitle = one('.rkw-sentiment-panel .rkw-panel-heading h3');
+  if (sentimentHelp && sentimentTitle) {
+    views.sentiment.metadata = [{node:sentimentHelp, home:sentimentTitle, detail:sentimentHeading}];
+    sentimentTitle.appendChild(sentimentHelp);
+  }
+  var leadership = one('.riskdlg-leadership', dialog);
+  putView('leadership', 'Market leadership', '市场领涨结构', leadership,
+    ['Current leaders and the separately tracked damage cohort.', '当前领涨板块与单独跟踪的受损群组。'],
+    one('.rkw-leadership-slot'));
+  /* The native leadership heading repeats the panel title but carries the as-of
+     date. Keep the date; drop the duplicate label. */
+  var leadershipHeading = leadership && one('.riskdlg-sec-h', leadership);
+  var leadershipDate = leadershipHeading && one('small', leadershipHeading);
+  var leadershipTitle = one('.rkw-leadership-panel .rkw-panel-heading');
+  if (leadershipDate && leadershipTitle) {
+    views.leadership.metadata = [{node:leadershipDate, home:leadershipTitle, detail:leadershipHeading}];
+    leadershipTitle.appendChild(leadershipDate);
+  }
   putView('volatility', 'Volatility & correlation', '波动率与相关性', one('.riskdlg-vw', dialog),
     ['Volatility, curve shape and cross-market relationships.', '波动率、期限结构与跨市场关系。']);
   var method = one('#riskdlg-method', dialog);
@@ -201,6 +255,9 @@
       node.appendChild(extra);
     }
   };
+  /* The native driver tile carries its own semantic colour tokens. The strip
+     reuses them for its dot and for the source's own badge; no new scale, rank
+     or classification is invented. */
   var driverNodes = all('.riskdlg-drv-list > .riskdlg-drv', vault);
   var nativeDrivers = driverNodes.slice();
   driverNodes = [['Leading','领先信号'],['Calendar','日历'],['Overseas','境外'],['Correlation','相关性']].map(function (labels) {
@@ -227,15 +284,16 @@
     var isCalendar = categoryEn && categoryEn.textContent.trim() === 'Calendar';
     card.dataset.kind = isCalendar ? 'season' : (driver.dataset.lensKind || '');
     if (driver.dataset.rkwMissing) card.dataset.missing = 'true';
+    if (driver.dataset.isle) card.dataset.isle = driver.dataset.isle;
+    if (driver.dataset.pressure) card.dataset.pressure = driver.dataset.pressure;
     card.setAttribute('aria-controls', 'rkw-inspector');
     card.setAttribute('aria-expanded', 'false');
-    var icon = el('span', 'rkw-driver-icon');
-    var nativeIcon = one('.rkc-sig-ico svg', driver);
-    if (nativeIcon) icon.appendChild(nativeIcon.cloneNode(true));
-    card.appendChild(icon);
-    card.appendChild(bilingualCopy(label, el('span', 'rkw-driver-label')));
+    var top = el('span', 'rkw-driver-top');
+    var dot = el('span', 'rkw-driver-dot'); dot.setAttribute('aria-hidden', 'true');
+    top.appendChild(dot);
+    top.appendChild(bilingualCopy(label, el('span', 'rkw-driver-label')));
+    card.appendChild(top);
     card.appendChild(bilingualCopy(fact, el('span', 'rkw-driver-state')));
-    all('.rkc-sig-chip', card).forEach(function (chip) { chip.remove(); });
     var arrow = el('span', 'rkw-arrow'); arrow.textContent = '↗'; arrow.setAttribute('aria-hidden', 'true');
     card.appendChild(arrow);
     one('.rkw-driver-grid').appendChild(card);
@@ -363,6 +421,51 @@
       '所有条形均使用 0–100% 刻度。常态为同一期限的历史基准。观测可能相互重叠，所示概率并非保证。'));
     oddsView.appendChild(notes);
   }
+  /* The signal index is a 0–100 pressure reading, never a probability. Its meter
+     draws the number the source already published; it adds no new scale. */
+  function renderIndexMeter() {
+    var meter = one('.rkw-index-meter');
+    var fill = one('.rkw-index-meter-fill');
+    if (!meter || !fill || !score) return;
+    var raw = (score.textContent || '').replace(/\/100\s*$/, '').trim();
+    var value = Number(raw);
+    if (!raw || !Number.isFinite(value) || value < 0 || value > 100) { meter.hidden = true; return; }
+    meter.hidden = false;
+    fill.style.width = value + '%';
+  }
+  function renderHorizonValues() {
+    all('[data-rkw-horizon]').forEach(function (button) {
+      var number = one('.rkw-horizon-value', button);
+      if (number) number.textContent = percent(reading(Number(button.dataset.rkwHorizon)).p);
+    });
+  }
+  /* Copy the settled band's own reading and qualifications. A coherence label
+     is not a claim that every Radar input is complete or current. */
+  function renderCompleteness() {
+    var strip = one('.rkw-completeness');
+    if (!strip) return;
+    strip.replaceChildren();
+    var label = el('span', 'rkw-completeness-label');
+    var coherence = sourceBand && one('.gde-coherence', sourceBand);
+    strip.appendChild(words(el('span', 'rkw-completeness-scope'), 'Market internals', '市场内部'));
+    if (coherence) bilingualCopy(coherence, label);
+    else words(label, 'Reading unavailable', '暂无读数');
+    strip.appendChild(label);
+    var session = sourceBand && sourceBand.dataset.settledSession;
+    if (session) {
+      strip.appendChild(words(el('span', 'rkw-completeness-session'), 'Settled ' + session, '收盘 ' + session));
+    }
+    if (sourceBand) {
+      ['.gde-context-line', '.gde-input-caveat:not(#gde-live-fallback)'].forEach(function (selector) {
+        var source = one(selector, sourceBand);
+        if (!source) return;
+        var caveat = el('span', 'rkw-reading-caveat');
+        bilingualCopy(source, caveat);
+        strip.appendChild(caveat);
+      });
+    }
+    strip.hidden = false;
+  }
   function setHorizon(day) {
     if ([5,10,21].indexOf(day) < 0) return;
     selectedDay = day;
@@ -380,13 +483,17 @@
     words(one('.rkw-quality'), h[0], h[1]);
     one('.rkw-quality').classList.toggle('is-thin', r.p !== null && (!r.matched || r.thin));
     renderOddsTable();
+    renderHorizonValues();
+    renderCompleteness();
     dialog.dataset.rkwSelectedHorizon = String(day);
   }
+  /* The band is one live consumer. It is shown in the overview slot and moves
+     into the inspector while a detail is open, then returns to the same slot. */
   function placeLiveContext() {
     if (!sourceBand) return;
-    var destination = current && mobile.matches ? mobileContext : sourceSlot;
+    var destination = current ? liveContext : bandSlot;
     if (sourceBand.parentNode !== destination) destination.appendChild(sourceBand);
-    mobileContext.hidden = !current || !mobile.matches;
+    liveContext.hidden = !current;
   }
   function focusTitle() { title.focus({preventScroll:true}); }
   function showView(key, trigger) {
@@ -396,7 +503,7 @@
       overviewScroll = body.scrollTop;
       origin = trigger || document.activeElement;
     }
-    if (current && views[current]) vault.appendChild(views[current].node);
+    if (current && views[current]) restore(views[current]);
     current = key;
     words(title, view.en, view.zh);
     summary.replaceChildren();
@@ -407,6 +514,7 @@
     else if (view.description) words(summary, view.description[0], view.description[1]);
     summary.hidden = !summary.childNodes.length;
     content.appendChild(view.node);
+    (view.metadata || []).forEach(function (meta) { meta.detail.appendChild(meta.node); });
     inspector.hidden = false;
     dialog.classList.add('rkw-detail-open');
     var index = driverKeys.indexOf(key);
@@ -423,7 +531,7 @@
   }
   function back() {
     if (!current) return false;
-    vault.appendChild(views[current].node);
+    restore(views[current]);
     current = null;
     inspector.hidden = true;
     dialog.classList.remove('rkw-detail-open');
@@ -488,6 +596,7 @@
   });
   openObserver.observe(dialog, {attributes:true, attributeFilter:['class']});
   all('[data-rkw-view]').forEach(function (button) { button.setAttribute('aria-controls', 'rkw-inspector'); });
+  renderIndexMeter();
   setHorizon(21);
   dialog.classList.add('rkw-ready');
 })();

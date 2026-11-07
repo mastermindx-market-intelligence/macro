@@ -1,0 +1,34 @@
+{
+  "presentation_source_revision": "9b424c673bd5e0d6c5f5aaa48caeca2d130c6134",
+  "input_source_revision": "734f54bae23cf5ef15c6adecbebe2d018bad1f47",
+  "production_authenticated": false,
+  "horizons": [
+    {
+      "day": "5",
+      "source_probability": 0.054,
+      "rendered": "5%"
+    },
+    {
+      "day": "10",
+      "source_probability": 0.12,
+      "rendered": "12%"
+    },
+    {
+      "day": "21",
+      "source_probability": 0.22,
+      "rendered": "22%"
+    }
+  ],
+  "driver_views_opened": 4,
+  "reading": {
+    "state": "Caution",
+    "index": "86/100",
+    "session": "2026-11-03",
+    "internals": "Market internals\nSignals align\nSettled 2026-11-03"
+  },
+  "screenshots": [
+    "latest-1440-dark-en.png",
+    "latest-390-light-zh.png"
+  ],
+  "page_errors": []
+}

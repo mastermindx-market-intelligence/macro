@@ -1,0 +1,51 @@
+{
+  "source_ref": "734f54bae23cf5ef15c6adecbebe2d018bad1f47",
+  "inputs": {
+    "data/regime/latest.json": {
+      "sha256": "cc13643073dbbef7dab385165f12484ac7242ea79dea9da14ea7921ebce44d69",
+      "as_of": "2026-11-03"
+    },
+    "data/market_state/latest.json": {
+      "sha256": "f9a902e04b7dc574ef47f030e825062a924a0389c6f8c94d6bc3723206e2e845",
+      "as_of": "2026-11-03"
+    },
+    "site/riskdata/risk_envelope.json": {
+      "sha256": "94bf7c881e84a5d1bf650268b9efa29052c0e1cc9b6231db289a12436ddc82d1",
+      "as_of": "2026-11-03"
+    },
+    "data/contagion_links/latest.json": {
+      "sha256": "f3ac9bc3689d4def7eaa08e3fc5d27f5cde518026150220d9c5fdcd41bc95a7e",
+      "as_of": null
+    },
+    "data/crossasset_shadow/latest.json": {
+      "sha256": "94d4e281c3ac3beb731b5e79f45f99ccf4e2b642aa25f859fabaa99c37fd5753",
+      "as_of": "2026-11-03"
+    },
+    "site/basketdata/fear_greed.json": {
+      "sha256": "6ceae709668e7d1e2d4d2193340b6a7bbc8658332bb865d16dfefae59c6c36f0",
+      "as_of": "2026-11-03"
+    },
+    "site/macrodata/macro_signals.json": {
+      "sha256": "3e933ad28e3d235a586a80d7d4a8ab7554f3de173e56c6460997afbe3eb9fae9",
+      "as_of": "2026-11-03"
+    },
+    "site/basketdata/vol_weather.json": {
+      "sha256": "def94e277be532e9b609ddbe9aae4cc4a268dd311e4200b644f5a09f6127a033",
+      "as_of": "2026-11-03"
+    },
+    "data/leadership_crack/latest.json": {
+      "sha256": "22c11be8995bb3e799167ee749448f437bbbfcbeb89f43c4fc9d547d55d1d3f3",
+      "as_of": "2026-11-03"
+    },
+    "site/basketdata/sector_pulse.json": {
+      "sha256": "162a310c7e8cc924cdf4ed40c74c4273b2dffe77d9469f0b2965e9c835ba308b",
+      "as_of": "2026-11-03"
+    }
+  },
+  "presentation_sha256": {
+    "templates/dashboard.html.j2": "310faa4e7c6774096c690fd0af2900f018c3dc418f501c5ee6f16fe9edd75442",
+    "templates/_risk_radar_workspace.html.j2": "66509177e2818e166c7d72a6f519920ed3dba2386287329f0f72b99e680db5a1",
+    "templates/risk_radar_workspace.js": "5c4ec64056887f5ff9ee8944e59ca44f7546df75d229eb2dcc40fc73dada0483",
+    "templates/risk_radar_workspace.css": "d8f8563a026057adce496efd9f87ce5ae3ff5224364df67f6046f2a59e00c1b1"
+  }
+}
