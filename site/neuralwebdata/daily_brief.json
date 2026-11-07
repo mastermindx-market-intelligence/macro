@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-11-06T13:44:22.842742+00:00",
+  "produced_at": "2026-11-06T23:51:41.790999+00:00",
   "as_of": "2026-11-05",
   "status": "degraded",
   "phase": "final",
@@ -801,13 +801,17 @@
   },
   "china_market_state": {
     "available": true,
-    "as_of": "2026-11-04",
+    "as_of": "2026-11-06",
     "phase": "REPAIR",
     "phase_confidence": 0.667,
     "who_controls": "mixed",
     "policy_impulse": "neutral",
-    "top_contradiction": null,
-    "data_gaps_count": 4,
+    "top_contradiction": {
+      "a": "southbound_z=-3.29 (outflow)",
+      "b": "turnover_z20=2.24 (hot)",
+      "detail": "offshore selling into retail-driven volume — potential distribution"
+    },
+    "data_gaps_count": 5,
     "display_only": true
   },
   "thematic_line": {
