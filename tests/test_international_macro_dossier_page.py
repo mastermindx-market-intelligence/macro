@@ -30,7 +30,9 @@ from __future__ import annotations
 import datetime
 import hashlib
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
 from html.parser import HTMLParser
@@ -1003,3 +1005,350 @@ def test_capture_source_binding_accepts_only_a_full_lowercase_hex_commit():
     committed = json.loads((Path(__file__).resolve().parents[1] /
                             "mockups/evidence/mo-paid-006-dossier-page/manifest.json").read_text(encoding="utf-8"))
     assert mod.source_binding(committed) == committed["source_commit"]
+
+
+# --- F02-006-FIXBIND-01: --finalize-only refuses malformed fixture/image bindings -----
+#
+# CEO A D81/D82/D90 on #6819. A sound minimal receipt in the committed receipt's shape
+# is built per test, ONE defect is introduced, and `main()` must refuse with rc 2 and
+# the exact defect before any finalizer call or write, under both template modes. The
+# sound receipt itself finalizes (rc 0), so every refusal is caused by its mutation.
+
+_FIXBIND_REST = "a1a1a1a1a1a1a1a1.png"
+_FIXBIND_HOVER = "b2b2b2b2b2b2b2b2--imd_dossier_headline_hover.png"
+_FIXBIND_LIGHT = "c3c3c3c3c3c3c3c3.png"
+_FIXBIND_CELLS = {
+    _FIXBIND_REST: b"\x89PNG\r\n\x1a\n" + b"rest-euro-area-dark;" * 3,
+    _FIXBIND_HOVER: b"\x89PNG\r\n\x1a\n" + b"hover-euro-area-dark;" * 4,
+    _FIXBIND_LIGHT: b"\x89PNG\r\n\x1a\n" + b"rest-japan-light;" * 5,
+}
+
+
+def _fixbind_head() -> str:
+    return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=Path(__file__).resolve().parents[1],
+                                   text=True).strip()
+
+
+def _fixbind_cell(name: str, file: str | None = None, **extra) -> dict:
+    data = _FIXBIND_CELLS[name]
+    return {"viewport": "desktop", "locale": "en", "theme": "dark", "captured": True,
+            "file": file or f"cells/{name}", "sha256": hashlib.sha256(data).hexdigest(),
+            "bytes": len(data), **extra}
+
+
+def _fixbind_receipt(tmp_path: Path, source_commit: str) -> tuple[Path, dict]:
+    """Two fixture pages bound to two pages; three real cells, one per recognized
+    reference form (`cells/`, `cells.interaction/`, `cells.rest/`); one force-state
+    expected miss still inside `pages` and one already in `excluded` (neither has a PNG)."""
+    out = tmp_path / "receipt"
+    (out / "cells").mkdir(parents=True)
+    for name, data in _FIXBIND_CELLS.items():
+        (out / "cells" / name).write_bytes(data)
+    manifest = {
+        "schema": "mastermind.p0_evidence.v2",
+        "source_commit": source_commit,
+        "fixture_pages": {
+            "euro_area": {"route": "euro_area.html", "sha256": "e" * 64, "bytes": 132875},
+            "japan": {"route": "japan.html", "sha256": "f" * 64, "bytes": 129741},
+        },
+        "pages": [
+            {"page_id": "euro_area", "route": "/euro_area.html", "states": [
+                _fixbind_cell(_FIXBIND_REST),
+                _fixbind_cell(_FIXBIND_HOVER, file=f"cells.interaction/{_FIXBIND_HOVER}",
+                              force_state="imd_dossier_headline_hover"),
+            ]},
+            {"page_id": "japan", "route": "/japan.html", "states": [
+                _fixbind_cell(_FIXBIND_LIGHT, file=f"cells.rest/{_FIXBIND_LIGHT}", theme="light"),
+                {"viewport": "desktop", "locale": "en", "theme": "dark", "captured": False, "file": None,
+                 "force_state": "imd_dossier_headline_focus", "expected_miss": True,
+                 "expected_miss_reason": "no .imd-dossier-headline on this route"},
+            ]},
+        ],
+        "excluded": [{"page_id": "japan", "route": "/japan.html", "force_state": "imd_dossier_headline_hover",
+                      "theme": "dark", "viewport": "desktop", "locale": "en", "expected_miss": True,
+                      "reason": "no .imd-dossier-headline on this route"}],
+    }
+    (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return out, manifest
+
+
+def _fixbind_outside_copy(tmp_path: Path, name: str) -> Path:
+    """A byte-identical copy of a cell OUTSIDE the evidence directory."""
+    outside = tmp_path / "outside"
+    outside.mkdir(exist_ok=True)
+    (outside / name).write_bytes(_FIXBIND_CELLS[name])
+    return outside / name
+
+
+def _fixbind_symlink_out(m: dict, out: Path, tmp_path: Path) -> None:
+    target = _fixbind_outside_copy(tmp_path, _FIXBIND_REST)
+    (out / "cells" / _FIXBIND_REST).unlink()
+    (out / "cells" / _FIXBIND_REST).symlink_to(target)
+
+
+def _fixbind_corrupt_same_length(m: dict, out: Path, tmp_path: Path) -> None:
+    cell = out / "cells" / _FIXBIND_REST
+    data = bytearray(cell.read_bytes())
+    data[-1] ^= 0x01
+    cell.write_bytes(bytes(data))
+
+
+def _fixbind_state(m: dict) -> dict:
+    return m["pages"][0]["states"][0]
+
+
+# case id -> (mutation(manifest, receipt_dir, tmp_path), exact defect text printed by main())
+_FIXBIND_NEGATIVES = {
+    # (a) a fixture / page / route binding field absent or malformed
+    "fixture-pages-absent": (
+        lambda m, out, tmp: m.pop("fixture_pages"),
+        "`fixture_pages` is absent or not a non-empty mapping (NoneType)"),
+    "fixture-pages-not-a-mapping": (
+        lambda m, out, tmp: m.__setitem__("fixture_pages", sorted(m["fixture_pages"])),
+        "`fixture_pages` is absent or not a non-empty mapping (list)"),
+    "fixture-route-malformed": (
+        lambda m, out, tmp: m["fixture_pages"]["japan"].__setitem__("route", "../japan.html"),
+        "fixture_pages['japan'].route '../japan.html' is not a bare <name>.html"),
+    "fixture-sha256-malformed": (
+        lambda m, out, tmp: m["fixture_pages"]["japan"].__setitem__("sha256", "f" * 12),
+        f"fixture_pages['japan'].sha256 {'f' * 12!r} is not 64 lowercase hex"),
+    "fixture-bytes-bool": (
+        lambda m, out, tmp: m["fixture_pages"]["japan"].__setitem__("bytes", True),
+        "fixture_pages['japan'].bytes True is not a byte count"),
+    "pages-absent": (
+        lambda m, out, tmp: m.pop("pages"),
+        "`pages` is absent or not a non-empty list (NoneType)"),
+    "pages-not-a-list": (
+        lambda m, out, tmp: m.__setitem__("pages", {p["page_id"]: p for p in m["pages"]}),
+        "`pages` is absent or not a non-empty list (dict)"),
+    "page-id-absent": (
+        lambda m, out, tmp: m["pages"][1].pop("page_id"),
+        "pages[1].page_id None names no fixture page"),
+    "page-id-unknown": (
+        lambda m, out, tmp: m["pages"][1].__setitem__("page_id", "korea"),
+        "pages[1].page_id 'korea' names no fixture page"),
+    "page-id-duplicated": (
+        lambda m, out, tmp: m["pages"][1].update(page_id="euro_area", route="/euro_area.html"),
+        "pages[1].page_id 'euro_area' is duplicated"),
+    "page-route-mismatch": (
+        lambda m, out, tmp: m["pages"][1].__setitem__("route", "/korea.html"),
+        "pages[1] (japan) route '/korea.html' != fixture route '/japan.html'"),
+    "fixture-page-unbound": (
+        lambda m, out, tmp: m["pages"].pop(1),
+        "fixture page(s) ['japan'] have no pages[] row"),
+    "excluded-page-unknown": (
+        lambda m, out, tmp: m["excluded"][0].__setitem__("page_id", "korea"),
+        "excluded[0].page_id 'korea' names no fixture page"),
+    "excluded-route-mismatch": (
+        lambda m, out, tmp: m["excluded"][0].__setitem__("route", "/euro_area.html"),
+        "excluded[0] (japan) route '/euro_area.html' != fixture route '/japan.html'"),
+    "kept-state-not-captured": (
+        lambda m, out, tmp: _fixbind_state(m).__setitem__("captured", False),
+        "pages[0] (euro_area) states[0] is kept in the receipt but not captured (`captured` = False)"),
+    "image-reference-absent": (
+        lambda m, out, tmp: _fixbind_state(m).pop("file"),
+        "pages[0] (euro_area) states[0]: no image reference (`file` = None)"),
+    "image-sha256-malformed": (
+        lambda m, out, tmp: _fixbind_state(m).__setitem__("sha256", "ABC"),
+        "pages[0] (euro_area) states[0]: recorded sha256 'ABC' is not 64 lowercase hex"),
+    "image-bytes-bool": (
+        lambda m, out, tmp: _fixbind_state(m).__setitem__("bytes", True),
+        "pages[0] (euro_area) states[0]: recorded bytes True is not a byte count"),
+    # (b) a referenced image missing on disk or resolving outside the evidence directory
+    "image-missing": (
+        lambda m, out, tmp: _fixbind_state(m).__setitem__("file", "cells/ffffffffffffffff.png"),
+        "pages[0] (euro_area) states[0]: image 'cells/ffffffffffffffff.png' is missing on disk"),
+    "image-wrong-case": (
+        lambda m, out, tmp: _fixbind_state(m).__setitem__("file", f"cells/{_FIXBIND_REST.upper()}"),
+        f"pages[0] (euro_area) states[0]: image 'cells/{_FIXBIND_REST.upper()}' is missing on disk"),
+    "image-absolute": (
+        lambda m, out, tmp: _fixbind_state(m).__setitem__("file", str(_fixbind_outside_copy(tmp, _FIXBIND_REST))),
+        "is absolute or not a POSIX relative path"),
+    "image-traversal": (
+        lambda m, out, tmp: (_fixbind_outside_copy(tmp, _FIXBIND_REST),
+                             _fixbind_state(m).__setitem__("file", f"cells.rest/../../outside/{_FIXBIND_REST}")),
+        f"pages[0] (euro_area) states[0]: image reference 'cells.rest/../../outside/{_FIXBIND_REST}' "
+        "traverses out of the evidence directory"),
+    "image-foreign-prefix": (
+        lambda m, out, tmp: _fixbind_state(m).__setitem__("file", f"shots/{_FIXBIND_REST}"),
+        f"pages[0] (euro_area) states[0]: image reference 'shots/{_FIXBIND_REST}' is not cells/<name> "
+        "(or a cells.rest/ / cells.interaction/ alias)"),
+    "image-nested": (
+        lambda m, out, tmp: _fixbind_state(m).__setitem__("file", f"cells/sub/{_FIXBIND_REST}"),
+        f"pages[0] (euro_area) states[0]: image reference 'cells/sub/{_FIXBIND_REST}' is not cells/<name> "
+        "(or a cells.rest/ / cells.interaction/ alias)"),
+    "image-symlink-out": (
+        _fixbind_symlink_out,
+        f"pages[0] (euro_area) states[0]: image reference 'cells/{_FIXBIND_REST}' is a symlink"),
+    # (c) a referenced image whose recorded sha256 / byte length mismatches the file on disk
+    "image-sha256-mismatch": (
+        lambda m, out, tmp: _fixbind_state(m).__setitem__("sha256", hashlib.sha256(b"other").hexdigest()),
+        f"pages[0] (euro_area) states[0]: cells/{_FIXBIND_REST} sha256 "
+        f"{hashlib.sha256(_FIXBIND_CELLS[_FIXBIND_REST]).hexdigest()[:12]} on disk "
+        f"!= recorded {hashlib.sha256(b'other').hexdigest()[:12]}"),
+    "image-length-mismatch": (
+        lambda m, out, tmp: _fixbind_state(m).__setitem__("bytes", len(_FIXBIND_CELLS[_FIXBIND_REST]) + 1),
+        f"pages[0] (euro_area) states[0]: cells/{_FIXBIND_REST} is {len(_FIXBIND_CELLS[_FIXBIND_REST])} bytes "
+        f"on disk, recorded {len(_FIXBIND_CELLS[_FIXBIND_REST]) + 1}"),
+    "image-same-length-corruption": (
+        _fixbind_corrupt_same_length,
+        f"pages[0] (euro_area) states[0]: cells/{_FIXBIND_REST} sha256 "
+        f"{hashlib.sha256(_FIXBIND_CELLS[_FIXBIND_REST][:-1] + bytes([_FIXBIND_CELLS[_FIXBIND_REST][-1] ^ 1])).hexdigest()[:12]} "
+        f"on disk != recorded {hashlib.sha256(_FIXBIND_CELLS[_FIXBIND_REST]).hexdigest()[:12]}"),
+}
+
+
+def _fixbind_case(tmp_path: Path, case: str) -> tuple[Path, str]:
+    """The sound receipt (bound to HEAD) with exactly one `_FIXBIND_NEGATIVES` defect."""
+    out, manifest = _fixbind_receipt(tmp_path, _fixbind_head())
+    mutate, defect = _FIXBIND_NEGATIVES[case]
+    mutate(manifest, out, tmp_path)
+    (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return out, defect
+
+
+def _fixbind_inventory(root: Path) -> dict:
+    """Every path under `root` (symlinks NOT followed) with its bytes / link target."""
+    inv: dict = {}
+    for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
+        for name in sorted(dirnames + filenames):
+            path = Path(dirpath) / name
+            rel = str(path.relative_to(root))
+            if path.is_symlink():
+                inv[rel] = ("symlink", os.readlink(path))
+            elif path.is_file():
+                inv[rel] = path.read_bytes()
+            else:
+                inv[rel] = "dir"
+    return inv
+
+
+def _fixbind_argv(allow_dirty: bool) -> list[str]:
+    return ["capture.py", "--finalize-only"] + (["--allow-dirty-template"] if allow_dirty else [])
+
+
+@pytest.mark.needs_full_checkout("mockups")
+@pytest.mark.parametrize("allow_dirty", [False, True], ids=["strict", "allow-dirty-template"])
+@pytest.mark.parametrize("case", list(_FIXBIND_NEGATIVES))
+def test_capture_finalize_only_refuses_a_malformed_fixture_or_image_binding(tmp_path, monkeypatch, capsys,
+                                                                            case, allow_dirty):
+    """F02-006-FIXBIND-01: a finalize-only pass refuses (rc 2) a receipt whose fixture /
+    page / route binding is absent or malformed, whose referenced image is missing or
+    resolves outside the evidence directory, or whose image bytes no longer match the
+    recorded sha256 / length — naming the exact defect, with no finalizer call, no write
+    sink touched, and the whole tree (receipt + any outside copy) byte-identical."""
+    mod = _load_mo_paid_006_capture_module()
+    out, defect = _fixbind_case(tmp_path, case)
+    before = _fixbind_inventory(tmp_path)
+
+    sinks: list[str] = []
+    finalize = mod.finalize_manifest
+    monkeypatch.setattr(mod, "finalize_manifest",
+                        lambda *a, **k: sinks.append("finalize_manifest") or finalize(*a, **k))
+    for name in ("write_text", "write_bytes"):
+        real = getattr(Path, name)
+        monkeypatch.setattr(Path, name, (lambda real, name: lambda self, *a, **k:
+                                         sinks.append(f"Path.{name}:{self}") or real(self, *a, **k))(real, name))
+    monkeypatch.setattr(mod, "OUT_DIR", out)
+    monkeypatch.setattr(sys, "argv", _fixbind_argv(allow_dirty))
+
+    assert mod.main() == 2
+    printed = capsys.readouterr().out
+    assert "fixture/image binding defect(s); nothing was written" in printed, printed
+    assert defect in printed, printed
+    assert sinks == [], sinks
+    assert _fixbind_inventory(tmp_path) == before, "a refused finalize-only pass must not touch any byte"
+
+
+@pytest.mark.needs_full_checkout("mockups")
+@pytest.mark.parametrize("allow_dirty", [False, True], ids=["strict", "allow-dirty-template"])
+def test_capture_finalize_only_finalizes_a_sound_receipt(tmp_path, monkeypatch, capsys, allow_dirty):
+    """The positive side: the sound receipt every negative is cut from finalizes (rc 0)
+    — the three reference forms land as `cells/<name>`, both expected misses sit in
+    `excluded`, `source_commit` stays the recorded binding, both self-hash fields equal
+    SHA256 of the module's actual bytes, the cells are untouched, and a second pass is
+    byte-identical."""
+    mod = _load_mo_paid_006_capture_module()
+    head = _fixbind_head()
+    out, manifest = _fixbind_receipt(tmp_path, head)
+    assert mod.fixture_binding_defects(manifest, out) == []
+    cells_before = {p.name: p.read_bytes() for p in (out / "cells").iterdir()}
+    monkeypatch.setattr(mod, "OUT_DIR", out)
+    monkeypatch.setattr(sys, "argv", _fixbind_argv(allow_dirty))
+
+    assert mod.main() == 0, capsys.readouterr().out
+    first = (out / "manifest.json").read_bytes()
+    final = json.loads(first)
+    assert [s["file"] for p in final["pages"] for s in p["states"]] == [
+        f"cells/{_FIXBIND_REST}", f"cells/{_FIXBIND_HOVER}", f"cells/{_FIXBIND_LIGHT}"]
+    assert len(final["excluded"]) == 2
+    assert final["source_commit"] == head
+    module_sha = hashlib.sha256(Path(mod.__file__).read_bytes()).hexdigest()
+    assert final["tool"]["module_sha256"] == final["capture_tool_module_sha256"] == module_sha
+    assert {p.name: p.read_bytes() for p in (out / "cells").iterdir()} == cells_before
+
+    assert mod.main() == 0
+    assert (out / "manifest.json").read_bytes() == first, "finalize-only must be idempotent"
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_capture_finalize_only_source_binding_refusal_precedes_fixture_validation(tmp_path, monkeypatch, capsys):
+    """R4e stays first: a receipt with BOTH a symbolic binding and no fixture pages is
+    refused for the binding, before the fixture validator runs."""
+    mod = _load_mo_paid_006_capture_module()
+    out, manifest = _fixbind_receipt(tmp_path, "HEAD")
+    manifest.pop("fixture_pages")
+    (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    monkeypatch.setattr(mod, "OUT_DIR", out)
+    monkeypatch.setattr(sys, "argv", _fixbind_argv(True))
+    assert mod.main() == 2
+    printed = capsys.readouterr().out
+    assert "carries no 40-hex `source_commit` binding" in printed
+    assert "fixture/image binding" not in printed
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mo_paid_006_committed_receipt_has_no_fixture_or_image_binding_defect():
+    """The evidence of record passes the FIXBIND validator as committed (5 fixture pages
+    bound to 5 pages, 52 cells hashed from disk, 8 excluded rows)."""
+    mod = _load_mo_paid_006_capture_module()
+    receipt = Path(__file__).resolve().parents[1] / "mockups/evidence/mo-paid-006-dossier-page"
+    manifest = json.loads((receipt / "manifest.json").read_text(encoding="utf-8"))
+    assert mod.fixture_binding_defects(manifest, receipt) == []
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mo_paid_006_finalize_only_on_a_copy_of_the_committed_receipt_changes_only_the_tool_hash(
+        tmp_path, monkeypatch, capsys):
+    """Natural identity on a disposable copy of the committed receipt + PNGs (the canonical
+    receipt is never touched): rc 0; the output differs from the committed manifest ONLY in
+    the two self-hash fields, which equal SHA256 of this module's actual bytes;
+    `source_commit` stays the recorded binding, never HEAD; a second pass is byte-identical."""
+    mod = _load_mo_paid_006_capture_module()
+    repo = Path(__file__).resolve().parents[1]
+    receipt = repo / "mockups/evidence/mo-paid-006-dossier-page"
+    committed_bytes = (receipt / "manifest.json").read_bytes()
+    committed = json.loads(committed_bytes)
+    recorded = committed["source_commit"]
+    if subprocess.run(["git", "cat-file", "-e", f"{recorded}^{{commit}}"], cwd=repo,
+                      capture_output=True).returncode != 0:
+        pytest.skip(f"recorded source_commit {recorded[:12]} is not in this clone (shallow checkout); "
+                    "the finalize-only template check resolves it")
+    copy = tmp_path / "receipt"
+    shutil.copytree(receipt / "cells", copy / "cells")
+    shutil.copy2(receipt / "manifest.json", copy / "manifest.json")
+    monkeypatch.setattr(mod, "OUT_DIR", copy)
+    monkeypatch.setattr(sys, "argv", _fixbind_argv(False))
+
+    assert mod.main() == 0, capsys.readouterr().out
+    first = (copy / "manifest.json").read_bytes()
+    final = json.loads(first)
+    module_sha = hashlib.sha256(Path(mod.__file__).read_bytes()).hexdigest()
+    assert final["tool"]["module_sha256"] == final["capture_tool_module_sha256"] == module_sha
+    assert final["source_commit"] == recorded
+    for doc in (final, committed):
+        doc["tool"]["module_sha256"] = doc["capture_tool_module_sha256"] = "<self-hash>"
+    assert final == committed
+    assert mod.main() == 0
+    assert (copy / "manifest.json").read_bytes() == first, "finalize-only must be idempotent"
+    assert (receipt / "manifest.json").read_bytes() == committed_bytes

@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0001652044-22-000029",
+    "expected_period_end": "2022-03-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "23010000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "GOOGL",
+    "label_class": "extract_positive",
+    "pack_id": "PK07",
+    "polarity": "positive",
+    "reason": "goog-20220331.htm | us-gaap:Goodwill @i9422c0ccf7cd4e90a8211407ba3d58ad_I20220331 | Goodwill 22,956 23,010 | Consolidated balance-sheet Goodwill at 2022-03-31 (current-quarter column), in millions (scale 6 applied).",
+    "section_family": "goodwill_intangibles",
+    "split": "held_out",
+    "target_id": "goodwill",
+    "target_kind": "extract",
+    "trial_id": "PK07|0001652044-22-000029|extract|goodwill"
+  },
+  {
+    "accession": "0001652044-22-000029",
+    "expected_period_end": "2022-03-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "1313000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "GOOGL",
+    "label_class": "extract_positive",
+    "pack_id": "PK07",
+    "polarity": "positive",
+    "reason": "goog-20220331.htm | us-gaap:IntangibleAssetsNetExcludingGoodwill @i9422c0ccf7cd4e90a8211407ba3d58ad_I20220331 | Intangible assets, net 1,417 1,313 | Balance-sheet caption 'Intangible assets, net' at 2022-03-31 (current-quarter column), in millions (scale 6 applied).",
+    "section_family": "goodwill_intangibles",
+    "split": "held_out",
+    "target_id": "intangible_assets_net",
+    "target_kind": "extract",
+    "trial_id": "PK07|0001652044-22-000029|extract|intangible_assets_net"
+  }
+]

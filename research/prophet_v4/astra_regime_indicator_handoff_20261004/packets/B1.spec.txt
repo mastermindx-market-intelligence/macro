@@ -14,9 +14,9 @@ VARIANTS (compute for every name):
   1D      = cascade(close_1D, k=1)
   2D.p0, 2D.p1 = cascade(close_2D(p), k=1)
   3D.p0, 3D.p1, 3D.p2 = cascade(close_3D(p), k=1)
-  1D.M2   = cascade(close_1D, k=2)      (1D grain, 2-session elapsed memory)
-  1D.M3   = cascade(close_1D, k=3)      (1D grain, 3-session elapsed memory)
-  3D.K1   = cascade(close_3D(p=0), k=1/3)   (3D grain, 1-session memory)
+  1D.M2   = cascade(close_1D, k=1/2)    (1D grain, 2-session elapsed memory)   [AMENDED 2026-10-04, DEC:B1-MEMORY-FACTOR-DIRECTION: was k=2]
+  1D.M3   = cascade(close_1D, k=1/3)    (1D grain, 3-session elapsed memory)   [AMENDED 2026-10-04: was k=3]
+  3D.K1   = cascade(close_3D(p=0), k=3)     (3D grain, 1-session memory)   [AMENDED 2026-10-04: was k=1/3]
 EVENT = bullish cross: macd[i−1] ≤ signal[i−1] and macd[i] > signal[i], both bars non-NaN, and the bar's last session index ≥ 400 (warm-up exclusion in SESSIONS, for every grain). The signal session s = the bar's last session. ENTRY session e = s + 1 (next session); entry price = close[e]. Events whose e + 21 exceeds the data are dropped (record the count).
 
 OUTCOMES per event (log returns): excess_H = (ln C[e+H] − ln C[e]) − (ln SPY[e+H] − ln SPY[e]) for H ∈ {5, 10, 21}; net versions subtract 0.002 once (excess_H_net = excess_H − 0.002). MFE21 = max over h=1..21 of (ln C[e+h] − ln C[e]); MAE21 = min over the same; sessions_to_mfe = argmax h. Store entry_month = YYYY-MM of date[e]; era = "2014-2019" if date[e] ≤ 2019-12-31 else "2020-2026".

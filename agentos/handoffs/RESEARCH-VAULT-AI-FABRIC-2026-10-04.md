@@ -1,8 +1,8 @@
 ---
-workstream: "qualitative-intelligence"
+workstream: "WS:RESEARCH-VAULT-AI-FABRIC"
 session: "chatgpt/research-vault-ai-fabric-masterplan-20261004"
-model: "selected/served Web mode unverified"
-ended_because: "restoration_resumed_with_source_publication_and_acceptance_gates"
+model: "sol"
+ended_because: "blocked"
 mission: >
   Complete one canonical, source-bound, rights-safe institutional Research Vault
   interface usable by authorized ChatGPT and Deep Research sessions, sharing the
@@ -81,10 +81,18 @@ danger_areas:
 prs: [8438, 8453, 8472, 8475, 8477, 8478, 7354]
 decisions: []
 discoveries:
-  - "DSC-RESEARCH-VAULT-FALLS-BACK-TO-SHARED-PUBLIC-BUCKET"
+  - "DSC:RESEARCH-VAULT-FALLS-BACK-TO-SHARED-PUBLIC-BUCKET"
 ---
 
 # Research Vault AI fabric - recovered continuation
+
+## Historical metadata correction (2026-11-07)
+
+This file preserves the October 5 recovery snapshot. Its saved frontier, local-commit status and uncertainty are historical evidence; reconcile the current [owning workstream](../workstreams/WS-RESEARCH-VAULT-AI-FABRIC.md) and later source-linked decisions before any new effect. Later accepted F3/F4/F5/F6 work and the H-00 rights decision must not be reopened from this snapshot.
+
+The original model field said `selected/served Web mode unverified`; that uncertainty remains. The schema value `sol` identifies the author role and does not attest a selected or served model. The original ending description was `restoration_resumed_with_source_publication_and_acceptance_gates`; `blocked` records the unresolved gates at that historical save.
+
+Only the four contract metadata values and this explanatory note were repaired. This correction does not settle original publisher run 38517760919, clear any refusal, grant runtime admission, or claim current product acceptance.
 
 Current outer instruction restored **Access R2 Research Papers** into this execution context. This is continuation of the same `qualitative-intelligence` program, not a new deployment or a claim that the old ChatGPT UI/session was reopened.
 
