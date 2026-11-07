@@ -180,3 +180,66 @@ def decide_workload(
         allowed_order=tuple(p for p in configured if p in allowed),
         denied_order=tuple(p for p in configured if p not in allowed),
     )
+
+
+@dataclass(frozen=True)
+class NativeWorkloadDecision:
+    """Content-only native purpose evidence, with no inference-provider grant."""
+
+    policy_revision: int
+    policy_hash: str
+    profiles: tuple[str, ...]
+
+    def receipt(self) -> dict[str, Any]:
+        return {
+            "schema": DECISION_SCHEMA,
+            "policy_revision": self.policy_revision,
+            "policy_hash": self.policy_hash,
+            "profiles": list(self.profiles),
+            "execution_surface": "native_agent",
+            "allowed_order": [],
+            "denied_order": [],
+        }
+
+
+def decide_native_workload(
+    cfg: Mapping[str, Any], *, host_profile: str | None = None,
+    policy_path: Path | None = None,
+) -> NativeWorkloadDecision:
+    """Qualify trusted native purposes before the existing native Fabric owner.
+
+    This separate entry never turns a native profile into an inference-provider
+    allowance. The actual application owner must still verify its native recipe,
+    purpose, driver, account permission and original operation before execution.
+    Missing selectors are a refusal here, not legacy-provider migration.
+    """
+    if not isinstance(cfg, Mapping):
+        _refuse("WORKLOAD_PROFILE_INVALID")
+    names: list[str] = []
+    if host_profile is not None:
+        names.append(_profile_id(host_profile))
+    if "workload_profile" in cfg:
+        name = _profile_id(cfg["workload_profile"])
+        if name not in names:
+            names.append(name)
+    if not names:
+        _refuse("NATIVE_WORKLOAD_PROFILE_REQUIRED")
+    # "fabric" here names the selected application carrier. It does not add
+    # fabric, oauth or codex to the policy's empty native inference allowlist.
+    if cfg.get("provider_order") != ["fabric"]:
+        _refuse("NATIVE_WORKLOAD_TRANSPORT_REQUIRED")
+    policy = load_policy(DEFAULT_POLICY_PATH if policy_path is None else policy_path)
+    for name in names:
+        row = policy["profiles"].get(name)
+        if row is None:
+            _refuse("WORKLOAD_PROFILE_UNKNOWN")
+        if row["execution_surface"] != "native_agent":
+            _refuse("INFERENCE_WORKLOAD_PATH_REQUIRED")
+        if row["allowed_providers"]:
+            _refuse("WORKLOAD_POLICY_NATIVE_TRANSPORT_INVALID")
+    canonical = json.dumps(policy, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return NativeWorkloadDecision(
+        policy_revision=policy["revision"],
+        policy_hash=hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+        profiles=tuple(names),
+    )

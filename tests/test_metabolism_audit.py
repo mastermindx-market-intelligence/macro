@@ -831,3 +831,70 @@ class TestPrCiGreenBindingChecks:
             ],
         }
         assert mm._pr_ci_green(pr) is False
+
+
+class TestTypedAuditResult:
+    @staticmethod
+    def reply(**changes):
+        value = {"verdict": "approve", "confidence": 0.95,
+                 "findings": [], "rationale": "The supplied bounded diff meets the proposal."}
+        value.update(changes)
+        return value
+
+    @pytest.mark.parametrize("changes", [
+        {"verdict": "APPROVE"}, {"verdict": []}, {"confidence": True},
+        {"confidence": "0.95"}, {"confidence": float("nan")},
+        {"confidence": float("inf")}, {"confidence": -0.1}, {"confidence": 1.1},
+        {"confidence": 10 ** 1000}, {"findings": "no findings"},
+        {"findings": [1]}, {"findings": [""]}, {"findings": ["x"] * 65},
+        {"findings": ["x" * 2049]}, {"rationale": ""}, {"rationale": "x" * 8193},
+        {"rationale": "\ud800"}, {"extra_permission": "approve"},
+    ])
+    def test_malformed_data_never_coerces_to_approval(self, changes):
+        from engine.metabolism import audit
+
+        raw = json.dumps(self.reply(**changes))
+        assert audit._parse_llm_reply(raw) is None
+        assert audit._parse_llm_reply(raw, strict=True) is None
+
+    @pytest.mark.parametrize("confidence", [0, 1, 0.95])
+    @pytest.mark.parametrize("verdict", ["approve", "reject"])
+    def test_typed_verdict_roundtrip(self, confidence, verdict):
+        from engine.metabolism import audit
+
+        value = self.reply(confidence=confidence, verdict=verdict)
+        assert audit._parse_llm_reply(json.dumps(value), strict=True) == value
+
+    def test_native_result_is_whole_json_and_legacy_formatting_is_explicit(self):
+        from engine.metabolism import audit
+
+        value = self.reply()
+        raw = json.dumps(value)
+        fence = chr(96) * 3
+        for wrapped in (fence + "json\n" + raw + "\n" + fence, "commentary\n" + raw):
+            assert audit._parse_llm_reply(wrapped) == value
+            assert audit._parse_llm_reply(wrapped, strict=True) is None
+        duplicate = raw[:-1] + ', "verdict": "reject"}'
+        assert audit._parse_llm_reply(duplicate) is None
+        assert audit._parse_llm_reply(duplicate, strict=True) is None
+
+    def test_reply_byte_bound_is_checked_before_json_salvage(self):
+        from engine.metabolism import audit
+
+        text = " " * audit._AUDIT_REPLY_BYTE_LIMIT + json.dumps(self.reply())
+        assert audit._parse_llm_reply(text) is None
+
+    def test_existing_auditor_consumes_only_the_typed_verdict(self, tmp_path, monkeypatch):
+        from engine import llm_auth
+        from engine.metabolism import audit
+
+        monkeypatch.delenv("MM_PROVIDER_APPLICATION_MODE", raising=False)
+        monkeypatch.delenv("MM_PROVIDER_WORKLOAD_PROFILE", raising=False)
+        monkeypatch.setattr(llm_auth, "build_providers", lambda *a, **kw: [object()])
+        monkeypatch.setattr(audit, "native_provider_call",
+                            lambda *a, **kw: (json.dumps(self.reply(confidence=True)), None, None))
+        value = audit._call_llm_auditor(
+            {"target_files": ["engine/example.py"]}, "+value = 1", [],
+            root=tmp_path, pr_number=42,
+        )
+        assert value == (None, None, [], "", "llm_error")
