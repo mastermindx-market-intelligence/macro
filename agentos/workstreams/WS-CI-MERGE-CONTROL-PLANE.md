@@ -343,6 +343,16 @@ waves:
       staleness rule), X2 (adaptive in-flight cap) and X3 (native queue
       premise re-test) are sequenced after PR 10652 and PR 10682.
       Current continuation: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-11-04-ACCELERATION.md.
+      Chairman recommissioned end-to-end acceleration on 2026-11-07. The
+      consolidated architecture and acceptance ledger are Mastermind PR 2191,
+      docs/CI_LIGHTNING_ARCHITECTURE.md; they extend this wave and the existing
+      Phase 4 delivery plan. Incumbent Mastermind PR 2065 and Terminal PR 1297
+      were integrated in their original source workspaces and published for
+      native qualification. Five-minute full-suite p95 remains a proposed
+      acceptance target, not a measured outcome. Macro PR 10755 is merged;
+      preserve PR 10674 original uncertain effect and PR 10656 release hold.
+      The remaining Macro progression is 10674, then 10745, then incumbent
+      sweeper/update-branch reproof of 10735; do not duplicate or bulk-arm it.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
