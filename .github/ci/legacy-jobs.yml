@@ -4881,6 +4881,8 @@ jobs:
       # pyarrow only; no render deps needed for this module's own kills).
       - name: HK discovery challenger — K-D1-K-D9 (hk_discovery_v1)
         run: python -m pytest tests/test_hk_discovery_challenger.py -q
+      - name: HK opportunity projection — owner-reader consumer
+        run: python -m pytest tests/test_hk_opportunity_projection.py -q
       - name: Prophet discovery outcomes - canonical grading and degraded clocks
         run: python -m pytest tests/test_grading.py -q
 

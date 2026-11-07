@@ -5473,9 +5473,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_915),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_930),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_671),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5483,6 +5483,47 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-06 PR #7385 (HK opportunity projection): the new
+    tests/test_hk_opportunity_projection.py suite joins the EXISTING
+    board-shadow-substrate job as one added pytest command, so the owner that
+    already rides all three probes grows by exactly three weight units.
+    Canonical paired planner measurement on base
+    5e0d4b504ef33f1e657763523f8804c31c443968 against candidate
+    a24867709370ca9c188aacae634c8b23d944ce2c (tree
+    5775b93b82353dba08d6e94f64cd60dc2c8042af, byte-identical to the tested
+    merge cd090ddbef5d494b68af382b772f305ac43f3f40), same run_ci_pack blob
+    3cbed58986d571e40af59eb03464e9419e8055a5 on both sides:
+
+        templates/index.html          137 jobs / 5,912 -> 5,915 weight / 10 packs
+        scripts/build_free_content.py 137 jobs / 5,927 -> 5,930 weight / 10 packs
+        engine/prophet/plan_book.py   131 jobs / 5,668 -> 5,671 weight / 10 packs
+
+    The selected ID sets are identical on both sides for all three probes — no
+    job enters and no job leaves. Selected-ID SHA256, base and head alike:
+    77c5dfda07877b9b5241ece2b090d546ecbdc6f6b75e51fe9f4959896a2cd783,
+    2adb7ee729ba793795b8f66caca67f71d436d1c2b3dfb3b538bc77487d426c0e and
+    b860a93e8920ecccba0ae8401e4eef9194550a1493444d9c6de4977e1b9ba3c6. The sole
+    selected-weight delta is the existing board-shadow-substrate job, 10 -> 13
+    (+1 for the added command, +2 for its tests/test_ reference;
+    len(text)//800 stays 0). It is deliberately unscoped and already rides all
+    three probes, so it moves all three weights and nothing else moves. Fund
+    exactly those three weight ceilings, +3 each with no cushion; the
+    job-count ceilings 137/138/131, the ten-pack ceiling and every selector,
+    estimator, job ID, gate, timeout, admission and concurrency bound stay
+    unchanged. These are planner estimates, not runtime evidence.
+
+    Narrowing was not an available remedy: the owner's own manifest comment
+    records that K6's repo-wide walk for the `prophet_shadow` string literal is
+    the opaque-traversal shape `infer_job_scopes` cannot narrow, and
+    test_deliberately_unscoped_gates_stay_always_on pins that job as
+    deliberately always-on, so a declared `paths:` there would be wrong.
+
+    Re-verified against current main 62f0d3b64411559626bf4890450baf57976abb82
+    (its .github/ci/legacy-jobs.yml is still blob 1d9aa5eb and its three probe
+    rows are the same 137/5,912, 137/5,927 and 131/5,668 with the same
+    selected-ID digests), because the hosted base is current main at merge
+    time: that base moves these three weights by the same +3.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
