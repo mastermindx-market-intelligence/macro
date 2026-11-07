@@ -77,13 +77,19 @@ waves:
       observability and rollback evidence. Do not infer fleet-wide strict activation
       from a merged substrate, a source-only change or this documentation PR.
 
-next_action: >
-  Execute W4's read-only control/cohort and normal-publication evidence inspection under
-  current role-based programme leadership; protect actual live writers and unknown effects.
-  Prepare W6 on the released #6651/#10130 source using accepted evidence, then W7 under
-  its declared prerequisites. The top product continuation is the independently executable
-  WS:EVAL-OS-EVIDENCE-VIEW A1; W4 natural-time completion is not an A1 dependency.
-  Use the wave records as the canonical planning/execution state and the dated audit only as evidence.
+next_action: >-
+  Preserve all three accepted general clocks and their original receipts. Verify current original
+  scheduled producer/grader and cohort/control qualification through the existing owners; do not
+  restart the superseded thematic first-clock task. W4's read-only inspection proceeds under
+  current role-based programme leadership while actual live writers and unknown effects remain
+  protected. Reuse source accepted through merged #6651/#10130 and existing receipts to prepare W6
+  final composed adversarial acceptance, then W7 staged metric-validity qualification under its
+  declared prerequisites. Reconcile reusable receipts and live path/effect state before new work;
+  do not reopen #6651 or infer P1 START. Keep recorded failed-run/persisted-status qualifications
+  dated and require an actual current owner receipt for any new run.
+  The top product continuation is independently executable WS:EVAL-OS-EVIDENCE-VIEW A1;
+  W4 natural-time completion is not an A1 dependency. Wave records remain canonical planning/
+  execution state and the dated audit is evidence.
 owns_paths:
   - engine/qledger.py
   - engine/qledger_validity.py
@@ -114,9 +120,20 @@ artifacts:
   - research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md
   - agentos/handoffs/EVAL-OS-E1-THEMATIC-COHORT-RECOVERY-2026-08-29.md
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
+  - agentos/handoffs/EVAL-OS-P1-PROMOTION-INTEGRITY-ACCEPTANCE-2026-08-30.md
   - research/EVAL_OS_WAVE_AUDIT_2026-10-24.md
   - agentos/handoffs/EVAL-OS-MEASUREMENT-LAW-2026-10-24-PRO.md
+
 ---
+
+**2026-11-05 source-state reconciliation.** PR #6651 merged on October24 as
+`4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e`. Reuse accepted source and existing
+current-owner evidence; do not reopen its source release or infer a P1 START.
+The linked P1 handoff preserves the full ten-mutation matrix. W4 remains in
+progress, and all existing clock, cohort, control and natural-run qualifications
+are retained. Older run observations and proposed placements below retain their
+recorded epochs; this update does not assert new runtime state or new acceptance.
+
 
 ## Wave audit and leadership continuity — 2026-10-24
 

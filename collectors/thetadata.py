@@ -857,6 +857,30 @@ class _SPYDSessionObservationTransport:
         self._deadline = None
         self._closed = False
 
+    def preflight(self, *, deadline_at):
+        """Inspect local transport capacity before a durable pilot claim; no GET.
+
+        Account/source admission remains the installing owner's factual check.
+        The in-flight adapter repeats its deadline/retry guards at each attempt.
+        """
+        import signal
+        import threading
+        try:
+            if (self._closed or self._index != 0 or self.origin != _base_url()
+                    or type(deadline_at) not in (int, float) or not math.isfinite(deadline_at)
+                    or deadline_at <= time.monotonic()
+                    or threading.current_thread() is not threading.main_thread()
+                    or not hasattr(signal, 'setitimer') or not hasattr(signal, 'ITIMER_REAL')
+                    or signal.getitimer(signal.ITIMER_REAL) != (0., 0.)):
+                return False
+            session = _session()  # construction/adapter inspection only, never reachable()
+            for path in ('/v3/option/history/eod', '/v3/option/history/greeks/eod'):
+                if session.get_adapter(self.origin+path).max_retries.total not in (0, False):
+                    return False
+            return True
+        except Exception:
+            return False
+
     def __call__(self, kind, *, root, day, order, request_options, request_budget,
                  max_bytes, max_rows, deadline_at, response_handler, raw_response_handler):
         import hashlib
@@ -928,10 +952,10 @@ class _SPYDSessionObservationTransport:
 
 
 def bounded_spy_d_session_transport(day: date):
-    """Prepare an unbound adapter; no CLI/env/scheduler calls this factory.
+    """Prepare an adapter; exact default-off CLI operation may bind it.
 
     Source availability is not activation, installed-source admission or a budget.
-    Current daily configuration remains None until its owner qualifies those facts.
+    Absent exact operation configuration the daily caller still supplies None.
     """
     return _SPYDSessionObservationTransport(day)
 
@@ -2181,7 +2205,14 @@ def _bulk_trade_quote_per_exp(
     cap_date = (target_date + timedelta(days=near_dte_cap_days)
                 if near_dte_cap_days is not None else None)
 
+    list_started = time.monotonic()
     exps = list_expirations(root)
+    log.info(
+        "thetadata: per-exp timing root=%s right=%s phase=list_expirations "
+        "elapsed_s=%.3f status=%s",
+        root, right, time.monotonic() - list_started,
+        "unavailable" if exps is None else "ok",
+    )
     if exps is None:
         log.warning(
             "thetadata: bulk_trade_quote per-exp fallback — list_expirations(%s) failed,"
@@ -2220,16 +2251,28 @@ def _bulk_trade_quote_per_exp(
         if et_str is not None:
             per_params["end_time"] = et_str
 
+        # _stream_lines is lazy: this phase includes transport/retries AND parsing.
+        # Time once per expiration, not per row; do not call it network-only time.
+        stream_started = time.monotonic()
+        stream_status = "error"
         try:
             rows = parse_rows(
                 _stream_lines(session, "/v3/option/history/trade_quote", per_params)
             )
             all_rows.extend(rows)
+            stream_status = "ok"
         except _StreamTruncated as e:
+            stream_status = "truncated"
             log.warning(
                 "thetadata: bulk_trade_quote per-exp fallback — exp %s failed, skipping: %s",
                 exp_iso, e)
             failed_count += 1
+        finally:
+            log.info(
+                "thetadata: per-exp timing root=%s right=%s expiration=%s "
+                "phase=stream_parse elapsed_s=%.3f status=%s",
+                root, right, exp_int, time.monotonic() - stream_started, stream_status,
+            )
 
     dte_label = f"<={near_dte_cap_days}" if near_dte_cap_days is not None else "all"
     log.info(
@@ -2242,4 +2285,15 @@ def _bulk_trade_quote_per_exp(
             " for %s %s, returning None", len(filtered), root, right)
         return None
 
-    return build_df(all_rows)
+    build_started = time.monotonic()
+    build_status = "error"
+    try:
+        frame = build_df(all_rows)
+        build_status = "ok"
+        return frame
+    finally:
+        log.info(
+            "thetadata: per-exp timing root=%s right=%s phase=build_frame "
+            "elapsed_s=%.3f status=%s",
+            root, right, time.monotonic() - build_started, build_status,
+        )

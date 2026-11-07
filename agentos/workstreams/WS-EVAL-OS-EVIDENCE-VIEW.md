@@ -28,26 +28,33 @@ waves:
     status: in_progress
     depends_on: []
     pr: 10171
-    next_action: >
-      Carry the independently accepted two-file engine/group filter repair through normal
-      CI and delivery from Draft #10171 at 95e8dadd. The author and publishing principal
-      do not approve or merge it. After actual delivery, bind the changed class/authority
-      chip behavior to served assets and a focused admin readback; reuse unchanged accepted
-      visual and journey evidence. Protect the live T08.S1 reader-presence repair and
-      reconcile its independent review without duplicating its source work or production
-      probe. Preserve unavailable numeric attribution. A1 does not depend on R1 native
-      request/log proof, W4 natural-time completion or #10079 activation.
-next_action: >
-  Complete the next normal-delivery disposition for #10171, then return affected-source,
-  served-asset and focused chip-count/readback evidence to this A1 record. Source repair,
-  focused negative-control regression and fresh non-author exact-head review are complete;
-  CI and deployed behavior remain separate. The retained journey, successful panel receipt
-  and separate restored-root wrapper timeout must all retain their scopes. Do not infer
-  reliable latency from one success. Extra admin evidence is required only for a concrete
-  uncovered render/update or comprehension boundary; no automatic full journey replay.
-  Preserve actual consent, denied/UNKNOWN effects and live writers for their exact actions.
-  Native numeric/internal-log acceptance belongs to existing R1.
-
+    next_action: >-
+      Reuse source PR #6651 merged on2026-10-24 as4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e
+      and released follow-on #10130 with their accepted receipts. Reconcile current normal-release
+      installation, served identity and authenticated consumer/operator evidence on the existing
+      owner before new action; do not republish or reopen the completed source repair.
+      Carry the existing #10171 engine/group filter repair through qualification of its current
+      published head, normal CI and delivery. The author and publishing principal do not approve
+      or merge it. After actual delivery, bind changed class/authority chip behavior to served
+      assets and a focused admin readback; reuse unchanged accepted visual and journey evidence.
+      Protect the live T08.S1 reader-presence repair and reconcile its independent review without
+      duplicating source work or a production probe. Preserve unavailable numeric attribution.
+      A1 does not depend on R1 native request/log proof, W4 natural-time completion or #10079 activation.
+next_action: >-
+  Reuse merged PR #6651, accepted A32 synthetic eight-context/42-state browser evidence and
+  separate A39 pre-release natural-owner progression. The assigned programme role reconciles
+  current installed/served identity, authenticated selected-store API-to-paint, lawful dark/light
+  EN/ZH experience, post-release natural progression and operator comprehension against actual
+  existing receipts. Qualify normal delivery of the current #10171 head, then return affected-source,
+  served-asset and focused chip-count/readback evidence to this A1 record. Its source repair,
+  negative-control regression and historical exact-head review remain bounded evidence; current
+  CI and deployed behavior remain separate. Retain both the successful panel observation and the
+  distinct restored-root wrapper timeout; do not infer reliable latency from one success.
+  Reuse unchanged proof; extra admin evidence addresses a concrete uncovered render/update or
+  comprehension boundary, without automatic full journey replay. Preserve original experience
+  UNKNOWN, lost CLI review, actual consent, denied/UNKNOWN effects and live writer fences; do not
+  reopen terminal source or recovery children. Natural accrual remains independent and honestly
+  qualified. Source merge does not complete A1. Native numeric/internal-log acceptance belongs to R1.
 owns_paths:
   - admin/intelligence_os.py
   - tests/test_admin_intelligence_os.py
@@ -71,13 +78,26 @@ artifacts:
   - agentos/workstreams/WS-EVAL-OS-OUTPUT-HEALTH.md
   - agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
+  - agentos/handoffs/EVAL-OS-A1-RELEASE-VISUAL-PROOF-2026-08-30.md
   - research/EVAL_OS_WAVE_AUDIT_2026-10-24.md
   - agentos/handoffs/EVAL-OS-MEASUREMENT-LAW-2026-10-24-PRO.md
   - research/evidence/eval_os_pro_census_20261024/a1-installed-reader-evidence.json
   - research/evidence/eval_os_pro_census_20261024/a1-readiness-generation-diff.json
   - research/evidence/eval_os_pro_census_20261024/a1-filter-independent-review.json
   - research/evidence/eval_os_pro_census_20261024/restored-root-reader-timeout-excerpt.json
+
 ---
+
+**2026-11-05 source-state supersession.** PR #6651 is merged as
+`4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e` on October24. Its old unpublished,
+open/draft and future source-release instructions below retain their observation
+epochs and no longer govern the next source action. A1 remains in progress:
+reuse the accepted source, A32 synthetic browser evidence and separate A39
+pre-release natural-owner proof, then reconcile actual current consumer and
+post-release receipts. This update neither reruns accepted work nor establishes
+installation, authenticated/operator acceptance, a P1 START or resolution of the
+original experience/CLI-review effects.
+
 
 ## A1 audited frontier and executable acceptance — 2026-10-24
 

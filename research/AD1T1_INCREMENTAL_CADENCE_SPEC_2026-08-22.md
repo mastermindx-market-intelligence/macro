@@ -844,3 +844,18 @@ configuration on another session does not carry its allocation forward. Neither
 a date label nor configuration construction authenticates an operator or grants
 provider access; the actual one-operation allocation and installation/custody
 preconditions remain separate. No CLI/environment entry is enabled here.
+
+### Oct26 exact CLI binding amendment — default off, source only
+
+The earlier unbound-source preparation now has one explicit normal-entry opt-in:
+`THETADATA_D_SESSION_OBSERVATION=spy-2026-10-26-1730-observation-v1`. The existing
+thin wrapper inherits it; `main --daily` supplies the fixed native transport and
+original root/coordinator/private journal for D26/S23. Absent/empty configuration
+still supplies `None`. No generic root/date/budget API, new timer or wrapper gate
+is introduced. Wrong token, forced/legacy mode or nondefault deadline refuses
+before source work. Exact date/rung/lock/local OI and durable no-replay fences
+remain, and native timer/thread/origin/zero-retry inspection precedes the claim.
+See the runbook's exact Oct26 binding for installation/account/capacity/activation
+requirements. Source publication or that configuration token does not itself
+establish those facts. No environment was set or host source installed by this
+amendment; the separately allocated two pilot attempts remain unexecuted.
