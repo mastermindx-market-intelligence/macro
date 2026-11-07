@@ -4143,8 +4143,36 @@ _SS_REASON: dict[str, dict[str, str]] = {
         "zh": "本周期未执行所有者身份读取，因此未核对该证券的身份。",
     },
     "PROPHET_OWNER_OUTPUT_ABSENT": {
-        "en": "No owner output is published for this security this cycle.",
-        "zh": "本周期没有发布该证券的所有者输出。",
+        "en": "No Prophet owner output is available for this security this cycle.",
+        "zh": "本周期没有可用的先知系统所有者输出。",
+    },
+    "PROPHET_NO_CURRENT_PLAN": {
+        "en": "Prophet published no current open plan for this security.",
+        "zh": "先知系统当前未发布该证券的开放计划。",
+    },
+    "PROPHET_CURRENT_OUTLOOK_AVAILABLE": {
+        "en": "A current Prophet outlook is available for this security.",
+        "zh": "该证券当前有可用的先知系统前瞻。",
+    },
+    "PROPHET_SOURCE_DELAYED": {
+        "en": "This Prophet read is published, but its source data is delayed.",
+        "zh": "该先知系统读数已发布，但其来源数据存在延迟。",
+    },
+    "PROPHET_SOURCE_UNKNOWN": {
+        "en": "This Prophet read is published, but the source freshness is unknown.",
+        "zh": "该先知系统读数已发布，但来源新鲜度未知。",
+    },
+    "PROPHET_OWNER_OUTPUT_STALE": {
+        "en": "The latest Prophet owner publication is older than this read.",
+        "zh": "最新先知系统所有者发布早于本次读取时间。",
+    },
+    "PROPHET_OWNER_CLOCK_FUTURE": {
+        "en": "The Prophet owner publication clock is ahead of this read, so it is withheld.",
+        "zh": "先知系统所有者发布时间晚于本次读取，因而暂不采用。",
+    },
+    "PROPHET_OWNER_CONFLICTED": {
+        "en": "The Prophet owner output conflicts and cannot be reduced to one current read.",
+        "zh": "先知系统所有者输出存在冲突，无法归并为单一当前读数。",
     },
     "PRIOR_CYCLE_COMMITTED_STATE": {
         "en": "This is the last complete read from a previous cycle.",
@@ -5359,16 +5387,25 @@ def _ss_fill_opportunity(out: dict[str, Any], leg: dict) -> None:
         code = _clean_str(node.get("state") or "").upper()
         if not code and node.get("available") is True:
             code = "AVAILABLE"
+        if fld == "prophet" and code not in _SS_COVERAGE:
+            code = "CONFLICTED"
         cov = _SS_COVERAGE.get(code, _SS_COVERAGE_FALLBACK)
         reason_raw = _clean_str(node.get("reason") or node.get("null_reason") or "")
-        reason_en, reason_zh = _ss_map_subread_reason(reason_raw)
+        if fld == "prophet" and reason_raw and (
+            not reason_raw.startswith("PROPHET_") or reason_raw not in _SS_REASON
+        ):
+            reason_en, reason_zh = _SS_COVERAGE_FALLBACK["en"], _SS_COVERAGE_FALLBACK["zh"]
+        else:
+            reason_en, reason_zh = _ss_map_subread_reason(reason_raw)
         subs.append({
             "en": en, "zh": zh,
             "cov": code, "tone": cov["tone"], "rail": cov["rail"],
             "cov_en": cov["en"], "cov_zh": cov["zh"],
             "reason_en": reason_en,
             "reason_zh": reason_zh,
-            "ref": _clean_str(node.get("ref") or ""),
+            # Public v1 never carries a Prophet identifier, including when a
+            # stale or invalid upstream record supplies one.
+            "ref": "" if fld == "prophet" else _clean_str(node.get("ref") or ""),
         })
     out["subreads"] = subs
 
@@ -6440,7 +6477,9 @@ def run(
     )
 
     # Persist logo negative-cache atomically (temp file + os.replace).
-    if _logo_attempts:
+    # Context-only mode is a pure read/compute contract for downstream template
+    # builders; it must not rewrite unrelated marketing caches.
+    if _logo_attempts and not context_only:
         try:
             _logo_attempts_path.parent.mkdir(parents=True, exist_ok=True)
             import tempfile as _tempfile

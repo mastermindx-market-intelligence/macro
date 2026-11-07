@@ -1583,6 +1583,79 @@ def test_m1_subread_reason_is_house_copy_never_english_on_zh_page() -> None:
     assert _SS_COVERAGE_FALLBACK["zh"] in unmapped_zh
 
 
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        "PROPHET_NO_CURRENT_PLAN",
+        "PROPHET_CURRENT_OUTLOOK_AVAILABLE",
+        "PROPHET_SOURCE_DELAYED",
+        "PROPHET_SOURCE_UNKNOWN",
+        "PROPHET_OWNER_OUTPUT_STALE",
+        "PROPHET_OWNER_CLOCK_FUTURE",
+        "PROPHET_OWNER_CONFLICTED",
+    ],
+)
+def test_prophet_owner_reason_codes_have_bilingual_house_copy(code: str) -> None:
+    from scripts.build_ticker_pages import _SS_REASON, _ss_map_subread_reason
+
+    en, zh = _ss_map_subread_reason(code)
+    assert en == _SS_REASON[code]["en"]
+    assert zh == _SS_REASON[code]["zh"]
+    assert en != zh
+    assert code not in en
+    assert code not in zh
+
+
+
+def _prophet_status_contract(**overrides: object) -> dict:
+    return _contract(legs={
+        **_contract()["legs"],
+        "opportunity_context": {
+            "prophet": {
+                "ref": None, "state": "AVAILABLE",
+                "reason": "PROPHET_CURRENT_OUTLOOK_AVAILABLE", **overrides,
+            },
+            "entry": {"state": "AVAILABLE", "available": True, "null_reason": None},
+            "market_incorporation": {"ref": None, "state": "NOT_COVERED"},
+            "dislocation": {"ref": None, "state": "NOT_COVERED"},
+            "coverage_state": "AVAILABLE",
+        },
+    })
+
+
+def test_prophet_status_reaches_bilingual_decision_spine() -> None:
+    from scripts.build_ticker_pages import _SS_REASON
+
+    view = build_security_state({"security_state": _prophet_status_contract()})
+    assert view is not None
+    prophet = next(s for s in _axis(view, "opportunity_context")["subreads"]
+                   if s["en"] == "Prophet outlook")
+    assert prophet["ref"] == ""
+    assert "refs" not in prophet
+    assert prophet["cov"] == "AVAILABLE"
+    copy = _SS_REASON["PROPHET_CURRENT_OUTLOOK_AVAILABLE"]
+    for lang in ("en", "zh"):
+        html = _render_section(view, lang=lang)
+        assert copy[lang] in html
+        assert "PROPHET_CURRENT_OUTLOOK_AVAILABLE" not in html
+
+
+@pytest.mark.parametrize("overrides", [
+    {"ref": "PRIVATE-PLAN-ID"},
+    {"refs": ["PRIVATE-PLAN-ONE", "PRIVATE-PLAN-TWO"]},
+    {"reason": "Private plan PRIVATE-PLAN-ID is ready"},
+    {"state": "PRIVATE-STATE"},
+    {"published_asof": "PRIVATE-CLOCK", "source_asof": "PRIVATE-SOURCE-CLOCK"},
+])
+def test_prophet_invalid_private_fields_cannot_reach_context_or_html(overrides: dict) -> None:
+    view = build_security_state({"security_state": _prophet_status_contract(**overrides)})
+    assert view is not None
+    assert "PRIVATE" not in json.dumps(view)
+    for lang in ("en", "zh"):
+        assert "PRIVATE" not in _render_section(view, lang=lang)
+
 def test_pinned_identity_not_owner_read_house_copy_is_the_frozen_pair() -> None:
     """REQUIRED 4: PINNED_IDENTITY_NOT_OWNER_READ_THIS_CYCLE is a frozen
     EN/ZH pair at parity, not pipeline jargon.
