@@ -73,6 +73,117 @@ def test_dispatch_exposes_real_rows_and_provenance(case):
     assert not case.runs.exists()
 
 
+@pytest.fixture
+def tiingo_case(tmp_path, monkeypatch):
+    import collectors.tiingo_archive as archive
+    from scripts.tiingo_materialize import materialize_one
+
+    monkeypatch.setattr(archive, "EXTERNAL_MOUNT", tmp_path)
+    monkeypatch.setattr(archive.os.path, "ismount", lambda p: Path(p) == tmp_path)
+    lake = archive.Archive(tmp_path / "tiingo", check_mount=False, free_floor=0)
+    monkeypatch.setattr(archive, "DEFAULT_ARCHIVE", lake.root)
+    refs = []
+    for dimension, value in ((True, 1), (False, 2)):
+        payload = [{"date": "2024-02-01", "year": 2023, "quarter": 0,
+                    "statementData": {"incomeStatement": [
+                        {"dataCode": "income", "value": value},
+                        {"dataCode": "sales", "value": 100},
+                    ]}}]
+        params = {"asReported": str(dimension).lower(),
+                  "startDate": "2023-01-01", "endDate": "2026-10-09"}
+        saved = lake.store_response(
+            "fund-statements", "jpm", archive.request_path("fund-statements", "jpm", params),
+            json.dumps(payload).encode(), received_at="2026-10-12T12:00:00Z",
+        )
+        receipt = next(json.loads(p.read_text()) for p in (lake.root / "receipts").rglob("*.json")
+                       if json.loads(p.read_text())["receipt_id"] == saved["receipt_id"])
+        assert materialize_one(lake.root, receipt, free_floor=0)["status"] == "WRITTEN"
+        refs.append("2026-10-12:" + saved["receipt_id"])
+    registry = tmp_path / "registry.yml"
+    registry.write_text("schema: dataset_registry.v1\ndatasets: []\n")
+    ws = DataWorkspace((RootBinding("tiingo", lake.root, "research_capture",
+                                    required_mount=tmp_path),), registry,
+                       source_revision="d" * 40)
+    request = {"action": "tiingo_compare_statements", "root": "tiingo",
+               "vendor_symbol": "jpm", "as_reported_capture": refs[0],
+               "restated_capture": refs[1], "start": "2023-01-01", "end": "2026-10-09",
+               "observed_before": "2026-10-13T00:00:00Z", "acknowledge_hindsight": True,
+               "limit": 1}
+    return SimpleNamespace(ws=ws, root=lake.root, registry=registry,
+                           config=tmp_path / "unused.json", request=request)
+
+
+def test_tiingo_comparison_uses_exact_bound_captures_and_bounded_pages(tiingo_case, monkeypatch):
+    import hashlib
+    import collectors.tiingo_archive as archive
+    c = tiingo_case
+    def forbidden(*args, **kwargs):
+        pytest.fail("comparison used provider or credentials")
+    monkeypatch.setattr(archive, "read_key", forbidden)
+    monkeypatch.setattr(archive, "collect_one", forbidden)
+    before = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+              for p in c.root.rglob("*") if p.is_file()}
+    result = web_api.dispatch(c.ws, c.request, config_path=c.config)
+    comparison = result["statement_comparison"]
+    assert result["root_alias"] == "tiingo" and result["source_access"] == "read_only"
+    assert result["implementation_revision"] == "d" * 40
+    assert result["production_qualification"] == "NOT_ESTABLISHED_BY_THIS_ADAPTER"
+    assert comparison["comparison_counts"]["DIFFERENT_VENDOR_VALUE"] == 1
+    assert comparison["pagination"] == {
+        "offset": 0, "limit": 1, "returned": 1, "total_comparison_keys": 2,
+        "next_offset": 1, "exact_capture_references_required_on_every_page": True,
+    }
+    assert comparison["comparison_rows"][0]["as_reported_rows"][0]["source_receipt_id"]
+    assert comparison["historical_identity_admitted"] is False
+    assert comparison["historical_known_at_proven"] is False
+    assert comparison["pit_backtest_eligible"] is False
+    second = web_api.dispatch(c.ws, {**c.request, "offset": 1}, config_path=c.config)
+    assert second["statement_comparison"]["comparison_rows"][0]["metric_code"] == "sales"
+    assert second["statement_comparison"]["pagination"]["next_offset"] is None
+    assert before == {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                      for p in c.root.rglob("*") if p.is_file()}
+    assert not c.config.exists()
+
+
+@pytest.mark.parametrize("changes,code", [
+    ({"root": "unknown"}, "ROOT_NOT_BOUND"),
+    ({"path": "/etc/passwd"}, "INVALID_REQUEST_FIELDS"),
+    ({"url": "https://example.com"}, "INVALID_REQUEST_FIELDS"),
+    ({"limit": 51}, "INVALID_ARGUMENT"),
+    ({"offset": -1}, "INVALID_ARGUMENT"),
+    ({"acknowledge_hindsight": False}, "TIINGO_STATEMENT_COMPARISON_REFUSED"),
+    ({"restated_capture": "latest"}, "TIINGO_STATEMENT_COMPARISON_REFUSED"),
+    ({"observed_before": "2026-10-11T00:00:00Z"}, "TIINGO_STATEMENT_COMPARISON_REFUSED"),
+])
+def test_tiingo_comparison_rejects_unbound_or_unverifiable_requests(tiingo_case, changes, code):
+    with pytest.raises(WorkspaceError) as error:
+        web_api.dispatch(tiingo_case.ws, {**tiingo_case.request, **changes}, config_path=tiingo_case.config)
+    assert error.value.code == code
+
+
+def test_tiingo_comparison_cannot_use_a_different_bound_root(tiingo_case, tmp_path):
+    other = tmp_path / "other"
+    other.mkdir()
+    ws = DataWorkspace((RootBinding("tiingo", other, "research_capture"),), tiingo_case.registry)
+    with pytest.raises(WorkspaceError, match="TIINGO_ARCHIVE_NOT_BOUND"):
+        web_api.dispatch(ws, tiingo_case.request, config_path=tiingo_case.config)
+
+
+def test_tiingo_comparison_refuses_symlink_root(tiingo_case, tmp_path):
+    old = tiingo_case.root.with_name("retained")
+    tiingo_case.root.rename(old)
+    tiingo_case.root.symlink_to(old, target_is_directory=True)
+    with pytest.raises(WorkspaceError, match="PATH_OR_SOURCE_REFUSED"):
+        web_api.dispatch(tiingo_case.ws, tiingo_case.request, config_path=tiingo_case.config)
+
+
+def test_tiingo_comparison_preserves_existing_response_byte_cap(tiingo_case, monkeypatch):
+    import lib.dataos.web_workspace as workspace_module
+    monkeypatch.setattr(workspace_module, "MAX_RESPONSE_BYTES", 256)
+    with pytest.raises(WorkspaceError, match="RESULT_TOO_LARGE_REDUCE_COLUMNS_OR_LIMIT"):
+        web_api.dispatch(tiingo_case.ws, tiingo_case.request, config_path=tiingo_case.config)
+
+
 def test_dispatch_plan_does_not_start_worker_or_create_artifacts(case):
     result = web_api.dispatch(case.ws, {
         "action": "lab_plan", "signal_id": "golden_cross_7_35",
@@ -419,3 +530,76 @@ def test_unreaped_timeout_reports_reconciliation_required(case, monkeypatch):
     assert response["run"]["failure_code"] == "LAB_PROCESS_RECONCILIATION_REQUIRED"
     status = case.runs / response["run"]["run_id"] / "status.json"
     assert json.loads(status.read_text()) == response["run"]
+
+
+# --- U03 (DATA-OS-COMPLETION): the view rides on the existing read action -----------------------------------
+def _u03_api_view(**changes):
+    view = {"mode": "CURRENT",
+            "contract": {"purpose": "U03 synthetic transport read",
+                         "identity": {"security_id": "SEC-FIX", "listing_id": "US-XNAS-FIX"},
+                         "field_units": {"ClosePx": "USD"}, "adjustment_reference": {"basis": "raw"},
+                         "coverage": "synthetic fixture rows local to this suite"}}
+    view.update(changes)
+    return view
+
+
+def test_U03_dispatch_read_with_a_view_is_repeatable_and_serves_the_legacy_rows(case):
+    request = {"action": "read", "ref": "fixture:prices.parquet", "columns": ["Session", "ClosePx"], "limit": 4}
+    legacy = web_api.dispatch(case.ws, dict(request), config_path=case.config)
+    one = web_api.dispatch(case.ws, dict(request, view=_u03_api_view()), config_path=case.config)
+    two = web_api.dispatch(case.ws, dict(request, view=_u03_api_view()), config_path=case.config)
+    assert legacy["action"] == "read" and one["action"] == "read_view"
+    assert one["result"] == legacy["result"]
+    assert one["view_digest_sha256"] == two["view_digest_sha256"]
+    assert one["view"]["evidence"]["source_revision"] == "d" * 40
+    assert not case.runs.exists()
+
+
+@pytest.mark.parametrize("api_request", [
+    {"action": "describe", "ref": "fixture:prices.parquet", "view": _u03_api_view()},
+    {"action": "browse", "root": "fixture", "view": _u03_api_view()},
+    {"action": "search", "query": "prices", "view": _u03_api_view()},
+    {"action": "lab_plan", "signal_id": "golden_cross_7_35", "refs": ["fixture:prices.parquet"],
+     "view": _u03_api_view()},
+    {"action": "capabilities", "view": _u03_api_view()},
+    {"action": "read", "view": _u03_api_view()},
+    {"action": "read", "ref": "fixture:prices.parquet", "view": _u03_api_view(), "mode": "CURRENT"},
+])
+def test_U03_a_view_is_accepted_only_on_read_with_a_ref(case, api_request):
+    with pytest.raises(WorkspaceError) as error:
+        web_api.dispatch(case.ws, api_request, config_path=case.config)
+    assert error.value.code == "INVALID_REQUEST_FIELDS"
+    assert not case.runs.exists()
+
+
+def test_U03_capabilities_declare_the_view_without_widening_the_cap(case):
+    caps = web_api.dispatch(case.ws, {"action": "capabilities"}, config_path=case.config)
+    assert caps["read_view"]["modes"] == ["CURRENT"]
+    assert caps["read_view"]["refused_modes"] == ["RECONSTRUCT", "REPLAY"]
+    assert caps["read_view"]["generation_token"] == "statv1"
+    assert caps["max_response_bytes"] == 131072 == web_api.MAX_RESPONSE_BYTES
+    # The seven canonical actions lead the list unchanged and U03 adds NO action of its own —
+    # the view rides on `read`. Sibling programs may append their own actions after them, so
+    # this pins the invariant U03 owns rather than the whole list.
+    canonical = ["search", "browse", "describe", "read", "lab_signals", "lab_plan", "lab_run"]
+    assert caps["actions"][: len(canonical)] == canonical
+    assert "read_view" not in caps["actions"]
+    assert len(caps["actions"]) == len(set(caps["actions"]))
+
+
+def test_U03_an_oversized_view_is_REQUEST_TOO_LARGE(case):
+    view = _u03_api_view()
+    view["contract"]["purpose"] = "x" * 20000
+    with pytest.raises(WorkspaceError) as error:
+        web_api.dispatch(case.ws, {"action": "read", "ref": "fixture:prices.parquet", "view": view},
+                         config_path=case.config)
+    assert error.value.code == "REQUEST_TOO_LARGE"
+
+
+def test_U03_dispatch_replay_refuses_NO_RETAINED_OUTPUT(case):
+    with pytest.raises(WorkspaceError) as error:
+        web_api.dispatch(case.ws, {"action": "read", "ref": "fixture:prices.parquet",
+                                   "view": _u03_api_view(mode="REPLAY", output_id="out-1")},
+                         config_path=case.config)
+    assert error.value.code == "VIEW_REFUSED_NO_RETAINED_OUTPUT"
+    assert not case.runs.exists()

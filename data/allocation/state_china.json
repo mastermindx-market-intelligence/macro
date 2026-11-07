@@ -3,11 +3,11 @@
   "crash": false,
   "eligible": [
     "cn_banks",
-    "cn_coal"
+    "cn_pharma_cxo"
   ],
   "held": [
     "cn_banks",
-    "cn_coal"
+    "cn_pharma_cxo"
   ],
   "leader": "cn_banks",
   "names": {
