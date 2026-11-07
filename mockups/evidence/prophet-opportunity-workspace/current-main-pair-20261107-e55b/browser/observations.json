@@ -1,0 +1,1820 @@
+{
+  "source_head": "e5fc097114082307a1ee707ef94edcc767cde16b",
+  "base_build_source_head": "e5fc097114082307a1ee707ef94edcc767cde16b",
+  "static_asset_followup": null,
+  "public_html_sha256": "effa218ef6a02292fc3ac179d1fe793b552941d59a2c46d49e340d9671fe00e9",
+  "essential_payload_sha256": "aca4249b1147d973562a7717b5895717fd9e13670850461ef0698cab98a8018f",
+  "public_html_bytes": 812667,
+  "essential_payload_bytes": 9645392,
+  "public_today_articles": 1,
+  "public_rich_cards": 1,
+  "public_pool_rows": 3,
+  "private_top_level": {
+    "schema": "str",
+    "page": "str",
+    "gated": "bool",
+    "required_tier": "str",
+    "built": "str",
+    "total": "int",
+    "preview": "int",
+    "locked": "int",
+    "as_of": "str",
+    "cards_html": "str",
+    "preview_cards_html": "str",
+    "rows": "list",
+    "today_cards_html": "str",
+    "today_preview": "int",
+    "today_total": "int",
+    "today_rows_meta": "list",
+    "today_source_binding": "dict",
+    "panels": "dict",
+    "candidate_pool_html": "str",
+    "candidate_pool_source": "dict",
+    "leader_observations_html": "str",
+    "leaders_html": "str",
+    "ran_html": "str",
+    "actnow_html": "str",
+    "tape_html": "str",
+    "plv_names": "dict",
+    "what_changed_html": "str",
+    "passed_html": "str",
+    "life_gate": "dict",
+    "plan_cards_html": "str"
+  },
+  "scope": "Normal producer HTML unchanged; anonymous offline browser; no premium payload served; no live/authenticated acceptance.",
+  "build_modules": [
+    {
+      "module": "scripts.build_site",
+      "argv": [
+        "scripts.build_site",
+        "--no-refresh-stock-library",
+        "--frozen-us-board-sha256",
+        "de26f5130f9d49595c21314b99bbefd1beb7caa0baf060df4e428076bd286858",
+        "--frozen-us-gate-sha256",
+        "805774246a1f2305d76a46cd32d817f5ac423f3195346ef169ca899f22e38ca4"
+      ],
+      "exit": 0,
+      "seconds": 691.99
+    },
+    {
+      "module": "scripts.inject_data_base",
+      "argv": [
+        "scripts.inject_data_base"
+      ],
+      "exit": 0,
+      "seconds": 8.83
+    },
+    {
+      "module": "scripts.externalize_css",
+      "argv": [
+        "scripts.externalize_css"
+      ],
+      "exit": 0,
+      "seconds": 13.02
+    },
+    {
+      "module": "scripts.optimize_assets",
+      "argv": [
+        "scripts.optimize_assets"
+      ],
+      "exit": 0,
+      "seconds": 47.56
+    }
+  ],
+  "capture_adapter": {
+    "parent_adapter_sha256": "8c7487a3ac6daf6b9f8d7170950d28038967e150eef372a5a3fbc3f4ffdcf29e",
+    "base_tool_sha256": "0b4b7f4b12e6d5e0b4f0952a67fd3410507014e780fb046f2e77bcb050d5a08d",
+    "reason": "Bind actual frozen-native source_head receipt and exercise direct public Sources, without changing producer receipt or serving protected payload."
+  },
+  "cells": [
+    {
+      "case": "1440-light-en",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4872,
+        "h1": "Prophet\nUS stocks",
+        "theme": "light",
+        "lang": "en",
+        "grid": {
+          "x": 40,
+          "y": 689.015625,
+          "width": 1360,
+          "height": 660.875
+        },
+        "columns": "328px 328px 328px 328px",
+        "empty": null,
+        "protectedControls": 0,
+        "cards": [
+          {
+            "ticker": "RGLD",
+            "rect": {
+              "x": 40,
+              "y": 689.015625,
+              "width": 328,
+              "height": 660.875
+            },
+            "text": "RGLD\nRoyal Gold\n$265.81\n—\nAs of Date unverified\nMaterials\nPriority\n48\nⓘ\n Featured\nNew\nContinuation\nBuy\nBottoming\nTurning\nReady\nTrend\n\nSignal session · 2026-11-06\n\nDaily closes\nAs of Date unverified\n\nBuy zone — entry open now\n\nKey caution Accounting q",
+            "identity": {
+              "x": 57,
+              "y": 706.015625,
+              "width": 141,
+              "height": 46.59375
+            },
+            "quote": {
+              "x": 210,
+              "y": 706.015625,
+              "width": 141,
+              "height": 67.59375
+            },
+            "status": {
+              "x": 57,
+              "y": 844,
+              "width": 294,
+              "height": 25.59375
+            },
+            "stages": {
+              "x": 57,
+              "y": 881.59375,
+              "width": 294,
+              "height": 30.5
+            },
+            "chart": {
+              "x": 57,
+              "y": 952.59375,
+              "width": 294,
+              "height": 88
+            },
+            "refinements": {
+              "x": 57,
+              "y": 785.609375,
+              "width": 294,
+              "height": 46.390625
+            },
+            "classification": {
+              "x": 57,
+              "y": 785.609375,
+              "width": 294,
+              "height": 18
+            }
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 112.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 195
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 425.796875
+          },
+          {
+            "text": "TODAY",
+            "y": 613.015625
+          },
+          {
+            "text": "",
+            "y": 1559.890625
+          },
+          {
+            "text": "",
+            "y": 1559.890625
+          },
+          {
+            "text": "",
+            "y": 3087.171875
+          },
+          {
+            "text": "",
+            "y": 3084.171875
+          },
+          {
+            "text": "",
+            "y": 3549.953125
+          },
+          {
+            "text": "",
+            "y": 3549.953125
+          },
+          {
+            "text": "",
+            "y": 5196.703125
+          },
+          {
+            "text": "",
+            "y": 5735.796875
+          },
+          {
+            "text": "",
+            "y": 6709.515625
+          },
+          {
+            "text": "",
+            "y": 6919.578125
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 1794.03125
+          },
+          {
+            "text": "Market context",
+            "y": 2736
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 2840.34375
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 3042.375
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 3692.953125
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 3956.234375
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 4410.828125
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 4551.328125
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:49959/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/risk_state.json?t=1794075306014",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:49959/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-1440-light-en.png",
+      "screenshot_sha256": "349dc5d16f45b51c660b3a3f695e7228afd1cca0dd5486b51de097ebc923e0ad",
+      "native_sources": {
+        "entry_surface": "today",
+        "same_card_id": "po-today-0",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-1440-light-en.png",
+        "screenshot_sha256": "2e3fd50110c38c9b22ad04e5eb0ad49e7c18f5499b86bcde1734f1bedac75411"
+      }
+    },
+    {
+      "case": "1440-light-zh",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4766,
+        "h1": "Prophet\n美国股票",
+        "theme": "light",
+        "lang": "zh-CN",
+        "grid": {
+          "x": 40,
+          "y": 688.796875,
+          "width": 1360,
+          "height": 610.875
+        },
+        "columns": "328px 328px 328px 328px",
+        "empty": null,
+        "protectedControls": 0,
+        "cards": [
+          {
+            "ticker": "RGLD",
+            "rect": {
+              "x": 40,
+              "y": 688.796875,
+              "width": 328,
+              "height": 610.875
+            },
+            "text": "RGLD\nRoyal Gold\n$265.81\n—\n截至 日期未核实\nMaterials\n优先级\n48\nⓘ\n 精选\n新\n延续\n买入\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-11-06\n\n每日收盘\n截至 日期未核实\n\n买入区 — 入场窗口已开启\n\n关键注意 财务质量值得再核查一次。 +1 条\n入场区间\n$254.30–$265.80\nUSD\n截至 2026-11-06\n入榜 2026-11-06\n查看形态 →\n来源\n对比\n保存",
+            "identity": {
+              "x": 57,
+              "y": 705.796875,
+              "width": 141,
+              "height": 46.59375
+            },
+            "quote": {
+              "x": 210,
+              "y": 705.796875,
+              "width": 141,
+              "height": 67.59375
+            },
+            "status": {
+              "x": 57,
+              "y": 843.78125,
+              "width": 294,
+              "height": 25.59375
+            },
+            "stages": {
+              "x": 57,
+              "y": 881.375,
+              "width": 294,
+              "height": 30.5
+            },
+            "chart": {
+              "x": 57,
+              "y": 952.375,
+              "width": 294,
+              "height": 88
+            },
+            "refinements": {
+              "x": 57,
+              "y": 785.390625,
+              "width": 294,
+              "height": 46.390625
+            },
+            "classification": {
+              "x": 57,
+              "y": 785.390625,
+              "width": 294,
+              "height": 18
+            }
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 112.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 195
+          },
+          {
+            "text": "机会工作台",
+            "y": 425.796875
+          },
+          {
+            "text": "今日",
+            "y": 611.796875
+          },
+          {
+            "text": "",
+            "y": 1509.671875
+          },
+          {
+            "text": "",
+            "y": 1509.671875
+          },
+          {
+            "text": "",
+            "y": 2909.09375
+          },
+          {
+            "text": "",
+            "y": 2906.09375
+          },
+          {
+            "text": "",
+            "y": 3355.375
+          },
+          {
+            "text": "",
+            "y": 3355.375
+          },
+          {
+            "text": "",
+            "y": 5140.28125
+          },
+          {
+            "text": "",
+            "y": 5551.90625
+          },
+          {
+            "text": "",
+            "y": 6283.4375
+          },
+          {
+            "text": "",
+            "y": 6477
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 1726.015625
+          },
+          {
+            "text": "市场背景",
+            "y": 2668.984375
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 2773.328125
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 2975.359375
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 3608.4375
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 3866.875
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 4304.96875
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 4445.46875
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:49959/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/risk_state.json?t=1794075308561",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:49959/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-1440-light-zh.png",
+      "screenshot_sha256": "3b5d13acd89f56f75ecd0498ccec570b312430e85736ef75b10322291e5b121e",
+      "native_sources": {
+        "entry_surface": "today",
+        "same_card_id": "po-today-0",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-1440-light-zh.png",
+        "screenshot_sha256": "e9395b63002a40a47b1c46fbba24dffa422559447863e2ba9ea61a1a50549335"
+      }
+    },
+    {
+      "case": "1440-dark-en",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4862,
+        "h1": "Prophet\nUS stocks",
+        "theme": "dark",
+        "lang": "en",
+        "grid": {
+          "x": 40,
+          "y": 689.015625,
+          "width": 1360,
+          "height": 660.875
+        },
+        "columns": "328px 328px 328px 328px",
+        "empty": null,
+        "protectedControls": 0,
+        "cards": [
+          {
+            "ticker": "RGLD",
+            "rect": {
+              "x": 40,
+              "y": 689.015625,
+              "width": 328,
+              "height": 660.875
+            },
+            "text": "RGLD\nRoyal Gold\n$265.81\n—\nAs of Date unverified\nMaterials\nPriority\n48\nⓘ\n Featured\nNew\nContinuation\nBuy\nBottoming\nTurning\nReady\nTrend\n\nSignal session · 2026-11-06\n\nDaily closes\nAs of Date unverified\n\nBuy zone — entry open now\n\nKey caution Accounting q",
+            "identity": {
+              "x": 57,
+              "y": 706.015625,
+              "width": 141,
+              "height": 46.59375
+            },
+            "quote": {
+              "x": 210,
+              "y": 706.015625,
+              "width": 141,
+              "height": 67.59375
+            },
+            "status": {
+              "x": 57,
+              "y": 844,
+              "width": 294,
+              "height": 25.59375
+            },
+            "stages": {
+              "x": 57,
+              "y": 881.59375,
+              "width": 294,
+              "height": 30.5
+            },
+            "chart": {
+              "x": 57,
+              "y": 952.59375,
+              "width": 294,
+              "height": 88
+            },
+            "refinements": {
+              "x": 57,
+              "y": 785.609375,
+              "width": 294,
+              "height": 46.390625
+            },
+            "classification": {
+              "x": 57,
+              "y": 785.609375,
+              "width": 294,
+              "height": 18
+            }
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 112.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 195
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 425.796875
+          },
+          {
+            "text": "TODAY",
+            "y": 613.015625
+          },
+          {
+            "text": "",
+            "y": 1559.890625
+          },
+          {
+            "text": "",
+            "y": 1559.890625
+          },
+          {
+            "text": "",
+            "y": 3087.171875
+          },
+          {
+            "text": "",
+            "y": 3084.171875
+          },
+          {
+            "text": "",
+            "y": 3549.953125
+          },
+          {
+            "text": "",
+            "y": 3549.953125
+          },
+          {
+            "text": "",
+            "y": 5196.703125
+          },
+          {
+            "text": "",
+            "y": 5735.796875
+          },
+          {
+            "text": "",
+            "y": 6709.515625
+          },
+          {
+            "text": "",
+            "y": 6919.578125
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 1794.03125
+          },
+          {
+            "text": "Market context",
+            "y": 2736
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 2840.34375
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 3042.375
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 3682.953125
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 3946.234375
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 4400.828125
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 4541.328125
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:49959/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/risk_state.json?t=1794075310980",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:49959/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-1440-dark-en.png",
+      "screenshot_sha256": "7805c0736b97897db6e3cefb4a11e7542a567c3cad25fc4cf2ad1e271e2b8ce1",
+      "native_sources": {
+        "entry_surface": "today",
+        "same_card_id": "po-today-0",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-1440-dark-en.png",
+        "screenshot_sha256": "17b8a9258c1911bed4adf0e0374a7f65f18f1a46c06c3aa9afcbe3ac1b4f35e5"
+      }
+    },
+    {
+      "case": "1440-dark-zh",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4756,
+        "h1": "Prophet\n美国股票",
+        "theme": "dark",
+        "lang": "zh-CN",
+        "grid": {
+          "x": 40,
+          "y": 688.796875,
+          "width": 1360,
+          "height": 610.875
+        },
+        "columns": "328px 328px 328px 328px",
+        "empty": null,
+        "protectedControls": 0,
+        "cards": [
+          {
+            "ticker": "RGLD",
+            "rect": {
+              "x": 40,
+              "y": 688.796875,
+              "width": 328,
+              "height": 610.875
+            },
+            "text": "RGLD\nRoyal Gold\n$265.81\n—\n截至 日期未核实\nMaterials\n优先级\n48\nⓘ\n 精选\n新\n延续\n买入\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-11-06\n\n每日收盘\n截至 日期未核实\n\n买入区 — 入场窗口已开启\n\n关键注意 财务质量值得再核查一次。 +1 条\n入场区间\n$254.30–$265.80\nUSD\n截至 2026-11-06\n入榜 2026-11-06\n查看形态 →\n来源\n对比\n保存",
+            "identity": {
+              "x": 57,
+              "y": 705.796875,
+              "width": 141,
+              "height": 46.59375
+            },
+            "quote": {
+              "x": 210,
+              "y": 705.796875,
+              "width": 141,
+              "height": 67.59375
+            },
+            "status": {
+              "x": 57,
+              "y": 843.78125,
+              "width": 294,
+              "height": 25.59375
+            },
+            "stages": {
+              "x": 57,
+              "y": 881.375,
+              "width": 294,
+              "height": 30.5
+            },
+            "chart": {
+              "x": 57,
+              "y": 952.375,
+              "width": 294,
+              "height": 88
+            },
+            "refinements": {
+              "x": 57,
+              "y": 785.390625,
+              "width": 294,
+              "height": 46.390625
+            },
+            "classification": {
+              "x": 57,
+              "y": 785.390625,
+              "width": 294,
+              "height": 18
+            }
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 112.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 195
+          },
+          {
+            "text": "机会工作台",
+            "y": 425.796875
+          },
+          {
+            "text": "今日",
+            "y": 611.796875
+          },
+          {
+            "text": "",
+            "y": 1509.671875
+          },
+          {
+            "text": "",
+            "y": 1509.671875
+          },
+          {
+            "text": "",
+            "y": 2909.09375
+          },
+          {
+            "text": "",
+            "y": 2906.09375
+          },
+          {
+            "text": "",
+            "y": 3355.375
+          },
+          {
+            "text": "",
+            "y": 3355.375
+          },
+          {
+            "text": "",
+            "y": 5140.28125
+          },
+          {
+            "text": "",
+            "y": 5551.90625
+          },
+          {
+            "text": "",
+            "y": 6283.4375
+          },
+          {
+            "text": "",
+            "y": 6477
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 1726.015625
+          },
+          {
+            "text": "市场背景",
+            "y": 2668.984375
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 2773.328125
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 2975.359375
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 3598.4375
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 3856.875
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 4294.96875
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 4435.46875
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:49959/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/risk_state.json?t=1794075313511",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:49959/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-1440-dark-zh.png",
+      "screenshot_sha256": "447b09447431f297373069ffde53b57aa90566a847e5ea4e525dbed9e25c20e8",
+      "native_sources": {
+        "entry_surface": "today",
+        "same_card_id": "po-today-0",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-1440-dark-zh.png",
+        "screenshot_sha256": "823349718a3719d12764aceaa34274ce84be106eb6489c6c501a9a4235e4b460"
+      }
+    },
+    {
+      "case": "390-light-en",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 7485,
+        "h1": "Prophet\nUS stocks",
+        "theme": "light",
+        "lang": "en",
+        "grid": {
+          "x": 18,
+          "y": 808.703125,
+          "width": 354,
+          "height": 610.875
+        },
+        "columns": "354px",
+        "empty": null,
+        "protectedControls": 0,
+        "cards": [
+          {
+            "ticker": "RGLD",
+            "rect": {
+              "x": 18,
+              "y": 808.703125,
+              "width": 354,
+              "height": 610.875
+            },
+            "text": "RGLD\nRoyal Gold\n$265.81\n—\nAs of Date unverified\nMaterials\nPriority\n48\nⓘ\n Featured\nNew\nContinuation\nBuy\nBottoming\nTurning\nReady\nTrend\n\nSignal session · 2026-11-06\n\nDaily closes\nAs of Date unverified\n\nBuy zone — entry open now\n\nKey caution Accounting q",
+            "identity": {
+              "x": 35,
+              "y": 825.703125,
+              "width": 154,
+              "height": 46.59375
+            },
+            "quote": {
+              "x": 201,
+              "y": 825.703125,
+              "width": 154,
+              "height": 67.59375
+            },
+            "status": {
+              "x": 35,
+              "y": 963.6875,
+              "width": 320,
+              "height": 25.59375
+            },
+            "stages": {
+              "x": 35,
+              "y": 1001.28125,
+              "width": 320,
+              "height": 30.5
+            },
+            "chart": {
+              "x": 35,
+              "y": 1072.28125,
+              "width": 320,
+              "height": 88
+            },
+            "refinements": {
+              "x": 35,
+              "y": 905.296875,
+              "width": 320,
+              "height": 46.390625
+            },
+            "classification": {
+              "x": 35,
+              "y": 905.296875,
+              "width": 320,
+              "height": 18
+            }
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 237.75
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 502.234375
+          },
+          {
+            "text": "TODAY",
+            "y": 704.703125
+          },
+          {
+            "text": "",
+            "y": 1695.078125
+          },
+          {
+            "text": "",
+            "y": 2331.125
+          },
+          {
+            "text": "",
+            "y": 3193.78125
+          },
+          {
+            "text": "",
+            "y": 3521.40625
+          },
+          {
+            "text": "",
+            "y": 3747.5625
+          },
+          {
+            "text": "",
+            "y": 4488.65625
+          },
+          {
+            "text": "",
+            "y": 5019.65625
+          },
+          {
+            "text": "",
+            "y": 5536.75
+          },
+          {
+            "text": "",
+            "y": 6510.46875
+          },
+          {
+            "text": "",
+            "y": 6720.53125
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 2094.0625
+          },
+          {
+            "text": "Market context",
+            "y": 3446.671875
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 3599.46875
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 3971
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 5612.078125
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 6160.703125
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 6869.640625
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 7080.140625
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:49959/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/risk_state.json?t=1794075315886",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:49959/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-390-light-en.png",
+      "screenshot_sha256": "552f689528a0b36a278eecd626d0b69320bec9660163be47c72e8e1bf47de675",
+      "native_sources": {
+        "entry_surface": "today",
+        "same_card_id": "po-today-0",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-390-light-en.png",
+        "screenshot_sha256": "35571dee580b2aaaad72d11180960b71f14080625c5ebd152f0741b9dd988d40"
+      }
+    },
+    {
+      "case": "390-light-zh",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 6985,
+        "h1": "Prophet\n美国股票",
+        "theme": "light",
+        "lang": "zh-CN",
+        "grid": {
+          "x": 18,
+          "y": 754.734375,
+          "width": 354,
+          "height": 610.875
+        },
+        "columns": "354px",
+        "empty": null,
+        "protectedControls": 0,
+        "cards": [
+          {
+            "ticker": "RGLD",
+            "rect": {
+              "x": 18,
+              "y": 754.734375,
+              "width": 354,
+              "height": 610.875
+            },
+            "text": "RGLD\nRoyal Gold\n$265.81\n—\n截至 日期未核实\nMaterials\n优先级\n48\nⓘ\n 精选\n新\n延续\n买入\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-11-06\n\n每日收盘\n截至 日期未核实\n\n买入区 — 入场窗口已开启\n\n关键注意 财务质量值得再核查一次。 +1 条\n入场区间\n$254.30–$265.80\nUSD\n截至 2026-11-06\n入榜 2026-11-06\n查看形态 →\n来源\n对比\n保存",
+            "identity": {
+              "x": 35,
+              "y": 771.734375,
+              "width": 154,
+              "height": 46.59375
+            },
+            "quote": {
+              "x": 201,
+              "y": 771.734375,
+              "width": 154,
+              "height": 67.59375
+            },
+            "status": {
+              "x": 35,
+              "y": 909.71875,
+              "width": 320,
+              "height": 25.59375
+            },
+            "stages": {
+              "x": 35,
+              "y": 947.3125,
+              "width": 320,
+              "height": 30.5
+            },
+            "chart": {
+              "x": 35,
+              "y": 1018.3125,
+              "width": 320,
+              "height": 88
+            },
+            "refinements": {
+              "x": 35,
+              "y": 851.328125,
+              "width": 320,
+              "height": 46.390625
+            },
+            "classification": {
+              "x": 35,
+              "y": 851.328125,
+              "width": 320,
+              "height": 18
+            }
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 237.75
+          },
+          {
+            "text": "机会工作台",
+            "y": 467.234375
+          },
+          {
+            "text": "今日",
+            "y": 669.484375
+          },
+          {
+            "text": "",
+            "y": 1663.609375
+          },
+          {
+            "text": "",
+            "y": 2249.0625
+          },
+          {
+            "text": "",
+            "y": 3263.53125
+          },
+          {
+            "text": "",
+            "y": 3632.78125
+          },
+          {
+            "text": "",
+            "y": 3842.4375
+          },
+          {
+            "text": "",
+            "y": 4542.15625
+          },
+          {
+            "text": "",
+            "y": 5038.65625
+          },
+          {
+            "text": "",
+            "y": 5428.28125
+          },
+          {
+            "text": "",
+            "y": 6159.8125
+          },
+          {
+            "text": "",
+            "y": 6353.375
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 1920.25
+          },
+          {
+            "text": "市场背景",
+            "y": 3149.453125
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 3243
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 3568.78125
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 5174.984375
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 5681.265625
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 6462.859375
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 6650.859375
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:49959/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/risk_state.json?t=1794075318100",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:49959/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-390-light-zh.png",
+      "screenshot_sha256": "37cbe344e5738b5b0dc57f907310da61a5bebe6fbcd04ef028733f5fb15b1129",
+      "native_sources": {
+        "entry_surface": "today",
+        "same_card_id": "po-today-0",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-390-light-zh.png",
+        "screenshot_sha256": "2779b1a02eea4fa6996101fd5923e4662996e8cd88cf814985c3417d3ad77c38"
+      }
+    },
+    {
+      "case": "390-dark-en",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 7475,
+        "h1": "Prophet\nUS stocks",
+        "theme": "dark",
+        "lang": "en",
+        "grid": {
+          "x": 18,
+          "y": 808.703125,
+          "width": 354,
+          "height": 610.875
+        },
+        "columns": "354px",
+        "empty": null,
+        "protectedControls": 0,
+        "cards": [
+          {
+            "ticker": "RGLD",
+            "rect": {
+              "x": 18,
+              "y": 808.703125,
+              "width": 354,
+              "height": 610.875
+            },
+            "text": "RGLD\nRoyal Gold\n$265.81\n—\nAs of Date unverified\nMaterials\nPriority\n48\nⓘ\n Featured\nNew\nContinuation\nBuy\nBottoming\nTurning\nReady\nTrend\n\nSignal session · 2026-11-06\n\nDaily closes\nAs of Date unverified\n\nBuy zone — entry open now\n\nKey caution Accounting q",
+            "identity": {
+              "x": 35,
+              "y": 825.703125,
+              "width": 154,
+              "height": 46.59375
+            },
+            "quote": {
+              "x": 201,
+              "y": 825.703125,
+              "width": 154,
+              "height": 67.59375
+            },
+            "status": {
+              "x": 35,
+              "y": 963.6875,
+              "width": 320,
+              "height": 25.59375
+            },
+            "stages": {
+              "x": 35,
+              "y": 1001.28125,
+              "width": 320,
+              "height": 30.5
+            },
+            "chart": {
+              "x": 35,
+              "y": 1072.28125,
+              "width": 320,
+              "height": 88
+            },
+            "refinements": {
+              "x": 35,
+              "y": 905.296875,
+              "width": 320,
+              "height": 46.390625
+            },
+            "classification": {
+              "x": 35,
+              "y": 905.296875,
+              "width": 320,
+              "height": 18
+            }
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 237.75
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 502.234375
+          },
+          {
+            "text": "TODAY",
+            "y": 704.703125
+          },
+          {
+            "text": "",
+            "y": 1695.078125
+          },
+          {
+            "text": "",
+            "y": 2331.125
+          },
+          {
+            "text": "",
+            "y": 3193.78125
+          },
+          {
+            "text": "",
+            "y": 3521.40625
+          },
+          {
+            "text": "",
+            "y": 3747.5625
+          },
+          {
+            "text": "",
+            "y": 4488.65625
+          },
+          {
+            "text": "",
+            "y": 5019.65625
+          },
+          {
+            "text": "",
+            "y": 5536.75
+          },
+          {
+            "text": "",
+            "y": 6510.46875
+          },
+          {
+            "text": "",
+            "y": 6720.53125
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 2094.0625
+          },
+          {
+            "text": "Market context",
+            "y": 3446.671875
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 3599.46875
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 3971
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 5602.078125
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 6150.703125
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 6859.640625
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 7070.140625
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:49959/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/risk_state.json?t=1794075320284",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:49959/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-390-dark-en.png",
+      "screenshot_sha256": "8ca4a52d1a6ed760473881a4c0ddc48e2b367d0be15a5f03ae53410a9d7f6482",
+      "native_sources": {
+        "entry_surface": "today",
+        "same_card_id": "po-today-0",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-390-dark-en.png",
+        "screenshot_sha256": "fc010fab5da54f1498a01505a2eefd351729ffc8d3e696bd3fa3c41360ceb837"
+      }
+    },
+    {
+      "case": "390-dark-zh",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 6975,
+        "h1": "Prophet\n美国股票",
+        "theme": "dark",
+        "lang": "zh-CN",
+        "grid": {
+          "x": 18,
+          "y": 754.734375,
+          "width": 354,
+          "height": 610.875
+        },
+        "columns": "354px",
+        "empty": null,
+        "protectedControls": 0,
+        "cards": [
+          {
+            "ticker": "RGLD",
+            "rect": {
+              "x": 18,
+              "y": 754.734375,
+              "width": 354,
+              "height": 610.875
+            },
+            "text": "RGLD\nRoyal Gold\n$265.81\n—\n截至 日期未核实\nMaterials\n优先级\n48\nⓘ\n 精选\n新\n延续\n买入\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-11-06\n\n每日收盘\n截至 日期未核实\n\n买入区 — 入场窗口已开启\n\n关键注意 财务质量值得再核查一次。 +1 条\n入场区间\n$254.30–$265.80\nUSD\n截至 2026-11-06\n入榜 2026-11-06\n查看形态 →\n来源\n对比\n保存",
+            "identity": {
+              "x": 35,
+              "y": 771.734375,
+              "width": 154,
+              "height": 46.59375
+            },
+            "quote": {
+              "x": 201,
+              "y": 771.734375,
+              "width": 154,
+              "height": 67.59375
+            },
+            "status": {
+              "x": 35,
+              "y": 909.71875,
+              "width": 320,
+              "height": 25.59375
+            },
+            "stages": {
+              "x": 35,
+              "y": 947.3125,
+              "width": 320,
+              "height": 30.5
+            },
+            "chart": {
+              "x": 35,
+              "y": 1018.3125,
+              "width": 320,
+              "height": 88
+            },
+            "refinements": {
+              "x": 35,
+              "y": 851.328125,
+              "width": 320,
+              "height": 46.390625
+            },
+            "classification": {
+              "x": 35,
+              "y": 851.328125,
+              "width": 320,
+              "height": 18
+            }
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 237.75
+          },
+          {
+            "text": "机会工作台",
+            "y": 467.234375
+          },
+          {
+            "text": "今日",
+            "y": 669.484375
+          },
+          {
+            "text": "",
+            "y": 1663.609375
+          },
+          {
+            "text": "",
+            "y": 2249.0625
+          },
+          {
+            "text": "",
+            "y": 3263.53125
+          },
+          {
+            "text": "",
+            "y": 3632.78125
+          },
+          {
+            "text": "",
+            "y": 3842.4375
+          },
+          {
+            "text": "",
+            "y": 4542.15625
+          },
+          {
+            "text": "",
+            "y": 5038.65625
+          },
+          {
+            "text": "",
+            "y": 5428.28125
+          },
+          {
+            "text": "",
+            "y": 6159.8125
+          },
+          {
+            "text": "",
+            "y": 6353.375
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 1920.25
+          },
+          {
+            "text": "市场背景",
+            "y": 3149.453125
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 3243
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 3568.78125
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 5164.984375
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 5671.265625
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 6452.859375
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 6640.859375
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:49959/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/risk_state.json?t=1794075322468",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:49959/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:49959/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-390-dark-zh.png",
+      "screenshot_sha256": "dd320b60d0f50736de500e61966673f2cb2f3fc7f3b8283241326797ef01c698",
+      "native_sources": {
+        "entry_surface": "today",
+        "same_card_id": "po-today-0",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-390-dark-zh.png",
+        "screenshot_sha256": "0f709d7eb97b748a5f3fcb622bbf961300de4ca494dd6c4ec16aa326018a92c4"
+      }
+    }
+  ],
+  "completed_at": 1794075324.5322812
+}

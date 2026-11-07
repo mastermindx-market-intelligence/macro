@@ -1,0 +1,26 @@
+{
+  "source_head": "e5fc097114082307a1ee707ef94edcc767cde16b",
+  "restored_owned_incidental_paths": 15065,
+  "archive_sha256": "50384c43a8a36c108aa9d0b52dca2aee202c6f054bfee8f05290dccd41618eb9",
+  "archive_bytes": 291864647,
+  "adopted_pair": [
+    {
+      "path": "site/premiumdata/us_stocks.json",
+      "bytes": 9645392,
+      "sha256": "aca4249b1147d973562a7717b5895717fd9e13670850461ef0698cab98a8018f",
+      "new_path": false
+    },
+    {
+      "path": "site/us_stocks.html",
+      "bytes": 812667,
+      "sha256": "effa218ef6a02292fc3ac179d1fe793b552941d59a2c46d49e340d9671fe00e9",
+      "new_path": false
+    }
+  ],
+  "remaining_changed_paths": [
+    "site/premiumdata/us_stocks.json",
+    "site/us_stocks.html"
+  ],
+  "scope": "Exact verified native pair only. Incidental renderer outputs archived/readback verified and restored to e5fc; no data refresh, no unrelated source or asset adoption.",
+  "completed_at": 1794075719.6445398
+}

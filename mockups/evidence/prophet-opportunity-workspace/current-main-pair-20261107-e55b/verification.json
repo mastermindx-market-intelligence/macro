@@ -1,0 +1,30 @@
+{
+  "source_head": "e5fc097114082307a1ee707ef94edcc767cde16b",
+  "started_at": 1794075290.524578,
+  "steps": [
+    {
+      "script": "verify_native_pair.py",
+      "exit": 0,
+      "seconds": 7.35
+    },
+    {
+      "script": "verify_integrated_pair.py",
+      "exit": 0,
+      "seconds": 5.83
+    },
+    {
+      "script": "capture-composed-native.py",
+      "exit": 0,
+      "seconds": 20.91
+    }
+  ],
+  "scope": "native artifacts and anonymous public Sources; not signed-in/live or Paper acceptance",
+  "native_check_count": 34,
+  "anonymous_source_journey_cells": 8,
+  "dependency_pins": {
+    "mockups/evidence/prophet-opportunity-workspace/full-page-20261103/tools/verify_native_pair.py": "dcd95e20c0b29c2f334d206ff63b5c7da2e9f2b5b1a2e669d554cce3103fd82b",
+    "mockups/evidence/prophet-opportunity-workspace/main-integration-20261105/tools/verify_integrated_pair.py": "3a947a295efe95f87305c603eb2f9061aff8e12d8258ba8f5fbef7b81b8a8f8e",
+    "scripts/capture_page_evidence.py": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+  },
+  "completed_at": 1794075324.6141708
+}
