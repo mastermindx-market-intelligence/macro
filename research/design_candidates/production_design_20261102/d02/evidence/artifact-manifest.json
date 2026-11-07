@@ -4,7 +4,7 @@
   "source_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
   "generated_at_utc": "2026-11-03T07:23:53.857913+00:00",
   "manifest_excludes_itself": true,
-  "set_sha256_method": "SHA256 of sorted relative path + NUL + member lowercase SHA256 + LF, encoded UTF-8; excludes this manifest",
+  "set_sha256_method": "SHA256 of each member's relative path + NUL + member lowercase SHA256 + LF in recorded members array order, encoded UTF-8; excludes this manifest",
   "set_sha256": "ef99f7a50c0b9008a3c1e9994dc55e4a01afeddea66c5da2347795372d311f6e",
   "members": [
     {

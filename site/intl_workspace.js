@@ -1185,6 +1185,15 @@
         var tableIds = new Set(tableRows.map(function (node) { return node.getAttribute('data-im-chart-table-market'); }));
         var show = !duplicate && cohortId === id && selected.length >= 2 &&
           selected.every(function (market) { return lineIds.has(market) && tableIds.has(market); });
+        var count = group.querySelector('[data-im-chart-visible-count]');
+        if (count) {
+          // Keep the source cohort total for no-JS fallback, but never
+          // announce unselected markets when the existing reducer paints.
+          var total = Number(count.getAttribute('data-im-chart-total'));
+          if (!Number.isSafeInteger(total) || total < 1 ||
+              total > controller.config.markets.length || selected.length > total) show = false;
+          count.textContent = show ? String(selected.length) : String(total);
+        }
         group.hidden = !show;
         lines.forEach(function (node) {
           // SVGGeometryElement.hidden may be only a JS expando; the actual
@@ -1254,7 +1263,7 @@
       '[data-im-inspector-origin],[data-im-inspector-payload],[data-im-inspector-enhancement],[data-im-inspector-page],'+
       '[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-shell],[data-im-inspector-deeper-unavailable],'+
       '[data-im-macro-market],[data-im-risk-channel],[data-im-risk-row],[data-im-risk-prompt],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option,'+
-      '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable]';
+      '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-visible-count],[data-im-chart-selection-unavailable]';
     selector += ',[data-im-history-panel],[data-im-history-slot],[data-im-history-prompt],[data-im-history-tabs],[data-im-scenario-field],[data-im-scenario-fields],[data-im-scenario-tab],[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-confirm-context],[data-im-scenario-confirm-reset],[data-im-scenario-result],[data-im-scenario-empty],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error],[data-im-scenario-action]';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
@@ -1291,6 +1300,7 @@
       if (node.matches('[data-im-compare-panel]')) attrs.push('data-im-compare-state','data-im-compare-reason');
       if (node.matches('[data-im-compare-slot],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove]')) attrs.push('hidden');
       if (node.matches('[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable]')) attrs.push('hidden');
+      if (node.matches('[data-im-chart-visible-count]')) text = true;
       if (node.matches('[data-im-compare-status],[data-im-compare-pin] option')) text = true;
       if (node.matches('[data-im-compare-pin] option')) attrs.push('disabled');
       if (node.matches('[data-im-compare-pin]')) value = true;
