@@ -722,6 +722,7 @@ FIVE_COMMAND_PAGES = (
 )
 
 
+@pytest.mark.data_gate
 def test_committed_payloads_have_zero_plain_fallbacks() -> None:
     """MA4: count BOTH fallback sentences against committed site/*.html."""
     from lib.macro_suite_labels import PLAIN_FALLBACK
@@ -1004,6 +1005,7 @@ def test_capture_relocated_needles_are_locale_visible_and_must_be_inside() -> No
         assert needle not in guard.reading_path_text(html)
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_committed_rates_page_keeps_relocated_needles_inside_details() -> None:
     """Companion site guard: the rebaked rates page keeps the same law.
@@ -1863,6 +1865,7 @@ def test_synthetic_partial_binds_from_dom() -> None:
         playwright_cm.stop()
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_user_facing_numbers_have_no_machine_floats() -> None:
     """E-m3: rendered suite HTML never ships ≥4 fractional digits or e±."""
@@ -1889,6 +1892,7 @@ def test_user_facing_numbers_have_no_machine_floats() -> None:
         assert guard.find_violations(html) == [], name
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_zh_l_zh_spans_are_translated() -> None:
     """M1: every .l-zh on the Macro Command hub (macro_monetary.html) + the 14 suite pages is not ASCII-letters-only."""
@@ -1933,6 +1937,7 @@ def test_zh_l_zh_spans_are_translated() -> None:
     assert ascii_hits == [], ascii_hits
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_locale_spans_have_no_machine_text() -> None:
     """E-m1: every visible text node on the Macro Command hub + 14 suite pages is plain."""
@@ -2005,6 +2010,7 @@ def test_computation_refused_uses_e2_vocabulary() -> None:
     assert "拒绝计算" not in NULL_REASON["COMPUTATION_REFUSED"]["zh"]
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_rendered_pages_use_ratified_null_vocabulary() -> None:
     """E-m2: no refused/refusal phrase on the Macro Command hub + 14 suite pages."""
@@ -2023,10 +2029,8 @@ def test_rendered_pages_use_ratified_null_vocabulary() -> None:
     assert hits == [], hits
 
 
-@pytest.mark.needs_full_checkout("site")
-def test_details_use_locale_pairing_not_lang_attributes() -> None:
-    """M2: Details text uses .l-en/.l-zh; suite templates have no lang= locale switch."""
-    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+def test_suite_templates_have_no_lang_locale_switch() -> None:
+    """M2, template half: suite templates have no lang= locale switch (code gate)."""
     suite_templates = list((ROOT / "templates").glob("macro_*.html.j2"))
     suite_templates.append(ROOT / "templates" / "_macro_suite_shell.html.j2")
     lang_hits = []
@@ -2037,6 +2041,13 @@ def test_details_use_locale_pairing_not_lang_attributes() -> None:
                 text):
             lang_hits.append(f"{path.name}:{match.group(0)[:80]}")
     assert lang_hits == [], lang_hits
+
+
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
+def test_details_use_locale_pairing_not_lang_attributes() -> None:
+    """M2, committed-page half: Details text pairs .l-en/.l-zh on every nightly page."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
     pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
     present = [name for name in pages if (ROOT / "site" / name).is_file()]
     assert len(present) >= 14, present
@@ -2083,7 +2094,10 @@ COMPOSITION_DISCLOSURE_ROWS = (
 )
 
 
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
 def test_axis_move_clauses_cover_every_axis_and_direction() -> None:
+    """Verdict moves with the nightly macrodata (payload axis census), so data gate."""
     from lib.macro_suite_disclosure import (
         AXIS_MOVE_CLAUSES, axis_move_clause, payload_axis_ids, required_axis_ids,
     )
@@ -2399,6 +2413,7 @@ COMPOSITE_COUNT_BY_PAGE = {
 }
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_composites_disclose_composition_law_in_plain_words() -> None:
     """M1: every composite on the 15 pages paints the N disclosure rows, EN+ZH."""
@@ -2627,8 +2642,18 @@ def test_owner_display_pair_falls_back_without_raising(capsys) -> None:
     assert "engine.brand_new_desk" in warning
 
 
+def test_shell_template_paints_trace_row_only_with_trace_ref() -> None:
+    """Template half (code gate): the shell paints mq-trace only under trace_ref."""
+    src = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(
+        encoding="utf-8")
+    assert "{%- if item.trace_ref %}" in src
+    assert "mq-trace" in src
+
+
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_trace_row_present_iff_trace_ref() -> None:
+    """Committed-page half: the nightly page paints one trace row per trace_ref."""
     import json
     path = DATA_ROOT / "workspaces" / "financial_conditions" / "US" / "latest.json"
     snap = json.loads(path.read_text(encoding="utf-8"))
@@ -2639,10 +2664,6 @@ def test_trace_row_present_iff_trace_ref() -> None:
     traces = re.findall(r'<p class="mq-trace">', html)
     expected = sum(1 for item in items if item.get("trace_ref"))
     assert len(traces) == expected
-    src = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(
-        encoding="utf-8")
-    assert "{%- if item.trace_ref %}" in src
-    assert "mq-trace" in src
 
 
 _RESTORED_ROW_PAIRS = (
@@ -2680,6 +2701,7 @@ def test_restored_row_families_on_non_composite_page() -> None:
     _assert_one_lineage_kind(baked, "value_correction")
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_committed_monetary_policy_page_keeps_restored_rows() -> None:
     """Companion site guard for the committed monetary page.
