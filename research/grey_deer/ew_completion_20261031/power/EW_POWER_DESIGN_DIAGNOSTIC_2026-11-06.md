@@ -1,0 +1,30 @@
+# EW clustered-loss size/power diagnostic — design fixed before simulation
+
+Parent: Grey Deer / MAS-258, Macro #10798 under #10795. This is an implementation diagnostic of the existing paired inference owner, not a replacement preregistration, market experiment family, issuer, model fit or capital policy. The frozen prereg blob remains `f6d411e379c3d5d799d7514f96c05a2214453e6e`.
+
+## Question and evidentiary limit
+
+At the registered minimum graded-row/event/cluster counts, how frequently does the existing paired-bootstrap comparison identify a five-percent expected Brier-skill difference in an explicitly declared block-dependent synthetic loss process? What false-positive rate and calibration acceptance occur under an equal-quality null?
+
+The data-generating process (DGP) below is a numerical stress design. It does not reproduce the economics of a market crash, SMH/SPY ratio drawdown, actual dealer positioning or realized cross-asset returns. A result is conditional on this design; it cannot establish empirical predictive power, source availability, natural-time maturity, future returns or live policy utility. It must not be substituted for the complete registered `EW_POWER_v1.json` until the scientific owner has qualified its DGP adequacy. Output is separately named `EW_POWER_DESIGN_DIAGNOSTIC_v1.json`, and `registered_power_artifact=false` throughout. This avoids silently making missing DGP choices part of frozen law.
+
+## Fixed design (before any result)
+
+- Primary horizon and noise dependence block: 21 observations. The existing bootstrap uses 2,000 draws and seed `20261031 + 21`; no sampling or interpolation formula changes.
+- 200 graded binary observations, 20 event-positive and therefore **180** non-events, in five separated four-row clusters. Cluster starts are `12 + 40*k + jitter`, k=0..4, with integer jitter uniformly in [-5,5]. Each within-cluster gap is1; the smallest inter-cluster positive gap is27, exceeding21. Exactly five clusters result under the incumbent overlap definition.
+- The registered floors cannot all be equalities: 20 events plus50 non-events do not fill200 graded rows. This diagnostic retains N=200 and event count20, satisfying the non-event minimum with180; it does not lower or rewrite any floor. Conceptual issuance coverage is252 observations/300days with52 immature rows not used in scoring. These are synthetic design labels, not real issue receipts.
+- The C-RS-specific twelve adverse outcomes are a disclosed synthetic subset of its20 event labels. They are descriptive metadata and are not fabricated SPY/SMH price trajectories or an empirical sign-case table.
+- Population event prevalence `p0=20/200=0.1` is fixed by design, not estimated from outcomes after simulation.
+- Arm forecasts are `p0 + amplitude * Z`, where Z is an independent, mean-zero Rademacher sign, constant within successive21-row blocks with a uniformly randomized block origin. Each arm has its own independent seeded stream. Neither arm reads the outcomes to generate its probabilities. This creates known forecast-error dependence without a fitted model or clairvoyant probability.
+- Alternative candidate amplitude `a=0.03` is an explicit design default. Each required comparator amplitude is `b=sqrt((p0*(1-p0)+a*a)/0.95 - p0*(1-p0))`. Thus expected Brier loss conditional on the20/200 event frequency is `p0*(1-p0)+amplitude^2`, and the alternative's expected Brier skill against **each** comparator is exactly0.05. Both comparator noise processes are retained; one easy comparator cannot substitute for another.
+- Null: candidate and both comparators all use b, with independent streams, so their expected loss is equal but realized paired loss differences are not identically zero. Alternative: candidate uses a, comparators remain b. Paired null/alternative replications reuse their own declared label/sign streams, changing only the candidate amplitude.
+- Families: C-MKT required comparator names M0/B1; C-RS B1_RS/B2_RS. Their different names do not make the synthetic processes empirical models. Seeds are SHA256-derived from literal design ID, family, replication index and stream name. No source prices/labels/ledgers are read.
+- Run **400 replications per family per condition** (null and alternative), with no early stopping, threshold search, selective seed replacement or post-result amendment. A small explicitly unqualified replication count is allowed only for code-conformance tests and never qualifies a power artifact.
+
+## Scoring and reporting
+
+Use `engine.risk_radar_scorecard.ew_paired_brier_statistics` unchanged for every replicate; both paired comparator deltas and calibration residuals use its original shared bootstrap stream. Use the strict level0.05/6 for both families, not step-down credit. Report tail-only, interpolated-bound-only, and **both-predicates** outcomes separately, including the finite-draw disagreement count. The conservative diagnostic requires both literal comparator predicates and the original90% calibration interval containing0. It is a diagnostic, not a silently amended scientific acceptance rule.
+
+Report null rejection frequency (size), alternative rejection frequency (power), Monte Carlo binomial uncertainty (Wilson95%), expected versus simulated Brier loss/skill, and the distribution of comparator/calibration failures. The registered0.80 power threshold is displayed for context, not used to activate a model. All scientific/policy/rank/gate/size/trade/validation authority remains false; the registered reader stays disabled. A low power result motivates source/sample-design work, not lowering an event floor or searching for a friendlier DGP.
+
+Retain source hashes and per-replication compact numerical receipts in the existing research artifact path. No second tracker, queue, ledger, lifecycle or runtime writer is introduced. The runner may create only the explicitly named diagnostic artifact and refuses overwriting an existing result. Full result execution occurs only after this design has a source-linked pre-run receipt.

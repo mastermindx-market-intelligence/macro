@@ -628,9 +628,9 @@ def _quantile(values: list[float], q: float) -> float:
     return vals[lo] * (1.0 - weight) + vals[hi] * weight
 
 
-def _moving_block_mean_ci(values: list[float], block: int, seed: int,
+def _moving_block_mean_samples(values: list[float], block: int, seed: int,
                           draws: int = _PROSPECTIVE_BOOT_DRAWS) -> list[float] | None:
-    """90% circular moving-block CI for an overlapping daily sequence."""
+    """Original circular sample means; shared seed/N/block binds paired draws."""
     vals = [float(v) for v in values]
     if not vals or any(not math.isfinite(v) for v in vals):
         return None
@@ -646,10 +646,177 @@ def _moving_block_mean_ci(values: list[float], block: int, seed: int,
             sample.extend(vals[(start + j) % n] for j in range(block))
         sample = sample[:n]
         means.append(sum(sample) / n)
-    return [
-        round(_quantile(means, 0.05), 8),
-        round(_quantile(means, 0.95), 8),
-    ]
+    return means
+
+
+def _moving_block_mean_ci(values: list[float], block: int, seed: int,
+                          draws: int = _PROSPECTIVE_BOOT_DRAWS) -> list[float] | None:
+    """Original 90% CI; extracting means preserves every old numerical result."""
+    means = _moving_block_mean_samples(values, block, seed, draws)
+    if means is None:
+        return None
+    return [round(_quantile(means, 0.05), 8), round(_quantile(means, 0.95), 8)]
+
+
+_EW_FAMILIES = ("grey_deer_ew_mkt_v1", "grey_deer_ew_rs_v1")
+_EW_AUTHORITY = {"can_rank": False, "can_gate": False, "can_size": False,
+                 "can_trade": False, "can_validate": False}
+
+
+def _ew_statistics_boundary() -> dict[str, Any]:
+    return {"statistics_only": True, "scientific_acceptance": False,
+            "maturity_checked": False, "source_qualification_checked": False,
+            "authority": dict(_EW_AUTHORITY)}
+
+
+def _ew_probability(value: Any) -> bool:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False
+    try:
+        return math.isfinite(value) and 0 <= value <= 1
+    except (ValueError, OverflowError):
+        return False
+
+
+def ew_bootstrap_bound_agreement(samples: list[float], *, alpha: float) -> dict:
+    """Report both frozen finite-draw predicates without equating them.
+
+    Counted nonnegative tails and the incumbent interpolated quantile can
+    disagree near a discrete 2,000-draw threshold. This diagnostic preserves
+    both literal results. Its conjunction is numerical information only: it
+    neither changes the preregistration nor grants a scientific verdict, a
+    look, power, source/epoch qualification, or any financial authority.
+    """
+    if not _ew_probability(alpha) or alpha not in (.05, .05 / 6, .05 / 3):
+        raise ValueError("registered_alpha_required")
+    def unavailable(reason):
+        return {"status": "UNAVAILABLE", "reasons": [reason],
+                "both_numerical_conditions_met": False, **_ew_statistics_boundary()}
+    if not isinstance(samples, (list, tuple)) or len(samples) != 2000:
+        return unavailable("registered_draw_count_required")
+    try:
+        if any(isinstance(value, bool) or not isinstance(value, (int, float))
+               or not math.isfinite(value) or not -1 <= value <= 1 for value in samples):
+            return unavailable("finite_brier_difference_means_required")
+    except (ValueError, OverflowError):
+        return unavailable("finite_brier_difference_means_required")
+    count = sum(value >= 0 for value in samples)
+    tail = count / 2000
+    upper = _quantile(samples, 1 - alpha)
+    counted, interpolated = tail <= alpha, upper < 0
+    agreement = counted == interpolated
+    return {"status": "COMPUTED", "sample_count": 2000, "alpha": alpha,
+            "nonnegative_count": count, "tail_fraction": tail,
+            "upper_quantile": 1 - alpha, "upper_bound": upper,
+            "counted_tail_rejected": counted,
+            "interpolated_bound_negative": interpolated,
+            "predicates_agree": agreement,
+            "both_numerical_conditions_met": counted and interpolated,
+            "disagreement_reason": None if agreement else "finite_draw_tail_quantile_disagreement",
+            **_ew_statistics_boundary()}
+
+
+def ew_paired_brier_statistics(outcomes: list[int], candidate: list[float],
+                               comparators: dict[str, list[float]], *, horizon: int) -> dict:
+    """Pure registered EW inference arithmetic on caller-qualified aligned rows.
+
+    The full reader/power wave must independently qualify source receipts, epochs,
+    issue timing, missingness, first-look floors and power. This function does
+    NONE of those and grants NO verdict. It never imputes a missing comparator,
+    drops rows, reads any file, fits a model or emits an issued probability.
+    Identical seeds on equal-length vectors reuse exactly the original sample
+    indices. All means are retained for the registered adjusted-quantile reader.
+    """
+    if type(horizon) is not int or horizon not in (5, 10, 21):
+        raise ValueError("registered_horizon_required")
+    def unavailable(reason):
+        return {"status": "UNAVAILABLE", "reasons": [reason], "comparisons": {},
+                **_ew_statistics_boundary()}
+    if not isinstance(outcomes, (list, tuple)) or not 1 <= len(outcomes) <= 5000:
+        return unavailable("bounded_rows_required")
+    n = len(outcomes)
+    if not isinstance(candidate, (list, tuple)) or len(candidate) != n:
+        return unavailable("unaligned_complete_rows_required")
+    if not isinstance(comparators, dict) or not 1 <= len(comparators) <= 8:
+        return unavailable("comparators_required")
+    if any(not isinstance(key, str) or not 0 < len(key) <= 80 or key.strip() != key
+           for key in comparators):
+        return unavailable("comparator_identity_invalid")
+    if any(not isinstance(vec, (list, tuple)) or len(vec) != n for vec in comparators.values()):
+        return unavailable("unaligned_complete_rows_required")
+    if any(type(y) is not int or y not in (0, 1) for y in outcomes):
+        return unavailable("binary_outcomes_required")
+    if any(not _ew_probability(value) for vec in (candidate, *comparators.values()) for value in vec):
+        return unavailable("probability_out_of_range")
+    seed, draws = 20261031 + horizon, 2000
+    candidate_losses = [(float(p) - y) ** 2 for p, y in zip(candidate, outcomes)]
+    comparisons = {}
+    for name in sorted(comparators):
+        losses = [(float(p) - y) ** 2 for p, y in zip(comparators[name], outcomes)]
+        diffs = [a - b for a, b in zip(candidate_losses, losses)]
+        means = _moving_block_mean_samples(diffs, horizon, seed, draws)
+        comparisons[name] = {
+            "candidate_brier": sum(candidate_losses) / n,
+            "comparator_brier": sum(losses) / n,
+            "mean_delta": sum(diffs) / n,
+            "bootstrap_means": means,
+            "tail_fraction_nonnegative": sum(value >= 0 for value in means) / draws,
+            "upper_bound_base": _quantile(means, .95),
+            "upper_bound_strict_look": _quantile(means, 1 - .05 / 6),
+            "upper_bound_stepdown_look": _quantile(means, 1 - .05 / 3),
+            "finite_draw_checks": {
+                "strict_look": ew_bootstrap_bound_agreement(means, alpha=.05 / 6),
+                "stepdown_look": ew_bootstrap_bound_agreement(means, alpha=.05 / 3),
+            },
+        }
+    residuals = [float(p) - y for p, y in zip(candidate, outcomes)]
+    calibration_means = _moving_block_mean_samples(residuals, horizon, seed, draws)
+    interval = [_quantile(calibration_means, .05), _quantile(calibration_means, .95)]
+    return {
+        "status": "COMPUTED", "row_count": n, "horizon": horizon,
+        "primary_horizon": horizon == 21, "draws": draws, "block": horizon, "seed": seed,
+        "comparisons": comparisons,
+        "intersection_union_tail_fraction": max(row["tail_fraction_nonnegative"] for row in comparisons.values()),
+        "calibration": {"mean_residual": sum(residuals) / n,
+                        "bootstrap_means": calibration_means, "interval90": interval,
+                        "contains_zero": interval[0] <= 0 <= interval[1]},
+        **_ew_statistics_boundary(),
+    }
+
+
+def ew_holm_levels(tail_fractions: dict[str, float | None], *, look: int) -> dict:
+    """Registered two-family numerical levels only; never maturity or acceptance.
+
+    The full reader decides which source-qualified family is eligible for a look.
+    A missing/immature family is represented by None, still counts in m=2, and
+    cannot grant step-down credit. Three looks are an upper bound, not permission
+    to inspect outcomes early. This function does not record/advance a look.
+    """
+    if type(look) is not int or look not in (1, 2, 3):
+        raise ValueError("registered_look_required")
+    if not isinstance(tail_fractions, dict) or any(name not in _EW_FAMILIES for name in tail_fractions):
+        raise ValueError("registered_families_required")
+    if any(value is not None and not _ew_probability(value) for value in tail_fractions.values()):
+        raise ValueError("finite_tail_fraction_required")
+    alpha = .05 / 3
+    present = sorted(((name, float(tail_fractions[name])) for name in _EW_FAMILIES
+                      if tail_fractions.get(name) is not None), key=lambda pair: (pair[1], pair[0]))
+    rows, first_passed = [], False
+    for index, (name, value) in enumerate(present):
+        blocked = index == 1 and not first_passed
+        level = alpha / 2 if index == 0 else alpha
+        rejected = not blocked and value <= level
+        rows.append({"family": name, "status": "STEP_DOWN_BLOCKED" if blocked else "NUMERIC_TEST",
+                     "tail_fraction": value, "alpha": None if blocked else level,
+                     "numerical_null_rejected": rejected})
+        if index == 0:
+            first_passed = rejected
+    rows.extend({"family": name, "status": "UNAVAILABLE", "tail_fraction": None,
+                 "alpha": None, "numerical_null_rejected": False}
+                for name in _EW_FAMILIES if tail_fractions.get(name) is None)
+    return {"look": look, "look_alpha": alpha, "family_count": 2, "families": rows,
+            **_ew_statistics_boundary()}
+
 
 
 def _event_cluster_count(sample: list[tuple], horizon: int) -> int:
