@@ -814,7 +814,8 @@ _APPLICATION_FABRIC_TRANSPORTS = {
         qualified=True, application_allowed=True),
     # Hermes primary turns use the same APPLICATION owner and exact native
     # protocol. These are distinct internal service identities, not provider
-    # keys or enrollment. Ordinary application qualification remains held.
+    # keys or enrollment. Current runtime data, capability and native admission
+    # remain mandatory; source support alone authorizes no request.
     "native_go_hermes_attended_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.1:50142/v1",
         secret_ref="HERMES_ATTENDED_FABRIC_APPLICATION_TOKEN",
@@ -824,8 +825,8 @@ _APPLICATION_FABRIC_TRANSPORTS = {
         cap_id="fabric:go_hermes_attended",
         capability_id="fabric_application_go_hermes_attended",
         protocol="native_application_v1",
-        qualified=False,
-        application_allowed=False,
+        qualified=True,
+        application_allowed=True,
         metadata_read=False,
     ),
     "native_go_hermes_secretary_v1": _ApplicationFabricTransport(
@@ -837,8 +838,8 @@ _APPLICATION_FABRIC_TRANSPORTS = {
         cap_id="fabric:go_hermes_secretary",
         capability_id="fabric_application_go_hermes_secretary",
         protocol="native_application_v1",
-        qualified=False,
-        application_allowed=False,
+        qualified=True,
+        application_allowed=True,
         metadata_read=False,
     ),
     "native_go_hermes_meta_v1": _ApplicationFabricTransport(
@@ -850,20 +851,22 @@ _APPLICATION_FABRIC_TRANSPORTS = {
         cap_id="fabric:go_hermes_meta",
         capability_id="fabric_application_go_hermes_meta",
         protocol="native_application_v1",
-        qualified=False,
-        application_allowed=False,
+        qualified=True,
+        application_allowed=True,
         metadata_read=False,
     ),
     "native_fabric_hermes_secretary_auto_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.2:50142/v1", secret_ref="HERMES_SECRETARY_FABRIC_APPLICATION_TOKEN",
         provider_id=None, model=None, cost_basis="unknown",
         cap_id="fabric:go_hermes_secretary", capability_id="fabric_application_go_hermes_secretary",
-        protocol="native_application_v1", automatic=True),
+        protocol="native_application_v1", automatic=True,
+        qualified=True, application_allowed=True),
     "native_fabric_hermes_meta_auto_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.3:50142/v1", secret_ref="HERMES_META_FABRIC_APPLICATION_TOKEN",
         provider_id=None, model=None, cost_basis="unknown",
         cap_id="fabric:go_hermes_meta", capability_id="fabric_application_go_hermes_meta",
-        protocol="native_application_v1", automatic=True),
+        protocol="native_application_v1", automatic=True,
+        qualified=True, application_allowed=True),
 }
 _APPLICATION_MODE_IDS = frozenset({"shared_fabric"})
 @dataclass(frozen=True)

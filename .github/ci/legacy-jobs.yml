@@ -6355,6 +6355,8 @@ jobs:
       - "engine/marketing/state.py"
       - "engine/session_anchor.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
+      - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_score.py"
       - "engine/stock_view.py"
@@ -16772,6 +16774,7 @@ jobs:
       - "engine/marketing/market_clock.py"
       - "engine/marketing/movers_source.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
       - "engine/stocks_hub.py"
       - "engine/liquidity_currency.py"
       - "engine/liquidity_source_availability.py"
@@ -19858,6 +19861,7 @@ jobs:
       - engine/signal_stack.py
       - engine/smart_money.py
       - engine/sp500_heatmap.py
+      - "engine/sector_breadth_close.py"
       - engine/special_arb.py
       - engine/special_situations.py
       - engine/special_situations_premium.py
@@ -24941,6 +24945,7 @@ jobs:
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
+      - "engine/sector_breadth_close.py"
       - "engine/smart_money.py"
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
@@ -29442,6 +29447,7 @@ jobs:
       - "engine/signal_archive.py"
       - "engine/signal_frontier_docket.py"
       - "engine/signal_gate.py"
+      - "engine/sector_breadth_close.py"
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
@@ -37783,6 +37789,7 @@ jobs:
       - "engine/signal_stack.py"
       - "engine/smart_money.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
@@ -39214,6 +39221,7 @@ jobs:
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
       - "engine/smart_money.py"
+      - "engine/sector_breadth_close.py"
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
@@ -42272,15 +42280,50 @@ jobs:
             native_target="$fabric_fixture_root/$native_relative"
             mkdir -p "$(dirname "$native_target")"
             curl --fail --silent --show-error --proto '=https' --tlsv1.2 --max-time 45 \
-              "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/f4bd27d91468176ec2fbb0eb83946824f7c35185/$native_relative" \
+              "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/8af48bc164b89f380b9fcca0fd2726cf2e21ab61/$native_relative" \
               -o "$native_target"
           done
           MM_FABRIC_GATEWAY_SOURCE_ROOT="$fabric_fixture_root" python -m pytest \
-            tests/test_fabric_native_application_client.py tests/test_fabric_native_application_composition.py tests/test_fabric_brain_buffered_delivery.py tests/test_fabric_caller_native_composition.py tests/test_fabric_small_consumers.py tests/test_fabric_commodity_influence.py tests/test_fabric_response_eval.py tests/test_fabric_marketing_review.py tests/test_fabric_marketing_copywriter.py tests/test_fabric_application_deadlines.py tests/test_fabric_marketing_breaking.py tests/test_fabric_marketing_fomc.py tests/test_fabric_marketing_hot_reply.py tests/test_fabric_admin_pool_view.py tests/test_fabric_admin_pool_server.py tests/test_fabric_marketing_cold_read.py tests/test_fabric_press_writer.py tests/test_fabric_uk_policy_brain.py tests/test_fabric_intelligence_desk.py tests/test_publish_time_fabric_composition.py tests/test_native_go_application_recipe.py tests/test_specialty_current_fabric_composition.py tests/test_earnings_current_fabric_composition.py tests/test_cortex_fabric_composition.py tests/test_fabric_diagnostic_scripts.py tests/test_fabric_whitehouse_brain.py tests/test_fabric_research_runners.py tests/test_metabolism_fabric_composition.py \
+            tests/test_fabric_native_application_client.py tests/test_fabric_native_application_composition.py tests/test_fabric_brain_buffered_delivery.py tests/test_fabric_caller_native_composition.py tests/test_fabric_small_consumers.py tests/test_fabric_commodity_influence.py tests/test_fabric_response_eval.py tests/test_fabric_marketing_review.py tests/test_fabric_marketing_copywriter.py tests/test_fabric_application_deadlines.py tests/test_fabric_marketing_breaking.py tests/test_fabric_marketing_fomc.py tests/test_fabric_marketing_hot_reply.py tests/test_fabric_admin_pool_view.py tests/test_fabric_admin_pool_server.py tests/test_fabric_marketing_cold_read.py tests/test_fabric_press_writer.py tests/test_fabric_uk_policy_brain.py tests/test_fabric_intelligence_desk.py tests/test_publish_time_fabric_composition.py tests/test_native_go_application_recipe.py tests/test_specialty_current_fabric_composition.py tests/test_earnings_current_fabric_composition.py tests/test_cortex_fabric_composition.py tests/test_fabric_diagnostic_scripts.py tests/test_fabric_whitehouse_brain.py tests/test_fabric_research_runners.py \
             tests/test_fabric_inference_client.py tests/test_fabric_consumer_composition.py \
             tests/test_fabric_gateway_composition.py tests/test_orchestrator_fabric_composition.py tests/test_fabric_application_binding.py \
             tests/test_fabric_shared_default.py tests/test_master_brain_fabric_composition.py \
             tests/test_news_narrators_fabric_composition.py tests/test_ask_fabric_composition.py tests/test_fabric_cached_brain_callbacks.py tests/test_fabric_application_inspection.py tests/test_fabric_translation_composition.py -q
+      - name: Metabolism current native composition
+        run: |
+          set -euo pipefail
+          metabolism_fixture_root="$(mktemp -d)"
+          trap 'rm -rf "$metabolism_fixture_root"' EXIT
+          # Current 19-file owner fixture is distinct from the historical 12-file fixture.
+          # Every immutable input is Git-blob checked by native_fixture before import.
+          for metabolism_relative in \
+            ops/native_fabric/quota_continuity/candidate/commission_deadline.py \
+            ops/native_fabric/quota_continuity/candidate/go_shim.py \
+            ops/native_fabric/quota_continuity/candidate/lease_broker.py \
+            ops/native_fabric/quota_continuity/candidate/go_lease_gateway.py \
+            ops/native_fabric/quota_continuity/candidate/go_lease_capability.py \
+            ops/native_fabric/quota_continuity/candidate/application_http_transports.py \
+            ops/native_fabric/quota_continuity/candidate/provider_outcome.py \
+            ops/native_fabric/quota_continuity/candidate/quota_circuit.py \
+            ops/native_fabric/quota_continuity/candidate/pick.py \
+            ops/native_fabric/quota_continuity/candidate/pool_ledger.py \
+            ops/native_fabric/quota_continuity/source/model_tier.py \
+            ops/native_fabric/quota_continuity/source/pool_status.py \
+            ops/native_fabric/quota_continuity/tests/_offline_boundary.py \
+            ops/native_fabric/quota_continuity/tests/test_go_application_handler_composition.py \
+            ops/native_fabric/quota_continuity/tests/test_application_turn_admission.py \
+            ops/native_fabric/quota_continuity/tests/test_application_registered_pool_selection.py \
+            ops/native_fabric/quota_continuity/tests/test_application_registered_pool_composition.py \
+            ops/native_fabric/quota_continuity/tests/test_application_auto_request.py \
+            ops/native_fabric/quota_continuity/tests/test_application_cross_pool_auto.py; do
+            metabolism_target="$metabolism_fixture_root/$metabolism_relative"
+            mkdir -p "$(dirname "$metabolism_target")"
+            curl --fail --silent --show-error --proto '=https' --tlsv1.2 --max-time 45 \
+              "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/41e86c7aa89905f9b4592d57fbf32c2d7c0f1458/$metabolism_relative" \
+              -o "$metabolism_target"
+          done
+          MM_FABRIC_GATEWAY_SOURCE_ROOT="$metabolism_fixture_root" python -B -m pytest \
+            -q --noconftest -o addopts= tests/test_metabolism_fabric_composition.py
       - name: Five service identities through actual paired Mastermind owners
         run: |
           set -euo pipefail
@@ -55312,6 +55355,7 @@ jobs:
       - "engine/signal_foundry/transforms.py"
       - "engine/signal_frontier_docket.py"
       - "engine/signal_gate.py"
+      - "engine/sector_breadth_close.py"
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
