@@ -20279,7 +20279,8 @@ jobs:
         run: python -m pytest tests/test_finnhub_transcripts.py -q
       - name: stocktwits sentiment collector tests
         run: python -m pytest tests/test_stocktwits.py -q
-
+      - name: Futures capability evidence and default-off rights guard (synthetic)
+        run: python -m pytest tests/test_massive_entitlement_probe.py -q -k futures
   china-sector-desk-gate:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
     gate: code
