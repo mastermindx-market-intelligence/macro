@@ -475,3 +475,13 @@ def test_no_change_cli_explicitly_reports_zero_publication_requests(archive, mon
     result = json.loads(capsys.readouterr().out)
     assert result['publication']['requested'] == 0
     assert result['publication']['keys'] == result['publication']['indices'] == {}
+
+
+@pytest.fixture(autouse=True)
+def native_publication_test_custody(tmp_path, monkeypatch):
+    from lib import options_publication_custody as custody
+    state = tmp_path / "native-state"
+    state.mkdir()
+    monkeypatch.setattr(custody, "_native_state_root", lambda: state)
+    with custody.publication_custody():
+        yield

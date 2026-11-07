@@ -18,6 +18,8 @@ suite pins:
 """
 from __future__ import annotations
 
+import pytest
+
 import json
 
 from scripts.build_options_hub_nightly import (
@@ -228,3 +230,13 @@ def test_write_json_publishes_a_payload_containing_a_nan(tmp_path):
     assert written["rows"][0]["d_oi_pct"] is None
     assert written["asof"] == "2026-08-06"
     assert "NaN" not in path.read_text()   # never the invalid JSON literal
+
+
+@pytest.fixture(autouse=True)
+def native_publication_test_custody(tmp_path, monkeypatch):
+    from lib import options_publication_custody as custody
+    state = tmp_path / "native-state"
+    state.mkdir()
+    monkeypatch.setattr(custody, "_native_state_root", lambda: state)
+    with custody.publication_custody():
+        yield

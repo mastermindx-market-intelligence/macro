@@ -39,6 +39,9 @@ import numpy as np
 _REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO))
 
+from lib.options_publication_custody import assert_admission_open  # noqa: E402
+
+
 from engine.thetadata_store import _load_parquets, _normalise_date, store_root, clear_parquet_cache
 from engine.options_hub import (
     compute_vol,
@@ -253,7 +256,20 @@ def _r2_client(*, single_attempt: bool = False):
 
 
 def _upload_r2(s3, bucket: str, local_path: Path, r2_key: str) -> bool:
+    if not r2_key.startswith("options_hub/gex_history/"):
+        return _upload_r2_locked(s3, bucket, local_path, r2_key)
+    from lib.options_publication_custody import publication_custody, assert_target_available
+    with publication_custody():
+        assert_target_available(bucket, r2_key)
+        return _upload_r2_locked(s3, bucket, local_path, r2_key)
+
+
+def _upload_r2_locked(s3, bucket: str, local_path: Path, r2_key: str) -> bool:
     """Upload a local file to R2. Returns True on success."""
+    from lib.options_publication_custody import require_custody, assert_target_available
+    if r2_key.startswith("options_hub/gex_history/"):
+        require_custody()
+        assert_target_available(bucket, r2_key)
     try:
         s3.upload_file(
             str(local_path),
@@ -297,7 +313,49 @@ def _nulled_nonfinite(obj, counter: list[int]):
     return obj
 
 
+def _native_output_destination(path: Path) -> bool:
+    """Bind custody to output, even when another checkout or alias writes it."""
+    native = Path.home() / "optionshub-ops-wt"
+    resolved = path.resolve()
+    # Include resolved incumbent output directories: a native output directory
+    # may itself be a symlink, and another checkout may address its target.
+    roots = (native, native / "data", native / "data/live_flow_out/options_hub",
+             native / "data/options_hub")
+    return path.absolute().is_relative_to(native.absolute()) or any(
+        resolved.is_relative_to(root.resolve()) for root in roots
+    )
+
+
+def _output_dir(args) -> Path:
+    if args.out:
+        return Path(args.out)
+    from lib import config as lib_config
+    return lib_config.data_dir() / "live_flow_out" / "options_hub"
+
+
+def _needs_publication_custody(args) -> bool:
+    return (args.publish or _REPO == (Path.home() / "optionshub-ops-wt").resolve()
+            or _native_output_destination(_output_dir(args)))
+
+
 def _write_json(path: Path, data: dict) -> None:
+    from lib.options_publication_custody import (
+        publication_custody, has_publication_custody, assert_local_target_available,
+    )
+    # Keep private offline builds portable; native canonical execution and any
+    # admitted publication interval must protect dated local evidence too.
+    native = _REPO == (Path.home() / "optionshub-ops-wt").resolve()
+    resolved = path.resolve()
+    dated = resolved.suffix == ".json" and resolved.parent.parent.name == "gex_history"
+    if _native_output_destination(path) or (dated and (native or has_publication_custody())):
+        with publication_custody():
+            if dated:
+                assert_local_target_available(f"options_hub/gex_history/{resolved.parent.name}/{resolved.name}")
+            return _write_json_unchecked(resolved, data)
+    return _write_json_unchecked(path, data)
+
+
+def _write_json_unchecked(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     counter = [0]
     clean = _nulled_nonfinite(data, counter)
@@ -883,12 +941,20 @@ def is_gex_dates(x: object) -> bool:
 
 
 def _list_gex_history_dates(s3, bucket: str, root: str) -> list[str] | None:
+    from lib.options_publication_custody import publication_custody
+    with publication_custody():
+        return _list_gex_history_dates_locked(s3, bucket, root)
+
+
+def _list_gex_history_dates_locked(s3, bucket: str, root: str) -> list[str] | None:
     """Session dates with a published snapshot under gex_history/{root}/ on R2.
 
     Ground truth by LIST (paginated), not a ledger — dates.json is then a pure
     projection of what exists. Returns None on any listing error so the caller
     skips the index write rather than publishing a lie.
     """
+    from lib.options_publication_custody import require_custody
+    require_custody()
     prefix = f"{R2_PREFIX}gex_history/{root}/"
     dates: set[str] = set()
     token = None
@@ -998,7 +1064,13 @@ def _heal_gex_history(root: str, missed: list[str], theta_store,
     return healed
 
 
-def publish_gex_history_index(root: str, asof: str, theta_store,
+def publish_gex_history_index(*args, **kwargs):
+    from lib.options_publication_custody import publication_custody
+    with publication_custody():
+        return _publish_gex_history_index_locked(*args, **kwargs)
+
+
+def _publish_gex_history_index_locked(root: str, asof: str, theta_store,
                               polygon_gex_dir: Path | None, out_dir: Path,
                               s3, bucket: str, heal_budget: int,
                               *, outcome: dict | None = None) -> int:
@@ -1019,6 +1091,8 @@ def publish_gex_history_index(root: str, asof: str, theta_store,
     index_attempted=False; an upload exception leaves it True with an unknown
     acknowledgement. The caller may retain this partial report on exceptions.
     """
+    from lib.options_publication_custody import require_custody
+    require_custody()
     # Record each phase BEFORE it can fail. The optional report survives an
     # exception without asserting that an upload was reached when it was not.
     if outcome is not None:
@@ -1214,6 +1288,7 @@ def load_exposure_contexts(path: str | None) -> dict[str, dict]:
 
 
 def main() -> None:
+    assert_admission_open()
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
@@ -1234,6 +1309,16 @@ def main() -> None:
     ap.add_argument("--exposure-context", default=None, metavar="JSON",
                     help="Explicit admitted owner receipts, bound to exact source inputs (no default)")
     args = ap.parse_args()
+    from contextlib import nullcontext
+    from lib.options_publication_custody import publication_custody
+    with publication_custody() if _needs_publication_custody(args) else nullcontext():
+        _run(args)
+
+
+def _run(args) -> None:
+    if _needs_publication_custody(args):
+        from lib.options_publication_custody import require_custody
+        require_custody()
     exposure_contexts = load_exposure_contexts(args.exposure_context)
 
     # A relative, missing, or non-directory input root stops here, before the
@@ -1255,7 +1340,7 @@ def main() -> None:
     # Output stays on data_root or the explicit --out. The input root cannot move it.
     _repo_root = Path(__file__).resolve().parent.parent
     _reads = resolve_options_hub_read_inputs(data_root, _repo_root)
-    out_dir = Path(args.out) if args.out else (data_root / "live_flow_out" / "options_hub")
+    out_dir = _output_dir(args).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # CONTRACT v2 data paths (resolved once; graceful-absent throughout)

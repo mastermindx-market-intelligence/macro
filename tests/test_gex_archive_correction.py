@@ -281,3 +281,13 @@ def test_retained_client_cannot_resend_after_unknown(artifact):
         client.put_object(**client.calls[0])
     assert len(client.calls) == 1
     assert result['transport_send_admissions'] == 1
+
+
+@pytest.fixture(autouse=True)
+def native_publication_test_custody(tmp_path, monkeypatch):
+    from lib import options_publication_custody as custody
+    state = tmp_path / "native-state"
+    state.mkdir()
+    monkeypatch.setattr(custody, "_native_state_root", lambda: state)
+    with custody.publication_custody():
+        yield
