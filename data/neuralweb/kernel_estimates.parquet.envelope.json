@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "produced_by": "engine/neuralweb/kernel.py",
-  "produced_at": "2026-11-06T13:00:56Z",
-  "inputs_hash": "sha256:b1dd6966aaecf0bc256dee4954cac2f3a0321d96c853ee681a4feecd4adb7b62",
+  "produced_at": "2026-11-07T13:47:02Z",
+  "inputs_hash": "sha256:073712e85810c735aa2d37f8a67e7eb7d2e54d99d6f951678ce1f8171951a571",
   "tier": "infrastructure",
   "artifact_path": "data/neuralweb/kernel_estimates.parquet",
-  "byte_sha256": "sha256:b1dd6966aaecf0bc256dee4954cac2f3a0321d96c853ee681a4feecd4adb7b62"
+  "byte_sha256": "sha256:073712e85810c735aa2d37f8a67e7eb7d2e54d99d6f951678ce1f8171951a571"
 }

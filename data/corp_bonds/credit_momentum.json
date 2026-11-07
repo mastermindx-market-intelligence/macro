@@ -1,6 +1,6 @@
 {
   "organ": "credit_momentum.v1",
-  "as_of": "2026-11-06",
+  "as_of": "2026-11-07",
   "data_session": "2026-11-05",
   "authority": {
     "rank": false,
@@ -1960,9 +1960,9 @@
     },
     "orcl": {
       "issuer": "ORCL",
-      "g_spread_bp_pw": 247.03,
-      "ig_peer_median_bp": 83.98,
-      "premium_vs_ig_peers_bp": 163.04,
+      "g_spread_bp_pw": 285.13,
+      "ig_peer_median_bp": 108.07,
+      "premium_vs_ig_peers_bp": 177.06,
       "peer_group": "IG-segment bonds at matched maturity bucket (no per-bond ratings available; BBB-median deferred)",
       "note": "live \u2014 labeled vs IG peers at matched maturity"
     }
@@ -2025,6 +2025,6 @@
       "note": null
     }
   ],
-  "_timing_s": 18.65,
+  "_timing_s": 33.91,
   "_n_ledger_new": 0
 }
