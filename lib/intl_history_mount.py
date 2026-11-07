@@ -3,7 +3,7 @@ from copy import deepcopy
 
 from lib.intl_macro_mount import _bound, _contexts, _registry, _validate_config
 from lib.intl_workspace_binding import binding_version
-from lib.intl_workspace_history import build_history_section
+from lib.intl_workspace_history import build_history_section, snapshot_selection
 
 
 def _unknown_source():
@@ -47,12 +47,15 @@ def attach_history(workspace, *, registry, sources):
             if source['history_read']['market_id'] not in {None,market}:
                 raise ValueError
             selected={**context,'selected_market':market}
+            capabilities=source['capabilities']
             section=build_history_section(context=selected,**source)
             if version==1:
                 capabilities=deepcopy(source['capabilities'])
                 for key in ('history_source','events','track_record'):
                     capabilities[key]=dict(metadata='unknown',value='unknown')
                 section=build_history_section(context=selected,**{**source,'capabilities':capabilities})
+            section['snapshot_compare']['selection']=snapshot_selection(
+                section, selected, capabilities['history_source'])
             sections.append(section)
         result=deepcopy(workspace)
         result['histories']=[dict(context_id='im-history',context=context,sections=sections,

@@ -22,6 +22,7 @@ import pandas as pd
 
 from engine import intl_inputs
 from engine.intl_performance_records import build_return_records
+from lib.intl_macro_publication import _observe_native_path
 
 _POLICY = "intl-observed-endpoints-completed-session-v1"
 _BASIS = "yfinance:auto_adjust=true:observed-close"
@@ -87,6 +88,7 @@ def _stored_witness(root: Path, series_id: str, expected: pd.DataFrame,
     """
     path = _path(root, series_id)
     try:
+        _observe_native_path(path)
         if not path.is_file() or path.is_symlink():
             return None
         data = path.read_bytes()
@@ -149,6 +151,7 @@ def build_eod_inputs(
         return None
     root = Path(data_root)
     try:
+        _observe_native_path(root / "run_status.json")
         status = json.loads((root / "run_status.json").read_text(encoding="utf-8"))
         source = status["sources"]["intl_prices"]
         collected = _when(source["checked_at"])

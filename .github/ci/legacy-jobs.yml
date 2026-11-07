@@ -295,6 +295,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2464,6 +2466,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3539,6 +3543,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -8133,6 +8139,11 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "tests/test_options_scenario_http_admission.py"
+      - "app/options_scenario_http_admission.py"
+      - "tests/test_native_capture_participant.py"
+      - "tests/test_investigation_native_capture.py"
+      - "app/investigation_native_capture.py"
       - "engine/neuralweb/options_selection_context.py"
       - "tests/test_options_selection_context.py"
       - "tests/fixtures/options_selection_question/terminal-mint-v1.json"
@@ -9244,7 +9255,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_selection_context.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_selection_context.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py tests/test_options_scenario_http_admission.py tests/test_investigation_native_capture.py tests/test_native_capture_participant.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -10644,6 +10655,31 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # S28 same-call selected publication and readback continuation.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "templates/intl_workspace/_investigation_action.html.j2"
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
       - "tests/intl_gs_dislocations_fixture.py"
@@ -10996,6 +11032,31 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # S28 same-call selected publication and readback continuation.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "tests/test_intl_history_current_policy.py"
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11327,7 +11388,7 @@ jobs:
       - name: install numerical test dependencies
         run: pip install pytest pandas numpy pyyaml pyarrow jinja2
       - name: International return identity, windows and observation provenance
-        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py tests/test_intl_global_dislocation.py -q
+        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_history_current_policy.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py tests/test_intl_global_dislocation.py -q
 
   international-global-watch:
     # IM18: GS-local watch-condition lifecycle contract — the pure evaluator
@@ -11367,6 +11428,35 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # S28 same-call selected publication and readback continuation.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "tests/intl_workspace_history_selection.test.cjs"
+      - "templates/intl_workspace/_investigation_action.html.j2"
+      - "tests/test_intl_investigation_page_adapter.py"
+      - "tests/intl_investigation_page_fixture.py"
+      - "tests/fixtures/intl_investigation_page/**"
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11799,9 +11889,9 @@ jobs:
           )
           PY
       - name: Actual International builder and template contracts
-        run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py tests/test_intl_gs_foundation.py -q
+        run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py tests/test_intl_gs_foundation.py tests/test_intl_investigation_page_adapter.py -q
       - name: Actual DOM controller and page entry in Chromium
-        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs tests/intl_gs_foundation_browser.test.cjs
+        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs tests/intl_workspace_history_selection.test.cjs tests/intl_gs_foundation_browser.test.cjs
       - name: Generic table sort/filter in Chromium (templates/tablesort.js)
         run: node --test tests/js/tablesort_browser.test.cjs
       # W2A (IM13) test steps: insert below this line
@@ -12373,6 +12463,10 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # S28: exact current publication continuation read closure.
+      - "lib/intl_durable_publication.py"
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -14897,6 +14991,29 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/rotation_observation_notification.py"
@@ -15919,7 +16036,7 @@ jobs:
       # it executes NOWHERE while reading green, which is the class
       # check_skip_only_suites.py (ci-control-plane-contracts) exists to catch.
       - name: install minimal deps
-        run: pip install pytest pyyaml pandas numpy pyarrow jinja2 requests
+        run: pip install pytest pyyaml pandas numpy pyarrow jinja2 requests boto3==1.40.0 botocore==1.40.0
       - name: check_workflow_yaml selftest
         run: python scripts/check_workflow_yaml.py --selftest
       - name: "all workflow files must parse with on:/jobs: blocks"
@@ -15930,8 +16047,8 @@ jobs:
       # step named it, so the guard for that fix was itself dark from the hour
       # it landed. Same class the unrun-* lanes close; caught by
       # scripts/audit_unrun_tests.py on the very next census.
-      - name: render-lane scope contract (intl must stay in the publish scopes)
-        run: python -m pytest tests/test_render_intl_scope.py -q
+      - name: render-lane intl scope and durable publication contracts
+        run: python -m pytest tests/test_render_intl_scope.py tests/test_intl_durable_publication.py tests/test_render_intl_durable.py tests/test_intl_public_delivery.py tests/test_intl_durable_native_inputs.py tests/test_intl_native_read_observer.py -q
       # A run: scalar over GitHub's length cap makes GitHub DE-REGISTER the workflow.
       # render.yml vanished from the registry on 2026-07-27 (#3826) and the express lane
       # was dead ~1h. yaml.safe_load, check_workflow_yaml.py and actionlint ALL pass on an
@@ -16107,6 +16224,10 @@ jobs:
     gate: code
     # The v2 loader reads this registration dynamically; keep its real-load test reachable.
     paths:
+      - "tests/test_intl_public_delivery.py"
+      - "tests/test_intl_investigation_page_adapter.py"
+      - "tests/intl_investigation_page_fixture.py"
+      - "tests/fixtures/intl_investigation_page/**"
       - "config/market_memory_spy_experience_registration.v2.json"
       - "tests/test_nyse_calendar.py"
       - "tests/test_tsx_calendar.py"
@@ -16615,6 +16736,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -19087,6 +19210,30 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -23204,6 +23351,32 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # S28 same-call selected publication and readback continuation.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "tests/test_intl_history_current_policy.py"
+      - "templates/intl_workspace/_investigation_action.html.j2"
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -23643,6 +23816,30 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -23978,6 +24175,30 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # S28: exact current publication continuation read closure.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -27631,6 +27852,11 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "engine/thetadata_store.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -30793,6 +31019,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -35396,6 +35624,29 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - collectors/rate_futures.py
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
@@ -36896,6 +37147,10 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -39688,6 +39943,27 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      # P12.T11.S29: accepted HK actual-function regression transitive read closure.
+      - "collectors/fred.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/cn_ai_semis_confirmer.py"
+      - "engine/election_cycle.py"
+      - "engine/i18n.py"
+      - "engine/inputs.py"
+      - "engine/marker_integrity.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_intl.py"
+      - "engine/yield_momentum.py"
+      - "scripts/validate_regime_fwd.py"
       - "collectors/yahoo.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -39767,6 +40043,10 @@ jobs:
       - "engine/theme_graph/__init__.py"
       - "engine/classification_axes/__init__.py"
       - "scripts/build_subsector_rotation.py"
+      # P12.T52: actual render-index/metadata consumer fixture read closure.
+      - "scripts/build_subsector_confluence.py"
+      - "templates/subsector_detail.html.j2"
+      - "engine/bar_derive.py"
       - "scripts/check_template_site_sync.py"
       - "scripts/worktree_sparse.py"
       - "site/chat.html"
@@ -39809,6 +40089,11 @@ jobs:
       - "templates/basket_detail.html.j2"
       - "tests/test_basket_intelligence_mounts.py"
       - "tests/test_subsector_confluence.py"
+      # P12.T50: actual China detail builder/Jinja clock handoff read closure.
+      - "lib/config.py"
+      - "scripts/build_subsector_rotation_pages.py"
+      - "scripts/build_subsector_rotation_china_pages.py"
+      - "templates/subsector_rotation_detail.html.j2"
       - "tests/test_subsector_rotation.py"
       - "tests/test_subsector_rotation_alerts.py"
       - "tests/test_subsector_scan.py"
@@ -40575,6 +40860,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -43905,6 +44192,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -45179,6 +45468,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -47017,6 +47308,10 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -47322,6 +47617,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -47586,6 +47885,8 @@ jobs:
     # the nightly engine shell). No data/** fallback.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "lib/intl_durable_publication.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
@@ -47754,6 +48055,8 @@ jobs:
     # read or run; an unlisted closure file is an uncovered path. No
     # tests/** catch-all.
     paths:
+      # S28: exact current publication continuation read closure.
+      - "lib/intl_durable_publication.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "engine/company_intelligence/rms_segment_profile.py"
@@ -50495,6 +50798,32 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       - "admin/press_audience.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"

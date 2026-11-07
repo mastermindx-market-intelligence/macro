@@ -210,3 +210,11 @@
   .intl-compare__table th:first-child { inline-size:30%; }
   [data-theme="light"] .intl-compare__metrics > div + div { border-inline-start:0; border-block-start:1px solid var(--line); }
 }
+
+/* Keep the metric first and its new research action secondary, not full-width. */
+.intl-macro__metric-slot > [data-im-investigate].gbtn { justify-self:start; }
+
+/* Reuse the incumbent 44px touch target at its existing phone/tablet breakpoint. */
+@media (max-width:768px) {
+  [data-im-workspace] [data-im-investigate].gbtn { min-block-size:44px; }
+}

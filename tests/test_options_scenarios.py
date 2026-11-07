@@ -165,6 +165,9 @@ class World:
     # ---- transports (recorded into the shared ordered trace) --------------
 
     def patch(self, monkeypatch):
+        # Explicit controlled startup, never live HTTP/source authority.
+        monkeypatch.setenv("OPTIONS_SCENARIO_SOURCE_ENABLED", "1")
+        monkeypatch.setenv("OPTIONS_SCENARIO_CAPTURE_ENABLED", "1")
         state = self.state
 
         def http(req, timeout):
@@ -268,6 +271,8 @@ class World:
         app = FastAPI()
         app.include_router(S.router)
         if bind:
+            from app.options_scenario_http_admission import install_http_admission
+            install_http_admission(app)
             kwargs = dict(s3=self.s3, bucket=BUCKET,
                           destination=self.destination_qualifier,
                           resource_access=self.resource_access,
@@ -1002,6 +1007,8 @@ def test_qualify_with_default_native_clock_uses_the_real_window(world):
     h.state.rpc_responses = [None, None]
     h.state.decided_at = "now"  # decided inside the observed real-clock window
     app = FastAPI()
+    from app.options_scenario_http_admission import install_http_admission
+    install_http_admission(app)
     app.include_router(S.router)
     app.state.options_scenario_source_bindings = S.SourceScenarioBindings(
         s3=h.s3, bucket=BUCKET, destination=h.destination_qualifier,

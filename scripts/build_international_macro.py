@@ -114,7 +114,9 @@ def build_all(latest: dict | None = None, *, history_receipts: dict | None = Non
         if history_receipts is None:
             history = load_history(cc)
         else:
-            receipt = load_history_result(cc)
+            materialization = records[cc].get("history_materialization")
+            receipt = (load_history_result(cc) if materialization is None else
+                       load_history_result(cc, materialization=materialization))
             history_receipts[cc] = receipt
             history = receipt["frame"] if receipt["status"] in {"ready", "empty"} else None
         view = build_country_view(records[cc], history)
@@ -162,6 +164,16 @@ def build_all(latest: dict | None = None, *, history_receipts: dict | None = Non
         )
         outputs.append(page)
         log.info("wrote %s (%s, score=%s)", page.name, cc, view["decision"]["score"])
+
+    if history_receipts is not None:
+        # Country pages own five routes; native History owns the configured
+        # market set. Reuse their five reads and collect only the remainder.
+        native_markets = (config.load().get("intl") or {}).get("countries", {})
+        for cc in native_markets:
+            if cc not in history_receipts:
+                materialization = records.get(cc, {}).get("history_materialization")
+                history_receipts[cc] = (load_history_result(cc) if materialization is None else
+                                        load_history_result(cc, materialization=materialization))
 
     for asset in ASSETS:
         src = root / "templates" / asset

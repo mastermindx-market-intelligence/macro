@@ -254,3 +254,50 @@ check(reasons[2][0].includes("roll-over risk high") && reasons[2][1].includes("�
       "independent roll-over reason changed");
 """
     _run_js(renderer + "\n" + consumer + "\n" + cases)
+
+
+# P12.T54 — execute the actual bilingual thesis expression and its source helpers.
+def _thesis_render(basket: dict) -> dict:
+    import json
+    import subprocess
+
+    src = _src()
+    helpers = "\n".join([
+        next(line for line in src.splitlines() if line.startswith("const L =")),
+        next(line for line in src.splitlines() if line.startswith("const esc =")),
+        src[src.index("const briefText ="):src.index("const cssv =")],
+    ])
+    match = re.search(r'<div class="thesis">\$\{(L\(.*\))\}</div>', src)
+    assert match, "actual hero thesis expression missing"
+    script = helpers + "\nconst b=" + json.dumps(basket) + ";\n" + (
+        "JSON.stringify({html:" + match.group(1) + ",briefEn:esc(briefText(b.thesis)),"
+        "briefZh:esc(briefText(b.thesis_zh || b.thesis))})"
+    )
+    runner = "const vm=require('node:vm');process.stdout.write(vm.runInNewContext(JSON.parse(require('fs').readFileSync(0,'utf8')),{}, {timeout:1000}));"
+    result = subprocess.run(["node", "-e", runner], input=json.dumps(script),
+                            text=True, capture_output=True, check=True, timeout=10)
+    return json.loads(result.stdout)
+
+
+def test_thesis_uses_existing_curated_zh_and_preserves_english() -> None:
+    en = "Mainland state banks plus HSBC and BOCHK."
+    zh = "内地国有银行加汇丰和中银香港。"
+    out = _thesis_render({"thesis": en, "thesis_zh": zh})
+    assert out["html"] == f'<span class="l-en">{en}</span><span class="l-zh">{zh}</span>'
+
+
+def test_thesis_missing_or_empty_zh_keeps_existing_source_fallback() -> None:
+    for basket in [{"thesis": "Retained English"}, {"thesis": "Retained English", "thesis_zh": ""}]:
+        out = _thesis_render(basket)
+        assert out["html"] == '<span class="l-en">Retained English</span><span class="l-zh">Retained English</span>'
+
+
+def test_thesis_both_languages_keep_existing_markup_escaping() -> None:
+    out = _thesis_render({"thesis": '<script>"EN"</script>', "thesis_zh": '<img onerror="ZH">'})
+    assert out["html"] == '<span class="l-en">&lt;script&gt;&quot;EN&quot;&lt;/script&gt;</span><span class="l-zh">&lt;img onerror=&quot;ZH&quot;&gt;</span>'
+
+
+def test_thesis_long_zh_uses_actual_existing_brief_rule() -> None:
+    out = _thesis_render({"thesis": "English context", "thesis_zh": "南向高股息和信贷核心板块" * 30})
+    assert out["briefZh"].endswith("...") and len(out["briefZh"]) <= 263
+    assert out["html"] == '<span class="l-en">English context</span><span class="l-zh">' + out["briefZh"] + '</span>'

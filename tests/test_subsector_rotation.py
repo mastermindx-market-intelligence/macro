@@ -1,7 +1,12 @@
 """Unit tests for engine.subsector_rotation — the rotation/velocity math."""
 from __future__ import annotations
 
+import json
+import socket
+
 from engine import subsector_rotation as sr
+from scripts import build_subsector_rotation_china_pages as china_pages
+from scripts import build_subsector_rotation_pages as us_pages
 
 
 def _tree():
@@ -166,3 +171,113 @@ def test_history_with_today_appends_a_missing_session_and_folds_synthetics():
                                   {"a1": {"1W": 2.0}, "synthetic": {"1W": 3.0}}, "2026-07-30")
     assert [r["asof"] for r in rows] == ["2026-07-29", "2026-07-30"]
     assert "synthetic" in rows[-1]["subsectors"]
+
+
+# ── P12.T50: China detail feed-clock handoff ─────────────────────────────────
+
+_ROTATION_FEED = {
+    china_pages: "subsector_rotation_china.json",
+    us_pages: "subsector_rotation.json",
+}
+
+
+def _render_china_detail(tmp_path, monkeypatch, payload, module=china_pages):
+    """Exercise the actual China/US builder and shared Jinja template without site writes."""
+    marketdata = tmp_path / "marketdata"
+    marketdata.mkdir(exist_ok=True)
+    (marketdata / _ROTATION_FEED[module]).write_text(json.dumps(payload))
+    rendered = {}
+
+    def capture_page(path, html):
+        rendered[path.name] = html
+
+    def no_network(*_args, **_kwargs):
+        raise AssertionError("China detail render must not use the network")
+
+    class NoNetworkSocket(socket.socket):
+        def connect(self, *_args, **_kwargs):
+            raise AssertionError("China detail render must not use the network")
+
+    monkeypatch.setattr(module, "write_page", capture_page)
+    monkeypatch.setattr(socket, "create_connection", no_network)
+    monkeypatch.setattr(socket, "socket", NoNetworkSocket)
+    assert module.build(tmp_path) == 1
+    return rendered["ai.html"]
+
+
+def _china_detail_payload(**clocks):
+    payload = {
+        "subsectors": [{
+            "key": "ai", "name": "AI & <chips>", "name_zh": "人工智能",
+            "theme": "Technology", "theme_zh": "科技", "n_members": 1, "rank": 1,
+            "quadrant": "leading", "rs_ratio": 1.2, "rs_mom": 0.4, "accel": 0.3,
+            "emerging_score": 2.1, "perf": {"1D": 1.0},
+            "members": [{"t": "000001", "name": "Ping An", "1M": 2.0}],
+        }],
+    }
+    payload.update(clocks)
+    return payload
+
+
+def test_china_detail_builder_hands_off_populated_feed_clocks(tmp_path, monkeypatch):
+    html = _render_china_detail(
+        tmp_path, monkeypatch,
+        _china_detail_payload(asof="2026-11-03<script>", generated_utc="2026-11-04T12:34:56Z"),
+    )
+    assert "Data as of" in html and "数据截至" in html
+    assert "Feed generated (UTC)" in html and "数据生成（UTC）" in html
+    assert "2026-11-03&lt;script&gt;" in html
+    assert "2026-11-04T12:34:56Z" in html
+    assert "Not published" not in html
+    assert '../sector_central_china.html#si-movement' in html
+    assert '../china_lookup.html#000001' in html
+    assert "median subsector" in html
+
+
+def test_china_detail_builder_marks_each_absent_clock_not_published(tmp_path, monkeypatch):
+    cases = (
+        ({"generated_utc": "2026-11-04T12:34:56Z"}, 1),
+        ({"asof": "2026-11-03"}, 1),
+        ({}, 2),
+    )
+    for clocks, unpublished_count in cases:
+        html = _render_china_detail(tmp_path, monkeypatch, _china_detail_payload(**clocks))
+        assert html.count("Not published") == unpublished_count
+        assert html.count("未发布") == unpublished_count
+        assert '../sector_central_china.html#si-movement' in html
+        assert '../china_lookup.html#000001' in html
+
+
+def test_us_detail_builder_hands_off_populated_feed_clocks(tmp_path, monkeypatch):
+    html = _render_china_detail(
+        tmp_path, monkeypatch,
+        _china_detail_payload(asof="2026-11-03<script>", generated_utc="2026-11-04T12:34:56Z"),
+        module=us_pages,
+    )
+    assert "Data as of" in html and "数据截至" in html
+    assert "Feed generated (UTC)" in html and "数据生成（UTC）" in html
+    assert "2026-11-03&lt;script&gt;" in html
+    assert "2026-11-04T12:34:56Z" in html
+    assert "Not published" not in html
+    assert '../subsector_rotation.html' in html
+    assert '../stock.html#000001' in html
+    assert "median subsector" in html
+    # source as-of date and feed-generation timestamp keep separate roles
+    assert html.index("2026-11-03&lt;script&gt;") < html.index("Feed generated (UTC)")
+    assert html.index("2026-11-04T12:34:56Z") > html.index("Feed generated (UTC)")
+
+
+def test_us_detail_builder_marks_each_absent_clock_not_published(tmp_path, monkeypatch):
+    cases = (
+        ({"generated_utc": "2026-11-04T12:34:56Z"}, 1),
+        ({"asof": "2026-11-03"}, 1),
+        ({}, 2),
+    )
+    for clocks, unpublished_count in cases:
+        html = _render_china_detail(
+            tmp_path, monkeypatch, _china_detail_payload(**clocks), module=us_pages
+        )
+        assert html.count("Not published") == unpublished_count
+        assert html.count("未发布") == unpublished_count
+        assert '../subsector_rotation.html' in html
+        assert '../stock.html#000001' in html

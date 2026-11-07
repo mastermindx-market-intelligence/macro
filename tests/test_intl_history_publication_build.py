@@ -4,6 +4,8 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
+
 from lib.intl_library_mount import render_international_pages
 from scripts import build_intl
 
@@ -134,3 +136,119 @@ def test_receipt_bridge_empty_and_invalid_sink():
     for invalid in ([], None, {'JP': object(), 7: object()}):
         with pytest.raises(ValueError, match='^invalid_history_receipts$'):
             build_intl._history_publication_sources(invalid)
+
+
+def _native_history_receipt(tmp_path, monkeypatch):
+    import pandas as pd
+    from lib import config
+    from lib.intl_history_materialization import capture_history_context, describe_history_write
+    from engine import international_macro_dashboard as reader
+    settings = deepcopy(config.load())
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    frame = pd.DataFrame({'growth_score': [0.25, -0.125], 'inflation_score': [0.5, 0.75]},
+                         index=pd.date_range('2026-01-01', periods=2))
+    context = capture_history_context('JP', settings['intl']['countries']['JP'],
+        settings['intl']['engine'], frame, source_root=config.ROOT)
+    path = tmp_path/'intl_regime/JP_history.parquet'; path.parent.mkdir(); frame.to_parquet(path)
+    materialization = describe_history_write('JP', frame, context, path.read_bytes(), '2026-11-05T00:00:00+00:00')
+    receipt = reader.load_history_result('JP', materialization=materialization)
+    assert receipt['status'] == 'ready'
+    return receipt, settings
+
+
+def test_derived_history_requires_explicit_exact_policy_and_verified_native_binding(tmp_path, monkeypatch):
+    from lib import config
+    receipt, settings = _native_history_receipt(tmp_path, monkeypatch)
+    settings['intl']['history_publication'].update(status='proposed', decision_ref=None)
+    monkeypatch.setattr(config, 'load', lambda: settings)
+    source = build_intl._history_publication_sources({'JP': receipt})['JP']
+    assert source['capabilities']['history_source'] == dict(metadata='unknown', value='unknown')
+    policy = settings['intl']['history_publication']
+    policy.update(status='confirmed', decision_ref='TEST-ONLY-explicit-derived-output-decision')
+    source = build_intl._history_publication_sources({'JP': receipt})['JP']
+    assert source['capabilities']['history_source'] == dict(metadata='allowed', value='allowed')
+    assert source['capabilities']['events'] == source['capabilities']['track_record'] == dict(metadata='unknown', value='unknown')
+    assert source['capabilities']['snapshot_compare'] == dict(left_observation_at=None, right_observation_at=None)
+    assert receipt['materialization']['provider_coverage']['status'] == 'unknown'
+    assert receipt['materialization']['disclosure_authority'] == 'none'
+    result = publish(tmp_path, history_sources={'JP': source})
+    jp = next(s for s in result['histories'][0]['sections'] if s['selected_market']=='JP')
+    assert jp['snapshot_compare']['selection']['eligible'] is True
+    assert jp['snapshot_compare']['reason'] == 'not_requested'
+
+
+def test_derived_policy_cannot_admit_legacy_or_changed_scope(tmp_path, monkeypatch):
+    from lib import config
+    receipt, settings = _native_history_receipt(tmp_path, monkeypatch)
+    policy = settings['intl']['history_publication']
+    policy.update(status='confirmed', decision_ref='TEST-ONLY-explicit-derived-output-decision')
+    monkeypatch.setattr(config, 'load', lambda: settings)
+    for change in [lambda p:p.update(status='denied'), lambda p:p.update(decision_ref=None),
+                   lambda p:p.update(audience='entitled-only'), lambda p:p['fields'].append('raw_series'),
+                   lambda p:p.update(extra='not-scoped')]:
+        candidate = deepcopy(policy); change(candidate)
+        assert build_intl._history_disclosure_allowed(receipt,'JP',candidate) is False
+    legacy = {k:v for k,v in receipt.items() if k!='materialization'}
+    assert build_intl._history_disclosure_allowed(legacy,'JP',policy) is False
+    original_timeout = settings['intl']['macro']['official_series']['ez_depo_rate']['timeout_s']
+    settings['intl']['macro']['official_series']['ez_depo_rate']['timeout_s'] = original_timeout + 1
+    assert build_intl._history_disclosure_allowed(receipt,'JP',policy) is False
+    settings['intl']['macro']['official_series']['ez_depo_rate']['timeout_s'] = original_timeout
+    assert build_intl._history_disclosure_allowed(receipt,'JP',policy) is True
+    settings['intl']['countries']['JP']['index'] = 'different-universe'
+    assert build_intl._history_disclosure_allowed(receipt,'JP',policy) is False
+
+
+def test_native_seven_market_receipts_reuse_five_reads_without_new_pages(tmp_path, monkeypatch):
+    """The five country routes are not the seven-market History universe."""
+    import pandas as pd
+    from collections import Counter
+    from types import SimpleNamespace
+    from lib import config
+    from lib.intl_history_materialization import capture_history_context, describe_history_write
+    from engine import international_macro_dashboard as reader
+    from scripts import build_international_macro as builder
+    settings = deepcopy(config.load())
+    settings['storage']['site_dir'] = str(tmp_path/'site')
+    monkeypatch.setattr(config, 'load', lambda: settings)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    frame = pd.DataFrame({'growth_score':[0.25,-0.125], 'inflation_score':[0.5,0.75]},
+                         index=pd.date_range('2026-01-01',periods=2))
+    records=[]
+    for cc, country in settings['intl']['countries'].items():
+        context = capture_history_context(cc,country,settings['intl']['engine'],frame,source_root=config.ROOT)
+        path=tmp_path/f'intl_regime/{cc}_history.parquet';path.parent.mkdir(exist_ok=True);frame.to_parquet(path)
+        descriptor=describe_history_write(cc,frame,context,path.read_bytes(),'2026-11-05T00:00:00+00:00')
+        records.append(dict(cc=cc,history_materialization=descriptor))
+    calls=[]
+    def read(cc, **kwargs):
+        calls.append(cc);return reader.load_history_result(cc,**kwargs)
+    monkeypatch.setattr(builder,'load_history_result',read)
+    monkeypatch.setattr(builder,'load_history',lambda *a:pytest.fail('duplicate compatibility read'))
+    monkeypatch.setattr(builder,'build_country_view',lambda record,history:dict(decision=dict(score=1)))
+    monkeypatch.setattr(builder,'validate_view',lambda *a:None)
+    monkeypatch.setattr(builder,'Environment',lambda **k:SimpleNamespace(get_template=lambda n:SimpleNamespace(render=lambda **k:'fixture')))
+    monkeypatch.setattr(builder,'write_page',lambda *a:None)
+    monkeypatch.setattr(builder,'ASSETS',())
+    monkeypatch.setattr('engine.europe_news_intel.panel',lambda *a:None)
+    sink={};outputs=builder.build_all(dict(records=records),history_receipts=sink)
+    assert len(outputs)==5 and {p.name for p in outputs}=={s.route for s in reader.REGIONS.values()}
+    assert Counter(calls)==Counter({cc:1 for cc in settings['intl']['countries']})
+    sources=build_intl._history_publication_sources(sink)
+    assert set(sources)==set(settings['intl']['countries'])
+    assert all(s['capabilities']['history_source']==dict(metadata='allowed',value='allowed') for s in sources.values())
+    workspace=publish(tmp_path,history_sources=sources)
+    assert len(workspace['histories'][0]['sections'])==7
+    assert all(s['snapshot_compare']['selection']['eligible'] for s in workspace['histories'][0]['sections'])
+    # Data loss is represented by the actual read, rather than an absent adapter row.
+    (tmp_path/'intl_regime/TW_history.parquet').unlink()
+    altered=frame.copy();altered.loc[altered.index[0],'growth_score']=999.0
+    altered.to_parquet(tmp_path/'intl_regime/AU_history.parquet')
+    calls.clear();sink={};builder.build_all(dict(records=records),history_receipts=sink)
+    assert Counter(calls)==Counter({cc:1 for cc in settings['intl']['countries']})
+    assert sink['TW']['status']=='missing' and sink['AU']['status']=='invalid'
+    sources=build_intl._history_publication_sources(sink)
+    assert sources['TW']['history_read']['status']=='missing'
+    assert sources['AU']['history_read']['status']=='invalid'
+    assert sources['TW']['capabilities']['history_source']==dict(metadata='unknown',value='unknown')
+    assert sources['AU']['capabilities']['history_source']==dict(metadata='unknown',value='unknown')

@@ -22,6 +22,7 @@ class ScenarioSourceRuntime:
     store: r2_store.R2Store
     producer_out_dir: Path | None
     capture_enabled: bool
+    native_capture_authority: object = None
 
     def for_request(self, *, token, principal, investigation_id, revision,
                     grant_id, capture, mode, expected_revision=None, operation_id=None):
@@ -121,7 +122,8 @@ class ScenarioSourceRuntime:
             destination=destination, resource_access=resource_access, source_use_decision=source_use,
             current_viewer=route._current_viewer_seam(token),
             producer_out_dir=self.producer_out_dir if self.capture_enabled else None,
-            source_save_decision=save, retention_decision=retain)
+            source_save_decision=save, retention_decision=retain,
+            native_capture_authority=self.native_capture_authority)
 
 
 def install_scenario_sources(app):
@@ -131,14 +133,18 @@ def install_scenario_sources(app):
     service. No generic credentials/public bucket fallback or ACL probe exists.
     Deployment owners retain the separate live activation decision.
     """
-    if os.environ.get("OPTIONS_SCENARIO_SOURCE_ENABLED") != "1":
+    from app.options_scenario_http_admission import AdmissionClosed, install_http_admission
+    admission = install_http_admission(app)
+    try:
+        admission.require_source()
+    except AdmissionClosed:
         return
     if os.environ.get("RESEARCH_LOCAL_STORE"):
         return
     bucket = (os.environ.get("R2_RESEARCH_BUCKET") or "").strip()
     if not bucket or bucket == (os.environ.get("R2_BUCKET") or "").strip():
         return
-    capture = os.environ.get("OPTIONS_SCENARIO_CAPTURE_ENABLED") == "1"
+    capture = admission.capture_for_installation()
     producer = os.environ.get("OPTIONS_SCENARIO_PRODUCER_DIR")
     path = Path(producer) if producer else None
     if capture and (path is None or not path.is_absolute() or path.is_symlink() or not path.is_dir()):
@@ -147,4 +153,14 @@ def install_scenario_sources(app):
     if not isinstance(store, r2_store.R2Store) or not store.available or store.bucket != bucket:
         return
     store.validate_strict_conditional_write_capability()
-    app.state.options_scenario_source_bindings = ScenarioSourceRuntime(store, path, capture)
+    authority = None
+    if capture:
+        from app.investigation_native_capture import from_server_runtime
+        try:
+            authority = from_server_runtime()
+        except Exception:
+            # Read/qualify remain available under their incumbent permissions;
+            # missing server-role/schema bindings cannot permit an initial PUT.
+            pass
+    admission.require_source()
+    app.state.options_scenario_source_bindings = ScenarioSourceRuntime(store, path, capture, authority)

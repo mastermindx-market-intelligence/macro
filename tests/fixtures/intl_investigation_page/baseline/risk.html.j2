@@ -1,0 +1,372 @@
+{% set quality_labels = {
+  'qualified': {'en': 'Qualified', 'zh': '符合条件'},
+  'stale': {'en': 'Stale data', 'zh': '数据过期'},
+  'missing': {'en': 'Missing data', 'zh': '数据缺失'},
+  'denied': {'en': 'Information withheld', 'zh': '信息未披露'},
+  'failed': {'en': 'Failed', 'zh': '失败'},
+  'unsupported': {'en': 'Unsupported', 'zh': '不支持'},
+  'unknown': {'en': 'Unavailable', 'zh': '不可用'}
+} %}
+{% set reason_labels = {
+  'not_supplied': {'en': 'Not supplied', 'zh': '未提供'},
+  'source_unknown': {'en': 'Source unknown', 'zh': '来源未知'},
+  'disclosure_unknown': {'en': 'Disclosure unknown', 'zh': '披露情况未知'},
+  'metadata_denied': {'en': 'Metadata withheld', 'zh': '元数据未披露'},
+  'value_denied': {'en': 'Value withheld', 'zh': '数值未披露'},
+  'source_stale': {'en': 'Source stale', 'zh': '来源过期'},
+  'source_failed': {'en': 'Source failed', 'zh': '来源失败'},
+  'method_unsupported': {'en': 'Method unsupported', 'zh': '方法不支持'},
+  'qualification_unknown': {'en': 'Unavailable', 'zh': '不可用'},
+  'support_unavailable': {'en': 'Unavailable', 'zh': '不可用'},
+  'issuer_exposure_not_supplied': {'en': 'Issuer exposure is not supplied.', 'zh': '未提供发行人敞口。'}
+} %}
+{% set annual_types = {
+  'actual': {'en': 'Actual', 'zh': '实际'},
+  'estimate': {'en': 'Estimate', 'zh': '估计'},
+  'projection': {'en': 'Projection', 'zh': '预测'}
+} %}
+{% set us_states = {
+  'quiet': {'en': 'Quiet', 'zh': '平静'},
+  'contained': {'en': 'Contained', 'zh': '受控'},
+  'watching': {'en': 'Watching', 'zh': '关注'},
+  'transmitting': {'en': 'Transmitting', 'zh': '传导中'}
+} %}
+{% set exposure_labels = {
+  'issuer_identity': {'en': 'Issuer identity', 'zh': '发行人身份'},
+  'revenue_currency': {'en': 'Revenue currency', 'zh': '收入货币'},
+  'cost_currency': {'en': 'Cost currency', 'zh': '成本货币'},
+  'debt_currency': {'en': 'Debt currency', 'zh': '债务货币'},
+  'hedges': {'en': 'Hedges', 'zh': '对冲'},
+  'effective_date': {'en': 'Effective date', 'zh': '生效日期'}
+} %}
+{% set domain_copy = {
+  'origin_stress': {
+    'en': 'Emerging-market stress',
+    'zh': '新兴市场压力',
+    'desc_en': 'A coincident EM origin aggregate. It is not a country diagnosis.',
+    'desc_zh': '这是新兴市场源点的同步聚合，不是单个国家的判断。'
+  },
+  'us_transmission': {
+    'en': 'Transmission to the US',
+    'zh': '向美国传导',
+    'desc_en': 'Signals from the existing US transmission model.',
+    'desc_zh': '来自现有美国传导模型的信号。'
+  },
+  'statistical_connectedness': {
+    'en': 'VAR/GFEVD statistical connectedness',
+    'zh': 'VAR/GFEVD 统计关联',
+    'desc_en': 'VAR/GFEVD statistical connectedness is not causality.',
+    'desc_zh': 'VAR/GFEVD 统计关联不是因果关系。'
+  },
+  'return_correlation': {
+    'en': 'Daily return correlation',
+    'zh': '日回报相关性',
+    'desc_en': 'Daily return correlation is distinct from the weekly correlation matrix.',
+    'desc_zh': '日回报相关性与周回报矩阵不同。'
+  },
+  'directed_pressure': {
+    'en': 'Directed model pressure',
+    'zh': '有向模型压力',
+    'desc_en': 'Directed model pressure is not issuer exposure.',
+    'desc_zh': '有向模型压力不是发行人敞口。'
+  },
+  'structural_fragility': {
+    'en': 'Structural fragility',
+    'zh': '结构性脆弱',
+    'desc_en': 'Slow-moving country balance-sheet indicators; not crisis timing or issuer exposure.',
+    'desc_zh': '变化缓慢的国家资产负债指标；不能确定危机时点或企业敞口。'
+  }
+} %}
+{% set pressure_columns = [
+  {'key': 'market', 'en': 'Market', 'zh': '市场'},
+  {'key': 'currency', 'en': 'Currency %', 'zh': '汇率 %'},
+  {'key': 'credit', 'en': 'Country credit change bp', 'zh': '国家信用变化 bp'},
+  {'key': 'account', 'en': 'Current account %GDP', 'zh': '经常账户占GDP%'},
+  {'key': 'breadth', 'en': 'Above 50-day average %', 'zh': '高于50日均线 %'}
+] %}
+{% macro words(en, zh) -%}
+<span class="l-en">{{ en|e }}</span><span class="l-zh" lang="zh">{{ zh|e }}</span>
+{%- endmacro %}
+{% macro resolved_href(dest) -%}
+{%- if dest is mapping -%}{%- set candidate = dest.get('destination') -%}{%- else -%}{%- set candidate = dest -%}{%- endif -%}
+{%- if candidate is string and candidate -%}
+{%- set local = namespace(valid=false) -%}
+{%- if candidate.startswith('#') and candidate|length > 1 -%}
+{%- set local.valid = true -%}
+{%- for char in candidate[1:] -%}
+{%- if not char.isalnum() and char not in "-_.!$&'()*+,;=:@~" -%}{%- set local.valid = false -%}{%- endif -%}
+{%- endfor -%}
+{%- elif candidate.startswith('/') and not candidate.startswith('//') -%}
+{%- set local.valid = true -%}
+{%- for char in candidate -%}
+{%- if not char.isalnum() and char not in "/-_.!$&'()*+,;=:@~?#" -%}{%- set local.valid = false -%}{%- endif -%}
+{%- endfor -%}
+{%- for part in candidate.split('?')[0].split('#')[0].split('/')[1:] -%}
+{%- if part in ['', '.', '..'] -%}{%- set local.valid = false -%}{%- endif -%}
+{%- endfor -%}
+{%- endif -%}
+{%- if local.valid -%}{{ candidate }}{%- endif -%}
+{%- endif -%}
+{%- endmacro %}
+{% macro quality_reason(metric) -%}
+{%- if metric is not mapping -%}{{ words('Unavailable', '不可用') }}
+{%- else -%}
+{%- set quality = metric.get('quality') -%}
+{%- set reason = metric.get('reason') -%}
+{%- if quality in quality_labels -%}{{ words(quality_labels[quality].en, quality_labels[quality].zh) }}
+{%- elif quality -%}{{ quality|e }}
+{%- else -%}{{ words('Unavailable', '不可用') }}
+{%- endif -%}
+{%- if reason in reason_labels -%} <small class="intl-risk__reason">{{ words(reason_labels[reason].en, reason_labels[reason].zh) }}</small>
+{%- elif reason -%} <small class="intl-risk__reason">{{ reason|e }}</small>
+{%- endif -%}
+{%- endif -%}
+{%- endmacro %}
+{% macro metric_number(metric, unit_kind) -%}
+{%- set value = metric.get('value') if metric is mapping else none -%}
+{%- set quality = metric.get('quality') if metric is mapping else none -%}
+{%- if value is not none and quality in ['qualified', 'stale'] -%}
+{%- set rounded = value|round(2) -%}
+{%- set text = rounded|string -%}
+{%- if 'inf' in text|lower or 'nan' in text|lower -%}{{ quality_reason(metric) }}
+{%- else -%}
+<span class="intl-risk__value{% if rounded > 0 %} intl-risk__value--up{% elif rounded < 0 %} intl-risk__value--down{% endif %}" data-im-risk-value>{% if rounded > 0 %}+{% endif %}{{ text }}</span>
+{%- if unit_kind == 'pp' %} <small>{{ words('pp', '个百分点') }}</small>
+{%- elif unit_kind == 'bp' %} <small>{{ words('bp', '基点') }}</small>
+{%- elif unit_kind == 'gdp' %} <small>{{ words('%GDP', '占GDP%') }}</small>
+{%- else %} <small>%</small>
+{%- endif -%}
+{%- if quality == 'stale' %} <small class="intl-risk__quality">{{ words('Stale data', '数据过期') }}</small>{%- endif -%}
+{%- endif -%}
+{%- else -%}{{ quality_reason(metric) }}
+{%- endif -%}
+{%- endmacro %}
+{% macro endpoint_block(window) -%}
+{%- if window is mapping -%}
+<div><dt>{{ words('Start', '起点') }}</dt><dd>{{ window.get('start')|e if window.get('start') is not none else words('Not supplied', '未提供') }}</dd></div>
+<div><dt>{{ words('End', '终点') }}</dt><dd>{{ window.get('end')|e if window.get('end') is not none else words('Not supplied', '未提供') }}</dd></div>
+<div><dt>{{ words('Calendar policy', '日历规则') }}</dt><dd>{{ window.get('calendar_policy')|e if window.get('calendar_policy') is not none else words('Not supplied', '未提供') }}</dd></div>
+{%- set observations = window.get('endpoint_observations') -%}
+{%- if observations is mapping -%}
+<div><dt>{{ words('Price start', '价格起点') }}</dt><dd>{{ observations.get('price_start')|e if observations.get('price_start') is not none else words('Not supplied', '未提供') }}</dd></div>
+<div><dt>{{ words('Price end', '价格终点') }}</dt><dd>{{ observations.get('price_end')|e if observations.get('price_end') is not none else words('Not supplied', '未提供') }}</dd></div>
+<div><dt>{{ words('FX start', '汇率起点') }}</dt><dd>{{ observations.get('fx_start')|e if observations.get('fx_start') is not none else words('Not supplied', '未提供') }}</dd></div>
+<div><dt>{{ words('FX end', '汇率终点') }}</dt><dd>{{ observations.get('fx_end')|e if observations.get('fx_end') is not none else words('Not supplied', '未提供') }}</dd></div>
+{%- endif -%}
+{%- endif -%}
+{%- endmacro %}
+{% set channels = risk_section.currency_channels if risk_section.currency_channels is sequence else [] %}
+{% set pressure_rows = risk_section.pressure_rows if risk_section.pressure_rows is sequence else [] %}
+{% set domain_panels = risk_section.domain_panels.values() if risk_section.domain_panels is mapping else [] %}
+{% set boundary = risk_section.exposure_boundary if risk_section.exposure_boundary is mapping else {} %}
+<section
+  class="intl-risk"
+  id="{{ context_id|e }}-risk"
+  aria-labelledby="{{ context_id|e }}-risk-title"
+  data-im-panel
+  data-view="risk"
+  data-horizon="{{ panel_context.horizon|e }}"
+  data-basis="{{ panel_context.currency_basis|e }}"
+  data-return-basis="{{ panel_context.return_basis|e }}"
+  data-source=""
+  {% if generation is not none %}data-im-generation="{{ generation|e }}"{% endif %}
+>
+  <header class="intl-risk__header">
+    <h2 id="{{ context_id|e }}-risk-title">{{ words('Risk and transmission', '风险与传导') }}</h2>
+    <div class="intl-risk__context">
+      <span>{{ words('Return horizon', '回报期限') }} {{ panel_context.horizon|e }}</span>
+      <span>{% if panel_context.currency_basis == 'local' %}{{ words('Currency basis · Local currency', '货币口径 · 本币') }}{% else %}{{ words('Currency basis · USD · Unhedged', '货币口径 · 美元 · 未对冲') }}{% endif %}</span>
+      <span>{{ words('Return basis · Price return', '回报口径 · 价格回报') }}</span>
+      <small>{{ words('USD · Unhedged returns include index and currency moves.', '美元 · 未对冲回报包含指数与汇率变动。') }}</small>
+    </div>
+    <label class="intl-risk__market-select-label" for="{{ context_id|e }}-risk-market-select">{{ words('Market', '市场') }}</label>
+    <select id="{{ context_id|e }}-risk-market-select" data-im-action="select_market">
+      <option value="" data-im-label-en="All markets" data-im-label-zh="全部市场">All markets / 全部市场</option>
+      {% for market in registry.markets %}
+        <option value="{{ market.market_id|e }}" data-im-label-en="{{ market.name_en|e }}" data-im-label-zh="{{ market.name_zh|e }}">{{ market.name_en|e }} / {{ market.name_zh|e }}</option>
+      {% endfor %}
+    </select>
+  </header>
+
+  <p class="intl-risk__prompt" data-im-risk-prompt>{{ words('Select a market to examine the currency channel', '选择市场以查看汇率传导') }}</p>
+
+  <div class="intl-risk__currency">
+    <div class="intl-risk__currency-layout">
+      <div class="intl-risk__channels">
+        {% for channel in channels %}
+          {% set market = channel.get('market') %}
+          <section class="intl-risk__channel" data-im-risk-channel="{{ channel.slot|e }}"{% if market is mapping and market.get('market_id') is not none %} data-im-risk-market="{{ market.market_id|e }}"{% endif %}>
+            <header class="intl-risk__channel-header">
+              {% if market is mapping %}
+                <h3>{{ words(market.get('name_en') or '', market.get('name_zh') or '') }}</h3>
+                {% if market.get('index_label') is not none %}<p class="intl-risk__index">{{ market.get('index_label')|e }}</p>{% endif %}
+              {% else %}
+                <h3>{{ words('Information withheld', '信息未披露') }}</h3>
+              {% endif %}
+              <p>{{ words('Why the dollar return differs', '美元回报为何不同') }}</p>
+            </header>
+            <div class="intl-risk__channel-cards">
+              <div class="intl-risk__card" data-im-risk-card="local">
+                <h4>{{ words('Local index return', '本币指数回报') }}</h4>
+                <p>{{ metric_number(channel.get('local_return'), 'percent') }}</p>
+              </div>
+              <div class="intl-risk__card" data-im-risk-card="fx">
+                <h4>{{ words('Currency return', '汇率回报') }}</h4>
+                <p>{{ words('Change in USD per local unit', '每单位本币的美元变化') }}</p>
+                <p>{{ metric_number(channel.get('fx_return_usd_per_local'), 'percent') }}</p>
+                <p class="intl-risk__contribution" data-im-risk-contribution>{{ words('Currency contribution', '汇率贡献') }} {{ metric_number(channel.get('fx_contribution_pp'), 'pp') }}</p>
+              </div>
+              <div class="intl-risk__card" data-im-risk-card="usd">
+                <h4>{{ words('USD price return', '美元价格回报') }}</h4>
+                <p>{{ metric_number(channel.get('usd_return'), 'percent') }}</p>
+              </div>
+            </div>
+            <p class="intl-risk__arithmetic">{{ words('Arithmetic', '算术') }}: (1 + local) × (1 + FX) − 1</p>
+            <details class="intl-risk__evidence">
+              <summary>{{ words('Evidence', '依据') }}</summary>
+              <dl>
+                {{ endpoint_block(channel.get('endpoint_policy') or (channel.get('usd_return').get('window') if channel.get('usd_return') is mapping else none)) }}
+                {% set fx_metric = channel.get('fx_return_usd_per_local') %}
+                {% if fx_metric is mapping and fx_metric.get('derivation') %}
+                  <div><dt>{{ words('Derivation', '推导') }}</dt><dd>{% if fx_metric.get('derivation') == 'derived_from_disclosed_returns' %}{{ words('Derived from disclosed returns', '由已披露回报推导') }}{% else %}{{ fx_metric.get('derivation')|e }}{% endif %}</dd></div>
+                {% endif %}
+                {% for ref in channel.get('input_evidence_refs') or [] %}
+                  <div><dt>{{ words('Source reference', '来源引用') }} · {{ ref.get('leg')|e }}</dt><dd class="intl-risk__reference">{{ ref.get('source_reference')|e }}</dd></div>
+                {% endfor %}
+              </dl>
+            </details>
+          </section>
+        {% endfor %}
+      </div>
+      <aside class="intl-risk__exposure">
+        <h3>{{ words('Company exposure requirements', '企业敞口要求') }}</h3>
+        <p>{{ words('Company exposure is not inferred from the listing or the currency channel.', '企业敞口不由上市身份或汇率通道推断。') }}</p>
+        <ul>
+          {% for key in boundary.get('missing_evidence') or [] %}
+            <li>{% if key in exposure_labels %}{{ words(exposure_labels[key].en, exposure_labels[key].zh) }}{% else %}{{ key|e }}{% endif %}</li>
+          {% endfor %}
+        </ul>
+        {% set company_href = resolved_href(boundary.get('destination'))|trim %}
+        {% if company_href %}
+          <a href="{{ company_href|e }}">{{ words('Company research', '企业研究') }}</a>
+        {% else %}
+          <details class="intl-risk__fallback">
+            <summary>{{ words('Company exposure requirements', '企业敞口要求') }}</summary>
+            <p>{{ words('Issuer identity, revenue currency, cost currency, debt currency, hedges and effective date are required before any company exposure claim.', '在作出任何企业敞口陈述之前，需要发行人身份、收入货币、成本货币、债务货币、对冲和生效日期。') }}</p>
+            <button type="button" data-im-risk-close-context>{{ words('Back', '返回') }}</button>
+          </details>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+
+  <div class="intl-risk__pressure">
+    <table class="intl-risk__table" id="{{ context_id|e }}-pressure-table">
+      <caption id="{{ context_id|e }}-pressure-caption">{{ words('Fast pressure. Slow resilience.', '短期压力，长期韧性') }}</caption>
+      <thead>
+        <tr>
+          {% for column in pressure_columns %}
+            <th scope="col" id="{{ context_id|e }}-pressure-{{ column.key|e }}">{{ words(column.en, column.zh) }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in pressure_rows %}
+          {% set row_index = loop.index %}
+          {% set row_id = context_id ~ '-pressure-row-' ~ row_index %}
+          <tr data-im-risk-row="{{ row.market_id|e }}">
+            <th scope="row" id="{{ row_id|e }}" headers="{{ context_id|e }}-pressure-market">
+              <strong class="intl-risk__cell-label">{{ words('Market', '市场') }}</strong>
+              <span class="intl-risk__market-id">{{ row.market_id|e }}</span>
+              <span class="intl-risk__market-name">{{ words(row.get('name_en') or '', row.get('name_zh') or '') }}</span>
+            </th>
+            <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-currency">
+              <strong class="intl-risk__cell-label">{{ words('Currency %', '汇率 %') }}</strong>
+              {{ metric_number(row.get('currency_return'), 'percent') }}
+              {% set ccy = row.get('currency_return') %}
+              {% if ccy is mapping and ccy.get('window') is mapping %}
+                <small>{{ ccy.window.get('start')|e }} – {{ ccy.window.get('end')|e }}</small>
+              {% endif %}
+            </td>
+            <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-credit">
+              <strong class="intl-risk__cell-label">{{ words('Country credit change bp', '国家信用变化 bp') }}</strong>
+              {{ metric_number(row.get('country_credit_change'), 'bp') }}
+              {% set credit = row.get('country_credit_change') %}
+              {% if credit is mapping %}
+                {% if credit.get('observation_at') is not none %}<small>{{ words('Observation', '观测') }} {{ credit.get('observation_at')|e }}</small>{% endif %}
+                {% set period = credit.get('period') %}
+                {% if period is mapping %}
+                  <small>{{ period.get('start')|e }} – {{ period.get('end')|e }} · {{ period.get('count')|e }} · {{ period.get('count_basis')|e }}</small>
+                {% endif %}
+              {% endif %}
+            </td>
+            <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-account">
+              <strong class="intl-risk__cell-label">{{ words('Current account %GDP', '经常账户占GDP%') }}</strong>
+              {{ metric_number(row.get('annual_current_account'), 'gdp') }}
+              {% set annual = row.get('annual_current_account') %}
+              {% if annual is mapping %}
+                {% set support = annual.get('support') %}
+                {% if support is mapping %}
+                  {% if support.get('field_year') is not none %}<small>{{ words('Field year', '字段年份') }} {{ support.get('field_year')|e }}</small>{% endif %}
+                  {% if support.get('vintage') is not none %}<small>{{ words('Vintage', '版本') }} {{ support.get('vintage')|e }}</small>{% endif %}
+                  {% if support.get('observation_type') in annual_types %}
+                    <small>{{ words(annual_types[support.observation_type].en, annual_types[support.observation_type].zh) }}</small>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </td>
+            <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-breadth">
+              <strong class="intl-risk__cell-label">{{ words('Above 50-day average %', '高于50日均线 %') }}</strong>
+              {{ metric_number(row.get('constituent_breadth_50d'), 'percent') }}
+              {% set breadth = row.get('constituent_breadth_50d') %}
+              {% set bsupport = breadth.get('support') if breadth is mapping else none %}
+              {% if bsupport is mapping %}
+                <small>{{ bsupport.get('above_count')|e }} / {{ bsupport.get('eligible_count')|e }}</small>
+                <small>{{ words('Lookback sessions', '回看交易日') }} {{ bsupport.get('lookback_sessions')|e }}</small>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="intl-risk__research">
+    <h3>{{ words('Retained research', '保留研究') }}</h3>
+    <ul class="intl-risk__research-list">
+      {% for panel in domain_panels %}
+        {% set key = panel.get('key') %}
+        {% set copy = domain_copy.get(key) %}
+        <li class="intl-risk__research-item" data-im-risk-domain="{{ key|e }}">
+          {% if copy %}
+            {% set panel_href = resolved_href(panel.get('destination'))|trim %}
+            {% if panel_href %}
+              <a href="{{ panel_href|e }}">{{ words(copy.en, copy.zh) }}</a>
+              <p>{{ words(copy.desc_en, copy.desc_zh) }}</p>
+            {% else %}
+              <details class="intl-risk__fallback">
+                <summary>{{ words(copy.en, copy.zh) }}</summary>
+                <p>{{ words(copy.desc_en, copy.desc_zh) }}</p>
+                <button type="button" data-im-risk-close-context>{{ words('Back', '返回') }}</button>
+              </details>
+            {% endif %}
+                {% if key == 'us_transmission' %}
+                  {% set summary = panel.get('summary') %}
+                  {% set state = summary.get('state') if summary is mapping else none %}
+                  {% set quality = summary.get('quality') if summary is mapping else none %}
+                  {% if quality == 'qualified' and state in us_states %}
+                    <p>{{ words('Current statement', '当前陈述') }}: {{ words(us_states[state].en, us_states[state].zh) }}</p>
+                  {% else %}
+                    <p>{{ words('Transmission assessment unavailable', '传导评估不可用') }}</p>
+                  {% endif %}
+                  {% set diagnostic = summary.get('diagnostic') if summary is mapping else none %}
+                  {% if diagnostic is mapping and diagnostic.get('reported_state') in us_states %}
+                    <p>{{ words('Reported diagnostic only', '仅为已报告诊断') }}: {{ words(us_states[diagnostic.reported_state].en, us_states[diagnostic.reported_state].zh) }}</p>
+                  {% endif %}
+                {% endif %}
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>

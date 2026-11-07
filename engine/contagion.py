@@ -27,6 +27,7 @@ from __future__ import annotations
 import logging
 import math
 import time
+import hashlib
 from datetime import datetime, timezone
 
 import numpy as np
@@ -34,6 +35,7 @@ import pandas as pd
 
 from lib import store
 from engine.ird_velocity import velocity_fields as _ird_velocity_fields
+from engine.ird_velocity import _TWO_YEARS_BD as _ird_velocity_norm_window
 
 log = logging.getLogger(__name__)
 
@@ -144,6 +146,33 @@ def _vel_z_20d(s: pd.Series) -> float | None:
     This is the single authoritative velocity grammar for all IRD lobes.
     """
     return _ird_velocity_fields(s, scale=1.0)["vel_20d_z"]
+
+
+def _publication_input(series, group, name, *, source_series=None):
+    """Identify the exact calculation frame, not vendor/parquet wire bytes."""
+    try:
+        if (series.empty or not series.index.is_unique or not series.index.is_monotonic_increasing
+                or not np.isfinite(series.to_numpy(dtype=float)).all()):
+            return None
+        source = series if source_series is None else source_series.loc[source_series.index <= series.index[-1]]
+        if source.empty or not source.index.is_unique or not source.index.is_monotonic_increasing:
+            return None
+        return {
+            "source_reference": f"data/{group}/{name}.parquet",
+            "observation_at": source.index[-1].date().isoformat(),
+            "calculation_input_sha256": hashlib.sha256(
+                series.to_json(orient="split", date_format="iso", double_precision=15).encode()
+            ).hexdigest(),
+        }
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return None
+
+
+def _publication_date(value):
+    try:
+        return value.date().isoformat()
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -630,6 +659,7 @@ def two_tier_read(em_stress_state: str | None = None) -> dict:
     # ---- Tier-2: US transmission legs ----
     tier2_legs: dict[str, dict] = {}
     tier2_hot_count = 0
+    publication_inputs = {}
 
     # (a) US HY OAS Δ20d z >= 2
     us_hy = _fred_series("BAMLH0A0HYM2")
@@ -641,6 +671,14 @@ def two_tier_read(em_stress_state: str | None = None) -> dict:
             "vel_20d_z": v20z,
             "hot": hot,
             "threshold": "vel_20d_z >= 2",
+        }
+        publication_inputs["us_hy_oas_vel"] = {
+            "observation_at": _publication_date(us_hy.index[-1]),
+            "calculation_available": v20z is not None and math.isfinite(v20z),
+            # Exact z input closure: current change + its trailing norm window,
+            # including the 20-observation lag. Earlier history is not consumed.
+            "inputs": [_publication_input(us_hy.tail(_ird_velocity_norm_window + 21),
+                                           "fred", "BAMLH0A0HYM2")],
         }
         if hot:
             tier2_hot_count += 1
@@ -667,6 +705,12 @@ def two_tier_read(em_stress_state: str | None = None) -> dict:
             "threshold": "KRE-SPY 20d RS < -5%",
             "note": "EUFN/KBWB absent from yahoo store — only KRE included",
         }
+        publication_inputs["kre_spy_rs"] = {
+            "observation_at": _publication_date(idx_rs[-1]),
+            "calculation_available": math.isfinite(rs),
+            "inputs": [_publication_input(kre_a.iloc[[-21, -1]], "yahoo", "KRE", source_series=kre),
+                       _publication_input(spy_a.iloc[[-21, -1]], "yahoo", "SPY", source_series=spy)],
+        }
         if hot:
             tier2_hot_count += 1
     else:
@@ -685,6 +729,11 @@ def two_tier_read(em_stress_state: str | None = None) -> dict:
             "hot": hot,
             "threshold": "pctile >= 85 (full history)",
             "asof": str(move_s.index[-1].date()),
+        }
+        publication_inputs["move_pctile"] = {
+            "observation_at": _publication_date(move_s.index[-1]),
+            "calculation_available": pct is not None and math.isfinite(pct),
+            "inputs": [_publication_input(move_s, "yahoo", "_MOVE")],
         }
         if hot:
             tier2_hot_count += 1
@@ -712,6 +761,12 @@ def two_tier_read(em_stress_state: str | None = None) -> dict:
                 "threshold": "SOFR-IORB > 0 for 5 consecutive days",
                 "caveat": "Quarter-end spikes (late Dec/Mar/Jun/Sep) are technical — "
                           "not structural funding stress; verify calendar proximity.",
+            }
+            publication_inputs["sofr_iorb_corridor"] = {
+                "observation_at": _publication_date(spread.index[-1]),
+                "calculation_available": bool(np.isfinite(last5).all()),
+                "inputs": [_publication_input(sofr_a.reindex(last5.index), "fred", "SOFR", source_series=sofr),
+                           _publication_input(iorb_a.reindex(last5.index), "fred", "IORB", source_series=iorb)],
             }
             if hot:
                 tier2_hot_count += 1
@@ -765,6 +820,7 @@ def two_tier_read(em_stress_state: str | None = None) -> dict:
             "legs": tier2_legs,
         },
         "safety_bid": safety_bid,
+        "publication_inputs": publication_inputs,
         "gaps": gaps,
         "state_logic": (
             "quiet: tier1 calm | contained: tier1>=strained, 0 tier2 hot | "

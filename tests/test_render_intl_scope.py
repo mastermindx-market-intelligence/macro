@@ -10,7 +10,8 @@ def test_render_workflow_has_an_international_scope():
     assert "options: [all, macro, intl," in WORKFLOW
     assert "templates/intl.html.j2|scripts/build_intl.py) echo intl;;" in WORKFLOW
     assert "for R in macro intl china hk canada markets gex baskets sits; do" in WORKFLOW
-    assert 'scripts.build_intl; }' in WORKFLOW
+    assert 'run_py "international macro dashboard (build_intl)" scripts.build_intl' in WORKFLOW
+    assert 'scripts.render_intl_durable build' in WORKFLOW
     assert "intl)\n              intl ;;" in WORKFLOW
 
 

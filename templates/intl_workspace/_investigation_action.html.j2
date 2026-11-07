@@ -1,0 +1,10 @@
+{# Only the immutable producer-qualified action is an evidence entrance.
+   Panel generation by itself never manufactures an action/reference. #}
+{% macro investigate(actions, field_id, generation) -%}
+{% set action = actions.get(field_id) if actions is mapping else none %}
+{% if action is mapping and action|length == 5 and action.generation == generation and action.field_ids == [field_id] and action.href is string and action.href.startswith('/analysis?view=investigations&') and action.context_id is string and action.fingerprint is string %}
+<a class="gbtn" data-im-investigate data-im-investigation-context="{{ action.context_id|e }}" data-im-investigation-generation="{{ action.generation|e }}" data-im-investigation-fingerprint="{{ action.fingerprint|e }}" data-im-investigation-field="{{ field_id|e }}" data-im-investigation-href="{{ action.href|e }}" href="https://app.mastermind-x.com{{ action.href|e }}"><span class="l-en">Investigate</span><span class="l-zh" lang="zh">调查研究</span></a>
+{% elif actions is mapping and actions.get('__unavailable__') is sameas true %}
+<span class="muted" role="status"><span class="l-en">Unavailable for this snapshot</span><span class="l-zh" lang="zh">此快照暂不可用</span></span>
+{% endif %}
+{%- endmacro %}

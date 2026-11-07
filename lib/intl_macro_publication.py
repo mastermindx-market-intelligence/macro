@@ -6,6 +6,9 @@ import hashlib
 import json
 import os
 import stat
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
 from io import BytesIO
 from pathlib import Path
 
@@ -17,6 +20,33 @@ _PROVENANCE_PATH = Path("intl_macro") / "provenance.json"
 _ARTIFACT_MAX_BYTES = 16 * 1024 * 1024
 _PROVENANCE_MAX_BYTES = 8 * 1024 * 1024
 _READ_CHUNK_BYTES = 64 * 1024
+
+_native_read_observer: ContextVar[Callable[[Path], object] | None] = ContextVar(
+    "intl_macro_native_read_observer", default=None
+)
+
+
+def _observe_native_path(path: Path) -> None:
+    observer = _native_read_observer.get()
+    if observer is None:
+        return
+    observer(Path(path))
+
+
+@contextmanager
+def observe_native_reads(observer: Callable[[Path], object]) -> Iterator[None]:
+    """Observe native paths read inside this context.
+
+    The seam is default-inert: outside a context the reader behaves exactly
+    as before. The observer receives each read path before the file is
+    opened and may raise to refuse that read. Nested scopes restore the
+    previous observer on exit, including when the body raises.
+    """
+    token = _native_read_observer.set(observer)
+    try:
+        yield
+    finally:
+        _native_read_observer.reset(token)
 
 
 def _read_bounded(fd: int, limit: int) -> bytes:
@@ -32,6 +62,7 @@ def _read_bounded(fd: int, limit: int) -> bytes:
 
 
 def _read_stable_once(path: Path, limit: int) -> bytes:
+    _observe_native_path(path)
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
     fd = os.open(path, flags)
     try:

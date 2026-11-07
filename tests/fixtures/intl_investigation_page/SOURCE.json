@@ -1,0 +1,10 @@
+{
+  "terminal_pin": "0449c164c5158cc96ecd8ea8f967fa48c4356ef7",
+  "source_directory": "terminal/lib/__tests__/fixtures/intl_policy_generation_actual_20261104",
+  "sha256": {
+    "intl_generation_current.json": "8b335d22195bbe3afae66766d78ef921950ef56648ac39c09e915f6a49d27084",
+    "intl_generation_descriptor_8b335d22195bbe3afae66766d78ef921950ef56648ac39c09e915f6a49d27084.json": "8b335d22195bbe3afae66766d78ef921950ef56648ac39c09e915f6a49d27084",
+    "intl_generation_f180e9f4-eeee-488d-b312-5a68d09ccf5c_0dc2265e5985adaff29f0c2efbf7191be9f80472a6c0f73646a4ac1b5776f8b8.json": "0dc2265e5985adaff29f0c2efbf7191be9f80472a6c0f73646a4ac1b5776f8b8"
+  },
+  "scope": "Exact retained immutable producer dependencies, no acquisition/current feed proof. No original helper hrefs are copied; real changed Jinja/controller emit the tested links."
+}

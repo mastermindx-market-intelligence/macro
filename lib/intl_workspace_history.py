@@ -186,6 +186,30 @@ def _track(selected, source, grant, destination):
     return result
 
 
+def _comparable(identity, context):
+    return (identity is not None
+            and all(identity[key] for key in ('market_id', 'unit', 'return_basis', 'universe', 'method_ref'))
+            and identity['market_id'] == context['selected_market']
+            and identity['return_basis'] == context['return_basis'])
+
+
+def snapshot_selection(result, context, grant):
+    """Mount eligibility for explicit user intent; never choose observation dates.
+
+    Called only with the validated section/context/grant owned by attach_history.
+    Existing supplied-pair helper output remains unchanged.
+    """
+    comparison = _comparison(result, context, grant,
+                             dict(left_observation_at=None, right_observation_at=None))
+    reason = comparison['reason']
+    if reason == 'not_requested':
+        reason = (None if _comparable(result['identity'], context)
+                  else 'comparability_not_established')
+        if reason is None and len(result['points']) < 2:
+            reason = 'two_observations_required'
+    return dict(eligible=reason is None, reason=reason)
+
+
 def _comparison(result, context, grant, query):
     points = result['points']
     left_at, right_at = query['left_observation_at'], query['right_observation_at']
@@ -210,9 +234,7 @@ def _comparison(result, context, grant, query):
         reason = 'observation_not_present'
     elif left_at == right_at:
         reason = 'same_observation'
-    elif identity is None or any(not identity[key] for key in ('market_id', 'unit', 'return_basis', 'universe', 'method_ref')):
-        reason = 'comparability_not_established'
-    elif identity['market_id'] != context['selected_market'] or identity['return_basis'] != context['return_basis']:
+    elif not _comparable(identity, context):
         reason = 'comparability_not_established'
     elif any(point[key] is None for point in (left, right) for key in _SCORES):
         reason = 'gap_or_null_observation'

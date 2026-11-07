@@ -42,15 +42,61 @@
           <summary>{{ words('Inspect dated observations','查看带日期的观测') }} ({{ s.points|length }})</summary>
           <table><caption>{{ words('Current reconstruction · source dates preserved','当前重建 · 保留来源日期') }}</caption>
             <thead><tr><th scope="col">{{ words('Observation','观测日期') }}</th><th scope="col">{{ words('Growth score','增长评分') }}</th><th scope="col">{{ words('Inflation score','通胀评分') }}</th></tr></thead>
-            <tbody>{% for point in s.points %}<tr><th scope="row">{{ point.observation_at|e }}</th><td>{{ point.growth_score|e if point.growth_score is not none else words('Unavailable','不可用') }}</td><td>{{ point.inflation_score|e if point.inflation_score is not none else words('Unavailable','不可用') }}</td></tr>{% endfor %}</tbody>
+            <tbody data-im-history-rows></tbody>
           </table>
+          <div class="intl-history__actions" data-im-history-paging hidden>
+            <button type="button" data-im-history-page="prev">{{ words('Previous','上一页') }}</button>
+            <span class="intl-history__muted" data-im-history-range role="status" aria-live="polite" aria-atomic="true"></span>
+            <button type="button" data-im-history-page="next">{{ words('Next','下一页') }}</button>
+          </div>
+          <p class="intl-history__muted">{{ words('All supplied observations stay available in their original order through these pages.','全部已提供观测均按原始顺序保留在这些分页中。') }}</p>
+        </details>
+        {% endif %}
+        <form data-im-snapshot-form novalidate>
+          <fieldset data-im-snapshot-fields disabled>
+            <legend>{{ words('Compare two supplied dates','比较两个已提供的日期') }}</legend>
+            {% for side, en, zh in [('left','First observation','第一条观测'),('right','Second observation','第二条观测')] %}
+            <label for="im-snapshot-{{ s.selected_market|e }}-{{ side }}-year">{{ words('Supplied year','已提供年份') }}</label>
+            <select id="im-snapshot-{{ s.selected_market|e }}-{{ side }}-year" data-im-snapshot-year="{{ side }}" aria-describedby="im-snapshot-{{ s.selected_market|e }}-status">
+              <option value="" data-im-label-en="Select a year" data-im-label-zh="选择年份">Select a year</option>
+            </select>
+            <label for="im-snapshot-{{ s.selected_market|e }}-{{ side }}">{{ words(en,zh) }}</label>
+            <select id="im-snapshot-{{ s.selected_market|e }}-{{ side }}" data-im-snapshot-date="{{ side }}" aria-describedby="im-snapshot-{{ s.selected_market|e }}-status">
+              <option value="" data-im-label-en="Select an observation" data-im-label-zh="选择观测">Select an observation</option>
+            </select>
+            {% endfor %}
+            <div class="intl-history__actions"><button type="submit">{{ words('Compare selected dates','比较所选日期') }}</button></div>
+          </fieldset>
+          <p id="im-snapshot-{{ s.selected_market|e }}-status" data-im-snapshot-status>{{ words('Comparison needs qualified observations and explicit date selection.','比较需要符合条件的观测和明确的日期选择。') }}</p>
+          <script type="application/json" data-im-snapshot-payload>{"selection":{{ s.snapshot_compare.selection|tojson }},"points":[{% for point in s.points %}[{{ point.observation_at|tojson }},{{ (point.growth_score|string)|tojson if point.growth_score is not none else 'null' }},{{ (point.inflation_score|string)|tojson if point.inflation_score is not none else 'null' }}]{{ ',' if not loop.last else '' }}{% endfor %}]}</script>
+          <section class="intl-history__snapshot" data-im-snapshot-result hidden>
+            <h4>{{ words('Selected observations · current reconstruction','所选观测 · 当前重建') }}</h4>
+            <p class="intl-history__muted">{{ words('These are descriptive classifier scores, not investment returns, forecasts or what was known at the time. Inspect the reconstruction evidence below.','这些是描述性分类器评分，不是投资回报、预测或当时已知的信息。请查看下方的重建依据。') }}</p>
+            <p class="intl-history__muted">{{ words('Input origins across the full history have not been verified.','完整历史中的输入来源尚未经核实。') }}</p>
+            <dl>{% for side in ['left','right'] %}<div>
+              <dt data-im-snapshot-at="{{ side }}"></dt>
+              <dd>{{ words('Growth score','增长评分') }}: <span data-im-snapshot-score="{{ side }}-growth_score"></span> · {{ words('Inflation score','通胀评分') }}: <span data-im-snapshot-score="{{ side }}-inflation_score"></span></dd>
+            </div>{% endfor %}</dl>
+            <div class="intl-history__actions"><button type="button" data-im-scenario-action="set_tab" data-im-scenario-tab="scenario">{{ words('Explore a manual Scenario','探索手动情景') }}</button></div>
+          </section>
+        </form>
+        {% if s.snapshot_compare.eligible %}
+        <details class="intl-history__snapshot">
+          <summary>{{ words('Compare two supplied observations','比较两条已提供的观测') }}</summary>
+          <p class="intl-history__muted">{{ words('Two observations from the current reconstruction. These are classifier scores, not investment returns, and not what was known at the time.','两条观测均来自当前重建。这些是分类器评分，不是投资回报，也不代表当时已知的信息。') }}</p>
+          <p class="intl-history__muted">{{ words('Input origins across the full history have not been verified.','完整历史中的输入来源尚未经核实。') }}</p>
+          <dl>{% for point in [s.snapshot_compare.left, s.snapshot_compare.right] %}<div>
+            <dt>{{ point.observation_at|e }}</dt>
+            <dd>{{ words('Growth score','增长评分') }}: <span data-im-snapshot-growth>{{ point.growth_score|e }}</span> · {{ words('Inflation score','通胀评分') }}: <span data-im-snapshot-inflation>{{ point.inflation_score|e }}</span></dd>
+          </div>{% endfor %}</dl>
         </details>
         {% endif %}
         {% if s.source_reference or s.acquisition_at %}<details class="intl-history__evidence"><summary>{{ words('Reconstruction evidence','重建依据') }}</summary><dl>
           {% if s.source_reference %}<div><dt>{{ words('Source reference','来源引用') }}</dt><dd>{{ s.source_reference|e }}</dd></div>{% endif %}
           {% if s.acquisition_at %}<div><dt>{{ words('Read time · not first-known time','读取时间 · 非首次获知时间') }}</dt><dd>{{ s.acquisition_at|e }}</dd></div>{% endif %}
           {% if s.method_ref %}<div><dt>{{ words('Method reference','方法引用') }}</dt><dd>{{ s.method_ref|e }}</dd></div>{% endif %}
-        </dl></details>{% endif %}
+          {% if s.identity and s.identity.universe %}<div><dt>{{ words('Universe reference','范围引用') }}</dt><dd data-im-history-universe>{{ s.identity.universe|e }}</dd></div>{% endif %}
+        </dl><p class="intl-history__muted">{{ words('Input origins across the full history have not been verified.','完整历史中的输入来源尚未经核实。') }}</p></details>{% endif %}
         <h4>{{ words('Attached changes','附带的变化记录') }}</h4>
         {% if s.events.records %}<ol class="intl-history__timeline">
           {% for event in s.events.records %}<li><time>{{ event.event_date|e }}</time><p>{{ words(event.text_en,event.text_zh) }}</p><small>{{ words('Recomputed change','重新计算的变化') }} · {{ event.evidence_ref|e }}</small></li>{% endfor %}

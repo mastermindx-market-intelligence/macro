@@ -1395,7 +1395,7 @@ def build_country_view(
     }
 
 
-def load_history_result(cc: str) -> dict[str, object]:
+def load_history_result(cc: str, *, materialization=None) -> dict[str, object]:
     """Read the existing reconstruction once, retaining distinct failure states.
 
     This internal receipt contains a DataFrame. Its acquisition clock and relative
@@ -1426,7 +1426,13 @@ def load_history_result(cc: str) -> dict[str, object]:
         except FileNotFoundError:
             result["status"] = "missing"
             return result
-        frame = pd.read_parquet(path)
+        if materialization is None:
+            frame = pd.read_parquet(path)
+        else:
+            from io import BytesIO
+            from lib.intl_history_materialization import read_stable_history_bytes
+            artifact_bytes = read_stable_history_bytes(path)
+            frame = pd.read_parquet(BytesIO(artifact_bytes))
         if (not isinstance(frame, pd.DataFrame)
                 or not isinstance(frame.index, pd.DatetimeIndex)
                 or frame.index.hasnans or frame.index.has_duplicates
@@ -1437,6 +1443,15 @@ def load_history_result(cc: str) -> dict[str, object]:
             return result
         result["status"] = "empty" if frame.empty else "ready"
         result["frame"] = frame
+        if materialization is not None:
+            from lib.intl_history_materialization import validate_history_materialization
+            try:
+                verified = validate_history_materialization(materialization, cc, frame, artifact_bytes=artifact_bytes)
+            except ValueError:
+                result.update(status="invalid", frame=None)
+                return result
+            result["method_ref"] = verified["method_ref"]
+            result["materialization"] = verified
     except Exception:  # noqa: BLE001 — fixed failure receipt, no private exception details
         result["status"] = "failed"
     return result
@@ -1474,8 +1489,14 @@ def project_history_read(receipt: dict[str, object], *, return_basis: str = "pri
     try:
         keys = {"status", "market_id", "artifact_ref", "read_at", "method_ref", "frame"}
         if (type(receipt) is not dict or any(type(key) is not str for key in receipt)
-                or set(receipt) != keys):
+                or set(receipt) not in (keys, keys | {"materialization"})):
             raise ValueError
+        if "materialization" in receipt:
+            from lib.intl_history_materialization import validate_history_materialization
+            verified = validate_history_materialization(receipt["materialization"], receipt["market_id"], receipt["frame"])
+            if receipt["method_ref"] != verified["method_ref"] or (universe is not None and universe != verified["universe_ref"]):
+                raise ValueError
+            universe = verified["universe_ref"]
         status = receipt["status"]
         if type(status) is not str or status not in {
                 "ready", "empty", "missing", "failed", "invalid", "unsupported"}:

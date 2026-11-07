@@ -27,6 +27,9 @@ name: render
 #
 # It commits ONLY site/ (never data/ or reports/), so the nightly `daily` pipeline
 # stays the single source of truth for every data ledger. daily.yml is untouched.
+# One explicit manual scope=intl opt-in persists only successful native Risk and
+# generation dependencies in the same guarded commit. It never stages raw data,
+# status or forward ledgers; default/automatic renders remain site-only.
 #
 # Note: static assets directly under site/ (e.g. live.js, *.css) already deploy in
 # ~1 min via pages.yml on any push to site/** — you only need THIS workflow for
@@ -39,6 +42,10 @@ on:
         type: choice
         default: all
         options: [all, macro, intl, china, hk, canada, markets, gex, baskets, sits, stubs]
+      durable_intl:
+        description: "Manual intl only: persist verified Risk and native generation dependencies (no collection)"
+        type: boolean
+        default: false
       runner:
         description: "Runner label — render-linux is routine; render-heavy/macstudio are explicit Mac fallbacks"
         type: choice
@@ -777,6 +784,13 @@ jobs:
       # site/premiumdata/special_situations.json — the Insider+ payload behind
       # the page's free preview (docs/TIER_PREVIEW_PATTERN.md), which MUST be
       # rebuilt in the same pass as the shell it pairs with.
+      # Composite scopes ("macro+china" from the pick step's union) run each region's
+      # branch sequentially; hub/central are guarded to run at most once per job.
+      # marker for the library-rebuild guard (same as daily): only libraries whose
+      # dashboard didn't build them fresh this run get rebuilt by the safety net.
+      # ---- spine: the macro/US dashboard + the desks its pages embed ----
+      # build_site reads the COMMITTED regime/latest.json (no engine.run needed) and
+      # renders macro.html + the US stock pages + news.html + the stock library.
       - name: re-render pages from committed data (resilient; no collect / no LLM / no EDGAR)
         id: render_pages
         # Mirrors the RENDER steps of daily.yml's `engine` job, minus the collectors,
@@ -800,14 +814,26 @@ jobs:
           # config news_translation.render_lanes is true (default off) — the RENDER_NO_DRIP=1
           # sentinel gates the call in code, so with the flag off this lane makes zero LLM calls.
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          # Only the explicit durable transaction gets the incumbent R2 transport.
+          # Ordinary site-only render never activates unpublished native actions.
+          R2_ENDPOINT: ${{ github.event_name == 'workflow_dispatch' && inputs.durable_intl == true && secrets.R2_ENDPOINT || '' }}
+          R2_ACCESS_KEY_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.durable_intl == true && secrets.R2_ACCESS_KEY_ID || '' }}
+          R2_SECRET_ACCESS_KEY: ${{ github.event_name == 'workflow_dispatch' && inputs.durable_intl == true && secrets.R2_SECRET_ACCESS_KEY || '' }}
+          R2_BUCKET: ${{ github.event_name == 'workflow_dispatch' && inputs.durable_intl == true && secrets.R2_BUCKET || '' }}
         run: |
           set +e
           SCOPE="${{ steps.pick.outputs.scope }}"; SCOPE="${SCOPE:-all}"
           echo "::notice::render scope = $SCOPE"
-          # Composite scopes ("macro+china" from the pick step's union) run each region's
-          # branch sequentially; hub/central are guarded to run at most once per job.
-          # marker for the library-rebuild guard (same as daily): only libraries whose
-          # dashboard didn't build them fresh this run get rebuilt by the safety net.
+          export INTL_DURABLE_MODE="${{ github.event_name == 'workflow_dispatch' && inputs.durable_intl == true }}"
+          export INTL_RENDER_SCOPE="$SCOPE"
+          if [ "$INTL_DURABLE_MODE" = true ] && [ "$SCOPE" != intl ]; then
+            echo "::error::durable International output requires manual exact scope=intl"; exit 1
+          fi
+          if [ "$INTL_DURABLE_MODE" = true ]; then
+            # The ordinary >=1.34 SDK minimum predates conditional PutObject.
+            # Pin only this opt-in transaction; default/bulk lanes are unchanged.
+            python -m pip install 'boto3==1.40.0' 'botocore==1.40.0' || exit 1
+          fi
           touch "$RUNNER_TEMP/render_libs_marker"
 
           run_py() {   # resilient serial builder (spine, page-renderers, narrow scopes)
@@ -822,9 +848,6 @@ jobs:
             fi
           }
 
-          # ---- spine: the macro/US dashboard + the desks its pages embed ----
-          # build_site reads the COMMITTED regime/latest.json (no engine.run needed) and
-          # renders macro.html + the US stock pages + news.html + the stock library.
           spine() {
             run_py "S&P allocation vector (build_spvector)" scripts.build_spvector
             run_py "alternative data desk (build_alt_data)" scripts.build_alt_data
@@ -855,7 +878,16 @@ jobs:
 
           hub() { [ -n "$HUB_DONE" ] && return 0; HUB_DONE=1; run_py "bitcoin vector + landing hub (build_vector)" scripts.build_vector; }
           crypto() { [ -n "$CRYPTO_DONE" ] && return 0; CRYPTO_DONE=1; run_py "crypto intelligence cockpit (build_crypto)" scripts.build_crypto; }
-          intl() { [ -n "$INTL_DONE" ] && return 0; INTL_DONE=1; run_py "international macro dashboard (build_intl)" scripts.build_intl; }
+          intl() {
+            [ -n "$INTL_DONE" ] && return 0; INTL_DONE=1
+            if [ "$INTL_DURABLE_MODE" = true ]; then
+              python -m scripts.render_intl_durable build \
+                --expected-source "${{ steps.pick.outputs.rendered_from }}" \
+                --receipt "$RUNNER_TEMP/intl-durable.json" || exit 1
+            else
+              run_py "international macro dashboard (build_intl)" scripts.build_intl
+            fi
+          }
 
           # Canada / S&P-TSX: rationale + restore provenance in the comment block above
           # this step (moved out of the run script 2026-08-01: 21,000-char run limit).
@@ -1347,9 +1379,11 @@ jobs:
             commit=$(printf '%s\n' "$message" | git commit-tree "$tree" -p "$parent")
             git update-ref HEAD "$commit" "$parent"
           }
-          # ONLY site/ — never data/ or reports/. The render may touch data/ as a build
+          # Default: ONLY site/ — never data/ or reports/. The render may touch data/ as a build
           # side-effect (cache writes, alert appends), but committing none of it keeps the
           # nightly the single source of truth for every forward-accountability ledger.
+          # The explicit durable intl branch below stages a verified native output
+          # closure, not raw data, run status, caches or forward ledgers.
           # pre-commit template↔site re-sync (ui.template_site_sync): the shim/externalize
           # step above rewrites the site/ copies of the ~48 templates/-paired plain-copy
           # assets, and only the post-rebase --fix in the push loop heals the divergence —
@@ -1374,7 +1408,14 @@ jobs:
           # refuse stash/rebase wreckage (2026-08-01 d29e4dd44d: a conflicted
           # autostash apply was staged wholesale — 1,704 pages shipped markers)
           bash "${GITHUB_WORKSPACE:-.}/scripts/ci/strip_conflict_markers.sh"
-          git add site/
+          INTL_DURABLE_MODE="${{ github.event_name == 'workflow_dispatch' && inputs.durable_intl == true }}"
+          if [ "$INTL_DURABLE_MODE" = true ]; then
+            # Seal only after the incumbent normalizers and template sync. Stage
+            # exact produced dependency paths; never raw inputs, status or caches.
+            python -m scripts.render_intl_durable finalize --receipt "$RUNNER_TEMP/intl-durable.json" || exit 1
+            python -m scripts.render_intl_durable stage --receipt "$RUNNER_TEMP/intl-durable.json" || exit 1
+          else
+            git add site/
           # separate + tolerant: `git add site/ templates/` exits 128 when a pathspec
           # matches nothing, and this step runs under `-eo pipefail` — a missing
           # templates/ would abort the commit and lose the whole render rather than
@@ -1384,6 +1425,7 @@ jobs:
           # chart OHLC, intraday, stock briefs) so the committed-tree deploy ships them —
           # a no-op for any subtree this scope didn't rebuild.
           git add -f site/stockbrief 2>/dev/null || true
+          fi
           if git diff --cached --quiet; then echo "no rendered-site changes to commit"; exit 0; fi
           # Stamp the ACTUAL scope (the old inputs.scope||'all' recorded every push-narrowed
           # render as "all" — an audit-trail lie) plus from= = the main SHA this run actually
@@ -1403,6 +1445,9 @@ jobs:
           python3 scripts/check_site_asset_refs.py site
           python -m scripts.check_government_revenue_projection
           python scripts/inject_shared_shell.py --check --site-dir site || exit 1
+          if [ "$INTL_DURABLE_MODE" = true ]; then
+            python -m scripts.render_intl_durable verify --receipt "$RUNNER_TEMP/intl-durable.json" || exit 1
+          fi
           commit_index "$RENDER_MESSAGE"
           RENDER_COMMIT=$(git rev-parse HEAD)
           RENDER_PARENT=$(git rev-parse "$RENDER_COMMIT^")
@@ -1464,6 +1509,10 @@ jobs:
             # a newer site/template delta needs the guarded porcelain path below,
             # because an asset deletion can invalidate a page without a path conflict.
             COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}') || exit 1
+            if [ "$INTL_DURABLE_MODE" = true ]; then
+              python -m scripts.render_intl_durable verify --receipt "$RUNNER_TEMP/intl-durable.json" \
+                --target-ref origin/main || exit 1
+            fi
             if git diff --quiet "$RENDER_PARENT" origin/main -- site/ templates/ "${GOVREV_PROJECTION_INPUTS[@]}" && \
               PUBLISH_COMMIT=$(push_metadata_replay_commit \
                 "$RENDER_PARENT" origin/main "$RENDER_COMMIT" \
@@ -1480,6 +1529,10 @@ jobs:
               fi
               python -m scripts.check_government_revenue_projection
               python scripts/inject_shared_shell.py --check --site-dir site || exit 1
+              if [ "$INTL_DURABLE_MODE" = true ]; then
+                python -m scripts.render_intl_durable verify --receipt "$RUNNER_TEMP/intl-durable.json" \
+                  --target-ref origin/main --candidate-ref "$PUBLISH_COMMIT" || exit 1
+              fi
               if push_do origin "$PUBLISH_REF:refs/heads/main"; then
                 git update-ref HEAD "$PUBLISH_COMMIT"
                 git update-ref -d "$PUBLISH_REF"
@@ -1494,6 +1547,10 @@ jobs:
               fi
               push_backoff
               continue
+            fi
+            if [ "$INTL_DURABLE_MODE" = true ]; then
+              echo "::error::durable International render overlaps newer output; defer and recompute, never rebase stale evidence"
+              exit 1
             fi
             echo "::notice::render output overlaps newer main; using guarded porcelain fallback"
             # rename/rename on content-hashed site/assets/css/* is deterministic across
@@ -1614,6 +1671,19 @@ jobs:
           echo "::error title=rendered site NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — main does not carry this render (the next render or the nightly re-lands it). Check the per-attempt [class] tags above: repeated [contention] means main is simply busier than this budget, repeated [rebase-conflict] means a NEW deterministic conflict class — see scripts/rebase_autoresolve_hashed_css.sh."
           echo "### ⚠️ rendered site NOT pushed after $PUSH_ATTEMPT attempts (next render/nightly re-lands main)" >> "$GITHUB_STEP_SUMMARY"
           exit 1
+      - name: Retain original durable International attempt facts
+        id: intl_durable_evidence
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.durable_intl == true }}
+        run: |
+          python -m scripts.render_intl_durable metadata --receipt "$RUNNER_TEMP/intl-durable.json" > "$RUNNER_TEMP/intl-durable-attempt.json"
+      - name: Upload original durable International attempt facts
+        if: ${{ always() && steps.intl_durable_evidence.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: intl-durable-attempt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intl-durable-attempt.json
+          if-no-files-found: error
+          retention-days: 14
       - name: remove oversized-checkout quarantine
         if: ${{ always() }}
         shell: bash

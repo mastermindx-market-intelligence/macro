@@ -277,11 +277,11 @@ def _build_rows(
             "label_en": "Benchmark",
             "label_zh": "基准",
             "text_en": (
-                f"{bench_en}, cap-weighted. The basket is equal-weight and rebalanced "
-                "monthly, so part of any gap is weighting, not stock selection."
+                f"{bench_en}, cap-weighted. The basket uses equal weighting, "
+                "so part of any gap is weighting, not stock selection."
             ),
             "text_zh": (
-                f"{bench_zh}，市值加权。篮子为等权、按月再平衡，"
+                f"{bench_zh}，市值加权。篮子采用等权，"
                 "因此差距有一部分来自权重而非选股。"
             ),
         },
@@ -384,6 +384,25 @@ def build_receipt(
         return _build_receipt_core(basket, theme, theme_intel, region, site)
     except Exception:  # noqa: BLE001 — display tier must not break the page
         rec = _unavailable_receipt("receipt_error", "收据生成错误")
+        # An error cannot substitute a different market's benchmark identity.
+        context = theme_intel if isinstance(theme_intel, dict) else {}
+        en = dict.get(context, "bench_label")
+        zh = dict.get(context, "bench_label_zh")
+        en = en.strip() if type(en) is str else ""
+        zh = zh.strip() if type(zh) is str else ""
+        declared = bool(en or zh)
+        bench_en, bench_zh = en or zh or "Not published", zh or en or "未发布"
+        benchmark_row = {
+            "key": "benchmark", "label_en": "Benchmark", "label_zh": "基准",
+            "text_en": (
+                f"{bench_en}, cap-weighted. The basket uses equal weighting, "
+                "so part of any gap is weighting, not stock selection."
+            ) if declared else "Benchmark not published. The benchmark comparison is unavailable.",
+            "text_zh": (
+                f"{bench_zh}，市值加权。篮子采用等权，"
+                "因此差距有一部分来自权重而非选股。"
+            ) if declared else "基准未发布，无法提供基准对比。",
+        }
         ts = {
             "status": "missing",
             "as_of": None,
@@ -391,16 +410,18 @@ def build_receipt(
             "quadrant": None,
         }
         try:
-            rec["benchmark"] = {"label": "S&P 500", "label_zh": "标普500"}
+            rec["benchmark"] = {"label": bench_en, "label_zh": bench_zh}
             rec["as_of"] = "—"
             rec["theme_state"] = ts
             rec["rows"] = _build_rows(
                 as_of="—",
-                bench_en="S&P 500",
-                bench_zh="标普500",
+                bench_en=bench_en,
+                bench_zh=bench_zh,
                 obs={},
                 ts=ts,
             )
+            rec["rows"] = [benchmark_row if row.get("key") == "benchmark" else row
+                           for row in rec["rows"]]
         except Exception:  # noqa: BLE001
             rec["rows"] = [
                 {
@@ -410,19 +431,7 @@ def build_receipt(
                     "text_en": "Daily close-to-close returns over 5, 20 and 60 sessions, as of —.",
                     "text_zh": "按日收盘价计算的5、20、60个交易日收益，截至—。",
                 },
-                {
-                    "key": "benchmark",
-                    "label_en": "Benchmark",
-                    "label_zh": "基准",
-                    "text_en": (
-                        "S&P 500, cap-weighted. The basket is equal-weight and rebalanced "
-                        "monthly, so part of any gap is weighting, not stock selection."
-                    ),
-                    "text_zh": (
-                        "标普500，市值加权。篮子为等权、按月再平衡，"
-                        "因此差距有一部分来自权重而非选股。"
-                    ),
-                },
+                benchmark_row,
                 {
                     "key": "measure",
                     "label_en": "Raw, not normalized",

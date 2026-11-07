@@ -1306,7 +1306,7 @@ function render(){
     <div class="lhs">
       <h1>${L(esc(b.name),esc(b.name_zh))}</h1>
       <div style="margin:6px 0">${b.parent?`<span class="chip">${L(esc(b.parent),esc(b.parent_zh||b.parent))}</span>`:''}${b.category?`<span class="chip">${L(esc(b.category),esc(b.category_zh||b.category))}</span>`:''}${tags}</div>
-      <div class="thesis">${L(esc(briefText(b.thesis)),esc(briefText(b.thesis)))}</div>
+      <div class="thesis">${L(esc(briefText(b.thesis)),esc(briefText(b.thesis_zh || b.thesis)))}</div>
     </div>
     <div>
       <div class="scoreboxes">

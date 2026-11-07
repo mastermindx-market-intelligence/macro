@@ -6,8 +6,54 @@ import hashlib
 import json
 
 from app import hub, options_scenarios as S
-from tests.test_options_scenarios import World, token, INV_B, OP, FakeRpcResponse
+from tests.test_options_scenarios import World, token, INV_B, OP, UID, FakeRpcResponse
 from tests.test_options_hub_retention import FakeS3, controlled_decision
+from app import investigation_native_capture as N
+
+
+def canonical_intent(payload):
+    if payload['mode'] != 'capture':
+        return {k:v for k,v in payload.items() if k != 'canonical_request'}
+    return {**payload, 'canonical_request': {'principal':UID, 'target':payload['investigation_id'],
+        'action':'create' if payload['expected_revision']==0 else 'revise',
+        'expected_revision':payload['expected_revision'],
+        'manifest':{'schema':'investigation_manifest.v2',
+            'intent':{'title':'Original capture','question':'What changes?','subjects':[]},
+            'layout_refs':[],'thesis_refs':[],'evidence_refs':[],'continuation':{},
+            'scenario_capture':payload['capture']}, 'layout_capture':None}}
+
+
+def native_authority(h):
+    """Controlled existing-owner RPC transport, never live SQL authority."""
+    h.native_phases = {}
+    h.native_rpc_calls = []
+    h.native_fail = None
+    h.native_lost_ack = None
+    generation = '40000000-0000-4000-8000-000000000004'
+    class Body:
+        status=200
+        def __init__(self,value):self.raw=json.dumps(value).encode()
+        def __enter__(self):return self
+        def __exit__(self,*_):pass
+        def read(self,*_):return self.raw
+    def rpc(request,timeout):
+        payload=json.loads(request.data); binding=payload['p_binding']; op=binding['operation_id']
+        claim=request.full_url.endswith('/claim_investigation_native_capture_v1')
+        h.native_rpc_calls.append(('claim' if claim else 'complete',deepcopy(payload)))
+        h.trace.append(('native_claim' if claim else 'native_complete',op))
+        if h.native_fail==('claim' if claim else 'complete'):raise TimeoutError('controlled unknown transport')
+        if claim:
+            existing=op in h.native_phases
+            if existing and h.native_phases[op]['binding']!=binding:
+                return Body({'status':'conflict'})
+            if not existing:h.native_phases[op]={'binding':binding,'state':'started'}
+            if h.native_lost_ack=='claim':raise TimeoutError('controlled lost claim acknowledgement')
+            return Body({'schema':'investigation.native_capture.v1','status':'existing' if existing else 'claimed','generation':generation,'binding':binding})
+        assert payload['p_generation']==generation and h.native_phases[op]['binding']==binding
+        h.native_phases[op]['state']='retained'
+        if h.native_lost_ack=='complete':raise TimeoutError('controlled lost completion acknowledgement')
+        return Body({'schema':'investigation.native_capture.v1','status':'recorded','generation':generation,'binding':binding,'native_phase':'retained'})
+    return N.NativeCaptureAuthority('https://supabase-fixture.invalid','FIXTURE-SERVER-KEY',rpc)
 
 
 def setup(h, monkeypatch, tmp_path):
@@ -23,9 +69,10 @@ def setup(h, monkeypatch, tmp_path):
         calls.append(deepcopy(binding))
         return {**h.source_use_decision(binding),'status':'allowed'}
     h.app.state.options_scenario_source_bindings=replace(base, producer_out_dir=tmp_path,
-        source_save_decision=save,retention_decision=controlled_decision())
+        source_save_decision=save,retention_decision=controlled_decision(),native_capture_authority=native_authority(h))
     payload={'mode':'capture','investigation_id':INV_B,'revision':1,'expected_revision':0,
         'operation_id':OP,'grant_id':None,'capture':h.capture()}
+    payload=canonical_intent(payload)
     return client,payload,calls
 
 
@@ -33,6 +80,7 @@ def test_capture_default_refuses_before_auth_files_or_store(monkeypatch):
     h=World();h.patch(monkeypatch);client=h.client()
     payload={'mode':'capture','investigation_id':INV_B,'revision':1,'expected_revision':0,
         'operation_id':OP,'grant_id':None,'capture':h.capture()}
+    payload=canonical_intent(payload)
     response=h.post(client,payload,token_value=token())
     assert response.status_code==200 and response.json()['reason']=='source_binding_unavailable'
     assert not h.trace and h.state.auth_calls==0
@@ -49,7 +97,7 @@ def test_initial_capture_retains_exact_bytes_before_returning_for_native_math(mo
     assert response.headers['cache-control']=='private, no-store'
     puts=sum(x[0]=='put' for x in h.s3.log)
     # Recovery is QUALIFY (read only); it never replays retention, even same op.
-    response=h.post(client,{**payload,'mode':'qualify'},token_value=token())
+    response=h.post(client,canonical_intent({**payload,'mode':'qualify'}),token_value=token())
     assert response.status_code==200 and sum(x[0]=='put' for x in h.s3.log)==puts
 
 
@@ -72,7 +120,7 @@ def test_partial_retention_stays_unknown_and_read_recovery_never_replays(monkeyp
     assert response.status_code==200 and response.json()['status']=='unavailable'
     assert h.gex_ref.key in h.s3.objects and h.moves_ref.key not in h.s3.objects
     count=len(h.s3.log)
-    response=h.post(client,{**payload,'mode':'qualify'},token_value=token())
+    response=h.post(client,canonical_intent({**payload,'mode':'qualify'}),token_value=token())
     assert response.status_code==200
     assert all(x[0]!='put' for x in h.s3.log[count:])
 
@@ -103,6 +151,8 @@ def runtime_setup(monkeypatch, tmp_path, *, capture_enabled=False, with_moves=Tr
     from engine.research_vault import r2_store
     from tests.test_options_scenarios import BUCKET
     h = World()
+    authority=native_authority(h)
+    monkeypatch.setattr(N,'from_server_runtime',lambda:authority)
     if not with_moves:
         original_capture = h.capture
         h.capture = lambda **kw: original_capture(**{**kw, 'with_moves': False})
@@ -175,12 +225,13 @@ def test_runtime_real_callbacks_capture_then_read_recovery_and_reopen(monkeypatc
     monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse({'status':'not_found'}))
     payload = {'mode':'capture','investigation_id':INV_B,'revision':1,'expected_revision':0,
                'operation_id':OP,'grant_id':None,'capture':h.capture()}
+    payload=canonical_intent(payload)
     response = h.post(client, payload, token_value=token())
     assert response.json().get('mode') == 'capture', response.text
     assert h.s3.objects[h.gex_ref.key] == h.gex_bytes
     assert h.moves_ref.key not in h.s3.objects
     count = sum(x[0] == 'put' for x in h.s3.log)
-    response = h.post(client, {**payload,'mode':'qualify'}, token_value=token())
+    response = h.post(client, canonical_intent({**payload,'mode':'qualify'}), token_value=token())
     assert response.json().get('mode') == 'qualify', response.text
     # The canonical CAS remains elsewhere; now simulate its caller-token read.
     monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse(h.row(revision=1, inv=INV_B)))
@@ -193,8 +244,8 @@ def test_runtime_real_callbacks_capture_then_read_recovery_and_reopen(monkeypatc
 
 def test_runtime_capture_has_separate_zero_io_gate(monkeypatch, tmp_path):
     h, client, _ = runtime_setup(monkeypatch, tmp_path)
-    response = h.post(client, {'mode':'capture','investigation_id':INV_B,'revision':1,
-        'expected_revision':0,'operation_id':OP,'grant_id':None,'capture':h.capture()},token_value=token())
+    response = h.post(client, canonical_intent({'mode':'capture','investigation_id':INV_B,'revision':1,
+        'expected_revision':0,'operation_id':OP,'grant_id':None,'capture':h.capture()}),token_value=token())
     assert response.json()['reason'] == 'source_binding_unavailable'
     assert not h.s3.log and not h.trace
 
@@ -255,9 +306,10 @@ def test_runtime_uncertain_write_has_no_retry_or_false_success(monkeypatch, tmp_
     monkeypatch.setattr(store, 'put_bytes_strict_conditional', lost)
     payload = {'mode':'capture','investigation_id':INV_B,'revision':1,'expected_revision':0,
                'operation_id':OP,'grant_id':None,'capture':h.capture()}
+    payload=canonical_intent(payload)
     response = h.post(client, payload, token_value=token())
     assert response.json()['status'] == 'unavailable' and len(calls) == 1
-    response = h.post(client, {**payload,'mode':'qualify'}, token_value=token())
+    response = h.post(client, canonical_intent({**payload,'mode':'qualify'}), token_value=token())
     assert response.json()['status'] == 'unavailable' and len(calls) == 1
 
 
@@ -289,7 +341,7 @@ def test_runtime_unqualified_whole_moves_never_inherit_named_source_attestation(
             payload = h.resolve_payload(revision=1, inv=INV_B)
         else:
             monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse({'status':'not_found'}))
-            payload = {**prospective, 'mode':mode}
+            payload = canonical_intent({**prospective, 'mode':mode})
         response = h.post(client, payload, token_value=token())
         assert response.json().get('status') == 'unavailable', (mode, response.text)
         assert response.json().get('reason') == 'source_unavailable', (mode, response.text)

@@ -7119,6 +7119,76 @@ canada:
 # with per-country flags. Taiwan macro is thin on keyless sources -> degrades.
 # ===========================================================================
 intl:
+  # Same finite History output decision, current source join 2026-11-07.
+  # Exact config identity is necessary, never a receipt or acquisition grant.
+  history_publication:
+    status: confirmed
+    scope: intl-current-reconstruction-score-history-v1
+    decision_ref: https://github.com/mastermindx-market-intelligence/macro/pull/7949#issuecomment-6589273748
+    audience: anonymous-and-registered-intl-html
+    fields:
+    - observation_at
+    - growth_score
+    - inflation_score
+    metadata:
+    - artifact_ref
+    - read_at
+    - method_ref
+    - universe_ref
+    markets:
+    - JP
+    - KR
+    - TW
+    - IN
+    - AU
+    - GB
+    - EZ
+    input_classes:
+    - configured-native-intl-yahoo
+    - configured-native-intl-macro
+    - configured-native-shared-yahoo
+    history_kind: current_reconstruction
+    input_configuration_sha256: 07a2cf4a7958d845969ce0bdf2ef1ab9b127fadfd516883b757c421dbcc11d20
+  policy_comparison_publication:
+    status: confirmed
+    policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-ecb-boe-policy-comparison
+    metadata: allowed
+    value_permission: allowed
+  field_publication:
+    GB.policy_rate:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-boe-bank-rate-admission
+      metadata: allowed
+      value_permission: allowed
+    EZ.gdp_yoy:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-gdp-and-hicp
+      metadata: allowed
+      value_permission: allowed
+    EZ.cpi_yoy:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-gdp-and-hicp
+      metadata: allowed
+      value_permission: allowed
+    EZ.annual_current_account:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-annual-current-account
+      metadata: allowed
+      value_permission: allowed
+  risk_summary_publication:
+    status: confirmed
+    scope: intl-us-transmission-derived-summary-v1
+    policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#incumbent-us-transmission-derived-summary
+    metadata: allowed
+    value_permission: allowed
+    audience: anonymous-and-registered-intl-html
+    fields:
+    - state
+    - evidence_refs
+    - diagnostic.reported_state
+    - calculation_at
+    - observation_dates
+    - origin_coverage
   # Chairman confirmed permitted user-facing EOD redistribution on 2026-10-09.
   # This is a source-scoped publication decision, NOT a provider session-clock
   # attestation, trading authorization, or blanket rights grant to other feeds.
