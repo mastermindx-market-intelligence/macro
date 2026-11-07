@@ -88,32 +88,32 @@
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-11-04",
+    "board_as_of": "2026-11-05",
     "coverage": {
-      "identical": 0,
+      "identical": 8,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 1,
-      "written": 8
+      "stamps": 0,
+      "written": 0
     },
     "dry_run": false,
     "failures": [],
     "family": {
-      "identical": 0,
+      "identical": 8,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 1,
-      "written": 8
+      "stamps": 0,
+      "written": 0
     },
     "n_coverage_rows": 8,
     "n_family_rows": 8,
-    "n_paired_rows": 2097,
+    "n_paired_rows": 2166,
     "paired": {
-      "identical": 1994,
+      "identical": 2123,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 1,
-      "written": 60
+      "stamps": 0,
+      "written": 0
     },
     "reconstruction_refused": [
       "2026-07-31",
@@ -141,19 +141,19 @@
       "2026-10-29",
       "2026-10-30"
     ],
-    "require_stamp": "2026-11-04",
+    "require_stamp": "2026-11-05",
     "same_stamp_revisions_refused": [],
     "sessions_written": {
-      "identical": 32,
+      "identical": 34,
       "matured": 0,
       "refused": 0,
-      "written": 1
+      "written": 0
     }
   },
   "latest_session": {
     "liveness": "unmatured",
     "reason": "paired observation accrued; H=10 outcome pending (not zero)",
-    "stamp_date": "2026-11-04"
+    "stamp_date": "2026-11-05"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [
@@ -176,7 +176,7 @@
   ],
   "n_degraded_or_unpaired": 20,
   "n_missing": 4,
-  "paired_sessions_accrued": 33,
+  "paired_sessions_accrued": 34,
   "same_stamp_revisions_refused": [
     {
       "changed_fields": [
@@ -12092,10 +12092,10 @@
   ],
   "schema": "us.prophet_w3_status/v1",
   "structural": {
-    "n_coverage_rows": 264,
-    "n_family_rows": 264,
+    "n_coverage_rows": 272,
+    "n_family_rows": 272,
     "outcome_blind": true,
     "schema": "prophet_fusion.w3_structural.v1"
   },
-  "unmatured_sessions": 32
+  "unmatured_sessions": 33
 }
