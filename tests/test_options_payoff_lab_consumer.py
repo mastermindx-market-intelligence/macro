@@ -1,9 +1,9 @@
 """Tests for the F03-W2-5b index-ETF payoff lab consumer (options.html.j2).
 
-Hermetic by construction: every fixture payload is built IN-MEMORY from the
-producer's documented contract (engine/options_payoff_lab.py SCHEMA
-"mastermind.options_payoff_lab/v1"); no real network, no store read, no
-file-system access.  The producer is the W2-5a store-host builder at
+Hermetic by construction: every fixture uses the producer's documented
+contract (engine/options_payoff_lab.py SCHEMA "mastermind.options_payoff_lab/v1").
+No real network or live store reads; loader regressions use temporary
+synthetic JSON files. The producer is the W2-5a store-host builder at
 PR #7759 (DRAFT, seat-gated); this test file pins the CONSUMER contract
 so the seat can ratify both halves from one review.
 
@@ -25,6 +25,7 @@ What these tests pin (each maps to a law the surface must not drift off):
 from __future__ import annotations
 
 import html
+import json
 import re
 import sys
 from pathlib import Path
@@ -385,6 +386,7 @@ def test_copy_law_summary_under_14_words_no_banned_token():
 def test_asof_note_only_when_ledger_asof_differs_from_card_asof():
     """The fold's asof_note appears ONLY when ledger_asof ≠ card asof."""
     stores = _stores()
+    stores["gex"]["SPY"]["meta"]["asof"] = "2026-09-24"
     # Same asof → no asof_note
     same = _payload(roots=[_full_root_spy()],
                     ledger_asof="2026-09-24", card_asof="2026-09-24")
@@ -399,6 +401,82 @@ def test_asof_note_only_when_ledger_asof_differs_from_card_asof():
     assert "2026-09-23" in ctx_diff["payoff_lab"]["SPY"]["asof_note_zh"]
     page = render(REPO, stores, payoff_lab=diff)
     assert "Structures as of 2026-09-23" in _visible_text(_workspace_fold(page, "SPY"))
+
+
+@pytest.mark.parametrize("card_date,expected", [
+    ("2026-09-24", True), ("2026-09-23", False),
+    ("2026-09-23T21:00:00Z", False), (None, False), ("not-a-date", False),
+])
+def test_native_payoff_dates_disclose_age_against_actual_card(card_date, expected):
+    """Native emit sets ledger_asof from asof; those dates agree on stale ledgers."""
+    payload = _payload(roots=[_full_root_spy()], ledger_asof="2026-09-23",
+                       card_asof="2026-09-23")
+    assert payload["ledger_asof"] == payload["asof"] == "2026-09-23"
+    stores = _stores()
+    stores["gex"]["SPY"]["meta"]["asof"] = card_date
+    # A different index's date must not supply SPY's card date.
+    stores["gex"]["QQQ"]["meta"]["asof"] = "2026-09-25"
+    lab = build_payoff_lab(payload, stores)["SPY"]
+    assert lab["asof_note_en"] == ("Structures as of 2026-09-23" if expected else "")
+    assert lab["asof_note_zh"] == ("结构定价截至 2026-09-23" if expected else "")
+    if expected:
+        visible = _visible_text(_workspace_fold(render(REPO, stores, payoff_lab=payload), "SPY"))
+        assert "Structures as of 2026-09-23" in visible
+
+
+
+@pytest.mark.parametrize("bad_meta", [
+    pytest.param("invalid", id="string"),
+    pytest.param(["invalid"], id="list"),
+    pytest.param(True, id="true"),
+    pytest.param(1, id="number"),
+    pytest.param("", id="empty-string"),
+    pytest.param([], id="empty-list"),
+    pytest.param(False, id="false"),
+    pytest.param(None, id="null"),
+])
+@pytest.mark.parametrize("symbol", ["SPY", "QQQ"])
+def test_malformed_card_meta_survives_loader_and_render(tmp_path, bad_meta, symbol):
+    """A malformed card date cannot abort valid structures or borrow another date."""
+    from scripts.build_options_command import load_stores
+
+    synthetic = _stores()
+    other = "QQQ" if symbol == "SPY" else "SPY"
+    synthetic["gex"][symbol]["meta"] = bad_meta
+    synthetic["gex"][other]["meta"]["asof"] = "2026-09-24"
+    gex_dir = tmp_path / "site" / "gex"
+    gex_dir.mkdir(parents=True)
+    for key, card in synthetic["gex"].items():
+        (gex_dir / f"{key}.json").write_text(json.dumps(card), encoding="utf-8")
+
+    stores = load_stores(tmp_path)
+    assert stores["gex"][symbol]["meta"] == bad_meta
+    payload = _payload(roots=[_full_root_spy(), _straddle_null_qqq()],
+                       ledger_asof="2026-09-23", card_asof="2026-09-23")
+    lab = build_payoff_lab(payload, stores)
+    assert lab[symbol]["asof_note_en"] == ""
+    assert lab[symbol]["asof_note_zh"] == ""
+    assert lab[other]["asof_note_en"] == "Structures as of 2026-09-23"
+    assert lab[other]["asof_note_zh"] == "结构定价截至 2026-09-23"
+    assert len(lab[symbol]["rows"]) == len(lab[other]["rows"]) == 4
+
+    # Missing metadata is the existing honest state; all other structure
+    # content must equal that control, not disappear with the invalid date.
+    control = {**stores, "gex": {
+        **stores["gex"], symbol: {**stores["gex"][symbol], "meta": {}},
+    }}
+    assert lab == build_payoff_lab(payload, control)
+    page = render(REPO, stores, payoff_lab=payload)
+    affected_fold = _workspace_fold(page, symbol)
+    other_fold = _workspace_fold(page, other)
+    assert 'class="oew-aib-detail oew-lab"' in affected_fold
+    assert 'class="oew-aib-detail oew-lab"' in other_fold
+    affected_text = _visible_text(affected_fold)
+    other_text = _visible_text(other_fold)
+    assert "Structures as of" not in affected_text
+    assert "结构定价截至" not in affected_text
+    assert "Structures as of 2026-09-23" in other_text
+    assert "结构定价截至 2026-09-23" in other_text
 
 
 # ─────────────────────────────────────────────────────────────────────────────
