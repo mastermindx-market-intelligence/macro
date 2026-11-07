@@ -12,6 +12,7 @@ import io
 import json
 import os
 import stat
+import subprocess
 import sys
 import zipfile
 from pathlib import Path
@@ -41,7 +42,6 @@ _PRIVATE_HEADERS = {
 _SSML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 _PKG_REL = "http://schemas.openxmlformats.org/package/2006/relationships"
 _OD_REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
-_APP_MAIN_LOADED_BEFORE = "app.main" in sys.modules
 
 
 # ---------------------------------------------------------------------------
@@ -147,10 +147,73 @@ def test_free_token_is_403_with_private_headers(harness_app) -> None:
     _assert_private_headers(response)
 
 
-def test_build_app_does_not_import_app_main(harness_app) -> None:
-    if _APP_MAIN_LOADED_BEFORE:
-        pytest.skip("app.main was already imported by an earlier module")
-    assert "app.main" not in sys.modules
+_APP_MAIN_PROBE = """
+import json
+import sys
+from pathlib import Path
+
+stages = {{}}
+{preamble}
+stages["before_harness_import"] = "app.main" in sys.modules
+from scripts import fif_excel_refresh_harness as harness
+stages["after_harness_import"] = "app.main" in sys.modules
+harness.build_app(Path({root!r}), {tokens!r})
+stages["after_build_app"] = "app.main" in sys.modules
+print("FIF_APP_MAIN_PROBE " + json.dumps(stages, sort_keys=True))
+"""
+
+
+def _run_app_main_probe(preamble: str = "") -> dict[str, bool]:
+    """Import the harness and build the app in a fresh interpreter.
+
+    The attribution is only meaningful in a process nothing else has touched:
+    under serial pytest or an xdist worker an earlier module may already have
+    imported ``app.main``, which would falsely convict (or, via a skip,
+    silently excuse) the harness. A fresh interpreter answers the real
+    question: does importing the harness or building its app pull in
+    ``app.main``?
+    """
+    code = _APP_MAIN_PROBE.format(preamble=preamble, root=str(ROOT), tokens=TOKENS)
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(ROOT)
+    proc = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=300,
+        check=False,
+    )
+    assert proc.returncode == 0, (
+        f"probe interpreter exited {proc.returncode}\n--- stderr ---\n{proc.stderr[-4000:]}"
+    )
+    lines = [ln for ln in proc.stdout.splitlines() if ln.startswith("FIF_APP_MAIN_PROBE ")]
+    assert len(lines) == 1, f"probe printed no stage line\n--- stdout ---\n{proc.stdout[-2000:]}"
+    return json.loads(lines[0].split(" ", 1)[1])
+
+
+def test_build_app_does_not_import_app_main() -> None:
+    assert _run_app_main_probe() == {
+        "before_harness_import": False,
+        "after_harness_import": False,
+        "after_build_app": False,
+    }
+
+
+def test_app_main_probe_detects_a_preloaded_app_main() -> None:
+    """Discriminating control: the probe must see app.main when it is present.
+
+    An inert module object stands in for the predecessor that an xdist worker
+    or an earlier serial module could have left behind; the probe must report
+    it at every stage rather than pass vacuously.
+    """
+    preamble = 'import types\nsys.modules["app.main"] = types.ModuleType("app.main")'
+    assert _run_app_main_probe(preamble) == {
+        "before_harness_import": True,
+        "after_harness_import": True,
+        "after_build_app": True,
+    }
 
 
 # ---------------------------------------------------------------------------

@@ -13521,10 +13521,17 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests fastapi httpx jsonschema jinja2
+        run: pip install pytest pytest-xdist pandas numpy pyarrow pyyaml requests fastapi httpx jsonschema jinja2
+      # 2026-11-04 (#917 CI acceleration): the class-A step ran 1,630-4,628 s serial on
+      # hosted ubuntu-latest (4,250 tests; run 41820701238 pack 0 = 4,628 s), the
+      # full-plan critical path once ci-control-plane-contracts was split (#10735).
+      # pytest-xdist -n 4 matches the 4-vCPU hosted runner; --dist loadfile keeps every
+      # module (and its module-scoped fixtures) on one worker; no suite binds a port
+      # (TestClient only). Local -n 8: 4,218 passed in 1,169 s. Precedent: the
+      # government-revenue candidate job already runs `-n 2 --dist load`.
       - name: FIF kernel suites (class A, hermetic)
         run: >
-          python -m pytest
+          python -m pytest -n 4 --dist loadfile --max-worker-restart=0
           tests/test_fif_a1_journey_ledger.py
           tests/test_fif_specialist_packs.py
           tests/test_fif_excel_refresh_harness.py
