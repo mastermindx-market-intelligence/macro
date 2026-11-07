@@ -6317,6 +6317,8 @@ jobs:
       - "engine/marketing/state.py"
       - "engine/session_anchor.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
+      - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_score.py"
       - "engine/stock_view.py"
@@ -8131,6 +8133,9 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/neuralweb/options_selection_context.py"
+      - "tests/test_options_selection_context.py"
+      - "tests/fixtures/options_selection_question/terminal-mint-v1.json"
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -9036,6 +9041,8 @@ jobs:
       - "engine/intelligence_workspace/scenario_source_resolution.py"
       - "engine/options_hub_retention.py"
       - "tests/test_options_hub_retention.py"
+      - "tests/test_options_hub.py"
+      - "tests/test_options_expiry_support.py"
       - "tests/test_scenario_source_resolution.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -9239,7 +9246,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_selection_context.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py tests/test_options_hub.py tests/test_options_expiry_support.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -16636,6 +16643,7 @@ jobs:
       - "engine/marketing/market_clock.py"
       - "engine/marketing/movers_source.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
       - "engine/stocks_hub.py"
       - "engine/liquidity_currency.py"
       - "engine/liquidity_source_availability.py"
@@ -19711,6 +19719,7 @@ jobs:
       - engine/signal_stack.py
       - engine/smart_money.py
       - engine/sp500_heatmap.py
+      - "engine/sector_breadth_close.py"
       - engine/special_arb.py
       - engine/special_situations.py
       - engine/special_situations_premium.py
@@ -20582,6 +20591,7 @@ jobs:
       - "lib/config.py"
       - "lib/pages.py"
       - "lib/site_assets.py"
+      - "scripts/__init__.py"
       - "scripts/build_research_screener.py"
       - "scripts/check_template_site_sync.py"
       - "scripts/optimize_assets.py"
@@ -21963,6 +21973,7 @@ jobs:
       - scripts/linear_projector_p1_offline.py
       - templates/_navlinks.html.j2
       - templates/intelligence_hub.html.j2
+      - templates/ontology-theme.js
       - tests/__init__.py
       - tests/agent_eval_continuity_cases.py
       - tests/linear_portfolio_plan_cases.py
@@ -21983,6 +21994,7 @@ jobs:
       - tests/test_agentos_project_proposal.py
       - tests/test_agentos_standing_instructions.py
       - tests/test_project_knowledge_recipes.py
+      - tests/test_project_discovery_correction.py
       - tests/test_agentos_status.py
       - tests/test_b_rec2_wave_boundary_records.py
       - tests/test_b_rec3_wave_boundary_records.py
@@ -21990,6 +22002,9 @@ jobs:
       - tests/test_f02_owner_map_receipts.py
       - tests/test_mo_b_ledger_reconciliation_2026_09_18.py
       - tests/test_w9b_rec_ns.py
+      - tests/test_tfg1_r3_source_truth.py
+      - research/earnings_intelligence/e3/tfg1_development_boundary_identity_adjudication_r2.json
+      - research/earnings_intelligence/e3/tfg1_development_boundary_identity_adjudication_r3.json
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22019,7 +22034,11 @@ jobs:
             tests/test_agentos_project_plan_owner.py \
             tests/test_agentos_project_proposal.py \
             tests/test_agentos_standing_instructions.py \
-            tests/test_project_knowledge_recipes.py -q
+            tests/test_project_knowledge_recipes.py \
+            tests/test_project_discovery_correction.py -q
+
+      - name: E3-FMT R3 source-truth and sealed-holdout integrity
+        run: python -m pytest tests/test_tfg1_r3_source_truth.py -q
 
   capability-broker:
     if: ${{ false }}
@@ -24750,6 +24769,7 @@ jobs:
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
+      - "engine/sector_breadth_close.py"
       - "engine/smart_money.py"
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
@@ -28040,6 +28060,7 @@ jobs:
       - "engine/signal_archive.py"
       - "engine/signal_frontier_docket.py"
       - "engine/signal_gate.py"
+      - "engine/sector_breadth_close.py"
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
@@ -36035,6 +36056,7 @@ jobs:
       - "engine/signal_stack.py"
       - "engine/smart_money.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
@@ -37459,6 +37481,7 @@ jobs:
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
       - "engine/smart_money.py"
+      - "engine/sector_breadth_close.py"
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
@@ -38663,7 +38686,7 @@ jobs:
         timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_financial_browser.py tests/test_brain_financial_standalone.py tests/test_brain_financial_widget.py tests/test_brain_chart_widget.py tests/test_brain_chart_price_controls.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_options_question_widget_browser.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_financial_browser.py tests/test_brain_financial_standalone.py tests/test_brain_financial_widget.py tests/test_brain_chart_widget.py tests/test_brain_chart_price_controls.py -q
 
   ric-y0-yield-momentum:
     if: ${{ false }}
@@ -50477,6 +50500,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "admin/press_audience.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -50609,6 +50633,8 @@ jobs:
       - "admin/long_hold.py"
       - "admin/macro_thesis.py"
       - "admin/marketing.py"
+      - "engine/marketing/seo_director.py"
+      - "engine/marketing/seo_search_console.py"
       - "admin/marketing_floor.py"
       - "admin/mastermind_logs.py"
       - "admin/mastermind_proxy.py"
@@ -51453,6 +51479,7 @@ jobs:
       - "engine/signal_foundry/transforms.py"
       - "engine/signal_frontier_docket.py"
       - "engine/signal_gate.py"
+      - "engine/sector_breadth_close.py"
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
@@ -51693,6 +51720,7 @@ jobs:
       - "templates/support.html.j2"
       - "templates/theme.css"
       - "tests/test_admin_intelligence_os.py"
+      - "tests/test_admin_seo.py"
       - "tests/test_intelligence_execution.py"
       - "admin/intelligence_execution.py"
       - "tests/test_admin_intelligence_os_ui.py"
@@ -52035,7 +52063,134 @@ jobs:
       - name: require Node for actual renderer contracts
         run: node --version
       - name: Intelligence OS API renderer source and finite measurement contracts
-        run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py -q
+        run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py tests/test_admin_seo.py -q
+
+  press-account-claim-consumer:
+    if: ${{ false }}  # Executed by the incumbent required ci-pack wrapper.
+    gate: code
+    scope: exclusive
+    paths:
+      - "admin/**"
+      - "app/**"
+      - "collectors/**"
+      - "config/**"
+      - "contracts/**"
+      - "engine/*.py"
+      - "engine/biocatalyst/**"
+      - "engine/capital_structure/**"
+      - "engine/catalyst_opportunity/**"
+      - "engine/chronicle/**"
+      - "engine/codex_lane/**"
+      - "engine/company_intelligence/**"
+      - "engine/company_theme_exposure/**"
+      - "engine/context_index/**"
+      - "engine/earnings_narrative/**"
+      - "engine/earnings_release/**"
+      - "engine/entry_radar/**"
+      - "engine/fundamental_forensics/**"
+      - "engine/government_revenue/**"
+      - "engine/institutional_census/**"
+      - "engine/intelligence_workspace/**"
+      - "engine/market_ontology/**"
+      - "engine/market_os/**"
+      - "engine/marketing/**"
+      - "engine/medtech/**"
+      - "engine/metabolism/**"
+      - "engine/neuralweb/**"
+      - "engine/news_impact/**"
+      - "engine/oracle/**"
+      - "engine/pick_lab/**"
+      - "engine/press/**"
+      - "engine/price_pressure/**"
+      - "engine/prophet_lab/**"
+      - "engine/prophet_live/**"
+      - "engine/research_intelligence/**"
+      - "engine/research_vault/**"
+      - "engine/seasonality/**"
+      - "engine/sector_intelligence/**"
+      - "engine/stock_identity/**"
+      - "engine/theme_graph/**"
+      - "lib/**"
+      - "research/**"
+      - "scripts/__init__.py"
+      - "scripts/build_debt_maturity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/build_security_master.py"
+      - "scripts/build_stock_library.py"
+      - "scripts/build_thematic_state.py"
+      - "scripts/calibrate_rate_inflation.py"
+      - "scripts/check_board_contradictions.py"
+      - "scripts/check_research_vault_source_freshness.py"
+      - "scripts/check_signal_gate_coherence.py"
+      - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "scripts/probe_theme_exposure_axes.py"
+      - "scripts/publish_company_disclosure.py"
+      - "scripts/query_k3e_expectation_surface.py"
+      - "scripts/security_state_producer.py"
+      - "scripts/snapshot_shadow_book.py"
+      - "scripts/sparse_guard.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "scripts/worktree_sparse.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/fear_greed.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/basketdata/sector_pulse.json"
+      - "site/canadabasketdata/baskets.json"
+      - "site/chinabasketdata/baskets.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/coming-soon.html"
+      - "site/data/portfolio_ctx.json"
+      - "site/factordata/alerts_triage.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/china_standouts.json"
+      - "site/factordata/dna_class.json"
+      - "site/factordata/factors.json"
+      - "site/factordata/impulse.json"
+      - "site/factordata/reflexivity_overlay.json"
+      - "site/factordata/signal_gate.json"
+      - "site/factordata/stock_personality.json"
+      - "site/factordata/us_standouts.json"
+      - "site/factordata/us_standouts_v2.json"
+      - "site/flowleaders/leaders.json"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "site/hkbasketdata/baskets.json"
+      - "site/leaderradar/radar.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/prophet/index.json"
+      - "site/turn_watch/turn_watch.json"
+      - "site/vol/regime.json"
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/glossary.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "admin/press_audience.py"
+      - "tests/test_press_account_claims.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deterministic reader fixture dependencies
+        run: pip install pytest requests pyyaml pandas numpy
+      - name: exact native Press account-claim and fail-soft reader contracts
+        run: python -m pytest tests/test_press_account_claims.py -q
 
   earnings-worker-systemd:
     if: ${{ false }}
