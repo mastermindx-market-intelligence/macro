@@ -323,25 +323,29 @@
       <div class="rrd-sep"></div>
       <div class="rrd-eyebrow">{{ t('Leaders','龙头') }}</div>
       {% if _ld.line_en %}
-      <div class="rrd-ldr-line">{{ t(_ld.line_en, _ld.line_zh if _ld.line_zh else _ld.line_en) }}</div>
+      <div class="rrd-ldr-line">{{ t(_ld.line_en|e, (_ld.line_zh if _ld.line_zh else _ld.line_en)|e) }}</div>
       {% endif %}
       {% if _ld.rows %}
       {#- A row set with no magnitude to draw drops the bar column entirely rather than
           printing an empty rail on every line (and rather than inventing a scale — the
-          fake-magnitude-bar idiom is vetoed, DESIGN_DOCTRINE §3). Inferred from row 1. -#}
+          fake-magnitude-bar idiom is vetoed, DESIGN_DOCTRINE §3). Inferred from row 1.
+          The CN/HK/CA builders render this macro with autoescape OFF, so every
+          pipeline-sourced string here passes through |e explicitly (a no-op for plain
+          tickers, names and CJK; only & < > " ' change). The None guard sits INSIDE
+          the parentheses because `none|e` would print "None". -#}
       {%- set _ld_bars = (_ld.rows[0].pct is defined and _ld.rows[0].pct is not none) -%}
       <div class="rrd-ldr-rows">
         {% for row in _ld.rows[:6] %}
-        <div class="rrd-ldr-row{{ '' if _ld_bars else ' is-plain' }} tone-{{ row.tone if row.tone else 'muted' }}">
-          <span class="rrd-ldr-tkr">{{ row.ticker if row.ticker else '' }}</span>
-          <span class="rrd-ldr-name">{{ t(row.name_en if row.name_en else '', row.name_zh if row.name_zh else (row.name_en if row.name_en else '')) }}</span>
+        <div class="rrd-ldr-row{{ '' if _ld_bars else ' is-plain' }} tone-{{ (row.tone if row.tone else 'muted')|e }}">
+          <span class="rrd-ldr-tkr">{{ (row.ticker if row.ticker else '')|e }}</span>
+          <span class="rrd-ldr-name">{{ t((row.name_en if row.name_en else '')|e, (row.name_zh if row.name_zh else (row.name_en if row.name_en else ''))|e) }}</span>
           {% if _ld_bars %}<span class="rrd-ldr-track">{% if row.pct is defined and row.pct is not none %}<span class="rrd-ldr-fill" style="width:{{ [[row.pct,2]|max,100]|min }}%"></span>{% endif %}</span>{% endif %}
-          <span class="rrd-ldr-val">{{ row.value if row.value else '' }}</span>
+          <span class="rrd-ldr-val">{{ (row.value if row.value else '')|e }}</span>
         </div>
         {% endfor %}
       </div>
       {% elif _ld.absent_en %}
-      <div class="rrd-absent">{{ t(_ld.absent_en, _ld.absent_zh if _ld.absent_zh else _ld.absent_en) }}</div>
+      <div class="rrd-absent">{{ t(_ld.absent_en|e, (_ld.absent_zh if _ld.absent_zh else _ld.absent_en)|e) }}</div>
       {% endif %}
       {% endif %}
 
@@ -410,8 +414,8 @@
                           and c.fx.built_date != c.asof) else none) -%}
       <div class="rrd-sep"></div>
       <div class="rrd-foot">
-        {%- if c.asof %}<span class="l-en">As of {{ c.asof }}{% if _fx_lag %}, currency readings from {{ _fx_lag }}{% endif %}. </span><span class="l-zh">数据截至 {{ c.asof }}{% if _fx_lag %}，汇率读数为 {{ _fx_lag }}{% endif %}。</span>{% endif -%}
-        {%- if c.caveat_en %}<span class="l-en">{{ c.caveat_en }} </span><span class="l-zh">{{ c.caveat_zh if c.caveat_zh else c.caveat_en }}</span>{% endif -%}
+        {%- if c.asof %}<span class="l-en">As of {{ c.asof|e }}{% if _fx_lag %}, currency readings from {{ _fx_lag|e }}{% endif %}. </span><span class="l-zh">数据截至 {{ c.asof|e }}{% if _fx_lag %}，汇率读数为 {{ _fx_lag|e }}{% endif %}。</span>{% endif -%}
+        {%- if c.caveat_en %}<span class="l-en">{{ c.caveat_en|e }} </span><span class="l-zh">{{ (c.caveat_zh if c.caveat_zh else c.caveat_en)|e }}</span>{% endif -%}
         <span class="l-en">These are windows, not certainties — re-drawn nightly. The response is sizing, not stock picking; forward records are still accruing.</span>
         <span class="l-zh">这些是概率窗口而非定论——每晚重算。应对是仓位控制而非选股；前瞻记录仍在积累中。</span>
       </div>
