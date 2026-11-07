@@ -2419,6 +2419,7 @@ jobs:
       - "tests/test_integrated_answer_clock.py"
       - "tests/test_integrated_answer_consumer_receipt.py"
       - "tests/test_integrated_answer_cs_context_leg.py"
+      - "tests/test_integrated_answer_provenance.py"
       - "tests/test_integrated_answer_v0.py"
       - "tools/**"
       - "worker/**"
@@ -2432,7 +2433,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
       - name: integrated answer v0 composer
-        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py tests/test_integrated_answer_cs_context_leg.py -q
+        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py tests/test_integrated_answer_cs_context_leg.py tests/test_integrated_answer_provenance.py -q
 
   c19-wp19-integrated-answer-pins:
     if: ${{ false }}
@@ -25027,6 +25028,8 @@ jobs:
       - "engine/theme_graph/membership_evidence.py"
       - "research/theme_graph/microtheme_membership_candidates_2026-10-08.json"
       - "research/theme_graph/micro_member_research_addendum_20261016/**"
+      # Read-only 103+46 composition; no graph/member admission.
+      - "research/theme_graph/MICRO_CURATOR_READINESS_2026-10-16.md"
       - "engine/theme_graph/ontology_inventory.py"
       - "engine/theme_graph/proposal_worklist.py"
       - "engine/theme_graph/security_navigation.py"
@@ -25045,6 +25048,7 @@ jobs:
       - "tests/test_theme_graph_local_plane.py"
       - "tests/test_theme_graph_micro_membership_research.py"
       - "tests/test_theme_graph_micro_member_addendum.py"
+      - "tests/test_theme_graph_micro_curator_readiness.py"
       - "tests/test_theme_graph_materialize.py"
       - "tests/test_theme_graph_membership_lifecycle.py"
       - "collectors/equity_earnings.py"
@@ -25149,7 +25153,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py tests/test_gmi_activity_history_bridge.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_micro_curator_readiness.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py tests/test_gmi_activity_history_bridge.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
@@ -30515,6 +30519,29 @@ jobs:
       # venv and re-darkens the jinja2 one the moment this step goes away.
       - name: inline-CSS externalization units (incl. the jinja2 cross-module gate)
         run: python -m pytest tests/test_externalize_css.py -q
+
+  inflation-finite-outputs:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # Inflation calculator. Node unit test over the template and the generated
+    # page: the whole controller IIFE runs over both surfaces and both copy
+    # transports, so a nonfinite derived amount, percentage or reciprocal is
+    # rejected instead of rendered as $Infinity and copied out. The verdict is a
+    # pure function of the PR tree (template + generated page + harness), so
+    # gate: code; the free-content-estate rebuild is gate: data and never runs
+    # on a pull request.
+    paths:
+      - templates/calculators/inflation.html.j2
+      - site/tools/calculators/inflation.html
+      - tests/js/inflation_finite_outputs.test.mjs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: inflation finite derived-output regression
+        run: node --test tests/js/inflation_finite_outputs.test.mjs
 
   calculator-input-integrity:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
