@@ -7003,6 +7003,28 @@ def write_posts_deterministic(
 # write_posts_llm  (optional; NEVER called in tests)
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _writer_provider_config(llm_cfg: dict) -> tuple[dict, bool]:
+    """Prepare the incumbent provider recipe without binding an item."""
+    from engine import llm_auth  # noqa: PLC0415 — keep the thin import closure
+
+    provider_cfg = {
+        "usage_lane": llm_cfg.get("usage_lane", "marketing-copywriter"),
+        "oauth_pool_lane": llm_cfg.get("oauth_pool_lane", "marketing-copywriter"),
+        "provider_order": llm_cfg.get("provider_order")
+        or ["codex", "oauth", "anthropic", "deepseek"],
+        "codex_source_model": llm_cfg.get("codex_source_model", "gpt-5.6-sol"),
+        "codex_reasoning_effort": llm_cfg.get("codex_reasoning_effort", "medium"),
+    }
+    for field in (llm_auth.APPLICATION_MODE_CFG_KEY, "workload_profile"):
+        if field in llm_cfg:
+            provider_cfg[field] = llm_cfg[field]
+    selected = llm_auth.application_mode_id(provider_cfg) is not None
+    if selected:
+        provider_cfg.setdefault("workload_profile", "site_batch")
+        provider_cfg["provider_order"] = ["fabric"]
+    return provider_cfg, selected
+
+
 def write_posts_llm(
     contexts: list[dict],
     cfg: dict,
@@ -7023,21 +7045,26 @@ def write_posts_llm(
         return None
 
     try:
-        try:
-            from lib import config as _config  # noqa: PLC0415
-            llm_models = _config.load().get("llm_models", {}) or {}
-        except Exception:  # noqa: BLE001 — fall back to reading config.yml directly
-            import yaml as _yaml  # noqa: PLC0415
-            from pathlib import Path as _Path  # noqa: PLC0415
-            _cfgp = _Path(__file__).resolve().parents[2] / "config.yml"
-            llm_models = (_yaml.safe_load(_cfgp.read_text(encoding="utf-8")) or {}).get("llm_models", {}) or {}
-        model_key = llm_cfg.get("model_key", "marketing_copy")
-        model_id = llm_models.get(model_key, "")
-        if not model_id:
-            return None
-
         max_posts = int(llm_cfg.get("max_posts_per_run", 60))
         batch = contexts[:max_posts]
+        if not batch:
+            return []
+        from engine import llm_auth  # noqa: PLC0415
+        provider_cfg, selected = _writer_provider_config(llm_cfg)
+        model_id = None
+        if not selected:
+            try:
+                from lib import config as _config  # noqa: PLC0415
+                llm_models = _config.load().get("llm_models", {}) or {}
+            except Exception:  # noqa: BLE001 — fall back to reading config.yml directly
+                import yaml as _yaml  # noqa: PLC0415
+                from pathlib import Path as _Path  # noqa: PLC0415
+                _cfgp = _Path(__file__).resolve().parents[2] / "config.yml"
+                llm_models = (_yaml.safe_load(_cfgp.read_text(encoding="utf-8")) or {}).get("llm_models", {}) or {}
+            model_key = llm_cfg.get("model_key", "marketing_copy")
+            model_id = llm_models.get(model_key, "")
+            if not model_id:
+                return None
 
         # ── The prompt IS the product: personas + copy laws + hook grammar ────
         personas_cfg = cfg.get("personas", {}) or {}
@@ -7370,18 +7397,9 @@ def write_posts_llm(
         # balancer (oauth_pool_lane), because Claude subscription tokens are
         # reserved for website-building sessions. Sol writes; a host without the
         # Codex CLI omits that rung and the lane degrades to the pool.
-        from engine import llm_auth  # noqa: PLC0415
-        providers = llm_auth.build_providers(
-            {
-                "usage_lane": llm_cfg.get("usage_lane", "marketing-copywriter"),
-                "oauth_pool_lane": llm_cfg.get("oauth_pool_lane", "marketing-copywriter"),
-                "provider_order": llm_cfg.get("provider_order")
-                or ["codex", "oauth", "anthropic", "deepseek"],
-                "codex_source_model": llm_cfg.get("codex_source_model", "gpt-5.6-sol"),
-                "codex_reasoning_effort": llm_cfg.get("codex_reasoning_effort", "medium"),
-            },
-            opus_model=model_id,
-        )
+        providers = llm_auth.build_providers(provider_cfg, opus_model=model_id)
+        if llm_auth.is_fabric_selection(providers) != selected:
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
         if not providers:
             # ARMED BUT MUTE. Reaching here means the operator switched the voice
             # lane ON (config copywriter.llm.enabled AND MARKETING_LLM_ENABLED)
@@ -7413,14 +7431,21 @@ def write_posts_llm(
                 messages=[{"role": "user", "content":
                            "Items:\n" + json.dumps(items_payload, indent=1)}],
             )
+            if selected and (getattr(resp, "stop_reason", None) != "end_turn"
+                             or not resp.content
+                             or any(getattr(block, "type", "") != "text" for block in resp.content)):
+                raise llm_auth.FabricProviderError("fabric_text_completion_required")
             if getattr(resp, "stop_reason", None) == "refusal":
                 return None, "stop_refusal", resp
             text = "".join(b.text for b in resp.content
                            if getattr(b, "type", "") == "text")
+            if selected and not text.strip():
+                raise llm_auth.FabricProviderError("fabric_text_completion_required")
             return (text or None), None, resp
 
-        raw_text, _reason, _provider = llm_auth.make_call(
-            providers, _do_call, context="marketing_copy")
+        with llm_auth.begin_operation(providers, context="marketing_copy") as operation:
+            raw_text, _reason, _provider = llm_auth.make_call(
+                operation.providers, _do_call, context="marketing_copy")
         if not raw_text:
             return None
         # Extract JSON array from response
@@ -8711,7 +8736,8 @@ _PROVIDER_FAULT_ALARM_SHARE = 0.10
 _PROVIDER_FAULT_ALARM_MIN = 3
 
 
-def _provider_fault_alarm(results: list[dict], dropped: list[dict]) -> None:
+def _provider_fault_alarm(results: list[dict], dropped: list[dict], *,
+                          fabric_selected: bool = False) -> None:
     """One line-start ``::error`` when provider faults are eating this desk.
 
     Bare print at line start with flush: a ``::error`` behind this module's
@@ -8749,6 +8775,12 @@ def _provider_fault_alarm(results: list[dict], dropped: list[dict]) -> None:
                  "Check the named rungs in copywriter.llm.provider_order: each "
                  "item already spent its same-provider retry and its one "
                  "failover rung before it died.")
+        if fabric_selected:
+            steer = ("Selected Fabric kept each item on its admitted model and "
+                     "account. Only a complete unreadable reply permits one "
+                     "format correction per editorial turn; transport faults "
+                     "do not trigger retries or provider failover. Check the "
+                     "named fault and the shared admission/settlement receipt.")
         print(f"::error title=marketing_copy_provider_faults::The copy lane's "
               f"PROVIDER stage lost {n} of {total} attempted posts "
               f"({share:.0%}; alarm floor {_PROVIDER_FAULT_ALARM_SHARE:.0%} and "
@@ -8808,26 +8840,24 @@ def write_posts_llm_v2(contexts: list[dict], cfg: dict, *, root: Any = None) -> 
         _bump("dropped_provider", len(contexts))
         return results
 
+    selected = None
+    selection_failed = False
     try:
-        model_id = _v2_model_id(llm_cfg)
         # House LLM path: the llm_auth provider waterfall (OAuth pool -> API key
         # -> deepseek), never a bare Anthropic() client. Lazy import: the
         # marketing-engine CI lane installs pytest + pyyaml + jinja2 and nothing
         # else, so a module-level import here reddens it at COLLECTION.
         from engine import llm_auth  # noqa: PLC0415
 
+        provider_cfg, selected = _writer_provider_config(llm_cfg)
+        model_id = None if selected else _v2_model_id(llm_cfg)
+
         # CHATGPT-FIRST (operator directive 2026-07-29) — see the note on
         # config/marketing.yml copywriter.llm. Codex leads, the key_pool-balanced
         # Claude oauth rung is the fallback, anthropic/deepseek are the metered
         # floor. Sol is the writing tier.
-        providers = llm_auth.build_providers(
-            {
-                "usage_lane": llm_cfg.get("usage_lane", "marketing-copywriter"),
-                "oauth_pool_lane": llm_cfg.get("oauth_pool_lane", "marketing-copywriter"),
-                "provider_order": llm_cfg.get("provider_order")
-                or ["codex", "oauth", "anthropic", "deepseek"],
-                "codex_source_model": llm_cfg.get("codex_source_model", "gpt-5.6-sol"),
-                "codex_reasoning_effort": llm_cfg.get("codex_reasoning_effort", "medium"),
+        if not selected:
+            provider_cfg.update({
                 # SDK RETRIES MUST NOT BECOME THE RETRY MECHANISM (house memory
                 # "SDK retries defeat failover walks"). The waterfall walk is
                 # this lane's retry for hard errors and the explicit empty-text
@@ -8853,12 +8883,16 @@ def write_posts_llm_v2(contexts: list[dict], cfg: dict, *, root: Any = None) -> 
                 # flip under load, and every loss reads as `provider_error` and
                 # walks the item down to the metered floor.
                 "codex_timeout_s": llm_cfg.get("codex_timeout_s", 150.0),
-            },
-            opus_model=model_id,
-        )
+            })
+        # Selected Fabric uses its incumbent 90s request bound. The native
+        # HTTP/Codex budgets above do not become a whole-item Fabric deadline.
+        providers = llm_auth.build_providers(provider_cfg, opus_model=model_id)
+        if llm_auth.is_fabric_selection(providers) != selected:
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
     except Exception as exc:  # noqa: BLE001 — provider construction must not raise out
         log.warning("copywriter v2: provider construction failed (%s: %s)",
                     type(exc).__name__, exc)
+        selection_failed = type(exc).__name__ == "FabricProviderError"
         providers = []
 
     if not providers:
@@ -8868,15 +8902,22 @@ def write_posts_llm_v2(contexts: list[dict], cfg: dict, *, root: Any = None) -> 
         # point of the 2026-07-26 incident fix. A bare print at line start with
         # flush: a "::warning" behind a prefixed log formatter is not a line
         # start and GitHub drops it silently (tests/test_gh_annotation_line_start.py).
-        print("::warning title=marketing_copywriter_mute::LLM copy lane is ARMED "
-              "(copywriter.llm.enabled + MARKETING_LLM_ENABLED) but no provider "
-              "credential is visible — every planned post is being DROPPED, not "
-              "templated. Pass CLAUDE_CODE_OAUTH_TOKEN* / ANTHROPIC_API_KEY / "
-              "DEEPSEEK_API_KEY to this step.", flush=True)
-        log.warning("copywriter v2: armed but no LLM provider credential — "
-                    "planned posts dropped")
+        if selected is not False or selection_failed:
+            print("::warning title=marketing_copywriter_mute::The selected "
+                  "shared AI binding is unavailable. Planned posts are DROPPED. "
+                  "Check the Fabric mode, workload qualification and admission "
+                  "receipt.", flush=True)
+            reason = "fabric_provider_unavailable"
+        else:
+            print("::warning title=marketing_copywriter_mute::LLM copy lane is ARMED "
+                  "(copywriter.llm.enabled + MARKETING_LLM_ENABLED) but no provider "
+                  "credential is visible — every planned post is being DROPPED, not "
+                  "templated. Pass CLAUDE_CODE_OAUTH_TOKEN* / ANTHROPIC_API_KEY / "
+                  "DEEPSEEK_API_KEY to this step.", flush=True)
+            reason = "no_provider_credential"
+        log.warning("copywriter v2: provider construction unavailable — planned posts dropped")
         for i in range(len(contexts)):
-            results[i] = {"mode": "dropped", "reasons": ["no_provider_credential"],
+            results[i] = {"mode": "dropped", "reasons": [reason],
                           "stage": "provider"}
         _bump("dropped_provider", len(contexts))
         return results
@@ -8968,11 +9009,15 @@ def write_posts_llm_v2(contexts: list[dict], cfg: dict, *, root: Any = None) -> 
             # present on the repair turn too (which restates only violations)
             # and sits beside the house defaults it is allowed to override.
             system_prompt = _prompt_for(persona_id, persona_card)
-            return _v2_write_one(
-                ctx, payload, providers=providers, system_prompt=system_prompt,
-                max_tokens=max_tokens, cfg=cfg,
-                recent=list(recent_seed.get(str(ctx.get("account", "")) or "", [])),
-            )
+            # The shared recipe is inert. Every item owns a fresh binding for
+            # all of its writer turns, including repairs requested by its
+            # separately admitted critic. No live client is shared by threads.
+            with llm_auth.begin_operation(providers, context="marketing_copy_v2") as operation:
+                return _v2_write_one(
+                    ctx, payload, providers=operation.providers, system_prompt=system_prompt,
+                    max_tokens=max_tokens, cfg=cfg,
+                    recent=list(recent_seed.get(str(ctx.get("account", "")) or "", [])),
+                )
         except Exception as exc:  # noqa: BLE001 — ONE item's failure, ONE drop
             log.warning("copywriter v2: item %d raised (%s: %s) — dropped",
                         idx, type(exc).__name__, exc)
@@ -9026,7 +9071,10 @@ def write_posts_llm_v2(contexts: list[dict], cfg: dict, *, root: Any = None) -> 
             {"text": text_i, "date": ctx_i.get("as_of")})
 
     dropped = [r for r in results if r.get("mode") == "dropped"]
-    _provider_fault_alarm(results, dropped)
+    if selected:
+        _provider_fault_alarm(results, dropped, fabric_selected=True)
+    else:
+        _provider_fault_alarm(results, dropped)
     _record_copy_funnel(results)
     print(funnel_annotation(), flush=True)
 
@@ -9139,6 +9187,7 @@ def _v2_write_one(
     from engine import llm_auth  # noqa: PLC0415
     from engine.marketing import expression_dial as _expression_dial  # noqa: PLC0415
 
+    selected = llm_auth.is_fabric_selection(providers)
     shape = str(ctx.get("shape") or DEFAULT_SHAPE)
     account_id = str(ctx.get("account", ""))
     kind = str(ctx.get("type", ""))
@@ -9369,6 +9418,58 @@ def _v2_write_one(
         fault["reason"] = f"{family}:" + "+".join(tried) + _rung_trace()
         return ""
 
+    def _selected_call(user_msg: str) -> str:
+        """One editorial turn, with at most one complete-output format repair.
+
+        The native empty-text retry and rung-subsetting helpers above are not
+        valid for an admitted Fabric operation. Each callback sends once and
+        every deliberate step keeps the original operation's providers intact.
+        Initial, validator and critic turns give at most six writer requests
+        per item; the critic has its own independent operation.
+        """
+        for format_attempt in range(2):
+            message = user_msg + (_OUTPUT_SHAPE_REMINDER if format_attempt else "")
+
+            def _once(client, model):
+                resp = _messages_create(client, model, message,
+                                        cap=max_tokens, extra_body=None)
+                if getattr(resp, "stop_reason", None) == "refusal":
+                    return None, "stop_refusal", resp
+                if (getattr(resp, "stop_reason", None) != "end_turn"
+                        or not resp.content
+                        or any(getattr(block, "type", "") != "text" for block in resp.content)):
+                    raise llm_auth.FabricProviderError("fabric_text_completion_required")
+                raw = llm_auth.response_text(resp)
+                if not raw or not raw.strip():
+                    raise llm_auth.FabricProviderError("fabric_text_completion_required")
+                return raw, None, resp
+
+            try:
+                raw, reason, served = llm_auth.make_call(
+                    providers, _once, context="marketing_copy_v2",
+                    attempts=rung_log)
+            except Exception as exc:  # noqa: BLE001 — never resend an uncertain step
+                fault["reason"] = f"provider_error:{type(exc).__name__}" + _rung_trace()
+                log.warning("copywriter v2: selected Fabric step failed (%s: %s)",
+                            type(exc).__name__, exc)
+                return ""
+            if not raw:
+                fault["reason"] = ("provider_refusal" if reason == "stop_refusal"
+                    else f"provider_unavailable:{reason or 'fabric_text_completion_required'}"
+                    + _rung_trace())
+                return ""
+            text = _v2_extract_text(raw)
+            if text:
+                if format_attempt:
+                    _bump("provider_recovered")
+                return text
+            _bump("unreadable_replies")
+            if not format_attempt:
+                _bump("unreadable_reasks")
+            else:
+                fault["reason"] = f"unreadable_reply:{served or 'fabric'}" + _rung_trace()
+        return ""
+
     def _call(user_msg: str) -> str:
         """One writer turn across the waterfall. "" on every provider fault.
 
@@ -9396,6 +9497,8 @@ def _v2_write_one(
         """
         fault.clear()
         rung_log.clear()
+        if selected:
+            return _selected_call(user_msg)
         try:
             raw, reason, served = llm_auth.make_call(
                 providers, _do_call_factory(user_msg, same_provider_retry=True),

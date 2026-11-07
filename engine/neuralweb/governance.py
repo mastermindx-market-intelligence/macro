@@ -61,9 +61,11 @@ Optional on all rows:
 """
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -120,6 +122,104 @@ def _event_id(event_type: str, target: str, ts: str) -> str:
     return hashlib.sha256(raw.encode()).hexdigest()[:16]
 
 
+def event_identity(event_type: str, target: str, ts: str) -> str:
+    """The stable identity of one governance event (the row's ``event_id``).
+
+    A caller that owns a durable publication intent computes the identity
+    BEFORE the append, so the acknowledged row can be correlated to exactly
+    the event that was intended.
+    """
+    return _event_id(event_type, target, ts)
+
+
+def _ledger_rows(path: Path) -> list[dict[str, Any]]:
+    """Parse the ledger rows. A row that does not parse is not an event."""
+    rows: list[dict[str, Any]] = []
+    try:
+        with path.open("r") as fh:
+            for raw in fh.read().splitlines():
+                raw = raw.strip()
+                if not raw:
+                    continue
+                try:
+                    row = json.loads(raw)
+                except Exception:  # noqa: BLE001
+                    continue
+                if isinstance(row, dict):
+                    rows.append(row)
+    except FileNotFoundError:
+        return []
+    return rows
+
+
+def _fsync_directory(path: Path) -> None:
+    """Make a directory entry durable (the file entry alone is not enough)."""
+    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+    fd = os.open(path, flags)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def _append_durable(path: Path, row: dict[str, Any], line: str, event_id: str) -> bool:
+    """Append one row durably and acknowledge the exact correlated row.
+
+    The row is written, the ledger file and its parent directory are fsynced,
+    and the exact row is read back and compared before the append is
+    acknowledged. An existing row with the same identity is acknowledged
+    without a second append when it is the same event, and is refused when it
+    is a different one.
+    """
+    expected = json.loads(line)
+    with path.open("a+") as fh:
+        fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
+        try:
+            fh.seek(0)
+            existing = None
+            for raw in fh.read().splitlines():
+                raw = raw.strip()
+                if not raw:
+                    continue
+                try:
+                    candidate = json.loads(raw)
+                except Exception:  # noqa: BLE001
+                    continue
+                if isinstance(candidate, dict) and candidate.get("event_id") == event_id:
+                    existing = candidate
+                    break
+            if existing is not None:
+                if existing != expected:
+                    log.warning("governance: event identity %s already names another event",
+                                event_id)
+                    return False
+                # The exact row is already in the ledger: never append a
+                # second copy of the same event. It is acknowledged only
+                # after its durability is reconciled — the ledger file is
+                # fsynced, its containing directories are fsynced, and the
+                # exact row is read back. A row left visible by an
+                # interrupted or failed fsync is not yet durable evidence.
+                fh.flush()
+                os.fsync(fh.fileno())
+            else:
+                fh.seek(0, os.SEEK_END)
+                fh.write(line + "\n")
+                fh.flush()
+                os.fsync(fh.fileno())
+        finally:
+            fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
+    # Requalify every entry created by _ledger_path, including on an
+    # identical-row recovery. Visibility cannot prove that an earlier
+    # failed ancestor fsync completed.
+    for directory in (path.parent, path.parent.parent, path.parent.parent.parent):
+        _fsync_directory(directory)
+    for candidate in _ledger_rows(path):
+        if candidate.get("event_id") == event_id:
+            return candidate == expected
+    log.warning("governance: appended event %s could not be read back", event_id)
+    return False
+
+
 def append_event(
     event_type: str,
     target: str,
@@ -131,6 +231,9 @@ def append_event(
     after: dict[str, Any] | None = None,
     root: str | Path | None = None,
     note: str | None = None,
+    event_id: str | None = None,
+    ts: str | None = None,
+    durable: bool = False,
 ) -> bool:
     """Append one governance event to data/neuralweb/governance.jsonl.
 
@@ -155,11 +258,25 @@ def append_event(
         Project root for path resolution (None = production paths).
     note : str | None
         Free-form human annotation.
+    event_id : str | None
+        The identity of this event. Defaults to the deterministic identity of
+        (event_type, target, ts). A caller that owns a durable publication
+        intent passes the identity it already persisted.
+    ts : str | None
+        The event time. Defaults to now. A caller that owns a durable
+        publication intent passes the time it already persisted.
+    durable : bool
+        When True the row is fsynced to the ledger and to its parent
+        directory, the exact row is read back and compared, and the append is
+        acknowledged only when that readback proves it. An event whose
+        identity already names a different row is refused rather than
+        appended twice.
 
     Returns
     -------
     bool
-        True if the event was appended successfully; False on any error.
+        True if the event was appended (and, when durable, acknowledged)
+        successfully; False on any error.
         NEVER raises.
     """
     try:
@@ -168,8 +285,8 @@ def append_event(
                         event_type, sorted(_VALID_EVENT_TYPES))
             # Still write it; schema drift is diagnosed by the quarterly auditor
 
-        ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
-        eid = _event_id(event_type, target, ts)
+        ts = ts or datetime.now(timezone.utc).isoformat(timespec="seconds")
+        eid = event_id or _event_id(event_type, target, ts)
 
         row: dict[str, Any] = {
             "schema": _SCHEMA,
@@ -191,6 +308,8 @@ def append_event(
 
         p = _ledger_path(root)
         line = json.dumps(row, separators=(",", ":"), default=str)
+        if durable:
+            return _append_durable(p, row, line, eid)
         with p.open("a") as fh:
             fh.write(line + "\n")
         return True

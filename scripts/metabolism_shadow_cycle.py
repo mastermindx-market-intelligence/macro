@@ -52,6 +52,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from scripts.metabolism_journal import FabricHeld
 
 _HERE = Path(__file__).resolve()
 _ROOT = _HERE.parent.parent
@@ -520,6 +521,8 @@ def _run_agenda(shadow_root: Path, real_root: Path, cycle_id: str, use_llm: bool
     """
     stage = "agenda"
     try:
+        from scripts.metabolism_journal import guard_native_route
+        guard_native_route(real_root, "agenda", cycle_id, ["agenda"], model_requested=use_llm)
         from engine.metabolism.agenda import build_agenda  # type: ignore[import]
         providers: list[dict] = []
         if use_llm:
@@ -540,7 +543,7 @@ def _run_agenda(shadow_root: Path, real_root: Path, cycle_id: str, use_llm: bool
             cycle_id=cycle_id,
             root=shadow_root,
             providers=providers,
-            model="claude-opus-4-8",
+            model="claude-opus-4-8" if use_llm else None,
         )
 
         from engine.metabolism.agenda import AGENDA_DIR  # type: ignore[import]
@@ -553,6 +556,8 @@ def _run_agenda(shadow_root: Path, real_root: Path, cycle_id: str, use_llm: bool
             "artifact": str(out_path),
             "note": f"agenda: {n_items} items; provider={agenda.get('provider')}",
         }
+    except FabricHeld as exc:
+        return {"status": "held", "artifact": None, "note": str(exc)}
     except Exception as exc:  # noqa: BLE001
         log.warning("shadow_cycle[%s]: %s", stage, exc)
         return {"status": "failed", "artifact": None, "note": str(exc)}
@@ -568,11 +573,15 @@ def _run_propose(
     """PROPOSE stage.  Uses injected_proposals seam when --no-llm."""
     stage = "propose"
     try:
-        from engine.metabolism.propose import propose  # type: ignore[import]
+        from scripts.metabolism_journal import guard_native_route
+        guard_native_route(real_root, "propose", cycle_id, ["lobe:til"], model_requested=use_llm)
+        from engine.metabolism.propose import propose, _propose_inner  # type: ignore[import]
 
         injected = None if use_llm else _STUB_INJECTED_PROPOSALS
 
-        result = propose(
+        # The no-LLM probe materializes declared stubs; it cannot invoke a model.
+        builder = propose if use_llm else _propose_inner
+        result = builder(
             cycle_id,
             lobe="til",
             root=shadow_root,
@@ -592,6 +601,8 @@ def _run_propose(
                 f"degraded={meta.get('degraded_reason')}"
             ),
         }
+    except FabricHeld as exc:
+        return {"status": "held", "artifact": None, "note": str(exc)}
     except Exception as exc:  # noqa: BLE001
         log.warning("shadow_cycle[%s]: %s", stage, exc)
         return {"status": "failed", "artifact": None, "note": str(exc)}
@@ -609,7 +620,10 @@ def _run_adjudicate(
     """
     stage = "adjudicate"
     try:
-        from engine.metabolism.adjudicate import adjudicate_role, resolve_two_key  # type: ignore[import]
+        from scripts.metabolism_journal import guard_native_route
+        for role in ("orchestrator", "adversary"):
+            guard_native_route(real_root, "adjudicate", cycle_id, ["role:"+role], model_requested=use_llm)
+        from engine.metabolism.adjudicate import adjudicate_role, _adjudicate_role_inner, resolve_two_key  # type: ignore[import]
 
         docket_path = shadow_root / "data" / "metabolism" / "dockets" / f"{cycle_id}.json"
         if not docket_path.exists():
@@ -624,14 +638,15 @@ def _run_adjudicate(
 
         injected_stub = None if use_llm else _stub_adjudication_injected(proposals)
 
-        results_orch = adjudicate_role(
+        adjudicator = adjudicate_role if use_llm else _adjudicate_role_inner
+        results_orch = adjudicator(
             "orchestrator", cycle_id, docket_path,
             run_id=f"shadow-{cycle_id}-orch",
             root=shadow_root,
             injected=injected_stub,
             dry_run=False,
         )
-        results_adv = adjudicate_role(
+        results_adv = adjudicator(
             "adversary", cycle_id, docket_path,
             run_id=f"shadow-{cycle_id}-adv",
             root=shadow_root,
@@ -649,6 +664,8 @@ def _run_adjudicate(
                 f"resolve: {n_auth}/{len(results_resolve)} authorized"
             ),
         }
+    except FabricHeld as exc:
+        return {"status": "held", "artifact": None, "note": str(exc)}
     except Exception as exc:  # noqa: BLE001
         log.warning("shadow_cycle[%s]: %s", stage, exc)
         return {"status": "failed", "artifact": None, "note": str(exc)}

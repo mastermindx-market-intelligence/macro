@@ -1,0 +1,218 @@
+{
+  "authority_refusal": "Prior contribution d7b ci-authority/main unsupported_base_ref is retained; no retarget, guard bypass, Ready/arming, self-approval or self-merge.",
+  "before": "d7b6ac402e359f68bee6c670ae975fc86e6ec868",
+  "decisions": [
+    "Preserve incoming current/completed publication history and independently observed partial usage in the incumbent audit owner.",
+    "Freeze resolved proposal overrides in new identities; accept only closed five/six-fact legacy/current identities without rewriting old originals; ambiguous matches and changed overrides stay held.",
+    "Authenticate retained response completion, text-only shape, observed provider, full publication ACK and optional outcome-owned ACK.",
+    "Recover a superseded d7b original absent from history only from its own complete ACK after one-snapshot membership/current-projection/different-head qualification. No validation exception becomes fallback and no recovery write occurs.",
+    "Keep Opus-only codex opt-out and commit the expanded OAuth lane/credential-reference transport policy before provider construction; retain descriptor and callback model guards.",
+    "Preserve all15 previously qualified regression methods, porting fixture storage accesses to the history schema, and add11 compatibility cases.",
+    "Correct the incoming history expectation that a changed explicit proposal override could reuse the prior result; identical requests still return the frozen record without effects.",
+    "Retain the historical12-file native fixture bytes and reusable loader; Metabolism uses the existing exact19-file current native pin owner.",
+    "Retain the original attended83aa test/workflow/evidence contribution and all four prior reports.",
+    "C3 bounded source judgment found no remaining concrete compatibility defect; no formal GitHub approval is claimed."
+  ],
+  "live_effects": "NONE; synthetic providers, disposable original owners and local source only",
+  "mastermind_native_pair": "6991fdea6b4dca152726629aa220a1b5d3fead63",
+  "original_parent": "1575d8ccb7c618f52efdcfdc638f5cbbf217d334",
+  "prior_iteration": {
+    "installed": false,
+    "live_effects": "NONE; synthetic provider and disposable owner fixtures only",
+    "runs": [
+      {
+        "command": [
+          "/tmp/mmx-d5-brain-composition-x6ymwpln/.proof-venv/bin/python",
+          "-B",
+          "/private/tmp/mmx-metabolism-history-join-1hzl05an/incoming_regression.py",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/metabolism-original-recovery-20261107-sol-001",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "--noconftest",
+          "-c",
+          "/dev/null",
+          "--rootdir",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/metabolism-original-recovery-20261107-sol-001",
+          "--basetemp",
+          "/private/tmp/mmx-metabolism-history-join-1hzl05an/incoming-regressions-tmp",
+          "--junitxml",
+          "/private/tmp/mmx-metabolism-history-join-1hzl05an/incoming-regressions.xml",
+          "tests/test_metabolism_audit.py::TestRetainedOriginal::test_completed_publication_correlation_cannot_be_forged[response_stop]",
+          "tests/test_metabolism_audit.py::TestRetainedOriginal::test_completed_publication_correlation_cannot_be_forged[response_shape]",
+          "tests/test_metabolism_audit.py::TestAuditHistoryCompatibility::test_changed_public_proposal_override_holds_before_any_new_effect"
+        ],
+        "junit_sha256": null,
+        "log": "/private/tmp/mmx-metabolism-history-join-1hzl05an/incoming-regressions.log",
+        "log_sha256": "7ad25df3e1708696ebae10de1b4dcd820288649c0377002c460ae937f8b1a361",
+        "name": "incoming-regressions",
+        "rc": 1,
+        "seconds": 0.18,
+        "totals": null
+      },
+      {
+        "command": [
+          "/tmp/mmx-d5-brain-composition-x6ymwpln/.proof-venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "--noconftest",
+          "-c",
+          "/dev/null",
+          "--rootdir",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/metabolism-original-recovery-20261107-sol-001",
+          "--basetemp",
+          "/private/tmp/mmx-metabolism-history-join-1hzl05an/composed-audit-tmp",
+          "--junitxml",
+          "/private/tmp/mmx-metabolism-history-join-1hzl05an/composed-audit.xml",
+          "tests/test_metabolism_audit.py"
+        ],
+        "junit_sha256": "3ac7aa54bde4590f43c2ba9c0c1818fddbe2a20f9f320482cf207e2f8730aa5c",
+        "log": "/private/tmp/mmx-metabolism-history-join-1hzl05an/composed-audit.log",
+        "log_sha256": "f123e06b54b6d56166c5b837e5aee5329af9e01124a61cc5e2706e1d47f8edb5",
+        "name": "composed-audit",
+        "rc": 1,
+        "seconds": 9.56,
+        "totals": {
+          "errors": 0,
+          "failures": 2,
+          "skipped": 0,
+          "tests": 185
+        }
+      }
+    ],
+    "source": {
+      "engine/metabolism/audit.py": "d4205a689d04004138b965918f092eda18a225fe575f2f3ca2686533a397f545",
+      "scripts/metabolism_journal.py": "0f62fa9e67c2435bd864f1d03020ecbf02ed9fb5f1776542cd8015b3d365fa9d",
+      "tests/test_metabolism_audit.py": "54f3726179fc7b25f99833c0c11904d4552856eed17db7656d96640672065713",
+      "tests/test_metabolism_fabric_composition.py": "f4cf972097231df032b6f5ccbefcaae01d4e7e781dbcf4cfc110474f103b20de"
+    },
+    "source_unchanged": true
+  },
+  "proof": {
+    "installed": false,
+    "live_effects": "NONE; synthetic provider and disposable owner fixtures only",
+    "runs": [
+      {
+        "cases_by_module": {
+          "test_metabolism_audit": 3
+        },
+        "command": [
+          "/tmp/mmx-d5-brain-composition-x6ymwpln/.proof-venv/bin/python",
+          "-B",
+          "/private/tmp/mmx-metabolism-history-join-1hzl05an/incoming_regression.py",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/metabolism-original-recovery-20261107-sol-001",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "--noconftest",
+          "-c",
+          "/dev/null",
+          "--rootdir",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/metabolism-original-recovery-20261107-sol-001",
+          "--basetemp",
+          "/private/tmp/mmx-metabolism-history-final-z3o2jguj/incoming-regressions-tmp",
+          "--junitxml",
+          "/private/tmp/mmx-metabolism-history-final-z3o2jguj/incoming-regressions.xml",
+          "tests/test_metabolism_audit.py::TestRetainedOriginal::test_completed_publication_correlation_cannot_be_forged[response_stop]",
+          "tests/test_metabolism_audit.py::TestRetainedOriginal::test_completed_publication_correlation_cannot_be_forged[response_shape]",
+          "tests/test_metabolism_audit.py::TestAuditHistoryCompatibility::test_changed_public_proposal_override_holds_before_any_new_effect"
+        ],
+        "junit_sha256": "b90d1e60bfbe146ce39f4ee94ca0071cb2f6b2a0aea138b399083aad9528076c",
+        "log": "/private/tmp/mmx-metabolism-history-final-z3o2jguj/incoming-regressions.log",
+        "log_sha256": "346d1dff847a0c487bb36742f6dc6f44a6658b3b91e97a9baa577ca8f3e254e6",
+        "name": "incoming-regressions",
+        "rc": 1,
+        "seconds": 3.58,
+        "totals": {
+          "errors": 0,
+          "failures": 3,
+          "skipped": 0,
+          "tests": 3
+        }
+      },
+      {
+        "cases_by_module": {
+          "test_metabolism_audit": 185,
+          "test_metabolism_fabric_composition": 106,
+          "test_native_go_application_recipe": 24,
+          "test_provider_production_modes": 162,
+          "test_provider_workload_policy": 70
+        },
+        "command": [
+          "/tmp/mmx-d5-brain-composition-x6ymwpln/.proof-venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "--noconftest",
+          "-c",
+          "/dev/null",
+          "--rootdir",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/metabolism-original-recovery-20261107-sol-001",
+          "--basetemp",
+          "/private/tmp/mmx-metabolism-history-final-z3o2jguj/composed-current-tmp",
+          "--junitxml",
+          "/private/tmp/mmx-metabolism-history-final-z3o2jguj/composed-current.xml",
+          "tests/test_metabolism_audit.py",
+          "tests/test_metabolism_fabric_composition.py",
+          "tests/test_provider_workload_policy.py",
+          "tests/test_native_go_application_recipe.py",
+          "tests/test_provider_production_modes.py"
+        ],
+        "junit_sha256": "1c92cb40925a401d849204b8ee705946d0e95cab69826922cc8e45dad059f7be",
+        "log": "/private/tmp/mmx-metabolism-history-final-z3o2jguj/composed-current.log",
+        "log_sha256": "d76678c0f3f2d010c75937ec18aafe82da559a8837388e2566e667a778a55c0f",
+        "name": "composed-current",
+        "rc": 0,
+        "seconds": 60.26,
+        "totals": {
+          "errors": 0,
+          "failures": 0,
+          "skipped": 0,
+          "tests": 547
+        }
+      }
+    ],
+    "source": {
+      "engine/metabolism/audit.py": "d4205a689d04004138b965918f092eda18a225fe575f2f3ca2686533a397f545",
+      "engine/neuralweb/governance.py": "e82a53c4769658137be391da1039d039d577771598bbe485f0cdb99f583bfdf7",
+      "scripts/metabolism_audit.py": "fd73a4bd334f6d2b2ee496b20b353510c77d5b33d3cf28c2c8fcce6b103a0cc8",
+      "scripts/metabolism_journal.py": "0f62fa9e67c2435bd864f1d03020ecbf02ed9fb5f1776542cd8015b3d365fa9d",
+      "scripts/metabolism_merge.py": "f89b949a2cb9a373734ae7fa223338d4a7e838f72ac66093616c0a7527a1d156",
+      "tests/test_fabric_native_application_composition.py": "36d18dd4c6d3425e2cd27dc64af44a2833592529236e67d6ae40a40c198ec5b5",
+      "tests/test_metabolism_audit.py": "21827135f6242d2a4057287967bc8553a2073f22520789e39325f7266bda1f26",
+      "tests/test_metabolism_fabric_composition.py": "f4cf972097231df032b6f5ccbefcaae01d4e7e781dbcf4cfc110474f103b20de"
+    },
+    "source_unchanged": true
+  },
+  "protected_main_parent": "5c8d02f78ca2fe317e861d69169733e56237cbcc",
+  "qualification_limits": [
+    "The first baseline proof attempt failed on macOS /tmp alias qualification before tests; the corrected isolated two-owner baseline executed3 cases and exposed3 actual regressions.",
+    "The first composed185-case audit run passed183 and failed2 fixture/spec assertions. Corrections preserve real provider descriptor shape and the required changed-proposal hold.",
+    "The subsequent full547-case current native pair passed with zero failures, errors or skips.",
+    "Protected main source and unrelated live-data changes come unchanged from original1575; the net contribution delta is explicitly enumerated.",
+    "Hosted current-head CI, original final carrier integration and live acceptance are separate."
+  ],
+  "runtime_changed": false,
+  "schema": "mastermind.metabolism_publication_history_composition.v1",
+  "source": {
+    ".github/workflows/hermes-application-owner.yml": "7baebce7cc3568102d6d1425654452b6d9f6c37a88f51a69fd803b2387bbacd9",
+    "docs/reports/hermes-attended-owner-contract-20261107.json": "0ea812509287bea8db8d46c8e4c62b836417e727014c69fc9a73b0add8f8271a",
+    "docs/reports/metabolism-attended-composition-20261107.json": "9905677b4f3f36cce3fe579efd3bed294e034c6d115599cc48d156ae7ce784bc",
+    "docs/reports/metabolism-current-hermes-composition-20261107.json": "edf03fd63b682c072ebcaa2ae89a5d5300e54f71dffb2f163a66bfa136e617e1",
+    "docs/reports/metabolism-original-publication-recovery-20261107.json": "cb58f8a445a5a40147a6e54c08220aee74bbe2e6fece1364c04f226215d1613f",
+    "engine/metabolism/audit.py": "d4205a689d04004138b965918f092eda18a225fe575f2f3ca2686533a397f545",
+    "engine/neuralweb/governance.py": "e82a53c4769658137be391da1039d039d577771598bbe485f0cdb99f583bfdf7",
+    "scripts/metabolism_journal.py": "0f62fa9e67c2435bd864f1d03020ecbf02ed9fb5f1776542cd8015b3d365fa9d",
+    "tests/test_fabric_native_application_composition.py": "36d18dd4c6d3425e2cd27dc64af44a2833592529236e67d6ae40a40c198ec5b5",
+    "tests/test_hermes_attended_fabric_identity.py": "9e4f14335b69f1b3650f940fa2afd578de77fe0e4b303195692a6733a7b29c88",
+    "tests/test_metabolism_audit.py": "21827135f6242d2a4057287967bc8553a2073f22520789e39325f7266bda1f26",
+    "tests/test_metabolism_fabric_composition.py": "f4cf972097231df032b6f5ccbefcaae01d4e7e781dbcf4cfc110474f103b20de"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "fabric_application.native_go_recipe_ci.v1",
+  "source_head": "e62e0d8a2f6aa23c6938e142ab79f64c30e7e720",
+  "pre_blob": "fd8efa96c52e9835ec2d5793cdcecfe91aa74fd4",
+  "post_blob": "e4b251dea818c98da6b875d6973dc284dd149efa",
+  "change": "Pin automatic=false and execution_surface=inference in both exact transport mappings; retain held qualification and no-network assertions.",
+  "validation": {
+    "tests": 24,
+    "passed": 24,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "log_sha256": "5d94f7c719c7025e0b12dd274f501532c371ba7e530937432a190244a914ad1b"
+  },
+  "runtime_effects": false
+}

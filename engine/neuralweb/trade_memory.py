@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import logging
 import math
+import os
 import re
 from collections import defaultdict
 from datetime import date, datetime, timezone
@@ -544,12 +545,98 @@ def parse_autopsy(text: str, packet: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
+def validate_autopsy_payload(data: Any, *, pick: bool = False) -> None:
+    """Validate the complete selected Prophet response before any publication.
+
+    Private episodes and public pick autopsies share the same forensic fields.
+    The legacy parser still normalizes historical/native replies separately.
+    """
+    from scripts.metabolism_journal import FabricHeld
+    required = {"summary", "mitigation_verdict", "causal_chain", "alternate_explanations",
+                "missing_evidence", "lesson", "signal_hypotheses"}
+    required |= {"pick_index", "engines_credit"} if pick else {"schema"}
+    def refuse():
+        raise FabricHeld("trade_memory_business_response_invalid")
+    def string(value, limit, *, empty=False):
+        if (type(value) is not str or len(value) > limit
+                or not empty and not value.strip() or "validated" in value.lower()):
+            refuse()
+    def strings(value, count, limit):
+        if type(value) is not list or len(value) > count:
+            refuse()
+        for item in value:
+            string(item, limit)
+    if type(data) is not dict or set(data) != required:
+        refuse()
+    if pick:
+        if type(data["pick_index"]) is not int or data["pick_index"] < 1:
+            refuse()
+        string(data["engines_credit"], 300)
+    elif data["schema"] != SCHEMA_AUTOPSY:
+        refuse()
+    string(data["summary"], 800 if pick else 1600)
+    string(data["lesson"], 300 if pick else 800)
+    if type(data["mitigation_verdict"]) is not str or data["mitigation_verdict"] not in MITIGATION_VERDICTS:
+        refuse()
+    strings(data["alternate_explanations"], 10, 500)
+    strings(data["missing_evidence"], 12, 500)
+    chain = data["causal_chain"]
+    if type(chain) is not list or len(chain) > 18:
+        refuse()
+    for row in chain:
+        if (type(row) is not dict or set(row) != {"order", "layer", "factor", "mechanism",
+                "evidence_status", "timing_status", "counterfactual", "evidence_refs"}
+                or type(row["order"]) is not int or row["order"] not in (1, 2, 3)
+                or type(row["layer"]) is not str or row["layer"] not in LAYERS
+                or type(row["evidence_status"]) is not str or row["evidence_status"] not in EVIDENCE_STATES
+                or type(row["timing_status"]) is not str or row["timing_status"] not in TIMING_STATES):
+            refuse()
+        for key, limit in (("factor", 300), ("mechanism", 900), ("counterfactual", 600)):
+            string(row[key], limit)
+        strings(row["evidence_refs"], 8, 240)
+    hypotheses = data["signal_hypotheses"]
+    if type(hypotheses) is not list or len(hypotheses) > 12:
+        refuse()
+    seen = set()
+    for row in hypotheses:
+        if (type(row) is not dict or set(row) != {"feature_key", "feature", "measurement",
+                "expected_direction", "falsifier", "authority"}
+                or row["authority"] != "research_only"):
+            refuse()
+        for key, limit in (("feature_key", 96), ("feature", 300), ("measurement", 700),
+                           ("expected_direction", 180), ("falsifier", 500)):
+            string(row[key], limit)
+        key = row["feature_key"]
+        if _feature_key(key) != key or key in seen:
+            refuse()
+        seen.add(key)
+
+
 def invoke_autopsy(
     packet: dict[str, Any],
     model_caller: Callable[[str, str], Any] | None = None,
+    *,
+    _fabric_context: Any = None,
 ) -> tuple[dict[str, Any] | None, str | None]:
     """Call the deliberation model (or an injected test caller), never raise."""
     system, user = autopsy_messages(packet)
+    if _fabric_context is not None:
+        from engine.neuralweb.trade_memory_store import PrivateFabricInvocation
+        if not isinstance(_fabric_context, PrivateFabricInvocation) or _fabric_context.packet != packet:
+            return None, "fabric_context_invalid"
+        text = _fabric_context.call()
+        try:
+            from scripts.metabolism_journal import strict_json, FabricHeld
+            validate_autopsy_payload(strict_json(text))
+            autopsy = parse_autopsy(text, packet)
+            if autopsy is None:
+                raise FabricHeld("trade_memory_business_response_invalid")
+        except (ValueError, TypeError):
+            _fabric_context.hold("trade_memory_business_response_invalid")
+            return None, "fabric_business_response_invalid"
+        return autopsy, _fabric_context.record["receipt"]["served_model"]
+    if "MM_PROVIDER_APPLICATION_MODE" in os.environ:
+        return None, "fabric_durable_context_required"
     if model_caller is not None:
         try:
             result = model_caller(system, user)

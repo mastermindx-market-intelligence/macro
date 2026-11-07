@@ -11,6 +11,7 @@ import hashlib
 import json
 import logging
 import os
+import uuid
 from pathlib import Path
 
 from lib import config
@@ -23,6 +24,26 @@ log = logging.getLogger(__name__)
 # to name a default. tests/test_news_translate_render_gate.py pins the two equal.
 CODEX_TERRA_MODEL = "gpt-5.6-terra"
 DEFAULT_DEEPSEEK_MODEL = "deepseek-chat"
+
+# --------------------------------------------------------------------------- #
+# The incumbent Fabric application binding.
+#
+# When the trusted host (or the trusted caller config) selects the shared
+# Fabric application transport, the incumbent owner composes the ONLY
+# transport this lane may use: no native credential read, no direct client,
+# no provider fallback, no resend. An owner refusal degrades to this lane's
+# existing unavailable contract (the caller keeps the source text).
+#
+# ABSENT selection keeps the legacy provider path exactly as it was. A PRESENT
+# but invalid selection stays SELECTED with no factory, so the lane refuses
+# instead of quietly reverting to a native credential. The selection is read
+# through llm_auth's own semantics, so this module keeps NO shadow selector
+# of its own: the host environment wins over the caller config, and a present
+# invalid/null/empty value refuses. Request content, browser input and cached
+# text can never choose a factory, an endpoint or a credential.
+# --------------------------------------------------------------------------- #
+FABRIC_LANE = "news-translate"
+FABRIC_WORKLOAD_PROFILE = "site_batch"
 
 SYSTEM_ZH = (
     "You are a professional financial-news translator. Translate each English "
@@ -109,6 +130,28 @@ def translator_ready(cfg: dict | None = None) -> tuple[bool, str]:
     translator ran rather than which one the config hoped for.
     """
     cfg = cfg if cfg is not None else _cfg()
+    selected, mode_id = _fabric_selection(cfg)
+    if selected:
+        # A SELECTED transport owns readiness: the incumbent owner composes the
+        # binding, and no native credential is discovered on this path. The
+        # readiness allocation is closed before returning — a local close never
+        # claims the upstream settled.
+        if not _api_fill_allowed(cfg):
+            return (False, "the selected Fabric fill is disabled on this host "
+                           "(this lane is cache-only)")
+        factory = _fabric_factory(cfg, mode_id)
+        request_id = _operation_id()
+        provider = _fabric_provider(factory, cfg, request_id)
+        if provider is None:
+            return (False, "the selected Fabric binding is not eligible on this host")
+        from engine import llm_auth
+
+        operation = llm_auth.begin_operation(
+            [provider], operation_id=request_id, context="news-translate")
+        try:
+            return (True, f"fabric/{provider.get('model') or ''}")
+        finally:
+            operation.close()
     provider = _provider(cfg)
     if provider == "codex":
         try:
@@ -222,11 +265,20 @@ def _record_usage(cfg: dict, resp) -> None:
         pass
 
 
-def _key(text: str, target: str = "zh") -> str:
+def _key(text: str, target: str = "zh", identity: str = "") -> str:
+    """The cache key for one translated item.
+
+    The legacy key is preserved byte-for-byte when no identity is supplied. A
+    SELECTED transport adds its own identity, so an entry produced by one
+    provider/model/capability is never served to another and can never collide
+    with a legacy model label.
+    """
+    if identity:
+        return hashlib.sha1(f"{target}\0{identity}\0{text}".encode("utf-8")).hexdigest()
     return hashlib.sha1(f"{target}\0{text}".encode("utf-8")).hexdigest()
 
 
-def _read_cache(texts: list[str], cfg: dict) -> tuple[list[str | None], list[int]]:
+def _read_cache(texts: list[str], cfg: dict, identity: str = "") -> tuple[list[str | None], list[int]]:
     cdir = _cache_dir(cfg)
     out: list[str | None] = []
     missing: list[int] = []
@@ -234,7 +286,7 @@ def _read_cache(texts: list[str], cfg: dict) -> tuple[list[str | None], list[int
         if not text or _has_cjk(text):
             out.append(text if text else None)
             continue
-        path = cdir / f"{_key(_payload_text(text, cfg))}.json"
+        path = cdir / f"{_key(_payload_text(text, cfg), 'zh', identity)}.json"
         try:
             if path.exists():
                 val = json.loads(path.read_text()).get("text_zh")
@@ -248,14 +300,14 @@ def _read_cache(texts: list[str], cfg: dict) -> tuple[list[str | None], list[int
     return out, missing
 
 
-def _write_cache(pairs: list[tuple[str, str | None]], cfg: dict) -> None:
+def _write_cache(pairs: list[tuple[str, str | None]], cfg: dict, identity: str = "") -> None:
     cdir = _cache_dir(cfg)
     for src, zh in pairs:
         if not src or not zh or not _has_cjk(zh):
             continue
         try:
             sent = _payload_text(src, cfg)
-            (cdir / f"{_key(sent)}.json").write_text(json.dumps(
+            (cdir / f"{_key(sent, 'zh', identity)}.json").write_text(json.dumps(
                 {"text": sent, "text_zh": zh}, ensure_ascii=False))
         except Exception:  # noqa: BLE001
             pass
@@ -301,6 +353,16 @@ def _codex_client(cfg: dict):
 
 
 def _client(cfg: dict):
+    """The legacy direct client — REFUSED once a transport is selected.
+
+    A selected transport owns every model construction in this module: this
+    path would read a native credential and build a direct client. Reaching
+    this function directly still refuses, so no selected host can discover a
+    native credential behind the selection.
+    """
+    selected, _mode_id = _fabric_selection(cfg)
+    if selected:
+        return None
     if _provider(cfg) == "codex":
         return _codex_client(cfg)
     key = config.secret(cfg.get("api_key_env", "DEEPSEEK_API_KEY"))
@@ -377,6 +439,9 @@ def translate_to_zh(texts: list[str], cfg: dict | None = None) -> list[str | Non
     cfg = cfg if cfg is not None else _cfg()
     if not texts:
         return []
+    selected, mode_id = _fabric_selection(cfg)
+    if selected:
+        return _fabric_translate(texts, cfg, mode_id, "zh")
     cached, missing = _read_cache(texts, cfg)
     if not missing or not _api_fill_allowed(cfg):
         return cached
@@ -401,7 +466,7 @@ def translate_to_zh(texts: list[str], cfg: dict | None = None) -> list[str | Non
 # batch protocol — only the system prompt, cache field and output validator
 # differ (a plausible English string instead of a CJK one).
 # --------------------------------------------------------------------------- #
-def _read_cache_en(texts: list[str], cfg: dict) -> tuple[list[str | None], list[int]]:
+def _read_cache_en(texts: list[str], cfg: dict, identity: str = "") -> tuple[list[str | None], list[int]]:
     cdir = _cache_dir(cfg)
     out: list[str | None] = []
     missing: list[int] = []
@@ -409,7 +474,7 @@ def _read_cache_en(texts: list[str], cfg: dict) -> tuple[list[str | None], list[
         if not text or not _has_cjk(text):
             out.append(text if text else None)     # already English -> passthrough
             continue
-        path = cdir / f"{_key(_payload_text(text, cfg), 'en')}.json"
+        path = cdir / f"{_key(_payload_text(text, cfg), 'en', identity)}.json"
         try:
             if path.exists():
                 val = json.loads(path.read_text()).get("text_en")
@@ -423,14 +488,14 @@ def _read_cache_en(texts: list[str], cfg: dict) -> tuple[list[str | None], list[
     return out, missing
 
 
-def _write_cache_en(pairs: list[tuple[str, str | None]], cfg: dict) -> None:
+def _write_cache_en(pairs: list[tuple[str, str | None]], cfg: dict, identity: str = "") -> None:
     cdir = _cache_dir(cfg)
     for src, en in pairs:
         if not src or not en or not _looks_english(en):
             continue
         try:
             sent = _payload_text(src, cfg)
-            (cdir / f"{_key(sent, 'en')}.json").write_text(json.dumps(
+            (cdir / f"{_key(sent, 'en', identity)}.json").write_text(json.dumps(
                 {"text": sent, "text_en": en}, ensure_ascii=False))
         except Exception:  # noqa: BLE001
             pass
@@ -468,6 +533,9 @@ def translate_to_en(texts: list[str], cfg: dict | None = None) -> list[str | Non
     cfg = cfg if cfg is not None else _cfg()
     if not texts:
         return []
+    selected, mode_id = _fabric_selection(cfg)
+    if selected:
+        return _fabric_translate(texts, cfg, mode_id, "en")
     cached, missing = _read_cache_en(texts, cfg)
     if not missing or not _api_fill_allowed(cfg):
         return cached
@@ -484,3 +552,303 @@ def translate_to_en(texts: list[str], cfg: dict | None = None) -> list[str | Non
             if val:
                 cached[i] = val
     return cached
+
+
+# --------------------------------------------------------------------------- #
+# The incumbent Fabric application binding — the only transport a SELECTED
+# host may use. See the FABRIC_LANE note at the top of this module.
+#
+# THE SPEND SINK. Under a selected transport the spend is recorded by the
+# incumbent llm_auth writer (make_call), NOT by this lane's own
+# ``_record_usage`` — one writer, one row, never two. A caller that declared
+# ``usage_sink: "none"`` keeps that declaration: the owner carries it into the
+# bound operation and suppresses only its own repository ledger row. This lane
+# never adds a second writer to work around it.
+# --------------------------------------------------------------------------- #
+def _fabric_selection(cfg: dict) -> tuple[bool, str | None]:
+    """The trusted selection in force -> (selected, mode_id).
+
+    This lane keeps NO shadow selector of its own: the incumbent owner's own
+    semantics decide. The host environment wins over the caller config; a
+    PRESENT but invalid/null/empty value stays SELECTED with no mode id, so
+    the lane refuses instead of reverting to a native credential; an ABSENT
+    selection leaves the legacy path untouched.
+    """
+    from engine import llm_auth
+
+    try:
+        mode_id = llm_auth.application_mode_id(cfg if isinstance(cfg, dict) else {})
+    except llm_auth.FabricProviderError:
+        return True, None
+    if mode_id is None:
+        return False, None
+    return True, mode_id
+
+
+def _fabric_factory(cfg: dict, mode_id: str | None):
+    """The incumbent owner's factory for the selected mode, or None.
+
+    The owner root is this lane's explicit ``config.ROOT`` — never the owner's
+    internal repository root: a recipe conversion must not silently retarget
+    the root the caller configured.
+    """
+    if not mode_id:
+        return None
+    try:
+        from engine.provider_production_modes import make_application_fabric_factory
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("news translation: Fabric owner unavailable (%s)", e)
+        return None
+    try:
+        return make_application_fabric_factory(
+            mode_id=mode_id, lane=FABRIC_LANE, root=config.ROOT,
+            workload_cfg={"workload_profile": FABRIC_WORKLOAD_PROFILE,
+                          "provider_order": ["fabric"]},
+        )
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("news translation: Fabric selection failed (%s)", e)
+        return None
+
+
+def _operation_id() -> str:
+    """ONE operation identity for ONE logical batch.
+
+    Allocated once, BEFORE the batch's intentional inference steps and outside
+    every retry branch: the incumbent client stamps each intentional step with
+    it. A later batch allocates its own.
+    """
+    return f"{FABRIC_LANE}:{uuid.uuid4().hex[:24]}"
+
+
+def _fabric_provider(factory, cfg: dict, request_id: str) -> dict | None:
+    """Compose ONE turn-scoped Fabric provider through the incumbent owner.
+
+    None when the owner refuses: the lane degrades to its existing unavailable
+    contract instead of reaching for a native credential or a direct client.
+    The caller's own cfg travels with the binding, so its declared workload
+    profile (presence AND value) and its declared spend sink are preserved.
+    """
+    from engine import llm_auth
+
+    if factory is None:
+        return None
+    try:
+        provider = llm_auth.build_fabric_provider(
+            factory, request_id=request_id,
+            workload_cfg=cfg if isinstance(cfg, dict) else None)
+    except llm_auth.FabricProviderError as exc:
+        log.warning("news translation: Fabric binding unavailable (%s)", exc.code)
+        return None
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("news translation: Fabric binding failed (%s)", e)
+        return None
+    provider["usage_lane"] = str(cfg.get("usage_lane") or "news-translate")
+    return provider
+
+
+def _fabric_cache_identity(inspected: dict, mode_id: str, cfg: dict, target: str) -> str:
+    """The cache identity of the transport that ACTUALLY produced the entry.
+
+    It names the selected mode, the provider, the model, the capability, the
+    cost basis, the workload in force and the output contract, so one
+    transport's translation is never served to another and can never collide
+    with a legacy model label. The transport half of the identity comes from
+    the owner's own credential-free inspection, never from the caller.
+    """
+    policy = inspected.get("workload_policy") or {}
+    profiles = policy.get("profiles") or []
+    try:
+        max_tokens = int(cfg.get("max_tokens", 3000) or 0)
+    except (TypeError, ValueError):
+        max_tokens = 0
+    return "|".join([
+        "fabric-v2",
+        str(mode_id or ""),
+        str(target),
+        str(inspected.get("provider") or ""),
+        str(inspected.get("model") or ""),
+        str(inspected.get("cap_id") or ""),
+        str(inspected.get("capability_id") or ""),
+        str(inspected.get("cost_basis") or ""),
+        str(inspected.get("transport_identity") or ""),
+        ",".join(str(p) for p in profiles),
+        str(policy.get("policy_revision") or ""),
+        str(policy.get("policy_hash") or ""),
+        str(max_tokens),
+    ])
+
+
+def _fabric_response_text(resp) -> str:
+    """The response's text. Text translation never accepts tools: a tool_use
+    block in a translation reply is unsolicited, so the batch is refused
+    rather than half-parsed. A truncated reply is refused for the same
+    reason — a cut-off answer cannot satisfy the JSON-array contract.
+    """
+    if getattr(resp, "stop_reason", None) == "max_tokens":
+        raise ValueError("fabric_response_truncated")
+    blocks = getattr(resp, "content", None)
+    if not isinstance(blocks, list):
+        raise ValueError("fabric_content_invalid")
+    for block in blocks:
+        if getattr(block, "type", "") == "tool_use":
+            raise ValueError("fabric_tools_unsolicited")
+    return "".join(getattr(b, "text", "") for b in blocks
+                   if getattr(b, "type", "") == "text")
+
+
+def _fabric_call_text(provider: dict, cfg: dict, system: str, user: str) -> str | None:
+    """ONE Anthropic-shaped batch through the incumbent llm_auth path.
+
+    Returns the reply's text, or None when the operation STOPPED. The
+    incumbent wrapper owns the response/model/usage validation, the request
+    identity and the uncertainty: an unknown execution, an empty reply, a
+    truncated reply or an unsolicited tool ends the operation. This lane never
+    retries, falls back to another provider or resends.
+    """
+    from engine import llm_auth
+
+    def _call(client, model):
+        resp = client.messages.create(
+            model=model,
+            max_tokens=int(cfg.get("max_tokens", 3000)),
+            system=system,
+            messages=[{"role": "user", "content": user}],
+        )
+        return _fabric_response_text(resp), None, resp
+
+    try:
+        text, _reason, _used = llm_auth.make_call(
+            [provider], _call, context="news-translate")
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("news translation Fabric batch failed (%s)", e)
+        return None
+    return text
+
+
+def _fabric_fill_zh(provider: dict, cfg: dict, src: list[str]) -> list[str | None] | None:
+    """One EN->ZH batch; None means the operation stopped (no retry/resend)."""
+    payload = [_payload_text(t, cfg) for t in src]
+    user = ("Translate this JSON array to Simplified Chinese:\n"
+            + json.dumps(payload, ensure_ascii=False))
+    text = _fabric_call_text(provider, cfg, SYSTEM_ZH, user)
+    if text is None:
+        return None
+    arr = _extract_array(text)
+    if arr is None or len(arr) != len(src):
+        log.warning("news translation Fabric malformed: got %s for %d inputs",
+                    None if arr is None else len(arr), len(src))
+        return None
+    out: list[str | None] = []
+    for val in arr:
+        s = str(val).strip() if val is not None else ""
+        out.append(s if _has_cjk(s) else None)
+    return out
+
+
+def _fabric_fill_en(provider: dict, cfg: dict, src: list[str]) -> list[str | None] | None:
+    """One ZH->EN batch; None means the operation stopped (no retry/resend)."""
+    payload = [_payload_text(t, cfg) for t in src]
+    user = ("Translate this JSON array to English:\n"
+            + json.dumps(payload, ensure_ascii=False))
+    text = _fabric_call_text(provider, cfg, SYSTEM_EN, user)
+    if text is None:
+        return None
+    arr = _extract_array(text)
+    if arr is None or len(arr) != len(src):
+        log.warning("news translation Fabric EN malformed: got %s for %d inputs",
+                    None if arr is None else len(arr), len(src))
+        return None
+    out: list[str | None] = []
+    for val in arr:
+        s = str(val).strip() if val is not None else ""
+        out.append(s if _looks_english(s) else None)
+    return out
+
+
+def _untranslated(texts: list[str], target: str) -> list[str | None]:
+    """This lane's existing unavailable contract: no translation, source kept.
+
+    An item already written in the target language is returned unchanged; the
+    rest is None, so the caller keeps the source text. No cached output is
+    presented as a healthy selection.
+    """
+    out: list[str | None] = []
+    for text in texts:
+        native = _has_cjk(text) if target == "zh" else not _has_cjk(text)
+        out.append(text if (text and native) else None)
+    return out
+
+
+def _fabric_translate(texts: list[str], cfg: dict, mode_id: str | None,
+                      target: str) -> list[str | None]:
+    """Translate one logical batch through the incumbent Fabric binding.
+
+    The lane's existing contract is preserved: a list aligned to ``texts``
+    where a missing translation is None. Batch order, batch count,
+    target-language semantics and the cache are the legacy ones — only the
+    transport and the cache identity change.
+
+    The order of the steps is the security order. The owner's credential-free
+    inspection names the selected transport FIRST, so a revoked or
+    reconfigured owner cannot serve a cached entry; the cache is then read
+    under that identity; and only a fill that is actually allowed resolves a
+    credential and constructs a client.
+    """
+    if mode_id is None:
+        # SELECTED with no eligible binding: the honest unavailable contract.
+        return _untranslated(texts, target)
+    factory = _fabric_factory(cfg, mode_id)
+    if factory is None:
+        return _untranslated(texts, target)
+    try:
+        inspected = factory.inspect(cfg if isinstance(cfg, dict) else None)
+        factory = factory.with_inspection(inspected)
+    except Exception as e:  # noqa: BLE001 — the owner refuses; degrade honestly
+        log.warning("news translation: Fabric owner refused (%s)", e)
+        return _untranslated(texts, target)
+    identity = _fabric_cache_identity(inspected, mode_id, cfg, target)
+    if target == "zh":
+        cached, missing = _read_cache(texts, cfg, identity)
+    else:
+        cached, missing = _read_cache_en(texts, cfg, identity)
+    if not missing or not _api_fill_allowed(cfg):
+        return cached
+
+    from engine import llm_auth
+
+    request_id = _operation_id()
+    provider = None
+    operation = None
+    try:
+        provider = _fabric_provider(factory, cfg, request_id)
+        if provider is None:
+            return cached
+        operation = llm_auth.begin_operation(
+            [provider], operation_id=request_id, context="news-translate")
+        batch_size = max(1, int(cfg.get("batch_size", 16)))
+        for start in range(0, len(missing), batch_size):
+            idxs = missing[start:start + batch_size]
+            src = [texts[i] for i in idxs]
+            if target == "zh":
+                filled = _fabric_fill_zh(provider, cfg, src)
+            else:
+                filled = _fabric_fill_en(provider, cfg, src)
+            if filled is None:
+                # The operation stopped: no retry, no fallback, no invented result.
+                break
+            if target == "zh":
+                _write_cache(list(zip(src, filled)), cfg, identity)
+            else:
+                _write_cache_en(list(zip(src, filled)), cfg, identity)
+            for i, val in zip(idxs, filled, strict=False):
+                if val:
+                    cached[i] = val
+        return cached
+    finally:
+        # EVERY exit closes the bound provider: success, cache-only,
+        # unavailable and exception alike. A local close invalidates the
+        # retained reference; it never claims the upstream lease released.
+        if operation is not None:
+            operation.close()
+        elif provider is not None:
+            llm_auth.close_fabric_provider(provider)

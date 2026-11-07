@@ -873,7 +873,67 @@ def _llm_cfg(root: Path | None, *, model: str, fallback_model: str) -> dict:
         v = lane.get(key)
         if isinstance(v, str) and v.strip():
             cfg[key] = v.strip()
+    for key in ("application_fabric_mode", "workload_profile"):
+        if key in lane:
+            cfg[key] = lane[key]
     return cfg
+
+
+def _eval_providers(llm_auth, cfg: dict, *, selected_required: bool = False) -> list[dict]:
+    """Build the current recipe without changing explicit purpose or selection."""
+    selected_cfg = dict(cfg)
+    if llm_auth.application_mode_id(selected_cfg) is not None or selected_required:
+        selected_cfg.setdefault("workload_profile", "site_batch")
+        # Existing owner fence: if host selection disappears before build,
+        # this explicit order refuses before native credential discovery.
+        selected_cfg["provider_order"] = ["fabric"]
+    return llm_auth.build_providers(
+        selected_cfg, opus_model=cfg.get("opus_model"),
+        deepseek_model=cfg.get("deepseek_model"),
+    )
+
+
+def _initial_eval_model(cfg: dict, requested: str) -> str:
+    """Pure metadata: a selected callable has no observed serving model yet."""
+    try:
+        from engine import llm_auth  # noqa: PLC0415
+
+        return requested if llm_auth.application_mode_id(cfg) is None else ""
+    except Exception:  # noqa: BLE001 — invalid selection is not native fallback
+        return ""
+
+
+def _fabric_eval_step(llm_auth, providers: list[dict], system: str, user: str,
+                      *, max_tokens: int, context: str) -> tuple[str, str]:
+    """One complete text step on an existing binding; parsing belongs to caller."""
+    if not llm_auth.is_fabric_selection(providers):
+        raise llm_auth.FabricProviderError("fabric_selection_changed")
+    served_model = ""
+
+    def _do_call(client, model: str):
+        nonlocal served_model
+        request: dict[str, Any] = {
+            "model": model, "max_tokens": int(max_tokens),
+            "messages": [{"role": "user", "content": user}],
+        }
+        if system:
+            request["system"] = system
+        resp = client.messages.create(**request)
+        if (getattr(resp, "stop_reason", None) != "end_turn" or not resp.content
+                or any(getattr(block, "type", "") != "text" for block in resp.content)):
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+        text = "".join(block.text for block in resp.content)
+        if not text.strip():
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+        # The shared wrapper has validated this observed model against the
+        # original binding. A configured/requested label is not this evidence.
+        served_model = resp.model
+        return text, None, resp
+
+    text, reason, _used = llm_auth.make_call(providers, _do_call, context=context)
+    if not text or reason is not None or not served_model:
+        raise llm_auth.FabricProviderError("fabric_text_completion_required")
+    return text, served_model
 
 
 def _one_shot(cfg: dict, system: str, user: str, *, max_tokens: int,
@@ -889,17 +949,28 @@ def _one_shot(cfg: dict, system: str, user: str, *, max_tokens: int,
         log.warning("response_eval: llm_auth import failed (%s)", exc)
         return None
     try:
-        providers = llm_auth.build_providers(
-            cfg,
-            opus_model=cfg.get("opus_model"),
-            deepseek_model=cfg.get("deepseek_model"),
-        )
+        providers = _eval_providers(llm_auth, cfg)
+        selected = llm_auth.is_fabric_selection(providers)
+        if selected and cfg.get("_response_eval_native_only") is True:
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
     except Exception as exc:  # noqa: BLE001
         log.warning("response_eval: build_providers failed (%s)", exc)
         return None
     if not providers:
         log.warning("response_eval: no LLM provider credential present (%s)", context)
         return None
+
+    if selected:
+        try:
+            with llm_auth.begin_operation(providers, context=context) as operation:
+                text, _served = _fabric_eval_step(
+                    llm_auth, operation.providers, system, user,
+                    max_tokens=max_tokens, context=context,
+                )
+            return text
+        except Exception as exc:  # noqa: BLE001
+            log.warning("response_eval: %s Fabric call failed (%s)", context, exc)
+            return None
 
     def _do_call(client, model: str):
         kw: dict[str, Any] = {
@@ -945,9 +1016,39 @@ def judge_via_llm_auth(
     cfg = _llm_cfg(root, model=model, fallback_model=JUDGE_FALLBACK_MODEL)
 
     def _judge(prompt: str) -> str | None:
+        _judge.model_id = ""  # type: ignore[attr-defined]
+        try:
+            from engine import llm_auth  # noqa: PLC0415
+
+            selected = llm_auth.application_mode_id(cfg) is not None
+            if selected:
+                providers = _eval_providers(llm_auth, cfg, selected_required=True)
+                accepted, served_model = None, ""
+                with llm_auth.begin_operation(providers, context="response_eval_judge") as operation:
+                    for attempt in (1, 2):
+                        text, actual_model = _fabric_eval_step(
+                            llm_auth, operation.providers, "", prompt,
+                            max_tokens=JUDGE_MAX_TOKENS, context="response_eval_judge",
+                        )
+                        # Only complete successful text can authorize a parse
+                        # re-ask. Transport/terminal failures leave this loop.
+                        if parse_judge(text) is not None:
+                            accepted, served_model = text, actual_model
+                            break
+                        if attempt == 1:
+                            log.debug("response_eval: judge reply unparseable — one re-ask")
+                if accepted is not None:
+                    _judge.model_id = served_model  # type: ignore[attr-defined]
+                return accepted
+        except Exception as exc:  # noqa: BLE001 — selected failure never falls back
+            log.warning("response_eval: Fabric judge unavailable (%s)", exc)
+            return None
+
+        _judge.model_id = model  # type: ignore[attr-defined]
+        native_cfg = {**cfg, "_response_eval_native_only": True}
         for attempt in (1, 2):
             text = _one_shot(
-                cfg, "", prompt, max_tokens=JUDGE_MAX_TOKENS, context="response_eval_judge"
+                native_cfg, "", prompt, max_tokens=JUDGE_MAX_TOKENS, context="response_eval_judge"
             )
             if text and parse_judge(text) is not None:
                 return text
@@ -955,7 +1056,7 @@ def judge_via_llm_auth(
                 log.debug("response_eval: judge reply unparseable — one retry")
         return None
 
-    _judge.model_id = model  # type: ignore[attr-defined]
+    _judge.model_id = _initial_eval_model(cfg, model)  # type: ignore[attr-defined]
     return _judge
 
 
@@ -974,12 +1075,30 @@ def answer_via_llm_auth(
     cfg = _llm_cfg(root, model=model, fallback_model=JUDGE_FALLBACK_MODEL)
 
     def _answer(system: str, user: str) -> str | None:
+        _answer.model_id = ""  # type: ignore[attr-defined]
+        try:
+            from engine import llm_auth  # noqa: PLC0415
+
+            if llm_auth.application_mode_id(cfg) is not None:
+                providers = _eval_providers(llm_auth, cfg, selected_required=True)
+                with llm_auth.begin_operation(providers, context="response_eval_benchmark") as operation:
+                    text, served_model = _fabric_eval_step(
+                        llm_auth, operation.providers, system, user,
+                        max_tokens=BENCHMARK_MAX_TOKENS, context="response_eval_benchmark",
+                    )
+                _answer.model_id = served_model  # type: ignore[attr-defined]
+                return text
+        except Exception as exc:  # noqa: BLE001 — invalid/pending selection stays unavailable
+            log.warning("response_eval: Fabric benchmark answer unavailable (%s)", exc)
+            return None
+
+        _answer.model_id = model  # type: ignore[attr-defined]
         return _one_shot(
-            cfg, system, user,
+            {**cfg, "_response_eval_native_only": True}, system, user,
             max_tokens=BENCHMARK_MAX_TOKENS, context="response_eval_benchmark",
         )
 
-    _answer.model_id = model  # type: ignore[attr-defined]
+    _answer.model_id = _initial_eval_model(cfg, model)  # type: ignore[attr-defined]
     return _answer
 
 

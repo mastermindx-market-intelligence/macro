@@ -23,8 +23,14 @@ This is context, never advice and never a trade signal.
 from __future__ import annotations
 
 import json
+import hashlib
 import logging
+import math
+import os
 import re
+import secrets
+import tempfile
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
@@ -160,16 +166,33 @@ def _provider(cfg: dict) -> tuple[str, str, str] | None:
 
 
 def enabled() -> bool:
-    """True only when the desk is switched on AND a model credential exists."""
+    """Desk gate plus selected readiness, or the incumbent native credential."""
     import os
 
     cfg = _cfg()
     on = bool(cfg.get("enabled", False)) or os.environ.get(GATE_ENV) == "1"
-    return bool(on and _provider(cfg) is not None)
+    if not on:
+        return False
+    try:
+        mode = _application_mode(cfg)
+        if mode is not None:
+            _selected_factory(cfg, mode)
+            return True
+    except Exception:
+        return False
+    return _provider(cfg) is not None
 
 
 def provider_label(cfg: dict | None = None) -> str:
-    prov = _provider(cfg or _cfg())
+    cfg = cfg or _cfg()
+    try:
+        mode = _application_mode(cfg)
+        if mode is not None:
+            _selected_factory(cfg, mode)
+            return "assistant"
+    except Exception:
+        return ""
+    prov = _provider(cfg)
     if prov is None:
         return ""
     name, _cred, _model = prov
@@ -365,12 +388,111 @@ def load_processed(root: Path) -> dict:
 
 
 def save_processed(root: Path, state: dict) -> None:
-    p = _state_path(root)
     try:
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps(state, indent=2, default=str))
+        with _processed_lock(root):
+            current = _read_processed_strict(root)
+            # Native scheduler snapshots must never erase a selected original
+            # claimed or settled by another process since that snapshot.
+            merged = {**current, **state,
+                "seen": {**current.get("seen", {}), **state.get("seen", {})}}
+            if "fabric_operations" in current:
+                merged["fabric_operations"] = current["fabric_operations"]
+            _write_processed_strict(root, merged)
     except Exception as e:  # noqa: BLE001
         log.warning("uk_policy: processed.json write failed (%s)", e)
+
+
+_FABRIC_OPERATION_SCHEMA = "mastermind.uk_policy_fabric_operation.v1"
+
+
+def _unique_object(pairs):
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError("uk_policy_state_duplicate_key")
+        value[key] = item
+    return value
+
+
+def _read_processed_strict(root: Path) -> dict:
+    """The existing processed state is authoritative for selected originals."""
+    try:
+        raw = _state_path(root).read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return {"seen": {}}
+    state = json.loads(raw, object_pairs_hook=_unique_object,
+        parse_constant=lambda _value: (_ for _ in ()).throw(ValueError("uk_policy_state_nonfinite")))
+    if (not isinstance(state, dict) or not isinstance(state.get("seen"), dict)
+            or not isinstance(state.get("attempts", {}), dict)
+            or not isinstance(state.get("fabric_operations", {}), dict)):
+        raise ValueError("uk_policy_state_invalid")
+    for key, entry in state.get("fabric_operations", {}).items():
+        if (not isinstance(key, str) or not key or not isinstance(entry, dict)
+                or entry.get("schema") != _FABRIC_OPERATION_SCHEMA
+                or not isinstance(entry.get("operation_id"), str)
+                or re.fullmatch(r"app:[0-9a-f]{32}", entry["operation_id"]) is None
+                or not isinstance(entry.get("input_sha256"), str)
+                or re.fullmatch(r"[0-9a-f]{64}", entry["input_sha256"]) is None
+                or entry.get("state") not in {"pending", "terminal", "held"}
+                or entry.get("outcome") not in {"pending", "usable", "invalid", "unavailable"}
+                or not isinstance(entry.get("selection"), dict)
+                or not isinstance(entry.get("source_identity"), dict)
+                or entry["source_identity"].get("id") != key
+                or not isinstance(entry.get("record"), dict)
+                or entry.get("receipt") is not None and not isinstance(entry["receipt"], dict)):
+            raise ValueError("uk_policy_operation_invalid")
+    return state
+
+
+def _fsync_directory(path: Path) -> None:
+    fd = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+@contextmanager
+def _processed_lock(root: Path):
+    """Short filesystem transaction only; never held during model I/O."""
+    import fcntl
+
+    root = Path(root)
+    if not root.is_dir():
+        raise ValueError("uk_policy_existing_state_root_required")
+    parent = _state_path(root).parent
+    parent.mkdir(parents=True, exist_ok=True)
+    # An earlier mkdir may be visible even though its parent fsync failed.
+    # Re-establish every owned link on every entry, including that recovery
+    # case. The caller owns the already-existing repository root itself.
+    for directory in (root, root / "data", parent):
+        _fsync_directory(directory)
+    with (parent / "processed.json.lock").open("a+b") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+
+
+def _write_processed_strict(root: Path, state: dict) -> None:
+    """Atomic existing-owner publication, fsync and exact readback, or fail."""
+    path = _state_path(root)
+    payload = (json.dumps(state, sort_keys=True, indent=2, ensure_ascii=False,
+                          allow_nan=False) + "\n").encode("utf-8")
+    descriptor, name = tempfile.mkstemp(prefix="processed.json.", suffix=".stage", dir=path.parent)
+    stage = Path(name)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(stage, path)
+        _fsync_directory(path.parent)
+        if path.read_bytes() != payload or _read_processed_strict(root) != state:
+            raise ValueError("uk_policy_state_readback_failed")
+    finally:
+        stage.unlink(missing_ok=True)
 
 
 def mark_seen(state: dict, item: dict, **kw) -> None:
@@ -477,6 +599,12 @@ def _call_model(item: dict, excerpt: str, cfg: dict, call=None) -> dict:
     annotation hook at tests/test_gh_annotation_line_start.py requires a bare
     print, and a logger prefixes with `WARNING ` which GitHub silently drops).
     """
+    # Even a direct/private native call cannot bypass selected durability.
+    try:
+        if _application_mode(cfg) is not None:
+            return {}
+    except Exception:
+        return {}
     prompt = _PROMPT_TEMPLATE.format(
         title=item.get("title", ""), excerpt=excerpt,
         sum_en=cfg.get("summary_max_en", 150), sum_zh=cfg.get("summary_max_zh", 70),
@@ -614,8 +742,186 @@ def _base_record(item: dict, cfg: dict | None = None) -> dict:
     }
 
 
+def _application_mode(cfg: dict) -> str | None:
+    from engine import llm_auth
+    return llm_auth.application_mode_id(cfg)
+
+
+def _selected_factory(cfg: dict, mode: str):
+    from engine import llm_auth, provider_production_modes as owner
+
+    maximum = cfg.get("max_tokens", 600)
+    timeout = cfg.get("client_timeout_s", 15)
+    if (type(maximum) is not int or maximum <= 0
+            or type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0):
+        raise ValueError("uk_policy_request_invalid")
+    selected = {**cfg, "provider_order": ["fabric"],
+                "client_timeout_s": min(float(timeout), 15.0), "client_max_retries": 0}
+    selected.setdefault("workload_profile", "site_batch")
+    factory = owner.make_application_fabric_factory(mode_id=mode,
+        lane=str(cfg.get("oauth_pool_lane") or cfg.get("usage_lane") or "application"),
+        workload_cfg=selected, root=llm_auth._repo_root())
+    identity = factory.inspect(selected)
+    return factory.with_inspection(identity), selected, identity, maximum
+
+
+def _selected_input(item: dict, cfg: dict, record: dict):
+    prompt = _PROMPT_TEMPLATE.format(title=item.get("title", ""), excerpt=record["excerpt"],
+        sum_en=cfg.get("summary_max_en", 150), sum_zh=cfg.get("summary_max_zh", 70))
+    source = {"id": item.get("id"), "url": item.get("url"), "doc_version": item.get("doc_version")}
+    digest = hashlib.sha256(json.dumps({"source": source, "prompt": prompt,
+        "max_tokens": cfg.get("max_tokens", 600)}, sort_keys=True, ensure_ascii=False,
+        separators=(",", ":"), allow_nan=False).encode("utf-8")).hexdigest()
+    return prompt, source, digest
+
+
+def _unavailable_record(record: dict, reason: str) -> dict:
+    return {**record, "model_unavailable": True, "state": "model_unavailable",
+            "fabric_selected": True, "fabric_reason": reason}
+
+
+def _retained_record(entry: dict, digest: str | None = None) -> dict:
+    record = dict(entry["record"])
+    record["fabric_selected"] = True
+    record["fabric_operation"] = {key: entry[key] for key in
+        ("schema", "operation_id", "input_sha256", "source_identity", "selection", "state", "outcome", "receipt")}
+    if digest is not None and digest != entry["input_sha256"]:
+        record["fabric_reason"] = "fabric_original_input_conflict"
+    elif entry["state"] in {"pending", "held"}:
+        record["fabric_reason"] = "fabric_original_unsettled"
+    if record.get("stance") is None:
+        record.update(model_unavailable=True, state="model_unavailable")
+    return record
+
+
+def _selected_completion(cfg, mode, route, operation_id, prompt, record):
+    """No state owner here: evaluate has already durably claimed this turn."""
+    from engine import llm_auth
+
+    factory, selected_cfg, _identity, maximum = route
+    provider, error = None, None
+    observed = {}
+    raw = None
+
+    def complete(client, model):
+        response = client.messages.create(model=model, max_tokens=maximum,
+            messages=[{"role": "user", "content": prompt}])
+        observed["model"] = response.model
+        observed["response"] = True
+        if (response.stop_reason != "end_turn" or not response.content
+                or any(getattr(block, "type", None) != "text" for block in response.content)):
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+        text = "".join(block.text for block in response.content).strip()
+        if not text:
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+        return text, None, response
+
+    try:
+        if _application_mode(cfg) != mode:
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
+        provider = llm_auth.build_fabric_provider(factory, request_id=operation_id,
+                                                workload_cfg=selected_cfg)
+        for key in ("usage_lane", "usage_stage"):
+            if selected_cfg.get(key):
+                provider[key] = str(selected_cfg[key])
+        provider["usage_cycle_id"] = operation_id
+        with llm_auth.begin_operation([provider], operation_id=operation_id,
+                                     context="uk_policy_brain") as operation:
+            text, _reason, _used = llm_auth.make_call(operation.providers, complete,
+                                                    context="uk_policy_brain")
+            raw = json.loads(text)
+    except Exception as exc:  # a selected error never enters the native waterfall
+        error = exc
+    finally:
+        if provider is not None:
+            llm_auth.close_fabric_provider(provider)
+
+    failure = provider.get("_fabric_failure") if provider else None
+    close = dict(provider.get("_fabric_close") or {}) if provider else {}
+    disposition = provider.get("_fabric_native_disposition") if provider else None
+    observation = (dict(provider["_fabric_last_observation"])
+        if provider and isinstance(provider.get("_fabric_last_observation"), dict) else None)
+    unknown = (bool(getattr(error, "effect_unknown", False))
+        or bool(getattr(failure, "effect_unknown", False))
+        or bool(provider and provider.get("_fabric_pending"))
+        or disposition in {"pending", "effect_unknown"}
+        or close.get("effect_unknown") is True
+        or close.get("disposition") in {"pending", "effect_unknown"})
+    receipt = {"operation_id": operation_id,
+        "provider": provider.get("provider") if provider else None,
+        "model": observed.get("model") or (observation or {}).get("serving_model"),
+        "usage": llm_auth.fabric_usage(provider) if provider else None,
+        "observed_usage": observation, "effect_unknown": unknown,
+        "native_disposition": disposition or ("completed" if observed.get("response")
+            else "unavailable" if provider else "not_started"), "close": close}
+    result = _unavailable_record(record, "fabric_completion_unavailable")
+    outcome = "invalid" if observed.get("response") else "unavailable"
+    if (isinstance(raw, dict) and isinstance(raw.get("stance"), str)
+            and raw["stance"] in _STANCES):
+        summary = _sanitize_field(raw.get("summary_en"), record["excerpt"])
+        if summary is not None:
+            result = {**record, "stance": raw["stance"], "summary_en": summary,
+                "summary_zh": _sanitize_field(raw.get("summary_zh"), record["excerpt"]),
+                "watch_en": _sanitize_field(raw.get("watch_en"), record["excerpt"]),
+                "watch_zh": _sanitize_field(raw.get("watch_zh"), record["excerpt"]),
+                "provider_label": "assistant", "fabric_selected": True,
+                "state": "stale" if record.get("age_days", 0) > cfg.get("stale_after_days", 3.0) else "ok"}
+            outcome = "usable"
+    result["serving_model"] = receipt["model"]
+    return result, receipt, "held" if unknown else "terminal", outcome
+
+
+def _evaluate_selected(item, cfg, root, record, mode, persist):
+    if not persist:
+        return _unavailable_record(record, "fabric_durable_state_required")
+    try:
+        route = _selected_factory(cfg, mode)
+        prompt, source, digest = _selected_input(item, cfg, record)
+        if not isinstance(item.get("id"), str) or not item["id"]:
+            raise ValueError("uk_policy_item_identity_required")
+        with _processed_lock(root):
+            state = _read_processed_strict(root)
+            operations = state.setdefault("fabric_operations", {})
+            if item["id"] in operations:
+                return _retained_record(operations[item["id"]], digest)
+            entry = {"schema": _FABRIC_OPERATION_SCHEMA,
+                "operation_id": "app:" + secrets.token_hex(16),
+                "input_sha256": digest, "source_identity": source,
+                "selection": {"mode_id": mode, "identity": route[2]},
+                "state": "pending", "outcome": "pending", "receipt": None,
+                "record": _unavailable_record(record, "fabric_original_unsettled")}
+            operations[item["id"]] = entry
+            _write_processed_strict(root, state)
+    except Exception:
+        return _unavailable_record(record, "fabric_claim_unavailable")
+
+    # Only a confirmed durable claim reaches credential binding or inference.
+    result, receipt, final_state, outcome = _selected_completion(
+        cfg, mode, route, entry["operation_id"], prompt, record)
+    settled = {**entry, "record": result, "receipt": receipt,
+               "state": final_state, "outcome": outcome}
+    try:
+        with _processed_lock(root):
+            current = _read_processed_strict(root)
+            original = current.get("fabric_operations", {}).get(item["id"])
+            if (not isinstance(original, dict) or original["operation_id"] != entry["operation_id"]
+                    or original["input_sha256"] != digest or original["state"] != "pending"):
+                raise ValueError("uk_policy_original_state_changed")
+            current["fabric_operations"][item["id"]] = settled
+            if final_state == "terminal":
+                mark_seen(current, item, model_unavailable=outcome != "usable",
+                          fabric_operation_id=entry["operation_id"])
+            _write_processed_strict(root, current)
+    except Exception:
+        # Keep a useful observed answer, while exposing unconfirmed publication.
+        # The original pending disk entry remains the replay barrier.
+        settled["state"] = "held"
+        settled["receipt"] = {**receipt, "state_publication": "unconfirmed"}
+    return _retained_record(settled)
+
+
 def evaluate(item: dict, cfg: dict | None = None, root=None, call=None,
-             previous_attempts: int = 0) -> dict:
+             previous_attempts: int = 0, *, persist: bool = False) -> dict:
     """Engine facts + model restate/classify, clamped in code. Never raises.
 
     MO-PAID-023_FIX_R3 D4: `previous_attempts` is the count already persisted
@@ -626,6 +932,19 @@ def evaluate(item: dict, cfg: dict | None = None, root=None, call=None,
     """
     cfg = cfg or _cfg()
     record = _base_record(item, cfg)
+    root = Path(root) if root else config.ROOT
+    try:
+        # Lookup precedes selector resolution, including a removed or invalid
+        # selector. Neither a forced cycle nor native credentials release it.
+        state = _read_processed_strict(root)
+        entry = state.get("fabric_operations", {}).get(item.get("id"))
+        if entry is not None:
+            return _retained_record(entry, _selected_input(item, cfg, record)[2])
+        mode = _application_mode(cfg)
+    except Exception:
+        return _unavailable_record(record, "fabric_state_or_selection_unavailable")
+    if mode is not None:
+        return _evaluate_selected(item, cfg, root, record, mode, persist)
     excerpt = record["excerpt"]
     raw = _call_model(item, excerpt, cfg, call=call)
     if not raw:
@@ -724,8 +1043,11 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
         fresh = new_items(items, state)
         if not fresh:
             # Do not spend a model call to label "no new announcement".
-            record = dict(prior) if prior else _base_record(items[0], cfg)
-            record["state"] = _typed_state("no_new")
+            original = state.get("fabric_operations", {}).get(items[0].get("id"))
+            record = (_retained_record(original) if original is not None
+                      else dict(prior) if prior else _base_record(items[0], cfg))
+            record["state"] = _typed_state("model_unavailable" if original is not None
+                and record.get("stance") is None else "no_new")
             if persist:
                 _persist(record, root)
             _log_verdict(record)
@@ -747,7 +1069,7 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
             previous_attempts = int(attempts_map.get(item["id"], 0) or 0)
         except Exception:  # noqa: BLE001
             previous_attempts = 0
-        record = evaluate(item, cfg, root, call=call, previous_attempts=previous_attempts)
+        record = evaluate(item, cfg, root, call=call, previous_attempts=previous_attempts, persist=persist)
         stale_after = cfg.get("stale_after_days", 3.0)
         if record.get("stance") is None:
             record["state"] = _typed_state("model_unavailable")
@@ -755,6 +1077,13 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
             record["state"] = _typed_state(
                 "stale" if record.get("age_days", 0.0) > stale_after else "ok"
             )
+        if record.get("fabric_selected"):
+            # evaluate owns selected claim/settlement. This pre-I/O native
+            # scheduler snapshot must never overwrite that transaction.
+            if persist:
+                _persist(record, root)
+            _log_verdict(record)
+            return record
         # MO-PAID-023_FIX_R1 S4 — only mark the item SEEN when evaluate produced a
         # stance (i.e. the model call succeeded). A model_unavailable item stays
         # UNSEEN so the next cycle retries it instead of relabelling the cached

@@ -1,0 +1,42 @@
+{
+  "installed_acceptance": false,
+  "junit_sha256": "5d3811563340e4cc1849459526edeb07dbe09e139d941935314acda751a11768",
+  "live_provider_acceptance": false,
+  "log_sha256": "4bef83093ee31cd6156be285c4e44a4cf0a72222b1613b12764f49adcc8538ff",
+  "native_owner_exact_pins": 19,
+  "native_owner_fixture": "41e86c7aa89905f9b4592d57fbf32c2d7c0f1458",
+  "parents": [
+    "913c8a874f21393e8f9b0a577ccb4863247b9903",
+    "fff0025e10de394c6a297c7878518513f1dbe633"
+  ],
+  "projection_consumer": "Mastermind #2225 existing attended installation owner",
+  "protected_base_delivery": "pending actual current main composition and binding CI",
+  "publication_target": "existing Macro #10740",
+  "qualification": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 245
+  },
+  "runtime_application_map_empty": true,
+  "runtime_enrollment": false,
+  "schema": "mastermind.hermes_attended_original_carrier_join/v1",
+  "source_files": {
+    ".github/workflows/hermes-application-owner.yml": "a3a8db732b91a3f6b3cd8e23b6299ce1a8a6173087018a82ab6fc9517d3af4bf",
+    "engine/fabric_inference_client.py": "0817202d609637ce024b5f4f1bbe6ba4507825424649f407a235bdf5ef441b8e",
+    "engine/provider_production_modes.py": "56996272225840ff7adefb95d8949c871cb91b1a578bbbf981ee8b8480454df8",
+    "tests/test_fabric_exact_scoped_model_composition.py": "4ef90246bf49f19a44ffa339c03916144fb69b021b612c47b265ccc81492c5b0",
+    "tests/test_fabric_service_identity.py": "0e7a956e448e25d0bff04e11d469cd1f71ab5e0c6c4c7749f29e60bb10760cc1",
+    "tests/test_hermes_application_source_support.py": "6e4a9b8b477cc29512b1ed5bc02d2dbbab290a0313a2f432bac6568c240cbdf0",
+    "tests/test_hermes_attended_fabric_identity.py": "69e7b4486924772d8d9b00e19b0a740fd16656c66a365e3777458ebf755019cd",
+    "tests/test_hermes_primary_fabric_endpoint.py": "3afab9059d10e7df951b87296e83333b758ac6a60fae7be3f94ef713330b01ed",
+    "tests/test_hermes_primary_fabric_identity.py": "d99109e8d8dc59e029d985dcc7cc17e5b6599717ae1877f70f865635772e4f21"
+  },
+  "source_support": {
+    "attended_auto": true,
+    "attended_fixed": true,
+    "same_service_identity": true
+  },
+  "source_unchanged_during_qualification": true,
+  "testcase_nodes": 245
+}

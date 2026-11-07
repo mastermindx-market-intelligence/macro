@@ -144,6 +144,7 @@ def _run_all_lobes(args: "argparse.Namespace", root: Path) -> int:  # noqa: F821
             "per-call defaults apply", _he,
         )
 
+    held = False
     for i, lobe_id in enumerate(loop_managed):
         # First lobe keeps the bare base cycle_id (backward compat guarantee)
         cycle_id = base_cycle if i == 0 else f"{base_cycle}-{lobe_id}"
@@ -182,7 +183,8 @@ def _run_all_lobes(args: "argparse.Namespace", root: Path) -> int:  # noqa: F821
             lobe_args.lobe = lobe_id
             lobe_args.cycle_id = cycle_id
             lobe_args.all_lobes = False  # prevent recursive call
-            _run_single_lobe(lobe_args, root, lobe_id, cycle_id)
+            if _run_single_lobe(lobe_args, root, lobe_id, cycle_id) is False:
+                held = True
         except Exception as exc:  # noqa: BLE001
             log.warning(
                 "metabolism_propose --all-lobes: lobe=%s cycle=%s failed: %s",
@@ -190,7 +192,7 @@ def _run_all_lobes(args: "argparse.Namespace", root: Path) -> int:  # noqa: F821
             )
             # Per-lobe failure isolates — continue to next lobe
 
-    return 0
+    return 2 if held else 0
 
 
 def _write_attention_skip_docket(
@@ -261,7 +263,7 @@ def _write_attention_skip_docket(
             )
 
 
-def _run_single_lobe(args: "argparse.Namespace", root: Path, lobe: str, cycle_id: str) -> None:  # noqa: F821
+def _run_single_lobe(args: "argparse.Namespace", root: Path, lobe: str, cycle_id: str) -> bool | None:  # noqa: F821
     """Run the propose flow for a single lobe.  NEVER raises.
 
     Extracted from main() to allow --all-lobes to reuse it.
@@ -277,6 +279,9 @@ def _run_single_lobe(args: "argparse.Namespace", root: Path, lobe: str, cycle_id
             log.info("metabolism_propose[%s]: %s — no-op", lobe, pause_reason())
             finish_stage(cycle_id, _STAGE, status="noop_paused", note=pause_reason(), root=root)
             return
+
+        from scripts.metabolism_journal import guard_native_route
+        guard_native_route(root, "propose", cycle_id, ["lobe:"+lobe])
 
         # ── Gate 2: per-lobe circuit breaker ─────────────────────────────
         try:
@@ -494,6 +499,8 @@ def _run_single_lobe(args: "argparse.Namespace", root: Path, lobe: str, cycle_id
         except Exception:  # noqa: BLE001
             pass
 
+        return False
+
 
 def _append_achievements_proposals(
     cycle_id: str,
@@ -625,8 +632,7 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 0
 
-    _run_single_lobe(args, root, lobe, cycle_id)
-    return 0
+    return 2 if _run_single_lobe(args, root, lobe, cycle_id) is False else 0
 
 
 def _run_id() -> str | None:

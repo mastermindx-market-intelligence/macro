@@ -1238,6 +1238,12 @@ ADMIN_MUST_RESTART = [
     "engine/codex_provider.py",
     "engine/codex_lane/runner.py",
     "engine/llm_auth.py",
+    # The trusted Fabric factory and its pool/health dependencies are cached
+    # by the Admin serving process; retain them with the GSC reload closure.
+    "engine/fabric_inference_client.py",
+    "engine/provider_capacity.py",
+    "engine/provider_health.py",
+    "engine/provider_production_modes.py",
     # private episode validator imported by admin/trade_memory.py
     "engine/neuralweb/trade_memory.py",
     # reached via importlib.import_module("...") string literals — a grep for

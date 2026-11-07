@@ -1941,7 +1941,8 @@ def test_r15_context_bus_has_one_code_gated_run_owner():
     jobs = yaml.safe_load(manifest.read_text())['jobs']
     suite = 'tests/test_forex_context_bus.py'
     owners = [(name, job) for name, job in jobs.items()
-              if any(suite in shlex.split(step.get('run', ''))
+              if any(suite in step.get('run', '')
+                     and suite in shlex.split(step.get('run', ''))
                      for step in job.get('steps', []))]
     assert [(name, job.get('gate', 'code')) for name, job in owners] == [('data-base-shim', 'code')]
     runs = [step['run'] for step in owners[0][1]['steps'] if suite in step.get('run', '')]

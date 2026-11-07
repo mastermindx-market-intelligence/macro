@@ -97,11 +97,35 @@ def _cfg() -> dict:
     return config.load().get("news_llm", {}) or {}
 
 
+def _shared_mode() -> str | None:
+    """The shared owner selection in force for this lane, or None.
+
+    A refused selection stays visible as unavailable; label/availability checks
+    never discover legacy credentials behind an invalid mandatory selector.
+    """
+    try:
+        from engine import llm_auth  # noqa: PLC0415 — import closure law
+        return llm_auth.application_mode_id(_cfg() or {})
+    except Exception:  # noqa: BLE001 — a label must never raise
+        if "MM_PROVIDER_APPLICATION_MODE" in os.environ or "application_fabric_mode" in (_cfg() or {}):
+            return "unavailable"
+        return None
+
+
 def enabled() -> bool:
-    """Off unless config.yml sets news_llm.enabled: true AND a provider credential
-    is present; when off or when no provider is available, annotate() is a
-    pass-through that returns its input unchanged."""
-    return bool(_cfg().get("enabled", False)) and _provider() is not None
+    """Off unless config.yml sets news_llm.enabled: true AND a provider is
+    available; when off or when no provider is available, annotate() is a
+    pass-through that returns its input unchanged.
+
+    The shared application selection IS a provider: the owner decides its own
+    eligibility at the operation boundary, so this predicate must not report
+    "no provider" merely because no NATIVE credential is present.
+    """
+    if not bool(_cfg().get("enabled", False)):
+        return False
+    if _shared_mode():
+        return True
+    return _provider() is not None
 
 
 # --------------------------------------------------------------------------- #
@@ -110,6 +134,8 @@ def enabled() -> bool:
 def _provider() -> tuple[str, str, str] | None:
     """Return (provider, credential, model) for the first available provider, or None.
     provider ∈ {"oauth", "anthropic", "deepseek"}."""
+    if _shared_mode() is not None:
+        return None
     cfg = _cfg()
     order = cfg.get("provider_order") or ["oauth", "anthropic", "deepseek"]
     haiku = _classify_model()
@@ -193,7 +219,8 @@ def _summarise_batch_raw(items: list[dict], client, model: str):
     resp = client.messages.create(
         model=model, max_tokens=max_tok, system=SYSTEM,
         messages=[{"role": "user", "content": user}])
-    if getattr(resp, "stop_reason", "") == "refusal":
+    if (getattr(resp, "stop_reason", "") in {"refusal", "tool_use"}
+            or any(getattr(b, "type", "") == "tool_use" for b in resp.content)):
         return {}, resp
     text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
     parsed = _xjson(text)
@@ -248,7 +275,15 @@ def annotate(headlines: list[dict], batch_size: int | None = None,
     cfg_aug = {**cfg,
                "oauth_pool_lane": cfg.get("oauth_pool_lane", "news-llm"),
                "usage_lane": cfg.get("usage_lane", "news-llm")}
-    providers = llm_auth.build_providers(cfg_aug, opus_model=haiku, deepseek_model=ds_model)
+    if llm_auth.APPLICATION_MODE_ENV in os.environ or llm_auth.APPLICATION_MODE_CFG_KEY in cfg:
+        cfg_aug.setdefault("workload_profile", "site_batch")
+    try:
+        providers = llm_auth.build_providers(cfg_aug, opus_model=haiku,
+                                             deepseek_model=ds_model)
+    except Exception as e:  # noqa: BLE001 — this module never raises: a failed
+        # provider build is the same pass-through as no provider at all.
+        log.warning("news_llm provider build failed (%s)", type(e).__name__)
+        return headlines
     if not providers:
         return headlines
 
@@ -269,8 +304,19 @@ def annotate(headlines: list[dict], batch_size: int | None = None,
             result_dict, resp = _summarise_batch_raw(items, client, model)
             return result_dict, None, resp
 
+        # THE OPERATION BOUNDARY.  The provider list is a RECIPE: the live
+        # turn-latched client and the operation identity are bound here, once
+        # per batch, so a list that was built once and reused never hands a
+        # stale or poisoned client to a later batch, and one batch's uncertain
+        # effect cannot reach the next.  A legacy native selection is unchanged
+        # by this — the operation is a view over the same list.
         try:
-            raw_res, _, pused = llm_auth.make_call(providers, _do_call, context="news_llm")
+            operation = llm_auth.begin_operation(providers, context="news_llm")
+            try:
+                raw_res, _, pused = llm_auth.make_call(
+                    operation.providers, _do_call, context="news_llm")
+            finally:
+                operation.close()
         except Exception as e:  # noqa: BLE001
             log.warning("news_llm batch call error (%s)", e)
             raw_res, pused = None, None
@@ -296,6 +342,11 @@ def annotate(headlines: list[dict], batch_size: int | None = None,
 
 def provider_label() -> str:
     """Human label of the active provider, for the page footer. Never raises."""
+    shared = _shared_mode()
+    if shared:
+        # The shared owner serves this lane; naming a native provider here
+        # would label a route that is not the one serving.
+        return f"Fabric owner ({shared})"
     prov = _provider()
     if prov is None:
         return ""

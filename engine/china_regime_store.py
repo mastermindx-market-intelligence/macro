@@ -202,17 +202,11 @@ def _update_state(asof: str, root: Path | None = None) -> None:
     regime_store_last_date — other fields are preserved.
     """
     try:
-        p = _state_path(root)
-        p.parent.mkdir(parents=True, exist_ok=True)
-        state: dict = {}
-        if p.exists():
-            try:
-                state = json.loads(p.read_text(encoding="utf-8"))
-            except Exception:  # noqa: BLE001
-                state = {}
-        state["regime_store_last_date"] = str(asof)
-        state["regime_store_updated_at"] = datetime.now(timezone.utc).isoformat()
-        p.write_text(json.dumps(state, indent=2, default=str), encoding="utf-8")
+        from scripts.metabolism_journal import update_owner_state
+        update_owner_state(_state_path(root).parents[2], "market", "cn", {
+            "regime_store_last_date": str(asof),
+            "regime_store_updated_at": datetime.now(timezone.utc).isoformat(),
+        })
     except Exception as exc:  # noqa: BLE001
         log.warning("china_regime_store._update_state failed: %s", exc)
 

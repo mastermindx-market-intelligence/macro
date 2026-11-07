@@ -1409,8 +1409,10 @@ def _build_us_impl(root: Path, retro_path: Path) -> dict:
         "new_evidence_packs_this_run": new_ev_count,
         "schema": "standout_audit.state.v1",
     }
-    state_path = _state_path(root)
-    state_path.write_text(json.dumps(state, indent=2), encoding="utf-8")
+    from scripts.metabolism_journal import update_owner_state
+    # The auditor's original-operation receipts and cursor share this owner.
+    # Merge the fresh organ fields under its physical lock, never replace them.
+    update_owner_state(_state_path(root).parents[2], "market", "us", state)
 
     log.info("build_us: done. %d attributed rows, %d new evidence packs", len(all_attr_rows), new_ev_count)
     return {

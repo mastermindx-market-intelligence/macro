@@ -33,12 +33,29 @@ Gated by scripts/metabolism_merge._audit_approved() (merge lane step 5.5).
 """
 from __future__ import annotations
 
+import copy
+import hashlib
 import json
 import logging
 import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from scripts.metabolism_journal import (
+    _AUDIT_FINDING_CHAR_LIMIT,
+    _AUDIT_FINDING_LIMIT,
+    _AUDIT_RATIONALE_CHAR_LIMIT,
+    _AUDIT_RECORD_FIELDS,
+    _AUDIT_REPLY_BYTE_LIMIT,
+    FabricHeld,
+    _parse_llm_reply,
+    _validated_audit_reply,
+    fabric_digest,
+    guard_native_route,
+    host_profile,
+    native_provider_call,
+    update_owner_state,
+)
 
 log = logging.getLogger(__name__)
 
@@ -51,6 +68,8 @@ _AUDIT_DIR = ("data", "metabolism", "audit")
 
 _LLM_CFG: dict[str, Any] = {
     "provider_order": ["oauth", "anthropic"],
+    # This original is Opus-pinned; automatic Codex insertion is not this policy.
+    "codex_provider": False,
     "oauth_token_env": "CLAUDE_CODE_OAUTH_TOKEN",
     "oauth_pool_lane": "metabolism-audit",
     "usage_lane": "metabolism-audit",
@@ -309,142 +328,614 @@ def _build_user_prompt(
     )
 
 
-def _parse_llm_reply(text: str) -> dict[str, Any] | None:
-    """Parse auditor JSON reply robustly (mirrors adjudicate._parse_judgments style)."""
-    if not text:
+# The incumbent audit reply grammar — the reply byte limit, the finding count
+# and character bounds, the rationale bound, the typed verdict validator and
+# the whole-response parser — is owned by the audit owner itself
+# (scripts.metabolism_journal). The writer and every reader of an owned
+# verdict therefore read one grammar, and a valid historical verdict is never
+# held because an identifier label limit was applied to its paragraphs.
+
+
+def _observed_usage(response: Any) -> dict[str, int] | None:
+    """The usage the response actually reported, if it reported any."""
+    usage = getattr(response, "usage", None)
+    if usage is None:
         return None
-    s = text.strip()
-    # Strip markdown fences
-    if s.startswith("```"):
-        s = re.sub(r"^```[a-zA-Z]*\n?", "", s)
-        s = re.sub(r"\n?```$", "", s).strip()
-    # Try raw then bracketed
-    for cand in (s, _slice_braced(s)):
-        if not cand:
-            continue
-        try:
-            data = json.loads(cand)
-            if isinstance(data, dict) and "verdict" in data:
-                return data
-        except Exception:  # noqa: BLE001
-            continue
-    return None
+    observed: dict[str, int] = {}
+    for key in ("input_tokens", "output_tokens"):
+        value = getattr(usage, key, None)
+        if type(value) is int and value >= 0:
+            observed[key] = value
+    return observed or None
 
 
-def _slice_braced(s: str) -> str:
-    i, j = s.find("{"), s.rfind("}")
-    if 0 <= i < j:
-        return s[i:j + 1]
-    return ""
+def _audit_transport(cfg):
+    """The existing audit transport policy bound before any provider effect."""
+    return {"lane": "metabolism-audit", "usage_lane": cfg.get("usage_lane"),
+            "provider_order": list(cfg.get("provider_order") or ["oauth"]),
+            "model": cfg.get("opus_model"),
+            "codex_provider": cfg.get("codex_provider", True),
+            "oauth_pool_lane": cfg.get("oauth_pool_lane"),
+            "oauth_token_env": cfg.get("oauth_token_env"),
+            "api_key_env": cfg.get("api_key_env")}
 
 
 def _call_llm_auditor(
     proposal: dict[str, Any],
     diff_text: str,
     immutable_paths: list[str],
-) -> tuple[str | None, float | None, list[str], str, str | None]:
-    """Call the opus auditor.
-
-    Returns (llm_verdict, confidence, findings, rationale, error_reason).
-    On any failure → verdict None, error_reason set.
-    NEVER raises.
-    """
+    *,
+    root: Path | None = None,
+    pr_number: int = 1,
+    owned: dict[str, Any] | None = None,
+) -> tuple[str | None, float | None, list[str], str, str | None, dict[str, Any] | None]:
+    """Dispatch the committed request and retain actual response evidence."""
+    scope = ["pr:" + str(pr_number)]
+    frozen_cfg = copy.deepcopy(_LLM_CFG)
+    guard_native_route(_repo_root(root), "audit", str(pr_number), scope,
+                       cfg=frozen_cfg, owned=owned)
+    observed: dict[str, Any] = {"text": None, "served_model": None, "provider": None,
+                                "stop_reason": None, "content_shape": None, "usage": None}
+    response_observed = False
     try:
-        from engine import llm_auth  # type: ignore[import]
+        from engine import llm_auth
 
-        providers = llm_auth.build_providers(
-            _LLM_CFG,
-            opus_model=_LLM_CFG.get("opus_model"),
-        )
+        inspection = owned.get("inspection") if owned is not None else None
+        if owned is not None:
+            request = owned.get("request")
+            if (type(request) is not dict
+                    or request.get("response_contract") != "complete-text-v1"
+                    or type(request.get("system")) is not str or not request["system"]
+                    or type(request.get("user")) is not str or not request["user"]
+                    or type(request.get("max_tokens")) is not int
+                    or request["max_tokens"] < 1
+                    or type(inspection) is not dict
+                    or inspection.get("transport_identity")
+                       != fabric_digest(_audit_transport(frozen_cfg))):
+                raise FabricHeld("metabolism_audit_dispatch_binding_changed")
+            system_content = request["system"]
+            user_content = request["user"]
+            max_tokens = request["max_tokens"]
+        else:
+            system_content = _AUDIT_SYSTEM
+            user_content = _build_user_prompt(proposal, diff_text, immutable_paths)
+            max_tokens = int(frozen_cfg.get("max_tokens", 4000))
+
+        # The saved transport commitment is checked before provider construction,
+        # including its account-lane and credential-reference policy.
+        providers = [dict(provider) for provider in llm_auth.build_providers(
+            frozen_cfg, opus_model=frozen_cfg.get("opus_model"))]
+        if owned is not None and any(provider.get("model") != inspection["model"]
+                                     for provider in providers):
+            raise FabricHeld("metabolism_audit_dispatch_model_changed")
         if not providers:
-            return None, None, [], "", "no_provider"
-
-        user_content = _build_user_prompt(proposal, diff_text, immutable_paths)
-        max_tokens = int(_LLM_CFG.get("max_tokens", 4000))
+            return None, None, [], "", "no_provider", observed
 
         def _do_call(client: Any, model: str) -> tuple:
+            nonlocal response_observed
+            if owned is not None and model != inspection["model"]:
+                raise FabricHeld("metabolism_audit_dispatch_model_changed")
             resp = client.messages.create(
-                model=model,
-                max_tokens=max_tokens,
-                system=_AUDIT_SYSTEM,
+                model=model, max_tokens=max_tokens, system=system_content,
                 messages=[{"role": "user", "content": user_content}],
-                # temperature removed — rejected (400) on opus-4.7+ per Anthropic API
             )
-            if getattr(resp, "stop_reason", None) == "refusal":
+            response_observed = True
+            observed["served_model"] = getattr(resp, "model", None)
+            observed["stop_reason"] = getattr(resp, "stop_reason", None)
+            blocks = getattr(resp, "content", None)
+            shape: list[str] = []
+            text_parts: list[str] = []
+            if isinstance(blocks, (list, tuple)):
+                for block in blocks:
+                    kind = getattr(block, "type", None)
+                    shape.append(kind if type(kind) is str else "unknown")
+                    if kind == "text" and type(getattr(block, "text", None)) is str:
+                        text_parts.append(block.text)
+            observed["content_shape"] = shape
+            observed["usage"] = _observed_usage(resp)
+            raw = "".join(text_parts)
+            raw_bytes = raw.encode("utf-8")
+            # A held result retains a bounded actual prefix; it is never parsed
+            # as a complete verdict after the size refusal.
+            observed["text"] = raw_bytes[:_AUDIT_REPLY_BYTE_LIMIT].decode("utf-8", "ignore") or None
+            if len(raw_bytes) > _AUDIT_REPLY_BYTE_LIMIT:
+                return None, "metabolism_audit_response_oversized", resp
+            stop = observed["stop_reason"]
+            if stop == "refusal":
                 return None, "stop_refusal", resp
-            text_out = "".join(
-                b.text for b in resp.content if getattr(b, "type", "") == "text"
-            )
-            return (text_out or None), None, resp
+            if stop != "end_turn":
+                return None, "stop_" + str(stop or "unknown"), resp
+            if not shape or any(kind != "text" for kind in shape):
+                return None, "metabolism_audit_response_not_text_only", resp
+            return (raw or None), None, resp
 
-        text, reason, _provider = llm_auth.make_call(
-            providers, _do_call, context="metabolism_audit"
-        )
-        if not text:
-            return None, None, [], "", reason or "empty_reply"
-
+        text, reason, provider_used = native_provider_call(
+            _repo_root(root), "audit", str(pr_number), scope, providers, _do_call,
+            context="metabolism_audit", cfg=frozen_cfg, owned=owned)
+        if observed["text"] is None and type(text) is str:
+            # Preserve text returned by the existing boundary even when no
+            # model/provider observation accompanied it; it cannot approve.
+            observed["text"] = text
+        if response_observed:
+            observed["provider"] = provider_used
+        if owned is not None and response_observed:
+            from scripts.metabolism_journal import _served_model_matches
+            if (not _served_model_matches(observed["served_model"], inspection)
+                    or (inspection["cost_basis"] != "incumbent_inference"
+                        and provider_used != inspection["provider"])):
+                return None, None, [], "", "committed_model_not_served", observed
+        if reason or not text:
+            return None, None, [], "", reason or "empty_reply", observed
         parsed = _parse_llm_reply(text)
         if parsed is None:
-            return None, None, [], "", "llm_error"
-
-        verdict = str(parsed.get("verdict") or "reject").lower()
-        if verdict not in ("approve", "reject"):
-            verdict = "reject"
-        confidence = float(parsed.get("confidence") or 0.0)
-        findings = [str(f) for f in (parsed.get("findings") or [])]
-        rationale = str(parsed.get("rationale") or "")
-        return verdict, confidence, findings, rationale, None
-
-    except Exception as exc:  # noqa: BLE001
+            return None, None, [], "", "llm_error", observed
+        return (parsed["verdict"], parsed["confidence"], parsed["findings"],
+                parsed["rationale"], None, observed)
+    except FabricHeld:
+        raise
+    except Exception as exc:
+        guard_native_route(_repo_root(root), "audit", str(pr_number), scope,
+                           cfg=frozen_cfg, owned=owned)
+        if str(getattr(exc, "code", "")).startswith("fabric_"):
+            raise FabricHeld("metabolism_selected_recipe_requires_original") from exc
         log.warning("audit: LLM auditor call failed: %s", exc)
-        return None, None, [], "", "llm_error"
+        return None, None, [], "", "llm_error", observed
 
 
 # ── Persistence helpers ────────────────────────────────────────────────────────
 
-def _write_audit_record(record: dict[str, Any], root: Path | None = None) -> None:
-    """Write data/metabolism/audit/<pr_number>.json. NEVER raises."""
+def _write_audit_record(record: dict[str, Any], root: Path | None = None) -> bool:
+    """Write data/metabolism/audit/<pr_number>.json.
+
+    Returns True only when the owner actually persisted the record. A failed
+    write is never an acknowledgement: the caller must not report the PR as
+    audited. The audited publication path commits the verdict and its
+    governance acknowledgement together through the audit owner instead.
+    """
     try:
         pr_number = record.get("pr_number")
         r = _repo_root(root)
-        audit_dir = r.joinpath(*_AUDIT_DIR)
-        audit_dir.mkdir(parents=True, exist_ok=True)
-        path = audit_dir / f"{pr_number}.json"
-        path.write_text(json.dumps(record, indent=2, default=str), encoding="utf-8")
+        update_owner_state(r, "audit", str(pr_number), record)
+        return True
     except Exception as exc:  # noqa: BLE001
         log.warning("audit: write_audit_record failed for PR %s: %s",
                     record.get("pr_number"), exc)
+        return False
 
 
-def _append_governance_event(record: dict[str, Any], root: Path | None = None) -> None:
-    """Append governance metabolism_audit event. NEVER raises."""
+def _governance_evidence(record: dict[str, Any]) -> dict[str, Any]:
+    """The evidence package of one audit governance event."""
+    return {
+        "head_sha": record.get("head_sha"),
+        "proposal_id": record.get("proposal_id"),
+        "verdict": record.get("verdict"),
+        "deterministic_ok": record.get("deterministic_ok"),
+        "llm_verdict": record.get("llm_verdict"),
+        "confidence": record.get("confidence"),
+    }
+
+
+def _append_governance_event(record: dict[str, Any], root: Path | None = None) -> dict[str, Any] | None:
+    """Append one governance metabolism_audit event and acknowledge it durably.
+
+    The append is fsynced to the ledger and to its parent directory, and the
+    exact correlated row is read back before the append is acknowledged. The
+    acknowledgement names the event that was appended, so the caller can bind
+    it to the publication it intended.
+
+    Returns the acknowledgement, or None when the append was not durably
+    acknowledged. A missing or falsy acknowledgement is never proof that
+    nothing was appended: the caller keeps its original held instead of
+    retrying. NEVER raises.
+    """
     try:
-        from engine.neuralweb.governance import append_event  # type: ignore[import]
+        from engine.neuralweb.governance import (  # type: ignore[import]
+            append_event, event_identity,
+        )
         pr_number = record.get("pr_number")
-        rationale = str(record.get("rationale") or "")[:200]
-        evidence: dict[str, Any] = {
-            "head_sha": record.get("head_sha"),
-            "proposal_id": record.get("proposal_id"),
-            "verdict": record.get("verdict"),
-            "deterministic_ok": record.get("deterministic_ok"),
-            "llm_verdict": record.get("llm_verdict"),
-            "confidence": record.get("confidence"),
-        }
-        append_event(
+        target = f"metabolism_pr:{pr_number}"
+        ts = str(record.get("ts") or "")
+        if not ts:
+            return None
+        event_id = event_identity("metabolism_audit", target, ts)
+        evidence = _governance_evidence(record)
+        note = str(record.get("rationale") or "")[:200]
+        if not append_event(
             "metabolism_audit",
-            target=f"metabolism_pr:{pr_number}",
+            target=target,
             article=None,
             authored_by="metabolism_audit",
             evidence=evidence,
-            note=rationale,
+            note=note,
             root=root,
-        )
+            event_id=event_id,
+            ts=ts,
+            durable=True,
+        ):
+            return None
+        return {"event_id": event_id, "event_type": "metabolism_audit", "target": target,
+                "ts": ts, "evidence": evidence}
     except Exception as exc:  # noqa: BLE001
         log.warning("audit: governance append failed for PR %s: %s",
                     record.get("pr_number"), exc)
+        return None
+
+
+# ── The audit's retained original ─────────────────────────────────────────────
+
+_AUDIT_LOGICAL_VERSION = "audit-fence-v1"
+_LOCAL_CLOSE = {"disposition": "local_only", "closed": False,
+                "effect_unknown": False, "attempted": False}
+
+
+def _publication_ts() -> str:
+    """The publication time of one audit verdict.
+
+    Microsecond precision keeps two distinct publications of one PR inside
+    the same second from sharing one governance event identity.
+    """
+    return datetime.now(timezone.utc).isoformat(timespec="microseconds")
+
+
+def _audit_facts(pr_number: int, proposal: dict[str, Any], diff_text: str,
+                 head_sha: str) -> dict[str, Any]:
+    """The frozen request facts of one audit."""
+    try:
+        proposal_digest = fabric_digest(proposal)
+    except (TypeError, ValueError) as exc:
+        raise FabricHeld("metabolism_audit_request_invalid") from exc
+    return {
+        "pr_number": int(pr_number),
+        "head_sha": str(head_sha),
+        "proposal_digest": proposal_digest,
+        "diff_digest": hashlib.sha256(diff_text.encode("utf-8", "replace")).hexdigest(),
+        "response_contract": "complete-text-v1",
+    }
+
+
+def _audit_inspection() -> dict[str, Any]:
+    """The audit purpose's own workload decision, kept in its native form.
+
+    The audit consumer is classified native_agent. That classification is a
+    workload fact, not a transport kind, and it is never relabeled as an
+    inference allowance.
+    """
+    from engine.provider_workload_policy import decide_native_workload
+    try:
+        decision = decide_native_workload(
+            {"workload_profile": "development_agent", "provider_order": ["fabric"]},
+            host_profile=host_profile())
+    except Exception as exc:  # noqa: BLE001
+        raise FabricHeld("metabolism_audit_workload_decision_unavailable") from exc
+    provider_order = list(_LLM_CFG.get("provider_order") or ["oauth"])
+    transport = _audit_transport(_LLM_CFG)
+    return {"provider": str(provider_order[0]),
+            "model": str(_LLM_CFG.get("opus_model") or ""),
+            "cap_id": "metabolism-audit", "capability_id": "metabolism_audit",
+            "cost_basis": "incumbent_inference", "workload_policy": decision.receipt(),
+            "transport_identity": fabric_digest(transport)}
+
+
+def _audit_receipt(operation_id: str, inspection: dict[str, Any],
+                   observation: dict[str, Any] | None, *, close: dict[str, Any] | None,
+                   effect_unknown: bool) -> dict[str, Any]:
+    """Retain each observed field independently; unknown is never a zero."""
+    observation = observation if type(observation) is dict else {}
+    served = observation.get("served_model")
+    provider = observation.get("provider")
+    reported = observation.get("usage")
+    reported = reported if type(reported) is dict else {}
+    def count(name):
+        value = reported.get(name)
+        return value if type(value) is int and value >= 0 else None
+    input_tokens, output_tokens = count("input_tokens"), count("output_tokens")
+    known = input_tokens is not None and output_tokens is not None
+    usage = {"input_tokens": input_tokens, "output_tokens": output_tokens,
+             "completed_input_tokens": input_tokens if input_tokens is not None else 0,
+             "completed_output_tokens": output_tokens if output_tokens is not None else 0,
+             "usage_state": "known" if known else "unknown"}
+    shape = observation.get("content_shape")
+    response = {"stop_reason": observation.get("stop_reason"),
+                "content_shape": list(shape) if type(shape) is list else []}
+    return {"operation_id": operation_id, "provider": provider,
+            "requested_model": inspection["model"], "served_model": served,
+            "observation": {"request_id": operation_id + ":brain:0",
+                            "serving_model": served,
+                            "input_tokens": input_tokens, "output_tokens": output_tokens},
+            "usage": usage, "close": copy.deepcopy(close),
+            "effect_unknown": effect_unknown, "response": response}
+
+
+def _audit_scope(pr_number: int) -> list[str]:
+    return ["pr:" + str(pr_number)]
+
+
+def _audit_logical(pr_number: int, proposal: dict[str, Any], diff_text: str,
+                   head_sha: str, proposal_id: str | None = None) -> dict[str, Any]:
+    """The immutable consumer identity includes the public proposal override."""
+    facts = _audit_facts(pr_number, proposal, diff_text, head_sha)
+    facts["proposal_id"] = (str(proposal.get("proposal_id") or "")
+                            if proposal_id is None else str(proposal_id))
+    return {"facts": facts, "prompt_version": _AUDIT_LOGICAL_VERSION}
+
+
+def _saved_audit_original(root, pr_number, proposal, diff_text, head_sha, proposal_id):
+    """Recover either exact retained identity without rewriting its facts."""
+    from scripts.metabolism_journal import saved_original_for
+    logical = _audit_logical(pr_number, proposal, diff_text, head_sha, proposal_id)
+    scope = _audit_scope(pr_number)
+    saved = saved_original_for(_repo_root(root), "audit", str(pr_number), logical, scope)
+    if "proposal_id" not in logical["facts"]:
+        return logical, saved
+    legacy = copy.deepcopy(logical)
+    legacy["facts"].pop("proposal_id")
+    historical = saved_original_for(_repo_root(root), "audit", str(pr_number), legacy, scope)
+    if saved is not None and historical is not None:
+        raise FabricHeld("metabolism_audit_original_ambiguous")
+    if historical is not None:
+        business = historical.get("business")
+        if (historical["state"] != "complete" or type(business) is not dict
+                or type(business.get("intent")) is not dict
+                or type(business.get("outcome")) is not dict
+                or business["intent"].get("proposal_id") != logical["facts"]["proposal_id"]
+                or business["outcome"].get("proposal_id") != logical["facts"]["proposal_id"]):
+            raise FabricHeld("metabolism_audit_legacy_proposal_unbound")
+        return legacy, historical
+    return logical, saved
+
+
+def _audit_response_complete(observation: dict[str, Any] | None) -> bool:
+    """True when the actual response is one completed, text-only result.
+
+    A truncated reply, a mixed text/tool reply, a missing raw reply and a
+    missing observed model are all incomplete: none of them can approve.
+    """
+    if type(observation) is not dict:
+        return False
+    if observation.get("stop_reason") != "end_turn":
+        return False
+    shape = observation.get("content_shape")
+    if type(shape) is not list or not shape or any(kind != "text" for kind in shape):
+        return False
+    text = observation.get("text")
+    if type(text) is not str or not text.strip():
+        return False
+    served = observation.get("served_model")
+    if type(served) is not str or not served.strip():
+        return False
+    provider = observation.get("provider")
+    return type(provider) is str and bool(provider.strip())
+
+
+def _audit_intent(record: dict[str, Any], pr_number: int) -> dict[str, Any]:
+    """The exact publication intent of one audit verdict."""
+    from engine.neuralweb.governance import event_identity  # type: ignore[import]
+    from scripts.metabolism_journal import audit_publication_decision_digest
+    target = f"metabolism_pr:{pr_number}"
+    ts = str(record.get("ts") or "")
+    return {
+        "event_type": "metabolism_audit",
+        "target": target,
+        "event_id": event_identity("metabolism_audit", target, ts),
+        "ts": ts,
+        "head_sha": record.get("head_sha"),
+        "proposal_id": record.get("proposal_id"),
+        "verdict": record.get("verdict"),
+        "deterministic_ok": record.get("deterministic_ok"),
+        "llm_verdict": record.get("llm_verdict"),
+        "confidence": record.get("confidence"),
+        "decision_digest": audit_publication_decision_digest(record),
+    }
+
+
+def _audit_outcome(published: dict[str, Any], intent: dict[str, Any],
+                   observation: dict[str, Any] | None, governance_receipt: dict[str, Any]) -> dict[str, Any]:
+    """The business outcome of one published audit verdict.
+
+    The outcome is the typed verdict this original actually holds, so a reader
+    can bind the owner projection to it without re-reading the reply.
+    """
+    observation = observation if type(observation) is dict else {}
+    return {"governance": "metabolism_audit", "target": intent["target"],
+            "event_id": intent["event_id"],
+            "verdict": published["verdict"], "llm_verdict": published["llm_verdict"],
+            "confidence": published["confidence"], "findings": list(published["findings"]),
+            "rationale": published["rationale"], "ts": published["ts"],
+            "head_sha": published["head_sha"], "proposal_id": published["proposal_id"],
+            "provider": observation.get("provider"),
+            "served_model": observation.get("served_model"),
+            "governance_receipt": copy.deepcopy(governance_receipt)}
 
 
 # ── Public API ─────────────────────────────────────────────────────────────────
+
+def _hold_operation(operation, reason: str) -> None:
+    """Move a retained original to held without ever re-sending it."""
+    if operation.record["state"] in ("observed", "known", "publishing"):
+        held = copy.deepcopy(operation.record)
+        held.update(state="held", error=reason)
+        operation.save(held)
+
+
+def _publish_with_original(operation, published: dict[str, Any], pr_number: int,
+                           root: Path | None, observation: dict[str, Any] | None) -> dict[str, Any]:
+    """Publish model state, exact verdict and retained history in one owner."""
+    from scripts.metabolism_journal import audit_publication_entry
+    entry = audit_publication_entry(
+        published, operation.record["logical"],
+        original_operation_id=operation.record["operation_id"])
+    intent = entry["intent"]
+    operation.publication_intent(intent, owner_updates={"publication": entry})
+    receipt = _append_governance_event(published, root)
+    if not receipt or receipt.get("event_id") != intent["event_id"]:
+        _hold_operation(operation, "metabolism_audit_governance_unacknowledged")
+        raise FabricHeld("metabolism_audit_governance_unacknowledged")
+    acknowledged = audit_publication_entry(
+        published, operation.record["logical"],
+        original_operation_id=operation.record["operation_id"],
+        state="acknowledged", receipt=receipt)
+    operation.complete(
+        _audit_outcome(published, intent, observation, receipt),
+        owner_updates={**published, "publication": acknowledged})
+    return published
+
+
+
+def _publish_without_original(published: dict[str, Any], pr_number: int,
+                              root: Path | None, *, logical) -> dict[str, Any]:
+    """Reconcile the frozen zero-model event; an old result never becomes current."""
+    from scripts.metabolism_journal import audit_publication_commit, audit_publication_intent
+    entry = audit_publication_intent(
+        _repo_root(root), pr_number, _audit_intent(published, pr_number),
+        logical=logical, record=published)
+    frozen = copy.deepcopy(entry["record"])
+    if entry["state"] == "acknowledged":
+        return frozen
+    receipt = _append_governance_event(frozen, root)
+    if not receipt or receipt.get("event_id") != entry["intent"]["event_id"]:
+        raise FabricHeld("metabolism_audit_governance_unacknowledged")
+    audit_publication_commit(
+        _repo_root(root), pr_number, frozen,
+        event_id=entry["intent"]["event_id"], receipt=receipt)
+    return frozen
+
+
+
+def _completed_original_result(operation, pr_number: int, root: Path | None,
+                                record: dict[str, Any]) -> dict[str, Any]:
+    """Recover one original against one qualified owner snapshot, without writes."""
+    from scripts.metabolism_journal import audit_retained_original_result
+    return audit_retained_original_result(_repo_root(root), pr_number, operation.record)
+
+
+
+def _audit_through_original(pr_number, proposal, diff_text, head_sha, root, record,
+                            findings, immutable_list, proposal_id):
+    """Review a PR through the retained original that owns this exact request.
+
+    A saved original is reopened before any inspection, budget, deterministic
+    policy or prompt discovery. A completed original returns its own saved
+    result; a known original finishes its own local publication; an incomplete
+    or ambiguous original stays held.
+    """
+    from scripts.metabolism_journal import FabricInvocation, saved_original_for
+
+    logical, saved = _saved_audit_original(
+        root, pr_number, proposal, diff_text, head_sha, proposal_id)
+    scope = _audit_scope(pr_number)
+    # The retained original is reopened before any mutable discovery.
+    if saved is not None:
+        operation = FabricInvocation.reopen(_repo_root(root), "audit", str(pr_number),
+                                            logical, scope)
+    else:
+        inspection = _audit_inspection()
+        user = _build_user_prompt(proposal, diff_text, immutable_list)
+        operation = FabricInvocation(_repo_root(root), "audit", str(pr_number), logical,
+                                     scope, _AUDIT_SYSTEM, user,
+                                     int(_LLM_CFG.get("max_tokens", 4000)), cfg=_LLM_CFG,
+                                     inspection=inspection,
+                                     selection={"mode": "incumbent_inference",
+                                                "host_profile": host_profile()})
+    state = operation.record["state"]
+    if state == "complete":
+        # The owner already holds this verdict and its operation together.
+        return _completed_original_result(operation, pr_number, root, record)
+
+    inspection = operation.record["inspection"]
+    if state == "known":
+        receipt = operation.record.get("receipt") or {}
+        response = receipt.get("response") or {}
+        usage = receipt.get("usage") or {}
+        observation = {"text": operation.record.get("text"),
+                       "served_model": receipt.get("served_model"),
+                       "provider": receipt.get("provider"),
+                       "stop_reason": response.get("stop_reason"),
+                       "content_shape": list(response.get("content_shape") or []),
+                       "usage": {"input_tokens": usage.get("input_tokens"),
+                                 "output_tokens": usage.get("output_tokens")}}
+    else:
+        # The model is called through the real guard and provider boundary
+        # with this caller's own claim: the claim is the only original the
+        # guard may not hold against this caller.
+        result = _call_llm_auditor(proposal, diff_text, immutable_list, root=root,
+                                   pr_number=pr_number, owned=operation.record)
+        verdict, confidence, llm_findings, rationale, error = result[:5]
+        raw = result[5] if len(result) > 5 else None
+        observation = raw if isinstance(raw, dict) else None
+        if error:
+            # The failed call still made an observation. The actual bounded
+            # response evidence — raw text, serving model and provider, stop
+            # reason, content shape and usage — is retained on the held
+            # original; there is no resend, no fabricated value and no
+            # false zero.
+            retained = observation if type(observation) is dict else None
+            retained_text = retained.get("text") if type(retained) is dict else None
+            if type(retained_text) is not str:
+                retained_text = None
+            receipt = _audit_receipt(operation.record["operation_id"], inspection,
+                                     retained, close=None, effect_unknown=True)
+            if retained_text is not None and receipt.get("usage") is None:
+                retained_text = None
+            observed = copy.deepcopy(operation.record)
+            observed.update(state="observed", text=retained_text,
+                            text_digest=fabric_digest(retained_text) if retained_text is not None else None,
+                            receipt=receipt,
+                            error="metabolism_audit_model_held")
+            operation.save(observed)
+            _hold_operation(operation, "metabolism_audit_model_held")
+            raise FabricHeld("metabolism_audit_model_held")
+        if observation is None:
+            # A typed verdict without its response-boundary receipt is not a
+            # result. The incumbent seam that published it is closed: the
+            # claim is held with no observation and never resent. Only the
+            # owner's own zero-model deterministic path or a historical
+            # legacy record can publish without a model original.
+            observed = copy.deepcopy(operation.record)
+            observed.update(state="observed", text=None, text_digest=None,
+                            receipt=_audit_receipt(operation.record["operation_id"],
+                                                   inspection, None, close=None,
+                                                   effect_unknown=True),
+                            error="metabolism_audit_response_unobserved")
+            operation.save(observed)
+            _hold_operation(operation, "metabolism_audit_response_unobserved")
+            raise FabricHeld("metabolism_audit_response_unobserved")
+        text = observation.get("text")
+        observed = copy.deepcopy(operation.record)
+        observed.update(state="observed", text=text,
+                        text_digest=fabric_digest(text) if type(text) is str else None,
+                        receipt=_audit_receipt(operation.record["operation_id"], inspection,
+                                               observation, close=None, effect_unknown=True),
+                        error=None)
+        operation.save(observed)
+        # The actual response must be one completed, text-only result. An
+        # incomplete response is held before it can become a known result.
+        if not _audit_response_complete(observation):
+            _hold_operation(operation, "metabolism_audit_response_incomplete")
+            raise FabricHeld("metabolism_audit_response_incomplete")
+        known = copy.deepcopy(operation.record)
+        known.update(state="known",
+                     receipt=_audit_receipt(operation.record["operation_id"], inspection,
+                                            observation, close=_LOCAL_CLOSE,
+                                            effect_unknown=False))
+        operation.save(known)
+
+    # The actual response must be one completed, text-only result.
+    if not _audit_response_complete(observation):
+        _hold_operation(operation, "metabolism_audit_response_incomplete")
+        raise FabricHeld("metabolism_audit_response_incomplete")
+    # The whole response must decode as one bounded typed verdict.
+    parsed = _parse_llm_reply(observation.get("text"), strict=True)
+    if parsed is None:
+        _hold_operation(operation, "metabolism_audit_response_invalid")
+        raise FabricHeld("metabolism_audit_response_invalid")
+
+    published = {**record, "verdict": parsed["verdict"], "deterministic_ok": True,
+                 "llm_verdict": parsed["verdict"], "confidence": parsed["confidence"],
+                 "findings": list(findings) + list(parsed["findings"]),
+                 "rationale": parsed["rationale"], "ts": _publication_ts()}
+    record.update(published)
+    return _publish_with_original(operation, published, pr_number, root, observation)
+
 
 def audit_pr(
     pr_number: int,
@@ -484,6 +975,7 @@ def audit_pr(
         confidence (float|None), findings (list[str]),
         rationale (str), ts (ISO string).
 
+    A held original is reported as status="held" and never as a verdict.
     NEVER raises — any exception → reject record.
     """
     # Resolve proposal_id: prefer explicit param, then proposal dict.
@@ -507,155 +999,157 @@ def audit_pr(
     }
 
     try:
+        # The retained original is reopened before any guard, selection,
+        # inspection, secret, nonce or admission happens. A held original is
+        # never cleared to permit a replay.
+        from scripts.metabolism_journal import saved_original_for
+        requested_logical = _audit_logical(pr_number, proposal, diff_text, head_sha, _proposal_id)
+        logical, saved = _saved_audit_original(
+            root, pr_number, proposal, diff_text, head_sha, _proposal_id)
+        from scripts.metabolism_journal import audit_saved_publication
+        publication = audit_saved_publication(_repo_root(root), pr_number, requested_logical)
+        if publication is not None:
+            if publication["state"] == "acknowledged":
+                return copy.deepcopy(publication["record"])
+            return _publish_without_original(
+                copy.deepcopy(publication["record"]), pr_number, root, logical=logical)
+        scope = _audit_scope(pr_number)
+        if saved is None:
+            guard_native_route(_repo_root(root), "audit", str(pr_number), scope,
+                               model_requested=False)
         target_files: list[str] = [
             str(f) for f in (proposal.get("target_files") or []) if f is not None
         ]
         findings: list[str] = []
+        immutable_list: list[str] = []
 
-        # ── DETERMINISTIC PRE-SCREEN ──────────────────────────────────────────
+        if saved is None:
+            # ── DETERMINISTIC PRE-SCREEN ──────────────────────────────────────
 
-        changed_files, parse_ok = _parse_changed_files_from_diff(diff_text)
+            changed_files, parse_ok = _parse_changed_files_from_diff(diff_text)
 
-        # (a0) Fail closed on an unparseable diff: a header we could not resolve
-        # to a path might hide a foreign/immutable file (#2377 review B1/B2).
-        # Also: a non-empty diff that parsed to ZERO files is suspicious.
-        if not parse_ok:
-            findings.append("unparseable_diff:header_unresolved")
-        if _count_diff_lines(diff_text) > 0 and not changed_files:
-            findings.append("unparseable_diff:no_files_parsed")
+            # (a0) Fail closed on an unparseable diff: a header we could not
+            # resolve to a path might hide a foreign/immutable file (#2377
+            # review B1/B2). Also: a non-empty diff that parsed to ZERO files is
+            # suspicious.
+            if not parse_ok:
+                findings.append("unparseable_diff:header_unresolved")
+            if _count_diff_lines(diff_text) > 0 and not changed_files:
+                findings.append("unparseable_diff:no_files_parsed")
 
-        # (a) Foreign-file containment
-        foreign: list[str] = [
-            f for f in changed_files if not _is_allowed_path(f, target_files)
-        ]
-        for f in foreign:
-            findings.append(f"foreign_file:{f}")
+            # (a) Foreign-file containment
+            foreign: list[str] = [
+                f for f in changed_files if not _is_allowed_path(f, target_files)
+            ]
+            for f in foreign:
+                findings.append(f"foreign_file:{f}")
 
-        # (b) Immutable re-check (reuse check_self_mod_fence._matches_immutable)
-        try:
-            from scripts.check_self_mod_fence import (  # type: ignore[import]
-                IMMUTABLE_PATTERNS, _matches_immutable,
-            )
-            immutable_hits = [f for f in changed_files if _matches_immutable(f)]
-            for f in immutable_hits:
-                findings.append(f"immutable_touch:{f}")
-        except Exception as exc:  # noqa: BLE001
-            log.warning("audit: immutable check import failed: %s", exc)
-            # Fail-closed: treat as a reject finding
-            findings.append("immutable_check_error:import_failed")
-            IMMUTABLE_PATTERNS = []
+            # (b) Immutable re-check (reuse check_self_mod_fence._matches_immutable)
+            try:
+                from scripts.check_self_mod_fence import (  # type: ignore[import]
+                    IMMUTABLE_PATTERNS, _matches_immutable,
+                )
+                immutable_hits = [f for f in changed_files if _matches_immutable(f)]
+                for f in immutable_hits:
+                    findings.append(f"immutable_touch:{f}")
+            except Exception as exc:  # noqa: BLE001
+                log.warning("audit: immutable check import failed: %s", exc)
+                # Fail-closed: treat as a reject finding
+                findings.append("immutable_check_error:import_failed")
+                IMMUTABLE_PATTERNS = []
 
-        # (c) Diff-budget
-        diff_line_count = _count_diff_lines(diff_text)
-        max_lines = _audit_max_diff_lines(root)
-        if diff_line_count > max_lines:
-            findings.append(f"diff_too_large:{diff_line_count}")
+            # (c) Diff-budget
+            diff_line_count = _count_diff_lines(diff_text)
+            max_lines = _audit_max_diff_lines(root)
+            if diff_line_count > max_lines:
+                findings.append(f"diff_too_large:{diff_line_count}")
 
-        # (d) V12 Surface Curator realized-delta teeth (R-V12-4): the census
-        # counter runs over the ACTUAL diff — declarations are checked, never
-        # trusted.  Deny-only; parser errors fail open (the propose/adjudicate
-        # binds of the same law still stand).
-        try:
-            from engine.metabolism import surface_map as _sm  # noqa: PLC0415
-            realized = _sm.realized_delta_from_diff(diff_text, root)
-            if realized.get("front_paths"):
-                kind = str(proposal.get("kind") or "").strip().lower()
-                rules = _sm.load_surface_rules(root)
-                byte_allow = int(rules.get("max_new_bytes_saturated") or 2048)
-                if kind != "ui" and int(realized.get("marker_delta") or 0) > 0:
-                    findings.append(
-                        f"undeclared_surface_addition:marker_delta="
-                        f"{realized['marker_delta']} on {realized['front_paths'][:3]}"
-                        " (front-page growth requires kind=ui — R-V12-4)"
-                    )
-                if kind == "ui":
-                    try:
-                        declared = int(proposal.get("panel_delta"))
-                    except (TypeError, ValueError):
-                        declared = 0
-                    if int(realized.get("marker_delta") or 0) > max(0, declared):
+            # (d) V12 Surface Curator realized-delta teeth (R-V12-4): the census
+            # counter runs over the ACTUAL diff — declarations are checked,
+            # never trusted.  Deny-only; parser errors fail open (the
+            # propose/adjudicate binds of the same law still stand).
+            try:
+                from engine.metabolism import surface_map as _sm  # noqa: PLC0415
+                realized = _sm.realized_delta_from_diff(diff_text, root)
+                if realized.get("front_paths"):
+                    kind = str(proposal.get("kind") or "").strip().lower()
+                    rules = _sm.load_surface_rules(root)
+                    byte_allow = int(rules.get("max_new_bytes_saturated") or 2048)
+                    if kind != "ui" and int(realized.get("marker_delta") or 0) > 0:
                         findings.append(
-                            f"panel_delta_exceeded:realized={realized['marker_delta']}"
-                            f">declared={declared} (R-V12-4)"
+                            f"undeclared_surface_addition:marker_delta="
+                            f"{realized['marker_delta']} on {realized['front_paths'][:3]}"
+                            " (front-page growth requires kind=ui — R-V12-4)"
                         )
-                smap = _sm.load_surface_map(root)
-                for page_key, fdelta in (realized.get("files") or {}).items():
-                    if not _sm.is_saturated(page_key, smap, root):
-                        continue
-                    if int(fdelta.get("marker_delta") or 0) > 0:
-                        findings.append(
-                            f"saturated_page_growth:{page_key}:markers+"
-                            f"{fdelta['marker_delta']} (R-V12-3)"
-                        )
-                    elif int(fdelta.get("net_bytes") or 0) > byte_allow:
-                        findings.append(
-                            f"saturated_page_growth:{page_key}:bytes+"
-                            f"{fdelta['net_bytes']}>{byte_allow} (R-V12-3)"
-                        )
-        except Exception as exc:  # noqa: BLE001
-            log.warning("audit: surface realized-delta check failed (fail-open): %s", exc)
+                    if kind == "ui":
+                        try:
+                            declared = int(proposal.get("panel_delta"))
+                        except (TypeError, ValueError):
+                            declared = 0
+                        if int(realized.get("marker_delta") or 0) > max(0, declared):
+                            findings.append(
+                                f"panel_delta_exceeded:realized={realized['marker_delta']}"
+                                f">declared={declared} (R-V12-4)"
+                            )
+                    smap = _sm.load_surface_map(root)
+                    for page_key, fdelta in (realized.get("files") or {}).items():
+                        if not _sm.is_saturated(page_key, smap, root):
+                            continue
+                        if int(fdelta.get("marker_delta") or 0) > 0:
+                            findings.append(
+                                f"saturated_page_growth:{page_key}:markers+"
+                                f"{fdelta['marker_delta']} (R-V12-3)"
+                            )
+                        elif int(fdelta.get("net_bytes") or 0) > byte_allow:
+                            findings.append(
+                                f"saturated_page_growth:{page_key}:bytes+"
+                                f"{fdelta['net_bytes']}>{byte_allow} (R-V12-3)"
+                            )
+            except Exception as exc:  # noqa: BLE001
+                log.warning("audit: surface realized-delta check failed (fail-open): %s", exc)
 
-        deterministic_ok = len(findings) == 0
-        record["deterministic_ok"] = deterministic_ok
-        record["findings"] = list(findings)
+            deterministic_ok = len(findings) == 0
+            record["deterministic_ok"] = deterministic_ok
+            record["findings"] = list(findings)
 
-        if not deterministic_ok:
-            record["verdict"] = "reject"
-            record["rationale"] = (
-                f"Deterministic pre-screen FAILED ({len(findings)} finding(s)): "
-                + "; ".join(findings[:5])
-            )
-            _write_audit_record(record, root)
-            _append_governance_event(record, root)
-            return record
+            if not deterministic_ok:
+                record["verdict"] = "reject"
+                record["rationale"] = (
+                    f"Deterministic pre-screen FAILED ({len(findings)} finding(s)): "
+                    + "; ".join(findings[:5])
+                )[:200]
+                record["ts"] = _publication_ts()
+                # A zero-model decision publishes through the audit owner with
+                # its own durable governance event. No model receipt is
+                # invented for it.
+                published = _publish_without_original(record, pr_number, root, logical=logical)
+                return published
 
-        # ── LLM ADVERSARIAL REVIEW ────────────────────────────────────────────
+            # ── LLM ADVERSARIAL REVIEW, THROUGH THE RETAINED ORIGINAL ────────
 
-        immutable_list = list(IMMUTABLE_PATTERNS) if IMMUTABLE_PATTERNS else []
-
-        llm_verdict, confidence, llm_findings, llm_rationale, error_reason = (
-            _call_llm_auditor(proposal, diff_text, immutable_list)
-        )
-
-        # Fail-closed: if LLM failed, treat as reject
-        if llm_verdict is None or error_reason:
-            record["verdict"] = "reject"
-            record["llm_verdict"] = error_reason or "no_provider"
-            record["confidence"] = None
-            record["findings"] = list(findings) + llm_findings
-            record["rationale"] = (
-                f"LLM auditor unavailable or failed ({error_reason!r}) — "
-                "fail-closed: REJECT"
-            )
-            _write_audit_record(record, root)
-            _append_governance_event(record, root)
-            return record
-
-        record["llm_verdict"] = llm_verdict
-        record["confidence"] = confidence
-        record["findings"] = list(findings) + llm_findings
-        record["rationale"] = llm_rationale
-
-        # Approve only iff deterministic passed AND LLM approved
-        if deterministic_ok and llm_verdict == "approve":
-            record["verdict"] = "approve"
+            guard_native_route(_repo_root(root), "audit", str(pr_number), scope, cfg=_LLM_CFG)
+            immutable_list = list(IMMUTABLE_PATTERNS) if IMMUTABLE_PATTERNS else []
         else:
-            record["verdict"] = "reject"
-            if not record["rationale"]:
-                record["rationale"] = "LLM auditor rejected (see findings)"
+            # A saved original owns this request. The deterministic screen, the
+            # budget, the immutable patterns and the prompt are not rediscovered:
+            # the original already holds the result of that discovery.
+            record["deterministic_ok"] = True
+            record["findings"] = []
 
-        _write_audit_record(record, root)
-        _append_governance_event(record, root)
-        return record
+        return _audit_through_original(pr_number, proposal, diff_text, head_sha, root,
+                                       record, findings, immutable_list, _proposal_id)
 
+    except FabricHeld as exc:
+        return {**record, "status": "held", "rationale": str(exc)}
     except Exception as exc:  # noqa: BLE001
         log.warning("audit.audit_pr: unexpected exception for PR %s: %s", pr_number, exc)
         record["verdict"] = "reject"
-        record["rationale"] = f"audit_pr exception (fail-closed): {exc}"
-        record["ts"] = _now_iso()
+        record["rationale"] = f"audit_pr exception (fail-closed): {exc}"[:200]
+        record["ts"] = _publication_ts()
         try:
-            _write_audit_record(record, root)
-            _append_governance_event(record, root)
+            return _publish_without_original(record, pr_number, root, logical=logical)
+        except FabricHeld as held:
+            return {**record, "status": "held", "rationale": str(held)}
         except Exception:  # noqa: BLE001
-            pass
-        return record
+            return {**record, "status": "held",
+                    "rationale": "metabolism_audit_publication_failed"}

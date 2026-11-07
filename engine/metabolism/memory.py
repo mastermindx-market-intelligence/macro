@@ -192,7 +192,6 @@ def append_lesson(
     try:
         repo = _repo_root(root)
         p = repo.joinpath(*LESSONS_PATH)
-        p.parent.mkdir(parents=True, exist_ok=True)
         row = {
             "schema": SCHEMA_LESSONS,
             "ts": _now_iso(),
@@ -204,8 +203,13 @@ def append_lesson(
             "what_failed": what_failed or "",
             "construction": construction or "",
         }
-        with p.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps(row, separators=(",", ":"), default=str) + "\n")
+        from scripts.metabolism_journal import owned_bytes
+        with owned_bytes(repo, "lessons", "lessons") as owner:
+            before = owner.read()
+            raw = before["raw"] or b""
+            if raw and not raw.endswith(b"\n"):
+                raise ValueError("lessons_partial_tail")
+            owner.replace(before, raw + (json.dumps(row, separators=(",", ":"), default=str) + "\n").encode())
         log.info("memory.append_lesson: cycle=%s verdict=%s lobe=%s", cycle_id, verdict, lobe or "")
         return True
     except Exception as exc:  # noqa: BLE001
@@ -251,66 +255,99 @@ def _needs_resummary(root: Path | None = None) -> bool:
         return False
 
 
+def _lesson_parts(raw: bytes) -> tuple[bytes, bytes]:
+    if len(raw) <= LESSONS_TAIL_BYTES:
+        return b"", raw
+    boundary = raw.find(b"\n", len(raw) - LESSONS_TAIL_BYTES)
+    boundary = len(raw) if boundary < 0 else boundary + 1
+    return raw[:boundary], raw[boundary:]
+
+
+def _lesson_source(snapshot: dict) -> dict:
+    import hashlib
+    raw = snapshot["raw"]
+    if raw is None:
+        raise ValueError("lessons_source_missing")
+    prefix, tail = _lesson_parts(raw)
+    return {
+        "sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw),
+        "file_identity": list(snapshot["identity"]),
+        "prefix_sha256": hashlib.sha256(prefix).hexdigest(), "prefix_bytes": len(prefix),
+        "tail_sha256": hashlib.sha256(tail).hexdigest(), "tail_bytes": len(tail),
+    }
+
+
+def capture_lessons_for_resummary(root: Path, *, max_prefix_bytes: int = 128 * 1024) -> tuple[dict, str]:
+    """Capture the exact discarded prefix; a partial summary never discards unseen rows."""
+    from scripts.metabolism_journal import owned_bytes, strict_json
+    repo = _repo_root(root)
+    with owned_bytes(repo, "lessons", "lessons") as owner:
+        before = owner.read()
+        source = _lesson_source(before)
+        raw = before["raw"]
+        if raw and not raw.endswith(b"\n"):
+            raise ValueError("lessons_partial_tail")
+        for line in raw.splitlines():
+            if line.strip() and type(strict_json(line)) is not dict:
+                raise ValueError("lessons_row_invalid")
+        prefix, _ = _lesson_parts(raw)
+        if not prefix or len(prefix) > max_prefix_bytes:
+            raise ValueError("lessons_summary_input_bound")
+        return source, prefix.decode("utf-8")
+
+
 def resummary_lessons(
     summary_text: str,
     root: Path | None = None,
+    *,
+    expected_source: dict | None = None,
+    receipt: dict | None = None,
 ) -> bool:
-    """Anti-rot: compress old lessons.
+    """Replace under the append owner's lock; selected callers compare the captured source.
 
-    The caller (weekly dream cycle) provides summary_text (LLM-generated,
-    display-tier only — never gate-altering).  This function:
-    1. Reads lessons.jsonl.
-    2. Takes the raw tail (last LESSONS_TAIL_BYTES).
-    3. Writes: [summary block as a single JSON row] + [raw tail rows].
-    4. Replaces lessons.jsonl atomically.
-
-    The summary row is marked is_summary=True so callers can distinguish it.
-    Returns True on success.  NEVER raises.
+    Legacy callers retain the boolean interface. The optional receipt is returned
+    directly to the incumbent journal caller; it is not another state file.
     """
     try:
+        import hashlib
+        from scripts.metabolism_journal import owned_bytes
         repo = _repo_root(root)
-        p = repo.joinpath(*LESSONS_PATH)
-        if not p.exists():
+        if not isinstance(summary_text, str) or not summary_text.strip():
             return False
-
-        text = p.read_text(encoding="utf-8")
-        encoded = text.encode()
-        # Keep only the raw tail
-        if len(encoded) > LESSONS_TAIL_BYTES:
-            tail_text = encoded[-LESSONS_TAIL_BYTES:].decode(errors="replace")
-            # Drop the leading partial line — a raw byte slice can chop mid-JSON,
-            # leaving an unparseable first row. Cut to the first complete line.
-            nl = tail_text.find("\n")
-            tail_text = tail_text[nl + 1:] if nl != -1 else ""
-        else:
-            tail_text = text
-
-        # Build the summary row
-        summary_row = {
-            "schema": SCHEMA_LESSONS,
-            "ts": _now_iso(),
-            "is_summary": True,
-            "summary": summary_text,
-            "note": (
-                "Anti-rot compression: this row summarizes lessons prior to the tail. "
-                "Display-only — never gate-altering. The raw tail follows."
-            ),
-        }
-
-        # Reconstruct: summary_row + newline + tail_text (strip leading partial line if any)
-        new_content = (
-            json.dumps(summary_row, separators=(",", ":"), default=str)
-            + "\n"
-            + tail_text.lstrip()
-        )
-
-        tmp = p.with_suffix(".tmp")
-        tmp.write_text(new_content, encoding="utf-8")
-        tmp.replace(p)
-        log.info("memory.resummary_lessons: compressed to %d bytes", len(new_content.encode()))
+        if receipt is not None and (type(receipt) is not dict or receipt):
+            return False
+        with owned_bytes(repo, "lessons", "lessons") as owner:
+            before = owner.read()
+            if before["raw"] is None:
+                return False
+            source = _lesson_source(before)
+            if expected_source is not None and source != expected_source:
+                return False
+            raw = before["raw"]
+            _, tail = _lesson_parts(raw)
+            # Decode strictly: a byte boundary is always immediately after a newline.
+            tail_text = tail.decode("utf-8")
+            summary_row = {
+                "schema": SCHEMA_LESSONS, "ts": _now_iso(), "is_summary": True,
+                "summary": summary_text,
+                "note": (
+                    "Anti-rot compression: this row summarizes lessons prior to the tail. "
+                    "Display-only — never gate-altering. The raw tail follows."
+                ),
+            }
+            if expected_source is not None:
+                summary_row["source_coverage"] = {k: v for k, v in source.items() if k != "file_identity"}
+            new_content = (json.dumps(summary_row, separators=(",", ":"), default=str) + "\n" + tail_text).encode()
+            after = owner.replace(before, new_content)
+            if receipt is not None:
+                receipt.update({"source": source,
+                    "summary_sha256": hashlib.sha256(summary_text.encode()).hexdigest(),
+                    "result_sha256": hashlib.sha256(after["raw"]).hexdigest(),
+                    "result_bytes": len(after["raw"]), "result_identity": list(after["identity"])})
+        log.info("memory.resummary_lessons: compressed to %d bytes", len(new_content))
         return True
-    except Exception as exc:  # noqa: BLE001
-        log.warning("memory.resummary_lessons: %s", exc)
+    except Exception as exc:
+        log.warning("memory.resummary_lessons held (%s)", type(exc).__name__)
         return False
 
 

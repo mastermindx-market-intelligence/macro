@@ -990,7 +990,7 @@ def feed(today: date | None = None, days: int = 7, top_n: int | None = None) -> 
 
 
 # --------------------------------------------------------------------------- #
-# optional LLM brief (gated on flag AND key; provider-agnostic; default OFF)
+# optional LLM brief (gated on flag AND provider; default OFF)
 # --------------------------------------------------------------------------- #
 _BRIEF_SYSTEM = (
     "You write a 2-3 sentence plain-中文 summary of the current China macro/policy backdrop "
@@ -1005,6 +1005,9 @@ def _llm_ready(cfg: dict) -> bool:
     if not (cfg.get("enabled") and cfg.get("llm_brief")):
         return False
     try:
+        from engine import llm_auth
+        if llm_auth.application_mode_id(cfg) is not None:
+            return True  # Eligibility is checked fresh by begin_operation.
         return bool(config.secret(cfg.get("api_key_env", "DEEPSEEK_API_KEY")))
     except Exception:  # noqa: BLE001
         return False
@@ -1015,16 +1018,38 @@ def news_brief(items: list[dict] | None, sentiment_line: str = "") -> dict | Non
     if not _llm_ready(cfg) or not items:
         return None
     try:
+        lines = "\n".join(f"- [{i.get('theme', '')}] {i.get('title', '')}" for i in items[:12])
+        user = f"Media sentiment: {sentiment_line or 'n/a'}\nFiltered headlines:\n{lines}"
+        from engine import llm_auth
+        if llm_auth.application_mode_id(cfg) is not None:
+            selected_cfg = dict(cfg)
+            selected_cfg.setdefault("workload_profile", "site_batch")
+            selected_cfg.setdefault("usage_lane", "china-news-intel")
+            providers = llm_auth.build_providers(selected_cfg)
+            with llm_auth.begin_operation(providers, context="china_news_intel") as operation:
+                def call(client, model):
+                    response = client.messages.create(
+                        model=model, max_tokens=220, system=_BRIEF_SYSTEM,
+                        messages=[{"role": "user", "content": user}])
+                    if (getattr(response, "stop_reason", "") not in {"end_turn", "stop_sequence"}
+                            or any(getattr(b, "type", "") == "tool_use" for b in response.content)):
+                        return None, "invalid_narration", response
+                    text = "".join(b.text for b in response.content
+                                   if getattr(b, "type", "") == "text").strip()
+                    return text or None, None, response
+
+                text, reason, _ = llm_auth.make_call(
+                    operation.providers, call, context="china_news_intel")
+                if not text or reason:
+                    return None
+                provider = operation.providers[0]
+                return {"text": text, "model": provider["model"],
+                        "provider": provider["provider"], "is_context_only": True}
         import anthropic
-    except ImportError:
-        return None
-    try:
         key = config.secret(cfg.get("api_key_env", "DEEPSEEK_API_KEY"))
         base = cfg.get("base_url")
         client = anthropic.Anthropic(api_key=key, base_url=base) if base \
             else anthropic.Anthropic(api_key=key)
-        lines = "\n".join(f"- [{i.get('theme', '')}] {i.get('title', '')}" for i in items[:12])
-        user = f"Media sentiment: {sentiment_line or 'n/a'}\nFiltered headlines:\n{lines}"
         resp = client.messages.create(
             model=cfg.get("llm_model", "deepseek-chat"), max_tokens=220,
             system=_BRIEF_SYSTEM, messages=[{"role": "user", "content": user}])

@@ -846,3 +846,542 @@ def test_local_qwen_cost_is_zero_not_unpriced(tmp_path, monkeypatch):
     assert row["provider"] == "openai_compat"
     assert row["cycle_id"] == "abc123"
     assert row["lane"] == "earnings_event_compiler"
+
+
+@pytest.fixture
+def qwen_observation_repo(tmp_path, monkeypatch):
+    import engine.company_intelligence.e3_shadow_compiler as e3
+
+    (tmp_path / "config").mkdir()
+    (tmp_path / "config/earnings_qual.yml").write_text(
+        "openai_compat:\n  base_url: http://127.0.0.1:11435/v1\n"
+        "  model: qwen3.5:9b\n  max_tokens: 1200\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(e3, "resolve_qwen_openai_compat_cfg",
+                        lambda root, cfg: {**cfg, "base_url_source": "fixture"})
+    monkeypatch.setattr(e3, "preflight_qwen_endpoint", lambda cfg: {"status": "ok"})
+    monkeypatch.setattr(e3, "_record_health", lambda **kwargs: None)
+    return tmp_path
+
+
+def test_qwen_attempt_uses_one_detailed_call_and_actual_observation(
+    qwen_observation_repo, monkeypatch,
+):
+    import requests
+    import engine.company_intelligence.e3_shadow_compiler as e3
+
+    sent = []
+    class Response:
+        status_code = 200
+        def json(self):
+            return {"model": "actual-qwen-serving-id", "choices": [{"message": {"content": "[]"}}],
+                    "usage": {"prompt_tokens": 17, "completion_tokens": 0}}
+
+    def post(url, **kwargs):
+        sent.append((url, kwargs))
+        return Response()
+
+    monkeypatch.setattr(requests, "post", post)
+    attempt = e3._attempt_qwen("return JSON", qwen_observation_repo)
+    assert requests.post is post
+    assert len(sent) == 1
+    payload = sent[0][1]["json"]
+    assert payload == {
+        "model": "qwen3.5:9b",
+        "messages": [{"role": "system", "content": e3.SYSTEM_PROMPT},
+                     {"role": "user", "content": "return JSON\n\n/no_think"}],
+        "max_tokens": 4096, "temperature": 0, "stream": False, "reasoning_effort": "none",
+    }
+    assert attempt.status == "ok"
+    assert attempt.model == "qwen3.5:9b"
+    assert attempt.served_model == "actual-qwen-serving-id"
+    assert attempt.http_status == 200 and attempt.error_kind is None
+    assert (attempt.input_tokens, attempt.output_tokens) == (17, 0)
+    assert attempt.observed_usage["total_tokens"] is None
+
+
+def test_qwen_attempt_does_not_resend_after_helper_exception(qwen_observation_repo, monkeypatch):
+    import engine.company_intelligence.e3_shadow_compiler as e3
+    from engine import earnings_qual
+
+    calls = []
+    def after_send(**kwargs):
+        calls.append(kwargs)
+        raise RuntimeError("response observation failed after simulated send")
+
+    monkeypatch.setattr(earnings_qual, "_call_openai_compat_detailed", after_send)
+    attempt = e3._attempt_qwen("request", qwen_observation_repo)
+    assert len(calls) == 1
+    assert attempt.status == "provider_unavailable"
+    assert attempt.degraded_reason == "exception: RuntimeError"
+    assert attempt.input_tokens is None and attempt.output_tokens is None
+    assert attempt.served_model is None
+
+
+def test_qwen_concurrent_observations_do_not_intercept_unrelated_requests(
+    qwen_observation_repo, monkeypatch,
+):
+    from concurrent.futures import ThreadPoolExecutor
+    import threading
+    import requests
+    import engine.company_intelligence.e3_shadow_compiler as e3
+
+    barrier = threading.Barrier(3)
+    sent = []
+    lock = threading.Lock()
+    class Response:
+        status_code = 200
+        def __init__(self, name):
+            self.name = name
+        def json(self):
+            n = {"first": 11, "second": 22, "unrelated": 99}[self.name]
+            return {"model": "served-" + self.name,
+                    "choices": [{"message": {"content": json.dumps({"name": self.name})}}],
+                    "usage": {"input_tokens": n, "output_tokens": 1}}
+
+    def post(url, **kwargs):
+        assert requests.post is post
+        payload = kwargs["json"]
+        name = payload.get("outside") or payload["messages"][1]["content"].split("\n")[0]
+        with lock:
+            sent.append(name)
+        barrier.wait(timeout=10)
+        return Response(name)
+
+    monkeypatch.setattr(requests, "post", post)
+    with ThreadPoolExecutor(max_workers=3) as workers:
+        first = workers.submit(e3._attempt_qwen, "first", qwen_observation_repo)
+        second = workers.submit(e3._attempt_qwen, "second", qwen_observation_repo)
+        unrelated = workers.submit(requests.post, "https://fixture.invalid/unrelated",
+                                   json={"outside": "unrelated"})
+        a, b, c = first.result(timeout=15), second.result(timeout=15), unrelated.result(timeout=15)
+    assert sorted(sent) == ["first", "second", "unrelated"]
+    assert requests.post is post
+    assert (a.served_model, a.input_tokens) == ("served-first", 11)
+    assert (b.served_model, b.input_tokens) == ("served-second", 22)
+    assert c.json()["model"] == "served-unrelated"
+    assert a.observed_usage is not b.observed_usage
+
+
+def test_qwen_empty_answer_retains_observation_without_acceptance(qwen_observation_repo, monkeypatch):
+    import requests
+    import engine.company_intelligence.e3_shadow_compiler as e3
+
+    class Response:
+        status_code = 200
+        def json(self):
+            return {"model": "actual-empty-model", "choices": [],
+                    "usage": {"prompt_tokens": 13, "completion_tokens": 4}}
+    monkeypatch.setattr(requests, "post", lambda *args, **kwargs: Response())
+    attempt = e3._attempt_qwen("empty", qwen_observation_repo)
+    assert attempt.status == "provider_unavailable" and attempt.raw_response is None
+    assert attempt.error_kind == "empty" and attempt.http_status == 200
+    assert attempt.served_model == "actual-empty-model"
+    assert (attempt.input_tokens, attempt.output_tokens) == (13, 4)
+
+
+def test_qwen_unknown_usage_is_not_zero_in_existing_ledger(tmp_path, monkeypatch):
+    from engine.company_intelligence.e3_shadow_compiler import ModelAttempt, ledger_attempt
+
+    monkeypatch.delenv("AI_COSTS_SHARD", raising=False)
+    attempt = ModelAttempt(provider="openai_compat", model="requested",
+                           endpoint_class="remote", input_tokens=None,
+                           output_tokens=None, est_cost_usd=None)
+    ledger_attempt(attempt, tmp_path, "unknown-observation")
+    row = json.loads((tmp_path / "data/ai_costs/usage.jsonl").read_text().splitlines()[0])
+    assert row["input_tokens"] is None and row["output_tokens"] is None
+    assert row["est_cost_usd"] is None and row["cost_basis"] == "unknown"
+
+
+# Selected E3 composition: real C/auth/client/B/picker/A/H with synthetic upstream.
+import copy
+import os
+import shutil
+from dataclasses import replace
+from unittest.mock import Mock, patch
+
+from lib.ai_costs import record_usage as _E3_REAL_RECORD_USAGE
+from tests.test_fabric_application_binding import binding  # noqa: F401
+from tests.test_fabric_exact_scoped_model_composition import exact, exact_native  # noqa: F401
+
+
+@pytest.fixture
+def e3_fabric(exact, monkeypatch):
+    from engine.company_intelligence import e3_shadow_compiler as e3
+    from engine import llm_auth as fabric_auth
+    from lib import ai_costs
+    monkeypatch.setattr(ai_costs, "record_usage", _E3_REAL_RECORD_USAGE)
+    for capability in exact.manifest["capabilities"]:
+        if capability["capability_id"] == exact.batch["capability_id"]:
+            capability["allowed_lanes"].append(e3.LANE)
+    exact.save()
+    for relative in (
+        Path("tests/fixtures/company_intelligence/aapl_fy2026_q3_ex99_1.htm"),
+        Path("tests/fixtures/company_intelligence/aapl_fy2026_q3.json.gz"),
+        e3.GOLD_PATH,
+    ):
+        destination = exact.root / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(REPO_ROOT / relative, destination)
+    live = {"available": True, "source_shas_match": True,
+        "release_source_sha256": e3.FROZEN_EXHIBIT_SHA,
+        "transcript_source_sha256": e3.FROZEN_TRANSCRIPT_SHA,
+        "reader": "synthetic_current_workspace_observation"}
+    monkeypatch.setattr(e3, "verify_live_workspace_shas", lambda: copy.deepcopy(live))
+    gold_document = json.loads(GOLD_PATH.read_bytes())
+    candidate = e3.gold_exchange_to_candidate(gold_document["exchanges"][0])
+    exact.native.response["output"][0]["content"][0]["text"] = json.dumps([candidate])
+    for name in ("_attempt_qwen", "_attempt_comparator", "freeze_comparator_choice",
+                 "_enable_eval_shards"):
+        monkeypatch.setattr(e3, name, Mock(side_effect=AssertionError("selected legacy effect: " + name)))
+    monkeypatch.setenv("AI_COSTS_SHARD", "e3_fabric_test")
+    exact.e3 = e3
+    exact.auth = fabric_auth
+    exact.candidate = candidate
+    return exact
+
+
+@pytest.mark.skipif(not os.environ.get("MM_FABRIC_GATEWAY_SOURCE_ROOT"),
+                    reason="paired exact-scoped Mastermind source required")
+class TestFabricE3OriginalComposition:
+    def test_exact_request_answer_accounting_close_and_selectorless_warm_read(self, e3_fabric, monkeypatch):
+        from engine import provider_production_modes as owner
+        from lib import ai_costs
+        state = e3_fabric
+        before_environment = dict(os.environ)
+        with patch.object(ai_costs, "record_usage", wraps=ai_costs.record_usage) as ledger:
+            result = state.e3.run_e3a_eval(state.root)
+            assert ledger.call_count == 1
+            assert ledger.call_args.kwargs["provider"] == "bailian"
+            assert ledger.call_args.kwargs["model"] == "qwen3.8-flash"
+            assert ledger.call_args.kwargs["est_cost_usd"] is None
+            assert ledger.call_args.kwargs["cost_basis"] == "unknown"
+        assert dict(os.environ) == before_environment
+        leg = result[state.e3._FABRIC_E3_KEY]["qwen"]
+        assert leg["phase"] == "complete"
+        assert leg["ledger"] == {"phase": "complete", "ack": True}
+        assert leg["close"]["outcome"]["closed"] is True
+        assert result["model_attempts"]["qwen"]["n_candidates"] == 1
+        assert result["model_attempts"]["comparator"]["phase"] == "unattempted"
+        assert result["model_attempts"]["comparator"]["requested_model"] == "claude-haiku-4-5"
+        assert result["summary"]["usefulness_bar_decision"] == "refusal_n7_too_small"
+        assert not any(result["summary"][key] for key in
+                       ("e3b_auto_unlocked", "event_workspace_v1_advanced", "r2_written"))
+        assert len(state.native.logical_posts) == len(state.native.rows("leases")) == 1
+        assert state.native.rows("leases")[0]["state"] == "released"
+        route = leg["observation"]["routing"]
+        request = state.native.rows("application_requests")[0]
+        assert route["requested_model"] == route["selected_model"] == "qwen3.8-flash"
+        assert route["pool"] == "bailian"
+        assert route["routed_request_digest"] is None
+        assert request["request_digest"] == leg["request_digest"] == route["request_digest"]
+        wire = json.loads(state.native.logical_posts[0].body)
+        assert wire["model"] == "qwen3.8-flash"
+        assert wire["max_output_tokens"] == state.e3.EXTRACTION_MAX_TOKENS
+        assert type(wire["temperature"]) is int and wire["temperature"] == 0
+        assert wire["reasoning"] == {"effort": "none"} and wire["stream"] is False
+        original = result[state.e3._FABRIC_E3_KEY]
+        user = state.e3._build_user_prompt(original["input"]["segments"]) + "\n\n/no_think"
+        assert original["input"]["request"]["messages"] == [{"role": "user", "content": user}]
+        assert user.count("/no_think") == 1
+        assert (leg["actual_observation"]["input_tokens"],
+                leg["actual_observation"]["output_tokens"]) == (11, 7)
+        assert (result["model_attempts"]["qwen"]["input_tokens"],
+                result["model_attempts"]["qwen"]["output_tokens"]) == (11, 7)
+        monkeypatch.delenv(state.auth.APPLICATION_MODE_ENV)
+        with patch.object(owner, "make_application_fabric_factory",
+                          side_effect=AssertionError("warm discovery")), \
+             patch.object(ai_costs, "record_usage", side_effect=AssertionError("warm ledger")):
+            warm = state.e3.run_e3a_eval(state.root)
+        assert warm == result
+        assert len(state.native.logical_posts) == 1
+
+    def test_legacy_receipt_is_retained_as_distinct_evidence(self, e3_fabric):
+        from engine import catalyst_tone as cache
+        state = e3_fabric
+        legacy = {"schema": "e3a_eval_receipt.v1", "run_id": "legacy-original",
+                  "model_attempts": {"qwen": {"model": "qwen3.5:9b", "status": "ok"}}}
+        cache._cache_save(state.root / state.e3.EVAL_RECEIPT_PATH, legacy)
+        result = state.e3.run_e3a_eval(state.root)
+        original = result[state.e3._FABRIC_E3_KEY]
+        assert original["legacy_receipt"] == legacy
+        assert original["legacy_digest"] == state.e3._fabric_e3_hash(legacy)
+        assert result["model_attempts"]["qwen"]["requested_model"] == "qwen3.8-flash"
+        assert len(state.native.logical_posts) == 1
+
+    def test_unqualified_capability_has_no_allocation_or_fallback(self, e3_fabric):
+        state = e3_fabric
+        for capability in state.manifest["capabilities"]:
+            if capability["capability_id"] == state.batch["capability_id"]:
+                capability["allowed_lanes"].remove(state.e3.LANE)
+        state.save()
+        result = state.e3.run_e3a_eval(state.root)
+        leg = result[state.e3._FABRIC_E3_KEY]["qwen"]
+        assert leg["phase"] == "unattempted"
+        assert leg["reason"] == "fabric_qualification_unavailable"
+        assert state.native.logical_posts == state.native.rows("leases") == []
+        assert leg["ledger"] == {"phase": "unattempted", "ack": None}
+
+    @staticmethod
+    def _delivery_fault(state, monkeypatch, change):
+        handler = state.native.server.RequestHandlerClass
+        original = handler._application_delivery
+        def deliver(instance, observed):
+            body = json.loads(observed.body)
+            change(body)
+            return original(instance, replace(observed, body=json.dumps(body).encode()))
+        monkeypatch.setattr(handler, "_application_delivery", deliver)
+
+    @pytest.mark.parametrize("text", ["", "not-json", "{}", '[{"ordinal":0,"ordinal":1}]'])
+    def test_invalid_extraction_retains_actual_usage_without_retry(self, e3_fabric, text, monkeypatch):
+        from engine import provider_production_modes as owner
+        state = e3_fabric
+        state.native.response["output"][0]["content"][0]["text"] = text
+        result = state.e3.run_e3a_eval(state.root)
+        leg = result[state.e3._FABRIC_E3_KEY]["qwen"]
+        assert leg["phase"] == "held" and leg["answer_status"] != "ok"
+        assert leg["actual_observation"]["input_tokens"] == 11
+        assert leg["actual_observation"]["output_tokens"] == 7
+        assert result["model_attempts"]["qwen"]["n_candidates"] == 0
+        monkeypatch.delenv(state.auth.APPLICATION_MODE_ENV)
+        with patch.object(owner, "make_application_fabric_factory",
+                          side_effect=AssertionError("invalid original rebound")):
+            assert state.e3.run_e3a_eval(state.root) == result
+        assert len(state.native.logical_posts) == 1
+
+    def test_empty_array_is_valid_empty_extraction(self, e3_fabric):
+        state = e3_fabric
+        state.native.response["output"][0]["content"][0]["text"] = "[]"
+        result = state.e3.run_e3a_eval(state.root)
+        assert result[state.e3._FABRIC_E3_KEY]["qwen"]["phase"] == "complete"
+        assert result["model_attempts"]["qwen"]["n_candidates"] == 0
+        assert result["summary"]["e3b_auto_unlocked"] is False
+
+    @pytest.mark.parametrize("kind", ["length", "tool_calls"])
+    def test_incomplete_or_tool_delivery_cannot_become_extraction(self, e3_fabric, monkeypatch, kind):
+        state = e3_fabric
+        def change(body):
+            choice = body["choices"][0]
+            choice["finish_reason"] = kind
+            if kind == "tool_calls":
+                choice["message"]["tool_calls"] = [{
+                    "id": "unexpected-tool", "type": "function",
+                    "function": {"name": "unexpected", "arguments": "{}"}}]
+        self._delivery_fault(state, monkeypatch, change)
+        result = state.e3.run_e3a_eval(state.root)
+        leg = result[state.e3._FABRIC_E3_KEY]["qwen"]
+        assert leg["phase"] == "held" and leg["answer_status"] != "ok"
+        assert leg["actual_observation"]["input_tokens"] == 11
+        assert result["model_attempts"]["qwen"]["n_candidates"] == 0
+        assert len(state.native.logical_posts) == 1
+
+    def test_served_model_mismatch_keeps_actual_model_and_counts(self, e3_fabric):
+        state = e3_fabric
+        state.native.response["model"] = "qwen3.8-max"
+        result = state.e3.run_e3a_eval(state.root)
+        leg = result[state.e3._FABRIC_E3_KEY]["qwen"]
+        assert leg["phase"] == "held" and leg["answer_status"] != "ok"
+        assert leg["observation"]["routing"]["selected_model"] == "qwen3.8-flash"
+        assert leg["actual_observation"]["serving_model"] == "qwen3.8-max"
+        assert result["model_attempts"]["qwen"]["served_model"] == "qwen3.8-max"
+        assert result["model_attempts"]["qwen"]["input_tokens"] == 11
+        assert len(state.native.logical_posts) == 1
+
+    @pytest.mark.parametrize("partial", [False, True])
+    def test_bad_route_retains_correlated_actual_usage_without_pool_claim(self, e3_fabric, monkeypatch, partial):
+        state = e3_fabric
+        def change(body):
+            body["application"]["routing"] = []
+            if partial:
+                body["usage"]["completion_tokens"] = None
+                body["application"]["usage"]["output_tokens"] = None
+        self._delivery_fault(state, monkeypatch, change)
+        result = state.e3.run_e3a_eval(state.root)
+        leg = result[state.e3._FABRIC_E3_KEY]["qwen"]
+        actual = leg["actual_observation"]
+        assert leg["phase"] == "held" and leg["observation"] is None
+        assert actual["request_id"] == leg["request_id"]
+        assert actual["serving_model"] == "qwen3.8-flash"
+        assert actual["input_tokens"] == 11
+        assert actual["output_tokens"] == (None if partial else 7)
+        assert leg["usage"]["usage_state"] == "unknown"
+        assert leg["usage"]["completed_input_tokens"] == (0 if partial else 11)
+        assert result["model_attempts"]["qwen"]["provider"] == "unknown"
+        assert result["model_attempts"]["qwen"]["input_tokens"] == 11
+        assert result["model_attempts"]["qwen"]["output_tokens"] == (None if partial else 7)
+        assert result["model_attempts"]["qwen"]["est_cost_usd"] is None
+        assert state.e3.run_e3a_eval(state.root) == result
+        assert len(state.native.logical_posts) == 1
+
+    def test_reentrant_reader_observes_claim_without_rebinding(self, e3_fabric, monkeypatch):
+        from engine import provider_production_modes as owner
+        state = e3_fabric
+        nested = []
+        def observe(body):
+            if not nested:
+                with patch.object(owner, "make_application_fabric_factory",
+                                  side_effect=AssertionError("duplicate binding")):
+                    nested.append(state.e3.run_e3a_eval(state.root))
+        self._delivery_fault(state, monkeypatch, observe)
+        result = state.e3.run_e3a_eval(state.root)
+        assert nested[0][state.e3._FABRIC_E3_KEY]["qwen"]["phase"] == "claimed"
+        assert result[state.e3._FABRIC_E3_KEY]["qwen"]["phase"] == "complete"
+        assert len(state.native.logical_posts) == len(state.native.rows("leases")) == 1
+
+    def test_crash_after_claim_cannot_rebind_after_selector_removal(self, e3_fabric, monkeypatch):
+        from engine import provider_production_modes as owner
+        state = e3_fabric
+        monkeypatch.setattr(state.auth, "build_fabric_provider",
+                            Mock(side_effect=KeyboardInterrupt("after durable claim")))
+        with pytest.raises(KeyboardInterrupt):
+            state.e3.run_e3a_eval(state.root)
+        monkeypatch.delenv(state.auth.APPLICATION_MODE_ENV)
+        with patch.object(owner, "make_application_fabric_factory",
+                          side_effect=AssertionError("original rediscovery")):
+            restored = state.e3.run_e3a_eval(state.root)
+        assert restored[state.e3._FABRIC_E3_KEY]["qwen"]["phase"] == "claimed"
+        assert state.native.logical_posts == state.native.rows("leases") == []
+
+    def test_cancellation_after_real_reply_closes_once_and_does_not_resend(self, e3_fabric, monkeypatch):
+        state = e3_fabric
+        original_build = state.auth.build_fabric_provider
+        def build(*args, **kwargs):
+            provider = original_build(*args, **kwargs)
+            original_create = provider["client"].messages.create
+            def cancelled(**request):
+                original_create(**request)
+                raise KeyboardInterrupt("after actual reply")
+            provider["client"].messages.create = cancelled
+            return provider
+        monkeypatch.setattr(state.auth, "build_fabric_provider", build)
+        with patch.object(state.auth, "close_fabric_provider",
+                          wraps=state.auth.close_fabric_provider) as close:
+            with pytest.raises(KeyboardInterrupt):
+                state.e3.run_e3a_eval(state.root)
+            assert close.call_count == 1
+            restored = state.e3.run_e3a_eval(state.root)
+            assert close.call_count == 1
+        assert restored[state.e3._FABRIC_E3_KEY]["qwen"]["phase"] == "claimed"
+        assert len(state.native.logical_posts) == 1
+        assert state.native.rows("leases")[0]["state"] == "released"
+
+    def test_answer_persistence_failure_closes_original_once(self, e3_fabric, monkeypatch):
+        from engine import catalyst_tone as cache
+        state = e3_fabric
+        save = cache._cache_save
+        def refuse_observation(path, document):
+            if document.get(state.e3._FABRIC_E3_KEY, {}).get("qwen", {}).get("phase") == "observed":
+                raise OSError("original answer storage unavailable")
+            return save(path, document)
+        monkeypatch.setattr(cache, "_cache_save", refuse_observation)
+        with patch.object(state.auth, "close_fabric_provider",
+                          wraps=state.auth.close_fabric_provider) as close:
+            with pytest.raises(OSError, match="storage unavailable"):
+                state.e3.run_e3a_eval(state.root)
+            assert close.call_count == 1
+            restored = state.e3.run_e3a_eval(state.root)
+            assert close.call_count == 1
+        assert restored[state.e3._FABRIC_E3_KEY]["qwen"]["phase"] == "claimed"
+        assert len(state.native.logical_posts) == 1
+        assert state.native.rows("leases")[0]["state"] == "released"
+
+    def test_lost_close_ack_holds_original_without_reclosing(self, e3_fabric, monkeypatch):
+        state = e3_fabric
+        original_close = state.auth.close_fabric_provider
+        calls = []
+        def lost_ack(provider):
+            calls.append(provider)
+            original_close(provider)
+            provider["_fabric_close"] = {"disposition": "effect_unknown", "closed": False,
+                                        "effect_unknown": True, "attempted": True}
+        monkeypatch.setattr(state.auth, "close_fabric_provider", lost_ack)
+        result = state.e3.run_e3a_eval(state.root)
+        leg = result[state.e3._FABRIC_E3_KEY]["qwen"]
+        assert leg["phase"] == "held" and leg["reason"] == "fabric_close_unknown"
+        assert leg["answer_status"] == "ok" and leg["answer"]
+        assert result["model_attempts"]["qwen"]["n_candidates"] == 0
+        assert state.e3.run_e3a_eval(state.root) == result
+        assert len(calls) == len(state.native.logical_posts) == 1
+
+    @pytest.mark.parametrize("crash", [False, True])
+    def test_ambiguous_ledger_append_never_reappends(self, e3_fabric, monkeypatch, crash):
+        from lib import ai_costs
+        state = e3_fabric
+        calls = []
+        def lost_ack(**kwargs):
+            calls.append(kwargs)
+            assert _E3_REAL_RECORD_USAGE(**kwargs) is True
+            if crash:
+                raise KeyboardInterrupt("after ledger append")
+            return False
+        monkeypatch.setattr(ai_costs, "record_usage", lost_ack)
+        if crash:
+            with pytest.raises(KeyboardInterrupt):
+                state.e3.run_e3a_eval(state.root)
+            result = state.e3.run_e3a_eval(state.root)
+        else:
+            result = state.e3.run_e3a_eval(state.root)
+        leg = result[state.e3._FABRIC_E3_KEY]["qwen"]
+        assert leg["phase"] == ("closed" if crash else "held")
+        assert leg["ledger"]["phase"] == ("intent" if crash else "unknown")
+        assert state.e3.run_e3a_eval(state.root) == result
+        assert len(calls) == len(state.native.logical_posts) == 1
+
+    @pytest.mark.parametrize("tamper", ["closed_without_reply", "null_completed", "known_totals", "request_id"])
+    def test_saved_receipt_corruption_refuses_before_effects(self, e3_fabric, monkeypatch, tamper):
+        from engine import catalyst_tone as cache, provider_production_modes as owner
+        from lib import ai_costs
+        state = e3_fabric
+        if tamper == "closed_without_reply":
+            with patch.object(state.auth, "build_fabric_provider",
+                              side_effect=KeyboardInterrupt("after claim")):
+                with pytest.raises(KeyboardInterrupt):
+                    state.e3.run_e3a_eval(state.root)
+        else:
+            state.e3.run_e3a_eval(state.root)
+        path = state.root / state.e3.EVAL_RECEIPT_PATH
+        original = copy.deepcopy(cache._cache_read(path)[state.e3._FABRIC_E3_KEY])
+        leg = original["qwen"]
+        if tamper == "closed_without_reply":
+            leg["phase"] = "closed"
+        elif tamper == "null_completed":
+            leg["usage"]["completed_input_tokens"] = None
+        elif tamper == "known_totals":
+            leg["usage"]["input_tokens"] += 1
+        else:
+            leg["actual_observation"]["request_id"] += ":different"
+        cache._cache_save(path, state.e3._fabric_e3_document(original))
+        count = len(state.native.logical_posts)
+        with patch.object(owner, "make_application_fabric_factory",
+                          side_effect=AssertionError("corrupt original rebound")), \
+             patch.object(ai_costs, "record_usage", side_effect=AssertionError("corrupt original ledger")):
+            with pytest.raises(ValueError, match="fabric_e3_"):
+                state.e3.run_e3a_eval(state.root)
+        assert len(state.native.logical_posts) == count
+
+    def test_legacy_lock_prevents_selected_takeover_before_native_effect(self, e3_fabric, monkeypatch):
+        state = e3_fabric
+        e3 = state.e3
+        monkeypatch.delenv(state.auth.APPLICATION_MODE_ENV)
+        competing = []
+        def legacy_call(prompt, root):
+            monkeypatch.setenv(state.auth.APPLICATION_MODE_ENV, "shared_fabric")
+            try:
+                with pytest.raises(BlockingIOError) as refused:
+                    e3.run_e3a_eval(root)
+                competing.append(refused.value)
+            finally:
+                monkeypatch.delenv(state.auth.APPLICATION_MODE_ENV)
+            return e3.ModelAttempt(provider="unknown", model="qwen3.5:9b", status="held")
+        monkeypatch.setattr(e3, "_attempt_qwen", legacy_call)
+        monkeypatch.setattr(e3, "_attempt_comparator", lambda *a, **k:
+                            e3.ModelAttempt(provider="unknown", model="claude-haiku-4-5", status="held"))
+        monkeypatch.setattr(e3, "freeze_comparator_choice", lambda *a, **k: {"freeze": {}, "providers": []})
+        monkeypatch.setattr(e3, "_enable_eval_shards", lambda *a, **k: {})
+        monkeypatch.setattr(e3, "_bounded_telemetry_proof", lambda *a, **k: {})
+        monkeypatch.setattr(e3, "ledger_attempt", lambda *a, **k: False)
+        result = e3.run_e3a_eval(state.root)
+        assert result["schema"] == "e3a_eval_receipt.v1"
+        assert competing and isinstance(competing[0], BlockingIOError)
+        assert state.native.logical_posts == state.native.rows("leases") == []

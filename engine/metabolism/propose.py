@@ -77,6 +77,7 @@ import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from scripts.metabolism_journal import FabricHeld, guard_native_route, native_provider_call, _physical_path
 
 log = logging.getLogger(__name__)
 
@@ -641,6 +642,7 @@ def _invoke_llm(
     cache_creation_tokens, model} when the SDK exposes them; empty dict otherwise.
     NEVER raises.  Tests patch this function to inject a canned reply without any network.
     """
+    guard_native_route(_repo_root(root), "propose", "propose-model", ["lobe:"+lobe], cfg=cfg)
     # PR-R8: use deliberation model (Fable) if enabled and within budget
     active_model = _get_deliberation_model()
     conf = {**_LLM_CFG, **(cfg or {}), "opus_model": active_model}
@@ -688,8 +690,8 @@ def _invoke_llm(
             )
             return (text or None), None
 
-        text, reason, provider = llm_auth.make_call(
-            providers, _do_call, context="metabolism_propose")
+        text, reason, provider = native_provider_call(_repo_root(root), "propose", "propose-model", ["lobe:"+lobe],
+            providers, _do_call, context="metabolism_propose", cfg=cfg)
         usage_info = _usage[0] if _usage else {}
 
         # PR-R8: model-not-found fallback — retry ONCE with Opus when the
@@ -708,14 +710,19 @@ def _invoke_llm(
                 deepseek_model=fb_conf.get("deepseek_model"),
             )
             if fb_providers:
-                text, reason, provider = llm_auth.make_call(
-                    fb_providers, _do_call, context="metabolism_propose_fallback")
+                text, reason, provider = native_provider_call(_repo_root(root), "propose", "propose-model", ["lobe:"+lobe],
+                    fb_providers, _do_call, context="metabolism_propose_fallback", cfg=cfg)
                 usage_info = _usage[0] if _usage else {}
                 if text is not None:
                     log.info("propose: fallback %r served", _OPUS_FALLBACK)
 
         return text, provider, reason, usage_info
+    except FabricHeld:
+        raise
     except Exception as exc:  # noqa: BLE001
+        guard_native_route(_repo_root(root), "propose", "propose-model", ["lobe:"+lobe], cfg=cfg)
+        if str(getattr(exc, "code", "")).startswith("fabric_"):
+            raise FabricHeld("metabolism_selected_recipe_requires_original") from exc
         log.warning("propose: LLM invocation failed: %s", exc)
         # PR-R8: on exception with deliberation model, retry with Opus
         if active_model != _OPUS_FALLBACK:
@@ -728,13 +735,16 @@ def _invoke_llm(
                 )
                 if fb_prov2:
                     _usage.clear()  # discard any partial usage from the failed call
-                    text2, reason2, prov2 = _la2.make_call(
-                        fb_prov2, _do_call, context="metabolism_propose_fallback"
+                    text2, reason2, prov2 = native_provider_call(_repo_root(root), "propose", "propose-model", ["lobe:"+lobe],
+                        fb_prov2, _do_call, context="metabolism_propose_fallback", cfg=cfg
                     )
                     if text2 is not None:
                         log.info("propose: exception retry with %r succeeded", _OPUS_FALLBACK)
                         return text2, prov2, reason2, (_usage[0] if _usage else {})
+            except FabricHeld:
+                raise
             except Exception as exc2:  # noqa: BLE001
+                guard_native_route(_repo_root(root), "propose", "propose-model", ["lobe:"+lobe], cfg=cfg)
                 log.warning("propose: fallback retry also failed: %s", exc2)
         return None, None, "llm_error", {}
 
@@ -1097,7 +1107,7 @@ def register_contracts(docket: dict[str, Any], root: Path | None = None) -> int:
         return 0
     try:
         from engine.trial_ledger import TrialLedger  # type: ignore[import]
-        path = (_repo_root(root) / "data" / "trial_ledger.jsonl") if root is not None else None
+        path = (_physical_path(_repo_root(root)) / "data" / "trial_ledger.jsonl") if root is not None else None
         led = TrialLedger(path=path, family=TRIAL_FAMILY)
         n = 0
         for prop in proposals:
@@ -1133,6 +1143,20 @@ def write_docket(docket: dict[str, Any], root: Path | None = None) -> Path | Non
 # ── Orchestration (pure — no kill-switch/journal; the CLI owns those) ─────────
 
 def propose(
+    cycle_id: str, *, lobe: str = LOBE, root: Path | None = None,
+    max_docket_size: int = 5, today: str | None = None,
+    run_id: str | None = None, dry_run: bool = False,
+    injected_proposals: list[dict[str, Any]] | None = None,
+    cfg: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Public model stage; selected policy applies before every injection seam."""
+    guard_native_route(_repo_root(root), "propose", cycle_id, ["lobe:"+lobe], cfg=cfg)
+    return _propose_inner(cycle_id, lobe=lobe, root=root,
+        max_docket_size=max_docket_size, today=today, run_id=run_id,
+        dry_run=dry_run, injected_proposals=injected_proposals, cfg=cfg)
+
+
+def _propose_inner(
     cycle_id: str,
     *,
     lobe: str = LOBE,
@@ -1163,6 +1187,8 @@ def propose(
     n_proposals/n_rejected/artifact.  NEVER raises.
     """
     try:
+        guard_native_route(_repo_root(root), "propose", cycle_id, ["lobe:"+lobe], cfg=cfg,
+                           model_requested=injected_proposals is None)
         provider: str | None = None
         degraded: str | None = None
 
@@ -1214,6 +1240,8 @@ def propose(
             "docket": docket,
             "meta": meta,
         }
+    except FabricHeld:
+        raise
     except Exception as exc:  # noqa: BLE001
         log.warning("propose: unexpected error for %s: %s", cycle_id, exc)
         empty = build_docket(cycle_id, [], root=root, max_docket_size=int(max_docket_size),

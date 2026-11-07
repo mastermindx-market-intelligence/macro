@@ -45,6 +45,7 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from scripts.metabolism_journal import FabricHeld, guard_native_route, native_provider_call
 
 log = logging.getLogger(__name__)
 
@@ -865,6 +866,8 @@ def _invoke_role_llm(
     docket: dict[str, Any],
     case_law: dict[str, str],
     cfg: dict[str, Any] | None = None,
+    *,
+    root: Path | None = None,
 ) -> tuple[dict[str, dict[str, Any]] | None, str | None, dict[str, Any]]:
     """Call the role LLM.  Returns (judgments_by_pid | None, degraded_reason, usage_info).
 
@@ -873,6 +876,7 @@ def _invoke_role_llm(
     None judgments = the role could not run (no provider / error) → callers must
     fail closed.  NEVER raises.  Tests patch this to inject judgments.
     """
+    guard_native_route(_repo_root(root), "adjudicate", str(docket.get("cycle_id") or "adjudicate-model"), ["role:"+role], cfg=cfg)
     # PR-R8: use deliberation model (Fable) if enabled and within budget
     active_model = _get_deliberation_model()
     conf = {**_LLM_CFG, **(cfg or {}), "opus_model": active_model}
@@ -915,8 +919,8 @@ def _invoke_role_llm(
             text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
             return (text or None), None
 
-        text, reason, _provider = llm_auth.make_call(
-            providers, _do_call, context=f"metabolism_adjudicate_{role}")
+        text, reason, _provider = native_provider_call(_repo_root(root), "adjudicate", str(docket.get("cycle_id") or "adjudicate-model"), ["role:"+role],
+            providers, _do_call, context=f"metabolism_adjudicate_{role}", cfg=cfg)
         usage_info = _usage[0] if _usage else {}
 
         # PR-R8: model-not-found fallback — retry ONCE with Opus
@@ -934,9 +938,9 @@ def _invoke_role_llm(
                 deepseek_model=fb_conf.get("deepseek_model"),
             )
             if fb_providers:
-                text, reason, _provider = llm_auth.make_call(
+                text, reason, _provider = native_provider_call(_repo_root(root), "adjudicate", str(docket.get("cycle_id") or "adjudicate-model"), ["role:"+role],
                     fb_providers, _do_call,
-                    context=f"metabolism_adjudicate_{role}_fallback")
+                    context=f"metabolism_adjudicate_{role}_fallback", cfg=cfg)
                 usage_info = _usage[0] if _usage else {}
                 if text is not None:
                     log.info("adjudicate: fallback %r served", _OPUS_FALLBACK)
@@ -945,7 +949,12 @@ def _invoke_role_llm(
         if parsed is None:
             return None, reason or "empty_or_unparseable_reply", usage_info
         return parsed, reason, usage_info
+    except FabricHeld:
+        raise
     except Exception as exc:  # noqa: BLE001
+        guard_native_route(_repo_root(root), "adjudicate", str(docket.get("cycle_id") or "adjudicate-model"), ["role:"+role], cfg=cfg)
+        if str(getattr(exc, "code", "")).startswith("fabric_"):
+            raise FabricHeld("metabolism_selected_recipe_requires_original") from exc
         log.warning("adjudicate: role LLM (%s) failed: %s", role, exc)
         # PR-R8: on exception with deliberation model, retry with Opus
         if active_model != _OPUS_FALLBACK:
@@ -958,9 +967,9 @@ def _invoke_role_llm(
                 )
                 if fb_prov2:
                     _usage.clear()  # discard any partial usage from the failed call
-                    text2, reason2, _prov2 = _la2.make_call(
+                    text2, reason2, _prov2 = native_provider_call(_repo_root(root), "adjudicate", str(docket.get("cycle_id") or "adjudicate-model"), ["role:"+role],
                         fb_prov2, _do_call,
-                        context=f"metabolism_adjudicate_{role}_fallback"
+                        context=f"metabolism_adjudicate_{role}_fallback", cfg=cfg
                     )
                     if text2 is not None:
                         log.info("adjudicate: exception retry with %r succeeded", _OPUS_FALLBACK)
@@ -968,7 +977,10 @@ def _invoke_role_llm(
                         parsed2 = _parse_judgments(text2 or "")
                         if parsed2 is not None:
                             return parsed2, reason2, usage_info2
+            except FabricHeld:
+                raise
             except Exception as exc2:  # noqa: BLE001
+                guard_native_route(_repo_root(root), "adjudicate", str(docket.get("cycle_id") or "adjudicate-model"), ["role:"+role], cfg=cfg)
                 log.warning("adjudicate: fallback retry also failed: %s", exc2)
         return None, "llm_error", {}
 
@@ -1087,6 +1099,20 @@ def _append_adversary_ledger(
 # ── Public API: one role's run ────────────────────────────────────────────────
 
 def adjudicate_role(
+    role: str, cycle_id: str, docket_path: str | Path, *,
+    run_id: str | None = None, root: Path | None = None,
+    cfg: dict[str, Any] | None = None,
+    injected: dict[str, dict[str, Any]] | None = None,
+    dry_run: bool = False, _usage_out: "list | None" = None,
+) -> list[dict[str, Any]]:
+    """Public model role; injected opinions cannot bypass selected policy."""
+    if role in (ROLE_ORCH, ROLE_ADV):
+        guard_native_route(_repo_root(root), "adjudicate", cycle_id, ["role:"+role], cfg=cfg)
+    return _adjudicate_role_inner(role, cycle_id, docket_path, run_id=run_id,
+        root=root, cfg=cfg, injected=injected, dry_run=dry_run, _usage_out=_usage_out)
+
+
+def _adjudicate_role_inner(
     role: str,
     cycle_id: str,
     docket_path: str | Path,
@@ -1109,6 +1135,8 @@ def adjudicate_role(
         log.warning("adjudicate: unknown role %r", role)
         return []
 
+    guard_native_route(_repo_root(root), "adjudicate", cycle_id, ["role:"+role], cfg=cfg,
+                       model_requested=injected is None)
     docket = _load_docket(docket_path)
     proposals = docket.get("proposals") or []
     case_law = _load_case_law(root)
@@ -1121,7 +1149,7 @@ def adjudicate_role(
         judgments: dict[str, dict[str, Any]] | None = injected
         degraded: str | None = None
     else:
-        judgments, degraded, llm_usage_info = _invoke_role_llm(role, docket, case_law, cfg)
+        judgments, degraded, llm_usage_info = _invoke_role_llm(role, docket, case_law, cfg, root=root)
 
     results: list[dict[str, Any]] = []
     for prop in proposals:

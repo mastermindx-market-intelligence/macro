@@ -1,0 +1,45 @@
+{
+  "schema": "macro.fabric_native_ci_fixture_separation.v1",
+  "parent": "e85fcf2248f52a8e25a9c850ab3ebd047555c75a",
+  "historical_native_revision": "8af48bc164b89f380b9fcca0fd2726cf2e21ab61",
+  "current_native_revision": "41e86c7aa89905f9b4592d57fbf32c2d7c0f1458",
+  "change": "Remove only the current Metabolism module from the historical39-module invocation; add a separate immutable19-file download and independent pytest process. Other fixture slots and all hash assertions remain unchanged.",
+  "qualification": [
+    {
+      "report": "macro-historical-ci-step-v2",
+      "returncode": 1,
+      "named": 1971,
+      "tests": 1978,
+      "failures": 0,
+      "errors": 49,
+      "skipped": 0,
+      "log_sha256": "6ed9c55b3e1edb21cce67ded57bd8ef15c9171b967b62af5153590565fddd651",
+      "xml_sha256": "53ac8ee2607b86be6b4515c3757e4ef6b8bfc4ff7cd25a4d304a45c8a1e16f64"
+    },
+    {
+      "report": "macro-historical-ci-fomc-v2",
+      "returncode": 0,
+      "named": 49,
+      "tests": 49,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "log_sha256": "5fbec452700fa47fd67392c491be47868e2b48d5745cc732ccc05130906c839f",
+      "xml_sha256": "3a1fd30e479d1b5db98a3d3e643ffc6961a0b77e6388f35f28be2aaabc7d58a4"
+    },
+    {
+      "report": "macro-metabolism-current-ci-19-v1",
+      "returncode": 0,
+      "named": 106,
+      "tests": 106,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "log_sha256": "0ff4c2ed2dc480a6aeff70feec153affeb55ad1286faf094b34f23bf21a90aed",
+      "xml_sha256": "c606a8c607c167555613d49012191d2b5d62f86ad568cbef12480724e880e07b"
+    }
+  ],
+  "input_repair": "The historical run passed1922 cases+7subtests;49 FOMC setup errors were caused solely by sparse-excluded tracked June/July statement seeds. Exact tracked statement fixtures restored; all49 affected cases then passed. No product/test input was invented.",
+  "hosted_proof": "Pending on final composed PR head",
+  "runtime_source_delta": []
+}

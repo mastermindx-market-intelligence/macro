@@ -1,0 +1,43 @@
+{
+  "schema": "mastermind.fabric_application.protected_source_join.v1",
+  "observed_at": "2026-11-07T16:47:58.443308+00:00",
+  "parents": {
+    "prior_application": "cd2ba4792e68587505b2638b1bcf8e9a3f00ed1a",
+    "protected_main": "335e5cc3eb222a4c19cb11e90e29ec6c6723c2b0"
+  },
+  "conflicts_resolved": [
+    ".github/ci/legacy-jobs.yml",
+    "tests/test_ci_pack.py"
+  ],
+  "decisions": [
+    "Retain the Fabric consumer scope and protected options-selection scope together.",
+    "Register the protected options browser test in the existing Brain gateway job's path closure.",
+    "Retain all actual test commands, fixtures, job limits, pack bounds, timeouts and selection rules.",
+    "Fund exactly the two measured added planning units in the free-content probe; other ceilings unchanged."
+  ],
+  "new_named_ai_path": {
+    "path": "engine/neuralweb/options_selection_context.py",
+    "classification": "deterministic authenticated selection/context resolver; no new provider/model invocation"
+  },
+  "qualification": {
+    "base": "335e5cc3eb222a4c19cb11e90e29ec6c6723c2b0",
+    "returncode": 0,
+    "seconds": 440.062146875076,
+    "log": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/protected-macro-contract-gate-v8.log",
+    "log_sha256": "458893ae43d5a63e8d024d647b92d1d860d794e4efe2f9d1db9562a4b625a9f8",
+    "packing_test_sha256": "fb1838fc971f4148cf7551fcc2f00553c2a3cd1beee3b7c71d980702f990fdc1",
+    "tail": "contract-delta: probe templates/index.html: head 134 jobs / 5,721 s / 10 packs; base 137 jobs / 5,914 s / 10 packs; ceilings 137 / 5,974 / 10\ncontract-delta: probe scripts/build_free_content.py: head 134 jobs / 5,991 s / 10 packs; base 137 jobs / 5,931 s / 10 packs; ceilings 138 / 5,991 / 10\ncontract-delta: probe engine/prophet/plan_book.py: head 127 jobs / 5,475 s / 10 packs; base 131 jobs / 5,672 s / 10 packs; ceilings 131 / 5,730 / 10\ncontract-delta: head census seconds: closure_and_suites 277.7, probes 75.7, skip_only 24.8, trigger_gaps 41.8\ncontract-delta: base census seconds: closure_and_suites 263.2, probes 79.8, skip_only 24.3, trigger_gaps 41.5\ncontract-delta: 0 introduced, 0 inherited (base 335e5cc3eb22)\ncontract-delta: wall 440.0 s\n"
+  },
+  "protected_paths_changed": 15120,
+  "prior_native_fixture_qualification": {
+    "source_parent": "cd2ba4792e68587505b2638b1bcf8e9a3f00ed1a",
+    "cases_passed": 106,
+    "not_rerun": "Native input table, fetch validation and fixture test selector are unchanged by this protected join."
+  },
+  "production_claims": {
+    "deployed": false,
+    "grants_issued": false,
+    "provider_called": false,
+    "accepted": false
+  }
+}

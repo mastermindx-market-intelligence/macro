@@ -1,0 +1,78 @@
+{
+  "base": "60b28ad2a17848d832d820eb568d605355ffab73",
+  "changes": {
+    "dependency_paths": [
+      "unrun-brain-gateway: tests/test_fabric_exact_scoped_model_composition.py",
+      "Hermes owner: config/provider_production_modes.v1.json",
+      "Hermes owner: engine/neuralweb/capability_broker.py"
+    ],
+    "fixture_acquisition": "Read the single literal NATIVE_PINS table via AST without importing tests; acquire the same19 exact immutable files; verify every Git blob SHA before import. The executed Metabolism suite is unchanged.",
+    "limits": "All packing ceilings, test selectors, production inference behavior and release controls are unchanged."
+  },
+  "files": {
+    ".github/ci/legacy-jobs.yml": {
+      "git_blob": "6e9f1c8aa5d758bebf51314bd24703d14fe0bd9d",
+      "sha256": "1b18dd4e21eecdda6c2bc07b3c4be3ca2d556d578f1408c28c39191f1f0785d5"
+    },
+    ".github/workflows/hermes-application-owner.yml": {
+      "git_blob": "3fb58fac4264b9682fa710de58ac8e2775dea28c",
+      "sha256": "4bbe75c86ddb10df3a5f456420198cf0f26cfd0f0131735adba3be2e2857add8"
+    }
+  },
+  "original_failed_run": 42385364817,
+  "production_acceptance": false,
+  "proof": {
+    "fixture_tests": {
+      "failed": 0,
+      "log_sha256": "c87abf1eaaed31ac35e97d03fd1c9ae13c29ef737a8b2c40ba898f767bda3336",
+      "passed": 106,
+      "skipped": 0,
+      "total_seconds": 17.774
+    },
+    "full_contract_delta": {
+      "inherited": 0,
+      "introduced": 0,
+      "log_sha256": "6477d52d02be145d6f3f4c152c72e10fff99b67005c5e1aaa568af2d2b819727",
+      "returncode": 0,
+      "seconds": 440.412
+    },
+    "packing": [
+      {
+        "ceilings": [
+          137,
+          5974,
+          10
+        ],
+        "jobs": 134,
+        "packs": 10,
+        "probe": "templates/index.html",
+        "weight": 5721
+      },
+      {
+        "ceilings": [
+          138,
+          5989,
+          10
+        ],
+        "jobs": 134,
+        "packs": 10,
+        "probe": "scripts/build_free_content.py",
+        "weight": 5989
+      },
+      {
+        "ceilings": [
+          131,
+          5730,
+          10
+        ],
+        "jobs": 127,
+        "packs": 10,
+        "probe": "engine/prophet/plan_book.py",
+        "weight": 5475
+      }
+    ],
+    "weight_note": "The eleven estimator units removed were five duplicated fixture test-path mentions and one command-text length unit. This is not a claim of eleven seconds wall-time reduction."
+  },
+  "schema": "macro.fabric_application.ci_contract_completion.v1",
+  "source_parent": "cc45757612addfdc496acbb3c233376ad4c28c78"
+}

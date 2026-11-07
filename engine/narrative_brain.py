@@ -128,58 +128,62 @@ def enabled() -> bool:
 
 
 def _make_call(cfg: dict):
-    """Return a call(model, system, user) -> (text|None, degraded|None). Caches the stable
-    system block (cache_control) so the per-theme rubric is reused across calls.
-
-    W5 ITEM 1 — 401-fallback: uses engine.llm_auth.make_call() so an expired OAuth
-    token triggers a fallback to ANTHROPIC_API_KEY, with degraded_reason
-    "auth_invalid:<provider>" distinguishing auth failures from content errors.
-
-    Note: narrative_brain uses TWO model ids (durability=sonnet, rotation=opus).
-    build_providers() produces providers keyed to opus_model; when the durability
-    (sonnet) call is made, the model id is overridden inside _do_call via the
-    `model` argument passed to call() — the client itself is model-agnostic.
-    """
+    """Cache an inert provider recipe; each callback owns one fresh operation."""
     from engine import llm_auth
 
-    # Build providers using the rotation model (opus) as the primary model.
-    # For durability calls the caller passes a different model id; the client
-    # supports any model on the same endpoint.
-    providers = llm_auth.build_providers(
-        cfg, opus_model=cfg.get("models", {}).get("rotation", "claude-opus-4-8"))
+    call_cfg = dict(cfg)
+    call_cfg.setdefault("oauth_pool_lane", "narrative-brain")
+    call_cfg.setdefault("usage_lane", "narrative-brain")
+    try:
+        selected = llm_auth.application_mode_id(call_cfg) is not None
+        if selected:
+            # Default only an absent caller purpose; explicit invalid values refuse.
+            call_cfg.setdefault("workload_profile", "site_batch")
+        providers = llm_auth.build_providers(call_cfg, opus_model=cfg.get("models", {}).get("rotation", "claude-opus-4-8"))
+    except llm_auth.FabricProviderError as exc:
+        reason = exc.code
+        return lambda model, system, user: (None, reason)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("narrative_brain: provider build failed (%s)", exc)
+        return None
     if not providers:
         return None
     max_tokens = int(cfg.get("max_tokens", 6000))
 
-    def call(model: str, system: str, user: str):
-        # Override the model id ONLY on Claude-endpoint providers (oauth /
-        # anthropic). deepseek and codex serve their own ids from
-        # build_providers (deepseek-v4-pro / the translated Codex tier);
-        # clobbering those with a Claude id 404s the fallback rung — the very
-        # rung that has to serve when the OAuth pool is rate-limited.
-        call_providers = [
-            {**p, "model": model} if p.get("name") in ("oauth", "anthropic") else p
-            for p in providers
-        ]
-
-        def _do_call(client, _model: str):
+    def call(model, system, user):
+        def invoke(client, model_id: str):
             resp = client.messages.create(
-                model=_model, max_tokens=max_tokens,
+                model=model_id, max_tokens=max_tokens,
                 system=[{"type": "text", "text": system,
                          "cache_control": {"type": "ephemeral"}}],
                 messages=[{"role": "user", "content": user}])
-            if getattr(resp, "stop_reason", None) == "refusal":
+            if selected:
+                if (getattr(resp, "stop_reason", None) != "end_turn"
+                        or any(getattr(block, "type", "") != "text"
+                               for block in resp.content)):
+                    raise llm_auth.FabricProviderError("fabric_text_response_invalid")
+            elif getattr(resp, "stop_reason", None) == "refusal":
                 return None, "refusal", resp
-            text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
+            text = "".join(block.text for block in resp.content
+                           if getattr(block, "type", "") == "text")
             return (text, None, resp) if text else (None, "empty_reply", resp)
 
         try:
-            text, reason, _used = llm_auth.make_call(
-                call_providers, _do_call, context="narrative_brain")
-        except Exception as e:  # noqa: BLE001
-            log.warning("narrative_brain call failed (%s): %s", model, e)
+            with llm_auth.begin_operation(providers, context="narrative_brain") as operation:
+                # Only native Claude endpoints accept the caller's Claude preference.
+                # Keep the original selected Fabric descriptor and model untouched.
+                call_providers = [
+                    {**p, "model": model} if p.get("name") in ("oauth", "anthropic") else p
+                    for p in operation.providers
+                ]
+                text, reason, used = llm_auth.make_call(
+                    call_providers, invoke, context="narrative_brain")
+            return text, reason
+        except llm_auth.FabricProviderError as exc:
+            return None, exc.code
+        except Exception as exc:  # noqa: BLE001
+            log.warning("narrative_brain call failed: %s", exc)
             return None, "llm_error"
-        return text, reason
 
     return call
 
@@ -281,13 +285,18 @@ def synthesize(evidence: dict, cfg: dict | None = None, call=None) -> dict:
     models = cfg.get("models", {})
     themes = evidence["themes"][: int(cfg.get("max_themes", 6))]
 
+    failures = []
     for theme in themes:
         text, degraded = call(models.get("durability", "claude-sonnet-4-6"),
                               _DURABILITY_SYSTEM, _theme_user_prompt(theme))
         if not text:
+            failures.append({"stage": "theme", "basket": theme.get("basket"),
+                             "reason": degraded or "empty_reply"})
             continue
         a = _extract_json(text)
         if not a:
+            failures.append({"stage": "theme", "basket": theme.get("basket"),
+                             "reason": "unparseable_reply"})
             continue
         a, override = _reconcile(a, theme)
         a["basket"] = theme.get("basket")
@@ -299,10 +308,15 @@ def synthesize(evidence: dict, cfg: dict | None = None, call=None) -> dict:
     # one cross-theme rotation read
     table = "\n".join(f"  {t.get('name')} ({t.get('basket')}): state={t.get('state')}, "
                       f"lifecycle={t.get('lifecycle')}" for t in evidence["themes"])
-    rtext, _ = call(models.get("rotation", "claude-opus-4-8"), _ROTATION_SYSTEM,
+    rtext, rotation_reason = call(models.get("rotation", "claude-opus-4-8"), _ROTATION_SYSTEM,
                     "RADAR FLAGS:\n" + table)
     if rtext:
         out["rotation"] = _extract_json(rtext)
+    if out["rotation"] is None:
+        failures.append({"stage": "rotation", "reason": rotation_reason or "no_usable_reply"})
+    if failures:
+        out["incomplete_calls"] = failures
+        out["degraded_reason"] = "partial_reply"
     if not out["assessments"] and out["rotation"] is None:
         out["degraded_reason"] = "no_usable_reply"
     return out

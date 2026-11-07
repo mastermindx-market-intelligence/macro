@@ -1,0 +1,74 @@
+name: Hermes APPLICATION owner composition
+
+on:
+  pull_request:
+    paths:
+      - 'config/provider_production_modes.v1.json'
+      - 'config/capability_manifest.yml'
+      - 'engine/neuralweb/capability_broker.py'
+      - 'engine/fabric_inference_client.py'
+      - 'engine/provider_production_modes.py'
+      - 'engine/llm_auth.py'
+      - 'config/provider_workloads.v1.json'
+      - 'tests/test_fabric_service_identity.py'
+      - 'tests/test_hermes_attended_fabric_identity.py'
+      - 'tests/test_hermes_application_source_support.py'
+      - 'tests/test_fabric_application_binding.py'
+      - 'tests/test_fabric_exact_scoped_model_composition.py'
+      - 'tests/test_hermes_primary_fabric_*.py'
+      - '.github/workflows/hermes-application-owner.yml'
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+
+jobs:
+  qualified-role-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            engine
+            lib
+            config
+            tests
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fixture dependencies
+        run: python -m pip install --disable-pip-version-check pytest PyYAML
+      - name: Checkout exact Mastermind Fabric owner fixture
+        uses: actions/checkout@v4
+        with:
+          repository: mastermindx-market-intelligence/Mastermind
+          ref: 41e86c7aa89905f9b4592d57fbf32c2d7c0f1458
+          path: .ci-fabric-mastermind
+          sparse-checkout: |
+            ops/native_fabric/quota_continuity
+            control_plane
+          persist-credentials: false
+      - name: Verify source-held identities, numeric endpoints and exact models
+        env:
+          MM_FABRIC_GATEWAY_SOURCE_ROOT: ${{ github.workspace }}/.ci-fabric-mastermind
+        run: |
+          set -euo pipefail
+          python -B -m pytest -q --tb=short --noconftest -o addopts= \
+            --junitxml="$RUNNER_TEMP/fabric-owner-composition.xml" \
+            tests/test_hermes_application_source_support.py \
+            tests/test_hermes_primary_fabric_identity.py \
+            tests/test_hermes_primary_fabric_endpoint.py \
+            tests/test_hermes_attended_fabric_identity.py \
+            tests/test_fabric_service_identity.py \
+            tests/test_fabric_exact_scoped_model_composition.py
+          python - "$RUNNER_TEMP/fabric-owner-composition.xml" <<'PROOF'
+          import json, sys, xml.etree.ElementTree as ET
+          suites = list(ET.parse(sys.argv[1]).getroot().iter("testsuite"))
+          totals = {key: sum(int(s.get(key, "0")) for s in suites)
+                    for key in ("tests", "failures", "errors", "skipped")}
+          assert totals["tests"] > 0 and all(totals[k] == 0 for k in ("failures", "errors", "skipped")), totals
+          print("FABRIC_OWNER_COMPOSITION_PROOF " + json.dumps(totals, sort_keys=True))
+          PROOF

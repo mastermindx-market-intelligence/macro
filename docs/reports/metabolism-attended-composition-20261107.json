@@ -1,0 +1,57 @@
+{
+  "schema": "mastermind.metabolism_attended_current_join.v1",
+  "own_head": "4cc98e85c37f781dc1568fe7273e3ebc14a8fc9f",
+  "merge_parent": "83aa7e16bfe0bd1f07d373e2e42aca69e5e8da20",
+  "command": [
+    "/tmp/mmx-d5-brain-composition-x6ymwpln/.proof-venv/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "--noconftest",
+    "-c",
+    "/dev/null",
+    "--rootdir",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/metabolism-original-recovery-20261107-sol-001",
+    "--basetemp",
+    "/tmp/mmx-metabolism-attended-join-k3mnmn36/pytest",
+    "--junitxml",
+    "/tmp/mmx-metabolism-attended-join-k3mnmn36/tests.xml",
+    "tests/test_hermes_primary_fabric_identity.py",
+    "tests/test_hermes_primary_fabric_endpoint.py",
+    "tests/test_hermes_attended_fabric_identity.py",
+    "tests/test_fabric_service_identity.py",
+    "tests/test_fabric_exact_scoped_model_composition.py"
+  ],
+  "rc": 0,
+  "seconds": 8.04,
+  "totals": {
+    "tests": 126,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "cases_by_module": {
+    "tests.test_hermes_primary_fabric_identity": 23,
+    "tests.test_hermes_primary_fabric_endpoint": 16,
+    "tests.test_hermes_attended_fabric_identity": 31,
+    "tests.test_fabric_service_identity": 25,
+    "tests.test_fabric_exact_scoped_model_composition": 31
+  },
+  "source": {
+    "tests/test_hermes_primary_fabric_identity.py": "7ee4f3d76d80d1068f9363583d6463bdde3f9f884f517a90b1564d6d420f8e74",
+    "tests/test_hermes_primary_fabric_endpoint.py": "3afab9059d10e7df951b87296e83333b758ac6a60fae7be3f94ef713330b01ed",
+    "tests/test_hermes_attended_fabric_identity.py": "9e4f14335b69f1b3650f940fa2afd578de77fe0e4b303195692a6733a7b29c88",
+    "tests/test_fabric_service_identity.py": "0e7a956e448e25d0bff04e11d469cd1f71ab5e0c6c4c7749f29e60bb10760cc1",
+    "tests/test_fabric_exact_scoped_model_composition.py": "4ef90246bf49f19a44ffa339c03916144fb69b021b612c47b265ccc81492c5b0",
+    "engine/provider_production_modes.py": "0db114bbe3df4b9a7b3ac90ead06c4b1a7f9af03bbeebcd35898c2a8584f667e",
+    "config/provider_workloads.v1.json": "6e816275f730842af25e318ae9712521ec9affcdd1e9965f8f9de893f9276eca",
+    ".github/workflows/hermes-application-owner.yml": "7baebce7cc3568102d6d1425654452b6d9f6c37a88f51a69fd803b2387bbacd9"
+  },
+  "source_unchanged": true,
+  "log": "/tmp/mmx-metabolism-attended-join-k3mnmn36/tests.log",
+  "log_sha256": "a871e3767fe6a283921308688e3f260e84308894515f44cb87cb7305d3e5f103",
+  "junit": "/tmp/mmx-metabolism-attended-join-k3mnmn36/tests.xml",
+  "junit_sha256": "e23ca84d75b50432909dbcc2a2de9cb071c432d1fc57e5428ef2b53d61099186",
+  "runtime_effects": "Synthetic fixture only; no service enrollment, provider call or qualification flag changed."
+}

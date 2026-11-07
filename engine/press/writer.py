@@ -30,7 +30,9 @@ from __future__ import annotations
 import json
 import logging
 import re
+import secrets
 import textwrap
+from contextlib import nullcontext
 from datetime import date
 from typing import Any, Callable
 
@@ -796,12 +798,51 @@ def _model_id(model_key: str) -> str:
         return ""
 
 
+def application_fabric_selected(cfg: dict) -> bool:
+    """Pure family decision for the existing staging/retry owner.
+
+    A present invalid selector is still exclusive, never a native fallback.
+    This does not check eligibility, resolve a credential or bind an operation.
+    """
+    from engine import llm_auth
+    node = (cfg.get("llm") or {}) if isinstance(cfg, dict) else {}
+    try:
+        return llm_auth.application_mode_id(node) is not None
+    except llm_auth.FabricProviderError:
+        return True
+
+
+def _fabric_operation_receipt(operation_id, provider, response_box):
+    from engine import llm_auth
+
+    failure = provider.get("_fabric_failure") if provider else None
+    close = dict(provider.get("_fabric_close") or {}) if provider else {}
+    disposition = provider.get("_fabric_native_disposition") if provider else None
+    unknown = (bool(getattr(failure, "effect_unknown", False))
+        or bool(provider and provider.get("_fabric_pending"))
+        or disposition in {"pending", "effect_unknown"}
+        or close.get("effect_unknown") is True
+        or close.get("disposition") in {"pending", "effect_unknown"})
+    return {"schema": "mastermind.press_fabric_operation.v1", "selected": True,
+        "regeneration_allowed": False, "operation_id": operation_id,
+        "provider": provider.get("provider") if provider else None,
+        "model": response_box.get("served_model"), "effect_unknown": unknown,
+        "disposition": disposition or ("completed" if response_box.get("response") is not None
+            else "unavailable" if provider else "not_started"),
+        "usage": llm_auth.fabric_usage(provider) if provider else None,
+        "observed_usage": dict(provider["_fabric_last_observation"])
+            if provider and isinstance(provider.get("_fabric_last_observation"), dict) else None,
+        "close": close}
+
+
 def write(slot: dict, cfg: dict, *, state: RunState | None = None,
           attempt: int = 0, prior_failures: list[str] | None = None,
           single_provider_attempt: bool = False,
           admitted_token_cap: bool = False,
           single_attempt: bool = False,
-          private_admission_check: Callable[[], None] | None = None) -> dict:
+          private_admission_check: Callable[[], None] | None = None,
+          application_operation_id: str | None = None,
+          expected_application_fabric: bool | None = None) -> dict:
     """Write one draft.  Returns {"ok", "draft"|None, "reason", "provider", ...}.
 
     Never raises.  Every failure path records against the RunState so the
@@ -885,9 +926,29 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
             return _fail(state, "token_budget_exhausted", charge=False, record=False,
                          estimated_tokens=est, tokens_left=state.tokens_left)
 
+    from engine import llm_auth  # noqa: PLC0415
+    current_selection = application_fabric_selected(cfg)
+    if expected_application_fabric is not None and (
+            type(expected_application_fabric) is not bool or current_selection != expected_application_fabric):
+        accounting = ({"token_cap": token_cap, "provider_usage": {
+            "reported": False, "accounting": "no_provider_call", "charged_tokens": 0}}
+            if token_cap is not None else {})
+        return _fail(state, "fabric_selection_changed", charge=False,
+            fabric_operation=_fabric_operation_receipt(application_operation_id, None, {}),
+            **accounting)
+    selected = current_selection or application_operation_id is not None
+    operation_id = (application_operation_id if application_operation_id is not None
+                    else "app:" + secrets.token_hex(16)) if selected else None
+    bound_provider = None
+    response_box: dict[str, Any] = {}
+
+    def fabric_receipt():
+        return {"fabric_operation": _fabric_operation_receipt(
+            operation_id, bound_provider, response_box)} if selected else {}
+
     model_key = str(slot.get("model_key") or "press_brief")
-    model_id = _model_id(model_key)
-    if not model_id:
+    model_id = "" if selected else _model_id(model_key)
+    if not selected and not model_id:
         extra = {}
         if token_cap is not None:
             extra = {
@@ -902,13 +963,22 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
 
     try:
         provider_cfg = {"usage_lane": f"press-{slot.get('desk')}"}
+        for field in (llm_auth.APPLICATION_MODE_CFG_KEY, "workload_profile", "client_timeout_s"):
+            if field in llm_cfg:
+                provider_cfg[field] = llm_cfg[field]
+        if selected:
+            if llm_auth.application_mode_id(provider_cfg) is None:
+                raise llm_auth.FabricProviderError("fabric_selection_changed")
+            provider_cfg.setdefault("workload_profile", "site_batch")
+            provider_cfg["provider_order"] = ["fabric"]
         if single_provider_attempt:
             # A one-candidate admission must not hide repeat HTTP requests in
             # an SDK retry loop before the explicit no-fallback filter below.
             provider_cfg["client_max_retries"] = 0
-        from engine import llm_auth  # noqa: PLC0415
         providers = llm_auth.build_providers(
             provider_cfg, opus_model=model_id)
+        if llm_auth.is_fabric_selection(providers) != selected:
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
     except Exception as exc:  # noqa: BLE001
         extra = {}
         if token_cap is not None:
@@ -920,9 +990,10 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
                     "charged_tokens": 0,
                 },
             }
-        return _fail(state, f"provider construction failed: {exc}", **extra)
+        return _fail(state, "fabric_selection_unavailable" if selected else
+                     f"provider construction failed: {exc}", **extra, **fabric_receipt())
 
-    if single_provider_attempt:
+    if single_provider_attempt and not selected:
         # ``make_call`` normally walks the complete waterfall after auth,
         # rate-limit, and transport failures.  Admission permits one real model
         # attempt only, so give it the first descriptor it would actually call.
@@ -949,9 +1020,7 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
                     "charged_tokens": 0,
                 },
             }
-        return _fail(state, "no_provider", **extra)
-
-    response_box: dict[str, Any] = {}
+        return _fail(state, "no_provider", **extra, **fabric_receipt())
 
     def _admit_private_call() -> None:
         if private_admission_check is not None:
@@ -967,16 +1036,29 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
             messages=[{"role": "user", "content": user_prompt}],
         )
         response_box["response"] = resp
+        if selected:
+            response_box["served_model"] = resp.model
+            if (getattr(resp, "stop_reason", None) != "end_turn" or not resp.content
+                    or any(getattr(block, "type", None) != "text" for block in resp.content)):
+                raise llm_auth.FabricProviderError("fabric_text_completion_required")
         if getattr(resp, "stop_reason", None) == "refusal":
             return None, "stop_refusal", resp
         text = "".join(b.text for b in resp.content
                        if getattr(b, "type", "") == "text")
+        if selected and not text.strip():
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
         return (text or None), None, resp
 
     try:
-        _admit_private_call()
-        raw_text, reason, provider = llm_auth.make_call(
-            providers, _do_call, context=f"press_{slot.get('desk')}")
+        context = (llm_auth.begin_operation(providers, operation_id=operation_id,
+            context=f"press_{slot.get('desk')}") if selected else nullcontext())
+        with context as operation:
+            active = operation.providers if selected else providers
+            if selected:
+                bound_provider = active[0]
+            _admit_private_call()
+            raw_text, reason, provider = llm_auth.make_call(
+                active, _do_call, context=f"press_{slot.get('desk')}")
     except _PrivateAdmissionCancelled as exc:
         return _fail(
             state, f"private_admission_refused: {exc}", charge=False, record=False,
@@ -984,8 +1066,13 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
             provider_usage={
                 "reported": False, "accounting": "no_provider_call", "charged_tokens": 0,
             },
+            **fabric_receipt(),
         )
     except Exception as exc:  # noqa: BLE001
+        if selected and bound_provider is None:
+            return _fail(state, "fabric_binding_unavailable", charge=False,
+                token_cap=token_cap, provider_usage={"reported": False,
+                    "accounting": "no_provider_call", "charged_tokens": 0}, **fabric_receipt())
         extra: dict[str, Any] = {}
         if token_cap is not None:
             reported = _provider_usage(response_box.get("response"))
@@ -1009,7 +1096,12 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
                 }
         else:
             state.charge(est)
-        return _fail(state, f"llm call raised: {exc}", charge=False, **extra)
+        return _fail(state, "fabric_completion_unavailable" if selected else
+                     f"llm call raised: {exc}", charge=False, **extra, **fabric_receipt())
+
+    if selected:
+        provider = bound_provider["provider"]
+        model_id = response_box["served_model"]
 
     # Generic Press preserves its legacy response handling byte-for-byte; only
     # the admitted rail requires and inspects provider usage metadata.
@@ -1028,6 +1120,7 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
                     "accounting": "reserved_upper_bound",
                     "charged_tokens": est,
                 },
+                **fabric_receipt(),
             )
         state.charge(usage["billable_total_tokens"])
         usage["within_requested_bounds"] = bool(
@@ -1043,6 +1136,7 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
                 provider=provider,
                 token_cap=token_cap,
                 provider_usage=usage,
+                **fabric_receipt(),
             )
     else:
         state.charge(estimate_tokens(system_prompt) + estimate_tokens(user_prompt)
@@ -1054,12 +1148,12 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
 
     if not raw_text:
         return _fail(state, f"empty response ({reason or 'unknown'})", charge=False,
-                     provider=provider, **usage_receipt)
+                     provider=provider, **usage_receipt, **fabric_receipt())
 
     draft = parse_envelope(raw_text)
     if draft is None:
         return _fail(state, "unparsable envelope", charge=False, provider=provider,
-                     raw_head=str(raw_text)[:240], **usage_receipt)
+                     raw_head=str(raw_text)[:240], **usage_receipt, **fabric_receipt())
 
     state.record_success()
     result = {
@@ -1074,6 +1168,7 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
     if token_cap is not None:
         result["token_cap"] = token_cap
         result["provider_usage"] = usage
+    result.update(fabric_receipt())
     return result
 
 

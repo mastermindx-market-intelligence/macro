@@ -53,8 +53,6 @@ from typing import Optional
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from lib import config
-
 log = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -140,6 +138,9 @@ def _call_model(body: str, model: str, providers: list) -> dict | None:
     """
     from engine import llm_auth  # noqa: PLC0415
 
+    if llm_auth.application_mode_id() is not None or any(p.get("name") == "fabric" for p in providers):
+        raise ValueError("fabric_drift_operation_required")
+
     def _call_fn(client, m: str):
         resp = client.messages.create(
             model=m,
@@ -171,6 +172,9 @@ def _get_providers_and_model(cfg: dict) -> tuple | None:
 
     Uses llm_auth.build_providers for pool-aware failover and usage capture.
     """
+    from engine import llm_auth
+    if llm_auth.application_mode_id(_fabric_caller_cfg(cfg)) is not None:
+        raise ValueError("fabric_drift_operation_required")
     model_id = cfg.get("qual_extraction", {}).get("model_id") or cfg.get(
         "altdata_brain", {}).get("model_id", "claude-haiku-4-5")
     try:
@@ -280,9 +284,156 @@ def dry_run(anchors: list[dict]) -> dict:
 # Main entry points
 # ---------------------------------------------------------------------------
 
-def full_check(anchors: list[dict]) -> dict:
+
+def _live_config() -> dict:
+    # Import/config validation belongs only to a live invocation. Dry-run is
+    # usable in a sparse checkout without credentials or a config.yml.
+    from lib import config
+    return config.load()
+
+
+def _fabric_caller_cfg(cfg: dict) -> dict:
+    caller = dict(cfg.get("qual_extraction", {}) or {})
+    for key in ("application_fabric_mode", "workload_profile"):
+        if key not in caller and key in cfg:
+            caller[key] = cfg[key]
+    return caller
+
+
+def _fabric_prediction(text: str) -> dict | None:
+    """A completed malformed prediction is missing coverage, never a retry."""
+    def nonfinite(_value):
+        raise ValueError("nonfinite_prediction")
+    match = re.search(r"```(?:json)?\s*(.*?)```", text, re.S)
+    try:
+        value = json.loads((match.group(1) if match else text).strip(), parse_constant=nonfinite)
+    except (ValueError, TypeError):
+        return None
+    if (type(value) is not dict
+            or not {"direction", "magnitude", "confidence", "reversibility", "quote_span"}.issubset(value)
+            or type(value["direction"]) is not str or value["direction"] not in _DIRECTION_VALID
+            or type(value["confidence"]) is not str or value["confidence"] not in _CONFIDENCE_VALID
+            or value["magnitude"] is not None and (type(value["magnitude"]) is not int or value["magnitude"] not in _MAGNITUDE_VALID)
+            or value["reversibility"] is not None and (type(value["reversibility"]) is not str or value["reversibility"] not in _REVERSIBILITY_VALID)
+            or type(value["quote_span"]) is not str
+            or type(value.get("dropped_fields", [])) is not list
+            or any(type(item) is not str for item in value.get("dropped_fields", []))):
+        return None
+    return value
+
+
+def _fabric_check(anchors: list[dict], cfg: dict, mode_id: str,
+                  operation_id: str | None, *, mode: str, seed: int | None = None) -> dict:
+    """One explicit batch, with no local resume store or replacement operation."""
+    from engine import llm_auth
+    from engine.provider_production_modes import make_application_fabric_factory
+
+    if (type(operation_id) is not str or len(operation_id) > 96
+            or not llm_auth._FABRIC_ID.fullmatch(operation_id)):
+        raise ValueError("fabric_operation_id_required")
+    # Freeze before inspect/bind/callback: external caller mutation cannot
+    # silently change a later anchor or the denominator of the gate.
+    frozen = json.loads(json.dumps(anchors, sort_keys=True, ensure_ascii=False, allow_nan=False))
+    for number, anchor in enumerate(frozen, 1):
+        _validate_anchor(anchor, number)
+        if type(anchor["body"]) is not str:
+            raise ValueError("fabric_anchor_body_invalid")
+    if not frozen or len({a["anchor_id"] for a in frozen}) != len(frozen):
+        raise ValueError("fabric_anchor_identity_invalid")
+    caller = _fabric_caller_cfg(cfg)
+    requested = caller.get("model_id", cfg.get("altdata_brain", {}).get("model_id"))
+    workload = {"provider_order": ["fabric"]}
+    for key in ("workload_profile", "client_timeout_s"):
+        if key in caller:
+            workload[key] = caller[key]
+    startup = {"provider_order": ["fabric"], "workload_profile": "portfolio_analysis"}
+    if "client_timeout_s" in workload:
+        startup["client_timeout_s"] = workload["client_timeout_s"]
+    factory = make_application_fabric_factory(mode_id=mode_id, lane="extraction-drift",
+        root=ROOT, workload_cfg=startup)
+    identity = factory.inspect(workload)
+    commitment = {"anchors": frozen, "mode": mode, "seed": seed, "inspection": identity,
+                  "system": _EXTRACT_SYSTEM, "max_tokens": 400, "body_limit": 2000}
+    digest = hashlib.sha256(json.dumps(commitment, sort_keys=True, ensure_ascii=False,
+                                     allow_nan=False, separators=(",", ":")).encode()).hexdigest()
+    receipt = {"operation_id": operation_id, "input_sha256": digest,
+        "sample_ids": [a["anchor_id"] for a in frozen], "seed": seed,
+        "requested_model": requested, "bound_model": identity["model"], "observed_model": None,
+        "expected": len(frozen), "attempted": 0, "completed": 0,
+        "observations": [], "usage": None, "close": None, "error": None}
+    print(json.dumps({"kind": "FABRIC_EXTRACTION_DRIFT", "phase": "intent", **receipt}, sort_keys=True), flush=True)
+    provider = operation = None
+    predictions = []
+    interrupted = None
+    try:
+        provider = llm_auth.build_fabric_provider(factory.with_inspection(identity),
+            request_id=operation_id, workload_cfg=workload)
+        provider.update(usage_lane="extraction-drift", usage_stage="diagnostic", usage_cycle_id=operation_id)
+        operation = llm_auth.begin_operation([provider], operation_id=operation_id, context="extraction_drift")
+        for anchor in frozen:
+            receipt["attempted"] += 1
+            def invoke(client, model):
+                response = client.messages.create(model=model, max_tokens=400, system=_EXTRACT_SYSTEM,
+                    messages=[{"role": "user", "content": f"TEXT:\n{anchor['body'][:2000]}"}])
+                text = "".join(b.text for b in response.content if getattr(b, "type", "") == "text")
+                return (text, None if response.stop_reason == "end_turn" else "fabric_response_incomplete", response)
+            text, reason, used = llm_auth.make_call(operation.providers, invoke, context="extraction_drift")
+            if reason is not None or used != "fabric" or not text:
+                raise ValueError("fabric_drift_incomplete")
+            receipt["completed"] += 1
+            predictions.append(_fabric_prediction(text))
+    except BaseException as exc:
+        receipt["error"] = "fabric_drift_failed" if isinstance(exc, Exception) else "fabric_drift_interrupted"
+        interrupted = exc if not isinstance(exc, Exception) else None
+    finally:
+        try:
+            if operation is not None:
+                operation.close()
+            elif provider is not None:
+                llm_auth.close_fabric_provider(provider)
+        except BaseException as exc:
+            receipt["error"] = receipt["error"] or "fabric_close_unsettled"
+            interrupted = interrupted or (exc if not isinstance(exc, Exception) else None)
+        if provider is not None:
+            receipt.update(usage=llm_auth.fabric_usage(provider), close=provider.get("_fabric_close"),
+                pending=bool(provider.get("_fabric_pending")),
+                last_observation=provider.get("_fabric_last_observation"),
+                native_disposition=provider.get("_fabric_native_disposition"))
+            receipt["observations"] = [{"serving_model": m, "input_tokens": i, "output_tokens": o}
+                for m, i, o in provider.get("_fabric_usage_observations", [])]
+            receipt["observed_model"] = (receipt["last_observation"] or {}).get("serving_model")
+        closed = receipt["close"] == {"disposition": "closed", "closed": True,
+                                     "effect_unknown": False, "attempted": True}
+        receipt["close_state"] = "closed" if closed else "unsettled"
+        receipt["missing"] = len(frozen) - sum(p is not None for p in predictions)
+        receipt["predicted"] = sum(p is not None for p in predictions)
+        receipt["incomplete"] = receipt["attempted"] - receipt["completed"]
+        receipt["unknown"] = int(bool(provider and (provider.get("_fabric_pending")
+            or getattr(provider.get("_fabric_failure"), "effect_unknown", False))))
+        receipt["failed"] = max(0, receipt["incomplete"] - receipt["unknown"])
+        scores = _score_predictions(frozen, predictions)
+        scores.update(mode=mode, model_id=identity["model"], run_utc=datetime.now(timezone.utc).isoformat(),
+                      fabric=receipt, degraded=bool(receipt["error"] or receipt["missing"] or not closed))
+        if mode == "light":
+            scores["n_sample"] = len(frozen)
+        scores["gate_pass"] = bool(scores["gate_pass"] and not scores["degraded"])
+        if receipt["error"]:
+            scores["error"] = receipt["error"]
+        # The final accounting evidence exists before status publication. A
+        # failed print/status cannot cause another call inside this invocation.
+        print(json.dumps({"kind": "FABRIC_EXTRACTION_DRIFT", "phase": "result", **scores}, sort_keys=True), flush=True)
+    if interrupted is not None:
+        raise interrupted
+    return scores
+
+
+def full_check(anchors: list[dict], *, fabric_operation_id: str | None = None) -> dict:
     """Run all 50 anchors through the current extraction model."""
-    cfg = config.load()
+    cfg = _live_config()
+    from engine import llm_auth
+    mode_id = llm_auth.application_mode_id(_fabric_caller_cfg(cfg))
+    if mode_id is not None:
+        return _fabric_check(anchors, cfg, mode_id, fabric_operation_id, mode="full")
     result = _get_providers_and_model(cfg)
     if result is None:
         log.error("extraction_drift: no LLM provider available — set ANTHROPIC_API_KEY or "
@@ -306,11 +457,16 @@ def full_check(anchors: list[dict]) -> dict:
     return scores
 
 
-def light_check(anchors: list[dict], n: int = 10, seed: Optional[int] = None) -> dict:
+def light_check(anchors: list[dict], n: int = 10, seed: Optional[int] = None,
+                *, fabric_operation_id: str | None = None) -> dict:
     """Sample n anchors for the weekly rolling re-score."""
     rng = random.Random(seed)
     sample = rng.sample(anchors, min(n, len(anchors)))
-    cfg = config.load()
+    cfg = _live_config()
+    from engine import llm_auth
+    mode_id = llm_auth.application_mode_id(_fabric_caller_cfg(cfg))
+    if mode_id is not None:
+        return _fabric_check(sample, cfg, mode_id, fabric_operation_id, mode="light", seed=seed)
     result = _get_providers_and_model(cfg)
     if result is None:
         return {"error": "no_client", "gate_pass": None, "mode": "light"}
@@ -353,6 +509,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--anchor-file", default=str(ANCHOR_FILE),
                         help="Path to extraction_anchors.jsonl (default: %(default)s)")
     parser.add_argument("--seed", type=int, default=None, help="RNG seed for --light sampling.")
+    parser.add_argument("--fabric-operation-id", help="Original operator invocation ID; required in Fabric mode.")
     args = parser.parse_args(argv)
 
     anchor_path = Path(args.anchor_file)
@@ -368,7 +525,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.light:
-        scores = light_check(anchors, n=10, seed=args.seed)
+        scores = light_check(anchors, n=10, seed=args.seed, fabric_operation_id=args.fabric_operation_id)
         _write_status(scores)
         print(json.dumps(scores, indent=2))
         rate = scores.get("field_agree_rate")
@@ -381,7 +538,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     # Full check — the model-upgrade gate
-    scores = full_check(anchors)
+    scores = full_check(anchors, fabric_operation_id=args.fabric_operation_id)
     _write_status(scores)
     print(json.dumps(scores, indent=2))
 

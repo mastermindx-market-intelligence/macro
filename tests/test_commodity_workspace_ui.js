@@ -7,10 +7,13 @@ const {JSDOM,VirtualConsole} = require("jsdom");
 const {spawnSync} = require("node:child_process");
 const root = path.resolve(__dirname,"..");
 const api = require(path.join(root,"templates/commodity-workspace.js"));
-const publishedHTML = fs.readFileSync(path.join(root,"site/commodities.html"),"utf8").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,"");
-// The live publisher may honestly have no identity-qualified companies. Keep
-// that data honest and test the link contract with explicitly synthetic cohorts.
-// Render the real component; hand-built anchors would miss a broken template.
+const fixturePython = process.env.PYTHON || "python3";
+const fixtures = JSON.parse(require("node:child_process").execFileSync(fixturePython,
+  [path.join(root,"tests/commodity_workspace_ui_fixture.py")],{cwd:root,encoding:"utf8",maxBuffer:4*1024*1024}));
+const html = fixtures.positive.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,"");
+// Keep the actual builder/identity-adapter fixture as the primary journey.
+// Also exercise controlled cohort rendering through the real component.
+// Both inputs are synthetic fixtures; no generated site snapshot supplies coverage.
 const cohortRenderer = [
   "import json, sys",
   "from pathlib import Path",
@@ -22,18 +25,18 @@ const cohortRenderer = [
   "template = env.from_string(macro + '{% include \"_commodity_decision_workspace.html.j2\" %}')",
   "json.dump({name: template.render(commodity_workspace=payload) for name, payload in payloads.items()}, sys.stdout)"
 ].join("\n");
-function renderCompanyCohortFixtures(publishedHTML) {
-  const source = new JSDOM(publishedHTML,{includeNodeLocations:true});
+function renderCompanyCohortFixtures(sourceHTML) {
+  const source = new JSDOM(sourceHTML,{includeNodeLocations:true});
   const mount = source.window.document.getElementById("commodity-workspace");
-  assert.ok(mount,"published workspace mount");
+  assert.ok(mount,"fixture workspace mount");
   assert.equal(source.window.document.querySelectorAll("#commodity-workspace").length,1);
   assert.equal(mount.querySelectorAll("#cw-data").length,1);
   const location = source.nodeLocation(mount);
   assert.ok(location && location.endOffset > location.startOffset,"bounded workspace source");
-  const published = JSON.parse(mount.querySelector("#cw-data").textContent);
+  const sourcePayload = JSON.parse(mount.querySelector("#cw-data").textContent);
   const payloads = {};
   for (const mode of ["linked","empty","unavailable"]) {
-    const payload = JSON.parse(JSON.stringify(published));
+    const payload = JSON.parse(JSON.stringify(sourcePayload));
     // Do not let whichever real cohorts happen to be published supply coverage.
     payload.chains = payload.chains.map(chain => ({...chain,cohorts:[]}));
     const cohort = {
@@ -60,7 +63,7 @@ function renderCompanyCohortFixtures(publishedHTML) {
     payloads[mode]=payload;
   }
   source.window.close();
-  const rendered=spawnSync(process.env.PYTHON || "python3",["-c",cohortRenderer,root],{
+  const rendered=spawnSync(fixturePython,["-c",cohortRenderer,root],{
     input:JSON.stringify(payloads),encoding:"utf8",maxBuffer:8*1024*1024,timeout:15000
   });
   assert.ifError(rendered.error);
@@ -68,12 +71,11 @@ function renderCompanyCohortFixtures(publishedHTML) {
   const components=JSON.parse(rendered.stdout),html={};
   for (const mode of Object.keys(payloads)) {
     assert.equal(typeof components[mode],"string",mode+" render result");
-    html[mode]=publishedHTML.slice(0,location.startOffset)+components[mode]+publishedHTML.slice(location.endOffset);
+    html[mode]=sourceHTML.slice(0,location.startOffset)+components[mode]+sourceHTML.slice(location.endOffset);
   }
-  return {html,publishedFingerprint:published.fingerprint};
+  return {html,sourceFingerprint:sourcePayload.fingerprint};
 }
-const cohortFixtures=renderCompanyCohortFixtures(publishedHTML);
-const html=cohortFixtures.html.linked;
+const cohortFixtures=renderCompanyCohortFixtures(html);
 
 const output = [];
 const consoleErrors = [];
@@ -161,10 +163,17 @@ async function checkMissingCompanyCohort(mode) {
 
 (async()=>{
   check("controlled company links come from the actual template",()=>{
-    assert.equal(data.test_fixture,"company-return-cohort:linked");
-    assert.equal(d.querySelectorAll("[data-cw-company-href]").length,1);
-    assert.equal(new URL(q("[data-cw-company-href]").dataset.cwCompanyHref).searchParams.get("owner"),"fixture");
+    const sample=new JSDOM(cohortFixtures.html.linked);
+    try {
+      const doc=sample.window.document;
+      const payload=JSON.parse(doc.getElementById("cw-data").textContent);
+      assert.equal(payload.test_fixture,"company-return-cohort:linked");
+      const links=doc.querySelectorAll("[data-cw-company-href]");
+      assert.equal(links.length,1);
+      assert.equal(new URL(links[0].dataset.cwCompanyHref).searchParams.get("owner"),"fixture");
+    } finally { sample.window.close(); }
   });
+
   check("default overview and dated evidence",()=>{
     assert.equal(q('#cw-panel-overview').hidden,false);
     assert.equal(q('#cw-panel-explore').hidden,true);
@@ -372,7 +381,24 @@ async function checkMissingCompanyCohort(mode) {
     const ids=Array.from(d.querySelectorAll('[id]'),el=>el.id);assert.equal(new Set(ids).size,ids.length);
     assert.deepEqual(consoleErrors,[]);
   });
-  fs.writeFileSync(process.env.CW_UI_RECEIPT || '/tmp/commodity-workspace-ui-receipt.json',JSON.stringify({passed,assets:data.assets.length,snapshot:data.fingerprint,published_snapshot:cohortFixtures.publishedFingerprint,company_cohort_cases:["linked","empty","unavailable"],fixture_only:true,export_bytes:output[0].size,visual_layout_verified:false},null,2)+'\n');
+  check("empty cohorts and unavailable aliases retain navigation without invented company links",()=>{
+    for (const name of ["empty_cohorts","identity_unavailable"]) {
+      const sample=new JSDOM(fixtures[name],{url:"https://www.mastermind-x.com/commodities.html",runScripts:"outside-only",virtualConsole:virtual});
+      const v=sample.window, doc=v.document;
+      v.HTMLElement.prototype.scrollIntoView=function(){};
+      v.eval(fs.readFileSync(path.join(root,"templates/commodity-workspace.js"),"utf8"));
+      assert.equal(doc.querySelectorAll("[data-cw-company-href]").length,0,name);
+      const select=doc.querySelector('#cw-panel-overview [data-cw-open="oil"]');
+      assert.ok(select,name);select.click();
+      assert.equal(doc.querySelector("#cw-panel-explore").hidden,false,name);
+      doc.querySelector("#cw-tab-relationships").click();
+      assert.equal(doc.querySelector("#cw-panel-relationships").hidden,false,name);
+      assert.equal(JSON.parse(doc.getElementById("cw-data").textContent).assets.length,17);
+      sample.window.close();
+    }
+    assert.deepEqual(consoleErrors,[]);
+  });
+  fs.writeFileSync(process.env.CW_UI_RECEIPT || '/tmp/commodity-workspace-ui-receipt.json',JSON.stringify({passed,assets:data.assets.length,snapshot:data.fingerprint,fixture_source_snapshot:cohortFixtures.sourceFingerprint,company_cohort_cases:["linked","empty","unavailable"],source_fixture_cases:["positive","empty_cohorts","identity_unavailable"],fixture_only:true,export_bytes:output[0].size,visual_layout_verified:false},null,2)+'\n');
   console.log('RESULT',passed,'rendered-DOM journeys passed; this is not a visual-layout proof.');
   dom.window.close();
 })().catch(error=>{console.error(error);dom.window.close();process.exitCode=1;});

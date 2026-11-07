@@ -591,6 +591,8 @@ def _run_panel(state: dict, cfg: dict, call=None) -> dict:
             return key, None
 
     keys = list(_PANEL_SYSTEMS)
+    if isinstance(fn, _ledger_law._FabricDeskReplay):
+        return dict(_one(k) for k in keys)
     try:
         from concurrent.futures import ThreadPoolExecutor
         with ThreadPoolExecutor(max_workers=len(keys)) as ex:
@@ -623,7 +625,67 @@ def _adjudicate(state: dict, panel: dict, cfg: dict, call=None, served: dict | N
     return _call_tracked(fn, _ADJ_SYSTEM, user, cfg, served if served is not None else {})
 
 
-def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
+def _fabric_systems():
+    return {"single": _SYSTEM, "adjudicator": _ADJ_SYSTEM,
+            **{"panel:" + name: value for name, value in _PANEL_SYSTEMS.items()}}
+
+
+def _fabric_render(state, cfg, call, context):
+    return _synthesize_legacy(state, cfg, call, _frozen=context)
+
+
+def _fabric_prepare(brief, context, root):
+    asof = brief["state_asof"]
+    regime = _regime_label(root)
+    rows = []
+    for thesis in brief["theses"]:
+        fields = ("id", "subject", "lean", "conviction", "horizon_d", "falsifier", "check_by")
+        row = {name: thesis[name] for name in fields}
+        row.update(logged_at=brief["generated_at"], state_asof=asof,
+                   entry_levels=_entry_levels((thesis.get("falsifier") or {}).get("check") or {}, asof, root),
+                   regime=regime, status="open", scored_at=None, outcome=None, realized=None)
+        rows.append(row)
+    effects = [
+        {"kind": "jsonl", "path": "data/ai_desk/theses.jsonl", "rows": rows,
+         "key": "id", "guard": None, "keep_first": False, "eligible": True},
+        {"kind": "json", "path": "data/regime/ai_desk.json", "value": brief}]
+    if context["site_present"]:
+        effects.append({"kind": "json", "path": "site/ai_desk.json",  # ci-trigger-closure: data — publication destination, not a source input
+                        "value": {k: v for k, v in brief.items() if k != "raw_text"}})
+    return effects
+
+
+def _fabric_synthesize(state, cfg, root, persist=False):
+    try:
+        result = _ledger_law.fabric_synthesize("ai-desk", root, state, cfg,
+            _fabric_systems(), _fabric_render, publication_requested=persist,
+            context={"passport": _desk_passport("ai_desk"), "site_present": (Path(root) / "site").is_dir()})
+        if result is None:
+            return _ledger_law.fabric_held("application_fabric_selection_changed")
+        if result["held"] or not persist or result["result"] is None:
+            return result["result"]
+        return _ledger_law.fabric_publish("ai-desk", root, result["run_id"],
+            lambda brief, context: _fabric_prepare(brief, context, root))
+    except Exception:
+        return _ledger_law.fabric_held("application_fabric_owner_refused")
+
+
+def synthesize(state: dict, cfg: dict | None = None, call=None, *, root=None) -> dict:
+    """Use the existing desk result owner for selected Fabric calls."""
+    cfg, root = cfg or _cfg(), Path(root) if root is not None else config.ROOT
+    held = _ledger_law.fabric_pending("ai-desk", root)
+    if held is not None:
+        return held
+    if _ledger_law.fabric_selected(cfg):
+        return _fabric_synthesize(state, cfg, root)
+    snapshot = _ledger_law.fabric_snapshot("ai-desk", root)
+    brief = _synthesize_legacy(state, cfg, call)
+    if not _ledger_law.fabric_legacy_publish("ai-desk", root, snapshot, cfg, lambda: None):
+        return _ledger_law.fabric_held("application_fabric_selection_changed")
+    return brief
+
+
+def _synthesize_legacy(state: dict, cfg: dict | None = None, call=None, *, _frozen=None) -> dict:
     """Run the analyst over a gathered state. Always returns a brief record (degraded
     fields flagged); never raises. `call` is injectable (defaults to
     master_brain._call_model) so tests run without an API key."""
@@ -631,7 +693,7 @@ def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
     asof = state.get("as_of")
     brief = {
         "schema": SCHEMA, "is_context_only": True,
-        "generated_at": _now_iso(), "state_asof": asof,
+        "generated_at": _frozen["created_at"] if _frozen else _now_iso(), "state_asof": asof,
         "model": cfg.get("llm_model", "deepseek-v4-pro"),
         # Rung that authored THIS NOTE's text — "codex" / "oauth" / "anthropic" /
         # "deepseek", or None on a degraded call. Populated below from the tracked
@@ -652,7 +714,7 @@ def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
         # #41 badge honesty: the desk's conviction badge carries an honest provenance passport
         # (measured · n / accruing · n=0) derived from the outcome spine, so a cold desk's
         # conviction can't read as an earned number. Shared helper, not a per-page patch.
-        "passport": _desk_passport("ai_desk"),
+        "passport": _frozen["passport"] if _frozen else _desk_passport("ai_desk"),
         "confidence": "low",
         "raw_text": None, "degraded_reason": None, "disclaimer": DISCLAIMER,
     }
@@ -759,41 +821,44 @@ def _persist(brief: dict, root) -> None:
 # public entry point
 # --------------------------------------------------------------------------- #
 def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict | None:
-    """Gather → synthesize → persist + append the ledger. Returns the brief, or None
-    when disabled (unless `force`) or no detector artifact is present. NEVER raises."""
-    cfg = _cfg()
-    if not force and not cfg.get("enabled", False):
-        return None
+    """Gather, synthesize and publish once; pending custody precedes mutable gates."""
+    cfg, root = _cfg(), Path(root) if root is not None else config.ROOT
     try:
-        root = Path(root) if root else config.ROOT
-        # Interval gate — only regenerate every N days (1..7). When the prior note is
-        # younger than the interval, skip the LLM call AND the ledger append (avoids
-        # duplicate theses corrupting the Phase-C scorer); the committed ai_desk.json
-        # stays live and deploys unchanged. `force` always bypasses the gate.
+        held = _ledger_law.fabric_pending("ai-desk", root)
+        if held is not None:
+            return held
+        if not force and not cfg.get("enabled", False):
+            return None
+        selected = _ledger_law.fabric_selected(cfg)
+        snapshot = None if selected else _ledger_law.fabric_snapshot("ai-desk", root)
         if not force:
             try:
                 interval = max(1, min(7, int(cfg.get("interval_days", 1))))
-            except Exception:  # noqa: BLE001
+            except Exception:
                 interval = 1
             if interval > 1:
-                prev = _read_json(Path(root) / "data" / "regime" / "ai_desk.json")
+                prev = _read_json(Path(root) / "data/regime/ai_desk.json")
                 age = _brief_age_days(prev)
                 if age is not None and age < interval:
-                    log.info("ai_desk: note is %.1fd old (< %dd interval) — skipping "
-                             "regen, keeping prior note", age, interval)
                     return prev
         state = gather_desk_state(root)
         if state is None:
-            log.info("ai_desk: no flow/regime_snap artifacts present — nothing to brief")
             return None
-        brief = synthesize(state, cfg, call=call)
-        if persist:
-            _persist(brief, root)
-            _append_ledger(brief, root)
+        if _ledger_law.fabric_selected(cfg) != selected:
+            return _ledger_law.fabric_held("application_fabric_selection_changed")
+        if selected:
+            return _fabric_synthesize(state, cfg, root, persist)
+        brief = _synthesize_legacy(state, cfg, call)
+        def publish():
+            if persist:
+                _persist(brief, root)
+                _append_ledger(brief, root)
+        if not _ledger_law.fabric_legacy_publish("ai-desk", root, snapshot, cfg, publish):
+            return _ledger_law.fabric_held("application_fabric_selection_changed")
         return brief
-    except Exception as e:  # noqa: BLE001 — additive overlay, never fatal
-        log.error("ai_desk run failed: %s", e)
-        return None
+    except Exception as exc:
+        log.error("ai_desk run failed: %s", exc)
+        return _ledger_law.fabric_held("application_fabric_owner_refused") if _ledger_law.fabric_selected(cfg) else None
 
 
 def render_markdown(brief: dict) -> str:

@@ -1,0 +1,93 @@
+{
+  "application_engine_lib_config_unchanged_from": "445d86584a50cf39e90a7f16c1df40c704aa03dc",
+  "binding_contract_delta": {
+    "base": "0e48e731791fd86b6a31a9ccb7d3fb308c783aac",
+    "exit": 0,
+    "head": "f36b950e1194ae4cb3af81c3439a37107cf9a8e8",
+    "inherited": 0,
+    "introduced": 0,
+    "log_sha256": "2bbcdce1baabb1a738790564879b107fe922d6d28ce8a7221a386964a50fc4d0"
+  },
+  "completed_original_carrier_join": {
+    "incoming": "339e14b58e331a3eda16d619b3a97c324e7f4eca",
+    "incoming_tree": "c4e3eadb49b114816a9a380495b8ff8296194ac1",
+    "merge_provenance": "preserve both completed histories and later protected0e content",
+    "report_blob": "0295e0df0c2702955c2cf07b23d7129cd5c20af2",
+    "retained_report": "docs/reports/fabric-protected-seo-composition-20261107.json",
+    "source_and_tests": "all executable source and tests remain byte-identical to qualified f36; only retained evidence changes"
+  },
+  "contract_delta_baseline": {
+    "base": "0e48e731791fd86b6a31a9ccb7d3fb308c783aac",
+    "head": "7fef0c1aae9a7daed8eef2596f4f5134e47df178",
+    "inherited": 0,
+    "introduced": 4,
+    "log_sha256": "b07c2916905abed4e68cc060a17693ee3b7ef6468ccce36fb6984c3e833ea1b3"
+  },
+  "exact_dependency_repairs": {
+    "press-account-claim-consumer": [
+      "scripts/metabolism_journal.py"
+    ],
+    "unrun-brain-gateway": [
+      "admin/press_audience.py",
+      "engine/marketing/seo_director.py",
+      "engine/marketing/seo_search_console.py"
+    ]
+  },
+  "installed_acceptance": false,
+  "junit_sha256": "3b791aaa9675e1a650f43d7b303cd3e76b489c11309c4ecdec07fb954c328afc",
+  "log_sha256": "706f643ff2a2c27fcc72c59e429c519f350409e766d5afd0621c9cac5b50977f",
+  "owner_qualification_reused_on_identical_source": {
+    "errors": 0,
+    "failures": 0,
+    "receipt": "review_evidence/hermes_primary/attended-auto-original-carrier-join-20261107.json",
+    "skipped": 0,
+    "tests": 245
+  },
+  "parents": [
+    "445d86584a50cf39e90a7f16c1df40c704aa03dc",
+    "0e48e731791fd86b6a31a9ccb7d3fb308c783aac"
+  ],
+  "planning_measurements": [
+    {
+      "jobs": 134,
+      "packs": 10,
+      "probe": "templates/index.html",
+      "weight": 5721
+    },
+    {
+      "jobs": 134,
+      "packs": 10,
+      "probe": "scripts/build_free_content.py",
+      "weight": 5993
+    },
+    {
+      "jobs": 127,
+      "packs": 10,
+      "probe": "engine/prophet/plan_book.py",
+      "weight": 5475
+    }
+  ],
+  "protected_delivery": false,
+  "pytest_warnings": 2,
+  "reload_and_curated_qualification": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 70
+  },
+  "resolution": {
+    "admin_reload": "exact union of original Fabric and protected GSC cached import dependencies",
+    "curated_jobs": "preserved both original jobs and press-account-claim-consumer",
+    "exclusive_paths": "preserved both Fabric closure and press audience dependency",
+    "packing": "only measured free-content ceiling5991 to5993; other ceilings and limits unchanged"
+  },
+  "runtime_enrollment": false,
+  "runtime_reload": false,
+  "schema": "mastermind.protected_press_gsc_fabric_join/v1",
+  "source_files": {
+    ".github/ci/legacy-jobs.yml": "3cf504a34e0bef1195462fdc05f810135facb72c810a9dcedacd9e863b07ea37",
+    "app/deploy/update.sh": "911ce1e975144d8ed7d2629cab97318ab8af0ffd229d669bf8f1244fe8d3edd2",
+    "tests/test_ci_pack.py": "faceea6e4df830e75b98c15af86f16c73b5699c50b0799bda24943f07881b7a3",
+    "tests/test_deploy_update_self_heal.py": "f8bea67446ec157fca8b89711b0b5a5c4b2ccf1fff16e76a11c312939fc52b78"
+  }
+}

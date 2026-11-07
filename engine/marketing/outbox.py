@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import contextlib
 import hashlib
+import json
 import logging
 import os
 import re
@@ -1016,6 +1017,335 @@ def _append_activity(root: Path | str | None, row: dict) -> None:
         append_jsonl(_activity_path(root), row)
     except Exception as exc:  # noqa: BLE001
         log.warning("outbox: activity append failed: %s", exc)
+
+
+# PublishTime's optional inference uses this SAME activity owner. These strict
+# opt-in methods do not change the ordinary publisher's best-effort contract.
+# A pending claim is retained even if no item is eventually enqueued.
+_PT_AI_SCHEMA = "mastermind.publish_time.fabric_operation.v1"
+_PT_AI_TYPE = "publish_time_fabric_operation"
+_PT_AI_MAX_ACTIVITY_BYTES = 32 * 1024 * 1024
+_PT_AI_MAX_RECORD_BYTES = 256 * 1024
+
+
+def _pt_ai_json(value: Any) -> bytes:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=False, allow_nan=False).encode("utf-8")
+
+
+def _pt_ai_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("publish_time_activity_duplicate_key")
+        result[key] = value
+    return result
+
+
+def _pt_ai_decode(raw: bytes):
+    def reject(_value):
+        raise ValueError("publish_time_activity_nonfinite")
+    return json.loads(raw, object_pairs_hook=_pt_ai_object, parse_constant=reject)
+
+
+def publish_time_operation_key(identity: dict) -> str:
+    if (type(identity) is not dict
+            or set(identity) != {"lane", "session", "kind", "subject"}
+            or identity["lane"] != "publish_time_wire"
+            or identity["kind"] not in {"mover", "theme_list"}
+            or type(identity["session"]) is not str
+            or date.fromisoformat(identity["session"]).isoformat() != identity["session"]
+            or type(identity["subject"]) is not str
+            or not identity["subject"].strip()
+            or len(identity["subject"]) > 200
+            or any(ord(char) < 32 for char in identity["subject"])
+            or (identity["kind"] == "mover"
+                and identity["subject"] != identity["subject"].upper())):
+        raise ValueError("publish_time_operation_identity_invalid")
+    return hashlib.sha256(_pt_ai_json(identity)).hexdigest()
+
+
+def _pt_ai_validate(entry: dict) -> None:
+    keys = {"schema", "operation_id", "identity", "created_at", "input",
+            "input_sha256", "selection", "state", "dispatch_possible",
+            "receipt", "result", "delivery"}
+    if (type(entry) is not dict or set(entry) != keys
+            or entry["schema"] != _PT_AI_SCHEMA
+            or type(entry["operation_id"]) is not str
+            or not re.fullmatch(r"ptwire:[a-f0-9]{32}", entry["operation_id"])
+            or type(entry["created_at"]) is not str
+            or not datetime.fromisoformat(entry["created_at"]).tzinfo
+            or type(entry["input"]) is not dict
+            or entry["input_sha256"] != hashlib.sha256(_pt_ai_json(entry["input"])).hexdigest()
+            or type(entry["selection"]) is not dict
+            or set(entry["selection"]) != {"mode_id", "inspection", "cfg"}
+            or type(entry["selection"]["mode_id"]) is not str
+            or not re.fullmatch(r"[a-z][a-z0-9_]{2,63}", entry["selection"]["mode_id"])
+            or type(entry["selection"]["inspection"]) is not dict
+            or type(entry["selection"]["cfg"]) is not dict
+            or entry["state"] not in {"pending", "held", "terminal"}
+            or type(entry["dispatch_possible"]) is not bool):
+        raise ValueError("publish_time_operation_record_invalid")
+    publish_time_operation_key(entry["identity"])
+    frozen = entry["input"]
+    if (set(frozen) != {"template", "facts", "kind", "now", "context", "system",
+                       "prompt", "max_tokens", "max_chars"}
+            or any(type(frozen[key]) is not str for key in ("template", "kind", "system", "prompt"))
+            or frozen["kind"] != entry["identity"]["kind"]
+            or type(frozen["facts"]) is not dict or type(frozen["context"]) is not dict
+            or (frozen["now"] is not None and type(frozen["now"]) is not str)
+            or type(frozen["max_tokens"]) is not int or not 0 < frozen["max_tokens"] <= 32768
+            or type(frozen["max_chars"]) is not int or not 0 < frozen["max_chars"] <= 10000):
+        raise ValueError("publish_time_operation_input_invalid")
+    receipt, result, delivery = entry["receipt"], entry["result"], entry["delivery"]
+    if entry["state"] == "pending":
+        if receipt is not None or result is not None:
+            raise ValueError("publish_time_pending_result_invalid")
+    else:
+        if (type(receipt) is not dict or receipt.get("operation_id") != entry["operation_id"]
+                or type(receipt.get("effect_unknown")) is not bool
+                or receipt["effect_unknown"] != (entry["state"] == "held")
+                or type(receipt.get("send_attempted")) is not bool
+                or type(receipt.get("response_observed")) is not bool
+                or (receipt["send_attempted"] and not entry["dispatch_possible"])
+                or (receipt["response_observed"] and not receipt["send_attempted"])
+                or type(receipt.get("close")) is not dict
+                or type(result) is not dict
+                or set(result) != {"text", "mode", "provider", "violations", "reason"}
+                or result["mode"] not in {"llm", "fallback_validation", "fallback_provider", "fallback_timeout"}
+                or type(result["reason"]) is not str
+                or result["provider"] not in {None, "fabric"}
+                or type(result["violations"]) is not list
+                or any(type(item) is not str for item in result["violations"])):
+            raise ValueError("publish_time_operation_outcome_invalid")
+        if result["mode"] == "llm":
+            if (type(result["text"]) is not str or not result["text"].strip()
+                    or len(result["text"]) > frozen["max_chars"]
+                    or result["violations"] or result["provider"] != "fabric"
+                    or not receipt["response_observed"]):
+                raise ValueError("publish_time_operation_result_invalid")
+        elif result["text"] is not None:
+            raise ValueError("publish_time_rejected_result_invalid")
+        close = receipt["close"]
+        if close and (set(close) != {"disposition", "closed", "effect_unknown", "attempted"}
+                or close["disposition"] not in {"local_only", "refused", "pending", "effect_unknown", "closed"}
+                or any(type(close[key]) is not bool for key in ("closed", "effect_unknown", "attempted"))):
+            raise ValueError("publish_time_close_receipt_invalid")
+        if (close.get("effect_unknown") is True
+                or close.get("disposition") in {"pending", "effect_unknown"}
+                or receipt.get("native_disposition") in {"pending", "effect_unknown"}) and entry["state"] != "held":
+            raise ValueError("publish_time_uncertainty_contradiction")
+        usage = receipt.get("usage")
+        if usage is not None:
+            if (type(usage) is not dict or set(usage) != {"input_tokens", "output_tokens", "usage_state",
+                                                       "completed_input_tokens", "completed_output_tokens"}
+                    or usage["usage_state"] not in {"known", "unknown"}
+                    or any(type(usage[key]) is not int or usage[key] < 0
+                           for key in ("completed_input_tokens", "completed_output_tokens"))):
+                raise ValueError("publish_time_usage_receipt_invalid")
+            for key, completed in (("input_tokens", "completed_input_tokens"),
+                                   ("output_tokens", "completed_output_tokens")):
+                if (usage["usage_state"] == "known" and
+                        (type(usage[key]) is not int or usage[key] != usage[completed])):
+                    raise ValueError("publish_time_known_usage_invalid")
+                if usage["usage_state"] == "unknown" and usage[key] is not None:
+                    raise ValueError("publish_time_unknown_usage_invalid")
+    if delivery is not None:
+        if (type(delivery) is not dict or set(delivery) != {"mode", "reason", "text", "text_sha256"}
+                or delivery["mode"] not in {"llm", "fallback_validation", "fallback_provider", "fallback_timeout"}
+                or type(delivery["reason"]) is not str or type(delivery["text"]) is not str):
+            raise ValueError("publish_time_operation_delivery_invalid")
+        text = delivery["text"]
+        if delivery["mode"] == "llm":
+            if result is None or result["mode"] != "llm" or text != result["text"]:
+                raise ValueError("publish_time_model_delivery_without_result")
+        if delivery["text_sha256"] != hashlib.sha256(text.encode("utf-8")).hexdigest():
+            raise ValueError("publish_time_delivery_digest_invalid")
+    if len(_pt_ai_json(entry)) > _PT_AI_MAX_RECORD_BYTES:
+        raise ValueError("publish_time_operation_record_oversized")
+
+
+def _pt_ai_transition(previous: dict, current: dict) -> None:
+    immutable = {"schema", "operation_id", "identity", "created_at", "input",
+                 "input_sha256", "selection"}
+    if any(previous[key] != current[key] for key in immutable):
+        raise ValueError("publish_time_operation_identity_changed")
+    if previous["dispatch_possible"] and not current["dispatch_possible"]:
+        raise ValueError("publish_time_dispatch_regressed")
+    if previous["state"] != "pending" and any(
+            previous[key] != current[key] for key in ("state", "receipt", "result", "dispatch_possible")):
+        raise ValueError("publish_time_outcome_replaced")
+    if previous["delivery"] is not None and previous["delivery"] != current["delivery"]:
+        raise ValueError("publish_time_delivery_replaced")
+    if previous == current:
+        raise ValueError("publish_time_duplicate_transition")
+
+
+def _pt_ai_read_all(root: Path | str) -> dict[str, tuple[int, dict]]:
+    path = _activity_path(root)
+    if path.is_symlink():
+        raise ValueError("publish_time_activity_symlink")
+    try:
+        with path.open("rb") as handle:
+            raw = handle.read(_PT_AI_MAX_ACTIVITY_BYTES + 1)
+    except FileNotFoundError:
+        return {}
+    if len(raw) > _PT_AI_MAX_ACTIVITY_BYTES:
+        raise ValueError("publish_time_activity_oversized")
+    if raw and not raw.endswith(b"\n"):
+        raise ValueError("publish_time_activity_incomplete")
+    entries = {}
+    operation_keys = {}
+    for line in raw.splitlines():
+        if not line.strip():
+            raise ValueError("publish_time_activity_empty_record")
+        row = _pt_ai_decode(line)
+        if type(row) is not dict:
+            raise ValueError("publish_time_activity_not_object")
+        if row.get("type") != _PT_AI_TYPE:
+            if row.get("schema") == _PT_AI_SCHEMA:
+                raise ValueError("publish_time_activity_type_invalid")
+            continue
+        if (set(row) != {"type", "schema", "key", "revision", "operation"}
+                or row["schema"] != _PT_AI_SCHEMA or type(row["revision"]) is not int):
+            raise ValueError("publish_time_activity_record_invalid")
+        entry = row["operation"]
+        _pt_ai_validate(entry)
+        key = publish_time_operation_key(entry["identity"])
+        if row["key"] != key or operation_keys.get(entry["operation_id"], key) != key:
+            raise ValueError("publish_time_activity_identity_invalid")
+        previous = entries.get(key)
+        if previous is None:
+            if (row["revision"] != 0 or entry["state"] != "pending"
+                    or entry["dispatch_possible"] or entry["delivery"] is not None):
+                raise ValueError("publish_time_activity_original_missing")
+        else:
+            if row["revision"] != previous[0] + 1:
+                raise ValueError("publish_time_activity_revision_invalid")
+            _pt_ai_transition(previous[1], entry)
+        entries[key] = (row["revision"], entry)
+        operation_keys[entry["operation_id"]] = key
+    return entries
+
+
+def read_publish_time_operation(root: Path | str, identity: dict) -> dict | None:
+    """Read only; corruption/uncertainty is never interpreted as absence.
+
+    A concurrent partial append can refuse this read, which is safe. New claims
+    and every update re-read under the existing exclusive outbox lock.
+    """
+    row = _pt_ai_read_all(root).get(publish_time_operation_key(identity))
+    return row[1] if row is not None else None
+
+
+def _pt_ai_append(root: Path | str, key: str, revision: int, entry: dict) -> dict:
+    _pt_ai_validate(entry)
+    row = {"type": _PT_AI_TYPE, "schema": _PT_AI_SCHEMA, "key": key,
+           "revision": revision, "operation": entry}
+    raw = _pt_ai_json(row) + b"\n"
+    base = Path(root).resolve(strict=True)
+    # Persist newly-created directory links as well as the activity data. The
+    # caller already holds the stable .lock; no replace/lock-inode split occurs.
+    for directory in (base, base / "data", base / "data/marketing", outbox_dir(base)):
+        fd = os.open(directory, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    path = _activity_path(base)
+    if path.is_symlink():
+        raise ValueError("publish_time_activity_symlink")
+    with path.open("ab") as handle:
+        if handle.write(raw) != len(raw):
+            raise OSError("publish_time_activity_short_write")
+        handle.flush()
+        os.fsync(handle.fileno())
+    fd = os.open(path.parent, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+    observed = _pt_ai_read_all(base).get(key)
+    if observed != (revision, entry):
+        raise OSError("publish_time_activity_readback_mismatch")
+    return observed[1]
+
+
+def claim_publish_time_operation(root: Path | str, proposed: dict) -> tuple[dict, bool]:
+    """Return the original, or durably claim this daily item before admission."""
+    _pt_ai_validate(proposed)
+    if proposed["state"] != "pending" or proposed["dispatch_possible"] or proposed["delivery"] is not None:
+        raise ValueError("publish_time_claim_invalid")
+    key = publish_time_operation_key(proposed["identity"])
+    with _outbox_lock(root, timeout_s=0.1) as acquired:
+        if not acquired:
+            raise OSError("publish_time_activity_lock_unavailable")
+        original = _pt_ai_read_all(root).get(key)
+        if original is not None:
+            return original[1], False
+        return _pt_ai_append(root, key, 0, proposed), True
+
+
+def update_publish_time_operation(root: Path | str, identity: dict, operation_id: str,
+                                  *, dispatch: bool = False, outcome: dict | None = None,
+                                  delivery: dict | None = None) -> dict:
+    """Merge one original state transition; never overwrite the worker/caller."""
+    if sum((bool(dispatch), outcome is not None, delivery is not None)) != 1:
+        raise ValueError("publish_time_transition_invalid")
+    key = publish_time_operation_key(identity)
+    with _outbox_lock(root, timeout_s=0.1) as acquired:
+        if not acquired:
+            raise OSError("publish_time_activity_lock_unavailable")
+        original = _pt_ai_read_all(root).get(key)
+        if original is None or original[1]["operation_id"] != operation_id:
+            raise ValueError("publish_time_original_missing")
+        revision, previous = original
+        current = _pt_ai_decode(_pt_ai_json(previous))
+        if dispatch:
+            if previous["state"] != "pending" or previous["dispatch_possible"]:
+                raise ValueError("publish_time_dispatch_already_authorized")
+            current["dispatch_possible"] = True
+        elif outcome is not None:
+            if (previous["state"] != "pending" or type(outcome) is not dict
+                    or set(outcome) != {"state", "receipt", "result"}
+                    or outcome["state"] not in {"terminal", "held"}):
+                raise ValueError("publish_time_outcome_transition_invalid")
+            current.update(outcome)
+        else:
+            if previous["delivery"] is not None:
+                return previous
+            current["delivery"] = delivery
+        _pt_ai_validate(current)
+        _pt_ai_transition(previous, current)
+        return _pt_ai_append(root, key, revision + 1, current)
+
+
+def confirm_publish_time_delivery(root: Path | str, identity: dict, operation_id: str) -> dict:
+    """Reconcile the original delivery append without another mutation/send.
+
+    Reading a buffered row alone is not durability. Re-establish file/directory
+    durability under the same lock, then verify the exact original state. A
+    failure remains unconfirmed; callers must not emit a claimed delivery.
+    """
+    key = publish_time_operation_key(identity)
+    with _outbox_lock(root, timeout_s=0.1) as acquired:
+        if not acquired:
+            raise OSError("publish_time_activity_lock_unavailable")
+        original = _pt_ai_read_all(root).get(key)
+        if (original is None or original[1]["operation_id"] != operation_id
+                or original[1]["delivery"] is None):
+            raise ValueError("publish_time_delivery_not_found")
+        path = _activity_path(root)
+        with path.open("rb") as handle:
+            os.fsync(handle.fileno())
+        fd = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+        if _pt_ai_read_all(root).get(key) != original:
+            raise OSError("publish_time_delivery_confirmation_mismatch")
+        return original[1]
 
 
 # ─────────────────────────────────────────────────────────────────────────────

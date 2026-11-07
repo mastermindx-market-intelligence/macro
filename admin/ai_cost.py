@@ -228,35 +228,47 @@ def unified() -> dict | None:
                 "usd": round(float(b.get("usd", 0.0)), 4),
                 "tokens": int(b.get("tokens", 0)),
                 "calls": int(b.get("calls", 0)),
+                "unpriced_calls": int(b.get("unpriced_calls", 0)),
                 "lanes": b.get("lanes_ranked") or [],
                 "no_usd": False,
             })
 
+        def known_amount(value):
+            from math import isfinite
+            return (round(float(value), 4) if type(value) in (int, float)
+                    and isfinite(value) and value >= 0 else None)
+
         # ── Mastermind bot (external VPS cost_summary.json) ──
         mm = _read_json(DATA / "mastermind" / "cost_summary.json")
         bot = None
+        bot_usd = None
         if mm and isinstance(mm, dict):
             t30 = mm.get("totals_30d") or {}
-            bot_usd = round(float(t30.get("usd", 0.0) or 0.0), 4)
+            bot_usd = known_amount(t30.get("usd"))
             bot_tok = int(t30.get("input_tokens", 0) or 0) + int(t30.get("output_tokens", 0) or 0)
             # cost_summary by_book/by_seat/by_key are {name: usd_float} maps.
             by_book = t30.get("by_book") or {}
-            bot_calls = 0
+            call_counts = []
             for _day in (mm.get("days") or {}).values():
                 for _seg in ("autonomous", "heavyweight"):
-                    bot_calls += int(((_day or {}).get(_seg) or {}).get("calls", 0) or 0)
+                    count = (((_day or {}).get(_seg) or {}).get("calls"))
+                    if type(count) is int and count >= 0:
+                        call_counts.append(count)
+            bot_calls = (t30["calls"] if type(t30.get("calls")) is int and t30["calls"] >= 0
+                         else sum(call_counts) if call_counts else None)
             bot = {"as_of": mm.get("as_of"), "totals_30d": t30, "days": mm.get("days")}
-            if bot_usd > 0 or bot_tok > 0:
+            if bot_usd is not None or bot_tok > 0 or bot_calls is not None or by_book:
                 lobes.append({
                     "name": "Mastermind · bot", "source": "bot",
                     "usd": bot_usd, "tokens": bot_tok, "calls": bot_calls,
                     "lanes": [
-                        {"name": k, "usd": round(float(v or 0.0), 4), "tokens": 0, "calls": 0}
+                        {"name": k, "usd": known_amount(v), "tokens": None, "calls": None,
+                         "no_usd": known_amount(v) is None}
                         for k, v in sorted(by_book.items(),
-                                           key=lambda kv: float(kv[1] or 0.0),
+                                           key=lambda kv: known_amount(kv[1]) or 0.0,
                                            reverse=True)
                     ],
-                    "no_usd": False,
+                    "no_usd": bot_usd is None,
                 })
 
         # ── Codex research lane (usage_state.json — rate-limit only, no USD) ──
@@ -284,13 +296,17 @@ def unified() -> dict | None:
             })
 
         # ── combined totals + percentages over the whole picture ──
-        tot_usd = round(sum(l["usd"] for l in lobes), 4)
+        tot_usd = round(sum(l["usd"] for l in lobes if l["usd"] is not None), 4)
         tot_tok = sum(l["tokens"] for l in lobes)
-        tot_calls = sum(l["calls"] for l in lobes)
+        tot_calls = sum(l["calls"] for l in lobes if l["calls"] is not None)
+        unpriced_calls = sum(l.get("unpriced_calls", 0) for l in lobes if l["source"] == "ledger")
+        unpriced_coverage_complete = bot is None and codex is None
+        known_cost_present = any(not l["no_usd"] and l["usd"] is not None
+            and (l["source"] != "ledger" or l["calls"] > l.get("unpriced_calls", 0)) for l in lobes)
         for l in lobes:
-            l["pct_usd"] = round(100.0 * l["usd"] / tot_usd, 1) if tot_usd else 0.0
+            l["pct_usd"] = round(100.0 * l["usd"] / tot_usd, 1) if tot_usd and l["usd"] is not None else None if l["no_usd"] else 0.0
             l["pct_tokens"] = round(100.0 * l["tokens"] / tot_tok, 1) if tot_tok else 0.0
-        lobes.sort(key=lambda l: (l["usd"], l["tokens"]), reverse=True)
+        lobes.sort(key=lambda l: (l["usd"] or 0.0, l["tokens"]), reverse=True)
 
         # ── source coverage (what is tracked / stale / missing) ──
         led_calls = int(d30.get("calls", 0) or 0)
@@ -301,14 +317,15 @@ def unified() -> dict | None:
             "status": "live" if led_calls > 0 else "empty",
             "as_of": led_asof, "age_h": _age_hours(led_asof),
             "usd_30d": round(float(d30.get("usd", 0.0) or 0.0), 4),
-            "note": f"{led_calls} calls/30d · data/ai_costs/usage.jsonl(+usage.d)",
+            "calls": led_calls, "unpriced_calls": int(d30.get("unpriced_calls", 0)),
+            "note": f"{led_calls} calls/30d · {int(d30.get('unpriced_calls', 0))} unpriced · data/ai_costs/usage.jsonl(+usage.d)",
         }]
         mm_asof = (mm or {}).get("as_of")
         sources.append({
             "key": "bot", "label": "Mastermind bot (VPS)",
             "status": _status_from_age(_age_hours(mm_asof)) if mm else "absent",
             "as_of": mm_asof, "age_h": _age_hours(mm_asof),
-            "usd_30d": round(float(((mm or {}).get("totals_30d") or {}).get("usd", 0.0) or 0.0), 4) if mm else None,
+            "usd_30d": bot_usd,
             "note": "external cost_summary.json (per-call rows not synced)",
         })
         cx_asof = (codex_state or {}).get("updated_at")
@@ -329,20 +346,25 @@ def unified() -> dict | None:
             "note": "data/metabolism/budget_ledger.json" + ("" if bl else " — not present"),
         })
 
-        # Combined subscription-vs-metered split across ALL sources so the
-        # two cards reconcile with the all-sources total.  The Mastermind bot
-        # runs on OAuth pool keys → its USD is API-equivalent (subscription).
+        # Billing-basis cards use the ledger's explicit classification.
+        # An external aggregate does not establish its calls' billing basis.
         cb = summary.get("by_cost_basis") or {}
         sub_led = float((cb.get("subscription") or {}).get("usd", 0.0) or 0.0)
         met_led = float((cb.get("metered") or {}).get("usd", 0.0) or 0.0)
-        bot_usd_total = float(((bot or {}).get("totals_30d") or {}).get("usd", 0.0) or 0.0)
-        subscription_usd = round(sub_led + bot_usd_total, 4)
+        subscription_usd = round(sub_led, 4)
         metered_usd = round(met_led, 4)
 
         return {
             "windows": windows,
             "totals": {
                 "usd": tot_usd, "tokens": tot_tok, "calls": tot_calls,
+                "unpriced_calls": unpriced_calls,
+                "unpriced_coverage_complete": unpriced_coverage_complete,
+                "unpriced_coverage": "ledger",
+                "calls_coverage_complete": all(l["calls"] is not None for l in lobes)
+                    and (bot is None or bot_calls is not None),
+                "no_usd": bool(lobes) and not known_cost_present and any(l["no_usd"] for l in lobes),
+                "billing_basis_coverage": "ledger",
                 "subscription_usd": subscription_usd, "metered_usd": metered_usd,
             },
             "lobes": lobes,

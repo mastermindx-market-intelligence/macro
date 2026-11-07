@@ -38,5 +38,25 @@
     "path": "site/neuralwebdata/ruling_graph.json",
     "token": "book_positions",
     "reason": "ruling_graph.json governance artifact"
+  },
+  {
+    "path": "tests/test_cortex_auto_fabric_composition.py",
+    "token": "cost_basis",
+    "reason": "Private synthetic AI-usage ledger assertions under pytest tmp_path_factory; simulated Neural Web output uses a separate pytest temporary root. This exact test-path/token classification retains both findings and all accounting assertions; it does not permit held-book data in public output or production writers."
+  },
+  {
+    "path": "tests/test_ruling_graph.py",
+    "token": "cost_basis",
+    "reason": "Deliberate privacy-detector regression fixtures under pytest tmp_path. This exact source path/token keeps findings visible while proving public paths, unlisted test paths, near names and wrong tokens remain HARD; it grants no production or public-output exception."
+  },
+  {
+    "path": "tests/test_ruling_graph.py",
+    "token": "fill_price",
+    "reason": "Deliberate wrong-token privacy-detector regression fixture under pytest tmp_path. This exact source path/token is test vocabulary, not held-book data; its generated fixture remains HARD and unallowlisted."
+  },
+  {
+    "path": "tests/test_metabolism_fabric_composition.py",
+    "token": "cost_basis",
+    "reason": "Synthetic private AI-usage receipt and inspection identities under pytest temporary directories. This exact test path/token retains usage truth and privacy findings; it does not permit held-book data in public output or production writers."
   }
 ]

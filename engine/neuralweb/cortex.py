@@ -64,7 +64,11 @@ import hashlib
 import json
 import logging
 import os
+import re
+import secrets
+import stat
 import time
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -318,7 +322,11 @@ def _compute_run_state_hash(root: Path) -> dict:
 def _load_last_run_state(root: Path) -> dict:
     p = _cortex_dir(root) / "last_run_state.json"
     try:
-        return json.loads(p.read_text(encoding="utf-8"))
+        value = json.loads(p.read_text(encoding="utf-8"))
+        if type(value) is dict and value.get("schema") == _FABRIC_STATE_SCHEMA:
+            value = _fabric_read_state(root)
+            return value["native_state"] or {}
+        return value
     except Exception:  # noqa: BLE001
         return {}
 
@@ -326,8 +334,21 @@ def _load_last_run_state(root: Path) -> dict:
 def _save_last_run_state(root: Path, state: dict) -> None:
     p = _cortex_dir(root) / "last_run_state.json"
     try:
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps(state, default=str), encoding="utf-8")
+        # A native caller may have taken its snapshot before a selected claim.
+        # Serialize the final save and never replace selected original custody.
+        with _fabric_state_lock(root):
+            current = _fabric_read_state(root)
+            if type(current) is dict and current.get("schema") == _FABRIC_STATE_SCHEMA:
+                if current["fabric"]["phase"] != "complete":
+                    return
+                # A real later native completion can advance its own warm
+                # tuple without discarding the settled Fabric evidence.
+                current["native_state"] = state
+                current["revision"] += 1
+                current["sha256"] = _fabric_digest({k: v for k, v in current.items() if k != "sha256"})
+                _fabric_write_state(root, p.resolve(), current)
+                return
+            _fabric_write_state(root, p.resolve(), state)
     except Exception as exc:  # noqa: BLE001
         log.warning("cortex: could not save last_run_state (%s)", exc)
 
@@ -341,6 +362,494 @@ def _state_changed(current: dict, last: dict) -> bool:
         or current.get("spine_rows") != last.get("spine_rows")
         or current.get("contradictions_hash") != last.get("contradictions_hash")
     )
+
+
+# The existing last_run_state owner also fences selected inference and tools.
+# The lock and temporary file below are serialization aids, not another ledger.
+_FABRIC_STATE_SCHEMA = "neuralweb.cortex_run.v2"
+_FABRIC_STATE_LIMIT = 64 * 1024 * 1024
+_FABRIC_SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}\Z")
+_FABRIC_INITIAL_MESSAGE = {
+    "role": "user",
+    "content": "Begin deliberation. Read the world state first, then explore the spine and contradictions, then flag attention items and write your memo.",
+}
+
+
+class _CortexFabricHold(ValueError):
+    """Bounded refusal; raw provider errors and credentials are never persisted."""
+
+
+def _fabric_json_bytes(value: Any) -> bytes:
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":"),
+                     ensure_ascii=False, allow_nan=False).encode("utf-8")
+    if len(raw) > _FABRIC_STATE_LIMIT:
+        raise _CortexFabricHold("cortex_fabric_state_bound")
+    return raw
+
+
+def _fabric_digest(value: Any) -> str:
+    return hashlib.sha256(_fabric_json_bytes(value)).hexdigest()
+
+
+def _fabric_json_load(raw: bytes) -> Any:
+    def pairs(values):
+        out = {}
+        for key, value in values:
+            if key in out:
+                raise _CortexFabricHold("cortex_fabric_duplicate_key")
+            out[key] = value
+        return out
+    def nonfinite(_value):
+        raise _CortexFabricHold("cortex_fabric_nonfinite")
+    return json.loads(raw, object_pairs_hook=pairs, parse_constant=nonfinite)
+
+
+def _fabric_clone(value: Any) -> Any:
+    return _fabric_json_load(_fabric_json_bytes(value))
+
+
+def _fabric_source_valid(value: Any) -> bool:
+    return (type(value) is dict
+            and set(value) == {"ws_inputs_hash", "spine_rows", "contradictions_hash"}
+            and type(value["ws_inputs_hash"]) is str
+            and type(value["contradictions_hash"]) is str
+            and type(value["spine_rows"]) is int and value["spine_rows"] >= -1)
+
+
+_FABRIC_AUTO_RUN_SCHEMA = "neuralweb.cortex_fabric_run.v2"
+
+
+def _fabric_auto_request(run: dict, step: dict) -> dict:
+    """Reconstruct the original request from this owner's retained input."""
+    from engine import fabric_inference_client as transport
+    payload = run["request_payload"]
+    _, raw = transport._request({"model": None, "request_id": step["request_id"],
+        "max_tokens": run["request"]["max_tokens"], "system": payload["system"],
+        "messages": run["messages"][:step["history_length"]], "tools": payload["tools"]}, None, False)
+    return transport._load_json(raw, unknown=False)
+
+
+def _fabric_auto_capture(run: dict, step: dict, provider: dict, *, require_success=False) -> None:
+    from engine import fabric_inference_client as transport, llm_auth
+    observation = llm_auth._fabric_routed_observation(
+        provider, llm_auth.fabric_observation(provider), step["request_id"])
+    if observation is None:
+        if require_success:
+            raise _CortexFabricHold("cortex_fabric_auto_observation_missing")
+        return
+    document = observation.document
+    original = _fabric_auto_request(run, step)
+    routed = transport._auto_request_digest(dict(original, model=document["routing"]["selected_model"]))
+    document = transport.validate_auto_observation(document, run["inspection"],
+        operation_id=run["operation_id"], request_id=step["request_id"],
+        request_digest=step["normalized_request_digest"], routed_request_digest=routed,
+        max_tokens=run["request"]["max_tokens"], expected_route=run["route_identity"],
+        require_success=require_success)
+    route_identity = transport.auto_route_identity(document["routing"])
+    if run["route_identity"] is None:
+        run["route_identity"] = route_identity
+    step["routed_request_digest"] = routed
+    step["application_observation"] = document
+
+
+def _fabric_actual_identity(run: dict) -> tuple:
+    if run.get("schema") != _FABRIC_AUTO_RUN_SCHEMA:
+        return run["inspection"]["model"], run["inspection"].get("provider")
+    observed = [step["observation"] for step in run["steps"]
+                if step["phase"] == "response" and step["observation"] is not None]
+    models = {row["serving_model"] for row in observed}
+    model = next(iter(models)) if len(models) == 1 else None
+    route = run["route_identity"]
+    return model, route["pool"] if route is not None else "unknown"
+
+
+def _fabric_validate_state(value: Any, root: Path | None = None) -> Any:
+    if value is None or _fabric_source_valid(value):
+        return value
+    if (type(value) is not dict or set(value) != {
+            "schema", "revision", "native_state", "fabric", "sha256"}
+            or value["schema"] != _FABRIC_STATE_SCHEMA
+            or type(value["revision"]) is not int or value["revision"] < 1
+            or value["native_state"] is not None and not _fabric_source_valid(value["native_state"])
+            or value["sha256"] != _fabric_digest({k: v for k, v in value.items() if k != "sha256"})):
+        raise _CortexFabricHold("cortex_fabric_state_invalid")
+    run = value["fabric"]
+    fields = {"operation_id", "root", "source", "selection", "inspection", "request", "created_at", "probation",
+              "phase", "messages", "steps", "tools", "census", "memo", "projection",
+              "receipt", "failure", "business_complete"}
+    automatic = type(run) is dict and run.get("schema") == _FABRIC_AUTO_RUN_SCHEMA
+    if automatic:
+        fields |= {"schema", "request_payload", "route_identity"}
+    if (type(run) is not dict or set(run) != fields
+            or type(run["operation_id"]) is not str
+            or not re.fullmatch(r"cortex:[0-9a-f]{32}", run["operation_id"])
+            or type(run["root"]) is not str or not Path(run["root"]).is_absolute()
+            or root is not None and run["root"] != str(root.resolve(strict=True))
+            or type(run["probation"]) is not dict
+            or not _fabric_source_valid(run["source"])
+            or type(run["selection"]) is not str
+            or not re.fullmatch(r"[a-z][a-z0-9_]{2,63}", run["selection"])
+            or type(run["created_at"]) is not str
+            or run["phase"] not in {"claimed", "bound", "inference_pending", "response",
+                                    "tool_pending", "finalizing", "complete", "held"}
+            or type(run["business_complete"]) is not bool
+            or run["failure"] is not None and (type(run["failure"]) is not str
+                or not re.fullmatch(r"[a-z0-9_]{1,96}", run["failure"]))
+            or type(run["messages"]) is not list or not run["messages"]
+            or run["messages"][0] != _FABRIC_INITIAL_MESSAGE
+            or type(run["steps"]) is not list or len(run["steps"]) > 256
+            or type(run["tools"]) is not list or len(run["tools"]) > 32768
+            or type(run["census"]) is not dict
+            or any(k not in _ALLOWED_TOOLS or type(v) is not int or v < 1
+                   for k, v in run["census"].items())):
+        raise _CortexFabricHold("cortex_fabric_run_invalid")
+    from engine.provider_production_modes import ApplicationFabricFactory
+    ApplicationFabricFactory._commit_inspection(run["inspection"])
+    if automatic != (run["inspection"].get("schema") == "mastermind.fabric_application_inspection.v2"):
+        raise _CortexFabricHold("cortex_fabric_run_variant_invalid")
+    request = run["request"]
+    if (type(request) is not dict or set(request) != {
+            "system_sha256", "tools_sha256", "max_tokens", "max_tool_calls", "caller_cfg_sha256"}
+            or any(type(request[k]) is not str or not re.fullmatch(r"[0-9a-f]{64}", request[k])
+                   for k in ("system_sha256", "tools_sha256", "caller_cfg_sha256"))
+            or type(request["max_tokens"]) is not int or not 1 <= request["max_tokens"] <= 32768
+            or type(request["max_tool_calls"]) is not int or not 1 <= request["max_tool_calls"] <= 256):
+        raise _CortexFabricHold("cortex_fabric_request_invalid")
+    if automatic:
+        payload = run["request_payload"]
+        if (type(payload) is not dict or set(payload) != {"system", "tools"}
+                or type(payload["system"]) is not str or type(payload["tools"]) is not list
+                or _fabric_digest(payload["system"]) != request["system_sha256"]
+                or _fabric_digest(payload["tools"]) != request["tools_sha256"]
+                or run["route_identity"] is not None and type(run["route_identity"]) is not dict):
+            raise _CortexFabricHold("cortex_fabric_payload_invalid")
+    for index, step in enumerate(run["steps"]):
+        step_fields = {"request_id", "history_length", "request_sha256", "phase", "response", "observation"}
+        if automatic:
+            step_fields |= {"normalized_request_digest", "routed_request_digest", "application_observation"}
+        if (type(step) is not dict or set(step) != step_fields
+                or step["request_id"] != f"{run['operation_id']}:brain:{index}"
+                or type(step["history_length"]) is not int
+                or not 1 <= step["history_length"] <= len(run["messages"])
+                or type(step["request_sha256"]) is not str
+                or not re.fullmatch(r"[0-9a-f]{64}", step["request_sha256"])
+                or step["phase"] not in {"intent", "response"}
+                or step["phase"] == "intent" and (step["response"] is not None or index != len(run["steps"]) - 1)
+                or step["phase"] == "response" and type(step["response"]) is not dict):
+            raise _CortexFabricHold("cortex_fabric_step_invalid")
+        expected = {"history": run["messages"][:step["history_length"]],
+                    "request": request, "inspection": run["inspection"]}
+        if step["request_sha256"] != _fabric_digest(expected):
+            raise _CortexFabricHold("cortex_fabric_history_changed")
+        if step["response"] is not None:
+            response = step["response"]
+            if (set(response) != {"model", "stop_reason", "content"}
+                    or not automatic and response["model"] != run["inspection"]["model"]
+                    or response["stop_reason"] not in {"tool_use", "end_turn", "max_tokens"}
+                    or type(response["content"]) is not list
+                    or run["messages"][step["history_length"]:step["history_length"] + 1]
+                       != [{"role": "assistant", "content": response["content"]}]):
+                raise _CortexFabricHold("cortex_fabric_response_invalid")
+        observation = step["observation"]
+        if step["phase"] == "response" and (observation is None
+                or type(observation) is not dict or observation.get("serving_model") != step["response"]["model"]):
+            raise _CortexFabricHold("cortex_fabric_response_observation_invalid")
+        if observation is not None and (type(observation) is not dict
+                or set(observation) != {"request_id", "serving_model", "input_tokens", "output_tokens"}
+                or observation["request_id"] != step["request_id"]
+                or observation["serving_model"] is not None and type(observation["serving_model"]) is not str
+                or any(v is not None and (type(v) is not int or not 0 <= v <= 10 ** 12)
+                       for v in (observation["input_tokens"], observation["output_tokens"]))):
+            raise _CortexFabricHold("cortex_fabric_observation_invalid")
+        if automatic:
+            from engine import fabric_inference_client as transport
+            original = _fabric_auto_request(run, step)
+            if step["normalized_request_digest"] != transport._auto_request_digest(original):
+                raise _CortexFabricHold("cortex_fabric_normalized_request_changed")
+            document = step["application_observation"]
+            if document is None:
+                if step["routed_request_digest"] is not None or step["phase"] == "response":
+                    raise _CortexFabricHold("cortex_fabric_auto_observation_missing")
+            else:
+                routed = transport._auto_request_digest(dict(original, model=document["routing"]["selected_model"]))
+                document = transport.validate_auto_observation(document, run["inspection"],
+                    operation_id=run["operation_id"], request_id=step["request_id"],
+                    request_digest=step["normalized_request_digest"], routed_request_digest=routed,
+                    max_tokens=request["max_tokens"], expected_route=run["route_identity"],
+                    require_success=step["phase"] == "response")
+                if (step["routed_request_digest"] != routed
+                        or run["route_identity"] != transport.auto_route_identity(document["routing"])
+                        or observation != {"request_id": step["request_id"],
+                            "serving_model": document["serving_model"], **document["usage"]}
+                        or step["phase"] == "response" and step["response"]["model"] != document["serving_model"]):
+                    raise _CortexFabricHold("cortex_fabric_auto_observation_invalid")
+    if automatic and (run["route_identity"] is not None) != any(
+            step["application_observation"] is not None for step in run["steps"]):
+        raise _CortexFabricHold("cortex_fabric_route_identity_invalid")
+    ids = set()
+    completed_census = {}
+    for tool in run["tools"]:
+        if (type(tool) is not dict or set(tool) != {
+                "id", "step", "name", "input", "input_sha256", "phase", "result"}
+                or type(tool["id"]) is not str or not _FABRIC_SAFE_ID.fullmatch(tool["id"])
+                or tool["id"] in ids or tool["name"] not in _ALLOWED_TOOLS
+                or type(tool["step"]) is not int or not 0 <= tool["step"] < len(run["steps"])
+                or type(tool["input"]) is not dict
+                or tool["input_sha256"] != _fabric_digest(tool["input"])
+                or tool["phase"] not in {"intent", "complete"}
+                or tool["phase"] == "intent" and tool["result"] is not None
+                or tool["phase"] == "complete" and type(tool["result"]) is not dict):
+            raise _CortexFabricHold("cortex_fabric_tool_invalid")
+        blocks = run["steps"][tool["step"]]["response"]
+        if blocks is None or {"type": "tool_use", "id": tool["id"], "name": tool["name"],
+                              "input": tool["input"]} not in blocks["content"]:
+            raise _CortexFabricHold("cortex_fabric_tool_unbound")
+        ids.add(tool["id"])
+        if tool["phase"] == "complete":
+            completed_census[tool["name"]] = completed_census.get(tool["name"], 0) + 1
+    if run["census"] != completed_census:
+        raise _CortexFabricHold("cortex_fabric_census_invalid")
+    # Reconstruct only legitimate history prefixes, including a crash between
+    # an acknowledged tool and publication of its whole batch's user message.
+    cursor = 1
+    if [t["step"] for t in run["tools"]] != sorted(t["step"] for t in run["tools"]):
+        raise _CortexFabricHold("cortex_fabric_tool_order")
+    for index, step in enumerate(run["steps"]):
+        if step["history_length"] != cursor:
+            raise _CortexFabricHold("cortex_fabric_history_invalid")
+        if step["phase"] == "intent":
+            break
+        cursor += 1  # The exact assistant message was checked above.
+        batch = [b for b in step["response"]["content"] if b.get("type") == "tool_use"]
+        recorded = [t for t in run["tools"] if t["step"] == index]
+        if (len(recorded) > len(batch)
+                or any((t["id"], t["name"], t["input"]) != (b["id"], b["name"], b["input"])
+                       for t, b in zip(recorded, batch))
+                or any(t["phase"] != "complete" for t in recorded[:-1])):
+            raise _CortexFabricHold("cortex_fabric_tool_order")
+        complete_batch = len(recorded) == len(batch) and all(t["phase"] == "complete" for t in recorded)
+        if batch and complete_batch and cursor < len(run["messages"]):
+            results = [{"type": "tool_result", "tool_use_id": t["id"],
+                        "content": _fabric_json_bytes(t["result"]).decode("utf-8")} for t in recorded]
+            if run["messages"][cursor] != {"role": "user", "content": results}:
+                raise _CortexFabricHold("cortex_fabric_tool_history_invalid")
+            cursor += 1
+        elif batch and (index != len(run["steps"]) - 1 or run["phase"] == "complete"):
+            raise _CortexFabricHold("cortex_fabric_tool_history_incomplete")
+    if cursor != len(run["messages"]) or len(run["steps"]) > request["max_tool_calls"]:
+        raise _CortexFabricHold("cortex_fabric_history_invalid")
+    projection = run["projection"]
+    if (type(projection) is not dict or set(projection) != {"phase", "params", "result"}
+            or projection["phase"] not in {"unsent", "intent", "complete"}
+            or projection["phase"] == "unsent" and (projection["params"] is not None or projection["result"] is not None)
+            or projection["phase"] != "unsent" and type(projection["params"]) is not dict
+            or projection["phase"] == "intent" and projection["result"] is not None
+            or projection["phase"] == "complete" and type(projection["result"]) is not dict
+            or run["memo"] is not None and type(run["memo"]) is not dict
+            or run["receipt"] is not None and type(run["receipt"]) is not dict):
+        raise _CortexFabricHold("cortex_fabric_completion_invalid")
+    receipt = run["receipt"]
+    if receipt is not None:
+        expected_observations = [{k: s["observation"][k] for k in (
+            "serving_model", "input_tokens", "output_tokens")}
+            for s in run["steps"] if s["observation"] is not None
+            and s["observation"]["input_tokens"] is not None and s["observation"]["output_tokens"] is not None]
+        observed = [s["observation"] for s in run["steps"] if s["observation"] is not None]
+        if (set(receipt) != {"usage", "last_observation", "observations", "close", "pending", "native_disposition"}
+                or type(receipt["pending"]) is not bool or receipt["observations"] != expected_observations
+                or receipt["last_observation"] != (observed[-1] if observed else None)
+                or type(receipt["usage"]) is not dict):
+            raise _CortexFabricHold("cortex_fabric_usage_receipt_invalid")
+        usage = receipt["usage"]
+        totals = [sum(row[k] for row in expected_observations) for k in ("input_tokens", "output_tokens")]
+        if (set(usage) != {"input_tokens", "output_tokens", "usage_state", "completed_input_tokens", "completed_output_tokens"}
+                or usage["usage_state"] not in {"known", "unknown"}
+                or any(type(v) is not int or v < 0 for v in (usage["completed_input_tokens"], usage["completed_output_tokens"]))
+                or [usage["completed_input_tokens"], usage["completed_output_tokens"]] != totals
+                or usage["usage_state"] == "known" and (
+                    receipt["pending"] or [usage["input_tokens"], usage["output_tokens"]] != totals
+                    or any(type(usage[k]) is not int for k in ("input_tokens", "output_tokens"))
+                    or any(row["input_tokens"] is None or row["output_tokens"] is None for row in observed))
+                or usage["usage_state"] == "unknown" and (usage["input_tokens"] is not None or usage["output_tokens"] is not None)):
+            raise _CortexFabricHold("cortex_fabric_usage_receipt_invalid")
+        close = receipt["close"]
+        if close is not None and (type(close) is not dict
+                or set(close) != {"disposition", "closed", "effect_unknown", "attempted"}
+                or close["disposition"] not in {"local_only", "refused", "pending", "effect_unknown", "closed"}
+                or any(type(close[k]) is not bool for k in ("closed", "effect_unknown", "attempted"))):
+            raise _CortexFabricHold("cortex_fabric_close_receipt_invalid")
+    if run["phase"] == "complete":
+        receipt = run["receipt"] or {}
+        if (not run["business_complete"] or run["failure"] is not None
+                or projection["phase"] != "complete" or not run["steps"]
+                or any(s["phase"] != "response" for s in run["steps"])
+                or any(t["phase"] != "complete" for t in run["tools"])
+                or receipt.get("close") != {"disposition": "closed", "closed": True,
+                                            "effect_unknown": False, "attempted": True}
+                or receipt.get("pending") is not False):
+            raise _CortexFabricHold("cortex_fabric_unsettled_completion")
+        memo = run["memo"]
+        if (type(memo) is not dict or set(memo) != {"sha256", "document_sha256", "document", "site_mirrored"}
+                or type(memo["document"]) is not dict or type(memo["site_mirrored"]) is not bool
+                or type(memo["sha256"]) is not str or not re.fullmatch(r"[0-9a-f]{64}", memo["sha256"])
+                or memo["document_sha256"] != _fabric_digest(memo["document"])):
+            raise _CortexFabricHold("cortex_fabric_memo_receipt_invalid")
+        document = memo["document"]
+        business = {"summary", "what_fired", "contradictions_review", "decaying_families", "deserves_operator",
+                    "tool_call_census", "run_status"}
+        if (set(document) != business | {"schema", "as_of", "probation", "is_context_only"}
+                or document["schema"] != _SCHEMA_MEMO or document["as_of"] != run["created_at"]
+                or document["probation"] != run["probation"] or document["is_context_only"] is not True
+                or document["tool_call_census"] != run["census"]
+                or projection["params"] != {key: document[key] for key in business}
+                or projection["result"] != {"written": str(Path(run["root"]) / "data/neuralweb/cortex/memo.json"),
+                                             "as_of": run["created_at"]}
+                or document["run_status"].get("operation_id") != run["operation_id"]
+                or document["run_status"].get("model_used") != _fabric_actual_identity(run)[0]
+                or automatic and document["run_status"].get("pool") != _fabric_actual_identity(run)[1]
+                or document["run_status"].get("close") != receipt.get("close")
+                or document["run_status"].get("usage") != receipt.get("usage")):
+            raise _CortexFabricHold("cortex_fabric_projection_invalid")
+    return value
+
+
+def _fabric_owner_path(root: Path, *, create: bool = False) -> Path:
+    root = Path(root).absolute()
+    if root.is_symlink() or not root.is_dir() or ".." in root.parts:
+        raise _CortexFabricHold("cortex_fabric_root_invalid")
+    root = root.resolve(strict=True)
+    current = root
+    for name in ("data", "neuralweb", "cortex"):
+        child = current / name
+        if create:
+            child.mkdir(exist_ok=True)
+        if child.is_symlink() or child.exists() and not child.is_dir():
+            raise _CortexFabricHold("cortex_fabric_directory_invalid")
+        if create:
+            # Also sync an existing entry: the previous process may have died
+            # after mkdir and before the containing directory was persisted.
+            _fabric_sync_dir(current)
+        current = child
+    if create:
+        _fabric_sync_dir(current)
+    return current / "last_run_state.json"
+
+
+def _fabric_sync_dir(path: Path) -> None:
+    fd = os.open(path, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+                 | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        if not stat.S_ISDIR(os.fstat(fd).st_mode):
+            raise _CortexFabricHold("cortex_fabric_directory_invalid")
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def _fabric_read_state(root: Path) -> Any:
+    path = _fabric_owner_path(root)
+    if path.is_symlink():
+        raise _CortexFabricHold("cortex_fabric_state_symlink")
+    try:
+        fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+                     | getattr(os, "O_NONBLOCK", 0))
+    except FileNotFoundError:
+        return None
+    with os.fdopen(fd, "rb") as source:
+        info = os.fstat(source.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_size > _FABRIC_STATE_LIMIT:
+            raise _CortexFabricHold("cortex_fabric_state_type")
+        raw = source.read(_FABRIC_STATE_LIMIT + 1)
+    if len(raw) > _FABRIC_STATE_LIMIT:
+        raise _CortexFabricHold("cortex_fabric_state_bound")
+    return _fabric_validate_state(_fabric_json_load(raw), root)
+
+
+@contextmanager
+def _fabric_state_lock(root: Path):
+    import fcntl
+    path = _fabric_owner_path(root, create=True)
+    lock = path.with_name(path.name + ".lock")
+    fd = os.open(lock, os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            raise _CortexFabricHold("cortex_fabric_lock_invalid")
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        linked = lock.stat(follow_symlinks=False)
+        if (linked.st_dev, linked.st_ino) != (info.st_dev, info.st_ino):
+            raise _CortexFabricHold("cortex_fabric_lock_changed")
+        _fabric_sync_dir(path.parent)
+        yield path
+    finally:
+        os.close(fd)
+
+
+def _fabric_write_state(root: Path, path: Path, value: dict) -> None:
+    _fabric_validate_state(value, root)
+    raw = _fabric_json_bytes(value)
+    if _fabric_owner_path(root, create=True) != path or path.is_symlink():
+        raise _CortexFabricHold("cortex_fabric_state_changed")
+    temporary = path.with_name(path.name + ".tmp." + secrets.token_hex(12))
+    fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                 | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    try:
+        with os.fdopen(fd, "wb") as target:
+            target.write(raw)
+            target.flush()
+            os.fsync(target.fileno())
+        os.replace(temporary, path)
+        _fabric_sync_dir(path.parent)
+        if _fabric_json_bytes(_fabric_read_state(root)) != raw:
+            raise _CortexFabricHold("cortex_fabric_state_readback")
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _fabric_commit(root: Path, prior: Any, run: dict) -> dict:
+    with _fabric_state_lock(root) as path:
+        actual = _fabric_read_state(root)
+        if _fabric_digest(actual) != _fabric_digest(prior):
+            raise _CortexFabricHold("cortex_fabric_state_cas")
+        selected_prior = type(prior) is dict and prior.get("schema") == _FABRIC_STATE_SCHEMA
+        if selected_prior and prior["fabric"]["operation_id"] != run["operation_id"] \
+                and prior["fabric"]["phase"] != "complete":
+            raise _CortexFabricHold("cortex_fabric_original_held")
+        if run.get("schema") == _FABRIC_AUTO_RUN_SCHEMA:
+            previous = prior["fabric"] if selected_prior else None
+            if previous is not None and previous["operation_id"] == run["operation_id"]:
+                immutable = ("schema", "operation_id", "root", "source", "selection", "inspection",
+                             "request", "request_payload", "created_at", "probation")
+                if (any(previous.get(key) != run.get(key) for key in immutable)
+                        or previous["route_identity"] is not None and previous["route_identity"] != run["route_identity"]
+                        or run["messages"][:len(previous["messages"])] != previous["messages"]
+                        or len(run["steps"]) < len(previous["steps"])
+                        or previous["phase"] == "complete" and previous != run):
+                    raise _CortexFabricHold("cortex_fabric_original_identity_changed")
+                for old_step, next_step in zip(previous["steps"], run["steps"]):
+                    committed = ("request_id", "history_length", "request_sha256", "normalized_request_digest")
+                    if (any(old_step[key] != next_step[key] for key in committed)
+                            or old_step["phase"] == "response" and old_step != next_step
+                            or old_step["application_observation"] is not None
+                                and old_step["application_observation"] != next_step["application_observation"]
+                            or old_step["routed_request_digest"] is not None
+                                and old_step["routed_request_digest"] != next_step["routed_request_digest"]):
+                        raise _CortexFabricHold("cortex_fabric_original_step_changed")
+            elif (run["phase"] != "claimed" or run["steps"] or run["tools"]
+                    or run["route_identity"] is not None):
+                raise _CortexFabricHold("cortex_fabric_original_claim_required")
+        value = {"schema": _FABRIC_STATE_SCHEMA,
+                 "revision": prior["revision"] + 1 if selected_prior else 1,
+                 "native_state": prior["native_state"] if selected_prior else prior,
+                 "fabric": _fabric_clone(run)}
+        value["sha256"] = _fabric_digest(value)
+        _fabric_write_state(root, path, value)
+        return value
+
+
+def _fabric_original_held(state: Any) -> bool:
+    return (type(state) is dict and state.get("schema") == _FABRIC_STATE_SCHEMA
+            and state["fabric"]["phase"] != "complete")
 
 
 # ---------------------------------------------------------------------------
@@ -503,7 +1012,8 @@ def _tool_read_artifact(root: Path, params: dict) -> dict:
 # Tool implementations — write tools (shadow-tier only)
 # ---------------------------------------------------------------------------
 
-def _tool_flag_attention(root: Path, params: dict, now_str: str) -> dict:
+def _tool_flag_attention(root: Path, params: dict, now_str: str, *,
+                         _strict_effects: bool = False) -> dict:
     """Append claim-shaped rows to data/reflexes/cortex_attention/firings.jsonl."""
     items = params.get("items") or []
     if not items:
@@ -531,7 +1041,13 @@ def _tool_flag_attention(root: Path, params: dict, now_str: str) -> dict:
             "is_context_only": True,
             "extra": item.get("extra", {}),
         }
+        path = _attn_dir(root) / "firings.jsonl"
+        before = _fabric_append_snapshot(root, path) if _strict_effects else None
         rec = _reflexes.record_firing("cortex_attention", payload, root)
+        if _strict_effects:
+            if type(rec) is not dict or rec.get("_write_error") or not rec.get("claim_id"):
+                raise _CortexFabricHold("cortex_fabric_attention_write_unknown")
+            _fabric_append_receipt(root, path, before, lambda row: row == rec)
         written.append(rec.get("claim_id"))
     return {"written": len(written), "claim_ids": written}
 
@@ -592,7 +1108,8 @@ def _tool_write_memo(root: Path, params: dict, now_str: str, probation_status: d
     return {"written": str(memo_path), "as_of": now_str}
 
 
-def _tool_stake_hypothesis(root: Path, params: dict, now_str: str) -> dict:
+def _tool_stake_hypothesis(root: Path, params: dict, now_str: str, *,
+                           _strict_effects: bool = False) -> dict:
     """Register a hypothesis via the metabolism module (PR2 — live registration path).
 
     Calls engine.neuralweb.metabolism.register_hypothesis() directly.
@@ -612,17 +1129,56 @@ def _tool_stake_hypothesis(root: Path, params: dict, now_str: str) -> dict:
         "registered_by": "cortex",
     }
 
+    if _strict_effects:
+        registry = _data(root, "neuralweb", "machine_registry.jsonl")
+        trial = _data(root, "trial_ledger.jsonl")
+        governance = _data(root, "neuralweb", "governance.jsonl")
+        before_registry = _fabric_append_snapshot(root, registry)
+        before_trial = _fabric_append_snapshot(root, trial)
+        before_governance = _fabric_append_snapshot(root, governance)
+
     # Attempt registration (budget enforcement + validation in metabolism)
     try:
         result = _register(h, root=str(root))
     except Exception as exc:  # noqa: BLE001
+        if _strict_effects:
+            # Registration may already have written. The selected caller keeps
+            # its original tool intent and must not acknowledge or repeat it.
+            raise
         log.warning("cortex: stake_hypothesis metabolism failed (%s)", exc)
         result = {"id": "error", "status": "invalid", "reason": str(exc)}
 
     reg_status = result.get("status", "invalid")
+    if _strict_effects:
+        if (reg_status not in {"registered", "invalid", "budget-rejected"}
+                or type(result.get("id")) is not str or not result["id"]):
+            raise _CortexFabricHold("cortex_fabric_registration_result_invalid")
+        registered = _fabric_append_receipt(root, registry, before_registry,
+            lambda row: row.get("id") == result["id"] and row.get("status") == reg_status
+                and row.get("kind") == "cortex_hypothesis"
+                and row.get("hypothesis") == h["hypothesis"]
+                and row.get("registered_by") == "cortex")
+        if reg_status == "registered":
+            from engine.trial_ledger import _hash as _trial_hash
+            trial_reason = f"cortex hypothesis registration: {result['id']}"
+            trial_hash = _trial_hash("cortex", {"__declared_budget__": 1, "reason": trial_reason})
+            _fabric_append_receipt(root, trial, before_trial,
+                lambda row: row.get("family") == "cortex" and row.get("kind") == "declared_budget"
+                    and type(row.get("n")) is int and row["n"] == 1
+                    and row.get("reason") == trial_reason and row.get("config_hash") == trial_hash,
+                allow_existing=True)
+            evidence = {key: registered[key] for key in (
+                "pre_committed_gate", "spine_query", "claim_shape", "horizon_d")}
+            _fabric_append_receipt(root, governance, before_governance,
+                lambda row: row.get("schema") == "neuralweb.governance.v1"
+                    and row.get("event_type") == "a6_llm_proposed"
+                    and row.get("target") == f"cortex_hypothesis:{result['id']}"
+                    and row.get("article") == 6 and row.get("authored_by") == "metabolism"
+                    and row.get("evidence") == evidence)
 
     # Append to inbox as audit trail with status transition
     inbox_path = _cortex_dir(root) / "hypothesis_inbox.jsonl"
+    before_inbox = _fabric_append_snapshot(root, inbox_path) if _strict_effects else None
     inbox_path.parent.mkdir(parents=True, exist_ok=True)
 
     record = {
@@ -648,7 +1204,12 @@ def _tool_stake_hypothesis(root: Path, params: dict, now_str: str) -> dict:
         with inbox_path.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(record, default=str) + "\n")
     except Exception as exc:  # noqa: BLE001
+        if _strict_effects:
+            raise
         log.warning("cortex: inbox append failed (%s)", exc)
+
+    if _strict_effects:
+        _fabric_append_receipt(root, inbox_path, before_inbox, lambda row: row == record)
 
     return {
         "id": result.get("id"),
@@ -1836,6 +2397,8 @@ def dispatch_tool(
     now_str: str,
     probation_status: dict,
     tool_call_census: dict,
+    *,
+    _strict_effects: bool = False,
 ) -> dict:
     """Route a tool call.  Refuses any name outside _ALLOWED_TOOLS (A7 guard)."""
     if tool_name not in _ALLOWED_TOOLS:
@@ -1928,10 +2491,14 @@ def dispatch_tool(
         # Exact transcript facts + claim receipts (context-only, local fail-closed)
         return _tool_read_earnings_evidence_cx(root, tool_params)
     elif tool_name == "flag_attention":
+        if _strict_effects:
+            return _tool_flag_attention(root, tool_params, now_str, _strict_effects=True)
         return _tool_flag_attention(root, tool_params, now_str)
     elif tool_name == "write_memo":
         return _tool_write_memo(root, tool_params, now_str, probation_status)
     elif tool_name == "stake_hypothesis":
+        if _strict_effects:
+            return _tool_stake_hypothesis(root, tool_params, now_str, _strict_effects=True)
         return _tool_stake_hypothesis(root, tool_params, now_str)
 
     return {"error": f"dispatcher: unhandled tool {tool_name!r}"}  # unreachable
@@ -2790,6 +3357,7 @@ def _single_call_fallback(
     degraded_reason: str,
 ) -> dict:
     """Fall back to a single non-tool completion producing just the memo."""
+    _fabric_refuse_legacy_entry(root, cfg, providers)
     log.warning("cortex: single-call fallback (reason=%s)", degraded_reason)
 
     # Gather world state summary for the fallback prompt
@@ -2916,6 +3484,456 @@ def _single_call_fallback(
 # Main tool loop
 # ---------------------------------------------------------------------------
 
+def _fabric_refuse_legacy_entry(root: Path, cfg: dict, providers: list[dict]) -> None:
+    from engine import llm_auth
+    if (_fabric_original_held(_fabric_read_state(root))
+            or llm_auth.application_mode_id(cfg) is not None
+            or any(p.get("name") == "fabric" for p in providers)):
+        raise _CortexFabricHold("cortex_fabric_durable_operation_required")
+
+
+def _fabric_schema_value(value: Any, schema: dict) -> None:
+    """Validate the finite grammar actually advertised by Cortex's 39 tools.
+
+    Declared object properties are closed here: undeclared memo health/census
+    fields must never become model-authored provenance. Explicit free-form
+    objects (attention extra/spine_query) remain JSON data for their real owner.
+    """
+    supported = {"type", "properties", "required", "items", "enum", "description",
+                 "minimum", "maximum"}
+    if set(schema) - supported:
+        raise _CortexFabricHold("cortex_fabric_schema_unsupported")
+    kind = schema.get("type")
+    valid = {"object": type(value) is dict, "array": type(value) is list,
+             "string": type(value) is str, "integer": type(value) is int,
+             "number": type(value) in (int, float), "boolean": type(value) is bool}
+    if kind not in valid or not valid[kind]:
+        raise _CortexFabricHold("cortex_fabric_tool_schema")
+    if "enum" in schema and value not in schema["enum"]:
+        raise _CortexFabricHold("cortex_fabric_tool_schema")
+    if "minimum" in schema and value < schema["minimum"] \
+            or "maximum" in schema and value > schema["maximum"]:
+        raise _CortexFabricHold("cortex_fabric_tool_schema")
+    if kind == "object" and "properties" in schema:
+        properties = schema["properties"]
+        if set(value) - set(properties) or set(schema.get("required", [])) - set(value):
+            raise _CortexFabricHold("cortex_fabric_tool_schema")
+        for key, item in value.items():
+            _fabric_schema_value(item, properties[key])
+    if kind == "array":
+        for item in value:
+            _fabric_schema_value(item, schema["items"])
+    _fabric_json_bytes(value)
+
+
+def _fabric_response_plain(response: Any) -> dict:
+    blocks = []
+    for block in response.content:
+        if block.type == "text":
+            blocks.append({"type": "text", "text": block.text})
+        elif block.type == "tool_use":
+            blocks.append({"type": "tool_use", "id": block.id,
+                           "name": block.name, "input": _fabric_clone(block.input)})
+        else:
+            raise _CortexFabricHold("cortex_fabric_response_invalid")
+    return {"model": response.model, "stop_reason": response.stop_reason, "content": blocks}
+
+
+def _fabric_tool_batch(run: dict, response: dict, schemas: list[dict]) -> list[dict]:
+    definitions = {row["name"]: row["input_schema"] for row in schemas}
+    if set(definitions) != _ALLOWED_TOOLS:
+        raise _CortexFabricHold("cortex_fabric_schema_parity")
+    ids = {tool["id"] for tool in run["tools"]}
+    tools = []
+    if len(response["content"]) > 128:
+        raise _CortexFabricHold("cortex_fabric_response_bound")
+    for block in response["content"]:
+        if block["type"] == "text":
+            continue
+        if (block["name"] not in definitions or block["id"] in ids
+                or not _FABRIC_SAFE_ID.fullmatch(block["id"])):
+            raise _CortexFabricHold("cortex_fabric_tool_invalid")
+        _fabric_schema_value(block["input"], definitions[block["name"]])
+        ids.add(block["id"])
+        tools.append(block)
+    if bool(tools) != (response["stop_reason"] == "tool_use"):
+        raise _CortexFabricHold("cortex_fabric_tool_stop_invalid")
+    return tools
+
+
+def _fabric_receipt(provider: dict | None) -> dict | None:
+    if provider is None:
+        return None
+    from engine import llm_auth
+    return _fabric_clone({"usage": llm_auth.fabric_usage(provider),
+        "last_observation": provider.get("_fabric_last_observation"),
+        "observations": [{"serving_model": row[0], "input_tokens": row[1], "output_tokens": row[2]}
+                         for row in provider.get("_fabric_usage_observations", [])],
+        "close": provider.get("_fabric_close"),
+        "pending": bool(provider.get("_fabric_pending")),
+        "native_disposition": provider.get("_fabric_native_disposition")})
+
+
+def _fabric_effect_paths(root: Path, name: str) -> list[Path]:
+    if name == "write_memo":
+        paths = [_cortex_dir(root) / "memo.json"]
+        if (root / "site").exists():
+            paths.append(_site(root, "neuralweb", "cortex_memo.json"))
+        return paths
+    if name == "flag_attention":
+        return [_attn_dir(root) / "firings.jsonl"]
+    if name == "stake_hypothesis":
+        return [_cortex_dir(root) / "hypothesis_inbox.jsonl",
+                _data(root, "neuralweb", "machine_registry.jsonl"),
+                _data(root, "trial_ledger.jsonl"), _data(root, "neuralweb", "governance.jsonl")]
+    return []
+
+
+def _fabric_check_effect_paths(root: Path, paths: list[Path], *, sync: bool = False) -> None:
+    """Keep existing business writers, but refuse redirected or unsynced output."""
+    root = root.resolve(strict=True)
+    for path in paths:
+        relative = path.absolute().relative_to(root)
+        current = root
+        for part in relative.parts:
+            current = current / part
+            if current.is_symlink():
+                raise _CortexFabricHold("cortex_fabric_effect_path")
+            if current.exists() and current != path and not current.is_dir():
+                raise _CortexFabricHold("cortex_fabric_effect_path")
+        if path.exists():
+            info = path.stat(follow_symlinks=False)
+            if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+                raise _CortexFabricHold("cortex_fabric_effect_path")
+        if sync and path.exists():
+            fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+            try:
+                if not stat.S_ISREG(os.fstat(fd).st_mode) or os.fstat(fd).st_nlink != 1:
+                    raise _CortexFabricHold("cortex_fabric_effect_path")
+                os.fsync(fd)
+            finally:
+                os.close(fd)
+            for directory in (path.parent, *path.parent.parents):
+                _fabric_sync_dir(directory)
+                if directory == root:
+                    break
+
+
+def _fabric_append_snapshot(root: Path, path: Path) -> tuple | None:
+    _fabric_check_effect_paths(root, [path])
+    try:
+        fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+                     | getattr(os, "O_NONBLOCK", 0))
+    except FileNotFoundError:
+        return None
+    with os.fdopen(fd, "rb") as source:
+        info = os.fstat(source.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            raise _CortexFabricHold("cortex_fabric_append_path")
+        if info.st_size:
+            source.seek(-1, os.SEEK_END)
+            if source.read(1) != b"\n":
+                raise _CortexFabricHold("cortex_fabric_append_partial")
+        return info.st_dev, info.st_ino, info.st_size
+
+
+def _fabric_append_receipt(root: Path, path: Path, before: tuple | None,
+                           matches, *, allow_existing: bool = False) -> dict:
+    """Observe the existing writer once, never repair or repeat its append."""
+    _fabric_check_effect_paths(root, [path], sync=True)
+    fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    with os.fdopen(fd, "rb") as source:
+        info = os.fstat(source.fileno())
+        if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1
+                or before is not None and ((info.st_dev, info.st_ino) != before[:2]
+                                           or info.st_size < before[2])):
+            raise _CortexFabricHold("cortex_fabric_append_changed")
+        source.seek(before[2] if before else 0)
+        raw = source.read(_FABRIC_STATE_LIMIT + 1)
+        if len(raw) > _FABRIC_STATE_LIMIT or raw and not raw.endswith(b"\n"):
+            raise _CortexFabricHold("cortex_fabric_append_partial")
+        candidates = [_fabric_json_load(line) for line in raw.splitlines()]
+        selected = [row for row in candidates if type(row) is dict and matches(row)]
+        if not selected and allow_existing:
+            source.seek(0)
+            raw = source.read(_FABRIC_STATE_LIMIT + 1)
+            if len(raw) > _FABRIC_STATE_LIMIT or raw and not raw.endswith(b"\n"):
+                raise _CortexFabricHold("cortex_fabric_append_bound")
+            selected = [row for line in raw.splitlines() if type(row := _fabric_json_load(line)) is dict
+                        and matches(row)]
+        if len(selected) != 1:
+            raise _CortexFabricHold("cortex_fabric_append_unacknowledged")
+        return selected[0]
+
+
+def _fabric_memo_receipt(root: Path, run: dict) -> dict:
+    paths = _fabric_effect_paths(root, "write_memo")
+    _fabric_check_effect_paths(root, paths, sync=True)
+    raw = paths[0].read_bytes()
+    if len(raw) > _FABRIC_STATE_LIMIT or any(p.read_bytes() != raw for p in paths[1:]):
+        raise _CortexFabricHold("cortex_fabric_memo_parity")
+    memo = _fabric_json_load(raw)
+    status = memo.get("run_status", {})
+    if (memo.get("schema") != _SCHEMA_MEMO or memo.get("as_of") != run["created_at"]
+            or memo.get("is_context_only") is not True
+            or status.get("operation_id") != run["operation_id"]):
+        raise _CortexFabricHold("cortex_fabric_memo_identity")
+    return {"sha256": hashlib.sha256(raw).hexdigest(), "document_sha256": _fabric_digest(memo), "document": memo,
+            "site_mirrored": len(paths) == 2}
+
+
+def _fabric_run_status(root: Path, run: dict, *, closed: bool) -> dict:
+    stale, as_of = _detect_context_stale(root, run["created_at"])
+    usage = (run["receipt"] or {}).get("usage", {})
+    calls = len(run["tools"])
+    degraded = not calls or not closed
+    automatic = run.get("schema") == _FABRIC_AUTO_RUN_SCHEMA
+    model, pool = _fabric_actual_identity(run)
+    return {"status": "degraded" if degraded else ("warn" if stale or usage.get("usage_state") != "known" else "ok"),
+        "degraded": degraded,
+        "degradation_reason": "fabric_pending_close" if not closed else ("zero_tool_calls" if not calls else None),
+        "model_used": model, "provider": "fabric", **({"pool": pool} if automatic else {}),
+        "operation_id": run["operation_id"],
+        "provider_attempts": [{"provider": "fabric",
+            "model": (step["observation"] or {}).get("serving_model") if automatic else model,
+            **({"pool": (step["application_observation"] or {}).get("routing", {}).get("pool", "unknown")}
+               if automatic else {}), "ok": step["phase"] == "response"} for step in run["steps"]],
+        "tool_call_batches": sum(s["response"] is not None and s["response"]["stop_reason"] == "tool_use" for s in run["steps"]),
+        "individual_tool_calls": calls, "expected_min_tool_calls": 1,
+        "context_stale": stale, "context_as_of": as_of,
+        "usage": usage, "close": (run["receipt"] or {}).get("close")}
+
+
+def _run_fabric(root: Path, cfg: dict, mode_id: str, prior: Any, now_str: str) -> int:
+    """One durable selected run; deliberate steps share one existing binding.
+
+    Original pending/failed work is retained, never reconstructed or resent.
+    The shared client and native A remain the admission, accounting and close
+    owners; this file only extends its incumbent last-run/effect owner.
+    """
+    from engine import llm_auth
+    from engine.provider_production_modes import make_application_fabric_factory
+
+    root = root.resolve(strict=True)
+    max_tokens = cfg.get("max_tokens", 4096)
+    max_rounds = cfg.get("max_tool_calls", _DEFAULT_MAX_TOOL_CALLS)
+    if (type(max_tokens) is not int or not 1 <= max_tokens <= 32768
+            or type(max_rounds) is not int or not 1 <= max_rounds <= 256):
+        raise _CortexFabricHold("cortex_fabric_limits_invalid")
+    caller_cfg = {"provider_order": ["fabric"]}
+    for key in ("workload_profile", "client_timeout_s"):
+        if key in cfg:
+            caller_cfg[key] = cfg[key]
+    startup = {"provider_order": ["fabric"], "workload_profile": "lobe_analysis"}
+    if "client_timeout_s" in cfg:
+        startup["client_timeout_s"] = cfg["client_timeout_s"]
+    factory = make_application_fabric_factory(mode_id=mode_id, lane="cortex",
+                                             root=root, workload_cfg=startup)
+    identity = factory.inspect(caller_cfg)
+    automatic = identity.get("schema") == "mastermind.fabric_application_inspection.v2"
+    if "llm_model" in cfg and (automatic or cfg["llm_model"] != identity["model"]):
+        raise _CortexFabricHold("cortex_fabric_required_model_mismatch")
+    source = _compute_run_state_hash(root)
+    schemas = _tool_schemas()
+    request = {"system_sha256": _fabric_digest(_SYSTEM_PROMPT),
+               "tools_sha256": _fabric_digest(schemas), "max_tokens": max_tokens,
+               "max_tool_calls": max_rounds, "caller_cfg_sha256": _fabric_digest(caller_cfg)}
+    if type(prior) is dict and prior.get("schema") == _FABRIC_STATE_SCHEMA:
+        previous = prior["fabric"]
+        if previous["phase"] != "complete":
+            raise _CortexFabricHold("cortex_fabric_original_held")
+        if (previous["source"], previous["selection"], previous["inspection"], previous["request"]) \
+                == (source, mode_id, identity, request):
+            return 0
+    probation = _check_constitution(root)
+    run = {"operation_id": "cortex:" + secrets.token_hex(16), "root": str(root), "source": source,
+           "selection": mode_id, "inspection": identity, "request": request, "created_at": now_str,
+           "phase": "claimed", "messages": [_fabric_clone(_FABRIC_INITIAL_MESSAGE)],
+           "steps": [], "tools": [], "census": {}, "memo": None,
+           "projection": {"phase": "unsent", "params": None, "result": None},
+           "receipt": None, "failure": None, "business_complete": False, "probation": probation}
+    if automatic:
+        run.update(schema=_FABRIC_AUTO_RUN_SCHEMA,
+                   request_payload={"system": _SYSTEM_PROMPT, "tools": _fabric_clone(schemas)},
+                   route_identity=None)
+    doc = _fabric_commit(root, prior, run)
+    provider = operation = None
+    failure = None
+    caught = None
+    try:
+        provider = llm_auth.build_fabric_provider(factory.with_inspection(identity),
+            request_id=run["operation_id"], workload_cfg=caller_cfg)
+        provider.update(usage_lane="cortex", usage_stage="deliberation", usage_cycle_id=run["operation_id"])
+        operation = llm_auth.begin_operation([provider], operation_id=run["operation_id"], context="cortex")
+        run["phase"] = "bound"
+        doc = _fabric_commit(root, doc, run)
+        for index in range(max_rounds):
+            step = {"request_id": f"{run['operation_id']}:brain:{index}",
+                    "history_length": len(run["messages"]),
+                    "request_sha256": _fabric_digest({"history": run["messages"], "request": request,
+                                                      "inspection": identity}),
+                    "phase": "intent", "response": None, "observation": None}
+            if automatic:
+                from engine import fabric_inference_client as transport
+                step.update(normalized_request_digest=transport._auto_request_digest(_fabric_auto_request(run, step)),
+                            routed_request_digest=None, application_observation=None)
+            run["steps"].append(step)
+            run["phase"] = "inference_pending"
+            doc = _fabric_commit(root, doc, run)
+            def call(client, model):
+                response = client.messages.create(model=model, max_tokens=max_tokens,
+                    system=run["request_payload"]["system"] if automatic else _SYSTEM_PROMPT,
+                    messages=_fabric_clone(run["messages"]),
+                    tools=_fabric_clone(run["request_payload"]["tools"]) if automatic else schemas)
+                return response, None, response
+            response, reason, used = llm_auth.make_call(operation.providers, call, context="cortex")
+            if reason is not None or used != "fabric" or response is None:
+                raise _CortexFabricHold("cortex_fabric_result_missing")
+            plain = _fabric_response_plain(response)
+            if automatic:
+                _fabric_auto_capture(run, step, provider, require_success=True)
+            step.update(phase="response", response=plain,
+                        observation=_fabric_clone(provider.get("_fabric_last_observation")))
+            run["messages"].append({"role": "assistant", "content": plain["content"]})
+            run["receipt"] = _fabric_receipt(provider)
+            run["phase"] = "response"
+            doc = _fabric_commit(root, doc, run)
+            batch = _fabric_tool_batch(run, plain, run["request_payload"]["tools"] if automatic else schemas)
+            if plain["stop_reason"] == "max_tokens":
+                raise _CortexFabricHold("cortex_fabric_response_truncated")
+            if not batch:
+                break
+            results = []
+            for block in batch:
+                record = {"id": block["id"], "step": index, "name": block["name"],
+                          "input": _fabric_clone(block["input"]),
+                          "input_sha256": _fabric_digest(block["input"]),
+                          "phase": "intent", "result": None}
+                run["tools"].append(record)
+                run["phase"] = "tool_pending"
+                doc = _fabric_commit(root, doc, run)
+                paths = _fabric_effect_paths(root, block["name"])
+                _fabric_check_effect_paths(root, paths)
+                params = _fabric_clone(block["input"])
+                census = dict(run["census"])
+                if block["name"] == "write_memo":
+                    params.update(run_status=_fabric_run_status(root, run, closed=False),
+                                  tool_call_census={**census, "write_memo": census.get("write_memo", 0) + 1})
+                result = dispatch_tool(block["name"], params, root, now_str, probation,
+                                       census, _strict_effects=True)
+                if type(result) is not dict:
+                    raise _CortexFabricHold("cortex_fabric_tool_result_invalid")
+                _fabric_json_bytes(result)
+                _fabric_check_effect_paths(root, paths, sync=True)
+                if block["name"] == "write_memo":
+                    if result.get("error") or result.get("written") != str(_cortex_dir(root) / "memo.json"):
+                        raise _CortexFabricHold("cortex_fabric_memo_failed")
+                    run["memo"] = _fabric_memo_receipt(root, run)
+                record.update(phase="complete", result=_fabric_clone(result))
+                run["census"] = census
+                results.append({"type": "tool_result", "tool_use_id": block["id"],
+                                "content": _fabric_json_bytes(result).decode("utf-8")})
+                run["phase"] = "response"
+                doc = _fabric_commit(root, doc, run)
+            run["messages"].append({"role": "user", "content": results})
+            doc = _fabric_commit(root, doc, run)
+    except BaseException as exc:
+        caught = exc
+        failure = (str(exc) if isinstance(exc, _CortexFabricHold) else "cortex_fabric_selected_failure")
+    finally:
+        # The durable original claim already fences an interrupted close. No
+        # close retry or new operation is inferred from an absent acknowledgement.
+        try:
+            if operation is not None:
+                operation.close()
+            elif provider is not None:
+                llm_auth.close_fabric_provider(provider)
+        except BaseException as exc:
+            caught = caught or exc
+            failure = failure or "cortex_fabric_close_unknown"
+        receipt_failed = False
+        try:
+            run["receipt"] = _fabric_receipt(provider)
+        except BaseException as exc:
+            if not automatic:
+                raise
+            caught = caught or exc
+            failure = failure or "cortex_fabric_receipt_invalid"
+            receipt_failed = True
+        if run["steps"] and run["steps"][-1]["observation"] is None and provider is not None:
+            observation = provider.get("_fabric_last_observation")
+            if observation is not None and observation.get("request_id") == run["steps"][-1]["request_id"]:
+                run["steps"][-1]["observation"] = _fabric_clone(observation)
+        if automatic and run["steps"] and provider is not None:
+            try:
+                _fabric_auto_capture(run, run["steps"][-1], provider,
+                                     require_success=run["steps"][-1]["phase"] == "response")
+            except BaseException as exc:
+                caught = caught or exc
+                failure = failure or "cortex_fabric_auto_observation_invalid"
+        close = (run["receipt"] or {}).get("close")
+        if close != {"disposition": "closed", "closed": True, "effect_unknown": False, "attempted": True}:
+            failure = failure or "cortex_fabric_close_unknown"
+        run["failure"] = failure
+        run["phase"] = "held" if failure else "finalizing"
+        try:
+            if not receipt_failed:
+                doc = _fabric_commit(root, doc, run)
+        except Exception:
+            # A prior write may have committed without its readback. Do not
+            # reload/rebase a failed CAS or overwrite that original evidence.
+            failure = failure or "cortex_fabric_persistence_unknown"
+    if caught is not None and not isinstance(caught, Exception):
+        raise caught
+    if failure:
+        log.warning("cortex: selected run held (%s)", failure)
+        return 0
+
+    # Finalization belongs to this operation. It reuses the real memo owner;
+    # neither an old healthy memo nor a model-supplied status can satisfy it.
+    try:
+        if run["memo"] is not None:
+            current = _fabric_memo_receipt(root, run)
+            if current != run["memo"]:
+                raise _CortexFabricHold("cortex_fabric_memo_changed")
+            original = current["document"]
+            params = {key: original[key] for key in (
+                "summary", "what_fired", "contradictions_review", "decaying_families", "deserves_operator")}
+        else:
+            params = {"summary": f"Budget exhausted after {len(run['steps'])} tool-call batches ({len(run['tools'])} individual calls). Partial deliberation only.",
+                      "what_fired": [], "contradictions_review": "Incomplete — no memo was submitted.",
+                      "decaying_families": [], "deserves_operator": []}
+        status = _fabric_run_status(root, run, closed=True)
+        if run["memo"] is None:
+            status.update(status="degraded", degraded=True, degradation_reason="memo_not_submitted")
+        if status["context_stale"]:
+            note = f"[context_stale] cortex deliberated over world_state from {status['context_as_of']}; current run={now_str}"
+            if note not in params["deserves_operator"]:
+                params["deserves_operator"].append(note)
+        params.update(tool_call_census=run["census"], run_status=status)
+        run["projection"] = {"phase": "intent", "params": _fabric_clone(params), "result": None}
+        doc = _fabric_commit(root, doc, run)
+        paths = _fabric_effect_paths(root, "write_memo")
+        _fabric_check_effect_paths(root, paths)
+        result = _tool_write_memo(root, params, now_str, probation)
+        run["memo"] = _fabric_memo_receipt(root, run)
+        run["projection"].update(phase="complete", result=_fabric_clone(result))
+        run["business_complete"] = True
+        run["phase"] = "complete"
+        doc = _fabric_commit(root, doc, run)
+    except BaseException as exc:
+        run["failure"] = "cortex_fabric_finalization_unknown"
+        run["phase"] = "held"
+        try:
+            _fabric_commit(root, doc, run)
+        except Exception:
+            pass  # Keep the original intent; never replace a lost acknowledgement.
+        if not isinstance(exc, Exception):
+            raise
+        log.warning("cortex: selected finalization held")
+    return 0
+
+
 def _run_tool_loop(
     root: Path,
     cfg: dict,
@@ -2924,6 +3942,7 @@ def _run_tool_loop(
     probation_status: dict,
 ) -> dict:
     """Run the bounded tool-use loop.  Returns the final memo result dict."""
+    _fabric_refuse_legacy_entry(root, cfg, providers)
     from engine import llm_auth  # noqa: PLC0415
 
     max_tool_calls = int(cfg.get("max_tool_calls", _DEFAULT_MAX_TOOL_CALLS))
@@ -3393,7 +4412,26 @@ def run(root: Path | None = None, force: bool = False) -> int:
     t0 = time.monotonic()
     root = _repo_root(root)
     now_str = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    # Inspect the sole durable owner before config, force, warm skip or native
+    # credential discovery. Unreadable evidence is never absence of a call.
+    try:
+        original = _fabric_read_state(root)
+        if _fabric_original_held(original):
+            log.warning("cortex: original selected run remains held")
+            return 0
+    except Exception:
+        log.warning("cortex: last-run custody unavailable; holding inference")
+        return 0
     cfg = _cfg(root)
+
+    from engine import llm_auth
+    try:
+        mode_id = llm_auth.application_mode_id(cfg)
+        if mode_id is not None:
+            return _run_fabric(root, cfg, mode_id, original, now_str)
+    except Exception:
+        log.warning("cortex: selected inference refused or held")
+        return 0
 
     log.info("cortex: starting run (now=%s, root=%s)", now_str, root)
 

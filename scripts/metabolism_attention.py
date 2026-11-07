@@ -74,8 +74,16 @@ def main(argv: list[str] | None = None) -> int:
 
     root = Path(args.root) if args.root else _ROOT_DIR
 
-    # Build providers
-    providers = _load_providers(args.model)
+    from scripts.metabolism_journal import FabricHeld, guard_native_route
+    try:
+        guard_native_route(root, "attention", args.cycle_id, ["attention"],
+                           model_requested=not args.dry_run)
+    except FabricHeld as exc:
+        log.warning("metabolism_attention held: %s", exc)
+        return 2
+
+    # A structural dry run does not discover credentials or providers.
+    providers = [] if args.dry_run else _load_providers(args.model)
     if not providers:
         log.warning(
             "metabolism_attention: no LLM providers available — will produce structural-only allocation"
@@ -113,19 +121,20 @@ def main(argv: list[str] | None = None) -> int:
             cycle_id=args.cycle_id,
             root=tmp_root,
             providers=[],
-            model=args.model,
+            model=None,
         )
         print("=== ATTENTION ALLOCATION (dry run) ===")
         print(json.dumps(alloc, indent=2, ensure_ascii=False))
         log.info("DRY RUN — not written.")
         return 0
 
-    alloc = build_attention(
-        cycle_id=args.cycle_id,
-        root=root,
-        providers=providers,
-        model=args.model,
-    )
+    try:
+        alloc = build_attention(
+            cycle_id=args.cycle_id, root=root, providers=providers, model=args.model,
+        )
+    except FabricHeld as exc:
+        log.warning("metabolism_attention held: %s", exc)
+        return 2
 
     out_path = root / ALLOCATION_PATH
     n_focus = len(alloc.get("focus_lobes") or [])

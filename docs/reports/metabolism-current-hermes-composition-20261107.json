@@ -1,0 +1,66 @@
+{
+  "schema": "mastermind.metabolism-joined-current-proof.v1",
+  "own_head": "b87d1fd33ddfd42fd1d982e7b77a9ae5553533f4",
+  "merge_parent": "c1647bf55ad5faf07e682f7055e3791280d6d41f",
+  "command": [
+    "/tmp/mmx-d5-brain-composition-x6ymwpln/.proof-venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--noconftest",
+    "-c",
+    "/dev/null",
+    "--rootdir=/Volumes/Mastermind/agent-workspaces/macro/web/metabolism-original-recovery-20261107-sol-001",
+    "--basetemp=/tmp/mmx-metabolism-joined-pytest-_am17vmc",
+    "tests/test_metabolism_audit.py",
+    "tests/test_metabolism_fabric_composition.py",
+    "tests/test_provider_workload_policy.py",
+    "tests/test_native_go_application_recipe.py",
+    "tests/test_provider_production_modes.py",
+    "--junitxml=/tmp/mmx-metabolism-joined-current-05.xml"
+  ],
+  "exit_code": 0,
+  "seconds": 31.896,
+  "suites": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "483",
+      "time": "30.963",
+      "timestamp": "2026-11-07T05:29:57.341818-07:00",
+      "hostname": "m2studio"
+    }
+  ],
+  "cases_by_module": {
+    "test_metabolism_audit": 121,
+    "test_metabolism_fabric_composition": 106,
+    "test_provider_workload_policy": 70,
+    "test_native_go_application_recipe": 24,
+    "test_provider_production_modes": 162
+  },
+  "source_sha256": {
+    "config/provider_workloads.v1.json": "6e816275f730842af25e318ae9712521ec9affcdd1e9965f8f9de893f9276eca",
+    "docs/reports/metabolism-original-publication-recovery-20261107.json": "cb58f8a445a5a40147a6e54c08220aee74bbe2e6fece1364c04f226215d1613f",
+    "engine/metabolism/audit.py": "7c97e41d59af12f967c3c0a6a52a35b1c6bf612975c89dbaef31c342bb0b8347",
+    "engine/neuralweb/governance.py": "e82a53c4769658137be391da1039d039d577771598bbe485f0cdb99f583bfdf7",
+    "engine/provider_production_modes.py": "0db114bbe3df4b9a7b3ac90ead06c4b1a7f9af03bbeebcd35898c2a8584f667e",
+    "scripts/metabolism_audit.py": "fd73a4bd334f6d2b2ee496b20b353510c77d5b33d3cf28c2c8fcce6b103a0cc8",
+    "scripts/metabolism_journal.py": "b4b8693eb2c5a7c0281323d8af415cd647f29f49bbd0b6b46708dd101fb16d81",
+    "scripts/metabolism_merge.py": "f89b949a2cb9a373734ae7fa223338d4a7e838f72ac66093616c0a7527a1d156",
+    "tests/test_fabric_native_application_composition.py": "36d18dd4c6d3425e2cd27dc64af44a2833592529236e67d6ae40a40c198ec5b5",
+    "tests/test_metabolism_audit.py": "cb780b58b372fff4d226c0ff19fc32e6f0f40e5527f95313940cfbb39de808ab",
+    "tests/test_metabolism_fabric_composition.py": "3d1f54533344b55306f0e897db2e7e4ef02e5773bc2435fb9de63f28b9c66a8c"
+  },
+  "log": "/tmp/mmx-metabolism-joined-current-05.log",
+  "log_sha256": "09a79e7784ef3bd6d281f81cc338155a8b04cb9d7cd4e92fbbe71c0e02c1e0d2",
+  "junit_sha256": "a7803b18fe6f901d0df5835ec72aea73c7d95f7e2267098387bd051a47646e99",
+  "live_effects": "NONE; synthetic response/credential fixtures only",
+  "state": "SOURCE_QUALIFIED_NOT_DEPLOYED",
+  "behavior": "Original audit recovery composes with the separately held Hermes attended service and current workload revision. All existing qualification flags remain held.",
+  "governing_pin": "e63d8acaebe0d3cee1ce7cfb8d85294bf0c57f46",
+  "governing_compatible_through": "788cafa84feb8526cb8ad0c27cd460e793a0cdb6"
+}

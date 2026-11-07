@@ -288,7 +288,76 @@ def _build_user(state: dict) -> str:
     return "POLICY + MARKET STATE (analyze; do not repeat back):\n" + json.dumps(state, default=str)[:14000]
 
 
-def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
+def _fabric_systems():
+    return {"single": _SYSTEM}
+
+
+def _fabric_render(state, cfg, call, context):
+    return _synthesize_legacy(state, cfg, call, _frozen=context)
+
+
+def _fabric_prepare(brief, context, root):
+    # Preserve the original gate-first rule: no price/regime evaluation off-lane.
+    eligible = bool(_ledger_advance_enabled())
+    rows = []
+    if eligible:
+        asof, regime = brief["state_asof"], quad_label(root)
+        for thesis in brief["theses"]:
+            check = (thesis.get("falsifier") or {}).get("check") or {}
+            entry = {}
+            for name in ("subject_ticker", "vs"):
+                ticker = check.get(name)
+                if ticker:
+                    level = _desk._level_asof(ticker, root, asof)
+                    if level is not None:
+                        entry[ticker] = level
+            fields = ("id", "subject", "lean", "conviction", "horizon_d", "falsifier", "check_by")
+            row = {name: thesis[name] for name in fields}
+            row.update(actor=thesis.get("actor"), logged_at=brief["generated_at"], state_asof=asof,
+                       entry_levels=entry, regime=regime, status="open", scored_at=None, outcome=None, realized=None)
+            rows.append(row)
+    effects = [
+        {"kind": "jsonl", "path": "data/policy_intent/theses.jsonl", "rows": rows,
+         "key": "id", "guard": "nightly", "keep_first": False, "eligible": eligible},
+        {"kind": "json", "path": "data/regime/policy_intent.json", "value": brief}]
+    if context["site_present"]:
+        effects.append({"kind": "json", "path": "site/policy_intent.json",  # ci-trigger-closure: data — publication destination, not a source input
+                        "value": {k: v for k, v in brief.items() if k != "raw_text"}})
+    return effects
+
+
+def _fabric_synthesize(state, cfg, root, persist=False):
+    try:
+        result = _ledger_law.fabric_synthesize("policy-intent", root, state, cfg,
+            _fabric_systems(), _fabric_render, publication_requested=persist,
+            context={"passport": _desk._desk_passport("policy_intent"),
+                     "site_present": (Path(root) / "site").is_dir()})
+        if result is None:
+            return _ledger_law.fabric_held("application_fabric_selection_changed")
+        if result["held"] or not persist or result["result"] is None:
+            return result["result"]
+        return _ledger_law.fabric_publish("policy-intent", root, result["run_id"],
+            lambda brief, context: _fabric_prepare(brief, context, root),
+            guard=lambda name: _ledger_advance_enabled())
+    except Exception:
+        return _ledger_law.fabric_held("application_fabric_owner_refused")
+
+
+def synthesize(state: dict, cfg: dict | None = None, call=None, *, root=None) -> dict:
+    cfg, root = cfg or _cfg(), Path(root) if root is not None else config.ROOT
+    held = _ledger_law.fabric_pending("policy-intent", root)
+    if held is not None:
+        return held
+    if _ledger_law.fabric_selected(cfg):
+        return _fabric_synthesize(state, cfg, root)
+    snapshot = _ledger_law.fabric_snapshot("policy-intent", root)
+    brief = _synthesize_legacy(state, cfg, call)
+    if not _ledger_law.fabric_legacy_publish("policy-intent", root, snapshot, cfg, lambda: None):
+        return _ledger_law.fabric_held("application_fabric_selection_changed")
+    return brief
+
+
+def _synthesize_legacy(state: dict, cfg: dict | None = None, call=None, *, _frozen=None) -> dict:
     """Run the analyst over a gathered state. Always returns a record (degraded fields
     flagged); never raises. `call` is injectable (defaults to master_brain._call_model)
     so tests run without an API key."""
@@ -296,7 +365,7 @@ def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
     asof = state.get("as_of")
     brief = {
         "schema": SCHEMA, "is_context_only": True, "lens": "realpolitik",
-        "generated_at": _now_iso(), "state_asof": asof,
+        "generated_at": _frozen["created_at"] if _frozen else _now_iso(), "state_asof": asof,
         "model": cfg.get("llm_model", "deepseek-v4-pro"),
         "regime_context": None, "regime_context_zh": None, "theses": [],
         "track_record": state.get("track_record"),
@@ -305,7 +374,7 @@ def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
         # #41 badge honesty: the desk's conviction badge carries an honest provenance passport
         # (measured·n / accruing·n=0), derived from the outcome spine, so a cold lean can't read
         # as an earned edge. Set here so every return path (incl. degraded) carries it.
-        "passport": _desk._desk_passport("policy_intent"),
+        "passport": _frozen["passport"] if _frozen else _desk._desk_passport("policy_intent"),
     }
     reply, reason = (call or _mb._call_model)(
         _SYSTEM, _build_user(state), {**(cfg or {}), "usage_stage": "policy-desk"})
@@ -407,41 +476,46 @@ def _brief_age_days(prev) -> float | None:
 
 
 def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict | None:
-    """Gather → synthesize → persist + append the ledger. None when disabled (unless
-    force) or no intel substrate present. NEVER raises."""
-    cfg = _cfg()
-    if not force and not cfg.get("enabled", False):
-        return None
+    """Publish the bilingual context brief; nightly still owns ledger advancement."""
+    cfg, root = _cfg(), Path(root) if root is not None else config.ROOT
     try:
-        root = Path(root) if root else config.ROOT
+        held = _ledger_law.fabric_pending("policy-intent", root)
+        if held is not None:
+            return held
+        if not force and not cfg.get("enabled", False):
+            return None
+        selected = _ledger_law.fabric_selected(cfg)
+        snapshot = None if selected else _ledger_law.fabric_snapshot("policy-intent", root)
         if not force:
             try:
                 interval = max(1, min(7, int(cfg.get("interval_days", 7))))
-            except Exception:  # noqa: BLE001
+            except Exception:
                 interval = 7
             if interval > 1:
-                prev = _read_json(Path(root) / "data" / "regime" / "policy_intent.json")
+                prev = _read_json(Path(root) / "data/regime/policy_intent.json")
                 age = _brief_age_days(prev)
                 if age is not None and age < interval:
-                    log.info("policy_intent: note %.1fd old (< %dd) — keeping prior", age, interval)
                     return prev
         state = gather_state(root)
         if state is None:
-            log.info("policy_intent: no data/policy/intel.json — nothing to brief")
             return None
-        brief = synthesize(state, cfg, call=call)
-        if persist:
-            _persist(brief, root)
-            _append_ledger(brief, root)
+        if _ledger_law.fabric_selected(cfg) != selected:
+            return _ledger_law.fabric_held("application_fabric_selection_changed")
+        if selected:
+            return _fabric_synthesize(state, cfg, root, persist)
+        brief = _synthesize_legacy(state, cfg, call)
+        def publish():
+            if persist:
+                _persist(brief, root)
+                _append_ledger(brief, root)
+        if not _ledger_law.fabric_legacy_publish("policy-intent", root, snapshot, cfg, publish):
+            return _ledger_law.fabric_held("application_fabric_selection_changed")
         return brief
-    except Exception as e:  # noqa: BLE001
-        log.error("policy_intent run failed: %s", e)
-        return None
+    except Exception as exc:
+        log.error("policy_intent run failed: %s", exc)
+        return _ledger_law.fabric_held("application_fabric_owner_refused") if _ledger_law.fabric_selected(cfg) else None
 
 
-# --------------------------------------------------------------------------- #
-# scorer — reuse ai_desk_scorer's predicate evaluators against our own ledger
-# --------------------------------------------------------------------------- #
 def _read_ledger(p: Path) -> dict:
     out = {}
     if p.exists():

@@ -9695,8 +9695,25 @@ def _lane_client_tuning(lane_cfg: dict) -> dict:
             if lane_cfg.get(k) is not None}
 
 
-def _build_lane_providers(lane: str, root: Path | None = None) -> list[dict]:
+def _build_lane_providers(lane: str, root: Path | None = None, *,
+                          fabric_selected: bool = False, fabric_provider_factory=None,
+                          request_id: str | None = None) -> list[dict]:
     """Build the provider list for a lane using config/brain.yml + llm_auth.build_providers."""
+    from engine import llm_auth  # noqa: PLC0415
+    if type(fabric_selected) is not bool:
+        raise llm_auth.FabricProviderError("fabric_selection_invalid")
+    if fabric_selected:
+        cfg = _load_brain_config(root)
+        lane_cfg = (cfg.get("lanes") or {}).get(lane) or {}
+        # Preserve presence, including null/empty, for the incumbent workload
+        # policy's migration boundary; the Fabric transport is not qualified yet.
+        fabric_cfg = dict(lane_cfg)
+        if "workload_profile" in cfg:
+            fabric_cfg["workload_profile"] = cfg["workload_profile"]
+        return llm_auth.build_providers(
+            fabric_cfg, fabric_selected=True, fabric_provider_factory=fabric_provider_factory,
+            request_id=request_id,
+        )
     cfg = _load_brain_config(root)
     lanes = cfg.get("lanes") or {}
     lane_cfg = lanes.get(lane) or {}
@@ -9961,6 +9978,9 @@ def _vision_providers(lane: str, providers: list[dict], root: Path | None) -> li
     image turns work regardless of lane. Multiple entries also enable OAuth-token
     failover on 429. [] when nothing vision-capable exists anywhere.
     """
+    from engine import llm_auth  # noqa: PLC0415
+    if llm_auth.is_fabric_selection(providers):
+        return []  # The installed text/tool transport has no image contract yet.
     chain = _vision_capable(providers)
     if lane != "pro" and not any(_is_claude_provider(p) for p in chain):
         try:
@@ -10185,6 +10205,9 @@ def _turn_providers(client: Any, model: str, providers: list[dict] | None) -> li
     them would leave nothing, in which case the full list is kept (never blank a lane
     that still has a usable client)."""
     if providers:
+        from engine import llm_auth  # noqa: PLC0415
+        if llm_auth.is_fabric_selection(providers):
+            return providers
         cands = [p for p in providers if p.get("client") is not None]
         try:
             from engine import llm_auth  # noqa: PLC0415
@@ -10209,17 +10232,22 @@ def _create_failover(cands: list[dict], *, per_model_kwargs=None, **kwargs) -> t
     per_model_kwargs(model) -> dict lets the caller add PER-CANDIDATE create kwargs that
     only some models accept (e.g. effort/adaptive-thinking for Claude, omitted for
     DeepSeek/Haiku) — merged over the shared kwargs for each candidate's own model."""
+    from engine import llm_auth  # noqa: PLC0415
+    exclusive = llm_auth.is_fabric_selection(cands)
     last: Exception | None = None
     for i, p in enumerate(cands):
         cl = p.get("client")
         if cl is None:
             continue
         try:
-            _mk = per_model_kwargs(p.get("model")) if per_model_kwargs else {}
+            _mk = per_model_kwargs(p.get("model")) if per_model_kwargs and not exclusive else {}
             resp = cl.messages.create(model=p.get("model"), **{**kwargs, **_mk})
-            _pool_record_success(p, resp)  # load-balancing ledger
-            return resp, (p.get("model") or "")
+            if not exclusive:
+                _pool_record_success(p, resp)  # load-balancing ledger
+            return resp, (getattr(resp, "model", None) if exclusive else (p.get("model") or ""))
         except Exception as exc:  # noqa: BLE001
+            if exclusive:
+                raise llm_auth.fabric_failure(p, exc) from None
             last = exc
             _mark_provider_dead_if_auth(p, exc)
             _pool_cool_for_exc(p, exc)  # cool a rate-limited/dead pool key for the next turn
@@ -10230,6 +10258,73 @@ def _create_failover(cands: list[dict], *, per_model_kwargs=None, **kwargs) -> t
     if last:
         raise last
     raise RuntimeError("brain_gateway: no usable provider")
+
+
+def _selected_turn_providers(lane, root, selected, factory, request_id, images):
+    """Keep private server selection separate from browser context and lane config."""
+    if selected is False:
+        return _build_lane_providers(lane, root)
+    from engine import llm_auth  # noqa: PLC0415
+    if images:
+        return []  # Never borrow a native vision account for a Fabric request.
+    try:
+        return _build_lane_providers(
+            lane, root, fabric_selected=selected, fabric_provider_factory=factory,
+            request_id=request_id,
+        )
+    except llm_auth.FabricProviderError as exc:
+        log.warning("brain_gateway: selected Fabric unavailable (%s)", exc.code)
+        return []
+
+
+def _fabric_served_identity(provider):
+    """Read the original turn observation without selecting or dispatching."""
+    from engine import llm_auth
+    observation = llm_auth.fabric_observation(provider)
+    if provider.get("_fabric_auto_inspection") is None:
+        return {"provider": provider["provider"], "model": provider["model"]}
+    document = observation.document if observation is not None else None
+    return {"provider": document["routing"]["pool"] if document is not None else "unknown",
+            "model": document["serving_model"] if document is not None else
+                (provider.get("_fabric_last_observation") or {}).get("serving_model")}
+
+
+def _settle_fabric_usage(provider, *, usage_lane, stage, user_id, lane):
+    """Use incumbent writers once, retaining known usage when a later step is unknown."""
+    from engine import llm_auth  # noqa: PLC0415
+    from lib import ai_costs  # noqa: PLC0415
+    usage = llm_auth.fabric_usage(provider)
+    observed = llm_auth._fabric_usage_delta(provider, (0, 0, 0))
+    if observed is not None:
+        # The shared writer owns the actual pool/model/route attribution and
+        # explicit unknown billing. This caller retains its one settlement and
+        # independent per-user token counter.
+        llm_auth._capture_usage(
+            {**provider, "usage_lane": usage_lane, "usage_stage": stage}, observed, stage)
+        _record_token_usage(user_id, lane, usage["completed_input_tokens"],
+                            usage["completed_output_tokens"])
+    return usage
+
+
+def _settle_brain_usage(usage, *, provider, model, usage_lane, stage, user_id, lane):
+    from lib import ai_costs  # noqa: PLC0415
+    if provider is not None:
+        return {**usage, **_settle_fabric_usage(
+            provider, usage_lane=usage_lane, stage=stage, user_id=user_id, lane=lane,
+        )}
+    in_tok = int(usage.get("input_tokens") or 0)
+    out_tok = int(usage.get("output_tokens") or 0)
+    try:
+        ai_costs.record_usage(
+            lane=usage_lane,
+            provider=("codex" if str(model).startswith("gpt-")
+                      else "claude_api" if str(model).startswith("claude") else "deepseek"),
+            model=model, stage=stage, input_tokens=in_tok, output_tokens=out_tok,
+        )
+    except Exception:  # noqa: BLE001
+        pass
+    _record_token_usage(user_id, lane, in_tok, out_tok)
+    return {**usage, "input_tokens": in_tok, "output_tokens": out_tok}
 
 
 # ---------------------------------------------------------------------------
@@ -10408,6 +10503,27 @@ def _tool_failure_result(tool_name: str, exc: BaseException) -> dict:
     log.warning("brain_gateway: tool %r raised (%s: %s)",
                 tool_name, type(exc).__name__, exc)
     return {"error": f"tool {tool_name or 'unknown'} failed: {type(exc).__name__}: {exc}"}
+
+
+def _validate_fabric_brain_calls(response, schemas, used_ids, provider) -> None:
+    """Check the whole offered batch before any selected Fabric tool effect."""
+    from engine import llm_auth  # noqa: PLC0415
+    from jsonschema import Draft202012Validator  # noqa: PLC0415
+
+    offered = {schema["name"]: schema["input_schema"] for schema in schemas}
+    pending_ids = set()
+    try:
+        for block in response.content:
+            if getattr(block, "type", "") != "tool_use":
+                continue
+            if block.id in used_ids or block.id in pending_ids or block.name not in offered:
+                raise ValueError("unoffered or repeated tool")
+            Draft202012Validator(offered[block.name]).validate(block.input)
+            pending_ids.add(block.id)
+    except Exception:
+        raise llm_auth.fabric_failure(provider, llm_auth.FabricProviderError(
+            "fabric_tool_request_invalid")) from None
+    used_ids.update(pending_ids)
 
 
 def _run_tool_block(block: Any, dispatch: Callable[[str, dict], dict]) -> dict:
@@ -10905,7 +11021,12 @@ def _run_brain_loop(
     command_seq = 0
     last_resp = None  # track to extract usage from final response
     _cands = _turn_providers(client, model, providers)  # failover order (OAuth tokens)
+    from engine import llm_auth  # noqa: PLC0415
+    exclusive_fabric = llm_auth.is_fabric_selection(_cands)
+    _fabric_tool_ids: set[str] = set()
     def _pmk(m):  # per-candidate model params — Claude-only / DeepSeek-only (see _create_failover)
+        if exclusive_fabric:
+            return {}
         return {**_effort_thinking_params(m, effort, thinking_mode),
                 **_deepseek_extra_params(m, deepseek_thinking)}
 
@@ -10928,11 +11049,13 @@ def _run_brain_loop(
         except Exception as exc:  # noqa: BLE001
             log.warning("brain_gateway: model call failed at turn %d: %s", tool_call_count, exc)
             _timing_round(timing, _ms_since(_round_t0), _round_tools)
-            if not answer_text:
+            if exclusive_fabric or not answer_text:
                 raise
             break
         _round_model_ms = _ms_since(_round_t0)
 
+        if exclusive_fabric and not f11_grounded:
+            _validate_fabric_brain_calls(resp, tool_schemas, _fabric_tool_ids, _cands[0])
         last_resp = resp
         messages.append({"role": "assistant", "content": resp.content})
 
@@ -11097,15 +11220,20 @@ def _run_brain_loop(
                 per_model_kwargs=_pmk,
                 max_tokens=max_tokens * 2 if thinking_limited else max_tokens,
                 system=system_param,
-                tools=[] if thinking_limited else tools_param,
+                tools=[] if exclusive_fabric or thinking_limited else tools_param,
                 messages=messages,
             )
+            if exclusive_fabric:
+                _validate_fabric_brain_calls(resp, [], _fabric_tool_ids, _cands[0])
+                answer_text = ""  # Prior tool narration is not a terminal answer.
             last_resp = resp
             messages.append({"role": "assistant", "content": resp.content})
             for block in resp.content:
                 if getattr(block, "type", "") == "text":
                     answer_text = block.text
         except Exception as exc:  # noqa: BLE001
+            if exclusive_fabric:
+                raise
             log.warning("brain_gateway: synthesis pass failed (%s) — keeping last text", exc)
         _timing_stamp(timing, "synthesis_ms", _synth_t0)
 
@@ -11136,6 +11264,8 @@ def _run_brain_loop(
         for field in ("input_tokens", "output_tokens"):
             usage_dict[field] = usage_dict.get(field, 0) + getattr(recovery_usage, field, 0)
 
+    if exclusive_fabric:
+        usage_dict = llm_auth.fabric_usage(_cands[0])
     # W5 Contract M: the turn's latency record rides the usage dict (see the docstring).
     _timing_stamp(timing, "total_ms", _lt0)
     usage_dict["latency"] = timing
@@ -11745,6 +11875,9 @@ def _run_brain_loop_stream(
         if not isinstance(usage, dict):
             usage = {}
         usage["latency"] = timing
+        if (providers and isinstance(providers[0], dict)
+                and providers[0].get("_fabric_auto_inspection") is not None):
+            fields.update(_fabric_served_identity(providers[0]))
         return "data: " + json.dumps({"type": "done", "route": timing["route"],
                                       "usage": usage, **fields}) + "\n\n"
 
@@ -11934,10 +12067,15 @@ def _run_brain_loop_stream(
 
     # Phase 1: tool-calling turns (streaming since W5.1 — see the round loop below)
     _cands = _turn_providers(client, model, providers)  # failover order (OAuth tokens)
+    from engine import llm_auth  # noqa: PLC0415
+    exclusive_fabric = llm_auth.is_fabric_selection(_cands)
+    _fabric_tool_ids: set[str] = set()
     # High-intensity params (effort + adaptive thinking) added PER-CANDIDATE — Claude-only,
     # so a DeepSeek/Haiku candidate in the same failover chain never receives them; the
     # DeepSeek thinking-disable rides the same channel in the opposite direction.
     def _pmk(m):
+        if exclusive_fabric:
+            return {}
         return {**_effort_thinking_params(m, effort, thinking_mode),
                 **_deepseek_extra_params(m, deepseek_thinking)}
 
@@ -11995,9 +12133,10 @@ def _run_brain_loop_stream(
                 _emitted = ""
             try:
                 _stream_call = getattr(getattr(_cl, "messages", None), "stream", None)
-                if _stream_call is None:
-                    # A provider client with no streaming surface keeps the pre-W5.1
-                    # blocking call, verbatim — nothing is shown, nothing is retracted.
+                if exclusive_fabric or _stream_call is None:
+                    # Selected Fabric buffers the original wrapped completion. Its
+                    # response/tool batch is validated before any display or tool effect.
+                    # Legacy clients without streaming keep their existing create path.
                     resp = _cl.messages.create(
                         model=_p.get("model"), max_tokens=max_tokens, system=system_param,
                         tools=tools_param, messages=messages, **_pmk(_p.get("model")))
@@ -12032,12 +12171,16 @@ def _run_brain_loop_stream(
                             resp = _s.get_final_message()
                 if _gate.leaked:
                     break
-                _pool_record_success(_p, resp)  # load-balancing ledger
+                if not exclusive_fabric:
+                    _pool_record_success(_p, resp)  # load-balancing ledger
                 model = _p.get("model") or model
                 break
             except Exception as exc:  # noqa: BLE001
                 resp = None
                 _round_err = exc
+                if exclusive_fabric:
+                    _round_err = llm_auth.fabric_failure(_p, exc)
+                    break
                 _mark_provider_dead_if_auth(_p, exc)
                 _pool_cool_for_exc(_p, exc)  # cool a rate-limited/dead key for the next turn
                 if _is_failover_error(exc) and _i < len(_cands) - 1:
@@ -12065,7 +12208,7 @@ def _run_brain_loop_stream(
             last_resp_content = []
             break
 
-        if resp is None and not _emitted:
+        if resp is None and not _emitted and not exclusive_fabric:
             # W5.1 SAFETY NET. The round is a STREAMING request now: `stream` + `tools`
             # is a request shape this loop never sent before, and a provider that cannot
             # serve it would black out the whole lane on every turn (the deepseek-chat
@@ -12091,12 +12234,19 @@ def _run_brain_loop_stream(
             if _emitted:      # never leave a half-written round under the degraded notice
                 yield _wipe_event()
                 _emitted = ""
+            failed_usage = llm_auth.fabric_usage(_cands[0]) if exclusive_fabric else {}
+            if exclusive_fabric and usage_out is not None:
+                usage_out[:] = [failed_usage]
+            if exclusive_fabric and answer_out is not None:
+                answer_out.clear()  # Display-only failure notice is never an assistant turn.
             yield _delta_event(_DEGRADED_USER_MSG)
-            yield _done_event(citations=[], quota=meta_event.get("quota", {}), usage={},
+            yield _done_event(citations=[], quota=meta_event.get("quota", {}), usage=failed_usage,
                               filtered=False, degraded=True, is_context_only=True)
             return
         _round_model_ms = _ms_since(_round_t0)
 
+        if exclusive_fabric and not f11_grounded:
+            _validate_fabric_brain_calls(resp, tool_schemas, _fabric_tool_ids, _cands[0])
         messages.append({"role": "assistant", "content": resp.content})
         last_resp_content = resp.content
         # Reasoning capture for this tool round — log-only, never yielded (leak law).
@@ -12346,42 +12496,50 @@ def _run_brain_loop_stream(
             _gate.restart()
             full_answer = ""
             try:
-                with _cl.messages.stream(
-                    model=_p.get("model"),
-                    max_tokens=synthesis_max_tokens,
-                    system=system_param,
-                    # NO tools: synthesis must produce PROSE. With tools attached the model
-                    # answers a tool-budget-exhausted turn with yet another tool_use, the
-                    # text stream stays empty, and the user gets the degraded stub with
-                    # nothing logged — the Terminal's chart turns hit this every time,
-                    # because chart work burns all 5 Fast rounds (reported 2026-07-26).
-                    messages=messages,
-                    **_pmk(_p.get("model")),
-                ) as s:
-                    for chunk in s.text_stream:
-                        _now = time.monotonic()
-                        _txt = _gate.feed(chunk, now=_now)
-                        full_answer = _gate.text
-                        if _gate.leaked:
-                            _leak_tripped = True
-                            break
-                        if _txt:
-                            _emitted += _txt
-                            _n_shown = max(_n_shown, len(full_answer))
-                            yield _delta_event(_txt)
-                        # A beat is the SILENCE between text, not a progress bar: it speaks
-                        # only when nothing has flushed for _WRITING_BEAT_S (the thinking
-                        # gap before the first token, or a long pause mid-answer).
-                        if _gate.beat_due(_now):
-                            _n_shown = max(_n_shown, len(full_answer))
-                            yield _status_event("writing", _t0, _STAGE_LABELS["writing"],
-                                                n=_n_shown)
-                    if _leak_tripped:
-                        # Deliberately abandoned mid-body — do NOT call get_final_message()
-                        # on a stream we stopped reading. The aborted call's usage is lost;
-                        # a prompt echo on a paying user's screen costs more than a token
-                        # count. Exiting the `with` closes the stream.
-                        model = _p.get("model") or model
+                if exclusive_fabric:
+                    final_resp = _cl.messages.create(
+                        model=_p.get("model"), max_tokens=synthesis_max_tokens,
+                        system=system_param, messages=messages, **_pmk(_p.get("model")))
+                    _validate_fabric_brain_calls(final_resp, [], _fabric_tool_ids, _p)
+                    full_answer = "".join(block.text for block in final_resp.content
+                                          if getattr(block, "type", "") == "text")
+                else:
+                    with _cl.messages.stream(
+                        model=_p.get("model"),
+                        max_tokens=synthesis_max_tokens,
+                        system=system_param,
+                        # NO tools: synthesis must produce PROSE. With tools attached the model
+                        # answers a tool-budget-exhausted turn with yet another tool_use, the
+                        # text stream stays empty, and the user gets the degraded stub with
+                        # nothing logged — the Terminal's chart turns hit this every time,
+                        # because chart work burns all 5 Fast rounds (reported 2026-07-26).
+                        messages=messages,
+                        **_pmk(_p.get("model")),
+                    ) as s:
+                        for chunk in s.text_stream:
+                            _now = time.monotonic()
+                            _txt = _gate.feed(chunk, now=_now)
+                            full_answer = _gate.text
+                            if _gate.leaked:
+                                _leak_tripped = True
+                                break
+                            if _txt:
+                                _emitted += _txt
+                                _n_shown = max(_n_shown, len(full_answer))
+                                yield _delta_event(_txt)
+                            # A beat is the SILENCE between text, not a progress bar: it speaks
+                            # only when nothing has flushed for _WRITING_BEAT_S (the thinking
+                            # gap before the first token, or a long pause mid-answer).
+                            if _gate.beat_due(_now):
+                                _n_shown = max(_n_shown, len(full_answer))
+                                yield _status_event("writing", _t0, _STAGE_LABELS["writing"],
+                                                    n=_n_shown)
+                        if _leak_tripped:
+                            # Deliberately abandoned mid-body — do NOT call get_final_message()
+                            # on a stream we stopped reading. The aborted call's usage is lost;
+                            # a prompt echo on a paying user's screen costs more than a token
+                            # count. Exiting the `with` closes the stream.
+                            model = _p.get("model") or model
                 if _leak_tripped:
                     log.warning("brain_gateway: prompt-echo sentinel caught MID-STREAM "
                                 "(lane=%s model=%s chars=%d emitted=%d)",
@@ -12399,7 +12557,8 @@ def _run_brain_loop_stream(
                     # ordinary single delta, which is byte-for-byte the old behavior and
                     # is also what a widget too old to know `retract` needs.
                     break
-                final_resp = s.get_final_message()
+                if not exclusive_fabric:
+                    final_resp = s.get_final_message()
                 # Synthesis reasoning — held per-candidate and only merged into the trace
                 # at the success point below, so a failed-over candidate's partial
                 # thinking is discarded with its buffer (same rule as full_answer).
@@ -12427,11 +12586,26 @@ def _run_brain_loop_stream(
                             _emitted = ""
                         continue
                 thinking_trace.extend(_cand_thinking)  # only the candidate that SHIPPED
-                _pool_record_success(_p, final_resp)  # load-balancing ledger
+                if not exclusive_fabric:
+                    _pool_record_success(_p, final_resp)  # load-balancing ledger
                 model = _p.get("model") or model
                 break
             except Exception as exc:  # noqa: BLE001
                 _last_err = exc
+                if exclusive_fabric:
+                    _last_err = llm_auth.fabric_failure(_p, exc)
+                    if _emitted:
+                        yield _wipe_event()
+                    failed_usage = llm_auth.fabric_usage(_p)
+                    if usage_out is not None:
+                        usage_out[:] = [failed_usage]
+                    if answer_out is not None:
+                        answer_out.clear()  # Failed synthesis has no persistable answer.
+                    yield _delta_event(_DEGRADED_USER_MSG)
+                    yield _done_event(citations=[], quota=meta_event.get("quota", {}),
+                                      usage=failed_usage, filtered=False, degraded=True,
+                                      is_context_only=True)
+                    return
                 _mark_provider_dead_if_auth(_p, exc)
                 _pool_cool_for_exc(_p, exc)  # cool a rate-limited/dead pool key for the next turn
                 if _is_failover_error(exc) and _i < len(_cands) - 1:
@@ -12473,7 +12647,9 @@ def _run_brain_loop_stream(
         for field in ("input_tokens", "output_tokens"):
             usage_dict[field] = usage_dict.get(field, 0) + getattr(recovery_usage, field, 0)
 
-    if need_synthesis and not full_answer.strip():
+    if exclusive_fabric:
+        usage_dict = llm_auth.fabric_usage(_cands[0])
+    if need_synthesis and not exclusive_fabric and not full_answer.strip():
         # Every candidate came back empty — salvage any text the last tool round wrote
         # rather than degrading a turn whose tool work all succeeded.
         for block in last_resp_content:
@@ -12543,6 +12719,33 @@ def _run_brain_loop_stream(
             usage_dict.get("input_tokens"), usage_dict.get("output_tokens"),
             synthesis_max_tokens if need_synthesis else max_tokens)
 
+    # Freeze the screened result before the first terminal display event. A
+    # producer closed at delta/suggest/visual/done must still settle this result.
+    if not display_answer.startswith(_emitted):
+        _retracted = True
+    if _retracted:
+        was_filtered = True
+    if source_receipt:
+        citations = citations + [source_receipt]
+    # Complete visual blocks follow the screened answer, never raw tool/model copy.
+    _public_visuals = [c for c in charts if c.get("visual")] if (
+        _visual_screen_ok and not was_filtered and not stub_shipped and not _retracted
+    ) else []
+    usage_dict["latency"] = timing
+    # Side-channel: hand real usage back to the caller (fix #1)
+    if usage_out is not None:
+        usage_out.append(usage_dict)
+    # Side-channel: hand the filtered answer back so the caller can persist the
+    # assistant turn (the streamed text lives only on the wire otherwise).
+    if answer_out is not None:
+        answer_out.append(filtered_answer)
+    # Side-channel: hand the reasoning trace back for the response log. LOG-ONLY —
+    # nothing above ever put this text on the wire, and nothing ever may.
+    if thinking_out is not None:
+        thinking_out.append(thinking_trace)
+    if visuals_out is not None:
+        visuals_out.extend(_public_visuals)
+
     # ── Contract S reconciliation ────────────────────────────────────────────────────
     # `_emitted` is exactly what the client holds. It is EMPTY on every non-streaming
     # path (a tool-round answer, the degraded stub, a prescreen refusal) and on any
@@ -12581,31 +12784,11 @@ def _run_brain_loop_stream(
     # consumer contradicts this: mm_brain.js's finalizeDone reads only `citations` and
     # `quota`, and the response log never sees this turn (_log_brain_response drops
     # empty answers, and answer_out below still carries the REAL empty answer).
-    if source_receipt:
-        citations = citations + [source_receipt]
-    # Complete visual blocks follow the screened answer, never raw tool/model copy.
-    _public_visuals = [c for c in charts if c.get("visual")] if (
-        _visual_screen_ok and not was_filtered and not stub_shipped and not _retracted
-    ) else []
     for visual in _public_visuals:
         yield "data: " + json.dumps(visual, allow_nan=False) + "\n\n"
-    if visuals_out is not None:
-        visuals_out.extend(_public_visuals)
     yield _done_event(citations=citations, quota=meta_event.get("quota", {}),
                       usage=usage_dict, filtered=was_filtered, degraded=stub_shipped,
                       charts=_public_visuals, is_context_only=True)
-
-    # Side-channel: hand real usage back to the caller (fix #1)
-    if usage_out is not None:
-        usage_out.append(usage_dict)
-    # Side-channel: hand the filtered answer back so the caller can persist the
-    # assistant turn (the streamed text lives only on the wire otherwise).
-    if answer_out is not None:
-        answer_out.append(filtered_answer)
-    # Side-channel: hand the reasoning trace back for the response log. LOG-ONLY —
-    # nothing above ever put this text on the wire, and nothing ever may.
-    if thinking_out is not None:
-        thinking_out.append(thinking_trace)
 
 
 def _json_safe(obj: Any) -> Any:
@@ -13687,6 +13870,8 @@ def chat(
     guest_ip: str = "",
     account_prefs: dict | None = None,
     user_jwt: str = "",
+    fabric_selected: bool = False,
+    fabric_provider_factory=None,
 ) -> dict:
     """Process a brain chat request (non-streaming).
 
@@ -13966,7 +14151,10 @@ def chat(
         }
 
     # 4. Build providers
-    providers = _build_lane_providers(lane, root)
+    providers = _selected_turn_providers(
+        lane, root, fabric_selected, fabric_provider_factory,
+        _ctx_envelope["request_id"], images,
+    )
     if not providers:
         return {
             "ok": True,
@@ -13981,265 +14169,271 @@ def chat(
             "is_context_only": True,
         }
 
-    client = providers[0].get("client")
-    model = providers[0].get("model") or "unknown"
+    fabric_provider = providers[0] if fabric_selected is True else None
+    _fabric_settled = False
+    try:
+        client = providers[0].get("client")
+        model = providers[0].get("model") or "unknown"
 
-    # 4b. Vision (W6c): Pro-gated (operator decision) — Free/Trial answer text-only.
-    # An image turn is served by a claude vision model (in-lane Haiku when a key exists,
-    # else the Pro lane's Opus via OAuth), with OAuth-token failover across them.
-    image_blocks = [] if _grounded else _image_blocks(images)  # spec item 8: images disabled
-    turn_providers = providers
-    if image_blocks and not _unlimited_allowed(user_email) and _get_allowance(tier, status, "pro", root).get("limit", 0) == 0:
-        image_blocks = []  # not Pro-eligible → drop attachments (unlimited operators keep vision)
-        # W3: the DROP stands — but the model is told it happened, so the reply owns the gate
-        # in one sentence instead of silently answering a picture it never received.
-        context = _mark_image_gated(context)
-    if image_blocks:
-        vprovs = _vision_providers(lane, providers, root)
-        if vprovs:
-            client = vprovs[0].get("client") or client
-            model = vprovs[0].get("model") or model
-            turn_providers = vprovs
-        else:
-            image_blocks = []
+        # 4b. Vision (W6c): Pro-gated (operator decision) — Free/Trial answer text-only.
+        # An image turn is served by a claude vision model (in-lane Haiku when a key exists,
+        # else the Pro lane's Opus via OAuth), with OAuth-token failover across them.
+        image_blocks = [] if _grounded else _image_blocks(images)  # spec item 8: images disabled
+        turn_providers = providers
+        if image_blocks and not _unlimited_allowed(user_email) and _get_allowance(tier, status, "pro", root).get("limit", 0) == 0:
+            image_blocks = []  # not Pro-eligible → drop attachments (unlimited operators keep vision)
+            # W3: the DROP stands — but the model is told it happened, so the reply owns the gate
+            # in one sentence instead of silently answering a picture it never received.
+            context = _mark_image_gated(context)
+        if image_blocks:
+            vprovs = _vision_providers(lane, providers, root)
+            if vprovs:
+                client = vprovs[0].get("client") or client
+                model = vprovs[0].get("model") or model
+                turn_providers = vprovs
+            else:
+                image_blocks = []
 
-    # 5. Thread store (best-effort; degrade to stateless on failure)
-    effective_thread_id: str | None = None
-    thread_history: list[dict] = []
+        # 5. Thread store (best-effort; degrade to stateless on failure)
+        effective_thread_id: str | None = None
+        thread_history: list[dict] = []
 
-    # Guests are STATELESS: no thread row is created and no message is persisted (continuity
-    # rides on the screened client-sent history below). Signed-in turns ensure a thread row
-    # (a new one when thread_id is None) so they persist; degrades to stateless if unavailable.
-    if not is_guest:
-        resolved_tid = _ensure_thread(thread_id, user_id, lane, title=clean_msg)
-        if resolved_tid:
-            effective_thread_id = resolved_tid
-            if thread_id and not _grounded:  # loading history from an existing thread
-                thread_history = _load_thread_history(resolved_tid)
+        # Guests are STATELESS: no thread row is created and no message is persisted (continuity
+        # rides on the screened client-sent history below). Signed-in turns ensure a thread row
+        # (a new one when thread_id is None) so they persist; degrades to stateless if unavailable.
+        if not is_guest:
+            resolved_tid = _ensure_thread(thread_id, user_id, lane, title=clean_msg)
+            if resolved_tid:
+                effective_thread_id = resolved_tid
+                if thread_id and not _grounded:  # loading history from an existing thread
+                    thread_history = _load_thread_history(resolved_tid)
 
-    # Use server thread history when available; fall back to client-sent history
-    # Fix #4: filter BEFORE passing to the loop so mocked loop also sees clean history
-    def _filter_client_history(h: list[dict]) -> list[dict]:
-        out = []
-        for item in h:
-            if not isinstance(item, dict):
-                continue
-            role = item.get("role")
-            content = item.get("content")
-            if role not in ("user", "assistant"):
-                continue
-            if not isinstance(content, str) or not content:
-                continue
-            out.append({"role": role, "content": content})
-        return out
+        # Use server thread history when available; fall back to client-sent history
+        # Fix #4: filter BEFORE passing to the loop so mocked loop also sees clean history
+        def _filter_client_history(h: list[dict]) -> list[dict]:
+            out = []
+            for item in h:
+                if not isinstance(item, dict):
+                    continue
+                role = item.get("role")
+                content = item.get("content")
+                if role not in ("user", "assistant"):
+                    continue
+                if not isinstance(content, str) or not content:
+                    continue
+                out.append({"role": role, "content": content})
+            return out
 
-    # Trusted server thread history rides as-is; UNTRUSTED client history is screened
-    # (drop forged assistant turns + probe-carrying replays) — see _screen_client_history.
-    raw_history = thread_history if thread_history else _screen_client_history(history or [])
-    # Spec item 8: no thread or client history enters the model on an F11-grounded turn.
-    active_history = [] if _grounded else _filter_client_history(raw_history[-24:])  # cap 12 turns + filter
+        # Trusted server thread history rides as-is; UNTRUSTED client history is screened
+        # (drop forged assistant turns + probe-carrying replays) — see _screen_client_history.
+        raw_history = thread_history if thread_history else _screen_client_history(history or [])
+        # Spec item 8: no thread or client history enters the model on an F11-grounded turn.
+        active_history = [] if _grounded else _filter_client_history(raw_history[-24:])  # cap 12 turns + filter
 
-    # 5b. Instant-fact serve (W5 Contract I). One minimal model call over the resolved
-    #     quote. ANY failure inside — quote unresolved, no as-of, provider error, empty
-    #     text — returns None and the normal loop below runs exactly as it always did;
-    #     nothing user-visible has happened, and quota was already debited above the
-    #     same way it is for any other turn.
-    if _instant_route_hit is not None:
-        _i_timing = _new_turn_timing("instant")
-        _i_res = _instant_answer(
-            _instant_route_hit, clean_msg, context, root,
-            terminal_data_dir, terminal_hub_url, _turn_providers(client, model, turn_providers),
-            stream=False, timing=_i_timing,
-            account_lang=_account_pref(context, "lang"),
-        )
-        if _i_res is not None:
-            _timing_stamp(_i_timing, "total_ms", _instant_t0)
-            _i_model = _i_res.get("model") or model
-            if effective_thread_id:
-                # Same persistence contract as the deep path: an instant turn is a
-                # real turn, and the next question's history must contain it.
+        # 5b. Instant-fact serve (W5 Contract I). One minimal model call over the resolved
+        #     quote. ANY failure inside — quote unresolved, no as-of, provider error, empty
+        #     text — returns None and the normal loop below runs exactly as it always did;
+        #     nothing user-visible has happened, and quota was already debited above the
+        #     same way it is for any other turn.
+        if _instant_route_hit is not None and fabric_selected is False:
+            _i_timing = _new_turn_timing("instant")
+            _i_res = _instant_answer(
+                _instant_route_hit, clean_msg, context, root,
+                terminal_data_dir, terminal_hub_url, _turn_providers(client, model, turn_providers),
+                stream=False, timing=_i_timing,
+                account_lang=_account_pref(context, "lang"),
+            )
+            if _i_res is not None:
+                _timing_stamp(_i_timing, "total_ms", _instant_t0)
+                _i_model = _i_res.get("model") or model
+                if effective_thread_id:
+                    # Same persistence contract as the deep path: an instant turn is a
+                    # real turn, and the next question's history must contain it.
+                    try:
+                        from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
+                        _append_message(effective_thread_id, "user", clean_msg)
+                        _append_message(effective_thread_id, "assistant", _i_res["text"],
+                                        meta=_with_retained_context(_bum.assistant_meta(None, _i_res["text"]), _ctx_receipt))
+                    except Exception:  # noqa: BLE001
+                        pass
+                _i_usage = _i_res.get("usage") or {}
+                _i_in = int(_i_usage.get("input_tokens") or 0)
+                _i_out = int(_i_usage.get("output_tokens") or 0)
                 try:
-                    from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
-                    _append_message(effective_thread_id, "user", clean_msg)
-                    _append_message(effective_thread_id, "assistant", _i_res["text"],
-                                    meta=_with_retained_context(_bum.assistant_meta(None, _i_res["text"]), _ctx_receipt))
+                    _ac.record_usage(
+                        lane=usage_lane,
+                        provider=(
+                            "codex" if str(_i_model).startswith("gpt-")
+                            else "claude_api" if str(_i_model).startswith("claude")
+                            else "deepseek"
+                        ),
+                        model=_i_model, stage="brain-instant",
+                        input_tokens=_i_in, output_tokens=_i_out,
+                    )
                 except Exception:  # noqa: BLE001
                     pass
-            _i_usage = _i_res.get("usage") or {}
-            _i_in = int(_i_usage.get("input_tokens") or 0)
-            _i_out = int(_i_usage.get("output_tokens") or 0)
-            try:
-                _ac.record_usage(
-                    lane=usage_lane,
-                    provider=(
-                        "codex" if str(_i_model).startswith("gpt-")
-                        else "claude_api" if str(_i_model).startswith("claude")
-                        else "deepseek"
-                    ),
-                    model=_i_model, stage="brain-instant",
-                    input_tokens=_i_in, output_tokens=_i_out,
+                _record_token_usage(user_id, lane, _i_in, _i_out)
+                _i_result: dict = {
+                    "ok": True,
+                    "reply": _i_res["text"],
+                    "citations": [],
+                    "lane": lane,
+                    "model": _i_model,
+                    "thread_id": effective_thread_id,
+                    "quota": quota_info,
+                    "filtered": False,
+                    "degraded": False,
+                    "is_context_only": True,
+                    "route": "instant",
+                    "latency": _i_timing,
+                    "context_receipt": _ctx_receipt,
+                }
+                if _i_res.get("symbol"):
+                    _i_result["symbol"] = _i_res["symbol"]
+                return _i_result
+
+        # 6. Run the tool loop
+        if _grounded:
+            # Spec item 8: the closed corpus is the ONLY source prompt; the loop boolean turns
+            # off tools, digests and addenda for this turn (see _run_brain_loop).
+            research_corpus = _build_research_corpus(root, user_jwt=user_jwt, context=context, grounded=_grounded)
+            loop_source_kwargs = {
+                "source_prompt": _format_research_grounding(research_corpus or {}),
+                "f11_grounded": True,
+            }
+        else:
+            loop_source_kwargs = ({"source_prompt": source_attachment.resolved.prompt_block}
+                                  if source_attachment else {})
+        try:
+            answer_text, citations, annotations, final_messages, usage_dict, commands, charts = _run_brain_loop(
+                clean_msg, lane, active_history, context or {},
+                root, terminal_data_dir, terminal_hub_url,
+                client, model, max_tokens, tool_budget,
+                mode=mode, image_blocks=image_blocks, providers=turn_providers,
+                user_id=user_id, user_email=user_email,
+                effort=effort, thinking_mode=thinking_mode,
+                deepseek_thinking=deepseek_thinking,
+                **loop_source_kwargs,
+            )
+        except Exception as exc:  # noqa: BLE001
+            failed_usage = {}
+            if fabric_selected is True:
+                _fabric_settled = True  # Do not replay a writer after an uncertain failure.
+                failed_usage = _settle_fabric_usage(
+                    providers[0], usage_lane=usage_lane, stage="brain-chat",
+                    user_id=user_id, lane=lane,
                 )
-            except Exception:  # noqa: BLE001
-                pass
-            _record_token_usage(user_id, lane, _i_in, _i_out)
-            _i_result: dict = {
+                log.warning("brain_gateway: Fabric turn failed; no fallback")
+            else:
+                log.warning("brain_gateway: loop failed (%s) — degraded reply", exc)
+            return {
                 "ok": True,
-                "reply": _i_res["text"],
+                "reply": _degraded_reply(lane),
                 "citations": [],
                 "lane": lane,
-                "model": _i_model,
+                "model": model,
                 "thread_id": effective_thread_id,
                 "quota": quota_info,
                 "filtered": False,
-                "degraded": False,
+                "degraded": True,
                 "is_context_only": True,
-                "route": "instant",
-                "latency": _i_timing,
-                "context_receipt": _ctx_receipt,
+                **({"usage": failed_usage, **_fabric_served_identity(providers[0])}
+                   if fabric_selected is True else {}),
             }
-            if _i_res.get("symbol"):
-                _i_result["symbol"] = _i_res["symbol"]
-            return _i_result
 
-    # 6. Run the tool loop
-    if _grounded:
-        # Spec item 8: the closed corpus is the ONLY source prompt; the loop boolean turns
-        # off tools, digests and addenda for this turn (see _run_brain_loop).
-        research_corpus = _build_research_corpus(root, user_jwt=user_jwt, context=context, grounded=_grounded)
-        loop_source_kwargs = {
-            "source_prompt": _format_research_grounding(research_corpus or {}),
-            "f11_grounded": True,
-        }
-    else:
-        loop_source_kwargs = ({"source_prompt": source_attachment.resolved.prompt_block}
-                              if source_attachment else {})
-    try:
-        answer_text, citations, annotations, final_messages, usage_dict, commands, charts = _run_brain_loop(
-            clean_msg, lane, active_history, context or {},
-            root, terminal_data_dir, terminal_hub_url,
-            client, model, max_tokens, tool_budget,
-            mode=mode, image_blocks=image_blocks, providers=turn_providers,
-            user_id=user_id, user_email=user_email,
-            effort=effort, thinking_mode=thinking_mode,
-            deepseek_thinking=deepseek_thinking,
-            **loop_source_kwargs,
+        # 7. Post-filter, output leak screen, then split off the [NEXT] suggestion block (W6d).
+        #    The CLEAN text is what we persist and return as the reply; suggestions become buttons.
+        answer_text, was_filtered = _post_filter_advice(answer_text, citations)
+        _visual_before_screen = answer_text
+        answer_text = _leak_screen(answer_text)  # PART B: prompt-echo → distill refusal
+        if was_filtered or answer_text != _visual_before_screen:
+            charts = [c for c in charts if not c.get("visual")]
+        answer_text, suggestions = _split_suggestions(answer_text)
+        if _grounded:
+            # Spec item 9: citation-or-null, forbidden-output filter, ceiling + used-list run
+            # AFTER the normal safety/leak pass, on the clean body only; a suggestion chip that
+            # reads like a signal or an instruction is dropped, never rewritten.
+            answer_text, _grounded_withheld = _research_postprocess(answer_text, research_corpus or {})
+            was_filtered = bool(was_filtered or _grounded_withheld)
+            suggestions = [sug for sug in suggestions if not _research_sentence_forbidden(str(sug))]
+        # Same language ladder the prompt used (W3: account lang is the middle fallback), so a
+        # chip can never come back screened against a different language than the body.
+        suggestions = _screen_suggestions(
+            suggestions, _turn_lang(clean_msg, context, _account_pref(context, "lang")))
+
+        # 8. Thread message persistence (best-effort) — persist the CLEAN text (no [NEXT] block)
+        if effective_thread_id:
+            _append_message(effective_thread_id, "user", clean_msg + ("\n\n[image attached]" if image_blocks else ""))
+            # The assistant turn carries SYSTEM-EVENT meta (W3): the tool names this turn
+            # called and the symbols they/the answer named — never user prose, never a score.
+            # brain_user_memory.recall_sessions reads it back so a later "as we discussed last
+            # week" costs one indexed read instead of re-deriving from answer text.
+            from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
+            _append_message(effective_thread_id, "assistant", answer_text,
+                            meta={**_with_retained_context(_bum.assistant_meta(final_messages, answer_text), _ctx_receipt),
+                                  "visuals": [c for c in charts if c.get("visual")]})
+
+        # Settle through the existing writer with the actual bound provider identity.
+        _fabric_settled = fabric_selected is True
+        usage_dict = _settle_brain_usage(
+            usage_dict, provider=providers[0] if fabric_selected is True else None,
+            model=model, usage_lane=usage_lane, stage="brain-chat", user_id=user_id, lane=lane,
         )
-    except Exception as exc:  # noqa: BLE001
-        log.warning("brain_gateway: loop failed (%s) — degraded reply", exc)
-        return {
+
+        if fabric_selected is True:
+            model = _fabric_served_identity(providers[0])["model"]
+
+        # Build annotations list from collected annotate_chart payloads
+        all_annotations: list[dict] = []
+        for ann in annotations:
+            all_annotations.extend(ann.get("annotations") or [])
+
+        result: dict = {
             "ok": True,
-            "reply": _degraded_reply(lane),
-            "citations": [],
+            "reply": answer_text,
+            "citations": citations + ([source_attachment.resolved.receipt] if source_attachment else []),
             "lane": lane,
             "model": model,
             "thread_id": effective_thread_id,
             "quota": quota_info,
-            "filtered": False,
-            "degraded": True,
+            "filtered": was_filtered,
+            "degraded": False,
             "is_context_only": True,
+            # W5 Contract M: which lane served the turn + its latency record (the loop
+            # hands the record back on the usage dict; see _run_brain_loop's docstring).
+            "route": "deep",
+            "latency": usage_dict.get("latency") or _new_turn_timing("deep"),
+            "context_receipt": _ctx_receipt,
+            "exact_source_receipt": source_attachment.resolved.receipt if source_attachment else None,
+            **({"usage": usage_dict, **_fabric_served_identity(providers[0])} if fabric_selected is True else {}),
         }
+        if all_annotations:
+            result["annotations"] = all_annotations
+        # Chart-command bus (W6b): include FLAT commands in non-stream response (same shape
+        # as the streamed 'command' events, so both API surfaces agree).
+        if commands:
+            result["commands"] = commands
+        # Inline charts (W6c): include chart payloads in non-stream response
+        if charts:
+            result["charts"] = charts
+        # Follow-up suggestions (W6d): omit the key entirely when there are none
+        if suggestions:
+            result["suggestions"] = suggestions
+        if context and context.get("symbol"):
+            # Reflect the SANITIZED symbol, never the raw client input (latent-hazard hygiene).
+            result["symbol"] = _safe_symbol(str(context["symbol"]))
 
-    # 7. Post-filter, output leak screen, then split off the [NEXT] suggestion block (W6d).
-    #    The CLEAN text is what we persist and return as the reply; suggestions become buttons.
-    answer_text, was_filtered = _post_filter_advice(answer_text, citations)
-    _visual_before_screen = answer_text
-    answer_text = _leak_screen(answer_text)  # PART B: prompt-echo → distill refusal
-    if was_filtered or answer_text != _visual_before_screen:
-        charts = [c for c in charts if not c.get("visual")]
-    answer_text, suggestions = _split_suggestions(answer_text)
-    if _grounded:
-        # Spec item 9: citation-or-null, forbidden-output filter, ceiling + used-list run
-        # AFTER the normal safety/leak pass, on the clean body only; a suggestion chip that
-        # reads like a signal or an instruction is dropped, never rewritten.
-        answer_text, _grounded_withheld = _research_postprocess(answer_text, research_corpus or {})
-        was_filtered = bool(was_filtered or _grounded_withheld)
-        suggestions = [sug for sug in suggestions if not _research_sentence_forbidden(str(sug))]
-    # Same language ladder the prompt used (W3: account lang is the middle fallback), so a
-    # chip can never come back screened against a different language than the body.
-    suggestions = _screen_suggestions(
-        suggestions, _turn_lang(clean_msg, context, _account_pref(context, "lang")))
-
-    # 8. Thread message persistence (best-effort) — persist the CLEAN text (no [NEXT] block)
-    if effective_thread_id:
-        _append_message(effective_thread_id, "user", clean_msg + ("\n\n[image attached]" if image_blocks else ""))
-        # The assistant turn carries SYSTEM-EVENT meta (W3): the tool names this turn
-        # called and the symbols they/the answer named — never user prose, never a score.
-        # brain_user_memory.recall_sessions reads it back so a later "as we discussed last
-        # week" costs one indexed read instead of re-deriving from answer text.
-        from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
-        _append_message(effective_thread_id, "assistant", answer_text,
-                        meta={**_with_retained_context(_bum.assistant_meta(final_messages, answer_text), _ctx_receipt),
-                              "visuals": [c for c in charts if c.get("visual")]})
-
-    # 9. Cost settlement from response.usage (fix #1: real tokens, never zeros)
-    in_tok = int(usage_dict.get("input_tokens") or 0)
-    out_tok = int(usage_dict.get("output_tokens") or 0)
-    stream_source_kwargs = (
-        {"source_prompt": source_attachment.resolved.prompt_block,
-         "source_receipt": source_attachment.resolved.receipt}
-        if source_attachment else {}
-    )
-    try:
-        _ac.record_usage(
-            lane=usage_lane,
-            # Attribute to the provider that ACTUALLY served the turn, not the lane:
-            # a Fast image turn is served by Haiku (claude_api), not DeepSeek.
-            provider=(
-                "codex" if str(model).startswith("gpt-")
-                else "claude_api" if str(model).startswith("claude")
-                else "deepseek"
-            ),
-            model=model,
-            stage="brain-chat",
-            input_tokens=in_tok,
-            output_tokens=out_tok,
-        )
-    except Exception:  # noqa: BLE001
-        pass
-
-    # Fix #2: accumulate towards the monthly token ceiling backstop
-    _record_token_usage(user_id, lane, in_tok, out_tok)
-
-    # Build annotations list from collected annotate_chart payloads
-    all_annotations: list[dict] = []
-    for ann in annotations:
-        all_annotations.extend(ann.get("annotations") or [])
-
-    result: dict = {
-        "ok": True,
-        "reply": answer_text,
-        "citations": citations + ([source_attachment.resolved.receipt] if source_attachment else []),
-        "lane": lane,
-        "model": model,
-        "thread_id": effective_thread_id,
-        "quota": quota_info,
-        "filtered": was_filtered,
-        "degraded": False,
-        "is_context_only": True,
-        # W5 Contract M: which lane served the turn + its latency record (the loop
-        # hands the record back on the usage dict; see _run_brain_loop's docstring).
-        "route": "deep",
-        "latency": usage_dict.get("latency") or _new_turn_timing("deep"),
-        "context_receipt": _ctx_receipt,
-        "exact_source_receipt": source_attachment.resolved.receipt if source_attachment else None,
-    }
-    if all_annotations:
-        result["annotations"] = all_annotations
-    # Chart-command bus (W6b): include FLAT commands in non-stream response (same shape
-    # as the streamed 'command' events, so both API surfaces agree).
-    if commands:
-        result["commands"] = commands
-    # Inline charts (W6c): include chart payloads in non-stream response
-    if charts:
-        result["charts"] = charts
-    # Follow-up suggestions (W6d): omit the key entirely when there are none
-    if suggestions:
-        result["suggestions"] = suggestions
-    if context and context.get("symbol"):
-        # Reflect the SANITIZED symbol, never the raw client input (latent-hazard hygiene).
-        result["symbol"] = _safe_symbol(str(context["symbol"]))
-
-    return result
+        return result
+    finally:
+        if fabric_provider is not None:
+            from engine import llm_auth  # noqa: PLC0415
+            try:
+                if not _fabric_settled:
+                    _settle_fabric_usage(
+                        fabric_provider, usage_lane=usage_lane, stage="brain-chat",
+                        user_id=user_id, lane=lane)
+            finally:
+                llm_auth.close_fabric_provider(fabric_provider)
 
 
 # ---------------------------------------------------------------------------
@@ -14264,6 +14458,8 @@ def chat_stream(
     guest_ip: str = "",
     account_prefs: dict | None = None,
     user_jwt: str = "",
+    fabric_selected: bool = False,
+    fabric_provider_factory=None,
 ) -> Generator[str, None, None]:
     """Process a brain chat request (streaming). Yields SSE strings per contract.
 
@@ -14505,7 +14701,10 @@ def chat_stream(
         return
 
     # 3. Providers
-    providers = _build_lane_providers(lane, root)
+    providers = _selected_turn_providers(
+        lane, root, fabric_selected, fabric_provider_factory,
+        _ctx_envelope["request_id"], images,
+    )
     if not providers:
         meta = {"type": "meta", "lane": lane, "model": "degraded", "thread_id": None, "quota": quota_info}
         yield f"data: {json.dumps(meta)}\n\n"
@@ -14513,239 +14712,254 @@ def chat_stream(
         yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': quota_info, 'usage': {}, 'filtered': False, 'degraded': True, 'is_context_only': True})}\n\n"
         return
 
-    client = providers[0].get("client")
+    fabric_provider = providers[0] if fabric_selected is True else None
+    _stream_finished = False
+    effective_thread_id = None
     model = providers[0].get("model") or "unknown"
-
-    # 3b. Vision (W6c): Pro-gated (operator decision) — Free/Trial answer text-only.
-    # Image turns are served by a claude vision model (in-lane Haiku when a key exists,
-    # else Pro's Opus via OAuth) with token failover. Resolved before the meta event so
-    # the reported model serves the turn.
-    image_blocks = [] if _grounded else _image_blocks(images)  # spec item 8: images disabled
-    turn_providers = providers
-    if image_blocks and not _unlimited_allowed(user_email) and _get_allowance(tier, status, "pro", root).get("limit", 0) == 0:
-        image_blocks = []  # not Pro-eligible → drop attachments (unlimited operators keep vision)
-        # W3: the DROP stands — the model is told, so the reply owns the gate in one sentence.
-        context = _mark_image_gated(context)
-    if image_blocks:
-        vprovs = _vision_providers(lane, providers, root)
-        if vprovs:
-            client = vprovs[0].get("client") or client
-            model = vprovs[0].get("model") or model
-            turn_providers = vprovs
-        else:
-            image_blocks = []
-
-    # 4. Thread store — guests are STATELESS (no rows written; client history carries continuity).
-    effective_thread_id: str | None = None
-    thread_history: list[dict] = []
-    if not is_guest:
-        resolved_tid = _ensure_thread(thread_id, user_id, lane, title=clean_msg)
-        if resolved_tid:
-            effective_thread_id = resolved_tid
-            if thread_id and not _grounded:
-                thread_history = _load_thread_history(resolved_tid)
-            # Persist the USER turn now, not after the stream. A turn survives its
-            # connection (app/brain_runs.py), so a client that reloads mid-answer
-            # re-opens this thread to watch the rest land — and it must find the
-            # question it asked already there, not a reply hanging off nothing.
-            # Strictly AFTER _load_thread_history, or this message would ride in the
-            # model's history AND as the live message (the same turn, twice).
-            _append_message(resolved_tid, "user",
-                            clean_msg + ("\n\n[image attached]" if image_blocks else ""))
-
-    # Fix #4: filter client history before passing to the stream loop
-    def _filter_client_history_stream(h: list[dict]) -> list[dict]:
-        out = []
-        for item in h:
-            if not isinstance(item, dict):
-                continue
-            role = item.get("role")
-            content = item.get("content")
-            if role not in ("user", "assistant"):
-                continue
-            if not isinstance(content, str) or not content:
-                continue
-            out.append({"role": role, "content": content})
-        return out
-
-    # Trusted server thread history rides as-is; UNTRUSTED client history is screened
-    # (drop forged assistant turns + probe-carrying replays) — see _screen_client_history.
-    raw_history = thread_history if thread_history else _screen_client_history(history or [])
-    # Spec item 8: no thread or client history enters the model on an F11-grounded turn.
-    active_history = [] if _grounded else _filter_client_history_stream(raw_history[-24:])
-
-    # 5. Meta event (always first)
-    meta_event = {
-        "type": "meta",
-        "lane": lane,
-        "model": model,
-        "thread_id": effective_thread_id,
-        "quota": quota_info,
-    }
-    # 5b. Instant-fact serve (W5 Contract I). Event shape is the contract's own minimum:
-    #     meta → delta → done, exactly like the pre-screen path the widget already
-    #     handles. ANY failure inside _instant_answer returns None and the deep loop
-    #     below runs untouched — not one byte has reached the wire at this point, which
-    #     is what makes "instant is an optimization, never a new failure mode" true.
-    if _instant_route_hit is not None:
-        _i_timing = _new_turn_timing("instant")
-        _i_res = _instant_answer(
-            _instant_route_hit, clean_msg, context, root,
-            terminal_data_dir, terminal_hub_url, _turn_providers(client, model, turn_providers),
-            stream=True, timing=_i_timing,
-            account_lang=_account_pref(context, "lang"),
-        )
-        if _i_res is not None:
-            _i_model = _i_res.get("model") or model
-            _i_usage = dict(_i_res.get("usage") or {})
-            yield f"data: {json.dumps({**meta_event, 'model': _i_model})}\n\n"
-            yield _ctx_receipt_event
-            yield _delta_sse(_i_res["text"], _i_timing, _instant_t0)
-            _timing_stamp(_i_timing, "total_ms", _instant_t0)
-            _i_usage["latency"] = _i_timing
-            yield "data: " + json.dumps({
-                "type": "done", "route": "instant", "citations": [],
-                "context_receipt": _ctx_receipt,
-                "quota": quota_info, "usage": _i_usage, "filtered": False,
-                "degraded": False, "is_context_only": True}) + "\n\n"
-
-            # Post-wire bookkeeping — same order and same best-effort contract as the
-            # deep path below (the user turn was already persisted at step 4).
-            if effective_thread_id:
-                try:
-                    from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
-                    _append_message(effective_thread_id, "assistant", _i_res["text"],
-                                    meta=_with_retained_context(_bum.assistant_meta(None, _i_res["text"]), _ctx_receipt))
-                except Exception:  # noqa: BLE001
-                    pass
-            _i_in = int(_i_usage.get("input_tokens") or 0)
-            _i_out = int(_i_usage.get("output_tokens") or 0)
-            try:
-                _ac.record_usage(
-                    lane=usage_lane,
-                    provider=(
-                        "codex" if str(_i_model).startswith("gpt-")
-                        else "claude_api" if str(_i_model).startswith("claude")
-                        else "deepseek"
-                    ),
-                    model=_i_model, stage="brain-instant",
-                    input_tokens=_i_in, output_tokens=_i_out,
-                )
-            except Exception:  # noqa: BLE001
-                pass
-            _record_token_usage(user_id, lane, _i_in, _i_out)
-            _log_brain_response(
-                question=clean_msg, answer=_i_res["text"], model=_i_model, lane=lane,
-                mode=mode, thread_id=effective_thread_id, user_id=user_id,
-                user_email=user_email, is_guest=is_guest,
-                latency_ms=int((time.time() - _t0) * 1000),
-                input_tokens=_i_in, output_tokens=_i_out, context=context,
-                latency=_i_timing,
-            )
-            return
-
-    # 6. Run streaming loop (usage_out collects real token counts, fix #1;
-    #    answer_out collects the filtered answer so the assistant turn can persist;
-    #    thinking_out collects the model's reasoning for the response log — LOG-ONLY,
-    #    it never touches the SSE wire)
     usage_out: list = []
     answer_out: list = []
     thinking_out: list = []
     visuals_out: list = []
-    if _grounded:
-        # Spec item 8: the closed corpus is the ONLY source prompt; the loop boolean turns
-        # off tools, digests and addenda, and the corpus drives the final-authority
-        # post-processing inside the stream loop (see _run_brain_loop_stream).
-        research_corpus = _build_research_corpus(root, user_jwt=user_jwt, context=context, grounded=_grounded)
-        stream_source_kwargs = {
-            "source_prompt": _format_research_grounding(research_corpus or {}),
-            "f11_grounded": True,
-            "research_corpus": research_corpus,
+    try:
+        client = providers[0].get("client")
+        model = providers[0].get("model") or "unknown"
+
+        # 3b. Vision (W6c): Pro-gated (operator decision) — Free/Trial answer text-only.
+        # Image turns are served by a claude vision model (in-lane Haiku when a key exists,
+        # else Pro's Opus via OAuth) with token failover. Resolved before the meta event so
+        # the reported model serves the turn.
+        image_blocks = [] if _grounded else _image_blocks(images)  # spec item 8: images disabled
+        turn_providers = providers
+        if image_blocks and not _unlimited_allowed(user_email) and _get_allowance(tier, status, "pro", root).get("limit", 0) == 0:
+            image_blocks = []  # not Pro-eligible → drop attachments (unlimited operators keep vision)
+            # W3: the DROP stands — the model is told, so the reply owns the gate in one sentence.
+            context = _mark_image_gated(context)
+        if image_blocks:
+            vprovs = _vision_providers(lane, providers, root)
+            if vprovs:
+                client = vprovs[0].get("client") or client
+                model = vprovs[0].get("model") or model
+                turn_providers = vprovs
+            else:
+                image_blocks = []
+
+        # 4. Thread store — guests are STATELESS (no rows written; client history carries continuity).
+        effective_thread_id: str | None = None
+        thread_history: list[dict] = []
+        if not is_guest:
+            resolved_tid = _ensure_thread(thread_id, user_id, lane, title=clean_msg)
+            if resolved_tid:
+                effective_thread_id = resolved_tid
+                if thread_id and not _grounded:
+                    thread_history = _load_thread_history(resolved_tid)
+                # Persist the USER turn now, not after the stream. A turn survives its
+                # connection (app/brain_runs.py), so a client that reloads mid-answer
+                # re-opens this thread to watch the rest land — and it must find the
+                # question it asked already there, not a reply hanging off nothing.
+                # Strictly AFTER _load_thread_history, or this message would ride in the
+                # model's history AND as the live message (the same turn, twice).
+                _append_message(resolved_tid, "user",
+                                clean_msg + ("\n\n[image attached]" if image_blocks else ""))
+
+        # Fix #4: filter client history before passing to the stream loop
+        def _filter_client_history_stream(h: list[dict]) -> list[dict]:
+            out = []
+            for item in h:
+                if not isinstance(item, dict):
+                    continue
+                role = item.get("role")
+                content = item.get("content")
+                if role not in ("user", "assistant"):
+                    continue
+                if not isinstance(content, str) or not content:
+                    continue
+                out.append({"role": role, "content": content})
+            return out
+
+        # Trusted server thread history rides as-is; UNTRUSTED client history is screened
+        # (drop forged assistant turns + probe-carrying replays) — see _screen_client_history.
+        raw_history = thread_history if thread_history else _screen_client_history(history or [])
+        # Spec item 8: no thread or client history enters the model on an F11-grounded turn.
+        active_history = [] if _grounded else _filter_client_history_stream(raw_history[-24:])
+
+        # 5. Meta event (always first)
+        meta_event = {
+            "type": "meta",
+            "lane": lane,
+            "model": model,
+            "thread_id": effective_thread_id,
+            "quota": quota_info,
         }
-    else:
-        stream_source_kwargs = (
-            {"source_prompt": source_attachment.resolved.prompt_block,
-             "source_receipt": source_attachment.resolved.receipt}
-            if source_attachment else {}
-        )
-    try:
-        yield from _run_brain_loop_stream(
-            clean_msg, lane, active_history, context or {},
-            root, terminal_data_dir, terminal_hub_url,
-            client, model, max_tokens, tool_budget,
-            meta_event,
-            usage_out,
-            answer_out,
-            thinking_out,
-            mode=mode, image_blocks=image_blocks, providers=turn_providers,
-            user_id=user_id, user_email=user_email,
-            effort=effort, thinking_mode=thinking_mode,
-            deepseek_thinking=deepseek_thinking,
-            context_receipt=_ctx_receipt,
-            visuals_out=visuals_out,
-            **stream_source_kwargs,
-        )
-    except Exception as exc:  # noqa: BLE001
-        log.warning("brain_gateway: stream loop failed (%s)", exc)
-        yield f"data: {json.dumps({'type': 'delta', 'text': _DEGRADED_USER_MSG})}\n\n"
-        yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': quota_info, 'usage': {}, 'filtered': False, 'degraded': True, 'is_context_only': True})}\n\n"
+        # 5b. Instant-fact serve (W5 Contract I). Event shape is the contract's own minimum:
+        #     meta → delta → done, exactly like the pre-screen path the widget already
+        #     handles. ANY failure inside _instant_answer returns None and the deep loop
+        #     below runs untouched — not one byte has reached the wire at this point, which
+        #     is what makes "instant is an optimization, never a new failure mode" true.
+        if _instant_route_hit is not None and fabric_selected is False:
+            _i_timing = _new_turn_timing("instant")
+            _i_res = _instant_answer(
+                _instant_route_hit, clean_msg, context, root,
+                terminal_data_dir, terminal_hub_url, _turn_providers(client, model, turn_providers),
+                stream=True, timing=_i_timing,
+                account_lang=_account_pref(context, "lang"),
+            )
+            if _i_res is not None:
+                _i_model = _i_res.get("model") or model
+                _i_usage = dict(_i_res.get("usage") or {})
+                yield f"data: {json.dumps({**meta_event, 'model': _i_model})}\n\n"
+                yield _ctx_receipt_event
+                yield _delta_sse(_i_res["text"], _i_timing, _instant_t0)
+                _timing_stamp(_i_timing, "total_ms", _instant_t0)
+                _i_usage["latency"] = _i_timing
+                yield "data: " + json.dumps({
+                    "type": "done", "route": "instant", "citations": [],
+                    "context_receipt": _ctx_receipt,
+                    "quota": quota_info, "usage": _i_usage, "filtered": False,
+                    "degraded": False, "is_context_only": True}) + "\n\n"
 
-    # 7. Assistant-turn persistence (best-effort, post-stream) — the streamed text lives
-    #    only on the SSE wire otherwise, so reload and multi-turn model context would
-    #    both lose it. The user turn was already written at step 4. This runs on the
-    #    run's own thread (app/brain_runs.py), so it still happens when the client that
-    #    asked the question is long gone — that is what makes the answer recoverable.
-    if effective_thread_id and answer_out:
-        # Same system-event meta as the non-streaming path (W3), with the SYMBOLS half
-        # only: the streaming loop keeps its message list internal and hands back just
-        # usage/answer/thinking side-channels, so no tool-name list is in scope here and
-        # threading new state through the loop is out of this change's scope. `tools`
-        # therefore ships empty on streamed turns — brain_user_memory falls back to
-        # reading the answer text, which is what every pre-W3 row needs anyway.
-        from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
-        _append_message(effective_thread_id, "assistant", answer_out[0],
-                        meta={**_with_retained_context(_bum.assistant_meta(None, answer_out[0]), _ctx_receipt),
-                              "visuals": visuals_out})
+                # Post-wire bookkeeping — same order and same best-effort contract as the
+                # deep path below (the user turn was already persisted at step 4).
+                if effective_thread_id:
+                    try:
+                        from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
+                        _append_message(effective_thread_id, "assistant", _i_res["text"],
+                                        meta=_with_retained_context(_bum.assistant_meta(None, _i_res["text"]), _ctx_receipt))
+                    except Exception:  # noqa: BLE001
+                        pass
+                _i_in = int(_i_usage.get("input_tokens") or 0)
+                _i_out = int(_i_usage.get("output_tokens") or 0)
+                try:
+                    _ac.record_usage(
+                        lane=usage_lane,
+                        provider=(
+                            "codex" if str(_i_model).startswith("gpt-")
+                            else "claude_api" if str(_i_model).startswith("claude")
+                            else "deepseek"
+                        ),
+                        model=_i_model, stage="brain-instant",
+                        input_tokens=_i_in, output_tokens=_i_out,
+                    )
+                except Exception:  # noqa: BLE001
+                    pass
+                _record_token_usage(user_id, lane, _i_in, _i_out)
+                _log_brain_response(
+                    question=clean_msg, answer=_i_res["text"], model=_i_model, lane=lane,
+                    mode=mode, thread_id=effective_thread_id, user_id=user_id,
+                    user_email=user_email, is_guest=is_guest,
+                    latency_ms=int((time.time() - _t0) * 1000),
+                    input_tokens=_i_in, output_tokens=_i_out, context=context,
+                    latency=_i_timing,
+                )
+                return
 
-    # 8. Cost record (fix #1: real tokens; fix #2: accumulate ceiling backstop)
-    usage_dict = usage_out[0] if usage_out else {}
-    in_tok = int(usage_dict.get("input_tokens") or 0)
-    out_tok = int(usage_dict.get("output_tokens") or 0)
-    try:
-        _ac.record_usage(
-            lane=usage_lane,
-            # Attribute to the provider that ACTUALLY served the turn, not the lane:
-            # a Fast image turn is served by Haiku (claude_api), not DeepSeek.
-            provider=(
-                "codex" if str(model).startswith("gpt-")
-                else "claude_api" if str(model).startswith("claude")
-                else "deepseek"
-            ),
-            model=model,
-            stage="brain-stream",
-            input_tokens=in_tok,
-            output_tokens=out_tok,
-        )
-    except Exception:  # noqa: BLE001
-        pass
+        # 6. Run streaming loop (usage_out collects real token counts, fix #1;
+        #    answer_out collects the filtered answer so the assistant turn can persist;
+        #    thinking_out collects the model's reasoning for the response log — LOG-ONLY,
+        #    it never touches the SSE wire)
+        if _grounded:
+            # Spec item 8: the closed corpus is the ONLY source prompt; the loop boolean turns
+            # off tools, digests and addenda, and the corpus drives the final-authority
+            # post-processing inside the stream loop (see _run_brain_loop_stream).
+            research_corpus = _build_research_corpus(root, user_jwt=user_jwt, context=context, grounded=_grounded)
+            stream_source_kwargs = {
+                "source_prompt": _format_research_grounding(research_corpus or {}),
+                "f11_grounded": True,
+                "research_corpus": research_corpus,
+            }
+        else:
+            stream_source_kwargs = (
+                {"source_prompt": source_attachment.resolved.prompt_block,
+                 "source_receipt": source_attachment.resolved.receipt}
+                if source_attachment else {}
+            )
+        try:
+            yield from _run_brain_loop_stream(
+                clean_msg, lane, active_history, context or {},
+                root, terminal_data_dir, terminal_hub_url,
+                client, model, max_tokens, tool_budget,
+                meta_event,
+                usage_out,
+                answer_out,
+                thinking_out,
+                mode=mode, image_blocks=image_blocks, providers=turn_providers,
+                user_id=user_id, user_email=user_email,
+                effort=effort, thinking_mode=thinking_mode,
+                deepseek_thinking=deepseek_thinking,
+                context_receipt=_ctx_receipt,
+                visuals_out=visuals_out,
+                **stream_source_kwargs,
+            )
+        except Exception as exc:  # noqa: BLE001
+            failed_usage = {}
+            if fabric_selected is True:
+                from engine import llm_auth  # noqa: PLC0415
+                llm_auth.fabric_failure(providers[0], exc)
+                failed_usage = llm_auth.fabric_usage(providers[0])
+                usage_out[:] = [failed_usage]
+                answer_out.clear()  # Never persist the display-only degraded notice.
+                log.warning("brain_gateway: Fabric stream failed; no fallback")
+                yield _wipe_event()
+            else:
+                log.warning("brain_gateway: stream loop failed (%s)", exc)
+            yield f"data: {json.dumps({'type': 'delta', 'text': _DEGRADED_USER_MSG})}\n\n"
+            failed_identity = (_fabric_served_identity(providers[0])
+                               if fabric_selected is True else {})
+            yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': quota_info, 'usage': failed_usage, 'filtered': False, 'degraded': True, 'is_context_only': True, **failed_identity})}\n\n"
+        _stream_finished = True
+    finally:
+        try:
+            if fabric_provider is not None or _stream_finished:
+                # 7. Assistant-turn persistence (best-effort, post-stream) — the streamed text lives
+                #    only on the SSE wire otherwise, so reload and multi-turn model context would
+                #    both lose it. The user turn was already written at step 4. This runs on the
+                #    run's own thread (app/brain_runs.py), so it still happens when the client that
+                #    asked the question is long gone — that is what makes the answer recoverable.
+                if effective_thread_id and answer_out and (fabric_provider is None or answer_out[0].strip()):
+                    # Same system-event meta as the non-streaming path (W3), with the SYMBOLS half
+                    # only: the streaming loop keeps its message list internal and hands back just
+                    # usage/answer/thinking side-channels, so no tool-name list is in scope here and
+                    # threading new state through the loop is out of this change's scope. `tools`
+                    # therefore ships empty on streamed turns — brain_user_memory falls back to
+                    # reading the answer text, which is what every pre-W3 row needs anyway.
+                    try:
+                        from engine.neuralweb import brain_user_memory as _bum  # noqa: PLC0415
+                        _append_message(effective_thread_id, "assistant", answer_out[0],
+                                        meta={**_with_retained_context(_bum.assistant_meta(None, answer_out[0]), _ctx_receipt),
+                                              "visuals": visuals_out})
 
-    # Fix #2: accumulate towards the monthly token ceiling backstop
-    _record_token_usage(user_id, lane, in_tok, out_tok)
+                    except Exception:  # noqa: BLE001 — incumbent best-effort store, no replay
+                        log.warning("brain_gateway: assistant persistence unavailable")
 
-    # 9. Response log (evaluation/training corpus) — best-effort, off the wire.
-    #    The answer already reached the client (delta/done yielded above); this
-    #    fire-and-forget write mirrors the cost-record step and never blocks.
-    _log_brain_response(
-        question=clean_msg,
-        answer=(answer_out[0] if answer_out else ""),
-        model=model, lane=lane, mode=mode,
-        thread_id=effective_thread_id, user_id=user_id, user_email=user_email,
-        is_guest=is_guest, latency_ms=int((time.time() - _t0) * 1000),
-        input_tokens=in_tok, output_tokens=out_tok, context=context,
-        thinking=(thinking_out[0] if thinking_out else []),
-        # W5 Contract M: the per-round breakdown behind that one latency_ms number.
-        latency=usage_dict.get("latency"),
-    )
+                # Settle once for the original run, even when its subscriber detached.
+                usage_dict = _settle_brain_usage(
+                    usage_out[0] if usage_out else {},
+                    provider=providers[0] if fabric_selected is True else None,
+                    model=model, usage_lane=usage_lane, stage="brain-stream", user_id=user_id, lane=lane,
+                )
+                in_tok = usage_dict.get("input_tokens")
+                out_tok = usage_dict.get("output_tokens")
+
+                # 9. Response log (evaluation/training corpus) — best-effort, off the wire.
+                #    The answer already reached the client (delta/done yielded above); this
+                #    fire-and-forget write mirrors the cost-record step and never blocks.
+                _log_brain_response(
+                    question=clean_msg,
+                    answer=(answer_out[0] if answer_out else ""),
+                    model=_fabric_served_identity(providers[0])["model"] if fabric_selected is True else model,
+                    lane=lane, mode=mode,
+                    thread_id=effective_thread_id, user_id=user_id, user_email=user_email,
+                    is_guest=is_guest, latency_ms=int((time.time() - _t0) * 1000),
+                    input_tokens=in_tok, output_tokens=out_tok, context=context,
+                    thinking=(thinking_out[0] if thinking_out else []),
+                    provider=_fabric_served_identity(providers[0])["provider"] if fabric_selected is True else None,
+                    flags={"degraded": bool(providers[0].get("_fabric_failure"))} if fabric_selected is True else None,
+                    # W5 Contract M: the per-round breakdown behind that one latency_ms number.
+                    latency=usage_dict.get("latency"),
+                )
+        finally:
+            if fabric_provider is not None:
+                from engine import llm_auth  # noqa: PLC0415
+                llm_auth.close_fabric_provider(fabric_provider)
 
 
 def _log_brain_response(**kwargs) -> None:

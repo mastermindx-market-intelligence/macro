@@ -526,6 +526,470 @@ def _cache_path(root: Path | str | None) -> Path:
     return base / CACHE_REL
 
 
+
+_FABRIC_CACHE_SCHEMA = "mastermind.intelligence_desk.fabric_operation.v1"
+
+
+def _unique_cache_object(pairs):
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError("intelligence_cache_duplicate_key")
+        value[key] = item
+    return value
+
+
+def _canonical(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=False, allow_nan=False).encode("utf-8")
+
+
+def _row_unresolved(row):
+    if not isinstance(row, dict) or "fabric_operation" not in row:
+        return False
+    entry = row["fabric_operation"]
+    try:
+        _validate_fabric_result(entry)
+        return entry["state"] != "terminal" or entry["receipt"]["effect_unknown"] is not False
+    except (KeyError, TypeError, ValueError):
+        return True
+
+def _validate_fabric_result(entry):
+    """Reject malformed saved output before any caller packet can be mutated."""
+    frozen = entry["input"]
+    if (set(frozen) != {"facts", "shapes", "max_tokens", "system", "prompt", "seed"}
+            or not isinstance(frozen["facts"], dict)
+            or not isinstance(frozen["shapes"], list)
+            or any(shape not in {"analysis", "wire"} for shape in frozen["shapes"])
+            or len(set(frozen["shapes"])) != len(frozen["shapes"])
+            or type(frozen["max_tokens"]) is not int or not 0 < frozen["max_tokens"] <= 32768
+            or not isinstance(frozen["system"], str) or not isinstance(frozen["prompt"], str)
+            or not isinstance(frozen["seed"], dict)
+            or frozen["seed"].get("id") != entry["identity"]["story_id"]
+            or not isinstance(frozen["seed"].get("evidence"), list)
+            or not isinstance(frozen["seed"].get("drafts"), list)
+            or any(not isinstance(row, dict) for row in
+                   frozen["seed"]["evidence"] + frozen["seed"]["drafts"])):
+        raise ValueError("intelligence_cache_input_invalid")
+    saved, receipt = entry.get("result"), entry.get("receipt")
+    if entry["state"] == "pending":
+        if saved is not None or receipt is not None:
+            raise ValueError("intelligence_cache_pending_result")
+        return
+    if (not isinstance(saved, dict) or set(saved) !=
+            {"analysis", "why", "wire", "replied", "violations", "accepted", "drafts"}
+            or any(type(saved.get(key)) is not bool for key in ("analysis", "why", "wire", "replied"))
+            or not isinstance(saved["violations"], list)
+            or any(not isinstance(value, str) for value in saved["violations"])
+            or not isinstance(saved["accepted"], dict)
+            or set(saved["accepted"]) - {"analysis", "why", "wire"}
+            or any(not isinstance(value, str) or not value.strip()
+                   for value in saved["accepted"].values())
+            or any(saved[key] != (key in saved["accepted"]) for key in ("analysis", "why", "wire"))
+            or saved["accepted"] and not saved["replied"]
+            or not isinstance(saved["drafts"], list)
+            or any(not isinstance(row, dict) for row in saved["drafts"])
+            or not isinstance(receipt, dict)
+            or receipt.get("operation_id") != entry["operation_id"]
+            or type(receipt.get("effect_unknown")) is not bool
+            or receipt["effect_unknown"] != (entry["state"] == "held")):
+        raise ValueError("intelligence_cache_result_invalid")
+    close = receipt.get("close")
+    if (not isinstance(close, dict)
+            or entry["state"] == "terminal" and (
+                receipt.get("native_disposition") in {"pending", "effect_unknown"}
+                or close.get("effect_unknown") is True
+                or close.get("disposition") in {"pending", "effect_unknown"})):
+        raise ValueError("intelligence_cache_uncertainty_conflict")
+    expected = []
+    seed = frozen["seed"]
+    if "analysis" in saved["accepted"]:
+        expected.append(_analysis_draft(saved["accepted"]["analysis"], seed,
+                                       now=_parse_iso(entry["generated_at"])))
+    if "wire" in saved["accepted"]:
+        text = saved["accepted"]["wire"]
+        source_url = next((str(row.get("source_url") or "") for row in seed["drafts"]
+                           if row.get("shape") == "wire"), None)
+        if source_url is None:
+            source_url = next((str(row.get("source_url") or "") for row in seed["drafts"]
+                               if row.get("source_url")), "")
+        expected.append({"id": "draft_" + hashlib.sha1(
+                f"{entry['identity']['story_id']}|wire|{text}".encode("utf-8")).hexdigest()[:16],
+            "shape": "wire", "text": text, "status": "review", "characters": len(text),
+            "requires_review": True, "source_url": source_url, "origin": "llm",
+            "updated_at": entry["generated_at"]})
+    if saved["drafts"] != expected:
+        raise ValueError("intelligence_cache_drafts_invalid")
+
+
+def _read_cache_strict(root):
+    try:
+        with _cache_path(root).open("rb") as stream:
+            raw = stream.read(16 * 1024 * 1024 + 1)
+    except FileNotFoundError:
+        return {}
+    if len(raw) > 16 * 1024 * 1024:
+        raise ValueError("intelligence_cache_too_large")
+    value = json.loads(raw, object_pairs_hook=_unique_cache_object,
+        parse_constant=lambda _value: (_ for _ in ()).throw(ValueError("intelligence_cache_nonfinite")))
+    return _validate_cache_value(value)
+
+
+def _validate_cache_value(value):
+    if not isinstance(value, dict) or any(not isinstance(row, dict) for row in value.values()):
+        raise ValueError("intelligence_cache_invalid")
+    for sid, row in value.items():
+        if "fabric_operation" not in row:
+            continue
+        entry = row["fabric_operation"]
+        if (not isinstance(sid, str) or not sid or not isinstance(entry, dict)
+                or entry.get("schema") != _FABRIC_CACHE_SCHEMA
+                or not isinstance(entry.get("operation_id"), str)
+                or re.fullmatch(r"app:[0-9a-f]{32}", entry["operation_id"]) is None
+                or not isinstance(entry.get("input_sha256"), str)
+                or re.fullmatch(r"[0-9a-f]{64}", entry["input_sha256"]) is None
+                or not isinstance(entry.get("input"), dict)
+                or hashlib.sha256(_canonical(entry["input"])).hexdigest() != entry["input_sha256"]
+                or not isinstance(entry.get("identity"), dict)
+                or entry["identity"].get("story_id") != sid
+                or entry["identity"].get("headline_sha1") != row.get("headline_sha1")
+                or entry.get("state") not in {"pending", "terminal", "held"}
+                or not isinstance(entry.get("selection"), dict)
+                or not isinstance(entry["selection"].get("identity"), dict)
+                or _parse_iso(entry.get("generated_at")) is None
+                or entry.get("result") is not None and not isinstance(entry["result"], dict)
+                or entry.get("receipt") is not None and not isinstance(entry["receipt"], dict)):
+            raise ValueError("intelligence_cache_operation_invalid")
+        if entry["state"] != "pending" and (entry["result"] is None or entry["receipt"] is None):
+            raise ValueError("intelligence_cache_terminal_invalid")
+        if entry["state"] == "terminal" and entry["receipt"].get("effect_unknown") is not False:
+            raise ValueError("intelligence_cache_terminal_unknown")
+        _validate_fabric_result(entry)
+    return value
+
+
+def _fsync_cache_directory(path):
+    fd = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def _cache_lock(root):
+    from contextlib import contextmanager
+
+    @contextmanager
+    def locked():
+        import fcntl
+        base = Path(root) if root is not None else Path(__file__).resolve().parents[2]
+        if not base.is_dir():
+            raise ValueError("intelligence_existing_root_required")
+        parent = _cache_path(base).parent
+        parent.mkdir(parents=True, exist_ok=True)
+        # Re-establish every owned link even after an earlier visible mkdir
+        # whose parent synchronization failed.
+        for directory in (base, base / "data", base / "data/marketing", parent):
+            _fsync_cache_directory(directory)
+        with (parent / "intel_llm_cache.json.lock").open("a+b") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            try:
+                _fsync_cache_directory(parent)
+                yield
+            finally:
+                fcntl.flock(lock, fcntl.LOCK_UN)
+    return locked()
+
+
+def _write_cache_strict(root, cache):
+    _validate_cache_value(cache)
+    path = _cache_path(root)
+    payload = _canonical(cache) + b"\n"
+    if len(payload) > 16 * 1024 * 1024:
+        raise ValueError("intelligence_cache_too_large")
+    fd, name = tempfile.mkstemp(prefix="intel_llm_cache.", suffix=".stage", dir=path.parent)
+    stage = Path(name)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(stage, path)
+        _fsync_cache_directory(path.parent)
+        if path.read_bytes() != payload or _read_cache_strict(root) != cache:
+            raise ValueError("intelligence_cache_readback_failed")
+    finally:
+        stage.unlink(missing_ok=True)
+
+
+def _application_mode(block):
+    from engine import llm_auth
+    return llm_auth.application_mode_id(block)
+
+
+def _selected_route(block, mode):
+    import math
+    from engine import llm_auth, provider_production_modes as owner
+    maximum = block.get("max_tokens", DEFAULT_MAX_TOKENS)
+    timeout = block.get("client_timeout_s", DEFAULT_CLIENT_TIMEOUT_S)
+    if (type(maximum) is not int or not 0 < maximum <= 32768
+            or type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0):
+        raise ValueError("intelligence_request_invalid")
+    selected = {**block, "provider_order": ["fabric"],
+        "client_timeout_s": min(float(timeout), DEFAULT_CLIENT_TIMEOUT_S),
+        "client_max_retries": 0}
+    selected.setdefault("workload_profile", "site_batch")
+    selected.setdefault("oauth_pool_lane", "application")
+    selected.setdefault("usage_lane", "intelligence-desk")
+    factory = owner.make_application_fabric_factory(mode_id=mode,
+        lane=str(selected["oauth_pool_lane"]), workload_cfg=selected,
+        root=llm_auth._repo_root())
+    identity = factory.inspect(selected)
+    return factory.with_inspection(identity), selected, identity, maximum
+
+
+def _empty_outcome():
+    return {"analysis": False, "why": False, "wire": False,
+            "replied": False, "violations": []}
+
+
+def _selected_outcome(reason, entry=None):
+    result = {**_empty_outcome(), "fabric_selected": True, "fabric_reason": reason}
+    if entry is not None:
+        result["fabric_operation"] = {key: entry[key] for key in
+            ("schema", "operation_id", "input_sha256", "identity", "selection", "state", "receipt")}
+        result["replied"] = bool((entry.get("result") or {}).get("replied"))
+    return result
+
+
+def _frozen_input(packet, shapes, maximum):
+    facts = build_fact_packet(packet)
+    evidence = [row for row in (packet.get("evidence") or []) if isinstance(row, dict)]
+    drafts = [row for row in (packet.get("drafts") or []) if isinstance(row, dict)]
+    # This seed carries original provenance, never a copy of private packet fields.
+    seed = {"id": packet["id"], "evidence": [
+        {"url": _clean(evidence[0].get("url"), 900)}] if evidence else [], "drafts": []}
+    for row in drafts:
+        if row.get("shape") == "wire":
+            seed["drafts"] = [{"shape": "wire", "source_url": _clean(row.get("source_url"), 900),
+                              "requires_review": True}]
+            break
+    if not seed["drafts"] and drafts:
+        seed["drafts"] = [{"shape": "long_post", "source_url": next(
+            (_clean(row.get("source_url"), 900) for row in drafts if row.get("source_url")), "")}]
+    return {"facts": facts, "shapes": list(shapes), "max_tokens": maximum,
+            "system": SYSTEM_PROMPT, "prompt": build_user_message(facts, shapes=shapes), "seed": seed}
+
+
+def _complete_selected(block, mode, route, entry):
+    from engine import llm_auth
+    provider = None
+    error = None
+    observed = {}
+    raw = None
+    factory, selected_cfg, _identity, maximum = route
+
+    def complete(client, model):
+        response = client.messages.create(model=model, max_tokens=maximum,
+            system=SYSTEM_PROMPT, messages=[{"role": "user", "content": entry["input"]["prompt"]}])
+        observed.update(response=True, model=response.model)
+        if (response.stop_reason != "end_turn" or not response.content
+                or any(getattr(part, "type", None) != "text" for part in response.content)):
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+        text = "".join(part.text for part in response.content).strip()
+        if not text:
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+        return text, None, response
+
+    try:
+        if _application_mode(block) != mode:
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
+        provider = llm_auth.build_fabric_provider(factory, request_id=entry["operation_id"],
+                                                workload_cfg=selected_cfg)
+        provider["usage_lane"] = str(selected_cfg["usage_lane"])
+        provider["usage_stage"] = "intelligence_desk"
+        provider["usage_cycle_id"] = entry["operation_id"]
+        with llm_auth.begin_operation([provider], operation_id=entry["operation_id"],
+                                     context="intelligence_desk") as operation:
+            text, _reason, _used = llm_auth.make_call(operation.providers, complete,
+                                                    context="intelligence_desk")
+            raw = json.loads(text, object_pairs_hook=_unique_cache_object,
+                parse_constant=lambda _value: (_ for _ in ()).throw(ValueError("nonfinite reply")))
+    except Exception as exc:
+        error = exc
+    finally:
+        if provider is not None:
+            llm_auth.close_fabric_provider(provider)
+
+    failure = provider.get("_fabric_failure") if provider else None
+    close = dict(provider.get("_fabric_close") or {}) if provider else {}
+    disposition = provider.get("_fabric_native_disposition") if provider else None
+    observation = (dict(provider["_fabric_last_observation"])
+        if provider and isinstance(provider.get("_fabric_last_observation"), dict) else None)
+    unknown = (bool(getattr(error, "effect_unknown", False))
+        or bool(getattr(failure, "effect_unknown", False))
+        or bool(provider and provider.get("_fabric_pending"))
+        or disposition in {"pending", "effect_unknown"}
+        or close.get("effect_unknown") is True
+        or close.get("disposition") in {"pending", "effect_unknown"})
+    receipt = {"operation_id": entry["operation_id"],
+        "provider": provider.get("provider") if provider else None,
+        "model": observed.get("model") or (observation or {}).get("serving_model"),
+        "usage": llm_auth.fabric_usage(provider) if provider else None,
+        "observed_usage": observation, "effect_unknown": unknown,
+        "native_disposition": disposition or ("completed" if observed.get("response")
+            else "unavailable" if provider else "not_started"), "close": close}
+    result = {**_empty_outcome(), "replied": bool(observed.get("response")),
+              "accepted": {}, "drafts": []}
+    try:
+        if isinstance(raw, dict):
+            seed = json.loads(json.dumps(entry["input"]["seed"]))
+            checked = _apply_reply(seed, raw, fact_packet=entry["input"]["facts"],
+                now=_parse_iso(entry["generated_at"]), shapes=tuple(entry["input"]["shapes"]),
+                record_stats=False)
+            result.update({key: checked[key] for key in ("analysis", "why", "wire", "violations")})
+            for shape in ("analysis", "wire"):
+                if checked[shape]:
+                    draft = next(row for row in seed["drafts"] if row.get("shape") == shape)
+                    draft["requires_review"] = True
+                    result["accepted"][shape] = draft["text"]
+                    result["drafts"].append(draft)
+            if checked["why"]:
+                result["accepted"]["why"] = seed["why_it_matters_en"]
+    except Exception:
+        result = {**_empty_outcome(), "replied": bool(observed.get("response")),
+                  "accepted": {}, "drafts": [], "violations": ["fabric:output_validation_failed"]}
+    return {**entry, "state": "held" if unknown else "terminal",
+            "result": result, "receipt": receipt}
+
+
+def _apply_selected(packet, block, entry, *, replay, shapes):
+    result = _selected_outcome("fabric_original_unsettled" if entry["state"] != "terminal"
+                               else "fabric_original_completed", entry)
+    _validate_fabric_result(entry)
+    if (not bool(block.get("enabled", False))
+            or os.environ.get(_ENV_FLAG, "").strip().lower() not in _TRUTHY
+            or not eligible_packets([packet], max_per_tick=1)):
+        result["fabric_reason"] = "fabric_original_not_armed_or_eligible"
+        return result
+    if set(shapes) - {"wire", "analysis"} or len(set(shapes)) != len(shapes):
+        result["fabric_reason"] = "fabric_original_shapes_invalid"
+        return result
+    saved = entry.get("result")
+    if not saved or not saved.get("accepted"):
+        return result
+    # Frozen facts determine applicability, not a new operation identity.
+    if (packet.get("id") != entry["identity"]["story_id"]
+            or headline_fingerprint(packet.get("headline")) != entry["identity"]["headline_sha1"]
+            or build_fact_packet(packet) != entry["input"]["facts"]):
+        result["fabric_reason"] = "fabric_original_input_conflict"
+        return result
+    if replay:
+        try:
+            mode = _application_mode(block)
+            if mode != entry["selection"]["mode_id"]:
+                raise ValueError("selection changed")
+            route = _selected_route(block, mode)
+            if route[2] != entry["selection"]["identity"]:
+                raise ValueError("inspection changed")
+        except Exception:
+            result["fabric_reason"] = "fabric_original_selection_changed"
+            return result
+    result["violations"] = list(saved["violations"])
+    # Only originally accepted fields are considered. Current validation may
+    # narrow acceptance; no rejected raw field survives to be promoted later.
+    accepted = {}
+    for key, text in saved["accepted"].items():
+        if key != "why" and key not in shapes:
+            continue
+        violations = validate_desk_copy(text, entry["input"]["facts"], shape=key)
+        if violations:
+            result["violations"].extend(key + ":" + item for item in violations)
+        else:
+            accepted[key] = text
+    for shape in ("analysis", "wire"):
+        if shape not in accepted:
+            continue
+        draft = next(row for row in saved["drafts"] if row.get("shape") == shape)
+        expected = "draft_" + hashlib.sha1(
+            f"{entry['identity']['story_id']}|{shape}|{accepted[shape]}".encode("utf-8")).hexdigest()[:16]
+        if (draft.get("id") != expected or draft.get("text") != accepted[shape]
+                or draft.get("requires_review") is not True or draft.get("origin") != "llm"):
+            result["fabric_reason"] = "fabric_saved_draft_invalid"
+            return result
+    for shape in ("analysis", "wire"):
+        if shape in accepted:
+            draft = dict(next(row for row in saved["drafts"] if row.get("shape") == shape))
+            packet["drafts"] = [row for row in (packet.get("drafts") or [])
+                if isinstance(row, dict) and row.get("shape") != shape] + [draft]
+            result[shape] = True
+            if not replay:
+                _bump("phrased_" + shape)
+    if "why" in accepted:
+        packet["why_it_matters_en"] = accepted["why"]
+        packet["_why_phrased"] = True
+        result["why"] = True
+        if not replay:
+            _bump("phrased_why")
+    if result["violations"] and not replay:
+        _bump("rejected")
+    return result
+
+
+def _selected_phrase(packet, block, now, shapes, root, mode):
+    import secrets
+    try:
+        sid = _clean(packet.get("id"), 96)
+        if (not sid or packet.get("id") != sid or set(shapes) - {"wire", "analysis"}
+                or len(set(shapes)) != len(shapes)):
+            raise ValueError("intelligence_story_identity_required")
+        route = _selected_route(block, mode)
+        frozen = _frozen_input(packet, shapes, route[3])
+        digest = hashlib.sha256(_canonical(frozen)).hexdigest()
+        with _cache_lock(root):
+            cache = _read_cache_strict(root)
+            row = cache.get(sid)
+            if isinstance(row, dict) and "fabric_operation" in row:
+                retained = row["fabric_operation"]
+                if (_row_unresolved(row) or row.get("headline_sha1") == headline_fingerprint(packet.get("headline"))
+                        and sid in prune_cache({sid: row}, now=now)):
+                    return _apply_selected(packet, block, retained, replay=True, shapes=shapes)
+            cache = prune_cache(cache, now=now)
+            if sid not in cache:
+                removable = sorted((key for key, value in cache.items() if not _row_unresolved(value)),
+                                   key=lambda key: str(cache[key].get("ts") or ""))
+                while len(cache) >= CACHE_MAX_ENTRIES and removable:
+                    del cache[removable.pop(0)]
+                if len(cache) >= CACHE_MAX_ENTRIES:
+                    raise ValueError("intelligence_unsettled_cache_full")
+            entry = {"schema": _FABRIC_CACHE_SCHEMA, "operation_id": "app:" + secrets.token_hex(16),
+                "identity": {"story_id": sid, "headline_sha1": headline_fingerprint(packet.get("headline"))},
+                "input": frozen, "input_sha256": digest, "selection": {"mode_id": mode, "identity": route[2]},
+                "state": "pending", "generated_at": _iso(now), "result": None, "receipt": None}
+            cache[sid] = {"headline_sha1": entry["identity"]["headline_sha1"], "ts": _iso(now),
+                          "fabric_operation": entry}
+            _write_cache_strict(root, cache)
+    except Exception:
+        return _selected_outcome("fabric_claim_unavailable")
+    settled = _complete_selected(block, mode, route, entry)
+    try:
+        with _cache_lock(root):
+            cache = _read_cache_strict(root)
+            current = cache.get(sid, {}).get("fabric_operation")
+            if (not isinstance(current, dict) or current.get("operation_id") != entry["operation_id"]
+                    or current.get("input_sha256") != digest or current.get("state") != "pending"):
+                raise ValueError("intelligence_original_changed")
+            cache[sid]["fabric_operation"] = settled
+            _write_cache_strict(root, cache)
+    except Exception:
+        # No artifact application until the original result is durable.
+        return _selected_outcome("fabric_result_persistence_unconfirmed", entry)
+    try:
+        return _apply_selected(packet, block, settled, replay=False, shapes=shapes)
+    except Exception:
+        return _selected_outcome("fabric_original_application_unavailable", settled)
+
+
 def load_cache(root: Path | str | None) -> dict:
     """{story_id: {headline_sha1, ts}} — {} on any fault (a cache is never load-bearing)."""
     try:
@@ -536,20 +1000,19 @@ def load_cache(root: Path | str | None) -> dict:
 
 
 def prune_cache(cache: dict, *, now: datetime) -> dict:
-    """TTL-prune (48 h) then hard-cap (500 newest). Pure."""
+    """Bound ordinary/complete cache rows; unresolved originals never expire."""
     now_utc = _utc(now)
-    kept: list[tuple[str, dict]] = []
+    protected = {str(sid): row for sid, row in (cache or {}).items() if _row_unresolved(row)}
+    kept = []
     for sid, row in (cache or {}).items():
-        if not isinstance(row, dict):
+        if str(sid) in protected or not isinstance(row, dict):
             continue
         stamp = _parse_iso(row.get("ts"))
-        if stamp is None:
-            continue
-        if (now_utc - stamp).total_seconds() > CACHE_TTL_H * 3600.0:
+        if stamp is None or (now_utc - stamp).total_seconds() > CACHE_TTL_H * 3600.0:
             continue
         kept.append((str(sid), row))
     kept.sort(key=lambda item: str(item[1].get("ts") or ""), reverse=True)
-    return dict(kept[:CACHE_MAX_ENTRIES])
+    return {**dict(kept[:max(0, CACHE_MAX_ENTRIES - len(protected))]), **protected}
 
 
 def _parse_iso(value: object) -> datetime | None:
@@ -562,35 +1025,27 @@ def _parse_iso(value: object) -> datetime | None:
         return None
 
 
-def save_cache(root: Path | str | None, cache: dict) -> None:
-    """Atomic write (tmp + fsync + replace). Never raises — a lost cache costs
-    one re-phrase, a crashed tick costs the whole desk."""
-    path = _cache_path(root)
+def save_cache(root: Path | str | None, cache: dict, *, now: datetime | None = None) -> None:
+    """Native cache publication shares the selected owner's lock and merge."""
     try:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8") as fh:
-                json.dump(cache, fh, ensure_ascii=False, separators=(",", ":"))
-                fh.write("\n")
-                fh.flush()
-                os.fsync(fh.fileno())
-            os.chmod(tmp_name, 0o644)
-            os.replace(tmp_name, path)
-        except Exception:
-            try:
-                os.unlink(tmp_name)
-            except OSError:
-                pass
-            raise
-    except Exception as exc:  # noqa: BLE001
-        log.warning("[intelligence_llm] cache write skipped (%s: %s)",
-                    type(exc).__name__, exc)
+        base = Path(root) if root is not None else Path(__file__).resolve().parents[2]
+        base.mkdir(parents=True, exist_ok=True)
+        with _cache_lock(base):
+            current = _read_cache_strict(base)
+            # A stale native tick cannot erase or replace an original operation.
+            selected = {key: row for key, row in current.items() if "fabric_operation" in row}
+            ordinary = {key: row for key, row in cache.items()
+                        if isinstance(row, dict) and "fabric_operation" not in row and key not in selected}
+            ordinary = dict(sorted(ordinary.items(), key=lambda item: str(item[1].get("ts") or ""),
+                                   reverse=True)[:max(0, CACHE_MAX_ENTRIES - len(selected))])
+            merged = {**ordinary, **selected}
+            # Only a current owner transaction may retire completed cache rows.
+            if now is not None:
+                merged = prune_cache(merged, now=now)
+            _write_cache_strict(base, merged)
+    except Exception as exc:
+        log.warning("[intelligence_llm] cache write skipped (%s)", type(exc).__name__)
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# The provider call
-# ─────────────────────────────────────────────────────────────────────────────
 
 def _tidy(text: str) -> str:
     """Strip the wrappers a model adds despite the output law — fences, prose."""
@@ -622,7 +1077,12 @@ def _parse_reply(raw: str) -> dict:
 
 
 def _call_model(fact_packet: dict, block: dict, *, shapes: tuple[str, ...]) -> dict:
-    """One provider call for one story. Returns the parsed reply, or {}."""
+    """Native-only helper; a selected call requires the durable public owner."""
+    try:
+        if _application_mode(block) is not None:
+            return {}
+    except Exception:
+        return {}
     from engine import llm_auth  # noqa: PLC0415
 
     provider_cfg = {
@@ -713,32 +1173,11 @@ def _analysis_draft(text: str, packet: dict, *, now: datetime) -> dict:
     }
 
 
-def phrase_packet(packet: dict, *, block: dict, now: datetime,
-                  shapes: tuple[str, ...]) -> dict:
-    """Phrase ONE story in place. Never raises; returns what it changed.
-
-    Returns ``{"analysis": bool, "why": bool, "wire": bool, "replied": bool,
-    "violations": [...]}``. Every False is a deterministic-content-stands
-    outcome, which is why nothing here has an error path the caller has to
-    handle. ``replied`` separates "the model answered and we rejected it" from
-    "no model answered at all" — the caller caches the first and retries the
-    second.
-    """
-    outcome: dict[str, Any] = {
-        "analysis": False, "why": False, "wire": False, "replied": False,
-        "violations": [],
-    }
-    fact_packet = build_fact_packet(packet)
-    try:
-        reply = _call_model(fact_packet, block, shapes=shapes)
-    except Exception as exc:  # noqa: BLE001 — a provider fault never breaks the desk
-        log.warning("[intelligence_llm] provider path failed for story=%s (%s: %s)",
-                    _clean(packet.get("id"), 96), type(exc).__name__, exc)
-        _bump("provider_fail")
-        return outcome
-    if not reply:
-        _bump("provider_fail")
-        return outcome
+def _apply_reply(packet, reply, *, fact_packet, now, shapes, record_stats=True):
+    outcome = _empty_outcome()
+    def bump(key):
+        if record_stats:
+            _bump(key)
     outcome["replied"] = True
 
     def _accept(key: str, shape: str) -> str:
@@ -760,7 +1199,7 @@ def phrase_packet(packet: dict, *, block: dict, now: datetime,
             drafts.append(_analysis_draft(text, packet, now=now))
             packet["drafts"] = drafts
             outcome["analysis"] = True
-            _bump("phrased_analysis")
+            bump("phrased_analysis")
 
     why = _accept("why", "why")
     if why:
@@ -770,7 +1209,7 @@ def phrase_packet(packet: dict, *, block: dict, now: datetime,
         # keys never reach the served snapshot (recursive leak test).
         packet["_why_phrased"] = True
         outcome["why"] = True
-        _bump("phrased_why")
+        bump("phrased_why")
 
     if "wire" in shapes:
         text = _accept("wire", "wire")
@@ -795,7 +1234,7 @@ def phrase_packet(packet: dict, *, block: dict, now: datetime,
                         f"{_clean(packet.get('id'), 96)}|wire|{text}".encode("utf-8")
                     ).hexdigest()[:16]
                     outcome["wire"] = True
-                    _bump("phrased_wire")
+                    bump("phrased_wire")
                     break
             else:
                 # Review N13: a story whose only deterministic draft is
@@ -820,10 +1259,10 @@ def phrase_packet(packet: dict, *, block: dict, now: datetime,
                         "updated_at": _iso(now),
                     })
                     outcome["wire"] = True
-                    _bump("phrased_wire")
+                    bump("phrased_wire")
 
     if outcome["violations"]:
-        _bump("rejected")
+        bump("rejected")
         log.info("[intelligence_llm] story=%s kept deterministic copy: %s",
                  _clean(packet.get("id"), 96), "; ".join(outcome["violations"][:6]))
     return outcome
@@ -832,6 +1271,45 @@ def phrase_packet(packet: dict, *, block: dict, now: datetime,
 # ─────────────────────────────────────────────────────────────────────────────
 # The daemon hook
 # ─────────────────────────────────────────────────────────────────────────────
+
+def phrase_packet(packet: dict, *, block: dict, now: datetime,
+                  shapes: tuple[str, ...], root: Path | str | None = None) -> dict:
+    """Phrase one story; selected originals require the existing durable cache."""
+    block = dict(block or {})
+    try:
+        sid = _clean(packet.get("id"), 96)
+        if _cache_path(root).exists():
+            with _cache_lock(root):
+                row = _read_cache_strict(root).get(sid)
+            if isinstance(row, dict) and "fabric_operation" in row:
+                if (_row_unresolved(row) or row.get("headline_sha1") == headline_fingerprint(packet.get("headline"))
+                        and sid in prune_cache({sid: row}, now=now)):
+                    _bump("cached")
+                    return _apply_selected(packet, block, row["fabric_operation"], replay=True, shapes=tuple(shapes))
+        mode = _application_mode(block)
+    except Exception:
+        return _selected_outcome("fabric_state_or_selection_unavailable")
+    if mode is not None:
+        if root is None:
+            return _selected_outcome("fabric_durable_root_required")
+        if (not bool(block.get("enabled", False))
+                or os.environ.get(_ENV_FLAG, "").strip().lower() not in _TRUTHY
+                or not eligible_packets([packet], max_per_tick=1)):
+            return _selected_outcome("fabric_not_armed_or_eligible")
+        return _selected_phrase(packet, block, now, tuple(shapes), root, mode)
+    fact_packet = build_fact_packet(packet)
+    try:
+        reply = _call_model(fact_packet, block, shapes=shapes)
+    except Exception as exc:
+        log.warning("[intelligence_llm] provider path failed for story=%s (%s)",
+                    _clean(packet.get("id"), 96), type(exc).__name__)
+        _bump("provider_fail")
+        return _empty_outcome()
+    if not reply:
+        _bump("provider_fail")
+        return _empty_outcome()
+    return _apply_reply(packet, reply, fact_packet=fact_packet, now=now, shapes=shapes)
+
 
 def attach_llm_drafts(packets: list, cfg: dict | None, *,
                       root: Path | str | None = None,
@@ -875,6 +1353,10 @@ def attach_llm_drafts(packets: list, cfg: dict | None, *,
         sid = _clean(packet.get("id"), 96)
         fingerprint = headline_fingerprint(packet.get("headline"))
         row = cache.get(sid)
+        if isinstance(row, dict) and "fabric_operation" in row:
+            if _row_unresolved(row) or str(row.get("headline_sha1") or "") == fingerprint:
+                phrase_packet(packet, block=block, now=stamp, shapes=shapes, root=root)
+                continue
         if isinstance(row, dict) and str(row.get("headline_sha1") or "") == fingerprint:
             # Same story, same headline: it was phrased on an earlier tick and the
             # store still carries that phrasing. Paying again buys nothing.
@@ -890,12 +1372,12 @@ def attach_llm_drafts(packets: list, cfg: dict | None, *,
     touched = False
     for packet in pending:
         _bump("attempted")
-        result = phrase_packet(packet, block=block, now=stamp, shapes=shapes)
+        result = phrase_packet(packet, block=block, now=stamp, shapes=shapes, root=root)
         # Cache on a REPLY, not on a success. A phrasing this model rejected for
         # this headline will be rejected again next tick, and a 75-second daemon
         # would otherwise burn a call on the same doomed story ~48 times an hour.
         # A provider FAILURE is different — that is transient, so it retries.
-        if result["replied"]:
+        if result["replied"] and not result.get("fabric_selected"):
             cache[_clean(packet.get("id"), 96)] = {
                 "headline_sha1": headline_fingerprint(packet.get("headline")),
                 "ts": _iso(stamp),
@@ -903,5 +1385,5 @@ def attach_llm_drafts(packets: list, cfg: dict | None, *,
             touched = True
 
     if touched:
-        save_cache(root, prune_cache(cache, now=stamp))
+        save_cache(root, prune_cache(cache, now=stamp), now=stamp)
     return stats()

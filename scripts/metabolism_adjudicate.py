@@ -385,6 +385,14 @@ def main(argv: list[str] | None = None) -> int:
         finish_stage(cycle_id, stage, status="noop_paused", note=pause_reason(), root=root)
         return 0
 
+    if role in ("orchestrator", "adversary"):
+        from scripts.metabolism_journal import FabricHeld, guard_native_route
+        try:
+            guard_native_route(root, "adjudicate", cycle_id, ["role:"+role])
+        except FabricHeld as exc:
+            finish_stage(cycle_id, stage, status="failed", note=str(exc), root=root)
+            return 2
+
     # ── Gate 2: per-lobe circuit breaker ────────────────────────────────────
     # The lobe comes from the docket body (per-lobe dockets, R-V6-5); 'til'
     # remains the fallback so the historical single-lobe path is unchanged.
@@ -555,6 +563,7 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:  # noqa: BLE001
         log.error("metabolism_adjudicate[%s]: unexpected error: %s", role, exc)
         finish_stage(cycle_id, stage, status="failed", note=str(exc), root=root)
+        return 2
 
     return 0
 

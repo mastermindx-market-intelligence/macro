@@ -42,6 +42,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -49,6 +50,7 @@ import pandas as pd
 
 from engine import catalyst_stock, master_brain
 from engine import desk_ledger as _ledger_law    # run-scoped ids + immutable appends
+from engine import catalyst_tone as _cache
 from engine.catalyst_tone import _extract_json
 from lib import config, store
 
@@ -252,8 +254,14 @@ def _build_user(state: dict) -> str:
             + json.dumps(state, indent=2, default=str) + "\n</state>")
 
 
-def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
-    cfg = {**(cfg or _cfg()), "usage_stage": "stock-desk"}  # cost drill-down tag
+def synthesize(state: dict, cfg: dict | None = None, call=None, *, root=None) -> dict:
+    cfg = {**(cfg or _cfg()), "usage_stage": "stock-desk"}
+    try:
+        selected = _stock_synthesize_fabric(state, cfg, _stock_root(root))
+    except Exception:
+        selected = {"notes": [], "degraded": "application_fabric_owner_refused"}
+    if selected is not None:
+        return selected  # cost drill-down tag
     call = call or (lambda system, user, c: master_brain._call_model(system, user, c))
     payload = {"as_of": state.get("as_of"), "picks": state.get("picks"),
                "track_record": state.get("track_record")}
@@ -670,7 +678,8 @@ def _brief_age_days(prev: dict | None) -> float | None:
         return None
 
 
-def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict | None:
+def _run_legacy(persist: bool = True, root=None, force: bool = False, call=None,
+                _owner_snapshot=None) -> dict | None:
     """Generate accountable leans on the top picks. Interval-gated to cap LLM cost;
     returns the prior note untouched when it is younger than `interval_days`. Always
     scores the ledger (cheap, no LLM). Never raises."""
@@ -701,7 +710,11 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
     if isinstance(track, dict):
         state["track_record"] = {k: track.get(k) for k in ("overall", "by_lean", "calibration_note")}
 
-    syn = synthesize(state, cfg, call=call)
+    if _stock_selected(cfg) or _stock_snapshot(root) != _owner_snapshot:
+        return _stock_held(reason="application_fabric_selection_changed")
+    syn = synthesize(state, cfg, call=call, root=root)
+    if _stock_selected(cfg) or _stock_snapshot(root) != _owner_snapshot:
+        return _stock_held(reason="application_fabric_selection_changed")
     asof = state.get("as_of") or datetime.now(timezone.utc).date().isoformat()
     generated_at = datetime.now(timezone.utc).isoformat()   # minted BEFORE note build — it
     token = _ledger_law.run_token(generated_at)             # is the run identity in every id
@@ -721,18 +734,495 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
                           "are fallible, falsifiable conditionals graded against reality — "
                           "never position sizes. See the track record.")}
     if persist and notes:
-        notes_path.parent.mkdir(parents=True, exist_ok=True)
-        notes_path.write_text(json.dumps(out, indent=2, default=str))
-        by_t = {nt["ticker"]: nt for nt in notes}
-        pub_path.parent.mkdir(parents=True, exist_ok=True)
-        pub_path.write_text(json.dumps({"as_of": asof, "by_ticker": by_t,
-                                        "disclaimer": out["disclaimer"]}, default=str))
-        written = _append_ledger(notes, asof, root)
-        if written:
-            _register_qledger_claims(written, state["picks"], root)
-        score_ledger(root=root)                 # re-score so the new open leans show
+        with _cache._cache_lock(_stock_path(root), root):
+            document, owner = _stock_document(root)
+            if _stock_selected(cfg) or _cache._cache_hash(document) != _owner_snapshot:
+                return _stock_held(document, "application_fabric_selection_changed")
+            notes_path.parent.mkdir(parents=True, exist_ok=True)
+            saved_output = dict(out)
+            if _STOCK_FABRIC_KEY in document:
+                saved_output[_STOCK_FABRIC_KEY] = owner
+            _cache._cache_save(notes_path, saved_output)
+            by_t = {nt["ticker"]: nt for nt in notes}
+            pub_path.parent.mkdir(parents=True, exist_ok=True)
+            pub_path.write_text(json.dumps({"as_of": asof, "by_ticker": by_t,
+                                            "disclaimer": out["disclaimer"]}, default=str))
+            written = _append_ledger(notes, asof, root)
+            if written:
+                _register_qledger_claims(written, state["picks"], root)
+            score_ledger(root=root)                 # re-score so the new open leans show
     log.info("stock_desk: %d notes (%s)", len(notes), syn.get("degraded") or "ok")
     return out
+
+
+
+# The existing notes document owns selected inference and its publication.
+# These are local custody fields, not a second ledger or a retry service.
+_STOCK_FABRIC_KEY = "_fabric_stock_desk"
+_STOCK_FABRIC_SCHEMA = "stock_desk.fabric_owner.v1"
+
+
+def _stock_clone(value):
+    return _cache._cache_decode(_cache._cache_json(value))
+
+
+def _stock_root(root):
+    return (Path(root) if root is not None else Path(config.ROOT)).resolve(strict=True)
+
+
+def _stock_path(root):
+    return root / "data/stock_desk/notes.json"
+
+
+def _stock_source(root):
+    return {"consumer": "stock-desk", "root": str(root)}
+
+
+def _stock_payload(state):
+    return {key: state.get(key) for key in ("as_of", "picks", "track_record")}
+
+
+def _stock_note_cfg(cfg):
+    return {key: cfg[key] for key in ("default_horizon_d", "falsifier_defaults") if key in cfg}
+
+
+def _stock_output(row, request):
+    context = request["context"]
+    state, cfg = context["state"], context["note_cfg"]
+    generated = row["receipt"]["completed_at"]
+    asof = state.get("as_of") or generated[:10]
+    picks = {p.get("ticker"): p for p in state["picks"]}
+    notes = []
+    token = row["operation_id"].rsplit(":", 1)[-1]
+    for index, note in enumerate((row["result"] or {}).get("notes") or []):
+        if type(note) is not dict or note.get("ticker") not in picks:
+            continue
+        built = _build_note(note, picks[note["ticker"]], asof, cfg, index, run_token=token)
+        if built:
+            notes.append(built)
+    receipt = row["receipt"]
+    return {"schema": SCHEMA, "as_of": asof, "generated_at": generated,
+        "degraded": row["error"], "notes": notes,
+        "model": receipt["served_model"], "served_by": receipt["provider"],
+        "requested_model": receipt["requested_model"],
+        "disclaimer": ("Accountable AI judgment on the deterministic top picks. The "
+            "cross-sectional rank has no validated forward edge; these leans "
+            "are fallible, falsifiable conditionals graded against reality — "
+            "never position sizes. See the track record.")}
+
+
+def _stock_document(root):
+    document = _cache._cache_read(_stock_path(root))
+    if document is None:
+        document = {}
+    if type(document) is not dict:
+        raise ValueError("stock_owner_document_invalid")
+    owner = document.get(_STOCK_FABRIC_KEY)
+    if owner is None:
+        return document, {"schema": _STOCK_FABRIC_SCHEMA,
+            "cache": _cache._fabric_cache_value(None, _stock_source(root)),
+            "requests": {}, "publications": {}, "publication_claim": None}
+    if (type(owner) is not dict
+            or set(owner) != {"schema", "cache", "requests", "publications", "publication_claim"}
+            or owner["schema"] != _STOCK_FABRIC_SCHEMA
+            or type(owner["requests"]) is not dict
+            or type(owner["publications"]) is not dict):
+        raise ValueError("stock_owner_invalid")
+    cache = _cache._fabric_cache_value(owner["cache"], _stock_source(root))
+    rows = {row["operation_id"]: row for row in cache["entries"]}
+    if set(owner["requests"]) != set(rows) or not set(owner["publications"]) <= set(rows):
+        raise ValueError("stock_owner_identities_invalid")
+    claim = owner["publication_claim"]
+    if claim is not None:
+        if (type(claim) is not dict or set(claim) != {"claim_id", "operation_id", "input_digest"}
+                or type(claim["claim_id"]) is not str or len(claim["claim_id"]) != 32
+                or any(ch not in "0123456789abcdef" for ch in claim["claim_id"])
+                or type(claim["input_digest"]) is not str or len(claim["input_digest"]) != 64
+                or claim["operation_id"] is not None and claim["operation_id"] not in rows):
+            raise ValueError("stock_publication_claim_invalid")
+    for operation_id, row in rows.items():
+        request = owner["requests"][operation_id]
+        if (type(request) is not dict
+                or set(request) != {"system", "user", "max_tokens", "context"}
+                or type(request["context"]) is not dict
+                or set(request["context"]) != {"state", "note_cfg"}
+                or type(request["system"]) is not str
+                or type(request["user"]) is not str
+                or type(request["context"]["state"]) is not dict
+                or type(request["context"]["note_cfg"]) is not dict):
+            raise ValueError("stock_request_invalid")
+        commitment = dict(request)
+        if row.get("schema") == _cache._AUTO_CACHE_ENTRY:
+            commitment.update(application_inspection=row["inspection"],
+                              application_mode=row["mode_id"])
+            original, frozen = _cache._cache_auto_request(operation_id,
+                request["system"], request["user"], request["max_tokens"])
+            if row["request"] != frozen:
+                raise ValueError("stock_request_commitment_changed")
+            _cache._cache_auto_validate(row, original)
+        if _cache._cache_hash(commitment) != row["input_digest"]:
+            raise ValueError("stock_input_commitment_changed")
+    for operation_id, plan in owner["publications"].items():
+        row = rows[operation_id]
+        if (row["state"] != "terminal" or row["result"] is None
+                or type(plan) is not dict
+                or set(plan) != {"output", "output_digest", "ledger_rows", "ledger_digest", "steps", "state"}
+                or plan["output"] != _stock_output(row, owner["requests"][operation_id])
+                or plan["output_digest"] != _cache._cache_hash(plan["output"])
+                or type(plan["ledger_rows"]) is not list
+                or plan["ledger_digest"] != _cache._cache_hash(plan["ledger_rows"])
+                or type(plan["steps"]) is not list or len(plan["steps"]) != 3
+                or [s.get("kind") for s in plan["steps"]] != ["ledger", "qledger", "site"]
+                or plan["state"] not in ("ready", "pending", "complete", "held")):
+            raise ValueError("stock_publication_invalid")
+        expected_notes = {note["id"]: note for note in plan["output"]["notes"]}
+        if len(expected_notes) != len(plan["ledger_rows"]):
+            raise ValueError("stock_ledger_plan_invalid")
+        for ledger_row in plan["ledger_rows"]:
+            if type(ledger_row) is not dict:
+                raise ValueError("stock_ledger_plan_invalid")
+            note = expected_notes.pop(ledger_row.get("id"), None)
+            if type(ledger_row.get("entry_levels")) is not dict:
+                raise ValueError("stock_ledger_plan_invalid")
+            if note is None or ledger_row != _stock_ledger_row(
+                    note, plan["output"]["as_of"], plan["output"]["generated_at"],
+                    entry_levels=ledger_row.get("entry_levels")):
+                raise ValueError("stock_ledger_plan_invalid")
+        passed_pending = False
+        for step in plan["steps"]:
+            if (set(step) != {"kind", "state", "receipt"}
+                    or step["state"] not in ("ready", "pending", "complete", "held")
+                    or step["state"] in ("ready", "pending") and step["receipt"] is not None
+                    or step["state"] == "complete" and type(step["receipt"]) is not dict
+                    or passed_pending and step["state"] != "ready"):
+                raise ValueError("stock_publication_order_invalid")
+            if step["state"] == "complete":
+                if step["kind"] == "ledger" and step["receipt"] != {"written": plan["ledger_rows"]}:
+                    raise ValueError("stock_ledger_receipt_invalid")
+                if step["kind"] == "qledger" and (
+                        set(step["receipt"]) != {"invoked", "returned", "materialization_proven"}
+                        or step["receipt"]["invoked"] is not True
+                        or step["receipt"]["materialization_proven"] is not False
+                        or step["receipt"]["returned"] is not None
+                        and type(step["receipt"]["returned"]) is not dict):
+                    raise ValueError("stock_qledger_receipt_invalid")
+                if step["kind"] == "site":
+                    public = {"as_of": plan["output"]["as_of"],
+                        "by_ticker": {n["ticker"]: n for n in plan["output"]["notes"]},
+                        "disclaimer": plan["output"]["disclaimer"]}
+                    if step["receipt"] != {"digest": _cache._cache_hash(public)}:
+                        raise ValueError("stock_site_receipt_invalid")
+            passed_pending |= step["state"] != "complete"
+        if (plan["state"] == "complete") != all(
+                step["state"] == "complete" for step in plan["steps"]):
+            raise ValueError("stock_publication_completion_invalid")
+    if sum(plan["state"] != "complete" for plan in owner["publications"].values()) > 1:
+        raise ValueError("stock_publication_overlap")
+    return document, owner
+
+
+def _stock_save(root, document, owner):
+    document = _stock_clone(document)
+    document[_STOCK_FABRIC_KEY] = owner
+    _cache._cache_save(_stock_path(root), document)
+    _stock_document(root)  # strict readback, including original request commitments
+
+
+def _stock_held(document=None, reason="application_fabric_original_held"):
+    output = {key: _stock_clone(value) for key, value in (document or {}).items()
+              if key != _STOCK_FABRIC_KEY}
+    output.setdefault("schema", SCHEMA)
+    output.setdefault("notes", [])
+    output["degraded"] = reason
+    return output
+
+
+def _stock_pending(root):
+    if not os.path.lexists(_stock_path(root)):
+        return None
+    try:
+        with _cache._cache_lock(_stock_path(root), root):
+            document, owner = _stock_document(root)
+            if (owner["publication_claim"] is not None
+                    or any(row["state"] != "terminal" for row in owner["cache"]["entries"])
+                    or any(p["state"] != "complete" for p in owner["publications"].values())):
+                return _stock_held(document)
+    except Exception:
+        return _stock_held(reason="application_fabric_owner_refused")
+    return None
+
+
+def _stock_snapshot(root):
+    with _cache._cache_lock(_stock_path(root), root):
+        document, _ = _stock_document(root)
+        return _cache._cache_hash(document)
+
+
+def _stock_selected(cfg):
+    from engine import llm_auth
+    return llm_auth.application_mode_id(cfg) is not None
+
+
+def _stock_synthesize_fabric(state, cfg, root, *, publication_requested=False):
+    held = _stock_pending(root)
+    if held is not None:
+        return {"notes": [], "degraded": held["degraded"]}
+    if not _stock_selected(cfg):
+        return None
+    # Stock prices are owned by the configured root and its existing series cache.
+    # An explicit foreign output root cannot relabel those inputs as its own.
+    if root != Path(config.ROOT).resolve(strict=True):
+        raise ValueError("stock_price_owner_root_mismatch")
+    frozen = _stock_clone({"state": _stock_payload(state), "note_cfg": _stock_note_cfg(cfg)})
+    selected = dict(cfg)
+    selected.setdefault("max_tokens", 4000)
+    request = {"system": _SYSTEM, "user": _build_user(frozen["state"]),
+               "max_tokens": selected["max_tokens"], "context": frozen}
+    claim_id = None
+    if publication_requested:
+        claim_id = os.urandom(16).hex()
+        with _cache._cache_lock(_stock_path(root), root):
+            document, owner = _stock_document(root)
+            if (owner["publication_claim"] is not None
+                    or any(row["state"] != "terminal" for row in owner["cache"]["entries"])
+                    or any(p["state"] != "complete" for p in owner["publications"].values())):
+                return {"notes": [], "degraded": "application_fabric_original_held"}
+            owner["publication_claim"] = {"claim_id": claim_id, "operation_id": None,
+                                         "input_digest": _cache._cache_hash(request)}
+            _stock_save(root, document, owner)
+    def assert_claim(owner):
+        claim = owner["publication_claim"]
+        if (claim is not None and claim["claim_id"] != claim_id
+                or claim_id is not None and claim is None):
+            raise ValueError("stock_publication_claim_changed")
+    def load_cache():
+        _, owner = _stock_document(root)
+        assert_claim(owner)
+        if any(p["state"] != "complete" for p in owner["publications"].values()):
+            raise ValueError("stock_publication_held")
+        return owner["cache"]
+    def store_cache(value):
+        document, owner = _stock_document(root)
+        assert_claim(owner)
+        before = {r["operation_id"]: r for r in owner["cache"]["entries"]}
+        for row in value["entries"]:
+            if row["operation_id"] not in before:
+                owner["requests"][row["operation_id"]] = _stock_clone(request)
+                if claim_id is not None:
+                    claim = owner["publication_claim"]
+                    if claim["operation_id"] not in (None, row["operation_id"]):
+                        raise ValueError("stock_publication_operation_changed")
+                    claim["operation_id"] = row["operation_id"]
+        owner["cache"] = value
+        _stock_save(root, document, owner)
+    def validate(text):
+        parsed = _extract_json(text)
+        if type(parsed) is not dict or type(parsed.get("notes")) is not list:
+            raise ValueError("stock_reply_invalid")
+        tickers = [note.get("ticker") if type(note) is dict else None for note in parsed["notes"]]
+        allowed = {pick.get("ticker") for pick in frozen["state"]["picks"]}
+        if len(tickers) != len(set(tickers)) or any(ticker not in allowed for ticker in tickers):
+            raise ValueError("stock_reply_ticker_invalid")
+        return {"notes": parsed["notes"], "degraded": None}
+    result = _cache._fabric_cached_document(path=_stock_path(root), root=root,
+        logical_source=_stock_source(root), cfg=selected, lane="stock-desk",
+        system=request["system"], user=request["user"], input_context=frozen,
+        validate=validate, load_cache=load_cache, store_cache=store_cache)
+    if claim_id is not None:
+        with _cache._cache_lock(_stock_path(root), root):
+            document, owner = _stock_document(root)
+            assert_claim(owner)
+            claim = owner["publication_claim"]
+            receipt = result.get("receipt") if result is not None else None
+            if receipt is not None:
+                operation_id = receipt["operation_id"]
+                if claim["operation_id"] not in (None, operation_id):
+                    raise ValueError("stock_publication_operation_changed")
+                claim["operation_id"] = operation_id
+                row = next(r for r in owner["cache"]["entries"] if r["operation_id"] == operation_id)
+                if row["state"] == "terminal" and row["result"] is None:
+                    owner["publication_claim"] = None
+            elif claim["operation_id"] is None:
+                owner["publication_claim"] = None  # positive absence of any claimed inference
+            _stock_save(root, document, owner)
+    if result is None:
+        return {"notes": [], "degraded": "application_fabric_selection_changed"}
+    output = _stock_clone(result["result"] or {"notes": [], "degraded": result["error"]})
+    if result["receipt"] is not None:
+        output["_fabric_operation_id"] = result["receipt"]["operation_id"]
+    if claim_id is not None:
+        output["_fabric_publication_id"] = claim_id
+    if result["error"]:
+        output["degraded"] = result["error"]
+    return output
+
+
+def _stock_ledger_row(note, asof, logged_at, *, entry_levels=None):
+    if entry_levels is None:
+        entry_levels = _entry_levels((note.get("falsifier") or {}).get("check") or {}, asof)
+    if type(entry_levels) is not dict:
+        raise ValueError("stock_entry_levels_invalid")
+    return {"id": note["id"], "logged_at": logged_at, "state_asof": str(asof),
+        "ticker": note["ticker"], "lean": note["lean"], "conviction": note["conviction"],
+        "horizon_d": note["horizon_d"], "falsifier": note.get("falsifier"),
+        "check_by": note.get("check_by"), "entry_levels": entry_levels,
+        "engine_verdict": note.get("engine_verdict"), "status": "open",
+        "scored_at": None, "outcome": None, "realized": None}
+
+
+def _stock_read_ledger(root):
+    path = master_brain._mb_auto_safe_path(root, "data/stock_desk/theses.jsonl")
+    raw, _ = master_brain._mb_auto_read_bytes(path)
+    rows = {}
+    if raw is None:
+        return rows
+    if raw and not raw.endswith(b"\n"):
+        raise ValueError("stock_ledger_partial")
+    for line in raw.splitlines():
+        value = _cache._cache_decode(line)
+        if type(value) is not dict or type(value.get("id")) is not str or value["id"] in rows:
+            raise ValueError("stock_ledger_invalid")
+        rows[value["id"]] = value
+    return rows
+
+
+def _stock_publish(root, operation_id, persist, claim_id=None):
+    path = _stock_path(root)
+    try:
+        with _cache._cache_lock(path, root):
+            document, owner = _stock_document(root)
+            claim = owner["publication_claim"]
+            if (claim_id is not None and (claim is None or claim["claim_id"] != claim_id
+                    or claim["operation_id"] != operation_id)
+                    or claim_id is None and claim is not None):
+                return _stock_held(document)
+            rows = {row["operation_id"]: row for row in owner["cache"]["entries"]}
+            row = rows[operation_id]
+            if any(r["state"] != "terminal" for r in rows.values()) or row["result"] is None:
+                return _stock_held(document)
+            output = _stock_output(row, owner["requests"][operation_id])
+            if not persist or not output["notes"]:
+                if claim_id is not None:
+                    owner["publication_claim"] = None
+                    _stock_save(root, document, owner)
+                return output
+            plan = owner["publications"].get(operation_id)
+            if plan is not None:
+                if plan["state"] == "complete":
+                    if claim_id is not None:
+                        owner["publication_claim"] = None
+                        _stock_save(root, document, owner)
+                    return _stock_clone(plan["output"])
+                return _stock_held(document)
+            if any(p["state"] != "complete" for p in owner["publications"].values()):
+                return _stock_held(document)
+            ledger_rows = [_stock_ledger_row(note, output["as_of"], output["generated_at"])
+                           for note in output["notes"]]
+            plan = {"output": output, "output_digest": _cache._cache_hash(output),
+                "ledger_rows": ledger_rows, "ledger_digest": _cache._cache_hash(ledger_rows), "state": "ready",
+                "steps": [{"kind": kind, "state": "ready", "receipt": None}
+                          for kind in ("ledger", "qledger", "site")]}
+            owner["publications"][operation_id] = plan
+            _stock_save(root, document, owner)
+            fresh_written = None
+            for step in plan["steps"]:
+                step["state"] = "pending"
+                plan["state"] = "pending"
+                _stock_save(root, document, owner)
+                if step["kind"] == "ledger":
+                    existing = _stock_read_ledger(root)
+                    if any(value["id"] in existing for value in ledger_rows):
+                        raise ValueError("stock_ledger_original_collision")
+                    ledger_path = master_brain._mb_auto_safe_path(
+                        root, "data/stock_desk/theses.jsonl", create=True)
+                    fd = os.open(ledger_path, os.O_CREAT | os.O_APPEND | os.O_WRONLY | os.O_NOFOLLOW, 0o600)
+                    with os.fdopen(fd, "ab") as target:
+                        for value in ledger_rows:
+                            target.write(_cache._cache_json(value) + b"\n")
+                        target.flush()
+                        os.fsync(target.fileno())
+                    _cache._cache_sync_directory(ledger_path.parent)
+                    actual = _stock_read_ledger(root)
+                    if any(actual.get(value["id"]) != value for value in ledger_rows):
+                        raise ValueError("stock_ledger_readback")
+                    # Only this invocation's actual successful append may feed qledger.
+                    # Recovery never promotes re-read ledger rows into fresh input.
+                    fresh_written = _stock_clone(ledger_rows)
+                    receipt = {"written": fresh_written}
+                elif step["kind"] == "qledger":
+                    if fresh_written is None:
+                        raise ValueError("stock_qledger_requires_fresh_append")
+                    result = _register_qledger_claims(fresh_written,
+                        owner["requests"][operation_id]["context"]["state"]["picks"], root)
+                    receipt = {"invoked": True, "returned": result,
+                               "materialization_proven": False}
+                else:
+                    public = {"as_of": output["as_of"],
+                        "by_ticker": {note["ticker"]: note for note in output["notes"]},
+                        "disclaimer": output["disclaimer"]}
+                    public_path = master_brain._mb_auto_safe_path(
+                        root, "site/stockdata/ai_desk_notes.json", create=True)
+                    _cache._cache_save(public_path, public)
+                    receipt = {"digest": _cache._cache_hash(public)}
+                step.update(state="complete", receipt=receipt)
+                if all(value["state"] == "complete" for value in plan["steps"]):
+                    plan["state"] = "complete"
+                    owner["publication_claim"] = None
+                    document = dict(output)
+                _stock_save(root, document, owner)
+            return _stock_clone(output)
+    except Exception:
+        # The last persisted pending effect remains an original barrier. A lost
+        # local write/registrar acknowledgement never reruns the append/registrar.
+        return _stock_held(reason="application_fabric_publication_held")
+
+
+def _stock_run_fabric(persist, root, force, cfg):
+    if not enabled() and not force:
+        return None
+    score_ledger(root=root)
+    if not force:
+        interval = max(1, min(7, int(cfg.get("interval_days", 1))))
+        document, _ = _stock_document(root)
+        age = _brief_age_days(document)
+        if interval > 1 and age is not None and age < interval:
+            return {key: value for key, value in document.items() if key != _STOCK_FABRIC_KEY}
+    state = gather_top_picks(root, cfg)
+    if not state:
+        return None
+    track = catalyst_stock._read_json(root / "data/stock_desk/track_record.json")
+    if isinstance(track, dict):
+        state["track_record"] = {key: track.get(key)
+                                for key in ("overall", "by_lean", "calibration_note")}
+    result = _stock_synthesize_fabric(state, {**cfg, "usage_stage": "stock-desk"}, root,
+                                     publication_requested=persist)
+    if result is None:
+        return _stock_held(reason="application_fabric_selection_changed")
+    operation_id = result.get("_fabric_operation_id")
+    if operation_id is None or result.get("degraded"):
+        return _stock_held(reason=result.get("degraded") or "application_fabric_owner_refused")
+    output = _stock_publish(root, operation_id, persist, result.get("_fabric_publication_id"))
+    if persist and not output.get("degraded"):
+        score_ledger(root=root)
+    return output
+
+
+def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict | None:
+    root = _stock_root(root)
+    held = _stock_pending(root)
+    if held is not None:
+        return held
+    if not enabled() and not force:
+        return None
+    cfg = _cfg()
+    try:
+        if _stock_selected(cfg):
+            return _stock_run_fabric(persist, root, force, cfg)
+        snapshot = _stock_snapshot(root)
+    except Exception:
+        return _stock_held(reason="application_fabric_owner_refused")
+    return _run_legacy(persist=persist, root=root, force=force, call=call,
+                       _owner_snapshot=snapshot)
 
 
 def main() -> int:

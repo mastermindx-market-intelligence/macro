@@ -72,18 +72,26 @@ def main(argv: list[str] | None = None) -> int:
 
     root = Path(args.root) if args.root else _ROOT_DIR
 
+    from scripts.metabolism_journal import FabricHeld, guard_native_route
+    try:
+        guard_native_route(root, "agenda", args.cycle_id, ["agenda"])
+    except FabricHeld as exc:
+        log.warning("metabolism_agenda held: %s", exc)
+        return 2
+
     # Build providers (Opus model for reasoning)
     providers = _load_providers(args.model)
     if not providers:
         log.warning("metabolism_agenda: no LLM providers available — will produce floor-only agenda")
 
     log.info("Building agenda for cycle %s …", args.cycle_id)
-    agenda = build_agenda(
-        cycle_id=args.cycle_id,
-        root=root,
-        providers=providers,
-        model=args.model,
-    )
+    try:
+        agenda = build_agenda(
+            cycle_id=args.cycle_id, root=root, providers=providers, model=args.model,
+        )
+    except FabricHeld as exc:
+        log.warning("metabolism_agenda held: %s", exc)
+        return 2
 
     out_str = json.dumps(agenda, indent=2, ensure_ascii=False)
 

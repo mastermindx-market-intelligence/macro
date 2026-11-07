@@ -1253,15 +1253,9 @@ def _write_fitness(board: pd.DataFrame, attribution: pd.DataFrame, root: Path | 
 def _update_state_attribution(root: Path | None) -> None:
     """Update cn_audit_state.json with attribution freshness stamp.  Never raises."""
     try:
-        p = _state_path(root)
-        p.parent.mkdir(parents=True, exist_ok=True)
-        state: dict = {}
-        if p.exists():
-            try:
-                state = json.loads(p.read_text(encoding="utf-8"))
-            except Exception:  # noqa: BLE001
-                state = {}
-        state["attribution_last_run"] = datetime.now(timezone.utc).isoformat()
-        p.write_text(json.dumps(state, indent=2, default=str), encoding="utf-8")
+        from scripts.metabolism_journal import update_owner_state
+        update_owner_state(_state_path(root).parents[2], "market", "cn", {
+            "attribution_last_run": datetime.now(timezone.utc).isoformat(),
+        })
     except Exception as exc:  # noqa: BLE001
         log.warning("china_standout_audit._update_state_attribution failed: %s", exc)

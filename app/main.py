@@ -133,6 +133,25 @@ app = FastAPI(title="macro API", version="0.1.0")
 log = logging.getLogger("macro.api")
 
 
+def _configure_brain_fabric() -> None:
+    """Read the host selector once; request content never selects a provider."""
+    from engine.provider_production_modes import configured_application_fabric
+
+    selected, factory = configured_application_fabric(
+        lane="brain", workload_profile="site_interactive", root=REPO,
+        service_mode_id="macro_brain_fabric")
+    app.state.fabric_selected = selected
+    app.state.fabric_provider_factory = factory
+    ask_selected, ask_factory = configured_application_fabric(
+        lane="ask-brain", workload_profile="site_interactive", root=REPO,
+        service_mode_id="macro_ask_fabric")
+    app.state.ask_fabric_selected = ask_selected
+    app.state.ask_fabric_provider_factory = ask_factory
+
+
+_configure_brain_fabric()
+
+
 class _NoStoreAPI:
     """Every /api/* response is per-user — never let a shared cache keep one.
 
@@ -1349,8 +1368,16 @@ class AskRequest(BaseModel):
     context_ticker: str | None = Field(None, description="Optional ticker to focus the query (e.g. 'NVDA')")
 
 
+def _ask_fabric_selection(request: Request) -> dict:
+    selected = getattr(request.app.state, "ask_fabric_selected", False)
+    if selected is False:
+        return {}
+    return {"fabric_selected": selected,
+            "fabric_provider_factory": getattr(request.app.state, "ask_fabric_provider_factory", None)}
+
+
 @app.post("/api/ask")
-def ask_brain(body: AskRequest, user: dict = Depends(require_site_full_user)) -> dict:
+def ask_brain(body: AskRequest, request: Request, user: dict = Depends(require_site_full_user)) -> dict:
     """Ask the Neural Web brain a question.
 
     Read-only cortex tools; write tools are absent from the schema (Article 1).
@@ -1375,12 +1402,13 @@ def ask_brain(body: AskRequest, user: dict = Depends(require_site_full_user)) ->
         user_id=user_id,
         context_ticker=body.context_ticker,
         root=REPO,
+        **_ask_fabric_selection(request),
     )
     return result
 
 
 @app.post("/api/ask/stream")
-def ask_brain_stream(body: AskRequest, user: dict = Depends(require_site_full_user)):
+def ask_brain_stream(body: AskRequest, request: Request, user: dict = Depends(require_site_full_user)):
     """SSE streaming variant of /api/ask.
 
     Tool-calling turns run synchronously; the final synthesis turn is streamed
@@ -1406,10 +1434,28 @@ def ask_brain_stream(body: AskRequest, user: dict = Depends(require_site_full_us
             user_id=user_id,
             context_ticker=body.context_ticker,
             root=REPO,
+            **_ask_fabric_selection(request),
         )
 
+    async def _connected_generator():
+        import anyio
+        from starlette.concurrency import run_in_threadpool
+        events = _generator()
+        sentinel = object()
+        try:
+            while not await request.is_disconnected():
+                event = await run_in_threadpool(next, events, sentinel)
+                if event is sentinel or await request.is_disconnected():
+                    break
+                yield event
+        finally:
+            # Wait for the current blocking call, then close the original
+            # iterator. Never start a later round after downstream cancellation.
+            with anyio.CancelScope(shield=True):
+                await run_in_threadpool(events.close)
+
     return StreamingResponse(
-        _generator(),
+        _connected_generator(),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
@@ -1479,6 +1525,21 @@ def _brain_module():
     except ImportError as exc:
         log.warning("brain_gateway unavailable (%s)", exc)
         raise HTTPException(503, "brain service unavailable") from exc
+
+
+def _brain_fabric_selection(request: Request) -> dict:
+    """Server startup injection only; never derive a binding from request content.
+
+    Startup installs the trusted host-selected owner factory. Selection without
+    a valid factory is forwarded intact so the gateway refuses before dispatch.
+    """
+    selected = getattr(request.app.state, "fabric_selected", False)
+    if selected is False:
+        return {}
+    return {
+        "fabric_selected": selected,
+        "fabric_provider_factory": getattr(request.app.state, "fabric_provider_factory", None),
+    }
 
 
 # ── Brain security: burst throttle + device-linked identity (PART A/B) ─────────
@@ -1695,6 +1756,7 @@ def brain_chat(body: BrainChatRequest, request: Request, background: BackgroundT
         # F11-6 (Sol 5967105152 item 5): the caller's own verified token, already injected
         # by require_user as `_access_token`; a guest has none. Never re-extracted here.
         user_jwt="" if is_guest else (user.get("_access_token") or ""),
+        **_brain_fabric_selection(request),
     )
 
     if result.get("quota_exhausted"):
@@ -1745,6 +1807,7 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
     # Resolved OUTSIDE the generator so it is computed on this request's thread, not on the
     # brain_runs pump thread that may outlive the socket.
     account_prefs = user_prefs.read_user_prefs(user)
+    fabric_selection = _brain_fabric_selection(request)
 
     def _gen():
         yield from gw.chat_stream(
@@ -1766,6 +1829,7 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             account_prefs=account_prefs,
             # F11-6 (Sol 5967105152 item 5): same caller-token pass-through as chat().
             user_jwt="" if is_guest else (user.get("_access_token") or ""),
+            **fabric_selection,
         )
 
     # The turn is registered as a server-side RUN before a single byte goes out.

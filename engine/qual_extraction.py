@@ -676,6 +676,12 @@ def _call_model(body: str, context: str, cfg: dict, model: str) -> tuple[str | N
 
     Cache check is BEFORE client/key check so a cache hit never requires an API key.
     """
+    from engine import llm_auth
+    try:
+        if llm_auth.application_mode_id(cfg) is not None:
+            return None, "fabric_document_owner_required"
+    except Exception:
+        return None, "fabric_selection_refused"
     user = (f"Filing context: {context}\n\n"
             f"Filing text (between <doc> tags):\n<doc>\n{body}\n</doc>")
     phash = _prompt_hash(model, _EXTRACTION_SYSTEM, user)
@@ -747,6 +753,8 @@ def extract(
     cfg = _cfg()
     if not enabled():
         return None
+    if not isinstance(body, str) or not body.strip():
+        return None
 
     try:
         model = _model_id()
@@ -771,6 +779,35 @@ def extract(
     # Truncate body to configured limit (cost / context cap)
     max_chars = int(cfg.get("max_body_chars", 40000))
     body_trunc = (body or "")[:max_chars]
+
+    from engine import catalyst_tone as custody
+    logical = {"task": "qual-extraction", "source_id": sid}
+    cache = custody._fabric_cache_path(config.ROOT / cfg.get("reply_cache_dir", "data/qual_extraction/reply_cache"), logical)
+    def validate_selected(text):
+        parsed = _extract_json(text)
+        if not isinstance(parsed, dict):
+            raise ValueError("json_parse_failure")
+        rec = _apply_confidence_floor(_verify_citations(_validate(parsed), body_trunc),
+            str(cfg.get("confidence_floor", _DEFAULT_CONF_FLOOR)))
+        dropped = rec.get("dropped_fields", [])
+        return {"fields": {k: rec[k] for k in _NEUTRAL}, "evidence": rec.get("evidence", []),
+                "dropped_fields": dropped,
+                "degraded_reason": f"dropped_fields:{','.join(dropped)}" if dropped else None,
+                "brain_usable": not bool(dropped)}
+    selected = custody._fabric_cached_document(path=cache, root=config.ROOT, logical_source=logical,
+        cfg=cfg, lane="qual-extraction", system=_EXTRACTION_SYSTEM,
+        user=f"Filing context: {context}\n\nFiling text (between <doc> tags):\n<doc>\n{body_trunc}\n</doc>",
+        input_context={"source_id": sid, "source_lane": source_lane, "tier": extraction_tier,
+            "schema": SCHEMA_VERSION, "confidence_floor": cfg.get("confidence_floor", _DEFAULT_CONF_FLOOR)},
+        validate=validate_selected)
+    if selected is not None:
+        receipt = selected["receipt"] or {}
+        value = selected["result"] or {"fields": dict(_NEUTRAL), "evidence": [],
+            "dropped_fields": list(INTERPRETIVE_FIELDS), "degraded_reason": selected["error"], "brain_usable": False}
+        if selected["error"]:
+            value = {**value, "brain_usable": False, "degraded_reason": selected["error"]}
+        return {**envelope, **value, "requested_model_id": model, "model_id": receipt.get("served_model"),
+                "fabric": receipt, "extracted_at": receipt.get("completed_at") or extracted_at}
 
     reply, degraded_reason = _call_model(body_trunc, context, cfg, model)
     if not reply:

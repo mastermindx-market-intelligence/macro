@@ -32,6 +32,7 @@ import json
 import logging
 import os
 import re
+import secrets
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -2822,6 +2823,178 @@ def _record_ask_usage(
 
 
 # ---------------------------------------------------------------------------
+# Selected Fabric path — the same read tools, quota and usage owners
+# ---------------------------------------------------------------------------
+
+def _ask_fabric_requested(selected: bool) -> bool:
+    from engine import llm_auth
+    if type(selected) is not bool:
+        raise llm_auth.FabricProviderError("fabric_selection_invalid")
+    # Presence-sensitive host selection is mandatory, including invalid values.
+    host_mode = llm_auth.application_mode_id({})
+    return selected or host_mode is not None
+
+
+def _ask_fabric_unavailable(error, *, operation_id=None, usage=None) -> dict:
+    unknown = bool(getattr(error, "effect_unknown", False))
+    return {
+        "answer": ("The result of this request could not be confirmed." if unknown
+                   else "The AI service could not complete this answer."),
+        "citations": [], "tool_call_census": {}, "disclaimer": _DISCLAIMER,
+        "is_context_only": True, "degraded": True, "mode": "unavailable",
+        "error": getattr(error, "code", "fabric_unavailable"),
+        "effect_unknown": unknown, "operation_id": operation_id, "usage": usage,
+    }
+
+
+def _ask_fabric_tool_batch(response, schemas, seen_ids, remaining):
+    """Validate the complete actual schema batch before the first tool runs."""
+    from engine import llm_auth
+    from jsonschema import Draft202012Validator
+
+    validators = {schema["name"]: Draft202012Validator(schema["input_schema"])
+                  for schema in schemas}
+    batch = []
+    ids = set()
+    for block in response.content:
+        if block.type != "tool_use":
+            continue
+        if (block.name not in _ASK_READ_TOOLS or block.name not in validators
+                or block.id in seen_ids or block.id in ids):
+            raise llm_auth.FabricProviderError("fabric_tool_response_invalid")
+        try:
+            params = json.loads(json.dumps(block.input, allow_nan=False, separators=(",", ":")))
+            validators[block.name].validate(params)
+        except Exception:
+            raise llm_auth.FabricProviderError("fabric_tool_arguments_invalid") from None
+        ids.add(block.id)
+        batch.append((block.id, block.name, params))
+    if (not batch or len(batch) > remaining or response.stop_reason != "tool_use"):
+        raise llm_auth.FabricProviderError("fabric_tool_budget_or_stop_invalid")
+    seen_ids.update(ids)
+    return batch
+
+
+def _ask_fabric_settle(provider) -> dict:
+    """Settle each observed model once through the existing shared writer."""
+    from engine import llm_auth
+    usage = llm_auth.fabric_usage(provider)
+    try:
+        # This loop invokes the wrapped messages client directly, so make_call
+        # has not written these observations. Its original counters distinguish
+        # a known error's actual model from the requested model and keep unknown
+        # usage nullable; the shared writer also owns local-zero semantics.
+        llm_auth._capture_usage(
+            provider, llm_auth._fabric_usage_delta(provider, (0, 0, 0)), "ask-brain")
+    except Exception:
+        log.warning("ask_brain: selected usage settlement unavailable")
+    return usage
+
+
+def _run_fabric_ask(question, context_ticker, root, budget, *, selected, factory):
+    """One request binding; yield between rounds so disconnect stops new work.
+
+    Text is buffered until the existing leak screen has accepted the whole
+    answer. The original generator's finalizer owns usage and local closure.
+    """
+    from engine import llm_auth
+    from engine.provider_production_modes import ApplicationFabricFactory, make_application_fabric_factory
+    operation = provider = None
+    operation_id = "ask:" + secrets.token_hex(16)
+    result = None
+    usage = None
+    census = {}
+    try:
+        yield {"status": "thinking"}
+        cfg = {"oauth_pool_lane": "ask-brain", "usage_lane": "ask-brain",
+               "workload_profile": "site_interactive", "provider_order": ["fabric"]}
+        if not selected:
+            mode_id = llm_auth.application_mode_id(cfg)
+            if mode_id is None:
+                raise llm_auth.FabricProviderError("fabric_selection_changed")
+            factory = make_application_fabric_factory(mode_id=mode_id, lane="ask-brain",
+                workload_cfg=cfg, root=root)
+        if (type(factory) is not ApplicationFabricFactory or factory.lane != "ask-brain"
+                or factory.root.resolve() != root.resolve()):
+            raise llm_auth.FabricProviderError("fabric_binding_scope_invalid")
+        providers = llm_auth.build_providers(cfg, fabric_selected=True,
+            fabric_provider_factory=factory, request_id=operation_id)
+        operation = llm_auth.begin_operation(providers, operation_id=operation_id, context="ask-brain")
+        if not llm_auth.is_fabric_selection(operation.providers) or len(operation.providers) != 1:
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
+        provider = operation.providers[0]
+        # This trusted caller binds directly and owns the loop's one settlement.
+        # Preserve its ledger attribution when using the shared usage writer.
+        provider["usage_lane"] = "ask-brain"
+        provider["usage_stage"] = "ask-brain"
+        provider["usage_cycle_id"] = operation_id
+        schemas = _read_tool_schemas()
+        seen_ids = set()
+        user_content = f"[Context ticker: {context_ticker}]\n\n{question}" if context_ticker else question
+        messages = [{"role": "user", "content": user_content}]
+        system = _CUSTOMER_SYSTEM_PROMPT + _analyst_block(question)
+        used = 0
+        while True:
+            final_only = used >= budget
+            kwargs = {"model": provider["model"], "max_tokens": _DEFAULT_MAX_TOKENS,
+                      "system": system, "messages": messages, "tools": [] if final_only else schemas}
+            if final_only:
+                kwargs["tool_choice"] = {"type": "none"}
+            response = provider["client"].messages.create(**kwargs)
+            if response.stop_reason == "max_tokens":
+                raise llm_auth.FabricProviderError("fabric_answer_truncated")
+            if response.stop_reason == "end_turn":
+                answer = "".join(block.text for block in response.content if block.type == "text")
+                if not answer.strip():
+                    raise llm_auth.FabricProviderError("fabric_empty_response")
+                citations = _extract_citations(messages)
+                answer, filtered = _post_filter_advice(answer, citations)
+                answer, leaked = _leak_screen_ask(answer, question)
+                result = {"answer": answer, "citations": citations, "tool_call_census": census,
+                          "disclaimer": _DISCLAIMER, "is_context_only": True,
+                          "degraded": bool(filtered or leaked), "mode": "live",
+                          **({"provider": response.application_observation.document["routing"]["pool"],
+                              "model": response.application_observation.document["serving_model"]}
+                             if provider.get("_fabric_auto_inspection") is not None else {
+                              "provider": provider["provider"], "model": provider["model"]}),
+                          "operation_id": operation_id}
+                break
+            batch = _ask_fabric_tool_batch(response, schemas, seen_ids, budget - used)
+            # Use normalized, validated inputs in both execution and history.
+            normalized = [{"type": "text", "text": block.text} for block in response.content if block.type == "text"]
+            normalized += [{"type": "tool_use", "id": tool_id, "name": name, "input": params}
+                           for tool_id, name, params in batch]
+            messages.append({"role": "assistant", "content": normalized})
+            outputs = []
+            for tool_id, name, params in batch:
+                yield {"status": "reading"}
+                census[name] = census.get(name, 0) + 1
+                output = _dispatch_read_tool(name, params, root)
+                outputs.append({"type": "tool_result", "tool_use_id": tool_id,
+                                "content": json.dumps(output, default=str, allow_nan=False)})
+                used += 1
+            messages.append({"role": "user", "content": outputs})
+            yield {"status": "thinking"}
+    except Exception as error:
+        if provider is not None:
+            failure = llm_auth.fabric_failure(provider, error)
+            if getattr(failure, "effect_unknown", False):
+                error = failure
+        result = _ask_fabric_unavailable(error, operation_id=operation_id)
+        result["tool_call_census"] = census
+    finally:
+        try:
+            if provider is not None:
+                usage = _ask_fabric_settle(provider)
+        finally:
+            if operation is not None:
+                operation.close()
+    if result is not None:
+        result["usage"] = usage
+        yield {"result": result}
+
+
+# ---------------------------------------------------------------------------
 # Live ask loop
 # ---------------------------------------------------------------------------
 
@@ -3091,6 +3264,7 @@ def ask(
     user_id: str,
     context_ticker: str | None = None,
     root: Path | None = None,
+    *, fabric_selected: bool = False, fabric_provider_factory=None,
 ) -> dict:
     """Answer a question about the Neural Web using the read-only cortex tools.
 
@@ -3126,6 +3300,18 @@ def ask(
     quota_allowed, quota_reason = _check_and_increment_quota(user_id)
     if not quota_allowed:
         return _memo_quote_response(clean_question, root, f"quota: {quota_reason}")
+
+    try:
+        selected = _ask_fabric_requested(fabric_selected)
+    except Exception as error:
+        return _ask_fabric_unavailable(error)
+    if selected:
+        budget, _ = _classify_question(clean_question, context_ticker)
+        for event in _run_fabric_ask(clean_question, context_ticker, root,
+                min(budget, _BUDGET_MAX_HARD_CAP), selected=fabric_selected, factory=fabric_provider_factory):
+            if "result" in event:
+                return event["result"]
+        raise RuntimeError("selected ask ended without a result")
 
     # 3. Build Anthropic client — key-optional
     client = None
@@ -3189,6 +3375,7 @@ def ask_stream(
     user_id: str,
     context_ticker: str | None = None,
     root: Path | None = None,
+    *, fabric_selected: bool = False, fabric_provider_factory=None,
 ) -> Generator[str, None, None]:
     """Streaming variant of ask().  Yields SSE text chunks.
 
@@ -3205,6 +3392,27 @@ def ask_stream(
     if not quota_allowed:
         result = _memo_quote_response(clean_question, root, f"quota: {quota_reason}")
         yield f"data: {json.dumps({'delta': result['answer'], 'done': True, 'degraded': True})}\n\n"
+        return
+
+    try:
+        selected = _ask_fabric_requested(fabric_selected)
+    except Exception as error:
+        result = _ask_fabric_unavailable(error)
+        yield f"data: {json.dumps({**result, 'delta': result['answer'], 'done': True})}\n\n"
+        return
+    if selected:
+        budget, _ = _classify_question(clean_question, context_ticker)
+        events = _run_fabric_ask(clean_question, context_ticker, root,
+            min(budget, _BUDGET_MAX_HARD_CAP), selected=fabric_selected, factory=fabric_provider_factory)
+        try:
+            for event in events:
+                if "result" in event:
+                    result = event["result"]
+                    yield f"data: {json.dumps({**result, 'delta': result['answer'], 'done': True})}\n\n"
+                else:
+                    yield f"data: {json.dumps(event)}\n\n"
+        finally:
+            events.close()
         return
 
     client = None

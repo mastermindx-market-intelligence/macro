@@ -47,7 +47,8 @@ def _stub_writer(monkeypatch, *, draft_fn=None, ok=True, reason="stubbed failure
 
     def _write(slot, cfg, *, state=None, attempt=0, prior_failures=None,
                single_provider_attempt=False, admitted_token_cap=False,
-               single_attempt=False, private_admission_check=None):
+               single_attempt=False, private_admission_check=None,
+               expected_application_fabric=None):
         calls["n"] += 1
         calls["single_provider_attempt"].append(single_provider_attempt)
         calls["admitted_token_cap"].append(admitted_token_cap)

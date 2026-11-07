@@ -66,8 +66,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
+import secrets
+import threading
 from typing import Any, Callable
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -239,10 +242,13 @@ def resolve_action(cfg: dict | None) -> str:
 #:
 #: BOUNDED, because the press fastlane daemon is long-running: an unbounded dict
 #: keyed on every post text a process ever saw is a slow leak in the one service
-#: that never restarts on its own. Oldest-first eviction — a text evicted and
-#: seen again simply costs one more call.
+#: that never restarts on its own. Completed results may be evicted oldest first.
+#: Selected pending/uncertain originals stay in their text slot, including when
+#: an observed verdict is known but its close is not. This process memo does
+#: not claim restart recovery or retain a live provider/client/operation.
 _MEMO: dict[str, dict] = {}
 _MEMO_CAP = 512
+_MEMO_LOCK = threading.Lock()
 
 #: Per-run read budget. The publisher's loop reaches this gate for every item it
 #: CONSIDERS, not only the ones it posts, so a slow or wedged local endpoint
@@ -258,7 +264,8 @@ _reads_this_run = 0
 def reset_run_budget() -> None:
     """Start a fresh per-run read budget. Called once per publisher sweep."""
     global _reads_this_run
-    _reads_this_run = 0
+    with _MEMO_LOCK:
+        _reads_this_run = 0
 
 
 def _text_key(text: str) -> str:
@@ -290,6 +297,10 @@ def _default_call(text: str, cfg: dict) -> str | None:
     try:
         from engine import llm_auth  # noqa: PLC0415
 
+        # The public entry owns selected inspection, memo and original turn.
+        # A late selector change cannot enter this native-only helper.
+        if llm_auth.application_mode_id(cfg) is not None:
+            return None
         providers = _providers(cfg)
         if not providers:
             return None
@@ -314,6 +325,122 @@ def _default_call(text: str, cfg: dict) -> str | None:
         return reply or None
     except Exception:  # noqa: BLE001
         return None
+
+
+def _unavailable(reason: str) -> dict:
+    return {"blocked": False, "category": "", "reason": reason, "mode": "unavailable"}
+
+
+def _inflight(entry: dict | None) -> bool:
+    return isinstance(entry, dict) and entry.get("_read_state") in {"pending", "held"}
+
+
+def _held_verdict(entry: dict) -> dict:
+    return _unavailable("cold_read_in_progress" if entry.get("_read_state") == "pending"
+                        else "fabric_operation_unresolved")
+
+
+def _make_memo_room(key: str) -> bool:
+    """Called under the memo lock; uncertainty is never an eviction candidate."""
+    if key in _MEMO or len(_MEMO) < _MEMO_CAP:
+        return True
+    for old, entry in list(_MEMO.items()):
+        if not _inflight(entry):
+            del _MEMO[old]
+            if len(_MEMO) < _MEMO_CAP:
+                return True
+    return False
+
+
+def _selected_inspection(cfg: dict, mode_id: str, body: str, provenance: str):
+    """Pure eligibility and exact memo identity; no credential or live binding."""
+    from engine import llm_auth, provider_production_modes as owner
+
+    maximum = cfg.get("max_tokens", _DEFAULT_MAX_TOKENS)
+    timeout = cfg.get("client_timeout_s", cfg.get("ollama_timeout_s", 30.0))
+    if (type(maximum) is not int or maximum < 1 or type(timeout) not in (int, float)
+            or not math.isfinite(timeout) or timeout <= 0):
+        raise ValueError("fabric_cold_read_request_invalid")
+    maximum = min(maximum, _DEFAULT_MAX_TOKENS)
+    selected_cfg = {"provider_order": ["fabric"],
+        "usage_lane": str(cfg.get("usage_lane", "marketing-cold-read")),
+        "oauth_pool_lane": str(cfg.get("oauth_pool_lane", "marketing-cold-read")),
+        "workload_profile": cfg.get("workload_profile", "site_batch"),
+        "client_timeout_s": min(float(timeout), 30.0)}
+    factory = owner.make_application_fabric_factory(mode_id=mode_id,
+        lane=selected_cfg["oauth_pool_lane"], workload_cfg=selected_cfg,
+        root=llm_auth._repo_root())
+    identity = factory.inspect(selected_cfg)
+    factory = factory.with_inspection(identity)
+    prompt = prompt_for(body)
+    commitment = hashlib.sha256(json.dumps({"identity": identity, "mode_id": mode_id,
+        "prompt": prompt, "max_tokens": maximum, "configuration": selected_cfg,
+        "provenance": provenance}, sort_keys=True, separators=(",", ":"),
+        ensure_ascii=False, allow_nan=False).encode()).hexdigest()
+    return factory, selected_cfg, prompt, maximum, commitment
+
+
+def _selected_read(cfg: dict, mode_id: str, route, operation_id: str):
+    """One original operation; only immutable evidence may enter the memo."""
+    from engine import llm_auth
+
+    factory, selected_cfg, prompt, maximum, _ = route
+    provider = None
+    served_model = None
+    error = None
+    verdict = _unavailable("fabric_unavailable")
+
+    def complete(client, model):
+        nonlocal served_model
+        response = client.messages.create(model=model, max_tokens=maximum,
+            system=prompt[0], messages=[{"role": "user", "content": prompt[1]}])
+        served_model = response.model
+        if (response.stop_reason != "end_turn" or not response.content
+                or any(getattr(block, "type", None) != "text" for block in response.content)):
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+        text = "".join(block.text for block in response.content).strip()
+        if not text:
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+        return text, None, response
+
+    try:
+        if llm_auth.application_mode_id(cfg) != mode_id:
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
+        provider = llm_auth.build_fabric_provider(factory, request_id=operation_id,
+                                                workload_cfg=selected_cfg)
+        provider.update(usage_lane=selected_cfg["usage_lane"], usage_cycle_id=operation_id)
+        with llm_auth.begin_operation([provider], operation_id=operation_id,
+                                     context="marketing_cold_read") as operation:
+            raw, _, _ = llm_auth.make_call(operation.providers, complete,
+                                         context="marketing_cold_read")
+        parsed = _coerce_verdict(raw)
+        if parsed["category"]:
+            verdict = {**parsed, "mode": "read"}
+        else:
+            verdict = _unavailable("fabric_verdict_invalid")
+    except Exception as exc:  # the advisory veto always fails open
+        error = exc
+    finally:
+        if provider is not None:
+            llm_auth.close_fabric_provider(provider)
+
+    close = dict(provider.get("_fabric_close") or {}) if provider else {}
+    failure = provider.get("_fabric_failure") if provider else None
+    disposition = provider.get("_fabric_native_disposition") if provider else None
+    unknown = (bool(getattr(error, "effect_unknown", False))
+        or bool(getattr(failure, "effect_unknown", False))
+        or bool(provider and provider.get("_fabric_pending"))
+        or disposition in {"pending", "effect_unknown"}
+        or close.get("effect_unknown") is True or close.get("disposition") in {"pending", "effect_unknown"})
+    # A lost close does not erase a correlated completed verdict. Its original
+    # operation stays held; future reuse still requires the same fresh identity.
+    if unknown and verdict["mode"] != "read":
+        verdict = _unavailable("fabric_operation_unresolved")
+    evidence = {"operation_id": operation_id, "model": served_model,
+        "provider": provider.get("provider") if provider else None,
+        "usage": llm_auth.fabric_usage(provider) if provider else None,
+        "native_disposition": disposition, "close": close}
+    return verdict, unknown, evidence
 
 
 def cold_read_verdict(
@@ -363,8 +490,21 @@ def cold_read_verdict(
         return {**base, "mode": "skipped", "reason": "lane allowlist unreadable"}
 
     key = _text_key(body)
-    if key in _MEMO:
-        return {**_MEMO[key], "action": action}
+    with _MEMO_LOCK:
+        # The original logical text slot precedes mutable selection. Resetting
+        # a sweep or removing a selector cannot turn uncertainty into a retry.
+        memo = _MEMO.get(key)
+        if _inflight(memo) and memo.get("verdict", {}).get("mode") != "read":
+            return {**_held_verdict(memo), "action": action}
+    try:
+        from engine import llm_auth
+        mode_id = llm_auth.application_mode_id(cfg)
+    except Exception:
+        return {**_unavailable("fabric_selection_unavailable"), "action": action}
+    with _MEMO_LOCK:
+        memo = _MEMO.get(key)
+        if mode_id is None and memo is not None and "_read_state" not in memo:
+            return {**memo, "action": action}
 
     # `cfg.get(k, default)`, NOT `cfg.get(k) or default`: an explicit "" means
     # "no env gate" and `or` would silently reinstate the default, which is how a
@@ -375,16 +515,50 @@ def cold_read_verdict(
         # test suite and any disarmed run at zero model calls.
         return {**base, "mode": "off", "reason": f"{env_gate} not set"}
 
+    try:
+        route = _selected_inspection(cfg, mode_id, body, provenance) if mode_id is not None else None
+        budget = int(cfg.get("max_reads_per_run", _DEFAULT_MAX_READS_PER_RUN))
+    except Exception:
+        return {**_unavailable("fabric_selection_unavailable"), "action": action}
+
     global _reads_this_run
-    budget = int(cfg.get("max_reads_per_run", _DEFAULT_MAX_READS_PER_RUN))
-    if budget > 0 and _reads_this_run >= budget:
-        # SAID OUT LOUD, never silent: a truncated screen that reports nothing
-        # reads as a clean run. The caller surfaces this.
-        return {**base, "mode": "budget_exhausted",
-                "reason": f"per-run read budget of {budget} reached"}
+    with _MEMO_LOCK:
+        memo = _MEMO.get(key)
+        if _inflight(memo):
+            if (route is not None and memo.get("_fabric_identity") == route[4]
+                    and memo.get("verdict", {}).get("mode") == "read"):
+                return {**memo["verdict"], "action": action}
+            return {**_held_verdict(memo), "action": action}
+        if (route is not None and memo is not None
+                and memo.get("_fabric_identity") == route[4]):
+            return {**memo["verdict"], "action": action}
+        if mode_id is None and memo is not None and "_read_state" not in memo:
+            return {**memo, "action": action}
+        if budget > 0 and _reads_this_run >= budget:
+            return {**base, "mode": "budget_exhausted",
+                    "reason": f"per-run read budget of {budget} reached"}
+        if not _make_memo_room(key):
+            return {**_unavailable("unresolved_read_memo_full"), "action": action}
+        # This is the incumbent process memo, not a new durable retry owner.
+        # It deliberately retains no factory, provider, client or operation.
+        entry = {"_read_state": "pending", "_operation_id": "app:" + secrets.token_hex(16)}
+        _MEMO[key] = entry
+        _reads_this_run += 1
+
+    if route is not None:
+        verdict, unknown, evidence = _selected_read(cfg, mode_id, route, entry["_operation_id"])
+        with _MEMO_LOCK:
+            if _MEMO.get(key) is entry:
+                if evidence["provider"] is None and not unknown:
+                    # No binding/provider request existed. Keep the spent read
+                    # allowance, but do not cache missing credentials forever.
+                    del _MEMO[key]
+                else:
+                    entry.update(_read_state="held" if unknown else "complete",
+                        _fabric_identity=route[4], evidence=evidence, verdict=verdict)
+        return {**verdict, "action": action}
 
     caller = _call or _default_call
-    _reads_this_run += 1
     try:
         reply = caller(body, cfg)
     except Exception:  # noqa: BLE001
@@ -393,11 +567,13 @@ def cold_read_verdict(
         # No endpoint, a timeout, a refusal. Unscreened, never dead.
         out = {"blocked": False, "category": "", "reason": "no model reachable",
                "mode": "unavailable"}
+        with _MEMO_LOCK:
+            if _MEMO.get(key) is entry:
+                del _MEMO[key]
         return {**out, "action": action}
 
     verdict = {**_coerce_verdict(reply), "mode": "read"}
-    if len(_MEMO) >= _MEMO_CAP:
-        for stale in list(_MEMO)[: _MEMO_CAP // 4]:
-            _MEMO.pop(stale, None)
-    _MEMO[key] = verdict
+    with _MEMO_LOCK:
+        if _MEMO.get(key) is entry:
+            _MEMO[key] = verdict
     return {**verdict, "action": action}

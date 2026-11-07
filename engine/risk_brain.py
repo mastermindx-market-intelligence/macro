@@ -109,45 +109,61 @@ def enabled() -> bool:
 
 
 def _make_call(cfg: dict):
-    """Return a call(model, system, user) -> (text, degraded) callable, or None.
+    """Cache an inert provider recipe; each callback owns one fresh operation."""
+    from engine import llm_auth
 
-    Refactored to use llm_auth.build_providers for pool-aware failover and
-    usage capture.  The external call signature is unchanged.
-    """
+    call_cfg = dict(cfg)
+    call_cfg.setdefault("oauth_pool_lane", "risk-brain")
+    call_cfg.setdefault("usage_lane", "risk-brain")
     try:
-        from engine import llm_auth  # noqa: PLC0415
-        providers = llm_auth.build_providers(cfg, opus_model=cfg.get("model", "claude-opus-4-8"))
-    except Exception as e:  # noqa: BLE001
-        log.warning("risk_brain: provider build failed (%s)", e)
+        selected = llm_auth.application_mode_id(call_cfg) is not None
+        if selected:
+            # Default only an absent caller purpose; explicit invalid values refuse.
+            call_cfg.setdefault("workload_profile", "site_batch")
+        providers = llm_auth.build_providers(call_cfg, opus_model=cfg.get("model", "claude-opus-4-8"))
+    except llm_auth.FabricProviderError as exc:
+        reason = exc.code
+        return lambda model, system, user: (None, reason)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("risk_brain: provider build failed (%s)", exc)
         return None
     if not providers:
         return None
     max_tokens = int(cfg.get("max_tokens", 5000))
 
-    def call(model: str, system: str, user: str):
-        def _call_fn(client, m: str):
+    def call(model, system, user):
+        def invoke(client, model_id: str):
             resp = client.messages.create(
-                model=m, max_tokens=max_tokens,
-                system=[{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
+                model=model_id, max_tokens=max_tokens,
+                system=[{"type": "text", "text": system,
+                         "cache_control": {"type": "ephemeral"}}],
                 messages=[{"role": "user", "content": user}])
-            if getattr(resp, "stop_reason", None) == "refusal":
+            if selected:
+                if (getattr(resp, "stop_reason", None) != "end_turn"
+                        or any(getattr(block, "type", "") != "text"
+                               for block in resp.content)):
+                    raise llm_auth.FabricProviderError("fabric_text_response_invalid")
+            elif getattr(resp, "stop_reason", None) == "refusal":
                 return None, "refusal", resp
-            text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
+            text = "".join(block.text for block in resp.content
+                           if getattr(block, "type", "") == "text")
             return (text, None, resp) if text else (None, "empty_reply", resp)
 
-        # Override the model ONLY on Claude-endpoint providers (oauth /
-        # anthropic) — deepseek/codex keep the ids build_providers chose for
-        # their endpoints; a Claude id sent to those 404s the fallback rung.
-        model_providers = [
-            {**p, "model": model} if p.get("name") in ("oauth", "anthropic") else p
-            for p in providers
-        ]
         try:
-            text, reason, _ = llm_auth.make_call(
-                model_providers, _call_fn, context="risk_brain")
+            with llm_auth.begin_operation(providers, context="risk_brain") as operation:
+                # Only native Claude endpoints accept the caller's Claude preference.
+                # Keep the original selected Fabric descriptor and model untouched.
+                call_providers = [
+                    {**p, "model": model} if p.get("name") in ("oauth", "anthropic") else p
+                    for p in operation.providers
+                ]
+                text, reason, used = llm_auth.make_call(
+                    call_providers, invoke, context="risk_brain")
             return text, reason
-        except Exception as e:  # noqa: BLE001 — degrade, never raise
-            log.warning("risk_brain call failed (%s): %s", model, e)
+        except llm_auth.FabricProviderError as exc:
+            return None, exc.code
+        except Exception as exc:  # noqa: BLE001
+            log.warning("risk_brain call failed: %s", exc)
             return None, "llm_error"
 
     return call

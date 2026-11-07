@@ -1040,7 +1040,7 @@ def _dig(cfg: Any, path: list[str]) -> dict | None:
     return node if isinstance(node, dict) else None
 
 
-def models(root=None) -> dict:
+def models(root=None, *, fabric_pool_reader=None, fabric_pool_reader_error="metadata_not_configured") -> dict:
     """Per-lane model routing plus the OAuth key-pool balancer's belief state."""
     repo = Path(root) if root is not None else _default_root()
     try:
@@ -1049,6 +1049,16 @@ def models(root=None) -> dict:
         for spec in _LLM_LANES:
             node = _dig(cfg, spec["path"]) or {}
             order = node.get("provider_order") or ["codex", "oauth", "anthropic", "deepseek"]
+            from engine.llm_auth import application_mode_id, FabricProviderError
+            from engine.provider_production_modes import describe_application_fabric_selection
+
+            try:
+                route = describe_application_fabric_selection(application_mode_id(node), root=repo)
+            except FabricProviderError:
+                route = {"selected": True, "state": "held", "provider": None, "model": None,
+                         "blocker": "fabric_application_mode_invalid"}
+            if route["selected"]:
+                order = ["fabric"]
             codex_model = node.get("codex_source_model") or "gpt-5.6-terra"
             tier, tier_word = _CODEX_TIERS.get(str(codex_model), (str(codex_model), ""))
             lanes.append({
@@ -1060,6 +1070,7 @@ def models(root=None) -> dict:
                 "enabled": node.get("enabled") if "enabled" in node else None,
                 "provider_order": list(order),
                 "first_choice": (list(order) or [None])[0],
+                "fabric_route": route,
                 "codex_model": codex_model,
                 "codex_tier": tier,
                 "codex_tier_word": tier_word,
@@ -1069,6 +1080,14 @@ def models(root=None) -> dict:
             })
 
         pool = _pool_health(repo)
+        from engine.provider_capacity import fabric_admin_pool_projection
+
+        fabric = fabric_admin_pool_projection(reason=fabric_pool_reader_error)
+        if fabric_pool_reader is not None:
+            try:
+                fabric = fabric_admin_pool_projection(fabric_pool_reader.read())
+            except Exception:
+                fabric = fabric_admin_pool_projection(reason="metadata_unavailable")
         return {
             "ok": True,
             "as_of": _utcnow().strftime("%Y-%m-%d"),
@@ -1085,6 +1104,7 @@ def models(root=None) -> dict:
                  "what": "Last rung before the lane goes quiet."},
             ],
             "pool": pool,
+            "fabric": fabric,
             "ledger": _key_ledger(repo),
             "law": ("A lane that exhausts every rung writes nothing and says so. "
                     "It never falls back to a house template."),
@@ -1109,9 +1129,9 @@ def _pool_health(repo: Path) -> dict:
                 "note": "The key-pool module is not importable in this "
                         "environment, so per-key load cannot be read here."}
     try:
-        rows = usage_snapshot(repo) or []
-    except Exception as exc:  # noqa: BLE001
-        return {"available": False, "note": f"key pool read failed: {exc}"}
+        rows = usage_snapshot(repo, recorded_only=True) or []
+    except Exception:  # noqa: BLE001
+        return {"available": False, "note": "Recorded key-pool observations are unavailable."}
 
     # usage_snapshot covers the balanced Claude pool AND provider rows (the
     # independently cooled Codex accounts plus DeepSeek). They must not share a
@@ -1124,10 +1144,12 @@ def _pool_health(repo: Path) -> dict:
     for r in rows:
         if not isinstance(r, dict):
             continue
-        present = bool(r.get("present"))
+        present = r.get("present") if type(r.get("present")) is bool else None
         cooling = bool(r.get("cooling"))
         enabled = r.get("enabled")
-        if not present:
+        if present is None:
+            state, word = "unobserved", "current credential presence unobserved"
+        elif not present:
             state, word = "absent", "not set on this host"
         elif cooling:
             state, word = "cooling", "rate-limited — resting"
@@ -1147,10 +1169,10 @@ def _pool_health(repo: Path) -> dict:
             # Load figures are meaningless for a key that is not set here — an
             # absent key's "0 tokens this window" reads as idle capacity when
             # the truth is there is no key at all.
-            "window_5h_est_tokens": r.get("window_5h_est_tokens") if present else None,
-            "weekly_est_tokens": r.get("weekly_est_tokens") if present else None,
-            "window_5h_sessions": r.get("window_5h_sessions") if present else None,
-            "weekly_sessions": r.get("weekly_sessions") if present else None,
+            "window_5h_est_tokens": r.get("window_5h_est_tokens") if present or r.get("last_ts") else None,
+            "weekly_est_tokens": r.get("weekly_est_tokens") if present or r.get("last_ts") else None,
+            "window_5h_sessions": r.get("window_5h_sessions") if present or r.get("last_ts") else None,
+            "weekly_sessions": r.get("weekly_sessions") if present or r.get("last_ts") else None,
             "last_outcome": r.get("last_outcome"),
             "last_ts": r.get("last_ts"),
         }
@@ -1165,10 +1187,13 @@ def _pool_health(repo: Path) -> dict:
         "keys": keys,
         "providers": providers,
         "ready": ready,
-        "cooling": sum(1 for k in keys if k["state"] == "cooling"),
+        "cooling": sum(1 for k in keys if k["cooling"] is True),
         "absent": sum(1 for k in keys if k["state"] == "absent"),
+        "unobserved": sum(1 for k in keys if k["state"] == "unobserved"),
         "total": len(keys),
-        "verdict": ("The pool can serve a fallback call." if ready else
+        "verdict": ("Credential presence is unobserved on this page. Recorded usage and cooling do not prove current availability."
+                    if any(k["state"] == "unobserved" for k in keys) else
+                    "The pool can serve a fallback call." if ready else
                     "No key in the pool can serve right now — a lane that "
                     "reaches this rung falls through to the next one."),
     }

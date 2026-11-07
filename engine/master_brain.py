@@ -28,12 +28,15 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
 from lib import config
 from engine import desk_ledger as _ledger_law    # run-scoped ids + immutable appends (leaf util)
 from engine.catalyst_tone import _extract_json   # shared tolerant JSON parser (leaf util)
+from engine import catalyst_tone as _brief_cache
 
 log = logging.getLogger(__name__)
 
@@ -434,6 +437,18 @@ def _mb_entry_levels(check: dict, asof, root) -> dict:
 
 
 def _append_ledger(brief: dict, root) -> None:
+    """Standalone legacy append; an AUTO owner requires its original fence."""
+    try:
+        root = _mb_auto_root(root)
+        with _brief_cache._cache_lock(_mb_auto_path(root, "macro"), root):
+            if _mb_auto_load(root, "macro")["entries"]:
+                return
+            _append_ledger_locked(brief, root)
+    except Exception as error:
+        log.warning("master_brain: ledger append held: %s", error)
+
+
+def _append_ledger_locked(brief: dict, root) -> None:
     """Append the macro brief's theses to data/master_brain/theses.jsonl. Never fatal."""
     theses = brief.get("theses") or []
     if not theses:
@@ -1659,6 +1674,261 @@ def _client(cfg: dict):
         return None
 
 
+def _production_mode_request(cfg: dict) -> tuple[str, int]:
+    """Validate an explicit production selection without selecting a fallback."""
+    mode_id = cfg.get("production_mode")
+    max_tokens = cfg.get("max_tokens", 4000)
+    if (not isinstance(mode_id, str) or not mode_id.strip()
+            or type(max_tokens) is not int or not 1 <= max_tokens <= 32768):
+        raise ValueError("invalid production mode request")
+    return mode_id.strip(), max_tokens
+
+
+def _call_production_mode(system: str, user: str, cfg: dict,
+                          served: dict | None = None) -> tuple[str | None, str | None]:
+    """One request through the incumbent API owner; no subscription waterfall.
+
+    The owner retains eligibility, credentials, pinned model/destination and
+    health/usage accounting. This consumer does not claim native Fabric capacity
+    or add an admission, retry or accounting plane.
+    """
+    try:
+        mode_id, max_tokens = _production_mode_request(cfg)
+        if not isinstance(system, str) or not isinstance(user, str):
+            raise ValueError("invalid production mode prompts")
+    except ValueError:
+        return None, "production_mode_invalid_request"
+    try:
+        from engine import provider_production_modes as owner
+    except Exception:
+        return None, "production_mode_owner_unavailable"
+    try:
+        receipt = owner.call_mode(mode_id, system, user, max_tokens=max_tokens)
+    except owner.ProductionModeConfigError:
+        return None, "production_mode_invalid_config"
+    except Exception:
+        # Dispatch may already have happened. Never replay on an uncertain error.
+        return None, "production_mode_error"
+    if receipt.ok and receipt.text:
+        if served is not None:
+            served.update(provider=receipt.provider_id, model=receipt.model)
+        return receipt.text, None
+    reason = receipt.state if receipt.state != "configured" else receipt.error_class
+    return None, "production_mode_" + reason
+
+
+# --------------------------------------------------------------------------- #
+# application Fabric route — the incumbent owner's shared Fabric binding
+#
+# The AI Brief's synthesis is a PAID, task-shaped inference. On a host whose
+# trusted configuration selects the shared Fabric application route
+# (MM_PROVIDER_APPLICATION_MODE), this lane serves through the incumbent Fabric
+# owner or not at all: never through a custom SDK client, a legacy secret, a
+# provider waterfall, a retry layer, a second cache or a second accounting
+# plane.
+#
+# The OWNER keeps eligibility (closed identity, workload permission,
+# enablement/qualification, application entitlement, the capability broker),
+# the credential, the transport, response validation, the per-turn uncertainty
+# latch and the usage/attribution write. This consumer keeps the request
+# contract (only the arguments the transport supports), the two-tuple result,
+# the served out-parameter and the reply-cache identity.
+#
+# The same owner composes host/startup/caller workload policy and fresh
+# qualification/capability checks. A selected unavailable route never falls back.
+# --------------------------------------------------------------------------- #
+_APPLICATION_MODE_ENV = "MM_PROVIDER_APPLICATION_MODE"
+_APPLICATION_FABRIC_LANE = "master-brain"
+_APPLICATION_FABRIC_CACHE_SCHEMA = "master_brain.application_fabric.v2"
+
+
+def _bounded_reason(value) -> str:
+    """Reduce a failure code to a closed, log-safe reason token."""
+    text = "".join(
+        ch if ch in "abcdefghijklmnopqrstuvwxyz0123456789_" else "_"
+        for ch in str(value).lower())
+    return text[:48]
+
+
+def _fabric_reason(code) -> str:
+    """The owner's bounded refusal code, without its redundant prefix."""
+    bounded = _bounded_reason(code)
+    return bounded[len("fabric_"):] if bounded.startswith("fabric_") else bounded
+
+
+def _application_selection(cfg: dict) -> tuple[bool, str | None, str | None]:
+    """Resolve the trusted host's application selection.
+
+    Returns ``(selected, mode_id, refusal)``. ``selected`` is True whenever the
+    host environment names an application mode: that selection is MANDATORY,
+    so this lane serves through the incumbent Fabric owner or not at all. A
+    refusal is a bounded reason and never falls back to another selection.
+
+    An explicit ``production_mode`` that names a DIFFERENT owner contradicts
+    the trusted host choice; it refuses rather than quietly serving a
+    different owner behind the host's selection. The custom-endpoint lane
+    config is NOT a contradiction: it is this lane's legacy default, and the
+    application route replaces it.
+    """
+    raw = os.environ.get(_APPLICATION_MODE_ENV)
+    if raw is None:
+        return False, None, None
+    mode_id = raw.strip() if isinstance(raw, str) else ""
+    if not mode_id:
+        # Presence is meaningful: an empty selection must fail closed, not
+        # quietly fall through to the legacy ladder or the legacy cache.
+        return True, None, "application_fabric_invalid_mode"
+    if "production_mode" in cfg:
+        explicit = cfg.get("production_mode")
+        explicit_id = explicit.strip() if isinstance(explicit, str) else ""
+        if explicit_id != mode_id:
+            return True, None, "application_fabric_conflicting_mode"
+    return True, mode_id, None
+
+
+def _application_operation_id() -> str:
+    """Allocate this operation's identity ONCE, before any inference.
+
+    The draft and its optional accepted rewrite are distinct intentional steps
+    of the SAME operation, so they share this id and differ only in the step
+    suffix the owner's per-turn wrapper assigns. It is never minted in a
+    recovery branch.
+    """
+    return f"master_brain:{uuid.uuid4().hex}"
+
+
+def _application_workload_cfg(cfg: dict) -> dict:
+    """The preserved lane cfg handed to the owner's workload gate.
+
+    ``_ladder_cfg`` keeps the operator's configured keys — ``provider_order``
+    and any ``workload_profile`` — exactly as they are. An invalid null/empty
+    workload profile travels UNCHANGED so the owner's gate, not this consumer,
+    decides whether the workload is permitted. This consumer never removes an
+    unqualified-workload refusal of its own.
+    """
+    out = {**_ladder_cfg(cfg), "provider_order": ["fabric"]}
+    out.setdefault("workload_profile", "site_batch")
+    return out
+
+
+def _resolve_application_route(cfg: dict, mode_id: str, root, operation_id: str):
+    """Inspect the incumbent owner's eligible identity without binding a client.
+
+    Returns ``(route, refusal)``. The route carries the owner's per-turn
+    narrowed factory and the identity the reply cache is keyed on. A
+    refusal means the owner did not admit this workload; the caller must not
+    substitute another selection, client, credential or cache.
+    """
+    from engine import provider_production_modes as owner
+
+    maker = getattr(owner, "make_application_fabric_factory", None)
+    if not callable(maker):
+        # The companion owner dependency is not installed on this host.
+        return None, "application_fabric_owner_unavailable"
+    max_tokens = cfg.get("max_tokens", 4000)
+    if type(max_tokens) is not int or not 1 <= max_tokens <= 32768:
+        return None, "application_fabric_invalid_request"
+    try:
+        factory = maker(
+            mode_id=mode_id,
+            lane=_APPLICATION_FABRIC_LANE,
+            workload_cfg=_application_workload_cfg(cfg),
+            root=(Path(root).resolve(strict=True) if root is not None
+                  else Path(owner.__file__).resolve().parents[1]),
+        )
+    except Exception:  # noqa: BLE001 — the owner's refusal is the answer
+        return None, "application_fabric_owner_refused"
+    if type(factory) is not owner.ApplicationFabricFactory:
+        return None, "application_fabric_owner_unavailable"
+    try:
+        identity = factory.inspect(_application_workload_cfg(cfg))
+        factory = factory.with_inspection(identity)
+    except Exception:
+        return None, "application_fabric_binding_unavailable"
+    return {
+        "mode_id": mode_id,
+        "factory": factory,
+        "operation_id": operation_id,
+        "inspection": identity,
+        "provider": None,
+        "provider_id": identity.get("provider"),
+        "model": identity.get("model"),
+        "cap_id": identity["cap_id"],
+        "cost_basis": identity.get("cost_basis"),
+        "max_tokens": max_tokens,
+    }, None
+
+
+def _call_application_fabric(system: str, user: str, cfg: dict, route: dict,
+                              served: dict | None = None, *, _auto_raw=False) -> tuple[str | None, str | None]:
+    """One intentional request through the incumbent Fabric owner.
+
+    No custom client, no credential discovery, no provider waterfall, no retry
+    and no fallback. The request carries ONLY the arguments the transport
+    supports — never ``seed`` and never a hidden ignored kwarg — and the owner
+    refuses to walk a ladder for a Fabric selection on its own.
+    """
+    from engine import llm_auth
+
+    context = route.get("_auto_context")
+    if context is not None and not _auto_raw:
+        return context.call(system, user, cfg, served)
+    provider = route["provider"]
+    if provider is None:
+        try:
+            provider = llm_auth.build_fabric_provider(
+                route["factory"], request_id=route["operation_id"],
+                workload_cfg=_application_workload_cfg(cfg))
+        except Exception as exc:  # A changed inspection refuses before a secret.
+            code = exc.code if isinstance(exc, llm_auth.FabricProviderError) else "binding_unavailable"
+            return None, "application_fabric_" + _fabric_reason(code)
+        route["provider"] = provider
+        provider["usage_cycle_id"] = route["operation_id"]
+    max_tokens = route["max_tokens"]
+    # Attribution for the owner's usage write: this lane and this step. The
+    # owner still owns the write; the consumer only names the lane it serves.
+    provider["usage_lane"] = str(cfg.get("usage_lane") or _APPLICATION_FABRIC_LANE)
+    provider["usage_stage"] = str(cfg.get("usage_stage") or "")
+
+    def _do_call(_client, _model: str):
+        resp = _client.messages.create(
+            model=_model,
+            max_tokens=max_tokens,
+            system=system,
+            messages=[{"role": "user", "content": user}],
+        )
+        if (getattr(resp, "stop_reason", None) == "tool_use"
+                or any(getattr(b, "type", "") == "tool_use" for b in resp.content)):
+            raise llm_auth.FabricProviderError("fabric_text_response_required")
+        text = "".join(b.text for b in getattr(resp, "content", [])
+                       if getattr(b, "type", "") == "text")
+        stop = getattr(resp, "stop_reason", None)
+        return text, ("truncated" if stop == "max_tokens" else None), resp
+
+    try:
+        text, reason, _rung = llm_auth.make_call(
+            [provider], _do_call, context="master_brain")
+    except Exception as exc:  # noqa: BLE001 — degrade, never raise
+        code = exc.code if isinstance(exc, llm_auth.FabricProviderError) else "error"
+        return None, "application_fabric_" + _fabric_reason(code)
+    if text is None:
+        return None, reason or "application_fabric_no_reply"
+    if served is not None:
+        # The ACTUAL provider and model that served this step — never a lane
+        # default and never a label the reply did not earn.
+        if route["inspection"].get("schema") == "mastermind.fabric_application_inspection.v2":
+            observation = llm_auth._fabric_routed_observation(provider,
+                llm_auth.fabric_observation(provider),
+                provider.get("_fabric_last_observation", {}).get("request_id"))
+            if observation is not None:
+                served["provider"] = observation.document["routing"]["pool"]
+                served["model"] = observation.document["serving_model"]
+        else:
+            served["provider"] = provider.get("provider")
+            served["model"] = provider.get("model")
+    return text, reason
+
+
 def _call_model(system: str, user: str, cfg: dict,
                  served: dict | None = None) -> tuple[str | None, str | None]:
     """Return (reply_text, degraded_reason). Never raises.
@@ -1693,6 +1963,32 @@ def _call_model(system: str, user: str, cfg: dict,
     balance exhaustion no longer blanks the whole brief. An operator who
     pinned some OTHER endpoint keeps the historic single-provider descriptor.
     """
+    # The trusted host's application selection is MANDATORY for this lane: when
+    # it is present, the incumbent Fabric owner serves the call — never a custom
+    # client, a legacy secret or the provider waterfall. This branch also
+    # bypasses the legacy empty-reply/SDK retries: a Fabric selection has no
+    # ladder to retry and no dead-key to strike off.
+    application_selected, application_mode, application_refusal = _application_selection(cfg)
+    if application_selected:
+        if application_refusal:
+            return None, application_refusal
+        route, route_refusal = _resolve_application_route(
+            cfg, application_mode, None, _application_operation_id())
+        if route is None:
+            return None, route_refusal
+        if route["inspection"].get("schema") == "mastermind.fabric_application_inspection.v2":
+            return None, "application_fabric_durable_owner_required"
+        from engine import llm_auth
+        try:
+            return _call_application_fabric(system, user, cfg, route, served=served)
+        finally:
+            if route["provider"] is not None:
+                llm_auth.close_fabric_provider(route["provider"])
+    # Presence is intentional: an empty/unknown mode must fail closed, not enter
+    # the legacy ladder. This branch also bypasses its empty-reply/SDK retries.
+    if "production_mode" in cfg:
+        return _call_production_mode(system, user, cfg, served=served)
+
     from engine import llm_auth
 
     if _is_deepseek_lane(cfg):
@@ -1942,18 +2238,1038 @@ def _collect_style_violations(parsed: dict) -> list[str]:
     return all_violations
 
 
+
+# AUTO evidence belongs to this existing root/lens reply-cache owner.
+_MB_AUTO_SCHEMA = "master_brain.fabric_cache.v1"
+_MB_AUTO_ENTRY_SCHEMA = "master_brain.fabric_entry.v1"
+
+
+class _BriefAutoStop(BaseException):
+    """Carry a durable-owner stop across legacy degrade-never-raise handlers."""
+
+
+def _mb_auto_clone(value):
+    return _brief_cache._cache_decode(_brief_cache._cache_json(value))
+
+
+def _mb_auto_root(root):
+    return (Path(root) if root is not None else Path(config.ROOT)).resolve(strict=True)
+
+
+def _mb_auto_path(root, lens):
+    if lens not in LENSES:
+        raise ValueError("brief_auto_lens_invalid")
+    # Config changes cannot move an unresolved original away from its publisher.
+    return root / "data/master_brain/reply_cache" / ("fabric-" + lens + ".json")
+
+
+def _mb_auto_payload(operation, step, index):
+    from engine import fabric_inference_client as transport
+    request_id = operation["operation_id"] + ":brain:" + str(index)
+    if step["request_id"] != request_id:
+        raise ValueError("brief_auto_request_identity")
+    _, raw = transport._request({"model": None, "request_id": request_id,
+        "max_tokens": operation["max_tokens"], "system": step["system"],
+        "messages": [{"role": "user", "content": step["user"]}]}, None, False)
+    return transport._load_json(raw, unknown=False)
+
+
+def _mb_auto_close_settled(operation):
+    close = operation["close"]
+    if close is None or close["effect_unknown"]:
+        return False
+    if close["disposition"] == "closed":
+        return close["closed"] and close["attempted"]
+    # A correlated refusal says this close was refused; it does not release
+    # an already admitted turn. Only positive local no-admission evidence can
+    # settle a failed operation without a native close receipt.
+    return (close["disposition"] in ("not_bound", "local_only")
+            and not close["closed"] and not close["attempted"]
+            and operation["route_identity"] is None
+            and all(step["state"] == "failed" and step["effect_unknown"] is False
+                    and step["application_observation"] is None
+                    for step in operation["steps"]))
+
+
+def _mb_auto_validate_operation(operation, maximum_steps):
+    from engine import fabric_inference_client as transport
+    fields = {"operation_id", "inspection", "max_tokens", "steps", "route_identity",
+              "state", "close", "usage"}
+    if (type(operation) is not dict or set(operation) != fields
+            or type(operation["operation_id"]) is not str
+            or not _re.fullmatch(r"master_brain:[0-9a-f]{32}", operation["operation_id"])
+            or type(operation["max_tokens"]) is not int
+            or not 1 <= operation["max_tokens"] <= 32768
+            or operation["state"] not in ("pending", "complete", "failed", "held")
+            or type(operation["steps"]) is not list or len(operation["steps"]) > maximum_steps):
+        raise ValueError("brief_auto_operation_invalid")
+    inspection = transport.validate_auto_inspection(operation["inspection"])
+    first_route, totals, complete_usage = None, {"input_tokens": 0, "output_tokens": 0}, True
+    pending, uncertain = 0, False
+    for index, step in enumerate(operation["steps"]):
+        fields = {"request_id", "system", "user", "request_digest", "routed_request_digest",
+                  "state", "text", "reason", "application_observation", "observed_usage",
+                  "effect_unknown"}
+        if (type(step) is not dict or set(step) != fields
+                or type(step["system"]) is not str or type(step["user"]) is not str
+                or step["state"] not in ("intent", "observed", "failed")
+                or step["reason"] is not None and type(step["reason"]) is not str
+                or step["text"] is not None and (type(step["text"]) is not str
+                    or len(step["text"].encode("utf-8")) > 1048576)):
+            raise ValueError("brief_auto_step_invalid")
+        payload = _mb_auto_payload(operation, step, index)
+        digest = transport._auto_request_digest(payload)
+        if step["request_digest"] != digest:
+            raise ValueError("brief_auto_request_commitment")
+        if step["state"] == "intent":
+            pending += 1
+            if index != len(operation["steps"]) - 1 or any(step[key] is not None for key in (
+                    "text", "reason", "application_observation", "observed_usage",
+                    "routed_request_digest", "effect_unknown")):
+                raise ValueError("brief_auto_intent_invalid")
+            continue
+        if type(step["effect_unknown"]) is not bool:
+            raise ValueError("brief_auto_effect_invalid")
+        uncertain |= step["effect_unknown"]
+        observation, usage = step["application_observation"], step["observed_usage"]
+        if usage is not None:
+            if (type(usage) is not dict
+                    or set(usage) != {"request_id", "serving_model", "input_tokens", "output_tokens"}
+                    or usage["request_id"] != step["request_id"]
+                    or usage["serving_model"] is not None and type(usage["serving_model"]) is not str
+                    or any(usage[key] is not None and (type(usage[key]) is not int
+                        or not 0 <= usage[key] <= transport.MAX_NATIVE_TOKENS) for key in totals)):
+                raise ValueError("brief_auto_usage_invalid")
+            if all(type(usage[key]) is int for key in totals):
+                for key in totals:
+                    totals[key] += usage[key]
+            else:
+                complete_usage = False
+        elif observation is not None or step["state"] == "observed":
+            raise ValueError("brief_auto_usage_missing")
+        if observation is None:
+            if step["routed_request_digest"] is not None or step["text"] is not None or step["state"] == "observed":
+                raise ValueError("brief_auto_observation_missing")
+            continue
+        routed = transport._auto_request_digest(dict(payload, model=observation["routing"]["selected_model"]))
+        observation = transport.validate_auto_observation(observation, inspection,
+            operation_id=operation["operation_id"], request_id=step["request_id"],
+            request_digest=digest, routed_request_digest=routed,
+            max_tokens=operation["max_tokens"], expected_route=first_route,
+            require_success=step["state"] == "observed")
+        if first_route is None:
+            first_route = transport.auto_route_identity(observation["routing"])
+        if (step["routed_request_digest"] != routed
+                or usage != {"request_id": step["request_id"], "serving_model": observation["serving_model"],
+                             **observation["usage"]}
+                or observation["effect_unknown"] and not step["effect_unknown"]
+                or step["state"] == "observed" and (step["text"] is None or step["effect_unknown"])):
+            raise ValueError("brief_auto_observation_invalid")
+    if operation["route_identity"] != first_route:
+        raise ValueError("brief_auto_route_identity")
+    close, usage = operation["close"], operation["usage"]
+    if close is not None:
+        if (type(close) is not dict
+                or set(close) != {"disposition", "closed", "effect_unknown", "attempted"}
+                or close["disposition"] not in ("not_bound", "local_only", "refused", "pending", "effect_unknown", "closed")
+                or any(type(close[key]) is not bool for key in ("closed", "effect_unknown", "attempted"))
+                or close["closed"] != (close["disposition"] == "closed")
+                or close["disposition"] == "closed" and (close["effect_unknown"] or not close["attempted"])):
+            raise ValueError("brief_auto_close_invalid")
+    if usage is not None:
+        if (type(usage) is not dict or set(usage) != {"input_tokens", "output_tokens", "usage_state",
+                "completed_input_tokens", "completed_output_tokens"}
+                or usage["usage_state"] not in ("known", "unknown")
+                or any(type(usage["completed_" + key]) is not int or usage["completed_" + key] != value
+                       for key, value in totals.items())
+                or usage["usage_state"] == "known" and (not complete_usage or pending or uncertain
+                    or any(type(usage[key]) is not int or usage[key] != totals[key] for key in totals))
+                or usage["usage_state"] == "unknown" and any(usage[key] is not None for key in totals)):
+            raise ValueError("brief_auto_usage_receipt_invalid")
+    if operation["state"] in ("complete", "failed"):
+        if (pending or uncertain or not operation["steps"] or not _mb_auto_close_settled(operation)):
+            raise ValueError("brief_auto_settlement_invalid")
+        if operation["state"] == "complete" and (
+                close["disposition"] != "closed" or usage is None
+                or any(step["state"] != "observed" for step in operation["steps"])):
+            raise ValueError("brief_auto_success_invalid")
+
+
+def _mb_auto_run_context(state, cfg, lens):
+    nw = state.get("neural_web") or {}
+    cortex = nw.get("cortex") or {}
+    try:
+        facts = _key_facts_for(lens, state)
+    except Exception:
+        facts = []
+    return {"nw_context_used": bool(nw),
+            "cortex_status": cortex.get("status", "absent") if not cortex.get("absent") else "absent",
+            "refresh_days": _interval_for(lens, cfg), "key_facts": facts}
+
+
+def _mb_auto_input(state, cfg, lens):
+    state = json.loads(json.dumps(state, default=str, allow_nan=False))
+    system = LENSES[lens]["system"].format(thesis=_thesis_for(lens, cfg))
+    user = ("Today's deterministic state (JSON). Synthesize per your instructions.\n<state>\n"
+            + json.dumps(state, indent=2, default=str) + "\n</state>")
+    policy = {"emit_theses": bool(cfg.get("emit_theses", True)),
+              "max_theses": int(cfg.get("max_theses", 2)),
+              "translate_zh": bool(cfg.get("translate_zh", True)),
+              "zh_batch_size": max(1, int(cfg.get("zh_batch_size", 6))),
+              "zh_max_chars": max(1, int(cfg.get("zh_max_chars", 2000))),
+              "max_tokens": cfg.get("max_tokens", 4000)}
+    if not 0 <= policy["max_theses"] <= 64 or policy["zh_batch_size"] > 512 or policy["zh_max_chars"] > 32768:
+        raise ValueError("brief_auto_policy_bound")
+    return {"system": system, "user": user, "state": state, "policy": policy,
+            "run_context": _mb_auto_run_context(state, cfg, lens)}
+
+
+def _mb_auto_rewrite_system(text):
+    parsed = _extract_json(text)
+    if not isinstance(parsed, dict):
+        raise ValueError("brief_auto_rewrite_without_draft")
+    violations = _collect_style_violations(parsed)
+    if not violations:
+        raise ValueError("brief_auto_rewrite_without_violation")
+    banned = list(dict.fromkeys(v.split(": ", 1)[-1] for v in violations))[:15]
+    return ("Your brief contains banned machine tokens: " + ", ".join(banned)
+            + ". Rewrite the SAME JSON — identical structure and claims — "
+            "replacing every banned token with plain language a non-finance "
+            "reader understands. Return only the JSON.")
+
+
+def _mb_auto_translation_plan(english, policy):
+    layout, texts = [], []
+    if not policy["translate_zh"] or english.get("degraded_reason") and not english.get("regime_read"):
+        return layout, texts
+    for key in _ZH_SCALARS:
+        value = english.get(key)
+        if isinstance(value, str) and value.strip():
+            layout.append([key, None])
+            texts.append(value)
+    for key in _ZH_LISTS:
+        for index, value in enumerate(english.get(key) or []):
+            if isinstance(value, str) and value.strip():
+                layout.append([key, index])
+                texts.append(value)
+    if len(texts) > 512:
+        raise ValueError("brief_auto_translation_bound")
+    size, limit = policy["zh_batch_size"], policy["zh_max_chars"]
+    return layout, [[text[:limit] for text in texts[start:start + size]]
+                    for start in range(0, len(texts), size)]
+
+
+def _mb_auto_translation_user(texts):
+    return ("Translate each item to Simplified Chinese and return a JSON array of the "
+            "same length and order:\n" + json.dumps(texts, ensure_ascii=False))
+
+
+def _mb_auto_translation_values(reply, count):
+    values = _extract_zh_array(reply or "")
+    if values is None or len(values) != count:
+        return [None] * count
+    result = []
+    for value in values:
+        text = str(value).strip() if value is not None else ""
+        result.append(_normalize_zh_lexicon(text) if text and any("一" <= ch <= "鿿" for ch in text) else None)
+    return result
+
+
+def _mb_auto_final_brief(entry):
+    if entry["english_brief"] is None:
+        raise ValueError("brief_auto_english_missing")
+    brief = _mb_auto_clone(entry["english_brief"])
+    brief.update(_mb_auto_clone(entry["input"]["run_context"]))
+    translation = entry["translations"]
+    if translation is not None:
+        values = [value for batch in translation["batches"] for value in (batch["result"] or [])]
+        if len(values) != len(translation["layout"]):
+            raise ValueError("brief_auto_translation_pending")
+        if any(value is not None for value in values):
+            zh = {"summary": None, "regime_read": None, "rotation_check": None,
+                  **{key: [None] * len(brief.get(key) or []) for key in _ZH_LISTS}}
+            for (key, index), text in zip(translation["layout"], values):
+                if text is not None:
+                    if index is None:
+                        zh[key] = text
+                    else:
+                        zh[key][index] = text
+            brief["zh"] = zh
+    return brief
+
+def _mb_auto_validate(value, root, lens):
+    if value is None:
+        return {"schema": _MB_AUTO_SCHEMA, "root": str(root), "lens": lens, "entries": []}
+    if (type(value) is not dict or set(value) != {"schema", "root", "lens", "entries"}
+            or value["schema"] != _MB_AUTO_SCHEMA or value["root"] != str(root) or value["lens"] != lens
+            or type(value["entries"]) is not list or len(value["entries"]) > 64):
+        raise ValueError("brief_auto_owner_invalid")
+    operations, digests = set(), set()
+    for entry in value["entries"]:
+        fields = {"schema", "operation_id", "input_digest", "input", "mode_id", "inspection",
+                  "generated_at", "state", "english", "english_brief", "english_digest",
+                  "translations", "brief", "brief_digest", "publication"}
+        if (type(entry) is not dict or set(entry) != fields or entry["schema"] != _MB_AUTO_ENTRY_SCHEMA
+                or type(entry["mode_id"]) is not str or type(entry["generated_at"]) is not str
+                or entry["state"] not in ("pending", "held", "ready")
+                or type(entry["input"]) is not dict
+                or set(entry["input"]) != {"system", "user", "state", "policy", "run_context"}
+                or entry["input_digest"] != _brief_cache._cache_hash(
+                    [entry["mode_id"], entry["inspection"], entry["input"]])
+                or entry["input_digest"] in digests or entry["operation_id"] in operations
+                or entry["english"]["operation_id"] != entry["operation_id"]
+                or entry["english"]["inspection"] != entry["inspection"]
+                or entry["english"]["max_tokens"] != entry["input"]["policy"]["max_tokens"]):
+            raise ValueError("brief_auto_entry_invalid")
+        _mb_auto_validate_operation(entry["english"], 2)
+        operations.add(entry["operation_id"])
+        digests.add(entry["input_digest"])
+        original = entry["input"]
+        if (type(original["system"]) is not str or type(original["user"]) is not str
+                or type(original["state"]) is not dict or type(original["policy"]) is not dict
+                or type(original["run_context"]) is not dict
+                or set(original["run_context"]) != {"nw_context_used", "cortex_status", "refresh_days", "key_facts"}
+                or set(original["policy"]) != {"emit_theses", "max_theses", "translate_zh",
+                    "zh_batch_size", "zh_max_chars", "max_tokens"}):
+            raise ValueError("brief_auto_input_invalid")
+        steps = entry["english"]["steps"]
+        if steps and (steps[0]["system"] != original["system"] or steps[0]["user"] != original["user"]):
+            raise ValueError("brief_auto_draft_request")
+        if len(steps) == 2 and (steps[1]["user"] != steps[0]["text"]
+                or steps[1]["system"] != _mb_auto_rewrite_system(steps[0]["text"])):
+            raise ValueError("brief_auto_rewrite_request")
+        english = entry["english_brief"]
+        if english is not None:
+            if (type(english) is not dict or _brief_cache._cache_hash(english) != entry["english_digest"]
+                    or english["generated_at"] != entry["generated_at"] or english["lens"] != lens
+                    or english["schema"] != "master_brief.v2"
+                    or english["state_asof"] != _state_asof(original["state"])):
+                raise ValueError("brief_auto_result_invalid")
+            text = english.get("raw_text")
+            if text is not None:
+                selected = next((step for step in reversed(steps)
+                                 if step["state"] == "observed" and step["text"] == text), None)
+                if selected is None:
+                    raise ValueError("brief_auto_result_unobserved")
+                observed = selected["application_observation"]
+                if (english["model"] != observed["serving_model"]
+                        or english["served_by"] != observed["routing"]["pool"]):
+                    raise ValueError("brief_auto_result_attribution")
+                parsed = _extract_json(text)
+                if isinstance(parsed, dict):
+                    for key in _BRIEF_FIELDS:
+                        if key in parsed and english.get(key) != parsed[key]:
+                            raise ValueError("brief_auto_result_content")
+                    raw_theses = parsed.get("theses") if isinstance(parsed.get("theses"), list) else []
+                    kept = [t for t in raw_theses[:original["policy"]["max_theses"]]
+                            if isinstance(t, dict) and str(t.get("subject") or "").strip()
+                            and str(t.get("lean") or "").strip().lower() in _THESIS_LEANS]
+                    if lens != "macro" or not original["policy"]["emit_theses"]:
+                        kept = []
+                    for index, thesis in enumerate(english.get("theses") or []):
+                        if index >= len(kept):
+                            raise ValueError("brief_auto_thesis_unobserved")
+                        source = kept[index]
+                        expected = "mb-" + str(english["state_asof"]) + "-" + entry["operation_id"].split(":", 1)[1] + "-" + str(index + 1)
+                        if (thesis.get("id") != expected
+                                or thesis.get("subject") != str(source["subject"]).strip()
+                                or thesis.get("lean") != str(source["lean"]).strip().lower()
+                                or thesis.get("thesis") != source.get("thesis")
+                                or thesis.get("falsifier", {}).get("text") != source.get("falsifier_text")):
+                            raise ValueError("brief_auto_thesis_identity")
+            elif english.get("model") is not None or english.get("served_by") is not None:
+                raise ValueError("brief_auto_unearned_attribution")
+        elif entry["english_digest"] is not None:
+            raise ValueError("brief_auto_result_digest")
+        translations = entry["translations"]
+        if translations is not None:
+            if (english is None or type(translations) is not dict
+                    or set(translations) != {"layout", "batches"}
+                    or type(translations["layout"]) is not list
+                    or type(translations["batches"]) is not list):
+                raise ValueError("brief_auto_translation_invalid")
+            layout, chunks = _mb_auto_translation_plan(english, original["policy"])
+            if translations["layout"] != layout or len(translations["batches"]) != len(chunks):
+                raise ValueError("brief_auto_translation_layout")
+            for batch, chunk in zip(translations["batches"], chunks):
+                if (type(batch) is not dict or set(batch) != {"texts", "operation", "result"}
+                        or batch["texts"] != chunk):
+                    raise ValueError("brief_auto_translation_input")
+                op = batch["operation"]
+                _mb_auto_validate_operation(op, 1)
+                if (op["operation_id"] in operations or op["inspection"] != entry["inspection"]
+                        or op["max_tokens"] != original["policy"]["max_tokens"]):
+                    raise ValueError("brief_auto_translation_identity")
+                operations.add(op["operation_id"])
+                if op["steps"] and (op["steps"][0]["system"] != _ZH_SYSTEM
+                        or op["steps"][0]["user"] != _mb_auto_translation_user(chunk)):
+                    raise ValueError("brief_auto_translation_request")
+                if batch["result"] is not None:
+                    if (op["state"] not in ("complete", "failed")
+                            or batch["result"] != _mb_auto_translation_values(
+                                op["steps"][0]["text"] if op["steps"] else None, len(chunk))):
+                        raise ValueError("brief_auto_translation_result")
+        if entry["brief"] is None:
+            if entry["brief_digest"] is not None:
+                raise ValueError("brief_auto_final_digest")
+        elif (type(entry["brief"]) is not dict or entry["brief_digest"] != _brief_cache._cache_hash(entry["brief"])
+                or entry["brief"] != _mb_auto_final_brief(entry)):
+            raise ValueError("brief_auto_final_invalid")
+        _mb_auto_validate_publication(entry, root, lens)
+        if entry["state"] == "ready":
+            if english is None or entry["english"]["state"] not in ("complete", "failed"):
+                raise ValueError("brief_auto_ready_invalid")
+            if translations is not None and (entry["brief"] is None or any(
+                    batch["operation"]["state"] not in ("complete", "failed") or batch["result"] is None
+                    for batch in translations["batches"])):
+                raise ValueError("brief_auto_translation_incomplete")
+            if entry["publication"] is not None and any(row["state"] not in ("unrequested", "done", "skipped")
+                    for row in entry["publication"].values()):
+                raise ValueError("brief_auto_publication_incomplete")
+    if sum(entry["state"] != "ready" for entry in value["entries"]) > 1:
+        raise ValueError("brief_auto_multiple_originals")
+    return value
+
+
+def _mb_auto_load(root, lens):
+    return _mb_auto_validate(_brief_cache._cache_read(_mb_auto_path(root, lens)), root, lens)
+
+
+def _mb_auto_held(entry=None, lens="macro", reason="application_fabric_original_held"):
+    brief = _mb_auto_clone(entry["english_brief"]) if entry and entry["english_brief"] else {
+        "schema": "master_brief.v2", "lens": lens, "is_context_only": True,
+        "generated_at": entry["generated_at"] if entry else datetime.now(timezone.utc).isoformat(),
+        "model": None, "served_by": None, "state_asof": None,
+        "tldr": [], "summary": None, "regime_read": None, "conflicts": [], "rotation_check": None,
+        "transmission": [], "watch_items": [], "theses": [], "confidence": "low", "raw_text": None,
+        "disclaimer": DISCLAIMER_TEXT}
+    if entry and entry["english_brief"] is None:
+        known = next((step for step in entry["english"]["steps"] if step["state"] == "observed"), None)
+        if known is not None:
+            parsed = _extract_json(known["text"])
+            if isinstance(parsed, dict):
+                brief.update({key: parsed[key] for key in _BRIEF_FIELDS if key in parsed})
+            observed = known["application_observation"]
+            brief.update(raw_text=known["text"], model=observed["serving_model"],
+                         served_by=observed["routing"]["pool"],
+                         state_asof=_state_asof(entry["input"]["state"]))
+    brief["degraded_reason"] = reason
+    return brief
+
+
+def _mb_auto_pending(root, lens):
+    try:
+        root = _mb_auto_root(root)
+        state = _mb_auto_load(root, lens)
+        original = next((entry for entry in state["entries"] if entry["state"] != "ready"), None)
+        if original is not None:
+            # Recovery only reads original local effects; it never generates,
+            # translates, appends or rewrites a previously attempted publication.
+            recovered = _mb_auto_reconcile_publication(root, lens, state, original)
+            return recovered if recovered is not None else _mb_auto_held(original, lens)
+    except Exception:
+        return _mb_auto_held(lens=lens, reason="application_fabric_owner_invalid")
+    return None
+
+
+def _mb_auto_new_operation(operation_id, inspection, maximum):
+    return {"operation_id": operation_id, "inspection": _mb_auto_clone(inspection),
+            "max_tokens": maximum, "steps": [], "route_identity": None,
+            "state": "pending", "close": None, "usage": None}
+
+
+def _mb_auto_transition(previous, current):
+    """Append observations, never replace an original request or accepted receipt."""
+    fixed = ("schema", "operation_id", "input_digest", "input", "mode_id", "inspection", "generated_at")
+    if any(previous[key] != current[key] for key in fixed):
+        raise ValueError("brief_auto_original_changed")
+    def operation(before, after):
+        for key in ("operation_id", "inspection", "max_tokens"):
+            if before[key] != after[key]:
+                raise ValueError("brief_auto_operation_changed")
+        old, new = before["steps"], after["steps"]
+        if not len(old) <= len(new) <= len(old) + 1:
+            raise ValueError("brief_auto_steps_changed")
+        for index, step in enumerate(old):
+            following = new[index]
+            if step["state"] == "intent":
+                for key in ("request_id", "system", "user", "request_digest"):
+                    if step[key] != following[key]:
+                        raise ValueError("brief_auto_request_changed")
+            elif step != following:
+                raise ValueError("brief_auto_observation_changed")
+        for key in ("route_identity", "close", "usage"):
+            if before[key] is not None and before[key] != after[key]:
+                raise ValueError("brief_auto_receipt_changed")
+        if before["state"] != "pending" and before != after:
+            raise ValueError("brief_auto_terminal_changed")
+    operation(previous["english"], current["english"])
+    for key in ("english_brief", "english_digest", "brief", "brief_digest"):
+        if previous[key] is not None and previous[key] != current[key]:
+            raise ValueError("brief_auto_result_changed")
+    old, new = previous["translations"], current["translations"]
+    if old is not None:
+        if new is None or old["layout"] != new["layout"] or len(old["batches"]) != len(new["batches"]):
+            raise ValueError("brief_auto_translation_plan_changed")
+        for before, after in zip(old["batches"], new["batches"]):
+            if before["texts"] != after["texts"] or before["result"] is not None and before["result"] != after["result"]:
+                raise ValueError("brief_auto_translation_changed")
+            operation(before["operation"], after["operation"])
+    old, new = previous["publication"], current["publication"]
+    if old is not None:
+        if new is None or set(old) != set(new):
+            raise ValueError("brief_auto_publication_changed")
+        for key, before in old.items():
+            after = new[key]
+            if any(before[field] != after[field] for field in before if field != "state"):
+                raise ValueError("brief_auto_publication_changed")
+            allowed = {"unrequested": {"unrequested", "planned", "skipped"},
+                       "planned": {"planned", "intent"}, "intent": {"intent", "done"},
+                       "done": {"done"}, "skipped": {"skipped"}}
+            if after["state"] not in allowed[before["state"]]:
+                raise ValueError("brief_auto_publication_transition")
+
+class _BriefAutoContext:
+    """An original call and its saved cache revision; no queue or retry owner."""
+    def __init__(self, root, lens, cfg, route, owner_state, index, batch=None):
+        self.root, self.lens, self.cfg = root, lens, cfg
+        self.route, self.state, self.index, self.batch = route, owner_state, index, batch
+        self.poisoned = False
+        self.route["_auto_context"] = self
+
+    @property
+    def entry(self):
+        return self.state["entries"][self.index]
+
+    def operation(self, entry=None):
+        entry = self.entry if entry is None else entry
+        return entry["english"] if self.batch is None else entry["translations"]["batches"][self.batch]["operation"]
+
+    def commit(self, entry, *, locked=False):
+        if self.poisoned:
+            raise _BriefAutoStop("brief_auto_persistence_latched")
+        def save():
+            current = _mb_auto_load(self.root, self.lens)
+            if _brief_cache._cache_json(current) != _brief_cache._cache_json(self.state):
+                raise ValueError("brief_auto_compare_failed")
+            _mb_auto_transition(self.entry, entry)
+            following = _mb_auto_clone(self.state)
+            following["entries"][self.index] = entry
+            _mb_auto_validate(following, self.root, self.lens)
+            _brief_cache._cache_save(_mb_auto_path(self.root, self.lens), following)
+            self.state = following
+        try:
+            if locked:
+                save()
+            else:
+                with _brief_cache._cache_lock(_mb_auto_path(self.root, self.lens), self.root):
+                    save()
+        except BaseException as error:
+            self.poisoned = True
+            if not isinstance(error, Exception):
+                raise
+            raise _BriefAutoStop("brief_auto_persistence_failed") from error
+
+    def call(self, system, user, cfg, served=None):
+        from engine import llm_auth as auth, fabric_inference_client as transport
+        entry = _mb_auto_clone(self.entry)
+        operation = self.operation(entry)
+        maximum = 2 if self.batch is None else 1
+        if self.poisoned or operation["state"] != "pending" or len(operation["steps"]) >= maximum:
+            raise _BriefAutoStop("brief_auto_step_refused")
+        index = len(operation["steps"])
+        step = {"request_id": operation["operation_id"] + ":brain:" + str(index),
+                "system": system, "user": user, "request_digest": None, "routed_request_digest": None,
+                "state": "intent", "text": None, "reason": None, "application_observation": None,
+                "observed_usage": None, "effect_unknown": None}
+        step["request_digest"] = transport._auto_request_digest(_mb_auto_payload(operation, step, index))
+        operation["steps"].append(step)
+        self.commit(entry)                 # Durable original before bind or send.
+        reply, reason, first_error = None, None, None
+        try:
+            reply, reason = _call_application_fabric(system, user, cfg, self.route, served=served, _auto_raw=True)
+        except BaseException as error:
+            first_error = error
+            reason = "application_fabric_interrupted"
+        provider = self.route["provider"]
+        observation, usage = None, None
+        unknown = first_error is not None
+        if provider is not None:
+            value = auth._fabric_routed_observation(provider, auth.fabric_observation(provider), step["request_id"])
+            observation = value.document if value is not None else None
+            raw_usage = provider.get("_fabric_last_observation")
+            if isinstance(raw_usage, dict) and raw_usage.get("request_id") == step["request_id"]:
+                usage = dict(raw_usage)
+            unknown |= bool(provider.get("_fabric_pending")
+                            or getattr(provider.get("_fabric_failure"), "effect_unknown", False))
+        if reply is not None and observation is None:
+            unknown = True
+            reply, reason = None, "application_fabric_observation_missing"
+        updated = _mb_auto_clone(self.entry)
+        op = self.operation(updated)
+        saved = op["steps"][-1]
+        saved.update(state="observed" if reply is not None and not unknown else "failed",
+                     text=reply if not unknown else None, reason=reason,
+                     application_observation=observation, observed_usage=usage, effect_unknown=bool(unknown))
+        if observation is not None:
+            payload = _mb_auto_payload(op, saved, index)
+            saved["routed_request_digest"] = transport._auto_request_digest(
+                dict(payload, model=observation["routing"]["selected_model"]))
+            if op["route_identity"] is None:
+                op["route_identity"] = transport.auto_route_identity(observation["routing"])
+        try:
+            self.commit(updated)
+        except BaseException:
+            if first_error is not None:
+                raise first_error
+            raise
+        if first_error is not None:
+            raise first_error
+        if unknown:
+            raise _BriefAutoStop("brief_auto_original_uncertain")
+        return reply, reason
+
+    def settle(self):
+        from engine import llm_auth as auth
+        provider, first_error = self.route["provider"], None
+        close = {"disposition": "not_bound", "closed": False, "effect_unknown": False, "attempted": False}
+        usage = None
+        if provider is not None:
+            try:
+                auth.close_fabric_provider(provider)       # Never under the owner lock.
+            except BaseException as error:
+                first_error = error
+            close = provider.get("_fabric_close") or {
+                "disposition": "effect_unknown", "closed": False, "effect_unknown": True, "attempted": True}
+            usage = auth.fabric_usage(provider)
+        if self.poisoned:
+            if first_error is not None:
+                raise first_error
+            return
+        entry = _mb_auto_clone(self.entry)
+        op = self.operation(entry)
+        op["close"], op["usage"] = _mb_auto_clone(close), _mb_auto_clone(usage)
+        held = (first_error is not None or not _mb_auto_close_settled(op)
+                or any(step["state"] == "intent" or step["effect_unknown"] for step in op["steps"]))
+        op["state"] = ("held" if held else "complete" if op["steps"]
+                       and all(step["state"] == "observed" for step in op["steps"])
+                       and close["disposition"] == "closed" else "failed")
+        if held:
+            entry["state"] = "held"
+        try:
+            self.commit(entry)
+        except BaseException:
+            if first_error is not None:
+                raise first_error
+            raise
+        if first_error is not None:
+            raise first_error
+
+
+def _mb_auto_synthesize(state, cfg, lens, root, route):
+    context = None
+    try:
+        root = _mb_auto_root(root)
+        cfg = _mb_auto_clone(cfg)
+        frozen = _mb_auto_input(state, cfg, lens)
+        digest = _brief_cache._cache_hash([route["mode_id"], route["inspection"], frozen])
+        path = _mb_auto_path(root, lens)
+        with _brief_cache._cache_lock(path, root):
+            owner_state = _mb_auto_load(root, lens)
+            pending = next((item for item in owner_state["entries"] if item["state"] != "ready"), None)
+            if pending is not None:
+                return _mb_auto_held(pending, lens), None
+            index = next((i for i, item in enumerate(owner_state["entries"]) if item["input_digest"] == digest), None)
+            if index is not None:
+                entry = owner_state["entries"][index]
+                route["operation_id"] = entry["operation_id"]
+                context = _BriefAutoContext(root, lens, cfg, route, owner_state, index)
+                return _mb_auto_clone(entry["english_brief"]), context
+            if len(owner_state["entries"]) >= 64:
+                return _mb_auto_held(lens=lens, reason="application_fabric_cache_bound"), None
+            entry = {"schema": _MB_AUTO_ENTRY_SCHEMA, "operation_id": route["operation_id"],
+                     "input_digest": digest, "input": frozen, "mode_id": route["mode_id"],
+                     "inspection": _mb_auto_clone(route["inspection"]),
+                     "generated_at": datetime.now(timezone.utc).isoformat(), "state": "pending",
+                     "english": _mb_auto_new_operation(route["operation_id"], route["inspection"], route["max_tokens"]),
+                     "english_brief": None, "english_digest": None, "translations": None,
+                     "brief": None, "brief_digest": None, "publication": None}
+            owner_state["entries"].append(entry)
+            _mb_auto_validate(owner_state, root, lens)
+            _brief_cache._cache_save(path, owner_state)
+            context = _BriefAutoContext(root, lens, cfg, route, owner_state, len(owner_state["entries"]) - 1)
+        result, first_error = None, None
+        try:
+            result = _synthesize_once(frozen["state"], cfg, lens, root, _fabric_context=context)
+        except BaseException as error:
+            first_error = error
+        try:
+            context.settle()
+        except BaseException as error:
+            if first_error is None:
+                first_error = error
+        if first_error is not None:
+            if isinstance(first_error, (Exception, _BriefAutoStop)):
+                return _mb_auto_held(context.entry, lens), None
+            raise first_error
+        if context.poisoned or context.operation()["state"] == "held" or result is None:
+            return _mb_auto_held(context.entry, lens), None
+        entry = _mb_auto_clone(context.entry)
+        entry["english_brief"] = _mb_auto_clone(result)
+        entry["english_digest"] = _brief_cache._cache_hash(result)
+        entry["state"] = "ready"
+        context.commit(entry)
+        return _mb_auto_clone(result), context
+    except (_BriefAutoStop, Exception):
+        return _mb_auto_held(context.entry if context is not None else None, lens), None
+
+
+def _mb_auto_extend(context, persist):
+    """Translate and publish the same English original once."""
+    try:
+        entry = context.entry
+        if entry["translations"] is None:
+            layout, chunks = _mb_auto_translation_plan(entry["english_brief"], entry["input"]["policy"])
+            update = _mb_auto_clone(entry)
+            update["state"] = "pending"
+            update["translations"] = {"layout": layout, "batches": [
+                {"texts": texts, "operation": _mb_auto_new_operation(_application_operation_id(),
+                     entry["inspection"], entry["input"]["policy"]["max_tokens"]), "result": None}
+                for texts in chunks]}
+            context.commit(update)                # Allocate the whole translation plan once.
+            for index, batch in enumerate(context.entry["translations"]["batches"]):
+                route = dict(context.route)
+                route.update(provider=None, operation_id=batch["operation"]["operation_id"])
+                child = _BriefAutoContext(context.root, context.lens, context.cfg, route,
+                                          context.state, context.index, batch=index)
+                first_error = None
+                try:
+                    child.call(_ZH_SYSTEM, _mb_auto_translation_user(batch["texts"]),
+                               {**context.cfg, "usage_stage": context.lens + "-zh"})
+                except BaseException as error:
+                    first_error = error
+                try:
+                    child.settle()
+                except BaseException as error:
+                    if first_error is None:
+                        first_error = error
+                context.state, context.poisoned = child.state, child.poisoned
+                if first_error is not None:
+                    if isinstance(first_error, (Exception, _BriefAutoStop)):
+                        return _mb_auto_held(context.entry, context.lens)
+                    raise first_error
+                if context.poisoned or child.operation()["state"] == "held":
+                    return _mb_auto_held(context.entry, context.lens)
+                update = _mb_auto_clone(context.entry)
+                target = update["translations"]["batches"][index]
+                target["result"] = _mb_auto_translation_values(
+                    target["operation"]["steps"][0]["text"], len(target["texts"]))
+                context.commit(update)
+            update = _mb_auto_clone(context.entry)
+            update["brief"] = _mb_auto_final_brief(update)
+            update["brief_digest"] = _brief_cache._cache_hash(update["brief"])
+            update["state"] = "ready"
+            context.commit(update)
+        return _mb_auto_publish(context, persist)
+    except (_BriefAutoStop, Exception):
+        return _mb_auto_held(context.entry, context.lens)
+
+def _mb_ledger_rows(brief, root):
+    from engine.regime_label import quad_label
+    asof, regime, rows = brief.get("state_asof"), quad_label(root), []
+    for thesis in brief.get("theses") or []:
+        check = (thesis.get("falsifier") or {}).get("check") or {}
+        rows.append({"id": thesis["id"], "logged_at": brief["generated_at"], "state_asof": asof,
+            "subject": thesis["subject"], "lean": thesis["lean"], "conviction": thesis["conviction"],
+            "horizon_d": thesis["horizon_d"], "falsifier": thesis["falsifier"],
+            "check_by": thesis["check_by"], "entry_levels": _mb_entry_levels(check, asof, root),
+            "regime": regime, "status": "open", "scored_at": None, "outcome": None, "realized": None})
+    return _mb_auto_clone(rows)
+
+
+def _mb_auto_validate_publication(entry, root, lens):
+    publication = entry["publication"]
+    if publication is None:
+        return
+    if type(publication) is not dict or set(publication) != {"data", "site", "ledger"} or entry["brief"] is None:
+        raise ValueError("brief_auto_publication_invalid")
+    brief = entry["brief"]
+    payload = json.dumps(brief, indent=2, default=str)
+    for key, relative in (("data", "data/regime/" + LENSES[lens]["out"]),
+                          ("site", "site/" + LENSES[lens]["out"])):
+        effect = publication[key]
+        if (type(effect) is not dict or set(effect) != {"path", "payload", "digest", "state"}
+                or effect["path"] != relative or effect["payload"] != payload
+                or effect["digest"] != hashlib.sha256(payload.encode("utf-8")).hexdigest()
+                or effect["state"] not in ("unrequested", "planned", "intent", "done", "skipped")
+                or key == "data" and effect["state"] == "skipped"):
+            raise ValueError("brief_auto_file_plan_invalid")
+    effect = publication["ledger"]
+    if (type(effect) is not dict or set(effect) != {"path", "rows", "digest", "state"}
+            or effect["path"] != "data/master_brain/theses.jsonl" or type(effect["rows"]) is not list
+            or effect["digest"] != _brief_cache._cache_hash(effect["rows"])
+            or effect["state"] not in ("planned", "intent", "done", "skipped")):
+        raise ValueError("brief_auto_ledger_plan_invalid")
+    expected = brief.get("theses") or [] if lens == "macro" else []
+    if len(effect["rows"]) != len(expected) or (not expected) != (effect["state"] == "skipped"):
+        raise ValueError("brief_auto_ledger_plan_invalid")
+    for row, thesis in zip(effect["rows"], expected):
+        fields = {"id", "logged_at", "state_asof", "subject", "lean", "conviction", "horizon_d",
+                  "falsifier", "check_by", "entry_levels", "regime", "status", "scored_at", "outcome", "realized"}
+        if (type(row) is not dict or set(row) != fields or row["logged_at"] != brief["generated_at"]
+                or row["state_asof"] != brief["state_asof"] or row["status"] != "open"
+                or any(row[key] is not None for key in ("scored_at", "outcome", "realized"))
+                or type(row["entry_levels"]) is not dict
+                or any(row[key] != thesis[key] for key in (
+                    "id", "subject", "lean", "conviction", "horizon_d", "falsifier", "check_by"))):
+            raise ValueError("brief_auto_ledger_row_invalid")
+
+
+def _mb_auto_safe_path(root, relative, create=False):
+    path = root / relative
+    parts = path.relative_to(root).parts
+    if any(part in (".", "..") for part in parts):
+        raise ValueError("brief_auto_path_invalid")
+    current = root
+    for part in parts[:-1]:
+        child = current / part
+        if create:
+            child.mkdir(exist_ok=True)
+        if child.is_symlink() or child.exists() and not child.is_dir():
+            raise ValueError("brief_auto_directory_invalid")
+        if not child.exists():
+            return path
+        if create:
+            _brief_cache._cache_sync_directory(current)
+        current = child
+    return path
+
+
+def _mb_auto_read_bytes(path, maximum=32 * 1024 * 1024):
+    import stat
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    except FileNotFoundError:
+        return None, None
+    with os.fdopen(fd, "rb") as source:
+        info = os.fstat(source.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_size > maximum:
+            raise ValueError("brief_auto_file_invalid")
+        raw = source.read(maximum + 1)
+    if len(raw) > maximum:
+        raise ValueError("brief_auto_file_bound")
+    return raw, (info.st_dev, info.st_ino, info.st_size)
+
+
+def _mb_auto_read_ledger(root):
+    path = _mb_auto_safe_path(root, "data/master_brain/theses.jsonl")
+    raw, identity = _mb_auto_read_bytes(path)
+    rows = {}
+    if raw is not None:
+        if raw and not raw.endswith(b"\n"):
+            raise ValueError("brief_auto_ledger_partial")
+        for line in raw.splitlines():
+            row = _brief_cache._cache_decode(line)
+            if (type(row) is not dict or type(row.get("id")) is not str
+                    or not row["id"] or row["id"] in rows):
+                raise ValueError("brief_auto_ledger_invalid")
+            rows[row["id"]] = row
+    return rows, raw, identity
+
+
+def _mb_auto_effect_observed(root, key, effect):
+    if key != "ledger":
+        path = _mb_auto_safe_path(root, effect["path"])
+        raw, _ = _mb_auto_read_bytes(path, 4 * 1024 * 1024)
+        return raw == effect["payload"].encode("utf-8")
+    present, _, _ = _mb_auto_read_ledger(root)
+    matched = 0
+    for row in effect["rows"]:
+        existing = present.get(row["id"])
+        if existing is not None:
+            if existing != row:
+                raise ValueError("brief_auto_ledger_conflict")
+            matched += 1
+    if matched and matched != len(effect["rows"]):
+        raise ValueError("brief_auto_ledger_partial")
+    return matched == len(effect["rows"])
+
+
+def _mb_auto_effect_write(root, key, effect):
+    """Attempt one original local effect; callers first save its intent."""
+    import secrets
+    if key == "ledger":
+        present, raw, identity = _mb_auto_read_ledger(root)
+        if any(row["id"] in present for row in effect["rows"]):
+            if _mb_auto_effect_observed(root, key, effect):
+                return
+            raise ValueError("brief_auto_ledger_conflict")
+        path = _mb_auto_safe_path(root, effect["path"], create=True)
+        flags = os.O_WRONLY | os.O_APPEND | os.O_NOFOLLOW
+        if identity is None:
+            flags |= os.O_CREAT | os.O_EXCL
+        fd = os.open(path, flags, 0o600)
+        with os.fdopen(fd, "ab") as target:
+            info = os.fstat(target.fileno())
+            if identity is not None and (info.st_dev, info.st_ino, info.st_size) != identity:
+                raise ValueError("brief_auto_ledger_compare_failed")
+            target.write(b"".join(_brief_cache._cache_json(row) + b"\n" for row in effect["rows"]))
+            target.flush()
+            os.fsync(target.fileno())
+        _brief_cache._cache_sync_directory(path.parent)
+    else:
+        if key == "site" and not (root / "site").is_dir():
+            raise ValueError("brief_auto_site_disappeared")
+        path = _mb_auto_safe_path(root, effect["path"], create=True)
+        _mb_auto_read_bytes(path, 4 * 1024 * 1024)   # Reject links and non-regular targets.
+        temporary = path.with_name(path.name + ".tmp-" + secrets.token_hex(12))
+        try:
+            fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+            with os.fdopen(fd, "wb") as target:
+                target.write(effect["payload"].encode("utf-8"))
+                target.flush()
+                os.fsync(target.fileno())
+            os.replace(temporary, path)
+            _brief_cache._cache_sync_directory(path.parent)
+        finally:
+            if temporary.exists():
+                temporary.unlink()
+    if not _mb_auto_effect_observed(root, key, effect):
+        raise ValueError("brief_auto_publication_readback")
+
+
+def _mb_auto_publish(context, persist):
+    path, root, lens = _mb_auto_path(context.root, context.lens), context.root, context.lens
+    with _brief_cache._cache_lock(path, root):
+        # This comparison also fences an old context from a newer claimant.
+        if _brief_cache._cache_json(_mb_auto_load(root, lens)) != _brief_cache._cache_json(context.state):
+            raise _BriefAutoStop("brief_auto_compare_failed")
+        entry = _mb_auto_clone(context.entry)
+        publication = entry["publication"]
+        if publication is None:
+            payload = json.dumps(entry["brief"], indent=2, default=str)
+            publication = {}
+            for key, relative in (("data", "data/regime/" + LENSES[lens]["out"]),
+                                  ("site", "site/" + LENSES[lens]["out"])):
+                publication[key] = {"path": relative, "payload": payload,
+                    "digest": hashlib.sha256(payload.encode("utf-8")).hexdigest(), "state": "unrequested"}
+            rows = _mb_ledger_rows(entry["brief"], root) if lens == "macro" else []
+            publication["ledger"] = {"path": "data/master_brain/theses.jsonl", "rows": rows,
+                "digest": _brief_cache._cache_hash(rows), "state": "planned" if rows else "skipped"}
+            entry["publication"] = publication
+        if persist:
+            for key in ("data", "site"):
+                if publication[key]["state"] == "unrequested":
+                    publication[key]["state"] = ("skipped" if key == "site" and not (root / "site").is_dir()
+                                                 else "planned")
+        if any(effect["state"] == "planned" for effect in publication.values()):
+            if context.index != len(context.state["entries"]) - 1:
+                return _mb_auto_held(entry, lens, "application_fabric_publication_superseded")
+            entry["state"] = "pending"
+        if entry != context.entry:
+            context.commit(entry, locked=True)
+        for key in ("data", "site", "ledger"):
+            effect = context.entry["publication"][key]
+            if effect["state"] != "planned":
+                continue
+            update = _mb_auto_clone(context.entry)
+            update["publication"][key]["state"] = "intent"
+            context.commit(update, locked=True)
+            _mb_auto_effect_write(root, key, context.entry["publication"][key])
+            update = _mb_auto_clone(context.entry)
+            update["publication"][key]["state"] = "done"
+            context.commit(update, locked=True)
+        update = _mb_auto_clone(context.entry)
+        update["state"] = "ready"
+        if update != context.entry:
+            context.commit(update, locked=True)
+        return _mb_auto_clone(context.entry["brief"])
+
+
+def _mb_auto_reconcile_publication(root, lens, state, entry):
+    publication = entry["publication"]
+    if (entry["brief"] is None or publication is None
+            or entry["english"]["state"] not in ("complete", "failed")
+            or entry["translations"] is None or any(
+                batch["operation"]["state"] not in ("complete", "failed") or batch["result"] is None
+                for batch in entry["translations"]["batches"])
+            or any(effect["state"] == "planned" for effect in publication.values())):
+        return None
+    with _brief_cache._cache_lock(_mb_auto_path(root, lens), root):
+        if _brief_cache._cache_json(_mb_auto_load(root, lens)) != _brief_cache._cache_json(state):
+            return None
+        update = _mb_auto_clone(entry)
+        for key, effect in update["publication"].items():
+            if effect["state"] in ("intent", "done") and not _mb_auto_effect_observed(root, key, effect):
+                return None
+            if effect["state"] == "intent":
+                effect["state"] = "done"
+        update["state"] = "ready"
+        _mb_auto_transition(entry, update)
+        following = _mb_auto_clone(state)
+        following["entries"][state["entries"].index(entry)] = update
+        _mb_auto_validate(following, root, lens)
+        _brief_cache._cache_save(_mb_auto_path(root, lens), following)
+        return _mb_auto_clone(update["brief"])
+
+
+def _mb_legacy_snapshot(root, lens):
+    with _brief_cache._cache_lock(_mb_auto_path(root, lens), root):
+        state = _mb_auto_load(root, lens)
+        if any(entry["state"] != "ready" for entry in state["entries"]):
+            raise ValueError("brief_auto_original_held")
+        return _brief_cache._cache_hash(state)
+
+
+def _mb_legacy_publish(brief, root, lens, persist, snapshot, cfg, selection):
+    with _brief_cache._cache_lock(_mb_auto_path(root, lens), root):
+        if (_brief_cache._cache_hash(_mb_auto_load(root, lens)) != snapshot
+                or _application_selection(cfg) != selection):
+            return False
+        if persist:
+            try:
+                payload = json.dumps(brief, indent=2, default=str)
+                out = root / "data/regime" / LENSES[lens]["out"]
+                out.parent.mkdir(parents=True, exist_ok=True)
+                out.write_text(payload)
+                if (root / "site").is_dir():
+                    (root / "site" / LENSES[lens]["out"]).write_text(payload)
+            except Exception as error:
+                log.warning("master_brief persist failed (lens=%s: %s)", lens, error)
+        if lens == "macro":
+            _append_ledger_locked(brief, root)
+        return True
+
+
 # --------------------------------------------------------------------------- #
 # public: synthesize one brief
 # --------------------------------------------------------------------------- #
 def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=None) -> dict:
+    original = _mb_auto_pending(root, lens)
+    if original is not None:
+        return original
+    return _synthesize_once(state, cfg, lens, root)
+
+
+def _synthesize_once(state: dict, cfg: dict | None = None, lens: str = "macro", root=None,
+                     _fabric_context=None) -> dict:
     """Run the LLM synthesis over a gathered state for one LENS. Always returns a
     brief record (degraded fields flagged); never raises."""
     cfg = cfg or _cfg()
     spec = LENSES.get(lens, LENSES["macro"])
+    production_selected = "production_mode" in cfg
+    # The trusted host's application selection is MANDATORY when present: this
+    # lane then serves through the incumbent Fabric owner or not at all, and the
+    # legacy DeepSeek label must never be published for it.
+    application_selected, application_mode, application_refusal = _application_selection(cfg)
+    if _fabric_context is not None:
+        application_selected, application_mode, application_refusal = True, _fabric_context.route["mode_id"], None
     brief = {
         "schema": "master_brief.v2", "lens": lens, "is_context_only": True,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "model": cfg.get("llm_model", "deepseek-v4-pro"),
+        "generated_at": (_fabric_context.entry["generated_at"] if _fabric_context is not None
+                         else datetime.now(timezone.utc).isoformat()),
+        "model": None if (production_selected or application_selected)
+        else cfg.get("llm_model", "deepseek-v4-pro"),
         # rung that served this brief — "codex" / "oauth" / "anthropic" / "deepseek",
         # "cache" on a reply-cache hit, or None on a degraded call. Populated below
         # from _call_model's `served` out-param so the ladder is verifiable from
@@ -1971,142 +3287,257 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
             "instructions.\n<state>\n"
             + json.dumps(state, indent=2, default=str) + "\n</state>")
 
-    # _call_model handles cache GET (returns cached if hit) and the raw provider call.
     # Content-hash cache, ROOT-AWARE (spec §4): synthesize is the SOLE cache
     # reader/writer, so only FINAL post-lint text ever lands under the prompt
     # hash — a cache hit therefore skips both the (paid) call AND the lint.
     # Root-awareness keeps fixture runs inside tmp roots (MM_DATA_GUARD).
     model = cfg.get("llm_model", "deepseek-v4-pro")
-    phash = _mb_prompt_hash(model, system, user)
-    cached = _mb_reply_cache_get(phash, cfg, root)
-    _cache_was_hit = cached is not None
-    if _cache_was_hit:
-        log.debug("master_brain: reply cache HIT (%s)", phash[:12])
-        reply, reason = cached, None
-        brief["served_by"] = "cache"
-    else:
-        # Tag the lens (macro/china/btc) as the usage stage for cost drill-down.
-        served: dict = {}
+    cache_allowed = True
+    production_cache_identity = None
+    application_cache_identity = None
+    route = None
+    if application_selected:
+        # The owner's eligibility is resolved BEFORE any cache read: a revoked,
+        # disabled or unqualified binding must never be able to look healthy on
+        # a stale cached reply. Inspection reads no credential and constructs no
+        # client. Only a cache miss conditionally binds this exact inspection.
+        cache_allowed = False
+        if application_refusal:
+            brief["degraded_reason"] = application_refusal
+            return brief
+        if _fabric_context is not None:
+            route, route_refusal = _fabric_context.route, None
+        else:
+            route, route_refusal = _resolve_application_route(
+                cfg, application_mode, root, _application_operation_id())
+        if route is None:
+            brief["degraded_reason"] = route_refusal
+            return brief
+        if (route["inspection"].get("schema") == "mastermind.fabric_application_inspection.v2"
+                and _fabric_context is None):
+            return _mb_auto_synthesize(state, cfg, lens, root, route)[0]
+        brief["model"] = route["model"]
+        application_cache_identity = (route["provider_id"], route["model"])
+        # Include the whole inspected transport/workload identity and output
+        # contract. Same-model changes of protocol, route or policy cannot alias
+        # a prior eligible result. Binding rechecks this exact snapshot.
+        model = json.dumps(
+            [_APPLICATION_FABRIC_CACHE_SCHEMA, route["mode_id"],
+             route["inspection"], {"max_tokens": route["max_tokens"], "format": "text"}],
+            sort_keys=True, separators=(",", ":"), allow_nan=False,
+        )
+        cache_allowed = _fabric_context is None
+    elif production_selected:
+        # Production replies must never alias a legacy model cache. Re-resolve
+        # eligibility before a cache read so disabled/unqualified modes cannot
+        # look healthy by serving old output. The owner alone handles secrets.
+        cache_allowed = False
         try:
-            reply, reason = _call_model(
-                system, user, {**cfg, "usage_stage": lens}, served=served)
-        except TypeError:
-            # Stub with the OLD 2-arg-plus-cfg signature (several tests monkeypatch
-            # _call_model this way, e.g. `lambda system, user, cfg: (...)`) — tolerate
-            # and retry without the new kwarg rather than breaking those callers.
-            reply, reason = _call_model(system, user, {**cfg, "usage_stage": lens})
-            served = {}
-        if reply is not None:
-            brief["served_by"] = served.get("provider")
-            if served.get("model"):
-                brief["model"] = served["model"]
-
-    brief["raw_text"] = reply
-    if reply is None:
-        brief["degraded_reason"] = reason
-        return brief
-    parsed = _extract_json(reply)
-    if not isinstance(parsed, dict):
-        brief["degraded_reason"] = reason or "unparseable_reply"   # surfaces "truncated"
-        return brief
-
-    # Style lint + ONE rewrite retry (spec §4).
-    # Skip lint on cache hits — stored text was already linted on the run that wrote it.
-    style_flags: list[str] = []
-    if not _cache_was_hit:
-        try:
-            violations = _collect_style_violations(parsed)
-            if violations:
-                # Build a deduplicated list of banned token names for the rewrite prompt
-                banned_list = list(dict.fromkeys(v.split(": ", 1)[-1] for v in violations))[:15]
-                rewrite_system = (
-                    "Your brief contains banned machine tokens: "
-                    + ", ".join(banned_list)
-                    + ". Rewrite the SAME JSON — identical structure and claims — "
-                    "replacing every banned token with plain language a non-finance "
-                    "reader understands. Return only the JSON."
-                )
-                # THE REWRITE IS A SECOND TRIP DOWN THE LADDER, so it can be served
-                # by a DIFFERENT rung than the original draft — mark_dead and pool
-                # cooling both move between the two calls. When the rewrite is
-                # ACCEPTED below it becomes the published text, so served_by/model
-                # must follow it; otherwise the brief carries the draft's label over
-                # the rewrite's words, and the field the operator reads to check
-                # "did DeepSeek quietly serve this?" answers about a reply that was
-                # thrown away. Tracked separately and only promoted on acceptance.
-                rw_served: dict = {}
-                rw_reply, _rw_reason = _call_model(
-                    rewrite_system, reply, {**cfg, "usage_stage": lens},
-                    served=rw_served)
-                if rw_reply:
-                    rw_parsed = _extract_json(rw_reply)
-                    if isinstance(rw_parsed, dict):
-                        rw_violations = _collect_style_violations(rw_parsed)
-                        if len(rw_violations) <= len(violations):
-                            # Rewrite is better (or no worse) — accept it
-                            reply = rw_reply
-                            parsed = rw_parsed
-                            violations = rw_violations
-                            if rw_served.get("provider"):
-                                brief["served_by"] = rw_served["provider"]
-                            if rw_served.get("model"):
-                                brief["model"] = rw_served["model"]
-                style_flags = violations
-            # Cache the FINAL post-lint text under the ORIGINAL prompt hash. On a
-            # lint failure above we cache NOTHING (next run re-calls and re-lints)
-            # — never a raw pre-lint reply that would dodge the lint on a hit.
-            _mb_reply_cache_put(phash, reply, cfg, root)
-        except Exception:  # noqa: BLE001 — degrade, never raise
+            mode_id, max_tokens = _production_mode_request(cfg)
+            from engine import provider_production_modes as owner
+            status = owner.resolve_mode(mode_id)
+            brief["model"] = status.model
+            production_cache_identity = (status.provider_id, status.model)
+            model = json.dumps(
+                ["master_brain.production_mode.v1", status.mode_id,
+                 status.provider_id, status.model, max_tokens],
+                separators=(",", ":"),
+            )
+            cache_allowed = status.state == "configured"
+        except Exception:
+            # The actual call below returns the bounded failure; no alternate
+            # cache, provider or credential resolver is tried here.
             pass
+    try:
+        phash = _mb_prompt_hash(model, system, user) if cache_allowed else None
+        cached = _mb_reply_cache_get(phash, cfg, root) if phash is not None else None
+        _cache_was_hit = cached is not None
+        if _cache_was_hit:
+            log.debug("master_brain: reply cache HIT (%s)", phash[:12])
+            reply, reason = cached, None
+            brief["served_by"] = "cache"
+        else:
+            # Tag the lens (macro/china/btc) as the usage stage for cost drill-down.
+            served: dict = {}
+            try:
+                if application_selected:
+                    # The SAME route (and therefore the SAME per-turn provider and
+                    # operation identity) serves the draft and its accepted rewrite.
+                    reply, reason = _call_application_fabric(
+                        system, user, {**cfg, "usage_stage": lens}, route, served=served)
+                else:
+                    reply, reason = _call_model(
+                        system, user, {**cfg, "usage_stage": lens}, served=served)
+            except TypeError:
+                if application_selected:
+                    # A TypeError may follow dispatch. The application route is
+                    # never replayed for a signature-compatibility path.
+                    reply, reason = None, "application_fabric_error"
+                elif production_selected:
+                    # A TypeError may follow dispatch. Production requests are never
+                    # replayed for the legacy test-stub signature compatibility path.
+                    reply, reason = None, "production_mode_error"
+                else:
+                    # Preserve existing callers that stub the old signature.
+                    reply, reason = _call_model(system, user, {**cfg, "usage_stage": lens})
+                served = {}
+            if reply is not None:
+                brief["served_by"] = served.get("provider")
+                if served.get("model"):
+                    brief["model"] = served["model"]
 
-    brief["style_flags"] = style_flags
+        brief["raw_text"] = reply
+        if reply is None:
+            brief["degraded_reason"] = reason
+            return brief
+        parsed = _extract_json(reply)
+        if not isinstance(parsed, dict):
+            brief["degraded_reason"] = reason or "unparseable_reply"   # surfaces "truncated"
+            return brief
 
-    for k in _BRIEF_FIELDS:
-        if k in parsed:
-            brief[k] = parsed[k]
-    # ADB-W2: forward_watch and forward_read (macro lens only).  Parsed defensively:
-    # - forward_watch: must be a list of dicts; any malformed row is dropped.
-    # - forward_read: must be a string; missing → omitted.
-    if lens == "macro":
-        try:
-            raw_fw = parsed.get("forward_watch")
-            if isinstance(raw_fw, list):
-                valid_rows = []
-                for row in raw_fw:
-                    if isinstance(row, dict) and row.get("date") and row.get("label"):
-                        valid_rows.append({
-                            "date": str(row["date"]),
-                            "label": str(row["label"]),
-                            "kind": str(row.get("kind", "")),
-                            "note": str(row.get("note", ""))[:120],  # guard runaway notes
-                        })
-                if valid_rows:
-                    brief["forward_watch"] = valid_rows
-            raw_fr = parsed.get("forward_read")
-            if isinstance(raw_fr, str) and raw_fr.strip():
-                brief["forward_read"] = raw_fr.strip()
-        except Exception as e:  # noqa: BLE001 — additive, never fatal
-            log.debug("master_brain: forward_watch/read parse failed: %s", e)
-    # macro-lens producer: stake the brain's OWN falsifiable leans. Wrapped in its own try so
-    # a theses bug can NEVER discard the free-text already copied above (the schema tail is
-    # placed last, so a truncated reply drops the trailing theses array first, not the narrative).
-    if lens == "macro" and cfg.get("emit_theses", True):
-        try:
-            raw = parsed.get("theses") if isinstance(parsed.get("theses"), list) else []
-            built = []
-            token = _ledger_law.run_token(brief.get("generated_at"))
-            for t in raw[: int(cfg.get("max_theses", 2))]:
-                th = _mb_build_thesis(t, len(built), brief["state_asof"], root, cfg,
-                                      run_token=token)
-                if th is not None:
-                    built.append(th)
-            brief["theses"] = built
-        except Exception as e:  # noqa: BLE001 — a theses bug must never lose the free-text
-            log.warning("master_brain: theses parse failed: %s", e)
-            brief["theses"] = []
-    if reason:
-        brief["degraded_reason"] = reason          # parsed, but flag e.g. truncation
-    return brief
+        # Style lint + ONE rewrite retry (spec §4).
+        # Skip lint on cache hits — stored text was already linted on the run that wrote it.
+        style_flags: list[str] = []
+        rewrite_degraded = False
+        if not _cache_was_hit:
+            try:
+                violations = _collect_style_violations(parsed)
+                if violations:
+                    # Build a deduplicated list of banned token names for the rewrite prompt
+                    banned_list = list(dict.fromkeys(v.split(": ", 1)[-1] for v in violations))[:15]
+                    rewrite_system = (
+                        "Your brief contains banned machine tokens: "
+                        + ", ".join(banned_list)
+                        + ". Rewrite the SAME JSON — identical structure and claims — "
+                        "replacing every banned token with plain language a non-finance "
+                        "reader understands. Return only the JSON."
+                    )
+                    # THE REWRITE IS A SECOND TRIP DOWN THE LADDER, so it can be served
+                    # by a DIFFERENT rung than the original draft — mark_dead and pool
+                    # cooling both move between the two calls. When the rewrite is
+                    # ACCEPTED below it becomes the published text, so served_by/model
+                    # must follow it; otherwise the brief carries the draft's label over
+                    # the rewrite's words, and the field the operator reads to check
+                    # "did DeepSeek quietly serve this?" answers about a reply that was
+                    # thrown away. Tracked separately and only promoted on acceptance.
+                    #
+                    # On the application Fabric route the rewrite is a second
+                    # INTENTIONAL STEP of the SAME operation, not retry work: it
+                    # reuses the same per-turn provider and operation identity, and
+                    # the owner serves it from the same binding. There is no ladder,
+                    # so there is no third request and no fallback.
+                    rw_served: dict = {}
+                    rw_reason = None
+                    if application_selected:
+                        rw_reply, rw_reason = _call_application_fabric(
+                            rewrite_system, reply, {**cfg, "usage_stage": lens},
+                            route, served=rw_served)
+                    else:
+                        rw_reply, _rw_reason = _call_model(
+                            rewrite_system, reply, {**cfg, "usage_stage": lens},
+                            served=rw_served)
+                    if rw_reply:
+                        rw_parsed = _extract_json(rw_reply)
+                        if isinstance(rw_parsed, dict):
+                            rw_violations = _collect_style_violations(rw_parsed)
+                            if len(rw_violations) <= len(violations):
+                                # Rewrite is better (or no worse) — accept it
+                                reply = rw_reply
+                                parsed = rw_parsed
+                                violations = rw_violations
+                                if application_selected and rw_reason:
+                                    rewrite_degraded = True
+                                    brief["degraded_reason"] = rw_reason
+                                if rw_served.get("provider"):
+                                    brief["served_by"] = rw_served["provider"]
+                                if rw_served.get("model"):
+                                    brief["model"] = rw_served["model"]
+                    elif application_selected:
+                        # A FAILED or UNCERTAIN rewrite keeps the KNOWN draft — the
+                        # useful text is real — but the brief is not a clean success
+                        # and must not be cached as one. No third request, no
+                        # fallback, no regenerated identity.
+                        rewrite_degraded = True
+                        brief["degraded_reason"] = rw_reason or "application_fabric_rewrite_failed"
+                    style_flags = violations
+                # Cache the FINAL post-lint text under the ORIGINAL prompt hash. On a
+                # lint failure above we cache NOTHING (next run re-calls and re-lints)
+                # — never a raw pre-lint reply that would dodge the lint on a hit.
+                # A future owner/model transition must not cache a receipt under a
+                # different identity than the one resolved before dispatch.
+                if application_selected:
+                    # The served identity is compared with the identity resolved
+                    # BEFORE dispatch. A changed owner/model must not poison the
+                    # cache under a stale identity, and a degraded rewrite is never
+                    # a clean success.
+                    cache_identity_matches = (
+                        not reason and not rewrite_degraded
+                        and application_cache_identity == (brief["served_by"], brief["model"]))
+                else:
+                    cache_identity_matches = (
+                        not production_selected
+                        or production_cache_identity == (brief["served_by"], brief["model"])
+                    )
+                if phash is not None and cache_identity_matches:
+                    _mb_reply_cache_put(phash, reply, cfg, root)
+            except Exception:  # noqa: BLE001 — degrade, never raise
+                pass
+
+        if _fabric_context is not None:
+            brief["raw_text"] = reply
+        brief["style_flags"] = style_flags
+
+        for k in _BRIEF_FIELDS:
+            if k in parsed:
+                brief[k] = parsed[k]
+        # ADB-W2: forward_watch and forward_read (macro lens only).  Parsed defensively:
+        # - forward_watch: must be a list of dicts; any malformed row is dropped.
+        # - forward_read: must be a string; missing → omitted.
+        if lens == "macro":
+            try:
+                raw_fw = parsed.get("forward_watch")
+                if isinstance(raw_fw, list):
+                    valid_rows = []
+                    for row in raw_fw:
+                        if isinstance(row, dict) and row.get("date") and row.get("label"):
+                            valid_rows.append({
+                                "date": str(row["date"]),
+                                "label": str(row["label"]),
+                                "kind": str(row.get("kind", "")),
+                                "note": str(row.get("note", ""))[:120],  # guard runaway notes
+                            })
+                    if valid_rows:
+                        brief["forward_watch"] = valid_rows
+                raw_fr = parsed.get("forward_read")
+                if isinstance(raw_fr, str) and raw_fr.strip():
+                    brief["forward_read"] = raw_fr.strip()
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.debug("master_brain: forward_watch/read parse failed: %s", e)
+        # macro-lens producer: stake the brain's OWN falsifiable leans. Wrapped in its own try so
+        # a theses bug can NEVER discard the free-text already copied above (the schema tail is
+        # placed last, so a truncated reply drops the trailing theses array first, not the narrative).
+        if lens == "macro" and cfg.get("emit_theses", True):
+            try:
+                raw = parsed.get("theses") if isinstance(parsed.get("theses"), list) else []
+                built = []
+                token = (_fabric_context.entry["operation_id"].split(":", 1)[1]
+                         if _fabric_context is not None else _ledger_law.run_token(brief.get("generated_at")))
+                for t in raw[: int(cfg.get("max_theses", 2))]:
+                    th = _mb_build_thesis(t, len(built), brief["state_asof"], root, cfg,
+                                          run_token=token)
+                    if th is not None:
+                        built.append(th)
+                brief["theses"] = built
+            except Exception as e:  # noqa: BLE001 — a theses bug must never lose the free-text
+                log.warning("master_brain: theses parse failed: %s", e)
+                brief["theses"] = []
+        if reason:
+            brief["degraded_reason"] = reason          # parsed, but flag e.g. truncation
+        return brief
+    finally:
+        if route is not None and route["provider"] is not None and _fabric_context is None:
+            from engine import llm_auth
+            llm_auth.close_fabric_provider(route["provider"])
 
 
 # --------------------------------------------------------------------------- #
@@ -2715,6 +4146,16 @@ def _translate_brief(brief: dict, cfg: dict, lens: str = "macro") -> None:
 
 def run(persist: bool = True, root: Path | None = None, force: bool = False,
         lens: str = "macro") -> dict | None:
+    if lens not in LENSES:
+        return None
+    original = _mb_auto_pending(root, lens)
+    if original is not None:
+        return original
+    return _run_once(persist=persist, root=root, force=force, lens=lens)
+
+
+def _run_once(persist: bool = True, root: Path | None = None, force: bool = False,
+              lens: str = "macro") -> dict | None:
     """Gather state -> synthesize -> persist data/regime/<out> + site/<out> for one
     LENS. Returns the brief, or None when disabled (unless `force`, for on-demand/CLI
     use) or the lens is unknown. NEVER raises into the pipeline."""
@@ -2726,7 +4167,19 @@ def run(persist: bool = True, root: Path | None = None, force: bool = False,
         log.warning("master_brain: unknown lens %r", lens)
         return None
     try:
-        root = Path(root) if root else config.ROOT
+        root = _mb_auto_root(root)
+        snapshot = _mb_legacy_snapshot(root, lens)
+        selected, mode, refusal = _application_selection(cfg)
+        selection = (selected, mode, refusal)
+        auto_route = None
+        if selected:
+            if refusal:
+                return _mb_auto_held(lens=lens, reason=refusal)
+            route, refusal = _resolve_application_route(cfg, mode, root, _application_operation_id())
+            if route is None:
+                return _mb_auto_held(lens=lens, reason=refusal)
+            if route["inspection"].get("schema") == "mastermind.fabric_application_inspection.v2":
+                auto_route = route
         # Interval gate — only regenerate every N days (1..7). When the existing brief
         # is younger than the interval, skip the (paid) LLM call and KEEP the prior
         # brief live: the committed data/regime/<out> + site/<out> are left untouched
@@ -2737,12 +4190,24 @@ def run(persist: bool = True, root: Path | None = None, force: bool = False,
             interval = _interval_for(lens, cfg)
             if interval > 1:
                 prev = _read_json(root / "data" / "regime" / spec["out"])
+                if auto_route is not None:
+                    current = _mb_auto_load(root, lens)
+                    matching = next((entry for entry in reversed(current["entries"])
+                        if entry["state"] == "ready" and entry["mode_id"] == auto_route["mode_id"]
+                        and entry["inspection"] == auto_route["inspection"] and entry["publication"]
+                        and entry["publication"]["data"]["state"] == "done"
+                        and entry["brief"] == prev
+                        and _mb_auto_effect_observed(root, "data", entry["publication"]["data"])), None)
+                    prev = _mb_auto_clone(matching["brief"]) if matching is not None else None
                 age = _brief_age_days(prev)
                 if age is not None and age < interval:
                     log.info("master_brain: lens=%s brief is %.1fd old (< %dd interval) "
                              "— skipping regen, keeping prior brief", lens, age, interval)
                     return prev
         state = spec["state_fn"](root)
+        if auto_route is not None:
+            brief, context = _mb_auto_synthesize(state, cfg, lens, root, auto_route)
+            return _mb_auto_extend(context, persist) if context is not None else brief
         brief = synthesize(state, cfg, lens=lens, root=root)
         # ADB-R9: additive optional keys (schema: master_brief.v2)
         brief["nw_context_used"] = bool(state.get("neural_web"))
@@ -2758,20 +4223,12 @@ def run(persist: bool = True, root: Path | None = None, force: bool = False,
             brief["key_facts"] = _key_facts_for(lens, state)
         except Exception:  # noqa: BLE001 — additive, never fatal
             brief["key_facts"] = []
+        if (_application_selection(cfg) != selection
+                or _mb_legacy_snapshot(root, lens) != snapshot):
+            return _mb_auto_held(lens=lens, reason="application_fabric_publication_superseded")
         _translate_brief(brief, cfg, lens)    # attach brief['zh'] for the 中文 toggle
-        if persist:
-            try:
-                payload = json.dumps(brief, indent=2, default=str)
-                out = root / "data" / "regime" / spec["out"]
-                out.parent.mkdir(parents=True, exist_ok=True)
-                out.write_text(payload)
-                site = root / "site"          # client-fetched by the dashboard panel
-                if site.is_dir():
-                    (site / spec["out"]).write_text(payload)
-            except Exception as e:  # noqa: BLE001
-                log.warning("master_brief persist failed (lens=%s: %s)", lens, e)
-        if lens == "macro":                   # producer: append the brain's own leans (macro only)
-            _append_ledger(brief, root)
+        if not _mb_legacy_publish(brief, root, lens, persist, snapshot, cfg, selection):
+            return _mb_auto_held(lens=lens, reason="application_fabric_publication_superseded")
         return brief
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("master_brain run failed (lens=%s: %s)", lens, e)

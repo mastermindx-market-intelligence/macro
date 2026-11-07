@@ -32,6 +32,8 @@ Outputs (non-fatal on any individual failure):
 from __future__ import annotations
 
 import argparse
+import copy
+import hashlib
 import json
 import logging
 import os
@@ -47,6 +49,11 @@ sys.path.insert(0, str(ROOT))
 # Module-level imports so tests can patch them
 from engine.signal_foundry.screen import screen_candidate  # noqa: E402
 from engine.signal_foundry.spec import stamp_gates_hash  # noqa: E402
+
+from scripts.run_causal_brainstorm import (  # existing journal primitives, no new owner
+    _ResearchHeld, _r_existing, _r_selection, _r_native_guard, _r_config,
+    _r_selected_run, _r_file_snapshot, _r_file_append_receipt, _r_json, _r_decode,
+)
 
 log = logging.getLogger(__name__)
 
@@ -163,6 +170,7 @@ def _build_scheduled_providers(cfg: dict) -> list[dict]:
     SF-R5 mirror of CHF-R8: ANTHROPIC_API_KEY and deepseek are explicitly
     excluded from the scheduled path.  Pool keys are oauth class — compliant.
     """
+    _r_native_guard(cfg, ROOT, 'signal-foundry')
     from engine import llm_auth  # noqa: PLC0415
 
     model = cfg.get("models", {}).get("generator", "claude-sonnet-4-6")
@@ -177,6 +185,7 @@ def _build_scheduled_providers(cfg: dict) -> list[dict]:
 
 def _build_operator_providers(cfg: dict, model_override: str | None = None) -> list[dict]:
     """For operator trigger: full waterfall (oauth → anthropic → deepseek)."""
+    _r_native_guard(cfg, ROOT, 'signal-foundry')
     from engine import llm_auth  # noqa: PLC0415
     model = model_override or cfg.get("models", {}).get("generator", "claude-sonnet-4-6")
     cfg_aug = {**cfg, "oauth_pool_lane": "signal-foundry", "usage_lane": "signal-foundry"}
@@ -189,6 +198,7 @@ def _build_providers_for_model(
     model_role: str,
 ) -> list[dict]:
     """Build providers selecting the right model from models config section."""
+    _r_native_guard(cfg, ROOT, 'signal-foundry')
     model = cfg.get("models", {}).get(model_role)
     if trigger == "scheduled":
         providers = _build_scheduled_providers(cfg)
@@ -261,6 +271,7 @@ def _llm_call(
 
     Returns (text, degraded_reason, provider_used, token_counts_dict).
     """
+    _r_native_guard({}, ROOT, 'signal-foundry')
     from engine import llm_auth  # noqa: PLC0415
 
     token_counts: dict = {}
@@ -290,7 +301,7 @@ def _llm_call(
 # JSON array parser (mirrors run_causal_brainstorm.py)
 # ---------------------------------------------------------------------------
 
-def _parse_json_array(text: str) -> list[dict]:
+def _parse_json_array(text: str, *, _strict: bool = False) -> list[dict]:
     """Parse LLM output that should be a JSON array. Tries multiple strategies."""
     import json as _json
 
@@ -298,7 +309,7 @@ def _parse_json_array(text: str) -> list[dict]:
 
     # Direct parse
     try:
-        obj = _json.loads(text)
+        obj = (_r_decode(text) if _strict else _json.loads(text))
         if isinstance(obj, list):
             return [c for c in obj if isinstance(c, dict)]
     except _json.JSONDecodeError:
@@ -312,7 +323,7 @@ def _parse_json_array(text: str) -> list[dict]:
             if end > start:
                 inner = text[start:end].strip()
                 try:
-                    obj = _json.loads(inner)
+                    obj = (_r_decode(inner) if _strict else _json.loads(inner))
                     if isinstance(obj, list):
                         return [c for c in obj if isinstance(c, dict)]
                 except _json.JSONDecodeError:
@@ -323,7 +334,7 @@ def _parse_json_array(text: str) -> list[dict]:
     end = text.rfind("]")
     if start != -1 and end > start:
         try:
-            obj = _json.loads(text[start:end + 1])
+            obj = (_r_decode(text[start:end + 1]) if _strict else _json.loads(text[start:end + 1]))
             if isinstance(obj, list):
                 return [c for c in obj if isinstance(c, dict)]
         except _json.JSONDecodeError:
@@ -597,6 +608,7 @@ def _file_specs(
     root: Path,
     iso_week: str,
     dry_run: bool,
+    _fabric_receipt=None,
 ) -> tuple[int, int]:
     """Apply two-key screen (SF-R7) and file admitted specs.
 
@@ -628,10 +640,13 @@ def _file_specs(
         except OSError:
             pass
 
+    if _fabric_receipt is not None:
+        _r_json(specs)
     for spec in specs:
         # Assign id if missing or placeholder
         sid = str(spec.get("id") or "")
-        if not sid or not sid.startswith("SF-") or not sid[3:].isdigit():
+        if (_fabric_receipt is not None or not sid
+                or not sid.startswith("SF-") or not sid[3:].isdigit()):
             next_id_n += 1
             sid = f"SF-{next_id_n:04d}"
             spec = dict(spec, id=sid)
@@ -639,6 +654,10 @@ def _file_specs(
         # Ensure registered_at is set
         if not spec.get("registered_at"):
             spec = dict(spec, registered_at=datetime.now(timezone.utc).date().isoformat())
+
+        if _fabric_receipt is not None:
+            from engine.signal_foundry.spec import construction_hash
+            spec = dict(spec, construction_hash=construction_hash(spec))
 
         # SF-R7 two-key: deterministic screen must independently admit
         screen_result = screen_candidate(spec, repo_root=root)
@@ -656,6 +675,10 @@ def _file_specs(
                     "gates_failed": screen_result.get("gates_failed", []),
                 },
             }
+            if _fabric_receipt is not None:
+                row["fabric_run_id"] = _fabric_receipt["run_id"]
+                row["fabric_served_models"] = _fabric_receipt["models"]
+                _fabric_receipt["rows"].append(copy.deepcopy(row))
             print(f"[run_signal_foundry_brainstorm] ADMITTED: {sid} '{spec.get('name', '')}'")
             if not dry_run:
                 with candidates_path.open("a", encoding="utf-8") as fh:
@@ -676,6 +699,10 @@ def _file_specs(
                     "gates_failed": screen_result.get("gates_failed", []),
                 },
             }
+            if _fabric_receipt is not None:
+                row["fabric_run_id"] = _fabric_receipt["run_id"]
+                row["fabric_served_models"] = _fabric_receipt["models"]
+                _fabric_receipt["rows"].append(copy.deepcopy(row))
             print(f"[run_signal_foundry_brainstorm] SCREEN_REJECTED: {sid} "
                   f"'{spec.get('name', '')}' reasons={screen_result.get('reasons', [])}")
             if not dry_run:
@@ -689,6 +716,54 @@ def _file_specs(
 # ---------------------------------------------------------------------------
 # Governance event writer (data/signal_foundry/governance.jsonl — SF-R10)
 # ---------------------------------------------------------------------------
+
+
+
+def _r_sf_file(ctx, specs, run_status):
+    root, identity = ctx.root, ctx.run["identity"]
+    candidates = root / "data/signal_foundry/candidates.jsonl"
+    governance = root / "data/signal_foundry/governance.jsonl"
+    before = _r_file_snapshot(candidates, root)
+    models = {stage["role"]: stage["receipt"]["served_model"] for stage in ctx.run["stages"]}
+    intent = {"kind": "signal_foundry_screen", "specs": specs, "models": models,
+              "dry_run": identity["dry_run"], "iso_week": identity["iso_week"],
+              "before_sha256": hashlib.sha256(before).hexdigest()}
+    ctx.filing_intent(intent)
+    # Same incumbent governance journal: freeze AFTER its own filing intent.
+    governance_before = _r_file_snapshot(governance, root)
+    expected = {"run_id": ctx.run["run_id"], "models": models, "rows": []}
+    admitted, rejected = _file_specs(copy.deepcopy(specs), candidates_path=candidates,
+        root=root, iso_week=identity["iso_week"], dry_run=identity["dry_run"],
+        _fabric_receipt=expected)
+    artifact = _r_file_append_receipt(candidates, root, before)
+    if (len(expected["rows"]) != admitted + rejected
+            or sum(row["status"] == "proposed" for row in expected["rows"]) != admitted
+            or sum(row["status"] == "screen_rejected" for row in expected["rows"]) != rejected
+            or artifact["rows"] != ([] if identity["dry_run"] else expected["rows"])):
+        raise _ResearchHeld("research_signal_filing_ack_unknown")
+    evidence = {"pack_id": ctx.run["run_id"], "run_id": ctx.run["run_id"],
+                "iso_week": identity["iso_week"], "trigger": identity["trigger"],
+                "n_admitted": admitted, "n_screen_rejected": rejected,
+                "n_proposed": len(specs), "n_filed": len(artifact["rows"]),
+                "models": models, "dry_run": identity["dry_run"]}
+    _append_governance_event("sf_llm_proposed", evidence, root=root)
+    governance_receipt = _r_file_append_receipt(governance, root, governance_before)
+    events = governance_receipt["rows"]
+    if (len(events) != 1 or events[0].get("event") != "sf_llm_proposed"
+            or events[0].get("authored_by") != "run_signal_foundry_brainstorm"
+            or events[0].get("evidence") != evidence):
+        raise _ResearchHeld("research_governance_ack_unknown")
+    receipt = {"kind": "signal_foundry_screen", "n_proposed": len(specs),
+               "n_admitted": admitted, "n_screen_rejected": rejected,
+               "n_filed": len(artifact["rows"]), "dry_run": identity["dry_run"],
+               "screened_rows": expected["rows"],
+               "files": {"candidates": artifact, "governance": governance_receipt},
+               "governance": evidence}
+    ctx.filing_complete(receipt)
+    run_status["stages"]["screen"] = {key: receipt[key] for key in
+        ("n_admitted", "n_screen_rejected", "n_filed")}
+    return receipt
+
 
 def _append_governance_event(
     event_type: str,
@@ -725,6 +800,8 @@ def _write_run_log(
     raw_replies: dict | None = None,
 ) -> None:
     """Append one row to data/signal_foundry/governance.jsonl (run log)."""
+    if run_status.get("mode") == "fabric":
+        return
     _append_governance_event(
         "sf_brainstorm_run",
         {
@@ -749,19 +826,24 @@ def _run_full_mode(
     iso_week: str,
     dry_run: bool,
     root: Path,
+    _fabric=None,
 ) -> int:
     """Run the full LLM chain: generator → skeptic → compiler → screen → file.
 
     Returns 0 always (non-fatal pattern).
     """
+    if _fabric is None:
+        _r_native_guard(cfg, root, 'signal-foundry')
     run_status: dict[str, Any] = {
         "trigger": trigger,
         "iso_week": iso_week,
         "started_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "mode": "full",
+        "mode": "fabric" if _fabric is not None else "full",
         "dry_run": dry_run,
         "stages": {},
     }
+    if _fabric is not None:
+        _fabric.status = run_status
 
     budgets = cfg.get("budgets") or {}
     n_candidates = int(budgets.get("filed_per_week", 5))
@@ -774,10 +856,15 @@ def _run_full_mode(
     print("[run_signal_foundry_brainstorm] Building fresh brainstorm pack...")
     try:
         pack_text = _build_sf_pack(root, n_candidates=n_candidates)
+        if _fabric is not None and not _fabric.claim(pack_text):
+            _write_lane_status("full", "original Fabric run already complete; no model or filing effect", root=root)
+            return 0
         pack_path = Path(tempfile.gettempdir()) / f"signal_foundry_pack_{iso_week}.txt"
         pack_path.write_text(pack_text, encoding="utf-8")
         print(f"[run_signal_foundry_brainstorm] Pack written to: {pack_path}")
         run_status["stages"]["pack"] = "ok"
+    except _ResearchHeld:
+        raise
     except Exception as exc:  # noqa: BLE001
         print(f"[run_signal_foundry_brainstorm] ERROR: pack build failed ({exc}); aborting full mode")
         run_status["stages"]["pack"] = f"error: {exc}"
@@ -787,7 +874,8 @@ def _run_full_mode(
 
     # ---- Step 2: GENERATOR — pack → JSON array of candidate pre-specs ----
     print(f"[run_signal_foundry_brainstorm] Stage: GENERATOR (model={generator_model})")
-    gen_providers = _build_providers_for_model(cfg, trigger, "generator")
+    gen_providers = (_build_providers_for_model(cfg, trigger, "generator")
+                  if _fabric is None else [])
     gen_system = (
         "You are the Signal Foundry brainstorm generator. Read the BRAINSTORM PACK carefully. "
         "Produce EXACTLY the requested number of candidate signal specs as a JSON array. "
@@ -796,10 +884,10 @@ def _run_full_mode(
         "Return JSON array ONLY — no prose, no markdown fences."
     )
 
-    gen_text, gen_reason, gen_provider, gen_tokens = _llm_call(
-        gen_providers, gen_system, pack_text,
-        max_tokens=6000, context="sf_generator",
-    )
+    gen_text, gen_reason, gen_provider, gen_tokens = (
+        _llm_call(gen_providers, gen_system, pack_text, max_tokens=6000, context="sf_generator")
+        if _fabric is None else _fabric.call("generator", generator_model, gen_system, pack_text,
+                                              6000, "sf_generator"))
 
     run_status["stages"]["generator"] = {
         "model": generator_model,
@@ -816,7 +904,7 @@ def _run_full_mode(
 
     # Parse generator output
     try:
-        candidate_specs = _parse_json_array(gen_text)
+        candidate_specs = (_parse_json_array(gen_text) if _fabric is None else _parse_json_array(gen_text, _strict=True))
     except Exception as exc:  # noqa: BLE001
         print(f"[run_signal_foundry_brainstorm] WARNING: could not parse generator output ({exc}); falling to pack-only")
         run_status["stages"]["generator"]["parse_error"] = str(exc)
@@ -829,7 +917,8 @@ def _run_full_mode(
 
     # ---- Step 3: SKEPTIC — specs → per-spec ADVISORY findings (categorical only) ----
     print(f"[run_signal_foundry_brainstorm] Stage: SKEPTIC (model={skeptic_model})")
-    skeptic_providers = _build_providers_for_model(cfg, trigger, "skeptic")
+    skeptic_providers = (_build_providers_for_model(cfg, trigger, "skeptic")
+                  if _fabric is None else [])
 
     skeptic_system = (
         "You are the Signal Foundry adversarial skeptic. Review proposed signal specs for "
@@ -851,10 +940,10 @@ def _run_full_mode(
         f"SPECS:\n{json.dumps(candidate_specs, indent=2, ensure_ascii=False)}"
     )
 
-    skep_text, skep_reason, skep_provider, skep_tokens = _llm_call(
-        skeptic_providers, skeptic_system, skeptic_user,
-        max_tokens=3000, context="sf_skeptic",
-    )
+    skep_text, skep_reason, skep_provider, skep_tokens = (
+        _llm_call(skeptic_providers, skeptic_system, skeptic_user, max_tokens=3000, context="sf_skeptic")
+        if _fabric is None else _fabric.call("skeptic", skeptic_model, skeptic_system, skeptic_user,
+                                              3000, "sf_skeptic"))
 
     run_status["stages"]["skeptic"] = {
         "model": skeptic_model,
@@ -867,7 +956,7 @@ def _run_full_mode(
     surviving_specs = candidate_specs
     if skep_text is not None:
         try:
-            findings_raw = _parse_json_array(skep_text)
+            findings_raw = (_parse_json_array(skep_text) if _fabric is None else _parse_json_array(skep_text, _strict=True))
             # RF-16/SF-R12: reject numeric confidence fields
             valid_findings, rf16_rejections = _validate_skeptic_findings(findings_raw)
             if rf16_rejections:
@@ -906,7 +995,8 @@ def _run_full_mode(
 
     # ---- Step 4: COMPILER — surviving specs → strict schema JSON ----
     print(f"[run_signal_foundry_brainstorm] Stage: COMPILER (model={compiler_model})")
-    compiler_providers = _build_providers_for_model(cfg, trigger, "compiler")
+    compiler_providers = (_build_providers_for_model(cfg, trigger, "compiler")
+                  if _fabric is None else [])
 
     compiler_system = (
         "You are the Signal Foundry schema compiler. Convert the given candidate signal specs "
@@ -923,10 +1013,10 @@ def _run_full_mode(
         f"SPECS:\n{json.dumps(surviving_specs, indent=2, ensure_ascii=False)}"
     )
 
-    comp_text, comp_reason, comp_provider, comp_tokens = _llm_call(
-        compiler_providers, compiler_system, compiler_user,
-        max_tokens=5000, context="sf_compiler",
-    )
+    comp_text, comp_reason, comp_provider, comp_tokens = (
+        _llm_call(compiler_providers, compiler_system, compiler_user, max_tokens=5000, context="sf_compiler")
+        if _fabric is None else _fabric.call("compiler", compiler_model, compiler_system, compiler_user,
+                                              5000, "sf_compiler"))
 
     run_status["stages"]["compiler"] = {
         "model": compiler_model,
@@ -938,7 +1028,7 @@ def _run_full_mode(
     final_specs = surviving_specs  # default: use pre-compiler specs
     if comp_text is not None:
         try:
-            compiled = _parse_json_array(comp_text)
+            compiled = (_parse_json_array(comp_text) if _fabric is None else _parse_json_array(comp_text, _strict=True))
             if compiled and len(compiled) >= len(surviving_specs) * 0.5:
                 final_specs = compiled
                 run_status["stages"]["compiler"]["n_compiled"] = len(compiled)
@@ -964,6 +1054,11 @@ def _run_full_mode(
               f"{len(final_specs)} specs to remaining weekly budget {remaining} "
               f"({already_filed}/{filed_per_week} already filed, {iso_week})")
         final_specs = final_specs[:remaining]
+    if _fabric is not None:
+        receipt = _r_sf_file(_fabric, final_specs, run_status)
+        _write_lane_status("full", f"Fabric run completed; {receipt['n_filed']} spec(s) actually filed", root=root)
+        return 0
+
     n_admitted, n_rejected = _file_specs(
         final_specs,
         candidates_path=candidates_path,
@@ -1035,15 +1130,26 @@ def main(argv: list[str] | None = None) -> int:
                     help="Dry-run: build pack + run LLM chain but do not write specs to disk")
     args = ap.parse_args(argv)
 
-    root = Path(args.root) if args.root else ROOT
+    root = (Path(args.root) if args.root else ROOT).absolute()
     trigger = args.trigger
     dry_run = args.dry_run
     iso_week = _current_iso_week()
 
     print(f"[run_signal_foundry_brainstorm] trigger={trigger}, iso_week={iso_week}, dry_run={dry_run}")
 
-    # Load config
-    cfg = _load_config()
+    # Original selected custody precedes config, week, pack and native auth.
+    try:
+        original = _r_existing(root, 'signal-foundry')
+        if original is not None and original["state"] != "complete":
+            raise _ResearchHeld("research_original_held")
+        cfg = _r_config(root, 'signal_foundry.yml', _load_config())
+        selected = _r_selection(cfg)["mode"] is not None
+        if original is not None and not selected:
+            raise _ResearchHeld("research_selection_changed")
+    except Exception as exc:
+        reason = str(exc) if isinstance(exc, _ResearchHeld) else "research_journal_refused"
+        _write_lane_status("degraded_fabric_held", reason, root=root)
+        return 0
 
     # ---- GATE 1: SIGNAL_FOUNDRY_PAUSED fail-closed (SF-R5) ----
     if trigger == "scheduled" and _is_paused():
@@ -1080,6 +1186,14 @@ def main(argv: list[str] | None = None) -> int:
                 f"already filed {already_filed}/{filed_per_week} this week ({iso_week}); idempotent skip",
                 root=root,
             )
+            return 0
+
+    if selected:
+        try:
+            return _r_selected_run(cfg, trigger, iso_week, dry_run, root,
+                                   'signal-foundry', __file__, _run_full_mode)
+        except _ResearchHeld as exc:
+            _write_lane_status("degraded_fabric_held", str(exc), root=root)
             return 0
 
     # ---- GATE 4: Auth availability check ----

@@ -24,6 +24,7 @@ Discipline (DECISIONS.md D33 + research/SP_VECTOR_VIABILITY.md):
 from __future__ import annotations
 
 import json
+from pathlib import Path
 import logging
 from datetime import datetime, timezone
 
@@ -95,7 +96,84 @@ def _bundle(view: dict, drivers, headlines, regime, n: int) -> dict:
             "recent_headlines": titles}
 
 
+def _fabric_systems():
+    return {"single": _SYSTEM}
+
+
+def _fabric_render(bundle, cfg, call, context):
+    user = ("Snap state + context (JSON). Judge durability per your "
+            "instructions.\n<state>\n" + json.dumps(bundle, default=str, indent=2) + "\n</state>")
+    reply, reason = call(_SYSTEM, user, cfg)
+    if reply is None:
+        return None
+    parsed = _extract_json(reply)
+    if not isinstance(parsed, dict) or parsed.get("lean") not in _LEANS:
+        return None
+    return {"schema": "regime_snap_veto.v1", "is_context_only": True,
+            "lean": parsed["lean"], "confidence": parsed.get("confidence", "low"),
+            "checks": parsed.get("checks") if isinstance(parsed.get("checks"), dict) else {},
+            "read": parsed.get("read"), "model": cfg["model"], "generated_at": context["created_at"],
+            "degraded_reason": reason, "disclaimer": DISCLAIMER}
+
+
+def _fabric_prepare(verdict, context):
+    eligible = bool(_ledger_advance_enabled())
+    rows = ([{"date": context["day"], "generated_at": verdict["generated_at"],
+              "lean": verdict["lean"], "confidence": verdict["confidence"],
+              "snap": context["bundle"]["snap"],
+              "headlines_n": len(context["bundle"]["recent_headlines"])}] if eligible else [])
+    return [{"kind": "jsonl", "path": context["journal_path"], "rows": rows,
+             "key": "date", "guard": "nightly", "keep_first": True, "eligible": eligible}]
+
+
 def assess(view: dict | None, *, drivers=None, headlines=None, regime=None,
+           cfg: dict | None = None, call=None, persist: bool = True) -> dict | None:
+    """Keep the original UTC-day journal and no-answer public contract."""
+    from engine import desk_ledger
+    root = Path(config.ROOT)
+    try:
+        # An unresolved original wins over trigger, date, enable and selection changes.
+        if desk_ledger.fabric_pending("regime-snap", root) is not None:
+            return None
+        if not view or view.get("status") in (None, "dormant"):
+            return None
+        c = {**_cfg(), **(cfg or {})}
+        if not c.get("enabled", True):
+            return None
+        selected = desk_ledger.fabric_selected(c)
+        snapshot = None if selected else desk_ledger.fabric_snapshot("regime-snap", root)
+        bundle = _bundle(view, drivers, headlines, regime, int(c["headlines_n"]))
+        if desk_ledger.fabric_selected(c) != selected:
+            return None
+        if selected:
+            original_time = datetime.now(timezone.utc).isoformat()
+            journal = (config.data_dir() / "regime_snap/veto_log.jsonl").absolute()
+            relative = journal.relative_to(root.resolve(strict=True)).as_posix()
+            result = desk_ledger.fabric_synthesize("regime-snap", root, bundle, c,
+                _fabric_systems(), _fabric_render, publication_requested=persist,
+                context={"day": original_time[:10], "bundle": bundle, "journal_path": relative},
+                generated_at=original_time)
+            if result is None or result["held"] or result["result"] is None:
+                return None
+            if not persist:
+                return result["result"]
+            published = desk_ledger.fabric_publish("regime-snap", root, result["run_id"],
+                _fabric_prepare, guard=lambda name: _ledger_advance_enabled())
+            return None if str(published.get("degraded_reason") or "").startswith("application_fabric_") else published
+        verdict = _assess_legacy(view, drivers=drivers, headlines=headlines,
+                                 regime=regime, cfg=c, call=call, persist=False)
+        def publish():
+            if persist and verdict is not None:
+                _append_log(verdict, bundle)
+        if not desk_ledger.fabric_legacy_publish("regime-snap", root, snapshot, c, publish):
+            return None
+        return verdict
+    except Exception as exc:
+        log.warning("regime-snap Fabric owner refused: %s", exc)
+        return None
+
+
+def _assess_legacy(view: dict | None, *, drivers=None, headlines=None, regime=None,
            cfg: dict | None = None, call=None, persist: bool = True) -> dict | None:
     """Triggered durability verdict for a firing/building snap. CONTEXT-ONLY.
 

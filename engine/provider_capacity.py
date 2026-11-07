@@ -20,6 +20,117 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
 SCHEMA = "mastermind.provider_capacity.v1"
+
+# A wire vocabulary for the native owner's aggregate observation, not slots in
+# the legacy capacity schema or an account/model/placement registry.
+FABRIC_ADMIN_SCHEMA = "mastermind.fabric_admin_pool_view.v1"
+FABRIC_ADMIN_POOLS = ("go", "glm", "minimax", "bailian", "grok", "cursor",
+                      "codex-native", "claude-native", "ocfree")
+_FABRIC_ADMIN_STATES = {"configured", "held", "unqualified", "unobserved"}
+_FABRIC_ADMIN_BLOCKERS = {
+    "account_inventory_unobserved", "pool_disabled", "no_configured_accounts",
+    "no_enabled_accounts", "application_transport_unqualified", "service_pool_mismatch",
+    "grant_unavailable", "grant_ambiguous", "credential_ref_mismatch", "recipe_mismatch",
+    "transport_accounts_unavailable", "application_grant_unavailable", "broker_room_exhausted",
+}
+
+
+def validate_fabric_admin_pool_view(value: Any) -> dict:
+    """Validate a separately named, secret-free native view without any I/O.
+
+    The native owner computes every count and grant condition. This adapter
+    neither reinterprets those decisions nor adds pools to provider_capacity.v1.
+    Unknown fields fail closed instead of leaking a future secret-bearing shape.
+    """
+    def require(ok):
+        if not ok:
+            raise ValueError("fabric_admin_view_invalid")
+
+    def member(v, values):
+        return type(v) is str and v in values
+
+    def count(v):
+        return v is None or type(v) is int and 0 <= v <= 2**31 - 1
+
+    def blockers(v):
+        return (type(v) is list and len(v) <= 16 and all(type(x) is str and x in _FABRIC_ADMIN_BLOCKERS for x in v)
+                and len(set(v)) == len(v))
+
+    require(type(value) is dict and set(value) == {"schema", "observed_at", "stale_after",
+        "execution_authorized", "requires_fresh_admission", "scope", "coverage", "source", "pools"})
+    require(value["schema"] == FABRIC_ADMIN_SCHEMA and value["execution_authorized"] is False
+            and value["requires_fresh_admission"] is True)
+    for key in ("observed_at", "stale_after"):
+        require(type(value[key]) in (int, float) and 0 < value[key] <= 253402300799 and math.isfinite(value[key]))
+    require(0 < value["stale_after"] - value["observed_at"] <= 30)
+    scope = value["scope"]
+    require(type(scope) is dict and set(scope) == {"workload", "bound_pool"}
+            and type(scope["workload"]) is str and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", scope["workload"]) is not None
+            and scope["bound_pool"] in ("go", "bailian"))
+    require(value["coverage"] == {"inventory": "canonical_accounts", "ledger": "held_rows",
+                                   "transports": "application_gateway", "provider_quota": "unobserved"})
+    source = value["source"]
+    require(type(source) is dict and set(source) == {"source_generation", "ingress_sha256", "gateway_sha256", "accounts_sha256"}
+            and all(type(v) is str and re.fullmatch(r"[0-9a-f]{64}", v) is not None for v in source.values()))
+    pools = value["pools"]
+    require(type(pools) is list and len(pools) == len(FABRIC_ADMIN_POOLS))
+    total_models = 0
+    for expected, row in zip(FABRIC_ADMIN_POOLS, pools):
+        require(type(row) is dict and set(row) == {"pool", "configured", "enabled", "configured_accounts",
+            "enabled_accounts", "capacity_basis", "held_leases", "application_state", "models", "model_coverage", "blockers"})
+        require(row["pool"] == expected and member(row["application_state"], _FABRIC_ADMIN_STATES)
+                and member(row["capacity_basis"], {"account_concurrency", "host_admitted", "unobserved"})
+                and member(row["model_coverage"], {"bound_transport", "unobserved"}) and blockers(row["blockers"]))
+        require(all(v is None or type(v) is bool for v in (row["configured"], row["enabled"])))
+        require(all(count(row[k]) for k in ("configured_accounts", "enabled_accounts", "held_leases")))
+        if row["configured_accounts"] is not None:
+            require(row["configured_accounts"] <= 1024 and row["enabled_accounts"] is not None
+                    and row["enabled_accounts"] <= row["configured_accounts"] and row["configured"] is True)
+        else:
+            require(row["enabled_accounts"] is None and row["configured"] is None and row["enabled"] is None)
+        require(type(row["models"]) is list and len(row["models"]) <= 128)
+        total_models += len(row["models"])
+        seen = set()
+        for model in row["models"]:
+            require(type(model) is dict and set(model) == {"model", "protocol", "capabilities",
+                "transport_state", "application_state", "ledger_room", "capacity_state", "blockers"})
+            require(type(model["model"]) is str and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_./:-]{0,127}", model["model"]) is not None
+                    and model["model"] not in seen)
+            seen.add(model["model"])
+            require(member(model["protocol"], {"chat", "responses", "messages", "harness"})
+                    and member(model["transport_state"], {"qualified", "unqualified"})
+                    and member(model["application_state"], _FABRIC_ADMIN_STATES)
+                    and member(model["capacity_state"], {"broker_ledger_only", "unobserved"})
+                    and count(model["ledger_room"]) and blockers(model["blockers"]))
+            require(type(model["capabilities"]) is dict
+                    and set(model["capabilities"]) == {"text", "tools", "vision", "upstream_streaming"}
+                    and all(type(v) is bool for v in model["capabilities"].values()))
+            if model["ledger_room"] is not None:
+                require(expected == "go" and model["capacity_state"] == "broker_ledger_only"
+                        and model["application_state"] == "configured")
+            else:
+                require(model["capacity_state"] == "unobserved")
+        require(bool(row["models"]) == (row["model_coverage"] == "bound_transport"))
+    require(total_models <= 128)
+    return copy.deepcopy(value)
+
+
+def fabric_admin_pool_projection(value=None, *, now=None, reason="metadata_not_configured") -> dict:
+    """Label observation age without renewing the native owner's timestamp."""
+    if value is None:
+        return {"available": False, "freshness": "unobserved", "reason": reason,
+            "observed_at": None, "stale_after": None, "execution_authorized": False,
+            "requires_fresh_admission": True, "scope": None, "source": None,
+            "pools": [{"pool": pool, "configured": None, "enabled": None,
+                "configured_accounts": None, "enabled_accounts": None, "capacity_basis": "unobserved",
+                "held_leases": None, "application_state": "unobserved", "models": [],
+                "model_coverage": "unobserved", "blockers": []} for pool in FABRIC_ADMIN_POOLS]}
+    result = validate_fabric_admin_pool_view(value)
+    now = datetime.now(timezone.utc).timestamp() if now is None else now
+    if type(now) not in (int, float) or not math.isfinite(now) or result["observed_at"] > now + 5:
+        raise ValueError("fabric_admin_view_clock_invalid")
+    result.update(available=True, freshness="fresh" if now <= result["stale_after"] else "stale", reason=None)
+    return result
 PRODUCER_REPOSITORY = "mastermindx-market-intelligence/macro"
 PRODUCER_PROGRAM = "shared-ai-provider-control"
 IMPLEMENTATION_ID = "provider-capacity-v1"

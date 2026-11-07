@@ -1,0 +1,39 @@
+{
+  "schema": "macro.native-ci-fixture-alignment.v1",
+  "source_parent": "a577dbbf605474f97bbafa4ceeb0daf841292421",
+  "test_file_blob": "86df23d674ced5b1c9bb815eacd7f0efcd3b1a5f",
+  "change": "Change only the first12-file native fixture download revision to the exact historical source required by that current test. Preserve every hash assertion and the three separate700eef/4bb/f7d72 slots.",
+  "counterexample": "Seven of12 f4bd blob identities differ from the current fixture PINS; go_shim is the first pre-import mismatch.",
+  "qualification": {
+    "source_head": "a577dbbf605474f97bbafa4ceeb0daf841292421",
+    "old_fixture": "f4bd27d91468176ec2fbb0eb83946824f7c35185",
+    "fixture": "8af48bc164b89f380b9fcca0fd2726cf2e21ab61",
+    "fixture_root": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/native-pair-8af-ci-12-v1",
+    "input_blobs": {
+      "candidate/commission_deadline.py": "fade630ed75c1b93334a5711a6df7a554fbd24ee",
+      "candidate/go_shim.py": "2c7bb5a9719f4a94bd57a30b5c1bc90d171573df",
+      "candidate/lease_broker.py": "166930f1b91753b764c4f6561ec309830f2cb332",
+      "candidate/go_lease_gateway.py": "b9fa884e88481e9f0e80a18b19dd79d343130bd1",
+      "candidate/go_lease_capability.py": "4224b4988a7b13e1a3b703f2e3fe7ddbbac88a03",
+      "candidate/provider_outcome.py": "4236303eb3abfa7c9dcad4d3e1a5454f15600c98",
+      "candidate/quota_circuit.py": "b119865ba77908eaf971e86e923075d7da365ffc",
+      "source/model_tier.py": "96093c2747d2dda69b3f2255cb84e656355c87ea",
+      "source/pool_status.py": "02922043357d63b4bcfa3791899df27a5c42be12",
+      "tests/_offline_boundary.py": "e511ab65fe1cd30bf4d2addac6700ca43c3468da",
+      "tests/test_go_application_handler_composition.py": "13ebd6bcee5167926807d7ccdc63bcabed0cf1b1",
+      "tests/test_application_turn_admission.py": "efe876eec40dc8885dbc0059915f2401146be969"
+    },
+    "ci_pre_sha256": "50cd062db43b3c8cda37e0f24c2c4cada4f0a2867ec046e5f008c7e3902e1a1a",
+    "ci_post_sha256": "373141a2b5fe762e4452f5e1a0843ccc505e8af05779bbf447cedeab8ee86826",
+    "returncode": 0,
+    "seconds": 3.605,
+    "log": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/macro-8af-native-ci-pair-v1.log",
+    "xml": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/macro-8af-native-ci-pair-v1.xml",
+    "log_sha256": "9750a1aa0eb4b0d1f4cb1bc64e0cd4a009403f4738583429caf7badf8d6a45d1"
+  },
+  "named_tests": 23,
+  "skipped": 0,
+  "production_native_source_changed": false,
+  "operational_effects": [],
+  "paired_MM_fixture": "Mastermind retains Macroa577 as its code/test fixture; this successor changes only CI download configuration and this evidence report, so all paired runtime/test source bytes are identical."
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "mastermind.provider_workloads.v1",
+  "revision": 3,
+  "owner_program": "shared-ai-provider-control",
+  "profiles": {
+    "hermes_attended": {
+      "execution_surface": "inference",
+      "allowed_providers": [
+        "fabric"
+      ]
+    },
+    "site_interactive": {
+      "execution_surface": "inference",
+      "allowed_providers": [
+        "anthropic",
+        "deepseek",
+        "ollama",
+        "fabric"
+      ]
+    },
+    "site_batch": {
+      "execution_surface": "inference",
+      "allowed_providers": [
+        "anthropic",
+        "deepseek",
+        "ollama",
+        "fabric"
+      ]
+    },
+    "portfolio_analysis": {
+      "execution_surface": "inference",
+      "allowed_providers": [
+        "anthropic",
+        "deepseek",
+        "ollama",
+        "fabric"
+      ]
+    },
+    "lobe_analysis": {
+      "execution_surface": "inference",
+      "allowed_providers": [
+        "anthropic",
+        "deepseek",
+        "ollama",
+        "fabric"
+      ]
+    },
+    "development_agent": {
+      "execution_surface": "native_agent",
+      "allowed_providers": []
+    },
+    "fable_orchestration": {
+      "execution_surface": "native_agent",
+      "allowed_providers": []
+    },
+    "lobe_maintenance": {
+      "execution_surface": "native_agent",
+      "allowed_providers": []
+    }
+  }
+}

@@ -5879,10 +5879,16 @@ def test_status_writing_beats_report_length_only(tmp_path):
 def test_no_status_events_on_prescreen_early_return(tmp_path):
     """Early returns (prescreen here) still emit meta+delta+done only — no status."""
     root = _make_temp_root()
+    # Exercise an actual methodology probe: "world state" is not one of the
+    # incumbent methodology nouns. This test checks the early-return event order.
+    message = "How is the composite score computed exactly?"
+    assert gw._prescreen_message(message) == gw._REFUSAL_DISTILL_EN
     with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
         with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
-            with patch.object(gw, "_ensure_thread", return_value=None):
-                parsed = _sse(list(gw.chat_stream("How is the world state computed exactly?",
+            with patch.object(gw, "_ensure_thread", return_value=None), patch.object(
+                gw, "_build_lane_providers", side_effect=AssertionError("provider after prescreen")
+            ):
+                parsed = _sse(list(gw.chat_stream(message,
                                                   "user-screen", lane="fast", root=root)))
     assert [e["type"] for e in parsed] == ["meta", "delta", "done"]
 

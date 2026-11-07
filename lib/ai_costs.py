@@ -37,6 +37,7 @@ Schema: ai_costs.usage.v1
 from __future__ import annotations
 
 import json
+import re
 import logging
 import os
 from datetime import datetime, timezone
@@ -291,11 +292,14 @@ def record_usage(
     stage: str = "",
     note: str = "",
     est_cost_usd: float | None = None,
+    fabric_route: dict[str, Any] | None = None,
     root: Path | None = None,
 ) -> bool:
     """Append one usage row to data/ai_costs/usage.jsonl.
 
-    When est_cost_usd is None it is computed from config/ai_pricing.yml.
+    When est_cost_usd is None it is computed from config/ai_pricing.yml,
+    except that explicit unknown billing remains unpriced. Routed Fabric
+    observations retain their public selected identity in this same ledger.
     Returns True on success, False on any failure.  Never raises.
 
     Concurrency: single-line JSONL appends are well under PIPE_BUF (4096 B on
@@ -305,7 +309,8 @@ def record_usage(
     non-POSIX filesystems or large rows).
     """
     try:
-        if est_cost_usd is None and model is not None:
+        if (est_cost_usd is None and model is not None
+                and str(cost_basis).lower() != "unknown"):
             est_cost_usd = estimate_cost_usd(
                 model, input_tokens, output_tokens,
                 cache_read_tokens, cache_creation_tokens, root=root,
@@ -328,6 +333,25 @@ def record_usage(
             "stage": stage,
             "note": note,
         }
+
+        if fabric_route is not None:
+            fields = {"selected_model", "mode", "protocol", "driver", "profile",
+                      "source", "recipe_digest", "selection_digest"}
+            if type(fabric_route) is not dict or set(fabric_route) != fields:
+                raise ValueError("fabric_route_invalid")
+            public = dict(fabric_route)
+            for name in fields - {"recipe_digest", "selection_digest"}:
+                value = public[name]
+                if (not isinstance(value, str) or not 1 <= len(value) <= 128
+                        or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/@+\\-]*", value) is None):
+                    raise ValueError("fabric_route_invalid")
+            for name in ("recipe_digest", "selection_digest"):
+                value = public[name]
+                if name == "recipe_digest" and value is None:
+                    continue
+                if not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{64}", value) is None:
+                    raise ValueError("fabric_route_invalid")
+            row["fabric_route"] = public
 
         ledger = _write_ledger_path(root)
         ledger.parent.mkdir(parents=True, exist_ok=True)
@@ -467,7 +491,8 @@ def read_usage(root: Path | None = None, days: int | None = None) -> list[dict]:
 # ── Summarize ─────────────────────────────────────────────────────────────────
 
 def _empty_bucket() -> dict[str, Any]:
-    return {"usd": 0.0, "input_tokens": 0, "output_tokens": 0, "calls": 0}
+    return {"usd": 0.0, "input_tokens": 0, "output_tokens": 0, "calls": 0,
+            "unpriced_calls": 0}
 
 
 def _add_row_to_bucket(bucket: dict[str, Any], row: dict) -> None:
@@ -475,6 +500,7 @@ def _add_row_to_bucket(bucket: dict[str, Any], row: dict) -> None:
     bucket["input_tokens"] += int(row.get("input_tokens") or 0)
     bucket["output_tokens"] += int(row.get("output_tokens") or 0)
     bucket["calls"] += 1
+    bucket["unpriced_calls"] += int(row.get("est_cost_usd") is None)
 
 
 def _pct(part: float, whole: float) -> float:
@@ -514,7 +540,9 @@ def _cost_basis_bucketname(row: dict) -> str:
         return "metered"
     if cb == "local":
         return "local"
-    # Fall back on provider when cost_basis is missing/unknown.
+    if cb == "unknown":
+        return "unknown"
+    # Preserve legacy provider inference only for omitted/unrecognized basis.
     prov = str(row.get("provider") or "").lower()
     if prov in ("claude_oauth", "claude_cli"):
         return "subscription"
@@ -622,10 +650,10 @@ def summarize(root: Path | None = None) -> dict[str, Any]:
         for lane, lb in by_lane.items():
             lobe = lobe_for_lane(lane)
             lobe_b = by_lobe.setdefault(lobe, {**_empty_bucket(), "lanes": {}})
-            for fld in ("usd", "input_tokens", "output_tokens", "calls"):
+            for fld in ("usd", "input_tokens", "output_tokens", "calls", "unpriced_calls"):
                 lobe_b[fld] += lb[fld]
             lane_entry = {k: lb[k] for k in ("usd", "input_tokens", "output_tokens",
-                                             "calls", "tokens", "pct_usd",
+                                             "calls", "tokens", "pct_usd", "unpriced_calls",
                                              "pct_tokens", "pct_calls")}
             # attach stage drill-down (ranked) when the lane carries stages
             stages = lane_stages.get(lane) or {}
@@ -651,7 +679,7 @@ def summarize(root: Path | None = None) -> dict[str, Any]:
                 "usd": round(tot_usd, 6), "tokens": tot_tok,
                 "input_tokens": int(d30_b["input_tokens"]),
                 "output_tokens": int(d30_b["output_tokens"]),
-                "calls": tot_calls,
+                "calls": tot_calls, "unpriced_calls": int(d30_b["unpriced_calls"]),
             },
             "by_lane": by_lane,
             "by_provider": by_provider,
@@ -677,7 +705,7 @@ def summarize(root: Path | None = None) -> dict[str, Any]:
             "d7": _empty_bucket(),
             "d30": _empty_bucket(),
             "totals_30d": {"usd": 0.0, "tokens": 0, "input_tokens": 0,
-                           "output_tokens": 0, "calls": 0},
+                           "output_tokens": 0, "calls": 0, "unpriced_calls": 0},
             "by_lane": {},
             "by_provider": {},
             "by_key": {},
