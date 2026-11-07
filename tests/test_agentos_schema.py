@@ -190,13 +190,15 @@ def test_fast_yaml_loader_preserves_historical_malformed_diagnostic() -> None:
 # (rule, relative path, anchor, replacement)
 # Mutate the top-level status prefix; its current valid value becomes a comment.
 # Workstreams may legitimately advance from active to done without hiding bad enums.
+# Rename the required top-level next_action key without depending on its prose.
+# Scalar and folded values stay valid YAML; nested wave actions remain untouched.
 MUTATIONS: list[tuple[str, str, str, str]] = [
     ("bad-enum", "workstreams/WS-AGENT-OS.md", "\nstatus:", "\nstatus: humming #"),
     (
         "required-field",
         "workstreams/WS-PROPHET-US-ENTRY-TIMING.md",
-        "next_action: Verify the 22:30Z bake (W1).",
-        "",
+        "\nnext_action:",
+        "\nremoved_next_action:",
     ),
     (
         "unknown-program",
