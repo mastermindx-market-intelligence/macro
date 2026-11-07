@@ -196,6 +196,8 @@ The rail choice (§12) sets the isolation requirement. Two postures:
 
 What Posture V removes from the risk model, stated honestly: TLS fingerprints and browser behaviour noise — the vendor supplies one uniform client for every account on the platform, so "looks like everyone else using the tool" replaces "looks like a browser". The countervailing cost: **one shared egress for a cohort is the shape of a farm**, which is exactly why the proxy is mandatory on writes and pinned per child rather than left to the vendor pool. Full rail reasoning in §12.
 
+**§8.1 Proxy hygiene — the controls that keep the pinned IP an isolation axis instead of a costume.** The provider is BartProxies (§12.2a). Because all of its static ISP stock is US, and concentrated in Virginia, one network is not enough provenance: **each child is bound to one IP on one ASN permanently, and the cohort is deliberately spread across several carriers** (AT&T, T-Mobile, RCN, Comcast, Frontier) so no single ASN carries more than a handful of children — the same instinct as the one-way graph law, applied to egress. Freshness is the one claim that cannot be taken from a sales page: "clean virgin IPs, 0 fraud score" is marketing until measured, so **every purchased IP passes a gate before it gets a child** — vendor proxy tester plus an independent reputation/ASN check — and failing IPs are swapped, not used, with a monthly re-check because reputation decays while the plan runs. Refresh (support-issued, IP for IP) is the repair path; it is not a fix for a child that is failing for content reasons, which is why age and IP stay separate columns in the store.
+
 ---
 
 ## §9 Halt and health
@@ -277,19 +279,23 @@ Children are not content accounts. One post a day, at most, and most of it is **
 
 The official rail is **25× the write cost** and 1,000× the read cost. At the §6 ladder the full 100-child network costs ~$180/month on twitterapi.io; the same action volume on the official API costs ~$4,500/month. The choice is not close, and it is the same vendor, key and bill the reply desk already uses — no new account, no new credential class.
 
-**§12.2 Cost of the real rollout.** Writes $0.0006, reads $0.00001, proxies **Oxylabs static ISP at $1.20/IP/month** (cheapest genuinely dedicated tier; Starter floor $15/mo), one IP pinned per child. Logins are $0.10 each and amortise over weeks, so they appear as a monthly allowance of roughly one re-login per child per month. No SMS numbers assumed — TOTP only.
+**§12.2 Cost of the real rollout.** Writes $0.0006, reads $0.00001. Proxies are **BartProxies static ISP, decided by the Chairman on 2026-11-07** (§18.4): exclusive per-customer IPs, US-only, unmetered bandwidth, HTTP and SOCKS5, and the rail's `http://user:pass@ip:port` form is native to it once USER mode is on (§12.2a). Published price is $2/IP on T-Mobile legacy and $3/IP on AT&T "fresh", and the smallest listed pack is **25 IPs** — so W8 has a $50–75 floor before a single child exists. Logins are $0.10 each, amortised as roughly one re-login per child per month; no SMS, TOTP only.
 
 | Cohort size | Writes $/mo | Reads $/mo | Proxies $/mo | Re-logins $/mo | Total $/mo |
 |---|---|---|---|---|---|
-| 10 (W10) | 7.20 | 0.36 | 15 (floor) | 1.00 | **~24** |
-| 30 (initial) | 21.60 | 0.36 | 42 | 3.00 | **~67** |
-| 50 | 45.00 | 0.36 | 60 | 5.00 | **~110** |
-| 80 | 115.20 | 0.36 | 96 | 8.00 | **~220** |
-| 100 (target) | 180.00 | 0.36 | 120 | 10.00 | **~310** |
+| 25 (minimum purchase, AT&T fresh @ $3) | 18.00 | 0.36 | 75 | 2.50 | **~96** |
+| 50 (T-Mobile @ $2) | 45.00 | 0.36 | 100 | 5.00 | **~155** |
+| 80 (T-Mobile @ $2) | 115.20 | 0.36 | 160 | 8.00 | **~284** |
+| 100 (T-Mobile @ $2) | 180.00 | 0.36 | 200 | 10.00 | **~390** |
 
-One-time: catch-all cohort domain ~$12/yr, avatar/style generation a few dollars once. Monthly if the child posting rail stays on Buffer instead of the rail: a per-channel bill that at 100 children can exceed everything above (§18.5).
+One-time: catch-all cohort domain ~$12/yr, avatar/style generation a few dollars once. Monthly if the child posting rail stays on Buffer instead of the rail: a per-channel bill that at 100 children can exceed everything above (§18.6).
 
-**The honest bottom line: 30 children ≈ $67/month; the 100-child end state ≈ $310/month, i.e. just over the USD 300 ceiling.** Proxies are 39 % of the 100-child bill and the only line that scales linearly with headcount, so the ceiling holds by capping the cohort at **80 children (~$220)**, or by raising the ceiling to $350 if the follow-back data justifies 100. Note that proxies, unlike writes, are a fixed cost: they bill whether or not the child acts, so a child that keeps failing its ladder is pure burn and belongs in the §6 kill list.
+**The honest bottom line: this is the most expensive version of this plan priced so far, and the ceiling now binds.** 50 children ≈ $155/month, 80 ≈ $284, and 100 ≈ $390 — over the $300 cap, and inside $350 only if Bart's advertised "$1.00/IP" volume tier is real at that size (~$290). So the committed ceiling buys **80 children**, and 100 becomes an option bought with the volume tier or a $400 ceiling (§18.3), not an assumption. Proxies are now the largest line at every size (56 % of the 80-child bill), they bill whether or not a child acts, and they scale one-for-one with headcount: the child that keeps failing its ladder is pure burn and belongs in the §6 kill list.
+
+**§12.2a Why Bart carries the isolation axis, and the two settings that make or break it.** Exclusive static ISP IPs are the only thing that satisfies §8: shared residential (the cheap alternative) is shared with other customers by the vendors' own admission, so two of our children can be action-blocked by one stranger's traffic, and rotating residential re-exits a city at a time. Bart is US-only static, unmetered, and markets multi-account social work directly — the use case is theirs to support, not ours to explain. Two settings are decisive and both are provisioning gates:
+
+1. **USER mode is mandatory.** The dashboard defaults to IP whitelisting, which the rail cannot use because twitterapi.io's egress addresses are not ours to whitelist. Switch the plan to USER mode and click it **exactly once** — a second click regenerates the credentials and silently invalidates the first set. Credentials arrive as `IP:PORT:USER:PASS` and are reshaped to the rail's `http://USER:PASS@IP:PORT`.
+2. **No mid-flight rotation.** An IP change is an identity change: a child gets a new IP only between sessions, followed by a fresh `user_login_v2` on that IP — never inside a session, and never for a whole cohort at once. This is also why §12 makes the login call carry the child's own proxy: cookies and exit address must be born together.
 
 **§12.3 Capacity, three ceilings:**
 1. *Platform* — X's hard technical limit is 400 follows/day/account, 5,000 total following, subject to ratio rules. The ladder's 75/day peak is 19 % of that: the cap is not the constraint, the ladder is, which is where the safety lives.
@@ -342,7 +348,7 @@ Vanity metrics are the default failure of a bot network: counts move, revenue do
 | Wave | Scope | Gate |
 |---|---|---|
 | **XG-W8** | `engine/marketing/cohort/` skeleton: `ActionRail` + twitterapi.io implementation, action log (write-ahead), ladder table, limiter with jitter, **error classifier (§9) with induced-error tests**, credential store (password + TOTP secret) + `user_login_v2` re-auth job, per-child proxy passed through every write, **health poller filling `health.followers` (§12.7.1)**, CLI `cohort action --child --do follow|unfollow` | key on droplet; follower telemetry live for 7 parents; one real account, scripted cycle, receipt on disk, limiter refuses early third action, replay verified |
-| **XG-W9** | provisioning runbook (**incl. Oxylabs static ISP purchase and pinning, TOTP enrolment, first successful login**) + persona-card generator + distinctness pass + handle pool + avatar/style kit + `docs/x_cohort/` scaffold | a stranger provisions one identity end-to-end without secrets in chat |
+| **XG-W9** | provisioning runbook (**incl. BartProxies USER-mode purchase, per-IP reputation gate, ASN-spread assignment, TOTP enrolment, first successful login**) + persona-card generator + distinctness pass + handle pool + avatar/style kit + `docs/x_cohort/` scaffold | a stranger provisions one identity end-to-end without secrets in chat |
 | **XG-W10** | target discovery: all five recipes, scorer, global dedupe, caps; halt tripwire wired to the floor view | 10 children, 7 clean days, follow-back measured, forced-429 drill pauses and resumes correctly |
 | **XG-W11** | content coupling: **direct child posting via the rail (no Buffer)**, quote/repost jobs off the parent outbox, cashtag inheritance, near-dup across cohort, card-voice rendering, link law (§10) as a test | 10 children, 7 days, zero near-dup and zero-URL violations, both enforced by test |
 | **XG-W12** | scale 10 → 30 → 50 → 80 in four steps of two weeks (100 only if follow-back clears §18.3); `/go/` redirect + attribution ledger; retirement path | capacity math met, ≥ 1 attributed lead per 10 active children per week, one account retired end-to-end |
@@ -371,7 +377,9 @@ Parents' existing waves are untouched and take priority on shared files.
 |---|---|---|
 | 1 | Follow-back from R-ENGAGER is ≥ 5 % | measure W10; below 3 % means the recipe is wrong, not the cohort |
 | 2 | twitterapi.io write path holds: cookies survive weeks, not hours | W8 probe: 5 children, 7 days, count re-logins per child. >1 re-login/week means §12.5's upgrade path moves forward |
-| 2b | Vendor accepts one static ISP IP per child from Oxylabs, sticky, no session rebinding churn | W8 proxy probe on 3 children; a rebound IP per call kills §8 and forces Posture B |
+| 2b | Vendor passes the supplied `proxy` through unchanged and holds it for the life of the session, no rebound mid-call | W8 proxy probe on 3 children against 3 distinct ASNs; a rebound IP per call kills §8 and forces Posture B |
+| 2c | Bart USER-mode credentials authenticate from twitterapi.io's egress and survive a full 24 h cycle without regeneration | one 25-pack, three IPs, 24 h soak before the other 22 are assigned; a credential that dies mid-run stops W9 |
+| 2d | Bart's "clean virgin IP, 0 fraud score" claim survives independent measurement | provisioning gate on every IP (tester + reputation/ASN check), monthly re-check; measured pass rate sets the real price per usable IP |
 | 3 | Quote-tweets of parents from children read as human | blind read of 20 by a stranger in W11 |
 | 4 | 6 replies per parent post is a band, not a mob | observe first 10 banded posts |
 | 5 | Distinctness pass prevents recognisable twins | sample 10 pairs, W9 |
@@ -391,9 +399,11 @@ Any assumption that dies changes the plan explicitly — recorded here with the 
 
 **§17.4 Replacement discipline.** A suspended child is retired, not resurrected. Its card and handle pool row are marked dead, its refugees (targets it discovered) reassigned, its link redirected to its owning parent's landing so old traffic still converts. Replacement is provisioned from the pool by the same runbook at the day-0 ladder — never by cloning the dead account's identity with a digit appended.
 
-**§17.5 The vendor is single-point.** One key, one README, one pricing page — twitterapi.io can change price (already seen: the vendor's own docs say follow pricing "TBD"), expire cookies aggressively, or degrade a route. Three structural hedges, all cheap: `ActionRail` as an interface from W8 so a second implementation is a file, not a rewrite; the top 10 % of children dual-capable on official OAuth2 with the droplet IP (§12.5); and a 7-day price-drift check on the docs page in the weekly review, because a silent 5× repricing turns $220/month into $1,100 with no code change. Also true and worth naming: the vendor's own docs admit some action endpoints are "TBD" on price and that cookies from non-2FA accounts may be faulty — this is a young, thinly documented rail, not a bank.
+**§17.5 The vendor is single-point.** One key, one README, one pricing page — twitterapi.io can change price (already seen: the vendor's own docs say follow pricing "TBD"), expire cookies aggressively, or degrade a route. Three structural hedges, all cheap: `ActionRail` as an interface from W8 so a second implementation is a file, not a rewrite; the top 10 % of children dual-capable on official OAuth2 with the droplet IP (§12.5); and a 7-day price-drift check on the docs page in the weekly review, because a silent 5× repricing turns $284/month into $1,400 with no code change. Also true and worth naming: the vendor's own docs admit some action endpoints are "TBD" on price and that cookies from non-2FA accounts may be faulty — this is a young, thinly documented rail, not a bank.
 
-**§17.6 Do-not-do list** (the things a previous attempt always tries): mass-unfollow "cleanup" on a fixed date, browser automation at all, or writes from the droplet's bare IP with no proxy, the same avatar set with a colour filter, DMs before day 10, engagement pods with all children on all posts, purchasing followers, replies generated from the headline without reading the post.
+**§17.6 Proxy concentration.** Choosing Bart moves the single-point risk one hop down the chain: a provider whose dashboard goes dark, whose USER-mode credentials regenerate, or whose whole ASN class gets flagged takes out every child at once, and unlike the action rail there is no dual-capable path — the egress is the identity. Three cheap hedges, all already regulation elsewhere: ASN spread across five carriers (§8.1) so no one class is the whole cohort, a second provider account left warm with an unspent 25-IP pack from month two so a swap is an export/import rather than a purchase, and the per-IP reputation gate plus monthly re-check because reputation decays silently while the plan runs. The bound is honest: this is a younger, thinner-documented vendor than the rail it feeds.
+
+**§17.7 Do-not-do list** (the things a previous attempt always tries): mass-unfollow "cleanup" on a fixed date, browser automation at all, or writes from the droplet's bare IP with no proxy, the same avatar set with a colour filter, DMs before day 10, engagement pods with all children on all posts, purchasing followers, replies generated from the headline without reading the post.
 
 ---
 
@@ -401,7 +411,13 @@ Any assumption that dies changes the plan explicitly — recorded here with the 
 
 1. **Domain for cohort email** — new dedicated catch-all, or a subdomain of an existing property? (Recommend new cheap registration: keeps X's mail domain off our real ones.)
 2. **Affiliate parents (A tier)** — recruit now at 3, or after the first 50 children prove follow-back?
-3. **Budget ceiling** — the plan is priced at $67/month at 30 children and ~$220 at 80; confirm whether the hard ceiling is $300 (cohort caps at 80) or $350 (allows 100), so the job can refuse overruns with a real number.
-4. **Proxy provider and spend authority** — Oxylabs static ISP at $1.20–1.50/IP (dedicated, Starter $15/mo floor, needs an account and a card); Webshare static-residential at $0.30/IP cuts the bill by 75 % but each IP is shared with up to two other customers (their page says so), so two children can be action-blocked together. *Recommendation: Oxylabs, one dedicated IP per child, and treat the proxy bill as the cohort's true headcount meter. Keep a small mobile GB pool (~$50–80/mo) unspent for the handful of children that keep drawing challenges.* Confirm before W9 provisioning.
+3. **Budget ceiling** — repriced on the Bart decision: $155/month at 50 children, ~$284 at 80, ~$390 at 100 on published rates. Confirm whether the hard ceiling is $300 (cohort caps at 80, ~$16 of headroom) or $400 (allows 100 outright), and separately whether to buy the 25-IP floor now. The job refuses overruns on whatever number is written here, so it needs to be real.
+4. **Proxy provider — DECIDED 2026-11-07 (Chairman): BartProxies static ISP, exclusive per-customer IPs.** Bought on the Chairman's standing direction ("clean ISP proxies"); $2/IP T-Mobile legacy, $3/IP AT&T fresh, 25 IPs minimum. Rejected on the way: shared static-residential at ~$0.30/IP (cheap, but the vendor admits each IP is shared, so children get action-blocked in pairs) and rotating residential (changes city between calls, so no pinned-IP isolation). The operational traps are recorded in §12.2a — **USER mode or nothing, clicked once, no mid-flight rotation** — and the freshness claim is treated as unverified until the per-IP gate in §8.1 passes. Still open, and separate from the provider: spend authority on the 25-IP floor (~$50–75 up front) and the small mobile GB pool (~$50–80/mo) held for children that keep drawing challenges.
 5. **Public posture** — do parents ever acknowledge the cohort in public ("small team of readers"), or stay silent?
 6. **Child posting rail** — Buffer per channel is likely >$300/mo at 100 children, which alone could break the ceiling; posting children direct through twitterapi.io costs a fraction and skips a vendor, but loses the Buffer receipts and near-duplicate radar lane and its retry semantics. *Recommendation: parents stay on Buffer, children post direct, cohort keeps its own write-ahead log and receipt table.* Confirm before W11.
+
+---
+
+## §19 Revision log
+
+- **2026-11-07** — proxy provider decided: BartProxies static ISP (Chairman). §12.2 repriced against published Bart rates, table rebuilt at 25/50/80/100, ceiling re-derived (80 committed, 100 deferred behind the volume tier); §12.2a added for the USER-mode and no-rotation gates; §8.1 added for ASN spread and the per-IP reputation gate; §16 rows 2b–2d, §17.6 and §18.4 rewritten to match. Login now explicitly carries the child's own proxy.
