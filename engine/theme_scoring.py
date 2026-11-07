@@ -1993,7 +1993,7 @@ def compute_theme_intel(region: str = "us", *, inputs: ThemeScoreInputs | None =
                 "quality": t["textures"]["clean_entry"]["quality"],
                 "reasons": t["textures"]["clean_entry"]["reasons"]} for t in entries[:6]]
     rollover = sorted([t for t in themes if (t["textures"].get("rollover_risk") or {}).get("band") in ("elevated", "high")],
-                      key=lambda x: -(t["textures"]["rollover_risk"]["risk"]))
+                      key=lambda x: -(x["textures"]["rollover_risk"]["risk"]))
     rollover = [{"id": t["id"], "name": t["name"], "name_zh": t["name_zh"], "score": t["score"],
                  "risk": t["textures"]["rollover_risk"]["risk"], "band": t["textures"]["rollover_risk"]["band"],
                  "reasons": t["textures"]["rollover_risk"]["reasons"]} for t in rollover[:6]]

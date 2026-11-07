@@ -397,22 +397,12 @@ def _write_history(rows: list[dict], root: Path, region: str = "us") -> None:
 # ── One-shot seed from baskets.parquet ─────────────────────────────────────────
 
 
-def _seed_from_archive(root: Path, region: str = "us") -> list[dict]:
-    """Best-effort seed from data/signal_archive/baskets[_china].parquet.
-
-    'us'    -> data/signal_archive/baskets.parquet
-    'china' -> data/signal_archive/baskets_china.parquet  (CN contract item 4)
-    Each row carries snapshot_json with per-theme label/score.  Returns empty
-    list on any failure (including missing parquet).
-    """
+def seed_history_from_inputs(frame) -> list[dict]:
+    """Project the captured archive with the incumbent seed semantics; no reads."""
     try:
-        import pandas as pd
-
-        archive_name = "baskets_china.parquet" if region == "china" else "baskets.parquet"
-        p = root / "data" / "signal_archive" / archive_name
-        if not p.exists():
+        df = frame
+        if df is None:
             return []
-        df = pd.read_parquet(str(p))
         if df.empty or "snapshot_json" not in df.columns:
             return []
         if "asof" not in df.columns:
@@ -444,6 +434,28 @@ def _seed_from_archive(root: Path, region: str = "us") -> list[dict]:
                 "scores": scores,
             })
         return rows
+    except Exception as e:  # noqa: BLE001 — same optional seed degradation
+        log.debug("theme_context._seed_from_archive: %s", e)
+        return []
+
+
+def _seed_from_archive(root: Path, region: str = "us") -> list[dict]:
+    """Best-effort seed from data/signal_archive/baskets[_china].parquet.
+
+    'us'    -> data/signal_archive/baskets.parquet
+    'china' -> data/signal_archive/baskets_china.parquet  (CN contract item 4)
+    Each row carries snapshot_json with per-theme label/score.  Returns empty
+    list on any failure (including missing parquet).
+    """
+    try:
+        import pandas as pd
+
+        archive_name = "baskets_china.parquet" if region == "china" else "baskets.parquet"
+        p = root / "data" / "signal_archive" / archive_name
+        if not p.exists():
+            return []
+        df = pd.read_parquet(str(p))
+        return seed_history_from_inputs(df)
     except Exception as e:  # noqa: BLE001
         log.debug("theme_context._seed_from_archive: %s", e)
         return []

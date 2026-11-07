@@ -331,3 +331,207 @@ the variable) as a separate control-plane step to resume scheduled Actions jobs.
 
 Do not run both scheduled writers after cutover. A dead-man failover may be added,
 but it must first check VPS freshness and acquire ownership before writing.
+
+
+## Sector generation in the existing snapshot lane
+
+The snapshot invocation also prepares the five private Sector documents consumed
+by the mounted Sector-generation API. It uses the same lane lock, source barrier,
+private generation store and publication owner. No timer, provider retry owner,
+selected-generation cache or ledger writer is added.
+
+The canonical entry remains:
+
+```sh
+/usr/local/bin/macro-update --live-lane snapshot
+```
+
+The existing live-source owner starts one absolute 400-second monotonic budget
+before source verification and shared-lock waiting. Under its existing fd 8 lock,
+it captures the full checkout release SHA, checks any pending source transaction,
+changes to the canonical application directory and forwards that SHA, fd 8 and
+the original deadline to the orchestrator. A delayed lock admission consumes the
+budget; exec does not restart it. The existing systemd ceiling remains 420seconds,
+with the existing 1GiB memory and 90% CPU controls.
+
+| Obligation | Nominal command limit |
+|---|---:|
+| Full quotes | 170seconds |
+| Intraday quote projection | 20seconds |
+| US basket pulse | 55seconds |
+| HK basket pulse | 55seconds |
+| Sector capture and calculation | 80seconds |
+
+The nominal work totals380seconds. Actual remaining time is authoritative:
+earlier commands reserve the Sector slot and15seconds for parent publication,
+and each child reserves bounded process-group cleanup. Staging validation must
+leave the full15-second publication reserve before the parent may invoke the
+publisher. This is an admission reserve, not a guarantee that filesystem
+publication finishes within15seconds; an invoked publisher is never interrupted
+or blindly replayed.
+
+Each snapshot command runs in its own process group and preserves the original
+shared source descriptor. Timeout cleanup covers the direct child and its
+descendants, including a descendant whose parent has already exited. An
+unconfirmed cleanup retains its original group in the incumbent private lane
+receipt and prevents another launch while that group remains. Budget exhaustion
+is a named task outcome before deleting required staging output or starting a
+child. A failed full quote pull records the three quote-dependent obligations as
+blocked; it does not prevent the independent Sector prerequisite check.
+
+### Required native inputs and the publication boundary
+
+The Sector child reads the current, exact Yahoo → breadth/member → member-OHLCV
+private generation chain. Missing, stale or mismatched dependencies refuse before
+holdings acquisition. The separate intraday breadth.json service is not this
+chain. Initial native input adoption and full-history acquisition use their
+existing owners and explicit prior/bootstrap facts; this consumer does not
+conceal that work inside its80-second slot or fall back to mutable caches.
+
+After native verification, the child captures the configured local auxiliary and
+amalgam sources, the previous selected Sector fence, and the actual eleven sponsor
+workbooks through SectorHoldingsAdapter.capture_from_inputs. It supplies the
+stable sector-inputs-v1 contract token, the qualified source floor and the
+incumbent recorded hazard-parity report to the explicit assembler, then runs all
+five existing document builders. The current recorded parity failure remains a
+failure. Named optional absences and failed holdings observations keep their own
+evidence; they do not invent current values or original publication times.
+
+The child writes only an ephemeral0700 directory containing the exact five
+members and bounded metadata. It does not create a generation manifest, content
+ID, publication timestamp or selected pointer. Deferred ledger effects cross as
+typed data, including their original timestamps and count, and are never
+executed by this bridge.
+
+After successful child exit, the parent verifies the private root and closed
+file set, requested generation/release identities, previous-selection fence,
+member hashes/lengths and deferred-data count. It then calls
+Orchestrator.publish_sector_documents once with the captured fence. The existing
+publisher repeats byte/coherence checks and decides semantic and API-wire
+admission at the actual publication instant.
+
+A timeout or incomplete candidate produces no Sector publication attempt.
+A returned uncertain effect or unconfirmed durability stays distinct from child
+success and is retained with its original generation, source revision and CAS
+fence in status-snapshot.json. Subsequent Sector acquisition is withheld until
+that original publication is reconciled through the generation owner; unrelated
+quote tasks can continue. Public status remains terse and exposes none of the
+private capture/diagnostic data.
+
+Source qualification and controlled fixture/API tests do not establish live
+provider success, installed runtime activation, an authenticated production
+journey or an earlier admissible point-in-time cut. Those require their own
+receipts.
+
+## Native Sector inputs in the existing source owner
+
+The native prerequisite chain has one bounded producer join in
+`Orchestrator.sector_inputs`: capture the actual request, acquire Yahoo, publish
+and verify Yahoo, acquire breadth/member closes, publish and verify that cohort,
+then acquire and publish genuine member OHLCV. Every publication uses the
+incumbent private generation publisher and the original per-domain selection
+fence. Each acquisition starts after its dependency's actual publication and
+readback, so a later transfer never invents dependency chronology.
+
+An explicit initial preparatory invocation enters through the same source owner:
+
+```sh
+/usr/local/bin/macro-update --live-lane sector-inputs
+```
+
+This fixed manual operation permits fresh native bootstrap only after the safe
+reader positively observes native domain/selection absence. Its all-null prior
+means no native prior was selected or adopted; it makes no assertion about
+legacy files and performs no legacy-file adoption. Existing corrupt, unreadable
+or incompatible selection state is not absence. The global Yahoo legacy profile
+is unchanged. There is no new service or timer: installed service inventory
+remains fast, snapshot and bars, with its existing ancillary units.
+
+The bars lane performs its incumbent Polygon accrual and flow work first, then
+offers only its actual remaining budget to this same native producer. Scheduled
+refresh cannot bootstrap an absent native domain. A Polygon failure records the
+flow dependency block while independent native work may proceed if cleanup,
+selection state and remaining time permit. Already current inputs bound to the
+same captured request are verified and reused without provider access or another
+publication.
+
+### Captured request and child handoff
+
+The parent creates one private ephemeral stage. The capture child observes the
+actual configuration, exit ledger, three constituent tables, thematic membership
+and both index-membership documents once, plus the three selected-generation
+identities or admitted native absence. Bounds cover source bytes, decoded
+constituent rows and allocation, exact fields, source hashes and chronology.
+Breadth and Yahoo policy validation happens before provider phases. Existing
+constituent repair, exit-row interpretation and alias policy remain their owners.
+
+The request fingerprint binds source bytes and aliases; it does not manufacture
+historical availability. Mutable-file source revisions remain unknown. The
+producer revision identifies the code that captured them. The native breadth
+receipt carries the actual index observations as its optional versioned adjunct;
+index-only prices do not become thematic members or synthetic OHLCV.
+
+Children use the existing acquisition APIs and write only closed staged members
+and preparation metadata. The parent compares every newly prepared payload with
+its original request: complete retained/absent prior identity, canonical
+membership, exact index observations, source-capture identity, effective request
+and selection policies, aliases and exclusions. Internally consistent payloads
+from another request are refused. Generic generation validation then repeats its
+own semantic checks at the actual publication boundary.
+
+Cold breadth requests use the finite horizon derived from the existing lookback
+policy: 1100 calendar days requests `4y`. This is a requested horizon, not a claim
+of returned lifetime coverage. Only an empty native prior may use that direct
+replacement branch; an inadequate response does not silently initiate a second
+`max` request. Warm refresh retains ordinary `1mo` and existing repair semantics.
+Yahoo bootstrap and thematic member OHLCV retain their incumbent history policies.
+
+### Deadline, custody and recovery
+
+Bars and manual native work receive an absolute 880-second deadline before source
+verification and fd8 waiting, under the bars service's existing 900-second
+ceiling. Snapshot retains its separate 400/420-second limits. The manual
+invocation must be qualified under the same 90% CPU and 1280MiB memory envelope
+before production readiness is claimed; merely having a finite command deadline
+does not establish those resource limits or measured fit.
+
+| Native child | Maximum child time |
+| --- | ---: |
+| Capture/preflight | 30 seconds |
+| Yahoo acquisition/preparation | 180 seconds |
+| Breadth, index/member closes and references | 420 seconds |
+| Member OHLCV acquisition/preparation | 180 seconds |
+
+These are individual caps, not a promise that all maxima fit. Each launch consumes
+the original remaining budget, reserves bounded process-group cleanup and leaves
+30 seconds for parent validation/publication. Validation must still leave that
+full publication reserve before invocation. An invoked publication is reconciled
+through its original owner; it is never interrupted and retried to fit a nominal
+sum. Actual provider, decode, publication and cleanup timings remain qualification
+evidence owed on the target VPS.
+
+Manual and bars entrances hold the same nonblocking `sector-inputs` flock from
+capture through final private receipt. Acquisition children inherit this lock
+descriptor and source fd8. An active owner coalesces the new request without a
+queue. Unconfirmed process-group cleanup prevents another launch and retains the
+original handoff for reconciliation.
+
+The incumbent `status-sector-inputs.json` is the shared private attempt receipt.
+It records original source/fingerprint/priors, each child outcome, every upstream
+publication/readback, and final selected-chain identities. Before each publisher
+call it durably records `invocation_pending`; this is intent, not proof of an
+effect. Once the publisher returns, the actual result replaces that boundary.
+Interrupted pending publication, uncertain effect and unconfirmed durability
+withhold further acquisition until the original generation owner reconciles
+them. Failed checkpoint persistence prevents a not-yet-invoked publisher call;
+it is not blindly rewritten in the same invocation. Independent lanes continue.
+
+A confirmed cold provider-phase timeout is sticky across manual and bars entry
+names until resource qualification and original receipt disposition. Capture
+failure, lock contention and pre-launch budget exhaustion are distinct and are
+not labeled cold provider timeouts. A successful Yahoo publication followed by a
+breadth timeout remains visible as partial progress with the original fences.
+Intermediate private receipts have no finished timestamp. Public health retains
+its existing terse allowlist and exposes no request bytes, private paths or
+publication identities. A final verified chain does not imply complete provider
+coverage, product acceptance or admissible historical availability.

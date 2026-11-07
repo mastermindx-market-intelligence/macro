@@ -132,30 +132,32 @@ def _load_theme_intel(region: str) -> dict | None:
         return None
 
 
-def _load_archive_snapshots(region: str) -> list[dict]:
-    """Return archive snapshot rows as a list of dicts {asof, themes[]} sorted oldest→newest.
-
-    Each row's 'themes' is the slim list written by _write_score_snapshot in build_baskets.py
-    (keys: id, name, score, label, reco, rank, net_ad, components, bull_days, overbought,
-    clean_entry, rollover).  Returns [] when the archive is absent or empty.
-    """
+def archive_snapshots_from_inputs(frame) -> list[dict]:
+    """Existing ordered Pulse archive projection, without an archive read."""
     try:
-        from engine.signal_archive import load_archive
-        stream = _ARCHIVE_STREAM.get(region, f"baskets_{region}")
-        df = load_archive(stream)
-        if df is None or df.empty or "snapshot_json" not in df.columns:
+        if frame is None or frame.empty or "snapshot_json" not in frame.columns:
             return []
         rows = []
-        for _, row in df.sort_values("asof").iterrows():
+        for _, row in frame.sort_values("asof").iterrows():
             try:
                 snap = json.loads(row["snapshot_json"])
                 asof = str(row.get("asof") or snap.get("as_of") or "")
                 themes = snap.get("themes") or []
                 if asof and themes:
                     rows.append({"asof": asof, "themes": themes})
-            except Exception:  # noqa: BLE001
+            except Exception:  # noqa: BLE001 — unchanged legacy per-row fallback
                 continue
         return rows
+    except Exception:  # noqa: BLE001 — unchanged optional archive fallback
+        return []
+
+
+def _load_archive_snapshots(region: str) -> list[dict]:
+    """Acquire the archive once, then use the shared value projection."""
+    try:
+        from engine.signal_archive import load_archive
+        stream = _ARCHIVE_STREAM.get(region, f"baskets_{region}")
+        return archive_snapshots_from_inputs(load_archive(stream))
     except Exception:  # noqa: BLE001
         log.debug("sector_pulse: archive unavailable for region=%s", region)
         return []
@@ -283,6 +285,12 @@ def _heat_tier(rank: int, n_themes: int, label: str,
 
 
 # ----------------------------------------------- backtested heat-tier grading
+def heat_calibration_from_document(document):
+    """Select the incumbent heat verdict; preserve its optional-source semantics."""
+    from copy import deepcopy
+    return deepcopy(document.get("verdict", {})) if isinstance(document, dict) else {}
+
+
 def _heat_calibration() -> dict:
     """The phase-0 heat-tier kill-test verdict from scripts.calibrate_sector_pulse_heat
     (data/strategies/sector_pulse_heat.json — 27y SPDR-proxy, paired-vs-idle HAC t + BH).
@@ -294,7 +302,7 @@ def _heat_calibration() -> dict:
         from lib import config
         p = config.data_dir() / "strategies" / "sector_pulse_heat.json"
         d = json.loads(p.read_text()) if p.exists() else {}
-        return d.get("verdict", {}) if isinstance(d, dict) else {}
+        return heat_calibration_from_document(d)
     except Exception:  # noqa: BLE001 — grading is enrichment, never fatal
         return {}
 

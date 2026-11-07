@@ -201,7 +201,8 @@ def acquire_extras_from_inputs(*, membership: Mapping, primary_panel: pd.DataFra
                                qualified_primary_members: frozenset[str],
                                primary_history_threshold: int, evaluation_instant: datetime,
                                yahoo_config: Mapping, aliases: Mapping, history_start: str,
-                               primary_basis: str = "unrecorded") -> BasketExtrasAcquisition:
+                               primary_basis: str = "unrecorded",
+                               index_membership: Mapping | None = None) -> BasketExtrasAcquisition:
     """Acquire through the incumbent downloader; keep the actual resolver choice.
 
     ``qualified_primary_members`` is supplied by the caller's captured primary
@@ -239,6 +240,11 @@ def acquire_extras_from_inputs(*, membership: Mapping, primary_panel: pd.DataFra
         raise captured.AdjustedCaptureError("observed_frozen_primary_tail_required")
     # Membership-time eligibility stays with the existing basket observation owner.
     document = deepcopy(dict(membership))
+    if index_membership is not None:
+        # The native receipt requires the strict thematic contract before any
+        # provider request. Legacy callers retain their existing value API.
+        from lib.breadth_member_generation_contract import _membership
+        _membership(document, primary)
     baskets = document.get("baskets")
     if not isinstance(baskets, dict) or len(baskets) > 1000:
         raise captured.AdjustedCaptureError("invalid_basket_membership")
@@ -273,6 +279,15 @@ def acquire_extras_from_inputs(*, membership: Mapping, primary_panel: pd.DataFra
         observation = population_observation(primary, rows, primary.index[-1])
         populations[basket_id] = observation["configured_members"]
         active_set.update(observation["configured_members"])
+    index_populations = None
+    if index_membership is not None:
+        from lib.sector_index_membership_capture import index_population
+        additional, eligible, ends, index_populations = index_population(
+            deepcopy(dict(index_membership)), primary=primary, before=evaluation)
+        requested_set.update(additional)
+        active_set.update(eligible)
+        for ticker, end in ends.items():
+            required_end[ticker] = max(required_end.get(ticker, end), end)
     requested = tuple(sorted(requested_set))
     if not requested or len(requested) > captured.MAX_COLUMNS:
         raise captured.AdjustedCaptureError("empty_or_oversized_basket_membership")
@@ -378,6 +393,8 @@ def acquire_extras_from_inputs(*, membership: Mapping, primary_panel: pd.DataFra
         "members": member_evidence,
         "unknown": {"vendor_publication_clock": "Not supplied per bar by yfinance",
                     "provider_available_at": "First retrievable time is not observed"}}
+    if index_populations is not None:
+        evidence["index_populations"] = index_populations
     return BasketExtrasAcquisition(status, source, resolution["effective_as_of"], archive, resolved,
         MappingProxyType(resolution), requested, tuple(downloaded), retained, tuple(unresolved), MappingProxyType(evidence))
 

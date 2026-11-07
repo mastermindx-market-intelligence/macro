@@ -31,6 +31,46 @@ US_SECTOR_PAGE = {
 }
 
 
+def liquidity_from_document(document) -> str | None:
+    """The existing persisted liquidity selection over captured values."""
+    try:
+        liq = document.get("liquidity_overlay")
+    except Exception:  # noqa: BLE001 — same optional context fallback
+        return None
+    return liq if liq in ("expanding", "contracting", "neutral") else None
+
+
+def macro_drag_from_document(document) -> float | None:
+    """The persisted MRS value; this is not Central's recomputed macro context."""
+    try:
+        value = (document.get("macro_risk") or {}).get("score")
+    except Exception:  # noqa: BLE001
+        return None
+    return float(value) if isinstance(value, (int, float)) else None
+
+
+def factor_context_from_document(document, *, logger=None) -> dict:
+    """Existing confirmer/tiebreak selection; no new factor or SUE calculation."""
+    factor_z, sue_z, factor_legs, sectors = {}, {}, {}, {}
+    try:
+        for row in (document or {}).get("table", []):
+            if not row.get("ticker"):
+                continue
+            composite = row.get("composite_rank")
+            if composite is None:
+                composite = row.get("composite")
+            if composite is not None:
+                factor_z[row["ticker"]] = composite
+            if row.get("sue") is not None:
+                sue_z[row["ticker"]] = row["sue"]
+            factor_legs[row["ticker"]] = {k: row.get(k) for k in ("value", "quality", "profitability")}
+            if row.get("sector"):
+                sectors[row["ticker"]] = row["sector"]
+    except Exception as exc:  # noqa: BLE001 — retain any preceding valid rows
+        (logger or log).warning("factors.json unreadable (%s)", exc)
+    return {"factor_z": factor_z, "sue_z": sue_z, "factor_legs": factor_legs, "sectors": sectors}
+
+
 ACTION_LANES = (
     "buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid",
 )

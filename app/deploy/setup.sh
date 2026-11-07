@@ -47,6 +47,16 @@ if [ "$#" -ne 0 ]; then
 	fi
 fi
 
+# Borrow an existing updater mutex only when it is the same file description.
+# Keep it through the absence check, package work, reset and owner installation.
+if ! { : >&9; } 2>/dev/null; then
+    exec 9>/var/lock/macro-update.lock
+fi
+[ /proc/$$/fd/9 -ef /var/lock/macro-update.lock ] || {
+    echo "source provisioning: inherited updater mutex is foreign" >&2; exit 75;
+}
+flock -n 9 || { echo "source provisioning: updater mutex is busy" >&2; exit 75; }
+
 # Full provisioning must not bypass the enrolled/partial live plane by reaching
 # bootstrap's direct reset. Routine refresh belongs to the installed updater.
 # Any ambiguous manager read refuses before package or source mutation.

@@ -42,8 +42,9 @@ reaches a gate is the session cookie, exactly as it reaches the static gate.
 The reader contract
 -------------------
 The route is a FACTORY. It is built around ONE trusted, injected
-``SelectedGenerationReader`` — the corrected publisher plus the pure
-projection, which are still under implementation upstream. This module never
+``SelectedGenerationReader`` — the incumbent verified snapshot facade plus
+the pure projection. The main application mounts this route; deployment binds
+its private storage reader explicitly. This module never
 parses a manifest, never reads a published file, never recomputes an
 intelligence value, never grades, never collects, never publishes, never
 changes watch state, and never serves a legacy or empty fallback when the
@@ -392,10 +393,9 @@ def _coerce_generation(result: Any, *, audience: str) -> SectorGeneration | None
 def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
     """Build the Sector generation read router around ONE trusted reader.
 
-    The returned router is not registered here. The application owner installs
-    it (and the reader it depends on); until the corrected publisher and the
-    pure projection exist, no reader is available and the route reports
-    UNAVAILABLE rather than serving a legacy fallback.
+    The main application registers this router once. Its reader capability is
+    configured separately from an explicit deployment-owned private root.
+    Unconfigured/unavailable storage reports UNAVAILABLE, with no legacy fallback.
     """
     router = APIRouter()
 

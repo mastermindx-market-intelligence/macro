@@ -3,7 +3,7 @@
   "root_id": "macro-always-on-shared-shell-20261105-c3",
   "protected_law_sha": "770837b4317287fb36a3e7e3948ea701de67bbab",
   "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
-  "recorded_at": "2026-11-06T15:56:38.859871+00:00",
+  "recorded_at": "2026-11-06T17:01:26.449492+00:00",
   "authority": "Chairman authorized end-to-end implementation. This file retains source-linked worker briefs and observations; it is not a new execution/state owner.",
   "entries": [
     {
@@ -1465,10 +1465,10 @@
       "operation_id": "macro-always-on-terminal-generation-20261106-c3",
       "repository": "terminal",
       "base_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
-      "status": "PARTIAL",
-      "effect_state": "EFFECT_UNKNOWN",
-      "code": "WORKSPACE_ACQUISITION_UNQUALIFIED",
-      "bounded_diagnostic": "Exact original status says workspace not registered. Both owner-declared destinations, exact branch and matching Git registration absent at read time. Original acquisition process completion remains unproven; status NOT_APPLIED describes only that read, not acquire.",
+      "status": "APPLIED",
+      "effect_state": "APPLIED",
+      "code": "MANAGED_WORKSPACE_ACQUIRED",
+      "bounded_diagnostic": "Original adapter call settled with no surviving allocator or artifacts. Exact managed CLI is the documented owner path and resolved the same operation; adapter had primary/secondary pool validation mismatch.",
       "retry_or_rehome": false,
       "prior_status": "REFUSED/NOT_APPLIED/REPOSITORY_SOURCE_UNAVAILABLE",
       "source_preparation": {
@@ -1477,7 +1477,41 @@
         "source_head_unchanged": "ec1e45ec29ced091b3721da77702d57e720ae588",
         "receipt": "/tmp/mmx-terminal-source-preparation-bb65839-20261106.json"
       },
-      "next": "Locate original acquisition action/process receipt; preserve original operation and no duplicate allocation"
+      "next": "Qualify four-view HTTP contract, transport, access/session lifetime and production mount",
+      "workspace": "/Volumes/Mastermind 2/agent-workspaces/terminal/web/macro-always-on-terminal-generation-20261106-c3",
+      "branch": "sol/web-macro-always-on-terminal-generation-20261106-c3",
+      "original_effect_reconciled": true,
+      "canonical_cli_receipt": {
+        "action": "canonical installed owner acquire",
+        "operation_id": "macro-always-on-terminal-generation-20261106-c3",
+        "elapsed_seconds": 7.881,
+        "exit_code": 0,
+        "stdout_sha256": "0ff089fab12deac600faaca5a4482e887f7e7a90ae09ba422f09c8505a4b6e6a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 906,
+        "stderr_bytes": 0,
+        "stdout_receipt": {
+          "action": "acquire",
+          "effect": "APPLIED",
+          "receipt": {
+            "base_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+            "branch": "sol/web-macro-always-on-terminal-generation-20261106-c3",
+            "common_git_dir": "/Users/chriswong/Documents/Cluade/charting-app/.git",
+            "head_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+            "lane": "web",
+            "lock_reason": "mastermind-linked-worktree:v1 operation=macro-always-on-terminal-generation-20261106-c3 lane=web base=bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+            "operation_id": "macro-always-on-terminal-generation-20261106-c3",
+            "reused": false,
+            "source_repository": "/Users/chriswong/Documents/Cluade/charting-app",
+            "workspace_path": "/Volumes/Mastermind 2/agent-workspaces/terminal/web/macro-always-on-terminal-generation-20261106-c3",
+            "workspace_root": "/Volumes/Mastermind 2/agent-workspaces/terminal"
+          },
+          "repository": "terminal",
+          "schema_version": "mastermind.workspace_cli/v2"
+        }
+      },
+      "typed_publication_status": "Verified same base, clean admitted workspace, remote branch absent before candidate application",
+      "candidate_state": "Original b441a9b retained patch applied; parent corrections and tests in progress"
     },
     "sector_context_inputs": {
       "state": "SOURCE_QUALIFIED_NOT_ACTIVATED",
@@ -1491,12 +1525,12 @@
       "remaining": "Actual source binding, resolved Market State, genuine OHLCV/holdings and auxiliary closure remain required; existing CI/Terminal/browser/effect fences unchanged."
     },
     "source_barrier_recovery_ruling": {
-      "state": "CORE_UPDATER_SOURCE_QUALIFIED_SETUP_INTEGRATION_REQUIRED",
-      "recorded_at": "2026-11-06T14:45:23.950871+00:00",
+      "state": "CORE_UPDATER_AND_LIVE_SETUP_SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "recorded_at": "2026-11-06T17:01:26.449492+00:00",
       "pending_requirements": [
-        "live-setup joins same installed owner/journal with explicit setup purpose",
-        "Crash-safe package readiness, smoke and captured timer restoration",
-        "Existing CI/release and real path acceptance"
+        "Existing CI/protected release",
+        "Controlled first adoption before old updater reset",
+        "Runtime provider/publication and authenticated beta proof"
       ],
       "unresolved": [
         "No production activation",
@@ -1514,7 +1548,9 @@
       "owner_replacement": "Atomic rename/fsync at both existing install sites; refuse any unresolved journal; bind executing /proc/$$/fd/255 digest",
       "scope": "Three service readers and their three timers; no estate-wide source isolation claim",
       "contract": "research/market_os/LIVE_SOURCE_BARRIER_2026-11-06.md",
-      "proof": "research/market_os/LIVE_SOURCE_BARRIER_SOURCE_REVIEW_2026-11-06.json"
+      "proof": "research/market_os/LIVE_SOURCE_BARRIER_SOURCE_REVIEW_2026-11-06.json",
+      "setup_contract": "research/market_os/LIVE_SETUP_SOURCE_TRANSACTION_2026-11-06.md",
+      "setup_proof": "research/market_os/LIVE_SETUP_SOURCE_REVIEW_2026-11-06.json"
     },
     "member_ohlcv_private_generation": {
       "state": "SOURCE_QUALIFIED_NOT_ACTIVATED",

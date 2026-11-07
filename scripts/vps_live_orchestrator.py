@@ -13,24 +13,104 @@ import fcntl
 import hashlib
 import json
 import logging
+import math
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
 import time
 import uuid
 from contextlib import contextmanager
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from stat import S_ISLNK, S_ISREG
+from stat import S_ISDIR, S_ISLNK, S_ISREG
 from types import MappingProxyType
 from typing import Any, Callable, Mapping, Sequence
 
 log = logging.getLogger("vps_live")
 ROOT = Path(__file__).resolve().parent.parent
+
+# Snapshot work shares the source owner's absolute monotonic deadline.
+# Leave 20s under systemd's 420s ceiling for source entry/final status.
+SNAPSHOT_WORK_SECONDS = 400.0
+BARS_WORK_SECONDS = 880.0  # 20s below the incumbent bars service ceiling.
+COMMAND_CLEANUP_SECONDS = 3.0
+SECTOR_PREPARE_SECONDS = 80.0
+SECTOR_PUBLICATION_RESERVE_SECONDS = 15.0
+NATIVE_PUBLICATION_RESERVE_SECONDS = 30.0
+NATIVE_PHASE_SECONDS = {"capture": 30, "yahoo": 180, "breadth": 420, "member": 180}
+
+
+class ProcessGroupCleanupUnconfirmed(RuntimeError):
+    def __init__(self, group_id: int, *, timed_out: bool = False):
+        self.group_id = group_id
+        self.timed_out = timed_out
+        super().__init__(f"command process-group cleanup unconfirmed: {group_id}")
+
+
+def _process_group_exists(group_id: int) -> bool:
+    try:
+        os.killpg(group_id, 0)
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+
+
+def _stop_command_group(process) -> tuple[str, str]:
+    """Terminate the original group even when its direct parent exited first."""
+    deadline = time.monotonic() + COMMAND_CLEANUP_SECONDS
+    for sig, grace in ((signal.SIGTERM, 2.0), (signal.SIGKILL, 1.0)):
+        try:
+            os.killpg(process.pid, sig)
+        except ProcessLookupError:
+            pass
+        except OSError as exc:
+            raise ProcessGroupCleanupUnconfirmed(process.pid) from exc
+        try:
+            output = process.communicate(timeout=max(.001, min(grace, deadline - time.monotonic())))
+        except subprocess.TimeoutExpired:
+            continue
+        if not _process_group_exists(process.pid):
+            return output
+    # A terminated orphan may need a short reap interval before its group vanishes.
+    while time.monotonic() < deadline and _process_group_exists(process.pid):
+        time.sleep(min(.02, max(0, deadline - time.monotonic())))
+    if _process_group_exists(process.pid):
+        raise ProcessGroupCleanupUnconfirmed(process.pid)
+    try:
+        return process.communicate(timeout=max(.001, deadline - time.monotonic()))
+    except subprocess.TimeoutExpired as exc:
+        raise ProcessGroupCleanupUnconfirmed(process.pid) from exc
+
+
+def _run_command_group(args, *, cwd, env, text, capture_output, timeout, check,
+                       pass_fds=()):
+    """The incumbent command boundary with bounded whole-child cleanup."""
+    if text is not True or capture_output is not True or check is not False:
+        raise ValueError("unsupported live command options")
+    process = subprocess.Popen(args, cwd=cwd, env=env, text=True,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True,
+        pass_fds=pass_fds)
+    try:
+        stdout, stderr = process.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        try:
+            stdout, stderr = _stop_command_group(process)
+        except ProcessGroupCleanupUnconfirmed as exc:
+            exc.timed_out = True
+            raise
+        raise subprocess.TimeoutExpired(args, timeout, output=stdout, stderr=stderr) from None
+    if _process_group_exists(process.pid):
+        _stop_command_group(process)
+        raise RuntimeError("command descendant outlived its direct parent")
+    return subprocess.CompletedProcess(args, process.returncode, stdout, stderr)
+
 
 
 @dataclass
@@ -41,6 +121,11 @@ class TaskResult:
     returncode: int | None = None
     published: tuple[str, ...] = ()
     detail: str | None = None
+    publication_sha256: dict[str, str] = field(default_factory=dict)
+    cleanup_group_id: int | None = None
+    generation_publication: dict[str, Any] | None = None
+    native_input_attempt: dict[str, Any] | None = None
+    timed_out: bool = False
 
 
 class DurabilityUnconfirmed(OSError):
@@ -104,19 +189,23 @@ def _valid_json(path: Path) -> bool:
         return False
 
 
-def atomic_publish(source: Path, target: Path, *, mode: int = 0o644) -> None:
-    """Publish a complete artifact without exposing an in-progress write."""
+def atomic_publish(source: Path, target: Path, *, mode: int = 0o644) -> str:
+    """Publish a complete artifact and return the hash of those exact copied bytes."""
     if source.suffix == ".json" and not _valid_json(source):
         raise ValueError(f"refusing invalid JSON artifact: {source}")
     target.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp_name = tempfile.mkstemp(prefix=f".{target.name}.", dir=target.parent)
     try:
+        digest = hashlib.sha256()
         with source.open("rb") as src, os.fdopen(fd, "wb") as dst:
-            shutil.copyfileobj(src, dst)
+            for chunk in iter(lambda: src.read(1024 * 1024), b""):
+                dst.write(chunk)
+                digest.update(chunk)
             dst.flush()
             os.fsync(dst.fileno())
             os.fchmod(dst.fileno(), mode)
         os.replace(tmp_name, target)
+        return digest.hexdigest()
     finally:
         try:
             os.unlink(tmp_name)
@@ -267,6 +356,14 @@ _GENERATION_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 class GenerationRejected(Exception):
     """Internal signal: this candidate generation is not publishable."""
+
+
+class SourceReadRejected(GenerationRejected):
+    """A typed source-read refusal; existing publisher rejection handling applies."""
+
+    def __init__(self, message: str, *, reason: str):
+        super().__init__(message)
+        self.reason = reason
 
 
 @dataclass(frozen=True)
@@ -427,7 +524,7 @@ def _private_dir(path: Path) -> Path:
     return path
 
 
-def _read_json_state(path: Path) -> tuple[str, dict[str, Any] | None]:
+def _read_json_state(path: Path, *, dir_fd: int | None = None) -> tuple[str, dict[str, Any] | None]:
     """Read a JSON object, telling genuine absence apart from corruption.
 
     ``"absent"`` means the file is not there, ``"unreadable"`` means it is
@@ -444,8 +541,12 @@ def _read_json_state(path: Path) -> tuple[str, dict[str, Any] | None]:
     its identity instead of parking the lane until a writer appears.
     """
     try:
-        if path.is_symlink():
+        linked = (path.is_symlink() if dir_fd is None else
+                  S_ISLNK(os.stat(path, dir_fd=dir_fd, follow_symlinks=False).st_mode))
+        if linked:
             return "symlink", None
+    except FileNotFoundError:
+        return "absent", None
     except OSError:
         return "unreadable", None
     flags = (
@@ -454,7 +555,7 @@ def _read_json_state(path: Path) -> tuple[str, dict[str, Any] | None]:
         | getattr(os, "O_NONBLOCK", 0)
     )
     try:
-        fd = os.open(path, flags)
+        fd = os.open(path, flags) if dir_fd is None else os.open(path, flags, dir_fd=dir_fd)
     except FileNotFoundError:
         return "absent", None
     except OSError as exc:
@@ -621,71 +722,96 @@ def _read_bundle_member(member: Path, *, limit: int) -> tuple[bytes | None, str 
     return data, None
 
 
-def _read_source_bytes(source: Path, *, limit: int) -> bytes:
-    """Read a producer's artifact exactly once, within a bounded size.
+def _read_source_bytes(source: Path, *, limit: int, directory_fd: int | None = None,
+                       require_stable: bool = False) -> bytes:
+    """Read one bounded source descriptor without following a leaf symlink.
 
-    The capture is taken through ONE descriptor: the file is opened once and
-    its identity is read from that descriptor, so the check and the read
-    cannot disagree about which file was captured. A symlinked source is
-    refused rather than followed: the link can be retargeted between
-    selection and capture, so the bytes that landed would not be the bytes
-    the caller selected.
-
-    The open is NON-BLOCKING where the platform supports it. A FIFO would
-    otherwise park the whole lane at the open until some writer appears, so
-    it is classified by its identity and refused instead of hanging the
-    publisher.
-
-    At most ``limit + 1`` bytes are read, so a source that grows while it is
-    being read is bounded and refused instead of being loaded into memory.
+    Existing callers retain their absolute-path behavior. A capture owner may
+    supply a retained parent descriptor plus a single relative leaf, and request
+    before/after descriptor stability. This binds the observed object, not a
+    continued pathname selection or an atomic multi-file snapshot.
     """
+    if (type(limit) is not int or limit < 0 or type(require_stable) is not bool):
+        raise SourceReadRejected("invalid source read options", reason="invalid_request")
+    if directory_fd is not None:
+        if (type(directory_fd) is not int or directory_fd < 0
+                or source.is_absolute() or len(source.parts) != 1
+                or source.name in {"", ".", ".."}
+                or "/" in str(source) or "\\" in str(source)):
+            raise SourceReadRejected("relative source leaf required", reason="invalid_request")
     flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0)
     nofollow = getattr(os, "O_NOFOLLOW", 0)
     if not nofollow:
-        # Without O_NOFOLLOW the link is refused before the open, which is
-        # the best this platform can do.
+        if directory_fd is not None or require_stable:
+            raise SourceReadRejected("safe source open unsupported", reason="unsupported")
         if source.is_symlink():
-            raise GenerationRejected(f"artifact source is a symlink: {source}")
+            raise SourceReadRejected(f"artifact source is a symlink: {source}", reason="symlink")
+
+    def os_reason(error):
+        if error.errno == errno.ENOENT:
+            return "not_found"
+        if error.errno in {errno.EACCES, errno.EPERM}:
+            return "read_denied"
+        if error.errno == errno.ELOOP:
+            return "symlink"
+        return "io_error"
+
     try:
-        fd = os.open(source, flags | nofollow)
+        # Do not pass a new keyword to the unchanged legacy open path.
+        fd = (os.open(source, flags | nofollow) if directory_fd is None else
+              os.open(source, flags | nofollow, dir_fd=directory_fd))
     except OSError as exc:
         if exc.errno == errno.ELOOP:
-            raise GenerationRejected(
-                f"artifact source is a symlink: {source}"
-            ) from exc
-        if exc.errno == errno.ENOENT:
-            raise GenerationRejected(
-                f"artifact source does not exist: {source}"
-            ) from exc
-        raise GenerationRejected(
-            f"artifact source cannot be opened: {source}: {exc}"
-        ) from exc
+            message = f"artifact source is a symlink: {source}"
+        elif exc.errno == errno.ENOENT:
+            message = f"artifact source does not exist: {source}"
+        else:
+            message = f"artifact source cannot be opened: {source}: {exc}"
+        raise SourceReadRejected(message, reason=os_reason(exc)) from exc
     try:
-        info = os.fstat(fd)
+        try:
+            info = os.fstat(fd)
+        except OSError as exc:
+            raise SourceReadRejected(f"artifact source cannot be inspected: {source}: {exc}",
+                                     reason=os_reason(exc)) from exc
         if not S_ISREG(info.st_mode):
-            raise GenerationRejected(
-                f"artifact source is not a regular file: {source}"
-            )
+            raise SourceReadRejected(f"artifact source is not a regular file: {source}",
+                                     reason="not_regular")
+        if require_stable and info.st_size > limit:
+            raise SourceReadRejected(f"artifact source exceeds the {limit} byte limit: {source}",
+                                     reason="encoded_bound")
         chunks: list[bytes] = []
         remaining = limit + 1
         while remaining > 0:
             try:
                 chunk = os.read(fd, min(65536, remaining))
             except OSError as exc:
-                raise GenerationRejected(
-                    f"artifact source cannot be read: {source}: {exc}"
-                ) from exc
+                raise SourceReadRejected(f"artifact source cannot be read: {source}: {exc}",
+                                         reason=os_reason(exc)) from exc
             if not chunk:
                 break
             chunks.append(chunk)
             remaining -= len(chunk)
         data = b"".join(chunks)
+        if len(data) > limit:
+            raise SourceReadRejected(f"artifact source exceeds the {limit} byte limit: {source}",
+                                     reason="encoded_bound")
+        if require_stable:
+            try:
+                after = os.fstat(fd)
+            except OSError as exc:
+                raise SourceReadRejected(f"artifact source cannot be inspected: {source}: {exc}",
+                                         reason=os_reason(exc)) from exc
+            fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
+            if (any(getattr(info, key) != getattr(after, key) for key in fields)
+                    or len(data) != after.st_size):
+                raise SourceReadRejected(f"artifact source changed during capture: {source}",
+                                         reason="unstable_read")
     finally:
         os.close(fd)
     if len(data) > limit:
-        raise GenerationRejected(
-            f"artifact source exceeds the {limit} byte limit: {source}"
-        )
+        raise SourceReadRejected(f"artifact source exceeds the {limit} byte limit: {source}",
+                                 reason="encoded_bound")
     return data
 
 
@@ -2025,6 +2151,20 @@ class SelectedGenerationUnavailable(Exception):
     """
 
 
+class SelectedGenerationAbsent(SelectedGenerationUnavailable):
+    """A safe initialized store was observed without a selected generation.
+
+    This observation alone does not authorize bootstrap. A caller still needs
+    explicit bootstrap intent and publication must retain the original None
+    selection fence. Storage, permission and integrity failures are unavailable.
+    """
+
+    def __init__(self, *, domain: str, reason: str):
+        super().__init__(f"no generation is selected for domain {domain!r}: {reason}")
+        self.domain = domain
+        self.reason = reason
+
+
 @dataclass(frozen=True)
 class SelectedGenerationSnapshot:
     """One detached verified generation, either selected or explicitly retained.
@@ -2063,7 +2203,8 @@ def read_selected_generation(
     the caller chooses only WHICH verified members it wants.
 
     A selection that cannot be read as a whole raises
-    :class:`SelectedGenerationUnavailable`.
+    :class:`SelectedGenerationUnavailable`. Only positive absence in a stable,
+    initialized store raises its :class:`SelectedGenerationAbsent` subtype.
     """
     error = _generation_segment_error("domain", domain)
     if error:
@@ -2079,21 +2220,58 @@ def read_selected_generation(
         raise SelectedGenerationUnavailable(collision)
 
     store = Path(generations_root)
-    error = _symlink_error("generations_root", store)
-    if error:
-        raise SelectedGenerationUnavailable(error)
-    root = store.resolve()
+    if not store.is_absolute():
+        raise SelectedGenerationUnavailable("absolute generations root required")
+    try:
+        if any(path.is_symlink() for path in (store, *store.parents)):
+            raise SelectedGenerationUnavailable("generations_root has a symlink")
+        root_info = store.lstat()
+        if not S_ISDIR(root_info.st_mode):
+            raise SelectedGenerationUnavailable("generations_root is not a directory")
+        root = store.resolve(strict=True)
+    except (OSError, RuntimeError) as exc:
+        raise SelectedGenerationUnavailable("generations_root is unavailable") from exc
+
+    def same_directory(path: Path, observed) -> bool:
+        try:
+            current = path.lstat()
+            return (S_ISDIR(current.st_mode) and
+                    (current.st_dev, current.st_ino) == (observed.st_dev, observed.st_ino))
+        except OSError:
+            return False
+
+    # Pin both directories. A pathname moved away and restored between checks
+    # must not make a populated captured directory appear empty (directory ABA).
+    directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    root_fd = domain_fd = None
     domain_dir = root / domain
-    if domain_dir.is_symlink() or not domain_dir.is_dir():
-        raise SelectedGenerationUnavailable(
-            f"no generation is selected for domain {domain!r}"
-        )
-    selection_path = domain_dir / _GENERATION_SELECTION_NAME
-    state, captured = _read_json_state(selection_path)
-    if state == "absent":
-        raise SelectedGenerationUnavailable(
-            f"no generation is selected for domain {domain!r}"
-        )
+    try:
+        root_fd = os.open(store, directory_flags)
+        opened_root = os.fstat(root_fd)
+        if (not S_ISDIR(opened_root.st_mode) or
+                (opened_root.st_dev, opened_root.st_ino) != (root_info.st_dev, root_info.st_ino)):
+            raise SelectedGenerationUnavailable("generations_root changed during capture")
+        try:
+            domain_fd = os.open(domain, directory_flags, dir_fd=root_fd)
+        except FileNotFoundError:
+            if not same_directory(store, root_info):
+                raise SelectedGenerationUnavailable("generations_root changed during capture")
+            raise SelectedGenerationAbsent(domain=domain, reason="domain_absent") from None
+        domain_info = os.fstat(domain_fd)
+        if not S_ISDIR(domain_info.st_mode):
+            raise SelectedGenerationUnavailable("generation domain is not a directory")
+        state, captured = _read_json_state(Path(_GENERATION_SELECTION_NAME), dir_fd=domain_fd)
+        if not same_directory(store, root_info) or not same_directory(domain_dir, domain_info):
+            raise SelectedGenerationUnavailable("generation store changed during capture")
+        if state == "absent":
+            raise SelectedGenerationAbsent(domain=domain, reason="selection_absent")
+    except OSError as exc:
+        raise SelectedGenerationUnavailable("generation store cannot be captured") from exc
+    finally:
+        if domain_fd is not None:
+            os.close(domain_fd)
+        if root_fd is not None:
+            os.close(root_fd)
     if state != "ok" or captured is None:
         raise SelectedGenerationUnavailable(f"the published selection is {state}")
     error = _selection_error(captured, domain)
@@ -2197,7 +2375,11 @@ class Orchestrator:
         state_dir: Path,
         data_dir: Path,
         now: datetime | None = None,
-        runner=subprocess.run,
+        runner=None,
+        source_revision: str | None = None,
+        deadline_monotonic: float | None = None,
+        source_lock_fd: int | None = None,
+        work_budget_seconds: float = SNAPSHOT_WORK_SECONDS,
     ) -> None:
         self.live_dir = live_dir
         self.public_dir = (
@@ -2213,6 +2395,21 @@ class Orchestrator:
         # publication samples after capture, not at orchestrator construction.
         self._publication_now = now
         self.runner = runner
+        self.source_revision = source_revision
+        self.source_lock_fd = source_lock_fd
+        if work_budget_seconds not in (SNAPSHOT_WORK_SECONDS, BARS_WORK_SECONDS):
+            raise ValueError("closed live work budget required")
+        if deadline_monotonic is not None:
+            if (type(deadline_monotonic) not in {int, float}
+                    or not math.isfinite(deadline_monotonic) or deadline_monotonic <= 0):
+                raise ValueError("finite absolute monotonic deadline required")
+            deadline_monotonic = min(deadline_monotonic, time.monotonic() + work_budget_seconds)
+        self._command_deadline = deadline_monotonic
+        self._cleanup_group_id = None
+        self._native_lock_fd = None
+        self._status_write_blocked = set()
+        self._prior_snapshot = None
+        self._prior_snapshot_error = None
         self.python = Path(sys.executable)
         self.results: list[TaskResult] = []
 
@@ -2223,10 +2420,24 @@ class Orchestrator:
         *,
         outputs: tuple[tuple[Path, Path], ...] = (),
         timeout: int,
+        reserve_s: float = 0.0,
         env: dict[str, str] | None = None,
         validator: Callable[[Path], str | None] | None = None,
     ) -> TaskResult:
         started = time.monotonic()
+        if self._cleanup_group_id is not None:
+            result = TaskResult(name, "cleanup_unconfirmed", 0.0,
+                detail="original command group remains unresolved",
+                cleanup_group_id=self._cleanup_group_id)
+            self.results.append(result)
+            return result
+        if self._command_deadline is not None:
+            timeout = min(timeout, self._command_deadline - started - reserve_s - COMMAND_CLEANUP_SECONDS)
+            if timeout <= 0:
+                result = TaskResult(name, "budget_exhausted", 0.0,
+                    detail="shared source deadline/reserve exhausted")
+                self.results.append(result)
+                return result
         merged_env = os.environ.copy()
         merged_env.update(env or {})
         # The first output is the task's required product. Remove only that
@@ -2254,7 +2465,11 @@ class Orchestrator:
                 except OSError:
                     optional_before[source] = None
         try:
-            completed = self.runner(
+            runner = self.runner or (_run_command_group if self._command_deadline is not None else subprocess.run)
+            descriptors = tuple(dict.fromkeys(fd for fd in
+                (self.source_lock_fd, self._native_lock_fd) if fd is not None))
+            inherited = {"pass_fds": descriptors} if descriptors else {}
+            completed = runner(
                 args,
                 cwd=ROOT,
                 env=merged_env,
@@ -2262,8 +2477,10 @@ class Orchestrator:
                 capture_output=True,
                 timeout=timeout,
                 check=False,
+                **inherited,
             )
             published: list[str] = []
+            publication_sha256: dict[str, str] = {}
             if completed.returncode == 0:
                 required_missing = bool(outputs and not outputs[0][0].is_file())
                 validation_error = (
@@ -2291,7 +2508,7 @@ class Orchestrator:
                         except ValueError:
                             label = target.name
                             mode = 0o600
-                        atomic_publish(source, target, mode=mode)
+                        publication_sha256[label] = atomic_publish(source, target, mode=mode)
                         published.append(label)
                     status = "ok"
                     detail = (completed.stdout or "").strip()[-500:] or None
@@ -2305,10 +2522,15 @@ class Orchestrator:
                 returncode=completed.returncode,
                 published=tuple(published),
                 detail=detail,
+                publication_sha256=publication_sha256,
             )
+        except ProcessGroupCleanupUnconfirmed as exc:
+            self._cleanup_group_id = exc.group_id
+            result = TaskResult(name, "cleanup_unconfirmed", round(time.monotonic() - started, 3),
+                detail=str(exc), cleanup_group_id=exc.group_id, timed_out=exc.timed_out)
         except subprocess.TimeoutExpired:
             result = TaskResult(
-                name, "timeout", round(time.monotonic() - started, 3), detail=f">{timeout}s"
+                name, "timeout", round(time.monotonic() - started, 3), detail=f">{timeout}s", timed_out=True
             )
         except Exception as exc:  # noqa: BLE001 - one task must not darken the lane
             result = TaskResult(
@@ -2439,59 +2661,153 @@ class Orchestrator:
             )
 
     def snapshot(self) -> None:
-        """Five-minute, network-heavy full snapshot followed by both basket pulses."""
-        snapshot_stage = self.stage_dir / "quotes_full.json"
-        snapshot_live = self.state_dir / "quotes_full.json"
-        quote_result = self.module(
-            "full_quotes",
-            "scripts.build_live_quotes",
-            ["--private-provenance", "--out", str(snapshot_stage)],
-            outputs=((snapshot_stage, snapshot_live),),
-            timeout=230,
-            validator=lambda path: quote_snapshot_error(
-                path, min_resolved=50, min_coverage=0.10
-            ),
-        )
-        if quote_result.status != "ok" or not snapshot_live.exists():
-            return
-        intraday_quote_stage = self.stage_dir / "intraday_quotes.json"
-        self.module(
-            "intraday_quotes",
-            "scripts.build_intraday_flow_quotes",
-            [
-                "--base", str(ROOT / "site" / "flowtracker" / "base.json"),
-                "--quotes", str(snapshot_live),
-                "--out", str(intraday_quote_stage),
-            ],
-            outputs=self._publish_pairs(("intraday_quotes.json",)),
-            timeout=30,
-            validator=lambda path: quote_snapshot_error(
-                path, min_resolved=80, min_coverage=0.90, require_source_clock=True,
-            ),
-        )
-        for market, filename in (
-            ("us", "basket_pulse.json"),
-            ("hk", "basket_pulse_hk.json"),
-        ):
-            args = [
-                "--market",
-                market,
-                "--quotes",
-                str(snapshot_live),
-                "--out",
-                str(self.stage_dir / filename),
-            ]
-            sidecar = filename.replace(".json", "_lastgood.json")
-            self.module(
-                f"basket_{market}",
-                "scripts.build_basket_pulse",
-                args,
-                outputs=self._publish_pairs((filename, sidecar)),
-                timeout=90,
-            )
+        """One source-fenced deadline for quotes, pulses and Sector calculation."""
+        prior_deadline = self._command_deadline
+        self._command_deadline = (prior_deadline if prior_deadline is not None
+                                  else time.monotonic() + SNAPSHOT_WORK_SECONDS)
+        state, previous = _read_json_state(self.state_dir / "status-snapshot.json")
+        self._prior_snapshot = previous if state == "ok" else None
+        self._prior_snapshot_error = None if state in {"ok", "absent"} else state
+        if self._prior_snapshot is not None:
+            for task in self._prior_snapshot.get("tasks", []):
+                group = task.get("cleanup_group_id")
+                if type(group) is int and group > 0 and _process_group_exists(group):
+                    self._cleanup_group_id = group
+                    break
+        reserve = SECTOR_PREPARE_SECONDS + SECTOR_PUBLICATION_RESERVE_SECONDS
+        try:
+            snapshot_stage = self.stage_dir / "quotes_full.json"
+            snapshot_live = self.state_dir / "quotes_full.json"
+            quote_result = self.module(
+                "full_quotes", "scripts.build_live_quotes",
+                ["--private-provenance", "--out", str(snapshot_stage)],
+                outputs=((snapshot_stage, snapshot_live),), timeout=170, reserve_s=reserve,
+                validator=lambda path: quote_snapshot_error(
+                    path, min_resolved=50, min_coverage=0.10))
+            if quote_result.status == "ok" and snapshot_live.exists():
+                intraday_quote_stage = self.stage_dir / "intraday_quotes.json"
+                self.module(
+                    "intraday_quotes", "scripts.build_intraday_flow_quotes",
+                    ["--base", str(ROOT / "site" / "flowtracker" / "base.json"),
+                     "--quotes", str(snapshot_live), "--out", str(intraday_quote_stage)],
+                    outputs=self._publish_pairs(("intraday_quotes.json",)),
+                    timeout=20, reserve_s=reserve,
+                    validator=lambda path: quote_snapshot_error(
+                        path, min_resolved=80, min_coverage=0.90, require_source_clock=True))
+                for market, filename in (("us", "basket_pulse.json"), ("hk", "basket_pulse_hk.json")):
+                    sidecar = filename.replace(".json", "_lastgood.json")
+                    self.module(f"basket_{market}", "scripts.build_basket_pulse",
+                        ["--market", market, "--quotes", str(snapshot_live),
+                         "--out", str(self.stage_dir / filename)],
+                        outputs=self._publish_pairs((filename, sidecar)),
+                        timeout=55, reserve_s=reserve)
+            else:
+                for name in ("intraday_quotes", "basket_us", "basket_hk"):
+                    self.results.append(TaskResult(name, "dependency_blocked", 0.0,
+                        detail="this invocation did not publish a qualified full quote snapshot"))
+            # Sector depends on the strict native chain, not on quotes_full.json.
+            self.sector_snapshot(timeout=SECTOR_PREPARE_SECONDS)
+        finally:
+            self._command_deadline = prior_deadline
+
+    def sector_snapshot(self, *, timeout=SECTOR_PREPARE_SECONDS) -> TaskResult:
+        """Prepare in a child, then validate and publish once in this parent."""
+        started = time.monotonic()
+        def blocked(status, detail, *, publication=None):
+            result = TaskResult("sector_generation", status,
+                round(time.monotonic() - started, 3), detail=detail,
+                cleanup_group_id=self._cleanup_group_id, generation_publication=publication)
+            self.results.append(result)
+            return result
+
+        if self._cleanup_group_id is not None:
+            return blocked("cleanup_unconfirmed", "original child group remains unresolved")
+        if self._prior_snapshot_error:
+            return blocked("dependency_blocked", "previous snapshot receipt " + self._prior_snapshot_error)
+        for task in (self._prior_snapshot or {}).get("tasks", []):
+            publication = task.get("generation_publication")
+            if (task.get("name") == "sector_generation" and isinstance(publication, dict)
+                    and (publication.get("status") == "uncertain"
+                         or publication.get("durability") == "unconfirmed")):
+                return blocked("publication_unconfirmed",
+                    "reconcile the original publication through its incumbent generation owner",
+                    publication=publication)
+        if (not isinstance(self.source_revision, str)
+                or re.fullmatch(r"[0-9a-f]{40}", self.source_revision) is None):
+            return blocked("dependency_blocked", "source owner release revision required")
+        if self._command_deadline is not None and time.monotonic() >= self._command_deadline:
+            return blocked("budget_exhausted", "shared snapshot deadline exhausted")
+        generation_id = "sector-" + uuid.uuid4().hex
+        publication_started = False
+        try:
+            root = self._yahoo_private_root()
+            _private_dir(Path(self.state_dir))
+            with tempfile.TemporaryDirectory(prefix=".sector-prepare-", dir=self.state_dir) as temporary:
+                stage = Path(temporary)
+                args = ["--repository-root", str(ROOT), "--theme-root", str(ROOT),
+                        "--generations-root", str(root), "--stage", str(stage),
+                        "--generation-id", generation_id, "--source-revision", self.source_revision]
+                if self._publication_now is not None:
+                    args.extend(["--now", self._publication_now.isoformat()])
+                result = self.module("sector_generation", "scripts.prepare_sector_snapshot", args,
+                    timeout=timeout, reserve_s=SECTOR_PUBLICATION_RESERVE_SECONDS)
+                if result.status != "ok":
+                    return result
+                from scripts.prepare_sector_snapshot import read_prepared
+                composition, metadata = read_prepared(stage,
+                    generation_id=generation_id, source_revision=self.source_revision)
+                if (self._command_deadline is not None
+                        and self._command_deadline - time.monotonic() < SECTOR_PUBLICATION_RESERVE_SECONDS):
+                    result.status = "budget_exhausted"
+                    result.detail = "insufficient shared budget before parent publication"
+                    return result
+                publication_started = True
+                publication = self.publish_sector_documents(composition,
+                    input_identity=metadata["input_identity"], generation_id=generation_id,
+                    source_revision=self.source_revision,
+                    expected_current_content_id=metadata["expected_current_content_id"])
+                result.generation_publication = {**asdict(publication),
+                    "source_revision": self.source_revision,
+                    "expected_current_content_id": metadata["expected_current_content_id"]}
+                if publication.status == "uncertain" or publication.durability == "unconfirmed":
+                    result.status = "publication_unconfirmed"
+                elif publication.status in {"published", "unchanged"}:
+                    result.status = "ok"
+                    result.published = publication.artifacts
+                    result.publication_sha256 = dict(composition.evidence["member_sha256"])
+                else:
+                    result.status = "failed"
+                result.detail = publication.detail or ("sector generation " + publication.status)
+                result.elapsed_s = round(time.monotonic() - started, 3)
+                return result
+        except Exception as exc:
+            detail = f"{type(exc).__name__}: {exc}"[:800]
+            if "result" in locals():
+                if publication_started and result.generation_publication is None:
+                    result.generation_publication = asdict(GenerationPublishResult(
+                        status="uncertain", generation_id=generation_id,
+                        detail="publisher raised after invocation: " + detail))
+                    result.generation_publication.update(source_revision=self.source_revision,
+                        expected_current_content_id=metadata["expected_current_content_id"])
+                    result.status = "publication_unconfirmed"
+                else:
+                    result.status = "error"
+                result.detail = detail
+                result.elapsed_s = round(time.monotonic() - started, 3)
+                return result
+            return blocked("error", detail)
 
     def bars(self) -> None:
-        """Hourly low-priority bar accrual followed by the site-only flow pulse."""
+        """Incumbent bars/flow first; native refresh uses only actual remainder."""
+        prior_deadline = self._command_deadline
+        self._command_deadline = prior_deadline if prior_deadline is not None else time.monotonic() + BARS_WORK_SECONDS
+        try:
+            self._bars_and_flow()
+            self.sector_inputs(allow_bootstrap=False)
+        finally:
+            self._command_deadline = prior_deadline
+
+    def _bars_and_flow(self) -> None:
         intraday_dir = self.data_dir / "intraday"
         symbols = intraday_flow_symbols(ROOT / "site" / "flowtracker" / "base.json")
         bars = self.module(
@@ -2505,6 +2821,8 @@ class Orchestrator:
             timeout=720,
         )
         if bars.status != "ok":
+            self.results.append(TaskResult("intraday_flow", "dependency_blocked", 0.0,
+                detail="this invocation did not complete Polygon bar accrual"))
             return
         self.module(
             "intraday_flow",
@@ -2516,16 +2834,213 @@ class Orchestrator:
             validator=lambda path: flow_pulse_error(path, min_coverage=0.80),
         )
 
-    def write_status(self, lane: str, started_at: datetime) -> None:
+    def sector_inputs(self, *, allow_bootstrap=False) -> TaskResult:
+        """One request, original fences, sequential parent publications/readback.
+
+        Both the manual entry and bars remainder hold the same native lane lock.
+        The existing private lane receipt preserves pending/uncertain boundaries;
+        it is never a retry queue or a substitute for the generation owner's proof.
+        """
+        started, started_at = time.monotonic(), self._yahoo_clock()
+        result = TaskResult("sector_inputs", "running", 0.0)
+        self.results.append(result)
+        lane, temporary, publication_started, entered = "sector-inputs", None, False, False
+        prior_deadline = self._command_deadline
+        self._command_deadline = prior_deadline if prior_deadline is not None else started + BARS_WORK_SECONDS
+        native_lock = None
+
+        def stop(status, detail):
+            result.status, result.detail = status, detail
+            result.cleanup_group_id = self._cleanup_group_id
+            return result
+
+        def checkpoint(*, finished=False):
+            try:
+                self.write_status(lane, started_at, finished=finished,
+                    private_only=not finished, require_durable=True)
+            except Exception:
+                self._status_write_blocked.add(lane)
+                raise
+
+        try:
+            if type(allow_bootstrap) is not bool:
+                return stop("dependency_blocked", "explicit bootstrap policy required")
+            if not isinstance(self.source_revision, str) or not re.fullmatch(r"[0-9a-f]{40}", self.source_revision):
+                return stop("dependency_blocked", "source owner release revision required")
+            if self._cleanup_group_id is not None:
+                return stop("cleanup_unconfirmed", "original command group remains unresolved")
+            if self._command_deadline - time.monotonic() <= NATIVE_PUBLICATION_RESERVE_SECONDS + COMMAND_CLEANUP_SECONDS:
+                return stop("budget_exhausted", "insufficient remaining source budget before native capture")
+            root = self._yahoo_private_root()
+            _private_dir(Path(self.state_dir))
+            native_lock = _lock_lane(self.state_dir, lane)
+            if native_lock is None:
+                return stop("deferred", "native-input owner already active; no work enqueued")
+            self._native_lock_fd = native_lock.fileno()
+            state, previous = _read_json_state(self.state_dir / f"status-{lane}.json")
+            if state not in {"ok", "absent"}:
+                return stop("dependency_blocked", "previous native receipt " + state)
+            if previous is not None and (previous.get("schema") != "vps_live_lane.v1"
+                    or previous.get("lane") != lane or type(previous.get("tasks")) is not list
+                    or any(type(task) is not dict for task in previous["tasks"])
+                    or len([task for task in previous["tasks"] if task.get("name") == "sector_inputs"]) != 1):
+                return stop("dependency_blocked", "previous native receipt shape invalid")
+            for task in (previous or {}).get("tasks", []):
+                group = task.get("cleanup_group_id")
+                if type(group) is int and group > 0 and _process_group_exists(group):
+                    self._cleanup_group_id = group
+                    return stop("cleanup_unconfirmed", "original native command group remains unresolved")
+                attempt = task.get("native_input_attempt")
+                if task.get("name") != "sector_inputs":
+                    continue
+                if (type(attempt) is not dict or type(attempt.get("phases")) is not dict
+                        or any(type(phase) is not dict for phase in attempt["phases"].values())):
+                    return stop("dependency_blocked", "previous native attempt shape invalid")
+                for phase in attempt.get("phases", {}).values():
+                    publication = phase.get("publication") or {}
+                    if (phase.get("publication_state") == "invocation_pending"
+                            or publication.get("status") == "uncertain"
+                            or publication.get("durability") == "unconfirmed"):
+                        result.native_input_attempt = attempt
+                        return stop("publication_unconfirmed", "reconcile the original native publication through its generation owner")
+                if attempt.get("cold_timeout") is not None:
+                    result.native_input_attempt = attempt
+                    return stop("cold_timeout_held", "original cold timeout requires resource qualification and receipt disposition")
+            _private_dir(root)
+            attempt_id = "native-" + uuid.uuid4().hex
+            temporary = Path(tempfile.mkdtemp(prefix=".sector-inputs-", dir=self.state_dir))
+            request_stage = _private_dir(temporary / "request")
+            result.native_input_attempt = {"attempt_id": attempt_id, "source_revision": self.source_revision,
+                "allow_bootstrap": allow_bootstrap, "stage": str(temporary), "request_fingerprint": None,
+                "original_priors": None, "phases": {}, "cold_timeout": None, "current_chain": None}
+            attempt = result.native_input_attempt
+            entered = True
+            checkpoint()
+            common = ["--repository-root", str(ROOT), "--generations-root", str(root),
+                      "--attempt-id", attempt_id, "--source-revision", self.source_revision]
+            if self._publication_now is not None:
+                common += ["--now", self._publication_now.isoformat()]
+            capture_args = [*common, "--phase", "capture", "--stage", str(request_stage)]
+            if allow_bootstrap:
+                capture_args.append("--allow-bootstrap")
+            child = self.module("native_capture", "scripts.prepare_sector_native_inputs", capture_args,
+                timeout=NATIVE_PHASE_SECONDS["capture"], reserve_s=NATIVE_PUBLICATION_RESERVE_SECONDS)
+            attempt["phases"]["capture"] = {"preparation": asdict(child)}
+            if child.status != "ok":
+                return stop(child.status, "native capture " + child.status)
+            from scripts import prepare_sector_native_inputs as prepare
+            raw, request = prepare.read_request(request_stage, attempt_id=attempt_id, source_revision=self.source_revision)
+            attempt["request_fingerprint"] = request["fingerprint"]
+            attempt["original_priors"] = request["priors"]
+            checkpoint()
+            dependencies = {}
+            publishers = {"yahoo": self.publish_yahoo_inputs, "breadth": self.publish_breadth_member_inputs,
+                          "member": self.publish_member_ohlcv_inputs}
+            for kind in prepare.KINDS:
+                stage = _private_dir(temporary / kind)
+                phase = {"generation_id": attempt_id + "-" + kind,
+                    "expected_current_content_id": request["priors"][kind]["content_id"],
+                    "dependencies": dict(dependencies), "publication_state": "not_invoked"}
+                attempt["phases"][kind] = phase
+                args = [*common, "--phase", kind, "--request-stage", str(request_stage), "--stage", str(stage)]
+                for name, reference in dependencies.items():
+                    args += ["--" + name + "-generation-id", reference["generation_id"],
+                             "--" + name + "-content-id", reference["content_id"]]
+                checkpoint()
+                child = self.module("native_" + kind, "scripts.prepare_sector_native_inputs", args,
+                    timeout=NATIVE_PHASE_SECONDS[kind], reserve_s=NATIVE_PUBLICATION_RESERVE_SECONDS)
+                phase["preparation"] = asdict(child)
+                if child.status != "ok":
+                    if child.timed_out and phase["expected_current_content_id"] is None:
+                        attempt["cold_timeout"] = {"phase": kind, "generation_id": phase["generation_id"],
+                            "expected_current_content_id": None}
+                    return stop(child.status, "native " + kind + " preparation " + child.status)
+                encoded, metadata, selected = prepare.read_prepared(stage, kind=kind, request=request,
+                    request_members=raw, generations_root=root, dependencies=dict(dependencies), clock=self._yahoo_clock)
+                if encoded is None:
+                    phase["publication_state"] = "reused"
+                else:
+                    if self._command_deadline - time.monotonic() < NATIVE_PUBLICATION_RESERVE_SECONDS:
+                        return stop("budget_exhausted", "insufficient source budget before " + kind + " publication")
+                    phase["publication_state"] = "invocation_pending"
+                    checkpoint()
+                    publication_started = True
+                    publication = publishers[kind](encoded, generation_id=metadata["generation_id"],
+                        source_revision=self.source_revision,
+                        expected_current_content_id=metadata["expected_current_content_id"], lane=lane)
+                    publication_started = False
+                    phase["publication"] = asdict(publication)
+                    phase["publication_state"] = "returned"
+                    checkpoint()
+                    if publication.status == "uncertain" or publication.durability == "unconfirmed":
+                        return stop("publication_unconfirmed", "native " + kind + " publication requires reconciliation")
+                    if publication.status not in {"published", "unchanged"}:
+                        return stop("failed", "native " + kind + " publication " + publication.status)
+                    domain, names = prepare._contract(kind)
+                    selected = read_selected_generation(generations_root=root, domain=domain, members=names)
+                    if selected.content_id != publication.content_id or selected.generation_id != publication.generation_id:
+                        return stop("dependency_blocked", "native " + kind + " selection changed before readback")
+                reference = {"generation_id": selected.generation_id, "content_id": selected.content_id}
+                phase["selected"] = reference
+                dependencies[kind] = reference
+                # Verify this actual selected dependency before any next acquisition.
+                if kind == "yahoo":
+                    captured_yahoo = prepare._captured_yahoo(dependencies, root, self._yahoo_clock)
+                elif kind == "breadth":
+                    captured_breadth = prepare._captured_breadth(dependencies, root, captured_yahoo, self._yahoo_clock)
+                else:
+                    prepare.candles.read_verified_member_ohlcv_inputs(generations_root=root,
+                        breadth=captured_breadth, yahoo=captured_yahoo, now=self._yahoo_clock(), require_current=True)
+                checkpoint()
+            # Reopen all three current selections; retained bytes alone cannot
+            # establish that the final chain is still selected.
+            for kind, reference in dependencies.items():
+                domain, names = prepare._contract(kind)
+                selected = read_selected_generation(generations_root=root, domain=domain, members=names)
+                if (selected.generation_id, selected.content_id) != (reference["generation_id"], reference["content_id"]):
+                    return stop("dependency_blocked", "native current chain changed during final readback")
+            attempt["current_chain"] = dependencies
+            return stop("ok", "current native dependency chain published or verified; provider gaps remain explicit")
+        except Exception as exc:
+            detail = f"{type(exc).__name__}: {exc}"[:800]
+            if publication_started:
+                phase["publication"] = asdict(GenerationPublishResult(status="uncertain",
+                    generation_id=phase["generation_id"], detail="publisher raised after invocation: " + detail))
+                return stop("publication_unconfirmed", detail)
+            return stop("receipt_unconfirmed" if lane in self._status_write_blocked else "error", detail)
+        finally:
+            result.elapsed_s = round(time.monotonic() - started, 3)
+            if entered and lane not in self._status_write_blocked:
+                try:
+                    checkpoint(finished=True)
+                except Exception as exc:
+                    result.status, result.detail = "receipt_unconfirmed", f"private native receipt write failed: {exc}"[:800]
+            # Retain uncertain handoffs for original-effect reconciliation.
+            if temporary is not None and result.status not in {"cleanup_unconfirmed", "publication_unconfirmed", "receipt_unconfirmed"}:
+                shutil.rmtree(temporary)
+            self._native_lock_fd = None
+            if native_lock is not None:
+                native_lock.close()
+            self._command_deadline = prior_deadline
+
+    def write_status(self, lane: str, started_at: datetime, *, finished=True,
+                     private_only=False, require_durable=False) -> None:
+        if lane in self._status_write_blocked:
+            raise RuntimeError("original status write requires reconciliation")
+        invocation = os.environ.get("INVOCATION_ID")
+        invocation = invocation if invocation and re.fullmatch(r"[0-9a-f]{32}", invocation) else None
         lane_payload = {
             "schema": "vps_live_lane.v1",
             "lane": lane,
+            "invocation_id": invocation,
             "started_at": started_at.isoformat(),
-            "finished_at": datetime.now(timezone.utc).isoformat(),
+            "finished_at": datetime.now(timezone.utc).isoformat() if finished else None,
             "ok": all(result.status == "ok" for result in self.results),
             "tasks": [asdict(result) for result in self.results],
         }
-        atomic_write_json(self.state_dir / f"status-{lane}.json", lane_payload)
+        atomic_write_json(self.state_dir / f"status-{lane}.json", lane_payload, require_durable=require_durable)
+        if private_only:
+            return
         lanes: dict[str, Any] = {}
         for status_path in sorted(self.state_dir.glob("status-*.json")):
             try:
@@ -2940,7 +3455,7 @@ def _lock_lane(state_dir: Path, lane: str):
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--lane", choices=("fast", "snapshot", "bars"), required=True)
+    parser.add_argument("--lane", choices=("fast", "snapshot", "bars", "sector-inputs"), required=True)
     parser.add_argument(
         "--live-dir",
         default=os.environ.get("MACRO_LIVE_DIR", "/var/lib/macro-live/public/live"),
@@ -2954,13 +3469,18 @@ def main() -> int:
         default=os.environ.get("MACRO_LIVE_DATA_DIR", "/var/lib/macro-live/data"),
     )
     parser.add_argument("--now", default=None, help="test override: ISO-8601 UTC timestamp")
+    parser.add_argument("--source-revision", default=None, help="Full release SHA from live source owner")
+    parser.add_argument("--deadline-monotonic", type=float, default=None)
+    parser.add_argument("--source-lock-fd", type=int, choices=(8,), default=None)
     args = parser.parse_args()
 
     live_dir, state_dir, data_dir = map(
         Path, (args.live_dir, args.state_dir, args.data_dir)
     )
-    lock_file = _lock_lane(state_dir, args.lane)
-    if lock_file is None:
+    # Manual native work obtains exactly the same lock inside sector_inputs as
+    # the bars continuation; no caller boolean can bypass that owner.
+    lock_file = None if args.lane == "sector-inputs" else _lock_lane(state_dir, args.lane)
+    if lock_file is None and args.lane != "sector-inputs":
         log.info("%s lane already active; coalescing timer tick", args.lane)
         return 0
     try:
@@ -2971,13 +3491,20 @@ def main() -> int:
             now = now.replace(tzinfo=timezone.utc)
         started_at = datetime.now(timezone.utc)
         orchestrator = Orchestrator(
-            live_dir=live_dir, state_dir=state_dir, data_dir=data_dir, now=now
+            live_dir=live_dir, state_dir=state_dir, data_dir=data_dir, now=now,
+            source_revision=args.source_revision, deadline_monotonic=args.deadline_monotonic,
+            source_lock_fd=args.source_lock_fd,
+            work_budget_seconds=BARS_WORK_SECONDS if args.lane in {"bars", "sector-inputs"} else SNAPSHOT_WORK_SECONDS,
         )
-        getattr(orchestrator, args.lane)()
-        orchestrator.write_status(args.lane, started_at)
+        if args.lane == "sector-inputs":
+            orchestrator.sector_inputs(allow_bootstrap=True)
+        else:
+            getattr(orchestrator, args.lane)()
+            orchestrator.write_status(args.lane, started_at)
         return 0 if all(result.status == "ok" for result in orchestrator.results) else 1
     finally:
-        lock_file.close()
+        if lock_file is not None:
+            lock_file.close()
 
 
 if __name__ == "__main__":

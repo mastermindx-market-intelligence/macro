@@ -1539,11 +1539,13 @@ def test_cutover_guards_keep_manual_recovery():
 def test_live_setup_retires_legacy_only_after_smoke_and_timer_enable():
     root = Path(__file__).resolve().parents[1]
     text = (root / "app" / "deploy" / "live-setup.sh").read_text()
-    smoke = text.index("systemctl start macro-live-fast.service")
-    enable = text.index("systemctl enable --now")
-    retire = text.index('grep -v "macro-live')
+    smoke = text.index("setup_control smoke")
+    enable = text.index("setup_control arm")
+    retire = text.index("setup_control finish")
     assert smoke < enable < retire
-    assert "first install failed; restoring legacy-only ownership" in text
+    assert "preserving original transaction and publication evidence" in text
+    assert 'mv "$PUBLIC_DIR"' not in text
+    assert 'exec /usr/local/bin/macro-update --live-setup' in text
     assert 'systemd-analyze verify "${unit_sources[@]}"' in text
 
 
@@ -1870,8 +1872,13 @@ def test_live_setup_installs_and_arms_the_breadth_lane():
     root = Path(__file__).resolve().parents[1]
     live_setup = (root / "app" / "deploy" / "live-setup.sh").read_text()
     assert "macro-live-breadth.service macro-live-breadth.timer" in live_setup
-    enable_block = live_setup.split("systemctl enable --now")[1].split("\n\n")[0]
-    assert "macro-live-breadth.timer" in enable_block
+    assert "setup_control arm" in live_setup
+    owner = (root / "app/deploy/update.sh").read_text()
+    assert 'for lane in ("prophet", "closepass", "breadth")' in owner
+    assert '(ANCILLARY_TIMERS if setup["ancillary_enrollment"] == "absent" else ())' in owner
+    # Fresh arming and disabled-existing intent are executed in the Linux owner
+    # fixtures; setup no longer runs an independent blanket enable command.
+    assert "systemctl enable --now" not in live_setup
 
 
 def test_breadth_unit_pair_exists_and_uses_the_shared_env_file():
@@ -4204,8 +4211,8 @@ def test_selected_generation_read_cannot_mix_members_across_a_pointer_change(
 
     real_read_json_state = vlo._read_json_state
 
-    def swapping_read(path):
-        state, payload = real_read_json_state(path)
+    def swapping_read(path, **kwargs):
+        state, payload = real_read_json_state(path, **kwargs)
         if Path(path).name == vlo._GENERATION_SELECTION_NAME and state == "ok":
             # A concurrent publisher moves the pointer after the reader's
             # capture and before its member reads.
@@ -4711,3 +4718,49 @@ def test_legacy_atomic_write_does_not_add_directory_fsync(tmp_path, monkeypatch)
         vlo.atomic_write_json(target, {"strict": True}, require_durable=True)
     assert json.loads(target.read_text()) == {"strict": True}
     assert calls == ["file", "file", "directory"]
+
+
+def test_publication_receipt_hashes_exact_copied_bytes(tmp_path: Path):
+    source = tmp_path / "source.json"
+    target = tmp_path / "public" / "quotes.json"
+    body = b'{"quotes":{"SPY":{"price":600}},"meta":{"requested":1,"resolved":1}}'
+    source.write_bytes(body)
+    digest = vlo.atomic_publish(source, target)
+    assert target.read_bytes() == body
+    assert digest == hashlib.sha256(body).hexdigest()
+
+
+@pytest.mark.parametrize("invocation,expected", [("a" * 32, "a" * 32), ("invalid", None)])
+def test_private_lane_receipt_binds_invocation_and_original_publication(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, invocation: str, expected: str | None
+):
+    monkeypatch.setenv("INVOCATION_ID", invocation)
+    source = tmp_path / "stage" / "quotes.json"
+    source.parent.mkdir()
+    target = tmp_path / "public" / "live" / "quotes.json"
+    body = json.dumps({
+        "quotes": {f"S{i}": {"price": i + 1} for i in range(5)},
+        "meta": {"requested": 5, "resolved": 5},
+    }).encode()
+
+    def runner(args, **kwargs):
+        source.write_bytes(body)
+        return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+
+    orch = vlo.Orchestrator(live_dir=target.parent, state_dir=tmp_path / "state",
+                            data_dir=tmp_path / "data", runner=runner)
+    result = orch.command("display_quotes", ["fixture"], outputs=((source, target),),
+                          timeout=1, validator=lambda path: vlo.quote_snapshot_error(
+                              path, min_resolved=5, min_coverage=0.10))
+    assert result.status == "ok"
+    assert result.publication_sha256 == {"live/quotes.json": hashlib.sha256(body).hexdigest()}
+    # A later writer cannot alter the earlier producer's provenance.
+    target.write_text('{"later_writer":true}')
+    orch.write_status("fast", datetime.now(timezone.utc))
+    private = json.loads((tmp_path / "state/status-fast.json").read_text())
+    assert private["invocation_id"] == expected
+    assert private["tasks"][0]["publication_sha256"] == result.publication_sha256
+    assert private["tasks"][0]["publication_sha256"]["live/quotes.json"] != hashlib.sha256(target.read_bytes()).hexdigest()
+    public = json.loads((target.parent / "orchestrator_status.json").read_text())
+    assert "invocation_id" not in public["lanes"]["fast"]
+    assert "publication_sha256" not in public["lanes"]["fast"]["tasks"][0]

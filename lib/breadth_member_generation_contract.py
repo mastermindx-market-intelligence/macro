@@ -94,9 +94,9 @@ class CapturedBreadthMemberInputs:
     def member_index_inputs(self, members):
         """Actual member closes and matching-source volume; no candle synthesis.
 
-        This binding covers the captured thematic population, not separately owned
-        Nasdaq/Russell amalgam membership. Remove only a suffix with no eligible
-        member observation; interior holes retain the incumbent index semantics.
+        Index-only members require the receipt's actual index-membership adjunct.
+        Remove only a suffix with no eligible member observation; interior holes
+        retain the incumbent index semantics.
         """
         if (not isinstance(members, (list, tuple)) or len(members) > values.MAX_COLUMNS
                 or any(not isinstance(row, Mapping) or not isinstance(row.get("ticker"), str)
@@ -505,10 +505,14 @@ def _group_evidence(declared, *, panels, members, source, prepared):
     request = evidence["request"]
     if (not isinstance(request, dict) or set(request) != {"period", "recovery_period", "batch_size", "retries",
             "backoff_base_s", "basis_tolerance", "minimum_repair_sessions", "calculation_lookback_days"}
-            or request["period"] not in ("1mo", "max") or request["recovery_period"] not in (None, "max")
+            or request["recovery_period"] not in (None, "max")
             or type(request["minimum_repair_sessions"]) is not int
             or request["minimum_repair_sessions"] != max(*policy["ma_windows"], policy["nhnl_window"])
             or type(request["calculation_lookback_days"]) is not int or request["calculation_lookback_days"] < 1):
+        _error("invalid_breadth_request_policy")
+    cold_period = f"{max(1, request['calculation_lookback_days'] // 365 + 1)}y"
+    if (request["period"] not in ("1mo", "max", cold_period)
+            or (request["period"] == cold_period and request["recovery_period"] is not None)):
         _error("invalid_breadth_request_policy")
     YahooRequestSettings.capture({**request, "upsert_basis_tol": request["basis_tolerance"]})
     vendors = set()
@@ -541,12 +545,26 @@ def _group_evidence(declared, *, panels, members, source, prepared):
     return evaluation, sets["current"]
 
 
-def _extras_evidence(declared, *, primary, archive, membership, group_current, merge_meta, source, prepared):
+def _extras_evidence(declared, *, primary, archive, membership, group_current, merge_meta, source,
+                     prepared, index_membership=None):
     keys = {"status", "source_session", "effective_as_of", "requested", "downloaded", "retained",
             "unresolved", "resolution", "evidence"}
     if not isinstance(declared, dict) or set(declared) != keys or declared["source_session"] != source:
         _error("invalid_extras_evidence")
     requested, active, required_end, populations, references = _membership(membership, primary)
+    index_populations = None
+    if index_membership is not None:
+        from lib.sector_index_membership_capture import index_population
+        # Replay actual index membership independently. It never enters the
+        # thematic basket document or its original population evidence.
+        additional, eligible, ends, index_populations = index_population(
+            index_membership, primary=primary, before=prepared)
+        requested = tuple(sorted(set(requested) | additional))
+        active.update(eligible)
+        for ticker, end in ends.items():
+            required_end[ticker] = max(required_end.get(ticker, end), end)
+        if len(requested) > values.MAX_COLUMNS or len(primary) * len(requested) > values.MAX_PANEL_CELLS:
+            _error("membership_projection_bound")
     if declared["requested"] != list(requested) or declared["effective_as_of"] != source:
         _error("extras_membership_or_clock_mismatch")
     sets = {}
@@ -563,10 +581,13 @@ def _extras_evidence(declared, *, primary, archive, membership, group_current, m
     keys = {"evaluation_instant", "source_session", "effective_as_of", "completed_sessions_only", "request",
             "skipped_qualified_primary", "basket_populations", "currently_eligible",
             "no_visible_history_obligation", "selection_history_shortfalls", "members", "unknown"}
+    if index_membership is not None:
+        keys.add("index_populations")
     if (not isinstance(evidence, dict) or set(evidence) != keys or evidence["source_session"] != source
             or evidence["effective_as_of"] != source or evidence["completed_sessions_only"] is not True
             or evidence["currently_eligible"] != sorted(active) or evidence["basket_populations"] != populations
             or evidence["no_visible_history_obligation"] != [t for t in requested if t not in required_end]
+            or (index_membership is not None and evidence.get("index_populations") != index_populations)
             or not isinstance(evidence["members"], dict) or set(evidence["members"]) != set(requested)):
         _error("invalid_extras_evidence")
     if evidence["unknown"] != {key: _UNKNOWN_CLOCKS[key] for key in ("vendor_publication_clock", "provider_available_at")}:
@@ -574,6 +595,9 @@ def _extras_evidence(declared, *, primary, archive, membership, group_current, m
     evaluation = _instant(evidence["evaluation_instant"])
     if evaluation > prepared or _completed_target(evaluation) != source:
         _error("invalid_extras_clock")
+    if index_membership is not None:
+        from lib.sector_index_membership_capture import decode_index_membership
+        decode_index_membership(index_membership, before=evaluation)
     request = evidence["request"]
     if (not isinstance(request, dict) or set(request) != {"history_start", "batch_size", "retries",
             "backoff_base_s", "primary_history_threshold"}
@@ -701,7 +725,9 @@ def validate_breadth_member_bundle(*, member_bytes, input_identity, yahoo, publi
     receipt = _json(member_bytes["acquisition.json"])
     keys = {"schema", "source_session", "prepared_at", "producer_source_sha", "yahoo",
             "source_captures", "prior", "groups", "extras", "references"}
-    if not isinstance(receipt, dict) or set(receipt) != keys or receipt["schema"] != SCHEMA:
+    if (not isinstance(receipt, dict) or set(receipt) not in (keys, keys | {"index_membership"})
+            or receipt["schema"] != SCHEMA
+            or ("index_membership" in receipt and receipt["index_membership"] is None)):
         _error("invalid_breadth_receipt")
     identity = {"sector_breadth_members": {
         "schema": SCHEMA, "source_session": receipt["source_session"], "prepared_at": receipt["prepared_at"],
@@ -747,7 +773,8 @@ def validate_breadth_member_bundle(*, member_bytes, input_identity, yahoo, publi
     extras = decode_panel(member_bytes["baskets/extras_close.parquet"], field="close", source_session=source)
     resolved, resolution, required_refs, extras_evaluation = _extras_evidence(receipt["extras"],
         primary=primary, archive=extras, membership=membership, group_current=current,
-        merge_meta=meta, source=source, prepared=prepared)
+        merge_meta=meta, source=source, prepared=prepared,
+        index_membership=receipt.get("index_membership"))
     evaluations.append(extras_evaluation)
     captures = receipt["source_captures"]
     if not isinstance(captures, dict) or set(captures) != {*BROAD_GROUPS, "membership"}:
@@ -767,7 +794,7 @@ def validate_breadth_member_bundle(*, member_bytes, input_identity, yahoo, publi
 
 def encode_breadth_member_acquisitions(*, groups, extras, membership, yahoo,
         reference_frames, reference_evidence, source_captures, prior_identity,
-        prepared_at, source_revision) -> EncodedBreadthMemberInputs:
+        prepared_at, source_revision, index_membership=None) -> EncodedBreadthMemberInputs:
     from collectors.breadth import BreadthPriceAcquisition
     from scripts.fetch_basket_extras import BasketExtrasAcquisition
     if (not isinstance(groups, Mapping) or set(groups) != set(BROAD_GROUPS)
@@ -837,6 +864,8 @@ def encode_breadth_member_acquisitions(*, groups, extras, membership, yahoo,
             **{key: list(getattr(extras, key)) for key in ("requested", "downloaded", "retained", "unresolved")},
             "resolution": _copy(dict(extras.resolution)), "evidence": _copy(dict(extras.evidence))},
         "references": _copy(dict(reference_evidence))}
+    if index_membership is not None:
+        receipt["index_membership"] = _copy(dict(index_membership))
     raw["acquisition.json"] = _json_bytes(receipt)
     identity = {"sector_breadth_members": {"schema": SCHEMA, "source_session": source,
         "prepared_at": prepared.isoformat(), "producer_source_sha": source_revision,
@@ -907,6 +936,26 @@ def prepare_breadth_member_generation_request(*, sources, input_identity, yahoo,
         bundle_validator=validate_bundle)
 
 
+def read_breadth_yahoo_dependency(*, snapshot, generations_root, now, dependency_reader=None,
+                                 require_current=False):
+    """Resolve only the exact retained Yahoo identity sealed by this snapshot."""
+    from scripts.vps_live_orchestrator import read_retained_generation
+    from lib.yahoo_generation_contract import YAHOO_GENERATION_MEMBERS, verify_yahoo_snapshot
+    root = Path(generations_root)
+    if not root.is_absolute() or snapshot.domain != DOMAIN:
+        _error("absolute_private_root_required")
+    receipt = _json(snapshot.members["acquisition.json"])
+    dependency = receipt.get("yahoo") if isinstance(receipt, dict) else None
+    if (not isinstance(dependency, dict) or set(dependency) != {"domain", "generation_id", "content_id",
+            "source_revision", "source_session", "published_at", "members"}
+            or dependency["domain"] != YAHOO_GENERATION_DOMAIN):
+        _error("invalid_yahoo_dependency")
+    pinned = (dependency_reader or read_retained_generation)(generations_root=root,
+        domain=dependency["domain"], generation_id=dependency["generation_id"],
+        content_id=dependency["content_id"], members=YAHOO_GENERATION_MEMBERS)
+    return verify_yahoo_snapshot(pinned, now=now, require_current=require_current)
+
+
 def read_verified_breadth_member_inputs(*, generations_root, now, yahoo=None, snapshot_reader=None,
                                        dependency_reader=None, require_current=False):
     from scripts.vps_live_orchestrator import read_selected_generation
@@ -917,20 +966,9 @@ def read_verified_breadth_member_inputs(*, generations_root, now, yahoo=None, sn
         generations_root=root, domain=DOMAIN, members=MEMBERS)
     if snapshot.domain != DOMAIN:
         _error("invalid_breadth_domain")
-    manifest = snapshot.manifest
     if yahoo is None:
         # Prior recovery must bind the old dependency even when current Yahoo
         # advanced before a failed breadth attempt. Never refresh either pointer.
-        from scripts.vps_live_orchestrator import read_retained_generation
-        from lib.yahoo_generation_contract import YAHOO_GENERATION_MEMBERS, verify_yahoo_snapshot
-        receipt = _json(snapshot.members["acquisition.json"])
-        dependency = receipt.get("yahoo") if isinstance(receipt, dict) else None
-        if (not isinstance(dependency, dict) or set(dependency) != {"domain", "generation_id", "content_id",
-                "source_revision", "source_session", "published_at", "members"}
-                or dependency["domain"] != YAHOO_GENERATION_DOMAIN):
-            _error("invalid_yahoo_dependency")
-        pinned = (dependency_reader or read_retained_generation)(generations_root=root,
-            domain=dependency["domain"], generation_id=dependency["generation_id"],
-            content_id=dependency["content_id"], members=YAHOO_GENERATION_MEMBERS)
-        yahoo = verify_yahoo_snapshot(pinned, now=now, require_current=require_current)
+        yahoo = read_breadth_yahoo_dependency(snapshot=snapshot, generations_root=root,
+            now=now, dependency_reader=dependency_reader, require_current=require_current)
     return verify_breadth_snapshot(snapshot, yahoo=yahoo, now=now, require_current=require_current)

@@ -60,3 +60,23 @@ class SectorGenerationReader:
             payload=projection, source_session=receipt["source_session"],
             published_at=receipt["published_at"], qualification=receipt["qualification"],
         )
+
+
+def configure_sector_generation_reader(app, *, generations_root: str | None) -> bool:
+    """Bind the existing reader from deployment config, with no store acquisition.
+
+    Unset configuration leaves the mounted route unavailable. Invalid config
+    clears the capability and raises; it never selects the checkout/static tree.
+    """
+    app.state.sector_generation_reader = None
+    if generations_root is None:
+        return False
+    if (type(generations_root) is not str or not generations_root
+            or generations_root != generations_root.strip()
+            or len(generations_root) > 4096 or "\x00" in generations_root):
+        raise ValueError("invalid_sector_generation_root")
+    root = Path(generations_root)
+    if not root.is_absolute() or root == Path("/") or ".." in root.parts:
+        raise ValueError("invalid_sector_generation_root")
+    app.state.sector_generation_reader = SectorGenerationReader(generations_root=root)
+    return True

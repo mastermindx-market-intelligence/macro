@@ -892,24 +892,39 @@ def _load_rotation_events():
         return None
 
 
-def _measured_read(cyc, *, rotation_payload=_INPUT_NOT_SUPPLIED) -> dict:
-    """T17: bounded display-tier measured group read over the cycle spine payload.
+class SectorWindowProjectionError(ValueError):
+    """An explicitly supplied exact-window composition could not be admitted."""
 
-    Pure projection via engine.leadership_rotation_context (lazy import); never
-    raises and never mutates ``cyc`` — on ANY failure the key degrades to the
-    projection_error stub so the rest of the payload is untouched.
+
+def _measured_read(cyc, *, rotation_payload=_INPUT_NOT_SUPPLIED,
+                   sector_window_inputs=None) -> dict:
+    """Project captured evidence without mutating the cycle spine.
+
+    Legacy calls retain their projection-error degradation. A present explicit
+    exact-window input must either be admitted or raise a typed refusal; it must
+    never disappear into a successful-looking legacy stub.
     """
     try:
         from engine import leadership_rotation_context as _lrc
     except Exception as e:  # noqa: BLE001
+        if sector_window_inputs is not None:
+            raise SectorWindowProjectionError("sector_window_projection_unavailable") from e
         log.warning("sector_central: measured_read import failed: %s", e)
         return {"schema": "leadership_rotation_context.measured_group_read/v1",
                 "status": "unavailable", "reason": "projection_error"}
     try:
         if rotation_payload is _INPUT_NOT_SUPPLIED:
             rotation_payload = _load_rotation_events()
-        return _lrc.measured_group_read(cyc, rotation_payload=rotation_payload)
+        if sector_window_inputs is not None:
+            return _lrc.measured_group_read(
+                cyc, rotation_payload=rotation_payload, include_sector_dossiers=True,
+                sector_window_inputs=sector_window_inputs)
+        return _lrc.measured_group_read(
+            cyc, rotation_payload=rotation_payload, include_sector_dossiers=True
+        )
     except Exception as e:  # noqa: BLE001
+        if sector_window_inputs is not None:
+            raise SectorWindowProjectionError("sector_window_projection_refused") from e
         log.warning("sector_central: measured_read projection failed: %s", e)
         return {"schema": _lrc.MEASURED_READ_SCHEMA, "status": "unavailable",
                 "reason": "projection_error"}
@@ -1115,6 +1130,7 @@ class SectorCentralInputs:
     rotation_artifact: dict
     rotation_events: dict | None
     fusion_calibrations: Mapping[FusionCalibrationKey, tuple[float, float]]
+    sector_window_inputs: dict | None = None
 
 
 def compute() -> dict | None:
@@ -1300,7 +1316,8 @@ def compute_from_inputs(inputs: SectorCentralInputs, *, evaluation_date: date) -
         "sectors": sectors,
         "baskets": baskets,
         "measured_read": _measured_read(
-            cyc, rotation_payload=deepcopy(inputs.rotation_events)),
+            cyc, rotation_payload=deepcopy(inputs.rotation_events),
+            sector_window_inputs=inputs.sector_window_inputs),
     }
 
 

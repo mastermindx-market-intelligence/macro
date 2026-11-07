@@ -206,6 +206,161 @@ def assemble_sector_basket_documents(inputs: SectorBasketDocumentInputs) -> Sect
 
 
 @dataclass(frozen=True)
+class SectorWindowCapture:
+    """Detached metadata plus an internal observation-consistency witness.
+
+    The digest is not a generation, receipt, freshness or historical-admission
+    claim. The published receipt remains the existing Yahoo owner's receipt.
+    """
+    source_binding: dict
+    panel_sha256: str
+
+
+def _sector_window_rows(panel):
+    """Preserve a bounded TR panel as flat primitive rows; never repair it."""
+    import hashlib
+    import math
+    from numbers import Real
+    import pandas as pd
+
+    if (not isinstance(panel, pd.DataFrame) or len(panel) > 20000
+            or len(panel.columns) > 64 or panel.columns.has_duplicates
+            or not isinstance(panel.index, pd.DatetimeIndex)
+            or panel.index.hasnans or panel.index.has_duplicates
+            or panel.index.tz is not None
+            or not panel.index.is_monotonic_increasing
+            or not panel.index.equals(panel.index.normalize())
+            or any(type(column) is not str or not column or len(column) > 256
+                   for column in panel.columns)):
+        raise SectorDocumentCompositionError("invalid_sector_window_panel")
+    columns = sorted(panel.columns)
+    rows = []
+    for stamp, values in zip(panel.index, panel[columns].itertuples(index=False, name=None)):
+        row = {"session": stamp.date().isoformat()}
+        for column, value in zip(columns, values):
+            if value is None or value is pd.NA:
+                row[column] = None
+            elif isinstance(value, Real) and not isinstance(value, bool):
+                try:
+                    number = float(value)
+                except (ValueError, OverflowError) as exc:
+                    raise SectorDocumentCompositionError("nonfinite_sector_window_observation") from exc
+                if math.isnan(number):
+                    row[column] = None  # the captured pandas missing observation
+                elif math.isfinite(number):
+                    row[column] = number
+                else:
+                    raise SectorDocumentCompositionError("nonfinite_sector_window_observation")
+            else:
+                raise SectorDocumentCompositionError("invalid_sector_window_observation")
+        rows.append(row)
+    encoded = json.dumps(rows, allow_nan=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return rows, hashlib.sha256(encoded).hexdigest()
+
+
+def sector_window_capture_from_prices(prices) -> SectorWindowCapture:
+    """Project supplied captured bytes only; no selection, acquisition or clock.
+
+    Reuse the incumbent semantic decoder over this snapshot's supplied member
+    bytes, so mutable DataFrame state cannot detach the witness from its receipt.
+    A later read time does not become vendor availability or historical evidence.
+    """
+    import pandas as pd
+    from engine.leadership_rotation_context import US_SECTOR_COHORT_ID, _window_binding
+    from lib.sector_input_capture import SectorPriceCaptures
+    from lib.yahoo_generation_contract import VerifiedYahooGeneration, verify_yahoo_snapshot
+    from lib.yahoo_runtime_profile import SECTOR_CLOSE_TICKERS, YahooRuntimeBindingError
+
+    if not isinstance(prices, SectorPriceCaptures) or not isinstance(prices.yahoo, VerifiedYahooGeneration):
+        raise SectorDocumentCompositionError("captured_yahoo_prices_required")
+    try:
+        verified = verify_yahoo_snapshot(prices.yahoo.snapshot, now=prices.captured_at,
+                                         require_current=False)
+        if (verified.cohort.generation_id != prices.yahoo.cohort.generation_id
+                or verified.cohort.source_session != prices.yahoo.cohort.source_session):
+            raise ValueError("different captured Yahoo identity")
+        # Every individual index has already been admitted by the existing owner.
+        # The outer union retains missing observations; it never fills a price.
+        panel = pd.concat({ticker: verified.cohort.frames[ticker]["close"]
+                           for ticker in SECTOR_CLOSE_TICKERS}, axis=1, sort=True)
+        _, digest = _sector_window_rows(panel)
+        supplied = {
+            "source_roots": ["yahoo-sector-close-14"],
+            "cohort_id": US_SECTOR_COHORT_ID,
+            "benchmark": "SPY",
+            "source_session": verified.cohort.source_session,
+            "price_basis": "total_return",
+            "clocks": {"publication": verified.snapshot.published_at,
+                       "availability": None, "correction": None, "history": None},
+            "receipt": verified.prior_identity(captured_at=prices.captured_at),
+        }
+        binding, diagnostics = _window_binding(supplied)
+        if diagnostics["receipt_withheld"] or binding != supplied:
+            raise ValueError("captured receipt could not be preserved")
+        return SectorWindowCapture(binding, digest)
+    except SectorDocumentCompositionError:
+        raise
+    except (AttributeError, KeyError, TypeError, ValueError, OverflowError, YahooRuntimeBindingError) as exc:
+        raise SectorDocumentCompositionError("invalid_sector_window_capture") from exc
+
+
+def _sector_window_inputs(capture, *, panel, reference, benchmark, source_session):
+    """Bind these exact observations and supplied canonical sessions to Central."""
+    import re
+    import pandas as pd
+    from engine.leadership_rotation_context import US_SECTOR_COHORT_ID, _window_binding
+
+    if not isinstance(capture, SectorWindowCapture):
+        raise SectorDocumentCompositionError("invalid_sector_window_capture")
+    if (not isinstance(capture.panel_sha256, str)
+            or re.fullmatch(r"[0-9a-f]{64}", capture.panel_sha256) is None):
+        raise SectorDocumentCompositionError("invalid_sector_window_witness")
+    try:
+        binding, diagnostics = _window_binding(capture.source_binding)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SectorDocumentCompositionError("invalid_sector_window_binding") from exc
+    if (diagnostics["receipt_withheld"]
+            or set(binding) != {"source_roots", "cohort_id", "benchmark", "source_session",
+                                "price_basis", "clocks", "receipt"}
+            or binding["source_roots"] != ["yahoo-sector-close-14"]
+            or binding["cohort_id"] != US_SECTOR_COHORT_ID
+            or binding["benchmark"] != benchmark or benchmark != "SPY"
+            or binding["source_session"] != source_session
+            or binding["price_basis"] != "total_return"
+            or binding != capture.source_binding):
+        raise SectorDocumentCompositionError("incompatible_sector_window_binding")
+    rows, digest = _sector_window_rows(panel)
+    if digest != capture.panel_sha256:
+        raise SectorDocumentCompositionError("different_captured_sector_window_prices")
+    if (not isinstance(reference, pd.DatetimeIndex) or len(reference) > 20000
+            or reference.hasnans or reference.has_duplicates or reference.tz is not None
+            or not reference.is_monotonic_increasing
+            or not reference.equals(reference.normalize())):
+        raise SectorDocumentCompositionError("invalid_sector_window_reference_sessions")
+    return {
+        "closes": rows, "benchmark": benchmark, "end_session": source_session,
+        "source_session": source_session,
+        "reference_sessions": [stamp.date().isoformat() for stamp in reference],
+        "windows": [5, 20, 63], "source_binding": binding,
+    }
+
+
+@dataclass(frozen=True)
+class SectorDatedContextInputs:
+    """Captured owner documents for one explicitly configured theme example.
+
+    This selector is not a theme-to-sector mapping. Capture attribution identifies
+    bytes, not original historical availability or a qualified causal relationship.
+    """
+    theme_key: str
+    regime_document: object
+    config_document: object
+    public_risk_document: object
+    source_attribution: dict
+    decision_cutoff: str | None = None
+
+
+@dataclass(frozen=True)
 class SectorDocumentContext:
     """Captured adjuncts for the existing five-member Sector calculation.
 
@@ -236,6 +391,8 @@ class SectorDocumentContext:
     grader_frozen: object
     auxiliary_evidence: dict
     fusion_macro_beta_table: Mapping | None = None
+    sector_window_capture: SectorWindowCapture | None = None
+    dated_context_inputs: SectorDatedContextInputs | None = None
 
 
 @dataclass(frozen=True)
@@ -284,6 +441,9 @@ def compose_sector_documents(*, basket_inputs, theme_inputs, allocation_inputs,
     if context.fusion_macro_beta_table is not None and (
             not isinstance(context.fusion_macro_beta_table, Mapping) or context.fusion_calibrations):
         raise SectorDocumentCompositionError("ambiguous_or_invalid_fusion_source")
+    if (context.dated_context_inputs is not None
+            and not isinstance(context.dated_context_inputs, SectorDatedContextInputs)):
+        raise SectorDocumentCompositionError("captured_dated_context_inputs_required")
     built = built_at.astimezone(timezone.utc)
     core_session = _session(context.core_source_session, "core_source_session")
     baseline = _session(context.baseline_session, "baseline_session")
@@ -308,6 +468,13 @@ def compose_sector_documents(*, basket_inputs, theme_inputs, allocation_inputs,
         if not same:
             raise SectorDocumentCompositionError("inconsistent_shared_cycle_context")
 
+    # Qualify a present capture before deepcopy or panel bounding can hide an
+    # unsupported value, duplicate label or unrelated/future observation.
+    if context.sector_window_capture is not None:
+        _sector_window_inputs(context.sector_window_capture,
+            panel=cycle_inputs.closes_tr, reference=left.reference_sessions.get("US"),
+            benchmark=cycle_inputs.benchmark, source_session=core_session)
+
     # One detached value set for this call. Acquisition must not mutate admitted
     # inputs concurrently; this copy is not another capture/provenance authority.
     basket_inputs, theme_inputs, allocation_inputs, cycle_inputs, timing_inputs, value = deepcopy(
@@ -318,6 +485,11 @@ def compose_sector_documents(*, basket_inputs, theme_inputs, allocation_inputs,
     if observed is None or observed.date().isoformat() != core_session:
         raise SectorDocumentCompositionError("yahoo_effective_session_mismatch")
     cycle_inputs = replace(cycle_inputs, closes_tr=bounded_yahoo, closes_px=bounded_price)
+    sector_window_inputs = (None if value.sector_window_capture is None else
+        _sector_window_inputs(value.sector_window_capture,
+            panel=cycle_inputs.closes_tr,
+            reference=cycle_inputs.calculation_inputs.reference_sessions.get("US"),
+            benchmark=cycle_inputs.benchmark, source_session=core_session))
     membership = (basket_inputs.membership or {}).get("baskets") or {}
     if dict(cycle_inputs.basket_specs) != membership:
         raise SectorDocumentCompositionError("different_captured_basket_membership")
@@ -411,17 +583,31 @@ def compose_sector_documents(*, basket_inputs, theme_inputs, allocation_inputs,
             macro_beta_table=dict(value.fusion_macro_beta_table),
             risk_calibration=cycle_inputs.calculation_inputs.risk_calibration)
 
-    central_data = sector_central.compute_from_inputs(sector_central.SectorCentralInputs(
-        cycle_spine=cycle_data, market_context=value.market_context,
-        closes=cycle_inputs.closes_tr, narrative_rotation=allocation,
-        membership_document=basket_inputs.membership,
-        membership_unavailable=value.membership_unavailable,
-        rotation_artifact=value.rotation_artifact, rotation_events=value.rotation_events,
-        fusion_calibrations=calibrations), evaluation_date=evaluation_date)
+    try:
+        central_data = sector_central.compute_from_inputs(sector_central.SectorCentralInputs(
+            cycle_spine=cycle_data, market_context=value.market_context,
+            closes=cycle_inputs.closes_tr, narrative_rotation=allocation,
+            membership_document=basket_inputs.membership,
+            membership_unavailable=value.membership_unavailable,
+            rotation_artifact=value.rotation_artifact, rotation_events=value.rotation_events,
+            fusion_calibrations=calibrations,
+            sector_window_inputs=sector_window_inputs), evaluation_date=evaluation_date)
+    except sector_central.SectorWindowProjectionError as exc:
+        raise SectorDocumentCompositionError("sector_window_projection_refused") from exc
     if not isinstance(central_data, dict) or not central_data.get("sectors"):
         raise SectorDocumentCompositionError("central_calculation_unavailable")
     if central_data.get("as_of") != core_session:
         raise SectorDocumentCompositionError("central_source_session_mismatch")
+
+    if value.dated_context_inputs is not None:
+        from engine.sector_dated_context import project_dated_context
+        dated = value.dated_context_inputs
+        central_data["dated_context"] = project_dated_context(
+            theme_key=dated.theme_key, regime_document=dated.regime_document,
+            config_document=dated.config_document,
+            public_risk_document=dated.public_risk_document,
+            source_attribution=dated.source_attribution,
+            decision_cutoff=dated.decision_cutoff)
 
     # Grading observes the same admitted Yahoo panel and one captured frozen store.
     # It does not append today's calls, freeze basket levels or use computed charts.

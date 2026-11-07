@@ -12,6 +12,7 @@ APP_DIR="/opt/macro"
 live_source_control() {
 	/usr/bin/python3 -I -S - "/proc/$$/fd/255" "$@" <<'MMX_LIVE_SOURCE_PY'
 import configparser
+from datetime import datetime, timedelta, timezone
 import fcntl
 import hashlib
 import json
@@ -21,6 +22,7 @@ import re
 import stat
 import subprocess
 import sys
+import time
 import uuid
 
 APP = Path("/opt/macro")
@@ -33,8 +35,17 @@ UNIT_DIR = Path("/etc/systemd/system")
 CGROUP = Path("/sys/fs/cgroup")
 BOOT_ID = Path("/proc/sys/kernel/random/boot_id")
 LANES = ("fast", "snapshot", "bars")
+RUN_LANES = (*LANES, "sector-inputs")
 UNITS = tuple("macro-live-" + lane + suffix for lane in LANES
               for suffix in (".service", ".timer"))
+CORE_TIMERS = tuple(unit for unit in UNITS if unit.endswith(".timer"))
+ANCILLARY_UNITS = tuple("macro-live-" + lane + suffix
+                        for lane in ("prophet", "closepass", "breadth")
+                        for suffix in (".service", ".timer"))
+ANCILLARY_TIMERS = tuple(unit for unit in ANCILLARY_UNITS if unit.endswith(".timer"))
+SETUP_MEMBERS = ("setup/live-setup.sh",) + tuple("setup/units/" + unit for unit in ANCILLARY_UNITS)
+CRONTAB = "/usr/bin/crontab"
+CRON_SPOOL = Path("/var/spool/cron/crontabs")
 HELPERS = tuple("market-memory-options-" + name + ".sh"
                 for name in ("unit-boundary", "runtime-fence", "dropin-migration"))
 PHASES = ("PREPARED", "GUARDS_READY", "MUTATING", "SOURCE_READY", "RESTORING")
@@ -176,16 +187,18 @@ def json_write(path, value):
                                   allow_nan=False) + "\n").encode(), 0o600)
 
 
-def run(args, *, accepted=(0,), input=None):
+def run(args, *, accepted=(0,), input=None, timeout=None):
+    bounded = {"timeout": timeout} if timeout is not None else {}
     result = subprocess.run(args, input=input, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE, check=False)
+                            stderr=subprocess.PIPE, check=False, **bounded)
     require(result.returncode in accepted,
             "command failed (" + str(result.returncode) + "): " + " ".join(map(str, args[:3])))
     return result.stdout.decode("utf-8", "strict").strip()
 
 
-def git(*args):
-    return run([GIT, "-C", str(APP), *args])
+def git(*args, timeout=None):
+    bounded = {"timeout": timeout} if timeout is not None else {}
+    return run([GIT, "-C", str(APP), *args], **bounded)
 
 
 def source_revision(value):
@@ -234,7 +247,7 @@ def object_bytes(revision, rel):
 
 
 def unit_show(unit, prop):
-    require(unit in UNITS, "foreign unit")
+    require(unit in UNITS + ANCILLARY_UNITS, "foreign unit")
     return run([SYSTEMCTL, "show", "-p", prop, "--value", unit])
 
 
@@ -283,10 +296,10 @@ def reviewed_unit_shape(name, body):
         require(parser["Timer"].get("Unit") == "macro-live-" + lane + ".service"
                 and parser["Install"].get("WantedBy") == "timers.target", "foreign timer target")
 
-def unit_inventory():
+def unit_inventory(units=UNITS, *, check_public=True):
     directory(UNIT_DIR)
     states = {}
-    for unit in UNITS:
+    for unit in units:
         path = UNIT_DIR / unit
         try:
             s = path.lstat()
@@ -302,19 +315,21 @@ def unit_inventory():
             require(not unit_show(unit, "DropInPaths"), "foreign live-unit drop-ins: " + unit)
         states[unit] = {"absent": absent}
     count = sum(int(v["absent"]) for v in states.values())
-    require(count in (0, len(UNITS)), "partial live-unit installation")
-    if count == len(UNITS):
-        public = STATE.parent / "public"
-        try:
-            public.lstat()
-        except FileNotFoundError:
-            pass
-        else:
-            raise Refusal("live public footprint without all six units")
+    require(count in (0, len(units)), "partial live-unit installation")
+    if count == len(units):
+        if check_public:
+            public = STATE.parent / "public"
+            try:
+                public.lstat()
+            except FileNotFoundError:
+                pass
+            else:
+                raise Refusal("live public footprint without all six units")
         return "absent", {}
     timers = {}
-    for lane in LANES:
-        unit = "macro-live-" + lane + ".timer"
+    for unit in units:
+        if not unit.endswith(".timer"):
+            continue
         enabled = unit_enabled(unit)
         require(enabled in ("enabled", "disabled"), "masked/foreign timer intent: " + unit)
         active = unit_show(unit, "ActiveState")
@@ -339,7 +354,7 @@ def read_pending(owner):
     if not pending_exists():
         return None
     journal = closed_json(safe_read(PENDING, 65536, mode=0o600))
-    exact_keys(journal, ("schema", "attempt", "manifest_sha256", "phase", "restoration", "mirrors"), "journal")
+    exact_keys(journal, ("schema", "attempt", "manifest_sha256", "phase", "restoration", "mirrors", "setup"), "journal")
     require(journal["schema"] == "macro.live-source-update.v1"
             and type(journal["attempt"]) is str and re.fullmatch(r"[0-9a-f]{32}", journal["attempt"])
             and journal["phase"] in PHASES, "invalid source journal")
@@ -348,7 +363,7 @@ def read_pending(owner):
     require(sha(raw) == journal["manifest_sha256"], "capsule manifest mismatch")
     manifest = closed_json(raw)
     exact_keys(manifest, ("schema", "attempt", "owner_sha256", "old", "new", "changed",
-                         "boot_id", "enrollment", "timers", "service_cgroups", "members"), "manifest")
+                         "boot_id", "enrollment", "timers", "service_cgroups", "members", "purpose", "setup"), "manifest")
     require(manifest["schema"] == journal["schema"] and manifest["attempt"] == journal["attempt"]
             and manifest["owner_sha256"] == owner, "incompatible transaction owner")
     source_revision(manifest["old"])
@@ -385,12 +400,16 @@ def read_pending(owner):
             require(journal["mirrors"]["site"] == "complete" and
                     all(value in ("complete", "absent") for value in journal["mirrors"].values()),
                     "incomplete ready mirror receipts")
+    require(manifest["purpose"] in ("update", "setup"), "unknown source purpose")
     members = {("helpers/" + x) for x in HELPERS} | {("units/" + x) for x in UNITS}
+    if manifest["purpose"] == "setup":
+        members |= set(SETUP_MEMBERS)
     exact_keys(manifest["members"], members, "capsule members")
     for rel, digest in manifest["members"].items():
         require(type(digest) is str and re.fullmatch(r"[0-9a-f]{64}", digest), "invalid member digest")
         data = safe_read(capsule / rel, 256 * 1024, mode=0o600)
         require(sha(data) == digest, "changed capsule member: " + rel)
+    validate_setup(journal, manifest, capsule)
     return journal, manifest, capsule
 
 
@@ -428,17 +447,90 @@ def entry_read(owner, attempt, old):
     return capsule, data
 
 
+
+def entry_old(owner, attempt):
+    """Read the preflight capture; never recapture a later checkout revision."""
+    require(type(attempt) is str and re.fullmatch(r"[0-9a-f]{32}", attempt), "invalid entry capsule")
+    entry = closed_json(safe_read(CAPSULES / attempt / "entry.json", 65536, mode=0o600))
+    exact_keys(entry, ("owner_sha256", "old", "helpers"), "entry capture")
+    old = source_revision(entry["old"])
+    entry_read(owner, attempt, old)
+    return old
+
+
+def retire_entry(attempt):
+    """Retire only a verified unprepared capsule, never transaction evidence."""
+    require(not pending_exists(), "cannot retire entry while a transaction is pending")
+    require(type(attempt) is str and re.fullmatch(r"[0-9a-f]{32}", attempt), "invalid entry retirement")
+    capsule = CAPSULES / attempt
+    directory(capsule)
+    require({p.name for p in capsule.iterdir()} == {"entry.json", "helpers"},
+            "entry capsule has transaction or unexpected evidence")
+    entry = closed_json(safe_read(capsule / "entry.json", 65536, mode=0o600))
+    exact_keys(entry, ("owner_sha256", "old", "helpers"), "entry capture")
+    require(type(entry["owner_sha256"]) is str and re.fullmatch(r"[0-9a-f]{64}", entry["owner_sha256"]),
+            "invalid entry owner")
+    source_revision(entry["old"])
+    entry_read(entry["owner_sha256"], attempt, entry["old"])
+    directory(capsule / "helpers")
+    require({p.name for p in (capsule / "helpers").iterdir()} == set(HELPERS), "unexpected entry helper")
+    for name in HELPERS:
+        (capsule / "helpers" / name).unlink()
+    (capsule / "helpers").rmdir()
+    (capsule / "entry.json").unlink()
+    capsule.rmdir()
+    try:
+        sync_dir(CAPSULES)
+    except OSError as exc:
+        raise EffectNeedsReadback("entry retirement visible for " + attempt + "; " + str(exc)) from exc
+
+
+def retire_unprepared_entries():
+    if not CAPSULES.exists():
+        return
+    directory(CAPSULES)
+    retired = 0
+    for candidate in CAPSULES.iterdir():
+        if retired == 64:
+            break
+        if not re.fullmatch(r"[0-9a-f]{32}", candidate.name):
+            continue
+        directory(candidate)
+        try:
+            (candidate / "manifest.json").lstat()
+        except FileNotFoundError:
+            # Partially created or unknown entries are preserved for diagnosis.
+            if {p.name for p in candidate.iterdir()} != {"entry.json", "helpers"}:
+                continue
+            retire_entry(candidate.name)
+            retired += 1
+
+
 def write_journal(journal):
     json_write(PENDING, journal)
 
 
-def prepare(owner, old, new, attempt):
+def prepare(owner, old, new, attempt, purpose="update"):
     require(not pending_exists(), "pending transaction already exists")
     old, new = source_revision(old), source_revision(new)
     require(git("rev-parse", "HEAD") == old, "source changed before preparation")
     require(git("rev-parse", new + "^{commit}") == new, "target commit unavailable")
     capsule, data = entry_read(owner, attempt, old)
+    require(purpose in ("update", "setup"), "invalid source purpose")
+    require(purpose != "setup" or old == new, "setup cannot change source revision")
     enrollment, timers = unit_inventory()
+    setup = setup_capture(attempt) if purpose == "setup" else None
+    if setup is not None:
+        setup["activate"] = list((CORE_TIMERS if enrollment == "absent" else ()) +
+                                 (ANCILLARY_TIMERS if setup["ancillary_enrollment"] == "absent" else ()))
+        for rel in SETUP_MEMBERS:
+            source = "app/deploy/" + Path(rel).name
+            body = object_bytes(new, source)
+            require(0 < len(body) <= 256 * 1024 and safe_read(APP / source, 256 * 1024) == body,
+                    "setup capture differs from selected source")
+            directory((capsule / rel).parent, create=True)
+            atomic_write(capsule / rel, body, 0o600)
+            data[rel] = body
     changed = git("diff", "--name-only", old, new).splitlines()
     require(len(changed) <= 20000 and all("\n" not in x and len(x) <= 4096 for x in changed),
             "changed-path capture too large")
@@ -453,7 +545,7 @@ def prepare(owner, old, new, attempt):
             atomic_write(capsule / rel, body, 0o600)
     manifest = {"schema": "macro.live-source-update.v1", "attempt": attempt,
                 "owner_sha256": owner, "old": old, "new": new, "changed": changed,
-                "boot_id": boot_identity(), "enrollment": enrollment, "timers": timers,
+                "purpose": purpose, "setup": setup, "boot_id": boot_identity(), "enrollment": enrollment, "timers": timers,
                 "service_cgroups": {unit: unit_show(unit, "ControlGroup") for unit in UNITS
                                    if unit.endswith(".service")} if enrollment == "present" else {},
                 "members": {rel: sha(body) for rel, body in data.items()}}
@@ -465,7 +557,11 @@ def prepare(owner, old, new, attempt):
     journal = {"schema": manifest["schema"], "attempt": attempt, "manifest_sha256": sha(raw),
                "phase": "PREPARED", "restoration": {unit: "pending" for unit in timers},
                "mirrors": {name: "not-required" if old == new else "pending"
-                           for name in ("site", "news", "research")}}
+                           for name in ("site", "news", "research")},
+               "setup": None if setup is None else {
+                   "stage": "PACKAGES", "smoke": None, "cron": None,
+                   "activation": {unit: {"enable": "pending", "start": "pending"}
+                                  for unit in setup["activate"]}}}
     write_journal(journal)
     return capsule
 
@@ -529,7 +625,7 @@ def recovery_target(manifest):
             "foreign HEAD during original source transaction")
 
 
-def source_ready(manifest):
+def source_ready(manifest, journal):
     require(git("rev-parse", "HEAD") == manifest["new"], "HEAD differs from captured target")
     # Runtime data artifacts have separate owners. This source fence is bounded
     # to the three core lanes and does not assert estate-wide writer isolation.
@@ -541,6 +637,8 @@ def source_ready(manifest):
         try:
             directory(target)
         except FileNotFoundError:
+            require(journal["mirrors"][name] != "complete",
+                    "completed mirror destination is missing: " + name)
             continue
         run([SYNC, "-f", str(target)])
 
@@ -566,9 +664,24 @@ def record_mirror(journal, manifest, name, outcome):
     write_journal(journal)
 
 
-def restore(journal, manifest, capsule):
+def complete(journal, manifest, capsule):
+    final_journal = (json.dumps(journal, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n").encode()
+    json_write(capsule / "completion.json", {
+        "schema": journal["schema"], "attempt": journal["attempt"], "new": manifest["new"],
+        "purpose": manifest["purpose"], "phase": "COMPLETE",
+        "manifest_sha256": journal["manifest_sha256"], "journal_sha256": sha(final_journal),
+        "journal": journal})
+    PENDING.unlink()
+    try:
+        sync_dir(PENDING.parent)
+    except OSError as exc:
+        raise EffectNeedsReadback("journal retirement visible for attempt " + journal["attempt"] +
+                                 "; reconcile pending absence and completion receipt; " + str(exc)) from exc
+
+
+def restore(journal, manifest, capsule, *, retire=True):
     require(journal["phase"] in READY, "source is not ready for timer restoration")
-    source_ready(manifest)
+    source_ready(manifest, journal)
     journal["phase"] = "RESTORING"
     write_journal(journal)
     boot_changed = boot_identity() != manifest["boot_id"]
@@ -581,20 +694,28 @@ def restore(journal, manifest, capsule):
             progress = journal["restoration"][unit]
             if boot_changed and intent["enabled"] == "disabled" and intent["active"]:
                 raise Refusal("manual timer activation does not survive a boot: " + unit)
-            if intent["active"]:
-                if active == "inactive":
-                    require(progress == "pending", "ambiguous/withdrawn timer restoration: " + unit)
-                    journal["restoration"][unit] = "starting"
-                    write_journal(journal)
-                    run([SYSTEMCTL, "start", unit])
-                    require(unit_enabled(unit) == intent["enabled"] and unit_show(unit, "ActiveState") == "active",
-                            "timer restoration failed: " + unit)
-            else:
+            start = intent["active"] and active == "inactive"
+            if start:
+                require(progress == "pending", "ambiguous/withdrawn timer restoration: " + unit)
+            elif not intent["active"]:
                 require(active == "inactive", "inactive timer intent changed: " + unit)
-            journal["restoration"][unit] = "restored"
-            write_journal(journal)
         except (Refusal, OSError) as exc:
             held.append(str(exc))
+            continue
+        if start:
+            journal["restoration"][unit] = "starting"
+            # Persistence failures terminate this invocation. A sibling must not
+            # accidentally publish an in-memory state whose write failed.
+            write_journal(journal)
+            try:
+                run([SYSTEMCTL, "start", unit])
+                require(unit_enabled(unit) == intent["enabled"] and unit_show(unit, "ActiveState") == "active",
+                        "timer restoration failed: " + unit)
+            except (Refusal, OSError) as exc:
+                held.append(str(exc))
+                continue
+        journal["restoration"][unit] = "restored"
+        write_journal(journal)
     for unit, intent in manifest["timers"].items():
         try:
             require(unit_enabled(unit) == intent["enabled"] and
@@ -603,14 +724,8 @@ def restore(journal, manifest, capsule):
         except (Refusal, OSError) as exc:
             held.append(str(exc))
     require(not held, "; ".join(dict.fromkeys(held)))
-    json_write(capsule / "completion.json", {"schema": journal["schema"], "attempt": journal["attempt"],
-                                           "new": manifest["new"], "phase": "COMPLETE"})
-    PENDING.unlink()
-    try:
-        sync_dir(PENDING.parent)
-    except OSError as exc:
-        raise EffectNeedsReadback("journal retirement visible for attempt " + journal["attempt"] +
-                                 "; reconcile pending absence and completion receipt; " + str(exc)) from exc
+    if retire:
+        complete(journal, manifest, capsule)
 
 
 def replace_owner(script_fd, revision, *, adoption=False):
@@ -633,16 +748,391 @@ def replace_owner(script_fd, revision, *, adoption=False):
         require(not pending_exists(), "source transaction appeared before owner replacement")
         owner_identity(script_fd, candidate=adoption)
         atomic_write(OWNER, data, 0o755)
-        if safe_read(OWNER, MAX_OWNER, mode=0o755) != data:
-            raise EffectNeedsReadback("installed owner readback mismatch; expected sha256=" + sha(data))
+        try:
+            require(safe_read(OWNER, MAX_OWNER, mode=0o755) == data, "installed owner readback mismatch")
+        except (Refusal, OSError) as exc:
+            raise EffectNeedsReadback("owner replacement visible; expected sha256=" + sha(data) +
+                                     "; readback failed: " + str(exc)) from exc
     finally:
         os.close(fd)
     print(sha(data))
 
 
+# Setup is a purpose of this installed owner, not a second installer controller.
+def setup_capture(attempt):
+    ancillary, timers = unit_inventory(ANCILLARY_UNITS, check_public=False)
+    target = APP / ".venv"
+    try:
+        info = target.lstat()
+    except FileNotFoundError:
+        environment = {"mode": "create", "path": str(STATE.parent / "envs" / attempt),
+                       "device": None, "inode": None}
+    else:
+        require(info.st_uid == ROOT_UID and info.st_gid == ROOT_GID
+                and (stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode)),
+                "unsafe existing live environment")
+        resolved = target.resolve(strict=True)
+        directory(resolved)
+        info = resolved.stat()
+        environment = {"mode": "existing", "path": str(resolved),
+                       "device": info.st_dev, "inode": info.st_ino}
+    return {"environment": environment, "ancillary_enrollment": ancillary,
+            "ancillary_timers": timers, "activate": []}
+
+
+def validate_setup(journal, manifest, capsule):
+    if manifest["purpose"] == "update":
+        require(manifest["setup"] is None and journal["setup"] is None, "foreign setup state")
+        return
+    require(manifest["purpose"] == "setup" and manifest["old"] == manifest["new"],
+            "invalid setup source purpose")
+    config, state = manifest["setup"], journal["setup"]
+    exact_keys(config, ("environment", "ancillary_enrollment", "ancillary_timers", "activate"), "setup capture")
+    exact_keys(state, ("stage", "smoke", "activation", "cron"), "setup progress")
+    require(state["stage"] in ("PACKAGES", "READY", "SMOKED", "ARMED", "CRON_RETIRED"),
+            "invalid setup stage")
+    require((state["stage"] == "PACKAGES") == (journal["phase"] not in READY),
+            "setup stage/source phase disagreement")
+    env = config["environment"]
+    exact_keys(env, ("mode", "path", "device", "inode"), "setup environment")
+    require(env["mode"] in ("existing", "create") and type(env["path"]) is str
+            and Path(env["path"]).is_absolute() and ".." not in Path(env["path"]).parts,
+            "invalid setup environment")
+    if env["mode"] == "create":
+        require(env["path"] == str(STATE.parent / "envs" / manifest["attempt"])
+                and env["device"] is None and env["inode"] is None, "foreign candidate environment")
+    else:
+        require(type(env["device"]) is int and type(env["inode"]) is int
+                and env["device"] >= 0 and env["inode"] > 0, "invalid environment identity")
+    require(config["ancillary_enrollment"] in ("present", "absent"), "invalid ancillary enrollment")
+    names = set(ANCILLARY_TIMERS) if config["ancillary_enrollment"] == "present" else set()
+    exact_keys(config["ancillary_timers"], names, "ancillary intent")
+    for intent in config["ancillary_timers"].values():
+        exact_keys(intent, ("enabled", "active"), "ancillary intent")
+        require(intent["enabled"] in ("enabled", "disabled") and type(intent["active"]) is bool,
+                "invalid ancillary intent")
+    expected = (set(CORE_TIMERS) if manifest["enrollment"] == "absent" else set()) | (
+        set(ANCILLARY_TIMERS) if config["ancillary_enrollment"] == "absent" else set())
+    require(type(config["activate"]) is list and len(config["activate"]) == len(expected)
+            and set(config["activate"]) == expected, "invalid fresh activation intent")
+    exact_keys(state["activation"], expected, "activation progress")
+    for value in state["activation"].values():
+        exact_keys(value, ("enable", "start"), "activation step")
+        require(all(x in ("pending", "starting", "done") for x in value.values()), "invalid activation step")
+    smoke = state["smoke"]
+    if smoke is not None:
+        keys = {"phase", "boot_id", "previous_invocation", "not_before", "monotonic_us"}
+        require(type(smoke) is dict and smoke.get("phase") in ("starting", "passed"), "invalid smoke phase")
+        if smoke["phase"] == "passed":
+            keys |= {"invocation", "status_sha256", "quotes_sha256"}
+        exact_keys(smoke, keys, "smoke receipt")
+        require(type(smoke["boot_id"]) is str and re.fullmatch(r"[0-9a-f-]{36}", smoke["boot_id"])
+                and type(smoke["previous_invocation"]) is str
+                and (smoke["previous_invocation"] == "" or re.fullmatch(r"[0-9a-f]{32}", smoke["previous_invocation"]))
+                and type(smoke["monotonic_us"]) is int and smoke["monotonic_us"] >= 0,
+                "invalid smoke identity")
+        utc_timestamp(smoke["not_before"])
+        if smoke["phase"] == "passed":
+            require(type(smoke["invocation"]) is str and re.fullmatch(r"[0-9a-f]{32}", smoke["invocation"]),
+                    "invalid completed invocation")
+            for name, limit in (("status", 2 * 1024 * 1024), ("quotes", 32 * 1024 * 1024)):
+                digest = smoke[name + "_sha256"]
+                require(type(digest) is str and re.fullmatch(r"[0-9a-f]{64}", digest), "invalid smoke hash")
+                require(sha(safe_read(capsule / ("smoke-" + name + ".json"), limit, mode=0o600)) == digest,
+                        "changed captured smoke publication")
+    if state["stage"] in ("SMOKED", "ARMED", "CRON_RETIRED"):
+        require(smoke is not None and smoke["phase"] == "passed", "missing completed smoke")
+    cron = state["cron"]
+    if cron is not None:
+        exact_keys(cron, ("phase", "before_sha256", "after_sha256", "before_absent"), "cron receipt")
+        require(cron["phase"] in ("planned", "applying", "applied") and type(cron["before_absent"]) is bool,
+                "invalid cron phase")
+        for name in ("before", "after"):
+            require(sha(safe_read(capsule / ("cron." + name), 1024 * 1024, mode=0o600)) == cron[name + "_sha256"],
+                    "changed cron capture")
+    if state["stage"] == "CRON_RETIRED":
+        require(cron is not None and cron["phase"] == "applied", "missing cron postimage")
+    if state["stage"] == "PACKAGES":
+        require(smoke is None and cron is None, "package phase contains later effect receipts")
+    if state["stage"] == "READY":
+        require(smoke is None or smoke["phase"] == "starting", "ready phase contains completed smoke")
+    if state["stage"] in ("PACKAGES", "READY"):
+        require(all(set(value.values()) == {"pending"} for value in state["activation"].values()),
+                "activation preceded successful smoke")
+    if state["stage"] in ("PACKAGES", "READY", "SMOKED"):
+        require(cron is None, "cron retirement preceded timer qualification")
+    if state["stage"] in ("ARMED", "CRON_RETIRED"):
+        require(all(set(value.values()) == {"done"} for value in state["activation"].values())
+                and all(value == "restored" for value in journal["restoration"].values()),
+                "armed stage has unfinished timer effects")
+
+
+def utc_timestamp(value):
+    require(type(value) is str, "invalid timestamp type")
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    require(parsed.tzinfo is not None and parsed.utcoffset() == timedelta(0), "timestamp is not UTC")
+    return parsed
+
+
+def setup_environment(manifest):
+    env = manifest["setup"]["environment"]
+    target = APP / ".venv"
+    if env["mode"] == "existing":
+        resolved = target.resolve(strict=True)
+        directory(resolved)
+        info = resolved.stat()
+        require(str(resolved) == env["path"] and (info.st_dev, info.st_ino) == (env["device"], env["inode"]),
+                "live environment identity changed")
+        return "reuse", resolved
+    candidate = Path(env["path"])
+    try:
+        info = target.lstat()
+    except FileNotFoundError:
+        directory(candidate, create=True)
+        return "prepare", candidate
+    require(stat.S_ISLNK(info.st_mode) and info.st_uid == ROOT_UID and info.st_gid == ROOT_GID
+            and os.readlink(target) == str(candidate), "foreign live environment appeared")
+    directory(candidate)
+    return "reuse", candidate
+
+
+def qualify_environment(path):
+    directory(path)
+    result = subprocess.run([str(path / "bin/python"), "-c",
+        "import pandas,pyarrow,numpy,requests,yaml,jinja2,datasketch,boto3;"
+        "import scripts.vps_live_orchestrator"],
+        cwd=APP, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False, timeout=90)
+    require(result.returncode == 0, "captured live runtime imports failed")
+
+
+def publish_environment(manifest, journal):
+    # This precedes every checkout import, including the bind-only setup stage.
+    source_ready(manifest, journal)
+    mode, path = setup_environment(manifest)
+    qualify_environment(path)
+    if mode == "reuse":
+        return
+    directory(APP)
+    run([SYNC, "-f", str(path)])
+    published = False
+    try:
+        # symlink creation is atomic and fails on any existing destination. An
+        # absence check followed by replace would permit a competing postimage.
+        os.symlink(str(path), APP / ".venv")
+        published = True
+        sync_dir(APP)
+    except OSError as exc:
+        if published:
+            raise EffectNeedsReadback("live environment link visible; reconcile " + str(path)) from exc
+        raise
+
+
+def setup_smoke(journal, manifest, capsule):
+    state = journal["setup"]
+    require(journal["phase"] in READY and state["stage"] in ("READY", "SMOKED"), "setup smoke not ready")
+    if state["smoke"] is not None and state["smoke"]["phase"] == "passed":
+        return
+    unit = "macro-live-fast.service"
+    if state["smoke"] is None:
+        require(unit_show(unit, "ActiveState") in ("inactive", "failed")
+                and unit_show(unit, "MainPID") == "0" and unit_show(unit, "ControlPID") == "0",
+                "fast lane is already running")
+        state["smoke"] = {"phase": "starting", "boot_id": boot_identity(),
+                          "previous_invocation": unit_show(unit, "InvocationID"),
+                          "not_before": datetime.now(timezone.utc).isoformat(),
+                          "monotonic_us": time.monotonic_ns() // 1000}
+        write_journal(journal)
+        run([SYSTEMCTL, "start", unit])
+    smoke = state["smoke"]
+    require(boot_identity() == smoke["boot_id"], "in-flight smoke crossed a boot; reconcile original invocation")
+    invocation = unit_show(unit, "InvocationID")
+    require(re.fullmatch(r"[0-9a-f]{32}", invocation) and invocation != smoke["previous_invocation"],
+            "no new guarded smoke invocation")
+    require(unit_show(unit, "ActiveState") == "inactive" and unit_show(unit, "MainPID") == "0"
+            and unit_show(unit, "ControlPID") == "0" and unit_show(unit, "Result") == "success"
+            and unit_show(unit, "ExecMainStatus") == "0" and unit_show(unit, "ExecMainCode") == "1",
+            "original smoke invocation has not completed successfully")
+    started = int(unit_show(unit, "ExecMainStartTimestampMonotonic"))
+    finished = int(unit_show(unit, "ExecMainExitTimestampMonotonic"))
+    require(smoke["monotonic_us"] <= started <= finished, "smoke invocation predates admission")
+    status = safe_read(STATE / "status-fast.json", 2 * 1024 * 1024)
+    row = closed_json(status)
+    require(type(row) is dict and row.get("schema") == "vps_live_lane.v1" and row.get("lane") == "fast"
+            and row.get("ok") is True and row.get("invocation_id") == invocation,
+            "fast publication status is not bound to the guarded invocation")
+    boundary = utc_timestamp(smoke["not_before"])
+    require(boundary <= utc_timestamp(row.get("started_at")) <= utc_timestamp(row.get("finished_at"))
+            <= datetime.now(timezone.utc), "fast publication does not belong to this smoke")
+    tasks = row.get("tasks")
+    require(type(tasks) is list, "missing fast task evidence")
+    quotes_tasks = [task for task in tasks if type(task) is dict and task.get("name") == "display_quotes"]
+    require(len(quotes_tasks) == 1 and quotes_tasks[0].get("status") == "ok"
+            and quotes_tasks[0].get("returncode") == 0
+            and "live/quotes.json" in quotes_tasks[0].get("published", []), "fresh quote publication is unproven")
+    quote_path = STATE.parent / "public/live/quotes.json"
+    quotes = safe_read(quote_path, 32 * 1024 * 1024)
+    hashes = quotes_tasks[0].get("publication_sha256")
+    require(type(hashes) is dict and hashes.get("live/quotes.json") == sha(quotes),
+            "quote bytes do not match the guarded producer publication")
+    # Reuse the live producer's actual quote gate. Never substitute a setup-only
+    # freshness formula or accept an old file on a successful systemctl return.
+    result = subprocess.run([str(APP / ".venv/bin/python"), "-c",
+        "from pathlib import Path; import sys;"
+        "from scripts.vps_live_orchestrator import quote_snapshot_error;"
+        "sys.exit(1 if quote_snapshot_error(Path(sys.argv[1]),min_resolved=5,min_coverage=.10) else 0)",
+        str(quote_path)], cwd=APP, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False, timeout=30)
+    require(result.returncode == 0 and safe_read(quote_path, 32 * 1024 * 1024) == quotes,
+            "smoke quote validation or stable capture failed")
+    require(safe_read(STATE / "status-fast.json", 2 * 1024 * 1024) == status
+            and unit_show(unit, "InvocationID") == invocation, "smoke evidence changed during capture")
+    atomic_write(capsule / "smoke-status.json", status, 0o600)
+    atomic_write(capsule / "smoke-quotes.json", quotes, 0o600)
+    smoke.update(phase="passed", invocation=invocation, status_sha256=sha(status), quotes_sha256=sha(quotes))
+    state["stage"] = "SMOKED"
+    write_journal(journal)
+
+
+def verify_ancillary_intent(manifest):
+    for unit, intent in manifest["setup"]["ancillary_timers"].items():
+        require(unit_enabled(unit) == intent["enabled"]
+                and unit_show(unit, "ActiveState") == ("active" if intent["active"] else "inactive"),
+                "ancillary timer intent changed: " + unit)
+
+
+def setup_arm(journal, manifest, capsule):
+    state = journal["setup"]
+    require(state["stage"] in ("SMOKED", "ARMED") and journal["phase"] in READY, "setup arming is not ready")
+    restore(journal, manifest, capsule, retire=False)
+    verify_ancillary_intent(manifest)
+    for unit in manifest["setup"]["activate"]:
+        progress = state["activation"][unit]
+        enabled = unit_enabled(unit)
+        if enabled != "enabled":
+            require(enabled == "disabled" and progress["enable"] == "pending",
+                    "ambiguous/withdrawn fresh timer enablement: " + unit)
+            progress["enable"] = "starting"
+            write_journal(journal)
+            run([SYSTEMCTL, "enable", unit])
+            require(unit_enabled(unit) == "enabled", "fresh timer was not enabled: " + unit)
+        else:
+            require(progress["enable"] != "pending", "foreign fresh timer enablement: " + unit)
+        # Reapply the durability barrier on an observed postimage as well as a
+        # newly issued enable. A previous invocation may have stopped here.
+        try:
+            run([SYNC, "-f", str(UNIT_DIR)])
+        except (Refusal, OSError) as exc:
+            raise EffectNeedsReadback("fresh enablement visible; reconcile " + unit) from exc
+        progress["enable"] = "done"
+        write_journal(journal)
+        active = unit_show(unit, "ActiveState")
+        if active != "active":
+            require(active == "inactive" and progress["start"] == "pending",
+                    "ambiguous/withdrawn fresh timer activation: " + unit)
+            progress["start"] = "starting"
+            write_journal(journal)
+            run([SYSTEMCTL, "start", unit])
+            require(unit_show(unit, "ActiveState") == "active", "fresh timer was not activated: " + unit)
+        # An already-active timer satisfies the captured fresh intent. This
+        # includes boot activation after our durable enablement. Observe it;
+        # never issue another start merely to manufacture an action receipt.
+        progress["start"] = "done"
+        write_journal(journal)
+    state["stage"] = "ARMED"
+    write_journal(journal)
+
+
+def cron_read():
+    result = subprocess.run([CRONTAB, "-l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            check=False, env={**os.environ, "LC_ALL": "C"})
+    require(len(result.stdout) <= 1024 * 1024 and len(result.stderr) <= 65536, "oversized crontab response")
+    if result.returncode == 0:
+        return result.stdout, False
+    require(result.returncode == 1 and not result.stdout
+            and result.stderr.strip() == b"no crontab for root", "cannot establish original crontab")
+    return b"", True
+
+
+def retire_setup_cron(journal, manifest, capsule):
+    state = journal["setup"]
+    require(state["stage"] in ("ARMED", "CRON_RETIRED"), "setup timers are not qualified")
+    if state["cron"] is None:
+        before, absent = cron_read()
+        after = b"".join(line for line in before.splitlines(keepends=True)
+                         if b"macro-live" not in line and b"build_live_overlay" not in line)
+        atomic_write(capsule / "cron.before", before, 0o600)
+        atomic_write(capsule / "cron.after", after, 0o600)
+        state["cron"] = {"phase": "planned", "before_sha256": sha(before),
+                         "after_sha256": sha(after), "before_absent": absent}
+        write_journal(journal)
+    receipt = state["cron"]
+    current, absent = cron_read()
+    if sha(current) != receipt["after_sha256"]:
+        require(receipt["phase"] == "planned" and sha(current) == receipt["before_sha256"]
+                and absent == receipt["before_absent"], "cron retirement requires original-effect reconciliation")
+        receipt["phase"] = "applying"
+        write_journal(journal)
+        run([CRONTAB, str(capsule / "cron.after")])
+        current, _ = cron_read()
+        require(sha(current) == receipt["after_sha256"], "cron retirement postimage mismatch")
+    try:
+        run([SYNC, "-f", str(CRON_SPOOL)])
+    except (Refusal, OSError) as exc:
+        raise EffectNeedsReadback("cron postimage observed; durability requires readback") from exc
+    require(sha(cron_read()[0]) == receipt["after_sha256"], "cron changed during durability verification")
+    receipt["phase"] = "applied"
+    state["stage"] = "CRON_RETIRED"
+    write_journal(journal)
+
+
+def setup_action(action, journal, manifest, capsule):
+    require(manifest["purpose"] == "setup", "not an original setup transaction")
+    state = journal["setup"]
+    if action == "inspect":
+        print(state["stage"])
+    elif action == "environment":
+        require(state["stage"] == "PACKAGES" and journal["phase"] == "MUTATING",
+                "setup package mutation is not admitted")
+        mode, path = setup_environment(manifest)
+        print(mode + "\n" + str(path))
+    elif action == "bind-environment":
+        require(state["stage"] == "PACKAGES" and journal["phase"] == "MUTATING", "environment mutation not admitted")
+        publish_environment(manifest, journal)
+    elif action == "ready":
+        require(state["stage"] == "PACKAGES" and journal["phase"] == "MUTATING", "setup mutation not admitted")
+        publish_environment(manifest, journal)
+        source_ready(manifest, journal)
+        journal["phase"] = "SOURCE_READY"
+        state["stage"] = "READY"
+        write_journal(journal)
+    elif action == "smoke":
+        source_ready(manifest, journal)
+        setup_smoke(journal, manifest, capsule)
+    elif action == "arm":
+        setup_arm(journal, manifest, capsule)
+    elif action == "finish":
+        require(state["stage"] in ("ARMED", "CRON_RETIRED"), "setup is not ready to complete")
+        source_ready(manifest, journal)
+        qualify_environment(setup_environment(manifest)[1])
+        verify_ancillary_intent(manifest)
+        for unit, intent in manifest["timers"].items():
+            require(unit_enabled(unit) == intent["enabled"] and unit_show(unit, "ActiveState") ==
+                    ("active" if intent["active"] else "inactive"), "restored core timer changed: " + unit)
+        for unit in manifest["setup"]["activate"]:
+            require(unit_enabled(unit) == "enabled" and unit_show(unit, "ActiveState") == "active",
+                    "fresh timer changed before setup completion: " + unit)
+        retire_setup_cron(journal, manifest, capsule)
+        complete(journal, manifest, capsule)
+    else:
+        raise Refusal("unknown setup action")
+
+
 def main(argv):
     require(os.geteuid() == ROOT_UID, "source owner requires root")
     script_fd, action, *args = argv
+    # This absolute budget includes owner verification and waiting for fd 8.
+    # The same host monotonic clock survives exec; it is never a data timestamp.
+    live_budget = {"snapshot": 400.0, "bars": 880.0, "sector-inputs": 880.0}.get(args[0]) if action == "run" and len(args) == 1 else None
+    live_deadline = time.monotonic() + live_budget if live_budget is not None else None
     if action == "adopt-owner":
         require(len(args) == 1, "adopt-owner arguments")
         owner_identity(script_fd, candidate=True)
@@ -650,7 +1140,7 @@ def main(argv):
         return
     owner = owner_identity(script_fd)
     if action == "run":
-        require(len(args) == 1 and args[0] in LANES, "unknown live lane")
+        require(len(args) == 1 and args[0] in RUN_LANES, "unknown live lane")
         try:
             os.close(9)
         except OSError:
@@ -661,7 +1151,16 @@ def main(argv):
             os.close(fd)
         else:
             os.set_inheritable(8, True)
-        fcntl.flock(8, fcntl.LOCK_SH)
+        if live_deadline is None:
+            fcntl.flock(8, fcntl.LOCK_SH)
+        else:
+            while True:
+                require(time.monotonic() < live_deadline, "live lane budget exhausted waiting for source")
+                try:
+                    fcntl.flock(8, fcntl.LOCK_SH | fcntl.LOCK_NB)
+                    break
+                except BlockingIOError:
+                    time.sleep(min(.05, max(0, live_deadline - time.monotonic())))
         verify_lock(8)
         # The installed owner may have changed while this invocation waited.
         owner = owner_identity(script_fd)
@@ -669,9 +1168,22 @@ def main(argv):
         if found:
             journal, manifest, _ = found
             require(journal["phase"] in READY, "source update is pending: " + journal["phase"])
-            require(git("rev-parse", "HEAD") == manifest["new"], "ready transaction HEAD mismatch")
-        os.execv(str(APP / ".venv/bin/python"),
-                 [str(APP / ".venv/bin/python"), "-m", "scripts.vps_live_orchestrator", "--lane", args[0]])
+        remaining = None if live_deadline is None else live_deadline - time.monotonic()
+        require(remaining is None or remaining > 0, "live lane budget exhausted before source identity")
+        try:
+            revision = source_revision(git("rev-parse", "HEAD",
+                timeout=None if remaining is None else min(5.0, remaining)))
+        except subprocess.TimeoutExpired:
+            raise Refusal("live lane budget exhausted during source identity") from None
+        if found:
+            require(revision == manifest["new"], "ready transaction HEAD mismatch")
+        command = [str(APP / ".venv/bin/python"), "-m", "scripts.vps_live_orchestrator",
+                   "--lane", args[0], "--source-revision", revision, "--source-lock-fd", "8"]
+        if live_deadline is not None:
+            require(time.monotonic() < live_deadline, "live lane budget exhausted before exec")
+            command.extend(["--deadline-monotonic", repr(live_deadline)])
+        os.chdir(APP)
+        os.execv(str(APP / ".venv/bin/python"), command)
     elif action == "lock-path":
         fd = open_lock()
         os.close(fd)
@@ -681,16 +1193,28 @@ def main(argv):
         fcntl.flock(8, fcntl.LOCK_EX if action == "lock" else fcntl.LOCK_UN)
         verify_lock(8)
     elif action == "preflight":
+        require(len(args) == 2 and args[0] in ("update", "setup"), "preflight purpose arguments")
+        purpose, attempt = args
         found = read_pending(owner)
         if found:
+            require(found[1]["purpose"] == purpose, "pending transaction belongs to " + found[1]["purpose"])
+            require(not attempt or attempt == found[0]["attempt"], "foreign setup control attempt")
             recovery_target(found[1])
             print("1\n" + str(found[2]))
         else:
+            require(not attempt, "original setup transaction is absent")
+            retire_unprepared_entries()
             print("0\n" + str(entry_capture(owner)))
+    elif action == "entry-old":
+        require(len(args) == 1, "entry-old arguments")
+        print(entry_old(owner, args[0]))
+    elif action == "retire-entry":
+        require(len(args) == 1, "retire-entry arguments")
+        retire_entry(args[0])
     elif action == "enrollment":
         print(unit_inventory()[0])
     elif action == "prepare":
-        require(len(args) == 3, "prepare arguments")
+        require(len(args) == 4, "prepare arguments")
         print(prepare(owner, *args))
     elif action == "cgroup":
         require(len(args) == 1, "cgroup arguments")
@@ -715,7 +1239,7 @@ def main(argv):
         require(found is not None, "missing source transaction")
         journal, manifest, capsule = found
         if action == "get":
-            require(len(args) == 1 and args[0] in ("old", "new", "changed", "phase", "enrollment"), "get arguments")
+            require(len(args) == 1 and args[0] in ("old", "new", "changed", "phase", "enrollment", "purpose"), "get arguments")
             value = journal["phase"] if args[0] == "phase" else manifest[args[0]]
             print("\n".join(value) if type(value) is list else value)
         elif action == "verify-target":
@@ -732,6 +1256,7 @@ def main(argv):
             require(len(args) == 2, "mirror arguments")
             record_mirror(journal, manifest, *args)
         elif action == "ready":
+            require(manifest["purpose"] == "update", "ordinary ready cannot admit setup")
             require(journal["phase"] == "MUTATING" or
                     (journal["phase"] == "GUARDS_READY" and manifest["old"] == manifest["new"]),
                     "source mutation has not completed")
@@ -739,14 +1264,18 @@ def main(argv):
                     (journal["mirrors"]["site"] == "complete" and
                      all(value in ("complete", "absent") for value in journal["mirrors"].values())),
                     "mirror completion is unproven")
-            source_ready(manifest)
+            source_ready(manifest, journal)
             journal["phase"] = "SOURCE_READY"
             write_journal(journal)
         elif action == "verify-ready":
             require(journal["phase"] in READY, "source is not ready")
-            source_ready(manifest)
+            source_ready(manifest, journal)
         elif action == "restore":
+            require(manifest["purpose"] == "update", "ordinary restore cannot retire setup")
             restore(journal, manifest, capsule)
+        elif action == "setup-action":
+            require(len(args) == 1, "setup action arguments")
+            setup_action(args[0], journal, manifest, capsule)
         else:
             raise Refusal("unknown source-owner action")
 
@@ -767,7 +1296,7 @@ MMX_LIVE_SOURCE_PY
 # writer or fall-through. Python exit statuses (including 75) remain failures.
 if [ "$#" -ge 1 ] && [ "$1" = --live-lane ]; then
 	[ "$#" -eq 2 ] || exit 2
-	case "$2" in fast|snapshot|bars) ;; *) exit 2 ;; esac
+	case "$2" in fast|snapshot|bars|sector-inputs) ;; *) exit 2 ;; esac
 	# Close the waiting Bash wrapper's inherited mutex copy as well.
 	exec 9>&-
 	live_source_control run "$2"
@@ -777,7 +1306,13 @@ fi
 # ordinary updater while still holding fd9. setup.sh supplies an exact Git object.
 if [ "$#" -ge 1 ] && [ "$1" = --install-source-owner ]; then
 	[ "$#" -eq 2 ] && [[ "$2" =~ ^[0-9a-f]{40}$ ]] || exit 2
-	exec 9>/var/lock/macro-update.lock
+	# Full provisioning may already own this very mutex description.
+	if ! { : >&9; } 2>/dev/null; then
+		exec 9>/var/lock/macro-update.lock
+	fi
+	[ /proc/$$/fd/9 -ef /var/lock/macro-update.lock ] || {
+		echo "macro-update: inherited updater mutex is foreign" >&2; exit 75;
+	}
 	flock -n 9 || { echo "macro-update: owner adoption is busy" >&2; exit 75; }
 	live_source_control adopt-owner "$2"
 	exit $?
@@ -787,6 +1322,20 @@ fi
 # by the complete API-managed Caddy configuration. Normal cron has no arguments.
 CADDY_SOURCE_BASELINE=""
 CADDY_RECONCILE_ARGS=()
+LIVE_SOURCE_PURPOSE=update
+LIVE_SETUP_CONTROL=""
+LIVE_SETUP_ATTEMPT=""
+if [ "$#" -eq 1 ] && [ "$1" = --live-setup ]; then
+    LIVE_SOURCE_PURPOSE=setup
+    shift
+elif [ "$#" -eq 3 ] && [ "$1" = --live-setup-control ]; then
+    [[ "$2" =~ ^[0-9a-f]{32}$ ]] || exit 2
+    case "$3" in inspect|environment|bind-environment|ready|smoke|arm|finish) ;; *) exit 2 ;; esac
+    LIVE_SOURCE_PURPOSE=setup
+    LIVE_SETUP_ATTEMPT=$2
+    LIVE_SETUP_CONTROL=$3
+    shift 3
+fi
 if [ "$#" -ne 0 ]; then
 	if [ "$#" -ne 2 ] || [ "$1" != --caddy-source-baseline ] ||
 	   [[ ! "$2" =~ ^[0-9a-f]{40}$ ]]; then
@@ -803,8 +1352,19 @@ fi
 # work-tree files WHILE the first run's rsync is still READING them — and rsync
 # then renames a partial/0-byte copy into site.served with a perfectly atomic
 # rename. Skipping is free: the next cron tick picks up whatever this run got.
-exec 9>/var/lock/macro-update.lock
-flock -n 9 || exit 0
+if [ -n "$LIVE_SETUP_CONTROL" ]; then
+    [ /proc/$$/fd/9 -ef /var/lock/macro-update.lock ] || {
+        echo "macro-update: setup control must borrow the original updater mutex" >&2; exit 75;
+    }
+    flock -n 9 || exit 75
+else
+    exec 9>/var/lock/macro-update.lock
+    if [ "$LIVE_SOURCE_PURPOSE" = update ]; then
+        flock -n 9 || exit 0
+    else
+        flock -n 9 || exit 75
+    fi
+fi
 # BEGIN OHLC_DELIVERY_RECONCILE
 # OHLC generations live outside both rsync trees. The helper borrows this
 # process's existing lock; it must never unlock or reacquire that shared fd.
@@ -822,7 +1382,7 @@ reconcile_ohlc_delivery() {
 
 # Resolve recovery before executing any mutable checkout helper. A new entry
 # captures the exact HEAD helpers; a pending entry uses its original capsule.
-LIVE_SOURCE_ENTRY=$(live_source_control preflight)
+LIVE_SOURCE_ENTRY=$(live_source_control preflight "$LIVE_SOURCE_PURPOSE" "$LIVE_SETUP_ATTEMPT")
 LIVE_SOURCE_PENDING="${LIVE_SOURCE_ENTRY%%$'\n'*}"
 LIVE_SOURCE_CAPSULE="${LIVE_SOURCE_ENTRY#*$'\n'}"
 source "$LIVE_SOURCE_CAPSULE/helpers/market-memory-options-unit-boundary.sh"
@@ -915,12 +1475,13 @@ live_source_begin() {
 	local -a sources
 	if [ "$LIVE_SOURCE_PENDING" -eq 0 ]; then
 		LIVE_SOURCE_ENROLLMENT=$(live_source_control enrollment)
-		if [ "$OLD" = "$NEW" ]; then
+		if [ "$LIVE_SOURCE_PURPOSE" = update ] && [ "$OLD" = "$NEW" ]; then
 			if [ "$LIVE_SOURCE_ENROLLMENT" = absent ] || live_source_units_ready "$APP_DIR/app/deploy"; then
+				live_source_control retire-entry "${LIVE_SOURCE_CAPSULE##*/}"
 				return 0
 			fi
 		fi
-		LIVE_SOURCE_CAPSULE=$(live_source_control prepare "$OLD" "$NEW" "${LIVE_SOURCE_CAPSULE##*/}")
+		LIVE_SOURCE_CAPSULE=$(live_source_control prepare "$OLD" "$NEW" "${LIVE_SOURCE_CAPSULE##*/}" "$LIVE_SOURCE_PURPOSE")
 		LIVE_SOURCE_PENDING=1
 	else
 		LIVE_SOURCE_ENROLLMENT=$(live_source_control get enrollment)
@@ -934,7 +1495,7 @@ live_source_begin() {
 	live_source_control verify-target
 	case "$phase" in
 		SOURCE_READY|RESTORING)
-			if [ "$LIVE_SOURCE_ENROLLMENT" = present ]; then
+			if [ "$LIVE_SOURCE_ENROLLMENT" = present ] || [ "$LIVE_SOURCE_PURPOSE" = setup ]; then
 				live_source_units_ready "$directory"
 			fi
 			live_source_control verify-ready
@@ -942,12 +1503,14 @@ live_source_begin() {
 			exec 8>&-
 			# No reset, mirrors or new fetch on this branch. Restoration may hold
 			# the journal, which also prevents the later self-install.
-			live_source_control restore
-			LIVE_SOURCE_PENDING=0
+			if [ "$LIVE_SOURCE_PURPOSE" = update ]; then
+				live_source_control restore
+				LIVE_SOURCE_PENDING=0
+			fi
 			return 0
 			;;
 	esac
-	if [ "$LIVE_SOURCE_ENROLLMENT" = present ]; then
+	if [ "$LIVE_SOURCE_ENROLLMENT" = present ] || [ "$LIVE_SOURCE_PURPOSE" = setup ]; then
 		sources=()
 		for unit in "${LIVE_SOURCE_UNITS[@]}"; do
 			mm_unit_repair_inputs_safe "$directory/$unit" "/etc/systemd/system/$unit"
@@ -992,6 +1555,58 @@ live_source_finish() {
 	LIVE_SOURCE_ACTIVE=0
 }
 # END LIVE_SOURCE_TRANSACTION
+
+# Setup borrows the same captured helpers and source transaction. Its child
+# stages keep fd9 for the whole attempt and never invoke an ordinary update.
+if [ "$LIVE_SOURCE_PURPOSE" = setup ]; then
+    if [ -n "$LIVE_SETUP_CONTROL" ]; then
+        case "$LIVE_SETUP_CONTROL" in
+            bind-environment|ready)
+                lock_path=$(live_source_control lock-path)
+                exec 8<>"$lock_path"
+                live_source_control lock
+                live_source_control verify-target
+                live_source_units_ready "$LIVE_SOURCE_CAPSULE/units"
+                if [ "$LIVE_SETUP_CONTROL" = ready ]; then
+                    for unit in macro-live-prophet.service macro-live-prophet.timer \
+                        macro-live-closepass.service macro-live-closepass.timer \
+                        macro-live-breadth.service macro-live-breadth.timer; do
+                        mm_loaded_unit_ready "$LIVE_SOURCE_CAPSULE/setup/units/$unit" "/etc/systemd/system/$unit" "$unit"
+                    done
+                fi
+                live_source_control setup-action "$LIVE_SETUP_CONTROL"
+                live_source_control unlock
+                exec 8>&-
+                ;;
+            smoke|arm|finish)
+                live_source_units_ready "$LIVE_SOURCE_CAPSULE/units"
+                for unit in macro-live-prophet.service macro-live-prophet.timer \
+                    macro-live-closepass.service macro-live-closepass.timer \
+                    macro-live-breadth.service macro-live-breadth.timer; do
+                    mm_loaded_unit_ready "$LIVE_SOURCE_CAPSULE/setup/units/$unit" "/etc/systemd/system/$unit" "$unit"
+                done
+                live_source_control setup-action "$LIVE_SETUP_CONTROL"
+                ;;
+            *) live_source_control setup-action "$LIVE_SETUP_CONTROL" ;;
+        esac
+        exit $?
+    fi
+    if [ "$LIVE_SOURCE_PENDING" -eq 1 ]; then
+        OLD=$(live_source_control get old)
+    else
+        OLD=$(live_source_control entry-old "${LIVE_SOURCE_CAPSULE##*/}")
+    fi
+    NEW=$OLD
+    live_source_begin
+    if [ "$LIVE_SOURCE_ACTIVE" -eq 1 ]; then
+        live_source_control mutating
+        live_source_control unlock
+        exec 8>&-
+    fi
+    bash "$LIVE_SOURCE_CAPSULE/setup/live-setup.sh" --source-attempt "${LIVE_SOURCE_CAPSULE##*/}"
+    exit $?
+fi
+
 
 # BEGIN W1B5_RECIPROCAL_STOP
 stop_reciprocal_market_memory_writers() {

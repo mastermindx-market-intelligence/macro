@@ -45,6 +45,18 @@ case "$MACRO_REPO_URL" in
 		;;
 esac
 
+if [ "$TARGET" = /opt/macro ]; then
+    # Borrow an existing updater mutex only when it is the same file description.
+    # Keep it through the absence check, package work, reset and owner installation.
+    if ! { : >&9; } 2>/dev/null; then
+        exec 9>/var/lock/macro-update.lock
+    fi
+    [ /proc/$$/fd/9 -ef /var/lock/macro-update.lock ] || {
+        echo "source provisioning: inherited updater mutex is foreign" >&2; exit 75;
+    }
+    flock -n 9 || { echo "source provisioning: updater mutex is busy" >&2; exit 75; }
+fi
+
 if [ -d "$TARGET/.git" ]; then
 	# Existing /opt/macro live readers are governed by the installed updater.
 	# Neither a disabled fast timer nor a partial unit set permits direct reset.

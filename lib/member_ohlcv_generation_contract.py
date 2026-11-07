@@ -518,16 +518,35 @@ def prepare_member_ohlcv_generation_request(*, sources, input_identity, breadth,
             validator=member_validator(name)) for name in MEMBERS), bundle_validator=validate_bundle)
 
 
-def read_verified_member_ohlcv_inputs(*, generations_root, now, breadth, yahoo,
-                                     snapshot_reader=None, require_current=False):
-    """Read one selected snapshot against the already captured dependency pair."""
-    from scripts.vps_live_orchestrator import read_selected_generation
+def read_verified_member_ohlcv_inputs(*, generations_root, now, breadth=None, yahoo=None,
+                                     snapshot_reader=None, dependency_reader=None, require_current=False):
+    """Read one selection, using supplied dependencies or its exact retained pair.
+
+    Recovery uses actual current observation time and old publication identities.
+    It never substitutes today's selected dependencies for a stale member prior.
+    """
+    from scripts.vps_live_orchestrator import read_selected_generation, read_retained_generation
     root = Path(generations_root)
     if not root.is_absolute():
         _error("absolute_private_root_required")
     snapshot = (snapshot_reader or read_selected_generation)(
         generations_root=root, domain=DOMAIN, members=MEMBERS)
     raw, manifest = _snapshot_bytes(snapshot)
+    if (breadth is None) != (yahoo is None):
+        _error("complete_dependency_pair_required")
+    if breadth is None:
+        receipt = broad._json(raw["acquisition.json"])
+        dependency = receipt.get("breadth") if isinstance(receipt, dict) else None
+        if (not isinstance(dependency, dict) or set(dependency) != {"domain", "generation_id", "content_id",
+                "source_revision", "source_session", "published_at", "members"}
+                or dependency["domain"] != broad.DOMAIN):
+            _error("invalid_breadth_dependency")
+        reader = dependency_reader or read_retained_generation
+        pinned = reader(generations_root=root, domain=dependency["domain"],
+            generation_id=dependency["generation_id"], content_id=dependency["content_id"], members=broad.MEMBERS)
+        yahoo = broad.read_breadth_yahoo_dependency(snapshot=pinned, generations_root=root,
+            now=now, dependency_reader=reader, require_current=require_current)
+        breadth = broad.verify_breadth_snapshot(pinned, yahoo=yahoo, now=now, require_current=require_current)
     inputs = validate_member_ohlcv_bundle(member_bytes=raw, input_identity=manifest.get("input_identity"),
         breadth=breadth, yahoo=yahoo, published_at=snapshot.published_at, now=now,
         source_revision=manifest.get("source_revision"), computed_at=manifest.get("computed_at"),

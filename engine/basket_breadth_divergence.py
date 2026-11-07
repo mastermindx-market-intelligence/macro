@@ -21,6 +21,7 @@ a "hidden top". Pure functions, never-raise, no network.
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 import logging
 
 import numpy as np
@@ -53,13 +54,18 @@ BAND_ELEV, BAND_HIGH = 0.35, 0.60   # same display bands as basket_score.rollove
 _BD_HAND = (0.50, 0.30, 0.20)
 
 
+def calibration_from_document(document) -> dict:
+    """The existing Phase-0 block from an explicit captured document."""
+    bf = document.get("breadth_divergence_fit") if isinstance(document, dict) else None
+    return deepcopy(bf) if isinstance(bf, dict) else {}
+
+
 def _calibration() -> dict:
     """The Phase-0 verdict block (additive enrichment; {} when absent)."""
     try:
         p = config.data_dir() / "strategies" / "baskets_calibration.json"
         d = json.loads(p.read_text()) if p.exists() else {}
-        bf = d.get("breadth_divergence_fit") if isinstance(d, dict) else None
-        return bf if isinstance(bf, dict) else {}
+        return calibration_from_document(d)
     except Exception:  # noqa: BLE001 — calibration is enrichment, never fatal
         return {}
 

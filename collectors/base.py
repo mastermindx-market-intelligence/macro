@@ -233,8 +233,8 @@ class Adapter:
     def http_get(self, url: str, retries: int = 3, backoff_base: float = 3.0,
                  timeout: int = 60, **kwargs) -> requests.Response:
         headers = kwargs.pop("headers", {})
-        headers.setdefault("User-Agent",
-                           config.load()["sponsors"]["user_agent"])
+        if "User-Agent" not in headers:
+            headers["User-Agent"] = config.load()["sponsors"]["user_agent"]
         last_exc: Exception | None = None
         for attempt in range(retries):
             try:

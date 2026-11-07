@@ -208,3 +208,9 @@ assignment. Original active effects remain fenced and are reconciled on their ca
 Post-transfer rollback changes the selected accepted generation while retaining the
 runtime source owner. Software rollback, missing profile or transport failure must not
 reactivate legacy provider collection or overwrite runtime histories.
+
+## 2026-11-06 live-setup continuation
+
+The existing installed source owner now carries purpose-bound live setup through captured source/environment readiness, invocation-bound publication smoke, timer-intent restoration and exact cron retirement. Sixty Linux fixtures passed; affected Git regressions and the three sparse-registry PCE cases are reconciled in [the source review](../../research/market_os/LIVE_SETUP_SOURCE_REVIEW_2026-11-06.json). [Controlled first adoption](../../research/market_os/LIVE_SETUP_SOURCE_TRANSACTION_2026-11-06.md) must precede any reset by the old installed updater. No production activation is claimed.
+
+Terminal's original workspace allocation uncertainty has been reconciled and the same managed operation admitted at bb65839. Native source implementation continues there with one four-view generation and the existing identity/access/transport owners. Original Fabric and CI action fences remain unchanged. This source milestone does not close the Chairman's migration outcome.

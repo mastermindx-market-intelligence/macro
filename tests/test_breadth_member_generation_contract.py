@@ -357,10 +357,16 @@ def test_recovery_after_yahoo_advance_reads_exact_retained_dependency(tmp_path, 
     pointer.write_text("invalid latest pointer")
     before = pointer.read_bytes()
     original_read = publisher._read_json_state
-    def guarded(path):
-        if path == pointer:
+    import os
+    from pathlib import Path
+    parent_stat = pointer.parent.stat()
+    def guarded(path, **kwargs):
+        descriptor = kwargs.get("dir_fd")
+        directory = os.fstat(descriptor) if descriptor is not None else None
+        same_directory = directory is not None and (directory.st_dev, directory.st_ino) == (parent_stat.st_dev, parent_stat.st_ino)
+        if Path(path) == pointer or (Path(path).name == pointer.name and same_directory):
             raise AssertionError("Latest Yahoo pointer was reopened")
-        return original_read(path)
+        return original_read(path, **kwargs)
     monkeypatch.setattr(publisher, "_read_json_state", guarded)
     read = contract.read_verified_breadth_member_inputs(generations_root=root,
                                                        now=PUBLISHED + timedelta(seconds=2))

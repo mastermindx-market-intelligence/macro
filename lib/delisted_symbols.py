@@ -57,6 +57,11 @@ def ledger() -> dict[str, dict]:
     except Exception as e:  # noqa: BLE001 — a malformed ledger must never break collect/build
         log.warning("delisted-symbol ledger unreadable (%s) — treated as empty", e)
         return {}
+    return ledger_from_document(raw)
+
+
+def ledger_from_document(raw: dict) -> dict[str, dict]:
+    """Apply the existing exit-row policy to an explicitly captured document."""
     symbols = raw.get("symbols") or {}
     if not isinstance(symbols, dict):
         log.warning("delisted-symbol ledger: `symbols` is %s, expected a mapping — "

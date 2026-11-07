@@ -319,6 +319,25 @@ def _download_batches(tickers, period, *, batch_size, retries, backoff_base_s, c
         time.sleep(1)
 
 
+def capture_adjusted_policy(policy: Mapping) -> dict:
+    """Detach and validate the native acquisition policy before provider work."""
+    from lib.adjusted_price_capture import AdjustedCaptureError
+    if not isinstance(policy, Mapping):
+        raise AdjustedCaptureError("invalid_breadth_policy")
+    cfg = deepcopy(dict(policy))
+    windows, nhw, lookback = (cfg.get(key) for key in
+                              ("ma_windows", "nhnl_window", "lookback_days_live"))
+    fixups = cfg.get("ticker_fixups") or {}
+    if (not isinstance(windows, (list, tuple)) or len(windows) != 2
+            or any(type(v) is not int or v < 1 for v in windows)
+            or type(nhw) is not int or nhw < 1 or type(lookback) is not int or lookback < 1
+            or not isinstance(fixups, dict)
+            or any(not isinstance(k, str) or not isinstance(v, str) for k, v in fixups.items())):
+        raise AdjustedCaptureError("invalid_breadth_policy")
+    cfg["ma_windows"], cfg["ticker_fixups"] = list(windows), fixups
+    return cfg
+
+
 class BreadthAdapter(Adapter):
     name = "breadth"
     group = "breadth"
@@ -484,10 +503,10 @@ class BreadthAdapter(Adapter):
         from lib import market_session
         from lib.adjusted_price_capture import (capture_panels, merge_adjusted_capture,
             remap_adjusted_capture, AdjustedCaptureError, FIELDS)
-        cfg = deepcopy(dict(self.cfg))
+        cfg = capture_adjusted_policy(self.cfg)
         request = YahooRequestSettings.capture(self.ycfg)
         if (not isinstance(evaluation_instant, datetime) or evaluation_instant.tzinfo is None
-                or evaluation_instant.utcoffset() is None or period not in ("1mo", "max")
+                or evaluation_instant.utcoffset() is None or not isinstance(period, str)
                 or not isinstance(excluded_symbols, frozenset)
                 or any(not isinstance(t, str) for t in excluded_symbols)
                 or not isinstance(aliases, Mapping)):
@@ -502,11 +521,10 @@ class BreadthAdapter(Adapter):
         windows = cfg.get("ma_windows")
         nhw = cfg.get("nhnl_window")
         lookback = cfg.get("lookback_days_live")
-        if (not isinstance(windows, (list, tuple)) or len(windows) != 2
-                or any(type(v) is not int or v < 1 for v in windows)
-                or type(nhw) is not int or nhw < 1 or type(lookback) is not int or lookback < 1):
-            raise AdjustedCaptureError("invalid_breadth_policy")
         depth = max(*windows, nhw)
+        cold_period = f"{max(1, lookback // 365 + 1)}y"
+        if period not in ("1mo", "max", cold_period):
+            raise AdjustedCaptureError("invalid_breadth_period")
         if (not isinstance(members, pd.DataFrame) or members.columns.has_duplicates
                 or not {"symbol", "name", "sector"}.issubset(members.columns)
                 or len(members) > 10_000
@@ -527,20 +545,22 @@ class BreadthAdapter(Adapter):
                for v in mapping.values()) or len(set(mapping.values())) != len(mapping):
             raise AdjustedCaptureError("vendor_alias_collision_or_invalid")
         previous = capture_panels(prior_panels, source_session=source, allow_absent=True)
+        if period == cold_period and any(not panel.empty for panel in previous.values()):
+            raise AdjustedCaptureError("finite_cold_period_requires_empty_prior")
         raw = self._download_adjusted_capture(tuple(mapping.values()), period,
             request_settings=request, source_session=source)
         initial = remap_adjusted_capture(raw, canonical_to_vendor=mapping)
         arguments = dict(prior=previous, fresh=initial, active=active, source_session=source,
                          basis_tolerance=request.basis_tolerance, minimum_repair_sessions=depth,
-                         full_replacement=period == "max")
+                         full_replacement=period != "1mo")
         tentative = merge_adjusted_capture(**arguments)
         scan = tentative.panels["close"].reindex(columns=active)
         scan = scan.loc[scan.index >= pd.Timestamp(source) - pd.Timedelta(days=_SEAM_SCAN_DAYS)]
-        suspects = tuple(seam_suspects(None, None, scan)) if period != "max" else ()
+        suspects = tuple(seam_suspects(None, None, scan)) if period == "1mo" else ()
         arguments["residual_suspects"] = suspects
         tentative = merge_adjusted_capture(**arguments)
         repair_capture = None
-        if tentative.needs_repair and period != "max":
+        if tentative.needs_repair and period == "1mo":
             repair_map = {t: mapping[t] for t in tentative.needs_repair}
             # One full-history recovery preserves prior depth across basis changes.
             repair_raw = self._download_adjusted_capture(tuple(repair_map.values()), "max",
@@ -552,7 +572,7 @@ class BreadthAdapter(Adapter):
         archive = set().union(*(set(panel.columns) for panel in result.panels.values()))
         member_evidence = {}
         for ticker in active:
-            selected_capture = (initial if ticker not in result.repaired or period == "max" else repair_capture)
+            selected_capture = (initial if ticker not in result.repaired or period != "1mo" else repair_capture)
             span = selected_capture.spans.get(ticker) if selected_capture is not None else None
             member_evidence[ticker] = {"vendor_symbol": mapping[ticker],
                 "initial_span": [s.date().isoformat() for s in initial.spans[ticker]] if ticker in initial.spans else None,

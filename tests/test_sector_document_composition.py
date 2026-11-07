@@ -28,10 +28,10 @@ SOURCE = "2026-11-05"
 BUILT = datetime(2026, 11, 5, 23, tzinfo=timezone.utc)
 
 
-@lru_cache(maxsize=1)
-def _captured():
-    closes, _, _, spy, _, _, _, populations = _make_universe(n_sessions=320, seed=11)
-    candidates = pd.bdate_range(end=SOURCE, periods=450)
+@lru_cache(maxsize=2)
+def _captured(n_sessions=320):
+    closes, _, _, spy, _, _, _, populations = _make_universe(n_sessions=n_sessions, seed=11)
+    candidates = pd.bdate_range(end=SOURCE, periods=max(450, n_sessions * 2) if n_sessions != 320 else 450)
     idx = candidates[[market_session.is_session_date("US", stamp.date()) for stamp in candidates]][-len(closes):].as_unit("ns")
     closes.index = idx; spy.index = idx
     closes, spy, observation = align_latest_common_observation(closes, spy)
@@ -104,6 +104,35 @@ def _captured():
 
 def captured():
     return deepcopy(_captured())
+
+
+@pytest.mark.parametrize("cutoff", [None, "2026-10-01T20:00:00Z"])
+def test_dated_context_is_an_additive_five_member_join_with_unchanged_measurements(cutoff):
+    from tests.test_leadership_rotation_contract import (
+        _psl_ctx_regime, _psl_ctx_config, _psl_ctx_public_risk, _psl_ctx_attribution)
+    from engine.sector_dated_context import project_dated_context
+    args = captured()
+    before = documents.compose_sector_documents(**args)
+    raw = dict(theme_key="memory_storage", regime_document=_psl_ctx_regime(),
+        config_document=_psl_ctx_config(), public_risk_document=_psl_ctx_public_risk(),
+        source_attribution=_psl_ctx_attribution(), decision_cutoff=cutoff)
+    args["context"] = replace(args["context"], dated_context_inputs=documents.SectorDatedContextInputs(**raw))
+    after = documents.compose_sector_documents(**args)
+    assert set(after.member_bytes) == set(before.member_bytes) == set(SECTOR_GENERATION_MEMBERS)
+    key = "sectordata/sector_central.json"
+    for member in set(SECTOR_GENERATION_MEMBERS) - {key}:
+        assert after.member_bytes[member] == before.member_bytes[member]
+    old, new = json.loads(before.member_bytes[key]), json.loads(after.member_bytes[key])
+    packet = new.pop("dated_context")
+    assert new == old
+    assert packet == project_dated_context(**raw)
+    if cutoff:
+        assert packet["observations"]["status"] == "withheld"
+        assert "revision_state" not in packet["observations"]
+        assert packet["market_risk"]["status"] == "withheld"
+    else:
+        assert packet["observations"]["bottleneck"]["asof"] == "2026-09-01"
+    assert all(value is False for value in packet["authority"].values())
 
 
 def test_real_owner_chain_is_atomic_finite_and_admitted_for_both_audiences(monkeypatch):
@@ -358,3 +387,271 @@ def test_changed_composition_refuses_before_private_staging(tmp_path, change):
     with pytest.raises(SectorGenerationContractError):
         publish_composition(tmp_path, result, identity=identity)
     assert not (tmp_path / "state").exists()
+
+
+# These fixtures exercise the real supplied-byte decoder, without acquisition,
+# selection or publication. Their IDs, clocks, observations and no-dividend
+# close/close_price equality are synthetic. Default 320-session tests above stay
+# unchanged; genuine Yahoo admission requires at least 1,000 actual US sessions.
+def _window_capture_fixture(*, missing=None):
+    from pathlib import Path
+    from collectors.yahoo import CycleBenchmarkAcquisition
+    from lib.sector_input_capture import SectorPriceCaptures
+    from lib import yahoo_generation_contract as yahoo
+    from lib.yahoo_runtime_profile import SECTOR_CLOSE_TICKERS
+    from scripts.vps_live_orchestrator import SelectedGenerationSnapshot
+
+    args = deepcopy(_captured(1100))
+    panel = args["cycle_inputs"].closes_tr.copy(deep=True)
+    for index, ticker in enumerate(SECTOR_CLOSE_TICKERS):
+        if ticker not in panel:
+            panel[ticker] = 100.0 + index + np.arange(len(panel)) / 100
+    panel = panel[list(SECTOR_CLOSE_TICKERS)]
+    frames = {ticker: pd.DataFrame({"close": panel[ticker],
+                                   "close_price": panel[ticker]})
+              for ticker in SECTOR_CLOSE_TICKERS}
+    if missing is not None:
+        ticker, position = missing
+        frames[ticker] = frames[ticker].drop(index=panel.index[position])
+    revision = "334b26b540ea82fc2593ab3a723ceda65be32b3b"
+    evaluated = BUILT - timedelta(seconds=3)
+    prepared = BUILT - timedelta(seconds=2)
+    published = BUILT - timedelta(seconds=1)
+    clocks = {
+        "known": {"evaluation_instant": evaluated.isoformat(), "expected_session": SOURCE,
+            "session_calendar": "US", "target_calendar_verified": True,
+            "completed_sessions_only": True, "minimum_history_sessions": 1000,
+            "basis_tolerance": .001, "fetch_period": "max", "batch_size": 14,
+            "retries": 1, "backoff_base_s": 0.0},
+        "unknown": {
+            "vendor_publication_clock": "Not supplied per bar by yfinance",
+            "provider_available_at": "First retrievable time is not observed",
+            "vendor_session_metadata": "No per-bar session-completion proof supplied",
+            "upstream_correction_clock": "Corrections are observed only on a later request"},
+    }
+    lineage = {ticker: {
+        "provider": "yahoo", "ticker": ticker, "vendor_symbol": ticker,
+        "alias_applied": False, "field": "Adj Close", "basis": "total_return",
+        "close_price_basis": "split_adjusted_dividend_unadjusted",
+        "attempt_periods": ["max"], "basis_comparison": {}, "prior": "absent",
+        "completed_sessions_only": True, "expected_session": SOURCE,
+        "rows": len(frame), "first_session": frame.index[0].date().isoformat(),
+        "last_session": SOURCE, "status": "accepted",
+    } for ticker, frame in frames.items()}
+    prior = {"kind": "bootstrap", "source_ref": "fixture-absent-yahoo", "content_id": None,
+        "captured_at": (BUILT - timedelta(seconds=4)).isoformat(),
+        "domain": yahoo.YAHOO_GENERATION_DOMAIN, "source_revision": revision,
+        "member_sha256": {ticker: None for ticker in SECTOR_CLOSE_TICKERS},
+        "member_bytes": {ticker: None for ticker in SECTOR_CLOSE_TICKERS}}
+    acquisition = CycleBenchmarkAcquisition(
+        accepted=True, reason="accepted", requested=SECTOR_CLOSE_TICKERS,
+        returned=SECTOR_CLOSE_TICKERS, failed=(), primary_failed=(),
+        failure_reasons={}, frames=frames, lineage=lineage, clocks=clocks, notes=())
+    encoded = yahoo.encode_yahoo_acquisition(acquisition, prior_identity=prior,
+        prepared_at=prepared, source_revision=revision)
+    snapshot = SelectedGenerationSnapshot(
+        domain=yahoo.YAHOO_GENERATION_DOMAIN, generation_id="fixture-sector-yahoo-1100",
+        content_id="a" * 64, generation_dir=Path("/inert-fixture-not-read"),
+        published_at=published.isoformat(),
+        manifest={"input_identity": encoded.input_identity, "source_revision": revision,
+                  "computed_at": prepared.isoformat()},
+        members=encoded.members)
+    verified = yahoo.verify_yahoo_snapshot(snapshot, now=BUILT, require_current=True)
+    # Only the Yahoo leg is consumed by this adapter. The other five-owner inputs
+    # remain the existing explicit calculation fixture; no breadth-capture
+    # acquisition or admission is claimed by this new Yahoo receipt test.
+    prices = SectorPriceCaptures(yahoo=verified, breadth=None, captured_at=BUILT)
+    decoded_panel = pd.concat({ticker: verified.cohort.frames[ticker]["close"]
+                               for ticker in SECTOR_CLOSE_TICKERS}, axis=1, sort=True)
+    args["cycle_inputs"] = replace(args["cycle_inputs"], closes_tr=decoded_panel,
+                                   closes_px=decoded_panel.copy(deep=True))
+    args["timing_inputs"] = replace(args["timing_inputs"],
+        etf_frames={fund: decoded_panel[fund].rename("close").to_frame()
+                    for fund in args["timing_inputs"].funds})
+    calibrations = dict(args["context"].fusion_calibrations)
+    for ticker in SECTOR_CLOSE_TICKERS[:11]:
+        for state in ("", *cycles.LADDER):
+            calibrations[central.fusion_calibration_key({
+                "kind": "sector", "ticker": ticker,
+                "now": {"timing_state": state}})] = (1.0, 1.0)
+    args["context"] = replace(args["context"], setup_closes=decoded_panel.copy(deep=True),
+        fusion_calibrations=calibrations,
+        sector_window_capture=documents.sector_window_capture_from_prices(prices))
+    return args, prices
+
+
+def test_sector_window_real_capture_chain_keeps_exact_values_receipt_and_clocks(monkeypatch):
+    from lib import yahoo_generation_contract as yahoo
+    from lib.yahoo_runtime_profile import SECTOR_CLOSE_TICKERS
+
+    args, prices = _window_capture_fixture()
+    before = args["cycle_inputs"].closes_tr.copy(deep=True)
+    binding = deepcopy(args["context"].sector_window_capture.source_binding)
+    rotation_seen = []
+    from engine import leadership_rotation_context as lrc
+    original_projection = lrc.measured_group_read
+    def project(*a, **k):
+        rotation_seen.append(deepcopy(k["rotation_payload"]))
+        return original_projection(*a, **k)
+    def forbidden(*a, **k):
+        raise AssertionError("ambient input, selection, calendar acquisition or effect reached")
+    original_datetime_module = SimpleNamespace(**vars(datetime_module))
+    with monkeypatch.context() as scoped:
+        scoped.setattr(relativedelta_module, "datetime", original_datetime_module)
+        for owner, name in ((config, "load"), (config, "data_dir"), (config, "site_dir"),
+                            (store, "read"), (central, "_load_rotation_events"),
+                            (yahoo, "read_verified_yahoo_cohort"),
+                            (sector_central_grader, "grade"),
+                            (sector_central_grader, "append_central_log")):
+            scoped.setattr(owner, name, forbidden)
+        scoped.setattr(lrc, "measured_group_read", project)
+        with _Trap() as trap:
+            observed = {**args,
+                "evaluation_date": documents.date.fromisoformat(SOURCE),
+                "built_at": datetime_module.datetime.fromisoformat(BUILT.isoformat())}
+            result = documents.compose_sector_documents(**observed)
+    assert trap.reads == trap.writes == trap.clocks == trap.providers == []
+    assert rotation_seen == [None]
+    # The longer, admitted capture reaches a real rollover-watch branch that
+    # the 320-session fixture never reached. Its owner must sort each actual
+    # candidate, not capture an unrelated outer ticker variable.
+    watch = json.loads(result.member_bytes["basketdata/baskets.json"])["theme_intel"]["rollover"]
+    assert watch and [row["risk"] for row in watch] == sorted(
+        (row["risk"] for row in watch), reverse=True)
+    read = json.loads(result.member_bytes[SECTOR_GENERATION_MEMBERS[0]])["measured_read"]
+    exact = read["sector_window_measurements"]
+    assert exact["windows_sessions"] == [5, 20, 63]
+    assert [row["group_id"] for row in exact["groups"]] == list(SECTOR_CLOSE_TICKERS[:11])
+    assert exact["source_session"] == exact["end_session"] == SOURCE
+    assert exact["windows"]["63"]["start_session"] == "2026-08-07"
+    assert "2026-09-07" not in [x.date().isoformat()
+        for x in args["cycle_inputs"].calculation_inputs.reference_sessions["US"]]
+    cell = next(x for x in exact["groups"] if x["group_id"] == "XLB")["windows"]["5"]
+    # XLB is the explicit 1100-row linear synthetic series: 110.99 / 110.94.
+    assert cell["absolute_return_pct"] == pytest.approx((110.99 / 110.94 - 1) * 100, abs=1e-6)
+    benchmark_ratio = before["SPY"].iloc[-1] / before["SPY"].iloc[-6]
+    assert cell["relative_wealth_pct"] == pytest.approx(
+        ((110.99 / 110.94) / benchmark_ratio - 1) * 100, abs=1e-6)
+    assert exact["clocks"]["publication"] == (BUILT - timedelta(seconds=1)).isoformat()
+    assert exact["clocks"]["availability"] is None
+    assert exact["clocks"]["history"] is None and exact["clocks"]["correction"] is None
+    assert exact["receipt"] == prices.yahoo.prior_identity(captured_at=BUILT)
+    assert exact["source_roots"] == ["yahoo-sector-close-14"]
+    assert exact["limitations"]["freshness"]["status"] == "unverified"
+    assert exact["limitations"]["point_in_time"]["status"] == "not_qualified"
+    assert all(flag is False for flag in exact["authority"].values())
+    assert read["sector_dossiers"]["windows_sessions"] == [21, 63]
+    json.dumps(exact, allow_nan=False)
+    pd.testing.assert_frame_equal(args["cycle_inputs"].closes_tr, before)
+    assert args["context"].sector_window_capture.source_binding == binding
+
+
+def test_sector_window_absence_preserves_frozen_joined_preimage_bytes():
+    result = documents.compose_sector_documents(**captured())
+    # Parent executed the frozen 720995... composition owner with the joined
+    # 36cfcb... Central and accepted 43b1cf... producer, before the optional join.
+    expected = {
+        "sectordata/sector_central.json": "88582a9f101a761ade15accbbc8c94014880a5d9a731cb46665d6edbbf3de6b1",
+        "sectordata/sector_cycles.json": "6310bdc78ab7ddd56e34c4a5bfb8e846e21a56db2767fdf92daae3c983df63bf",
+        "basketdata/baskets.json": "3e22034d17fce3190e910531e5155941f46c2a52c9afea9968b2bff80698b59f",
+        "basketdata/si_handoff.json": "b0277b794719bb71ba335bbfee168f272d2f88ac95244aeb27433d7db4d45de0",
+        "basketdata/action_board.json": "d68476a46519f92c0e6e683ca2f2dd39336f6b64101be070c330f698df89214f",
+    }
+    assert {name: hashlib.sha256(raw).hexdigest()
+            for name, raw in result.member_bytes.items()} == expected
+    assert "sector_window_measurements" not in json.loads(
+        result.member_bytes[SECTOR_GENERATION_MEMBERS[0]])["measured_read"]
+
+
+@pytest.mark.parametrize("change", ["panel", "source_session", "benchmark", "basis", "cohort",
+                                   "receipt", "capture_type", "duplicate", "boolean", "future"])
+def test_sector_window_incompatible_capture_refuses_before_calculation(change, monkeypatch):
+    args, _ = _window_capture_fixture()
+    capture = args["context"].sector_window_capture
+    if change in ("panel", "duplicate", "boolean", "future"):
+        panel = args["cycle_inputs"].closes_tr.copy(deep=True)
+        if change == "panel":
+            panel.iloc[-1, panel.columns.get_loc("XLB")] += 1
+        elif change == "duplicate":
+            panel = pd.concat([panel, panel.iloc[-1:]])
+        elif change == "boolean":
+            panel = panel.astype(object); panel.iloc[-1, 0] = True
+        else:
+            panel.loc[pd.Timestamp("2026-11-06")] = panel.iloc[-1]
+        args["cycle_inputs"] = replace(args["cycle_inputs"], closes_tr=panel)
+    elif change == "benchmark":
+        args["cycle_inputs"] = replace(args["cycle_inputs"], benchmark="QQQ")
+    elif change == "capture_type":
+        args["context"] = replace(args["context"], sector_window_capture={})
+    else:
+        binding = deepcopy(capture.source_binding)
+        if change == "source_session": binding["source_session"] = "2026-11-04"
+        elif change == "basis": binding["price_basis"] = "price"
+        elif change == "cohort": binding["cohort_id"] = "other"
+        elif change == "receipt": binding["receipt"] = {"pad": "x" * 17000}
+        args["context"] = replace(args["context"],
+            sector_window_capture=replace(capture, source_binding=binding))
+    def forbidden(*a, **k): raise AssertionError("calculation must not start")
+    monkeypatch.setattr(baskets, "compute_baskets_from_inputs", forbidden)
+    with pytest.raises(documents.SectorDocumentCompositionError):
+        documents.compose_sector_documents(**args)
+
+
+@pytest.mark.parametrize("ticker", ["XLB", "SPY"])
+def test_sector_window_missing_start_observation_is_not_filled_or_shifted(ticker):
+    # The verified member legitimately omits one old session; every retained
+    # value is finite/positive and >1000 actual sessions remain. The outer
+    # captured panel carries that absence, rather than a NaN encoded as a bar.
+    args, _ = _window_capture_fixture(missing=(ticker, -6))
+    result = documents.compose_sector_documents(**args)
+    exact = json.loads(result.member_bytes[SECTOR_GENERATION_MEMBERS[0]])[
+        "measured_read"]["sector_window_measurements"]
+    window = exact["windows"]["5"]
+    assert window["start_session"] == "2026-10-29"
+    assert window["end_session"] == SOURCE
+    cell = next(x for x in exact["groups"] if x["group_id"] == "XLB")["windows"]["5"]
+    if ticker == "XLB":
+        assert cell["absolute_return_pct"] is None
+        assert cell["relative_wealth_pct"] is None
+        assert cell["coverage"]["observed_n"] == 5
+    else:
+        assert cell["absolute_return_pct"] is not None
+        assert cell["relative_wealth_pct"] is None
+        assert cell["coverage"]["observed_n"] == 6
+        assert window["benchmark_return_pct"] is None
+        assert window["benchmark_coverage"]["observed_n"] == 5
+    assert cell["null_reasons"]["relative_wealth_pct"] is not None
+
+
+def test_sector_window_adapter_uses_supplied_bytes_not_mutable_frame_state():
+    args, prices = _window_capture_fixture()
+    original = args["context"].sector_window_capture
+    prices.yahoo.cohort.frames["XLB"].iloc[-1, 0] *= 2
+    assert documents.sector_window_capture_from_prices(prices) == original
+    panel = args["cycle_inputs"].closes_tr.copy(deep=True)
+    panel.iloc[-1, panel.columns.get_loc("XLB")] *= 2
+    args["cycle_inputs"] = replace(args["cycle_inputs"], closes_tr=panel)
+    with pytest.raises(documents.SectorDocumentCompositionError,
+                       match="different_captured_sector_window_prices"):
+        documents.compose_sector_documents(**args)
+
+
+def test_sector_window_short_history_cannot_masquerade_as_verified_capture():
+    from lib.yahoo_generation_contract import encode_history
+    from lib.yahoo_runtime_profile import YahooRuntimeBindingError
+    frame = captured()["cycle_inputs"].closes_tr["SPY"]
+    with pytest.raises(YahooRuntimeBindingError, match="YAHOO_RUNTIME_HISTORY_INSUFFICIENT"):
+        encode_history(pd.DataFrame({"close": frame, "close_price": frame}), source_session=SOURCE)
+
+
+def test_sector_window_explicit_failure_is_visible_but_legacy_stays_failsoft(monkeypatch):
+    from engine import leadership_rotation_context as lrc
+    def refused(*a, **k): raise ValueError("explicit invalid composition fixture")
+    monkeypatch.setattr(lrc, "measured_group_read", refused)
+    def forbidden(*a, **k): raise AssertionError("captured absence must not load rotation")
+    monkeypatch.setattr(central, "_load_rotation_events", forbidden)
+    legacy = central._measured_read({}, rotation_payload=None)
+    assert legacy["reason"] == "projection_error"
+    with pytest.raises(central.SectorWindowProjectionError,
+                       match="sector_window_projection_refused"):
+        central._measured_read({}, rotation_payload=None, sector_window_inputs={})

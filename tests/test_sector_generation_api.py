@@ -669,14 +669,25 @@ def test_error_bodies_carry_no_private_metadata(_incumbent_gates, monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Ownership: the parent owns the final wiring hunk.
+# Ownership: the existing application owns the one mounted route.
 # ---------------------------------------------------------------------------
 
 
-def test_the_route_is_not_wired_into_the_application_by_this_change():
-    """The application owner reserves the final registration hunk."""
-    source = (REPO_ROOT / "app" / "main.py").read_text(encoding="utf-8")
-    assert "sector_generation" not in source
+def test_the_route_is_mounted_exactly_once_in_the_existing_application():
+    from app.main import app
+    # Newer FastAPI retains included routers; enumerate their effective routes
+    # while preserving the same single mounted GET ownership assertion.
+    effective = []
+    for route in app.routes:
+        contexts = getattr(route, "effective_route_contexts", None)
+        effective.extend(contexts() if callable(contexts) else [route])
+    routes = [route for route in effective if getattr(route, "path", None) == "/api/sector-generation"]
+    assert len(routes) == 1
+    assert routes[0].methods == {"GET"}
+    response = TestClient(app).get("/api/sector-generation?audience=invalid")
+    assert response.status_code == 400
+    assert response.json()["code"] == "REQUEST_INVALID"
+    assert response.headers["cache-control"] == "private, no-store"
 
 
 @pytest.mark.parametrize("audience", ["preview", "entitled"])

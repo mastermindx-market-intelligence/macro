@@ -26,17 +26,25 @@ from lib import config
 _ROLLOVER_HAND = (0.30, 0.25, 0.20, 0.15, 0.10)
 
 
+def rollover_weights_from_document(document) -> tuple:
+    """Existing fitted-or-hand selection over one captured calibration document."""
+    try:
+        rf = document.get("rollover_fit") or {}
+        w = rf.get("wired_weights")
+        if rf.get("verdict") == "ship_fitted_weights" and isinstance(w, list) and len(w) == 5:
+            return tuple(float(x) for x in w)
+    except Exception:  # noqa: BLE001 — same optional enrichment fallback
+        pass
+    return _ROLLOVER_HAND
+
+
 def _rollover_weights() -> tuple:
     try:
         p = config.data_dir() / "strategies" / "baskets_calibration.json"
         d = json.loads(p.read_text()) if p.exists() else {}
-        rf = d.get("rollover_fit") or {}
-        w = rf.get("wired_weights")
-        if rf.get("verdict") == "ship_fitted_weights" and isinstance(w, list) and len(w) == 5:
-            return tuple(float(x) for x in w)
+        return rollover_weights_from_document(d)
     except Exception:  # noqa: BLE001 — calibration is enrichment, never fatal
-        pass
-    return _ROLLOVER_HAND
+        return _ROLLOVER_HAND
 
 
 def _rsi(s: pd.Series, n: int = 14) -> float | None:
