@@ -275,6 +275,13 @@
                     "null"
                   ]
                 },
+                "generated_utc": {"type": ["string", "null"]},
+                "stale_after": {"type": ["string", "null"]},
+                "freshness": {
+                  "type": ["object", "null"],
+                  "properties": {"stale": {"type": "boolean"}},
+                  "additionalProperties": false
+                },
                 "produced_at": {
                   "type": [
                     "string",
@@ -356,6 +363,29 @@
             }
           ]
         },
+        "source_clock_receipt": {
+          "type": "object",
+          "properties": {
+            "generated_utc": {"type": ["string", "null"]},
+            "produced_at": {"type": ["string", "null"]},
+            "available_at": {"type": ["string", "null"]},
+            "stale_after": {"type": ["string", "null"]},
+            "availability": {
+              "type": ["object", "null"],
+              "properties": {
+                "status": {"type": ["string", "null"]},
+                "available_at": {"type": ["string", "null"]}
+              },
+              "additionalProperties": false
+            },
+            "freshness": {
+              "type": ["object", "null"],
+              "properties": {"stale": {"type": "boolean"}},
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
         "confirmed_events": {
           "anyOf": [
             {
@@ -408,6 +438,9 @@
         },
         "display_only": {
           "const": true
+        },
+        "latest_observation": {
+          "description": "Optional display-only rotation_observation_view/v1 wrapper lifted verbatim from the rotation artifact's early_context.latest_observation. The consumer mirror (V1-V8) validates it; a present non-object renders unreadable. It is never a stage, hazard, confluence or policy input."
         }
       },
       "additionalProperties": false

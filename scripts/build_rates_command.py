@@ -51,6 +51,11 @@ def _append_forward_log(outdir: Path, artifact: dict) -> None:
     """Append divergence-flag stamp to forward_log.jsonl under nightly lane gate.
 
     keep-FIRST per asof_night: skip if a row with the same asof_night already exists.
+    A build-time-fallback asof (no candidate input date — C0 sets the
+    caveat ``asof_build_time_fallback``) MUST NOT land in the forward ledger
+    (SEAT S4): nightly stays the sole advancer and a manufactured asof has
+    no contract meaning. The skip is recorded in the build's stdout so the
+    missing row is auditable.
     """
     lane = os.environ.get("COLLECT_LANE", "") or os.environ.get("US_LANE", "")
     if lane != _LANE_GATE:
@@ -60,6 +65,19 @@ def _append_forward_log(outdir: Path, artifact: dict) -> None:
     asof_night = artifact.get("asof", "")
     if not asof_night:
         log.warning("forward_log: asof missing — skipping append")
+        return
+
+    # Build-time-fallback asof: ledger-law guard (SEAT S4 / §2.10). Never
+    # append when the asof was manufactured by build_board's no-candidate
+    # branch; the nightly lane is the sole advancer of forward_log.
+    caveats = artifact.get("caveats") or []
+    if isinstance(caveats, list) and "asof_build_time_fallback" in caveats:
+        print(
+            "::notice title=forward-log-skipped::"
+            "forward_log_skipped:asof_build_time_fallback",
+            flush=True,
+        )
+        log.info("forward_log: build-time-fallback asof — skipping append")
         return
 
     log_path = outdir / "forward_log.jsonl"
@@ -102,6 +120,9 @@ def _append_forward_log(outdir: Path, artifact: dict) -> None:
         },
         "implied_bp_12m": (artifact.get("board") or {}).get("rate_path_row", {}).get("implied_bp_12m"),
         "gap_bp": (artifact.get("board") or {}).get("rate_path_row", {}).get("gap", {}).get("gap_bp"),
+        # Freeze the exact already-qualified RIC measurement block. Do not recompute,
+        # score, or reinterpret it here; keep-FIRST turns this into prospective evidence.
+        "policy_path_repricing": artifact.get("policy_path_repricing"),
         "logged_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -175,7 +196,7 @@ def main() -> int:
     # Build the board artifact
     try:
         from engine.rates_inflation_command import build_board, build_changes
-        artifact = build_board()
+        artifact = build_board(cutoff=datetime.now(timezone.utc).date().isoformat())
     except Exception as exc:
         log.error("rates_inflation_command.build_board failed: %s", exc)
         return 0

@@ -1,0 +1,22 @@
+[
+  {
+    "accession": "0001652044-23-000070",
+    "expected_period_end": "2023-06-30",
+    "expected_span_ref": null,
+    "expected_unit": "ratio",
+    "expected_value_text": null,
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "GOOGL",
+    "label_class": "extract_absent",
+    "pack_id": "PK11",
+    "polarity": "negative",
+    "reason": "goog-20230630.htm | untagged | Software 10-Q with no regulatory-capital disclosure: grepped for 'common equity tier', 'CET1', 'tier 1 capital', 'regulatory capital': 0 matches each.",
+    "section_family": "cet1_or_stated_ratio",
+    "split": "held_out",
+    "target_id": "cet1_ratio_disclosed",
+    "target_kind": "extract",
+    "trial_id": "PK11|0001652044-23-000070|extract|cet1_ratio_disclosed"
+  }
+]
