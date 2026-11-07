@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FIZZ-BULL-20260818",
-  "asof": "2026-11-06",
+  "asof": "2026-11-07",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 46.4,
@@ -11,26 +11,26 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 51.2,
+    "progress": 51.1,
     "pace": 0.0,
-    "retention": 100.0,
-    "overlay": 32.8
+    "retention": 99.6,
+    "overlay": 36.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.028,
-    "dist_to_t1_r": 0.472,
-    "dist_to_t2_r": 1.972,
-    "horizon_pct_used": 175.6,
-    "p1": 0.6856,
-    "p2": 0.3428,
+    "dist_to_stop_r": 2.024,
+    "dist_to_t1_r": 0.476,
+    "dist_to_t2_r": 1.976,
+    "horizon_pct_used": 177.8,
+    "p1": 0.6829,
+    "p2": 0.3415,
     "p3": null,
-    "move_r": 1.028,
+    "move_r": 1.024,
     "mfe_r": 1.028,
     "mae_r": -0.589
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 79,
-  "tau": 1.7556,
+  "days_elapsed": 80,
+  "tau": 1.7778,
   "closed": true,
   "outcome": "EXPIRED"
 }
