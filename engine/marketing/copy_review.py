@@ -210,12 +210,6 @@ def review_posts_llm(posts: list[dict], cfg: dict, *,
         return []
 
     try:
-        from lib import config as _config  # noqa: PLC0415
-        model_id = (_config.load().get("llm_models", {}) or {}).get(
-            llm_cfg.get("model_key", "marketing_copy"), "")
-        if not model_id:
-            return None
-
         # CHATGPT-FIRST (operator directive 2026-07-29, recorded on
         # config/marketing.yml copywriter.llm): codex leads, the key_pool-balanced
         # Claude oauth rung is the fallback. Sol, same tier as the writer whose
@@ -228,22 +222,38 @@ def review_posts_llm(posts: list[dict], cfg: dict, *,
         # key ledger. The codex tier IS threaded because the ruling gives both
         # lanes the same one.
         from engine import llm_auth  # noqa: PLC0415
-        providers = llm_auth.build_providers(
-            {
-                "usage_lane": "marketing-copy-review",
-                "oauth_pool_lane": "marketing-copy-review",
-                "provider_order": llm_cfg.get("provider_order")
-                or ["codex", "oauth", "anthropic", "deepseek"],
-                "codex_source_model": llm_cfg.get("codex_source_model", "gpt-5.6-sol"),
-                "codex_reasoning_effort": llm_cfg.get("codex_reasoning_effort", "medium"),
-            },
-            opus_model=model_id,
-        )
+        provider_cfg = {
+            "usage_lane": "marketing-copy-review",
+            "oauth_pool_lane": "marketing-copy-review",
+            "provider_order": llm_cfg.get("provider_order")
+            or ["codex", "oauth", "anthropic", "deepseek"],
+            "codex_source_model": llm_cfg.get("codex_source_model", "gpt-5.6-sol"),
+            "codex_reasoning_effort": llm_cfg.get("codex_reasoning_effort", "medium"),
+        }
+        for field in (llm_auth.APPLICATION_MODE_CFG_KEY, "workload_profile"):
+            if field in llm_cfg:
+                provider_cfg[field] = llm_cfg[field]
+        selected_mode = llm_auth.application_mode_id(provider_cfg) is not None
+        if selected_mode:
+            provider_cfg.setdefault("workload_profile", "site_batch")
+            provider_cfg["provider_order"] = ["fabric"]
+            model_id = None
+        else:
+            from lib import config as _config  # noqa: PLC0415
+            model_id = (_config.load().get("llm_models", {}) or {}).get(
+                llm_cfg.get("model_key", "marketing_copy"), "")
+            if not model_id:
+                return None
+        providers = llm_auth.build_providers(provider_cfg, opus_model=model_id)
         if not providers:
             print("::warning title=marketing_copy_review_mute::Copy review is "
                   "enabled but no LLM provider credential is visible — falling "
                   "back to the mechanical repetition check only.")
             return None
+
+        selected = llm_auth.is_fabric_selection(providers)
+        if selected != selected_mode:
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
 
         learned = ""
         if lessons:
@@ -281,12 +291,19 @@ def review_posts_llm(posts: list[dict], cfg: dict, *,
             resp = client.messages.create(
                 model=model, max_tokens=2000, system=system,
                 messages=[{"role": "user", "content": json.dumps(payload, indent=1)}])
+            if selected and (getattr(resp, "stop_reason", None) != "end_turn"
+                             or not resp.content
+                             or any(getattr(block, "type", "") != "text" for block in resp.content)):
+                raise llm_auth.FabricProviderError("fabric_text_completion_required")
             text = "".join(b.text for b in resp.content
                            if getattr(b, "type", "") == "text")
+            if selected and not text.strip():
+                raise llm_auth.FabricProviderError("fabric_text_completion_required")
             return (text or None), None, resp
 
-        raw, _reason, _prov = llm_auth.make_call(providers, _call,
-                                                 context="marketing_copy_review")
+        with llm_auth.begin_operation(providers, context="marketing_copy_review") as operation:
+            raw, _reason, _prov = llm_auth.make_call(operation.providers, _call,
+                                                   context="marketing_copy_review")
         if not raw:
             return None
         m = re.search(r"\[.*\]", raw, re.DOTALL)

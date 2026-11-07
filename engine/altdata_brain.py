@@ -201,39 +201,69 @@ def enabled() -> bool:
 
 
 def _make_call(cfg: dict):
-    """Return call(system, user) -> (text|None, degraded|None). Opus reasoning model; caches
-    the stable system block. None when no provider is available.
-
-    W5 ITEM 1 — 401-fallback: uses engine.llm_auth.make_call() so an expired OAuth
-    token triggers a fallback to ANTHROPIC_API_KEY, with degraded_reason
-    "auth_invalid:<provider>" distinguishing auth failures from LLM content errors.
-    """
+    """Cache an inert provider recipe; each callback owns one fresh operation."""
     from engine import llm_auth
 
-    providers = llm_auth.build_providers(cfg, opus_model=_reasoning_model(cfg))
+    call_cfg = dict(cfg)
+    call_cfg.setdefault("oauth_pool_lane", "altdata-brain")
+    call_cfg.setdefault("usage_lane", "altdata-brain")
+    try:
+        selected = llm_auth.application_mode_id(call_cfg) is not None
+        if selected:
+            # Default only an absent caller purpose; explicit invalid values refuse.
+            call_cfg.setdefault("workload_profile", "site_batch")
+        providers = llm_auth.build_providers(call_cfg, opus_model=_reasoning_model(cfg))
+    except llm_auth.FabricProviderError as exc:
+        reason = exc.code
+        return lambda system, user: (None, reason)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("altdata_brain: provider build failed (%s)", exc)
+        return None
     if not providers:
         return None
     max_tokens = int(cfg.get("max_tokens", 8000))
 
-    def call(system: str, user: str):
-        def _do_call(client, model: str):
+    def call(system, user):
+        call._served_identity.clear()
+        def invoke(client, model_id: str):
             resp = client.messages.create(
-                model=model, max_tokens=max_tokens,
+                model=model_id, max_tokens=max_tokens,
                 system=[{"type": "text", "text": system,
                          "cache_control": {"type": "ephemeral"}}],
                 messages=[{"role": "user", "content": user}])
-            if getattr(resp, "stop_reason", None) == "refusal":
+            if selected:
+                if (getattr(resp, "stop_reason", None) != "end_turn"
+                        or any(getattr(block, "type", "") != "text"
+                               for block in resp.content)):
+                    raise llm_auth.FabricProviderError("fabric_text_response_invalid")
+            elif getattr(resp, "stop_reason", None) == "refusal":
                 return None, "refusal", resp
-            text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
+            text = "".join(block.text for block in resp.content
+                           if getattr(block, "type", "") == "text")
             return (text, None, resp) if text else (None, "empty_reply", resp)
 
         try:
-            text, reason, _used = llm_auth.make_call(
-                providers, _do_call, context="altdata_brain")
-        except Exception as e:  # noqa: BLE001
-            log.warning("altdata_brain call failed: %s", e)
+            with llm_auth.begin_operation(providers, context="altdata_brain") as operation:
+                call_providers = operation.providers
+                text, reason, used = llm_auth.make_call(
+                    call_providers, invoke, context="altdata_brain")
+                if text:
+                    served = next((p for p in call_providers if p.get("name") == used), None)
+                    if served is not None:
+                        call._served_identity.update({
+                            "model": served.get("model"),
+                            "provider": served.get("provider") or used,
+                            "cap_id": served.get("cap_id"),
+                            "cost_basis": served.get("cost_basis"),
+                        })
+            return text, reason
+        except llm_auth.FabricProviderError as exc:
+            return None, exc.code
+        except Exception as exc:  # noqa: BLE001
+            log.warning("altdata_brain call failed: %s", exc)
             return None, "llm_error"
-        return text, reason
+
+    call._served_identity = {}
 
     return call
 
@@ -693,7 +723,8 @@ def synthesize(state: dict, cfg: dict | None = None, call=None,
             "evaluated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         },
         "generated_at": datetime.now(timezone.utc).isoformat(), "state_asof": asof,
-        "model": _reasoning_model(cfg),
+        "model": None, "requested_model": _reasoning_model(cfg),
+        "provider": None, "cap_id": None, "cost_basis": None,
         "regime_read": None, "regime_read_zh": None, "theses": [],
         "track_record": state.get("track_record"),
         "confidence": "low", "n_clusters": state.get("n_clusters"),
@@ -706,6 +737,11 @@ def synthesize(state: dict, cfg: dict | None = None, call=None,
         brief["degraded_reason"] = "no_client_or_token"
         return brief
     reply, reason = fn(_SYSTEM, _build_user(state))
+    # Provenance comes from the trusted execution callback, never model JSON.
+    serving = getattr(fn, "_served_identity", None)
+    if reply and isinstance(serving, dict):
+        for key in ("model", "provider", "cap_id", "cost_basis"):
+            brief[key] = serving.get(key)
     brief["raw_text"] = reply
     if reply is None:
         brief["degraded_reason"] = reason

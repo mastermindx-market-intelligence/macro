@@ -6,7 +6,9 @@ const path = require("node:path");
 const {JSDOM,VirtualConsole} = require("jsdom");
 const root = path.resolve(__dirname,"..");
 const api = require(path.join(root,"templates/commodity-workspace.js"));
-const html = fs.readFileSync(path.join(root,"site/commodities.html"),"utf8").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,"");
+const fixtures = JSON.parse(require("node:child_process").execFileSync(process.env.PYTHON || "python",
+  [path.join(root,"tests/commodity_workspace_ui_fixture.py")],{cwd:root,encoding:"utf8",maxBuffer:4*1024*1024}));
+const html = fixtures.positive.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,"");
 const output = [];
 const consoleErrors = [];
 const virtual = new VirtualConsole();
@@ -248,6 +250,23 @@ function checkCompanyReturn(selector='[data-cw-company-href]') {
   });
   check("rendered DOM has no duplicate IDs or event errors",()=>{
     const ids=Array.from(d.querySelectorAll('[id]'),el=>el.id);assert.equal(new Set(ids).size,ids.length);
+    assert.deepEqual(consoleErrors,[]);
+  });
+  check("empty cohorts and unavailable aliases retain navigation without invented company links",()=>{
+    for (const name of ["empty_cohorts","identity_unavailable"]) {
+      const sample=new JSDOM(fixtures[name],{url:"https://www.mastermind-x.com/commodities.html",runScripts:"outside-only",virtualConsole:virtual});
+      const v=sample.window, doc=v.document;
+      v.HTMLElement.prototype.scrollIntoView=function(){};
+      v.eval(fs.readFileSync(path.join(root,"templates/commodity-workspace.js"),"utf8"));
+      assert.equal(doc.querySelectorAll("[data-cw-company-href]").length,0,name);
+      const select=doc.querySelector('#cw-panel-overview [data-cw-open="oil"]');
+      assert.ok(select,name);select.click();
+      assert.equal(doc.querySelector("#cw-panel-explore").hidden,false,name);
+      doc.querySelector("#cw-tab-relationships").click();
+      assert.equal(doc.querySelector("#cw-panel-relationships").hidden,false,name);
+      assert.equal(JSON.parse(doc.getElementById("cw-data").textContent).assets.length,17);
+      sample.window.close();
+    }
     assert.deepEqual(consoleErrors,[]);
   });
   fs.writeFileSync(process.env.CW_UI_RECEIPT || '/tmp/commodity-workspace-ui-receipt.json',JSON.stringify({passed,assets:data.assets.length,snapshot:data.fingerprint,export_bytes:output[0].size,visual_layout_verified:false},null,2)+'\n');

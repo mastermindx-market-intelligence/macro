@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -76,6 +77,32 @@ def _load_prophet_pick_autopsies(root: str | Path | None = None) -> list[dict[st
     return out
 
 
+def _rebuild_patterns(store, root):
+    pattern_n = 0
+    rows = store.fetch_autopsied()
+    autopsies: list[dict[str, Any]] = []
+    for row in rows:
+        item = row.get("autopsy")
+        if not isinstance(item, dict):
+            continue
+        # Re-attach immutable episode facts needed by the deterministic
+        # repetition/time-cluster gate.
+        item = dict(item)
+        item["episode_ref"] = str(row.get("id") or item.get("episode_ref") or "")
+        item["entry_date"] = row.get("entry_date") or item.get("entry_date")
+        item["outcome"] = row.get("outcome") or item.get("outcome")
+        autopsies.append(item)
+    # One private derived view, two canonical sources: owner rows above plus
+    # Prophet's existing git-backed pick autopsies. Personal rows never move in
+    # the other direction and no second episode store is created.
+    autopsies.extend(_load_prophet_pick_autopsies(root))
+    patterns = trade_memory.build_pattern_candidates(autopsies)
+    if store.replace_patterns(patterns):
+        pattern_n = len(patterns)
+
+    return pattern_n
+
+
 def run(
     store: SupabaseTradeMemoryStore | None,
     *,
@@ -84,93 +111,102 @@ def run(
     model_caller: Callable[[str, str], Any] | None = None,
     dry_run: bool = False,
 ) -> dict[str, Any]:
-    """Process a bounded batch; return counts only (privacy-safe)."""
-    if store is None or not store.available:
-        return {
-            "ok": True,
-            "configured": False,
-            "processed": 0,
-            "completed": 0,
-            "failed": 0,
-            "patterns": 0,
-        }
-
-    pending = store.fetch_pending(limit=cap)
-    processed = completed = failed = 0
-    for row in pending:
-        processed += 1
+    """Process owner rows; selected completion requires the original conditional receipt."""
+    result = {"ok": True, "configured": bool(store is not None and store.available),
+              "processed": 0, "completed": 0, "failed": 0, "patterns": 0, "held": 0}
+    if not result["configured"]:
+        return result
+    from scripts.metabolism_journal import (
+        FabricHeld, selected_factory, operation_record, fabric_digest,
+    )
+    from engine.neuralweb.trade_memory_store import fabric_claim_present, PrivateFabricInvocation
+    repo = Path(root).absolute() if root is not None else _ROOT
+    selection = ("MM_PROVIDER_APPLICATION_MODE" in os.environ,
+                 os.environ.get("MM_PROVIDER_APPLICATION_MODE"),
+                 os.environ.get("MM_PROVIDER_WORKLOAD_PROFILE"))
+    try:
+        # Read the incumbent originals before selection. Real rows include held
+        # running claims; legacy injected test stores retain their old interface.
+        pending = (store.fetch_fabric_candidates(limit=cap)
+                   if isinstance(store, SupabaseTradeMemoryStore)
+                   else store.fetch_pending(limit=cap))
+        eligible = []
+        for row in pending:
+            if fabric_claim_present(row) or row.get("autopsy_state") == "running":
+                result["processed"] += 1
+                result["failed"] += 1
+                result["held"] += 1
+            else:
+                eligible.append(row)
+        factory, cfg = selected_factory(repo, "trade_memory", {"max_tokens": 7000})
+        if (selection != ("MM_PROVIDER_APPLICATION_MODE" in os.environ,
+                          os.environ.get("MM_PROVIDER_APPLICATION_MODE"),
+                          os.environ.get("MM_PROVIDER_WORKLOAD_PROFILE"))
+                or (factory is not None) != selection[0]):
+            raise FabricHeld("trade_memory_selection_changed")
+        if factory is not None and (dry_run or model_caller is not None
+                or not isinstance(store, SupabaseTradeMemoryStore)):
+            raise FabricHeld("trade_memory_durable_owner_required")
+    except Exception:
+        result.update(ok=False, held=max(1, result["held"]))
+        return result
+    for row in eligible:
+        result["processed"] += 1
         episode_id = str(row.get("id") or "")
+        context = None
         try:
-            packet = trade_memory.build_evidence_packet(row, root=root)
-            # Keep the database identity in the private packet; normalize_episode()
-            # intentionally accepts only trade facts and therefore omits it.
+            packet = trade_memory.build_evidence_packet(row, root=repo)
             packet["episode"]["id"] = episode_id
-            autopsy, provider = trade_memory.invoke_autopsy(
-                packet, model_caller=model_caller
-            )
-            if autopsy is None:
-                failed += 1
-                if not dry_run:
-                    store.update_episode(episode_id, {
-                        "evidence_packet": packet,
-                        "autopsy_state": "retry",
-                        "autopsy_model": provider,
-                        "autopsy_error": "no_structured_reply",
-                        "updated_at": _now(),
-                    })
+            if factory is not None:
+                system, user = trade_memory.autopsy_messages(packet)
+                record = operation_record(repo, "trade_memory", episode_id,
+                    {"operator": store.operator_user_id, "episode": episode_id,
+                     "facts": trade_memory.normalize_episode(row), "packet_digest": fabric_digest(packet)},
+                    ["episode:"+episode_id], system, user, 7000, factory, cfg)
+                context = PrivateFabricInvocation(store, row, packet, record, factory, cfg)
+                autopsy, provider = trade_memory.invoke_autopsy(packet, _fabric_context=context)
+                if autopsy is None:
+                    result["failed"] += 1
+                    result["held"] += 1
+                    continue
+                context.publication_intent(autopsy)
+                context.complete(autopsy)
+                result["completed"] += 1
                 continue
-            completed += 1
+            if selection != ("MM_PROVIDER_APPLICATION_MODE" in os.environ,
+                             os.environ.get("MM_PROVIDER_APPLICATION_MODE"),
+                             os.environ.get("MM_PROVIDER_WORKLOAD_PROFILE")):
+                raise FabricHeld("trade_memory_selection_changed")
+            autopsy, provider = trade_memory.invoke_autopsy(packet, model_caller=model_caller)
+            if autopsy is None:
+                result["failed"] += 1
+                if not dry_run:
+                    if not store.update_episode(episode_id, {"evidence_packet": packet, "autopsy_state": "retry",
+                            "autopsy_model": provider, "autopsy_error": "no_structured_reply", "updated_at": _now()}):
+                        result["held"] += 1
+                continue
             if not dry_run:
-                store.update_episode(episode_id, {
-                    "evidence_packet": packet,
-                    "autopsy": autopsy,
-                    "autopsy_state": "complete",
-                    "autopsy_model": provider,
-                    "autopsied_at": _now(),
-                    "autopsy_error": None,
-                    "updated_at": _now(),
-                })
-        except Exception as exc:  # noqa: BLE001
-            failed += 1
+                if not store.update_episode(episode_id, {"evidence_packet": packet, "autopsy": autopsy,
+                    "autopsy_state": "complete", "autopsy_model": provider, "autopsied_at": _now(),
+                        "autopsy_error": None, "updated_at": _now()}):
+                    result["held"] += 1
+                    result["failed"] += 1
+                    continue
+            result["completed"] += 1
+        except Exception as exc:
+            result["failed"] += 1
+            if factory is not None or isinstance(exc, FabricHeld):
+                result["held"] += 1
+                # The original row and known observations remain with their owner.
+                # An exception never changes a selected row back to retry.
+                continue
             log.warning("trade_memory: one private episode failed (%s)", type(exc).__name__)
             if not dry_run:
-                store.update_episode(episode_id, {
-                    "autopsy_state": "retry",
-                    "autopsy_error": type(exc).__name__[:80],
-                    "updated_at": _now(),
-                })
-
-    pattern_n = 0
-    if not dry_run:
-        rows = store.fetch_autopsied()
-        autopsies: list[dict[str, Any]] = []
-        for row in rows:
-            item = row.get("autopsy")
-            if not isinstance(item, dict):
-                continue
-            # Re-attach immutable episode facts needed by the deterministic
-            # repetition/time-cluster gate.
-            item = dict(item)
-            item["episode_ref"] = str(row.get("id") or item.get("episode_ref") or "")
-            item["entry_date"] = row.get("entry_date") or item.get("entry_date")
-            item["outcome"] = row.get("outcome") or item.get("outcome")
-            autopsies.append(item)
-        # One private derived view, two canonical sources: owner rows above plus
-        # Prophet's existing git-backed pick autopsies. Personal rows never move in
-        # the other direction and no second episode store is created.
-        autopsies.extend(_load_prophet_pick_autopsies(root))
-        patterns = trade_memory.build_pattern_candidates(autopsies)
-        if store.replace_patterns(patterns):
-            pattern_n = len(patterns)
-
-    return {
-        "ok": True,
-        "configured": True,
-        "processed": processed,
-        "completed": completed,
-        "failed": failed,
-        "patterns": pattern_n,
-    }
+                store.update_episode(episode_id, {"autopsy_state": "retry",
+                    "autopsy_error": type(exc).__name__[:80], "updated_at": _now()})
+    if not dry_run and not result["held"]:
+        result["patterns"] = _rebuild_patterns(store, repo)
+    return result
 
 
 def main() -> int:

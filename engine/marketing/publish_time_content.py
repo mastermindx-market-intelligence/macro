@@ -61,12 +61,16 @@ describes what already moved on the tape.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
+import math
 import os
 import re
+import secrets
 import threading
 import time
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -1215,6 +1219,7 @@ _LLM_STAT_KEYS = ("calls", "llm", "fallback_validation", "fallback_provider",
                   "fallback_timeout", "off")
 _LLM_STATS: dict[str, int] = {k: 0 for k in _LLM_STAT_KEYS}
 _LLM_CALLS_THIS_RUN = 0
+_LLM_CAP_LOCK = threading.Lock()
 
 
 def phrase_stats() -> dict:
@@ -1250,15 +1255,20 @@ def _llm_cfg(cfg: dict | None) -> dict[str, Any]:
     """
     out = dict(_LLM_DEFAULTS)
     block: Any = {}
+    selection_levels = []
     try:
         src = cfg or {}
+        selection_levels.append(src)
         if isinstance(src.get("publish"), dict):
             src = src.get("publish") or {}
+            selection_levels.append(src)
         if isinstance(src.get("publish_time_movers"), dict):
             src = src.get("publish_time_movers") or {}
+            selection_levels.append(src)
         block = src.get("llm") if isinstance(src.get("llm"), dict) else src
         if not isinstance(block, dict):
             block = {}
+        selection_levels.append(block)
     except Exception as exc:  # noqa: BLE001
         log.warning("publish_time_content: bad publish_time_movers.llm config "
                     "(%s) — phrase pass stays off", exc)
@@ -1279,6 +1289,14 @@ def _llm_cfg(cfg: dict | None) -> dict[str, Any]:
         except (TypeError, ValueError):
             log.warning("publish_time_content: publish_time_movers.llm.%s is not a "
                         "%s (%r) — using %r", k, type(dv).__name__, v, dv)
+    # Presence is meaningful to the shared owner. In particular an explicit
+    # empty/None profile or mode must refuse, not silently inherit defaults.
+    for key in ("application_fabric_mode", "workload_profile", "oauth_pool_lane"):
+        present = [level[key] for level in selection_levels if isinstance(level, dict) and key in level]
+        if present:
+            if any(value != present[0] for value in present[1:]):
+                raise ValueError("publish_time_fabric_configuration_conflict")
+            out[key] = present[0]
     return out
 
 
@@ -1459,7 +1477,7 @@ def _tidy_phrase(text: str) -> str:
     return out
 
 
-def _run_with_deadline(fn, budget_s: float) -> tuple[Any, bool]:
+def _run_with_deadline(fn, budget_s: float, *, minimum_wait_s: float = 0.1) -> tuple[Any, bool]:
     """``(value, timed_out)`` — run *fn* on a DAEMON thread, give up at the budget.
 
     The publisher's slot run owns the clock, not the provider waterfall. A walk
@@ -1490,7 +1508,7 @@ def _run_with_deadline(fn, budget_s: float) -> tuple[Any, bool]:
             done.set()
 
     threading.Thread(target=_worker, name="pt-wire-phrase", daemon=True).start()
-    if not done.wait(max(0.1, float(budget_s))):
+    if not done.wait(max(minimum_wait_s, float(budget_s))):
         return None, True
     err = box.get("error")
     if isinstance(err, Exception):
@@ -1502,11 +1520,307 @@ def _run_with_deadline(fn, budget_s: float) -> tuple[Any, bool]:
     return box.get("value"), False
 
 
+def _pt_fabric_input(template, facts, kind, now, context, llm):
+    maximum, characters = llm["max_tokens"], llm["max_chars"]
+    if (type(maximum) is not int or not 0 < maximum <= 32768
+            or type(characters) is not int or not 0 < characters <= 10000):
+        raise ValueError("publish_time_request_invalid")
+    frozen = {"template": template, "facts": facts if facts is not None else {},
+        "kind": kind, "now": now.isoformat() if now is not None else None,
+        "context": context if context is not None else {},
+        "system": _wire_system_prompt(characters),
+        "prompt": _wire_user_message(template, facts, kind),
+        "max_tokens": maximum, "max_chars": characters}
+    # Copy by value before thread creation. The caller cannot mutate the facts
+    # or selection while the worker uses the committed request.
+    return outbox._pt_ai_decode(outbox._pt_ai_json(frozen))
+
+
+def _pt_fabric_route(llm, mode, *, timeout_s):
+    from engine import llm_auth, provider_production_modes as owner
+    selected = {"provider_order": ["fabric"], "client_timeout_s": timeout_s,
+                "client_max_retries": 0, "usage_lane": str(llm["usage_lane"])}
+    for key in ("application_fabric_mode", "workload_profile", "oauth_pool_lane"):
+        if key in llm:
+            selected[key] = llm[key]
+    selected.setdefault("workload_profile", "site_interactive")
+    selected.setdefault("oauth_pool_lane", "application")
+    factory = owner.make_application_fabric_factory(mode_id=mode,
+        lane=str(selected["oauth_pool_lane"]), workload_cfg=selected,
+        root=llm_auth._repo_root())
+    inspection = factory.inspect(selected)
+    return factory.with_inspection(inspection), selected, inspection
+
+
+def _pt_fabric_snapshot(entry):
+    if entry is None:
+        return None
+    keys = ("schema", "operation_id", "identity", "input_sha256", "selection",
+            "state", "dispatch_possible", "receipt", "delivery")
+    return outbox._pt_ai_decode(outbox._pt_ai_json({key: entry[key] for key in keys}))
+
+
+def _pt_fabric_reply(template, *, entry=None, reason="fabric_unavailable",
+                     mode="fallback_provider", text=None, violations=None, emit_allowed=True):
+    return {"text": template if text is None else text, "mode": mode,
+            "provider": "fabric" if mode == "llm" else None,
+            "violations": list(violations or []), "fabric_reason": reason,
+            "fabric_operation": _pt_fabric_snapshot(entry), "fabric_emit_allowed": emit_allowed}
+
+
+def _pt_fabric_delivery(root, entry, mode, text, reason):
+    delivery = {"mode": mode, "reason": reason, "text": text,
+                "text_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest()}
+    try:
+        return outbox.update_publish_time_operation(root, entry["identity"], entry["operation_id"],
+                                                      delivery=delivery)
+    except Exception:
+        # One original-carrier reconciliation, not a repeated append. When it
+        # cannot prove the decision, the public generator must not emit it.
+        return outbox.confirm_publish_time_delivery(root, entry["identity"], entry["operation_id"])
+
+
+def _pt_fabric_replay(template, entry, *, frozen, llm, mode, now, live, root):
+    outbox._pt_ai_validate(entry)
+    reply = _pt_fabric_reply(template, entry=entry, reason="fabric_original_unsettled")
+    if live is not True:
+        reply["fabric_reason"] = "fabric_dry_run_no_claim"
+        return reply
+    if entry["delivery"] is None:
+        try:
+            entry = _pt_fabric_delivery(root, entry, "fallback_provider", template,
+                                       "fabric_original_template_delivery")
+            reply = _pt_fabric_reply(template, entry=entry, reason="fabric_original_template_delivery")
+        except Exception:
+            return _pt_fabric_reply(template, entry=entry, reason="fabric_delivery_unconfirmed",
+                                    emit_allowed=False)
+    if entry["input"] != frozen:
+        reply["fabric_reason"] = "fabric_original_input_conflict"
+        return reply
+    delivery, result = entry["delivery"], entry["result"]
+    if delivery is None or result is None or delivery["mode"] != "llm":
+        reply["fabric_reason"] = ("fabric_original_template_delivery" if delivery is not None
+                                  else "fabric_original_unsettled")
+        return reply
+    if mode != entry["selection"]["mode_id"]:
+        reply["fabric_reason"] = "fabric_original_selection_changed"
+        return reply
+    # Inspection is read-only and cannot create a fresh operation on replay.
+    try:
+        _factory, _cfg, inspection = _pt_fabric_route(llm, mode,
+            timeout_s=entry["selection"]["cfg"]["client_timeout_s"])
+    except Exception:
+        reply["fabric_reason"] = "fabric_original_selection_unavailable"
+        return reply
+    if inspection != entry["selection"]["inspection"]:
+        reply["fabric_reason"] = "fabric_original_selection_changed"
+        return reply
+    violations = wire_violations(result["text"], template, facts=frozen["facts"],
+                                 now=now, max_chars=frozen["max_chars"])
+    if violations:
+        return _pt_fabric_reply(template, entry=entry, reason="fabric_saved_result_rejected",
+                                mode="fallback_validation", violations=violations)
+    return _pt_fabric_reply(template, entry=entry, reason="fabric_original_completed",
+                            mode="llm", text=result["text"])
+
+
+def _pt_fabric_worker(root, entry, route, llm, deadline, stop, dispatch_lock):
+    """Only this worker binds, sends, captures usage and closes its operation."""
+    from engine import llm_auth
+    provider = None
+    observed = {"send_attempted": False, "response_observed": False}
+    error = None
+    result = {"text": None, "mode": "fallback_provider", "provider": None,
+              "violations": [], "reason": "fabric_unavailable"}
+    factory, selected, _inspection = route
+    frozen = entry["input"]
+
+    def stopped():
+        return stop.is_set() or time.monotonic() >= deadline
+
+    def complete(client, model):
+        # One arbitration point with the caller deadline. Once this durable
+        # boundary wins, a later timeout cannot claim provider cancellation.
+        with dispatch_lock:
+            if stopped():
+                result.update(mode="fallback_timeout", reason="fabric_stopped_before_dispatch")
+                raise llm_auth.FabricProviderError("fabric_stopped_before_dispatch")
+        # Storage can block. It must not hold the caller's short arbitration
+        # latch, and authorization must be checked again after it completes.
+        outbox.update_publish_time_operation(root, entry["identity"], entry["operation_id"],
+                                              dispatch=True)
+        with dispatch_lock:
+            if stopped():
+                result.update(mode="fallback_timeout", reason="fabric_stopped_before_dispatch")
+                raise llm_auth.FabricProviderError("fabric_stopped_before_dispatch")
+            observed["send_attempted"] = True
+        response = client.messages.create(model=model, max_tokens=frozen["max_tokens"],
+            system=frozen["system"], messages=[{"role": "user", "content": frozen["prompt"]}])
+        observed.update(response_observed=True, model=response.model)
+        if (response.stop_reason != "end_turn" or not response.content
+                or any(getattr(part, "type", None) != "text" for part in response.content)):
+            result.update(mode="fallback_validation", reason="fabric_text_completion_required",
+                          violations=["completion_shape"])
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+        raw = "".join(part.text for part in response.content)
+        if not raw.strip():
+            result.update(mode="fallback_validation", reason="fabric_empty_reply", violations=["empty"])
+            raise llm_auth.FabricProviderError("fabric_empty_reply")
+        return raw, None, response
+
+    try:
+        with dispatch_lock:
+            if stopped():
+                result.update(mode="fallback_timeout", reason="fabric_stopped_before_dispatch")
+                raise llm_auth.FabricProviderError("fabric_stopped_before_dispatch")
+        if llm_auth.application_mode_id(llm) != entry["selection"]["mode_id"]:
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            result.update(mode="fallback_timeout", reason="fabric_stopped_before_dispatch")
+            raise llm_auth.FabricProviderError("fabric_stopped_before_dispatch")
+        cfg = {**selected, "client_timeout_s": min(selected["client_timeout_s"], remaining)}
+        provider = llm_auth.build_fabric_provider(factory, request_id=entry["operation_id"],
+                                                 workload_cfg=cfg)
+        provider.update(usage_lane=selected["usage_lane"], usage_stage="publish_time_wire",
+                        usage_cycle_id=entry["operation_id"])
+        with llm_auth.begin_operation([provider], operation_id=entry["operation_id"],
+                                      context="publish_time_wire") as operation:
+            raw, _reason, _used = llm_auth.make_call(operation.providers, complete,
+                                                   context="publish_time_wire")
+            phrase = _tidy_phrase(raw)
+            violations = wire_violations(phrase, frozen["template"], facts=frozen["facts"],
+                now=datetime.fromisoformat(frozen["now"]) if frozen["now"] else None,
+                max_chars=frozen["max_chars"])
+            if violations:
+                result.update(mode="fallback_validation", reason="fabric_wire_rejected", violations=violations)
+            else:
+                result.update(text=phrase, mode="llm", provider="fabric", reason="fabric_completed")
+    except BaseException as exc:  # daemon death still preserves the original claim
+        error = exc
+        if result["reason"] == "fabric_unavailable":
+            result["reason"] = str(getattr(exc, "code", "fabric_provider_failed"))
+    finally:
+        if provider is not None:
+            llm_auth.close_fabric_provider(provider)
+
+    failure = provider.get("_fabric_failure") if provider else None
+    close = dict(provider.get("_fabric_close") or {}) if provider else {}
+    disposition = provider.get("_fabric_native_disposition") if provider else None
+    observation = (dict(provider["_fabric_last_observation"])
+        if provider and isinstance(provider.get("_fabric_last_observation"), dict) else None)
+    unknown = (bool(getattr(error, "effect_unknown", False))
+        or bool(getattr(failure, "effect_unknown", False))
+        or bool(provider and provider.get("_fabric_pending"))
+        or disposition in {"pending", "effect_unknown"}
+        or close.get("effect_unknown") is True
+        or close.get("disposition") in {"pending", "effect_unknown"})
+    receipt = {"operation_id": entry["operation_id"],
+        "provider": provider.get("provider") if provider else None,
+        "requested_model": provider.get("model") if provider else entry["selection"]["inspection"].get("model"),
+        "model": observed.get("model") or (observation or {}).get("serving_model"),
+        "usage": llm_auth.fabric_usage(provider) if provider else None,
+        "observed_usage": observation, "effect_unknown": unknown,
+        "native_disposition": disposition or ("completed" if observed["response_observed"]
+            else "not_dispatched" if not observed["send_attempted"] else "unavailable"),
+        "close": close, "send_attempted": observed["send_attempted"],
+        "response_observed": observed["response_observed"]}
+    try:
+        return outbox.update_publish_time_operation(root, entry["identity"], entry["operation_id"],
+            outcome={"state": "held" if unknown else "terminal", "receipt": receipt, "result": result})
+    except Exception:
+        # No in-memory success escapes a lost result write. The original durable
+        # pending/dispatch record remains the recovery authority.
+        return None
+
+
+def _pt_selected_phrase(template, *, facts, kind, now, llm, root, identity,
+                        context, live, mode, existing, started):
+    global _LLM_CALLS_THIS_RUN
+    if live is not True:
+        return _pt_fabric_reply(template, entry=existing, reason="fabric_dry_run_no_claim")
+    if root is None or identity is None:
+        return _pt_fabric_reply(template, entry=existing, reason="fabric_durable_context_required")
+    outbox.publish_time_operation_key(identity)
+    frozen = _pt_fabric_input(template, facts, kind, now, context, llm)
+    if existing is not None:
+        return _pt_fabric_replay(template, existing, frozen=frozen, llm=llm, mode=mode, now=now, live=live, root=root)
+    budget, timeout = llm["budget_s"], llm["client_timeout_s"]
+    if (type(budget) not in (int, float) or not math.isfinite(budget) or budget <= 0
+            or type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0):
+        raise ValueError("publish_time_deadline_invalid")
+    deadline = started + min(float(budget), 20.0)
+    if time.monotonic() >= deadline:
+        return _pt_fabric_reply(template, reason="fabric_deadline_before_claim", mode="fallback_timeout")
+    with _LLM_CAP_LOCK:
+        if _LLM_CALLS_THIS_RUN >= int(llm["max_calls_per_run"]):
+            return _pt_fabric_reply(template, reason="fabric_run_cap")
+        route = _pt_fabric_route(llm, mode, timeout_s=min(float(timeout), deadline - time.monotonic()))
+        proposed = {"schema": outbox._PT_AI_SCHEMA, "operation_id": "ptwire:" + secrets.token_hex(16),
+            "identity": identity, "created_at": datetime.now(timezone.utc).isoformat(),
+            "input": frozen, "input_sha256": hashlib.sha256(outbox._pt_ai_json(frozen)).hexdigest(),
+            "selection": {"mode_id": mode, "inspection": route[2], "cfg": route[1]},
+            "state": "pending", "dispatch_possible": False, "receipt": None,
+            "result": None, "delivery": None}
+        entry, claimed = outbox.claim_publish_time_operation(root, proposed)
+        if not claimed:
+            return _pt_fabric_replay(template, entry, frozen=frozen, llm=llm, mode=mode, now=now, live=live, root=root)
+        _LLM_CALLS_THIS_RUN += 1
+
+    stop, dispatch_lock = threading.Event(), threading.Lock()
+    remaining = deadline - time.monotonic()
+    if remaining > 0:
+        try:
+            completed, timed_out = _run_with_deadline(
+                lambda: _pt_fabric_worker(root, entry, route, llm, deadline, stop, dispatch_lock),
+                remaining, minimum_wait_s=0.0)
+        except Exception:
+            with dispatch_lock:
+                stop.set()
+            try:
+                entry = _pt_fabric_delivery(root, entry, "fallback_provider", template,
+                                            "fabric_worker_start_unconfirmed")
+            except Exception:
+                return _pt_fabric_reply(template, entry=entry, reason="fabric_worker_start_unconfirmed",
+                                        emit_allowed=False)
+            return _pt_fabric_reply(template, entry=entry, reason="fabric_worker_start_unconfirmed")
+    else:
+        completed, timed_out = None, True
+    if timed_out:
+        with dispatch_lock:
+            stop.set()
+        chosen_mode, chosen_text, reason = "fallback_timeout", template, "fabric_caller_deadline"
+    elif completed is not None:
+        chosen_mode = completed["result"]["mode"]
+        chosen_text = completed["result"]["text"] if chosen_mode == "llm" else template
+        reason = completed["result"]["reason"]
+    else:
+        chosen_mode, chosen_text, reason = "fallback_provider", template, "fabric_result_not_durable"
+    try:
+        entry = _pt_fabric_delivery(root, entry, chosen_mode, chosen_text, reason)
+    except Exception:
+        return _pt_fabric_reply(template, entry=entry, reason="fabric_delivery_unconfirmed",
+                                mode="fallback_timeout" if timed_out else "fallback_provider",
+                                emit_allowed=False)
+    # The first delivery decision is immutable, even if a worker completed while
+    # this caller was persisting its timeout. Return a detached snapshot.
+    if entry["delivery"]["mode"] == "llm":
+        return _pt_fabric_reply(template, entry=entry, mode="llm", text=entry["result"]["text"],
+                                reason=entry["delivery"]["reason"])
+    return _pt_fabric_reply(template, entry=entry, mode=entry["delivery"]["mode"],
+        reason=entry["delivery"]["reason"],
+        violations=(entry["result"] or {}).get("violations", []))
+
+
 def phrase_or_template(template_text: str, *,
                        facts: dict | None = None,
                        kind: str = "mover",
                        now: datetime | None = None,
-                       cfg: dict | None = None) -> dict:
+                       cfg: dict | None = None,
+                       root: Path | str | None = None,
+                       operation_identity: dict | None = None,
+                       operation_context: dict | None = None,
+                       live: bool = True) -> dict:
     """Phrase one publish-time item in wire voice, or hand back the template.
 
     NEVER RAISES, and never returns text the caller did not already have unless
@@ -1530,6 +1844,12 @@ def phrase_or_template(template_text: str, *,
     cfg:
         Full marketing config, the ``publish`` block, the lane block, or the
         ``llm`` block itself. Absent ⇒ the in-code defaults ⇒ disabled.
+    root, operation_identity, operation_context, live:
+        Selected Fabric inference requires the actual durable outbox root and
+        daily item identity. Slot/account and facts are committed context.
+        Selected previews do not write or call a model. A returned
+        ``fabric_emit_allowed=False`` means the original delivery could not be
+        confirmed; generate_slot_items retains its receipt and drops the item.
 
     Returns
     -------
@@ -1547,15 +1867,21 @@ def phrase_or_template(template_text: str, *,
     _LLM_STATS["calls"] += 1
 
     def _done(mode: str, text: str, *, provider: str | None = None,
-              violations: list[str] | None = None) -> dict:
+              violations: list[str] | None = None,
+              fabric_reason: str | None = None, fabric_operation: dict | None = None,
+              fabric_emit_allowed: bool = True) -> dict:
         _LLM_STATS[mode] = _LLM_STATS.get(mode, 0) + 1
-        return {
+        result = {
             "text": text,
             "mode": mode,
             "provider": provider,
             "violations": list(violations or []),
             "latency_ms": int((time.monotonic() - started) * 1000),
         }
+        if fabric_reason is not None:
+            result.update(fabric_reason=fabric_reason, fabric_operation=fabric_operation,
+                          fabric_emit_allowed=fabric_emit_allowed)
+        return result
 
     try:
         llm = _llm_cfg(cfg)
@@ -1564,6 +1890,28 @@ def phrase_or_template(template_text: str, *,
             # Disarmed: no provider is constructed, no credential is read, no
             # call is made, and the template comes back byte-identical.
             return _done("off", template)
+
+        from engine import llm_auth  # noqa: PLC0415
+        # Recover the daily original before selector removal can enter the
+        # native waterfall. A malformed record is never treated as a cache miss.
+        try:
+            existing = (outbox.read_publish_time_operation(root, operation_identity)
+                        if root is not None and operation_identity is not None else None)
+        except Exception:
+            return _done("fallback_provider", template, fabric_reason="fabric_original_state_unreadable",
+                          fabric_emit_allowed=False)
+        try:
+            selected_mode = llm_auth.application_mode_id(llm)
+        except Exception:
+            return _done(**_pt_fabric_reply(template, entry=existing,
+                reason="fabric_original_selection_invalid",
+                emit_allowed=existing is None or existing["delivery"] is not None))
+        if selected_mode is not None or existing is not None:
+            reply = _pt_selected_phrase(template, facts=facts, kind=str(kind or "mover"),
+                now=now, llm=llm, root=root, identity=operation_identity,
+                context=operation_context, live=live, mode=selected_mode,
+                existing=existing, started=started)
+            return _done(**reply)
 
         if _LLM_CALLS_THIS_RUN >= int(llm["max_calls_per_run"]):
             log.warning("publish_time_content: wire phrase call cap reached (%d) — "
@@ -2050,6 +2398,7 @@ def generate_slot_items(
     carry yesterday's as_of.
     """
     slot: str | None = None
+    llm_phrase_operations: list[dict] = []
     try:
         r = Path(root)
         pt = _pt_cfg(cfg)
@@ -2418,10 +2767,25 @@ def generate_slot_items(
                 text, facts=(cand.get("_mover_facts")
                              if cand["type"] == "mover"
                              else cand.get("_theme_facts")),
-                kind=str(cand["type"]), now=now, cfg=cfg)
+                kind=str(cand["type"]), now=now, cfg=cfg, root=r, live=live,
+                operation_identity={"lane": "publish_time_wire", "session": cand_session,
+                    "kind": str(cand["type"]),
+                    "subject": (str(cand.get("ticker") or "").upper()
+                        if cand["type"] == "mover" else str(cand.get("_theme_name") or ""))},
+                operation_context={"slot": slot, "account": chosen,
+                                   "row_session": cand_session, "quote_source": quote_source})
+            if _phrased.get("fabric_reason") is not None:
+                llm_phrase_operations.append({"mode": _phrased["mode"],
+                    "reason": _phrased["fabric_reason"],
+                    "operation": _phrased.get("fabric_operation"),
+                    "emit_allowed": _phrased.get("fabric_emit_allowed", True)})
             llm_phrase_modes[_phrased["mode"]] = (
                 llm_phrase_modes.get(_phrased["mode"], 0) + 1)
             text = _phrased["text"]
+            if _phrased.get("fabric_emit_allowed", True) is not True:
+                dropped.append({"reason": "fabric_delivery_unconfirmed",
+                                "detail": lead_cashtag or str(cand["type"])})
+                continue
 
             # ── Cashtag breadth — EVERY KIND, theme_list included ────────────
             #
@@ -2488,6 +2852,11 @@ def generate_slot_items(
 
             # ── Build the outbox item + source stamp ────────────────────────
             source = _build_source(cand, slot, now, quote_source)
+            if _phrased.get("fabric_reason") is not None:
+                source["fabric_phrase"] = {"mode": _phrased["mode"],
+                    "reason": _phrased["fabric_reason"],
+                    "operation": _phrased.get("fabric_operation"),
+                    "emit_allowed": _phrased.get("fabric_emit_allowed", True)}
             try:
                 item = outbox.make_item(
                     account=chosen,
@@ -2587,6 +2956,7 @@ def generate_slot_items(
             "cards_deferred_dry_run": cards_deferred_dry_run,
             # {} when the phrase pass never ran, {"off": N} when it is disarmed.
             "llm_phrase_modes": dict(llm_phrase_modes),
+            "llm_phrase_operations": llm_phrase_operations,
         }
 
     except Exception as exc:  # noqa: BLE001
@@ -2598,6 +2968,7 @@ def generate_slot_items(
             "dropped": [{"reason": "error", "detail": str(exc)}],
             "quote_source": "none",
             "slot": slot or "",
+            "llm_phrase_operations": llm_phrase_operations,
         }
 
 

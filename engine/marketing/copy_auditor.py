@@ -142,10 +142,24 @@ def _armed() -> bool:
 def _providers(acfg: dict) -> list:
     order = list(acfg.get("provider_order") or [])
     codex_model = str(acfg.get("codex_source_model", "gpt-5.6-terra"))
+    timeout = acfg.get("client_timeout_s", DEFAULT_CLIENT_TIMEOUT_S)
     key = (
         str(acfg.get("usage_lane")), str(acfg.get("oauth_pool_lane")),
         ",".join(order), codex_model,
         str(acfg.get("codex_reasoning_effort", "medium")),
+        # The shared application selection is HOST state.  It belongs in the
+        # cache key so a host that selects (or changes) an owner mode is never
+        # served a recipe that was built for the previous selection.
+        ("MM_PROVIDER_APPLICATION_MODE" in os.environ,
+         os.environ.get("MM_PROVIDER_APPLICATION_MODE")),
+        ("MM_PROVIDER_WORKLOAD_PROFILE" in os.environ,
+         os.environ.get("MM_PROVIDER_WORKLOAD_PROFILE")),
+        tuple((name in acfg, repr(acfg.get(name))) for name in
+              ("workload_profile", "application_fabric_mode")),
+        # The factory snapshots this request budget. A cached recipe must not
+        # retain an older cap after config changes. Preserve None and malformed
+        # values distinctly so cache reuse cannot bypass owner validation.
+        (type(timeout).__name__, repr(timeout)),
     )
     with _PROVIDER_LOCK:
         if key in _PROVIDER_CACHE:
@@ -153,6 +167,11 @@ def _providers(acfg: dict) -> list:
         from engine import llm_auth  # noqa: PLC0415
         providers = llm_auth.build_providers(
             {
+                **{name: acfg[name] for name in ("workload_profile", "application_fabric_mode")
+                   if name in acfg},
+                **({"workload_profile": "site_batch"} if "workload_profile" not in acfg
+                   and ("MM_PROVIDER_APPLICATION_MODE" in os.environ
+                        or "application_fabric_mode" in acfg) else {}),
                 "usage_lane": key[0],
                 "oauth_pool_lane": key[1],
                 "provider_order": order,
@@ -160,8 +179,7 @@ def _providers(acfg: dict) -> list:
                 "codex_reasoning_effort": acfg.get("codex_reasoning_effort", "medium"),
                 "client_max_retries": acfg.get(
                     "client_max_retries", DEFAULT_CLIENT_MAX_RETRIES),
-                "client_timeout_s": acfg.get(
-                    "client_timeout_s", DEFAULT_CLIENT_TIMEOUT_S),
+                "client_timeout_s": timeout,
                 # An HTTP budget is not a process budget: `codex exec` is a
                 # subprocess and inherits this rung's own ceiling, not the
                 # client's (W2, 2026-08-08 — see engine/marketing/copywriter.py
@@ -322,6 +340,10 @@ def audit_batch(posts: list[dict], *, cfg: dict | None = None) -> dict:
             system=system,
             messages=[{"role": "user", "content": user}],
         )
+        if llm_auth.is_fabric_selection(providers) and (
+                getattr(resp, "stop_reason", None) != "end_turn"
+                or any(getattr(block, "type", None) != "text" for block in resp.content)):
+            raise llm_auth.FabricProviderError("fabric_text_protocol_invalid")
         if getattr(resp, "stop_reason", None) == "refusal":
             return None, "stop_refusal", resp
         out = "".join(b.text for b in resp.content
@@ -330,10 +352,25 @@ def audit_batch(posts: list[dict], *, cfg: dict | None = None) -> dict:
 
     try:
         from engine import llm_auth  # noqa: PLC0415 — import closure law
-        raw, reason, _provider = llm_auth.make_call(
-            providers, _do_call, context="marketing_auditor")
+        # THE OPERATION BOUNDARY.  ``_providers`` is cached across invocations,
+        # so the live turn client and the operation identity are bound HERE,
+        # once per audited day: two audits never share a client, and one day's
+        # uncertain effect cannot reach the next.
+        operation = llm_auth.begin_operation(providers, context="marketing_auditor")
+        try:
+            raw, reason, _provider = llm_auth.make_call(
+                operation.providers, _do_call, context="marketing_auditor")
+        finally:
+            operation.close()
     except Exception as exc:  # noqa: BLE001 — an auditor must never break a night
-        return _unaudited(rows, f"call failed: {type(exc).__name__}")
+        detail = type(exc).__name__
+        # Only this module's OWN bounded refusal codes are surfaced: a foreign
+        # exception carrying a ``code`` attribute must not put its code in an
+        # operator-facing field.
+        code = getattr(exc, "code", None)
+        if isinstance(exc, llm_auth.FabricProviderError):
+            detail = f"{detail} ({code})"
+        return _unaudited(rows, f"call failed: {detail}")
     if not str(raw or "").strip():
         return _unaudited(rows, f"no provider returned text ({reason or 'empty'})")
 

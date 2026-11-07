@@ -52,8 +52,11 @@ return the JSON. Until then, coverage = the precomputed set.
 from __future__ import annotations
 
 import json
+import copy
 import logging
 import os
+import re
+import secrets
 import time
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -61,6 +64,7 @@ from pathlib import Path
 from lib import config
 # Reuse the Tier-A digest leaf's primitives — do NOT reinvent them.
 from engine.catalyst_tone import _client, _extract_json  # noqa: F401  (shared leaf utils)
+from engine import catalyst_tone as _tone
 
 log = logging.getLogger(__name__)
 
@@ -318,7 +322,8 @@ def _fetch_stock_headlines(ticker: str, name: str | None, cfg: dict) -> list[str
 
 
 def news_digest(ticker: str, name: str | None, cfg: dict | None = None,
-                headlines: list[str] | None = None) -> dict | None:
+                headlines: list[str] | None = None, *, root=None,
+                fabric_cfg=None, asof=None) -> dict | None:
     """Digest recent public headlines about the company into the Tier-A tone record
     (reusing catalyst_tone.digest_document, so the citation-verify + confidence-floor
     gates apply). Returns None when the news leg is disabled, no headlines are found,
@@ -333,18 +338,24 @@ def news_digest(ticker: str, name: str | None, cfg: dict | None = None,
             return None
         text = (f"Recent news headlines about {name or ticker} ({ticker}):\n"
                 + "\n".join(f"- {h}" for h in heads))
+        stamp = asof if asof is not None else date.today().isoformat()
+        source_key = _tone._cache_hash(ticker) if fabric_cfg is not None else safe_name(ticker)
         rec = catalyst_tone.digest_document(
-            text, kind="stock_news", doc_id=f"stocknews_{safe_name(ticker)}_{date.today().isoformat()}",
-            context=f"recent news for {name or ticker} ({ticker})", asof=date.today())
+            text, kind="stock_news", doc_id=f"stocknews_{source_key}_{stamp}",
+            context=f"recent news for {name or ticker} ({ticker})", asof=stamp,
+            root=root, fabric_cfg=fabric_cfg)
         if rec is None:                     # Tier-A digest disabled -> no news leg
             return None
         # keep only the compact, model-facing fields (drop the heavy disclaimer)
-        return {k: rec.get(k) for k in (
+        result = {k: rec.get(k) for k in (
             "tone_score", "guidance_direction", "risk_delta", "confidence",
             "confidence_gated", "evidence", "degraded_reason")}
+        if fabric_cfg is not None or "fabric" in rec:
+            result["fabric"] = rec.get("fabric")
+        return result
     except Exception as e:  # noqa: BLE001 — news is optional context
         log.warning("stock news_digest failed (%s)", e)
-        return None
+        return {"degraded_reason": "fabric_news_unavailable", "fabric": None} if fabric_cfg is not None else None
 
 
 # --------------------------------------------------------------------------- #
@@ -353,6 +364,12 @@ def news_digest(ticker: str, name: str | None, cfg: dict | None = None,
 def _call_model(system: str, user: str, cfg: dict) -> tuple[str | None, str | None]:
     """Return (reply_text, degraded_reason). Mirrors master_brain._call_model and
     reuses catalyst_tone._client. Never raises."""
+    from engine import llm_auth
+    try:
+        if llm_auth.application_mode_id(cfg) is not None:
+            return None, "fabric_document_owner_required"
+    except Exception:
+        return None, "fabric_selection_refused"
     client = _client(cfg)
     if client is None:
         return None, "no_client_or_key"
@@ -415,6 +432,368 @@ _ZH_SCALARS = ("summary",)
 _ZH_LISTS = ("drivers", "risks", "catalysts")
 
 
+def _stock_path(root, cfg, ticker):
+    if type(ticker) is not str or not ticker.strip() or len(ticker.encode()) > 512:
+        raise ValueError("fabric_stock_ticker_invalid")
+    directory = Path(root) / cfg.get("brief_cache_dir", "data/catalyst/stockbrief_cache")
+    return directory / ("fabric-stock-" + _tone._cache_hash(ticker) + ".json")
+
+
+def _stock_state(path, ticker):
+    value = _tone._cache_read(path)
+    if value is None:
+        return {"schema": "macro.stockbrief_fabric_cache.v1", "ticker": ticker, "entries": []}
+    if (type(value) is not dict or set(value) != {"schema", "ticker", "entries"}
+            or value["schema"] != "macro.stockbrief_fabric_cache.v1" or value["ticker"] != ticker
+            or type(value["entries"]) is not list or len(value["entries"]) > 64):
+        raise ValueError("fabric_stock_cache_invalid")
+    seen = set()
+    fields = {"input", "input_digest", "mode_id", "inspection", "state", "news", "english",
+              "translation", "record", "record_digest"}
+    for row in value["entries"]:
+        if (type(row) is not dict or set(row) != fields or type(row["input"]) is not dict
+                or row["input_digest"] != _tone._cache_hash(row["input"])
+                or row["input_digest"] in seen or type(row["mode_id"]) is not str
+                or type(row["inspection"]) is not dict or row["state"] not in ("pending", "held", "terminal")
+                or type(row["record"]) is not dict or row["record_digest"] != _tone._cache_hash(row["record"])
+                or row["record"].get("ticker") != ticker or row["record"].get("is_context_only") is not True
+                or row["news"] is not None and type(row["news"]) is not dict):
+            raise ValueError("fabric_stock_cache_invalid")
+        if row["english"] is not None:
+            cache = _tone._fabric_cache_value(row["english"], _stock_logical(ticker, row["input_digest"]))
+            if len(cache["entries"]) != 1 or cache["entries"][0]["inspection"] != row["inspection"]:
+                raise ValueError("fabric_stock_english_invalid")
+            if row["state"] == "terminal" and cache["entries"][0]["state"] != "terminal":
+                raise ValueError("fabric_stock_original_held")
+        elif row["state"] == "terminal":
+            raise ValueError("fabric_stock_terminal_without_english")
+        news = row["news"]
+        if news is not None:
+            if (set(news) != {"headlines", "asof", "document_id", "state", "result"}
+                    or type(news["headlines"]) is not list
+                    or any(type(headline) is not str for headline in news["headlines"])
+                    or news["asof"] != row["input"].get("day")
+                    or news["document_id"] != "stocknews_" + _tone._cache_hash(ticker) + "_" + news["asof"]
+                    or news["state"] not in ("pending", "held", "terminal", "not_dispatched")
+                    or news["result"] is not None and type(news["result"]) is not dict
+                    or news["state"] in ("pending", "not_dispatched") and news["result"] is not None
+                    or news["state"] in ("terminal", "held") and news["result"] is None
+                    or row["state"] == "terminal" and news["state"] not in ("terminal", "not_dispatched")):
+                raise ValueError("fabric_stock_news_invalid")
+            if news["state"] == "terminal":
+                receipt = news["result"].get("fabric")
+                if (type(receipt) is not dict or receipt.get("effect_unknown") is not False
+                        or type(receipt.get("close")) is not dict
+                        or receipt["close"].get("effect_unknown") is not False
+                        or receipt["close"].get("disposition") in (None, "pending", "effect_unknown")):
+                    raise ValueError("fabric_stock_news_unsettled")
+        leg = row["translation"]
+        if leg is not None:
+            if (type(leg) is not dict or set(leg) != {"operation_id", "inspection", "input", "input_digest",
+                    "state", "output", "served_model", "usage", "close", "effect_unknown"}
+                    or type(leg["operation_id"]) is not str
+                    or re.fullmatch(r"translate-profiles:[0-9a-f]{32}", leg["operation_id"]) is None
+                    or type(leg["inspection"]) is not dict or type(leg["input"]) is not dict
+                    or leg["input_digest"] != _tone._cache_hash(leg["input"])
+                    or leg["state"] not in ("pending", "output_observed", "output_unavailable")
+                    or any(leg[k] is not None for k in ("served_model", "usage", "close"))
+                    or leg["effect_unknown"] is not True or row["state"] == "terminal"
+                    or leg["output"] is not None and (type(leg["output"]) is not list
+                        or len(leg["output"]) != len(leg["input"].get("texts", []))
+                        or any(v is not None and type(v) is not str for v in leg["output"]))):
+                raise ValueError("fabric_stock_translation_invalid")
+        seen.add(row["input_digest"])
+    if sum(r["state"] != "terminal" for r in value["entries"]) > 1:
+        raise ValueError("fabric_stock_cache_invalid")
+    return value
+
+
+def _stock_logical(ticker, digest):
+    return {"task": "catalyst-stock", "ticker": ticker, "input_digest": digest}
+
+
+def _stock_commit(path, root, ticker, digest, change):
+    with _tone._cache_lock(path, root):
+        document = _stock_state(path, ticker)
+        row = next(r for r in document["entries"] if r["input_digest"] == digest)
+        if row["state"] != "pending":
+            raise ValueError("fabric_stock_original_changed")
+        change(row)
+        row["record_digest"] = _tone._cache_hash(row["record"])
+        _tone._cache_save(path, document)
+
+
+def _stock_held(row):
+    result = copy.deepcopy(row["record"])
+    # Recover a durably validated English answer after a lost outer save. This
+    # is local delivery only; an interrupted later stage is never restarted.
+    cache = row["english"]
+    if cache and cache["entries"][0]["result"] is not None:
+        english = cache["entries"][0]
+        if _stock_validate(english["text"]) != english["result"]:
+            raise ValueError("fabric_stock_result_invalid")
+        result.update(english["result"], model=english["receipt"]["served_model"],
+                      fabric=english["receipt"])
+    result["degraded_reason"] = "fabric_original_held"
+    return result
+
+
+def _stock_validate(text):
+    parsed = _extract_json(text)
+    if type(parsed) is not dict:
+        raise ValueError("fabric_stock_reply_invalid")
+    result = _validate_brief(parsed)
+    if not result["summary"] and not any(result[k] for k in _BRIEF_LIST_FIELDS):
+        raise ValueError("fabric_stock_reply_empty")
+    return result
+
+
+def _stock_prompt(context):
+    return ("One stock's PUBLIC research context (JSON). Write the brief per your "
+            "instructions. Context only — no holdings or positions are included.\n"
+            "<context>\n" + json.dumps(context, indent=2, default=str) + "\n</context>")
+
+
+def _stock_translation_input(brief):
+    texts, layout = [], []
+    for key in _ZH_SCALARS:
+        value = brief.get(key)
+        if isinstance(value, str) and value.strip():
+            texts.append(value)
+            layout.append([key, None])
+    for key in _ZH_LISTS:
+        for index, value in enumerate(brief.get(key) or []):
+            if isinstance(value, str) and value.strip():
+                texts.append(value)
+                layout.append([key, index])
+    return texts, layout
+
+
+def _stock_attach_translation(brief, layout, output):
+    if not output or all(v is None for v in output):
+        return
+    translated = {"summary": None, **{key: [None] * len(brief.get(key) or []) for key in _ZH_LISTS}}
+    for (key, index), text in zip(layout, output):
+        if text is not None:
+            if index is None:
+                translated[key] = text
+            else:
+                translated[key][index] = text
+    brief["zh"] = translated
+
+
+def _stock_translate_selected(path, root, ticker, digest, cfg, mode_id, record):
+    from engine import translate as translator, llm_auth
+    if not cfg.get("translate_zh", True):
+        return False
+    texts, layout = _stock_translation_input(record)
+    if not texts:
+        return False
+    # The approved translator seam has no root argument. Do not retarget its
+    # global configuration or bind against another caller's authority.
+    if Path(root).resolve(strict=True) != Path(translator.config.ROOT).resolve(strict=True):
+        record["translation_error"] = "fabric_translation_root_mismatch"
+        return False
+    tcfg = {"enabled": True, "max_chars": 1500, "max_tokens": 3000, "batch_size": 24,
+            **{k: cfg[k] for k in ("application_fabric_mode", "workload_profile", "usage_sink") if k in cfg}}
+    tcfg.setdefault("workload_profile", "site_batch")
+    if llm_auth.application_mode_id(tcfg) != mode_id:
+        record["translation_error"] = "fabric_selection_changed"
+        return False
+    factory = translator._fabric_factory(tcfg, mode_id)
+    if factory is None:
+        record["translation_error"] = "fabric_translation_unavailable"
+        return False
+    inspection = factory.inspect(tcfg)
+    payload = {"texts": texts, "layout": layout, "max_chars": 1500, "max_tokens": 3000,
+               "batch_size": 24, "system": translator._SYSTEM}
+    leg = {"operation_id": "translate-profiles:" + secrets.token_hex(16), "inspection": inspection,
+           "input": payload, "input_digest": _tone._cache_hash(payload), "state": "pending", "output": None,
+           "served_model": None, "usage": None, "close": None, "effect_unknown": True}
+    def claim(row):
+        if row["translation"] is not None:
+            raise ValueError("fabric_stock_translation_claimed")
+        row["translation"] = leg
+        row["record"] = copy.deepcopy(record)
+    _stock_commit(path, root, ticker, digest, claim)
+    # Original ID and full inspection are committed before any translator bind.
+    # The list API exposes output only; neither full nor partial output is a
+    # receipt for upstream settlement. Keep this original leg held thereafter.
+    try:
+        output = translator.translate_to_zh(texts, tcfg, fabric_operation_id=leg["operation_id"],
+                                             fabric_inspection=inspection)
+    except Exception:
+        output = None
+    if (type(output) is not list or len(output) != len(texts)
+            or any(v is not None and (type(v) is not str or not v.strip()) for v in output)):
+        output = None
+    leg.update(output=output, state="output_observed" if output and any(output) else "output_unavailable")
+    _stock_attach_translation(record, layout, output)
+    record["translation"] = {k: copy.deepcopy(leg[k]) for k in
+        ("operation_id", "state", "served_model", "usage", "close", "effect_unknown")}
+    record["translation_error"] = "fabric_translation_settlement_unobserved"
+    def save_output(row):
+        original = row["translation"]
+        if original["operation_id"] != leg["operation_id"] or original["input_digest"] != leg["input_digest"]:
+            raise ValueError("fabric_stock_translation_changed")
+        row["translation"] = leg
+        row["record"] = copy.deepcopy(record)
+        row["state"] = "held"
+    _stock_commit(path, root, ticker, digest, save_output)
+    return True
+
+
+def _stock_selected(ticker, root, cfg, include_news, record):
+    """The existing per-ticker cache owns the three deliberate brief stages."""
+    from engine import llm_auth
+    from engine.provider_production_modes import make_application_fabric_factory
+    root = Path(root).resolve(strict=True)
+    path = _stock_path(root, cfg, ticker)
+    if os.path.lexists(path):
+        with _tone._cache_lock(path, root):
+            state = _stock_state(path, ticker)
+            held = next((r for r in state["entries"] if r["state"] != "terminal"), None)
+            if held is not None:
+                return _stock_held(held)
+    mode_id = llm_auth.application_mode_id(cfg)
+    if mode_id is None:
+        return None
+    record.update(requested_model=record["model"], model=None)
+    context = assemble_context(ticker, root)
+    if context is None:
+        record["degraded_reason"] = "no_context"
+        return record
+    record["name"] = (context.get("identity") or {}).get("name")
+    record["asof"] = (context.get("identity") or {}).get("asof")
+    actual_cfg = {"max_tokens": 2000, **cfg, "provider_order": ["fabric"], "usage_lane": "catalyst-stock"}
+    actual_cfg.setdefault("workload_profile", "site_batch")
+    bound = actual_cfg["max_tokens"]
+    if type(bound) is not int or not 1 <= bound <= 32768:
+        raise ValueError("fabric_stock_bound_invalid")
+    factory = make_application_fabric_factory(mode_id=mode_id, lane="catalyst-stock", root=root,
+                                              workload_cfg={**actual_cfg, "workload_profile": "site_batch"})
+    inspection = factory.inspect(actual_cfg)
+    inputs = {"day": date.today().isoformat(), "context": context, "include_news": bool(include_news),
+              "system": STOCK_SYSTEM, "max_tokens": bound,
+              "news_enabled": bool(cfg.get("news_enabled", True)),
+              "news_window_days": cfg.get("news_window_days", 5),
+              "news_max_records": cfg.get("news_max_records", 8),
+              "translate_zh": bool(cfg.get("translate_zh", True))}
+    digest = _tone._cache_hash(inputs)
+    with _tone._cache_lock(path, root):
+        state = _stock_state(path, ticker)
+        held = next((r for r in state["entries"] if r["state"] != "terminal"), None)
+        if held is not None:
+            return _stock_held(held)
+        prior = next((r for r in state["entries"] if r["input_digest"] == digest), None)
+        if prior is not None:
+            if prior["inspection"] != inspection or prior["mode_id"] != mode_id:
+                raise ValueError("fabric_stock_identity_changed")
+            if prior["english"] and prior["english"]["entries"][0]["result"] is not None:
+                english = prior["english"]["entries"][0]
+                if _stock_validate(english["text"]) != english["result"]:
+                    raise ValueError("fabric_stock_result_invalid")
+            return copy.deepcopy(prior["record"])
+        if len(state["entries"]) >= 64:
+            raise ValueError("fabric_stock_cache_bound")
+        state["entries"].append({"input": inputs, "input_digest": digest, "mode_id": mode_id,
+            "inspection": inspection, "state": "pending", "news": None, "english": None,
+            "translation": None, "record": copy.deepcopy(record), "record_digest": _tone._cache_hash(record)})
+        _tone._cache_save(path, state)
+    # No network or credential work runs while the per-ticker lock is held.
+    if include_news:
+        if llm_auth.application_mode_id(actual_cfg) != mode_id:
+            raise ValueError("fabric_stock_selection_changed")
+        news_cfg = {k: actual_cfg[k] for k in ("application_fabric_mode", "workload_profile", "usage_sink")
+                    if k in actual_cfg}
+        news_cfg.setdefault("application_fabric_mode", mode_id)
+        heads = (_fetch_stock_headlines(ticker, record["name"], actual_cfg)
+                 if actual_cfg.get("news_enabled", True) and _tone.enabled() else [])
+        snapshot = {"headlines": heads, "asof": inputs["day"],
+                    "document_id": "stocknews_" + _tone._cache_hash(ticker) + "_" + inputs["day"],
+                    "state": "pending", "result": None}
+        def claim_news(row):
+            row["news"] = snapshot
+        _stock_commit(path, root, ticker, digest, claim_news)
+        news = news_digest(ticker, record["name"], actual_cfg, headlines=heads,
+                           root=root, fabric_cfg=news_cfg, asof=inputs["day"])
+        if news is not None:
+            receipt = news.get("fabric")
+            uncertain = not isinstance(receipt, dict) or receipt.get("effect_unknown") is not False
+            public_news = {k: v for k, v in news.items() if k != "fabric"}
+            record["news"] = public_news
+            record["news_fabric"] = receipt
+            if uncertain:
+                record["degraded_reason"] = "fabric_news_original_held"
+            def save_news(row):
+                row["news"] = {**snapshot, "state": "held" if uncertain else "terminal", "result": news}
+                row["record"] = copy.deepcopy(record)
+                if uncertain:
+                    row["state"] = "held"
+            _stock_commit(path, root, ticker, digest, save_news)
+            if uncertain:
+                return record
+            context = {**context, "news": public_news}
+        else:
+            def skip_news(row):
+                row["news"] = {**snapshot, "state": "not_dispatched", "result": None}
+            _stock_commit(path, root, ticker, digest, skip_news)
+    logical = _stock_logical(ticker, digest)
+    def load_english():
+        document = _stock_state(path, ticker)
+        row = next(r for r in document["entries"] if r["input_digest"] == digest)
+        if row["state"] != "pending":
+            raise ValueError("fabric_stock_original_changed")
+        return row["english"]
+    def store_english(cache):
+        if len(cache["entries"]) != 1 or cache["entries"][0]["inspection"] != inspection:
+            raise ValueError("fabric_stock_english_changed")
+        document = _stock_state(path, ticker)
+        row = next(r for r in document["entries"] if r["input_digest"] == digest)
+        if row["state"] != "pending":
+            raise ValueError("fabric_stock_original_changed")
+        if row["english"] is not None and any(row["english"]["entries"][0][key] != cache["entries"][0][key]
+                for key in ("operation_id", "input_digest")):
+            raise ValueError("fabric_stock_english_claimed")
+        row["english"] = cache
+        _tone._cache_save(path, document)
+    english = _tone._fabric_cached_document(path=path, root=root, logical_source=logical,
+        cfg=actual_cfg, lane="catalyst-stock", system=STOCK_SYSTEM, user=_stock_prompt(context),
+        input_context=inputs, validate=_stock_validate, load_cache=load_english, store_cache=store_english,
+        allow_truncated=True)
+    receipt = english["receipt"] if english is not None else None
+    record["fabric"] = receipt
+    record["model"] = receipt.get("served_model") if receipt else None
+    if english and english["result"] is not None:
+        record.update(english["result"])
+    record["degraded_reason"] = english["error"] if english else "fabric_selection_changed"
+    uncertain = not isinstance(receipt, dict) or receipt.get("effect_unknown") is not False
+    def save_english(row):
+        row["record"] = copy.deepcopy(record)
+        if uncertain:
+            row["state"] = "held"
+    _stock_commit(path, root, ticker, digest, save_english)
+    if uncertain:
+        return record
+    if english["result"] is not None:
+        try:
+            if _stock_translate_selected(path, root, ticker, digest, actual_cfg, mode_id, record):
+                return record
+        except Exception:
+            # A failed preflight is no call. A visible Chinese claim is retained
+            # as an unresolved original, including a lost write acknowledgement.
+            with _tone._cache_lock(path, root):
+                current = next(r for r in _stock_state(path, ticker)["entries"] if r["input_digest"] == digest)
+                if current["translation"] is not None:
+                    return _stock_held(current)
+            record["translation_error"] = "fabric_translation_unavailable"
+    def finish(row):
+        row["record"] = copy.deepcopy(record)
+        row["state"] = "terminal"
+    _stock_commit(path, root, ticker, digest, finish)
+    return record
+
+
 def _translate_brief(brief: dict, cfg: dict) -> None:
     """Attach a Chinese version (brief['zh']) via the shared DeepSeek translator so the
     #stock-brief panel can show the read under the 中文 toggle. Cheap V4-Flash pass;
@@ -466,7 +845,11 @@ def brief_for_ticker(ticker: str, root: Path | None = None,
     """Assemble PUBLIC context -> optional Flash news digest -> Pro reasoning brief.
     Returns None when the master switch is off; otherwise ALWAYS returns a record
     (degraded fields flagged). NEVER raises into the pipeline."""
-    cfg = _cfg()
+    return _brief_for_ticker(ticker, dict(_cfg()), root, include_news)
+
+
+def _brief_for_ticker(ticker, cfg, root=None, include_news=True):
+    """Private configuration snapshot; threaded force never mutates `_cfg`."""
     if not cfg.get("enabled", False):
         return None
 
@@ -486,6 +869,9 @@ def brief_for_ticker(ticker: str, root: Path | None = None,
     }
     try:
         root = Path(root) if root else config.ROOT
+        selected = _stock_selected(ticker, root, cfg, include_news, rec)
+        if selected is not None:
+            return selected
         ctx = assemble_context(ticker, root)
         if ctx is None:
             rec["degraded_reason"] = "no_context"
@@ -499,9 +885,7 @@ def brief_for_ticker(ticker: str, root: Path | None = None,
                 ctx["news"] = news
                 rec["news"] = news
 
-        user = ("One stock's PUBLIC research context (JSON). Write the brief per your "
-                "instructions. Context only — no holdings or positions are included.\n"
-                "<context>\n" + json.dumps(ctx, indent=2, default=str) + "\n</context>")
+        user = _stock_prompt(ctx)
         reply, reason = _call_model(STOCK_SYSTEM, user, cfg)
         if reply is None:
             rec["degraded_reason"] = reason
@@ -517,7 +901,13 @@ def brief_for_ticker(ticker: str, root: Path | None = None,
         return rec
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("brief_for_ticker(%s) failed (%s)", ticker, e)
-        rec["degraded_reason"] = "internal_error"
+        if _stock_owns(ticker, root, cfg):
+            rec["degraded_reason"] = "fabric_stock_refused"
+            rec.setdefault("requested_model", rec["model"])
+            receipt = rec.get("fabric")
+            rec["model"] = receipt.get("served_model") if isinstance(receipt, dict) else None
+        else:
+            rec["degraded_reason"] = "internal_error"
         return rec
 
 
@@ -529,6 +919,14 @@ def _cache_path(root: Path, cfg: dict, safe: str, day: str) -> Path:
     cdir = root / cfg.get("brief_cache_dir", "data/catalyst/stockbrief_cache")
     cdir.mkdir(parents=True, exist_ok=True)
     return cdir / f"{safe}_{day}.json"
+
+
+def _stock_owns(ticker, root, cfg):
+    from engine import llm_auth
+    try:
+        return os.path.lexists(_stock_path(root, cfg, ticker)) or llm_auth.application_mode_id(cfg) is not None
+    except Exception:
+        return True
 
 
 def _brief_workers() -> int:
@@ -547,15 +945,11 @@ def precompute_briefs(tickers, root: Path | None = None, site: Path | None = Non
     caps to config `precompute_max`, and caches a successful brief per ticker per
     day (so repeated builds the same day don't re-spend). Returns a list of
     {ticker, degraded_reason}. Returns [] when disabled (unless force). NEVER raises."""
-    cfg = _cfg()
+    cfg = dict(_cfg())
     if not force and not cfg.get("enabled", False):
         return []
-    # force => run even when the master switch is off, and make the per-ticker
-    # brief honour that (it re-reads _cfg()); restored in finally. Mirrors __main__.
-    _orig_cfg = None
-    if force and not cfg.get("enabled", False):
-        _orig_cfg = _cfg
-        globals()["_cfg"] = lambda: {**_orig_cfg(), "enabled": True}
+    if force:
+        cfg["enabled"] = True
     try:
         root = Path(root) if root else config.ROOT
         site = Path(site) if site else (root / config.load()["storage"].get("site_dir", "site"))
@@ -584,12 +978,15 @@ def precompute_briefs(tickers, root: Path | None = None, site: Path | None = Non
         # serial stretch after factor-series + the stock library were parallelised.
         def _resolve(t: str):
             safe = safe_name(t)
+            if _stock_owns(t, root, cfg):
+                return t, safe, None, _brief_for_ticker(t, cfg, root), False
             cache = _cache_path(root, cfg, safe, day)
             if cache.exists():
                 rec = _read_json(cache)
                 if rec is not None:
                     return t, safe, cache, rec, False    # cached -> don't re-write cache
-            return t, safe, cache, brief_for_ticker(t, root=root), True
+            result = _brief_for_ticker(t, cfg, root) if force else brief_for_ticker(t, root=root)
+            return t, safe, cache, result, True
 
         workers = _brief_workers()
         if workers > 1 and len(work) > 1:
@@ -622,9 +1019,6 @@ def precompute_briefs(tickers, root: Path | None = None, site: Path | None = Non
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("precompute_briefs failed (%s)", e)
         return []
-    finally:
-        if _orig_cfg is not None:
-            globals()["_cfg"] = _orig_cfg
 
 
 def render_markdown(brief: dict) -> str:
@@ -652,10 +1046,7 @@ if __name__ == "__main__":
     tk = args[0] if args else "AAPL"
     if force:
         # ad-hoc single-ticker run even when disabled (for live verification)
-        _orig = _cfg
-        globals()["_cfg"] = lambda: {**_orig(), "enabled": True}
-        b = brief_for_ticker(tk)
-        globals()["_cfg"] = _orig
+        b = _brief_for_ticker(tk, {**_cfg(), "enabled": True})
     else:
         b = brief_for_ticker(tk)
     if b is None:

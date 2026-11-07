@@ -74,6 +74,7 @@ import json
 import logging
 import os
 import re
+import secrets
 import shutil
 import subprocess
 import sys
@@ -603,21 +604,34 @@ def _stage_preplanned_slots(
         prior: list[str] = []
         passed_payload = None
         out = staging_dir / f"{slot['id']}.json"
+        # Selection is sticky for this slot, including invalid-present modes.
+        # The existing exclusive checkpoint owns the original ID before bind.
+        fabric_selected = writer.application_fabric_selected(cfg)
+        application_operation_id = "app:" + secrets.token_hex(16) if fabric_selected else None
         checkpoint = _stage_item(slot, None, attempts, run_date,
                                  admission_receipt=admission_receipt)
         checkpoint.pop("quarantine_reason", None)
         checkpoint.update(status="in_progress",
                           progress={"phase": "provider_started", "attempt": 0})
+        if fabric_selected:
+            checkpoint["fabric_operation"] = {"schema": "mastermind.press_fabric_intent.v1",
+                "selected": True, "operation_id": application_operation_id,
+                "regeneration_allowed": False}
         _write_stage_checkpoint(out, checkpoint, create=True)
-        writer_kwargs: dict = {}
+        writer_kwargs: dict = {"expected_application_fabric": fabric_selected}
         if single_provider_attempt:
             writer_kwargs["single_provider_attempt"] = True
             if max_regenerations == 0:
                 writer_kwargs["single_attempt"] = True
         if admitted_token_cap:
             writer_kwargs["admitted_token_cap"] = True
+        if fabric_selected:
+            writer_kwargs.update(application_operation_id=application_operation_id,
+                                 single_provider_attempt=True, single_attempt=True)
 
         for attempt in range(max_regenerations + 1):
+            if attempt and (fabric_selected or writer.application_fabric_selected(cfg)):
+                break
             if attempt:
                 checkpoint["progress"] = {"phase": "provider_started", "attempt": attempt}
                 _write_stage_checkpoint(out, checkpoint)
@@ -649,15 +663,22 @@ def _stage_preplanned_slots(
                 writer_kwargs["private_admission_check"] = lambda prepared=slot: before_write(prepared)
             res = writer.write(slot, cfg, state=state, attempt=attempt,
                                prior_failures=prior or None, **writer_kwargs)
+            fabric_receipt = res.get("fabric_operation")
+            if isinstance(fabric_receipt, dict) and fabric_receipt.get("selected") is True:
+                fabric_selected = True
+                checkpoint["fabric_operation"] = dict(fabric_receipt)
+                _write_stage_checkpoint(out, checkpoint)
             if not res.get("ok"):
                 attempt_row = {"attempt": attempt, "ok": False,
                                "reason": res.get("reason")}
                 if admitted_token_cap:
                     attempt_row["provider"] = res.get("provider")
-                for key in ("token_cap", "provider_usage"):
+                for key in ("token_cap", "provider_usage", "fabric_operation"):
                     if key in res:
                         attempt_row[key] = res[key]
                 attempts.append(attempt_row)
+                if fabric_selected:
+                    break  # selected failure is terminal for this original slot
                 if res.get("reason") in ("circuit_open", "token_budget_exhausted",
                                          "no_provider", "llm_disabled"):
                     break                       # a run-level stop, not a draft problem
@@ -673,7 +694,7 @@ def _stage_preplanned_slots(
                               validator_report=None,
                               writer_state=res.get("state"),
                               progress={"phase": "validation_pending", "attempt": attempt})
-            for key in ("token_cap", "provider_usage"):
+            for key in ("token_cap", "provider_usage", "fabric_operation"):
                 if key in res:
                     checkpoint[key] = res[key]
             _write_stage_checkpoint(out, checkpoint)
@@ -684,7 +705,7 @@ def _stage_preplanned_slots(
                            "our_value_share": report.get("our_value_share"),
                            "max_block_jaccard": report.get("max_block_jaccard"),
                            "provider": res.get("provider")}
-            for key in ("token_cap", "provider_usage"):
+            for key in ("token_cap", "provider_usage", "fabric_operation"):
                 if key in res:
                     attempt_row[key] = res[key]
             attempts.append(attempt_row)
@@ -692,6 +713,8 @@ def _stage_preplanned_slots(
                 taken_slugs.add(draft["slug"])
                 passed_payload = (draft, report, res)
                 break
+            if fabric_selected:
+                break  # completed invalid text does not authorize another operation
             prior = [f"{c['name']}: {c['detail']}" for c in report["checks"] if not c["ok"]]
 
         item = _stage_item(
@@ -701,6 +724,8 @@ def _stage_preplanned_slots(
             run_date,
             admission_receipt=admission_receipt,
         )
+        if "fabric_operation" in checkpoint:
+            item["fabric_operation"] = checkpoint["fabric_operation"]
         if passed_payload is None and checkpoint.get("draft") is not None:
             # A failed validator verdict is evidence, not permission to erase
             # the returned prose. Retain its exact last draft/report while

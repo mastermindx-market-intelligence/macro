@@ -34,8 +34,8 @@ CONTRACT (schema "mastermind.response_log.v1"):
     user_ref      HASHED user id, or "guest" — raw ids/emails are NEVER stored
     question      the user's message (text only; image markers stripped upstream)
     answer        the full assistant answer text
-    input_tokens  int
-    output_tokens int
+    input_tokens  int | null (null when the provider did not report usage)
+    output_tokens int | null (null when the provider did not report usage)
     latency_ms    int | null
     context       {"page": ..., "symbol": ...} (small dict; scalars only)
     citations     list (macro only; [] otherwise)
@@ -233,8 +233,8 @@ def build_row(
     is_guest: bool = False,
     latency_ms: int | None = None,
     latency: dict | None = None,
-    input_tokens: int = 0,
-    output_tokens: int = 0,
+    input_tokens: int | None = 0,
+    output_tokens: int | None = 0,
     context: dict | None = None,
     citations: list | None = None,
     tools: list | None = None,
@@ -262,8 +262,8 @@ def build_row(
         "user_ref": hash_user_ref(user_id, user_email, is_guest),
         "question": _clip(question, 8000),
         "answer": _clip(answer, 24000),
-        "input_tokens": int(input_tokens or 0),
-        "output_tokens": int(output_tokens or 0),
+        "input_tokens": None if input_tokens is None else int(input_tokens or 0),
+        "output_tokens": None if output_tokens is None else int(output_tokens or 0),
         "latency_ms": int(latency_ms) if latency_ms is not None else None,
         # W5 Contract M: the breakdown behind latency_ms — {route, ttfv_ms, rounds[],
         # synthesis_ms, total_ms}. Additive: absent on every pre-W5 row, and a reader

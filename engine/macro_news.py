@@ -20,7 +20,7 @@ HOW "useful vs useless" news is decided — almost entirely WITHOUT AI:
   5. OPTIONAL AI BRIEF  — the ONLY AI: a gated, default-off, degrade-to-keyless
      narrator that writes a 1-paragraph "what's the macro story" from the
      ALREADY-FILTERED headlines + the regime/sentiment state. Labeled context,
-     never scored. Off unless macro_news.enabled AND llm_brief AND a key present.
+     never scored. Off unless macro_news.enabled AND llm_brief AND an eligible provider.
 
 GDELT gotchas honored: ~3-month history, >=6s pacing, 200+json content-type
 guard, seendate=%Y%m%dT%H%M%SZ.
@@ -1536,7 +1536,7 @@ def load_upcoming_catalysts(today: date | None = None, horizon_days: int = 14) -
 
 
 # --------------------------------------------------------------------------- #
-# optional LLM brief (gated on flag AND key; provider-agnostic; default OFF)
+# optional LLM brief (gated on flag AND provider; default OFF)
 # --------------------------------------------------------------------------- #
 BRIEF_SYSTEM = (
     "You write a 2-3 sentence plain-English summary of the current US macro backdrop "
@@ -1550,33 +1550,61 @@ BRIEF_SYSTEM = (
 def _llm_ready(cfg: dict) -> bool:
     if not cfg.get("enabled", False) or not cfg.get("llm_brief", False):
         return False
-    return bool(config.secret(cfg.get("api_key_env", "DEEPSEEK_API_KEY")))
+    try:
+        from engine import llm_auth
+        if llm_auth.application_mode_id(cfg) is not None:
+            return True  # The owner checks eligibility at the operation boundary.
+        return bool(config.secret(cfg.get("api_key_env", "DEEPSEEK_API_KEY")))
+    except Exception:  # noqa: BLE001 — an invalid selection stays unavailable
+        return False
 
 
 def macro_brief(headlines: list[dict] | None, regime_line: str = "",
                 sentiment_line: str = "", catalyst_line: str = "") -> dict | None:
     """OPTIONAL one-paragraph narration of the filtered headlines + regime/sentiment
     + the imminent-catalyst schedule (from engine.event_calendar). Default-off, gated
-    on key, provider-agnostic (DeepSeek/Anthropic), degrade to None. Labeled context;
+    on an eligible provider, degrade to None. Labeled context;
     never scored. The catalyst line is scheduling background the narrator may mention
     ("CPI prints Thursday"), NOT a directive to de-risk."""
     cfg = _cfg()
     if not _llm_ready(cfg) or not headlines:
         return None
     try:
-        import anthropic
-    except ImportError:
-        return None
-    try:
-        key = config.secret(cfg.get("api_key_env", "DEEPSEEK_API_KEY"))
-        base = cfg.get("base_url")
-        client = anthropic.Anthropic(api_key=key, base_url=base) if base \
-            else anthropic.Anthropic(api_key=key)
         lines = "\n".join(f"- [{h.get('theme','')}] {h['title']} ({h['domain']})"
                           for h in headlines[:12])
         user = (f"Regime: {regime_line or 'n/a'}\nNews sentiment: {sentiment_line or 'n/a'}\n"
                 + (f"{catalyst_line}\n" if catalyst_line else "")
                 + f"Filtered macro headlines:\n{lines}")
+        from engine import llm_auth
+        if llm_auth.application_mode_id(cfg) is not None:
+            selected_cfg = dict(cfg)
+            selected_cfg.setdefault("workload_profile", "site_batch")
+            selected_cfg.setdefault("usage_lane", "macro-news")
+            providers = llm_auth.build_providers(selected_cfg)
+            with llm_auth.begin_operation(providers, context="macro_news") as operation:
+                def call(client, model):
+                    response = client.messages.create(
+                        model=model, max_tokens=220, system=BRIEF_SYSTEM,
+                        messages=[{"role": "user", "content": user}])
+                    if (getattr(response, "stop_reason", "") not in {"end_turn", "stop_sequence"}
+                            or any(getattr(b, "type", "") == "tool_use" for b in response.content)):
+                        return None, "invalid_narration", response
+                    text = "".join(b.text for b in response.content
+                                   if getattr(b, "type", "") == "text").strip()
+                    return text or None, None, response
+
+                text, reason, _ = llm_auth.make_call(
+                    operation.providers, call, context="macro_news")
+                if not text or reason:
+                    return None
+                provider = operation.providers[0]
+                return {"text": text, "model": provider["model"],
+                        "provider": provider["provider"], "is_context_only": True}
+        import anthropic
+        key = config.secret(cfg.get("api_key_env", "DEEPSEEK_API_KEY"))
+        base = cfg.get("base_url")
+        client = anthropic.Anthropic(api_key=key, base_url=base) if base \
+            else anthropic.Anthropic(api_key=key)
         resp = client.messages.create(
             model=cfg.get("llm_model", "deepseek-chat"), max_tokens=220,
             system=BRIEF_SYSTEM, messages=[{"role": "user", "content": user}])

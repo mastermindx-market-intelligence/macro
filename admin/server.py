@@ -889,6 +889,9 @@ class Handler(BaseHTTPRequestHandler):
             if settings.auth_enabled() and not self._authed():
                 return self._json({"error": "authentication required"}, 401)
 
+            if path == "/api/marketing/models" and q.get("force") == ["1"]:
+                _clear_response_cache()
+
             if _cacheable_api_get(path, q):
                 cache_key = f"{_server_cache_namespace(self.server)}:{self.path}"
                 if path in {"/api/intelligence_os", "/api/intelligence_os/engine"}:
@@ -955,7 +958,9 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/marketing/floor":
                 return self._json(marketing_floor.floor())
             if path == "/api/marketing/models":
-                return self._json(marketing_floor.models())
+                return self._json(marketing_floor.models(
+                    fabric_pool_reader=getattr(self.server, "fabric_pool_reader", None),
+                    fabric_pool_reader_error=getattr(self.server, "fabric_pool_reader_error", "metadata_not_configured")))
             if path == "/api/marketing/lanes":
                 return self._json(marketing_floor.lanes())
             if path == "/api/marketing/overview":
@@ -1632,8 +1637,18 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(res, 200 if res.get("ok") else 400)
 
             if path == "/api/orchestrator/chat":
-                return self._json(orchestrator_chat.chat(b.get("message", ""),
-                                                         history=b.get("history")))
+                # The Fabric binding is SERVER-owned dependency injection: it is
+                # read from the server object alone.  The request body, its
+                # headers and the connection context can never supply or
+                # override it — b["fabric_selected"], b["fabric_provider_factory"]
+                # and b["request_id"] are ignored here by construction.
+                return self._json(orchestrator_chat.chat(
+                    b.get("message", ""),
+                    history=b.get("history"),
+                    fabric_selected=getattr(self.server, "fabric_selected", False),
+                    fabric_provider_factory=getattr(self.server, "fabric_provider_factory", None),
+                    request_id=orchestrator_chat.new_request_id(),
+                ))
 
             if path == "/api/orchestrator/wake":
                 return self._json(orchestrator_chat.wake())
@@ -2036,7 +2051,41 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"ok": False, "error": str(e)}, 500)
 
 
-def serve(host: str = "127.0.0.1", port: int = 8787) -> None:
+def _build_server(host: str, port: int, *, fabric_selected=False,
+                  fabric_provider_factory=None):
+    """Create the admin HTTP server and attach its TRUSTED server-side inputs.
+
+    The Fabric composition is dependency injection from the process that owns
+    this admin: whoever can call serve() can already reach this process, so the
+    binding is not an entitlement check.  It is stored on the server object and
+    the Handler reads it from there — never from the request.
+    """
+    from engine.provider_production_modes import configured_application_fabric
+    from .paths import ROOT
+
+    host_selected, host_factory = configured_application_fabric(
+        lane="admin-orchestrator", workload_profile="site_interactive", root=ROOT)
+    if host_selected:
+        # An explicit false/callback cannot weaken the trusted host selection.
+        fabric_selected, fabric_provider_factory = True, host_factory
+    httpd = ThreadingHTTPServer((host, port), Handler)
+    httpd.fabric_selected = fabric_selected
+    httpd.fabric_provider_factory = fabric_provider_factory
+    httpd.fabric_pool_reader = None
+    httpd.fabric_pool_reader_error = "metadata_not_configured"
+    if host_selected and host_factory is not None:
+        try:
+            httpd.fabric_pool_reader = host_factory.prepare_admin_pool_reader()
+            httpd.fabric_pool_reader_error = None
+        except Exception:
+            # Configuration/permission failures leave the read-only desk usable.
+            # No retry, fallback, turn factory or request-time secret discovery.
+            httpd.fabric_pool_reader_error = "metadata_startup_unavailable"
+    return httpd
+
+
+def serve(host: str = "127.0.0.1", port: int = 8787, *, fabric_selected=False,
+          fabric_provider_factory=None) -> None:
     # Always bind loopback: in deployed mode Caddy reverse-proxies the public
     # host to 127.0.0.1, so the panel itself never needs a routable socket.
     # Refusing a non-loopback bind keeps the unauthenticated-by-mistake failure
@@ -2047,7 +2096,8 @@ def serve(host: str = "127.0.0.1", port: int = 8787) -> None:
             "127.0.0.1 and is exposed via a reverse proxy (Caddy) + auth, never "
             "directly. For remote access use admin.mastermind-x.com or an SSH tunnel.")
     settings.startup_check()
-    httpd = ThreadingHTTPServer((host, port), Handler)
+    httpd = _build_server(host, port, fabric_selected=fabric_selected,
+                           fabric_provider_factory=fabric_provider_factory)
     mode = "DEPLOYED (auth required)" if settings.deployed() else (
         "local + auth" if settings.auth_enabled() else "local (open)")
     print(f"  Macro Admin → http://{host}:{port}   [{mode}]")

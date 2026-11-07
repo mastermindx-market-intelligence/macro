@@ -90,6 +90,8 @@ Public API
 """
 from __future__ import annotations
 
+from contextlib import ExitStack
+
 import json
 import logging
 import math
@@ -962,167 +964,199 @@ def phrase_or_fallback(packet: dict, trigger: str, fallback_text: str, *,
         ``violations``  the gate hits that forced a fallback (else []).
         ``latency_ms``  wall time of the whole attempt.
     """
-    global _CALLS_THIS_RUN
-    started = time.monotonic()
-    _STATS["calls"] += 1
+    with ExitStack() as lifetime:
+        global _CALLS_THIS_RUN
+        started = time.monotonic()
+        _STATS["calls"] += 1
 
-    pkt = dict(packet or {})
-    pkt.setdefault("trigger", trigger)
+        pkt = dict(packet or {})
+        pkt.setdefault("trigger", trigger)
 
-    def _done(mode: str, text: str, *, provider: str | None = None,
-              violations: list[str] | None = None) -> dict:
-        _STATS[mode] = _STATS.get(mode, 0) + 1
-        return {
-            "text": text,
-            "mode": mode,
-            "provider": provider,
-            "violations": list(violations or []),
-            "latency_ms": int((time.monotonic() - started) * 1000),
-        }
+        def _done(mode: str, text: str, *, provider: str | None = None,
+                  violations: list[str] | None = None) -> dict:
+            _STATS[mode] = _STATS.get(mode, 0) + 1
+            return {
+                "text": text,
+                "mode": mode,
+                "provider": provider,
+                "violations": list(violations or []),
+                "latency_ms": int((time.monotonic() - started) * 1000),
+            }
 
-    llm_cfg = _llm_cfg(cfg)
-    env_on = os.environ.get(_ENV_FLAG, "").strip().lower() in _TRUTHY
-    if not bool(llm_cfg.get("enabled", False)) or not env_on:
-        # Disarmed: no provider is constructed, no credential is read, no call
-        # is made. Same two-key arming as the nightly copywriter lane.
-        return _done("off", fallback_text)
+        llm_cfg = _llm_cfg(cfg)
+        env_on = os.environ.get(_ENV_FLAG, "").strip().lower() in _TRUTHY
+        if not bool(llm_cfg.get("enabled", False)) or not env_on:
+            # Disarmed: no provider is constructed, no credential is read, no call
+            # is made. Same two-key arming as the nightly copywriter lane.
+            return _done("off", fallback_text)
 
-    try:
-        max_calls = int(llm_cfg.get("max_calls_per_run", DEFAULT_MAX_CALLS_PER_RUN))
-    except (TypeError, ValueError):
-        max_calls = DEFAULT_MAX_CALLS_PER_RUN
-    if _CALLS_THIS_RUN >= max_calls:
-        log.warning("hot_tape_llm: per-run call cap reached (%d) — trigger=%s falls "
-                    "back to the deterministic template", max_calls, trigger)
-        return _done("fallback_provider", fallback_text)
-
-    try:
-        from engine import llm_auth  # noqa: PLC0415
-
-        # CHATGPT-FIRST (operator directive 2026-07-29, recorded on
-        # config/marketing.yml copywriter.llm): the attached Codex account leads,
-        # Claude follows as the balanced fallback drawn through the key_pool load
-        # balancer. Terra at LOW effort — one short wire sentence inside a
-        # 5-second per-provider budget cannot afford a reasoning pass.
-        provider_cfg = {
-            "provider_order": llm_cfg.get("provider_order") or ["codex", "oauth", "anthropic", "deepseek"],
-            "codex_source_model": llm_cfg.get("codex_source_model", "gpt-5.6-terra"),
-            "codex_reasoning_effort": llm_cfg.get("codex_reasoning_effort", "low"),
-            "oauth_token_env": llm_cfg.get("oauth_token_env", "CLAUDE_CODE_OAUTH_TOKEN"),
-            "deepseek_key_env": llm_cfg.get("deepseek_key_env", "DEEPSEEK_API_KEY"),
-            "oauth_pool_lane": llm_cfg.get("oauth_pool_lane", "hot-tape-wire"),
-            "usage_lane": llm_cfg.get("usage_lane", "hot-tape-wire"),
-            "client_timeout_s": llm_cfg.get("client_timeout_s", DEFAULT_CLIENT_TIMEOUT_S),
-            "client_max_retries": llm_cfg.get("client_max_retries", DEFAULT_CLIENT_MAX_RETRIES),
-        }
-        model_id = _resolve_model_id()
-        ds_model = str(llm_cfg.get("deepseek_model", DEFAULT_DEEPSEEK_MODEL))
-        providers = llm_auth.build_providers(
-            provider_cfg, opus_model=model_id, deepseek_model=ds_model)
-
-        if not providers:
-            # ARMED BUT MUTE — the config says the wire desk is on and the env
-            # flag agrees, yet no credential is visible, so every fired event is
-            # silently posting the template. The nightly copywriter lane ran in
-            # exactly this state for months (2026-07-26 incident).
-            # A BARE print at line start: GitHub only parses `::` at column 0,
-            # and every logger in this repo prefixes the line, so an annotation
-            # routed through log.warning is dropped silently
-            # (tests/test_gh_annotation_line_start.py).
-            print("::warning title=hot_tape_llm_mute::Hot Tape wire desk is ARMED "
-                  "(hot_tape.llm.enabled + MARKETING_LLM_ENABLED) but no provider "
-                  "credential is visible — every fired event is falling back to the "
-                  "deterministic wire template. Pass CLAUDE_CODE_OAUTH_TOKEN* / "
-                  "ANTHROPIC_API_KEY / DEEPSEEK_API_KEY to this step.", flush=True)
-            log.warning("hot_tape_llm: armed but no provider credential — "
-                        "deterministic templates only")
+        try:
+            max_calls = int(llm_cfg.get("max_calls_per_run", DEFAULT_MAX_CALLS_PER_RUN))
+        except (TypeError, ValueError):
+            max_calls = DEFAULT_MAX_CALLS_PER_RUN
+        if _CALLS_THIS_RUN >= max_calls:
+            log.warning("hot_tape_llm: per-run call cap reached (%d) — trigger=%s falls "
+                        "back to the deterministic template", max_calls, trigger)
             return _done("fallback_provider", fallback_text)
 
         try:
-            max_tokens = int(llm_cfg.get("max_tokens", DEFAULT_MAX_TOKENS))
-        except (TypeError, ValueError):
-            max_tokens = DEFAULT_MAX_TOKENS
-        user_msg = build_user_message(pkt, trigger)
-        # Built ONCE per event and reused by the repair turn: the repair must be
-        # judged against the same laws as the draft, and rebuilding would re-read
-        # config/press.yml inside the 5-second budget for nothing.
-        system_prompt = build_system_prompt()
+            from engine import llm_auth  # noqa: PLC0415
 
-        def _caller(messages: list[dict]):
-            """A make_call body bound to one message list (draft or repair)."""
-            def _do_call(client, model):
-                resp = client.messages.create(
-                    model=model, max_tokens=max_tokens, system=system_prompt,
-                    messages=messages,
-                )
-                if getattr(resp, "stop_reason", None) == "refusal":
-                    return None, "stop_refusal", resp
-                text = "".join(b.text for b in resp.content
-                               if getattr(b, "type", "") == "text")
-                return (text.strip() or None), None, resp
-            return _do_call
+            # CHATGPT-FIRST (operator directive 2026-07-29, recorded on
+            # config/marketing.yml copywriter.llm): the attached Codex account leads,
+            # Claude follows as the balanced fallback drawn through the key_pool load
+            # balancer. Terra at LOW effort — one short wire sentence inside a
+            # 5-second per-provider budget cannot afford a reasoning pass.
+            provider_cfg = {
+                "provider_order": llm_cfg.get("provider_order") or ["codex", "oauth", "anthropic", "deepseek"],
+                "codex_source_model": llm_cfg.get("codex_source_model", "gpt-5.6-terra"),
+                "codex_reasoning_effort": llm_cfg.get("codex_reasoning_effort", "low"),
+                "oauth_token_env": llm_cfg.get("oauth_token_env", "CLAUDE_CODE_OAUTH_TOKEN"),
+                "deepseek_key_env": llm_cfg.get("deepseek_key_env", "DEEPSEEK_API_KEY"),
+                "oauth_pool_lane": llm_cfg.get("oauth_pool_lane", "hot-tape-wire"),
+                "usage_lane": llm_cfg.get("usage_lane", "hot-tape-wire"),
+                "client_timeout_s": llm_cfg.get("client_timeout_s", DEFAULT_CLIENT_TIMEOUT_S),
+                "client_max_retries": llm_cfg.get("client_max_retries", DEFAULT_CLIENT_MAX_RETRIES),
+            }
+            for field in (llm_auth.APPLICATION_MODE_CFG_KEY, "workload_profile"):
+                if field in llm_cfg:
+                    provider_cfg[field] = llm_cfg[field]
+            selected = llm_auth.application_mode_id(provider_cfg) is not None
+            if selected:
+                provider_cfg.setdefault("workload_profile", "site_batch")
+                provider_cfg["provider_order"] = ["fabric"]
+                model_id = ds_model = None
+            else:
+                model_id = _resolve_model_id()
+                ds_model = str(llm_cfg.get("deepseek_model", DEFAULT_DEEPSEEK_MODEL))
+            providers = llm_auth.build_providers(
+                provider_cfg, opus_model=model_id, deepseek_model=ds_model)
 
-        # ONE call per fired event: no batching, and no retry loop of our own —
-        # the waterfall walk IS the retry (client_max_retries=0 above). The one
-        # REPAIR turn below is a different thing: a second call only when the
-        # first draft violated a stated law, which is a cheaper answer than the
-        # template.
-        _CALLS_THIS_RUN += 1
-        raw_text, reason, provider = llm_auth.make_call(
-            providers, _caller([{"role": "user", "content": user_msg}]),
-            context="hot_tape_wire")
-    except Exception as exc:  # noqa: BLE001 — a fired event must still post
-        log.warning("hot_tape_llm: provider path failed for trigger=%s (%s: %s) — "
-                    "deterministic template posts", trigger, type(exc).__name__, exc)
-        return _done("fallback_provider", fallback_text)
+            if llm_auth.is_fabric_selection(providers) != selected:
+                raise llm_auth.FabricProviderError("fabric_selection_changed")
+            if not providers:
+                # ARMED BUT MUTE — the config says the wire desk is on and the env
+                # flag agrees, yet no credential is visible, so every fired event is
+                # silently posting the template. The nightly copywriter lane ran in
+                # exactly this state for months (2026-07-26 incident).
+                # A BARE print at line start: GitHub only parses `::` at column 0,
+                # and every logger in this repo prefixes the line, so an annotation
+                # routed through log.warning is dropped silently
+                # (tests/test_gh_annotation_line_start.py).
+                print("::warning title=hot_tape_llm_mute::Hot Tape wire desk is ARMED "
+                      "(hot_tape.llm.enabled + MARKETING_LLM_ENABLED) but no provider "
+                      "credential is visible — every fired event is falling back to the "
+                      "deterministic wire template. Pass CLAUDE_CODE_OAUTH_TOKEN* / "
+                      "ANTHROPIC_API_KEY / DEEPSEEK_API_KEY to this step.", flush=True)
+                log.warning("hot_tape_llm: armed but no provider credential — "
+                            "deterministic templates only")
+                return _done("fallback_provider", fallback_text)
 
-    if not raw_text:
-        log.info("hot_tape_llm: no model copy for trigger=%s (%s) — deterministic "
-                 "template posts", trigger, reason or "empty")
-        return _done("fallback_provider", fallback_text)
+            operation = lifetime.enter_context(llm_auth.begin_operation(
+                providers, context="hot_tape_wire"))
+            providers = operation.providers
+            if llm_auth.is_fabric_selection(providers) != selected:
+                raise llm_auth.FabricProviderError("fabric_selection_changed")
 
-    text = _tidy(raw_text)
-    violations = validate_wire_copy(text, pkt, link=link, links_allowed=links_allowed)
-    if not violations:
-        return _done("llm", text, provider=provider)
+            try:
+                max_tokens = int(llm_cfg.get("max_tokens", DEFAULT_MAX_TOKENS))
+            except (TypeError, ValueError):
+                max_tokens = DEFAULT_MAX_TOKENS
+            user_msg = build_user_message(pkt, trigger)
+            # Built ONCE per event and reused by the repair turn: the repair must be
+            # judged against the same laws as the draft, and rebuilding would re-read
+            # config/press.yml inside the 5-second budget for nothing.
+            system_prompt = build_system_prompt()
 
-    # ── ONE REPAIR TURN ──────────────────────────────────────────────────────
-    # Before this, a single violation meant the template posted: measured at ~90%
-    # of armed attempts, mostly on laws the prompt never stated (now generated
-    # into it above). A repair turn is the other half of that fix — the model is
-    # told exactly which rule it broke and gets one chance, which is how the v2
-    # copywriter lane already works. Strictly ONE: a loop would blow the 5-second
-    # tick budget the whole lane exists to meet, and a model that fails the same
-    # named rule twice is not going to find it on the third pass.
-    log.warning("hot_tape_llm: draft rejected for trigger=%s: %s — one repair turn",
-                trigger, "; ".join(violations[:6]))
-    repair_violations: list[str] = []
-    if _CALLS_THIS_RUN < max_calls:
-        try:
+            def _caller(messages: list[dict]):
+                """A make_call body bound to one message list (draft or repair)."""
+                def _do_call(client, model):
+                    resp = client.messages.create(
+                        model=model, max_tokens=max_tokens, system=system_prompt,
+                        messages=messages,
+                    )
+                    if selected and (getattr(resp, "stop_reason", None) != "end_turn"
+                                     or not resp.content
+                                     or any(getattr(part, "type", "") != "text" for part in resp.content)):
+                        raise llm_auth.FabricProviderError("fabric_text_completion_required")
+                    if getattr(resp, "stop_reason", None) == "refusal":
+                        return None, "stop_refusal", resp
+                    text = "".join(b.text for b in resp.content
+                                   if getattr(b, "type", "") == "text")
+                    if selected and not text.strip():
+                        raise llm_auth.FabricProviderError("fabric_text_completion_required")
+                    return (text.strip() or None), None, resp
+                return _do_call
+
+            # ONE call per fired event: no batching, and no retry loop of our own —
+            # the waterfall walk IS the retry (client_max_retries=0 above). The one
+            # REPAIR turn below is a different thing: a second call only when the
+            # first draft violated a stated law, which is a cheaper answer than the
+            # template.
             _CALLS_THIS_RUN += 1
-            r_raw, _r_reason, r_provider = llm_auth.make_call(
-                providers,
-                _caller([
-                    {"role": "user", "content": user_msg},
-                    {"role": "assistant", "content": text},
-                    {"role": "user", "content": build_repair_message(violations)},
-                ]),
-                context="hot_tape_wire_repair")
+            raw_text, reason, provider = llm_auth.make_call(
+                providers, _caller([{"role": "user", "content": user_msg}]),
+                context="hot_tape_wire")
         except Exception as exc:  # noqa: BLE001 — a fired event must still post
-            log.warning("hot_tape_llm: repair turn failed for trigger=%s (%s: %s)",
-                        trigger, type(exc).__name__, exc)
-            r_raw, r_provider = None, None
-        if r_raw:
-            r_text = _tidy(r_raw)
-            repair_violations = validate_wire_copy(
-                r_text, pkt, link=link, links_allowed=links_allowed)
-            if not repair_violations:
-                return _done("llm_repair", r_text, provider=r_provider)
-            log.warning("hot_tape_llm: repair still rejected for trigger=%s: %s",
-                        trigger, "; ".join(repair_violations[:6]))
+            log.warning("hot_tape_llm: provider path failed for trigger=%s (%s: %s) — "
+                        "deterministic template posts", trigger, type(exc).__name__, exc)
+            return _done("fallback_provider", fallback_text)
 
-    # BOTH lists travel: the draft's violations are what the prompt failed to
-    # prevent, the repair's are what the model could not fix when told. The
-    # fallback-rate table needs the difference between those two.
-    return _done("fallback_validation", fallback_text,
-                 violations=violations + [f"repair:{v}" for v in repair_violations])
+        if not raw_text:
+            log.info("hot_tape_llm: no model copy for trigger=%s (%s) — deterministic "
+                     "template posts", trigger, reason or "empty")
+            return _done("fallback_provider", fallback_text)
+
+        text = _tidy(raw_text)
+        try:
+            violations = validate_wire_copy(text, pkt, link=link, links_allowed=links_allowed)
+        except Exception as exc:  # noqa: BLE001 — unvalidated copy cannot ship
+            log.warning("hot_tape_llm: validation unavailable (%s)", type(exc).__name__)
+            return _done("fallback_validation", fallback_text,
+                         violations=[f"validation unavailable ({type(exc).__name__})"])
+        if not violations:
+            return _done("llm", text, provider=provider)
+
+        # ── ONE REPAIR TURN ──────────────────────────────────────────────────────
+        # Before this, a single violation meant the template posted: measured at ~90%
+        # of armed attempts, mostly on laws the prompt never stated (now generated
+        # into it above). A repair turn is the other half of that fix — the model is
+        # told exactly which rule it broke and gets one chance, which is how the v2
+        # copywriter lane already works. Strictly ONE: a loop would blow the 5-second
+        # tick budget the whole lane exists to meet, and a model that fails the same
+        # named rule twice is not going to find it on the third pass.
+        log.warning("hot_tape_llm: draft rejected for trigger=%s: %s — one repair turn",
+                    trigger, "; ".join(violations[:6]))
+        repair_violations: list[str] = []
+        if _CALLS_THIS_RUN < max_calls:
+            try:
+                _CALLS_THIS_RUN += 1
+                r_raw, _r_reason, r_provider = llm_auth.make_call(
+                    providers,
+                    _caller([
+                        {"role": "user", "content": user_msg},
+                        {"role": "assistant", "content": text},
+                        {"role": "user", "content": build_repair_message(violations)},
+                    ]),
+                    context="hot_tape_wire_repair")
+            except Exception as exc:  # noqa: BLE001 — a fired event must still post
+                log.warning("hot_tape_llm: repair turn failed for trigger=%s (%s: %s)",
+                            trigger, type(exc).__name__, exc)
+                r_raw, r_provider = None, None
+            if r_raw:
+                r_text = _tidy(r_raw)
+                try:
+                    repair_violations = validate_wire_copy(
+                        r_text, pkt, link=link, links_allowed=links_allowed)
+                except Exception as exc:  # noqa: BLE001 — retain deterministic fallback
+                    repair_violations = [f"validation unavailable ({type(exc).__name__})"]
+                if not repair_violations:
+                    return _done("llm_repair", r_text, provider=r_provider)
+                log.warning("hot_tape_llm: repair still rejected for trigger=%s: %s",
+                            trigger, "; ".join(repair_violations[:6]))
+
+        # BOTH lists travel: the draft's violations are what the prompt failed to
+        # prevent, the repair's are what the model could not fix when told. The
+        # fallback-rate table needs the difference between those two.
+        return _done("fallback_validation", fallback_text,
+                     violations=violations + [f"repair:{v}" for v in repair_violations])

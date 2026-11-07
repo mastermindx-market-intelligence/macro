@@ -78,6 +78,7 @@ import os
 import re
 import time
 from collections import deque
+from contextlib import ExitStack
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -990,208 +991,237 @@ def voice_or_fallback(
         ``violations``  the gate hits that forced a fallback (else []).
         ``latency_ms``  wall time of the whole attempt.
     """
-    started = time.monotonic()
-    _STATS["calls"] += 1
-    fallback_text = str(draft or "")
+    with ExitStack() as lifetime:
+        started = time.monotonic()
+        _STATS["calls"] += 1
+        fallback_text = str(draft or "")
 
-    def _done(mode: str, text: str, *, provider: str | None = None,
-              violations: list[str] | None = None) -> dict:
-        _STATS[mode] = _STATS.get(mode, 0) + 1
-        return {
-            "text": text,
-            "mode": mode,
-            "provider": provider,
-            "violations": list(violations or []),
-            "latency_ms": int((time.monotonic() - started) * 1000),
-        }
+        def _done(mode: str, text: str, *, provider: str | None = None,
+                  violations: list[str] | None = None) -> dict:
+            _STATS[mode] = _STATS.get(mode, 0) + 1
+            return {
+                "text": text,
+                "mode": mode,
+                "provider": provider,
+                "violations": list(violations or []),
+                "latency_ms": int((time.monotonic() - started) * 1000),
+            }
 
-    voice_cfg = _voice_cfg(cfg, root)
-    env_on = os.environ.get(_ENV_FLAG, "").strip().lower() in _TRUTHY
-    if not fallback_text.strip():
-        # An abstention upstream stays an abstention. Nothing to phrase.
-        return _done("off", fallback_text)
-    if not bool(voice_cfg.get("enabled", False)) or not env_on:
-        # Disarmed: no provider is constructed, no credential is read, no call
-        # is made. Same two-key arming as every other emitting LLM lane here.
-        return _done("off", fallback_text)
+        voice_cfg = _voice_cfg(cfg, root)
+        env_on = os.environ.get(_ENV_FLAG, "").strip().lower() in _TRUTHY
+        if not fallback_text.strip():
+            # An abstention upstream stays an abstention. Nothing to phrase.
+            return _done("off", fallback_text)
+        if not bool(voice_cfg.get("enabled", False)) or not env_on:
+            # Disarmed: no provider is constructed, no credential is read, no call
+            # is made. Same two-key arming as every other emitting LLM lane here.
+            return _done("off", fallback_text)
 
-    max_calls = _int_cfg(voice_cfg, "max_calls_per_run", DEFAULT_MAX_CALLS_PER_RUN)
-    try:
-        window_s = float(voice_cfg.get("call_window_s", DEFAULT_CALL_WINDOW_S))
-    except (TypeError, ValueError):
-        window_s = DEFAULT_CALL_WINDOW_S
-    if not _take_call_slot(max_calls, window_s):
-        _STATS["cap_hits"] += 1
-        log.warning("reply_voice: runaway guard tripped (%d calls per %.0fs) — "
-                    "account=%s falls back to the deterministic draft",
-                    max_calls, window_s, account)
-        return _done("fallback_provider", fallback_text)
-
-    try:
-        from engine import llm_auth  # noqa: PLC0415
-
-        # CHATGPT-FIRST (operator directive 2026-07-29, recorded on
-        # config/marketing.yml copywriter.llm): the attached Codex account leads,
-        # Claude follows as the balanced fallback drawn through the key_pool load
-        # balancer. Terra — a reply is a short conversational turn, wire register.
-        provider_cfg = {
-            "provider_order": voice_cfg.get("provider_order") or ["codex", "oauth", "anthropic", "deepseek"],
-            "codex_source_model": voice_cfg.get("codex_source_model", "gpt-5.6-terra"),
-            "codex_reasoning_effort": voice_cfg.get("codex_reasoning_effort", "medium"),
-            "oauth_token_env": voice_cfg.get("oauth_token_env", "CLAUDE_CODE_OAUTH_TOKEN"),
-            "deepseek_key_env": voice_cfg.get("deepseek_key_env", "DEEPSEEK_API_KEY"),
-            "oauth_pool_lane": voice_cfg.get("oauth_pool_lane", "reply-voice"),
-            "usage_lane": voice_cfg.get("usage_lane", "reply-voice"),
-            "client_timeout_s": voice_cfg.get("client_timeout_s", DEFAULT_CLIENT_TIMEOUT_S),
-            "client_max_retries": voice_cfg.get("client_max_retries", DEFAULT_CLIENT_MAX_RETRIES),
-        }
-        providers = llm_auth.build_providers(
-            provider_cfg,
-            opus_model=_resolve_model_id(voice_cfg),
-            deepseek_model=str(voice_cfg.get("deepseek_model", DEFAULT_DEEPSEEK_MODEL)),
-        )
-
-        if not providers:
-            # ARMED BUT MUTE — config says the reply voice is on and the env
-            # flag agrees, yet no credential is visible, so every draft is
-            # silently shipping the template. The nightly copywriter lane ran
-            # in exactly this state for months (2026-07-26 incident).
-            # A BARE print at line start: GitHub only parses `::` at column 0,
-            # and every logger here prefixes the line, so an annotation routed
-            # through log.warning is dropped silently
-            # (tests/test_gh_annotation_line_start.py).
-            print("::warning title=reply_voice_mute::Reply voice is ARMED "
-                  "(reply_desk.voice.enabled + MARKETING_LLM_ENABLED) but no provider "
-                  "credential is visible — every reply is falling back to the "
-                  "deterministic draft. Pass CLAUDE_CODE_OAUTH_TOKEN* / "
-                  "ANTHROPIC_API_KEY / DEEPSEEK_API_KEY to this step.", flush=True)
-            log.warning("reply_voice: armed but no provider credential — "
-                        "deterministic drafts only")
+        max_calls = _int_cfg(voice_cfg, "max_calls_per_run", DEFAULT_MAX_CALLS_PER_RUN)
+        try:
+            window_s = float(voice_cfg.get("call_window_s", DEFAULT_CALL_WINDOW_S))
+        except (TypeError, ValueError):
+            window_s = DEFAULT_CALL_WINDOW_S
+        if not _take_call_slot(max_calls, window_s):
+            _STATS["cap_hits"] += 1
+            log.warning("reply_voice: runaway guard tripped (%d calls per %.0fs) — "
+                        "account=%s falls back to the deterministic draft",
+                        max_calls, window_s, account)
             return _done("fallback_provider", fallback_text)
 
-        max_tokens = _int_cfg(voice_cfg, "max_tokens", DEFAULT_MAX_TOKENS)
-        user_msg = build_user_message(
-            draft=fallback_text, family=family, account=account,
-            parent_text=parent_text, parent_author=parent_author,
-            numbers_whitelist=numbers_whitelist, cfg=cfg, family_spec=family_spec,
-            warmth=str(warmth or ""), warmth_spec=warmth_spec,
-            shape=str(shape or ""), shape_spec=shape_spec,
-        )
+        try:
+            from engine import llm_auth  # noqa: PLC0415
 
-        # §10 E3: SYSTEM_PROMPT plus whatever the config pins, which is nothing
-        # until an operator edits intel.exemplar_store.active_version.
-        _system = system_prompt(cfg, root)
-
-        def _do_call(client, model):
-            resp = client.messages.create(
-                model=model, max_tokens=max_tokens, system=_system,
-                messages=[{"role": "user", "content": user_msg}],
-            )
-            if getattr(resp, "stop_reason", None) == "refusal":
-                return None, "stop_refusal", resp
-            text = "".join(b.text for b in resp.content
-                           if getattr(b, "type", "") == "text")
-            return (text.strip() or None), None, resp
-
-        # ONE call per draft: no batching, and no retry loop of our own — the
-        # waterfall walk IS the retry (client_max_retries=0 above). The slot was
-        # claimed above, before any credential was read.
-        raw_text, reason, provider = llm_auth.make_call(
-            providers, _do_call, context="reply_voice")
-    except Exception as exc:  # noqa: BLE001 — a drafted reply must still exist
-        log.warning("reply_voice: provider path failed for account=%s (%s: %s) — "
-                    "deterministic draft ships", account, type(exc).__name__, exc)
-        return _done("fallback_provider", fallback_text)
-
-    if not raw_text:
-        log.info("reply_voice: no model copy for account=%s (%s) — deterministic "
-                 "draft ships", account, reason or "empty")
-        return _done("fallback_provider", fallback_text)
-
-    text = _tidy(raw_text)
-
-    def _validate(candidate: str) -> list[str]:
-        return validate_reply_copy(
-            candidate, draft=fallback_text, numbers_whitelist=numbers_whitelist,
-            parent_text=parent_text, parent_author=parent_author,
-            account=account, family=family, warmth=str(warmth or ""),
-            shape=str(shape or ""), relationship_only=bool(relationship_only),
-            corpus=corpus, root=root,
-        )
-
-    try:
-        violations = _validate(text)
-        if violations:
-            # ONE REPAIR TURN, the same discipline the copywriter v2 path uses:
-            # restate only the violations, never the laws, never a suggested
-            # rewrite. The reply desk needs it MORE than the post lane does,
-            # because a warmth move is exactly the kind of instruction a model
-            # obeys at the cost of a different gate (it writes the fused
-            # concession and slips in a hedge her codex bans), and without a
-            # repair a single recoverable slip costs the whole phrasing pass.
-            #
-            # The repair claims its OWN slot from the runaway guard. A guard
-            # that counts one call per draft while the code makes two is a cap
-            # of 80/hour wearing a 40 label, which is the exact bug the rolling
-            # window was introduced to fix.
-            if _take_call_slot(max_calls, window_s):
-                _STATS["repairs"] += 1
-                repair_msg = build_user_message(
-                    draft=fallback_text, family=family, account=account,
-                    parent_text=parent_text, parent_author=parent_author,
-                    numbers_whitelist=numbers_whitelist, cfg=cfg,
-                    family_spec=family_spec, warmth=str(warmth or ""),
-                    warmth_spec=warmth_spec, shape=str(shape or ""),
-                    shape_spec=shape_spec, violations=violations,
-                )
-
-                def _do_repair(client, model):
-                    resp = client.messages.create(
-                        model=model, max_tokens=max_tokens, system=_system,
-                        messages=[{"role": "user", "content": repair_msg}],
-                    )
-                    if getattr(resp, "stop_reason", None) == "refusal":
-                        return None, "stop_refusal", resp
-                    out = "".join(b.text for b in resp.content
-                                  if getattr(b, "type", "") == "text")
-                    return (out.strip() or None), None, resp
-
-                try:
-                    retry_text, _reason, retry_provider = llm_auth.make_call(
-                        providers, _do_repair, context="reply_voice_repair")
-                except Exception as exc:  # noqa: BLE001 — repair is best-effort
-                    log.warning("reply_voice: repair turn failed for account=%s "
-                                "(%s: %s)", account, type(exc).__name__, exc)
-                    retry_text, retry_provider = None, None
-                if retry_text:
-                    candidate = _tidy(retry_text)
-                    retry_violations = _validate(candidate)
-                    if not retry_violations:
-                        return _done("llm", candidate, provider=retry_provider or provider)
-                    violations = retry_violations
+            # CHATGPT-FIRST (operator directive 2026-07-29, recorded on
+            # config/marketing.yml copywriter.llm): the attached Codex account leads,
+            # Claude follows as the balanced fallback drawn through the key_pool load
+            # balancer. Terra — a reply is a short conversational turn, wire register.
+            provider_cfg = {
+                "provider_order": voice_cfg.get("provider_order") or ["codex", "oauth", "anthropic", "deepseek"],
+                "codex_source_model": voice_cfg.get("codex_source_model", "gpt-5.6-terra"),
+                "codex_reasoning_effort": voice_cfg.get("codex_reasoning_effort", "medium"),
+                "oauth_token_env": voice_cfg.get("oauth_token_env", "CLAUDE_CODE_OAUTH_TOKEN"),
+                "deepseek_key_env": voice_cfg.get("deepseek_key_env", "DEEPSEEK_API_KEY"),
+                "oauth_pool_lane": voice_cfg.get("oauth_pool_lane", "reply-voice"),
+                "usage_lane": voice_cfg.get("usage_lane", "reply-voice"),
+                "client_timeout_s": voice_cfg.get("client_timeout_s", DEFAULT_CLIENT_TIMEOUT_S),
+                "client_max_retries": voice_cfg.get("client_max_retries", DEFAULT_CLIENT_MAX_RETRIES),
+            }
+            for field in (llm_auth.APPLICATION_MODE_CFG_KEY, "workload_profile"):
+                if field in voice_cfg:
+                    provider_cfg[field] = voice_cfg[field]
+            selected = llm_auth.application_mode_id(provider_cfg) is not None
+            if selected:
+                provider_cfg.setdefault("workload_profile", "site_batch")
+                provider_cfg["provider_order"] = ["fabric"]
+                model_id = ds_model = None
             else:
-                _STATS["cap_hits"] += 1
-    except Exception as exc:  # noqa: BLE001 — "Never raises" is the contract
-        # THE GATE IS NOT ALLOWED TO BE THE CRASH. `validate_reply_copy` does
-        # four LAZY imports (hot_tape_llm, reply_critics, copywriter,
-        # expression_dial) and any of them can ImportError in a thin runtime —
-        # exactly the CI/minimal-deps lane this package is built to survive. That
-        # exception used to escape a function documented "Never raises", which is
-        # the guarantee §0 gate 1 of the reply doctrine rests on: the caller
-        # treats a reply as always-postable. UNVALIDATED MODEL COPY NEVER SHIPS
-        # here — the deterministic draft does, and the reason is recorded in the
-        # same `violations` field the gate hits use, so the producer's
-        # fallback-rate report shows it instead of hiding it.
-        log.warning("reply_voice: validation unavailable for account=%s (%s: %s) — "
-                    "deterministic draft ships", account, type(exc).__name__, exc)
-        return _done("fallback_validation", fallback_text,
-                     violations=[f"validation unavailable ({type(exc).__name__}: {exc})"])
-    if violations:
-        log.warning("reply_voice: model copy rejected for account=%s: %s",
-                    account, "; ".join(violations[:6]))
-        return _done("fallback_validation", fallback_text, violations=violations)
+                model_id = _resolve_model_id(voice_cfg)
+                ds_model = str(voice_cfg.get("deepseek_model", DEFAULT_DEEPSEEK_MODEL))
+            providers = llm_auth.build_providers(
+                provider_cfg, opus_model=model_id, deepseek_model=ds_model)
 
-    return _done("llm", text, provider=provider)
+            if llm_auth.is_fabric_selection(providers) != selected:
+                raise llm_auth.FabricProviderError("fabric_selection_changed")
+            if not providers:
+                # ARMED BUT MUTE — config says the reply voice is on and the env
+                # flag agrees, yet no credential is visible, so every draft is
+                # silently shipping the template. The nightly copywriter lane ran
+                # in exactly this state for months (2026-07-26 incident).
+                # A BARE print at line start: GitHub only parses `::` at column 0,
+                # and every logger here prefixes the line, so an annotation routed
+                # through log.warning is dropped silently
+                # (tests/test_gh_annotation_line_start.py).
+                print("::warning title=reply_voice_mute::Reply voice is ARMED "
+                      "(reply_desk.voice.enabled + MARKETING_LLM_ENABLED) but no provider "
+                      "credential is visible — every reply is falling back to the "
+                      "deterministic draft. Pass CLAUDE_CODE_OAUTH_TOKEN* / "
+                      "ANTHROPIC_API_KEY / DEEPSEEK_API_KEY to this step.", flush=True)
+                log.warning("reply_voice: armed but no provider credential — "
+                            "deterministic drafts only")
+                return _done("fallback_provider", fallback_text)
+
+            operation = lifetime.enter_context(llm_auth.begin_operation(
+                providers, context="reply_voice"))
+            providers = operation.providers
+            if llm_auth.is_fabric_selection(providers) != selected:
+                raise llm_auth.FabricProviderError("fabric_selection_changed")
+
+            max_tokens = _int_cfg(voice_cfg, "max_tokens", DEFAULT_MAX_TOKENS)
+            user_msg = build_user_message(
+                draft=fallback_text, family=family, account=account,
+                parent_text=parent_text, parent_author=parent_author,
+                numbers_whitelist=numbers_whitelist, cfg=cfg, family_spec=family_spec,
+                warmth=str(warmth or ""), warmth_spec=warmth_spec,
+                shape=str(shape or ""), shape_spec=shape_spec,
+            )
+
+            # §10 E3: SYSTEM_PROMPT plus whatever the config pins, which is nothing
+            # until an operator edits intel.exemplar_store.active_version.
+            _system = system_prompt(cfg, root)
+
+            def _do_call(client, model):
+                resp = client.messages.create(
+                    model=model, max_tokens=max_tokens, system=_system,
+                    messages=[{"role": "user", "content": user_msg}],
+                )
+                if selected and (getattr(resp, "stop_reason", None) != "end_turn"
+                                 or not resp.content
+                                 or any(getattr(part, "type", "") != "text" for part in resp.content)):
+                    raise llm_auth.FabricProviderError("fabric_text_completion_required")
+                if getattr(resp, "stop_reason", None) == "refusal":
+                    return None, "stop_refusal", resp
+                text = "".join(b.text for b in resp.content
+                               if getattr(b, "type", "") == "text")
+                if selected and not text.strip():
+                    raise llm_auth.FabricProviderError("fabric_text_completion_required")
+                return (text.strip() or None), None, resp
+
+            # ONE call per draft: no batching, and no retry loop of our own — the
+            # waterfall walk IS the retry (client_max_retries=0 above). The slot was
+            # claimed above, before any credential was read.
+            raw_text, reason, provider = llm_auth.make_call(
+                providers, _do_call, context="reply_voice")
+        except Exception as exc:  # noqa: BLE001 — a drafted reply must still exist
+            log.warning("reply_voice: provider path failed for account=%s (%s: %s) — "
+                        "deterministic draft ships", account, type(exc).__name__, exc)
+            return _done("fallback_provider", fallback_text)
+
+        if not raw_text:
+            log.info("reply_voice: no model copy for account=%s (%s) — deterministic "
+                     "draft ships", account, reason or "empty")
+            return _done("fallback_provider", fallback_text)
+
+        text = _tidy(raw_text)
+
+        def _validate(candidate: str) -> list[str]:
+            return validate_reply_copy(
+                candidate, draft=fallback_text, numbers_whitelist=numbers_whitelist,
+                parent_text=parent_text, parent_author=parent_author,
+                account=account, family=family, warmth=str(warmth or ""),
+                shape=str(shape or ""), relationship_only=bool(relationship_only),
+                corpus=corpus, root=root,
+            )
+
+        try:
+            violations = _validate(text)
+            if violations:
+                # ONE REPAIR TURN, the same discipline the copywriter v2 path uses:
+                # restate only the violations, never the laws, never a suggested
+                # rewrite. The reply desk needs it MORE than the post lane does,
+                # because a warmth move is exactly the kind of instruction a model
+                # obeys at the cost of a different gate (it writes the fused
+                # concession and slips in a hedge her codex bans), and without a
+                # repair a single recoverable slip costs the whole phrasing pass.
+                #
+                # The repair claims its OWN slot from the runaway guard. A guard
+                # that counts one call per draft while the code makes two is a cap
+                # of 80/hour wearing a 40 label, which is the exact bug the rolling
+                # window was introduced to fix.
+                if _take_call_slot(max_calls, window_s):
+                    _STATS["repairs"] += 1
+                    repair_msg = build_user_message(
+                        draft=fallback_text, family=family, account=account,
+                        parent_text=parent_text, parent_author=parent_author,
+                        numbers_whitelist=numbers_whitelist, cfg=cfg,
+                        family_spec=family_spec, warmth=str(warmth or ""),
+                        warmth_spec=warmth_spec, shape=str(shape or ""),
+                        shape_spec=shape_spec, violations=violations,
+                    )
+
+                    def _do_repair(client, model):
+                        resp = client.messages.create(
+                            model=model, max_tokens=max_tokens, system=_system,
+                            messages=[{"role": "user", "content": repair_msg}],
+                        )
+                        if selected and (getattr(resp, "stop_reason", None) != "end_turn"
+                                         or not resp.content
+                                         or any(getattr(part, "type", "") != "text" for part in resp.content)):
+                            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+                        if getattr(resp, "stop_reason", None) == "refusal":
+                            return None, "stop_refusal", resp
+                        out = "".join(b.text for b in resp.content
+                                      if getattr(b, "type", "") == "text")
+                        if selected and not out.strip():
+                            raise llm_auth.FabricProviderError("fabric_text_completion_required")
+                        return (out.strip() or None), None, resp
+
+                    try:
+                        retry_text, _reason, retry_provider = llm_auth.make_call(
+                            providers, _do_repair, context="reply_voice_repair")
+                    except Exception as exc:  # noqa: BLE001 — repair is best-effort
+                        log.warning("reply_voice: repair turn failed for account=%s "
+                                    "(%s: %s)", account, type(exc).__name__, exc)
+                        retry_text, retry_provider = None, None
+                    if retry_text:
+                        candidate = _tidy(retry_text)
+                        retry_violations = _validate(candidate)
+                        if not retry_violations:
+                            return _done("llm", candidate, provider=retry_provider or provider)
+                        violations = retry_violations
+                else:
+                    _STATS["cap_hits"] += 1
+        except Exception as exc:  # noqa: BLE001 — "Never raises" is the contract
+            # THE GATE IS NOT ALLOWED TO BE THE CRASH. `validate_reply_copy` does
+            # four LAZY imports (hot_tape_llm, reply_critics, copywriter,
+            # expression_dial) and any of them can ImportError in a thin runtime —
+            # exactly the CI/minimal-deps lane this package is built to survive. That
+            # exception used to escape a function documented "Never raises", which is
+            # the guarantee §0 gate 1 of the reply doctrine rests on: the caller
+            # treats a reply as always-postable. UNVALIDATED MODEL COPY NEVER SHIPS
+            # here — the deterministic draft does, and the reason is recorded in the
+            # same `violations` field the gate hits use, so the producer's
+            # fallback-rate report shows it instead of hiding it.
+            log.warning("reply_voice: validation unavailable for account=%s (%s: %s) — "
+                        "deterministic draft ships", account, type(exc).__name__, exc)
+            return _done("fallback_validation", fallback_text,
+                         violations=[f"validation unavailable ({type(exc).__name__}: {exc})"])
+        if violations:
+            log.warning("reply_voice: model copy rejected for account=%s: %s",
+                        account, "; ".join(violations[:6]))
+            return _done("fallback_validation", fallback_text, violations=violations)
+
+        return _done("llm", text, provider=provider)
 
 
 __all__ = [

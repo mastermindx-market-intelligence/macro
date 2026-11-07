@@ -58,6 +58,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -295,6 +304,13 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - "engine/provider_production_modes.py"
+      - "config/provider_production_modes.v1.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2463,6 +2479,13 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - "engine/provider_production_modes.py"
+      - "config/provider_production_modes.v1.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3538,6 +3561,13 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - "engine/provider_production_modes.py"
+      - "config/provider_production_modes.v1.json"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -6196,6 +6226,14 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
@@ -7611,6 +7649,7 @@ jobs:
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       # Derived-closure coverage (compose with origin/main 7abc73b9): these
       # concrete paths enter this job's own import closure through upstream
       # modules. `scope: exclusive` means declared paths REPLACE inference,
@@ -8130,6 +8169,13 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -9257,6 +9303,11 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "engine/provider_workload_policy.py"
+      - engine/provider_production_modes.py
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
@@ -10638,6 +10689,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
       - "tests/intl_gs_dislocations_fixture.py"
@@ -10990,6 +11050,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11361,6 +11430,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -12367,6 +12445,13 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -13868,6 +13953,15 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/fabric_inference_client.py
+      - engine/provider_production_modes.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
       - "engine/capital_structure/covenant_html.py"
       - "config/ai_pricing.yml"
       - "config/capability_manifest.yml"
@@ -14179,6 +14273,22 @@ jobs:
     # W38-B3 (2026-10-31): the suite reads engine/china_narrative_radar.py by ast to pin its
     # provenance copy, so that module and its closure join the paths.
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - "config/metabolism_budget.yml"
+      - "config/provider_production_modes.v1.json"
+      - "config/provider_workloads.v1.json"
+      - "engine/_text_scrub.py"
+      - "engine/earnings_qual.py"
+      - "engine/fabric_inference_client.py"
+      - "engine/llm_auth.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/ollama_provider.py"
+      - "engine/provider_health.py"
+      - "engine/provider_production_modes.py"
+      - "engine/provider_workload_policy.py"
       - "templates/china_altdata.html.j2"
       - "engine/china_narrative_radar.py"
       - "engine/china_sector_index.py"
@@ -14353,6 +14463,23 @@ jobs:
     # ledger suites (jinja2 + engine/i18n; data_dir monkeypatched, no data/ or site/ read).
     # scope: exclusive pins the job to its static import closure plus ancestor inits.
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - "config/metabolism_budget.yml"
+      - "config/provider_production_modes.v1.json"
+      - "config/provider_workloads.v1.json"
+      - "engine/_text_scrub.py"
+      - "engine/earnings_qual.py"
+      - "engine/fabric_inference_client.py"
+      - "engine/llm_auth.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/ollama_provider.py"
+      - "engine/provider_health.py"
+      - "engine/provider_production_modes.py"
+      - "engine/provider_workload_policy.py"
       - "templates/china_radar.html.j2"
       - "tests/test_china_radar_candidate_convergence.py"
       - "tests/test_china_radar_horizon_record.py"
@@ -14891,6 +15018,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/rotation_observation_notification.py"
@@ -15476,6 +15604,7 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - research/signal_engine/confluence.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - "lib/us_cash_calendar.py"
@@ -16609,6 +16738,13 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -18365,6 +18501,8 @@ jobs:
         run: python -m pytest tests/test_model_routing_guard.py -q
       - name: agent routing control matrix (HOUSE-U2 — ROUTE registry, commission + return contracts)
         run: python -m pytest tests/test_agent_routing_control.py -q
+      - name: "provider workload guard (no developer subscriptions in product inference)"
+        run: python -m pytest tests/test_provider_workload_policy.py -q
 
   contract-drift:
     if: ${{ false }}
@@ -18627,6 +18765,7 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - research/signal_engine/confluence.py
       - "tests/test_uk_policy_brain.py"
       - "tests/fixtures/uk_policy_govuk_sample.json"
       - ".github/workflows/whitehouse-sentinel.yml"
@@ -19080,6 +19219,14 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -20883,6 +21030,15 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/fabric_inference_client.py
+      - engine/provider_production_modes.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -22101,7 +22257,7 @@ jobs:
         # writes to was dark too, which is how _capture_usage could bill free
         # Ollama calls to the Claude subscription lane unnoticed.  It guards the
         # same waterfall as the files beside it — keep it in this step.
-        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py tests/test_provider_capacity_v2_cli.py tests/test_provider_native_enablement.py -q
+        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_provider_workload_policy.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py tests/test_provider_capacity_v2_cli.py tests/test_provider_native_enablement.py -q
       - name: V10 key economy suite (enabled-set, header capture, usage snapshot)
         run: python -m pytest tests/test_key_pool_economy.py -q
       - name: cortex provider routing + tool loop suite
@@ -23033,6 +23189,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "engine/intl_transmission_evidence.py"
       - "config/intl_transmission_channels_v1.json"
       - "tests/test_intl_transmission_evidence.py"
@@ -23189,6 +23354,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -23628,6 +23802,15 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -23963,6 +24146,14 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -26557,6 +26748,15 @@ jobs:
     # RIC E0 frozen-spec retrospective runners (2026-10-14): M0 coherent requalification (H1, family ric_mri_coherent_requal_v1, n=13) and X0 release reaction (H3, family ric_x0_release_reaction_v1, n=8). Both ran ONCE against frozen protocols; these suites pin the runners' rules, receipts and committed results. Hermetic: synthetic fixtures and committed research/ receipts only, no network, no data/ reads or writes, no ledger writes.
     timeout-minutes: 10
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -26975,6 +27175,14 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       - "engine/options_hub_retention.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
@@ -27612,6 +27820,11 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "engine/provider_workload_policy.py"
+      - "engine/provider_production_modes.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -28463,6 +28676,11 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "engine/provider_workload_policy.py"
+      - "engine/provider_production_modes.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -29072,6 +29290,7 @@ jobs:
     # Derived with infer_job_scopes for both suites; no packing ceilings changed.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "app/**"
       - "collectors/**"
       - "config/**"
@@ -30217,6 +30436,10 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "engine/codex_lane/runner.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "scripts/metabolism_journal.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -30773,6 +30996,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -31849,6 +32079,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -32649,6 +32888,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "scripts/company_intelligence_publication_evidence.py"
       - "tests/test_company_intelligence_event_workspace.py"
       - "tests/test_government_revenue_dossier_validation_memo.py"
@@ -33492,6 +33732,11 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "engine/provider_workload_policy.py"
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -34130,6 +34375,7 @@ jobs:
     # fallback domains that otherwise select unrelated homepage/Prophet probes.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "admin/**"
       - "app/**"
       - "collectors/**"
@@ -34700,6 +34946,296 @@ jobs:
         run: python -m pytest tests/test_release_cpi_coherent_governance.py tests/test_release_cpi_coherent_shadow.py -q
 
   unrun-brain-desks:
+    # Exact named dependency closure; retain all commands and only drop opaque fallback.
+    scope: exclusive
+    paths:
+      - "scripts/metabolism_journal.py"
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_news.py"
+      - "collectors/china_visits.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/grants_gov.py"
+      - "collectors/massive_flatfiles.py"
+      - "collectors/massive_stock_day.py"
+      - "collectors/openfigi.py"
+      - "collectors/sam_gov.py"
+      - "collectors/sp_index_changes.py"
+      - "collectors/yahoo.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/delisted_symbols.yml"
+      - "config/metabolism_budget.yml"
+      - "config/provider_production_modes.v1.json"
+      - "config/provider_workloads.v1.json"
+      - "engine/__init__.py"
+      - "engine/_text_scrub.py"
+      - "engine/activist.py"
+      - "engine/ai_desk.py"
+      - "engine/ai_desk_scorer.py"
+      - "engine/altdata.py"
+      - "engine/altdata_alerts.py"
+      - "engine/altdata_brain.py"
+      - "engine/altdata_emit.py"
+      - "engine/altdata_ledger.py"
+      - "engine/altdata_models.py"
+      - "engine/altdata_picks.py"
+      - "engine/altdata_signals.py"
+      - "engine/analyst_revisions.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/beneficial_ownership.py"
+      - "engine/briefing.py"
+      - "engine/canon.py"
+      - "engine/catalyst_tone.py"
+      - "engine/china_altdata.py"
+      - "engine/china_basket_spine.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_discovery.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_intel_bus.py"
+      - "engine/china_intel_hub.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_radar.py"
+      - "engine/china_radar_ic.py"
+      - "engine/china_radar_ledger.py"
+      - "engine/china_regime_store.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_standout_track.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/conditions.py"
+      - "engine/confluence_tiers.py"
+      - "engine/cross_asset.py"
+      - "engine/cycles.py"
+      - "engine/desk_grader.py"
+      - "engine/desk_ledger.py"
+      - "engine/desk_scorer.py"
+      - "engine/earnings_qual.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/election_cycle.py"
+      - "engine/entity_resolver.py"
+      - "engine/event_calendar.py"
+      - "engine/extension.py"
+      - "engine/fabric_inference_client.py"
+      - "engine/forward_calendar_context.py"
+      - "engine/gdelt_client.py"
+      - "engine/grading.py"
+      - "engine/hub_track_record.py"
+      - "engine/hysteresis.py"
+      - "engine/i18n.py"
+      - "engine/index_changes.py"
+      - "engine/indicators.py"
+      - "engine/influence/__init__.py"
+      - "engine/influence/extract.py"
+      - "engine/influence/graph.py"
+      - "engine/inputs.py"
+      - "engine/intel_discovery.py"
+      - "engine/intel_hub.py"
+      - "engine/intelligence.py"
+      - "engine/ledger_lane.py"
+      - "engine/live_overlay.py"
+      - "engine/llm_auth.py"
+      - "engine/local_projection_research_card.py"
+      - "engine/local_projections.py"
+      - "engine/macro_news.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/market_drivers.py"
+      - "engine/master_brain.py"
+      - "engine/master_brain_scorer.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/name_resolver.py"
+      - "engine/narrative_crossmarket.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brief_context.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/constitution.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/governance.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/query.py"
+      - "engine/neuralweb/read.py"
+      - "engine/neuralweb/reflexes.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/news_common.py"
+      - "engine/news_events.py"
+      - "engine/news_translate.py"
+      - "engine/ollama_provider.py"
+      - "engine/opex.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/passport.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/pooling.py"
+      - "engine/provider_capacity.py"
+      - "engine/provider_health.py"
+      - "engine/provider_production_modes.py"
+      - "engine/provider_workload_policy.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
+      - "engine/qledger_ui.py"
+      - "engine/qledger_validity.py"
+      - "engine/rates_command_basis.py"
+      - "engine/rebalance_calendar.py"
+      - "engine/regime.py"
+      - "engine/regime_label.py"
+      - "engine/regime_one.py"
+      - "engine/regime_vector.py"
+      - "engine/research_implication_card.py"
+      - "engine/risk_brain.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_audit.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_review.py"
+      - "engine/seasonality/contracts.py"
+      - "engine/seasonality/event_study.py"
+      - "engine/seasonality/multiplicity.py"
+      - "engine/session_anchor.py"
+      - "engine/shock_deescalation.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_governor.py"
+      - "engine/signal_quality.py"
+      - "engine/smart_money.py"
+      - "engine/special_arb.py"
+      - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
+      - "engine/spine.py"
+      - "engine/spvector_overlay.py"
+      - "engine/synthetic_control.py"
+      - "engine/technicals.py"
+      - "engine/ticker_shape.py"
+      - "engine/trajectory.py"
+      - "engine/translate.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/whitehouse_brain.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/dataos/identity.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/filing_value_units.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/massive_ticker.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "research/HINCL2_PREREG.md"
+      - "research/SYNTHETIC_CONTROL_PHASE0.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_PREREG_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_RESULTS_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_PROBABILITY_WALKFORWARD_PREREG_2026-09-23.md"
+      - "research/grey_deer/RISK_RADAR_PROBABILITY_WALKFORWARD_RESULTS_2026-09-23.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_PREREG_2026-09-21.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_RESULTS_2026-09-21.md"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V1_SOURCE_REFUSAL.json"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V1_STUDY_SPEC.json"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V2_APPENDIX.md"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V2_STUDY_SPEC.json"
+      - "research/local_projections/reproduce_alfred_cpi_payroll_v2.py"
+      - "scripts/__init__.py"
+      - "scripts/build_alt_data.py"
+      - "scripts/build_china_intel.py"
+      - "scripts/build_china_intel_hub.py"
+      - "scripts/build_crossmarket.py"
+      - "scripts/build_intel_hub.py"
+      - "scripts/hincl2_event_study.py"
+      - "scripts/local_projection_alfred_panel.py"
+      - "scripts/replay_standout_pipeline.py"
+      - "scripts/research/risk_radar_displayed_probability_audit.py"
+      - "scripts/research/risk_radar_probability_walkforward.py"
+      - "scripts/research/risk_radar_state_ladder_calibration.py"
+      - "scripts/run_local_projections.py"
+      - "scripts/synthetic_control_phase0.py"
+      - "scripts/validate_regime_fwd.py"
+      - "site/allocationdata/special_situations.json"
+      - "site/altdata/by_ticker.json"
+      - "site/altdata/mastermind.json"
+      - "site/assets/js/intelligence-hub-market-pulse.js"
+      - "site/basketdata/radar_ticker.json"
+      - "site/china_intel/analogs.json"
+      - "site/china_intel/briefing.json"
+      - "site/china_intel/command.json"
+      - "site/chinaaltdata/by_ticker.json"
+      - "site/chinanews/by_ticker.json"
+      - "site/chinaradar/radar.json"
+      - "site/chinaspecialdata/special.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/china_standouts.json"
+      - "site/factordata/signal_gate.json"
+      - "site/factordata/us_standouts.json"
+      - "site/intelligence_hub.html"
+      - "site/news/by_ticker.json"
+      - "site/policy_intent.json"
+      - "templates/alt_data.html.j2"
+      - "templates/intelligence_hub.html.j2"
+      - "tests/test_admin_brief_gate.py"
+      - "tests/test_ai_desk_panel.py"
+      - "tests/test_altdata_intel.py"
+      - "tests/test_altdata_price_truth.py"
+      - "tests/test_china_intel_bus.py"
+      - "tests/test_china_intel_hub.py"
+      - "tests/test_china_intel_hub_command.py"
+      - "tests/test_china_intel_hub_visits.py"
+      - "tests/test_china_intel_visits_render.py"
+      - "tests/test_intel_hub_universe_scope.py"
+      - "tests/test_intel_hub_w0_heals.py"
+      - "tests/test_intelligence_hub_glance_copy.py"
+      - "tests/test_intelligence_hub_market_pulse_client.py"
+      - "tests/test_intelligence_hub_market_pulse_surface.py"
+      - "tests/test_master_brain.py"
+      - "tests/test_master_brain_ladder.py"
+      - "tests/test_master_brain_policy.py"
+      - "tests/test_master_brain_producer.py"
+      - "tests/test_master_brain_production_composition.py"
+      - "tests/test_master_brain_scorer.py"
+      - "tests/test_master_brain_zh_ladder.py"
+      - "tests/test_narrative_crossmarket.py"
+      - "tests/test_risk_brain.py"
+      - "tests/test_risk_radar_probability_walkforward.py"
+      - "tests/test_risk_radar_review.py"
+      - "tests/test_shock_deescalation.py"
+      - "tests/test_ticker_shape.py"
+      - "tests/test_w7_llm_determinism.py"
     # master brain / AI desk / alt-data / risk brains behind the shipped desk verdicts.
     if: ${{ false }}
     gate: code
@@ -34713,7 +35249,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: master brain / AI desk / alt-data / risk brains behind the shipped desk verdicts
-        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_china_intel_hub_command.py tests/test_narrative_crossmarket.py tests/test_master_brain.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_risk_radar_probability_walkforward.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
+        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_china_intel_hub_command.py tests/test_narrative_crossmarket.py tests/test_master_brain.py tests/test_master_brain_production_composition.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_risk_radar_probability_walkforward.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
       # China Alpha Intelligence P1 (#6050): the china_intel_hub dossier's
       # descriptive-only visits block — joins the china_intel_hub owner lane.
       # test_china_intel_visits_render.py is the SOL-repair template render
@@ -34770,6 +35306,16 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -35378,6 +35924,14 @@ jobs:
     paths:
       - collectors/rate_futures.py
       - engine/rate_futures_repricing.py
+      - "scripts/metabolism_journal.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -36723,6 +37277,7 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -36876,6 +37431,12 @@ jobs:
     scope: exclusive
     paths:
       - engine/rate_futures_repricing.py
+      - "scripts/metabolism_journal.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "engine/provider_workload_policy.py"
+      - engine/provider_production_modes.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -38627,6 +39188,9 @@ jobs:
     # Run 39768032122 spent 417s installing Chromium; preserve the full browser gate.
     if: ${{ false }}
     gate: code
+    paths:
+      - tests/test_admin_cost_unpriced_composition.js
+      - admin/static/app.js
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -38635,7 +39199,168 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright rjsmin==1.2.5
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright rjsmin==1.2.5 'claude-agent-sdk>=0.2'
+      - name: Fabric adapter and real shared-gateway Brain composition
+        run: |
+          set -euo pipefail
+          fabric_fixture_root="$(mktemp -d)"
+          trap 'rm -rf "$fabric_fixture_root"' EXIT
+          mkdir -p "$fabric_fixture_root/ops/native_fabric/experiential_proxy"
+          # Public, immutable owner source; the test verifies its exact Git blob
+          # before import. No credentials, provider calls, or anonymous retry.
+          curl --fail --silent --show-error --proto '=https' --tlsv1.2 --max-time 45 \
+            https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/700eef54bca4a2dc4e30d94a6b30dcfa733ad57c/ops/native_fabric/experiential_proxy/gateway.py \
+            -o "$fabric_fixture_root/ops/native_fabric/experiential_proxy/gateway.py"
+          # Closed native B/A fixture from the published handler revision.
+          # Every downloaded file is Git-blob checked before real composition.
+          for native_relative in \
+            ops/native_fabric/quota_continuity/candidate/commission_deadline.py \
+            ops/native_fabric/quota_continuity/candidate/go_lease_capability.py \
+            ops/native_fabric/quota_continuity/candidate/go_lease_gateway.py \
+            ops/native_fabric/quota_continuity/candidate/go_shim.py \
+            ops/native_fabric/quota_continuity/candidate/lease_broker.py \
+            ops/native_fabric/quota_continuity/candidate/provider_outcome.py \
+            ops/native_fabric/quota_continuity/candidate/quota_circuit.py \
+            ops/native_fabric/quota_continuity/source/model_tier.py \
+            ops/native_fabric/quota_continuity/source/pool_status.py \
+            ops/native_fabric/quota_continuity/tests/_offline_boundary.py \
+            ops/native_fabric/quota_continuity/tests/test_application_turn_admission.py \
+            ops/native_fabric/quota_continuity/tests/test_go_application_handler_composition.py; do
+            native_target="$fabric_fixture_root/$native_relative"
+            mkdir -p "$(dirname "$native_target")"
+            curl --fail --silent --show-error --proto '=https' --tlsv1.2 --max-time 45 \
+              "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/1fc6ebfc1ed340861feca069540d89a5a3288c27/$native_relative" \
+              -o "$native_target"
+          done
+          MM_FABRIC_GATEWAY_SOURCE_ROOT="$fabric_fixture_root" python -m pytest \
+            tests/test_fabric_native_application_client.py tests/test_fabric_native_application_composition.py tests/test_fabric_brain_buffered_delivery.py tests/test_fabric_caller_native_composition.py tests/test_fabric_small_consumers.py tests/test_fabric_commodity_influence.py tests/test_fabric_response_eval.py tests/test_fabric_marketing_review.py tests/test_fabric_marketing_copywriter.py tests/test_fabric_application_deadlines.py tests/test_fabric_marketing_breaking.py tests/test_fabric_marketing_fomc.py tests/test_fabric_marketing_hot_reply.py tests/test_fabric_admin_pool_view.py tests/test_fabric_admin_pool_server.py tests/test_fabric_marketing_cold_read.py tests/test_fabric_press_writer.py tests/test_fabric_uk_policy_brain.py tests/test_fabric_intelligence_desk.py tests/test_publish_time_fabric_composition.py tests/test_native_go_application_recipe.py tests/test_specialty_current_fabric_composition.py tests/test_earnings_current_fabric_composition.py tests/test_cortex_fabric_composition.py tests/test_fabric_diagnostic_scripts.py tests/test_fabric_whitehouse_brain.py tests/test_fabric_research_runners.py tests/test_metabolism_fabric_composition.py \
+            tests/test_fabric_inference_client.py tests/test_fabric_consumer_composition.py \
+            tests/test_fabric_gateway_composition.py tests/test_orchestrator_fabric_composition.py tests/test_fabric_application_binding.py \
+            tests/test_fabric_shared_default.py tests/test_master_brain_fabric_composition.py \
+            tests/test_news_narrators_fabric_composition.py tests/test_ask_fabric_composition.py tests/test_fabric_cached_brain_callbacks.py tests/test_fabric_application_inspection.py tests/test_fabric_translation_composition.py -q
+      - name: Five service identities through actual paired Mastermind owners
+        run: |
+          set -euo pipefail
+          fabric_identity_fixture_root="$(mktemp -d)"
+          trap 'rm -rf "$fabric_identity_fixture_root"' EXIT
+          # The current five-service pair is isolated from the original 1fc/f7 modules.
+          # Verify the closed native and actual Brain/tool import closure before use.
+          python - "$fabric_identity_fixture_root" <<'PY'
+          from pathlib import Path
+          import hashlib
+          import subprocess
+          import sys
+
+          root = Path(sys.argv[1])
+          pins = {
+              "bot/__init__.py": "7cd08f9dbb5a7534f997a1394062b4d72774d7a0",
+              "brain/__init__.py": "8f957bc85f3f20f0fd1d8f97d27ba56f69f5d026",
+              "brain/advisor.py": "64793aca4edba07e2ba67bc90f126e0886b2c800",
+              "brain/bot_mcp.py": "fdfc70151735731837090bc4452829c836e97f56",
+              "brain/cli_bridge.py": "92c2c2e488e3ebb8c0a52428b09b711c7fa3fbd1",
+              "brain/fabric_chat.py": "835a6dc72ddf680eb4626ae614b0c5ea26353ecc",
+              "brain/fabric_inference.py": "57427e927e2c8c35507b82616c7d40d264173dca",
+              "brain/provider_failure.py": "3fdf1782c4b94ff6b3cf1e4e222cbe5bff347c4a",
+              "brain/thinking_log.py": "43ea1d2f6000b50eb6a648b8a83e73e6c143c2ae",
+              "common/__init__.py": "4eda2ac4ab080fa537738fd4a714de3ce3503c1f",
+              "common/redaction.py": "5fcb5604ab5a1c13e70c55fea3cdffa564821375",
+              "control_plane/__init__.py": "2bcf2a4135db7c52a584b6fb98a15b7c9fea9959",
+              "control_plane/locks.py": "e207d7da64ea2a1bb591b65c3229962b11945993",
+              "portfolio/__init__.py": "8f957bc85f3f20f0fd1d8f97d27ba56f69f5d026",
+              "portfolio/registry.py": "f5eb632d8f2d8dfcdbe11abb19076f9d746b38fe",
+              "ops/native_fabric/quota_continuity/candidate/commission_deadline.py": "fade630ed75c1b93334a5711a6df7a554fbd24ee",
+              "ops/native_fabric/quota_continuity/candidate/go_shim.py": "969ffaf84e23ef2d1c0398761943093c9b5c9456",
+              "ops/native_fabric/quota_continuity/candidate/lease_broker.py": "3c1360866b6a4fcdc2f9d72732d0439361e3d0c7",
+              "ops/native_fabric/quota_continuity/candidate/go_lease_gateway.py": "9a30985f744be11b8ce3f2514baef5b494b4471a",
+              "ops/native_fabric/quota_continuity/candidate/go_lease_capability.py": "38856700331b3fb3a7706a5745e23fb7b3d18cf0",
+              "ops/native_fabric/quota_continuity/candidate/provider_outcome.py": "981f35a01183e83fdb9f0b8a4175b290cdeb85f8",
+              "ops/native_fabric/quota_continuity/candidate/quota_circuit.py": "1583a6ba773e56dbc3f295b65ffc08dea2d31d48",
+              "ops/native_fabric/quota_continuity/source/model_tier.py": "96093c2747d2dda69b3f2255cb84e656355c87ea",
+              "ops/native_fabric/quota_continuity/source/pool_status.py": "02922043357d63b4bcfa3791899df27a5c42be12",
+              "ops/native_fabric/quota_continuity/tests/_offline_boundary.py": "e511ab65fe1cd30bf4d2addac6700ca43c3468da",
+              "ops/native_fabric/quota_continuity/tests/test_go_application_handler_composition.py": "13ebd6bcee5167926807d7ccdc63bcabed0cf1b1",
+              "ops/native_fabric/quota_continuity/tests/test_application_turn_admission.py": "8487163bb0904f8b95f0a9b326efa1622cd0ad0e",
+              "ops/native_fabric/quota_continuity/tests/test_application_cross_pool_auto.py": "a4844fa37548f31027b5041c35e540cd50e51ce3",
+              "ops/native_fabric/quota_continuity/tests/test_application_registered_pool_composition.py": "3c1bb6f596fa8821af19c71eb2ea2327147b19eb",
+              "ops/native_fabric/quota_continuity/tests/test_application_registered_pool_selection.py": "754d6d8c1a6391fcfefdbd26417f87944403ea2b",
+              "ops/native_fabric/quota_continuity/tests/test_application_auto_request.py": "3f34cd0c38adbc09e10166a79832582e9ef25ec0",
+              "ops/native_fabric/quota_continuity/candidate/pick.py": "d17447c3c9f472b061733e36fa49a7f8d7e34ee5",
+              "ops/native_fabric/quota_continuity/candidate/pool_ledger.py": "61dc4d5e83172e6c647d058ec844f00a0b3955a6",
+              "ops/native_fabric/quota_continuity/source/fabric_policy_snapshot.py": "53f0cab2d1aaa2c07f9ec137ecdece939da74d0e",
+              "ops/native_fabric/quota_continuity/candidate/application_http_transports.py": "b0b8404b45dd0a3e73a34430c2ef3a28b1edbf6d",
+              "control_plane/codex_provider_realm.py": "eeea4c0fafc7e6df5c534c731cb6046bbe4d3f37",
+              "control_plane/provider_protocols.py": "92452237ac3956e8104e45ab9ee386c2fa016b76",
+              "control_plane/fs_security.py": "16617789dc115b5748a3e72cc0d9a53fbc368918"
+          }
+          commit = "4bb7bb9cc547d73b96f5fec659a80ae95d75bb95"
+          base = "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/"
+          def git_blob(raw):
+              return hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+          for relative, expected in pins.items():
+              result = subprocess.run(
+                  ["curl", "--fail", "--silent", "--show-error", "--proto", "=https",
+                   "--tlsv1.2", "--max-time", "45", "--max-filesize", "2097152",
+                   base + commit + "/" + relative],
+                  check=True, capture_output=True, timeout=50)
+              if git_blob(result.stdout) != expected:
+                  raise SystemExit("paired fixture blob mismatch: " + relative)
+              target = root / relative
+              target.parent.mkdir(parents=True, exist_ok=True)
+              with target.open("xb") as stream:
+                  stream.write(result.stdout)
+          target = b"macro_src"
+          if git_blob(target) != "67c7d1aa15e255af2e662d8b4b385faf9714f06a":
+              raise SystemExit("paired fixture symlink mismatch")
+          (root / "vendor").mkdir()
+          (root / "vendor/macro").symlink_to(target.decode())
+          print("Verified 38 paired source blobs and original vendor symlink.")
+          PY
+          MM_FABRIC_GATEWAY_SOURCE_ROOT="$fabric_identity_fixture_root" python -m pytest \
+            tests/test_fabric_service_identity.py \
+            tests/test_fabric_service_identity_composition.py \
+            tests/test_fabric_service_auto_composition.py \
+            tests/test_fabric_workload_auto_composition.py \
+            tests/test_cortex_auto_fabric_composition.py \
+            tests/test_specialty_auto_fabric_composition.py \
+            tests/test_master_brain_auto_fabric_composition.py \
+            tests/test_stock_desk_auto_fabric_composition.py \
+            tests/test_delegated_desks_auto_fabric_composition.py \
+            tests/test_admin_cost_unpriced_composition.py -q
+      - name: Fabric HTTP Admin composition with sealed realm metadata
+        run: |
+          set -euo pipefail
+          fabric_http_fixture_root="$(mktemp -d)"
+          trap 'rm -rf "$fabric_http_fixture_root"' EXIT
+          # A separate process keeps the current HTTP pair's module identities closed.
+          # The test verifies every exact Git blob before using synthetic loopback.
+          for native_http_relative in \
+            control_plane/codex_provider_realm.py \
+            control_plane/provider_protocols.py \
+            control_plane/fs_security.py \
+            ops/native_fabric/quota_continuity/candidate/commission_deadline.py \
+            ops/native_fabric/quota_continuity/candidate/go_shim.py \
+            ops/native_fabric/quota_continuity/candidate/lease_broker.py \
+            ops/native_fabric/quota_continuity/candidate/go_lease_gateway.py \
+            ops/native_fabric/quota_continuity/candidate/go_lease_capability.py \
+            ops/native_fabric/quota_continuity/candidate/application_http_transports.py \
+            ops/native_fabric/quota_continuity/candidate/provider_outcome.py \
+            ops/native_fabric/quota_continuity/candidate/quota_circuit.py \
+            ops/native_fabric/quota_continuity/source/model_tier.py \
+            ops/native_fabric/quota_continuity/source/pool_status.py \
+            ops/native_fabric/quota_continuity/source/application_http_transports.py.preimage \
+            ops/native_fabric/quota_continuity/rollout/application_http_realm_projection.py \
+            ops/native_fabric/quota_continuity/tests/_offline_boundary.py \
+            ops/native_fabric/quota_continuity/tests/test_application_turn_admission.py \
+            ops/native_fabric/quota_continuity/tests/test_go_application_handler_composition.py \
+            ops/native_fabric/quota_continuity/tests/test_bailian_application_handler_composition.py; do
+            native_http_target="$fabric_http_fixture_root/$native_http_relative"
+            mkdir -p "$(dirname "$native_http_target")"
+            curl --fail --silent --show-error --proto '=https' --tlsv1.2 --max-time 45 \
+              "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/f7d72b740103bdf7a817ae0b00474f65cc2d828d/$native_http_relative" \
+              -o "$native_http_target"
+          done
+          MM_FABRIC_HTTP_SOURCE_ROOT="$fabric_http_fixture_root" python -m pytest \
+            tests/test_bailian_fabric_native_composition.py -q
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
         run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_research_thesis_read.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py tests/test_brain_visuals.py tests/test_brain_visuals_review.py tests/test_brain_visuals_integration.py tests/test_brain_visuals_assets.py tests/test_brain_visuals_ci_ownership.py tests/test_brain_output_fast_presentation.py tests/test_brain_financial_views.py tests/test_brain_financial_assets.py tests/test_brain_chart_continuation.py tests/test_brain_chart_receipt_outcomes.py tests/test_brain_native_evidence_boundary.py tests/test_brain_pane_contexts.py tests/test_brain_price_window.py tests/test_brain_presentation.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
@@ -40002,6 +40727,11 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "engine/provider_workload_policy.py"
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -40553,6 +41283,13 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -42203,6 +42940,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -43868,6 +44614,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -45142,6 +45895,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - "engine/provider_production_modes.py"
+      - "config/provider_production_modes.v1.json"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -46856,6 +47616,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -47161,6 +47922,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -48830,6 +49592,15 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - research/single_name_intelligence/common/**
       - research/single_name_intelligence/evaluation/**
       - research/single_name_intelligence/us_stress/**
@@ -49097,6 +49868,15 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 20
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "research/single_name_intelligence/**"
       - "contracts/single_name_intelligence/**"
       - "config/single_name_intelligence/**"
@@ -49728,6 +50508,15 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/fabric_inference_client.py
+      - engine/provider_production_modes.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/grading_stats.py"
@@ -49904,6 +50693,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -50198,6 +50996,15 @@ jobs:
     # Exclude only opaque whole-root inference from the builder's dormant I/O;
     # packing ceilings, all named dependencies and test assertions stay intact.
     paths:
+      - "engine/earnings_transcript_intake.py"
+      - "engine/provider_capacity.py"
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/fabric_inference_client.py
+      - engine/provider_production_modes.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -50334,6 +51141,14 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/neuralweb/trade_memory_store.py"
+      - "scripts/metabolism_journal.py"
+      - "engine/provider_capacity.py"
+      - engine/fabric_inference_client.py
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"

@@ -34,5 +34,6 @@
       "pricing_ref": "Z.ai platform pricing page (metered PAYG) — reviewable pointer, no rate is encoded here",
       "notes": "distinct from glm-coding-plan (#7103)"
     }
-  }
+  },
+  "application_fabric_modes": {}
 }

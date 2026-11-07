@@ -39,6 +39,7 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from scripts.metabolism_journal import FabricHeld, guard_native_route, native_provider_call, update_owner_state
 
 log = logging.getLogger(__name__)
 
@@ -342,6 +343,9 @@ def _call_llm_auditor(
     proposal: dict[str, Any],
     diff_text: str,
     immutable_paths: list[str],
+    *,
+    root: Path | None = None,
+    pr_number: int = 1,
 ) -> tuple[str | None, float | None, list[str], str, str | None]:
     """Call the opus auditor.
 
@@ -349,6 +353,7 @@ def _call_llm_auditor(
     On any failure → verdict None, error_reason set.
     NEVER raises.
     """
+    guard_native_route(_repo_root(root), "audit", str(pr_number), ["pr:"+str(pr_number)], cfg=_LLM_CFG)
     try:
         from engine import llm_auth  # type: ignore[import]
 
@@ -377,8 +382,8 @@ def _call_llm_auditor(
             )
             return (text_out or None), None, resp
 
-        text, reason, _provider = llm_auth.make_call(
-            providers, _do_call, context="metabolism_audit"
+        text, reason, _provider = native_provider_call(_repo_root(root), "audit", str(pr_number), ["pr:"+str(pr_number)],
+            providers, _do_call, context="metabolism_audit", cfg=_LLM_CFG
         )
         if not text:
             return None, None, [], "", reason or "empty_reply"
@@ -395,7 +400,12 @@ def _call_llm_auditor(
         rationale = str(parsed.get("rationale") or "")
         return verdict, confidence, findings, rationale, None
 
+    except FabricHeld:
+        raise
     except Exception as exc:  # noqa: BLE001
+        guard_native_route(_repo_root(root), "audit", str(pr_number), ["pr:"+str(pr_number)], cfg=_LLM_CFG)
+        if str(getattr(exc, "code", "")).startswith("fabric_"):
+            raise FabricHeld("metabolism_selected_recipe_requires_original") from exc
         log.warning("audit: LLM auditor call failed: %s", exc)
         return None, None, [], "", "llm_error"
 
@@ -407,10 +417,7 @@ def _write_audit_record(record: dict[str, Any], root: Path | None = None) -> Non
     try:
         pr_number = record.get("pr_number")
         r = _repo_root(root)
-        audit_dir = r.joinpath(*_AUDIT_DIR)
-        audit_dir.mkdir(parents=True, exist_ok=True)
-        path = audit_dir / f"{pr_number}.json"
-        path.write_text(json.dumps(record, indent=2, default=str), encoding="utf-8")
+        update_owner_state(r, "audit", str(pr_number), record)
     except Exception as exc:  # noqa: BLE001
         log.warning("audit: write_audit_record failed for PR %s: %s",
                     record.get("pr_number"), exc)
@@ -507,6 +514,8 @@ def audit_pr(
     }
 
     try:
+        guard_native_route(_repo_root(root), "audit", str(pr_number), ["pr:"+str(pr_number)],
+                           model_requested=False)
         target_files: list[str] = [
             str(f) for f in (proposal.get("target_files") or []) if f is not None
         ]
@@ -611,10 +620,11 @@ def audit_pr(
 
         # ── LLM ADVERSARIAL REVIEW ────────────────────────────────────────────
 
+        guard_native_route(_repo_root(root), "audit", str(pr_number), ["pr:"+str(pr_number)], cfg=_LLM_CFG)
         immutable_list = list(IMMUTABLE_PATTERNS) if IMMUTABLE_PATTERNS else []
 
         llm_verdict, confidence, llm_findings, llm_rationale, error_reason = (
-            _call_llm_auditor(proposal, diff_text, immutable_list)
+            _call_llm_auditor(proposal, diff_text, immutable_list, root=root, pr_number=pr_number)
         )
 
         # Fail-closed: if LLM failed, treat as reject
@@ -648,6 +658,8 @@ def audit_pr(
         _append_governance_event(record, root)
         return record
 
+    except FabricHeld as exc:
+        return {**record, "status": "held", "rationale": str(exc)}
     except Exception as exc:  # noqa: BLE001
         log.warning("audit.audit_pr: unexpected exception for PR %s: %s", pr_number, exc)
         record["verdict"] = "reject"

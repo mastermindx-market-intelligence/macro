@@ -202,7 +202,8 @@ def _critic_cfg(cfg: dict | None) -> dict:
     if isinstance(critic, dict):
         return critic
     # `node` is already the critic block when the caller narrowed that far.
-    return node if ("max_tokens" in node or "enabled" in node) else {}
+    return node if any(key in node for key in (
+        "max_tokens", "enabled", "application_fabric_mode", "workload_profile")) else {}
 
 
 def _topic_line(ctx: dict) -> str:
@@ -325,7 +326,7 @@ def _unavailable(reason: str, *, annotate: bool = True) -> dict:
 
 
 def _providers(critic_cfg: dict) -> list:
-    """The provider waterfall for this critic config. Built ONCE per process.
+    """Fresh selected Fabric recipe, or the cached native provider waterfall.
 
     Keyed on everything that changes the waterfall (lane, model, transport
     settings, the codex tier) so a config change still rebuilds. Built inside the
@@ -336,6 +337,26 @@ def _providers(critic_cfg: dict) -> list:
     copywriter.llm): codex leads, the key_pool-balanced Claude oauth rung is the
     fallback. TERRA, not Sol — the critic reads and judges, it never writes.
     """
+    from engine import llm_auth  # noqa: PLC0415 — import closure law
+
+    selection_cfg = {
+        "usage_lane": str(critic_cfg.get("usage_lane", "marketing-critic")),
+        "oauth_pool_lane": str(critic_cfg.get("oauth_pool_lane", "marketing-critic")),
+    }
+    for field in (llm_auth.APPLICATION_MODE_CFG_KEY, "workload_profile"):
+        if field in critic_cfg:
+            selection_cfg[field] = critic_cfg[field]
+    if llm_auth.application_mode_id(selection_cfg) is not None:
+        selection_cfg.setdefault("workload_profile", "site_batch")
+        selection_cfg["provider_order"] = ["fabric"]
+        # A selected recipe holds no live client and is never cached here.
+        # Fabric owns its bounded transport deadline; the native SDK's 30s
+        # tuning below and Codex's 150s process budget do not change that owner.
+        providers = llm_auth.build_providers(selection_cfg)
+        if not llm_auth.is_fabric_selection(providers):
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
+        return providers
+
     _order = list(
         critic_cfg.get("provider_order") or ["codex", "oauth", "anthropic", "deepseek"]
     )
@@ -352,13 +373,15 @@ def _providers(critic_cfg: dict) -> list:
         _codex_effort,
         _pool_lane,
     )
+    if "workload_profile" in selection_cfg:
+        key += ("workload_profile", json.dumps(selection_cfg["workload_profile"], sort_keys=True))
     with _PROVIDER_LOCK:
         if key in _PROVIDER_CACHE:
             return _PROVIDER_CACHE[key]
-        from engine import llm_auth  # noqa: PLC0415
 
         providers = llm_auth.build_providers(
             {
+                **selection_cfg,
                 "usage_lane": key[0],
                 "oauth_pool_lane": _pool_lane,
                 "provider_order": _order,
@@ -378,6 +401,8 @@ def _providers(critic_cfg: dict) -> list:
             },
             opus_model=key[1],
         )
+        if llm_auth.is_fabric_selection(providers):
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
         _PROVIDER_CACHE[key] = providers
         return providers
 
@@ -430,6 +455,12 @@ def cold_read_verdict(text: str, ctx: dict, cfg: dict | None = None) -> dict:
         return _unavailable("no_credential")
 
     try:
+        from engine import llm_auth  # noqa: PLC0415 — import closure law
+        selected = llm_auth.is_fabric_selection(providers)
+    except Exception as exc:  # noqa: BLE001
+        return _unavailable(f"provider_build:{type(exc).__name__}")
+
+    try:
         max_tokens = int(critic_cfg.get("max_tokens", DEFAULT_MAX_TOKENS))
     except (TypeError, ValueError):
         max_tokens = DEFAULT_MAX_TOKENS
@@ -442,17 +473,22 @@ def cold_read_verdict(text: str, ctx: dict, cfg: dict | None = None) -> dict:
             model=model, max_tokens=max_tokens, system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_msg}],
         )
+        if selected and (getattr(resp, "stop_reason", None) != "end_turn"
+                         or not resp.content
+                         or any(getattr(block, "type", "") != "text" for block in resp.content)):
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
         if getattr(resp, "stop_reason", None) == "refusal":
             return None, "stop_refusal", resp
         out = "".join(b.text for b in resp.content
                       if getattr(b, "type", "") == "text")
+        if selected and not out.strip():
+            raise llm_auth.FabricProviderError("fabric_text_completion_required")
         return (out or None), None, resp
 
     try:
-        from engine import llm_auth  # noqa: PLC0415 — import closure law
-
-        raw, reason, _provider = llm_auth.make_call(
-            providers, _do_call, context="marketing_critic")
+        with llm_auth.begin_operation(providers, context="marketing_critic") as operation:
+            raw, reason, _provider = llm_auth.make_call(
+                operation.providers, _do_call, context="marketing_critic")
     except Exception as exc:  # noqa: BLE001 — a critic must never break a night
         return _unavailable(f"call:{type(exc).__name__}")
 
