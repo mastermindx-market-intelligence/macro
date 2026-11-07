@@ -33,6 +33,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config  # noqa: E402
+from scripts import risk_warning_projection as _rwp  # noqa: E402
 
 log = logging.getLogger("build_rr_banner")
 
@@ -158,37 +159,96 @@ def build_alert(rr: dict) -> dict | None:
     }
 
 
+
+def _load_json(path: Path) -> dict | None:
+    try:
+        value = json.loads(path.read_text())
+        return value if isinstance(value, dict) else None
+    except Exception:  # noqa: BLE001 — display publisher degrades explicitly below
+        return None
+
+
+def _expected_session(market_state: dict | None) -> str | None:
+    """Independent US session reference from the existing Market State owner.
+
+    Deliberately never falls back to the Risk Radar's own as-of date: a source
+    cannot certify its own freshness.
+    """
+    if not isinstance(market_state, dict):
+        return None
+    freshness = market_state.get("freshness")
+    if not isinstance(freshness, dict):
+        return None
+    value = freshness.get("expected_asof")
+    return value if isinstance(value, str) else None
+
+
+def _previous_warning(out: Path) -> dict | None:
+    previous = _load_json(out)
+    warning = previous.get("warning_projection") if isinstance(previous, dict) else None
+    return warning if isinstance(warning, dict) else None
+
+
 def build(site_dir: Path | None = None) -> Path:
-    """Read the live radar snapshot and (re)write site/rr_banner.json. Returns the
-    path written. Never raises — on any failure it writes an inert alert:null so a
-    stale extreme banner can never linger."""
+    """Publish the existing extreme alert plus additive warning/briefing views.
+
+    Legacy ``alert`` keeps its historical gated-risk-off meaning. The new
+    display-only projections make caution/elevated visible without changing
+    alert counts, model state, probabilities, capital authority or execution.
+    """
     if site_dir is None:
         site_dir = config.ROOT / config.load()["storage"]["site_dir"]
     site_dir = Path(site_dir)
     site_dir.mkdir(parents=True, exist_ok=True)
     out = site_dir / "rr_banner.json"
 
-    alert = None
-    asof = None
-    try:
-        latest = json.loads((config.data_dir() / "regime" / "latest.json").read_text())
-        rr = latest.get("risk_radar")
-        if isinstance(rr, dict):
-            asof = rr.get("asof")
-            alert = build_alert(rr)
-    except Exception as e:  # noqa: BLE001
-        log.warning("rr_banner: could not read radar snapshot (%s) — writing inert", e)
+    previous_warning = _previous_warning(out)
+    data = config.data_dir()
+    latest = _load_json(data / "regime" / "latest.json")
+    market_state = _load_json(data / "market_state" / "latest.json")
+    risk_envelope = _load_json(data / "risk_envelope" / "latest.json")
+
+    rr = latest.get("risk_radar") if isinstance(latest, dict) else None
+    rr = rr if isinstance(rr, dict) else None
+    asof = rr.get("asof") if rr is not None else None
+
+    # Preserve the registered legacy extreme-only field exactly. Existing
+    # operator-exposure consumers count this shape, so caution/elevated
+    # visibility lives only in the additive projection until they migrate.
+    alert = build_alert(rr) if rr is not None else None
+
+    expected = _expected_session(market_state)
+    warning = _rwp.project_radar_warning(
+        rr, market="us", expected_session=expected,
+    )
+    warning = _rwp.retain_unresolved_warning(warning, previous_warning)
+
+    radar_view = market_state.get("radar") if isinstance(market_state, dict) else None
+    recovery = radar_view.get("recovery") if isinstance(radar_view, dict) else None
+    briefing = _rwp.compose_capital_protection_briefing(
+        warning,
+        radar=rr,
+        regime=latest,
+        market_state=market_state,
+        risk_envelope=risk_envelope,
+        recovery=recovery,
+    )
 
     payload = {
         "schema": "rr_banner.v1",
         "asof": asof,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "alert": alert,
+        "warning_projection": warning,
+        "briefing": briefing,
     }
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
-    log.info("rr_banner.json written (alert=%s)", "yes" if alert else "none")
+    log.info(
+        "rr_banner.json written (alert=%s warning=%s)",
+        "yes" if alert else "none",
+        warning.get("attention"),
+    )
     return out
-
 
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
