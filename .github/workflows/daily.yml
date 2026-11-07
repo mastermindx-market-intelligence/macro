@@ -2219,6 +2219,39 @@ jobs:
         run: |
           python -m engine.credit_momentum \
             || echo "::warning::credit_momentum engine failed (non-fatal)"
+      - name: timings band — revisions-drip (W2)
+        run: python3 scripts/nightly_timings.py mark --band revisions-drip || echo "::warning::timings band mark failed (non-fatal)"
+      - name: analyst revisions drip (collectors.equity_revisions; non-fatal)
+        # 2026-11-07 (#7646 root cause): moved here from scripts/build_stock_library.py, where
+        # it ran INSIDE build_site on the engine job's render path (102 of build_site's 143 min
+        # on 2026-11-06; engine-core 170 min — the step that carried the engine job past the
+        # runner kill, Mastermind #1632, six nights running). House law: accrual steps go in
+        # collect_tail. Drips the <=200 STALEST names (<6d-fresh skipped) with atomic 25-name
+        # checkpoints of data/revisions/* + the SRC-A1 stores, all under `git add data/` in
+        # "commit tail data". The engine job sets MACRO_REVISIONS_DRIP=collect_tail so
+        # build_site reads the committed parquet (one-night lag, inside the 6-day window).
+        # KEEP THE python LINE BARE: no argv = the config cap (equity_profile.per_build, 200).
+        # PLACEMENT: last before the commit so a blowout truncates only this step. BUDGET:
+        # 102 min measured at ~30 s/name → 120-min step bound (job 21-25 min + this ≈ 125-145
+        # of the 200-min cap, tripwire 170); if it hits the bound nightly fix the per-name cost.
+        # DEADLINE: the earlier bounds already sum past the job cap on paper and the cap
+        # comment says STEP bounds guarantee the commit — so the collector gets a wall-clock
+        # deadline = min(job start + cap − 30-min commit reserve [W2 stamp], now + 115 min
+        # [5 under this bound]). Past it the SRC-A1 pre-pass and the drip loop stop starting
+        # names, flush and exit 0: a stacked night keeps the commit reserve, an ordinary night
+        # ends by its own clock. GitHub's timeout signals bash, not python — the step bound
+        # and the atomic checkpoints are the backstop, never the design.
+        timeout-minutes: 120
+        continue-on-error: true
+        run: |
+          stamp="${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
+          now=$(date +%s)
+          if [ -r "$stamp" ]; then start=$(cat "$stamp"); else echo "::warning::revisions drip: job-start stamp missing — job-cap deadline measured from now"; start=$now; fi
+          job_deadline=$(( start + (200 - 30) * 60 ))
+          step_deadline=$(( now + 115 * 60 ))
+          export MACRO_REVISIONS_DEADLINE_EPOCH=$(( job_deadline < step_deadline ? job_deadline : step_deadline ))
+          python -m collectors.equity_revisions \
+            || echo "::warning::equity_revisions drip failed (non-fatal)"
       - name: timings band — commit (W2)
         run: python3 scripts/nightly_timings.py mark --band commit || echo "::warning::timings band mark failed (non-fatal)"
       - name: commit tail data
@@ -2294,6 +2327,15 @@ jobs:
                               # build_confluence_strength, archive_signals,
                               # archive_context_snapshots, build_thematic_state,
                               # grade_thematic) can advance their ledgers.
+      MACRO_REVISIONS_DRIP: collect_tail   # 2026-11-07 (#7646 root cause): the analyst-revision
+                              # yfinance drip (collectors.equity_revisions, ~100 min/night at the
+                              # 200-name cap) no longer runs inside build_site on this job's
+                              # render path — collect_tail's "analyst revisions drip" step owns
+                              # it and commits data/revisions/; build_site reads the committed
+                              # parquet. Evidence: engine-core band 170 min on 2026-11-06, of
+                              # which build_site 143 min and its `revisions` ledger line 102 min.
+                              # The "build_site ~24m" reading in the timeout comment above is
+                              # the 2026-08-08 measurement; by 2026-11 build_site was 143 min.
     steps:
       - name: timings — job start mark (W2)
         run: date +%s > "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"

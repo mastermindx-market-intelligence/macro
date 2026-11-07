@@ -15201,7 +15201,6 @@ jobs:
         run: python -m pytest tests/test_output_health.py -q
       - name: "SRC-A1 native lineage, failure preservation and legacy compatibility"
         run: python -m pytest --noconftest tests/test_equity_revisions_src_a1_acceptance.py -q
-
       - name: "EXP1 deterministic K3E expectation query consumer"
         run: |
           python scripts/query_k3e_expectation_surface.py --help
@@ -49808,6 +49807,46 @@ jobs:
         run: pip install pytest fastapi pandas numpy pyarrow pyyaml jsonschema==4.26.0
       - name: c19-wp28-cs-leg-qualification
         run: python -m pytest tests/test_c19_wp28_cs_leg_qualification.py -q -p no:cacheprovider
+
+  nightly-revisions-drip-offrender:
+    # 2026-11-07 (#7646 root cause): the analyst-revision yfinance drip moved off
+    # the engine job's render path into collect_tail. Two suites: the collector's
+    # ownership guard, CLI config cap, atomic 25-name checkpoints, wall-clock
+    # deadline and interrupt flush; and the daily.yml wiring (engine hand-off env,
+    # bare step-bounded CLI last before the tail commit, its timings band, the
+    # deadline keyed to the job-start stamp). As steps in intelligence-registry
+    # and dag-conformance they moved all three packing probes (index 5,915 >
+    # 5,912, free-content 5,932 > 5,929, plan-book 5,676 > 5,670). scope:
+    # exclusive with the static import closure below plus the workflow the
+    # wiring suite reads as text; no ceiling moves.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - ".github/workflows/daily.yml"
+      - "collectors/__init__.py"
+      - "collectors/equity_revisions.py"
+      - "config.yml"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_revisions_drip_offrender.py"
+      - "tests/test_revisions_drip_offrender_wiring.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas pyarrow pyyaml
+      - name: revisions drip ownership, CLI cap, checkpoints, deadline and interrupt flush
+        run: python -m pytest --noconftest tests/test_revisions_drip_offrender.py -q -p no:cacheprovider
+      - name: revisions drip is a collect_tail step, off the render path
+        run: python -m pytest tests/test_revisions_drip_offrender_wiring.py -q -p no:cacheprovider
 
   grey-deer-pboc-liquidity:
     # Grey Deer GD-4C: the typed PBOC liquidity state that reads an OMO window.

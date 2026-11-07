@@ -5168,6 +5168,13 @@ CURATED_EXCLUSIVE = {
     # As a step in china-native-collectors it moved templates/index.html to
     # 5,816 > 5,800; its own exclusive job keeps the import closure only.
     "grey-deer-pboc-liquidity",
+    # 2026-11-07 (#7646): the analyst-revision drip moved off the engine render
+    # path into collect_tail. As steps in intelligence-registry and
+    # dag-conformance its two suites moved all three packing probes (index
+    # 5,915 > 5,912, free-content 5,932 > 5,929, plan-book 5,676 > 5,670);
+    # their own exclusive job keeps the collector's static import closure plus
+    # the daily.yml the wiring suite reads; ceilings stay fixed.
+    "nightly-revisions-drip-offrender",
     # 2026-10-20 W27-L27: the China Alt-Data catalyst-card render tests. As a
     # step in unrun-template-chips they moved the index-template (5,825 > 5,822)
     # and build_free_content (5,700 > 5,697) packing probes; its own exclusive
