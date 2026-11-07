@@ -3867,12 +3867,14 @@ def _cm_prepare(fixture, *, hook=None, tested=None, base_ref='main'):
     """
     real_run = _cm_subprocess.run
     fixture['fetches'] = []
+    fixture['fetch_inputs'] = []
 
     def observed(argv, *args, **kwargs):
         command = list(argv) if isinstance(argv, (list, tuple)) else []
         is_fetch = bool(command and command[0] == 'git' and 'fetch' in command)
         if is_fetch:
             fixture['fetches'].append(command)
+            fixture['fetch_inputs'].append(kwargs.get('input'))
             if hook:
                 hook('before', fixture, command, len(fixture['fetches']))
         result = real_run(argv, *args, **kwargs)
@@ -4100,12 +4102,12 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
         removed = []
 
         def remove(phase, fixture, command, count):
-            if phase != 'after' or count != 1:
+            if phase != 'after':
                 return
             repo = fixture['checkout']
             blob = _cm_git(repo, 'rev-parse', fixture['tested'] + ':' + _CM_FROZEN_PATHS[0])
             packs = repo / '.git' / 'objects' / 'pack'
-            held = self.parent / 'retained-fixture-packs'
+            held = self.parent / f'retained-fixture-packs-{count}'
             held.mkdir()
             names = [p.name for p in packs.glob('*.pack')]
             for path in list(packs.iterdir()):
@@ -4122,8 +4124,9 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
 
         with self.assertRaisesRegex(RuntimeError, 'required.*object'):
             _cm_prepare(f, hook=remove)
-        self.assertEqual(len(removed), 1)
-        self.assertEqual(len(f['fetches']), 1)
+        self.assertEqual(len(removed), 2)
+        self.assertEqual(len(f['fetches']), 2)
+        self.assertIn('--stdin', f['fetches'][-1])
         self.assert_head(f)
 
     def test_missing_origin_main_acquires_actual_canonical_tip(self):
@@ -4282,3 +4285,92 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
                     else:
                         guard(path)
                 self.assert_head(f)
+
+
+@pytest.mark.parametrize('boundary', ['complete', 'transport-failure', 'missing-after-batch', 'changed-main', 'changed-fetch-head'])
+def test_canonical_frozen_only_missing_promisor_blob_is_acquired_once(tmp_path, boundary):
+    """Default International guards need finite blobs as well as ancestry."""
+    import hashlib
+    f = _cm_fixture(tmp_path)
+    _cm_git(f['source'], 'config', 'uploadpack.allowFilter', 'true')
+    root = f['checkout']
+    original_index = (root / '.git/index').read_bytes()
+    original_head = _cm_git(root, 'rev-parse', 'HEAD')
+    original_files = {str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
+                      for path in root.rglob('*') if path.is_file()
+                      and not path.is_relative_to(root / '.git')}
+    removed = []
+    batch_count = []
+    batch_shallow = []
+    assert _cm_git(root, 'rev-parse', '--is-shallow-repository') == 'true'
+
+    def remove_blob(blob, suffix):
+        packs = root / '.git/objects/pack'
+        held = tmp_path / ('held-packs-' + suffix)
+        held.mkdir()
+        names = [path.name for path in packs.glob('*.pack')]
+        for path in list(packs.iterdir()):
+            path.rename(held / path.name)
+        for name in names:
+            with (held / name).open('rb') as data:
+                _cm_subprocess.run(['git', '-C', str(root), 'unpack-objects', '-r'],
+                    stdin=data, check=True, capture_output=True,
+                    env=dict(os.environ, GIT_NO_LAZY_FETCH='1', GIT_ALLOW_PROTOCOL=''))
+        target = root / '.git/objects' / blob[:2] / blob[2:]
+        assert target.is_file()
+        target.unlink()
+
+    def boundary_hook(phase, fixture, command, count):
+        if phase == 'after' and '--stdin' not in command and not removed:
+            offline = PACK._trusted_git_environment(root)
+            offline.update(GIT_NO_LAZY_FETCH='1', GIT_ALLOW_PROTOCOL='')
+            # Inject only at the actual ready-ancestry boundary. Removing an
+            # ordinary checkout blob before another deepen tests connectivity,
+            # not the completed canonical-fetch/frozen-guard defect.
+            ready = PACK._tested_tree_ancestry_ready(root, offline, f['tested'])
+            base = _cm_subprocess.run(['git', 'merge-base', f['canonical'], f['tested']],
+                cwd=root, env=offline, capture_output=True)
+            if ready and base.returncode == 0:
+                blob = _cm_git(root, 'rev-parse', f['tested'] + ':' + _CM_FROZEN_PATHS[0])
+                remove_blob(blob, 'initial')
+                removed.append(blob)
+        if '--stdin' not in command:
+            return
+        assert '--no-write-fetch-head' in command
+        assert '--filter=blob:none' in command
+        if phase == 'before':
+            batch_count.append(count)
+            batch_shallow.append(_cm_git(root, 'rev-parse', '--is-shallow-repository'))
+            if boundary == 'transport-failure':
+                raise _cm_subprocess.CalledProcessError(128, command, stderr='fixture explicit batch failure')
+        if phase == 'after':
+            if boundary == 'missing-after-batch':
+                remove_blob(removed[0], 'after-batch')
+            elif boundary == 'changed-main':
+                _cm_git(root, 'update-ref', 'refs/remotes/origin/main', f['tested'])
+            elif boundary == 'changed-fetch-head':
+                (root / '.git/FETCH_HEAD').write_text(f['tested'] + '\t\twrong fixture head\n')
+
+    if boundary == 'complete':
+        assert _cm_prepare(f, hook=boundary_hook) == f['canonical']
+        offline = PACK._trusted_git_environment(root)
+        offline.update(GIT_NO_LAZY_FETCH='1', GIT_ALLOW_PROTOCOL='')
+        for ref in (f['tested'], _cm_git(root, 'merge-base', f['canonical'], f['tested'])):
+            for path in _CM_FROZEN_PATHS:
+                result = _cm_subprocess.run(['git', 'cat-file', '-e', f'{ref}:{path}'],
+                    cwd=root, env=offline, capture_output=True)
+                assert result.returncode == 0
+        assert _cm_git(root, 'rev-parse', 'FETCH_HEAD') == f['canonical']
+        assert _cm_git(root, 'rev-parse', '--is-shallow-repository') == batch_shallow[0]
+    else:
+        with pytest.raises((RuntimeError, _cm_subprocess.CalledProcessError)):
+            _cm_prepare(f, hook=boundary_hook)
+    assert len(removed) == len(batch_count) == 1
+    assert sum('--stdin' in command for command in f['fetches']) == 1
+    batch_inputs = [value for command, value in zip(f['fetches'], f['fetch_inputs']) if '--stdin' in command]
+    assert batch_inputs == [''.join(oid + '\n' for oid in sorted(removed))]
+    assert _cm_git(root, 'rev-parse', 'HEAD') == original_head
+    assert (root / '.git/index').read_bytes() == original_index
+    assert {str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in root.rglob('*') if path.is_file()
+            and not path.is_relative_to(root / '.git')} == original_files
