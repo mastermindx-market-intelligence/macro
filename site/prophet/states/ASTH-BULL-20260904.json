@@ -1,12 +1,12 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ASTH-BULL-20260904",
-  "asof": "2026-11-04",
+  "asof": "2026-11-07",
   "phase": "invalidated",
   "detection_phase": "invalidated",
-  "management_confidence": 10.2,
+  "management_confidence": 12.9,
   "raw_confidence": 8.0,
-  "delta_vs_base": -49.8,
+  "delta_vs_base": -47.1,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.462,
+    "dist_to_stop_r": -2.622,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 135.6,
-    "p1": -0.975,
-    "p2": -0.4875,
+    "horizon_pct_used": 142.2,
+    "p1": -2.4149,
+    "p2": -1.2075,
     "p3": null,
-    "move_r": -1.462,
+    "move_r": -3.622,
     "mfe_r": 1.317,
     "mae_r": -5.085
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-04",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 61,
-  "tau": 1.3556,
+  "days_elapsed": 64,
+  "tau": 1.4222,
   "closed": true,
   "outcome": "INVALIDATED"
 }

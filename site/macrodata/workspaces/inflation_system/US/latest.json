@@ -400,7 +400,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no source value changed (no-change republication).",
-    "predecessor_generation_id": "inflation_system-US-97b03d53a086abbb"
+    "predecessor_generation_id": "inflation_system-US-172ffe8ce5e401a4"
   },
   "drivers": {
     "balance_sheet": [
@@ -521,11 +521,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-05T10:00:13Z",
+    "built_at": "2026-11-07T07:10:09Z",
     "calculation_as_of": "2026-10-16",
-    "code_version": "e26dddef9b88ebefbcb9600423a069a829c6899d",
-    "content_sha256": "37b499cf533b5954bd3f0f15dd053e7fa61ef5a2cd641b3865a97128a899308f",
-    "generation_id": "inflation_system-US-37b499cf533b5954",
+    "code_version": "10b1ce0bd2189fb4db01951fd26d88446563d940",
+    "content_sha256": "f51a275002252d6d16b811deb942570e47d53c5eb9e1666800bf57297044d954",
+    "generation_id": "inflation_system-US-f51a275002252d6d",
     "producer": "engine.market_os.macro_workspaces.inflation",
     "rendered_at": null
   },
