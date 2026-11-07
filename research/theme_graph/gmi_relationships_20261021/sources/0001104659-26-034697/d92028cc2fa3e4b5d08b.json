@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-25T22:10:23Z",
+ "accession": "0001104659-26-034697",
+ "cik": "0001649752",
+ "doc_byte_length": 1622055,
+ "doc_sha256": "3d935d1d878c18a1384040e4daa11959c4fb8876a4b5efec11218b3f9edd471d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-26",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nmg-20251231xex99d1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 310173,
+  "byte_start": 308748,
+  "normalized": "In October 2025, the Corporation entered into (i) the Panasonic Energy Agreement for a volume of 13 ktpy of active anode material to be produced from the Phase-2 First-Stage Bécancour Battery Material Plant, (ii) a binding Supply Term Sheet and a binding Marketing Term Sheet with the Government of Canada providing for an aggregate 15 ktpy of graphite concentrate to be purchased by the GoC on a take or pay basis and a potential additional 15 ktpy to be purchased by allied countries for strategic applications, with a seven year offtake term, and (iii) a binding amended and restated A&R Offtake and Joint Marketing Agreement with Traxys for 20 ktpy of graphite concentrate over seven years, including a 10 ktpy take or pay component. (see “Three-Year History – Fiscal Year Ended December 31, 2025 and up to the date of this Annual Information Form –Offtake and commercial agreements and Project Execution Strategy Update” of this Annual Information Form). These agreements contain conditions precedent that are customary for agreements of this nature, including the condition precedent which require the Corporation to have made a positive decision with respect to FID, entered into certain definitive agreements, and other project-related agreements by certain fixed dates, failing which the customers may terminate their agreement with the Corporation.",
+  "normalized_sha256": "1cf92b8a087e630ea95a0d88841e0609f78f11e64f68158fc4598291f299c306",
+  "raw": "In October 2025, the Corporation entered into (i) the Panasonic Energy Agreement for a volume of 13 ktpy of active anode material to be produced from the Phase-2 First-Stage B&#233;cancour Battery Material Plant, (ii) a binding Supply Term Sheet and a binding Marketing Term Sheet with the Government of Canada providing for an aggregate 15 ktpy of graphite concentrate to be purchased by the GoC on a take or pay basis and a potential additional 15 ktpy to be purchased by allied countries for strategic applications, with a seven year offtake term, and (iii) a binding amended and restated A&amp;R Offtake and Joint Marketing Agreement with Traxys for 20 ktpy of graphite concentrate over seven years, including a 10 ktpy take or pay component. (see &#8220;<i style=\"font-style:italic;\">Three-Year History &#8211; Fiscal Year Ended December 31, 2025 and up to the date of this Annual Information Form &#8211;Offtake and commercial agreements and Project Execution Strategy Update</i>&#8221; of this Annual Information Form). These agreements contain conditions precedent that are customary for agreements of this nature, including the condition precedent which require the Corporation to have made a positive decision with respect to FID, entered into certain definitive agreements, and other project-related agreements by certain fixed dates, failing which the customers may terminate their agreement with the Corporation.",
+  "raw_sha256": "d92028cc2fa3e4b5d08b8d66759e60cf045f95c4a48da72b1e47bd3d055f4380"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1649752/000110465926034697/nmg-20251231xex99d1.htm",
+ "xbrl_contexts": []
+}

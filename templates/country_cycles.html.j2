@@ -52,6 +52,15 @@
     </div>
   </header>
 
+  {% with lock_renderer='sector_cycles.js', lock_fill='sc-cards',
+    lock_hide='#sc-tabs,.cyc-stage,.cyc-wrap>.cyc-cards-hd,#sc-cards,.cyc-asof',
+    lock_en='Members get each country fund and regional bloc '
+    ~ 'on the cycle clock, its scorecard, and its strength '
+    ~ 'against the US.',
+    lock_zh='会员可查看每只国家 ETF 与区域板块的周期时钟、记分卡，以及相对美国的强弱。' %}
+  {% include "_cycle_locked_slot.html.j2" %}
+  {% endwith %}
+
   <div class="sc-tabs" id="sc-tabs" role="tablist">
     <button class="sc-tab on" data-fam="sectors" role="tab">🗺️ <span class="l-en">Countries</span><span class="l-zh">国家</span> <i id="sc-tab-n-sec"></i></button>
     <button class="sc-tab" data-fam="baskets" role="tab">🌐 <span class="l-en">Regions &amp; Blocs</span><span class="l-zh">区域与板块</span> <i id="sc-tab-n-bsk"></i></button>
