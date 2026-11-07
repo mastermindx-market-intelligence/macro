@@ -177,6 +177,53 @@ def test_the_wall_clock_deadline_stops_the_loop_and_keeps_the_rest_stalest(monke
     assert revisions.fetch_revisions(max_new=200) == 20
 
 
+def test_the_src_a1_pre_pass_honours_the_same_deadline(monkeypatch, tmp_path):
+    """Review round 2 MAJOR: accrual makes one provider call per name BEFORE the
+    drip loop; with no deadline it alone could carry a stacked night past the
+    commit reserve. It must stop starting names at the same wall clock, and
+    fetch_revisions must hand it the deadline it was given."""
+    calls: list[str] = []
+
+    class _Client:
+        def __init__(self, t):
+            calls.append(t)
+            self.earnings_estimate = None
+            self.revenue_estimate = None
+
+    now = {"t": 1000.0}
+
+    def _factory(t):
+        now["t"] += 30.0
+        return _Client(t)
+
+    names = [f"T{i:03d}" for i in range(40)]
+    # deadline already past → zero provider calls, same return shape
+    res = revisions.accrue_expectation_observations(
+        names, output_dir=tmp_path, ticker_factory=_factory, deadline=0.0, clock=lambda: now["t"],
+    )
+    assert res == {"attempts": 0, "observations": 0} and calls == []
+    # deadline 10 "minutes" out → 20 names attempted, 20 never started
+    res = revisions.accrue_expectation_observations(
+        names, output_dir=tmp_path, ticker_factory=_factory, deadline=1000.0 + 600.0, clock=lambda: now["t"],
+    )
+    assert len(calls) == 20 and res["attempts"] == 20
+
+    # fetch_revisions threads deadline + clock through to the pre-pass
+    monkeypatch.setattr(revisions.config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(revisions, "_universe", lambda: names)
+    monkeypatch.setattr(revisions, "_one", lambda t: {"breadth": 0.1, "n_analysts": 3})
+    seen: dict = {}
+
+    def _accrual(tickers, **kw):
+        seen.update(kw)
+        return {"attempts": 0, "observations": 0}
+
+    monkeypatch.setattr(revisions, "accrue_expectation_observations", _accrual)
+    clock = lambda: 5.0  # noqa: E731
+    revisions.fetch_revisions(max_new=200, deadline=99.0, clock=clock)
+    assert seen["deadline"] == 99.0 and seen["clock"] is clock
+
+
 def test_deadline_env_parsing_and_cli_pass_through(monkeypatch):
     assert revisions.drip_deadline({}) is None
     assert revisions.drip_deadline({revisions.DEADLINE_ENV: " "}) is None

@@ -470,8 +470,15 @@ def accrue_expectation_observations(
     collection_session_id: str | None = None,
     system_observed_at: object | None = None,
     ticker_factory: Callable[[str], Any] | None = None,
+    deadline: float | None = None,
+    clock: Callable[[], float] = time.time,
 ) -> dict[str, int]:
     """Accrue one bounded SRC-A1 collection session without changing legacy artifacts.
+
+    ``deadline`` (unix epoch seconds) stops the loop from STARTING another name
+    once ``clock()`` passes it — the same wall-clock contract as
+    ``fetch_revisions``; names not reached get no attempt row (nothing was
+    attempted) and are retried by the next session.
 
     Callers may inject both paths and the provider factory for hermetic tests.  The
     default session identifier is deterministic for the collection invocation;
@@ -495,7 +502,14 @@ def accrue_expectation_observations(
         import yfinance as yf
         ticker_factory = yf.Ticker
 
-    for ticker in sorted(set(tickers)):
+    ordered = sorted(set(tickers))
+    for i, ticker in enumerate(ordered):
+        if deadline is not None and clock() >= deadline:
+            log.warning(
+                "SRC-A1: wall-clock deadline reached after %d of %d names — %d not attempted",
+                i, len(ordered), len(ordered) - i,
+            )
+            break
         attempted_at = _iso8601()
         started = pd.Timestamp.now(tz="UTC")
         frames: dict[str, Any] = {}
@@ -891,6 +905,8 @@ def fetch_revisions(
             output_dir=expectation_output_dir,
             collection_session_id=collection_session_id,
             system_observed_at=system_observed_at,
+            deadline=deadline,
+            clock=clock,
         )
     except Exception as exc:  # noqa: BLE001 - preserve legacy revisions availability
         log.warning("SRC-A1 expectation accrual skipped (%s)", type(exc).__name__)
@@ -964,8 +980,14 @@ def _sigterm_to_exit(signum, frame):  # noqa: ARG001 - signal handler signature
 
 
 def _install_sigterm_flush() -> None:
-    """Make the step kill (SIGTERM) unwind the stack so fetch_revisions' ``finally``
-    flushes the pending chunk; the default SIGTERM action terminates without it.
+    """Make a direct SIGTERM (launchd, a local operator, a `kill`) unwind the stack
+    so fetch_revisions' ``finally`` flushes the pending chunk; the default SIGTERM
+    action terminates without it. NOT the step-timeout path: GitHub's cancel
+    sequence signals the step's bash, then kills the tree — this process may never
+    see it. That is why daily.yml hands the collector a self-budget deadline BELOW
+    the step bound (the normal stop is the deadline, flushed in the finally) and
+    why checkpoints are atomic every PERSIST_EVERY names (the backstop if the tree
+    kill lands first: at most PERSIST_EVERY-1 fetched names are re-dripped).
     Main-thread only (signal law); a no-op elsewhere."""
     try:
         signal.signal(signal.SIGTERM, _sigterm_to_exit)

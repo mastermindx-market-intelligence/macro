@@ -21,9 +21,13 @@ _WF = yaml.safe_load(DAILY)
 DRIP_STEP = "analyst revisions drip"
 _BARE_CLI = re.compile(r"python -m collectors\.equity_revisions\s*(\\\s*)?\|\|")
 _DEADLINE = re.compile(
-    r"export MACRO_REVISIONS_DEADLINE_EPOCH=\$\(\(\s*start\s*\+\s*\(\s*(\d+)\s*-\s*(\d+)\s*\)\s*\*\s*60\s*\)\)"
+    r"job_deadline=\$\(\(\s*start\s*\+\s*\(\s*(\d+)\s*-\s*(\d+)\s*\)\s*\*\s*60\s*\)\)"
 )
-_START_STAMP = 'cat "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"'
+_STEP_BUDGET = re.compile(r"step_deadline=\$\(\(\s*now\s*\+\s*(\d+)\s*\*\s*60\s*\)\)")
+_EXPORT_MIN = re.compile(
+    r"export MACRO_REVISIONS_DEADLINE_EPOCH=\$\(\(\s*job_deadline\s*<\s*step_deadline\s*\?\s*job_deadline\s*:\s*step_deadline\s*\)\)"
+)
+_START_STAMP = 'stamp="${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"'
 
 
 def _steps(job: str) -> list[dict]:
@@ -83,14 +87,40 @@ def test_the_drip_gets_a_wall_clock_deadline_from_the_job_cap():
     _, drip = _step_index(steps, DRIP_STEP)
     run = drip.get("run") or ""
     assert _START_STAMP in run, "the deadline must be derived from the W2 job-start stamp"
+    assert 'cat "$stamp"' in run and "::warning::" in run.split("job_deadline=")[0], (
+        "a missing stamp must be loud (::warning) and fall back to now, never silent"
+    )
     m = _DEADLINE.search(run)
-    assert m, "the drip must export MACRO_REVISIONS_DEADLINE_EPOCH=$(( start + (CAP - RESERVE) * 60 ))"
+    assert m, "the drip must compute job_deadline=$(( start + (CAP - RESERVE) * 60 ))"
     cap, reserve = int(m.group(1)), int(m.group(2))
     job_cap = _WF["jobs"]["collect_tail"]["timeout-minutes"]
     assert cap == job_cap, f"deadline arithmetic uses cap {cap} but the job cap is {job_cap}"
     assert reserve >= 20, f"commit reserve {reserve}m is too thin for the tail commit + push"
     i_stamp, _ = _step_index(steps, "timings — job start mark")
     assert i_stamp == 0, "the job-start stamp must be the job's first step"
+
+
+def test_the_drip_stops_itself_under_its_own_step_bound():
+    """GitHub's step-timeout cancel signals the step's bash, not the python child,
+    so the collector cannot rely on a signal to flush. The step hands it a
+    self-budget deadline BELOW timeout-minutes so the normal stop is the
+    collector's own clock (flushed in its finally), and exports the EARLIER of
+    the job-cap deadline and the self-budget."""
+    _, drip = _step_index(_steps("collect_tail"), DRIP_STEP)
+    run = drip.get("run") or ""
+    m = _STEP_BUDGET.search(run)
+    assert m, "the drip must compute step_deadline=$(( now + BUDGET * 60 ))"
+    budget = int(m.group(1))
+    assert budget < drip["timeout-minutes"], (
+        f"self-budget {budget}m must be strictly under the step bound {drip['timeout-minutes']}m"
+    )
+    assert drip["timeout-minutes"] - budget <= 10, (
+        "the step bound is a backstop; keep it within 10 min of the self-budget so the "
+        "budget comment's arithmetic stays honest"
+    )
+    assert _EXPORT_MIN.search(run), (
+        "MACRO_REVISIONS_DEADLINE_EPOCH must be the EARLIER of job_deadline and step_deadline"
+    )
 
 
 def test_the_drip_has_its_own_timings_band():

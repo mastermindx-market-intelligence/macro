@@ -2223,35 +2223,33 @@ jobs:
         run: python3 scripts/nightly_timings.py mark --band revisions-drip || echo "::warning::timings band mark failed (non-fatal)"
       - name: analyst revisions drip (collectors.equity_revisions; non-fatal)
         # 2026-11-07 (#7646 root cause): moved here from scripts/build_stock_library.py, where
-        # it ran INSIDE build_site on the engine job's render path — 102 min of build_site's
-        # 143 min / the 170-min engine-core band on 2026-11-06, the one step that carried the
-        # engine job past the runner kill (Mastermind #1632) six nights running. House law:
-        # accrual steps go in collect_tail. Drips the <=200 STALEST names (<6d-fresh skipped),
-        # checkpointing data/revisions/latest.parquet + history.parquet every 25 names, plus
-        # the SRC-A1 expectation stores — all covered by `git add data/` in "commit tail data"
-        # below. The engine job sets MACRO_REVISIONS_DRIP=collect_tail so build_site reads the
-        # committed parquet instead of dripping (one-night lag for the refreshed names, inside
-        # the 6-day freshness window). KEEP THIS LINE BARE: no argv means the config cap
-        # (equity_profile.per_build, 200); an argv is for ad-hoc backfills only.
-        # PLACEMENT: last before the commit, so a budget blowout truncates only this step
-        # (timeout + continue-on-error) and never the cheap organs ahead of it; a truncated
-        # night keeps its checkpointed names and re-drips the stalest next night. BUDGET:
-        # measured 102 min at ~30 s/name on 2026-11-06 → 120-min bound; with the observed
-        # job (21-25 min) that is ~125-145 min against the 200-min cap and the 85% tripwire
-        # at 170. If the drip starts hitting its bound nightly, fix ITS per-name cost — do not
-        # silently raise the bound. DEADLINE: the step bounds ahead of this one already sum
-        # past the job cap on paper (tape-flow 75 + census 15 + scorers 60+50 + …), and the
-        # job-cap comment above says the STEP bounds, not the cap, are what guarantee the
-        # commit runs — so this step also hands the collector a wall-clock deadline of
-        # job start + cap − 30-min commit reserve (MACRO_REVISIONS_DEADLINE_EPOCH, read
-        # from the W2 job-start stamp). On a night where every earlier bound stacks, the
-        # drip stops starting names at that instant, flushes its checkpoint and exits 0,
-        # leaving the commit its reserve instead of the cancellation grace window.
+        # it ran INSIDE build_site on the engine job's render path (102 of build_site's 143 min
+        # on 2026-11-06; engine-core 170 min — the step that carried the engine job past the
+        # runner kill, Mastermind #1632, six nights running). House law: accrual steps go in
+        # collect_tail. Drips the <=200 STALEST names (<6d-fresh skipped) with atomic 25-name
+        # checkpoints of data/revisions/* + the SRC-A1 stores, all under `git add data/` in
+        # "commit tail data". The engine job sets MACRO_REVISIONS_DRIP=collect_tail so
+        # build_site reads the committed parquet (one-night lag, inside the 6-day window).
+        # KEEP THE python LINE BARE: no argv = the config cap (equity_profile.per_build, 200).
+        # PLACEMENT: last before the commit so a blowout truncates only this step. BUDGET:
+        # 102 min measured at ~30 s/name → 120-min step bound (job 21-25 min + this ≈ 125-145
+        # of the 200-min cap, tripwire 170); if it hits the bound nightly fix the per-name cost.
+        # DEADLINE: the earlier bounds already sum past the job cap on paper and the cap
+        # comment says STEP bounds guarantee the commit — so the collector gets a wall-clock
+        # deadline = min(job start + cap − 30-min commit reserve [W2 stamp], now + 115 min
+        # [5 under this bound]). Past it the SRC-A1 pre-pass and the drip loop stop starting
+        # names, flush and exit 0: a stacked night keeps the commit reserve, an ordinary night
+        # ends by its own clock. GitHub's timeout signals bash, not python — the step bound
+        # and the atomic checkpoints are the backstop, never the design.
         timeout-minutes: 120
         continue-on-error: true
         run: |
-          start=$(cat "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start" 2>/dev/null || date +%s)
-          export MACRO_REVISIONS_DEADLINE_EPOCH=$(( start + (200 - 30) * 60 ))
+          stamp="${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
+          now=$(date +%s)
+          if [ -r "$stamp" ]; then start=$(cat "$stamp"); else echo "::warning::revisions drip: job-start stamp missing — job-cap deadline measured from now"; start=$now; fi
+          job_deadline=$(( start + (200 - 30) * 60 ))
+          step_deadline=$(( now + 115 * 60 ))
+          export MACRO_REVISIONS_DEADLINE_EPOCH=$(( job_deadline < step_deadline ? job_deadline : step_deadline ))
           python -m collectors.equity_revisions \
             || echo "::warning::equity_revisions drip failed (non-fatal)"
       - name: timings band — commit (W2)
