@@ -3,19 +3,20 @@
 Scope (deliberately narrow):
 
 * ``validate_registry`` validates one closed
-  ``mastermind.provider_native_capability_registry/v1`` document and returns a
+  closed V1 or default-off V2 registry document and returns a
   fresh, canonically sorted, normalized copy.
 * ``validate_registry_transition`` validates ``current`` as the lawful
   successor of ``previous`` under the generation/state machine and returns a
   fresh normalized ``current``.
 * ``registration_export`` derives the deterministic
-  ``mastermind.provider_native_capability_registration/v1`` export receipt for
+  matching V1 or V2 registration export receipt for
   exactly one existing source row selected by the caller.
 
 Out of scope (and intentionally absent): persistence, schedulers, workers,
 account/quota databases, admission, quota math, network, filesystem access,
 credentials, hosts, principals and paths.  This module is native
-*registration* source only; it preserves ``provider_capacity.v1`` and all of
+*registration and enablement-policy* source only. Enablement never establishes
+authentication, health, quota or physical eligibility. It preserves ``provider_capacity.v1`` and all of
 its semantics untouched.  The MiniMax API-key *kind* here is source vocabulary
 of the already-reviewed finite Claude-compatible harness -- never credential
 content and never an auth authority.
@@ -38,7 +39,9 @@ __all__ = [
     "NativeCapabilityError",
     "ERROR_CODES",
     "REGISTRY_SCHEMA",
+    "REGISTRY_SCHEMA_V2",
     "REGISTRATION_EXPORT_SCHEMA",
+    "REGISTRATION_EXPORT_SCHEMA_V2",
     "OWNER_PROGRAM",
     "MAX_CAPABILITIES",
     "MAX_GENERATION",
@@ -49,6 +52,8 @@ __all__ = [
 
 REGISTRY_SCHEMA = "mastermind.provider_native_capability_registry/v1"
 REGISTRATION_EXPORT_SCHEMA = "mastermind.provider_native_capability_registration/v1"
+REGISTRY_SCHEMA_V2 = "mastermind.provider_native_capability_registry/v2"
+REGISTRATION_EXPORT_SCHEMA_V2 = "mastermind.provider_native_capability_registration/v2"
 OWNER_PROGRAM = "shared-ai-provider-control"
 
 MAX_CAPABILITIES = 32
@@ -88,6 +93,7 @@ _CAPABILITY_ROW_KEYS = frozenset(
         "registration_state",
     }
 )
+_CAPABILITY_ROW_KEYS_V2 = _CAPABILITY_ROW_KEYS | {"provider_enabled"}
 # The four fields that make a capability's registration identity; they may
 # never change across a transition.
 _IDENTITY_KEYS = ("provider", "billing_mode", "credential_kind", "execution_surface")
@@ -126,6 +132,10 @@ ERROR_CODES = frozenset(
         "provider_credential_mismatch",
         "invalid_execution_surface",
         "invalid_registration_state",
+        "invalid_provider_enabled",
+        "revoked_capability_enabled",
+        "transition_schema_regressed",
+        "transition_enablement_not_disarmed",
         "missing_previous_registry",
         "missing_current_registry",
         "transition_first_registration_not_registered",
@@ -183,16 +193,17 @@ def _validate_generation(value: object) -> int:
     return value
 
 
-def _validate_capability_row(raw_row: object) -> dict:
+def _validate_capability_row(raw_row: object, *, with_enablement: bool = False) -> dict:
     """Validate one closed capability row and return a fresh normalized row."""
     if not isinstance(raw_row, dict):
         raise _refuse("invalid_capability_row")
     row_keys = set(raw_row)
-    if not row_keys <= _CAPABILITY_ROW_KEYS:
+    expected_keys = _CAPABILITY_ROW_KEYS_V2 if with_enablement else _CAPABILITY_ROW_KEYS
+    if not row_keys <= expected_keys:
         # Extra fields (host, principal, worker, path, quota, secret, ...)
         # are refused outright; the row schema is closed.
         raise _refuse("unexpected_capability_field")
-    if not row_keys >= _CAPABILITY_ROW_KEYS:
+    if not row_keys >= expected_keys:
         raise _refuse("missing_capability_field")
 
     capability_id = _validate_capability_id(raw_row["capacity_capability_id"])
@@ -223,7 +234,14 @@ def _validate_capability_row(raw_row: object) -> dict:
     if not isinstance(state, str) or state not in _REGISTRATION_STATES:
         raise _refuse("invalid_registration_state")
 
-    return {
+    if with_enablement:
+        enabled = raw_row["provider_enabled"]
+        if type(enabled) is not bool:
+            raise _refuse("invalid_provider_enabled")
+        if state == REGISTRATION_STATE_REVOKED and enabled:
+            raise _refuse("revoked_capability_enabled")
+
+    result = {
         "capacity_capability_id": capability_id,
         "capability_generation": generation,
         "provider": provider,
@@ -232,6 +250,9 @@ def _validate_capability_row(raw_row: object) -> dict:
         "execution_surface": execution_surface,
         "registration_state": state,
     }
+    if with_enablement:
+        result["provider_enabled"] = enabled
+    return result
 
 
 def validate_registry(document: object) -> dict:
@@ -249,7 +270,8 @@ def validate_registry(document: object) -> dict:
     if not top_keys >= _REGISTRY_TOP_KEYS:
         raise _refuse("missing_registry_field")
 
-    if document["schema"] != REGISTRY_SCHEMA:
+    schema = document["schema"]
+    if not isinstance(schema, str) or schema not in (REGISTRY_SCHEMA, REGISTRY_SCHEMA_V2):
         raise _refuse("invalid_registry_schema")
     if document["owner_program"] != OWNER_PROGRAM:
         raise _refuse("invalid_owner_program")
@@ -263,7 +285,7 @@ def validate_registry(document: object) -> dict:
     seen: set[str] = set()
     rows = []
     for raw_row in capabilities:
-        row = _validate_capability_row(raw_row)
+        row = _validate_capability_row(raw_row, with_enablement=schema == REGISTRY_SCHEMA_V2)
         capability_id = row["capacity_capability_id"]
         if capability_id in seen:
             raise _refuse("duplicate_capability_id")
@@ -272,7 +294,7 @@ def validate_registry(document: object) -> dict:
     rows.sort(key=lambda row: row["capacity_capability_id"])
 
     return {
-        "schema": REGISTRY_SCHEMA,
+        "schema": schema,
         "owner_program": OWNER_PROGRAM,
         "capabilities": rows,
     }
@@ -293,6 +315,9 @@ def validate_registry_transition(previous: object, current: object) -> dict:
     * ``revoked(g)`` -> ``revoked(g)`` or ``registered(g2 > g)``; never a
       same-generation resurrection, never an incrementing tombstone.
     * A capability new to the transition may only enter as ``registered``.
+    * V1→V2, first V2 registration and a revived generation begin disabled.
+      Later enable/disable changes preserve the existing identity/generation.
+    * V2 cannot regress to V1 or erase its explicit enablement policy.
     """
     if previous is None:
         raise _refuse("missing_previous_registry")
@@ -301,6 +326,13 @@ def validate_registry_transition(previous: object, current: object) -> dict:
 
     previous_registry = validate_registry(previous)
     current_registry = validate_registry(current)
+    if (previous_registry["schema"] == REGISTRY_SCHEMA_V2
+            and current_registry["schema"] != REGISTRY_SCHEMA_V2):
+        raise _refuse("transition_schema_regressed")
+    if previous_registry["schema"] != current_registry["schema"]:
+        for row in current_registry["capabilities"]:
+            if row["provider_enabled"] is not False:
+                raise _refuse("transition_enablement_not_disarmed")
 
     previous_rows = {
         row["capacity_capability_id"]: row for row in previous_registry["capabilities"]
@@ -314,6 +346,8 @@ def validate_registry_transition(previous: object, current: object) -> dict:
         for row in current_registry["capabilities"]:
             if row["registration_state"] != REGISTRATION_STATE_REGISTERED:
                 raise _refuse("transition_first_registration_not_registered")
+            if row.get("provider_enabled") is True:
+                raise _refuse("transition_enablement_not_disarmed")
         return current_registry
 
     for capability_id, before in previous_rows.items():
@@ -349,11 +383,15 @@ def validate_registry_transition(previous: object, current: object) -> dict:
                     raise _refuse("transition_generation_rollback")
                 if current_generation == previous_generation:
                     raise _refuse("transition_capability_resurrection")
+                if row.get("provider_enabled") is True:
+                    raise _refuse("transition_enablement_not_disarmed")
 
     for capability_id, row in current_rows.items():
         if capability_id not in previous_rows:
             if row["registration_state"] != REGISTRATION_STATE_REGISTERED:
                 raise _refuse("transition_new_capability_not_registered")
+            if row.get("provider_enabled") is True:
+                raise _refuse("transition_enablement_not_disarmed")
 
     return current_registry
 
@@ -400,7 +438,9 @@ def registration_export(
         raise _refuse("unknown_capability_selection")
 
     export = {
-        "schema": REGISTRATION_EXPORT_SCHEMA,
+        "schema": (REGISTRATION_EXPORT_SCHEMA_V2
+                   if normalized["schema"] == REGISTRY_SCHEMA_V2
+                   else REGISTRATION_EXPORT_SCHEMA),
         "capacity_capability_id": selected["capacity_capability_id"],
         "capability_generation": selected["capability_generation"],
         "provider": selected["provider"],
@@ -410,5 +450,7 @@ def registration_export(
         "registration_state": selected["registration_state"],
         "material_source_digest": material_source_digest,
     }
+    if normalized["schema"] == REGISTRY_SCHEMA_V2:
+        export["provider_enabled"] = selected["provider_enabled"]
     export["registration_receipt_digest"] = _canonical_receipt_digest(export)
     return export

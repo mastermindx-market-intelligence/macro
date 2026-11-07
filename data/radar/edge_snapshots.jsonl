@@ -18661,3 +18661,12 @@
 {"date":"2026-10-14","kind":"ticker","subject":"ALK","ticker":"ALK","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
 {"date":"2026-10-14","kind":"ticker","subject":"LVS","ticker":"LVS","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
 {"date":"2026-10-14","kind":"ticker","subject":"POWL","ticker":"POWL","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
+{"date":"2026-10-14","kind":"ticker","subject":"SNAP","ticker":"SNAP","edge_score":55,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-10-14","kind":"ticker","subject":"BP","ticker":"BP","edge_score":48,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-10-14","kind":"ticker","subject":"KO","ticker":"KO","edge_score":35,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-10-14","kind":"ticker","subject":"REBN","ticker":"REBN","edge_score":34,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-10-14","kind":"ticker","subject":"KVYO","ticker":"KVYO","edge_score":22,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-10-14","kind":"ticker","subject":"TSLA","ticker":"TSLA","edge_score":5,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
+{"date":"2026-10-14","kind":"ticker","subject":"AZN","ticker":"AZN","edge_score":1,"state":"CONFIRMED_DOWN","era":2,"source":"signal"}
+{"date":"2026-10-14","kind":"ticker","subject":"GOOGL","ticker":"GOOGL","edge_score":1,"state":"CONFIRMED_UP","era":2,"source":"basket_attributed"}
+{"date":"2026-10-14","kind":"ticker","subject":"QCOM","ticker":"QCOM","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}

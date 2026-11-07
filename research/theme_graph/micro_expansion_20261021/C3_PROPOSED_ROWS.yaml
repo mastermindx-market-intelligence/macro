@@ -1,0 +1,878 @@
+# research(gmi-micro): C3 micro-theme expansion proposals — PROPOSED rows, NOT ratified.
+# Lane gmi-micro-c3-20261021-r9, base ca7edbcf50df21bd321bffa3433e5f105d3335da, asserted_on 2026-10-21.
+# Research-only taxonomy rows: display vocabulary, no issuers, no tickers, no weights, no scores.
+# Proposed: 13 sub_themes, 85 micro_themes, 159 parents. Every micro keeps a (theme, micro) parent row;
+# sub-attached micros additionally get (sub_theme, micro). Existing rows are untouched.
+hierarchy:
+  sub_themes:
+    # --- theme:rare_earth_critical_min ---
+    - id: "theme:critical_min_extraction_routes"
+      name_en: "Critical-Mineral Extraction Routes"
+      name_zh: "关键矿产提取工艺路线"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Extraction-mechanism routes for critical minerals - ionic-clay leaching, placer sands, brine DLE and laterite HPAL - as distinct process families from the generic mining-development layer."
+      value_chain_position: "upstream"
+    - id: "theme:critical_min_circularity"
+      name_en: "Critical-Mineral Circularity"
+      name_zh: "关键矿产循环利用"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Recovery and substitution around the primary chain: by-product streams, end-of-life magnet recycling and demand-side substitution, distinct from primary ore mining and refining."
+      value_chain_position: "enabler"
+    - id: "theme:ree_functional_materials"
+      name_en: "Rare-Earth Functional Materials"
+      name_zh: "稀土功能材料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Downstream rare-earth functional outputs by physical function - polishing and glass, luminescence and catalysis - distinct from magnetic applications covered by the NdFeB rows."
+      value_chain_position: "downstream"
+    # --- theme:copper_steel_electrify ---
+    - id: "theme:iron_steel_process_routes"
+      name_en: "Iron & Steel Process Routes"
+      name_zh: "钢铁冶炼工艺路线"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Ironmaking and steelmaking process families - pellets feed, hydrogen DRI, scrap EAF and BF-BOF low-carbon retrofit - as conversion mechanisms, distinct from steel product demand rows."
+      value_chain_position: "midstream"
+    - id: "theme:copper_extraction_fabrication"
+      name_en: "Copper Extraction & Fabrication"
+      name_zh: "铜提取与加工"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Post-mine copper conversion and fabrication stages - leach cathode, secondary smelting, mill products, winding wire and smelter by-products - between mine and finished cable."
+      value_chain_position: "midstream"
+    - id: "theme:electrical_steel_materials"
+      name_en: "Electrical Steel Materials"
+      name_zh: "电工钢材料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Magnetic-core steel materials from GOES/NOES strip through laminated core processing - the material layer upstream of finished transformers and motors."
+      value_chain_position: "midstream"
+    # --- theme:ag_fertilizer ---
+    - id: "theme:fertilizer_upstream_feedstocks"
+      name_en: "Fertilizer Upstream Feedstocks"
+      name_zh: "化肥上游原料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Ore, sulphur and ammonia feedstock stages upstream of finished nutrient products - phosphate rock, sulphur and sulphuric acid, potash extraction and electrolytic ammonia."
+      value_chain_position: "upstream"
+    - id: "theme:compound_specialty_fertilizers"
+      name_en: "Compound & Specialty Fertilizers"
+      name_zh: "复合肥与特种肥料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Formulated and differentiated nutrient products - compound NPK, controlled-release, water-soluble, biological and micronutrient lines - beyond single-nutrient commodity grades."
+      value_chain_position: "midstream"
+    # --- theme:medical_devices ---
+    - id: "theme:interventional_therapy_devices"
+      name_en: "Interventional Therapy Devices"
+      name_zh: "介入治疗器械"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Catheter-based and active implantable therapy systems - cardiovascular, neuro/peripheral, neuromodulation and ophthalmic - distinct from open-surgical implants and instruments."
+      value_chain_position: "midstream"
+    - id: "theme:clinical_care_equipment"
+      name_en: "Clinical Care Equipment"
+      name_zh: "临床治疗设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Hospital therapy-delivery equipment - respiratory and anesthesia, blood purification, infusion and surgical energy - distinct from monitoring and imaging modalities."
+      value_chain_position: "midstream"
+    # --- theme:diagnostics_lifesci ---
+    - id: "theme:molecular_immuno_core_lab"
+      name_en: "Molecular & Immuno Core Lab"
+      name_zh: "分子与免疫实验室检测"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Core-lab detection modalities by chemistry and platform - molecular, immuno/chemistry, mass spectrometry, POCT and flow cytometry - beneath the multi-omics discovery layer."
+      value_chain_position: "midstream"
+    - id: "theme:lifesci_upstream_tools"
+      name_en: "Life-Science Upstream Tools"
+      name_zh: "生命科学上游工具与原料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Upstream inputs and workflow infrastructure for labs and bioproduction - raw reagents, media and cell lines, gene synthesis and automation - upstream of finished assays."
+      value_chain_position: "upstream"
+    - id: "theme:diagnostics_services_icl"
+      name_en: "Diagnostics Services & ICL"
+      name_zh: "医学检验服务"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Downstream service operators who run tests - independent and central labs, companion diagnostics, screening programs and trial bioanalytics - distinct from assay products."
+      value_chain_position: "downstream"
+  micro_themes:
+    # ================= theme:rare_earth_critical_min (16) =================
+    - id: "theme:ree_exploration_resource_definition"
+      name_en: "Rare-earth & critical-mineral exploration"
+      name_zh: "稀土及关键矿产勘查评价"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Pre-production exploration and resource-definition work on critical-mineral assets, upstream of the producer/developer layer named by critical_mineral_mining_development, with no operating-mine output."
+      value_chain_position: "upstream"
+    - id: "theme:ion_adsorption_ree_leaching"
+      name_en: "Ion-adsorption rare-earth extraction"
+      name_zh: "离子型稀土矿浸出提取"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "In-situ leach extraction of ion-adsorption clay REE deposits, the medium-and-heavy rare-earth resource mechanism; distinct from generic mining development and from hard-rock or placer streams."
+      value_chain_position: "upstream"
+    - id: "theme:heavy_mineral_sands_monazite"
+      name_en: "Heavy mineral sands & monazite streams"
+      name_zh: "重矿砂与独居石资源开采"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Coastal placer mining producing ilmenite, zircon and monazite, where rare earths enter as a monazite by-product stream; distinct from ionic-clay leaching and from primary REE mining."
+      value_chain_position: "upstream"
+    - id: "theme:lithium_brine_dle"
+      name_en: "Lithium brine & direct lithium extraction"
+      name_zh: "盐湖提锂与直接提锂"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Brine-based lithium extraction via solar evaporation and direct-lithium-extraction technologies; a brine mechanism distinct from hard-rock spodumene mining and from REE-specific extraction."
+      value_chain_position: "upstream"
+    - id: "theme:nickel_cobalt_hpal"
+      name_en: "Laterite nickel-cobalt HPAL"
+      name_zh: "红土镍钴高压酸浸"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "High-pressure acid leach processing of laterite nickel-cobalt ores into mixed hydroxide and metal intermediates; hydrometallurgical battery-metal route distinct from copper smelting and brine lithium."
+      value_chain_position: "midstream"
+    - id: "theme:natural_graphite_processing"
+      name_en: "Natural graphite mining & purification"
+      name_zh: "天然石墨采选与提纯"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Natural graphite mining, beneficiation and purification into high-purity and spherical grades; a carbon-mineral route distinct from battery-metals hydrometallurgy and from semiconductor metals."
+      value_chain_position: "upstream"
+    - id: "theme:tungsten_smelting_carbides"
+      name_en: "Tungsten smelting & cemented carbides"
+      name_zh: "钨冶炼与硬质合金"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Tungsten concentrate conversion into APT, tungsten metal and cemented-carbide powders and parts; refractory-metal chain distinct from the mining-development layer and from magnetic materials."
+      value_chain_position: "midstream"
+    - id: "theme:titanium_sponge_pigment"
+      name_en: "Titanium sponge & pigment chain"
+      name_zh: "海绵钛与钛白粉产业链"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Titanium mineral conversion into sponge metal via the Kroll route and into chloride-process TiO2 pigment; a metal-and-pigment chain distinct from placer sand mining and semiconductor metals."
+      value_chain_position: "midstream"
+    - id: "theme:critical_min_byproduct_recovery"
+      name_en: "By-product critical-mineral recovery"
+      name_zh: "关键矿产伴生资源综合回收"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Recovery of critical minerals from other processing streams - tailings, phosphogypsum, coal ash and smelter slimes; industrial-waste recovery distinct from end-of-life recycling and primary mining."
+      value_chain_position: "midstream"
+    - id: "theme:magnet_scrap_recycling"
+      name_en: "Rare-earth magnet recycling"
+      name_zh: "稀土磁材回收利用"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Collection and reprocessing of magnet swarf and end-of-life magnets back into oxides, metals or finished magnets; a recycled-feed loop distinct from primary ore separation and refining."
+      value_chain_position: "midstream"
+    - id: "theme:critical_min_substitution"
+      name_en: "Critical-mineral substitution technologies"
+      name_zh: "关键矿产减量替代技术"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Technologies reducing or replacing critical-mineral content - lower-REE motor magnets, alternative chemistries and material thrifting; demand-side enabler distinct from recovery and recycling."
+      value_chain_position: "enabler"
+    - id: "theme:ree_polishing_glass_ceramic"
+      name_en: "Rare-earth polishing & glass-ceramic materials"
+      name_zh: "稀土抛光粉与玻璃陶瓷材料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Cerium-based polishing powders, glass additives and ceramic applications using rare-earth mechanical and chemical function; non-magnetic downstream distinct from magnet fabrication."
+      value_chain_position: "downstream"
+    - id: "theme:ree_phosphor_luminescent"
+      name_en: "Rare-earth phosphors & luminescent materials"
+      name_zh: "稀土发光与荧光材料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Rare-earth-activated phosphors, scintillators and lighting or display luminescent materials using optical-excitation function; distinct from polishing and from catalytic applications."
+      value_chain_position: "downstream"
+    - id: "theme:ree_catalyst_materials"
+      name_en: "Rare-earth catalyst materials"
+      name_zh: "稀土催化材料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Rare-earth catalytic function - fluid-cracking zeolite additives, automotive oxygen-storage ceria-zirconia and industrial catalysts; distinct from luminescent and mechanical-function outputs."
+      value_chain_position: "downstream"
+    - id: "theme:ree_metals_master_alloys"
+      name_en: "Rare-earth metals & master alloys"
+      name_zh: "稀土金属与中间合金"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Molten-salt electrolysis and metallothermic reduction of REE oxides into metals and master alloys, the metal step between separation and magnet making; distinct from oxide-stage separation."
+      value_chain_position: "midstream"
+    - id: "theme:smco_bonded_magnets"
+      name_en: "SmCo & bonded magnet manufacturing"
+      name_zh: "钐钴与粘结磁体"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Samarium-cobalt high-temperature magnets and polymer-bonded melt-spun magnet products; alternative magnet mechanisms distinct from sintered NdFeB fabrication."
+      value_chain_position: "midstream"
+    # ================= theme:copper_steel_electrify (14) =================
+    - id: "theme:copper_solvent_extraction_ew"
+      name_en: "Copper SX-EW cathode"
+      name_zh: "湿法炼铜（萃取电积）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Hydrometallurgical copper - heap leaching to pregnant liquor, solvent extraction and electrowinning cathode; a leach route distinct from concentrate smelting and from the mine stage."
+      value_chain_position: "midstream"
+    - id: "theme:secondary_copper_smelting"
+      name_en: "Secondary copper & scrap smelting"
+      name_zh: "再生铜冶炼"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Collection, sorting and secondary smelting or refining of copper scrap into alloys and cathode; a recycled-feed route distinct from primary smelting and from leach cathode."
+      value_chain_position: "midstream"
+    - id: "theme:copper_mill_products"
+      name_en: "Copper rod, tube & alloy mill products"
+      name_zh: "铜杆管带与铜合金加工材"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Semi-finished copper fabrication - rod, tube, strip, brass and bronze mill shapes; bare mill products distinct from insulated wire and cable and from winding-wire enamelling."
+      value_chain_position: "midstream"
+    - id: "theme:magnet_winding_wire"
+      name_en: "Magnet & winding wire"
+      name_zh: "电磁线与绕组线"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Enamelled and insulated winding wire for motors, generators and transformers; a conductor-conversion step distinct from power cable fabrication and from bare mill rod."
+      value_chain_position: "midstream"
+    - id: "theme:copper_byproduct_refining"
+      name_en: "Copper smelter by-product recovery"
+      name_zh: "铜阳极泥与冶炼副产品回收"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Recovery of selenium, tellurium, precious metals and sulphuric-acid co-products from copper anode slimes and smelter gases; minor-metal recovery distinct from scrap smelting."
+      value_chain_position: "midstream"
+    - id: "theme:iron_ore_beneficiation_pellets"
+      name_en: "Iron ore beneficiation & pelletizing"
+      name_zh: "铁矿石采选与球团"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Iron-ore mining, concentration and pelletising into blast-furnace and direct-reduction feed; the ore-to-aggregate stage upstream of all ironmaking routes, distinct from steel products."
+      value_chain_position: "upstream"
+    - id: "theme:hydrogen_dri_steelmaking"
+      name_en: "Hydrogen-based DRI & green ironmaking"
+      name_zh: "氢冶金与直接还原铁"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Gas- and hydrogen-based direct reduction of iron plus EAF melting - the virgin green-iron route; distinct from scrap-EAF recycling and from BF-BOF retrofit."
+      value_chain_position: "midstream"
+    - id: "theme:eaf_scrap_steelmaking"
+      name_en: "Scrap-based EAF steelmaking"
+      name_zh: "电炉短流程炼钢"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Scrap collection and electric-arc-furnace short-route steelmaking from recycled feed; distinct from hydrogen DRI (virgin feed) and from integrated BF-BOF operation."
+      value_chain_position: "midstream"
+    - id: "theme:bf_bof_low_carbon_retrofit"
+      name_en: "Integrated BF-BOF decarbonization & CCUS"
+      name_zh: "长流程低碳化与碳捕集改造"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Decarbonisation of the integrated BF-BOF route - top-gas recycling, hydrogen enrichment and carbon-capture retrofits; incremental retrofit distinct from route replacement via DRI or EAF."
+      value_chain_position: "midstream"
+    - id: "theme:electrical_steel_goes_noes"
+      name_en: "Electrical steel (GOES/NOES)"
+      name_zh: "电工钢（取向与无取向硅钢）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Grain-oriented and non-oriented electrical steel strip with insulating coatings for magnetic cores; a magnetic-alloy product distinct from construction plate and from core stamping."
+      value_chain_position: "midstream"
+    - id: "theme:transformer_core_laminations"
+      name_en: "Transformer core lamination processing"
+      name_zh: "变压器铁芯叠片加工"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Slitting, stamping and wound-core assembly of electrical steel into transformer cores; material conversion feeding transformer makers, distinct from finished transformers and switchgear."
+      value_chain_position: "midstream"
+    - id: "theme:mining_fleet_electrification"
+      name_en: "Mine fleet electrification"
+      name_zh: "矿山运输装备电动化"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Electrified mining equipment and site power - battery haul trucks, trolley assist and charging; an equipment and powertrain layer serving mines, distinct from ore output itself."
+      value_chain_position: "enabler"
+    - id: "theme:steel_service_centers"
+      name_en: "Steel processing & distribution service centers"
+      name_zh: "钢材加工配送"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Steel service centres - slitting, cut-to-length, levelling and just-in-time distribution between mills and fabricators; a processing and distribution layer distinct from steelmaking."
+      value_chain_position: "downstream"
+    - id: "theme:metallurgical_equipment_casters"
+      name_en: "Metallurgical plant equipment & continuous casting"
+      name_zh: "冶金成套装备与连铸连轧"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Steel-plant capital equipment - continuous casters, rolling mills, electric furnaces and reheating systems; an equipment layer distinct from steel products and from mining-side equipment."
+      value_chain_position: "enabler"
+    # ================= theme:ag_fertilizer (13) =================
+    - id: "theme:phosphate_rock_mining"
+      name_en: "Phosphate rock mining & beneficiation"
+      name_zh: "磷矿采选与选矿"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Phosphate ore mining and beneficiation into rock and concentrate; the upstream ore stage distinct from finished phosphate nutrient products such as DAP, MAP and TSP."
+      value_chain_position: "upstream"
+    - id: "theme:sulphur_sulphuric_acid"
+      name_en: "Sulphur & sulphuric acid intermediates"
+      name_zh: "硫磺与硫酸中间体"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Sulphur handling and sulphuric acid production from burning and smelter acid, consumed by phosphoric-acid plants; an intermediate stream distinct from phosphate ore and nutrient products."
+      value_chain_position: "upstream"
+    - id: "theme:potash_mining_solutions"
+      name_en: "Potash mining & solution extraction"
+      name_zh: "钾盐开采与溶液采矿"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Conventional shaft and solution-mining extraction of potash ores and brines; the extraction stage distinct from finished MOP and SOP nutrient products."
+      value_chain_position: "upstream"
+    - id: "theme:green_ammonia_synthesis"
+      name_en: "Green ammonia & electrolytic nitrogen"
+      name_zh: "绿氨与电解水制氮"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Ammonia synthesis from electrolytic or abated hydrogen feed; a low-carbon production route distinct from conventional gas- and coal-based nitrogen fertilizer production."
+      value_chain_position: "midstream"
+    - id: "theme:ammonia_fuel_logistics"
+      name_en: "Ammonia fuel storage & marine bunkering"
+      name_zh: "氨燃料储运与船用加注"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Refrigerated ammonia storage, shipping and marine bunkering as an energy carrier; downstream energy use of the ammonia chain distinct from fertilizer application."
+      value_chain_position: "downstream"
+    - id: "theme:urea_downstream_derivatives"
+      name_en: "Urea downstream derivatives"
+      name_zh: "尿素深加工（车用尿素与三聚氰胺）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Industrial urea conversion - diesel exhaust fluid, melamine and urea-formaldehyde resins; non-agricultural derivatives distinct from fertilizer-grade urea production."
+      value_chain_position: "downstream"
+    - id: "theme:npk_compound_blending"
+      name_en: "Compound NPK & bulk blending"
+      name_zh: "复合肥与掺混肥"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Compounding, granulation and bulk blending of multi-nutrient NPK grades tailored to soil and crop; a formulation layer distinct from single-nutrient commodity products."
+      value_chain_position: "midstream"
+    - id: "theme:controlled_release_fertilizers"
+      name_en: "Controlled-release & stabilised fertilizers"
+      name_zh: "控释肥与稳定性肥料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Coated, encapsulated and inhibitor-stabilised fertilizers that meter nutrient release; release-mechanism differentiation distinct from conventional soluble compounds."
+      value_chain_position: "midstream"
+    - id: "theme:water_soluble_fertigation"
+      name_en: "Water-soluble fertilizers & fertigation"
+      name_zh: "水溶肥与水肥一体化"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Fully water-soluble grades and fertigation programs for drip and sprinkler systems; irrigation-integrated nutrition distinct from field-applied granular compounds."
+      value_chain_position: "midstream"
+    - id: "theme:biofertilizers_biostimulants"
+      name_en: "Biofertilizers & biostimulants"
+      name_zh: "生物肥料与生物刺激素"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Microbial inoculants and biostimulant products acting via biological mechanisms - nitrogen fixation, phosphorus solubilisation, stress tolerance; distinct from mineral nutrient products."
+      value_chain_position: "midstream"
+    - id: "theme:micronutrients_soil_conditioners"
+      name_en: "Crop micronutrients & soil conditioners"
+      name_zh: "中微量元素肥料与土壤调理剂"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Zinc, boron and iron micronutrient fertilizers, gypsum, lime and other soil amendments; secondary-and-minor-nutrient function distinct from NPK macronutrient products."
+      value_chain_position: "midstream"
+    - id: "theme:organic_nutrient_recovery"
+      name_en: "Organic waste nutrient recovery"
+      name_zh: "有机废弃物养分回收"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Nutrient recovery from manure, sludge and digestate into struvite, compost and organic-mineral products; a circular nutrient stream distinct from mineral synthesis routes."
+      value_chain_position: "midstream"
+    - id: "theme:soil_testing_agronomy_services"
+      name_en: "Soil testing & agronomy advisory services"
+      name_zh: "土壤检测与农化服务"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Soil and tissue laboratory analytics plus field agronomy advisory that prescribes nutrient programs; a services layer distinct from data platforms and from fertilizer products."
+      value_chain_position: "enabler"
+    # ================= theme:glp1_obesity (12) =================
+    - id: "theme:peptide_sps_reagents"
+      name_en: "Peptide solid-phase synthesis reagents"
+      name_zh: "多肽固相合成试剂"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Amino-acid building blocks, resins, linkers and coupling chemistry for solid-phase peptide synthesis; a synthesis-input layer upstream of GMP drug-substance manufacturing."
+      value_chain_position: "upstream"
+    - id: "theme:recombinant_peptide_fermentation"
+      name_en: "Recombinant & fermentation peptide API"
+      name_zh: "重组发酵法多肽原料药"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Recombinant expression and fermentation production of peptide actives as an alternative biological route; a production-technology path distinct from synthetic chemistry and from capacity framing."
+      value_chain_position: "upstream"
+    - id: "theme:multi_receptor_incretin_agonists"
+      name_en: "Multi-receptor incretin co-agonists"
+      name_zh: "多重受体激动剂"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "GIP, GLP-1 and glucagon multi- and co-agonist molecules engaging several receptors at once; polypharmacology distinct from the single-receptor incretin therapy class."
+      value_chain_position: "midstream"
+    - id: "theme:amylin_cagri_analogues"
+      name_en: "Amylin & CAGR receptor analogues"
+      name_zh: "胰淀素类似物"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Amylin and calcitonin-receptor pathway analogues for appetite and metabolic control; a non-incretin mechanism distinct from incretin multi-agonists."
+      value_chain_position: "midstream"
+    - id: "theme:oral_small_molecule_obesity"
+      name_en: "Oral small-molecule obesity drugs"
+      name_zh: "口服小分子减重药物"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Small-molecule oral drugs acting on appetite and regulatory pathways; a chemical oral modality distinct from oral peptide formulations of GLP-1."
+      value_chain_position: "midstream"
+    - id: "theme:pharma_cold_chain_logistics"
+      name_en: "Pharma cold-chain logistics"
+      name_zh: "医药冷链物流"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Temperature-controlled storage and distribution of injectable biologics under good-distribution-practice; a distribution layer distinct from fill-finish manufacturing and from devices."
+      value_chain_position: "downstream"
+    - id: "theme:obesity_care_programs"
+      name_en: "Obesity care & telehealth weight management"
+      name_zh: "减重门诊与互联网体重管理"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Physician, dietitian and telehealth weight-management programs wrapping pharmacotherapy; a care-delivery layer distinct from drug products and from surgery."
+      value_chain_position: "downstream"
+    - id: "theme:metabolic_bariatric_surgery"
+      name_en: "Metabolic & bariatric surgery"
+      name_zh: "减重代谢外科"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Sleeve gastrectomy, bypass and revision procedures plus surgical stapling devices for metabolic disease; procedural intervention distinct from pharmacotherapy and care programs."
+      value_chain_position: "downstream"
+    - id: "theme:weight_management_nutrition"
+      name_en: "Weight-management nutrition & meal replacement"
+      name_zh: "体重管理营养与代餐食品"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Meal replacements, very-low-calorie formulas and protein products used under supervision; a nutrition-product layer distinct from care services and from drugs."
+      value_chain_position: "downstream"
+    - id: "theme:compounded_peptide_supply"
+      name_en: "Compounded & alternate peptide supply"
+      name_zh: "药房配制与替代供给"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Regulated compounding and alternate preparation of GLP-1 actives during shortages; distinct from innovator GMP supply and from authorized generic channels."
+      value_chain_position: "downstream"
+    - id: "theme:digital_titration_adherence"
+      name_en: "Digital titration & adherence programs"
+      name_zh: "数字化滴定与依从管理"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Apps and connected programs managing dose escalation, side effects and persistence; a software enabler distinct from human care delivery."
+      value_chain_position: "enabler"
+    - id: "theme:sharps_waste_services"
+      name_en: "Sharps & injectable waste services"
+      name_zh: "注射锐器与医疗废物服务"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Collection, mail-back and treatment of needles and injectable waste generated by self-injection; post-use services distinct from distribution and from care delivery."
+      value_chain_position: "enabler"
+    # ================= theme:medical_devices (15) =================
+    - id: "theme:cardiovascular_interventional_devices"
+      name_en: "Cardiovascular interventional devices"
+      name_zh: "心血管介入器械"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Coronary stents, structural-heart valves, balloons and delivery catheters for catheter-based therapy; interventional devices distinct from open-surgical implants and instruments."
+      value_chain_position: "midstream"
+    - id: "theme:neurovascular_peripheral_intervention"
+      name_en: "Neurovascular & peripheral intervention"
+      name_zh: "神经与外周介入器械"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Thrombectomy, aneurysm and peripheral-vessel devices for neuro and vascular beds; a subspecialty intervention distinct from coronary and structural-heart devices."
+      value_chain_position: "midstream"
+    - id: "theme:neuromodulation_implants"
+      name_en: "Neuromodulation & active implants"
+      name_zh: "神经调控与有源植入"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Active implantable stimulators - spinal cord, deep-brain, sacral and vagal - plus leads and programmers; electroceutical implants distinct from passive implants and instruments."
+      value_chain_position: "midstream"
+    - id: "theme:ophthalmic_devices_iol"
+      name_en: "Ophthalmic devices & IOLs"
+      name_zh: "眼科器械与人工晶状体"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Intraocular lenses, phaco handpieces and glaucoma implants for ocular surgery; an ocular device class distinct from general surgical implants and instruments."
+      value_chain_position: "midstream"
+    - id: "theme:respiratory_anesthesia_equipment"
+      name_en: "Respiratory & anesthesia equipment"
+      name_zh: "呼吸与麻醉设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Ventilators, anaesthesia machines, humidification and airway-management systems; life-support therapy equipment distinct from monitoring and imaging modalities."
+      value_chain_position: "midstream"
+    - id: "theme:renal_dialysis_devices"
+      name_en: "Renal dialysis & blood purification devices"
+      name_zh: "血液净化与透析设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Haemodialysis and peritoneal dialysis machines, dialysers and water-treatment trains; blood-purification therapy equipment distinct from monitoring and imaging."
+      value_chain_position: "midstream"
+    - id: "theme:infusion_chemo_delivery_devices"
+      name_en: "Infusion & oncology delivery devices"
+      name_zh: "静脉输注与化疗给药设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Infusion pumps, elastomeric devices and closed-system oncology transfer sets; hospital drug-delivery hardware distinct from GLP-1 fill-finish and pen-injector supply."
+      value_chain_position: "midstream"
+    - id: "theme:surgical_energy_endoscopy"
+      name_en: "Surgical energy & endoscopic instruments"
+      name_zh: "外科能量与腔镜器械"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Electrosurgical and ultrasonic energy platforms, staplers, endoscopes and laparoscopic instruments; handheld devices distinct from robotic surgery platforms."
+      value_chain_position: "midstream"
+    - id: "theme:wound_care_advanced_dressings"
+      name_en: "Advanced wound care & surgical consumables"
+      name_zh: "伤口护理与高端敷料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Advanced dressings, negative-pressure systems, haemostats and sutures as single-use consumables; consumable products distinct from implantable devices."
+      value_chain_position: "midstream"
+    - id: "theme:dental_implant_equipment"
+      name_en: "Dental implants & dental equipment"
+      name_zh: "口腔种植与齿科设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Dental implants, bone-graft materials, CAD/CAM systems and chairside equipment for oral restoration; an oral device class distinct from body implants."
+      value_chain_position: "midstream"
+    - id: "theme:medical_biomaterials_polymers"
+      name_en: "Medical-grade polymers & biomaterials"
+      name_zh: "医用高分子与生物材料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Medical-grade polymers, nitinol and resorbable biomaterials supplied into device manufacture; an input-material layer distinct from finished device categories."
+      value_chain_position: "upstream"
+    - id: "theme:device_contract_manufacturing"
+      name_en: "Device precision manufacturing & CMO"
+      name_zh: "医疗器械精密加工与代工"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Precision machining, moulding and electronics assembly for device makers under design-transfer contracts; a manufacturing-services layer distinct from OEM product categories."
+      value_chain_position: "enabler"
+    - id: "theme:sterilization_reprocessing"
+      name_en: "Sterilization & device reprocessing services"
+      name_zh: "灭菌与器械再处理服务"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Ethylene-oxide, radiation and steam sterilisation services plus single-use-device reprocessing; post-production services distinct from device manufacturing."
+      value_chain_position: "enabler"
+    - id: "theme:home_therapy_devices"
+      name_en: "Home therapy & self-care devices"
+      name_zh: "家用治疗与居家护理设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "CPAP, home oxygen, hearing aids and other self-care therapy hardware; home-setting devices distinct from connected monitoring and hospital equipment."
+      value_chain_position: "downstream"
+    - id: "theme:device_evidence_pm_services"
+      name_en: "Device clinical evidence & post-market services"
+      name_zh: "器械临床证据与上市后监测服务"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Clinical-evidence generation, registries and post-market surveillance services for device makers; evidence services distinct from manufacturing and sterilisation."
+      value_chain_position: "enabler"
+    # ================= theme:diagnostics_lifesci (15) =================
+    - id: "theme:pcr_molecular_diagnostics"
+      name_en: "PCR & nucleic-acid molecular diagnostics"
+      name_zh: "分子诊断与核酸检测"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Real-time PCR and nucleic-acid amplification assays for infectious disease and genetics; a targeted-amplification modality distinct from NGS sequencing platforms."
+      value_chain_position: "midstream"
+    - id: "theme:immunoassay_clinical_chemistry"
+      name_en: "Immunoassay & clinical chemistry systems"
+      name_zh: "免疫诊断与生化检测"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Immunodiagnostic and clinical-chemistry analysers with their assay menus run on installed systems; a routine-lab modality distinct from reagent-kit trade lines and from NGS."
+      value_chain_position: "midstream"
+    - id: "theme:clinical_mass_spectrometry"
+      name_en: "Clinical mass spectrometry"
+      name_zh: "临床质谱检测"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "LC-MS/MS quantitation of clinical analytes such as vitamin D, toxicology and newborn-screening panels; a clinical modality distinct from research proteomics discovery platforms."
+      value_chain_position: "midstream"
+    - id: "theme:point_of_care_testing"
+      name_en: "Point-of-care testing"
+      name_zh: "即时检测（POCT）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Decentralised near-patient testing devices and cartridges used at bedside, clinic and pharmacy; a site-of-care modality distinct from central-lab analysers."
+      value_chain_position: "midstream"
+    - id: "theme:flow_cytometry_analysis"
+      name_en: "Flow cytometry & cellular analysis"
+      name_zh: "流式细胞分析"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Flow cytometers and reagent panels for immunophenotyping and cell-therapy quality control; a cellular-analysis modality distinct from general laboratory instruments."
+      value_chain_position: "midstream"
+    - id: "theme:lifesci_raw_reagents"
+      name_en: "Life-science raw reagents (enzymes & antibodies)"
+      name_zh: "生命科学上游原料试剂"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Upstream enzymes, antibodies, probes and assay building blocks consumed by kit makers and laboratories; a raw-material layer distinct from finished diagnostic kits."
+      value_chain_position: "upstream"
+    - id: "theme:cell_culture_media_celllines"
+      name_en: "Cell-culture media & cell lines"
+      name_zh: "细胞培养基与细胞系"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Serum-free media, supplements, sera and authenticated cell lines supporting research and bioproduction; growth-system inputs distinct from assay reagents."
+      value_chain_position: "upstream"
+    - id: "theme:oligo_gene_synthesis"
+      name_en: "Oligonucleotide & gene synthesis"
+      name_zh: "寡核苷酸与基因合成"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Synthetic oligonucleotides, genes and libraries built to order; a DNA-writing supply distinct from sequencing, which reads DNA."
+      value_chain_position: "upstream"
+    - id: "theme:lab_automation_sample_prep"
+      name_en: "Laboratory automation & sample preparation"
+      name_zh: "实验室自动化与样本前处理"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Liquid handlers, robotic workcells and sample-prep consumables integrating laboratory workflows; physical automation distinct from individual instruments and from software."
+      value_chain_position: "enabler"
+    - id: "theme:lims_lab_informatics"
+      name_en: "LIMS & laboratory informatics"
+      name_zh: "实验室信息化（LIMS）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "LIMS and ELN data systems supporting accredited laboratory workflows; an informatics layer distinct from physical automation and from instruments."
+      value_chain_position: "enabler"
+    - id: "theme:icl_central_labs"
+      name_en: "Independent clinical labs & central labs"
+      name_zh: "独立医学实验室与中心实验室"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Independent clinical laboratories and central-lab networks running routine and referred testing; a service-operator layer distinct from assay and kit products."
+      value_chain_position: "downstream"
+    - id: "theme:companion_diagnostics"
+      name_en: "Companion diagnostics"
+      name_zh: "伴随诊断"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Therapy-linked assays co-developed and co-approved with drugs to select patients; a regulatory-coupled assay class distinct from general molecular testing."
+      value_chain_position: "downstream"
+    - id: "theme:newborn_screening_programs"
+      name_en: "Newborn screening & population programs"
+      name_zh: "新生儿筛查与出生缺陷防控"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Newborn and population screening program content - dried-blood-spot assays and program laboratories; public-health screening distinct from routine hospital laboratories."
+      value_chain_position: "downstream"
+    - id: "theme:trial_biomarker_services"
+      name_en: "Trial biomarker & bioanalytical services"
+      name_zh: "临床试验生物标志物与生物分析服务"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Sponsor-facing bioanalytical and biomarker testing supporting clinical-trial endpoints; trial services distinct from routine patient testing."
+      value_chain_position: "downstream"
+    - id: "theme:digital_pathology_ai"
+      name_en: "Digital pathology & AI-assisted reads"
+      name_zh: "数字病理与AI辅助判读"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
+      note: "Whole-slide imaging, scanners and AI-assisted reads digitising pathology workflows; pathology informatics distinct from radiology imaging systems."
+      value_chain_position: "enabler"
+  parents:
+    # ---- theme-parent rows for new sub_themes (13) ----
+    - {parent: "theme:rare_earth_critical_min", child: "theme:critical_min_extraction_routes", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:critical_min_circularity", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:ree_functional_materials", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:iron_steel_process_routes", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:copper_extraction_fabrication", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:electrical_steel_materials", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:fertilizer_upstream_feedstocks", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:compound_specialty_fertilizers", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:interventional_therapy_devices", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:clinical_care_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:molecular_immuno_core_lab", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:lifesci_upstream_tools", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:diagnostics_services_icl", asserted_on: "2026-10-21"}
+    # ---- (theme, micro) rows: theme:rare_earth_critical_min (16) ----
+    - {parent: "theme:rare_earth_critical_min", child: "theme:ree_exploration_resource_definition", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:ion_adsorption_ree_leaching", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:heavy_mineral_sands_monazite", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:lithium_brine_dle", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:nickel_cobalt_hpal", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:natural_graphite_processing", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:tungsten_smelting_carbides", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:titanium_sponge_pigment", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:critical_min_byproduct_recovery", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:magnet_scrap_recycling", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:critical_min_substitution", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:ree_polishing_glass_ceramic", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:ree_phosphor_luminescent", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:ree_catalyst_materials", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:ree_metals_master_alloys", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:smco_bonded_magnets", asserted_on: "2026-10-21"}
+    # ---- (sub_theme, micro) rows: rare_earth_critical_min subs (13) ----
+    - {parent: "theme:critical_min_extraction_routes", child: "theme:ion_adsorption_ree_leaching", asserted_on: "2026-10-21"}
+    - {parent: "theme:critical_min_extraction_routes", child: "theme:heavy_mineral_sands_monazite", asserted_on: "2026-10-21"}
+    - {parent: "theme:critical_min_extraction_routes", child: "theme:lithium_brine_dle", asserted_on: "2026-10-21"}
+    - {parent: "theme:critical_min_extraction_routes", child: "theme:nickel_cobalt_hpal", asserted_on: "2026-10-21"}
+    - {parent: "theme:critical_min_extraction_routes", child: "theme:natural_graphite_processing", asserted_on: "2026-10-21"}
+    - {parent: "theme:critical_min_circularity", child: "theme:critical_min_byproduct_recovery", asserted_on: "2026-10-21"}
+    - {parent: "theme:critical_min_circularity", child: "theme:magnet_scrap_recycling", asserted_on: "2026-10-21"}
+    - {parent: "theme:critical_min_circularity", child: "theme:critical_min_substitution", asserted_on: "2026-10-21"}
+    - {parent: "theme:ree_functional_materials", child: "theme:ree_polishing_glass_ceramic", asserted_on: "2026-10-21"}
+    - {parent: "theme:ree_functional_materials", child: "theme:ree_phosphor_luminescent", asserted_on: "2026-10-21"}
+    - {parent: "theme:ree_functional_materials", child: "theme:ree_catalyst_materials", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_processing_magnets", child: "theme:ree_metals_master_alloys", asserted_on: "2026-10-21"}
+    - {parent: "theme:rare_earth_processing_magnets", child: "theme:smco_bonded_magnets", asserted_on: "2026-10-21"}
+    # ---- (theme, micro) rows: theme:copper_steel_electrify (14) ----
+    - {parent: "theme:copper_steel_electrify", child: "theme:copper_solvent_extraction_ew", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:secondary_copper_smelting", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:copper_mill_products", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:magnet_winding_wire", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:copper_byproduct_refining", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:iron_ore_beneficiation_pellets", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:hydrogen_dri_steelmaking", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:eaf_scrap_steelmaking", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:bf_bof_low_carbon_retrofit", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:electrical_steel_goes_noes", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:transformer_core_laminations", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:mining_fleet_electrification", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:steel_service_centers", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:metallurgical_equipment_casters", asserted_on: "2026-10-21"}
+    # ---- (sub_theme, micro) rows: copper_steel_electrify subs (11) ----
+    - {parent: "theme:copper_extraction_fabrication", child: "theme:copper_solvent_extraction_ew", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_extraction_fabrication", child: "theme:secondary_copper_smelting", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_extraction_fabrication", child: "theme:copper_mill_products", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_extraction_fabrication", child: "theme:magnet_winding_wire", asserted_on: "2026-10-21"}
+    - {parent: "theme:copper_extraction_fabrication", child: "theme:copper_byproduct_refining", asserted_on: "2026-10-21"}
+    - {parent: "theme:iron_steel_process_routes", child: "theme:iron_ore_beneficiation_pellets", asserted_on: "2026-10-21"}
+    - {parent: "theme:iron_steel_process_routes", child: "theme:hydrogen_dri_steelmaking", asserted_on: "2026-10-21"}
+    - {parent: "theme:iron_steel_process_routes", child: "theme:eaf_scrap_steelmaking", asserted_on: "2026-10-21"}
+    - {parent: "theme:iron_steel_process_routes", child: "theme:bf_bof_low_carbon_retrofit", asserted_on: "2026-10-21"}
+    - {parent: "theme:electrical_steel_materials", child: "theme:electrical_steel_goes_noes", asserted_on: "2026-10-21"}
+    - {parent: "theme:electrical_steel_materials", child: "theme:transformer_core_laminations", asserted_on: "2026-10-21"}
+    # ---- (theme, micro) rows: theme:ag_fertilizer (13) ----
+    - {parent: "theme:ag_fertilizer", child: "theme:phosphate_rock_mining", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:sulphur_sulphuric_acid", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:potash_mining_solutions", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:green_ammonia_synthesis", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:ammonia_fuel_logistics", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:urea_downstream_derivatives", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:npk_compound_blending", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:controlled_release_fertilizers", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:water_soluble_fertigation", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:biofertilizers_biostimulants", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:micronutrients_soil_conditioners", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:organic_nutrient_recovery", asserted_on: "2026-10-21"}
+    - {parent: "theme:ag_fertilizer", child: "theme:soil_testing_agronomy_services", asserted_on: "2026-10-21"}
+    # ---- (sub_theme, micro) rows: ag_fertilizer subs (10) ----
+    - {parent: "theme:fertilizer_upstream_feedstocks", child: "theme:phosphate_rock_mining", asserted_on: "2026-10-21"}
+    - {parent: "theme:fertilizer_upstream_feedstocks", child: "theme:sulphur_sulphuric_acid", asserted_on: "2026-10-21"}
+    - {parent: "theme:fertilizer_upstream_feedstocks", child: "theme:potash_mining_solutions", asserted_on: "2026-10-21"}
+    - {parent: "theme:fertilizer_upstream_feedstocks", child: "theme:green_ammonia_synthesis", asserted_on: "2026-10-21"}
+    - {parent: "theme:compound_specialty_fertilizers", child: "theme:npk_compound_blending", asserted_on: "2026-10-21"}
+    - {parent: "theme:compound_specialty_fertilizers", child: "theme:controlled_release_fertilizers", asserted_on: "2026-10-21"}
+    - {parent: "theme:compound_specialty_fertilizers", child: "theme:water_soluble_fertigation", asserted_on: "2026-10-21"}
+    - {parent: "theme:compound_specialty_fertilizers", child: "theme:biofertilizers_biostimulants", asserted_on: "2026-10-21"}
+    - {parent: "theme:compound_specialty_fertilizers", child: "theme:micronutrients_soil_conditioners", asserted_on: "2026-10-21"}
+    - {parent: "theme:compound_specialty_fertilizers", child: "theme:organic_nutrient_recovery", asserted_on: "2026-10-21"}
+    # ---- (theme, micro) rows: theme:glp1_obesity (12) ----
+    - {parent: "theme:glp1_obesity", child: "theme:peptide_sps_reagents", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_obesity", child: "theme:recombinant_peptide_fermentation", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_obesity", child: "theme:multi_receptor_incretin_agonists", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_obesity", child: "theme:amylin_cagri_analogues", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_obesity", child: "theme:oral_small_molecule_obesity", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_obesity", child: "theme:pharma_cold_chain_logistics", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_obesity", child: "theme:obesity_care_programs", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_obesity", child: "theme:metabolic_bariatric_surgery", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_obesity", child: "theme:weight_management_nutrition", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_obesity", child: "theme:compounded_peptide_supply", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_obesity", child: "theme:digital_titration_adherence", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_obesity", child: "theme:sharps_waste_services", asserted_on: "2026-10-21"}
+    # ---- (sub_theme, micro) rows: existing glp1 subs (6) ----
+    - {parent: "theme:glp1_supply_chain", child: "theme:peptide_sps_reagents", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_supply_chain", child: "theme:recombinant_peptide_fermentation", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_supply_chain", child: "theme:pharma_cold_chain_logistics", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_therapy_products", child: "theme:multi_receptor_incretin_agonists", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_therapy_products", child: "theme:amylin_cagri_analogues", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_therapy_products", child: "theme:oral_small_molecule_obesity", asserted_on: "2026-10-21"}
+    # ---- (theme, micro) rows: theme:medical_devices (15) ----
+    - {parent: "theme:medical_devices", child: "theme:cardiovascular_interventional_devices", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:neurovascular_peripheral_intervention", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:neuromodulation_implants", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:ophthalmic_devices_iol", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:respiratory_anesthesia_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:renal_dialysis_devices", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:infusion_chemo_delivery_devices", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:surgical_energy_endoscopy", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:wound_care_advanced_dressings", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:dental_implant_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:medical_biomaterials_polymers", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:device_contract_manufacturing", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:sterilization_reprocessing", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:home_therapy_devices", asserted_on: "2026-10-21"}
+    - {parent: "theme:medical_devices", child: "theme:device_evidence_pm_services", asserted_on: "2026-10-21"}
+    # ---- (sub_theme, micro) rows: medical_devices subs (8) ----
+    - {parent: "theme:interventional_therapy_devices", child: "theme:cardiovascular_interventional_devices", asserted_on: "2026-10-21"}
+    - {parent: "theme:interventional_therapy_devices", child: "theme:neurovascular_peripheral_intervention", asserted_on: "2026-10-21"}
+    - {parent: "theme:interventional_therapy_devices", child: "theme:neuromodulation_implants", asserted_on: "2026-10-21"}
+    - {parent: "theme:interventional_therapy_devices", child: "theme:ophthalmic_devices_iol", asserted_on: "2026-10-21"}
+    - {parent: "theme:clinical_care_equipment", child: "theme:respiratory_anesthesia_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:clinical_care_equipment", child: "theme:renal_dialysis_devices", asserted_on: "2026-10-21"}
+    - {parent: "theme:clinical_care_equipment", child: "theme:infusion_chemo_delivery_devices", asserted_on: "2026-10-21"}
+    - {parent: "theme:clinical_care_equipment", child: "theme:surgical_energy_endoscopy", asserted_on: "2026-10-21"}
+    # ---- (theme, micro) rows: theme:diagnostics_lifesci (15) ----
+    - {parent: "theme:diagnostics_lifesci", child: "theme:pcr_molecular_diagnostics", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:immunoassay_clinical_chemistry", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:clinical_mass_spectrometry", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:point_of_care_testing", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:flow_cytometry_analysis", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:lifesci_raw_reagents", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:cell_culture_media_celllines", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:oligo_gene_synthesis", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:lab_automation_sample_prep", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:lims_lab_informatics", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:icl_central_labs", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:companion_diagnostics", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:newborn_screening_programs", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:trial_biomarker_services", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:digital_pathology_ai", asserted_on: "2026-10-21"}
+    # ---- (sub_theme, micro) rows: diagnostics_lifesci subs (13) ----
+    - {parent: "theme:molecular_immuno_core_lab", child: "theme:pcr_molecular_diagnostics", asserted_on: "2026-10-21"}
+    - {parent: "theme:molecular_immuno_core_lab", child: "theme:immunoassay_clinical_chemistry", asserted_on: "2026-10-21"}
+    - {parent: "theme:molecular_immuno_core_lab", child: "theme:clinical_mass_spectrometry", asserted_on: "2026-10-21"}
+    - {parent: "theme:molecular_immuno_core_lab", child: "theme:point_of_care_testing", asserted_on: "2026-10-21"}
+    - {parent: "theme:molecular_immuno_core_lab", child: "theme:flow_cytometry_analysis", asserted_on: "2026-10-21"}
+    - {parent: "theme:lifesci_upstream_tools", child: "theme:lifesci_raw_reagents", asserted_on: "2026-10-21"}
+    - {parent: "theme:lifesci_upstream_tools", child: "theme:cell_culture_media_celllines", asserted_on: "2026-10-21"}
+    - {parent: "theme:lifesci_upstream_tools", child: "theme:oligo_gene_synthesis", asserted_on: "2026-10-21"}
+    - {parent: "theme:lifesci_upstream_tools", child: "theme:lab_automation_sample_prep", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_services_icl", child: "theme:icl_central_labs", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_services_icl", child: "theme:companion_diagnostics", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_services_icl", child: "theme:newborn_screening_programs", asserted_on: "2026-10-21"}
+    - {parent: "theme:diagnostics_services_icl", child: "theme:trial_biomarker_services", asserted_on: "2026-10-21"}

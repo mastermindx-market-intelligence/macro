@@ -453,3 +453,4 @@
 {"asof":"2026-10-15","data_session":"2026-10-15","session_source":"bench","market":"au","p_raw":0.4075,"pct":0.7619,"level":"moderate","top_exporter":"jp"}
 {"asof":"2026-10-14","data_session":"2026-10-14","session_source":"bench","market":"gb","p_raw":0.3436,"pct":0.7083,"level":"low","top_exporter":"jp"}
 {"asof":"2026-10-14","data_session":"2026-10-14","session_source":"bench","market":"ez","p_raw":0.3361,"pct":0.6905,"level":"low","top_exporter":"jp"}
+{"asof":"2026-10-16","data_session":"2026-10-16","session_source":"bench","market":"us","p_raw":0.3954,"pct":0.7401,"level":"low","top_exporter":"kr"}

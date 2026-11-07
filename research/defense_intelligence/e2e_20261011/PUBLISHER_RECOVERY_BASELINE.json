@@ -7,11 +7,12 @@
     "fms-acquire.yml": "publish / refresh"
   },
   "source_closure": {
-    "scripts/ci/govrev_publisher_preflight.py": "3f24c2e2139ea6f11103997bd07a1e69ec938e1012856f5112557ba2d65948f9",
+    "scripts/ci/govrev_publisher_preflight.py": "f5fb09af2d8bfe34065b3e3c23082021398e6af146ea9e9fe74b5ca393e80878",
     "scripts/ci/govrev_candidate_proof.py": "43267a7a3352810d7dd3751d3c4e6150dbc6e274a0ceb6d129c627a5ba26e299",
+    "scripts/ci/fms_persist.py": "6b0decd045e494d1aaf4f77b00eade3d205e17004470b2cb081311bbabbed4d1",
     ".github/workflows/government-revenue-live.yml": "e6f2941f9efaf638d8bc82592a6f5cf38d9b0323db2e8c2dd087b08052aa1376",
-    ".github/workflows/daily.yml": "ed25c015087e6bd29c7b6c5c02f1b15b7ddc1ffb31b94712f2cfa860dbeca9bb",
-    ".github/workflows/fms-acquire.yml": "5995f83b35c5a39ea663e5e802f6431c9cd805a69d557be06596041dcd16175e"
+    ".github/workflows/daily.yml": "bc3a1e6c97479b2ac07de56fca0efae3a159b94c93ce40adb7c4a3a834f23e77",
+    ".github/workflows/fms-acquire.yml": "91e65a31eb3c38c38dad3aa99e9c4f80c7c31fa44820af1d7a6720aa2e0b904a"
   },
   "scan_created_after": "2026-10-10T17:26:49Z",
   "legacy_effects_reconciled_at": "2026-10-13T06:55:59.489033+00:00",
@@ -414,7 +415,9 @@
     "classifier_patch_sha256": "fba87b533655b7403755b939ec9efe267fe98e1eeef1a7963ad60d7a5896e646",
     "independent_classifier_review_sha256": "de8004bcdcf3b0de91522d167081faf032d8e577937fd515bc7a7eb1d23d312e",
     "legacy_workflow_semantic_audit_sha256": "4a21ca40d438cad158a9bbcd8b7a1664d45d19999b63747076ead6456f01ba40",
-    "final_cutover_source_binding_owner": "root; source_closure not yet bound"
+    "final_cutover_source_binding_owner": "root; source_closure not yet bound",
+    "current_source_requalification_sha256": "d2be30ab95a470f2d756595209328b23c1ed97739608e75302735edc16607a07",
+    "current_source_requalification_path": "research/defense_intelligence/e2e_20261011/CURRENT_PUBLISHER_SOURCE_REQUALIFICATION_20261018.json"
   },
   "evidence_clocks": {
     "census_observed_at": "2026-10-13T06:55:59.489033+00:00",

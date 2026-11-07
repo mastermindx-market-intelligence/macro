@@ -69,15 +69,18 @@ uses, so what lands in site/blog/ is the post-sweep image --check expects.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 from datetime import date, datetime, timezone
 from pathlib import Path
+from typing import Callable
 
 _REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO))
@@ -163,20 +166,20 @@ _OFFICIAL_SOURCE_PREFIX = "official_feed:"
 
 
 def _is_private_official_stage(item: object) -> bool:
-    """Detect a privately staged official-feed candidate — never emittable."""
+    """Detect a private agency/issuer/market candidate — never emittable here."""
     if not isinstance(item, dict):
         return False
     slot = item.get("slot")
     holders = [item] + ([slot] if isinstance(slot, dict) else [])
     for holder in holders:
-        if str(holder.get("id") or "").startswith("press-official-"):
+        if str(holder.get("id") or "").startswith(("press-official-", "press-issuer-", "press-market-")):
             return True
         provenance = holder.get("provenance")
         if not isinstance(provenance, dict):
             continue
         receipt = provenance.get("admission_receipt")
         if (isinstance(receipt, dict)
-                and str(receipt.get("rail") or "") == _OFFICIAL_STAGE_RAIL):
+                and str(receipt.get("rail") or "") in (_OFFICIAL_STAGE_RAIL, "private_issuer_release", "private_market_snapshot")):
             return True
     refs: set[str] = set()
     for holder in holders:
@@ -189,7 +192,7 @@ def _is_private_official_stage(item: object) -> bool:
         revisions = holder.get("source_revisions")
         if isinstance(revisions, dict):
             refs.update(str(r) for r in revisions)
-    return any(ref.startswith(_OFFICIAL_SOURCE_PREFIX) for ref in refs)
+    return any(ref.startswith((_OFFICIAL_SOURCE_PREFIX, "issuer_sec:", "market_snapshot:", "market_snapshot_inputs:")) for ref in refs)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -575,6 +578,8 @@ def _stage_preplanned_slots(
     admission_receipt: dict | None = None,
     single_provider_attempt: bool = False,
     admitted_token_cap: bool = False,
+    prepare_slot: Callable[[dict], dict] | None = None,
+    before_write: Callable[[dict], None] | None = None,
 ) -> dict:
     """Write already-selected slots through the normal writer/validator rail.
 
@@ -604,9 +609,11 @@ def _stage_preplanned_slots(
         checkpoint.update(status="in_progress",
                           progress={"phase": "provider_started", "attempt": 0})
         _write_stage_checkpoint(out, checkpoint, create=True)
-        writer_kwargs: dict[str, bool] = {}
+        writer_kwargs: dict = {}
         if single_provider_attempt:
             writer_kwargs["single_provider_attempt"] = True
+            if max_regenerations == 0:
+                writer_kwargs["single_attempt"] = True
         if admitted_token_cap:
             writer_kwargs["admitted_token_cap"] = True
 
@@ -614,6 +621,32 @@ def _stage_preplanned_slots(
             if attempt:
                 checkpoint["progress"] = {"phase": "provider_started", "attempt": attempt}
                 _write_stage_checkpoint(out, checkpoint)
+            if prepare_slot is not None or before_write is not None:
+                from engine.press.qbus_news import PrivateNewsUnavailable
+
+                try:
+                    if prepare_slot is not None:
+                        prepared = prepare_slot(slot)
+                        if not isinstance(prepared, dict) or prepared.get("id") != slot["id"]:
+                            raise PrivateNewsUnavailable("source_preparation_changed_slot_identity")
+                        slot = prepared
+                        checkpoint.update(
+                            slot=slot, sources=list(slot.get("sources") or []),
+                            seed_refs=list(slot.get("seed_refs") or []),
+                            source_revisions=dict(slot.get("source_revisions") or {}),
+                        )
+                        _write_stage_checkpoint(out, checkpoint)
+                    # Permission and identity checks run AFTER the provenance
+                    # checkpoint, immediately before each actual writer call.
+                    if before_write is not None:
+                        before_write(slot)
+                except PrivateNewsUnavailable as exc:
+                    attempts.append({"attempt": attempt, "ok": False, "reason": str(exc)})
+                    break
+            if before_write is not None:
+                # Bind the prepared attempt for a final check after provider
+                # construction and at the actual external request boundary.
+                writer_kwargs["private_admission_check"] = lambda prepared=slot: before_write(prepared)
             res = writer.write(slot, cfg, state=state, attempt=attempt,
                                prior_failures=prior or None, **writer_kwargs)
             if not res.get("ok"):
@@ -819,6 +852,77 @@ def run_admitted_earnings_staging(
     )
 
 
+def run_private_news_staging(
+    root: Path, cfg: dict, *, slot: dict, database, universe_path,
+    receipt_paths, staging_dir: str | Path,
+) -> dict:
+    """Ground one existing Press slot with blog_draft news; never enable emit.
+
+    The private directory is outside all generic staging/content/site paths.
+    Every attempt rebuilds from the original slot and checks admission again
+    after checkpoint IO. Provider fallback and regeneration remain disabled.
+    """
+    import copy
+    from engine.press import qbus_news
+
+    source_slot = copy.deepcopy(slot)
+    candidate = qbus_news.private_slot(source_slot)
+    if _is_canonical_story_slot(source_slot) or _is_private_official_stage({"slot": source_slot}):
+        raise qbus_news.PrivateNewsUnavailable("qbus_draft_requires_ordinary_press_slot")
+    receipt_paths = tuple(receipt_paths)
+    if not receipt_paths:
+        raise qbus_news.PrivateNewsUnavailable("qbus_draft_rights_required")
+    destination = Path(staging_dir).resolve()
+    paths = _paths(cfg, root)
+    forbidden = [
+        paths["staging"].resolve(), paths["content"].resolve(),
+        (root / "content").resolve(), (root / "site").resolve(),
+        (root / "properties").resolve(),
+    ]
+    # Press properties are independently served publication trees, not merely
+    # source inputs. Include actual configured roots as well as canonical roots.
+    for publication in (cfg.get("publications") or {}).values():
+        if isinstance(publication, dict):
+            for key in ("property_tree", "content_dir"):
+                value = publication.get(key)
+                if isinstance(value, str) and value:
+                    forbidden.append((root / value).resolve())
+    if any(destination == path or path in destination.parents
+           or destination in path.parents for path in forbidden):
+        raise qbus_news.PrivateNewsUnavailable("qbus_draft_requires_private_directory")
+    destination.mkdir(mode=0o700, parents=True, exist_ok=True)
+
+    def prepare(_previous: dict) -> dict:
+        # Never append new reports to an earlier attempt's evidence/facts.
+        return qbus_news.prepare_slot(
+            source_slot, database=database, universe_path=universe_path,
+            receipt_paths=receipt_paths,
+        )
+
+    def verify(prepared: dict) -> None:
+        qbus_news.verify_slot(
+            prepared, universe_path=universe_path, receipt_paths=receipt_paths,
+        )
+
+    llm_cfg = cfg.get("llm") or {}
+    state = writer.RunState(
+        token_budget=min(_env_int(
+            "PRESS_RUN_TOKEN_BUDGET", int(llm_cfg.get("run_token_budget") or 240_000)
+        ), 12_000),
+        breaker_threshold=_env_int(
+            "PRESS_CIRCUIT_BREAKER_FAILURES",
+            int(llm_cfg.get("circuit_breaker_consecutive_failures") or 3),
+        ),
+    )
+    return _stage_preplanned_slots(
+        root, cfg, slots=[candidate], staging_dir=destination,
+        run_date=str(source_slot.get("as_of") or ""),
+        state=state, max_regenerations=0, taken_slugs=set(),
+        single_provider_attempt=True, admitted_token_cap=True,
+        prepare_slot=prepare, before_write=verify,
+    )
+
+
 def _stage_item(
     slot: dict,
     passed_payload,
@@ -935,10 +1039,10 @@ def _same_page(rendered: Path, committed: Path) -> bool:
     """True when the committed file already IS this render, in the projection
     this lane is accountable for.
 
-    HTML is compared through build_free_content._comparable, which strips the
-    daily.yml-only wh_banner tag and normalises the `?v=` asset stamps — the two
-    sweeps a press emit cannot replay and does not own.  Everything else (the
-    RSS feed) is a plain byte compare.
+    HTML uses build_free_content._comparable for the separately owned banner
+    and asset stamps. A missing common-renderer Shared Shell block is projected
+    in memory before that comparison; an existing block is never regenerated.
+    Everything else (the RSS feed) remains a plain byte compare.
     """
     if not committed.exists():
         return False
@@ -948,9 +1052,24 @@ def _same_page(rendered: Path, committed: Path) -> bool:
     if rendered.suffix != ".html":
         return False
     from scripts.build_free_content import _comparable  # noqa: PLC0415
+    from lib.pages import dbase_prefix  # noqa: PLC0415
+    from lib.shared_shell import END, START, inject_shared_shell_text  # noqa: PLC0415
+
+    def comparison_text(raw: bytes, path: Path) -> str:
+        text = raw.decode("utf-8")
+        if START not in text and END not in text:
+            # The common renderer owns this additive sweep. Explicit digests
+            # keep this comparison pure; _comparable already ignores stamp values.
+            # Never regenerate a present block: doing so could erase extra content
+            # or malformed markup inside its markers and hide a real difference.
+            text = inject_shared_shell_text(
+                text, dbase_prefix(path), version="00000000", css_version="00000000",
+            )
+        return _comparable(text)
+
     try:
-        return _comparable(a.decode("utf-8")) == _comparable(b.decode("utf-8"))
-    except UnicodeDecodeError:
+        return comparison_text(a, rendered) == comparison_text(b, committed)
+    except (UnicodeDecodeError, ValueError):
         return False
 
 
@@ -1008,7 +1127,7 @@ def _render_blog_subtree(root: Path) -> tuple[list[str], list[str]]:
     return copied, unowned
 
 
-def run_emit(root: Path, cfg: dict) -> dict:
+def run_emit(root: Path, cfg: dict, *, reviewed_promotion: dict | None = None) -> dict:
     paths = _paths(cfg, root)
     stage = paths["staging"]
     if not stage.exists():
@@ -1034,6 +1153,18 @@ def run_emit(root: Path, cfg: dict) -> dict:
             continue
         if isinstance(obj, dict) and obj.get("status") == "passed" and obj.get("draft"):
             slot = obj.get("slot") if isinstance(obj.get("slot"), dict) else {}
+            from engine.press.qbus_news import is_private_stage
+
+            if is_private_stage(obj):
+                obj["status"] = "approval_required"
+                obj["quarantine_reason"] = (
+                    "private qbus news draft: source processing permission "
+                    "does not authorize public-article release"
+                )
+                _write_stage_checkpoint(path, obj)
+                _annotate("warning", "press_emit_qbus_approval",
+                          f"press emit: private news candidate {obj.get('id')} not emitted")
+                continue
             if _is_unverified_earnings_story_stage(obj):
                 obj["status"] = "approval_required"
                 obj["quarantine_reason"] = (
@@ -1056,7 +1187,7 @@ def run_emit(root: Path, cfg: dict) -> dict:
                 # content/site/ledger write.
                 obj["status"] = "approval_required"
                 obj["quarantine_reason"] = (
-                    "privately staged official-feed candidate: the candidate-only "
+                    "privately staged external candidate (official-feed or issuer): the candidate-only "
                     "qualification conveys no public-article approval"
                 )
                 path.write_text(
@@ -1064,8 +1195,8 @@ def run_emit(root: Path, cfg: dict) -> dict:
                     encoding="utf-8",
                 )
                 _annotate(
-                    "warning", "press_emit_official_approval",
-                    f"press emit: official candidate {obj.get('id')} requires "
+                    "warning", "press_emit_external_approval",
+                    f"press emit: private external candidate {obj.get('id')} requires "
                     f"public-article approval — not emitted",
                 )
                 continue
@@ -1146,6 +1277,7 @@ def run_emit(root: Path, cfg: dict) -> dict:
             "source_revisions": dict(_source_revisions(obj)),
             "seed_refs": list(obj.get("seed_refs") or []),
             "validator_report": obj.get("validator_report"),
+            **({"reviewed_promotion": reviewed_promotion} if reviewed_promotion else {}),
             "urls": [route["url"]],
         })
 
@@ -1279,6 +1411,278 @@ def append_ledger(path: Path, rows: list[dict]) -> int:
     return len(rows)
 
 
+# Reviewed bundles are release inputs committed through the normal protected PR.
+# They attest an editorial decision over exact bytes, not new approval for the
+# private official/earnings rails. No model or alternate publisher is involved.
+_REVIEWED_PREFIX = "research/agentic_media/press_reviewed/"
+_REVIEWED_REPO = "mastermindx-market-intelligence/macro"
+_REVIEWED_SCOPES = (
+    "engine/press/validators.py", "engine/press/adjusted_baseline.py",
+    "engine/marketing/copywriter.py", "engine/marketing/sentinel.py",
+    "config/press.yml", "scripts/run_press.py", "scripts/build_free_content.py",
+    ".github/workflows/press-publish.yml",
+)
+
+
+def _promotion_git(root: Path, *args: str) -> bytes:
+    try:
+        return subprocess.check_output(["git", "-C", str(root), *args], stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as exc:
+        raise ValueError("reviewed promotion Git evidence unavailable") from exc
+
+
+def _promotion_path(root: Path, relative: str) -> Path:
+    path = Path(relative)
+    if (not isinstance(relative, str) or not relative or path.is_absolute()
+            or any(part in (".", "..") for part in relative.split("/"))
+            or "\\" in relative or any(ord(c) < 32 for c in relative)):
+        raise ValueError("unsafe reviewed promotion path")
+    resolved = root / path
+    if any(p.is_symlink() for p in (resolved, *resolved.parents) if p.is_relative_to(root)):
+        raise ValueError("symlink in reviewed promotion path")
+    return resolved
+
+
+def _promotion_refs(item: dict) -> set[str]:
+    return {str(ref) for holder in (item, item.get("slot") or {})
+            for ref in holder.get("sources", []) if isinstance(ref, str)}
+
+
+def _promotion_item(raw: bytes, slot_id: str) -> dict:
+    try:
+        item = json.loads(raw)
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise ValueError("invalid reviewed stage JSON") from exc
+    if (not isinstance(item, dict) or item.get("id") != slot_id
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", slot_id)
+            or item.get("status") != "passed" or not isinstance(item.get("draft"), dict)
+            or not isinstance(item.get("slot"), dict) or item["slot"].get("id") != slot_id
+            or (item.get("validator_report") or {}).get("ok") is not True
+            or not _promotion_refs(item)):
+        raise ValueError("reviewed stage is not one passing identified slot")
+    if _is_unverified_earnings_story_stage(item) or _is_private_official_stage(item):
+        raise ValueError("reviewed bundle cannot approve private official or earnings rail")
+    return item
+
+
+def _promotion_dependencies(root: Path, head: str, item: dict) -> dict[str, str]:
+    """Freeze semantic article inputs, not a whole catalog or the UI estate.
+
+    Report and Chronicle selectors ignore unrelated appends. Immutable hashes
+    already in the exact stage remain in the review; private provenance paths
+    are never dereferenced or made into new repository publication requirements.
+    Current templates/assets are intentionally left to the normal renderer.
+    """
+    snapshot = {}
+
+    def bind(relative: str, key: str, select=lambda raw: raw):
+        path = _promotion_path(root, relative)
+        reviewed = select(_promotion_git(root, "show", f"{head}:{relative}"))
+        current = select(_promotion_git(root, "show", f"HEAD:{relative}"))
+        working = select(path.read_bytes()) if path.is_file() else current
+        if reviewed != current or reviewed != working:
+            raise ValueError(f"reviewed source dependency is missing or changed: {key}")
+        snapshot[key] = hashlib.sha256(reviewed).hexdigest()
+
+    files = _promotion_git(root, "ls-tree", "-r", "--name-only", head,
+                           "--", *_REVIEWED_SCOPES).decode().splitlines()
+    for relative in files:
+        bind(relative, relative)
+    if "config/press.yml" not in snapshot:
+        raise ValueError("reviewed source dependencies missing Press config")
+
+    refs = set()
+    for holder in (item, item.get("slot") or {}):
+        refs.update(holder.get("sources") or [])
+        refs.update(holder.get("seed_refs") or [])
+        refs.update((holder.get("source_revisions") or {}).keys())
+        for fact in holder.get("facts") or []:
+            if isinstance(fact, dict):
+                # Artifact revisions are actual numerical evidence. No private
+                # source/provenance path is inferred from a report's metadata.
+                if str(fact.get("ref") or "").startswith("artifact:"):
+                    refs.add(fact["ref"])
+                refs.update((fact.get("input_revisions") or {}).keys())
+    for ref in sorted(refs):
+        if not isinstance(ref, str):
+            raise ValueError("invalid reviewed source reference")
+        if ref.startswith("artifact:"):
+            bind(ref.removeprefix("artifact:").split("#", 1)[0], ref)
+        elif ref.startswith("research_vault:"):
+            report_id = ref.removeprefix("research_vault:")
+            def report_entry(raw, report_id=report_id):
+                rows = [row for row in json.loads(raw).get("items", [])
+                        if isinstance(row, dict) and row.get("id") == report_id]
+                if len(rows) != 1:
+                    raise ValueError("reviewed report entry missing or ambiguous")
+                return json.dumps(rows[0], sort_keys=True, ensure_ascii=False,
+                                  separators=(",", ":")).encode()
+            bind("data/research_vault/catalog.json", ref, report_entry)
+        elif ref.startswith("chronicle:"):
+            source_ref = ref.removeprefix("chronicle:")
+            def event_entry(raw, source_ref=source_ref):
+                rows = [json.loads(line) for line in raw.splitlines() if line.strip()]
+                matches = [row for row in rows if isinstance(row, dict)
+                           and (row.get("source_ref") or row.get("id")) == source_ref]
+                if len(matches) != 1:
+                    raise ValueError("reviewed Chronicle entry missing or ambiguous")
+                return json.dumps(matches[0], sort_keys=True, ensure_ascii=False,
+                                  separators=(",", ":")).encode()
+            bind("data/chronicle/events.jsonl", ref, event_entry)
+    return snapshot
+
+
+def prepare_reviewed_bundle(root: Path, stage_path: Path, output_path: Path,
+                            *, confirm_reviewed: bool = False) -> dict:
+    """Package already-reviewed local bytes; never edit the stage or call a writer.
+
+    The caller must commit this bundle via the existing protected release path.
+    Its digest is then an explicit workflow input. This function grants nothing
+    to source-ready private rails, even if their mutable report claims approval.
+    """
+    if not confirm_reviewed:
+        raise ValueError("explicit editorial confirmation required")
+    stage_path = stage_path if stage_path.is_absolute() else root / stage_path
+    output_path = output_path if output_path.is_absolute() else root / output_path
+    relative = output_path.relative_to(root).as_posix()
+    if not relative.startswith(_REVIEWED_PREFIX) or not relative.endswith(".json"):
+        raise ValueError("reviewed bundle must use the repository review directory")
+    _promotion_path(root, relative)
+    raw = stage_path.read_bytes()
+    obj = json.loads(raw)
+    item = _promotion_item(raw, str(obj.get("id") or ""))
+    head = _promotion_git(root, "rev-parse", "HEAD").decode().strip()
+    bundle = {"schema": "press.reviewed_bundle/v1", "repository": _REVIEWED_REPO,
+              "bundle_path": relative, "source_head": head, "slot_id": item["id"],
+              "stage_sha256": hashlib.sha256(raw).hexdigest(),
+              "stage_json": raw.decode("utf-8"),
+              "dependencies": _promotion_dependencies(root, head, item)}
+    payload = (json.dumps(bundle, ensure_ascii=False, indent=2) + "\n").encode()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("xb") as handle:
+        handle.write(payload)
+    return {"bundle_path": relative, "bundle_sha256": hashlib.sha256(payload).hexdigest(),
+            "slot_id": item["id"], "source_head": head}
+
+
+def _promotion_workflow() -> dict[str, str]:
+    keys = ("GITHUB_REPOSITORY", "GITHUB_WORKFLOW_REF", "GITHUB_REF", "GITHUB_SHA",
+            "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT")
+    binding = {key: os.environ.get(key, "") for key in keys}
+    if (os.environ.get("GITHUB_ACTIONS") != "true"
+            or binding["GITHUB_REPOSITORY"] != _REVIEWED_REPO
+            or binding["GITHUB_REF"] != "refs/heads/main"
+            or binding["GITHUB_WORKFLOW_REF"] != (
+                _REVIEWED_REPO + "/.github/workflows/press-publish.yml@refs/heads/main")
+            or not re.fullmatch(r"[0-9a-f]{40}", binding["GITHUB_SHA"])
+            or not all(re.fullmatch(r"[0-9]+", binding[key])
+                       for key in ("GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT"))):
+        raise ValueError("reviewed promotion requires the main Press workflow and repository")
+    return binding
+
+
+def check_reviewed_bundle(root: Path, cfg: dict, bundle_path: Path,
+                          expected_sha256: str, expected_slot: str, *, published=False) -> dict:
+    """Reconcile exact review, current dependencies and the strict publication ledger."""
+    binding = _promotion_workflow()
+    _promotion_git(root, "merge-base", "--is-ancestor", binding["GITHUB_SHA"], "HEAD")
+    raw = bundle_path.read_bytes()
+    if (not re.fullmatch(r"[0-9a-f]{64}", expected_sha256)
+            or hashlib.sha256(raw).hexdigest() != expected_sha256):
+        raise ValueError("reviewed bundle SHA256 mismatch")
+    bundle = json.loads(raw)
+    if (bundle.get("schema") != "press.reviewed_bundle/v1"
+            or bundle.get("repository") != _REVIEWED_REPO
+            or bundle.get("slot_id") != expected_slot
+            or not re.fullmatch(r"[0-9a-f]{40}", str(bundle.get("source_head")))):
+        raise ValueError("reviewed bundle identity mismatch")
+    relative = str(bundle.get("bundle_path") or "")
+    if not relative.startswith(_REVIEWED_PREFIX) or not relative.endswith(".json"):
+        raise ValueError("reviewed bundle path is outside the review directory")
+    _promotion_path(root, relative)
+    if _promotion_git(root, "show", f"HEAD:{relative}") != raw:
+        raise ValueError("reviewed bundle differs from committed repository bytes")
+    stage_raw = bundle["stage_json"].encode("utf-8")
+    if hashlib.sha256(stage_raw).hexdigest() != bundle.get("stage_sha256"):
+        raise ValueError("reviewed stage digest mismatch")
+    item = _promotion_item(stage_raw, expected_slot)
+    # A protected squash rewrites source ancestry. The committed bundle and
+    # exact snapshot hashes bind the reviewed source; source_head is retained
+    # provenance, while the actual workflow head is checked separately.
+    if _promotion_dependencies(root, "HEAD", item) != bundle.get("dependencies"):
+        raise ValueError("reviewed source dependencies changed")
+    ledger = _paths(cfg, root)["ledger"]
+    try:
+        rows = [json.loads(line) for line in ledger.read_text().splitlines() if line.strip()] if ledger.exists() else []
+        if any(not isinstance(row, dict) for row in rows):
+            raise ValueError("non-object publication row")
+    except (ValueError, OSError) as exc:
+        raise ValueError("publication ledger is unreadable") from exc
+    own = [row for row in rows if row.get("id") == expected_slot]
+    if (not published and own) or (published and len(own) != 1):
+        raise ValueError("reviewed slot already published or publication missing")
+    if published and (own[0].get("reviewed_promotion") or {}).get("bundle_sha256") != expected_sha256:
+        raise ValueError("published slot has different reviewed bundle")
+    refs = _promotion_refs(item)
+    if any(refs.intersection(_promotion_refs(row)) for row in rows if row.get("id") != expected_slot):
+        raise ValueError("reviewed source already published")
+    return {"bundle": bundle, "item": item, "stage_raw": stage_raw}
+
+
+def _check_promotion_staging(root: Path, cfg: dict, expected_slot: str, stage_raw: bytes,
+                             *, require_stage: bool = False) -> Path:
+    stage = _paths(cfg, root)["staging"]
+    selected = _promotion_path(root, (stage / (expected_slot + ".json")).relative_to(root).as_posix())
+    for path in stage.glob("*.json"):
+        if path.name.startswith("_"):
+            continue
+        obj = json.loads(path.read_bytes())
+        if path == selected:
+            if path.read_bytes() != stage_raw:
+                raise ValueError("reviewed stage bytes changed")
+        elif isinstance(obj, dict) and obj.get("status") == "passed":
+            raise ValueError("additional passed stage is not part of this promotion")
+    if require_stage and (not selected.is_file() or selected.read_bytes() != stage_raw):
+        raise ValueError("reviewed stage artifact missing or changed")
+    return selected
+
+
+def import_reviewed_bundle(root: Path, cfg: dict, bundle_path: Path,
+                           expected_sha256: str, expected_slot: str) -> dict:
+    checked = check_reviewed_bundle(root, cfg, bundle_path, expected_sha256, expected_slot)
+    if _promotion_git(root, "rev-parse", "HEAD").decode().strip() != _promotion_workflow()["GITHUB_SHA"]:
+        raise ValueError("reviewed artifact import head differs from workflow head")
+    selected = _check_promotion_staging(root, cfg, expected_slot, checked["stage_raw"])
+    # The ordinary validator rechecks the exact draft BEFORE any artifact write.
+    report = validators.validate(checked["item"]["draft"], checked["item"]["slot"], cfg, root=root)
+    if not report["ok"]:
+        raise ValueError("reviewed stage no longer passes validators: " + ", ".join(report["failed"]))
+    selected.parent.mkdir(parents=True, exist_ok=True)
+    selected.write_bytes(checked["stage_raw"])
+    (selected.parent / "_reviewed_bundle.json").write_bytes(bundle_path.read_bytes())
+    (selected.parent / "_reviewed_workflow.json").write_text(json.dumps(_promotion_workflow()))
+    summary = {"passed": 1, "slot_id": expected_slot, "bundle_sha256": expected_sha256}
+    (selected.parent / "_run_summary.json").write_text(json.dumps(summary))
+    return summary
+
+
+def promote_reviewed_bundle(root: Path, cfg: dict, bundle_path: Path,
+                            expected_sha256: str, expected_slot: str) -> dict:
+    checked = check_reviewed_bundle(root, cfg, bundle_path, expected_sha256, expected_slot)
+    stage = _paths(cfg, root)["staging"]
+    if json.loads((stage / "_reviewed_workflow.json").read_bytes()) != _promotion_workflow():
+        raise ValueError("reviewed workflow artifact belongs to a different run or head")
+    _check_promotion_staging(root, cfg, expected_slot, checked["stage_raw"], require_stage=True)
+    bundle = checked["bundle"]
+    out = run_emit(root, cfg, reviewed_promotion={
+        "bundle_sha256": expected_sha256, "stage_sha256": bundle["stage_sha256"],
+        "source_head": bundle["source_head"],
+    })
+    if out["emitted"] != 1 or out["items"][0]["id"] != expected_slot:
+        raise ValueError("reviewed promotion did not emit exactly the reviewed slot")
+    return out
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1291,6 +1695,15 @@ def main(argv=None) -> int:
                       help="plan + write + validate into data/press/staging/ (default)")
     mode.add_argument("--emit", action="store_true",
                       help="publish PASSING staged drafts to content/seo/blog + site/blog")
+    mode.add_argument("--prepare-reviewed-bundle", metavar="STAGE_JSON")
+    mode.add_argument("--import-reviewed-bundle", metavar="BUNDLE_JSON")
+    mode.add_argument("--promote-reviewed-bundle", metavar="BUNDLE_JSON")
+    mode.add_argument("--check-reviewed-bundle", metavar="BUNDLE_JSON")
+    ap.add_argument("--bundle-output", default="")
+    ap.add_argument("--confirm-reviewed", action="store_true")
+    ap.add_argument("--promotion-sha256", default="")
+    ap.add_argument("--promotion-slot", default="")
+    ap.add_argument("--published", action="store_true")
     ap.add_argument("--desks", default="",
                     help="comma-separated desk names (default: every desk in config)")
     ap.add_argument("--as-of", default="", help="run date YYYY-MM-DD (default: today)")
@@ -1301,7 +1714,24 @@ def main(argv=None) -> int:
                     help="stage with one provider-adapter invocation per slot; "
                          "disable Anthropic SDK retries, Press fallback and "
                          "regeneration (Codex CLI internal requests are not bounded)")
+    mode.add_argument("--stage-qbus-news", action="store_true",
+                      help="ground one private Press draft from qualified qbus news; never emit")
+    ap.add_argument("--qbus-slot", default="", help="existing planned Press slot JSON")
+    ap.add_argument("--qbus-db", default="", help="canonical qbus database")
+    ap.add_argument("--qbus-universe", default="", help="owner-supplied news universe JSON")
+    ap.add_argument("--qbus-rights", action="append", default=[],
+                    help="blog_draft rights receipt; repeat for additional publishers")
+    ap.add_argument("--qbus-staging-dir", default="", help="dedicated private output directory")
     args = ap.parse_args(argv)
+    qbus_inputs = (args.qbus_slot, args.qbus_db, args.qbus_universe,
+                   args.qbus_rights, args.qbus_staging_dir)
+    if args.stage_qbus_news:
+        if not all(qbus_inputs):
+            ap.error("--stage-qbus-news requires all --qbus-* source/output arguments")
+        if args.desks or args.as_of or args.max_slots is not None:
+            ap.error("private news staging uses exactly the supplied current-day slot")
+    elif any(qbus_inputs):
+        ap.error("--qbus-* arguments require --stage-qbus-news")
     if args.emit and args.single_attempt:
         ap.error("--single-attempt applies only to staging, not --emit")
 
@@ -1316,7 +1746,38 @@ def main(argv=None) -> int:
 
     desks = [d.strip() for d in args.desks.split(",") if d.strip()] or None
 
-    if args.emit:
+    if args.stage_qbus_news:
+        try:
+            slot = json.loads(Path(args.qbus_slot).read_text(encoding="utf-8"))
+            out = run_private_news_staging(
+                root, cfg, slot=slot, database=args.qbus_db,
+                universe_path=args.qbus_universe, receipt_paths=args.qbus_rights,
+                staging_dir=args.qbus_staging_dir,
+            )
+        except (OSError, ValueError) as exc:
+            _annotate("error", "press_private_news", str(exc))
+            return 1
+        print(json.dumps(out, ensure_ascii=False, indent=2, default=str))
+        return 0 if out["passed"] == 1 else 1
+    if args.prepare_reviewed_bundle:
+        if not args.bundle_output:
+            ap.error("--bundle-output is required")
+        out = prepare_reviewed_bundle(root, Path(args.prepare_reviewed_bundle),
+                                      Path(args.bundle_output), confirm_reviewed=args.confirm_reviewed)
+    elif args.import_reviewed_bundle or args.promote_reviewed_bundle or args.check_reviewed_bundle:
+        if not args.promotion_sha256 or not args.promotion_slot:
+            ap.error("reviewed promotion requires --promotion-sha256 and --promotion-slot")
+        path = Path(args.import_reviewed_bundle or args.promote_reviewed_bundle or args.check_reviewed_bundle)
+        path = path if path.is_absolute() else root / path
+        if args.import_reviewed_bundle:
+            out = import_reviewed_bundle(root, cfg, path, args.promotion_sha256, args.promotion_slot)
+        elif args.promote_reviewed_bundle:
+            out = promote_reviewed_bundle(root, cfg, path, args.promotion_sha256, args.promotion_slot)
+        else:
+            check_reviewed_bundle(root, cfg, path, args.promotion_sha256, args.promotion_slot,
+                                  published=args.published)
+            out = {"verified": True}
+    elif args.emit:
         out = run_emit(root, cfg)
     else:
         out = run_staging(root, cfg, desks=desks,

@@ -424,8 +424,8 @@ def test_hub_hero_uses_loading_skeleton_not_em_dash():
     assert "hub-clock-skel" in html
     assert 'class="hub-clock-skel skel"' in html
     assert 'class="hub-clock-static"' in html
-    assert "Latest market snapshot" in html
-    assert "最新市场快照" in html
+    assert "Page built" in html
+    assert "页面生成于" in html
     assert 'data-asof="2026-06-14"' in html
     assert "Jun 14, 2026" in html
     assert "2026年6月14日" in html
@@ -470,8 +470,8 @@ def test_reconciled_hub_keeps_snapshot_shell_and_h1_clock_wrap():
     assert "snapshot-dot" in html
     assert "hub-clock-wrap" in html
     assert "hub-clock-skel" in html
-    assert "Latest market snapshot" in html
-    assert "最新市场快照" in html
+    assert "Page built" in html
+    assert "页面生成于" in html
     assert 'data-asof="2026-09-18"' in html
     assert "Sep 18, 2026" in html
     clock_js = html.split("querySelector(\".hub-clock-wrap\")", 1)[-1].split("hub-welcome.js", 1)[0]

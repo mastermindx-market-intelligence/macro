@@ -1,12 +1,12 @@
 {
  "schema": "bottom_ledger/v1",
- "as_of": "2026-10-16",
+ "as_of": "2026-10-17",
  "ledger_born": "2026-06-30",
  "advance": {
   "status": "advanced",
-  "as_of": "2026-10-16",
-  "n_new_flags": 144,
-  "n_newly_graded": 105,
+  "as_of": "2026-10-17",
+  "n_new_flags": 0,
+  "n_newly_graded": 0,
   "error": null,
   "clock_contract": "ledger dates are civil calendar dates (YYYY-MM-DD, no clock, no timezone) — engine/ledger_clock.py",
   "n_rows": 3571,
