@@ -18,21 +18,21 @@
         "as_of": "2026-11-06",
         "n_records": 58,
         "coverage": 58,
-        "fingerprint": "5a0f42abb2667c4a",
+        "fingerprint": "252eb77c7967db15",
         "scores": {
           "conviction.composite_z": {
             "n_sub": 58,
             "pop": 58,
-            "uniq": 58,
-            "mean": -0.4022586206896552,
-            "std": 0.5729562347234232
+            "uniq": 57,
+            "mean": -0.36625862068965515,
+            "std": 0.5717791821283273
           },
           "alpha": {
             "n_sub": 58,
             "pop": 58,
             "uniq": 56,
-            "mean": -0.17482758620689653,
-            "std": 0.9314768425487122
+            "mean": -0.19034482758620688,
+            "std": 0.9262549092749818
           }
         }
       }
@@ -139,29 +139,29 @@
       "fails": [],
       "warns": [],
       "as_of": "2026-11-07",
-      "n": 227,
-      "coverage": 227,
+      "n": 228,
+      "coverage": 228,
       "row": {
         "run_date": "2026-11-07",
         "surface": "news",
         "as_of": "2026-11-07",
-        "n_records": 227,
-        "coverage": 227,
-        "fingerprint": "31157acf78a17ca4",
+        "n_records": 228,
+        "coverage": 228,
+        "fingerprint": "f6c38e377e536613",
         "scores": {
           "n_recent": {
-            "n_sub": 227,
-            "pop": 227,
-            "uniq": 5,
-            "mean": 1.3788546255506609,
-            "std": 1.0397782341552921
+            "n_sub": 228,
+            "pop": 228,
+            "uniq": 6,
+            "mean": 1.4035087719298245,
+            "std": 1.069672012738173
           },
           "sentiment_score": {
-            "n_sub": 227,
-            "pop": 227,
+            "n_sub": 228,
+            "pop": 228,
             "uniq": 3,
-            "mean": 0.20704845814977973,
-            "std": 0.8163222631408412
+            "mean": 0.21052631578947367,
+            "std": 0.8162138115405696
           }
         }
       }
@@ -217,5 +217,5 @@
     "intel_hub"
   ],
   "missing": [],
-  "evaluated_at": "2026-11-07T10:00:14.620617+00:00"
+  "evaluated_at": "2026-11-07T13:48:24.320907+00:00"
 }
