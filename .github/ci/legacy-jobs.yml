@@ -34124,6 +34124,32 @@ jobs:
       - name: pick-conditional forward distributions — PIT/embargo (w1) + HAR standardizer pin (w1.5)
         run: python -m pytest tests/test_pick_forward_dist.py tests/test_pick_forward_dist_phase1.py -q
 
+  market-tide-event-response:
+    # MR2 pure event-response contracts: no cross-project publisher or runtime.
+    # Exact closure; ordinary code/landing-page PRs must not pay for this suite.
+    if: ${{ false }}
+    gate: code
+    timeout-minutes: 6
+    runs-on: ubuntu-latest
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/market_tide_event_response.py"
+      - "scripts/__init__.py"
+      - "scripts/market_tide_event_response.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_market_tide_event_response.py"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install isolated pytest
+        run: pip install pytest
+      - name: Market Tide event-response PIT and zero-authority tests
+        run: python -m pytest tests/test_market_tide_event_response.py -q
+
   admin-analytics-pages:
     # The live page reader must retain every exclusion while avoiding repeated
     # membership work. Real PostgreSQL fixtures use a fresh Unix-only cluster;

@@ -4555,6 +4555,8 @@ CURATED_EXCLUSIVE = {
     "ontology-explorer",
     # DR3: exact closure isolates the observation consumer; no packing ceiling change.
     "rotation-observation-delivery",
+    # MR2 exact PIT job must not select ordinary CI packing probes.
+    "market-tide-event-response",
 
     "catalyst-opportunity",  # Attention/API job owns its measured import/read closure.
     "forex-r26-consumer",  # R26 consumer suites retain their declared import/read closure.
@@ -5335,6 +5337,20 @@ def test_the_curated_exclusive_set_is_actually_declared() -> None:
     """The set this file pins must be the set the manifest declares."""
     declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}
     assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)
+
+
+def test_market_tide_pit_job_has_exact_inputs_without_global_packing_tax() -> None:
+    """MR2 must run on its own source changes, not unrelated broad-code probes."""
+    job = next(j for j in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if j.job_id == "market-tide-event-response")
+    assert job.exclusive
+    for owned in ("engine/market_tide_event_response.py",
+                  "scripts/market_tide_event_response.py",
+                  "tests/test_market_tide_event_response.py"):
+        assert PACK._job_diff_match(job, [owned]), owned
+    for unrelated in ("engine/prophet/plan_book.py",
+                      "scripts/build_free_content.py", "templates/index.html"):
+        assert not PACK._job_diff_match(job, [unrelated]), unrelated
 
 
 def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
