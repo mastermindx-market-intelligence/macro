@@ -83,10 +83,9 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
-# Allow running as a script as well as a module (repo convention).
+# Pin this repository first for file-path entry, even when it was later in sys.path.
 _REPO = Path(__file__).resolve().parent.parent
-if str(_REPO) not in sys.path:
-    sys.path.insert(0, str(_REPO))
+sys.path.insert(0, str(_REPO))
 
 from engine.systematic_research import (
     CANDIDATE_KEYS,
@@ -265,10 +264,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--sessions-per-year", type=int, default=None,
                    help="Declared sampling cadence for annualisation.")
     p.add_argument("--aum-usd", type=float, default=None,
-                   help="Opt in to square-root impact modelling. Omit and no "
-                        "capacity claim is made at all.")
+                   help="Request capacity evaluation. Currently refused because "
+                        "the impact model is not qualified; omission makes no "
+                        "capacity claim.")
     p.add_argument("--impact-eta", type=float, default=0.1,
-                   help="Impact coefficient, used only with --aum-usd.")
+                   help="Impact coefficient retained for compatibility; capacity "
+                        "modelling remains disabled.")
     return p
 
 

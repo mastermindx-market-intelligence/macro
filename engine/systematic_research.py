@@ -666,7 +666,7 @@ def _evaluate_candidate(key: str, usable: dict[str, pd.DataFrame],
             f"Common window holds {len(window)} sessions, below the "
             f"{MIN_COMMON_SESSIONS}-session sufficiency floor."], cost_bps)
 
-    # Warm up each name on its FULL point-in-time history, then slice. Recomputing
+    # Warm up each name on its FULL supplied current-vintage history, then slice. Recomputing
     # on the truncated window would change the indicator values themselves.
     ready: dict[str, pd.Timestamp] = {}
     warmups: dict[str, int] = {}
@@ -755,6 +755,9 @@ def _evaluate_candidate(key: str, usable: dict[str, pd.DataFrame],
     turnover = float(daily_turnover.sum())
 
     cost = pd.DataFrame({t: s["cost"] for t, s in sims.items()}).sum(axis=1)
+    # Every funded subaccount starts at 1.0. Cash fees share the same
+    # equal-initial-capital scale as the mean portfolio NAV above.
+    initial_portfolio_capital = float(len(sims))
 
     limitations.append(
         "Warm-up is ACTUAL leading feature availability, not a count of discarded "
@@ -774,6 +777,11 @@ def _evaluate_candidate(key: str, usable: dict[str, pd.DataFrame],
         "sample. It is neither a per-name mean, a per-session mean, nor an "
         "annualised figure.")
 
+    limitations.append(
+        "total_cost_fraction is cumulative cash fees across all funded "
+        "subaccounts divided by their combined INITIAL capital. It is not "
+        "a compounded terminal-wealth drag or a per-name sum.")
+
     return {
         "state": "available",
         "reason": None,
@@ -789,7 +797,7 @@ def _evaluate_candidate(key: str, usable: dict[str, pd.DataFrame],
         "benchmark_sharpe": _finite(_sharpe(bench, ppy)),
         "benchmark_gross_sharpe": _finite(_sharpe(gross_reference, ppy)),
         "benchmark_convention": "identical_cohort_start_fill_cost_terminal",
-        "total_cost_fraction": _finite(float(cost.sum())),
+        "total_cost_fraction": _finite(float(cost.sum()) / initial_portfolio_capital),
         "return_interval": RETURN_INTERVAL,
         "initial_capital_per_subaccount": 1.0,
         "cost_bps": float(cost_bps),

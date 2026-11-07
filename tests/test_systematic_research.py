@@ -1082,15 +1082,29 @@ def test_return_timestamps_declare_the_documented_interval():
 
 
 def test_evaluation_touches_no_socket_and_writes_no_file_it_was_not_given(tmp_path, monkeypatch):
+    import builtins
+    import io
+    import os
     import socket
     from pathlib import Path
 
+    # Prepare inputs before guarding the actual supplied-input evaluator.
+    frames = _frames()
+
     def _forbidden(*a, **k):
-        raise AssertionError("the research engine opened a network connection")
+        raise AssertionError("the research evaluator attempted file or network I/O")
 
-    monkeypatch.setattr(socket.socket, "connect", _forbidden)
-    monkeypatch.setattr(socket, "create_connection", _forbidden)
+    with monkeypatch.context() as guard:
+        guard.setattr(socket.socket, "connect", _forbidden)
+        guard.setattr(socket, "create_connection", _forbidden)
+        guard.setattr(builtins, "open", _forbidden)
+        guard.setattr(io, "open", _forbidden)
+        guard.setattr(os, "open", _forbidden)
+        report = _report(frames)
 
+    assert all(row["historical"]["state"] == "available"
+               for row in report["strategies"])
+    assert list(tmp_path.iterdir()) == []
     repo_root = Path(__file__).resolve().parents[1]
     for guarded in ("data/qledger", "data/allocation", "data/accounts"):
         assert not (repo_root / guarded / "systematic_research.json").exists()
@@ -1178,3 +1192,26 @@ def test_candidate_position_comes_from_the_installed_signal_callable():
         assert len(pos) == len(df)
         assert warmup > 0, "a 200-period feature cannot be available from bar 0"
         assert float(pos.min()) >= 0.0 and float(pos.max()) <= 1.0
+
+@pytest.mark.parametrize("cost_bps", [0.0, 10.0])
+def test_cost_fraction_is_invariant_to_duplicate_identically_funded_sleeves(cost_bps):
+    frame = _make_frame()
+    single = {"AAA": _price_frame(frame.copy(deep=True), "AAA")}
+    duplicated = {
+        "AAA": _price_frame(frame.copy(deep=True), "AAA"),
+        "BBB": _price_frame(frame.copy(deep=True), "BBB"),
+    }
+    one_report = _report(single, cost_bps=cost_bps)
+    two_report = _report(duplicated, cost_bps=cost_bps)
+    for key in sr.CANDIDATE_KEYS:
+        one = _by_id(one_report, key)["historical"]
+        two = _by_id(two_report, key)["historical"]
+        assert one["state"] == two["state"] == "available"
+        assert one["initial_capital_per_subaccount"] == two["initial_capital_per_subaccount"] == 1.0
+        assert two["total_cost_fraction"] == pytest.approx(one["total_cost_fraction"], abs=1e-6)
+        for metric in ("net_cagr", "net_sharpe", "max_drawdown", "turnover"):
+            assert two[metric] == one[metric], metric
+        if cost_bps:
+            assert one["total_cost_fraction"] > 0
+        else:
+            assert one["total_cost_fraction"] == two["total_cost_fraction"] == 0

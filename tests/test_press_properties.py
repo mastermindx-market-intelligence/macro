@@ -1046,7 +1046,9 @@ def test_update_sh_publishes_both_property_trees_atomically():
                 f'"$APP_DIR/{dst}/"') in script, f"missing/altered rsync for {src}"
 
     # Inside the REPO_UPDATED block, next to the site.served publish it mirrors.
-    site_rsync = script.index('rsync -a --delete --min-size=1 "$APP_DIR/site/"')
+    # That publish excludes the OHLC generations it does not own (#10073).
+    site_rsync = script.index(
+        'rsync -a --delete --min-size=1 --exclude=/ohlc "$APP_DIR/site/" "$APP_DIR/site.served/"')
     news_rsync = script.index('"$APP_DIR/properties/news/"')
     reconcile = script.index("# Do not exit just because Git is current.")
     assert site_rsync < news_rsync < reconcile
@@ -1068,7 +1070,11 @@ def test_the_workflow_rebuilds_the_properties_after_emitting():
     they are rebuilt after the ledger moved — not before it."""
     steps = _emit_steps()
     runs = [str(s.get("run") or "") for s in steps]
-    emit_at = next(i for i, r in enumerate(runs) if "run_press --emit" in r)
+    # The step that moves the ledger: promoting the reviewed bundle since #9650,
+    # which replaced the direct `run_press --emit`.
+    emit_at = next((i for i, r in enumerate(runs)
+                    if "run_press --promote-reviewed-bundle" in r or "run_press --emit" in r), None)
+    assert emit_at is not None, "the emit job has no step that moves the ledger"
     build_at = next(i for i, r in enumerate(runs) if "scripts.build_press_properties" in r)
     check_at = next(i for i, r in enumerate(runs) if "build_free_content --check" in r)
     assert emit_at < build_at < check_at

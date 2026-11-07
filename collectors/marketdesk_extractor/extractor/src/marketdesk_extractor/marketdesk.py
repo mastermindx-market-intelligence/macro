@@ -100,8 +100,11 @@ class SessionExpired(MarketDeskError):
       while the account's own counter said ``used_24h=0``.
 
     The authoritative discriminator is therefore not the page but
-    :meth:`MarketDeskClient.session_alive`. Recovery needs a human: stop the
-    daemon (the profile is single-writer) and re-run ``marketdesk auth``.
+    :meth:`MarketDeskClient.session_alive`. A *live* session that still returns
+    ``{"success": false}`` on browse/provision is usually the authenticated
+    T&Cs overlay (self-healed by ``POST /terms/consent``), not this class.
+    A dead session still needs a human: stop the daemon (the profile is
+    single-writer) and re-run ``marketdesk auth --force``.
     """
 
 
@@ -115,6 +118,10 @@ class MarketDeskClient:
             "Referer": f"{cfg.base_url}/library/browse",
             "X-Requested-With": "XMLHttpRequest",
         }
+        # One consent POST per client lifetime. The overlay is not a logged-out
+        # session: ``latest/latest`` still returns an ID array while browse and
+        # provision return ``{"success": false}`` until ``POST /terms/consent``.
+        self._terms_consent_attempted = False
 
     # --- low level ---------------------------------------------------------
     @retry(
@@ -169,11 +176,11 @@ class MarketDeskClient:
             log.warning("session probe failed: %s", e)
             return False
 
-    def _raise_array_error(
-        self, payload: Any, what: str, expired: SessionExpired,
+    def _fail_array(
+        self, payload: Any, what: str, expired: SessionExpired, *, alive: bool,
     ) -> NoReturn:
-        """Classify a rejected array with one fresh, raw authentication control."""
-        if self.session_alive():
+        """Raise endpoint failure vs session expiry without a second probe."""
+        if alive:
             raise MarketDeskError(
                 f"{what}: expected a JSON array, got {type(payload).__name__} "
                 f"({str(payload)[:60]}) while the session control probe succeeds "
@@ -181,13 +188,72 @@ class MarketDeskClient:
             ) from expired
         raise expired
 
+    def _raise_array_error(
+        self, payload: Any, what: str, expired: SessionExpired,
+    ) -> NoReturn:
+        """Classify a rejected array with one fresh, raw authentication control."""
+        self._fail_array(payload, what, expired, alive=self.session_alive())
+
+    def _try_terms_consent(self) -> bool:
+        """Accept the authenticated T&Cs overlay once. Returns whether to retry.
+
+        The vendor UI posts ``/terms/consent`` then reloads. Doing the same from
+        the existing session is the lawful self-heal for that overlay. A dead
+        session never reaches this method. HTTP 2xx is enough; the UI does not
+        inspect the JSON body. Failures stay fail-closed: we do not pretend the
+        library recovered.
+        """
+        if self._terms_consent_attempted:
+            return False
+        self._terms_consent_attempted = True
+        url = self.cfg.terms_consent_url()
+        try:
+            resp = self.req.post(
+                url, data={}, headers=self._headers, timeout=20_000,
+            )
+            if not resp.ok:
+                log.warning("terms consent POST %s -> HTTP %s", url, resp.status)
+                return False
+            log.info("accepted MarketDesk terms overlay; retrying rejected request")
+            return True
+        except Exception as e:  # noqa: BLE001 - consent is best-effort, then fail loud
+            log.warning("terms consent POST failed: %s", e)
+            return False
+
+    def _recover_array(
+        self,
+        what: str,
+        payload: Any,
+        retry_fetch: Callable[[], Any],
+        expired: SessionExpired,
+        *,
+        as_id_list: bool = True,
+    ) -> list:
+        """If the session is alive, accept updated T&Cs once and retry."""
+        alive = self.session_alive()
+        if alive and self._try_terms_consent():
+            payload = retry_fetch()
+            try:
+                if as_id_list:
+                    return _as_id_list(payload, what)
+                if isinstance(payload, list):
+                    return payload
+                raise SessionExpired(
+                    f"{what}: rejected metadata response after terms consent"
+                )
+            except SessionExpired as exc:
+                self._fail_array(
+                    payload, what, exc, alive=self.session_alive(),
+                )
+        self._fail_array(payload, what, expired, alive=alive)
+
     def _read_id_list(self, what: str, fetch: Callable[[], Any]) -> list[str]:
         """Preserve strict feed validation without guessing why an endpoint failed."""
         payload = fetch()
         try:
             return _as_id_list(payload, what)
         except SessionExpired as exc:
-            self._raise_array_error(payload, what, exc)
+            return self._recover_array(what, payload, fetch, exc)
 
     # --- feeds -------------------------------------------------------------
     def latest(self, institutions: list[str] | None = None) -> list[str]:
@@ -230,14 +296,20 @@ class MarketDeskClient:
         """Batch-hydrate item metadata. Chunked to be polite."""
         out: list[dict] = []
         for chunk in chunked(path_ids, _PROVISION_CHUNK):
-            res = self._post(self.cfg.api("items/provision"), {"pathIds": chunk})
+            fetch = lambda c=chunk: self._post(
+                self.cfg.api("items/provision"), {"pathIds": c},
+            )
+            res = fetch()
             if not isinstance(res, list):
-                self._raise_array_error(
-                    res, "items/provision",
+                res = self._recover_array(
+                    "items/provision",
+                    res,
+                    fetch,
                     SessionExpired(
                         "items/provision: rejected metadata response and no "
                         "authenticated session control"
                     ),
+                    as_id_list=False,
                 )
             out.extend(res)
             jitter_sleep()
