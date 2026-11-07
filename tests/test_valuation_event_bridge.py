@@ -850,3 +850,35 @@ def test_function_calls_have_no_side_effects():
         veb.bridge_for_issuer(42)
         veb.classified_event_domain()
     assert veb.classified_event_domain() == snapshot, "closed map mutated"
+
+
+@pytest.mark.parametrize(("as_of", "expected_id", "proposed"), [
+    ("2026-08-04", "known", True),
+    ("2026-08-06T14:59:59.999999Z", "known", True),
+    ("2026-08-06T11:00:00-04:00", "later", True),
+    ("2026-08-06", "later", True),
+    ("2026-08-03T17:59:59Z", "later", False),
+])
+def test_panel_uses_filing_available_at_build(issuer_spines, monkeypatch,
+                                             as_of, expected_id, proposed):
+    records = [
+        {"id": key, "tickers": ["AAPL"], "ts": ts, "kind": kind,
+         "links": {"source": "https://www.sec.gov/Archives/synthetic/" + key + ".htm"}}
+        for key, ts, kind in [
+            ("known", "2026-08-03T18:00:00Z", "Tender Offers"),
+            ("later", "2026-08-06T17:00:00+02:00", "Restructuring"),
+        ]
+    ]
+    issuer_spines.write_text("".join(json.dumps(row) + "\n" for row in records))
+    monkeypatch.setattr(va, "issuer_guidance_hits", lambda *a, **kw: [])
+    panel = va.controls_blob(vs.compute(_rows(), ticker="AAPL"), as_of=as_of)
+    candidate = panel["event_assumption_proposal"]
+    assert candidate["event"]["event_id"] == expected_id
+    if proposed:
+        assert candidate["status"] == "PROPOSED"
+        assert candidate["event"]["source_refs"][0]["url"].endswith("/" + expected_id + ".htm")
+        assert panel["latest_event_bridge"]["event_class"] == (
+            "Tender Offers" if expected_id == "known" else "Restructuring")
+    else:
+        assert "event_not_yet_observable" in candidate["abstain_reasons"]
+        assert panel["latest_event_bridge"] is None
