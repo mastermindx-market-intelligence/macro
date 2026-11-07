@@ -1,6 +1,6 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-11-07T04:41:21.407571+00:00",
+  "generated_at": "2026-11-07T05:29:11.687211+00:00",
   "n_ledgers": 35,
   "n_closed": 28,
   "n_grader_starved": 7,
@@ -15,8 +15,8 @@
         "scripts/grade_qledger.py"
       ],
       "n_logged": 118477,
-      "n_graded": 219893,
-      "last_graded_at": "2026-11-07T04:36:41.293357+00:00",
+      "n_graded": 219900,
+      "last_graded_at": "2026-11-07T05:24:37.559977+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -28,9 +28,9 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 219893,
-      "n_graded": 219893,
-      "last_graded_at": "2026-11-07T04:36:41.293357+00:00",
+      "n_logged": 219900,
+      "n_graded": 219900,
+      "last_graded_at": "2026-11-07T05:24:37.559977+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
