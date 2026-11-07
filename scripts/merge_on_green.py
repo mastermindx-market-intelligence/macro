@@ -359,11 +359,14 @@ MAX_PULL_CAP = 128
 # Extra commit-file pagination reads shared by every PR and commit in one sweep.
 # Exhaustion keeps the affected inventory incomplete; it never clears a proof.
 COMMIT_FILE_PAGE_READ_CAP = 100
-FULL_SWEEP_FIXED_REQUESTS = 87
+# 87 measured + 5 for the adaptive hosted-pool census (one queued-run read, one
+# mature-run list and up to ADAPTIVE_CENSUS_SAMPLE_RUNS job lists), charged even on
+# the sweeps that skip it so the shrink formula stays pessimistic.
+FULL_SWEEP_FIXED_REQUESTS = 92
 AUTHORITY_RUN_LOOKUP_CAP = 8
 MAX_REQUESTS_PER_PULL = 19 + AUTHORITY_RUN_LOOKUP_CAP
-# A 25-pull reference pass now models 87 fixed + 25 x up-to-27 + 8 refresh
-# attempts = 770 calls. The floor retains the reference 90-percent bound while
+# A 25-pull reference pass now models 92 fixed + 25 x up-to-27 + 8 refresh
+# attempts = 775 calls. The floor retains the reference 90-percent bound while
 # room for other lanes in the ordinary cheaper shape. Larger buckets do
 # not need a proportionally larger dead zone: `pull_cap` shrinks to what the
 # remaining requests can actually afford.
@@ -405,6 +408,57 @@ MAX_IN_FLIGHT_PR_PROOFS = 8
 # breaker and re-created the CI stampede it was meant to stop.
 HIGH_LOAD_LEASE_THRESHOLD = 1
 ACTIVE_PR_PROOF_STATUSES = ("queued", "in_progress", "pending", "requested", "waiting")
+# Adaptive headroom ABOVE the flat cap, never a flat raise.  The flat 8 was sized
+# against a pool pinned at 180/180 on 2026-08-11; the repository now sits on the
+# Enterprise plan's 500-standard-hosted-job ceiling (see ci.yml's ci-pack comment),
+# where 16 proofs x 15 hosted jobs = 240 still fit, yet on an idle pool the flat cap
+# leaves most runners unused while a red backlog drains at 8 proofs per hour.
+#
+# The pressure signal is JOB-level, never run-level.  A ci.yml run is `in_progress`
+# the moment `ci-plan` gets a runner, and its twelve pack jobs are only CREATED
+# minutes later when the dynamic matrix resolves (observed 2026-11-05, run
+# 42044812799: ci-plan 14:25:09, packs created 14:28:45); jobs still blocked on
+# `needs` are not listed at all.  So a run-level `queued` count cannot see a
+# saturated pool (every pack sits queued INSIDE an in-progress run), while any
+# `queued` job in a run's job list is, by construction, a job the pool has refused
+# a runner.  Each sweep that could use headroom therefore samples the jobs of the
+# newest ADAPTIVE_CENSUS_SAMPLE_RUNS in-progress ci.yml runs that are at least
+# ADAPTIVE_CENSUS_MATURITY_SECONDS old (the maturity filter only steers the sample
+# toward runs whose packs exist; it is never itself evidence) and widens only on
+# POSITIVE evidence that the pool is serving this repository's hosted jobs.  A run
+# is SERVED evidence only when a GitHub-hosted LATER-WAVE job (a `ci-pack-*`
+# or `ci-gate` job, by name, created after the run's earliest job; the dynamic
+# matrix resolves only after `ci-plan` completes) is running, and nothing in
+# the run shows refusal.  First-wave jobs (`ci-plan`, `contract-delta`, a
+# re-run `ci-plan`, the pc-route `trusted-ci` gate jobs) never serve, whatever
+# their timestamps say.  REFUSAL evidence is any non-self-hosted job that is neither running
+# nor completed (queued, pending, waiting, requested; unlabelled jobs included)
+# and any job the pool took longer than ADAPTIVE_PICKUP_GRACE_SECONDS to start
+# (`started_at - created_at`, the pickup latency the job payload already carries;
+# the free pool observed 2-82 s).  Jobs whose requested labels include
+# `self-hosted` are ignored (ci.yml has none today; the macstudio render lanes
+# live in other workflows and never appear in these job lists); only labels
+# with a GitHub-hosted prefix count as served evidence, so a runner-group job
+# that reports only its group label (the pc-route `trusted-pack`) can refuse
+# but never serve.  A running or completed job without a usable `started_at`,
+# or a job list shorter than its own `total_count`, makes the census unreadable.  `READ_TOKEN` is repo-scoped, so other repositories' load on the shared
+# account ceiling is visible only through its effect on this repository's own
+# jobs; a pool that fills after our packs were admitted shows up in the next
+# launched run's packs, so the ADMISSION overshoot is bounded by the cap itself
+# (16 proofs, about 13 concurrent hosted jobs each, under the account-wide 500
+# ceiling) and the admission cap collapses to 8 on the first sweep that sees a
+# refused or slow job; proofs already admitted still run to completion.  An
+# unreadable census, or no sampled run with served evidence, is the flat cap,
+# exactly today's behaviour.  The per-sweep cap and the durable lease are
+# unchanged: a sweep still launches at most MAX_REFRESHES_PER_SWEEP.
+ADAPTIVE_PROOF_CAP_MAX = 16
+ADAPTIVE_CENSUS_SAMPLE_RUNS = 3
+ADAPTIVE_CENSUS_MATURITY_SECONDS = 240
+ADAPTIVE_CENSUS_JOB_PAGE = 100
+ADAPTIVE_SERVED_RUNS_FULL_HEADROOM = 2
+ADAPTIVE_PICKUP_GRACE_SECONDS = 120
+ADAPTIVE_HOSTED_LABEL_PREFIXES = ("ubuntu-", "windows-", "macos-")
+ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
 # The rotation advances by the live pull cap every bucket, so every armed pull
 # request enters the window within ceil(N / cap) buckets — ~40 minutes for a
 # 93-PR backlog. Ten minutes matches the recovery cron; the sweeper keeps NO state
@@ -2111,7 +2165,7 @@ class ProofFreshness:
         # X1 manifest scoping. Commit sha -> manifest blob sha ('' when absent),
         # commit sha -> parsed `jobs`, blob sha -> parsed `jobs` (the frozen tip
         # is parsed once per sweep), (PR number, head sha) -> the exact proof's
-        # v1 plan: its selected legacy jobs and the SEALED base its pack runner
+        # Final evidence: its selected legacy jobs and the SEALED base its pack runner
         # read the manifest at (each None when the plan cannot be read).
         self._manifest_blob_shas: dict[str, str] = {}
         self._manifest_jobs: dict[str, dict[str, dict[str, Any]] | None] = {}
@@ -2875,10 +2929,10 @@ class ProofFreshness:
         runs: list[dict[str, Any]],
         semantic_evidence: Any | None = None,
     ) -> tuple[frozenset[str] | None, str | None]:
-        """This head's exact proof as its v1 plan: ``(selected jobs, sealed base)``.
+        """This head's exact final evidence: ``(selected jobs, sealed base)``.
 
         The sealed base is ``base_sha`` of the same evidence that carries the
-        plan: ``ci.yml`` seals the tested merge commit's first parent (main at
+        inventory: ``ci.yml`` seals the tested merge commit's first parent (main at
         run time), and the loader binds it to the parents GitHub confirms.  It is
         the commit whose manifest the pack runner read when it selected those
         jobs.  The check run's ``pull_requests[].base`` is NOT that commit: it is
@@ -2909,25 +2963,27 @@ class ProofFreshness:
                     expected_base_sha=_semantic_pr_base_sha(runs, head_sha, number),
                 )
             evidence = getattr(loaded, "evidence", None)
-            if not isinstance(evidence, dict):
-                evidence = {}
-            # Evidence handed in by the caller is bound to THIS head here too:
-            # the cache key names the head, so must the content.
-            if (
-                str(evidence.get("role") or "") != "pr_head"
-                or str(evidence.get("subject_head_sha") or "").lower() != head_sha
-            ):
-                evidence = {}
-            plan = evidence.get("plan")
-            jobs = plan.get("eligible_jobs") if isinstance(plan, dict) else None
-            sealed = str(evidence.get("base_sha") or "").lower()
-            if isinstance(jobs, list) and all(
-                isinstance(job, str) and job for job in jobs
-            ):
-                answer = (
-                    frozenset(jobs),
-                    sealed if re.fullmatch(r"[0-9a-f]{40}", sealed) else None,
-                )
+            if getattr(loaded, "mode", None) == "semantic" and isinstance(evidence, dict):
+                # Revalidate caller-supplied evidence through its existing owner.
+                # The final artifact has no embedded plan: its complete jobs
+                # inventory includes failed, inherited, blocked and not-run jobs.
+                evidence = semantic_proof.load_semantic_evidence(
+                    evidence,
+                    advertised=True,
+                    expected_subject_head_sha=head_sha,
+                    expected_role="pr_head",
+                    expected_workflow="ci",
+                    expected_event="pull_request",
+                ).evidence
+                assert evidence is not None
+                jobs = evidence["jobs"]
+                # An empty successful plan proves no work. An empty planner
+                # failure does not establish that zero jobs were selected.
+                if jobs or evidence["status"] == "clear":
+                    answer = (
+                        frozenset(job["logical_job_id"] for job in jobs),
+                        str(evidence["base_sha"]).lower(),
+                    )
         except RateLimited:
             raise
         except (semantic_proof.SemanticProofError, RuntimeError, ValueError, OSError):
@@ -2949,12 +3005,12 @@ class ProofFreshness:
         job, returned stale for EVERY armed head: each went through
         update-branch and twelve packs on the single render-heavy runner for
         a definition it never ran. The manifest at the proof's SEALED base
-        (the commit its pack runner read, from the same v1 plan that names the
+        (the commit its pack runner read, from the same final evidence that names the
         selected jobs) and at the frozen tip are compared job by job; the edit
         is current for this head only when every changed job is one its proof
         did not run AND cannot newly select it (exclusive scope on both sides
         with its selection keys untouched, incumbent order kept). Every
-        unknown — unreadable manifest, no v1 plan or sealed base, a sealed base
+        unknown — unreadable manifest, no final inventory or sealed base, a sealed base
         the window cannot place, a head that edits the manifest itself, an
         added job — stays stale. ``base_sha`` is the window's reported base;
         the sealed base must sit at or after it and never outside a window
@@ -3364,6 +3420,184 @@ def in_flight_pr_proofs(repo: str, token: str) -> int | None:
     return total
 
 
+@dataclass(frozen=True)
+class HostedPoolCensus:
+    """Job-level evidence of hosted-pool service for this repository's ci.yml."""
+
+    #: ci.yml runs whose first job (`ci-plan`, hosted) has no runner yet.
+    queued_runs: int
+    #: Mature in-progress ci.yml runs whose job lists were read.
+    sampled_runs: int
+    #: Non-self-hosted jobs in those runs neither running nor completed.
+    refused_jobs: int
+    #: Sampled runs with a later-wave GitHub-hosted job running and no refusal.
+    served_runs: int
+    #: Non-self-hosted jobs the pool took longer than the pickup grace to start.
+    slow_jobs: int = 0
+
+
+def _clean_count(payload: Any, key: str) -> int | None:
+    count = payload.get(key) if isinstance(payload, dict) else None
+    if not isinstance(count, int) or isinstance(count, bool) or count < 0:
+        return None
+    return count
+
+
+def _job_labels(job: dict[str, Any]) -> list[str] | None:
+    labels = job.get("labels")
+    if not isinstance(labels, list) or not all(isinstance(l, str) for l in labels):
+        return None
+    return labels
+
+
+def _github_hosted_label(labels: list[str]) -> bool:
+    """A label GitHub itself serves (`ubuntu-latest`, `ubuntu-24.04`, ...)."""
+    return any(label.startswith(ADAPTIVE_HOSTED_LABEL_PREFIXES) for label in labels)
+
+
+def _run_job_evidence(jobs: list[Any]) -> tuple[int, int, bool] | None:
+    """``(refused, slow, served)`` for one run's job list; ``None`` if unclean.
+
+    Self-hosted jobs are ignored.  Every other job is refusal evidence when it is
+    neither running nor completed, or when the pool took longer than the pickup
+    grace to start it.  Served evidence needs a GitHub-hosted LATER-WAVE job (a
+    `ci-pack-*`/`ci-gate` job by name, created after the run's earliest job) to
+    be running: the first wave (`ci-plan`, `contract-delta` on pull requests, a
+    re-run `ci-plan`, the pc-route trusted-ci gate) is admitted before the pack
+    matrix exists, so it says nothing about whether the pool will serve the
+    packs, whatever its timestamps say.  A running or completed job without a
+    usable `started_at` is unclean (``None``), like a job without `created_at`.
+    """
+    parsed: list[tuple[dt.datetime, dt.datetime | None, str, bool, bool]] = []
+    for job in jobs:
+        if not isinstance(job, dict):
+            return None
+        labels = _job_labels(job)
+        if labels is None:
+            return None
+        if "self-hosted" in labels:
+            continue
+        created = _parse_dt(job.get("created_at"))
+        if created is None:
+            return None
+        status = job.get("status")
+        name = job.get("name")
+        if not isinstance(status, str) or not isinstance(name, str):
+            return None
+        started = _parse_dt(job.get("started_at"))
+        if started is None and status in ("in_progress", "completed"):
+            return None
+        later_wave = name.startswith(ADAPTIVE_LATER_WAVE_JOB_PREFIXES)
+        parsed.append((created, started, status, _github_hosted_label(labels), later_wave))
+    if not parsed:
+        return 0, 0, False
+    first_wave = min(created for created, _s, _st, _h, _l in parsed)
+    grace = dt.timedelta(seconds=ADAPTIVE_PICKUP_GRACE_SECONDS)
+    refused = slow = 0
+    served = False
+    for created, started, status, hosted, later_wave in parsed:
+        if status not in ("in_progress", "completed"):
+            refused += 1
+            continue
+        if started - created > grace:
+            slow += 1
+        if status == "in_progress" and hosted and later_wave and created > first_wave:
+            served = True
+    return refused, slow, served and refused == 0 and slow == 0
+
+
+def hosted_pool_census(
+    repo: str, token: str, *, now: dt.datetime | None = None
+) -> HostedPoolCensus | None:
+    """Sample this repository's mature in-progress ci.yml runs at the JOB level.
+
+    One ``per_page=1`` read of queued ci.yml runs, one list of the newest
+    in-progress ci.yml runs created at least ``ADAPTIVE_CENSUS_MATURITY_SECONDS``
+    ago (so their dynamic pack matrix is likely to exist), and one job list per
+    sampled run.  ``None`` on any read that is not clean, including a job list
+    longer than one page or a job without a usable timestamp, so the caller
+    falls back to the flat cap rather than reading an API blip as a free pool.
+    """
+    base = f"{GITHUB_API}/repos/{repo}/actions"
+    query = urllib.parse.urlencode({"status": "queued", "per_page": "1"})
+    status, payload = _request("GET", f"{base}/workflows/ci.yml/runs?{query}", token)
+    queued_runs = _clean_count(payload, "total_count") if status < 400 else None
+    if queued_runs is None:
+        return None
+    cutoff = (now or dt.datetime.now(dt.timezone.utc)) - dt.timedelta(
+        seconds=ADAPTIVE_CENSUS_MATURITY_SECONDS
+    )
+    query = urllib.parse.urlencode(
+        {
+            "status": "in_progress",
+            "per_page": str(ADAPTIVE_CENSUS_SAMPLE_RUNS),
+            "created": "<" + cutoff.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+    )
+    status, payload = _request("GET", f"{base}/workflows/ci.yml/runs?{query}", token)
+    runs = payload.get("workflow_runs") if isinstance(payload, dict) else None
+    if status >= 400 or not isinstance(runs, list):
+        return None
+    sampled = refused = served = slow = 0
+    for run in runs[:ADAPTIVE_CENSUS_SAMPLE_RUNS]:
+        run_id = run.get("id") if isinstance(run, dict) else None
+        if not isinstance(run_id, int) or isinstance(run_id, bool):
+            return None
+        query = urllib.parse.urlencode(
+            {"filter": "latest", "per_page": str(ADAPTIVE_CENSUS_JOB_PAGE)}
+        )
+        status, payload = _request("GET", f"{base}/runs/{run_id}/jobs?{query}", token)
+        jobs = payload.get("jobs") if isinstance(payload, dict) else None
+        total = _clean_count(payload, "total_count")
+        if (
+            status >= 400
+            or not isinstance(jobs, list)
+            or total is None
+            or total > ADAPTIVE_CENSUS_JOB_PAGE
+            or total != len(jobs)
+        ):
+            return None
+        evidence = _run_job_evidence(jobs)
+        if evidence is None:
+            return None
+        run_refused, run_slow, run_served = evidence
+        sampled += 1
+        refused += run_refused
+        slow += run_slow
+        if run_served:
+            served += 1
+    return HostedPoolCensus(queued_runs, sampled, refused, served, slow)
+
+
+def adaptive_proof_cap(census: HostedPoolCensus | None) -> tuple[int, str]:
+    """``clamp(8 + headroom, 8, 16)`` from job-level evidence; flat cap otherwise."""
+    if census is None:
+        return MAX_IN_FLIGHT_PR_PROOFS, "census unavailable: flat cap"
+    full = ADAPTIVE_PROOF_CAP_MAX - MAX_IN_FLIGHT_PR_PROOFS
+    if census.queued_runs > 0 or census.refused_jobs > 0 or census.slow_jobs > 0:
+        headroom = 0
+        why = (
+            f"hosted pool refused {census.queued_runs} queued run(s), "
+            f"{census.refused_jobs} waiting hosted job(s), "
+            f"{census.slow_jobs} slow pickup(s) in "
+            f"{census.sampled_runs} mature run(s)"
+        )
+    elif census.served_runs >= ADAPTIVE_SERVED_RUNS_FULL_HEADROOM:
+        headroom = full
+        why = f"{census.served_runs} of {census.sampled_runs} mature run(s) served"
+    elif census.served_runs > 0:
+        headroom = full // 2
+        why = f"{census.served_runs} of {census.sampled_runs} mature run(s) served"
+    else:
+        headroom = 0
+        why = f"no mature run witnessed the hosted pool ({census.sampled_runs} sampled)"
+    cap = max(
+        MAX_IN_FLIGHT_PR_PROOFS,
+        min(ADAPTIVE_PROOF_CAP_MAX, MAX_IN_FLIGHT_PR_PROOFS + headroom),
+    )
+    return cap, f"+{headroom} adaptive: {why}"
+
+
 def refresh_lease_reservation_count(
     repo: str,
     token: str,
@@ -3668,6 +3902,7 @@ class RefreshLease:
         self.readable = readable
         self.claim_attempted = False
         self.released_numbers: set[int] = set()
+        self.claim_attempted_number: int | None = None
         self._label_ready: bool | None = None
 
     @property
@@ -3719,6 +3954,27 @@ class RefreshLease:
             return True
         return current - stamp >= REFRESH_LEASE_MAX_SECONDS
 
+    def _decline(self, number: Any, reason: str) -> bool:
+        """Refuse a claim out loud.
+
+        Every refusal before the issue-label POST used to be a bare ``return
+        False`` (most are pre-write; the read-back case follows a register write
+        whose outcome is then unknown); the only trace
+        the sweep left was `refresh_deferred`'s "0/1 effective CI workload slot(s)
+        in use", which reads as a capacity wait when the real cause was a refused
+        generation-register read, a sweep-wide claim latch, or a released
+        generation (observed live with a tier-0 `main-red-repair` pull request
+        deferred sweep after sweep while the queue showed a free slot). The
+        annotation names the cause; the fail-closed verdict is unchanged.
+        """
+        _annotate(
+            "notice",
+            "merge-on-green refresh lease",
+            f"PR #{number}: refresh lease not claimed — {reason}; no update-branch "
+            "write attempted.",
+        )
+        return False
+
     def _write_generation_record(self, number: Any, head_sha: str) -> bool:
         """Create/update and affirm the exact generation before claiming.
 
@@ -3756,7 +4012,11 @@ class RefreshLease:
                     },
                 )
             else:
-                return False
+                return self._decline(
+                    number,
+                    f"the generation register read answered HTTP {status}"
+                    + ("" if isinstance(current, dict) or status != 200 else " without a label object"),
+                )
             # Every mutating response is potentially ambiguous, and 422 is also
             # validation/throttling. Only an exact read-back authorises the issue
             # label or the CI-producing update.
@@ -3768,11 +4028,19 @@ class RefreshLease:
                 or not isinstance(verified, dict)
                 or str(verified.get("description") or "") != description
             ):
-                return False
+                return self._decline(
+                    number,
+                    "a generation register write was attempted but the read-back did "
+                    f"not affirm the intended record (write HTTP {write_status}, "
+                    f"read-back HTTP {verify_status}); the register's outcome is "
+                    "unknown",
+                )
             self._label_ready = True
             parsed = parse_refresh_lease_record(description)
             if parsed is None:
-                return False
+                return self._decline(
+                    number, "the affirmed generation record did not parse"
+                )
             (
                 _owner,
                 self.generation_head_sha,
@@ -3809,24 +4077,60 @@ class RefreshLease:
         """Claim before ``update-branch``; ambiguity fails closed."""
         number = pull.get("number")
         head_sha = str(((pull.get("head") or {}).get("sha")) or "").lower()
-        if not self.readable or not number or len(head_sha) != 40:
-            return False
+        if not self.readable:
+            return self._decline(
+                number, "the lease census or generation register is unreadable this sweep"
+            )
+        if not number:
+            return self._decline(number, "the live pull request carries no number")
+        if len(head_sha) != 40:
+            return self._decline(
+                number, "the live pull request carries no 40-character head sha"
+            )
         if str(number).isdigit() and int(number) in self.released_numbers:
-            return False
+            return self._decline(
+                number, "its generation was released earlier in this same sweep"
+            )
         if self.owns(pull):
             # A generation may authorize exactly one update of its recorded head.
             # Once update-branch moved the live head, later sweeps only reconcile
             # that workload; they must never use the same label for a second update.
-            return bool(
-                self.generation_head_sha
-                and head_sha == self.generation_head_sha
-                and self.record_is_current()
+            if not self.generation_head_sha:
+                return self._decline(
+                    number, "it holds the lease but no generation head is recorded"
+                )
+            if head_sha != self.generation_head_sha:
+                return self._decline(
+                    number,
+                    "its recorded generation already authorised one update "
+                    f"(recorded head {self.generation_head_sha[:12]}, live head "
+                    f"{head_sha[:12]})",
+                )
+            if self.record_is_current():
+                return True
+            return self._decline(
+                number,
+                "the generation register no longer affirms its generation "
+                "(read refused or record changed)",
             )
-        if self.owner_number is not None or self.claim_attempted:
-            return False
+        if self.owner_number is not None:
+            return self._decline(
+                number, f"PR #{self.owner_number} holds the one durable lease"
+            )
+        if self.claim_attempted:
+            return self._decline(
+                number,
+                "this sweep already spent its single lease claim"
+                + (
+                    f" on PR #{self.claim_attempted_number}"
+                    if self.claim_attempted_number is not None
+                    else ""
+                ),
+            )
         # Set before any network write. A timeout may mean the server accepted it,
         # so this process must never try a different pull request afterward.
         self.claim_attempted = True
+        self.claim_attempted_number = int(number) if str(number).isdigit() else None
         if not self._write_generation_record(number, head_sha):
             return False
         try:
@@ -6678,11 +6982,19 @@ def live_authorized_pull(
         )
         return None, "authorization-unreadable"
     if status >= 400 or not isinstance(live, dict):
-        _annotate(
-            "warning",
-            "merge-on-green authorization",
-            f"PR #{number}: live authorization read returned HTTP {status}.",
+        # Reuse the existing body/header classifier without changing this guard's
+        # fail-closed disposition or its callers' retry policy. A bare HTTP 403
+        # hides the distinction between exhausted quota and an authorization fault.
+        failure = _read_failed(
+            status, live, f"PR #{number}: live authorization read failed"
         )
+        detail = str(failure)
+        if token:
+            detail = detail.replace(token, "[redacted]")
+        # Provider text is untrusted annotation data, never another log command.
+        detail = re.sub(r"[\x00-\x1f\x7f-\x9f]", " ", detail)
+        detail = " ".join(detail.split()).replace("%", "%25")[:600]
+        _annotate("warning", "merge-on-green authorization", detail)
         return None, "authorization-unreadable"
     if live.get("merged") is True:
         return None, "already-merged"
@@ -8524,12 +8836,33 @@ def main() -> int:
         if active_pr_proofs is not None
         else None
     )
+    # The adaptive cap is read only where headroom could admit a refresh: a readable
+    # census and lease, refresh authority, fewer proofs in flight than the widest
+    # cap, and a flat-cap allowance smaller than what this sweep could launch (with
+    # no proof in flight the flat cap already affords a full MAX_REFRESHES_PER_SWEEP).
+    # It degrades to the flat cap on ANY census problem, including a RateLimited
+    # read: it must never route the sweep into the deferred path.
+    proof_cap, adaptive_detail = MAX_IN_FLIGHT_PR_PROOFS, "census skipped: flat cap"
+    effective_proofs = int(effective_active_proofs or 0)
+    if (
+        active_pr_proofs is not None
+        and refresh_lease.readable
+        and budget.refresh_authorized
+        and effective_proofs < ADAPTIVE_PROOF_CAP_MAX
+        and MAX_IN_FLIGHT_PR_PROOFS - effective_proofs < budget.max_refreshes
+    ):
+        try:
+            pool_census = hosted_pool_census(repo, read_token)
+        except Exception as exc:
+            adaptive_detail = f"census failed ({exc}): flat cap"
+        else:
+            proof_cap, adaptive_detail = adaptive_proof_cap(pool_census)
     if active_pr_proofs is None or not refresh_lease.readable:
         budget.max_refreshes = 0
         refresh_load_detail = refresh_load_detail or "census/lease unreadable; new refreshes paused"
     else:
         available_refreshes = max(
-            0, MAX_IN_FLIGHT_PR_PROOFS - int(effective_active_proofs or 0)
+            0, proof_cap - int(effective_active_proofs or 0)
         )
         budget.max_refreshes = min(budget.max_refreshes, available_refreshes)
         budget.requires_refresh_lease = (
@@ -8539,7 +8872,7 @@ def main() -> int:
             f"{active_pr_proofs} indexed pull-request ci run(s) plus "
             f"{reservation_count} unindexed durable "
             f"reservation(s), global cap "
-            f"{MAX_IN_FLIGHT_PR_PROOFS}, {budget.max_refreshes} CI workload slot(s) "
+            f"{proof_cap} ({adaptive_detail}), {budget.max_refreshes} CI workload slot(s) "
             "available this sweep"
             + (" (durable lease required)" if budget.requires_refresh_lease else "")
         )

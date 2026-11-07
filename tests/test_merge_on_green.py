@@ -27,6 +27,7 @@ import scripts.merge_on_green as MOG
 
 ROOT = Path(__file__).resolve().parents[1]
 REAL_IN_FLIGHT_PR_PROOFS = MOG.in_flight_pr_proofs
+REAL_HOSTED_POOL_CENSUS = MOG.hosted_pool_census
 REAL_REFRESH_LEASE_RESERVATION_COUNT = MOG.refresh_lease_reservation_count
 REAL_PREPARE_REFRESH_LEASE = MOG.prepare_refresh_lease
 REAL_SERIALIZED_REFRESH_AUTHORITY = MOG.serialized_refresh_authority
@@ -74,6 +75,10 @@ def _no_unstubbed_http(monkeypatch):
     # The repo-wide Actions census is another main()-only read. Healthy/idle is the
     # neutral default; tests about global refresh backpressure override it.
     monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 0)
+    # The adaptive-cap census is another main()-only read. Its neutral default is
+    # "unreadable" (the flat cap of 8), so every test written against the flat cap
+    # keeps its numbers; tests about the adaptive cap override it.
+    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: None)
     monkeypatch.setattr(MOG, "refresh_lease_reservation_count", lambda *_a: 0)
     monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a: True)
     monkeypatch.setattr(
@@ -4298,63 +4303,158 @@ def test_the_manifest_parser_accepts_only_a_jobs_mapping():
     assert MOG._manifest_jobs_from_bytes(b"\xff\xfe") is None
 
 
-def test_the_proofs_selected_jobs_come_from_its_v1_plan(monkeypatch):
-    class Loaded:
-        def __init__(self, evidence):
-            self.evidence = evidence
+def _freshness_semantic_evidence(job_ids=("job-a", "job-b"), *, head=EXACT_HEAD_SHA, role="pr_head"):
+    """Build final evidence through the real plan, reconciler and public loader."""
+    import copy
+    from tests import test_ci_semantic_proof as fixtures
 
+    proof = MOG.semantic_proof
+    plan = fixtures._plan(role=role)
+    plan["subject_head_sha"] = head
+    plan["base_sha"] = "c" * 40 if role == "pr_head" else head
+    plan["changed_from"] = plan["base_sha"] if role == "pr_head" else None
+    if role == "main":
+        plan["tested_tree_sha"] = head
+    template = plan["semantic_jobs"][0]
+    plan["semantic_jobs"] = [
+        dict(copy.deepcopy(template), logical_job_id=job_id) for job_id in job_ids
+    ]
+    plan["eligible_jobs"] = list(job_ids)
+    plan["eligible_job_count"] = plan["legacy_job_count"] = len(job_ids)
+    plan["packs"][5]["jobs"] = list(job_ids)
+    plan["packs"][5]["weight"] = len(job_ids)
+    plan["nonempty_pack_indices"] = [5] if job_ids else []
+    plan["matrix"] = {"include": [{"pack": 5}]} if job_ids else {"include": []}
+    plan["has_work"] = bool(job_ids)
+    plan["plan_sha256"] = proof.authoritative_plan_sha256(plan)
+    fragments = []
+    if job_ids:
+        fragment = fixtures._fragment(plan=plan)
+        row = fragment["jobs"][0]
+        fragment["jobs"] = [
+            dict(copy.deepcopy(row), logical_job_id=job_id) for job_id in job_ids
+        ]
+        fragments.append(fragment)
+    evidence = proof.reconcile_evidence(plan, fragments)
+    return proof.load_semantic_evidence(
+        evidence, advertised=True, expected_subject_head_sha=head,
+        expected_base_sha=plan["base_sha"], expected_role=role,
+        expected_workflow="ci", expected_event=plan["event"],
+    )
+
+
+def _reseal_freshness_evidence(evidence):
+    payload = dict(evidence)
+    payload.pop("evidence_sha256", None)
+    evidence["evidence_sha256"] = MOG.semantic_proof.canonical_sha256(payload)
+
+
+def test_the_proofs_selected_jobs_come_from_real_final_evidence(monkeypatch):
     freshness = _manifest_window()
     monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("every read is seeded"))
-    sealed = "c" * 40
-
-    def _evidence(**fields):
-        return {"role": "pr_head", "subject_head_sha": EXACT_HEAD_SHA, **fields}
-
-    loaded = MOG.semantic_proof.LoadedSemanticEvidence(
-        mode="v1", evidence=_evidence(plan={"eligible_jobs": ["a", "b"]}, base_sha=sealed.upper())
-    )
-    assert freshness.proof_plan_of(_pull(), [], loaded) == (frozenset({"a", "b"}), sealed)
-    # Evidence for another head, or main-role evidence, never answers for this head.
-    assert freshness.proof_plan_of(
-        _pull(number=13),
-        [],
-        Loaded(_evidence(subject_head_sha="b" * 40, plan={"eligible_jobs": ["a"]}, base_sha=sealed)),
-    ) == (None, None)
-    assert freshness.proof_plan_of(
-        _pull(number=14),
-        [],
-        Loaded(_evidence(role="main", plan={"eligible_jobs": ["a"]}, base_sha=sealed)),
-    ) == (None, None)
-    # Cached per (number, head): a later call never re-reads, and another head of
-    # the same number is its own read.
-    assert freshness.proof_plan_of(_pull(), [], Loaded(None)) == (frozenset({"a", "b"}), sealed)
+    loaded = _freshness_semantic_evidence()
+    assert loaded.mode == "semantic"
+    assert "plan" not in loaded.evidence
+    expected = (frozenset({"job-a", "job-b"}), "c" * 40)
+    assert freshness.proof_plan_of(_pull(), [], loaded) == expected
+    # The cache belongs to a PR number AND exact head, including failed reads.
+    absent = MOG.semantic_proof.LoadedSemanticEvidence("legacy_absent", None)
+    assert freshness.proof_plan_of(_pull(), [], absent) == expected
     other_head = dict(_pull(), head=dict(_pull()["head"], sha="b" * 40))
-    assert freshness.proof_plan_of(other_head, [], Loaded(None)) == (None, None)
-    assert freshness.proof_plan_of(_pull(number=7), [], Loaded(None)) == (None, None)
-    assert freshness.proof_plan_of(
-        _pull(number=8), [], Loaded(_evidence(plan={"eligible_jobs": ["a", 3]}, base_sha=sealed))
-    ) == (None, None)
-    # A plan without a well-formed sealed base keeps its jobs but no base.
-    assert freshness.proof_plan_of(
-        _pull(number=11), [], Loaded(_evidence(plan={"eligible_jobs": ["a"]}, base_sha="short"))
-    ) == (frozenset({"a"}), None)
-    # Without evidence in hand the head's own v1 artifact is the source.
-    monkeypatch.setattr(
-        MOG,
-        "semantic_evidence_for_head",
-        lambda *_a, **_k: Loaded(_evidence(plan={"eligible_jobs": ["z"]}, base_sha=sealed)),
-    )
-    assert freshness.proof_plan_of(_pull(number=9), []) == (frozenset({"z"}), sealed)
+    assert freshness.proof_plan_of(other_head, [], absent) == (None, None)
+    assert freshness.proof_plan_of(_pull(number=7), [], absent) == (None, None)
+    assert freshness.proof_plan_of(_pull(number=7), [], loaded) == (None, None)
+    # When absent from the caller, use the existing provenance-bound fetch.
+    monkeypatch.setattr(MOG, "semantic_evidence_for_head", lambda *_a, **_k: loaded)
+    assert freshness.proof_plan_of(_pull(number=9), []) == expected
 
+
+@pytest.mark.parametrize("outcome,classification,status", [
+    ("failed", "unknown", "failure"),
+    ("failed", "inherited_base", "clear"),
+    ("not_run_prior_failure", "unknown", "failure"),
+    ("infrastructure_blocked", "unknown", "failure"),
+])
+def test_freshness_inventory_keeps_selected_jobs_regardless_of_outcome(outcome, classification, status):
+    loaded = _freshness_semantic_evidence()
+    evidence = loaded.evidence
+    step = evidence["jobs"][1]["steps"][0]
+    step.update(outcome=outcome, classification=classification)
+    evidence["status"] = status
+    _reseal_freshness_evidence(evidence)
+    # Prove this is legitimate final evidence, not an unchecked fixture.
+    loaded = MOG.semantic_proof.load_semantic_evidence(evidence, advertised=True)
+    assert _manifest_window().proof_plan_of(_pull(), [], loaded) == (
+        frozenset({"job-a", "job-b"}), "c" * 40,
+    )
+
+
+@pytest.mark.parametrize("corruption", [
+    "wrong_head", "wrong_role", "workflow", "event", "mode", "legacy_absent",
+    "missing_job_id", "invalid_job_id", "duplicate_job", "invalid_job_row",
+    "invalid_step", "digest", "base", "embedded_plan",
+])
+def test_freshness_inventory_refuses_invalid_or_foreign_final_evidence(corruption):
+    proof = MOG.semantic_proof
+    loaded = _freshness_semantic_evidence()
+    evidence = loaded.evidence
+    if corruption == "wrong_head":
+        loaded = _freshness_semantic_evidence(head="b" * 40)
+    elif corruption == "wrong_role":
+        loaded = _freshness_semantic_evidence(role="main")
+    elif corruption == "mode":
+        loaded = proof.LoadedSemanticEvidence("v1", evidence)
+    elif corruption == "legacy_absent":
+        loaded = proof.LoadedSemanticEvidence("legacy_absent", None)
+    else:
+        if corruption == "workflow":
+            evidence["workflow"] = "other"
+        elif corruption == "event":
+            evidence["event"] = "workflow_dispatch"
+        elif corruption == "missing_job_id":
+            del evidence["jobs"][0]["logical_job_id"]
+        elif corruption == "invalid_job_id":
+            evidence["jobs"][0]["logical_job_id"] = 3
+        elif corruption == "duplicate_job":
+            evidence["jobs"][1]["logical_job_id"] = evidence["jobs"][0]["logical_job_id"]
+        elif corruption == "invalid_job_row":
+            evidence["jobs"][0]["extra"] = True
+        elif corruption == "invalid_step":
+            evidence["jobs"][0]["steps"][0]["step_spec_sha256"] = "short"
+        elif corruption == "base":
+            evidence["base_sha"] = "short"
+        elif corruption == "embedded_plan":
+            evidence["plan"] = {"eligible_jobs": ["job-a"]}
+        if corruption == "digest":
+            evidence["evidence_sha256"] = "0" * 64
+        else:
+            _reseal_freshness_evidence(evidence)
+    assert _manifest_window().proof_plan_of(_pull(), [], loaded) == (None, None)
+
+
+def test_freshness_inventory_distinguishes_no_work_from_planner_failure():
+    loaded = _freshness_semantic_evidence(())
+    assert loaded.evidence["jobs"] == [] and loaded.evidence["status"] == "clear"
+    assert _manifest_window().proof_plan_of(_pull(), [], loaded) == (frozenset(), "c" * 40)
+    evidence = loaded.evidence
+    evidence["status"] = "failure"
+    evidence["infrastructure"] = [
+        {"outcome": "planner_configuration_failure", "detail": "plan unavailable"},
+    ]
+    _reseal_freshness_evidence(evidence)
+    loaded = MOG.semantic_proof.load_semantic_evidence(evidence, advertised=True)
+    assert _manifest_window().proof_plan_of(_pull(), [], loaded) == (None, None)
+
+
+def test_freshness_inventory_preserves_refusal_and_rate_limit_deferral(monkeypatch):
+    freshness = _manifest_window()
     def _refuse(*_a, **_k):
         raise MOG.semantic_proof.SemanticProofError("no artifact")
-
     monkeypatch.setattr(MOG, "semantic_evidence_for_head", _refuse)
     assert freshness.proof_plan_of(_pull(number=10), []) == (None, None)
 
     def _quota(*_a, **_k):
         raise MOG.RateLimited("secondary rate limit")
-
     monkeypatch.setattr(MOG, "semantic_evidence_for_head", _quota)
     with pytest.raises(MOG.RateLimited):
         freshness.proof_plan_of(_pull(number=12), [])
@@ -5683,6 +5783,376 @@ def test_existing_owner_only_consumes_extra_capacity_until_its_run_is_indexed(
     assert observed == [(expected_allowance, requires_lease)]
 
 
+def _census(queued_runs=0, sampled_runs=3, refused_jobs=0, served_runs=3, slow_jobs=0):
+    return MOG.HostedPoolCensus(
+        queued_runs, sampled_runs, refused_jobs, served_runs, slow_jobs
+    )
+
+
+@pytest.mark.parametrize(
+    "census,expected_cap,needle",
+    [
+        (None, 8, "census unavailable"),
+        (_census(queued_runs=1), 8, "+0 adaptive: hosted pool refused 1 queued run(s)"),
+        (
+            _census(refused_jobs=2, served_runs=2),
+            8,
+            "+0 adaptive: hosted pool refused 0 queued run(s), 2 waiting hosted job(s)",
+        ),
+        (_census(slow_jobs=1, served_runs=2), 8, "1 slow pickup(s)"),
+        (_census(served_runs=3), 16, "+8 adaptive: 3 of 3 mature run(s) served"),
+        (_census(served_runs=2), 16, "+8 adaptive: 2 of 3 mature run(s) served"),
+        (
+            _census(sampled_runs=1, served_runs=1),
+            12,
+            "+4 adaptive: 1 of 1 mature run(s) served",
+        ),
+        (
+            _census(sampled_runs=0, served_runs=0),
+            8,
+            "+0 adaptive: no mature run witnessed the hosted pool (0 sampled)",
+        ),
+        (_census(sampled_runs=2, served_runs=0), 8, "+0 adaptive: no mature run"),
+    ],
+)
+def test_adaptive_proof_cap_widens_only_on_job_level_service_evidence(
+    census, expected_cap, needle
+):
+    cap, detail = MOG.adaptive_proof_cap(census)
+    assert cap == expected_cap
+    assert needle in detail
+    assert MOG.MAX_IN_FLIGHT_PR_PROOFS <= cap <= MOG.ADAPTIVE_PROOF_CAP_MAX == 16
+
+
+_T0 = dt.datetime(2026, 11, 5, 14, 25, 9, tzinfo=dt.timezone.utc)
+
+
+def _at(seconds):
+    return (_T0 + dt.timedelta(seconds=seconds)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _census_job(name, status, created=0, started=2, labels=("ubuntu-latest",)):
+    job = {"name": name, "status": status, "labels": list(labels), "created_at": _at(created)}
+    if started is not None:
+        job["started_at"] = _at(created + started)
+    return job
+
+
+def _census_jobs(*jobs):
+    return 200, {"total_count": len(jobs), "jobs": list(jobs)}
+
+
+def _first_wave(*extra):
+    return (
+        _census_job("ci-plan", "completed"),
+        _census_job("contract-delta", "in_progress"),
+        _census_job("trusted-ci", "completed", created=216, started=0, labels=()),
+        *extra,
+    )
+
+
+def _packs(status="in_progress", started=2, count=12, offset=0):
+    return [
+        _census_job(f"ci-pack-{i + offset}", status, created=216, started=started)
+        for i in range(count)
+    ]
+
+
+@pytest.mark.parametrize(
+    "jobs,expected",
+    [
+        # Live shape of run 42044812799: packs created 216 s after ci-plan, all served.
+        (_first_wave(*_packs()), (0, 0, True)),
+        # Round-2 MAJOR: only the first wave is running, the packs do not exist yet.
+        (_first_wave(), (0, 0, False)),
+        # Packs finished, ci-gate not yet created, only contract-delta running.
+        (_first_wave(*_packs(status="completed")), (0, 0, False)),
+        # Two packs the pool has not started: refused, never served.
+        (_first_wave(*_packs(count=10), *_packs(status="queued", started=None, count=2, offset=10)), (2, 0, False)),
+        # pending / waiting / requested hosted jobs are refusal evidence too.
+        (_first_wave(*_packs(count=11), _census_job("ci-pack-11", "pending", created=216, started=None)), (1, 0, False)),
+        (_first_wave(*_packs(count=11), _census_job("ci-pack-11", "waiting", created=216, started=None)), (1, 0, False)),
+        # A queued job with no labels at all is refusal evidence, not ignored.
+        (_first_wave(*_packs(count=11), _census_job("ci-pack-11", "queued", created=216, started=None, labels=())), (1, 0, False)),
+        # The pool took 200 s to start one pack: slow pickup, never served.
+        (_first_wave(*_packs(count=11), _census_job("ci-pack-11", "in_progress", created=216, started=200)), (0, 1, False)),
+        # Slow ci-plan pickup in the first wave is pressure evidence as well.
+        ((_census_job("ci-plan", "completed", started=150), *_packs()), (0, 1, False)),
+        # A runner-group label that GitHub does not itself serve can never serve.
+        (_first_wave(*[_census_job(f"ci-pack-{i}", "in_progress", created=216, labels=("ci-linux",)) for i in range(12)]), (0, 0, False)),
+        # Self-hosted render jobs say nothing about the hosted pool.
+        (_first_wave(_census_job("render", "queued", created=216, started=None, labels=("self-hosted", "macstudio"))), (0, 0, False)),
+        # MINOR-1 (round 3): the first wave is a set of JOBS, not a timestamp.
+        # `contract-delta` created one second after `ci-plan` (a second boundary)
+        # with no packs yet is still the first wave.
+        ((_census_job("ci-plan", "in_progress"), _census_job("contract-delta", "in_progress", created=1)), (0, 0, False)),
+        # A re-run of a failed `ci-plan` carries the old `contract-delta` and a
+        # new, much later `ci-plan`; still no pack exists.
+        ((_census_job("contract-delta", "completed"), _census_job("ci-plan", "in_progress", created=900)), (0, 0, False)),
+        # The pc route's trusted-ci gate jobs are hosted and later than ci-plan
+        # but the packs are still blocked behind them.
+        ((_census_job("ci-plan", "completed"), _census_job("trusted-ci / trust-gate", "in_progress", created=30), _census_job("trusted-ci / plan", "in_progress", created=30)), (0, 0, False)),
+        # `ci-gate` running after the packs is later-wave service.
+        (_first_wave(*_packs(status="completed"), _census_job("ci-gate", "in_progress", created=600)), (0, 0, True)),
+        # An empty job list is no evidence either way.
+        ((), (0, 0, False)),
+    ],
+    ids=(
+        "served-live-shape",
+        "before-packs-not-served",
+        "packs-done-first-wave-only-not-served",
+        "queued-packs-refused",
+        "pending-refused",
+        "waiting-refused",
+        "unlabelled-queued-refused",
+        "slow-pack-pickup",
+        "slow-ci-plan-pickup",
+        "runner-group-label-never-serves",
+        "self-hosted-ignored",
+        "contract-delta-a-second-later-not-served",
+        "rerun-ci-plan-later-not-served",
+        "pc-route-trust-gate-not-served",
+        "ci-gate-after-packs-served",
+        "empty",
+    ),
+)
+def test_run_job_evidence_requires_a_served_later_wave_and_no_refusal(jobs, expected):
+    assert MOG._run_job_evidence(list(jobs)) == expected
+
+
+@pytest.mark.parametrize(
+    "jobs",
+    [
+        ["not a job"],
+        [{"name": "ci-plan", "status": "completed", "labels": "ubuntu-latest", "created_at": _at(0)}],
+        [{"name": "ci-plan", "status": "completed", "labels": ["ubuntu-latest"]}],
+        [{"name": "ci-plan", "status": None, "labels": ["ubuntu-latest"], "created_at": _at(0)}],
+        [{"name": "ci-plan", "status": "completed", "labels": ["ubuntu-latest"], "created_at": "yesterday"}],
+        [{"status": "completed", "labels": ["ubuntu-latest"], "created_at": _at(0), "started_at": _at(2)}],
+        # NIT-2 (round 3): a running pack without `started_at` is unclean, not a
+        # fast pickup; so is a garbled one.
+        [*_first_wave(*_packs(count=11)), _census_job("ci-pack-11", "in_progress", created=216, started=None)],
+        [*_first_wave(*_packs(count=11)), {**_census_job("ci-pack-11", "in_progress", created=216), "started_at": "soon"}],
+    ],
+    ids=(
+        "non-dict",
+        "labels-not-a-list",
+        "no-created-at",
+        "status-not-a-string",
+        "bad-timestamp",
+        "no-name",
+        "running-without-started-at",
+        "running-with-bad-started-at",
+    ),
+)
+def test_run_job_evidence_is_unreadable_on_any_unclean_job(jobs):
+    assert MOG._run_job_evidence(jobs) is None
+
+
+def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch):
+    seen: list[str] = []
+    now = dt.datetime(2026, 11, 5, 14, 25, tzinfo=dt.timezone.utc)
+    served = _census_jobs(*_first_wave(*_packs()))
+    refused = _census_jobs(
+        *_first_wave(*_packs(count=10), *_packs(status="queued", started=None, count=2, offset=10))
+    )
+    render_only = _census_jobs(
+        *_first_wave(
+            _census_job("render", "queued", created=216, started=None, labels=("self-hosted", "macstudio")),
+            _census_job("render-light", "queued", created=216, started=None, labels=("self-hosted", "macstudio-light")),
+        )
+    )
+
+    def fake_request(method, url, token, payload=None):
+        seen.append(url)
+        assert method == "GET" and token == "read"
+        if "/workflows/ci.yml/runs?" in url and "status=queued" in url:
+            assert "per_page=1" in url
+            return 200, {"total_count": 0}
+        if "/workflows/ci.yml/runs?" in url and "status=in_progress" in url:
+            # Mature = created before now - 240 s, newest first, sample of three.
+            assert "per_page=3" in url
+            assert "created=%3C2026-11-05T14%3A21%3A00Z" in url
+            return 200, {"workflow_runs": [{"id": 11}, {"id": 12}, {"id": 13}]}
+        if url.endswith("/runs/11/jobs?filter=latest&per_page=100"):
+            return served
+        if url.endswith("/runs/12/jobs?filter=latest&per_page=100"):
+            return refused
+        if url.endswith("/runs/13/jobs?filter=latest&per_page=100"):
+            return render_only
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now)
+    # Run 11 is served; run 12 has two hosted jobs the pool refused; run 13's only
+    # waiting jobs are self-hosted render jobs, which say nothing about the hosted
+    # pool, and its first wave alone is not served evidence.
+    assert census == MOG.HostedPoolCensus(
+        queued_runs=0, sampled_runs=3, refused_jobs=2, served_runs=1, slow_jobs=0
+    )
+    assert len(seen) == 5
+
+    def failing(step, answer):
+        def request(method, url, token, payload=None):
+            if step == "queued" and "status=queued" in url:
+                return answer
+            if step == "list" and "status=in_progress" in url:
+                return answer
+            if step == "jobs" and "/jobs?" in url:
+                return answer
+            return fake_request(method, url, token, payload)
+
+        return request
+
+    for step, answer in (
+        ("queued", (403, {"message": "rate limited"})),
+        ("queued", (200, {"total_count": True})),
+        ("list", (500, None)),
+        ("list", (200, {"workflow_runs": [{"id": True}]})),
+        ("list", (200, {"total_count": 3})),
+        ("jobs", (403, {"message": "rate limited"})),
+        ("jobs", (200, {"total_count": 101, "jobs": []})),
+        ("jobs", (200, {"jobs": "nope"})),
+        ("jobs", (200, {"total_count": 1, "jobs": ["not a job"]})),
+        # NIT-3 (round 3): a job list shorter than its own total is a short page.
+        ("jobs", (200, {"total_count": 16, "jobs": list(_first_wave(*_packs(count=2)))})),
+    ):
+        monkeypatch.setattr(MOG, "_request", failing(step, answer))
+        assert REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now) is None, (
+            step,
+            answer,
+        )
+
+
+def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
+    def fake_request(method, url, token, payload=None):
+        if "status=queued" in url:
+            return 200, {"total_count": 0}
+        if "status=in_progress" in url:
+            return 200, {"workflow_runs": []}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read")
+    assert census == MOG.HostedPoolCensus(0, 0, 0, 0, 0)
+    assert MOG.adaptive_proof_cap(census)[0] == MOG.MAX_IN_FLIGHT_PR_PROOFS
+
+
+@pytest.mark.parametrize(
+    "census,active,expected_allowance",
+    [
+        (_census(served_runs=3), 8, 8),
+        (_census(served_runs=3), 15, 1),
+        (_census(served_runs=3), 16, 0),
+        (_census(sampled_runs=1, served_runs=1), 10, 2),
+        (_census(refused_jobs=1, served_runs=2), 8, 0),
+        (_census(slow_jobs=1, served_runs=3), 8, 0),
+        (_census(queued_runs=1), 8, 0),
+        (_census(sampled_runs=0, served_runs=0), 8, 0),
+        (None, 8, 0),
+    ],
+    ids=(
+        "served-pool-cap-16",
+        "served-pool-last-slot",
+        "served-pool-full",
+        "one-served-run-cap-12",
+        "refused-job-flat-cap",
+        "slow-pickup-flat-cap",
+        "queued-run-flat-cap",
+        "no-witness-flat-cap",
+        "census-unreadable-flat-cap",
+    ),
+)
+def test_adaptive_cap_widens_update_branch_capacity_only_on_a_served_pool(
+    monkeypatch, capsys, census, active, expected_allowance
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: census)
+    allowances: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        allowances.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert allowances == [expected_allowance]
+    out = capsys.readouterr().out
+    if active >= MOG.ADAPTIVE_PROOF_CAP_MAX:
+        # Nothing could widen past a full widest cap: the census is not even read.
+        assert "global cap 8 (census skipped: flat cap)" in out
+    else:
+        expected_cap, _ = MOG.adaptive_proof_cap(census)
+        assert f"global cap {expected_cap} (" in out
+
+
+@pytest.mark.parametrize(
+    "active,authorized,lease_readable",
+    [(0, True, True), (16, True, True), (20, True, True), (3, False, True), (3, True, False)],
+    ids=(
+        "idle-repo",
+        "widest-cap-already-full",
+        "beyond-widest-cap",
+        "refresh-authority-refused",
+        "lease-unreadable",
+    ),
+)
+def test_adaptive_census_is_not_read_where_it_cannot_widen_anything(
+    monkeypatch, capsys, active, authorized, lease_readable
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a: authorized)
+    if not lease_readable:
+        monkeypatch.setattr(
+            MOG,
+            "prepare_refresh_lease",
+            lambda repo, read, write, pulls: (
+                MOG.RefreshLease(repo, read, write, readable=False),
+                pulls,
+            ),
+        )
+
+    def never(*_a, **_k):
+        raise AssertionError("census read although no headroom could be used")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", never)
+    monkeypatch.setattr(MOG, "sweep_pull", lambda *_a: "pending")
+    assert MOG.main() == 0
+    out = capsys.readouterr().out
+    if authorized and lease_readable:
+        assert "global cap 8 (census skipped: flat cap)" in out
+
+
+def test_adaptive_census_exception_degrades_to_the_flat_cap_without_deferring(
+    monkeypatch, capsys
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 7)
+
+    def rate_limited(*_a, **_k):
+        raise MOG.RateLimited("core budget exhausted")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", rate_limited)
+    allowances: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        allowances.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert allowances == [1]
+    out = capsys.readouterr().out
+    assert "global cap 8 (census failed (core budget exhausted): flat cap)" in out
+    assert "Sweep deferred" not in out
+
+
 def test_every_update_branch_call_is_behind_the_refresh_admission_gateway():
     tree = ast.parse(
         (ROOT / "scripts" / "merge_on_green.py").read_text(encoding="utf-8")
@@ -5943,6 +6413,125 @@ def test_ambiguous_lease_claim_never_updates_or_tries_a_second_owner(monkeypatch
     ) == "refresh-deferred"
     assert not [call for call in calls if call[0] == "PUT"]
     assert len([call for call in calls if call[0] == "PATCH"]) == 1
+
+
+def test_refused_generation_register_read_declines_the_claim_out_loud(
+    monkeypatch, capsys
+):
+    """A pre-write refusal must say why. Observed live: the tier-0 main-red-repair
+    pull request was deferred sweep after sweep at "0/1 effective CI workload
+    slot(s) in use" while the queue showed a free slot, because the register read
+    was refused and `claim()` returned a bare False."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and url.endswith("/pulls/1"):
+            return 200, _pull(1)
+        if method == "GET" and "/labels/" in url:
+            return 403, {"message": "forbidden"}
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget = MOG.SweepBudget("read", max_refreshes=1)
+    budget.refresh_authorized = True
+    budget.max_refreshes = 1
+    budget.requires_refresh_lease = True
+    budget.refresh_lease = lease
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "write", budget, "stale"
+    ) == "refresh-deferred"
+    out = capsys.readouterr().out
+    assert (
+        "::notice title=merge-on-green refresh lease::PR #1: refresh lease not "
+        "claimed — the generation register read answered HTTP 403; no "
+        "update-branch write attempted." in out
+    )
+    assert "0/1 effective CI workload slot(s) in use" in out
+    assert not [call for call in calls if call[0] in {"PATCH", "POST", "PUT"}]
+    assert budget.refreshes_used == 0
+
+
+def test_spent_claim_latch_names_the_first_claimant(monkeypatch, capsys):
+    """The one-claim-per-sweep latch is correct and must stay; it must also be
+    visible, naming the pull request that consumed it."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and url.endswith("/pulls/1"):
+            return 200, _pull(1)
+        if method == "GET" and url.endswith("/pulls/2"):
+            return 200, _pull(2)
+        if method == "GET" and "/labels/" in url:
+            return 200, {
+                "name": MOG.REFRESH_LEASE_LABEL,
+                "description": MOG.REFRESH_LEASE_DESCRIPTION,
+            }
+        if method == "PATCH" and "/labels/" in url:
+            return 500, None
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget = MOG.SweepBudget("read", max_refreshes=1)
+    budget.refresh_authorized = True
+    budget.max_refreshes = 1
+    budget.requires_refresh_lease = True
+    budget.refresh_lease = lease
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "write", budget, "stale"
+    ) == "refresh-deferred"
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(2), "write", budget, "stale"
+    ) == "refresh-deferred"
+    out = capsys.readouterr().out
+    assert (
+        "PR #1: refresh lease not claimed — a generation register write was "
+        "attempted but the read-back did not affirm the intended record (write "
+        "HTTP 500, read-back HTTP 200); the register's outcome is unknown" in out
+    )
+    assert (
+        "PR #2: refresh lease not claimed — this sweep already spent its single "
+        "lease claim on PR #1" in out
+    )
+    assert lease.claim_attempted_number == 1
+    assert not [call for call in calls if call[0] in {"POST", "PUT"}]
+    assert len([call for call in calls if call[0] == "PATCH"]) == 1
+
+
+def test_owner_with_refused_register_read_is_declined_as_a_refused_read(
+    monkeypatch, capsys
+):
+    """Heads match, but the register read is refused: the notice must say the
+    register no longer affirms the generation, not that an update was already
+    authorised (review finding on the S2a change)."""
+    head = "a" * 40
+
+    def fake_request(method, url, token, payload=None):
+        if method == "GET" and "/labels/" in url:
+            return 403, {"message": "forbidden"}
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease(
+        "acme/widgets",
+        "read",
+        "write",
+        owner_number=1,
+        owner_updated_at="2026-11-05T22:00:00Z",
+        generation_head_sha=head,
+        generation_id="gen",
+    )
+    pull = _pull(1, labels=(MOG.MERGE_ON_GREEN_LABEL, MOG.REFRESH_LEASE_LABEL))
+    assert lease.claim(pull) is False
+    out = capsys.readouterr().out
+    assert (
+        "PR #1: refresh lease not claimed — the generation register no longer "
+        "affirms its generation (read refused or record changed)" in out
+    )
+    assert "already authorised" not in out
 
 
 def test_affirmative_fresh_conflict_declines_before_lease_claim_or_write(monkeypatch):
@@ -6812,7 +7401,7 @@ def test_the_per_sweep_cap_bounds_the_work_and_names_what_it_deferred(
     seen = _main_harness(monkeypatch, armed)
     assert MOG.main() == 0
 
-    funded_cap = 23  # (1000 - 87 fixed - 8 attempts - 260 reserve) // 27
+    funded_cap = 23  # (1000 - 92 fixed - 8 attempts - 260 reserve) // 27
     assert len(seen) == funded_cap, (
         f"expected exactly {funded_cap} pull requests per sweep, "
         f"got {len(seen)}"
@@ -7149,10 +7738,12 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     assert MOG.RATE_LIMIT_RESERVE < MOG.RATE_LIMIT_FLOOR
 
     assert MOG.pull_cap_for_budget(14_904, 15_000) == MOG.MAX_PULL_CAP
-    assert MOG.pull_cap_for_budget(600, 15_000) == 9
+    # (600 - 260 reserve - 92 fixed - 8 attempts) // 27 = 8; the fixed overhead
+    # now carries the up-to-five adaptive hosted-pool census reads.
+    assert MOG.pull_cap_for_budget(600, 15_000) == 8
     affordable_cost = (
         MOG.FULL_SWEEP_FIXED_REQUESTS
-        + 9 * MOG.MAX_REQUESTS_PER_PULL
+        + 8 * MOG.MAX_REQUESTS_PER_PULL
         + MOG.MAX_REFRESHES_PER_SWEEP
         + MOG.RATE_LIMIT_RESERVE
     )
@@ -10579,3 +11170,106 @@ def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
             + admitted * MOG.MAX_REQUESTS_PER_PULL
             + MOG.MAX_REFRESHES_PER_SWEEP
             + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR
+
+
+# --- live authorization diagnostics (Policy Monitor release recovery) ----------
+
+
+@pytest.mark.parametrize(
+    ("status", "payload", "headers", "expected"),
+    (
+        (
+            403,
+            {"message": "Resource not accessible by integration"},
+            {"x-ratelimit-remaining": "412"},
+            ("HTTP 403", "Resource not accessible by integration"),
+        ),
+        (
+            403,
+            {"message": "Forbidden"},
+            {
+                "x-ratelimit-remaining": "0",
+                "x-ratelimit-limit": "5000",
+                "x-ratelimit-reset": "1793928600",
+            },
+            ("primary API quota", "0 of 5000 requests left", "1793928600"),
+        ),
+        (
+            403,
+            {"message": "You have exceeded a secondary rate limit."},
+            {"retry-after": "60"},
+            ("secondary (burst) rate limit", "retry-after 60s"),
+        ),
+        (
+            403,
+            None,
+            {"x-ratelimit-remaining": "412"},
+            ("HTTP 403",),
+        ),
+        (429, None, {}, ("HTTP 429",)),
+        (500, {"message": "Server Error"}, {}, ("HTTP 500", "Server Error")),
+        (200, [], {}, ("HTTP 200",)),
+    ),
+    ids=(
+        "permission",
+        "primary-header-evidence",
+        "secondary-retry-after",
+        "unexplained-forbidden",
+        "unexplained-429",
+        "server-failure",
+        "malformed-success",
+    ),
+)
+def test_live_authorization_failure_reports_cause_without_changing_admission(
+    monkeypatch, capsys, status, payload, headers, expected
+):
+    calls = []
+
+    def fail_read(method, url, token, data=None):
+        calls.append((method, url, token, data))
+        return status, payload
+
+    monkeypatch.setattr(MOG, "_request", fail_read)
+    monkeypatch.setattr(MOG, "_LAST_RESPONSE_HEADERS", headers)
+    budget = _authorized_budget(max_refreshes=1)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "test-write-credential", budget, "stale"
+    ) == "authorization-unreadable"
+    assert calls == [
+        ("GET", f"{MOG.GITHUB_API}/repos/acme/widgets/pulls/1", "test-write-credential", None)
+    ], "the same credential and endpoint must fail closed before any write"
+    assert budget.refresh_attempts_used == 0
+    assert budget.refreshes_used == 0
+    out = capsys.readouterr().out
+    for fragment in expected:
+        assert fragment in out
+    if not headers.get("retry-after") and headers.get("x-ratelimit-remaining") != "0":
+        assert "API quota" not in out
+        assert "secondary (burst)" not in out
+
+
+@pytest.mark.parametrize("quota", (False, True), ids=("permission", "quota"))
+def test_live_authorization_diagnostic_redacts_and_bounds_untrusted_response(
+    monkeypatch, capsys, quota
+):
+    credential = "test-private-write-credential"
+    message = (
+        f"Forbidden {credential}\r\n::error title=injected::"
+        "\x1b[31m %0A forged " + ("x" * 2000)
+    )
+    monkeypatch.setattr(MOG, "_request", lambda *_a: (403, {"message": message}))
+    monkeypatch.setattr(
+        MOG, "_LAST_RESPONSE_HEADERS",
+        {"x-ratelimit-remaining": "0", "x-ratelimit-limit": "5000"} if quota else {},
+    )
+    assert MOG.live_authorized_pull(
+        "acme/widgets", _pull(1), credential
+    ) == (None, "authorization-unreadable")
+    out = capsys.readouterr().out
+    prefix = "::warning title=merge-on-green authorization::"
+    assert out.startswith(prefix)
+    assert len(out.splitlines()) == 1
+    assert credential not in out and "[redacted]" in out
+    assert "\r" not in out and "\x1b" not in out
+    assert "%250A" in out and "%0A" not in out
+    assert len(out.removeprefix(prefix).rstrip("\n")) <= 600
