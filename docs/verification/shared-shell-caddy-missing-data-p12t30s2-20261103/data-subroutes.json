@@ -1,0 +1,332 @@
+[
+  {
+    "handle": [
+      {
+        "handler": "subroute",
+        "routes": [
+          {
+            "handle": [
+              {
+                "handler": "vars",
+                "root": "/opt/terminal/terminal/public"
+              }
+            ]
+          },
+          {
+            "handle": [
+              {
+                "handler": "headers",
+                "response": {
+                  "set": {
+                    "Cache-Control": [
+                      "public, s-maxage=60, max-age=0, must-revalidate"
+                    ]
+                  }
+                }
+              }
+            ],
+            "match": [
+              {
+                "path": [
+                  "/data/manifest.json"
+                ]
+              }
+            ]
+          },
+          {
+            "handle": [
+              {
+                "handler": "headers",
+                "response": {
+                  "set": {
+                    "Cache-Control": [
+                      "public, s-maxage=300, max-age=0, must-revalidate"
+                    ]
+                  }
+                }
+              }
+            ],
+            "match": [
+              {
+                "not": [
+                  {
+                    "path": [
+                      "/data/manifest.json"
+                    ]
+                  }
+                ],
+                "path": [
+                  "/data/*"
+                ]
+              }
+            ]
+          },
+          {
+            "handle": [
+              {
+                "handler": "subroute",
+                "routes": [
+                  {
+                    "handle": [
+                      {
+                        "handler": "file_server",
+                        "hide": [
+                          "./-"
+                        ],
+                        "pass_thru": true
+                      }
+                    ]
+                  },
+                  {
+                    "handle": [
+                      {
+                        "handler": "headers",
+                        "response": {
+                          "set": {
+                            "Cache-Control": [
+                              "no-store"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "handler": "headers",
+                        "response": {
+                          "set": {
+                            "Content-Type": [
+                              "application/json"
+                            ]
+                          }
+                        }
+                      }
+                    ],
+                    "match": [
+                      {
+                        "method": [
+                          "GET",
+                          "HEAD"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "handle": [
+                      {
+                        "handler": "static_response",
+                        "status_code": 404
+                      }
+                    ],
+                    "match": [
+                      {
+                        "method": [
+                          "HEAD"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "handle": [
+                      {
+                        "body": "{\"error\":\"not_found\"}",
+                        "handler": "static_response",
+                        "status_code": 404
+                      }
+                    ],
+                    "match": [
+                      {
+                        "method": [
+                          "GET",
+                          "HEAD"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "handle": [
+                      {
+                        "handler": "error",
+                        "status_code": 404
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "match": [
+      {
+        "path": [
+          "/data/*"
+        ]
+      }
+    ]
+  },
+  {
+    "handle": [
+      {
+        "handler": "subroute",
+        "routes": [
+          {
+            "handle": [
+              {
+                "handler": "vars",
+                "root": "/opt/terminal/terminal/public"
+              }
+            ]
+          },
+          {
+            "handle": [
+              {
+                "handler": "headers",
+                "response": {
+                  "set": {
+                    "Cache-Control": [
+                      "public, s-maxage=60, max-age=0, must-revalidate"
+                    ]
+                  }
+                }
+              }
+            ],
+            "match": [
+              {
+                "path": [
+                  "/data/manifest.json"
+                ]
+              }
+            ]
+          },
+          {
+            "handle": [
+              {
+                "handler": "headers",
+                "response": {
+                  "set": {
+                    "Cache-Control": [
+                      "public, s-maxage=300, max-age=0, must-revalidate"
+                    ]
+                  }
+                }
+              }
+            ],
+            "match": [
+              {
+                "not": [
+                  {
+                    "path": [
+                      "/data/manifest.json"
+                    ]
+                  }
+                ],
+                "path": [
+                  "/data/*"
+                ]
+              }
+            ]
+          },
+          {
+            "handle": [
+              {
+                "handler": "subroute",
+                "routes": [
+                  {
+                    "handle": [
+                      {
+                        "handler": "file_server",
+                        "hide": [
+                          "./-"
+                        ],
+                        "pass_thru": true
+                      }
+                    ]
+                  },
+                  {
+                    "handle": [
+                      {
+                        "handler": "headers",
+                        "response": {
+                          "set": {
+                            "Cache-Control": [
+                              "no-store"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "handler": "headers",
+                        "response": {
+                          "set": {
+                            "Content-Type": [
+                              "application/json"
+                            ]
+                          }
+                        }
+                      }
+                    ],
+                    "match": [
+                      {
+                        "method": [
+                          "GET",
+                          "HEAD"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "handle": [
+                      {
+                        "handler": "static_response",
+                        "status_code": 404
+                      }
+                    ],
+                    "match": [
+                      {
+                        "method": [
+                          "HEAD"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "handle": [
+                      {
+                        "body": "{\"error\":\"not_found\"}",
+                        "handler": "static_response",
+                        "status_code": 404
+                      }
+                    ],
+                    "match": [
+                      {
+                        "method": [
+                          "GET",
+                          "HEAD"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "handle": [
+                      {
+                        "handler": "error",
+                        "status_code": 404
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "match": [
+      {
+        "path": [
+          "/data/*"
+        ]
+      }
+    ]
+  }
+]
