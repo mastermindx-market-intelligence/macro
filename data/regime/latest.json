@@ -551,7 +551,7 @@
       "vix_term_lead_lag": "coincident",
       "skew": 153.55,
       "skew_pctile": 0.7976190476190477,
-      "stock_bond_corr": 0.002882672364838223,
+      "stock_bond_corr": 0.0028826723648317175,
       "stock_bond_regime": "mixed",
       "roro": -1.3874944434831877,
       "roro_state": "risk-off",
@@ -658,7 +658,7 @@
     "tiers": {
       "leading": {
         "asof": "2026-11-30",
-        "index": 94.26584601272853,
+        "index": 94.26584601272855,
         "mom6": -0.6168268995023567,
         "trend": 0.36371266277963743,
         "diffusion": 33.333333333333336,
@@ -8788,21 +8788,8 @@
     "confidence": "medium",
     "confidence_gated": false,
     "dropped_fields": [],
-    "evidence": [
-      {
-        "field": "tone_score",
-        "quote_span": "Inflation remains elevated"
-      },
-      {
-        "field": "guidance_direction",
-        "quote_span": "maintain the target range for the federal funds rate at 3-3/4 to 4 percent"
-      },
-      {
-        "field": "risk_delta",
-        "quote_span": "who preferred to raise the target range for the federal funds rate by 1/4 percentage point"
-      }
-    ],
-    "degraded_reason": null,
+    "evidence": [],
+    "degraded_reason": "llm_error",
     "disclaimer": "Context only \u2014 not a signal. This is a machine DIGEST of a public document, produced by an AI model after the fact. The tone / guidance / risk / reversibility readings are background context; they are NOT inputs to any score, signal or allocation unless a downstream, separately-gated step promotes a single field, and even then only as one bounded factor. \u201cunknown\u201d means the evidence was insufficient \u2014 the honest answer. Every non-unknown field is backed by a quote verified to appear verbatim in the source; unverifiable claims are dropped."
   },
   "dislocation": {
@@ -9468,7 +9455,7 @@
   },
   "fed_path": {
     "asof": "2026-11-06",
-    "built": "2026-11-07T06:39:12.990368+00:00",
+    "built": "2026-11-07T09:52:32.405725+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -11388,18 +11375,16 @@
     "label_zh": "\u9e70\u6d3e",
     "color": "down",
     "implied_cuts_12m": -2.0,
-    "guidance": "on_hold",
+    "guidance": "unknown",
     "market_vs_fed_bp": -15.0,
     "market_vs_fed_en": "market more dovish than the Fed",
     "market_vs_fed_zh": "\u5e02\u573a\u6bd4\u7f8e\u8054\u50a8\u66f4\u9e3d\u6d3e",
     "drivers_en": [
       "market prices ~2.0 hike(s) over 12m",
-      "statement guidance on-hold",
       "market more dovish than the Fed (-15bp)"
     ],
     "drivers_zh": [
       "\u5e02\u573a\u8ba1\u5165\u672a\u676512\u4e2a\u6708\u7ea62.0\u6b21\u52a0\u606f",
-      "\u58f0\u660e\u6307\u5f15\u6309\u5175\u4e0d\u52a8",
       "\u5e02\u573a\u6bd4\u7f8e\u8054\u50a8\u66f4\u9e3d\u6d3e\uff08-15bp\uff09"
     ],
     "is_context_only": true,
@@ -18089,7 +18074,7 @@
           "freshness": {
             "capture_qualified": true,
             "capture_finished_at": "2026-11-06T12:06:00.432599+00:00",
-            "capture_age_s": 66796.717751,
+            "capture_age_s": 78394.798154,
             "source_generation": "2026-11-06",
             "source_generation_age_days": 1,
             "stale": null,
@@ -21889,75 +21874,48 @@
     "note": "W4a rebuild: HEAT = n_lit_sources / n_available_sources [\u00d7 earliness when measured \u2014 dropped, not filled, when absent].  5 distinct data feeds (physical \u00b7 demand \u00b7 guidance \u00b7 altdata \u00b7 edgar_scarcity \u2014 the old subsector_scarcity + discovery_echo were one EDGAR parquet, now counted once). Dark sources leave the denominator \u2014 no outage penalty.  Earliness from engine/foresight_earliness.py (attention-based, Q3); absent below 2 usable legs \u2192 factor DROPPED (not laundered as neutral 0.5).  Physical numeric bonus \u00d71.15 when genuinely TIGHT/SOLD_OUT.  Threshold 0.40 PROVISIONAL.  Meta-driver cards emit for \u22653 co-heating same-cluster themes.  Cross-theme heats reflect agreement among AVAILABLE surfaces only \u2014 themes with different data coverage are not on a fully comparable scale."
   },
   "foresight_analyst": {
-    "regime_read": "The board shows multiple themes with three lit surfaces (physical, demand, guidance) and strong earliness, but no theme has all key surfaces aligned to a degree that would constitute high-conviction convergence. The most coherent near-term candidates are data_center_power and grid_electrification, both showing tightening physical bottlenecks, accelerating demand, and rising guidance, though the strength of confirmation from other surfaces like altdata and scarcity is absent.",
-    "regime_read_zh": "\u770b\u677f\u663e\u793a\u591a\u4e2a\u4e3b\u9898\u62e5\u6709\u4e09\u9879\u4eae\u8d77\u8868\u9762\uff08\u7269\u7406\u3001\u9700\u6c42\u3001\u6307\u5f15\uff09\uff0c\u4e14\u65e9\u89c1\u5ea6\u8f83\u9ad8\uff0c\u4f46\u5c1a\u65e0\u4e3b\u9898\u8fbe\u5230\u6240\u6709\u5173\u952e\u8868\u9762\u4e00\u81f4\u5bf9\u9f50\u7684\u7a0b\u5ea6\uff0c\u4e0d\u8db3\u6784\u6210\u9ad8\u786e\u4fe1\u5ea6\u6536\u655b\u3002\u6700\u8fde\u8d2f\u7684\u8fd1\u671f\u5019\u9009\u662f\u6570\u636e\u4e2d\u5fc3\u7535\u529b\u4e0e\u7535\u7f51\u7535\u6c14\u5316\uff0c\u4e24\u8005\u5747\u663e\u793a\u7269\u7406\u74f6\u9888\u8d8b\u7d27\u3001\u9700\u6c42\u52a0\u901f\u3001\u6307\u5f15\u4e0a\u8c03\uff0c\u4f46\u7f3a\u4e4f\u53e6\u7c7b\u6570\u636e\u4e0e\u7a00\u7f3a\u6027\u7b49\u5176\u4ed6\u8868\u9762\u7684\u5f3a\u529b\u786e\u8ba4\u3002",
+    "regime_read": "The convergence board is mostly in WATCH with single or weakly-coupled surfaces; the only theme where multiple independent surfaces align while still early is grid electrification, where physical tightening, accelerating demand, and raising guidance co-exist with flat revisions.",
+    "regime_read_zh": "\u6536\u655b\u9762\u677f\u5927\u591a\u5904\u4e8e\u89c2\u5bdf\u9636\u6bb5\uff0c\u8868\u9762\u5355\u4e00\u6216\u8026\u5408\u8f83\u5f31\uff1b\u552f\u4e00\u591a\u4e2a\u72ec\u7acb\u8868\u9762\u4e00\u81f4\u4e14\u4ecd\u5904\u4e8e\u65e9\u671f\u7684\u662f\u7535\u7f51\u7535\u6c14\u5316\u2014\u2014\u7269\u7406\u8d8b\u7d27\u3001\u9700\u6c42\u52a0\u901f\u3001\u6307\u5f15\u4e0a\u8c03\uff0c\u540c\u65f6\u76c8\u5229\u4fee\u6b63\u5c1a\u672a\u8ddf\u8fdb\u3002",
     "theses": [
       {
-        "theme": "data_center_power",
-        "mechanism": "Physical bottleneck is tightening per confirmed evidence. Simultaneously, customer demand is accelerating, and management guidance is raising (2 raisers). This trio of independent surfaces aligning suggests that the supply constraint is being pulled by real demand, not a transient or speculative factor. The mechanism is likely a feedback loop where accelerating end-user demand for data center capacity drives orders for power/cooling infrastructure, tightening the provision timeline and leading management to raise forward expectations.",
-        "non_obvious": "The non-obvious pattern is that management guidance is already raising despite only moderate revision breadth (0.488). This early stage of revisions suggests the street has not yet fully priced the guidance shift, and the early movers (the raisers) may be early-mover indicators of a broader guidance cycle. If altdata or insider activity confirms capacity constraints independently, that gap would be the hidden signal, but currently absent.",
-        "kill_criteria": [
-          "Guidance band moves to NEUTRAL or CUTTING (guidance_band stops being RAISING).",
-          "Physical bottleneck band loosens to NEUTRAL or WIDE.",
-          "Demand band decelerates from ACCELERATING.",
-          "Revision breadth falls back below baseline after broadening."
-        ],
-        "evidence": [
-          {
-            "text": "[physical] bottleneck_band: TIGHTENING",
-            "ungrounded": true
-          },
-          {
-            "text": "[demand] demand_band: ACCELERATING",
-            "ungrounded": true
-          },
-          {
-            "text": "[guidance] guidance_band: RAISING, guidance_raisers: 2",
-            "ungrounded": true
-          }
-        ],
-        "evidence_display": [],
-        "dissent": "The theme is still in WATCH stage. No altdata (gov awards, patent clusters) or edgar_scarcity surfaces are lit, implying no independent confirmation from the supply-constrained side beyond physical. Demand acceleration could be broad-based AI capex narrative, not specific power supply scarcity. Also, revision breadth is only 0.488, so while early, it is not overwhelmingly broad.",
-        "confidence": "low",
-        "n_grounded": 0,
-        "n_total_evidence": 3,
-        "_forecast_clamped": null
-      },
-      {
         "theme": "grid_electrification",
-        "mechanism": "Three main surfaces are independently lit: physical bottleneck is TIGHTENING, demand is ACCELERATING, and guidance band is RAISING with 2 raisers. The alignment of physical constraint with accelerating demand suggests that grid infrastructure is becoming a binding constraint on electrification needs. Management raising guidance likely reflects backlog/build-out visibility stemming from that demand. However, without altdata or edgar scarcity, there is no independent confirmation from alternative sourcing or market scarcity signals.",
-        "non_obvious": "The non-obvious pattern here is that despite a strong physical tightening signal and accelerating demand, revision breadth is negative (-0.011). This means most analysts have not yet adapted estimates, creating a potential divergence between the real underlying trend and the consensus. If guidance raising propagates over the next quarters, this could be a large mid-term revision wave.",
+        "mechanism": "Physical bottlenecks are tightening while demand is accelerating and management guidance is being raised; three independent legs are moving in the same direction. Revisions are not yet reflecting this, which suggests the operational reality is ahead of street models.",
+        "non_obvious": "Tightening physical + accelerating demand + raising guidance with flat revisions is the supply-led early-stage signature: management is seeing orders and constraints before sell-side analysts update estimates.",
         "kill_criteria": [
-          "Physical bottleneck band becomes NEUTRAL or looser.",
-          "Demand band stops being ACCELERATING.",
-          "Guidance band shifts to NEUTRAL or CUTTING.",
-          "Revision breadth continues to be negative or fails to turn positive after multiple quarters."
+          "bottleneck_band reverts to NEUTRAL or looser",
+          "demand_band rolls over to NEUTRAL or DECELERATING",
+          "guidance_band turns to NEUTRAL or CUTTING",
+          "revision_breadth stays flat or turns negative for another full cycle while bottleneck remains TIGHTENING"
         ],
         "evidence": [
           {
-            "text": "[physical] bottleneck_band: TIGHTENING",
+            "text": "physical: TIGHTENING",
             "ungrounded": true
           },
           {
-            "text": "[demand] demand_band: ACCELERATING",
+            "text": "demand: ACCELERATING",
             "ungrounded": true
           },
           {
-            "text": "[guidance] guidance_band: RAISING, guidance_raisers: 2",
+            "text": "guidance: RAISING (2 raisers)",
+            "ungrounded": true
+          },
+          {
+            "text": "revision_breadth: -0.011",
             "ungrounded": true
           }
         ],
         "evidence_display": [],
-        "dissent": "Revision breadth is still negative, indicating analysts may not yet see the same demand story. The theme has higher heat but lower earliness than some. No cross-surface signals like edgar_scarcity or altdata, so independent verification from non-traditional source is missing. Could be a supply chain normalized cycle not yet sustained.",
-        "confidence": "low",
+        "dissent": "The tightening may be early-cycle noise; guidance raisers could be company-specific rather than sector-wide, and revision breadth is not yet positive, so street models may simply not be wrong yet.",
+        "confidence": "medium",
         "n_grounded": 0,
-        "n_total_evidence": 3,
+        "n_total_evidence": 4,
         "_forecast_clamped": null
       }
     ],
-    "confidence": "low",
+    "confidence": "medium",
     "asof": "2026-11-06",
-    "n_theses": 2,
+    "n_theses": 1,
     "disclaimer": "An AI reading of the desk's OWN deterministic convergence \u2014 checkable and forward-graded, never a price forecast."
   },
   "thesis_monitor": {
@@ -22446,31 +22404,31 @@
   },
   "vol_regime": {
     "available": true,
-    "asof": "2026-11-05",
+    "asof": "2026-11-06",
     "regime": "backwardation-stress",
-    "risk_score": -0.624,
+    "risk_score": -0.523,
     "scored_score": null,
     "scored_active": false,
-    "vix": 28.18,
-    "ts_slope": 1.103,
+    "vix": 25.64,
+    "ts_slope": 1.042,
     "ts_slope_state": "backwardation",
-    "ts9": 1.159,
-    "move": 97.9,
-    "move_pctile": 0.785,
-    "move_vix": 3.475,
-    "vrp": -0.03,
-    "vrp_pctile": 0.068,
-    "vrp_chg_21d": -6.88,
+    "ts9": 1.06,
+    "move": 92.8,
+    "move_pctile": 0.684,
+    "move_vix": 3.618,
+    "vrp": 0.05,
+    "vrp_pctile": 0.07,
+    "vrp_chg_21d": -7.85,
     "vrp_state": "collapsing (de-risk)",
-    "skew": 149.4,
-    "skew_cost_pctile": 0.65,
+    "skew": 153.6,
+    "skew_cost_pctile": 0.791,
     "insurance_cost": "normal",
-    "downside_vrp": 4.374,
-    "vvix": null,
-    "vvix_vix": null,
-    "vvix_pctile": 0.0,
-    "vvix_vix_pctile": 0.0,
-    "vvix_state": "complacent (vol-of-vol cheap vs vol \u2014 historically precedes rising vol)",
+    "downside_vrp": 4.732,
+    "vvix": 121.9,
+    "vvix_vix": 4.756,
+    "vvix_pctile": 0.934,
+    "vvix_vix_pctile": 0.101,
+    "vvix_state": "peak-fear (vol-of-vol extreme \u2014 capitulation, historically mean-reverts)",
     "vol_target_scalar": 0.5,
     "fragility_confluence": 3,
     "flags": [
@@ -22480,31 +22438,31 @@
     ],
     "legs": {
       "ts_slope": {
-        "z": -2.5,
+        "z": -2.086,
         "scored": false,
         "sign": null,
         "eligible": true
       },
       "move": {
-        "z": -0.883,
+        "z": -0.557,
         "scored": false,
         "sign": null,
         "eligible": true
       },
       "vrp": {
-        "z": -1.295,
+        "z": -1.276,
         "scored": false,
         "sign": null,
         "eligible": true
       },
       "ts9": {
-        "z": -2.5,
+        "z": -1.575,
         "scored": false,
         "sign": null,
         "eligible": false
       },
       "skew_cost": {
-        "z": 0.197,
+        "z": 0.624,
         "scored": false,
         "sign": null,
         "eligible": false
@@ -22516,7 +22474,7 @@
         "eligible": false
       },
       "vvix": {
-        "z": null,
+        "z": -1.276,
         "scored": false,
         "sign": null,
         "eligible": false
@@ -23519,7 +23477,7 @@
     }
   },
   "ignition_radar": {
-    "as_of": "2026-11-06",
+    "as_of": "2026-11-07",
     "data_session": "2026-11-06",
     "state": "off",
     "k_count": 1,
@@ -23837,7 +23795,7 @@
       "n_qualifying": 32,
       "null": false,
       "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
-      "as_of": "2026-11-06"
+      "as_of": "2026-11-07"
     },
     "narrow_top": {
       "basket_id": "XLRE",
@@ -23851,7 +23809,7 @@
       "phase": null
     },
     "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-    "_timing_s": 3.23,
+    "_timing_s": 2.47,
     "forward_log": {
       "market": "us",
       "n_graded": 36,
@@ -24088,7 +24046,7 @@
         }
       }
     },
-    "_timing_s": 0.18
+    "_timing_s": 0.08
   },
   "mag7_washout": {
     "schema": "mag7_washout.v1",
@@ -24125,7 +24083,7 @@
   },
   "index_momentum": {
     "organ": "index_momentum.v1",
-    "as_of": "2026-11-06",
+    "as_of": "2026-11-07",
     "data_as_of": "2026-11-06",
     "authority": {
       "rank": false,
@@ -25738,11 +25696,11 @@
       "fresh_crossers": []
     },
     "n_roster": 13,
-    "_timing_s": 3.01
+    "_timing_s": 2.17
   },
   "vol_shock": {
-    "score": 43.1,
-    "score_int": 43,
+    "score": 44.9,
+    "score_int": 45,
     "band": "elevated",
     "band_zh": "\u5347\u9ad8",
     "asof": "2026-11-06",
@@ -25806,14 +25764,14 @@
         "key": "vix_term",
         "label": "VIX term structure (inversion)",
         "label_zh": "VIX \u671f\u9650\u7ed3\u6784\uff08\u5012\u6302\uff09",
-        "value": 1.103,
+        "value": 1.042,
         "weight": 0.8,
         "available": true,
-        "sub": 100.0,
+        "sub": 96.0,
         "note": "term structure inverted \u2014 front-month fear bid",
         "note_zh": "\u671f\u9650\u7ed3\u6784\u5012\u6302\u2014\u2014\u8fd1\u6708\u6050\u614c\u4e70\u76d8",
         "color": "#d04545",
-        "points": 16.3
+        "points": 15.7
       },
       {
         "key": "vrp_skew",
@@ -25832,14 +25790,14 @@
         "key": "put_call",
         "label": "Put/call positioning",
         "label_zh": "\u770b\u8dcc/\u770b\u6da8\u6301\u4ed3",
-        "value": 0.81,
+        "value": 0.58,
         "weight": 0.5,
         "available": true,
-        "sub": 18.5,
-        "note": "protective put-buying (fearful)",
-        "note_zh": "protective put-buying (fearful)",
+        "sub": 41.9,
+        "note": "balanced put/call",
+        "note_zh": "balanced put/call",
         "color": "#5a9bd4",
-        "points": 1.9
+        "points": 4.3
       },
       {
         "key": "complacency",
@@ -28591,7 +28549,7 @@
   },
   "freshness": {
     "asof": "2026-11-06",
-    "built_at": "2026-11-07T06:41:32Z",
+    "built_at": "2026-11-07T09:53:59Z",
     "age_days": 1,
     "age_sessions": 0,
     "max_age_sessions": 1,
@@ -32837,7 +32795,7 @@
     "favor_entries": true,
     "cap_leadership": false,
     "vol_regime": "backwardation-stress",
-    "vol_ts_slope": 1.103,
+    "vol_ts_slope": 1.042,
     "vol_ts_slope_state": "backwardation",
     "subsector_rotation_sides": null,
     "donor_unwind_state": null,

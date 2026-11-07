@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import time
+from dataclasses import replace
 import pytest
 
 from engine import provider_production_modes as owner
@@ -21,11 +22,14 @@ def test_unqualified_role_refuses_even_with_config_and_secret(identity, service_
     _, _, events, install, _, make, _, monkeypatch = identity
     lane, transport_id, secret_ref = ROLES[service_id]
     transport = owner._APPLICATION_FABRIC_TRANSPORTS[transport_id]
-    assert not transport.qualified and not transport.application_allowed and not transport.metadata_read
+    assert transport.qualified and transport.application_allowed and not transport.metadata_read
     assert transport.protocol == "native_application_v1" and transport.secret_ref == secret_ref
     expected_host = "127.0.0.2" if service_id == "hermes_secretary_fabric" else "127.0.0.3"
     assert transport.base_url == f"http://{expected_host}:50142/v1"
     assert owner._SERVICE_FABRIC_RELATIONS[service_id].lane == lane
+    # A legitimate source revocation still beats otherwise eligible runtime data.
+    transport = replace(transport, qualified=False, application_allowed=False)
+    monkeypatch.setitem(owner._APPLICATION_FABRIC_TRANSPORTS, transport_id, transport)
     row = {k: getattr(transport, k) for k in owner._APPLICATION_IDENTITY_FIELDS}
     row.update(transport_id=transport_id, enabled=True, application_allowed=True,
                qualification=owner.PROFILE_QUALIFIED_CANARY,
@@ -86,7 +90,7 @@ def test_auto_role_retains_original_identity_and_null_model(identity, service_id
     relation = owner._SERVICE_FABRIC_RELATIONS[service_id]
     fixed = owner._APPLICATION_FABRIC_TRANSPORTS[fixed_id]
     automatic = owner._APPLICATION_FABRIC_TRANSPORTS[relation.automatic_transport_id]
-    assert not automatic.qualified and not automatic.application_allowed and not automatic.metadata_read
+    assert automatic.qualified and automatic.application_allowed and not automatic.metadata_read
     for name in ("base_url", "secret_ref", "cap_id", "capability_id"):
         assert getattr(automatic, name) == getattr(fixed, name)
     scope = {"schema": "mastermind.application_route_scope.v1", "pools": pools}

@@ -6355,6 +6355,8 @@ jobs:
       - "engine/marketing/state.py"
       - "engine/session_anchor.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
+      - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_score.py"
       - "engine/stock_view.py"
@@ -16772,6 +16774,7 @@ jobs:
       - "engine/marketing/market_clock.py"
       - "engine/marketing/movers_source.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
       - "engine/stocks_hub.py"
       - "engine/liquidity_currency.py"
       - "engine/liquidity_source_availability.py"
@@ -19858,6 +19861,7 @@ jobs:
       - engine/signal_stack.py
       - engine/smart_money.py
       - engine/sp500_heatmap.py
+      - "engine/sector_breadth_close.py"
       - engine/special_arb.py
       - engine/special_situations.py
       - engine/special_situations_premium.py
@@ -24941,6 +24945,7 @@ jobs:
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
+      - "engine/sector_breadth_close.py"
       - "engine/smart_money.py"
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
@@ -29442,6 +29447,7 @@ jobs:
       - "engine/signal_archive.py"
       - "engine/signal_frontier_docket.py"
       - "engine/signal_gate.py"
+      - "engine/sector_breadth_close.py"
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
@@ -37783,6 +37789,7 @@ jobs:
       - "engine/signal_stack.py"
       - "engine/smart_money.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
@@ -39214,6 +39221,7 @@ jobs:
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
       - "engine/smart_money.py"
+      - "engine/sector_breadth_close.py"
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
@@ -40389,6 +40397,7 @@ jobs:
     gate: code
     # Exact Git-tree closure, including subprocess JS inputs and observed data domains.
     paths:
+      - tests/test_fabric_exact_scoped_model_composition.py
       - collectors/biocatalyst/__init__.py
       - engine/biocatalyst/__init__.py
       - engine/catalyst_opportunity/__init__.py
@@ -42276,11 +42285,41 @@ jobs:
               -o "$native_target"
           done
           MM_FABRIC_GATEWAY_SOURCE_ROOT="$fabric_fixture_root" python -m pytest \
-            tests/test_fabric_native_application_client.py tests/test_fabric_native_application_composition.py tests/test_fabric_brain_buffered_delivery.py tests/test_fabric_caller_native_composition.py tests/test_fabric_small_consumers.py tests/test_fabric_commodity_influence.py tests/test_fabric_response_eval.py tests/test_fabric_marketing_review.py tests/test_fabric_marketing_copywriter.py tests/test_fabric_application_deadlines.py tests/test_fabric_marketing_breaking.py tests/test_fabric_marketing_fomc.py tests/test_fabric_marketing_hot_reply.py tests/test_fabric_admin_pool_view.py tests/test_fabric_admin_pool_server.py tests/test_fabric_marketing_cold_read.py tests/test_fabric_press_writer.py tests/test_fabric_uk_policy_brain.py tests/test_fabric_intelligence_desk.py tests/test_publish_time_fabric_composition.py tests/test_native_go_application_recipe.py tests/test_specialty_current_fabric_composition.py tests/test_earnings_current_fabric_composition.py tests/test_cortex_fabric_composition.py tests/test_fabric_diagnostic_scripts.py tests/test_fabric_whitehouse_brain.py tests/test_fabric_research_runners.py tests/test_metabolism_fabric_composition.py \
+            tests/test_fabric_native_application_client.py tests/test_fabric_native_application_composition.py tests/test_fabric_brain_buffered_delivery.py tests/test_fabric_caller_native_composition.py tests/test_fabric_small_consumers.py tests/test_fabric_commodity_influence.py tests/test_fabric_response_eval.py tests/test_fabric_marketing_review.py tests/test_fabric_marketing_copywriter.py tests/test_fabric_application_deadlines.py tests/test_fabric_marketing_breaking.py tests/test_fabric_marketing_fomc.py tests/test_fabric_marketing_hot_reply.py tests/test_fabric_admin_pool_view.py tests/test_fabric_admin_pool_server.py tests/test_fabric_marketing_cold_read.py tests/test_fabric_press_writer.py tests/test_fabric_uk_policy_brain.py tests/test_fabric_intelligence_desk.py tests/test_publish_time_fabric_composition.py tests/test_native_go_application_recipe.py tests/test_specialty_current_fabric_composition.py tests/test_earnings_current_fabric_composition.py tests/test_cortex_fabric_composition.py tests/test_fabric_diagnostic_scripts.py tests/test_fabric_whitehouse_brain.py tests/test_fabric_research_runners.py \
             tests/test_fabric_inference_client.py tests/test_fabric_consumer_composition.py \
             tests/test_fabric_gateway_composition.py tests/test_orchestrator_fabric_composition.py tests/test_fabric_application_binding.py \
             tests/test_fabric_shared_default.py tests/test_master_brain_fabric_composition.py \
             tests/test_news_narrators_fabric_composition.py tests/test_ask_fabric_composition.py tests/test_fabric_cached_brain_callbacks.py tests/test_fabric_application_inspection.py tests/test_fabric_translation_composition.py -q
+      - name: Metabolism current native composition
+        run: |
+          set -euo pipefail
+          metabolism_fixture_root="$(mktemp -d)"
+          trap 'rm -rf "$metabolism_fixture_root"' EXIT
+          # Consume the exact pin table owned by the composition fixture without importing it.
+          python - "$metabolism_fixture_root" <<'FIXTURE'
+          import ast, hashlib, pathlib, re, subprocess, sys
+          tree = ast.parse(pathlib.Path("tests/test_fabric_exact_scoped_model_composition.py").read_bytes())
+          tables = [n.value for n in tree.body if isinstance(n, ast.Assign) and len(n.targets) == 1
+                    and isinstance(n.targets[0], ast.Name) and n.targets[0].id == "NATIVE_PINS"]
+          assert len(tables) == 1, "one canonical native fixture pin table required"
+          pins = ast.literal_eval(tables[0])
+          assert type(pins) is dict and len(pins) == 19, "closed native fixture cohort required"
+          base = "ops/native_fabric/quota_continuity/"
+          revision = "41e86c7aa89905f9b4592d57fbf32c2d7c0f1458"
+          for relative, expected in pins.items():
+              path = pathlib.PurePosixPath(relative)
+              assert not path.is_absolute() and ".." not in path.parts and str(path) == relative
+              assert path.parts[0] in {"candidate", "source", "tests"} and re.fullmatch("[0-9a-f]{40}", expected)
+              target = pathlib.Path(sys.argv[1]) / base / path
+              target.parent.mkdir(parents=True, exist_ok=True)
+              url = "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/" + revision + "/" + base + relative
+              subprocess.run(["curl", "--fail", "--silent", "--show-error", "--proto", "=https",
+                              "--tlsv1.2", "--max-time", "45", url, "-o", str(target)], check=True)
+              raw = target.read_bytes()
+              assert hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest() == expected, relative
+          FIXTURE
+          MM_FABRIC_GATEWAY_SOURCE_ROOT="$metabolism_fixture_root" python -B -m pytest \
+            -q --noconftest -o addopts= tests/test_metabolism_fabric_composition.py
       - name: Five service identities through actual paired Mastermind owners
         run: |
           set -euo pipefail
@@ -55312,6 +55351,7 @@ jobs:
       - "engine/signal_foundry/transforms.py"
       - "engine/signal_frontier_docket.py"
       - "engine/signal_gate.py"
+      - "engine/sector_breadth_close.py"
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
