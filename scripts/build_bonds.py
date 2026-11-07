@@ -905,8 +905,8 @@ def _build_maturity_wall(cm_path: Path | None) -> list[dict]:
         if mw.empty or "as_of" not in mw.columns:
             return []
         mw["as_of"] = _pd.to_datetime(mw["as_of"], errors="coerce")
-        mw = mw.dropna(subset=["as_of"])
-        if mw.empty:
+        # An undated theme row can belong to the latest snapshot; do not drop it.
+        if mw["as_of"].isna().any():
             return []
         maturity_asof = mw["as_of"].max()
         mw = mw[mw["as_of"] == maturity_asof]

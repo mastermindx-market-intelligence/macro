@@ -556,6 +556,22 @@ class TestMaturityWall:
         assert _build_maturity_wall(cm_dir / "credit_momentum.json") == []
 
 
+    @pytest.mark.parametrize("invalid_date", [None, "not-a-date"])
+    def test_maturity_wall_mixed_invalid_dates_fail_closed(
+        self, tmp_path: Path, invalid_date: str | None
+    ) -> None:
+        """A valid row cannot hide an undated member of the same source snapshot."""
+        cm_dir = tmp_path / "corp_bonds"
+        (cm_dir / "series").mkdir(parents=True)
+        pd.DataFrame([
+            {"as_of": "2026-10-16", "scope_type": "theme", "scope": "hyperscaler_credit",
+             "bucket": "0_1y", "par_total": 2_000_000.0, "n_bonds": 1},
+            {"as_of": invalid_date, "scope_type": "theme", "scope": "hyperscaler_credit",
+             "bucket": "1_3y", "par_total": 3_000_000.0, "n_bonds": 1},
+        ]).to_parquet(cm_dir / "series" / "maturity_wall.parquet")
+        assert _build_maturity_wall(cm_dir / "credit_momentum.json") == []
+
+
 # ---------------------------------------------------------------------------
 # 7. FINRA breadth vm
 # ---------------------------------------------------------------------------
