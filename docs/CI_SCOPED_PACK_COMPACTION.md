@@ -89,9 +89,12 @@ explicit rather than removing tests or disguising local environment gaps.
 ## Adoption and interaction with existing work
 
 Current related candidates retain ownership: #10735 splits the heavy control-plane
-logical job; #10738 addresses the FIF critical path; #10745 repairs replay
-configuration inheritance. This compactor changes disjoint algorithm/planner
-blocks, not those weight entries, suite definitions or replay environment helpers.
+logical job; #10658 preserves a fresh interpreter for each FIF file with two
+concurrent processes; #10745 repairs replay configuration inheritance. #10738's
+four shared xdist workers changed the isolation model and remain unqualified;
+its failing replay is not the next accepted concurrency step. This compactor
+changes disjoint algorithm/planner blocks, not those weight entries, suite
+definitions or replay environment helpers.
 Reconcile exact current heads before integrating those PRs; do not overwrite an
 incumbent or create replacement carriers.
 
@@ -99,3 +102,25 @@ Source merge, installed workflow use, a natural scoped-plan observation, and act
 latency improvement are separate receipts. Observe selection equivalence, stable
 main baselines and real runner/startup demand after release. A report or green PR
 alone is not completion of the Fast-ship program.
+
+## Current composition — 2026-11-07
+
+The original operation and branch compose protected main
+8f83fc39187565eb0e16f9ebf66b9be2d3a8df2a without changing the authored compactor.
+Only this document, the original planner blocks and appended planner tests differ
+from that main revision. Accepted source, semantic classification, inherited-red
+handling and import-guard repairs remain current. Fresh exact-candidate native
+qualification is still required; the older failed run41985635410 is not relabeled.
+
+The original Fabric scratch run fastship-pack-compact-20261104-01, under root
+fastship-ci-20261104-ryan, has a verified TERMINAL/rc0 recorded return. It made no
+repository or GitHub changes and its blanket-compaction prototype was not
+accepted. Its result does not authorize a new run or acceptance; the existing
+scoped implementation remains the sole source carrier. The old process number
+70837 was not a durable runtime identity or a live-writer receipt.
+
+Adoption still needs a natural genuinely narrowed PR, identical selected logical
+jobs and execution digests, preserved main check names, and observed end-to-end
+queue/setup/execution/aggregate costs. Twelve-to-two modeled packing is not a
+five-minute full-CI result. Preserve #10674's original uncertain operation26751
+and the #10745-to-#10735 delivery chain independently.
