@@ -344,58 +344,79 @@ waves:
       premise re-test) are sequenced after PR 10652 and PR 10682.
       Current continuation: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-11-04-ACCELERATION.md.
       Chairman recommissioned end-to-end acceleration on 2026-11-07. The
-      consolidated architecture and acceptance ledger are Mastermind PR 2191,
-      docs/CI_LIGHTNING_ARCHITECTURE.md; they extend this wave and the existing
-      Phase 4 delivery plan. Incumbent Mastermind PR 2065 and Terminal PR 1297
-      were integrated in their original source workspaces and published for
-      native qualification. Five-minute full-suite p95 remains a proposed
-      acceptance target, not a measured outcome. Macro PR 10755 is merged;
-      preserve PR 10674 original uncertain effect and PR 10656 release hold.
-      The remaining Macro progression is 10674, then 10745, then incumbent
-      sweeper/update-branch reproof of 10735; do not duplicate or bulk-arm it.
-      Architecture and execution evidence remain source-linked at
-      https://github.com/mastermindx-market-intelligence/Mastermind/pull/2191;
-      the preceding immutable checkpoint is
-      https://github.com/mastermindx-market-intelligence/Mastermind/blob/6c490b1bdd16d03c538d8703fc487fd1e5375511/docs/CI_LIGHTNING_ARCHITECTURE.md.
-      Accepted continuity PR 10825 remains efdf3577bb35607bb02a4a0a1900adb91a3784c6.
-      The b440 required and shadow runs both failed only the old main-command
-      expectation. Its repair and three measured inner placements are published
-      in original PR 2065 as d6f21633b3ffdb60a05a14042d22e28545c7ae34.
-      Focused proof passed 486 cases. Required run 42363117005 succeeded in
-      18m48s on integrated d0816673c522bbc2386a3eccd38940ac30b6c2dc, with base
-      93861e9ab2e75176108bb357bd9e81b54307981d. All 24 child receipts were
-      complete; 2,298 modules were selected with zero exclusions and 69,573 case
-      occurrences. No prior runtime module disappeared; six new boundary cases
-      and 238 accepted-base cases explain the increase. Shard 0 improved from
-      968s to 512s, but shard 3 took 777s and started 252s after job creation.
-      Source qualification took 656s. Shadow 42363117019 also passed in 36m44s.
-      Whole-verdict speed acceptance is unproved; Gateway Release HOLD remains.
-      A local native-custody scheduling experiment passed 375 unittests and
-      277 cases under each four-worker mode: loadfile 263.983s versus load
-      224.879s. Exact case multiset matched; no workflow change is published.
-      Terminal PR 1334 publishes 204db79b72ea23f824bce77e89ca7108c4b51121:
-      one News navigation with unchanged test bodies and an 87-case inventory.
-      All responsive projects passed 75 cases with 12 expected skips and zero
-      failures; mobile reproduced all 24 named crops. Local mobile candidate
-      200.638s versus controls 230.111s and 284.867s is variable-load evidence,
-      not hosted p95 proof. Native run 42364524142 is pending. Preserve green
-      PR 1297, held PR 1223's original uncertain effect and existing delivery owners.
-      Macro PR 10788 exact-head run 42204345843 measured FIF kernel siblings at
-      957.34s, 1644.98s and 1302.98s, totaling 4,250 passes and one skip. Those
-      three packs passed; the full 318-job run failed elsewhere. Current sibling
-      closures contain 1,139 paths, including eight ancestor imports absent from
-      the old 1,131-path closure. The same 120 kernel modules are preserved.
-      Checkout steps took 211s, 419s and 432s and materialized 145,069 files.
-      Fetch alone took 125.635s, 355.961s and 368.497s. Existing issue 6351 and
-      W-SELFHOSTED-BRIDGE own materialization; planner sparse paths are not packs.
-      Next decisions use explicit 300s critical-path budgets, inner unittest
-      inventory/timing, current fetch/fixture costs and admitted capacity.
-      Dev runtime remains Terminal's accepted full-suite path; compiled authority
-      parity and broader reuse receive no unproved latency credit. Five-minute
-      p95 and full three-repository acceptance remain open. Preserve original
-      operation 26751 for PR 10674 as EFFECT_UNKNOWN, PR 10656's hold and main
-      admission OFF, plus Macro/Terminal rule-read 403s. No self-merge, queue
-      request, alternate denied lookup or messaging occurred.
+      master architecture extends this wave and existing Phase 4, without a new
+      planner, queue, runtime or acceptance owner. Its latest immutable milestone is
+      https://github.com/mastermindx-market-intelligence/Mastermind/blob/01a4bf1ac0e0001bb674cc696fd98710dae1b91f/docs/CI_LIGHTNING_ARCHITECTURE.md
+      in original PR 2191, document blob 5870bd18e8f98db75ffd7d937e05f6cc675bdb56.
+      That source defines explicit 300s full-verdict budgets, fresh-work and
+      exact-source reuse boundaries, rollback proofs and natural-cohort acceptance.
+      Five-minute p95 and complete three-repository delivery remain unachieved.
+      Accepted continuity PR 10825 remains efdf3577bb35607bb02a4a0a1900adb91a3784c6;
+      this original PR 10827 carries the bounded follow-up, not a new workstream.
+      Mastermind PR 2065 now publishes 6659ab2ce6b56390d9f3ca74dfe22f4fcd03c4e4.
+      Its adapter repair preserves signal refusal and completion custody while
+      preventing repeated escalation and blocked final stderr reporting. Five new
+      regressions failed on b549; one repaired invocation passed all 217 cases,
+      zero failure/error/skip. Earlier b549 required and serial runs completed
+      SUCCESS in 19m54s and 37m53s on actual merge 4e4c49ba6b870d48cfb9396d41cbb40322e8d1a8.
+      All 24 required child receipts are valid; same-source module/count parity
+      covers 2,313 selected modules and 70,058 case occurrences. Eight nested
+      diagnostic summaries added 98 cases to raw timing output; those lines are
+      not inventory authority. The next exact case/outcome companion must use
+      explicit actual-child argv activation, complete source-bound rows and
+      duplicate/missing refusal, without changing private receipts or selection.
+      Manual four-process RWE run 42374751661 failed an initializer custody check
+      on different branch-source b549; do not call it a matched speed comparison.
+      Preserve first failure and bounded node/field diagnosis before relocating
+      the realized environment or making any guard change. RWE default stays 0.
+      Current 6659 required run 42377942847 is FAILURE at actual merge fe34727abd6f725c4c5a894a05e42a1ce98ff319.
+      Its process-concurrency test received all six zero-exit starter results, but
+      at least one contained a caught journal refusal. Recover finite owner codes;
+      do not assume a queue hang, precreate the root or widen timers to hide it.
+      Serial run 42377942886 remains in progress at this milestone. The historical
+      gateway Release HOLD is separate and remains binding despite later greens.
+      Terminal PR 1297 is accepted as 90ddc1390e89f60677a55ed854e8368accbc252d.
+      Terminal PR 1334 is accepted as 81ff9cb82bc90e166746802b83ed9daa0df4a97c.
+      DO_NOT_REDO either accepted scope or News preparation change. The latter's
+      full native run 42364524142 succeeded in 55m20s, including one flaky tablet
+      J1 journey; exact merge-group 42372715075 also succeeded. A retained trace
+      proves the first Company-to-Thesis link omitted all six origin fields before
+      Save or Back. Original artifact 13572528490 has SHA256
+      598eda48d3454c4472c5331be8b12568527880f5af3f49e852b86f20ef421d6a.
+      The existing AnalysisWorkspace passive context projection is the repair
+      boundary. Fresh operation ci-lightning-terminal-context-20261107-c2 starts
+      from protected 81ff; the actual component initial-render regression fails
+      before effects, and unscoped-context controls expose fallback-company
+      attachment. Synchronous validated projection must preserve immediate
+      same-company picker clearing and later legitimate route returns. Retain
+      original J1's immediate link click and complete Save-B-Back-reload-return
+      journey; no readiness wait may conceal the defect. The production owner,
+      existing unit owner and browser spec are unchanged in held PR 1223's actual
+      unpublished tree. Its original uncertain create-commit and shared runtime
+      ownership remain fenced; the independent leaf repair does not clear them.
+      Macro PR 10788 was updated once on its original carrier to
+      7bb27547804acb3e80df103e47f18358ae73f68b, integrating accepted main 53e1da35.
+      Accepted PR 10781 already supplies code/data routing; do not recreate it.
+      Fresh run 42375466781 used actual merge 33adac3070ee9d951aa6cfbeb27d93950ad0a4a9.
+      Contract-delta passed in 559s and planning in 94s. Pack 7 failed the missing
+      commodity company-link assertion; exact-base replay also fails visibly,
+      but canonical inherited-base is not inferred without its semantic fragment.
+      Accepted PR 10834 merged as dabd1169a7cd1b2518d94fc199888bc00103ca27 and
+      fixes this one fixture through actual-template synthetic linked/empty/
+      unavailable cohorts. Integrate that accepted repair on original PR 10788
+      after current native/effect reconciliation; do not rewrite product data,
+      relax failure classification or open a replacement carrier. Preserve all
+      120 FIF modules, corrected 1,139-path closures and accepted S1 routing.
+      Historical FIF native times remain 957.34/1644.98/1302.98s, not the old
+      model weights; checkout fetch and materialization remain separately measured.
+      Existing issue 6351 and W-SELFHOSTED-BRIDGE own acquisition work.
+      Macro PR 10755 is accepted. Preserve PR 10674 original operation 26751 as
+      EFFECT_UNKNOWN, then the existing 10745-to-10735 progression; no bulk arming.
+      PR 10656 remains held and main admission OFF. Explicit Macro/Terminal
+      rule-read 403s are not retried through another carrier. Dev runtime remains
+      Terminal's accepted full-suite path; compiled authority parity and broader
+      reuse get no unproved latency credit. No self-merge, queue request,
+      autonomous-runner claim or external messaging is part of this milestone.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
