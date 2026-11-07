@@ -1,0 +1,19 @@
+{
+  "schema": "mmx.commodities.review_receipt.v1",
+  "accepted_base": "2148a98367be4239baac6af5bad103b2fb6f78e9",
+  "mode": "published_payload_presentation_only",
+  "research_as_of": "2026-10-21",
+  "workspace_fingerprint": "619bb06df66962d8f7219f5e5a096d58ef556e58d45d617f6a51ee7f3a12e2ee",
+  "accepted_page_sha256": "b0fe761bb70e6359adfc97a4eefa57d3026b1ae9d98175fd46db58c57f559910",
+  "review_page_sha256": "3cdd6196c58cd4d24998598df3934680f2c154f4c71f0775968f6b6ef20e24a2",
+  "payload_sha256": "a0363b8ea32e1eda0878d9b2ff8cc9cbdd9cd561c47e8593f47867e16c0bb56d",
+  "payload_bytes_unchanged": true,
+  "legacy_content_preserved": true,
+  "assets": 17,
+  "chains": 3,
+  "economic_recomputation": false,
+  "collectors_run": false,
+  "scoring_run": false,
+  "forecasts_run": false,
+  "production_acceptance": false
+}

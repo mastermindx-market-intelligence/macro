@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-27T21:02:59Z",
+ "accession": "0002013745-26-000007",
+ "cik": "0002013745",
+ "doc_byte_length": 4950613,
+ "doc_sha256": "9c222278fdb7b316069aef1075946fab530249989175ae7ffea5507b60a53373",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-27",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "clmt-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 789036,
+  "byte_start": 788677,
+  "normalized": "We have various long-term feedstock supply agreements with Phillips 66, with some agreements operating under the option to continue on a month-to-month basis thereafter, for feedstocks that are key to the operations of our Karns City and Dickinson facilities. In addition, certain products of our refineries can be used as feedstocks by these facilities.",
+  "normalized_sha256": "ec871cd917116f3c3e8fe757985d0cd622187c0aa33edf871044e4822b876130",
+  "raw": "We have various long-term feedstock supply agreements with Phillips 66, with some agreements operating under the option to continue on a&#160;month-to-month basis thereafter, for feedstocks that are key to the operations of our Karns City and Dickinson facilities. In addition, certain products of our refineries can be used as feedstocks by these facilities.",
+  "raw_sha256": "c5fb345b44b15e5af08a868622ac2f3abee0fbb0fb4da628dbce08fd800be3b2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2013745/000201374526000007/clmt-20251231x10k.htm",
+ "xbrl_contexts": []
+}

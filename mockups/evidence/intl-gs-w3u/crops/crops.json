@@ -1,0 +1,42 @@
+[
+ {
+  "file": "dislocations__dark__en__1280.png",
+  "viewport": "1280x900",
+  "theme": "dark",
+  "lang": "en",
+  "variant": "specimen",
+  "what": "1280 desktop: rail 400 beside the column"
+ },
+ {
+  "file": "dislocations__dark__en__1024-stacked.png",
+  "viewport": "1024x900",
+  "theme": "dark",
+  "lang": "en",
+  "variant": "specimen",
+  "what": "1024: the inspector rail stacks below the left column (D3, mutant 6)"
+ },
+ {
+  "file": "abstain-row__dark__en__1440.png",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "lang": "en",
+  "variant": "production-rows",
+  "what": "Abstain row: dashed muted chip, dash cells, reason line"
+ },
+ {
+  "file": "qualified-row__dark__en__1440.png",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "lang": "en",
+  "variant": "specimen",
+  "what": "Qualified row: dashed warn residual bar outline, fragility 60 above threshold (D2/D4)"
+ },
+ {
+  "file": "dislocations__dark__en__1440__production.png",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "lang": "en",
+  "variant": "production",
+  "what": "production honesty: no fragility numeral, scatter Empty note, all markets in Not-plotted chips"
+ }
+]

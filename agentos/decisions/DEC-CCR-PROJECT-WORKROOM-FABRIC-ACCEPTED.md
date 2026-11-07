@@ -1,6 +1,107 @@
 ---
 key: CCR-PROJECT-WORKROOM-FABRIC-ACCEPTED
 question: >
+  Should selected material Mastermind Projects use persistent Slack Workrooms joined to
+  Linear while preserving the existing organizational, runtime and implementation owners?
+answer: >
+  The August 29, 2026 decision adopted the Federated Project Workroom Fabric under
+  WS:CHAIRMAN-CONTROL-ROOM. An eligible Agent OS workstream may bind exactly to one
+  normalized Linear Project and zero or one selected public-internal Slack Workroom.
+  Linear is human projection; Slack is collaboration and dialogue transport; Agent OS
+  is organizational knowledge; Executive OS owns Job/Attempt/Worker/Event authority;
+  GitHub owns implementation and proof. Protected Mastermind #273 records architecture
+  and #285 records WR-R0 research. This November 7 archival correction publishes that
+  historical ruling and its boundaries; it does not install or activate a Workroom.
+rationale: >
+  The accepted design separated collaboration surfaces from runtime and source truth.
+  Exact identity, immutable evidence and fail-closed effect reconciliation prevent
+  Slack or Linear activity from being mistaken for ownership, completion or authority.
+  The public-internal V1 and separate least-privilege Projector/Relay principals remain
+  the historical design. Private Workrooms, fuzzy adoption, write-exposed Home surfaces
+  and broad automatic channel creation were not accepted first-wave behavior.
+  Dated state and archived commands must not become a present-day execution request.
+alternatives:
+  - option: Treat closed architecture and research drafts as current release carriers
+    why_not: "Protected #273 and #285 preserve their accepted source lineage; reviving #240 or #242 would duplicate carrier authority."
+  - option: Replace Slack and Linear with another project or runtime system
+    why_not: This duplicates existing knowledge, lifecycle, task, queue or memory ownership.
+  - option: Give Agent Relay general Workroom mutation authority
+    why_not: Dialogue transport and the least-privilege Workroom Projector have separate effect and identity boundaries.
+  - option: Use attached Canvas creation as an automatic fallback
+    why_not: Write exposure and ambiguous create/access outcomes require exact-object reconciliation, not a second object or automatic deletion.
+evidence:
+  - "Historical decision date is August 29, 2026; this source-publication correction is a November 7 records-preparation snapshot under Macro #6661."
+  - "Current canonical PR metadata confirms Mastermind #273 merged as 8f0babf473e6e4e8efce697014bd48c594227d94 and #285 merged as e19ef1c54cc6f2b7bfc652a78bf94a209fcb42b9."
+  - "Immutable commits dcce6f7ab6efad360f4854d748ad0d65dc9e0f7c (#228 Steward source) and 6c5c2a6225a3fa2c2ec3e3398dcc8b8629b3a988 (#421 portfolio source amendment) are verified ancestors of protected Mastermind e37dc82f070fd391e29f0dbd0bf46b022166beea; this is source ancestry, not renewed product acceptance."
+  - "August observations recorded 0 Initiatives / 50 Projects / 0 memberships. The earlier desired compiler epoch was 7 Initiatives / 52 memberships / 2 exceptions."
+  - "The September 6 #6661 description recorded 7 Initiatives / 65 Projects / 63 single-Initiative memberships / 2 exceptions / 0 multi-parent Projects, with group counts 10/17/11/6/4/8/7. These are dated attributed observations."
+  - "November live Linear and Slack estate is UNVERIFIED by this repair. No new live connector read, rollout or product proof occurred."
+  - "The August 29 exact-channel record reports C0BTQ71QEA0 as effect APPLIED and capability INERT / UNMANAGED / NOT A WORKROOM; its complete original source is retained in the discovery archive."
+  - "Historical HOLD https://github.com/mastermindx-market-intelligence/macro/pull/6661#issuecomment-5486988717 and records-only preparation ruling https://github.com/mastermindx-market-intelligence/macro/pull/6661#issuecomment-6655490055 remain attributed evidence."
+  - "Current source recovery and release evidence belong to https://github.com/mastermindx-market-intelligence/macro/pull/6661#issuecomment-6701715753; source publication requires its actual validation and protected release receipts."
+affects:
+  - WS:CHAIRMAN-CONTROL-ROOM
+  - MAS-231
+  - MAS-235
+  - MAS-236
+  - mastermindx-market-intelligence/Mastermind#273
+  - mastermindx-market-intelligence/Mastermind#285
+  - Workroom Projector / Agent Relay / Executive Steward ownership boundaries
+confidence: high
+reversibility: costly
+decided_by: chairman
+decided_at: 2026-08-29
+---
+
+## Publication scope and historical lineage
+
+This file retains the accepted historical architecture under its existing owners.
+Its active fields describe dated evidence and source-publication boundaries.
+The complete original text is quoted verbatim below; its obsolete current-tense
+claims and continuation commands do not govern a November operation.
+
+| Source | Verified protected identity | Meaning of that evidence |
+|---|---|---|
+| Mastermind #273 | 8f0babf473e6e4e8efce697014bd48c594227d94 | Architecture and rollout source |
+| Mastermind #285 | e19ef1c54cc6f2b7bfc652a78bf94a209fcb42b9 | WR-R0 research; accepted head 324f5889ade509adcd430448b6e264a21914b129 |
+| Mastermind #228 | dcce6f7ab6efad360f4854d748ad0d65dc9e0f7c | Steward source, with BUILT_NOT_PROVEN / PRODUCTION_INERT boundaries |
+| Mastermind #421 | 6c5c2a6225a3fa2c2ec3e3398dcc8b8629b3a988 | Records-only 7/65/63/2 portfolio amendment |
+
+The #228 and #421 identities were confirmed through immutable commits and ancestry
+against protected Mastermind e37dc82f070fd391e29f0dbd0bf46b022166beea. Their initial
+PR metadata reads were unavailable; commit timestamps are not relabeled PR merge
+timestamps. The September 6 live-portfolio counts are attributed to the historical
+PR description, not to a November connector read.
+
+## Execution and product boundaries
+
+This records-only change does not commission WR-P0, repeat an Initiative apply,
+adopt a channel or claim any present Workroom capability. Macro #6658 retains its
+own source, review, CI and acceptance lineage. A stale compiler record does not
+prove the live portfolio is absent. Current normalized portfolio proof and later
+Workroom prerequisites belong to their separately authorized owners.
+
+The Projector and Agent Relay remain separate principals. Standalone-first Home,
+exact channel/marker identity and canary-only attached Canvas retain their
+historical constraints. Ambiguous remote effects remain bound to their original
+objects; a lost response permits neither a second create nor automatic deletion.
+Existing uncertain effects and live writers are not reassigned by this record.
+
+No workstream, lifecycle, project database, queue, retry/session registry, memory
+plane, synchronizer, provider router or watcher is introduced. Closed predecessor
+carriers are historical; the active WS:CHAIRMAN-CONTROL-ROOM file is unchanged.
+
+## Verbatim historical archive
+
+The following is the complete original source at [ad978bbb46ca04144aa834949572ff37617978f2](https://github.com/mastermindx-market-intelligence/macro/blob/ad978bbb46ca04144aa834949572ff37617978f2/agentos/decisions/DEC-CCR-PROJECT-WORKROOM-FABRIC-ACCEPTED.md), Git blob `8dd8b4a08e12980b5f980fdb814868604a28ba40`, 7018 UTF-8 bytes, SHA256 `92dbcb11b3d85fc1662028cf017a01f5752dbb0ad2a71b3ae5de73f9372ea6ac`.
+
+This quotation preserves historical facts, obsolete metadata and imperative lists as evidence. Those archived instructions are inert: they do not commission work, establish current liveness, replace an owner, or authorize a new or repeated effect. The leading record describes the dated records-preparation snapshot; later source-release evidence belongs to [the original PR](https://github.com/mastermindx-market-intelligence/macro/pull/6661). A separator newline after the payload is outside the recorded original bytes.
+
+<!-- ORIGINAL_PAYLOAD_BEGIN -->
+````text
+---
+key: CCR-PROJECT-WORKROOM-FABRIC-ACCEPTED
+question: >
   Should selected material Mastermind Projects operate through persistent Slack Workrooms joined to
   Linear, or should Slack/Linear be replaced or allowed to become another project/runtime truth plane?
 answer: >
@@ -94,3 +195,6 @@ pure WR-P0 compiler unbuilt once its own direct prerequisites are satisfied.
 Do not create `WS:PROJECT-WORKROOMS`, Slack OS, Workroom OS, another lifecycle, project/task database,
 queue, watcher store, retry plane, session registry, memory plane, synchronizer or provider router.
 Slack/Linear activity never establishes runtime, authority, completion or production acceptance.
+
+````
+<!-- ORIGINAL_PAYLOAD_END -->

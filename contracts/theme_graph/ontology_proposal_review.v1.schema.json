@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/ontology_proposal_review.v1.schema.json",
+  "title": "GMI exact proposal evidence review v1",
+  "description": "Read-only review of one existing proposal. Its status never grants graph, curation, public-display or investment authority. Endpoint envelopes reuse the existing neighborhood contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "authority_ceiling", "proposal_id", "asof", "knowledge_cutoff", "availability", "proposal", "relation", "endpoints", "limitations"],
+  "properties": {
+    "schema": {"const": "gmi.theme_ontology_proposal_review/v1"},
+    "authority_ceiling": {"const": "research_internal_only"},
+    "proposal_id": {"type": "string", "pattern": "^prop:[0-9a-f]{16}$"},
+    "asof": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/date"},
+    "knowledge_cutoff": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/date"},
+    "availability": {
+      "type": "object", "additionalProperties": false, "required": ["state", "reason"],
+      "properties": {"state": {"enum": ["OK", "PROPOSAL_NOT_FOUND"]}, "reason": {"type": ["string", "null"]}}
+    },
+    "proposal": {"anyOf": [{"type": "null"}, {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/proposal"}]},
+    "relation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state", "type", "source_node_id", "target_node_id", "edge_ids"],
+      "properties": {
+        "state": {"enum": ["NOT_EVALUATED", "UNSUPPORTED_SUBJECT", "ENDPOINT_UNAVAILABLE", "RELATION_ABSENT", "RELATION_PRESENT"]},
+        "type": {"enum": [null, "EXPRESSES"]},
+        "source_node_id": {"type": ["string", "null"]},
+        "target_node_id": {"type": ["string", "null"]},
+        "edge_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      },
+      "allOf": [{
+        "if": {"properties": {"state": {"const": "RELATION_PRESENT"}}},
+        "then": {"properties": {"edge_ids": {"minItems": 1}, "type": {"const": "EXPRESSES"}, "source_node_id": {"type": "string"}, "target_node_id": {"type": "string"}}},
+        "else": {"properties": {"edge_ids": {"maxItems": 0}}}
+      }]
+    },
+    "endpoints": {"type": "array", "maxItems": 2, "items": {"$ref": "ontology_neighborhood.v1.schema.json"}},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "allOf": [{
+    "if": {"properties": {"availability": {"properties": {"state": {"const": "PROPOSAL_NOT_FOUND"}}}}},
+    "then": {"properties": {"proposal": {"type": "null"}, "endpoints": {"maxItems": 0}, "relation": {"properties": {"state": {"const": "NOT_EVALUATED"}}}}},
+    "else": {"properties": {"proposal": {"type": "object"}}}
+  }]
+}
