@@ -85,6 +85,26 @@ test('deep link binds one exact capture tuple in cold and cached catalogs',()=>{
  assert.equal(h.deepLinkMismatch({mode:'historical'},c),'');
 });
 
+test('only a complete historical/current reference can dispatch to the exact endpoint without a catalog',()=>{
+ const e=fixture.examples.retained_historical,i=intent(e,'historical'),cu=fixture.examples.retained_current;
+ assert.equal(h.completeCompareRef(i),true);
+ assert.equal(h.completeCompareRef(intent(cu,'current')),true);
+ for (const key of ['query','subject','gen','genSha','method','context','cutoff']) {
+  const partial={...i};delete partial[key];
+  assert.equal(h.completeCompareRef(partial),false,'a missing '+key+' must go back to the catalog');
+ }
+ assert.equal(h.completeCompareRef({...i,mode:'saved'}),false,'saved output still needs its catalog capture id');
+ assert.equal(h.completeCompareRef({...i,mode:'current',method:cu.body.method_spec.method_spec_id}),true);
+ for (const broken of [{genSha:'zz'},{genSha:''},{genSha:64},{cutoff:'2026-08-20T12:00:00'},{cutoff:'2026-02-30T00:00:00Z'},
+   {query:'mm query with spaces'},{method:''},{context:'mmctx_'+('x'.repeat(200))}]) {
+  assert.equal(h.completeCompareRef({...i,...broken}),false,'malformed '+Object.keys(broken)[0]);
+ }
+ assert.equal(h.completeCompareRef(null),false);
+ assert.equal(h.completeCompareRef(undefined),false);
+ assert.equal(h.completeCompareRef({}),false);
+ assert.equal(h.completeCompareRef({...i,mode:'not-a-mode'}),false);
+});
+
 function savedPair() {
  const e=fixture.examples.saved,q=e.request.query;
  const entry=h.normalizeCatalog(fixture.examples.catalog_saved.body).entries.find(v=>v.contextId===q.context_id);
@@ -119,4 +139,23 @@ test('catalog missing fields follow owner unavailable enum',()=>{
  const e=clone(fixture.examples.catalog_saved.body.entries[0]);e.field_status.growth_score='unavailable';
  assert.equal(h.normalizeEntry(e).fieldsPresent.growth_score,false);
  e.field_status.growth_score='missing';assert.throws(()=>h.normalizeEntry(e));
+});
+
+// Real edge response: Caddy keeps the packet digest and adds its encoding suffix.
+for (const encoding of ['gzip','zstd']) test('saved output accepts exact '+encoding+' representation tag',()=>{
+ const {e,entry,i}=savedPair();
+ const etag='"'+entry.packetSha256+'-'+encoding+'"';
+ const v=h.normalizePlayback(entry,e.body,etag,i,encoding);
+ assert.equal(v.contextId,i.context);assert.deepEqual(clone(v.state),e.body.feature_projection.state);
+ const wrong=clone(e.body);wrong.exact_refs.packet.sha256='f'.repeat(64);
+ assert.throws(()=>h.normalizePlayback(entry,wrong,etag,i,encoding),e=>e.contractCode==='saved_original_refs');
+});
+for(const [suffix,encoding] of [['gzip',null],['gzip','zstd'],['zstd','gzip'],['gzip','gzip, br'],['br','br'],['gzip-extra','gzip']])test('reject nonmatching encoded saved validator '+suffix+'/'+encoding,()=>{
+ const {e,entry,i}=savedPair();
+ assert.throws(()=>h.normalizePlayback(entry,e.body,'"'+entry.packetSha256+'-'+suffix+'"',i,encoding),e=>e.contractCode==='saved_etag');
+});
+test('encoding cannot excuse a different digest or weak/malformed validator',()=>{
+ const {e,entry,i}=savedPair();
+ for(const etag of ['"'+('f'.repeat(64))+'-gzip"','W/"'+entry.packetSha256+'-gzip"',entry.packetSha256+'-gzip','"'+entry.packetSha256+'-gzip", "other"'])
+  assert.throws(()=>h.normalizePlayback(entry,e.body,etag,i,'gzip'),e=>e.contractCode==='saved_etag');
 });

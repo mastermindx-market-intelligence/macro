@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-26T20:35:23Z",
+ "accession": "0001973239-26-000097",
+ "cik": "0001973239",
+ "doc_byte_length": 3137018,
+ "doc_sha256": "8ab052cc035f9cc93429c0bfd76edf2bc11a686a80f0cc7b568fbd456b2ec815",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-26",
+ "form": "20-F",
+ "period_of_report": "2026-03-31",
+ "primary_document": "arm-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 798944,
+  "byte_start": 798098,
+  "normalized": "On August 31, 2022, we sued Qualcomm Inc. and Qualcomm Technologies, Inc. (together, “Qualcomm”) and Nuvia, Inc. (“Nuvia”) in the U.S. District Court for the District of Delaware alleging that, inter alia, Qualcomm and Nuvia breached the termination provisions of Nuvia’s Architecture License Agreement (the “Nuvia ALA”) with us by failing to destroy technology Nuvia developed under the Nuvia ALA, which we terminated in March 2022 based on Nuvia’s failure to obtain our consent to the assignment of the Nuvia ALA to Qualcomm. Our complaint sought, among other things, specific performance of the Nuvia ALA termination provisions to require Qualcomm and Nuvia to stop using and to destroy the relevant Nuvia technology, and to stop their improper use of our trademarks with their related products.",
+  "normalized_sha256": "6a32a6482ddc6c1bb11fb140141596e5884ddd92afdbd3db9c4cf619bbae439d",
+  "raw": "On August 31, 2022, we sued Qualcomm Inc. and Qualcomm Technologies, Inc. (together, &#8220;Qualcomm&#8221;) and Nuvia, Inc. (&#8220;Nuvia&#8221;) in the U.S. District Court for the District of Delaware alleging that, inter alia, Qualcomm and Nuvia breached the termination provisions of Nuvia&#8217;s Architecture License Agreement (the &#8220;Nuvia ALA&#8221;) with us by failing to destroy technology Nuvia developed under the Nuvia ALA, which we terminated in March 2022 based on Nuvia&#8217;s failure to obtain our consent to the assignment of the Nuvia ALA to Qualcomm. Our complaint sought, among other things, specific performance of the Nuvia ALA termination provisions to require Qualcomm and Nuvia to stop using and to destroy the relevant Nuvia technology, and to stop their improper use of our trademarks with their related products.",
+  "raw_sha256": "c5b99d0e34718c3a2ab87ef793fc43b2cff095636e19a01784fbd07c38b1e489"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1973239/000197323926000097/arm-20260331.htm",
+ "xbrl_contexts": []
+}

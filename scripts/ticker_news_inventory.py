@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 import json
 import math
 import sqlite3
+import stat
 import sys
 import time
 from pathlib import Path
@@ -182,15 +183,14 @@ def build_inventory(
     known_at = _zulu(current)
     path = Path(database)
     try:
-        # pathlib re-raises EACCES and friends instead of reporting the
-        # path as absent, so an untraversable state directory must map to
-        # the same fail-closed refusal as every other unreadable store.
-        if not path.exists():
-            raise InventoryError("database_missing")
-        if not path.is_file():
+        # Use stat directly: recent Python versions make exists()/is_file()
+        # suppress permission errors, which would mislabel an unreadable store.
+        info = path.stat()
+        if not stat.S_ISREG(info.st_mode):
             raise InventoryError("database_unreadable")
-
-        size = path.stat().st_size
+        size = info.st_size
+    except (FileNotFoundError, NotADirectoryError) as exc:
+        raise InventoryError("database_missing") from exc
     except OSError as exc:
         raise InventoryError("database_unreadable") from exc
 

@@ -17,6 +17,7 @@ from engine.fundamental_forensics.query import HARD_MAX_TICKERS
 
 
 _PERCENTILE_QUANTUM = Decimal("0.0001")
+_DURATION_TOLERANCE_DAYS = 20
 _AUTHORITY: Mapping[str, Any] = MappingProxyType(
     {"class": "context_only", "display_only": True}
 )
@@ -37,6 +38,10 @@ class MetricObservation:
     period_end: date | None
     period_basis: str
     applicable: bool
+    withheld: bool = False
+    period_start: date | None = None
+    unit: str | None = None
+    metric_version: str | None = None
 
 
 @dataclass(frozen=True)
@@ -77,6 +82,9 @@ class MetricEmission:
     ranks: Mapping[str, int] | None
     percentiles: Mapping[str, Decimal] | None
     mean: Decimal | None
+    members_considered: int = 0
+    exclusion_counts: Mapping[str, int] = MappingProxyType({})
+    shifted_n: int = 0
 
 
 @dataclass(frozen=True)
@@ -116,8 +124,11 @@ def build_cohort_table(
 
     ``observations`` is keyed ``issuer_id → metric_id → MetricObservation``.
     Duplicate ``issuer_id`` values raise the query-kernel unique-entity
-    message.  Members sharing a CIK collapse to the lexicographically first
-    ``issuer_id``; dropped aliases emit ``A35-I1``.
+    message.  ``CohortMember.cik`` is the owner-binding cik the caller
+    supplies (A14) and is the only collapse key: members sharing it collapse
+    to the lexicographically first ``issuer_id`` and dropped aliases emit
+    ``A35-I1`` — this module never derives, re-keys, or second-guesses
+    issuer identity.
     """
     issuer_ids = [member.issuer_id for member in definition.members]
     if len(set(issuer_ids)) != len(issuer_ids):
@@ -206,21 +217,43 @@ def _emit_metric(
     anchor_obs = _lookup(observations, anchor_id, metric_id)
     if anchor_obs is None and definition.anchor_issuer_id != anchor_id:
         anchor_obs = _lookup(observations, definition.anchor_issuer_id, metric_id)
-    anchor_end = None if anchor_obs is None else anchor_obs.period_end
+    # A withheld anchor still sets the reference month (it is excluded
+    # itself as W1); only an anchor with no reference period is unusable.
+    anchor_usable = (
+        anchor_obs is not None
+        and anchor_obs.applicable
+        and (anchor_obs.value is not None or anchor_obs.withheld)
+        and anchor_obs.period_end is not None
+    )
 
     rows: list[MemberRow] = []
     exclusions: list[Exclusion] = []
+    removed_counts: dict[str, int] = {}
     for member in kept:
-        row, exclusion = _evaluate_member(
-            definition,
-            member=member,
-            metric_id=metric_id,
-            observations=observations,
-            anchor_end=anchor_end,
-        )
+        if anchor_usable or member.issuer_id == anchor_id:
+            # the anchor member keeps its own ordinary exclusion (X1/B1/P1)
+            # even when the anchor reference is unusable for ranking
+            row, exclusion = _evaluate_member(
+                definition,
+                member=member,
+                metric_id=metric_id,
+                observations=observations,
+                anchor_obs=anchor_obs if anchor_usable else None,
+            )
+        else:
+            row = None
+            exclusion = Exclusion(
+                issuer_id=member.issuer_id,
+                metric_id=metric_id,
+                code="A35-R1",
+                reason="anchor_reference_unavailable",
+            )
         if exclusion is not None:
             exclusions.append(exclusion)
             if row is None:
+                removed_counts[exclusion.code] = (
+                    removed_counts.get(exclusion.code, 0) + 1
+                )
                 continue
         if row is not None:
             rows.append(row)
@@ -228,7 +261,21 @@ def _emit_metric(
     rows.sort(key=lambda item: (item.metric_id, item.issuer_id))
     exclusions.sort(key=lambda item: (item.metric_id, item.issuer_id))
     eligible_n = len(rows)
-    if eligible_n < definition.min_n:
+    exclusion_counts = MappingProxyType(dict(sorted(removed_counts.items())))
+    shifted_n = sum(1 for row in rows if row.shifted)
+    if not anchor_usable:
+        emission = MetricEmission(
+            metric_id=metric_id,
+            emission_state="anchor_unavailable",
+            eligible_n=0,
+            rows=(),
+            ranks=None,
+            percentiles=None,
+            mean=None,
+            members_considered=len(kept),
+            exclusion_counts=exclusion_counts,
+        )
+    elif eligible_n < definition.min_n:
         emission = MetricEmission(
             metric_id=metric_id,
             emission_state="below_min_n",
@@ -237,6 +284,9 @@ def _emit_metric(
             ranks=None,
             percentiles=None,
             mean=None,
+            members_considered=len(kept),
+            exclusion_counts=exclusion_counts,
+            shifted_n=shifted_n,
         )
     else:
         ranks, percentiles, mean = _rank_stats(rows)
@@ -248,6 +298,9 @@ def _emit_metric(
             ranks=MappingProxyType(ranks),
             percentiles=MappingProxyType(percentiles),
             mean=mean,
+            members_considered=len(kept),
+            exclusion_counts=exclusion_counts,
+            shifted_n=shifted_n,
         )
     return emission, exclusions
 
@@ -258,7 +311,7 @@ def _evaluate_member(
     member: CohortMember,
     metric_id: str,
     observations: Mapping[str, Mapping[str, MetricObservation]],
-    anchor_end: date | None,
+    anchor_obs: MetricObservation | None,
 ) -> tuple[MemberRow | None, Exclusion | None]:
     observation = _lookup(observations, member.issuer_id, metric_id)
     if observation is None:
@@ -274,6 +327,13 @@ def _evaluate_member(
             metric_id=metric_id,
             code="A35-B1",
             reason="metric_not_applicable",
+        )
+    if observation.withheld:
+        return None, Exclusion(
+            issuer_id=member.issuer_id,
+            metric_id=metric_id,
+            code="A35-W1",
+            reason="statement_withheld",
         )
     if observation.value is None:
         return None, Exclusion(
@@ -295,6 +355,52 @@ def _evaluate_member(
             code="A35-P1",
             reason="period_misaligned",
         )
+    if anchor_obs is not None:
+        # A35 comparability controls: each check is skipped when the anchor
+        # field it reads is unset, so legacy observation maps see no change.
+        if anchor_obs.period_basis and observation.period_basis != anchor_obs.period_basis:
+            return None, Exclusion(
+                issuer_id=member.issuer_id,
+                metric_id=metric_id,
+                code="A35-K1",
+                reason="period_basis_incompatible",
+            )
+        if anchor_obs.unit is not None and observation.unit != anchor_obs.unit:
+            return None, Exclusion(
+                issuer_id=member.issuer_id,
+                metric_id=metric_id,
+                code="A35-U1",
+                reason="unit_incompatible",
+            )
+        if (
+            anchor_obs.period_basis == "duration"
+            and anchor_obs.period_start is not None
+            and (
+                observation.period_start is None
+                or abs(
+                    (observation.period_end - observation.period_start).days
+                    - (anchor_obs.period_end - anchor_obs.period_start).days
+                )
+                > _DURATION_TOLERANCE_DAYS
+            )
+        ):
+            return None, Exclusion(
+                issuer_id=member.issuer_id,
+                metric_id=metric_id,
+                code="A35-D1",
+                reason="duration_incompatible",
+            )
+        if (
+            anchor_obs.metric_version is not None
+            and observation.metric_version != anchor_obs.metric_version
+        ):
+            return None, Exclusion(
+                issuer_id=member.issuer_id,
+                metric_id=metric_id,
+                code="A35-V1",
+                reason="metric_version_incompatible",
+            )
+    anchor_end = None if anchor_obs is None else anchor_obs.period_end
     if anchor_end is not None:
         delta = (observation.period_end - anchor_end).days
         if abs(delta) > definition.period_tolerance_days:
@@ -426,4 +532,10 @@ def _emission_to_dict(emission: MetricEmission) -> dict[str, Any]:
         "ranks": ranks,
         "percentiles": percentiles,
         "mean": None if emission.mean is None else str(emission.mean),
+        "members_considered": emission.members_considered,
+        "exclusion_counts": {
+            key: emission.exclusion_counts[key]
+            for key in sorted(emission.exclusion_counts)
+        },
+        "shifted_n": emission.shifted_n,
     }

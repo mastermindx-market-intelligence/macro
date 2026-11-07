@@ -33,6 +33,7 @@ import re
 import shlex
 import subprocess
 import sys
+import unicodedata
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parent.parent
@@ -62,11 +63,69 @@ DISCOVERY_FALSIFIER_PLACEHOLDER = "UNFILLED"
 DISCOVERY_SO_WHAT_PLACEHOLDER = ""
 _PR_KEYS = frozenset({"number", "title", "head_sha", "files", "merged_at"})
 _WS_RE = re.compile(r"^WS:([A-Z0-9]+(?:-[A-Z0-9]+)*)$")
-_MERGED_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})(?:T\d{2}:\d{2}:\d{2}Z)?$")
+# ``re.ASCII``, not ``[0-9]``: local to this pattern, retroactively covering
+# every ``\d`` here -- present and future -- while ``\d{2}`` stays readable.
+# Without it ``\d`` matches every Unicode Nd; measured pre-fix, only the
+# hour/minute/second ONES coerced -- 3 of the 6 time positions x 670
+# non-ASCII Nd = 2010 (``2026-10-13T1٠:34:56Z``): ``_strptime``'s TimeRE
+# pins the tens as ASCII literals and ``fromisoformat`` refused the date,
+# so the regex class was the only door that could refuse the whole family.
+_MERGED_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})(?:T\d{2}:\d{2}:\d{2}Z)?$", re.ASCII)
 _SHA_RE = re.compile(r"^[0-9a-fA-F]{7,40}$")
 # This checkout can be a partial clone. A missing object must not promisor-fetch,
 # and a miss can walk a multi-gigabyte pack index, so the lookup is bounded.
 _GIT_TIMEOUT_SECONDS = 5
+# One argv hardening list for BOTH the git the drafter runs and the git it
+# RECORDS. A recorded command is a reproduction artifact a human pastes into a
+# shell; if the two prefixes drift, the copy-paste loses the ``-c`` overrides.
+# ``core.fsmonitor`` is the PROVEN vector, and it is proven for the subcommands
+# ``_git`` admits and for nothing wider: ``_git`` accepts only ``cat-file`` and
+# ``diff-tree``, and a target repository's ``.git/config`` can name a
+# ``core.fsmonitor`` executable that a plain, unhardened ``git diff-tree`` runs.
+# ``test_diff_tree_does_not_invoke_repo_fsmonitor`` and
+# ``test_pasting_a_recorded_git_command_does_not_run_repo_fsmonitor`` each assert
+# that power check first -- an UNHARDENED argv really does touch the marker on
+# this git build -- so the flag is not defending a hypothetical.
+# ``-c core.hooksPath=`` is defense-in-depth, not a second proven vector:
+# hooks fire for commands that move refs or the index (commit, push,
+# receive-pack, checkout), not for read-only plumbing, so no command this
+# drafter can record reaches ``core.hooksPath`` today -- measured on git
+# 2.43.0 in a throwaway repository whose ``core.hooksPath`` was seeded with
+# all 28 hook names documented in ``githooks(5)``: plain ``cat-file`` and
+# ``diff-tree`` fire NOTHING, and ``git commit`` fires SIX of them
+# (pre-commit, prepare-commit-msg, commit-msg, post-commit,
+# reference-transaction, post-index-change). An earlier revision here claimed
+# five; that count is seed-dependent -- it only reproduces from a seed that
+# omits post-index-change. No test here proves a hook ran, because none can;
+# what IS pinned is that the flag stays in both prefixes
+# (``test_recorded_git_commands_carry_the_hardening_flags``). It is carried in
+# the same list on purpose: if the ``_git`` subcommand set is ever widened,
+# the widening starts hardened instead of becoming the day the copy-paste
+# gained a second execution vector.
+_GIT_HARDENING = ("-c", "core.fsmonitor=", "-c", "core.hooksPath=")
+# Unicode general categories the ``pr.files`` guard refuses ON TOP of the
+# ``splitlines()`` clause, and the two reasons differ:
+# (i) characters that DO break ``str.splitlines`` inside an entry, so one seat
+#     string becomes two rendered lines, and that the pre-#9310 ``"\n" in entry
+#     or "\r" in entry`` test missed: U+0085 NEL, U+000B VT, U+000C FF (Cc),
+#     U+2028 LINE SEPARATOR (Zl) and U+2029 PARAGRAPH SEPARATOR (Zp). U+000A and
+#     U+000D break lines the same way and were already caught. Scope note: the
+#     count clause only sees a separator that is FOLLOWED by text -- a trailing
+#     one collapses to a single element (``"lib/x.py\n".splitlines() ==
+#     ["lib/x.py"]``), so this category set, not the count, is what refuses a
+#     trailing break of any kind.
+# (ii) characters that break NO line, so no line count can see them, and that
+#     must not reach a rendered record either way: U+0009 TAB, U+0000 NUL and
+#     U+001B ESC (Cc), and the zero-advance invisibles U+200B ZWSP, the bidi
+#     controls U+202A LRE / U+202B RLE / U+202C PDF / U+202D LRO / U+202E RLO
+#     and U+FEFF BOM (Cf). The rendered path is copy-pasted back into a shell,
+#     where ESC is an escape sequence and a bidi override is not decoration.
+# Both parts bind through the same door: ``pr.files`` entries are interpolated
+# RAW into the handoff body and the WS append, so the field guard is the only
+# place they can be refused -- ``_q`` protects the quoted fields, not those two
+# f-strings. (i) is pinned by ``test_file_path_line_separators_are_refused``,
+# (ii) by ``test_invisible_non_line_breakers_are_refused``.
+_UNSAFE_LINE_CATEGORIES = frozenset({"Cc", "Cf", "Zl", "Zp"})
 _GIT_ENV = dict(os.environ)
 _GIT_ENV["GIT_TERMINAL_PROMPT"] = "0"
 _GIT_ENV["GIT_NO_LAZY_FETCH"] = "1"
@@ -116,10 +175,7 @@ def _git(
         return subprocess.run(
             [
                 "git",
-                "-c",
-                "core.fsmonitor=",
-                "-c",
-                "core.hooksPath=",
+                *_GIT_HARDENING,
                 "-C",
                 str(root),
                 subcommand,
@@ -136,10 +192,18 @@ def _git(
 
 
 def _git_tool(repo: Path | None) -> str:
-    """Command prefix recorded in the draft. Omitted --repo stays plain ``git``."""
-    if repo is None:
-        return "git"
-    return "git -C " + shlex.quote(str(repo))
+    """Command prefix recorded in the draft, hardened like the drafter's own argv.
+
+    ``_git`` runs ``git`` with ``-c core.fsmonitor= -c core.hooksPath=`` before
+    ``-C``. The recorded prefix is quoted out of the handoff by a human, so it
+    carries the same ``-c`` overrides in the same order; a plain ``git -C``
+    prefix would run the target repository's ``core.fsmonitor`` for the copier.
+    An omitted ``--repo`` keeps the flags and drops ``-C``.
+    """
+    argv = ["git", *_GIT_HARDENING]
+    if repo is not None:
+        argv += ["-C", str(repo)]
+    return " ".join(shlex.quote(part) for part in argv)
 
 
 def _load_document(path: Path) -> dict:
@@ -197,7 +261,13 @@ def _pr_fields(document: dict) -> dict:
     for entry in files:
         if not isinstance(entry, str) or not entry.strip():
             raise DraftError("pr.files entries must be non-empty strings")
-        if "\n" in entry or "\r" in entry or entry.startswith(("/", "\\")):
+        if (
+            len(entry.splitlines()) != 1
+            or any(
+                unicodedata.category(ch) in _UNSAFE_LINE_CATEGORIES for ch in entry
+            )
+            or entry.startswith(("/", "\\"))
+        ):
             raise DraftError("pr.files entries must be single-line repo-relative paths")
         if any(part == ".." for part in entry.split("/")):
             raise DraftError("pr.files entries must not contain ..")
@@ -214,8 +284,12 @@ def _pr_fields(document: dict) -> dict:
         ) from None
     # The regex permits any digit pairs in the time component; reject impossible
     # wall-clock times like 2026-10-13T99:99:99Z when the ``T...Z`` part is
-    # present.
-    if len(merged_at) > 10 and merged_at[10] == "T":
+    # present. ``fullmatch`` on _MERGED_RE admits exactly two shapes: the fixed
+    # 10-character date group, or that group plus the fixed 10-character
+    # ``(?:T\d{2}:\d{2}:\d{2}Z)`` group. So an accepted string is 10 or 20
+    # characters long and ``len(merged_at) > 10`` already means index 10 is the
+    # literal ``T``; the second test was implied.
+    if len(merged_at) > 10:
         try:
             _dt.datetime.strptime(merged_at, "%Y-%m-%dT%H:%M:%SZ")
         except ValueError:

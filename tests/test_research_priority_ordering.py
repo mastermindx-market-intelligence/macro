@@ -20,11 +20,33 @@ BUILDER_PATH = REPO / "scripts" / "build_state_of_themes.py"
 TEMPLATE_PATH = REPO / "templates" / "state_of_themes.html.j2"
 NAVLINKS_PATH = REPO / "templates" / "_navlinks.html.j2"
 
-_SUPPORT_PARTIALS = (
-    "_site_nav.html.j2",
-    "_navlinks.html.j2",
-    "_seo_head.html.j2",
-)
+# Every partial state_of_themes.html.j2 reaches through {% include %}, followed
+# transitively (_site_nav.html.j2 pulls in _navlinks.html.j2) and read from the
+# template itself. A hand-kept list here went stale when FIN-T9 (#7957) added
+# _finance_sector_deep_dive.html.j2: every synthetic-root render then raised
+# TemplateNotFound. Jinja comments are stripped first so a documented
+# {% include %} example is never mistaken for a real one.
+_INCLUDE_RE = re.compile(r"""\{%-?\s*include\s+["']([^"']+)["']""")
+_JINJA_COMMENT_RE = re.compile(r"\{#.*?#\}", re.DOTALL)
+
+
+def _included_partials(text: str) -> list[str]:
+    return _INCLUDE_RE.findall(_JINJA_COMMENT_RE.sub("", text))
+
+
+def _support_partials() -> tuple[str, ...]:
+    seen: set[str] = set()
+    todo = _included_partials(TEMPLATE_PATH.read_text(encoding="utf-8"))
+    while todo:
+        name = todo.pop()
+        if name in seen:
+            continue
+        seen.add(name)
+        todo.extend(_included_partials((REPO / "templates" / name).read_text(encoding="utf-8")))
+    return tuple(sorted(seen))
+
+
+_SUPPORT_PARTIALS = _support_partials()
 
 _FORBIDDEN_RENDER = (
     "probability",
@@ -151,6 +173,17 @@ def _copy_templates(root: Path) -> None:
     for name in _SUPPORT_PARTIALS:
         src = REPO / "templates" / name
         templates.joinpath(name).write_bytes(src.read_bytes())
+
+
+def test_support_partials_follow_the_template_includes():
+    """The synthetic root mirrors every partial the page reaches, nav included."""
+    assert {
+        "_site_nav.html.j2",
+        "_navlinks.html.j2",
+        "_seo_head.html.j2",
+        "_finance_sector_deep_dive.html.j2",
+    } <= set(_SUPPORT_PARTIALS)
+    assert _included_partials('{# {% include "_ghost.html.j2" %} #}') == []
 
 
 def _base_ctx(**kwargs):

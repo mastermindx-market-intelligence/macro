@@ -72,9 +72,14 @@ def apply_page_signal(
 
     Admission finishes before any slice is written, and each falsifier is
     routed by the row admission read, not by a second read of the
-    document. Every slice's falsifier list is checked before the first
-    slice is written, so a refusal leaves the page as it was. A slice with
-    no admitted row is left as it was.
+    document. Every slice's falsifier list is checked and every target
+    slice's ``rerating`` value is read before the first slice is written.
+    A :func:`_attach_falsifiers` refusal leaves the page as it was, and
+    so does any exception raised by a lookup on a caller-supplied slice
+    mapping or on the ``rerating`` mapping nested inside it. A slice with
+    no admitted row is left as it was. A ``__setitem__`` that raises on a
+    caller-supplied mapping is outside the guarantee: undoing such a
+    write would itself call ``__setitem__``.
     """
     pairs = _admit_pairs(case_document)
     slices = page.get("slices")
@@ -100,5 +105,12 @@ def apply_page_signal(
     # bare slice finds every refusal before a real slice changes.
     for slice_id in order:
         _attach_falsifiers({"slice_id": slice_id}, grouped[slice_id])
+    # Every lookup on a caller-supplied slice happens before the first
+    # caller-visible write, so a raising lookup leaves the page as it was.
+    pre_read: dict[str, Any] = {}
     for slice_id in order:
-        _attach_falsifiers(by_id[slice_id], grouped[slice_id])
+        pre_read[slice_id] = by_id[slice_id].get("rerating")
+    for slice_id in order:
+        _attach_falsifiers(
+            by_id[slice_id], grouped[slice_id], rerating=pre_read[slice_id]
+        )

@@ -1,0 +1,2148 @@
+{
+  "snapshot_file": "/Volumes/Mastermind/ci-pack-throughput-20261019/weighted-natural-runs-2048.json",
+  "treatment_merge": "38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae",
+  "treatment_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+  "discovered": 32,
+  "pending": 9,
+  "cancelled": 4,
+  "before": [
+    {
+      "id": 39238690990,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 94,
+      "job_set": "a0a36886a37820381e7e2cd144e9c9b59c4af054b39fb47243f22cabadc3c7c6",
+      "proof_set": "d95374f4680ff09df9e3d22d789235ccb44862ed7b1f409617f4152419dd430d",
+      "run_to_gate_s": 2414.0,
+      "first_red_s": null,
+      "runner_minutes": 184.45
+    },
+    {
+      "id": 39237548874,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 83,
+      "job_set": "1646330e6caf98723031efcf930da157a33ad279a8fc81c881300045cd41c482",
+      "proof_set": "174ab12979bf14c24aff4ec6baf82748cfd04306daef8d081b8380913c28df93",
+      "run_to_gate_s": 2453.0,
+      "first_red_s": null,
+      "runner_minutes": 144.93
+    },
+    {
+      "id": 39236414524,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 108,
+      "job_set": "2ea37b8974d8c439b9f41f5c6dd7576db6a8b1aac4f7dde112be7ac94504f789",
+      "proof_set": "5e23782dd067473593f75e50537c5f1bec7a578b7917984effb606366053243e",
+      "run_to_gate_s": 4057.0,
+      "first_red_s": null,
+      "runner_minutes": 256.77
+    },
+    {
+      "id": 39236332532,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 102,
+      "job_set": "6171202c8bc75d6d509da69cfaf95996c5069bbed13abbbd8a1ec1bb7ade9f99",
+      "proof_set": "b45710167bc5ee910f37fefec1974a594c011c9e514c9f16bccfb3c08ea13453",
+      "run_to_gate_s": 3429.0,
+      "first_red_s": null,
+      "runner_minutes": 234.58
+    },
+    {
+      "id": 39236263674,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 112,
+      "job_set": "c946cf0c4d67bff89477cd8251d5600c9ba3226e6ecbfd5d4ca54fceeb9d1852",
+      "proof_set": "0698975435b7212bfbd5875f60813d0789f9551c7769df647830f3e2e3ef0a7d",
+      "run_to_gate_s": 4074.0,
+      "first_red_s": null,
+      "runner_minutes": 257.63
+    },
+    {
+      "id": 39235975546,
+      "conclusion": "success",
+      "scope": "global",
+      "count": 255,
+      "job_set": "1cd0fc238e6b8bcbbd56ca6b3ee07e49236abbb6e4746f992cc1f547b81cc444",
+      "proof_set": "b1982744b87efa281e7daf217fe8308f82aeebee26681cfaa0195a239fad0ae2",
+      "run_to_gate_s": 3196.0,
+      "first_red_s": null,
+      "runner_minutes": 321.97
+    },
+    {
+      "id": 39235580372,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 105,
+      "job_set": "0864be6c0e88229dc35580045f0d5eac7a1a2f18b3e07a9016115f561a83f2ef",
+      "proof_set": "0f7bfc73fc5ef152e86041534dd84e661b796880142a0e83d1da8cbefec306d7",
+      "run_to_gate_s": 2499.0,
+      "first_red_s": null,
+      "runner_minutes": 182.02
+    },
+    {
+      "id": 39234426974,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 124,
+      "job_set": "9390fc826ac57f49182cda0dd6658a0567604869c55272b9af718f93a0f86524",
+      "proof_set": "86c81e200845f9a735e74620c12bfb833fef3fe2f5e222442916ccb2358ebadc",
+      "run_to_gate_s": 3458.0,
+      "first_red_s": null,
+      "runner_minutes": 236.57
+    },
+    {
+      "id": 39234350662,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 18,
+      "job_set": "9234b1a15794c8294b69f66cc395fc676deef4c13fbcb2e8891938fe758c21f0",
+      "proof_set": "f18ade60ada999cb1c5b49059814d10b0029f33e91bd9ba5182c534663c5cfed",
+      "run_to_gate_s": 2785.0,
+      "first_red_s": null,
+      "runner_minutes": 102.12
+    },
+    {
+      "id": 39233825272,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 110,
+      "job_set": "a6fba2e4ef28fd1619ecf3f356dee4f2de709d2625975eb5f9bdad9e33fea839",
+      "proof_set": "8ef103394b5abf97e184d45f0759ef99083f2b157bb722df005915f203257972",
+      "run_to_gate_s": 3402.0,
+      "first_red_s": null,
+      "runner_minutes": 218.88
+    },
+    {
+      "id": 39233775390,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 116,
+      "job_set": "05fd981b8fa3966facaa24e905a92b0d2888132572d6069c2fcf675e82f20acd",
+      "proof_set": "764fa6ba948eabb76baa14c55164f4dab371f241b16556a0213ec80addf3c450",
+      "run_to_gate_s": 3013.0,
+      "first_red_s": null,
+      "runner_minutes": 218.5
+    },
+    {
+      "id": 39233721469,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 107,
+      "job_set": "ca2caf86ba02f858cf4a54ea174cfaf7111d2300852bbfd100fb7aff922fe3de",
+      "proof_set": "5ce51d86be1b6ad3ce2be04e5b942d9c453670bdd34ca78024e611dc936336f6",
+      "run_to_gate_s": 3542.0,
+      "first_red_s": null,
+      "runner_minutes": 227.15
+    },
+    {
+      "id": 39233349598,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 116,
+      "job_set": "e1b82735e46a78c30382caaf0629395c0a2d94014f09e4e66b061c0efaaf5ec6",
+      "proof_set": "8df7e9c21cdd7d6dd9310c481493a9501af1467c672543f223013d3fc365e8f9",
+      "run_to_gate_s": 3942.0,
+      "first_red_s": null,
+      "runner_minutes": 255.18
+    },
+    {
+      "id": 39233246363,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 107,
+      "job_set": "cf61d1de63c4a174a8f2ae09577f736c1febb47be7055c2aeeb934ac24c31457",
+      "proof_set": "6b91c757d3ecf50c25b466b614e86f0aea03a28a8bf74be9d75fc79f11856db9",
+      "run_to_gate_s": 2684.0,
+      "first_red_s": null,
+      "runner_minutes": 188.53
+    },
+    {
+      "id": 39233122614,
+      "conclusion": "success",
+      "scope": "scoped",
+      "count": 107,
+      "job_set": "c32c9cec82bb1a9dc76fffc433de5ab7c45b7ab359916fc7aba31dbee53392bc",
+      "proof_set": "7fe8fae8e3affff86354b15344dc76173ffdb7be84f299d47cf07a567b70296e",
+      "run_to_gate_s": 3129.0,
+      "first_red_s": null,
+      "runner_minutes": 227.72
+    },
+    {
+      "id": 39232626567,
+      "conclusion": "failure",
+      "scope": "global",
+      "count": 255,
+      "job_set": "1cd0fc238e6b8bcbbd56ca6b3ee07e49236abbb6e4746f992cc1f547b81cc444",
+      "proof_set": "c2e89748c9c85d9786187a4d1ce25120a0b6ba0966bb8aae5f3f329264e59cc8",
+      "run_to_gate_s": 3516.0,
+      "first_red_s": 2957.0,
+      "runner_minutes": 342.57
+    },
+    {
+      "id": 39232473798,
+      "conclusion": "failure",
+      "scope": "global",
+      "count": 255,
+      "job_set": "1cd0fc238e6b8bcbbd56ca6b3ee07e49236abbb6e4746f992cc1f547b81cc444",
+      "proof_set": "b1982744b87efa281e7daf217fe8308f82aeebee26681cfaa0195a239fad0ae2",
+      "run_to_gate_s": 4109.0,
+      "first_red_s": 2632.0,
+      "runner_minutes": 361.0
+    },
+    {
+      "id": 39230039622,
+      "conclusion": "failure",
+      "scope": "scoped",
+      "count": 97,
+      "job_set": "28c136f52783ed82ae2776fa5cebf6a73b47b998d8647cf7a87932f601006726",
+      "proof_set": "ed9f704a7210db90b8fe03942d9f68eff50caa7913df9e868381e005ee7f82e6",
+      "run_to_gate_s": 2914.0,
+      "first_red_s": 2545.0,
+      "runner_minutes": 189.92
+    },
+    {
+      "id": 39229273374,
+      "conclusion": "failure",
+      "scope": "scoped",
+      "count": 106,
+      "job_set": "70bfd7ff67d442abca3ac059dda656d70da77ef5185f1f17346475d66084edb3",
+      "proof_set": "e44b98bc0a75686b0cd42341f975e805a9069050fc4d7f874a052bc7d8356636",
+      "run_to_gate_s": 3753.0,
+      "first_red_s": 3691.0,
+      "runner_minutes": 231.57
+    },
+    {
+      "id": 39228917299,
+      "conclusion": "failure",
+      "scope": "global",
+      "count": 256,
+      "job_set": "58fc6153a7278765969ff671c0ec7c7e00fb0791bacd6ab438cde7343002fb15",
+      "proof_set": "c3754cc91ce1911db39305b46027302a3c0a7405d5ede6ad2b88a56fd6dc6edf",
+      "run_to_gate_s": 7145.0,
+      "first_red_s": 912.0,
+      "runner_minutes": 481.25
+    },
+    {
+      "id": 39228597930,
+      "conclusion": "failure",
+      "scope": "scoped",
+      "count": 93,
+      "job_set": "0bde3e4635493d1e8215559fc97cfa698fc8c1199c199396dc05a3f23281db9f",
+      "proof_set": "d95996464d8f8a378dfb466b3fbdb564379b7fed39a940a4adc5d0ae78b0409e",
+      "run_to_gate_s": 4232.0,
+      "first_red_s": 4178.0,
+      "runner_minutes": 180.13
+    },
+    {
+      "id": 39228592753,
+      "conclusion": "failure",
+      "scope": "scoped",
+      "count": 134,
+      "job_set": "921fac88b1dea29e2319309cbc11f6ac01b559c65915ecaf0b6693fbc56ba721",
+      "proof_set": "f9c6987cb52999a845a6707e81cc125a12580f6c0695c838fac83ee674dd3faa",
+      "run_to_gate_s": 4342.0,
+      "first_red_s": 2212.0,
+      "runner_minutes": 332.83
+    }
+  ],
+  "after": [
+    {
+      "id": 39318170744,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39318170744",
+      "conclusion": "success",
+      "tested_tree_sha": "308d427705f9c38b26202e6ecb7313672072d2d6",
+      "base_sha": "4e81e6d0942b9ba29fe1f10532a5ee949a98969a",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 20,
+      "job_set": "e6b589cb737d4b8d5c3b4e5cb4536f0be4829f3f47cdc225be3afcc687738b91",
+      "proof_set": "5119e4ddbb48d9a8132b439ed1d255f399c379be811b3406f399e739252e0978",
+      "run_to_gate_s": 1532.0,
+      "first_red_s": null,
+      "runner_minutes": 93.4,
+      "last_pack_to_gate_start_s": 3.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39317389150,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39317389150",
+      "conclusion": "success",
+      "tested_tree_sha": "fd2613786d10ab7ebf658e192780f4ce6301735f",
+      "base_sha": "6dc7e53e2a464889059a5820dda29db2fb644dc1",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 3,
+      "job_set": "1e59a2ee784881f7369c9c56bcfae3e5bcb1f1157410e6bfa970b0ece27fbfd8",
+      "proof_set": "0a7053bde969deaa5a1e2b763788565411b2e699101b47e525ec95b2854d6517",
+      "run_to_gate_s": 776.0,
+      "first_red_s": null,
+      "runner_minutes": 30.716666666666665,
+      "last_pack_to_gate_start_s": 2.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39315061820,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39315061820",
+      "conclusion": "success",
+      "tested_tree_sha": "aebd987c28c9246b3901659f550283da28bbeaf5",
+      "base_sha": "576e21dc2e46bea739465c84a33ffbdf2135cd78",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 94,
+      "job_set": "c038274eb321b64c75556dd5b212f8ae49ac48f70f57e1a1ccdcd6d5441ed40c",
+      "proof_set": "b70273d0daea9633fdd15bf75622c3a1dd776422b36dab070bf9cff8e26dcac8",
+      "run_to_gate_s": 1163.0,
+      "first_red_s": null,
+      "runner_minutes": 159.13333333333333,
+      "last_pack_to_gate_start_s": 2.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39314217895,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39314217895",
+      "conclusion": "failure",
+      "tested_tree_sha": "8f1775d6632ea7f120b00f2ba47b5d8db99e6b0a",
+      "base_sha": "b5998a9344794ded8f3641bf86d6afdf5d65abf4",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 98,
+      "job_set": "60d27f3498124702db96d28071f7ddcb8f095f4f225a1f1ac3d5152e630e456b",
+      "proof_set": "9cce18354e069d387f5322840d416bdbce09365453ef7f65b74e9539a54b8de0",
+      "run_to_gate_s": 2120.0,
+      "first_red_s": 745.0,
+      "runner_minutes": 208.63333333333333,
+      "last_pack_to_gate_start_s": 10.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39311636560,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39311636560",
+      "conclusion": "failure",
+      "tested_tree_sha": "78d074439bd37b6a21d79e40b8e2e42274215e60",
+      "base_sha": "cd98ce5398dbbc551074a0c58dd18888b210c66c",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 114,
+      "job_set": "b7ded20eee15b8ef0bdd8c37c66564e0512b049e85ecb38ea3eb94753575f773",
+      "proof_set": "8f0b7dc5445532ceae9d3f157177ec046102a9dd6b63881b1e526e7a4bb2be78",
+      "run_to_gate_s": 2796.0,
+      "first_red_s": 1428.0,
+      "runner_minutes": 283.6166666666667,
+      "last_pack_to_gate_start_s": 2.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39311574352,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39311574352",
+      "conclusion": "success",
+      "tested_tree_sha": "f1608086524cc8e494d8df1b8b1a8a738561d0c6",
+      "base_sha": "cd98ce5398dbbc551074a0c58dd18888b210c66c",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 159,
+      "job_set": "6f8193704bbea11da6903f7217dc8d56dbc1a58cfdda041757f746832d6dd6c5",
+      "proof_set": "e54de75ff8bc6c6bedf4ea267a42fe4af6999391f9ac51486770cfcc54a551d7",
+      "run_to_gate_s": 3941.0,
+      "first_red_s": null,
+      "runner_minutes": 399.3666666666667,
+      "last_pack_to_gate_start_s": 3.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39311337094,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39311337094",
+      "conclusion": "success",
+      "tested_tree_sha": "fc27b75d4b1ce7de89b2e299bdd5509af95eb7a8",
+      "base_sha": "fc69036adc92bca8329013094d0f071d2777a508",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 111,
+      "job_set": "9b4785162f1492ed39059a53f25531be817cb6e8c0e11a3c6e210b4eb9436015",
+      "proof_set": "b23866c726702913f510caaed1883a8e3889088ac1a5c021605970fe97d27e0e",
+      "run_to_gate_s": 2521.0,
+      "first_red_s": null,
+      "runner_minutes": 277.48333333333335,
+      "last_pack_to_gate_start_s": 2.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39310593327,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39310593327",
+      "conclusion": "failure",
+      "tested_tree_sha": "6e83eef3f1c099af05b7be782a560cb114f3c651",
+      "base_sha": "e4fd1b8b1ee4a1aed846e801a346299a2e296e84",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "global",
+      "count": 258,
+      "job_set": "fe4c67e40b96b6ea4f0cf85e95efe38203d15f3e31e49036caab1aae3f2e06e4",
+      "proof_set": "e47e27884940aa1c8604a8497b58681d9bc9ba8dac43b911012c305118092610",
+      "run_to_gate_s": 2809.0,
+      "first_red_s": 1605.0,
+      "runner_minutes": 365.9166666666667,
+      "last_pack_to_gate_start_s": 3.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39310207706,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39310207706",
+      "conclusion": "success",
+      "tested_tree_sha": "e83b7830b4f96ff9ac0aa797cad09fce7333c479",
+      "base_sha": "e4fd1b8b1ee4a1aed846e801a346299a2e296e84",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 110,
+      "job_set": "752b6d970eb9f4a194f107433358157440e14c0223e15feea347f33dd144119e",
+      "proof_set": "d2c5d74dc66dd3b09c6d02189790e16a2ae4414be2335aadcf5f5d61febdab1e",
+      "run_to_gate_s": 2346.0,
+      "first_red_s": null,
+      "runner_minutes": 247.8,
+      "last_pack_to_gate_start_s": 2.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39310145707,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39310145707",
+      "conclusion": "success",
+      "tested_tree_sha": "f0fbb2e3563bc86147c69d1d7aceaddf2957c3ad",
+      "base_sha": "e4fd1b8b1ee4a1aed846e801a346299a2e296e84",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 141,
+      "job_set": "22ea94469b992754fecdea9b25a5668a827b0e2102e7dc179f613289af3ff3b1",
+      "proof_set": "5dc7a08c8d15ed7267ac01106f0e704737ff45256806255f11d5b7f051d74315",
+      "run_to_gate_s": 2452.0,
+      "first_red_s": null,
+      "runner_minutes": 285.25,
+      "last_pack_to_gate_start_s": 2.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39309396156,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39309396156",
+      "conclusion": "success",
+      "tested_tree_sha": "cbf4f18c3828af99bc1c1ea78b65db613cc21796",
+      "base_sha": "e4fd1b8b1ee4a1aed846e801a346299a2e296e84",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 121,
+      "job_set": "5ee820658b61729ec8333b2673e3bfcaa433294331a6f43010aeb940c4a76059",
+      "proof_set": "7db9caeae9260e26989f4e76f08da26878d744b5f75f032f4a62d09efd48c3aa",
+      "run_to_gate_s": 2106.0,
+      "first_red_s": null,
+      "runner_minutes": 231.71666666666667,
+      "last_pack_to_gate_start_s": 4.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39309256542,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39309256542",
+      "conclusion": "success",
+      "tested_tree_sha": "bf972e4504a00e13006fa4d85b2325a660d66014",
+      "base_sha": "c13ee85f0e686250c1b021deecfdd1ce7eb4b880",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "global",
+      "count": 258,
+      "job_set": "fe4c67e40b96b6ea4f0cf85e95efe38203d15f3e31e49036caab1aae3f2e06e4",
+      "proof_set": "d1e011ef041532b59b30e91cc3d713430254ab2b8be940b2484d1cf0eacb5b23",
+      "run_to_gate_s": 2517.0,
+      "first_red_s": null,
+      "runner_minutes": 373.43333333333334,
+      "last_pack_to_gate_start_s": 2.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39308752646,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39308752646",
+      "conclusion": "failure",
+      "tested_tree_sha": "fee470db34f66bbff9c6e2d4e7da7e8a060d396b",
+      "base_sha": "c13ee85f0e686250c1b021deecfdd1ce7eb4b880",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 108,
+      "job_set": "c4981539cf2147d79b4eb02d46aebd02d6f5ecf159aea8b00d4f9bcdcc39a19e",
+      "proof_set": "5bf0eb5cc6260481ce8cafae3205b3ff2411d6e205bdf0c8e4b27eaa20b00db0",
+      "run_to_gate_s": 3412.0,
+      "first_red_s": 1911.0,
+      "runner_minutes": 309.21666666666664,
+      "last_pack_to_gate_start_s": 2.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39308682108,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39308682108",
+      "conclusion": "success",
+      "tested_tree_sha": "3c92e1b9a26cdddb06ecb252c1fe92d89b61dd78",
+      "base_sha": "38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 119,
+      "job_set": "77db82b974ea9950ac41226cd02bce608d4d07c69ddf7726de2d17f84d86076a",
+      "proof_set": "60d89b9e5d7728792571eaf2ed073fc34c27d67ba10c5dde3ea06d6563e24bc4",
+      "run_to_gate_s": 1937.0,
+      "first_red_s": null,
+      "runner_minutes": 205.65,
+      "last_pack_to_gate_start_s": 3.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39308479052,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39308479052",
+      "conclusion": "success",
+      "tested_tree_sha": "4284bdb4f18a729ae3aef7fbfa865b3353c6489f",
+      "base_sha": "38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 119,
+      "job_set": "afefeb70d3bea3a3b267ea61b37817ae368e5f012e8f82a354a408dc703222da",
+      "proof_set": "0fe5ff79ff6ebc7700409e49e949734b14ef30d6c54771af0a676f2c000f7612",
+      "run_to_gate_s": 2251.0,
+      "first_red_s": null,
+      "runner_minutes": 235.55,
+      "last_pack_to_gate_start_s": 26.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39306698152,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39306698152",
+      "conclusion": "success",
+      "tested_tree_sha": "458874632de1654098ddc37526c13ae2010b6731",
+      "base_sha": "38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 75,
+      "job_set": "75943d884f6ec6c6b53c753a5cbdad88730f736205c3a1777d71bcfe3b98f4b7",
+      "proof_set": "da1eacc0166e76b5a39e69d214e2b441fa8b226193488741862ef9112176f1ce",
+      "run_to_gate_s": 1001.0,
+      "first_red_s": null,
+      "runner_minutes": 143.65,
+      "last_pack_to_gate_start_s": 3.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39306352830,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39306352830",
+      "conclusion": "success",
+      "tested_tree_sha": "f340b5d73e17abb47e4621987c54e2b73ee22a49",
+      "base_sha": "38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 96,
+      "job_set": "91ffd55fddc727be31bfc4dca81f870839dd5e6623e646fa1a8ec2343a89b5d8",
+      "proof_set": "23c5ece7836f952343c9c1d953ec25bb8b69e5ccefb4e0d39f24e70064a66a29",
+      "run_to_gate_s": 2426.0,
+      "first_red_s": null,
+      "runner_minutes": 215.68333333333334,
+      "last_pack_to_gate_start_s": 2.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39306252071,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39306252071",
+      "conclusion": "success",
+      "tested_tree_sha": "c74e58e33624a4f70a51f117bb7c137751a16686",
+      "base_sha": "38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 91,
+      "job_set": "3dea4b94215b97347f753527e9f5f11724748b10bfe620ac8f776d862d96251d",
+      "proof_set": "6b975800d9c2f1592beafc8929c596c16833a9f8c0844c67e4e427cfe280f91a",
+      "run_to_gate_s": 1075.0,
+      "first_red_s": null,
+      "runner_minutes": 139.73333333333332,
+      "last_pack_to_gate_start_s": 3.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    },
+    {
+      "id": 39305992104,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39305992104",
+      "conclusion": "failure",
+      "tested_tree_sha": "a1a070f6162e71de027bafd65b3ce988e5ce55e4",
+      "base_sha": "38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae",
+      "implementation_blob": "f5e4e9c3202c35c9b29c6d038e1d077661fe6375",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 128,
+      "job_set": "6efa6cdfbc492b0e5e904795941c8a31f3394f66a7573719341eb831d667f002",
+      "proof_set": "a7c0ac28b16c6d07c37e139ca9d30614bd25bc840f06b63c76e0a49ec290a7c6",
+      "run_to_gate_s": 2728.0,
+      "first_red_s": 2105.0,
+      "runner_minutes": 280.9,
+      "last_pack_to_gate_start_s": 2.0,
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": []
+    }
+  ],
+  "summary": [
+    {
+      "cohort": "before",
+      "scope": "scoped",
+      "conclusion": "success",
+      "run_to_gate_s": {
+        "n": 14,
+        "p50": 3265.5,
+        "p95": 4074.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95": null
+      },
+      "runner_minutes": {
+        "n": 14,
+        "p50": 223.015,
+        "p95": 257.63
+      }
+    },
+    {
+      "cohort": "after",
+      "scope": "scoped",
+      "conclusion": "success",
+      "run_to_gate_s": {
+        "n": 13,
+        "p50": 2106.0,
+        "p95": 3941.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95": null
+      },
+      "runner_minutes": {
+        "n": 13,
+        "p50": 215.68333333333334,
+        "p95": 399.3666666666667
+      }
+    },
+    {
+      "cohort": "before",
+      "scope": "scoped",
+      "conclusion": "failure",
+      "run_to_gate_s": {
+        "n": 4,
+        "p50": 3992.5,
+        "p95": 4342.0
+      },
+      "first_red_s": {
+        "n": 4,
+        "p50": 3118.0,
+        "p95": 4178.0
+      },
+      "runner_minutes": {
+        "n": 4,
+        "p50": 210.745,
+        "p95": 332.83
+      }
+    },
+    {
+      "cohort": "after",
+      "scope": "scoped",
+      "conclusion": "failure",
+      "run_to_gate_s": {
+        "n": 4,
+        "p50": 2762.0,
+        "p95": 3412.0
+      },
+      "first_red_s": {
+        "n": 4,
+        "p50": 1669.5,
+        "p95": 2105.0
+      },
+      "runner_minutes": {
+        "n": 4,
+        "p50": 282.2583333333333,
+        "p95": 309.21666666666664
+      }
+    },
+    {
+      "cohort": "before",
+      "scope": "global",
+      "conclusion": "success",
+      "run_to_gate_s": {
+        "n": 1,
+        "p50": 3196.0,
+        "p95": 3196.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95": null
+      },
+      "runner_minutes": {
+        "n": 1,
+        "p50": 321.97,
+        "p95": 321.97
+      }
+    },
+    {
+      "cohort": "after",
+      "scope": "global",
+      "conclusion": "success",
+      "run_to_gate_s": {
+        "n": 1,
+        "p50": 2517.0,
+        "p95": 2517.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95": null
+      },
+      "runner_minutes": {
+        "n": 1,
+        "p50": 373.43333333333334,
+        "p95": 373.43333333333334
+      }
+    },
+    {
+      "cohort": "before",
+      "scope": "global",
+      "conclusion": "failure",
+      "run_to_gate_s": {
+        "n": 3,
+        "p50": 4109.0,
+        "p95": 7145.0
+      },
+      "first_red_s": {
+        "n": 3,
+        "p50": 2632.0,
+        "p95": 2957.0
+      },
+      "runner_minutes": {
+        "n": 3,
+        "p50": 361.0,
+        "p95": 481.25
+      }
+    },
+    {
+      "cohort": "after",
+      "scope": "global",
+      "conclusion": "failure",
+      "run_to_gate_s": {
+        "n": 1,
+        "p50": 2809.0,
+        "p95": 2809.0
+      },
+      "first_red_s": {
+        "n": 1,
+        "p50": 1605.0,
+        "p95": 1605.0
+      },
+      "runner_minutes": {
+        "n": 1,
+        "p50": 365.9166666666667,
+        "p95": 365.9166666666667
+      }
+    }
+  ],
+  "limitations": [
+    "Interim completion-conditioned cohort; long pending runs are not represented.",
+    "Same selected jobs/definition proofs do not prove identical test inputs or queue conditions.",
+    "No causal estimate; no claimed fleet p95 improvement."
+  ],
+  "exposure_analysis": [
+    {
+      "selects_calibrated_job": false,
+      "scope": "scoped",
+      "conclusion": "success",
+      "run_to_gate_s": {
+        "n": 8,
+        "p50": 1347.5,
+        "p95": 2251.0
+      },
+      "wall_min": {
+        "n": 8,
+        "p50": 151.39166666666665,
+        "p95": 235.55
+      }
+    },
+    {
+      "selects_calibrated_job": false,
+      "scope": "scoped",
+      "conclusion": "failure",
+      "run_to_gate_s": {
+        "n": 1,
+        "p50": 2120.0,
+        "p95": 2120.0
+      },
+      "wall_min": {
+        "n": 1,
+        "p50": 208.63333333333333,
+        "p95": 208.63333333333333
+      }
+    },
+    {
+      "selects_calibrated_job": true,
+      "scope": "scoped",
+      "conclusion": "success",
+      "run_to_gate_s": {
+        "n": 5,
+        "p50": 2452.0,
+        "p95": 3941.0
+      },
+      "wall_min": {
+        "n": 5,
+        "p50": 277.48333333333335,
+        "p95": 399.3666666666667
+      }
+    },
+    {
+      "selects_calibrated_job": true,
+      "scope": "scoped",
+      "conclusion": "failure",
+      "run_to_gate_s": {
+        "n": 3,
+        "p50": 2796.0,
+        "p95": 3412.0
+      },
+      "wall_min": {
+        "n": 3,
+        "p50": 283.6166666666667,
+        "p95": 309.21666666666664
+      }
+    }
+  ],
+  "stage_analysis": {
+    "rows": [
+      {
+        "id": 39318170744,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 20,
+        "critical_pack": "ci-pack-0",
+        "critical_wall_seconds": 1367.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 222.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1118.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          4.0,
+          8.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          256.0,
+          0.0,
+          211.0,
+          0.0,
+          230.0,
+          0.0,
+          249.0,
+          0.0,
+          222.0,
+          0.0,
+          234.0,
+          0.0,
+          206.0,
+          0.0,
+          215.0,
+          0.0,
+          215.0,
+          0.0,
+          201.0,
+          0.0,
+          270.0,
+          0.0,
+          208.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39317389150,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 3,
+        "critical_pack": "ci-pack-1",
+        "critical_wall_seconds": 540.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 201.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 317.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          2.0,
+          2.0,
+          2.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          201.0,
+          0.0,
+          212.0,
+          0.0,
+          217.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39315061820,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 94,
+        "critical_pack": "ci-pack-11",
+        "critical_wall_seconds": 947.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 253.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 665.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          4.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          207.0,
+          0.0,
+          238.0,
+          0.0,
+          212.0,
+          0.0,
+          221.0,
+          0.0,
+          253.0,
+          0.0,
+          291.0,
+          0.0,
+          337.0,
+          0.0,
+          257.0,
+          0.0,
+          203.0,
+          0.0,
+          223.0,
+          0.0,
+          222.0,
+          0.0,
+          241.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39314217895,
+        "scope": "scoped",
+        "conclusion": "failure",
+        "selected_jobs": 98,
+        "critical_pack": "ci-pack-0",
+        "critical_wall_seconds": 1827.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 260.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1536.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          3.0,
+          3.0,
+          4.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          307.0,
+          0.0,
+          235.0,
+          0.0,
+          224.0,
+          0.0,
+          221.0,
+          0.0,
+          260.0,
+          0.0,
+          537.0,
+          0.0,
+          244.0,
+          0.0,
+          268.0,
+          0.0,
+          249.0,
+          0.0,
+          289.0,
+          0.0,
+          221.0,
+          0.0,
+          247.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39311636560,
+        "scope": "scoped",
+        "conclusion": "failure",
+        "selected_jobs": 114,
+        "critical_pack": "ci-pack-6",
+        "critical_wall_seconds": 2572.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 525.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 2018.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          2.0,
+          2.0,
+          2.0,
+          3.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          2.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          288.0,
+          0.0,
+          210.0,
+          0.0,
+          227.0,
+          0.0,
+          234.0,
+          0.0,
+          525.0,
+          0.0,
+          194.0,
+          0.0,
+          206.0,
+          0.0,
+          267.0,
+          1.0,
+          224.0,
+          0.0,
+          224.0,
+          0.0,
+          250.0,
+          0.0,
+          213.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39311574352,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 159,
+        "critical_pack": "ci-pack-6",
+        "critical_wall_seconds": 3610.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 377.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 3205.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          243.0,
+          0.0,
+          317.0,
+          0.0,
+          377.0,
+          0.0,
+          242.0,
+          0.0,
+          206.0,
+          0.0,
+          239.0,
+          0.0,
+          221.0,
+          0.0,
+          199.0,
+          0.0,
+          221.0,
+          0.0,
+          229.0,
+          0.0,
+          213.0,
+          0.0,
+          224.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39311337094,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 111,
+        "critical_pack": "ci-pack-0",
+        "critical_wall_seconds": 2324.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 245.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 2057.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          245.0,
+          0.0,
+          226.0,
+          0.0,
+          254.0,
+          0.0,
+          545.0,
+          0.0,
+          211.0,
+          0.0,
+          216.0,
+          0.0,
+          202.0,
+          0.0,
+          211.0,
+          0.0,
+          206.0,
+          0.0,
+          217.0,
+          0.0,
+          310.0,
+          0.0,
+          229.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39310593327,
+        "scope": "global",
+        "conclusion": "failure",
+        "selected_jobs": 258,
+        "critical_pack": "ci-pack-11",
+        "critical_wall_seconds": 2728.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 210.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 2494.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          233.0,
+          0.0,
+          272.0,
+          0.0,
+          210.0,
+          0.0,
+          234.0,
+          0.0,
+          252.0,
+          1.0,
+          210.0,
+          0.0,
+          276.0,
+          0.0,
+          263.0,
+          0.0,
+          230.0,
+          0.0,
+          200.0,
+          0.0,
+          214.0,
+          0.0,
+          222.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39310207706,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 110,
+        "critical_pack": "ci-pack-10",
+        "critical_wall_seconds": 2145.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 233.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1887.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          3.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          233.0,
+          0.0,
+          260.0,
+          0.0,
+          209.0,
+          0.0,
+          233.0,
+          0.0,
+          212.0,
+          0.0,
+          227.0,
+          0.0,
+          254.0,
+          0.0,
+          204.0,
+          0.0,
+          227.0,
+          0.0,
+          220.0,
+          0.0,
+          235.0,
+          0.0,
+          263.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39310145707,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 141,
+        "critical_pack": "ci-pack-0",
+        "critical_wall_seconds": 2185.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 226.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1937.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          3.0,
+          2.0,
+          2.0,
+          3.0,
+          2.0,
+          3.0,
+          2.0,
+          2.0,
+          2.0,
+          3.0,
+          2.0,
+          2.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          313.0,
+          0.0,
+          239.0,
+          0.0,
+          212.0,
+          0.0,
+          237.0,
+          0.0,
+          229.0,
+          1.0,
+          220.0,
+          0.0,
+          224.0,
+          0.0,
+          263.0,
+          0.0,
+          203.0,
+          0.0,
+          206.0,
+          0.0,
+          227.0,
+          0.0,
+          226.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39309396156,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 121,
+        "critical_pack": "ci-pack-9",
+        "critical_wall_seconds": 1929.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 205.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1699.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          2.0,
+          3.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          3.0,
+          2.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          205.0,
+          0.0,
+          294.0,
+          0.0,
+          230.0,
+          0.0,
+          235.0,
+          0.0,
+          224.0,
+          0.0,
+          237.0,
+          1.0,
+          202.0,
+          0.0,
+          203.0,
+          0.0,
+          217.0,
+          0.0,
+          221.0,
+          0.0,
+          202.0,
+          0.0,
+          247.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39309256542,
+        "scope": "global",
+        "conclusion": "success",
+        "selected_jobs": 258,
+        "critical_pack": "ci-pack-11",
+        "critical_wall_seconds": 2425.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 479.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1918.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          306.0,
+          0.0,
+          225.0,
+          0.0,
+          234.0,
+          0.0,
+          209.0,
+          0.0,
+          197.0,
+          0.0,
+          479.0,
+          0.0,
+          224.0,
+          0.0,
+          205.0,
+          0.0,
+          203.0,
+          0.0,
+          206.0,
+          0.0,
+          232.0,
+          0.0,
+          199.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39308752646,
+        "scope": "scoped",
+        "conclusion": "failure",
+        "selected_jobs": 108,
+        "critical_pack": "ci-pack-4",
+        "critical_wall_seconds": 3185.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 1993.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1162.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          2.0,
+          2.0,
+          3.0,
+          2.0,
+          3.0,
+          2.0,
+          3.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          223.0,
+          0.0,
+          245.0,
+          0.0,
+          377.0,
+          0.0,
+          217.0,
+          0.0,
+          256.0,
+          0.0,
+          554.0,
+          0.0,
+          340.0,
+          0.0,
+          231.0,
+          0.0,
+          236.0,
+          0.0,
+          216.0,
+          0.0,
+          231.0,
+          0.0,
+          1993.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39308682108,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 119,
+        "critical_pack": "ci-pack-0",
+        "critical_wall_seconds": 1729.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 202.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1498.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          3.0,
+          4.0,
+          3.0,
+          4.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          4.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          207.0,
+          0.0,
+          187.0,
+          0.0,
+          203.0,
+          0.0,
+          311.0,
+          0.0,
+          217.0,
+          0.0,
+          335.0,
+          0.0,
+          239.0,
+          0.0,
+          227.0,
+          0.0,
+          215.0,
+          0.0,
+          202.0,
+          0.0,
+          215.0,
+          0.0,
+          235.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39308479052,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 119,
+        "critical_pack": "ci-pack-0",
+        "critical_wall_seconds": 1943.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 405.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1511.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          405.0,
+          0.0,
+          217.0,
+          0.0,
+          208.0,
+          0.0,
+          348.0,
+          0.0,
+          235.0,
+          0.0,
+          206.0,
+          0.0,
+          201.0,
+          0.0,
+          324.0,
+          0.0,
+          190.0,
+          0.0,
+          221.0,
+          0.0,
+          216.0,
+          0.0,
+          279.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39306698152,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 75,
+        "critical_pack": "ci-pack-7",
+        "critical_wall_seconds": 810.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 220.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 568.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          3.0,
+          4.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          203.0,
+          0.0,
+          238.0,
+          0.0,
+          237.0,
+          0.0,
+          224.0,
+          0.0,
+          238.0,
+          0.0,
+          250.0,
+          0.0,
+          220.0,
+          0.0,
+          290.0,
+          0.0,
+          249.0,
+          0.0,
+          222.0,
+          0.0,
+          271.0,
+          0.0,
+          253.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39306352830,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 96,
+        "critical_pack": "ci-pack-0",
+        "critical_wall_seconds": 2155.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 231.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1897.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          4.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          338.0,
+          0.0,
+          234.0,
+          0.0,
+          211.0,
+          0.0,
+          265.0,
+          0.0,
+          209.0,
+          0.0,
+          857.0,
+          0.0,
+          227.0,
+          0.0,
+          213.0,
+          0.0,
+          231.0,
+          0.0,
+          219.0,
+          0.0,
+          231.0,
+          0.0,
+          346.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39306252071,
+        "scope": "scoped",
+        "conclusion": "success",
+        "selected_jobs": 91,
+        "critical_pack": "ci-pack-11",
+        "critical_wall_seconds": 849.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 224.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 601.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          4.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          212.0,
+          0.0,
+          228.0,
+          0.0,
+          239.0,
+          0.0,
+          220.0,
+          0.0,
+          227.0,
+          0.0,
+          214.0,
+          0.0,
+          219.0,
+          0.0,
+          237.0,
+          0.0,
+          217.0,
+          0.0,
+          208.0,
+          0.0,
+          225.0,
+          0.0,
+          224.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      },
+      {
+        "id": 39305992104,
+        "scope": "scoped",
+        "conclusion": "failure",
+        "selected_jobs": 128,
+        "critical_pack": "ci-pack-0",
+        "critical_wall_seconds": 2405.0,
+        "critical_steps": [
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 196.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 2175.0
+          }
+        ],
+        "planner_to_pack_start_seconds": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          4.0,
+          3.0,
+          4.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "pack_checkout_seconds": [
+          0.0,
+          238.0,
+          0.0,
+          289.0,
+          0.0,
+          262.0,
+          0.0,
+          222.0,
+          0.0,
+          300.0,
+          0.0,
+          247.0,
+          0.0,
+          238.0,
+          0.0,
+          425.0,
+          0.0,
+          258.0,
+          1.0,
+          209.0,
+          0.0,
+          231.0,
+          0.0,
+          196.0
+        ],
+        "runner_labels": [
+          [
+            "ubuntu-latest"
+          ]
+        ]
+      }
+    ],
+    "prior_dedup_matches": [
+      {
+        "weighted": 39317389150,
+        "dedup": 39286505109,
+        "same_execution_proof": false
+      },
+      {
+        "weighted": 39317389150,
+        "dedup": 39278246801,
+        "same_execution_proof": false
+      },
+      {
+        "weighted": 39317389150,
+        "dedup": 39277310642,
+        "same_execution_proof": false
+      },
+      {
+        "weighted": 39317389150,
+        "dedup": 39275130073,
+        "same_execution_proof": false
+      },
+      {
+        "weighted": 39317389150,
+        "dedup": 39269909809,
+        "same_execution_proof": false
+      },
+      {
+        "weighted": 39311636560,
+        "dedup": 39281980914,
+        "same_execution_proof": false
+      },
+      {
+        "weighted": 39306352830,
+        "dedup": 39281995864,
+        "same_execution_proof": false
+      },
+      {
+        "weighted": 39306352830,
+        "dedup": 39265641229,
+        "same_execution_proof": false
+      }
+    ],
+    "excluding_own_report_run": {
+      "run_to_gate_seconds": {
+        "n": 12,
+        "p50": 2178.5,
+        "p95": 3941.0
+      },
+      "summed_wall_minutes": {
+        "n": 12,
+        "p50": 223.7,
+        "p95": 399.3666666666667
+      }
+    },
+    "limitations": [
+      "Selected job counts vary from3 to258; scoped is not homogeneous work.",
+      "Reported job labels do not establish immutable runner image parity.",
+      "Nine pending runs and four cancellations remain outside completed-run quantiles.",
+      "No exact baseline selected or execution matches."
+    ]
+  },
+  "exploratory_control_window": {
+    "window": "2026-10-19T16:50:00Z..2026-10-19T18:49:48Z",
+    "exploratory": true,
+    "discovered": 35,
+    "missing_plans": [],
+    "selected_set_matches": [
+      {
+        "weighted_run": 39308752646,
+        "control_run": 39304080612,
+        "same_execution_proof": false
+      },
+      {
+        "weighted_run": 39310207706,
+        "control_run": 39302544235,
+        "same_execution_proof": false
+      },
+      {
+        "weighted_run": 39306352830,
+        "control_run": 39301621726,
+        "same_execution_proof": false
+      },
+      {
+        "weighted_run": 39306252071,
+        "control_run": 39300382055,
+        "same_execution_proof": true
+      },
+      {
+        "weighted_run": 39311574352,
+        "control_run": 39298428765,
+        "same_execution_proof": false
+      },
+      {
+        "weighted_run": 39306352830,
+        "control_run": 39291669686,
+        "same_execution_proof": false
+      }
+    ],
+    "control_treatment_verified": false
+  },
+  "exploratory_exact_pair": {
+    "control_id": 39300382055,
+    "control_conclusion": "failure",
+    "control_blob": "f11d465d8ebcbea59652dbb6365deccceb9a287d",
+    "control_base": "f5cb9f3299eb7cc043fcf516056ff371e51aa770",
+    "control_eligible": true,
+    "control_run_to_gate_seconds": 1010.0,
+    "control_summed_wall_minutes": 151.05,
+    "weighted_id": 39306252071,
+    "weighted_run_to_gate_seconds": 1075,
+    "weighted_summed_wall_minutes": 139.73333333333332,
+    "same_selected_and_execution_proof": true,
+    "selected_jobs": 91,
+    "calibrated_jobs_selected": [],
+    "interpretation": "Exploratory adjacent-window negative control. Neither calibrated job selected, so the changed weights cannot alter its partition. Same definitions do not establish identical source/test inputs or runner conditions. Control failed and weighted run succeeded; this outcome mismatch also prevents a like-for-like latency comparison.",
+    "weighted_conclusion": "success"
+  },
+  "tail_diagnosis": {
+    "run_id": 39311574352,
+    "critical_pack": 6,
+    "execution_wrapper_seconds": 3205,
+    "logical_command_seconds": 1525.035082,
+    "observed_deepen_gaps_seconds": [
+      691.303094,
+      725.668624
+    ],
+    "exact_tested_tree": "f1608086524cc8e494d8df1b8b1a8a738561d0c6",
+    "same_depth_ladder_repeated": true,
+    "scope": "Notice-to-next-fetch-response intervals include transport/client work; not CPU or billed-cost measurements.",
+    "hypothesis": "A later fetch-depth-zero consumer should keep already-complete exact ancestry instead of fetching depth2 and truncating it again. Recheck current repository/tree each time; otherwise retain all existing fetch and recovery paths. Actual savings require hosted observation; intervening consumers may change readiness."
+  }
+}

@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
+import hashlib
+from html.parser import HTMLParser
 from pathlib import Path
 import shutil
 import subprocess
+from urllib.parse import parse_qs, urlsplit
 
 import pytest
 
@@ -13,6 +16,19 @@ from lib import seo
 from scripts import build_market_memory_page
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def test_market_memory_coverage_copy_has_no_live_or_forecast() -> None:
+    text = (ROOT / "templates" / "market_memory.html.j2").read_text(
+        encoding="utf-8"
+    )
+    assert any(
+        "Available now" in line and "现已可用" in line
+        for line in text.splitlines()
+    )
+    assert "context, not a prediction." in text
+    assert "Live now" not in text
+    assert "forecast" not in text
 
 
 def test_market_memory_shell_renders_without_market_data() -> None:
@@ -47,7 +63,7 @@ def test_market_memory_client_uses_only_the_owned_read_api() -> None:
     assert "request('/symbol/'" in source
     assert "basisPoints(query.spread_2s10s)" in source
     assert "data.historical_basis" in source
-    assert "error.status === 403" in source
+    assert "notice.status === 403" in source
     assert "macroRequest: 0" in source
     assert "requestId !== state.macroRequest" in source
     assert "requestId !== state.symbolRequest" in source
@@ -71,6 +87,38 @@ def test_market_memory_assets_are_template_owned_and_byte_identical() -> None:
         assert (ROOT / "templates" / name).read_bytes() == (
             ROOT / "site" / name
         ).read_bytes()
+
+
+def test_market_memory_page_loads_current_owned_asset_versions() -> None:
+    """A new emitted bundle must not leave returning browsers on an immutable old URL."""
+    owned = {
+        "market_memory.css", "market_memory.js", "market_memory_intent.js",
+        "market_memory_retained.js", "market_memory_retained.css",
+    }
+    refs: dict[str, list[str]] = {name: [] for name in owned}
+
+    class LoadedAssets(HTMLParser):
+        def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+            attributes = dict(attrs)
+            if tag == "script":
+                reference = attributes.get("src")
+            elif tag == "link" and "stylesheet" in (attributes.get("rel") or "").split():
+                reference = attributes.get("href")
+            else:
+                return
+            if not reference:
+                return
+            parsed = urlsplit(reference)
+            if not parsed.scheme and not parsed.netloc and parsed.path in owned:
+                refs[parsed.path].append(reference)
+
+    LoadedAssets().feed((ROOT / "site" / "market_memory.html").read_text(encoding="utf-8"))
+    for name in sorted(owned):
+        assert len(refs[name]) == 1, (name, refs[name])
+        parsed = urlsplit(refs[name][0])
+        expected = hashlib.sha256((ROOT / "site" / name).read_bytes()).hexdigest()[:8]
+        assert parse_qs(parsed.query) == {"v": [expected]}, (name, refs[name][0], expected)
+        assert not parsed.fragment
 
 
 def test_market_memory_is_wired_into_build_router_and_navigation() -> None:
@@ -160,10 +208,10 @@ const noEvidence = () => {assert.ok(!summary().includes('mm-symbol-ticker'),summ
  reply('NVDA'); await tick(); assert.ok(summary().includes('>NVDA</span>')); assert.ok(grids().includes('mm-grid-card'));
  submit('A APL'); const invalid=summary(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'请检查代码':'Check the ticker')); assert.equal(location.search,'?ticker=NVDA');
  submit('MSFT'); await tick(); submit('AAPL'); await tick(); reply('MSFT'); await tick(); changeLanguage(); noEvidence(); reply('AAPL'); await tick(); assert.ok(summary().includes('>AAPL</span>'));
- submit('NVDA'); await tick(); reply('NVDA',503); await tick(); const failure=summary(); changeLanguage(); noEvidence(); assert.equal(summary(),failure);
+ submit('NVDA'); await tick(); reply('NVDA',503); await tick(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'个股记忆暂不可用':'Symbol memory unavailable'));
  submit('NVDA'); await tick(); reply('NVDA'); await tick(); assert.ok(summary().includes('>NVDA</span>'));
  submit('MSFT'); await tick(); submit('!'); const invalidPending=summary(); reply('MSFT'); await tick(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'请检查代码':'Check the ticker'));
- submit('AAPL'); await tick(); reply('AAPL'); await tick(); submit('NVDA'); await tick(); authChanged(null); const signedOut=summary(); reply('NVDA'); await tick(); changeLanguage(); noEvidence(); assert.equal(summary(),signedOut);
+ submit('AAPL'); await tick(); reply('AAPL'); await tick(); submit('NVDA'); await tick(); authChanged(null); reply('NVDA'); await tick(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'登录以打开个股记忆':'Sign in to open symbol memory'));
  console.log('pending, invalid, latest-intent, late completion, failure, recovery, sign-out and language assertions passed');
 })().catch(error => {console.error(error);process.exitCode=1;});
 '''

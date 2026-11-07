@@ -484,7 +484,8 @@ def test_a10_adversarial_period_id_trailing_space():
     series = list(_positive_series())
     series[0] = _record(PERIODS[0] + " ", value=10)
     verdict = check_kpi_series(tuple(series), expected_periods=PERIODS)
-    _assert_refused(verdict, "PERIOD_ABSENT", "UNEXPECTED_PERIOD")
+    # FAMILY TEXT RULE v2: a padded period_id is ABSENT, never a different valid id.
+    _assert_refused(verdict, "PERIOD_ID_MISSING", "PERIOD_ABSENT")
     assert aggregate_sum(tuple(series), periods=PERIODS) is None
 
 

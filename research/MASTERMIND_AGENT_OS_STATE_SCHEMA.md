@@ -268,6 +268,51 @@ chooses — not reconstructed later, because reconstruction is exactly what fail
 | `supersedes` | ◻ | list[`DEC:`] | |
 | `superseded_by` | ◻ | `DEC:` | Set on the OLD record when a new one lands. Never delete. |
 | `review_by` | ◻ | date | For decisions taken under acknowledged uncertainty. |
+| `project_plan_adoption` | ◻ | closed object | Explicit planning content decision; §2.1. Absence makes no adoption claim. |
+
+### §2.1 Optional planning content decision and proposal
+
+`project_plan_adoption` has exactly `schema`, `work_ref`, `adopted_source`,
+`predecessor`, `proposal_source`, and `display_revision`. Its schema is
+`agentos.project_plan_adoption.v1`. The selected `WS:<KEY>` must occur in the
+decision's existing `affects` list. `adopted_source` contains exactly repository,
+relative Markdown path, immutable 40-character Git commit and `content_sha256`
+of the exact Git bytes. Supported repositories are the existing Macro and
+Mastermind repositories. A Macro workstream reference must name this exact WS.
+References are data, never authority to fetch a path, repository, network endpoint
+or credentials. Bodies resolve only from already-qualified captured source roots.
+An unavailable referenced body stays unresolved; digest metadata is not a read or
+a content comparison.
+
+`predecessor` is null for an explicitly chosen first baseline or the exact prior
+`DEC:<KEY>`. Successor `supersedes` and predecessor `superseded_by` must reciprocate.
+The pure selector refuses incomplete, cyclic, competing or disconnected lineage;
+dates never elect a winner. `proposal_source` is null or an exact source reference.
+`display_revision` is null or a literal authored label, never an inferred version.
+The current authored WS may evolve independently of the retained adopted bytes.
+Legacy decisions without this optional field retain their existing meaning.
+
+A proposal is an immutable Markdown artifact associated through the existing
+workstream `artifacts` field, not a second plan or task registry. Its closed
+`agentos.project_plan_proposal.v1` header contains `schema`, `proposal_id`,
+`work_ref`, `base_adoption`, `base_source`, `candidate_sha256`, `rationale`, and
+`evidence`. The candidate hash binds exact proposed UTF-8 bytes; the actual owner
+must separately bind the enclosing artifact and the candidate body. The proposal
+artifact starts with an exact `---` line, its YAML header, and a closing `---`
+line, each terminated by LF or CRLF. Every byte after the closing fence's line
+terminator is the candidate body, including leading blank lines, indentation,
+line endings and any UTF-8 BOM in that body. The existing owner YAML loader parses
+the header; `parse_project_plan_proposal` preserves this exact byte boundary.
+A proposal's base must match the selected adopted decision and its exact source reference.
+With no adopted baseline, null `base_adoption` records a comparison basis only.
+It does not establish acceptance. No declaration creates a Job, dispatch,
+permission, adoption command, protected release or runtime/product acceptance.
+
+The existing `draft-decision` serializer validates and preserves this optional
+metadata and remains stdout-only. The pure expected-predecessor check is not a
+write transaction. The commissioned Git writer must qualify actual captured
+source, check the current lineage against its exact publication base, and use
+the normal protected publication path; no stale write is authorized by a draft.
 
 ### Relationship to `DO_NOT_REBUILD.md`
 
@@ -364,6 +409,23 @@ A discovery is written **only if both hold**. This is the anti-hoarding mechanis
 | `cited_by` | ◻ | list | Auto-maintained by the generator. Drives GC. |
 | `superseded_by` | ◻ | `DSC:` | |
 | `expires` | ◻ | date | Default: `verified_at` + 90d if never cited. Flagged, never auto-deleted. |
+| `evaluation_finding` | ◻ | object | Optional six-field Evaluation OS evidence; no discovery admission is inferred. |
+
+An `evaluation_finding` has exactly `engine`, `metric`, `observed_change`,
+`segment`, `evidence_link`, and `suggested_tier`. Engine, metric, segment and
+link are non-empty valid UTF-8 strings of at most 2,048 bytes each. The link is
+an authored locator; drafting and validation do not fetch or verify its contents.
+`observed_change` is explicit null, bounded non-empty qualitative text, or exactly
+`{baseline, current, unit}`. Baseline/current are finite numbers or explicit null;
+unit is bounded non-empty text. Zero remains zero. Qualitative snapshot findings
+need not invent a numerical or temporal comparison. `suggested_tier` is T0–T4 or
+explicit null; it never means a tier was executed or passed. Existing discovery
+admission, falsifier, verification, scope and confidence are still mandatory and
+caller-authored. Both `draft-discovery` and raw record validation enforce this
+shape. The drafter prints the finding in YAML to stdout; it does not publish,
+prioritise, schedule or route an issue. Knowledge excerpts retain their existing
+claim/so_what/falsifier projection with the record locator. This optional DSC
+emission path does not make every research finding a verified discovery.
 
 ### Example
 
@@ -618,3 +680,61 @@ nobody will use this system."*
 The steady-state cost for a working session is **1–2 fields at a wave boundary**. Everything
 heavier is written at a moment the session was already stopping to write prose. Phase 4 moves
 `status`, `prs`, and `updated` to hook auto-capture, taking the steady-state cost to ~0.
+
+
+### Explicit accepted Direction association (P16.T1.S11)
+
+A workstream may declare `accepted_direction: DEC:<KEY>`. The same reference must
+occur in its existing `decisions` index. Absence remains absence: objectives,
+source revisions, generic decisions and plan-adoption records are different facts.
+The selected DEC carries exactly `direction: {schema:
+agentos.direction_acceptance.v1, state: ACCEPTED, work_ref: WS:<KEY>, predecessor:
+null | DEC:<KEY>}`. The scope occurs in `affects`; `decided_at` has day precision.
+A Direction DEC does not also carry `project_plan_adoption`.
+
+The predecessor is the sole `supersedes` entry; its retained record reciprocates
+with `superseded_by`. The current WS pointer selects the head, never timestamps.
+A read validates at most eight explicit revisions, keeps unknown totals unknown
+when history continues, and does not change current Direction while inspecting a
+previous revision. Missing or conflicting links cannot be presented as accepted
+history. Prospective app authoring uses the existing fixed publisher with a
+distinct `ACCEPT_DIRECTION` grant, original operation fingerprint and source CAS.
+A source-only Root decision may be prepared and published through the existing
+protected Git workflow under its actual commission. Publication grants no app,
+Runtime, placement, admission or execution power. No history is reconstructed.
+
+### Optional explicit project archive declaration
+
+A WS may declare `archive` with exactly `schema: agentos.workstream_archive.v1`,
+`state: ARCHIVED`, an authored `archived_on` calendar day (`YYYY-MM-DD`),
+`archived_by` (nonempty, at most256 UTF-8 bytes), and `reason` (nonempty,
+at most2000 UTF-8 bytes). The original declaration clock has day precision;
+Git commit time is separate source provenance. Absence means no declaration.
+Workstream status (`done`, `parked`, `killed` included), retained history,
+source freshness and archived chats never imply this fact. This additive read
+semantics does not implement Archive/Restore, reopen work or grant sending.
+A bounded qualified catalogue read describes its observed coverage; an empty
+sample is never a company-wide claim that no archived projects exist.
+
+### Explicit project files, communication preferences and standing instructions
+
+Optional WS `project_files` indexes at most32 user file declarations. Each closed
+row carries file_id/content_sha256 digests, a fixed per-project artifact_ref also
+in `artifacts`, basename-only display_name≤128UTF8 bytes, media_type exactly
+text/plain or text/markdown, and PRINCIPAL_UPLOAD origin with workspace principal
+actor and original request SHA. User bytes and WS index are published atomically
+by the separately granted typed recipe. A path or actor label alone grants nothing.
+
+A fixed `DEC-PROJECT-COMMUNICATION-PREFERENCE-<WSKEY>` may explicitly declare
+`project_preference` (schema agentos.project_preference.v1, exactWS, COMMUNICATION,
+literal value≤2000UTF8 equal to answer, USER_EDIT origin with null source refs,
+last_edit actor/request SHA). Standard DEC facts and WS decisions/affects joins
+remain required. CAS edits preserve origin. Conversation-derived origin is not
+accepted until its real qualified source-reference contract exists. No generated
+model memory or generic title matching implies a preference.
+
+Optional `standing_instructions` is a literal authored list of at most16 closed
+{instruction_ref,text} rows, unique project-scoped INS:UPPER-KEBAB key2..64 and
+nonblank valid UTF-8 text≤4096 Unicode codepoints (only LF/CR/TAB controls). Absence and supplied-empty are distinct.
+Revision is derived from exact canonical ref/text. No clock, activation, pause,
+scheduler or execution grant is authored here. Runtime admission remains separate.

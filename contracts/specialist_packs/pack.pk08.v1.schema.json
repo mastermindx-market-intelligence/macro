@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk08.v1.schema.json",
   "title": "Specialist pack PK08 v1 catalogue",
-  "description": "Legal contingencies. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
+  "description": "Legal contingencies. Result instances validate against specialist_pack_result.v1. The field, check and reason-code catalogue is frozen by the FIF K3/K4 seat spec; pack results remain display-only context (attested: false) until a Q1 held-out evaluation under Q0.",
   "pack_schema_id": "pack.pk08/v1",
   "pack_id": "PK08",
   "name": "Legal contingencies",
@@ -15,10 +15,191 @@
     "typed absences",
     "production source trace"
   ],
-  "catalogue_state": "unspecified",
-  "fields": [],
-  "checks": [],
-  "reason_codes": [],
+  "catalogue_state": "specified",
+  "fields": [
+    {
+      "field_id": "loss_contingency_accrual",
+      "name": "Loss contingency accrual",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "loss_contingency_range_low",
+      "name": "Loss contingency, estimate of possible loss, low end of range",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact",
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "loss_contingency_range_high",
+      "name": "Loss contingency, estimate of possible loss, high end of range",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact",
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "loss_contingency_range_disclosed",
+      "name": "Loss contingency range language (disclosed_range | not_estimable | no_range_language)",
+      "type": "enum",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "contingency_nature",
+      "name": "Loss contingency nature (axis member)",
+      "type": "axis_member",
+      "unit": null,
+      "period_kind": null,
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "commitments_and_contingencies_bs_state",
+      "name": "Commitments and contingencies balance-sheet line state (nil_disclosed | missing)",
+      "type": "enum",
+      "unit": null,
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "commitments_text_block",
+      "name": "Commitments and contingencies note text block",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "legal_proceedings_item3",
+      "name": "Legal proceedings (Item 3)",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "allegation_span",
+      "name": "Allegation as stated by the issuer",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "procedural_status_span",
+      "name": "Procedural status of the matter",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "accrual_vs_range",
+      "kind": "cross_statement",
+      "operands": [
+        "loss_contingency_accrual",
+        "loss_contingency_range_low",
+        "loss_contingency_range_high",
+        "loss_contingency_range_disclosed"
+      ]
+    },
+    {
+      "check_id": "nil_bs_vs_note",
+      "kind": "qualitative_presence",
+      "operands": [
+        "commitments_and_contingencies_bs_state",
+        "commitments_text_block"
+      ]
+    },
+    {
+      "check_id": "item3_vs_note",
+      "kind": "qualitative_presence",
+      "operands": [
+        "legal_proceedings_item3",
+        "commitments_text_block"
+      ]
+    }
+  ],
+  "reason_codes": [
+    {
+      "code": "applicability_rule_satisfied",
+      "parameter": null,
+      "meaning": "the pack's versioned applicability rule (`applicability.rule_id`) evaluated true"
+    },
+    {
+      "code": "form_outside_pack_forms",
+      "parameter": null,
+      "meaning": "the admitted form is outside the pack's Q0-frozen forms"
+    },
+    {
+      "code": "missing_standard_fact",
+      "parameter": "concept",
+      "meaning": "the standard concept named by the parameter has no admitted fact for the period"
+    },
+    {
+      "code": "extension_concept_unaliased",
+      "parameter": "prefix",
+      "meaning": "the value exists only under an extension prefix with no frozen alias"
+    },
+    {
+      "code": "disallowed_dimension",
+      "parameter": null,
+      "meaning": "the only facts carry a dimension the field does not admit"
+    },
+    {
+      "code": "missing_dependency",
+      "parameter": null,
+      "meaning": "a formula/check operand is not valued (R-K3: never an implied zero)"
+    },
+    {
+      "code": "unit_mismatch",
+      "parameter": null,
+      "meaning": "operands differ in unit/currency/period basis"
+    },
+    {
+      "code": "numeric_value_in_narrative_only",
+      "parameter": null,
+      "meaning": "the number appears only inside narrative text; R-K4' forbids extracting it"
+    }
+  ],
   "type": "object",
   "additionalProperties": false
 }

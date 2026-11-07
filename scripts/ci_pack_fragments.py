@@ -39,6 +39,13 @@ from both the base and the moved separator, the merge records ``__order__``
 instead of silently dropping that edit. Job bodies, the preamble, and the
 trailer come from the per-key resolve, so the edit's scalar wins.
 
+The same case is also clean when both sides carry the identical job-key
+permutation and exactly one side is order-only, provided the edit side
+moved every separator the permutation moved: the agreed order applies and
+the other side's edited bodies win, while mixed glue (a positional swap
+against a whole-fragment swap of the same pair) stays an ``__order__``
+conflict.
+
 Order-only means the same job keys, the same preamble and trailer bytes, and
 the same bytes from each job's key line through the end of its fragment. A
 leading separator may sit with the other job after a positional swap. A side
@@ -584,6 +591,7 @@ def _apply_order_and_edits(
     edit_frags: list[Fragment],
     *,
     order_is_ours: bool,
+    edit_side_permuted: bool,
 ) -> MergeResult | None:
     """Apply one side's order-only permutation and the other side's text edits.
 
@@ -592,7 +600,29 @@ def _apply_order_and_edits(
     separator that side left unchanged can take the edit. Bodies,
     preamble, and trailer use the per-key resolve, so a one-sided scalar wins.
     ``None`` means this shape is not that case; the caller records ``__order__``.
+
+    ``edit_side_permuted`` declares that the edit side carries the SAME job-key
+    permutation as the order-only side instead of base order; the guard in
+    ``_moved_separators_agree`` runs here exactly when it is True, so a
+    separator the permutation moved must also have moved on the edit side,
+    otherwise mixed glue would let one swap's separator silently outrank the
+    other's and this returns ``None``. The flag is keyword-only with no
+    default, so a caller that omits it raises ``TypeError`` at its own call
+    site instead of silently merging with no guard. Omission is the only
+    shape the signature can catch: a caller that states a WRONG False is not
+    caught by it, because no signature sees the edit side's key order, so
+    such a call merges unguarded and its coverage rests on that caller's own
+    base-order precondition. The agreed-permutation caller passes
+    True. The base-order callers (an edit side whose keys stay in base order)
+    state False: hoisting the guard unconditionally would turn their clean
+    merge into an ``__order__`` conflict.
     """
+    if edit_side_permuted and not _moved_separators_agree(
+        base_frags,
+        order_frags,
+        edit_frags,
+    ):
+        return None
     base_by = _unique_map(base_frags)
     order_by = _unique_map(order_frags)
     edit_by = _unique_map(edit_frags)
@@ -647,6 +677,39 @@ def _apply_order_and_edits(
         return None
     pieces.append(trailer)
     return MergeResult("".join(pieces), ())
+
+
+def _moved_separators_agree(
+    base_frags: list[Fragment],
+    order_frags: list[Fragment],
+    edit_frags: list[Fragment],
+) -> bool:
+    """True when the edit side moved every separator the permutation moved.
+
+    Both sides share one job-key order, so the edit side's per-key separator
+    is a glue choice for that permutation, not a base separator left in its
+    slot. ``_apply_order_and_edits`` only rejects a third-shape separator, so
+    by itself it would let a positional swap's glue silently outrank a
+    whole-fragment swap's; that mixed-glue shape must stay an ``__order__``
+    conflict, so ``_apply_order_and_edits`` returns ``None`` for it when its
+    required keyword-only ``edit_side_permuted`` argument says the edit side
+    carries this same permutation; every caller states that flag, so the
+    guard cannot be skipped by omission.
+    """
+    base_by = _unique_map(base_frags)
+    order_by = _unique_map(order_frags)
+    edit_by = _unique_map(edit_frags)
+    if base_by is None or order_by is None or edit_by is None:
+        return False
+    for key in _job_order(order_frags):
+        if key not in base_by or key not in edit_by:
+            return False
+        base_lead = _lead_and_body(base_by[key])[0]
+        order_lead = _lead_and_body(order_by[key])[0]
+        edit_lead = _lead_and_body(edit_by[key])[0]
+        if order_lead != base_lead and edit_lead != order_lead:
+            return False
+    return True
 
 
 def _fragment_texts(
@@ -711,6 +774,7 @@ def merge3(base: str, ours: str, theirs: str) -> MergeResult:
                 ours_frags,
                 theirs_frags,
                 order_is_ours=True,
+                edit_side_permuted=False,
             )
             if applied is not None:
                 return applied
@@ -720,6 +784,29 @@ def merge3(base: str, ours: str, theirs: str) -> MergeResult:
                 theirs_frags,
                 ours_frags,
                 order_is_ours=False,
+                edit_side_permuted=False,
+            )
+            if applied is not None:
+                return applied
+        if ours_keys == theirs_keys and ours_only != theirs_only:
+            if ours_only:
+                order_frags, edit_frags, order_is_ours = (
+                    ours_frags,
+                    theirs_frags,
+                    True,
+                )
+            else:
+                order_frags, edit_frags, order_is_ours = (
+                    theirs_frags,
+                    ours_frags,
+                    False,
+                )
+            applied = _apply_order_and_edits(
+                base_frags,
+                order_frags,
+                edit_frags,
+                order_is_ours=order_is_ours,
+                edit_side_permuted=True,
             )
             if applied is not None:
                 return applied

@@ -636,8 +636,10 @@ def test_a36g_static_scan_module_source():
 def test_a36g_adversarial_trailing_space_refuses():
     pack = [_member(), _member(security_id="SYN-SEC-B ")]
     verdict = check_class_duplicates(pack, share_class_pairs=[_pair()])
-    _assert_refused(verdict, "ISSUER_DUPLICATE_UNDECLARED")
-    assert verdict.reasons == ("ISSUER_DUPLICATE_UNDECLARED",)
+    # FAMILY TEXT RULE v2: a padded security_id is ABSENT, never a
+    # different valid id; the undeclared duplicate still refuses.
+    _assert_refused(verdict, "SECURITY_ID_MISSING", "ISSUER_DUPLICATE_UNDECLARED")
+    assert verdict.reasons == ("SECURITY_ID_MISSING", "ISSUER_DUPLICATE_UNDECLARED")
 
 
 def test_a36g_adversarial_case_change_refuses():

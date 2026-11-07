@@ -1,0 +1,339 @@
+{
+ "seed": 20261014,
+ "strata": [
+  [
+   "agree_present",
+   20
+  ],
+  [
+   "present_value_differs",
+   10
+  ],
+  [
+   "present_vs_absent",
+   10
+  ]
+ ],
+ "cards": [
+  {
+   "n": 1,
+   "case_id": "02f08a53b09dc6c1",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "agree_present",
+   "fold": "f2"
+  },
+  {
+   "n": 2,
+   "case_id": "18e637ed6fa015bc",
+   "field": "stated_quantity",
+   "template": "T3",
+   "class": "agree_present",
+   "fold": "f5"
+  },
+  {
+   "n": 3,
+   "case_id": "26a0b5728c9f940d",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "agree_present",
+   "fold": "f1"
+  },
+  {
+   "n": 4,
+   "case_id": "33d6ad63bcc2d8b0",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "agree_present",
+   "fold": "f2"
+  },
+  {
+   "n": 5,
+   "case_id": "3494bd998b93cdbe",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "agree_present",
+   "fold": "f2"
+  },
+  {
+   "n": 6,
+   "case_id": "3bca18c5a1f0259a",
+   "field": "stated_quantity",
+   "template": "T3",
+   "class": "agree_present",
+   "fold": "f5"
+  },
+  {
+   "n": 7,
+   "case_id": "3e7e51da19bdb4f5",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "agree_present",
+   "fold": "f3"
+  },
+  {
+   "n": 8,
+   "case_id": "55b0f7c87d3facba",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "agree_present",
+   "fold": "f4"
+  },
+  {
+   "n": 9,
+   "case_id": "654ecf963004e4a5",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "agree_present",
+   "fold": "f5"
+  },
+  {
+   "n": 10,
+   "case_id": "745af6c4f844e9ba",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "agree_present",
+   "fold": "f3"
+  },
+  {
+   "n": 11,
+   "case_id": "799c6e079075a08e",
+   "field": "executed_amount",
+   "template": "T1",
+   "class": "agree_present",
+   "fold": "f4"
+  },
+  {
+   "n": 12,
+   "case_id": "799c6e079075a08e",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "agree_present",
+   "fold": "f4"
+  },
+  {
+   "n": 13,
+   "case_id": "845257bdbf199c74",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "agree_present",
+   "fold": "f5"
+  },
+  {
+   "n": 14,
+   "case_id": "913f696c23cbedaa",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "agree_present",
+   "fold": "f1"
+  },
+  {
+   "n": 15,
+   "case_id": "add57ab031c0e17b",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "agree_present",
+   "fold": "f2"
+  },
+  {
+   "n": 16,
+   "case_id": "b95967705eb0bb54",
+   "field": "stated_quantity",
+   "template": "T3",
+   "class": "agree_present",
+   "fold": "f3"
+  },
+  {
+   "n": 17,
+   "case_id": "bce9289ad020a763",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "agree_present",
+   "fold": "f2"
+  },
+  {
+   "n": 18,
+   "case_id": "c10d748fb16821ae",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "agree_present",
+   "fold": "f2"
+  },
+  {
+   "n": 19,
+   "case_id": "e50497c035a03dc1",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "agree_present",
+   "fold": "f1"
+  },
+  {
+   "n": 20,
+   "case_id": "ebe79d38ec54ba71",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "agree_present",
+   "fold": "f4"
+  },
+  {
+   "n": 21,
+   "case_id": "6594f06e4e1d82ac",
+   "field": "executed_amount",
+   "template": "T1",
+   "class": "present_value_differs",
+   "fold": "f2"
+  },
+  {
+   "n": 22,
+   "case_id": "77c504d5e4bdab9f",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "present_value_differs",
+   "fold": "f4"
+  },
+  {
+   "n": 23,
+   "case_id": "8209ca03e15e8472",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "present_value_differs",
+   "fold": "f3"
+  },
+  {
+   "n": 24,
+   "case_id": "947b73a0f2f0baf1",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "present_value_differs",
+   "fold": "f2"
+  },
+  {
+   "n": 25,
+   "case_id": "a956da6ec7ae61e2",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "present_value_differs",
+   "fold": "f1"
+  },
+  {
+   "n": 26,
+   "case_id": "add57ab031c0e17b",
+   "field": "executed_amount",
+   "template": "T1",
+   "class": "present_value_differs",
+   "fold": "f2"
+  },
+  {
+   "n": 27,
+   "case_id": "c0d771dbaa34d2e4",
+   "field": "executed_amount",
+   "template": "T1",
+   "class": "present_value_differs",
+   "fold": "f4"
+  },
+  {
+   "n": 28,
+   "case_id": "c5e3009268a1a9a0",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "present_value_differs",
+   "fold": "f3"
+  },
+  {
+   "n": 29,
+   "case_id": "dc04af1e4e191e29",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "present_value_differs",
+   "fold": "f3"
+  },
+  {
+   "n": 30,
+   "case_id": "f4077d9f3f105c84",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "present_value_differs",
+   "fold": "f4"
+  },
+  {
+   "n": 31,
+   "case_id": "13f9cd891072561f",
+   "field": "stated_quantity",
+   "template": "T3",
+   "class": "present_vs_absent",
+   "fold": "f4"
+  },
+  {
+   "n": 32,
+   "case_id": "1ee7904026ed9768",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "present_vs_absent",
+   "fold": "f5"
+  },
+  {
+   "n": 33,
+   "case_id": "4602e789354c515d",
+   "field": "stated_amount",
+   "template": "T2",
+   "class": "present_vs_absent",
+   "fold": "f2"
+  },
+  {
+   "n": 34,
+   "case_id": "46c277e39819a37d",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "present_vs_absent",
+   "fold": "f4"
+  },
+  {
+   "n": 35,
+   "case_id": "4f48edf99b0081da",
+   "field": "remaining_authorization",
+   "template": "T1",
+   "class": "present_vs_absent",
+   "fold": "f1"
+  },
+  {
+   "n": 36,
+   "case_id": "80d764ada51548ee",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "present_vs_absent",
+   "fold": "f5"
+  },
+  {
+   "n": 37,
+   "case_id": "8a14460d21a3356d",
+   "field": "executed_amount",
+   "template": "T1",
+   "class": "present_vs_absent",
+   "fold": "f3"
+  },
+  {
+   "n": 38,
+   "case_id": "9357a11376cad73c",
+   "field": "stated_quantity",
+   "template": "T3",
+   "class": "present_vs_absent",
+   "fold": "f4"
+  },
+  {
+   "n": 39,
+   "case_id": "a6fa29c5d2bc577e",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "present_vs_absent",
+   "fold": "f2"
+  },
+  {
+   "n": 40,
+   "case_id": "bcc4791d7a343d85",
+   "field": "incremental_amount",
+   "template": "T1",
+   "class": "present_vs_absent",
+   "fold": "f2"
+  }
+ ]
+}

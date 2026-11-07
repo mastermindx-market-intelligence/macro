@@ -297,6 +297,51 @@ def test_every_relocated_string_is_inside_mc_details_on_a_workspace_page(
     assert leaked == [], f"relocated string still in the reading path: {leaked}"
 
 
+def test_labor_unavailable_copy_preserves_partial_readings() -> None:
+    """Insufficient overall coverage must not imply every reading is absent."""
+    from copy import deepcopy
+    from lib import macro_suite_view
+
+    entry = {
+        "implication_id": "state_unavailable",
+        "text": {
+            "en": "US labor-market state cannot be classified: axis coverage is below "
+                  "the disclosed floor. No quadrant is asserted rather than defaulting "
+                  "to a neutral state.",
+            "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。",
+        },
+        "evidence_class": "DESCRIPTIVE",
+        "confidence": {},
+        "horizon": "current",
+        "channels": ["hiring", "layoffs", "wages"],
+        "contradictions": [],
+        "trace_ref": "data/regime/latest.json#labor_nowcast",
+    }
+    before = deepcopy(entry)
+    rendered = macro_suite_view._implications({"implications": {"items": [entry]}})
+    assert not rendered["absent"]
+    assert len(rendered["entries"]) == 1
+    item = rendered["entries"][0]
+    assert "no overall reading is shown" in item["text"]["en"]
+    assert "Missing data is not treated as a neutral reading" in item["text"]["en"]
+    assert "不展示总体读数" in item["text"]["zh"]
+    assert "缺失数据不会被当作中性读数" in item["text"]["zh"]
+    for language in ("en", "zh"):
+        assert guard.find_violations(f"<p>{item['text'][language]}</p>") == []
+    assert item["text_original"] is None
+    assert item["implication_id"] == entry["implication_id"]
+    assert item["evidence_class"] == entry["evidence_class"]
+    assert item["trace_ref"] == entry["trace_ref"]
+    assert len(item["channels"]) == 3 and all(item["channels"])
+    assert entry == before
+
+    clean = "Hiring has slowed while layoff notices stayed broadly flat."
+    entry["text"] = {"en": clean, "zh": "招聘放缓，裁员通知大致持平。"}
+    entry["implication_id"] = "labor_reading"
+    available = macro_suite_view._implications({"implications": {"items": [entry]}})
+    assert available["entries"][0]["text"]["en"] == clean
+
+
 def test_all_fifteen_built_pages_are_clean_outside_details(tmp_path_factory) -> None:
     """P5 acceptance: hub + 14 deep-link pages, zero banned hits outside
     .mc-details / .mc-primer."""
@@ -455,6 +500,78 @@ def test_apply_plain_producer_unreviewed_machine_text_uses_fallback() -> None:
     assert original["en"].startswith("raw_unreviewed_slug")
 
 
+def test_labor_coverage_refusal_is_plain_without_claiming_neutral() -> None:
+    from html import escape
+    from lib.macro_suite_labels import PLAIN_FALLBACK, apply_plain_producer
+
+    source = {
+        "en": (
+            "US labor-market state cannot be classified: axis coverage is below "
+            "the disclosed floor. No quadrant is asserted rather than defaulting "
+            "to a neutral state."
+        ),
+        "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。",
+    }
+    unchanged = dict(source)
+    reading, original = apply_plain_producer(source)
+
+    assert source == unchanged
+    assert original == unchanged
+    assert original is not source
+    assert reading is not None and reading != PLAIN_FALLBACK
+    assert "not treated as a neutral reading" in reading["en"]
+    assert "缺失数据不会被当作中性读数" in reading["zh"]
+    customer = (
+        '<main class="mc-shell"><p><span class="l-en">'
+        + escape(reading["en"]) + '</span><span class="l-zh">'
+        + escape(reading["zh"]) + "</span></p></main>"
+    )
+    assert guard.find_violations(customer) == []
+
+
+def test_labor_coverage_refusal_has_plain_copy_without_changing_source() -> None:
+    from lib.macro_suite_labels import apply_plain_producer
+
+    source = {
+        "en": "US labor-market state cannot be classified: axis coverage is below "
+              "the disclosed floor. No quadrant is asserted rather than defaulting "
+              "to a neutral state.",
+        "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。",
+    }
+    before = dict(source)
+    reading, original = apply_plain_producer(source)
+    assert reading is not None and reading != source
+    assert original == before and source == before
+    assert "no overall reading" in reading["en"]
+    assert "not treated as a neutral reading" in reading["en"]
+    html = (f'<p><span class="l-en">{reading["en"]}</span>'
+            f'<span class="l-zh">{reading["zh"]}</span></p>')
+    assert guard.find_violations(html) == []
+    ordinary = {"en": "Payrolls increased this month.", "zh": "本月就业人数增加。"}
+    assert apply_plain_producer(ordinary) == (ordinary, None)
+
+
+def test_labor_unavailable_implication_is_plain_without_changing_source() -> None:
+    from copy import deepcopy
+    from engine.market_os.macro_workspaces import labor
+    from lib import macro_suite_view as view
+
+    items = labor._implications(
+        {"state_id": None}, None, None, {"present": False}, "CURRENT", 0.0)
+    snapshot = {"implications": {"items": items}}
+    before = deepcopy(snapshot)
+    reading = view._implications(snapshot)["entries"][0]["text"]
+
+    assert reading["en"] == (
+        "Labor-market data coverage is below the required minimum, so no "
+        "overall reading is shown. Missing data is not treated as a neutral reading.")
+    assert reading["zh"] == "劳动力市场数据覆盖未达到所需下限，因此不展示总体读数。缺失数据不会被当作中性读数。"
+    visible = f'<main><p>{reading["en"]}</p><p>{reading["zh"]}</p></main>'
+    assert guard.find_violations(visible) == []
+    assert snapshot == before
+    assert "axis coverage is below the disclosed floor" in items[0]["text"]["en"]
+
+
 def test_machine_text_predicate_catches_slugs_tokens_and_iso() -> None:
     from lib.macro_suite_labels import machine_text_hits
     assert machine_text_hits("sticky_led in the mix")
@@ -539,6 +656,7 @@ FIVE_COMMAND_PAGES = (
 )
 
 
+@pytest.mark.data_gate
 def test_committed_payloads_have_zero_plain_fallbacks() -> None:
     """MA4: count BOTH fallback sentences against committed site/*.html."""
     from lib.macro_suite_labels import PLAIN_FALLBACK
@@ -821,6 +939,7 @@ def test_capture_relocated_needles_are_locale_visible_and_must_be_inside() -> No
         assert needle not in guard.reading_path_text(html)
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_committed_rates_page_keeps_relocated_needles_inside_details() -> None:
     """Companion site guard: the rebaked rates page keeps the same law.
@@ -1680,6 +1799,7 @@ def test_synthetic_partial_binds_from_dom() -> None:
         playwright_cm.stop()
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_user_facing_numbers_have_no_machine_floats() -> None:
     """E-m3: rendered suite HTML never ships ≥4 fractional digits or e±."""
@@ -1706,6 +1826,7 @@ def test_user_facing_numbers_have_no_machine_floats() -> None:
         assert guard.find_violations(html) == [], name
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_zh_l_zh_spans_are_translated() -> None:
     """M1: every .l-zh on the Macro Command hub (macro_monetary.html) + the 14 suite pages is not ASCII-letters-only."""
@@ -1750,6 +1871,7 @@ def test_zh_l_zh_spans_are_translated() -> None:
     assert ascii_hits == [], ascii_hits
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_locale_spans_have_no_machine_text() -> None:
     """E-m1: every visible text node on the Macro Command hub + 14 suite pages is plain."""
@@ -1822,6 +1944,7 @@ def test_computation_refused_uses_e2_vocabulary() -> None:
     assert "拒绝计算" not in NULL_REASON["COMPUTATION_REFUSED"]["zh"]
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_rendered_pages_use_ratified_null_vocabulary() -> None:
     """E-m2: no refused/refusal phrase on the Macro Command hub + 14 suite pages."""
@@ -1840,10 +1963,8 @@ def test_rendered_pages_use_ratified_null_vocabulary() -> None:
     assert hits == [], hits
 
 
-@pytest.mark.needs_full_checkout("site")
-def test_details_use_locale_pairing_not_lang_attributes() -> None:
-    """M2: Details text uses .l-en/.l-zh; suite templates have no lang= locale switch."""
-    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+def test_suite_templates_have_no_lang_locale_switch() -> None:
+    """M2, template half: suite templates have no lang= locale switch (code gate)."""
     suite_templates = list((ROOT / "templates").glob("macro_*.html.j2"))
     suite_templates.append(ROOT / "templates" / "_macro_suite_shell.html.j2")
     lang_hits = []
@@ -1854,6 +1975,13 @@ def test_details_use_locale_pairing_not_lang_attributes() -> None:
                 text):
             lang_hits.append(f"{path.name}:{match.group(0)[:80]}")
     assert lang_hits == [], lang_hits
+
+
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
+def test_details_use_locale_pairing_not_lang_attributes() -> None:
+    """M2, committed-page half: Details text pairs .l-en/.l-zh on every nightly page."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
     pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
     present = [name for name in pages if (ROOT / "site" / name).is_file()]
     assert len(present) >= 14, present
@@ -1900,7 +2028,10 @@ COMPOSITION_DISCLOSURE_ROWS = (
 )
 
 
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
 def test_axis_move_clauses_cover_every_axis_and_direction() -> None:
+    """Verdict moves with the nightly macrodata (payload axis census), so data gate."""
     from lib.macro_suite_disclosure import (
         AXIS_MOVE_CLAUSES, axis_move_clause, payload_axis_ids, required_axis_ids,
     )
@@ -1966,6 +2097,10 @@ def _assert_one_lineage_kind(html: str, kind: str) -> None:
     from lib.macro_suite_disclosure import (
         LINEAGE_NOTE_KIND_FACTS, LINEAGE_NOTE_KIND_SENTENCES,
     )
+    assert set(LINEAGE_NOTE_KIND_FACTS) == set(LINEAGE_NOTE_KIND_SENTENCES), (
+        "FACTS and SENTENCES must cover the same lineage kinds: the helpers "
+        "below filter on one dict and index the other by kind"
+    )
     for other, fact in LINEAGE_NOTE_KIND_FACTS.items():
         zh = LINEAGE_NOTE_KIND_SENTENCES[other]["zh"]
         if other == kind:
@@ -1988,6 +2123,10 @@ def _assert_page_states_one_lineage_kind(html: str) -> str:
     """
     from lib.macro_suite_disclosure import (
         LINEAGE_NOTE_KIND_FACTS, LINEAGE_NOTE_KIND_SENTENCES,
+    )
+    assert set(LINEAGE_NOTE_KIND_FACTS) == set(LINEAGE_NOTE_KIND_SENTENCES), (
+        "FACTS and SENTENCES must cover the same lineage kinds: the helpers "
+        "below filter on one dict and index the other by kind"
     )
     stated = [kind for kind, fact in LINEAGE_NOTE_KIND_FACTS.items()
               if kind in LINEAGE_NOTE_KIND_SENTENCES and fact in html]
@@ -2208,6 +2347,7 @@ COMPOSITE_COUNT_BY_PAGE = {
 }
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_composites_disclose_composition_law_in_plain_words() -> None:
     """M1: every composite on the 15 pages paints the N disclosure rows, EN+ZH."""
@@ -2436,8 +2576,18 @@ def test_owner_display_pair_falls_back_without_raising(capsys) -> None:
     assert "engine.brand_new_desk" in warning
 
 
+def test_shell_template_paints_trace_row_only_with_trace_ref() -> None:
+    """Template half (code gate): the shell paints mq-trace only under trace_ref."""
+    src = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(
+        encoding="utf-8")
+    assert "{%- if item.trace_ref %}" in src
+    assert "mq-trace" in src
+
+
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_trace_row_present_iff_trace_ref() -> None:
+    """Committed-page half: the nightly page paints one trace row per trace_ref."""
     import json
     path = DATA_ROOT / "workspaces" / "financial_conditions" / "US" / "latest.json"
     snap = json.loads(path.read_text(encoding="utf-8"))
@@ -2448,10 +2598,6 @@ def test_trace_row_present_iff_trace_ref() -> None:
     traces = re.findall(r'<p class="mq-trace">', html)
     expected = sum(1 for item in items if item.get("trace_ref"))
     assert len(traces) == expected
-    src = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(
-        encoding="utf-8")
-    assert "{%- if item.trace_ref %}" in src
-    assert "mq-trace" in src
 
 
 _RESTORED_ROW_PAIRS = (
@@ -2489,6 +2635,7 @@ def test_restored_row_families_on_non_composite_page() -> None:
     _assert_one_lineage_kind(baked, "value_correction")
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_committed_monetary_policy_page_keeps_restored_rows() -> None:
     """Companion site guard for the committed monetary page.

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import ast
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -20,9 +21,11 @@ from engine.sector_intelligence.consumer_cyclical_display import (
     display_packet,
 )
 from engine.sector_intelligence.consumer_cyclical_projection import (
+    _DEFINITION_CONTRADICTED,
     project_economic_change,
 )
 from engine.sector_intelligence.consumer_cyclical_shared_contract import (
+    SHARED_CONTRACT_MODULE,
     ConsumerCyclicalResearchRefusal,
     shared_contract,
 )
@@ -83,7 +86,8 @@ def test_synthetic_packet_shows_the_r6_lead_and_refuses_a_filing_claim() -> None
     emitted = {row["key"]: row["value_text"] for row in projected["results"]}
     assert packet["filing_claim"] is False
     assert packet["provenance"] == "synthetic_fixture"
-    assert packet["shared_contract_status"] == "unavailable"
+    # The shared owner's module is on this tree, so the probe records it.
+    assert packet["shared_contract_status"] == "present"
     assert packet["advertising_net_change"] == emitted["advertising_net_change"]
     assert packet["advertising_net_change"] == "-4"
     assert packet["lead"] == projected["explanation"]["lead"]
@@ -122,7 +126,7 @@ def test_unavailable_document_and_withheld_row_stay_visible(
     target = [row for row in rows if row["key"] == "advertising_net_change"]
     assert len(target) == 1
     target[0]["value_text"] = None
-    target[0]["withheld_reason"] = "result_envelope_contradicts_stated_definition"
+    target[0]["withheld_reason"] = _DEFINITION_CONTRADICTED
     _patch_projection(
         monkeypatch, {**document, "results": rows, "availability": "unavailable"}
     )
@@ -131,7 +135,7 @@ def test_unavailable_document_and_withheld_row_stay_visible(
     assert packet["advertising_net_change"] is None
     assert packet["advertising_net_change_status"] == "withheld"
     assert packet["advertising_net_change_withheld_reason"] == (
-        "result_envelope_contradicts_stated_definition"
+        _DEFINITION_CONTRADICTED
     )
 
 
@@ -170,6 +174,8 @@ def test_absent_contract_records_unavailable_and_keeps_the_lead(
 ) -> None:
     case = _committed_synthetic_case()
     projected = project_economic_change(case)
+    # Mask the shared module: ImportError, as on a tree without it.
+    monkeypatch.setitem(sys.modules, SHARED_CONTRACT_MODULE, None)
     with pytest.raises(ConsumerCyclicalResearchRefusal) as live:
         shared_contract()
     assert live.value.code == "shared_contract_unavailable"
