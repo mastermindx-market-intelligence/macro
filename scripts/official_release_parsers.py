@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import html
 import re
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from html.parser import HTMLParser
 from typing import Any
@@ -205,13 +205,18 @@ def _entry_packet(
 class _DOLClaimsListingParser(HTMLParser):
     """Capture one exact-date claims teaser from the DOL ETA release listing."""
 
+    _VOID_TAGS = frozenset("area base br col embed hr img input link meta param source track wbr".split())
+
     def __init__(self, target_path: str) -> None:
         super().__init__(convert_charrefs=True)
         self.target_path = target_path
+        self.event_day = datetime.strptime(target_path[-8:], "%Y%m%d").date()
         self.capture_depth = 0
         self.title_depth = 0
+        self.date_depth = 0
         self.parts: list[str] = []
         self.title_parts: list[str] = []
+        self.date_parts: list[str] = []
         self.source_path = target_path
         self.done = False
 
@@ -220,28 +225,43 @@ class _DOLClaimsListingParser(HTMLParser):
         tag: str,
         attrs: list[tuple[str, str | None]],
     ) -> None:
+        if tag.lower() in self._VOID_TAGS:
+            return
         attributes = {key: value or "" for key, value in attrs}
         about = attributes.get("about", "").strip()
-        if not self.capture_depth and not self.done and about == self.target_path:
+        if about.startswith("/index.php/"):
+            about = about[len("/index.php"):]
+        if not self.capture_depth and not self.done and (
+            about == self.target_path or re.fullmatch(r"/node/\d+", about)
+        ):
             self.capture_depth = 1
             self.source_path = about
         elif self.capture_depth:
             self.capture_depth += 1
         if self.capture_depth and tag.lower() == "h3":
             self.title_depth += 1
-        if self.capture_depth and attributes.get("href", "").strip():
-            href = re.sub(r"\s+", "", attributes["href"])
-            if href.endswith(self.target_path):
-                self.source_path = href
+        if self.capture_depth and "dol-date-text" in attributes.get("class", "").split():
+            self.date_depth = self.capture_depth
 
     def handle_endtag(self, tag: str) -> None:
+        if tag.lower() in self._VOID_TAGS:
+            return
         if not self.capture_depth:
             return
         if tag.lower() == "h3" and self.title_depth:
             self.title_depth -= 1
+        if self.date_depth == self.capture_depth:
+            self.date_depth = 0
         self.capture_depth -= 1
         if self.capture_depth == 0:
-            self.done = True
+            try:
+                printed_day = datetime.strptime(" ".join(self.date_parts).strip(), "%B %d, %Y").date()
+            except ValueError:
+                printed_day = None
+            self.done = bool(printed_day == self.event_day and
+                             "unemployment insurance weekly claims" in " ".join(self.title_parts).lower())
+            if not self.done:
+                self.parts, self.title_parts, self.date_parts = [], [], []
 
     def handle_data(self, data: str) -> None:
         if not self.capture_depth:
@@ -250,6 +270,8 @@ class _DOLClaimsListingParser(HTMLParser):
             self.parts.append(data)
             if self.title_depth:
                 self.title_parts.append(data)
+            if self.date_depth:
+                self.date_parts.append(data)
 
 
 def _extract_dol_claims_listing(
@@ -265,6 +287,14 @@ def _extract_dol_claims_listing(
         return None
     if not parser.done:
         return None
+    # The URL and scheduled embargo are identifiers, not proof that this block
+    # actually contains the expected release. Require its own printed date.
+    try:
+        printed_day = datetime.strptime(" ".join(parser.date_parts).strip(), "%B %d, %Y").date()
+    except ValueError:
+        return None
+    if printed_day != event_day:
+        return None
     text = re.sub(r"\s+", " ", " ".join(parser.parts)).strip()
     title = re.sub(r"\s+", " ", " ".join(parser.title_parts)).strip()
     if (
@@ -274,13 +304,13 @@ def _extract_dol_claims_listing(
         return None
     # The first-party ``index.php`` route serves this exact release while
     # DOL's shorter CDN path rejects the watcher service identity.
-    source_url = f"https://www.dol.gov/index.php{target_path}"
+    source_url = f"https://www.dol.gov/index.php{parser.source_path}"
     return _entry_packet(
         title=title,
         content=text,
         source_url=source_url,
         released_at=None,
-        entry_id=target_path,
+        entry_id=parser.source_path,
         reference_period=None,
     )
 
@@ -911,7 +941,9 @@ def parse_pce_actual(body: bytes) -> dict[str, Any] | None:
     }
 
 
-def parse_claims_actual(body: bytes) -> dict[str, Any] | None:
+def parse_claims_actual(
+    body: bytes, *, event_day: date | None = None,
+) -> dict[str, Any] | None:
     """Parse weekly initial claims facts from a DOL ETA release page."""
     text = _html_text(body)
     claims = re.search(
@@ -943,7 +975,23 @@ def parse_claims_actual(body: bytes) -> dict[str, Any] | None:
         flags=re.IGNORECASE,
     )
     reference_period = claims.group("week").title()
-    if release_date_match:
+    if event_day is not None:
+        # Claims always concern the preceding Saturday, including Wednesday
+        # holiday releases and a December reference week in a January release.
+        expected_week = event_day - timedelta(days=(event_day.weekday() - 5) % 7 or 7)
+        month, day = reference_period.split()
+        if _MONTHS.get(month.lower()) != expected_week.month or int(day) != expected_week.day:
+            return None
+        if not release_date_match:
+            return None
+        try:
+            printed_day = datetime.strptime(release_date_match.group(0), "%B %d, %Y").date()
+        except ValueError:
+            return None
+        if printed_day != event_day:
+            return None
+        reference_period = f"{expected_week:%B} {expected_week.day}, {expected_week.year}"
+    elif release_date_match:
         reference_period += f", {release_date_match.group(2)}"
     headline_en = f"Initial claims {actual / 1_000:.0f}k ({change / 1_000:+.0f}k)"
     headline_zh = f"初请失业金 {actual / 1_000:.0f}千（{change / 1_000:+.0f}千）"

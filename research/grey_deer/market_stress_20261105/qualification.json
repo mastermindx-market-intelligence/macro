@@ -1,0 +1,197 @@
+{
+  "environment": "existing managed C3 workspace",
+  "source_base": "20959c5e8183f44678df4dbfc26ac246665ba2bf",
+  "prior_committed_head": "3fce398ed4fb6f4dae48c11b2daabbc5cecd46b8",
+  "command": "python3 -m pytest tests/test_official_release_parsers.py tests/test_vps_live_orchestration.py tests/test_release_actuals.py tests/test_release_publications_live_client.py tests/test_status_error_leak.py tests/test_risk_state_live_session_floor.py tests/test_risk_state_live_copy_sync.py tests/test_risk_state_live_participation_copy.py tests/test_live_risk_envelope.py -q --tb=short",
+  "tool_process_pid": 57223,
+  "exit_code": 0,
+  "passed": 314,
+  "failed": 0,
+  "skipped": 0,
+  "warnings": 5,
+  "elapsed_seconds": 13.65,
+  "source_sha256": {
+    "scripts/build_risk_state.py": "d3f622095ff4574f7188e4ff5031dc761ff13cb1fcf89cac8e76f241ea307a46",
+    "scripts/official_release_parsers.py": "fa38b1b89e5dbb1bef6c3c87e1bcea006b8813bf69a350ab70b6b49e8419cdc3",
+    "scripts/watch_release_publications.py": "b40d08bf196df3773f16d61716ccdb80f4da218e283727efd85267be7d41347b",
+    "templates/risk_state_live.js": "875658fe80319c227a2ef9d3f3022e18138515ec6c567f35176493a3532adbf0",
+    "site/risk_state_live.js": "875658fe80319c227a2ef9d3f3022e18138515ec6c567f35176493a3532adbf0",
+    "tests/test_risk_state_live_session_floor.py": "b225ecee56db5f016cb1f669bb7419dba9ceeddc33e7340ac0b95747b69b973d",
+    "tests/test_vps_live_orchestration.py": "0943d5276493cf1350befb1fc5808a13ab61b1a77b5c5e8eac8df152423bfc02"
+  },
+  "production_acceptance": false,
+  "observed_at": "2026-11-05T23:31:22Z",
+  "agentos_validation": {
+    "exit_code": 0,
+    "records": 2073,
+    "errors": 0,
+    "warnings": 174,
+    "warnings_scope": "existing organizational records; no new schema errors"
+  },
+  "november_6_followthrough": {
+    "source_tip": "ec68973e8c1ed582e301e2b404ca141d9c58f602",
+    "main_parent": "9531f6b11780a95ab53a084435c7a19357214bb5",
+    "tested_source_tree": "1ec69b32a311fbfcb261f2adb2d922cd1bba45f6",
+    "tool_process_pid": 6934,
+    "exit_code": 0,
+    "passed": 314,
+    "failed": 0,
+    "skipped": 0,
+    "warnings": 11,
+    "elapsed_seconds": 23.25,
+    "command": "python3 -m pytest tests/test_official_release_parsers.py tests/test_vps_live_orchestration.py tests/test_release_actuals.py tests/test_release_publications_live_client.py tests/test_status_error_leak.py tests/test_risk_state_live_session_floor.py tests/test_risk_state_live_copy_sync.py tests/test_risk_state_live_participation_copy.py tests/test_live_risk_envelope.py -q --tb=short",
+    "node_syntax": "pass for template and site",
+    "paired_js_equal": true,
+    "source_sha256": {
+      "scripts/build_risk_state.py": "d3f622095ff4574f7188e4ff5031dc761ff13cb1fcf89cac8e76f241ea307a46",
+      "scripts/official_release_parsers.py": "fa38b1b89e5dbb1bef6c3c87e1bcea006b8813bf69a350ab70b6b49e8419cdc3",
+      "scripts/watch_release_publications.py": "b40d08bf196df3773f16d61716ccdb80f4da218e283727efd85267be7d41347b",
+      "templates/risk_state_live.js": "9a52dbd1d204eb4938a99f25b973cf100c825617f6059cd885529a534edddb17",
+      "site/risk_state_live.js": "9a52dbd1d204eb4938a99f25b973cf100c825617f6059cd885529a534edddb17",
+      "tests/test_risk_state_live_session_floor.py": "899dcfe0e1246ca4aae3ef3657d5a26ed3fe641afb623f0d76b12d1ab0e1b9e8",
+      "tests/test_vps_live_orchestration.py": "0943d5276493cf1350befb1fc5808a13ab61b1a77b5c5e8eac8df152423bfc02"
+    },
+    "observed_at": "2026-11-06T00:54:20.522519+00:00",
+    "production_acceptance": false
+  },
+  "november_6_required_quote_expiry": {
+    "source_head": "c2180b76a91dc039dedd27092a25e8bf053f214c",
+    "compared_main": "075445df2872a877fe11049da4d35245068c3a08",
+    "operation_id": "macro-market-stress-20261105-c3",
+    "original_required_clock_regressions": {
+      "tests": 35,
+      "failed": 27,
+      "passed": 8,
+      "errors": 0,
+      "pytest_process_pid": 29275,
+      "receipt_reconciliation_pid": 44702,
+      "receipt_sha256": "a2cb92391003a750daf49a3ac5fb0ce038aead88eba5d20cb0003e6b4fc2d223",
+      "rerun": false
+    },
+    "original_envelope_regressions": {
+      "tests": 24,
+      "failed": 20,
+      "passed": 4,
+      "errors": 0,
+      "process_pid": 65703,
+      "exit_code": 0
+    },
+    "intermediate_producer_client_proof": {
+      "process_pid": 47334,
+      "exit_code": 0,
+      "passed": 116,
+      "failed": 0,
+      "skipped": 0
+    },
+    "final_affected_selection": {
+      "process_pid": 82074,
+      "exit_code": 0,
+      "passed": 373,
+      "failed": 0,
+      "skipped": 0,
+      "warnings": 5,
+      "pytest_elapsed_seconds": 15.76,
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 -B -m pytest tests/test_official_release_parsers.py tests/test_vps_live_orchestration.py tests/test_release_actuals.py tests/test_release_publications_live_client.py tests/test_status_error_leak.py tests/test_risk_state_live_session_floor.py tests/test_risk_state_live_copy_sync.py tests/test_risk_state_live_participation_copy.py tests/test_live_risk_envelope.py -q --tb=short"
+    },
+    "source_blobs": {
+      "scripts/build_risk_state.py": "7fecb93e524ac21fc7dab996ea4646a6dcf068b6",
+      "templates/risk_state_live.js": "6acf107e873ff24af447f2739fc676996161978d",
+      "site/risk_state_live.js": "6acf107e873ff24af447f2739fc676996161978d",
+      "scripts/build_live_risk_envelope.py": "099a1ed6ae18766e52964b7872730a20f082a6de",
+      "templates/risk_envelope_live.js": "f7626ec36c88ee426f80d7e21cef07014d7e743c",
+      "tests/test_risk_state_live_session_floor.py": "aeb77aec12a5b8cbb89ca5f83284e315e57769f8",
+      "tests/test_live_risk_envelope.py": "b27ed9b5d6eb2d9eb4b1b7acb4c0325f4f46c686",
+      "site/risk_envelope_live.js": "f7626ec36c88ee426f80d7e21cef07014d7e743c"
+    },
+    "paired_asset_emitter": "lib.site_assets.copy_asset",
+    "node_syntax": "passed for both risk_state_live.js and risk_envelope_live.js template/site pairs",
+    "deadline_contract": {
+      "source": "earliest already-admitted required quote deadline; configured quote budget; serialized built plus five-minute artifact cap",
+      "optional_or_carried_inputs_add_veto": false,
+      "source_event_time": "newest provenance clock unchanged",
+      "envelope": "same upstream deadline bounded by existing carrying-artifact horizon; no rebuild renewal",
+      "consumer_boundary": "expired when now >= stale_after; missing, malformed and timezone-naive live deadlines refused"
+    },
+    "original_receipts_preserved": true,
+    "source_disjoint_with_10795_engine": true,
+    "risk_response_9428_integration_required": true,
+    "terminal_contract_compatibility_only": true,
+    "production_acceptance": false,
+    "authenticated_browser_acceptance": false
+  },
+  "november_6_consumer_fixture_compatibility": {
+    "source_head": "60fabc3a3dc4a9e9fc78b5655e2cb3954119497e",
+    "publication_base": "296c6fc8b432252b7ef48ed375ca8f48852763ad",
+    "original_hosted_failure": {
+      "run_id": 42187372021,
+      "attempt": 1,
+      "job_id": 127806620899,
+      "failed_tests": 73,
+      "radar_failures": 7,
+      "rotation_failures": 66,
+      "exact_base": "075445df2872a877fe11049da4d35245068c3a08",
+      "automatic_base_replays_succeeded": true,
+      "artifact_id": 13493533833,
+      "artifact_finalized": true
+    },
+    "repair": {
+      "scope": "Two existing consumer fixture modules; no production source change",
+      "absolute_deadlines": "Explicit original observation deadlines in intended-live fixtures",
+      "boundary": "Actual producer expires at equality; an explicitly synthetic later-expiry copy separately preserves the inclusive carrying-TTL and nonrenewal checks",
+      "weekend": "Moved fixture deadline with its intentionally moved observation so original weekend rejection remains discriminating",
+      "all_original_test_functions_decorators_imports_preserved": true,
+      "original_assertions": 234,
+      "final_assertions": 237
+    },
+    "test_blobs": {
+      "tests/test_risk_envelope_radar_integration.py": "0d04e42888e58ef366d68cb0b13429dc64fb7a92",
+      "tests/test_rotation_risk_consumers.py": "88c97dc0f7ceaac3b01990ea70bf4514510e34ed"
+    },
+    "final_affected_selection": {
+      "process_pid": 36549,
+      "pytest_exit_code": 0,
+      "driver_exit_code": 1,
+      "passed": 169,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "pytest_elapsed_seconds": 74.55,
+      "parent_elapsed_seconds": 75.73,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "consumer_guard_receipt",
+        "tests/test_risk_envelope_radar_integration.py",
+        "tests/test_rotation_risk_consumers.py",
+        "-q",
+        "--tb=short",
+        "--basetemp=/private/tmp/macro-pr10782-consumers-x6iifyxj/pytest",
+        "--junitxml=/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-market-stress-20261105-c3/.proof_runtime/c4-consumer-clock-compat/final-consumers.xml"
+      ],
+      "source_receipt_sha256": "e39c4c78575b7dcca2c4900f0fa5c2e0f2d06bd8803f0ac7f221880931bcada2",
+      "log_sha256": "07c79ededc05bb2e6592de6f29aa0a2b1196a63b9697ce5330a5fac6fe9381c3",
+      "xml_sha256": "c167ac5339089da2a7ab781e6d743014d7c4c1a983000f9c2de4ca043dc0a354"
+    },
+    "guard_reconciliation": {
+      "process_pid": 44439,
+      "exit_code": 0,
+      "pytest_rerun": false,
+      "reason": "The receipt driver incorrectly demanded an empty baseline after all169 tests passed; canonical guard permits the two pre-existing site JS source changes. Both exact blobs and all25 measured source/dependency blobs remain unchanged after tests. Actual guards stayed active.",
+      "receipt_sha256": "3f5ad5b9964118d53bf18ed75b01030dd7f75fa4c060756c133a502a296df1d7",
+      "data_guard_baseline_entries": 2,
+      "module_guard_leaks": 0
+    },
+    "accepted_current_main_template_inputs": [
+      "templates/allocation.html.j2",
+      "templates/stockdata.js"
+    ],
+    "original_373_source_cases_reused_not_rerun": true,
+    "ci_manifest_and_existing_owners_unchanged": true,
+    "authenticated_browser_acceptance": false,
+    "production_acceptance": false,
+    "release_hold_retained": true
+  }
+}

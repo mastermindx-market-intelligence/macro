@@ -328,6 +328,7 @@ def _live_turn_fixture(tmp_path, monkeypatch):
     write(tmp_path, "data/market_state/latest.json", {"asof": _SETTLED_SESSION})
     write(tmp_path, "site/live/risk_state.json", {
         "built": "2026-10-07 14:00:00 UTC", "live_active": True,
+        "stale_after": "2026-10-07T14:05:00Z",
         "live": {"verdict": "RISK_OFF", "score": 40, "raw_score": 40,
                  "radar": {"state": "warning"}, "source_event_time": "2026-10-07T13:59:50Z"},
     })
@@ -425,6 +426,17 @@ def test_live_ttl_uses_upstream_clock_with_inclusive_owner_boundary(tmp_path, mo
     from datetime import timedelta
     anchor, current = _live_turn_fixture(tmp_path, monkeypatch)
     boundary = datetime(2026, 10, 7, 14, 5, tzinfo=timezone.utc)
+    produced = current
+    assert produced["stale_after"] == "2026-10-07T14:05:00+00:00"
+    before = boundary - timedelta(microseconds=1)
+    assert rc.qualify_live_context(produced, settled=anchor, now=before)["usable"] is True
+    for instant in (boundary, boundary + timedelta(microseconds=1)):
+        out = rc.qualify_live_context(produced, settled=anchor, now=instant)
+        assert out["usable"] is False and out["reason"] == "expired_or_invalid_source_clock"
+    # Deliberately loosen only this synthetic copy's outer expiry to isolate the
+    # independent carrying TTL. The actual producer above never emits this value.
+    current = deepcopy(produced)
+    current["stale_after"] = "2026-10-07T14:10:00Z"
     out = rc.qualify_live_context(current, settled=anchor, now=boundary)
     assert out["usable"] is True
     assert out["selection"]["fresh_through"] == "2026-10-07T14:05:00+00:00"
@@ -574,6 +586,7 @@ def test_repeated_read_cannot_tick_or_recompose_and_frozen_pending_can_differ(tm
     write(tmp_path, "data/leadership_crack/latest.json", {"asof": _SETTLED_SESSION, "state": "INTACT"})
     write(tmp_path, "site/live/risk_state.json", {
         "built": "2026-10-07 14:00:00 UTC", "live_active": True,
+        "stale_after": "2026-10-07T14:05:00Z",
         "live": {"verdict": "RISK_OFF", "score": 40, "radar": {"state": "quiet"}},
     })
     current = live.build(tmp_path, now=_LIVE_NOW, produced_now=_LIVE_NOW)
@@ -679,6 +692,7 @@ def test_live_clock_aliases_and_session_cannot_borrow_wrapper_freshness(tmp_path
             current["observed_at"] = current["produced_at"] = now.isoformat()
             current["clocks"]["observed_at"] = current["clocks"]["produced_at"] = now.isoformat()
             current["clocks"]["upstream_built"] = "2026-10-10T14:00:00Z"
+            current["stale_after"] = "2026-10-10T14:05:00Z"
         expected = "live_session_unqualified"
     before = deepcopy(current)
     out = rc.qualify_live_context(current, settled=anchor, now=now)
@@ -718,6 +732,7 @@ def test_actual_live_owner_current_et_session_survives_utc_midnight(tmp_path, mo
     now = datetime(2026, 10, 8, 0, 30, tzinfo=timezone.utc)  # still Oct 7 ET
     write(tmp_path, "site/live/risk_state.json", {
         "built": "2026-10-08 00:29:00 UTC", "live_active": True,
+        "stale_after": "2026-10-08T00:34:00Z",
         "live": {"verdict": "RISK_OFF", "score": 40, "radar": {"state": "warning"},
                  "source_event_time": "2026-10-08T00:28:59Z"},
     })

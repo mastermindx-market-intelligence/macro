@@ -62,7 +62,7 @@ import copy
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -71,6 +71,7 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 from engine import live_overlay, live_quotes, market_state, market_drivers, risk_radar  # noqa: E402
+from engine.indicators import pct_rank_window  # noqa: E402
 from lib import config  # noqa: E402
 from lib import store as store_mod  # noqa: E402
 
@@ -85,8 +86,6 @@ SPLICE = {
     "HYG": "HYG", "TLT": "TLT",
     "_VIX": "^VIX", "_VIX3M": "^VIX3M", "_VIX9D": "^VIX9D", "_MOVE": "^MOVE",
 }
-# which market_state component legs become LIVE when we splice (the rest carry nightly)
-_LIVE_LEGS = {"trend", "vol"}
 # Volatility indices legitimately move far more than equities in a single session (VIX +40-80%
 # on a real shock), so the equity limit-move guard would WRONGLY reject them — blinding the vol
 # leg exactly when stress hits. Use a much looser cap (still catches a 10x glitch print).
@@ -194,6 +193,28 @@ def _live_vix_term(live_close, nightly_close):
     if vix and v3m:
         return round(vix / v3m, 4)
     return None
+
+
+def _live_vix_percentile(spliced: dict) -> float | None:
+    """Refresh the existing volatility input with the SAME nightly definition.
+
+    Splicing _VIX into the store does not refresh latest.conditions, which the
+    market-state volatility leg reads. Without this projection the prior calm
+    percentile survives a real volatility shock under a "live" leg label.
+    No new factor, score weight, lookback or outlier rule is introduced.
+    """
+    frame = spliced.get("_VIX")
+    if frame is None or frame.empty or "close" not in frame:
+        return None
+    try:
+        mcfg = config.load()["engine"]["conditions"]["complacency"]
+        window = int(mcfg["vix_pctile_lookback_d"])
+        if window < 2:
+            return None
+        value = pct_rank_window(frame["close"], window).iloc[-1]
+        return float(value) if pd.notna(value) and 0 <= value <= 1 else None
+    except (KeyError, TypeError, ValueError, IndexError):
+        return None
 
 
 def _hy_oas_asof():
@@ -312,11 +333,12 @@ def build(offline: bool = False) -> dict:
     quotes = live_quotes.fetch_quotes(sorted(set(SPLICE.values())), offline=offline, diag=diag)
     spliced, live_close, nightly_close, quote_clocks = _spliced_frames(
         quotes, max_chg, stale_after, now, session["open"])
-    live_active = bool(spliced)
 
     # ---- recompute the engine on the spliced store (NO logic duplication) ----
     live_ms = None
     live_radar = None
+    term = None
+    vix_percentile = None
     _orig_read = store_mod.read
     try:
         def _patched(group, name, *a, **k):
@@ -333,12 +355,56 @@ def build(offline: bool = False) -> dict:
             ra = (live_latest.setdefault("conditions", {})
                              .setdefault("risk_appetite", {}))
             ra["vix_term"] = term
+        vix_percentile = _live_vix_percentile(spliced)
+        if vix_percentile is not None:
+            cmp = (live_latest.setdefault("conditions", {})
+                              .setdefault("complacency", {}))
+            cmp["vix_pctile"] = vix_percentile
         frame = _live_frame(spliced)
         live_ms = market_state.market_state_snapshot(live_latest, frame, latest.get("alerts") or [])
     except Exception as e:  # noqa: BLE001 — never abort the loop; fall back to nightly
         log.error("risk_state: live recompute failed: %s", e)
     finally:
         store_mod.read = _orig_read
+
+    # A fresh bond quote must not certify stale equity/volatility inputs. This
+    # is source eligibility, not a new risk factor or policy. Keep partial
+    # computations available for diagnosis, but every consumer of live_active
+    # (including the canonical envelope) must see the same unavailable state.
+    required_quote_times = {}
+
+    def clocked(name):
+        event = _source_event_time({name: quote_clocks.get(name)}, now)
+        if name not in spliced or not event:
+            return False
+        quote_time = datetime.fromisoformat(event)
+        eligible = (now - quote_time).total_seconds() <= stale_after * 60
+        if eligible:
+            required_quote_times[name] = quote_time
+        return eligible
+
+    fast_inputs = {
+        "trend": {name: clocked(name) for name in ("SPY", "QQQ", "IWM")},
+        "vol": {
+            "vix_percentile": vix_percentile is not None and clocked("_VIX"),
+            "vix_term": term is not None and clocked("_VIX3M") and
+                        clocked("_VIX9D" if live_close.get("_VIX9D") else "_VIX"),
+        },
+    }
+    critical_missing = [name for inputs in fast_inputs.values()
+                        for name, available in inputs.items() if not available]
+    live_active = bool(live_ms) and not critical_missing
+
+    # Consumers must expire when the first required input does, not when the
+    # newest provenance clock does. Reuse the clocks that certified this exact
+    # assessment so optional/carried legs do not gain a freshness veto. Match
+    # the whole-second built stamp when applying the existing artifact TTL.
+    live_stale_after = None
+    if live_active:
+        deadlines = [now.replace(microsecond=0) + timedelta(minutes=5)]
+        deadlines.extend(event + timedelta(minutes=stale_after)
+                         for event in required_quote_times.values())
+        live_stale_after = min(deadlines).isoformat()
 
     live_blk = _verdict_block(live_ms)
     # GD-3R1: the source event clock — the real source-market quote clock(s) behind
@@ -374,13 +440,16 @@ def build(offline: bool = False) -> dict:
     legs = []
     for c in (live_ms or {}).get("components", []):
         key = c.get("key")
-        is_live = live_active and key in _LIVE_LEGS
+        available = list(fast_inputs.get(key, {}).values())
+        is_live = bool(available) and all(available)
+        basis = "live" if is_live else "partial" if any(available) else "carried"
         legs.append({"key": key, "label_en": c.get("label_en"), "score": c.get("score"),
-                     "basis": "live" if is_live else "carried",
+                     "basis": basis,
                      "asof": "live" if is_live else nightly_asof})
+    component_asof = {leg["key"]: leg["asof"] for leg in legs}
     legs_asof = {
-        "tape_trend": "live" if (live_active and "SPY" in spliced) else nightly_asof,
-        "volatility": "live" if (live_active and ("_VIX3M" in spliced or "_VIX9D" in spliced)) else nightly_asof,
+        "tape_trend": component_asof.get("trend", nightly_asof),
+        "volatility": component_asof.get("vol", nightly_asof),
         "radar_fast": "live" if live_active else nightly_asof,   # equity/vol/credit-proxy radar legs
         "credit_hy_oas": _hy_oas_asof(),                          # FRED, carried, ~1 biz day lag
         "breadth": nightly_asof, "liquidity": nightly_asof,
@@ -434,10 +503,17 @@ def build(offline: bool = False) -> dict:
         "session": session,
         "live_active": live_active,
         "stale": (not live_active),
+        "stale_after": live_stale_after,
         "stale_reason": (None if live_active else
-                         ("market closed" if not session["open"] else "no fresh quotes")),
+                         "market closed" if not session["open"] else
+                         "critical inputs unavailable" if critical_missing else
+                         "live calculation unavailable"),
+        "critical_missing": critical_missing,
         # HONEST FRESHNESS: even "live" is vendor-delayed (Polygon Standard / Yahoo ~15 min).
         "delayed_min": int(cfg.get("delayed_min", 0)),
+        # Consumer-time quote expiry must use the same vendor-delay budget as
+        # quote admission, rather than treating the fresh build clock as a trade.
+        "quote_stale_after_min": stale_after,
         "feed": str(cfg.get("feed_label", "") or ""),
         "realtime": int(cfg.get("delayed_min", 0)) == 0,
         "nightly_asof": nightly_asof,

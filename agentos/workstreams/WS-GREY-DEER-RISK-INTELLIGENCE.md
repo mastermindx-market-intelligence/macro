@@ -26,6 +26,7 @@ owns_paths:
   - tests/test_risk_envelope
   - agentos/handoffs/GREY-DEER-
 discoveries:
+  - DSC:MARKET-STRESS-20261105-CLOCKS-AND-IDENTITY
   - DSC:GD1-LC-EMISSION-LOG-STARTS-BROKEN
   - DSC:GD1-EWY-IS-NOT-KOSPI-CASH
   - DSC:GD1C-PIT-MEMBERSHIP-PREHISTORY-ABSENT
@@ -41,6 +42,8 @@ decisions:
   - DEC:SCOPED-REFLEX-CONSTRAINTS-NOT-FUSED-SHIELD
   - DEC:AUTO-EXIT-NOT-IN-GREY-DEER-V1
 artifacts:
+  - research/grey_deer/market_stress_20261105/PLAN.md
+  - research/grey_deer/market_stress_20261105/FINDINGS.md
   - research/grey_deer/serving_freshness_20261021/AMZN_ADJUDICATION.md
   - research/grey_deer/serving_freshness_20261021/amzn_historical_execution_20261021.json
   - research/grey_deer/serving_freshness_20261021/mtf_history_candidates_20261021.json

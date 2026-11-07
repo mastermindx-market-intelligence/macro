@@ -1,0 +1,106 @@
+{
+  "kind": "captured_production_claims_withdrawal_replay",
+  "production": false,
+  "before": {
+    "event_id": "claims:2026-11-05",
+    "type": "CLAIMS",
+    "date": "2026-11-05",
+    "time_et": "08:30",
+    "label": "Initial jobless claims",
+    "label_zh": "初请失业金",
+    "schedule_source": "computed",
+    "is_context_only": true,
+    "scheduled_at": "2026-11-05T08:30:00-05:00",
+    "status": "published",
+    "detected_at": "2026-11-05T13:30:41.181142+00:00",
+    "first_seen_at": "2026-11-05T13:30:41.181142+00:00",
+    "observed_at": "2026-11-05T13:30:41.181142+00:00",
+    "official_embargo_at": "2026-11-05T08:30:00-05:00",
+    "source_released_at": "2026-11-05T13:30:00+00:00",
+    "source_time_basis": "scheduled_embargo_floor",
+    "publisher": "U.S. Department of Labor",
+    "source_id": "dol_claims",
+    "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta",
+    "content_sha256": "a5275deafed7afc13398a82440b2f5b2281956279abb0bc112a1eea997d77864",
+    "source_sha256": "a5275deafed7afc13398a82440b2f5b2281956279abb0bc112a1eea997d77864",
+    "data_ready": true,
+    "reference_period": "October 24, 2026",
+    "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+    "parser": {
+      "name": "claims",
+      "version": 1
+    },
+    "actual": {
+      "kind": "jobless_claims",
+      "initial_claims": 194000,
+      "change": -1000,
+      "prior_initial_claims": 195000,
+      "four_week_average": 196750,
+      "unit": "persons",
+      "reference_period": "October 24, 2026",
+      "metrics": [
+        {
+          "metric_id": "claims_initial",
+          "value": 194000,
+          "unit": "persons",
+          "period": "October 24, 2026"
+        },
+        {
+          "metric_id": "claims_change",
+          "value": -1000,
+          "unit": "persons",
+          "period": "October 24, 2026"
+        },
+        {
+          "metric_id": "claims_four_week_avg",
+          "value": 196750,
+          "unit": "persons",
+          "period": "October 24, 2026"
+        }
+      ],
+      "headline_en": "Initial claims 194k (-1k)",
+      "headline_zh": "初请失业金 194千（-1千）",
+      "summary_en": "Initial claims 194k (-1k) for the week ending October 24, 2026; four-week average 196.8k.",
+      "summary_zh": "初请失业金 194千（-1千），截至 October 24, 2026 当周；四周均值 196.8千。",
+      "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta"
+    },
+    "verified_at": "2026-11-05T13:30:41.181142+00:00"
+  },
+  "after": {
+    "event_id": "claims:2026-11-05",
+    "type": "CLAIMS",
+    "date": "2026-11-05",
+    "time_et": "08:30",
+    "label": "Initial jobless claims",
+    "label_zh": "初请失业金",
+    "schedule_source": "computed",
+    "is_context_only": true,
+    "scheduled_at": "2026-11-05T08:30:00-05:00",
+    "status": "published_unparsed",
+    "detected_at": "2026-11-05T13:30:41.181142+00:00",
+    "first_seen_at": "2026-11-05T13:30:41.181142+00:00",
+    "observed_at": "2026-11-05T13:30:41.181142+00:00",
+    "official_embargo_at": "2026-11-05T08:30:00-05:00",
+    "publisher": "U.S. Department of Labor",
+    "source_id": "dol_claims",
+    "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta",
+    "content_sha256": "a5275deafed7afc13398a82440b2f5b2281956279abb0bc112a1eea997d77864",
+    "source_sha256": "a5275deafed7afc13398a82440b2f5b2281956279abb0bc112a1eea997d77864",
+    "data_ready": false,
+    "note": "Release identity unverified; the previously displayed claims value has been withdrawn.",
+    "parser": {
+      "name": "claims",
+      "version": 1
+    }
+  },
+  "preserved": [
+    "source_url",
+    "source_sha256",
+    "detected_at",
+    "first_seen_at"
+  ],
+  "source_sha256": {
+    "scripts/official_release_parsers.py": "fa38b1b89e5dbb1bef6c3c87e1bcea006b8813bf69a350ab70b6b49e8419cdc3",
+    "scripts/watch_release_publications.py": "b40d08bf196df3773f16d61716ccdb80f4da218e283727efd85267be7d41347b"
+  }
+}

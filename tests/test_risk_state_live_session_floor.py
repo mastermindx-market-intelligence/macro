@@ -80,7 +80,12 @@ BAKED_WORD = "Risk-on"
 # can read back what the patcher actually did.
 DOM_STUB = r"""
 function El(id, cls, text) {
-  this.id = id || ""; this.textContent = text === undefined ? "" : text;
+  this.id = id || ""; this._text = "";
+  Object.defineProperty(this, "textContent", {
+    get: function () { return this._text; },
+    set: function (value) { this._text = String(value); this.children = []; }
+  });
+  this.textContent = text === undefined ? "" : text;
   this._cls = {}; (cls || "").split(/\s+/).forEach(function (c) { if (c) this._cls[c] = 1; }, this);
   this.style = {}; this.children = []; this._attrs = {};
   var self = this;
@@ -102,6 +107,7 @@ El.prototype.hasClass = function (c) { return !!this._cls[c]; };
 var REG = {};      // selector / id -> El
 function reg(key, el) { REG[key] = el; return el; }
 
+var EVENT_HANDLERS = {};
 var document = {
   readyState: "complete",
   documentElement: { getAttribute: function () { return "en"; }, lang: "en" },
@@ -110,7 +116,7 @@ var document = {
   querySelector: function (s) { return REG[s] || null; },
   querySelectorAll: function (s) { return REG[s] ? [REG[s]] : []; },
   createElement: function () { return new El(); },
-  addEventListener: function () {},
+  addEventListener: function (name, handler) { EVENT_HANDLERS[name] = handler; },
   dispatchEvent: function () {}
 };
 function CustomEvent() {}
@@ -120,7 +126,7 @@ var fetch = function () { return { then: function () { return this; }, catch: fu
 """
 
 
-def _harness(js_src: str, feed: dict, page: str) -> dict:
+def _harness(js_src: str, feed: dict, page: str, *, now=None, after="", poll=False) -> dict:
     """Run one patcher against one feed and report what the DOM ended up holding."""
     if page == "us":
         setup = f"""
@@ -131,6 +137,8 @@ def _harness(js_src: str, feed: dict, page: str) -> dict:
         var thesis  = reg(".mx5-thesis", new El("", "mx5-thesis", "Risk-on — the tape"));
         var subline = reg(".mx5-sub-line", new El("", "mx5-sub-line", "GREEN — Risk-on backdrop"));
         var action  = reg("[data-wtd-primary] .mx5-action-label", new El("", "mx5-action-label", "Stay selective."));
+        var actionSub = reg("[data-wtd-primary] .mx5-action-sub", new El());
+        var flipEl = reg(".mx5-flip", new El());
         var pill    = reg("#ms-live-pill", new El("ms-live-pill", "on"));
         reg("#ms-date", new El("ms-date", "", "{BAKED_SESSION}"));
         reg("#regime-asof", new El("regime-asof", "", "{BAKED_SESSION}"));
@@ -145,6 +153,9 @@ def _harness(js_src: str, feed: dict, page: str) -> dict:
         out.thesis = (thesis.children[0] || {}).textContent || thesis.textContent;
         out.subline = (subline.children[0] || {}).textContent || subline.textContent;
         out.action = (action.children[0] || {}).textContent || action.textContent;
+        out.action_sub = (actionSub.children[0] || {}).textContent || actionSub.textContent;
+        out.thesis_zh = (thesis.children[1] || {}).textContent;
+        out.flip_hidden = flipEl.style.display === "none";
         out.pill_on = pill.hasClass("on");
         """
     else:
@@ -181,19 +192,34 @@ def _harness(js_src: str, feed: dict, page: str) -> dict:
     # keep their internals private; re-expose the one entry point we drive by
     # replacing the fetch-driven tick with a direct call.
     entry = "patchMacro" if page == "us" else "patchChina"
+    # Deterministic browser time: these fixtures intentionally describe older
+    # sessions. Expiry tests pass an independent later observation time.
+    if now is None:
+        now = (feed.get("built") or "2026-07-31 22:31:49 UTC").replace(" UTC", "+00:00")
+        now = (datetime.fromisoformat(now) + timedelta(seconds=60)).isoformat()
+    result_js = "\n".join([
+        readback,
+        "out.chart_last = JSON.parse(svg.getAttribute('data-points')).slice(-1)[0];",
+        "console.log(JSON.stringify(out));",
+    ])
+    invocation = (f"patchMacro(FEED); {after}" if poll else f"{entry}(FEED); {after}")
+    if poll:
+        invocation = ("(async function () { try { " + invocation +
+                      " } catch (e) { out.error = String(e); } " + result_js + " })();")
+    else:
+        invocation = f"try {{ {invocation} }} catch (e) {{ out.error = String(e); }}"
     script = "\n".join([
         DOM_STUB,
         setup,
         chart,
         "var out = {};",
         f"var FEED = {json.dumps(feed)};",
+        f"var browserNow = Date.parse({json.dumps(now)}); Date.now = function () {{ return browserNow; }};",
         # strip the module's own auto-run tail, then invoke the patcher directly
         "(function(){",
-        js_src.replace("})();", f"try {{ {entry}(FEED); }} catch (e) {{ out.error = String(e); }}\n}})();"),
+        js_src.replace("})();", invocation + "\n})();"),
         "})();",
-        readback,
-        "out.chart_last = JSON.parse(svg.getAttribute('data-points')).slice(-1)[0];",
-        "console.log(JSON.stringify(out));",
+        "" if poll else result_js,
     ])
     res = subprocess.run(["node", "-e", script], capture_output=True, text=True, timeout=60)
     assert res.returncode == 0, f"node failed: {res.stderr[-2000:]}"
@@ -210,7 +236,7 @@ RE_BAKED_BUNDLE = "fd9ccdbe47f7f008"
 RE_BAKED_SESSION = "2026-08-19"
 
 
-def _re_harness(js_src: str, feed: dict | None) -> dict:
+def _re_harness(js_src: str, feed: dict | None, *, now=None, after="") -> dict:
     """Run risk_envelope_live.js's `applyFeed` against one feed and report what
     the DOM ended up holding. `feed=None` simulates a fetch that resolved falsy
     (network error / non-OK response already reduced to null upstream of
@@ -260,10 +286,12 @@ def _re_harness(js_src: str, feed: dict | None) -> dict:
         setup,
         "var out = {};",
         f"var FEED = {json.dumps(feed)};",
+        (f"var browserNow = Date.parse({json.dumps(now)}); Date.now = function () {{ return browserNow; }};"
+         if now is not None else ""),
         "(function(){",
         js_src.replace(
             "})();",
-            "try { applyFeed(FEED); } catch (e) { out.error = String(e); }\n})();",
+            "try { applyFeed(FEED); " + after + " } catch (e) { out.error = String(e); }\n})();",
         ),
         "})();",
         readback,
@@ -293,6 +321,8 @@ def _re_feed(*, source_session="2026-08-20", bundle_id=RE_BAKED_BUNDLE, preceden
         "built": built,
         "live_active": live_active,
         "stale_after_min": stale_after_min,
+        "stale_after": (datetime.fromisoformat(built.replace(" UTC", "+00:00")) +
+                        timedelta(minutes=stale_after_min)).isoformat() if live_active else None,
         "data_state": data_state,
         "hazard_summary": {"stage": stage},
         "overlays": {"settled_bundle_id": bundle_id, "settled_source_session": RE_BAKED_SESSION},
@@ -458,11 +488,17 @@ COLOR = {"RISK_ON": "green", "MIXED": "yellow", "RISK_OFF": "red"}
 
 def _us_feed(nightly_asof: str, score: int, verdict: str, *, live=False, built=None) -> dict:
     en, zh = LABEL[verdict]
+    built = built or f"{nightly_asof} 22:31:49 UTC"
+    event = datetime.fromisoformat(built.replace(" UTC", "+00:00")) - timedelta(minutes=15)
     return {
         "schema": "risk_state.v1",
-        "built": built or f"{nightly_asof} 22:31:49 UTC",
+        "built": built,
         "live_active": live, "realtime": False, "stale": not live,
         "nightly_asof": nightly_asof,
+        "session": {"open": live, "expected_session": nightly_asof},
+        "quote_stale_after_min": 20,
+        "stale_after": (event + timedelta(minutes=20)).isoformat() if live else None,
+        "live": {"source_event_time": event.isoformat()},
         "display": {"verdict": verdict, "label_en": en, "label_zh": zh,
                     "color": COLOR[verdict], "score": score},
         "nightly": {"verdict": verdict, "score": score, "label_en": en, "label_zh": zh},
@@ -493,7 +529,7 @@ def test_us_feed_a_session_behind_leaves_the_board_alone(js):
         f"{out['chart_last']['s']}) — the split the floor exists to prevent")
     assert out["big"] == str(BAKED_SCORE)
     assert out["word"] == BAKED_WORD
-    assert out["thesis"].startswith("Risk-on")
+    assert out["thesis"].startswith("Current market assessment unavailable")
     assert out["pill_on"] is False, "a behind-the-render feed must not claim live"
     assert out["chart_last"]["s"] == BAKED_SCORE
 
@@ -645,6 +681,424 @@ def test_us_unreadable_feed_session_fails_closed(js):
 
 
 # ══ GD-3R1 — scripts/build_risk_state.py's own quote-clock plumbing ══════════════
+
+@needs_node
+@US_PAGES
+def test_us_postclose_does_not_present_previous_session_as_current(js):
+    feed = _us_feed("2026-11-04", 57, "MIXED", built="2026-11-05 22:25:53 UTC")
+    feed["session"] = {"open": False, "state": "postclose", "expected_session": "2026-11-05"}
+    out = _harness(js.read_text(), feed, "us", now="2026-11-05T22:26:00Z")
+    assert not out.get("error"), out.get("error")
+    assert out["score"] == "57"
+    assert out["chart_last"]["d"] == "2026-11-04"
+    assert out["chart_last"]["s"] == 57
+    assert out["thesis"].startswith("Current market assessment unavailable")
+    assert "2026-11-04" in out["subline"]
+    assert "unavailable" in out["action"]
+    assert "2026-11-04" in out["action_sub"]
+    assert "暂不可用" in out["thesis_zh"]
+    assert out["flip_hidden"] and not out["pill_on"]
+
+
+@needs_node
+@US_PAGES
+@pytest.mark.parametrize("source_clock", [
+    None, "2026-11-05T14:50:00", "2026-11-05T14:00:00Z", "2026-11-06T15:05:00Z",
+])
+def test_us_fresh_build_cannot_launder_bad_or_expired_market_clock(js, source_clock):
+    feed = _us_feed("2026-11-05", 70, "RISK_ON", live=True,
+                    built="2026-11-05 15:05:00 UTC")
+    feed["live"]["source_event_time"] = source_clock
+    out = _harness(js.read_text(), feed, "us", now="2026-11-05T15:06:00Z")
+    assert not out.get("error"), out.get("error")
+    assert out["score"] == str(BAKED_SCORE)
+    assert out["chart_last"]["d"] == BAKED_SESSION
+    assert "unavailable" in out["action"]
+
+
+@needs_node
+@US_PAGES
+def test_us_healthy_delayed_observation_remains_eligible(js):
+    feed = _us_feed("2026-11-05", 38, "RISK_OFF", live=True,
+                    built="2026-11-05 15:05:00 UTC")
+    out = _harness(js.read_text(), feed, "us", now="2026-11-05T15:06:00Z")
+    assert not out.get("error"), out.get("error")
+    assert out["score"] == "38"
+    assert out["chart_last"]["d"] == "2026-11-05"
+    assert out["thesis"].startswith("Risk-off")
+    assert not out["pill_on"]  # delayed is not realtime
+
+
+@needs_node
+@US_PAGES
+def test_us_long_open_failure_expires_and_fresh_recovery_restores_copy(js):
+    feed = _us_feed("2026-11-05", 38, "RISK_OFF", live=True,
+                    built="2026-11-05 15:05:00 UTC")
+    after = """
+    browserNow += 6 * 60000;
+    EVENT_HANDLERS.visibilitychange();
+    out.expired_action = action.children[0].textContent;
+    out.expired_thesis = thesis.children[0].textContent;
+    out.expired_base_action = action.getAttribute("data-wtd-base-en");
+    out.expired_base_verdict = action.getAttribute("data-wtd-base-verdict");
+    FEED.built = new Date(browserNow - 1000).toISOString();
+    FEED.live.source_event_time = new Date(browserNow - 15 * 60000).toISOString();
+    FEED.stale_after = new Date(Date.parse(FEED.built) + 5 * 60000).toISOString();
+    patchMacro(FEED);
+    out.recovered_base_action = action.getAttribute("data-wtd-base-en");
+    out.recovered_base_verdict = action.getAttribute("data-wtd-base-verdict");
+    """
+    out = _harness(js.read_text(), feed, "us", now="2026-11-05T15:06:00Z", after=after)
+    assert not out.get("error"), out.get("error")
+    assert "unavailable" in out["expired_action"]
+    assert "historical snapshot" in out["expired_thesis"]
+    assert out["expired_base_action"] == out["expired_action"]
+    assert out["expired_base_verdict"] == "UNAVAILABLE"
+    assert out["recovered_base_action"] == "Reduce risk. Protect capital."
+    assert out["recovered_base_verdict"] == "RISK_OFF"
+    assert out["thesis"].startswith("Risk-off")
+    assert out["action"] == "Reduce risk. Protect capital."
+    assert out["score"] == "38"
+
+
+@needs_node
+@US_PAGES
+def test_us_postclose_fallback_cannot_rewind_a_live_session_already_shown(js):
+    feed = _us_feed("2026-11-04", 38, "RISK_OFF", live=True,
+                    built="2026-11-05 20:55:00 UTC")
+    after = """
+    browserNow = Date.parse('2026-11-05T22:26:00Z');
+    var fallback = JSON.parse(JSON.stringify(FEED));
+    fallback.built = '2026-11-05 22:25:53 UTC';
+    fallback.live_active = false;
+    fallback.stale = true;
+    fallback.session = {open:false, state:'postclose', expected_session:'2026-11-05'};
+    fallback.display = {verdict:'MIXED', label_en:'Mixed', score:57, raw_score:57};
+    patchMacro(fallback);
+    """
+    out = _harness(js.read_text(), feed, "us", now="2026-11-05T20:56:00Z", after=after)
+    assert not out.get("error"), out.get("error")
+    assert out["score"] == "38"
+    assert out["chart_last"]["d"] == "2026-11-05"
+    assert out["chart_last"]["s"] == 38
+    assert "2026-11-05" in out["subline"]
+    assert "unavailable" in out["action"]
+
+
+@needs_node
+@US_PAGES
+def test_us_expired_build_never_appends_an_old_live_tick(js):
+    feed = _us_feed("2026-11-05", 70, "RISK_ON", live=True,
+                    built="2026-11-05 15:05:00 UTC")
+    out = _harness(js.read_text(), feed, "us", now="2026-11-05T15:11:00Z")
+    assert not out.get("error"), out.get("error")
+    assert out["chart_last"]["d"] == BAKED_SESSION
+    assert "unavailable" in out["action"]
+
+
+@needs_node
+@US_PAGES
+@pytest.mark.parametrize("failure", ["http", "json", "network"])
+def test_us_poll_failures_expire_then_recover_without_rewriting_history(js, failure):
+    feed = _us_feed("2026-11-05", 38, "RISK_OFF", live=True,
+                    built="2026-11-05 15:05:00 UTC")
+    response = {
+        "http": "Promise.resolve({ok:false})",
+        "json": "Promise.resolve({ok:true,json:function(){return Promise.reject(new Error('bad JSON'));}})",
+        "network": "Promise.reject(new Error('offline'))",
+    }[failure]
+    after = f"""
+    requestPending = false;
+    fetch = function () {{ return {response}; }};
+    tick();
+    await new Promise(function (resolve) {{ setImmediate(resolve); }});
+    out.brief_failure = action.children[0].textContent;
+    browserNow += 6 * 60000;
+    tick();
+    await new Promise(function (resolve) {{ setImmediate(resolve); }});
+    out.failed_action = action.children[0].textContent;
+    out.failed_last = JSON.parse(svg.getAttribute('data-points')).slice(-1)[0];
+    var recovered = JSON.parse(JSON.stringify(FEED));
+    recovered.built = new Date(browserNow - 1000).toISOString();
+    recovered.live.source_event_time = new Date(browserNow - 15 * 60000).toISOString();
+    recovered.stale_after = new Date(Date.parse(recovered.built) + 5 * 60000).toISOString();
+    fetch = function () {{ return Promise.resolve({{ok:true,json:function(){{return Promise.resolve(recovered);}}}}); }};
+    tick();
+    await new Promise(function (resolve) {{ setImmediate(resolve); }});
+    """
+    out = _harness(js.read_text(), feed, "us", now="2026-11-05T15:06:00Z", after=after, poll=True)
+    assert not out.get("error"), out.get("error")
+    assert out["brief_failure"] == "Reduce risk. Protect capital."
+    assert "unavailable" in out["failed_action"]
+    assert out["failed_last"]["s"] == out["chart_last"]["s"] == 38
+    assert out["failed_last"]["d"] == out["chart_last"]["d"] == "2026-11-05"
+    assert out["action"] == "Reduce risk. Protect capital."
+
+
+def test_live_vix_shock_refreshes_existing_percentile_definition(monkeypatch):
+    from engine.indicators import pct_rank_window
+    from engine.market_state import _comp_vol
+    monkeypatch.setattr(brs.config, "load", lambda: {
+        "engine": {"conditions": {"complacency": {"vix_pctile_lookback_d": 504}}}
+    })
+    prices = pd.Series([16.0 + i / 1000 for i in range(504)] + [28.0])
+    value = brs._live_vix_percentile({"_VIX": pd.DataFrame({"close": prices})})
+    assert value == pct_rank_window(prices, 504).iloc[-1] == 1.0
+    stale = {"conditions": {"risk_appetite": {"vix_term": 1.1},
+                            "complacency": {"vix_pctile": 0.41865079365079366}}}
+    fresh = {"conditions": {"risk_appetite": {"vix_term": 1.1},
+                            "complacency": {"vix_pctile": value}}}
+    assert _comp_vol(stale)["score"] == 34
+    assert _comp_vol(fresh)["score"] == 12
+
+
+def test_live_vix_percentile_does_not_invent_missing_observation():
+    assert brs._live_vix_percentile({}) is None
+    assert brs._live_vix_percentile({"_VIX": pd.DataFrame({"close": []})}) is None
+
+
+def _built_required_clock_feed(monkeypatch, tmp_path, *, unavailable=None,
+                               quote_times=None, now=None, budget=20, use_vix9d=True):
+    from engine import shock_deescalation
+    now = now or datetime(2026, 11, 5, 15, 5, tzinfo=timezone.utc)
+    class FrozenDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return now
+    monkeypatch.setattr(brs, "datetime", FrozenDatetime)
+    monkeypatch.setattr(brs.config, "ROOT", tmp_path)
+    cfg = {"live": {"stale_after_min": 20, "delayed_min": 15},
+           "storage": {"site_dir": "site"},
+           "engine": {"conditions": {"complacency": {"vix_pctile_lookback_d": 504}}}}
+    if budget is None:
+        cfg["live"].pop("stale_after_min")
+    else:
+        cfg["live"]["stale_after_min"] = budget
+    monkeypatch.setattr(brs.config, "load", lambda: cfg)
+    monkeypatch.setattr(brs.config, "data_dir", lambda: tmp_path / "data")
+    regime = tmp_path / "data" / "regime"
+    regime.mkdir(parents=True, exist_ok=True)
+    latest = {"date": "2026-11-04", "conditions": {
+        "complacency": {"vix_pctile": 0.41865079365079366},
+        "risk_appetite": {"vix_term": 0.8835}}}
+    (regime / "latest.json").write_text(json.dumps(latest))
+    nightly = {"asof": "2026-11-04", "verdict": "MIXED", "score": 57, "raw_score": 57}
+    monkeypatch.setattr(brs.market_state, "load_persisted", lambda: nightly)
+    monkeypatch.setattr(brs.live_overlay, "market_session", lambda *a: {
+        "open": True, "state": "regular", "expected_session": "2026-11-05"})
+    monkeypatch.setattr(brs.live_quotes, "fetch_quotes", lambda *a, **kw: {})
+    idx = pd.date_range(end="2026-11-05", periods=505)
+    spliced = {name: pd.DataFrame({"close": [100.0] * 505}, index=idx)
+               for name in ("SPY", "QQQ", "IWM", "HYG", "_VIX", "_VIX3M", "_VIX9D")}
+    spliced["_VIX"]["close"] = [16.0 + i / 1000 for i in range(504)] + [28.0]
+    if not use_vix9d:
+        spliced.pop("_VIX9D", None)
+    if unavailable == "equities":
+        for name in ("SPY", "QQQ", "IWM"):
+            del spliced[name]
+    if unavailable == "volatility":
+        for name in ("_VIX", "_VIX3M", "_VIX9D"):
+            del spliced[name]
+    clocks = {name: "2026-11-05T14:50:00+00:00" for name in spliced}
+    if quote_times:
+        clocks.update(quote_times)
+    if unavailable == "missing_clock":
+        clocks["QQQ"] = None
+    if unavailable == "future_clock":
+        clocks["QQQ"] = "2026-11-06T15:05:00+00:00"
+    if unavailable == "naive_clock":
+        clocks["QQQ"] = "2026-11-05T14:50:00"
+    live_close = {name: frame["close"].iloc[-1] for name, frame in spliced.items()}
+    if "_VIX9D" in live_close:
+        live_close.update({"_VIX9D": 33.0, "_VIX3M": 30.0})
+    monkeypatch.setattr(brs, "_spliced_frames", lambda *a: (spliced, live_close, {}, clocks))
+    monkeypatch.setattr(brs, "_live_frame", lambda *a: None)
+    monkeypatch.setattr(brs, "_hy_oas_asof", lambda: "2026-11-04")
+    monkeypatch.setattr(brs.risk_radar, "compute", lambda: {})
+    captured = {}
+    def snapshot(projected, *args):
+        captured.update(projected)
+        if unavailable == "computation":
+            return None
+        vol = brs.market_state._comp_vol(projected)
+        return {"verdict": "RISK_OFF", "score": 38, "raw_score": 38,
+                "components": [{"key": "trend", "score": 10}, vol]}
+    monkeypatch.setattr(brs.market_state, "market_state_snapshot", snapshot)
+    monkeypatch.setattr(brs.market_drivers, "snapshot", lambda: {})
+    monkeypatch.setattr(brs.market_drivers, "append_log", lambda *a, **kw: None)
+    monkeypatch.setattr(shock_deescalation, "build_intraday", lambda: {})
+    original_reader = brs.store_mod.read
+    assert brs.build(offline=True)["status"] == "ok"
+    out = json.loads((tmp_path / "site" / "live" / "risk_state.json").read_text())
+    assert brs.store_mod.read is original_reader
+    assert json.loads((regime / "latest.json").read_text()) == latest
+    return out, captured
+
+
+@pytest.mark.parametrize("unavailable", [None, "equities", "volatility", "naive_clock"])
+def test_build_refreshes_vix_but_partial_inputs_cannot_claim_live(monkeypatch, tmp_path, unavailable):
+    from scripts.build_live_risk_envelope import market_freshness
+
+    now = datetime(2026, 11, 5, 15, 5, tzinfo=timezone.utc)
+    out, captured = _built_required_clock_feed(monkeypatch, tmp_path, unavailable=unavailable)
+    assert out["quote_stale_after_min"] == 20
+    legs = {leg["key"]: leg for leg in out["legs"]}
+    assert out["legs_asof"]["tape_trend"] == legs["trend"]["asof"]
+    assert out["legs_asof"]["volatility"] == legs["vol"]["asof"]
+    if unavailable != "volatility":
+        assert captured["conditions"]["complacency"]["vix_pctile"] == 1.0
+        assert legs["vol"]["score"] == 12
+    if unavailable:
+        assert out["n_live_symbols"] > 0
+        assert out["live_active"] is False and out["stale"] is True
+        assert out["critical_missing"]
+        assert out["display"]["score"] == 57  # dated historical fallback only
+        assert market_freshness(out, 5, now)["usable"] is False
+        if unavailable == "naive_clock":
+            assert legs["trend"]["basis"] == "partial"
+            assert "QQQ" in out["critical_missing"]
+    else:
+        assert out["live_active"] is True and out["critical_missing"] == []
+        assert out["display"]["score"] == 38
+        assert out["display"]["verdict"] == "MIXED"  # preserve two-tick debounce
+        assert out["display"]["pending"]["ticks"] == 1
+        assert market_freshness(out, 5, now)["usable"] is True
+
+
+@pytest.mark.parametrize("quote_times,budget,use_vix9d,now,expected", [
+    ({"QQQ": "2026-11-05T14:45:30+00:00"}, 20, True, None,
+     "2026-11-05T15:05:30+00:00"),
+    ({"HYG": "2026-11-05T14:45:10+00:00"}, 20, True, None,
+     "2026-11-05T15:10:00+00:00"),
+    ({"_VIX9D": "2026-11-05T14:46:05+00:00"}, 20, True, None,
+     "2026-11-05T15:06:05+00:00"),
+    ({}, 20, False, None, "2026-11-05T15:10:00+00:00"),
+    ({}, 18, True, None, "2026-11-05T15:08:00+00:00"),
+    ({}, None, True, None, "2026-11-05T15:10:00+00:00"),
+    ({name: "2026-11-05T15:04:00+00:00"
+      for name in ("SPY", "QQQ", "IWM", "_VIX", "_VIX3M", "_VIX9D")},
+     20, True, datetime(2026, 11, 5, 15, 5, 0, 750000, tzinfo=timezone.utc),
+     "2026-11-05T15:10:00+00:00"),
+], ids=["mixed-required-age", "optional-no-veto", "selected-vix9d", "vix-fallback",
+        "configured-budget", "default-budget", "serialized-artifact-cap"])
+def test_required_quote_deadline_matches_actual_admitted_inputs(
+        monkeypatch, tmp_path, quote_times, budget, use_vix9d, now, expected):
+    out, _ = _built_required_clock_feed(
+        monkeypatch, tmp_path, quote_times=quote_times, budget=budget,
+        use_vix9d=use_vix9d, now=now)
+    assert out["live_active"] is True
+    assert out["stale_after"] == expected
+    assert out["quote_stale_after_min"] == (20 if budget is None else budget)
+    assert out["live"]["source_event_time"] == (
+        "2026-11-05T15:04:00+00:00" if now else "2026-11-05T14:50:00+00:00")
+    if not use_vix9d:
+        assert "_VIX9D" not in out["live"]["source_quote_clocks"]
+
+
+@pytest.mark.parametrize("unavailable", [
+    "equities", "volatility", "naive_clock", "missing_clock", "future_clock", "computation",
+])
+def test_required_quote_deadline_unavailable_inputs_have_no_live_deadline(
+        monkeypatch, tmp_path, unavailable):
+    out, _ = _built_required_clock_feed(monkeypatch, tmp_path, unavailable=unavailable)
+    assert out["live_active"] is False
+    assert out.get("stale_after") is None
+    assert out["display"]["score"] == 57
+
+
+@needs_node
+@US_PAGES
+@pytest.mark.parametrize("failure", ["resume", "http", "json", "network"])
+def test_required_quote_expiry_reaches_actual_emitted_feed_consumers(
+        monkeypatch, tmp_path, js, failure):
+    feed, _ = _built_required_clock_feed(
+        monkeypatch, tmp_path, quote_times={"QQQ": "2026-11-05T14:45:30+00:00"})
+    responses = {
+        "http": "Promise.resolve({ok:false})",
+        "json": "Promise.resolve({ok:true,json:function(){return Promise.reject(new Error('bad JSON'));}})",
+        "network": "Promise.reject(new Error('offline'))",
+    }
+    after = """
+    out.initial_action = action.children[0].textContent;
+    out.initial_score = String(scoreEl.textContent);
+    browserNow = Date.parse('2026-11-05T15:06:00Z');
+    """
+    if failure == "resume":
+        after += "EVENT_HANDLERS.visibilitychange();"
+    else:
+        after += f"""
+        requestPending = false;
+        fetch = function () {{ return {responses[failure]}; }};
+        tick();
+        await new Promise(function (resolve) {{ setImmediate(resolve); }});
+        """
+    after += """
+    out.expired_base_verdict = action.getAttribute('data-wtd-base-verdict');
+    """
+    out = _harness(js.read_text(), feed, "us", now="2026-11-05T15:05:10Z",
+                   after=after, poll=failure != "resume")
+    assert not out.get("error"), out.get("error")
+    assert "unavailable" not in out["initial_action"]
+    assert out["initial_score"] == "38"
+    assert "unavailable" in out["action"]
+    assert out["expired_base_verdict"] == "UNAVAILABLE"
+    assert out["score"] == "38"
+    assert out["chart_last"]["d"] == "2026-11-05"
+
+
+@needs_node
+@US_PAGES
+@pytest.mark.parametrize("deadline,eligible", [
+    (None, False),
+    ("invalid", False),
+    ("2026-11-05T15:10:00", False),
+    ("2026-11-05T15:05:59Z", False),
+    ("2026-11-05T15:06:00Z", False),
+    ("2026-11-05T15:06:00.001Z", True),
+])
+def test_required_quote_deadline_missing_malformed_and_exact_boundary(js, deadline, eligible):
+    feed = _us_feed("2026-11-05", 38, "RISK_OFF", live=True,
+                    built="2026-11-05 15:05:00 UTC")
+    if deadline is None:
+        feed.pop("stale_after", None)
+    else:
+        feed["stale_after"] = deadline
+    out = _harness(js.read_text(), feed, "us", now="2026-11-05T15:06:00Z")
+    assert not out.get("error"), out.get("error")
+    assert ("unavailable" not in out["action"]) is eligible
+    assert out["score"] == ("38" if eligible else str(BAKED_SCORE))
+
+
+@needs_node
+@US_PAGES
+def test_required_quote_deadline_cannot_be_laundered_but_actual_new_feed_recovers(
+        monkeypatch, tmp_path, js):
+    feed, _ = _built_required_clock_feed(
+        monkeypatch, tmp_path / "initial",
+        quote_times={"QQQ": "2026-11-05T14:45:30+00:00"})
+    renewed, _ = _built_required_clock_feed(
+        monkeypatch, tmp_path / "renewed",
+        now=datetime(2026, 11, 5, 15, 6, tzinfo=timezone.utc),
+        quote_times={name: "2026-11-05T15:00:00+00:00"
+                     for name in ("SPY", "QQQ", "IWM", "_VIX", "_VIX3M", "_VIX9D")})
+    after = """
+    browserNow = Date.parse('2026-11-05T15:06:00Z');
+    FEED.built = new Date(browserNow).toISOString();
+    FEED.live.source_event_time = new Date(browserNow).toISOString();
+    patchMacro(FEED);
+    out.laundered_action = action.children[0].textContent;
+    out.laundered_base = action.getAttribute('data-wtd-base-verdict');
+    """ + f"patchMacro({json.dumps(renewed)});" + """
+    out.recovered_base = action.getAttribute('data-wtd-base-verdict');
+    """
+    out = _harness(js.read_text(), feed, "us", now="2026-11-05T15:05:10Z", after=after)
+    assert not out.get("error"), out.get("error")
+    assert "unavailable" in out["laundered_action"]
+    assert out["laundered_base"] == "UNAVAILABLE"
+    assert "unavailable" not in out["action"]
+    assert out["recovered_base"] == "MIXED"
+    assert out["chart_last"]["d"] == "2026-11-05"
+
 #
 # No suite unit-tests scripts/build_risk_state.py's pure Python helpers directly
 # (tests/test_risk_state.py covers the unrelated engine/risk_state.py; this file
@@ -878,3 +1332,71 @@ class TestSyntheticQuoteClockFlag:
             "regularMarketPrice": 412.6}}]}]}}   # no regularMarketTime
         q = lq.parse_yahoo_spark(payload)["0700.HK"]
         assert q["quote_ts_synthetic"] is True
+
+
+@needs_node
+@RE_PAGES
+@pytest.mark.parametrize("deadline,eligible", [
+    (None, False),
+    ("invalid", False),
+    ("2026-11-05T15:05:30", False),
+    ("2026-11-05T15:05:29Z", False),
+    ("2026-11-05T15:05:30Z", False),
+    ("2026-11-05T15:05:31Z", True),
+])
+def test_required_quote_envelope_client_requires_deadline(js, deadline, eligible):
+    feed = _re_feed(source_session="2026-11-05", built="2026-11-05 15:05:00 UTC")
+    if deadline is None:
+        feed.pop("stale_after")
+    else:
+        feed["stale_after"] = deadline
+    out = _re_harness(js.read_text(encoding="utf-8"), feed, now="2026-11-05T15:05:30Z")
+    assert not out.get("error"), out.get("error")
+    assert out["chip_hidden"] is (not eligible)
+    if not eligible:
+        assert out["pending_hidden"] and out["receipt_hidden"]
+
+
+@needs_node
+@RE_PAGES
+def test_required_quote_actual_producer_envelope_and_cached_client_expire(monkeypatch, tmp_path, js):
+    from scripts import build_live_risk_envelope as blre
+
+    built = datetime(2026, 11, 5, 15, 5, tzinfo=timezone.utc)
+    feed, _ = _built_required_clock_feed(
+        monkeypatch, tmp_path, now=built,
+        quote_times={"QQQ": "2026-11-05T14:45:30+00:00"})
+    deadline = datetime(2026, 11, 5, 15, 5, 30, tzinfo=timezone.utc)
+    assert datetime.fromisoformat(feed["stale_after"]) == deadline
+    settled = tmp_path / "data" / "risk_envelope" / "latest.json"
+    settled.parent.mkdir(parents=True, exist_ok=True)
+    settled.write_text(json.dumps({
+        "source_session": "2026-11-04", "bundle_id": RE_BAKED_BUNDLE,
+        "hazard_summary": {"stage": "FRAGILE"}}))
+    monkeypatch.setattr(blre, "_risk_envelope_cfg",
+                        lambda: {"stale_after_min": 5, "debounce_ticks": 3})
+    monkeypatch.setattr(blre, "_emit_materiality_firing",
+                        lambda **kw: pytest.fail("expiry fixture must not emit a firing"))
+
+    envelope = blre.build(root=tmp_path, now=built + timedelta(seconds=5))
+    assert envelope["live_active"] is True
+    assert envelope["stale_after"] is not None
+    assert datetime.fromisoformat(envelope["stale_after"]) == deadline
+    assert envelope["clocks"]["event_time"] == "2026-11-05T14:50:00.000Z"
+
+    # The initial request remains pending in this DOM fixture. The existing
+    # tick's precheck must still withdraw the cached envelope at the deadline.
+    after = (
+        "out.was_visible = !chip.hidden; "
+        "browserNow = Date.parse('2026-11-05T15:05:30Z'); tick();"
+    )
+    out = _re_harness(js.read_text(encoding="utf-8"), envelope,
+                      now="2026-11-05T15:05:05Z", after=after)
+    assert not out.get("error"), out.get("error")
+    assert out["was_visible"] is True
+    assert out["chip_hidden"] and out["pending_hidden"] and out["receipt_hidden"]
+
+    # A new envelope build cannot renew the original source inputs.
+    expired = blre.build(root=tmp_path, now=deadline)
+    assert expired["live_active"] is False
+    assert expired["measured_state"]["usable"] is False

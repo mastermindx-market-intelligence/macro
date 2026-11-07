@@ -121,7 +121,7 @@ import logging
 import os
 import sys
 import tempfile
-from datetime import date, datetime, time, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -334,16 +334,34 @@ def _live_session(built_dt: datetime | None) -> str | None:
 def market_freshness(
     risk_state_doc: dict[str, Any] | None, stale_after_min: float, now: datetime,
 ) -> dict[str, Any]:
-    """The ONE freshness verdict for the market-state/radar leg, computed once and
-    reused everywhere it matters (source assembly AND the wrapper) so the two can
-    never drift apart. `usable` folds live_active, the stale_after_min horizon, and
-    a wall-clock skew guard on the carrying artifact's own `built` clock (>120s
-    ahead of wall-clock is refused, same as the general clock law)."""
-    return live_market_freshness(
-        live_active=bool((risk_state_doc or {}).get("live_active")),
-        built_dt=_parse_built((risk_state_doc or {}).get("built")),
+    """One market-state/radar eligibility verdict for source assembly and the
+    wrapper. Preserve the shared carrying-clock arithmetic, then require the
+    producer's required-input deadline. An envelope rebuild cannot renew it.
+    """
+    doc = risk_state_doc or {}
+    fresh = live_market_freshness(
+        live_active=bool(doc.get("live_active")),
+        built_dt=_parse_built(doc.get("built")),
         stale_after_min=stale_after_min, now=now,
     )
+    deadline = None
+    raw = doc.get("stale_after")
+    if (fresh["live_active"] and not fresh["future_artifact"] and
+            fresh["built_dt"] is not None and isinstance(raw, str) and stale_after_min > 0):
+        try:
+            parsed = datetime.fromisoformat(raw)
+            if parsed.tzinfo is not None:
+                deadline = min(parsed.astimezone(timezone.utc),
+                               fresh["built_dt"] + timedelta(minutes=stale_after_min))
+                # The browser reads millisecond instants. Decide against the
+                # same conservative serialized deadline that it will consume.
+                deadline = deadline.replace(microsecond=(deadline.microsecond // 1000) * 1000)
+        except (TypeError, ValueError, OverflowError):
+            deadline = None
+    fresh["stale_after"] = deadline.isoformat() if deadline is not None else None
+    fresh["deadline_fresh"] = deadline is not None and now < deadline
+    fresh["usable"] = bool(fresh["usable"] and fresh["deadline_fresh"])
+    return fresh
 
 
 def _is_future(as_of: str | None, ceiling: str | None, wall_now: datetime) -> bool:
@@ -745,7 +763,7 @@ def build(root: Path | None = None, now: datetime | None = None,
         as_of=envelope_session,
         observed_at=observed_stamp,
         produced_at=produced_stamp,
-        stale_after=None,
+        stale_after=fresh["stale_after"],
         revision="live_provisional",
     )
     candidate_stage = envelope["hazard_summary"]["stage"]
@@ -781,6 +799,8 @@ def build(root: Path | None = None, now: datetime | None = None,
         stale_reason = "market closed or no fresh live read"
     elif not fresh["fresh_enough"]:
         stale_reason = "stale (older than stale_after_min)"
+    elif not fresh["deadline_fresh"]:
+        stale_reason = "required source deadline unavailable or expired"
     elif L is not None and S is not None and L < S:
         stale_reason = "older than settled"
     elif L is not None and S is not None and L == S and precedence == "settled":

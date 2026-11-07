@@ -1,0 +1,43 @@
+{
+  "source_pin": "20959c5e8183f44678df4dbfc26ac246665ba2bf",
+  "observation": "captured Nov 5 postclose payload; controlled Node DOM, not production deployment",
+  "asof": "2026-11-05T22:32:09.560Z",
+  "before": {
+    "score": "57",
+    "word": "Mixed",
+    "thesis": "Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.",
+    "subline": "YELLOW — Trade with caution",
+    "action": "Trade small. Stay selective.",
+    "action_sub": "Mixed · 57/100",
+    "chart_last": {
+      "d": "2026-11-04",
+      "md": "Nov 4",
+      "mz": "11月4",
+      "s": 57,
+      "v": "Mixed",
+      "vz": "中性",
+      "x": 988,
+      "y": 89.12,
+      "live": 1
+    }
+  },
+  "after": {
+    "score": "57",
+    "word": "Mixed",
+    "thesis": "Current market assessment unavailable. The displayed score is a historical snapshot · 2026-11-04.",
+    "subline": "Historical snapshot · 2026-11-04",
+    "action": "Current risk assessment unavailable.",
+    "action_sub": "Last displayed assessment · 2026-11-04",
+    "chart_last": {
+      "d": "2026-11-04",
+      "md": "Nov 4",
+      "mz": "11月4",
+      "s": 57,
+      "v": "Mixed",
+      "vz": "中性",
+      "x": 988,
+      "y": 89.12,
+      "live": 1
+    }
+  }
+}

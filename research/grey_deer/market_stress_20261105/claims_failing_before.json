@@ -1,0 +1,46 @@
+{
+  "source_pin": "20959c5e8183f44678df4dbfc26ac246665ba2bf",
+  "method": "original modules loaded from immutable git blobs; corrected candidate regression functions, no source replacement",
+  "cases": [
+    {
+      "test": "test_claims_identity_holiday_and_year_boundary_reference",
+      "baseline": "FAIL",
+      "error_type": "AssertionError",
+      "detail": ""
+    },
+    {
+      "test": "test_claims_identity_keeps_verified_facts_when_listing_rolls_forward",
+      "baseline": "PASS"
+    },
+    {
+      "test": "test_claims_identity_node_needs_own_date_not_another_nodes_date",
+      "baseline": "FAIL",
+      "error_type": "AssertionError",
+      "detail": ""
+    },
+    {
+      "test": "test_claims_identity_printed_date_supports_dol_path_forms",
+      "baseline": "FAIL",
+      "error_type": "KeyError",
+      "detail": "'source_document_date'"
+    },
+    {
+      "test": "test_claims_identity_undated_or_other_week_listing_cannot_publish",
+      "baseline": "FAIL",
+      "error_type": "AssertionError",
+      "detail": ""
+    },
+    {
+      "test": "test_claims_identity_withdraws_retained_bad_value_and_existing_retry_recovers",
+      "baseline": "FAIL",
+      "error_type": "AssertionError",
+      "detail": ""
+    },
+    {
+      "test": "test_claims_identity_wrong_reference_week_cannot_be_verified",
+      "baseline": "FAIL",
+      "error_type": "AssertionError",
+      "detail": ""
+    }
+  ]
+}
