@@ -84,8 +84,21 @@ E4 extraction recall
   note: precision is never used as a recall proxy
 
 E5 positive precision
-  state=OWED
-  reason: no precision sample directory given (--precision-dir)
+  overall accepted=67/100 precision=0.67
+  overall wilson95=[0.5731, 0.7544]
+  stratum D1|component_dependency: reviewed=8 accepted=8 precision=1.0 wilson95=[0.6756, 1.0]
+  stratum D1|contract_manufacturing: reviewed=13 accepted=11 precision=0.8461538461538461 wilson95=[0.5777, 0.9567]
+  stratum D1|distribution: reviewed=11 accepted=5 precision=0.45454545454545453 wilson95=[0.2127, 0.7199]
+  stratum D1|licensing: reviewed=13 accepted=8 precision=0.6153846153846154 wilson95=[0.3552, 0.8229]
+  stratum D1|supplier_customer: reviewed=20 accepted=13 precision=0.65 wilson95=[0.4329, 0.8188]
+  stratum D2|component_dependency: reviewed=3 accepted=3 precision=1.0 wilson95=[0.4385, 1.0]
+  stratum D2|contract_manufacturing: reviewed=1 accepted=1 precision=1.0 wilson95=[0.2065, 1.0]
+  stratum D2|distribution: reviewed=3 accepted=2 precision=0.6666666666666666 wilson95=[0.2077, 0.9385]
+  stratum D2|licensing: reviewed=8 accepted=2 precision=0.25 wilson95=[0.0715, 0.5907]
+  stratum D2|supplier_customer: reviewed=20 accepted=14 precision=0.7 wilson95=[0.481, 0.8545]
+  overall_weighted precision=0.6621 ci=[0.5596, 0.7646]
+  decoys reviewed=25 accepted=0 acceptance_rate=0.0
+  reviewer_reliable=True
 
 E6 natural operations latency (hours, ingested - published, UTC)
   D1: n=1172 p50=5722.39 p90=6248.68 max=16909.17 clock_violations=0

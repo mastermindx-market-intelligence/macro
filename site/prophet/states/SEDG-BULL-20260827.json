@@ -1,12 +1,12 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SEDG-BULL-20260827",
-  "asof": "2026-11-02",
+  "asof": "2026-11-06",
   "phase": "invalidated",
   "detection_phase": "invalidated",
-  "management_confidence": 12.1,
+  "management_confidence": 11.7,
   "raw_confidence": 8.0,
-  "delta_vs_base": -47.9,
+  "delta_vs_base": -48.3,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
@@ -14,23 +14,23 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 32.8
   },
   "geometry": {
-    "dist_to_stop_r": -0.505,
+    "dist_to_stop_r": -2.18,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 148.9,
-    "p1": -1.0034,
-    "p2": -0.5017,
+    "horizon_pct_used": 157.8,
+    "p1": -2.1199,
+    "p2": -1.06,
     "p3": null,
-    "move_r": -1.505,
+    "move_r": -3.18,
     "mfe_r": 1.409,
-    "mae_r": -1.505
+    "mae_r": -3.18
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Phase: overtime \u2192 invalidated",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 3.240000000000002,
-  "_mae": -3.460000762939451,
+  "_mae": -7.309999237060545,
   "_max_p1": 0.939620671654777,
   "_first_trigger_ts": "2026-09-03",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 67,
-  "tau": 1.4889,
+  "days_elapsed": 71,
+  "tau": 1.5778,
   "closed": true,
   "outcome": "INVALIDATED"
 }
