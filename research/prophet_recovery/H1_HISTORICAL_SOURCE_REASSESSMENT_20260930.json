@@ -1,0 +1,89 @@
+{
+  "schema": "mastermind.prophet.h1.historical_source_reassessment.v1",
+  "observed_main": "6e7ef32c1ee53f1f559035cbdd35bcdab1364d81",
+  "method": "Git tree inventory plus Parquet schema/row-count inspection only; no grade return values read",
+  "files_present": {
+    "candidate_months": [
+      "2026-07",
+      "2026-08",
+      "2026-09"
+    ],
+    "grade_parts": 20,
+    "grade_parts_by_month": {
+      "2026-08": 4,
+      "2026-09": 16
+    },
+    "latest_grade_part": "2026-09-25"
+  },
+  "candidate_2026_09": {
+    "rows": 65949,
+    "columns": 222,
+    "accepted_h1_fields_present": [
+      "stamp_date",
+      "ticker",
+      "board_definition",
+      "lane",
+      "context_dims",
+      "theme_membership_ids"
+    ],
+    "accepted_h1_fields_missing": [
+      "security_id",
+      "issuer_id",
+      "identity_epoch",
+      "identity_epoch_state",
+      "identity_capture_state",
+      "identity_capture_basis",
+      "identity_alias_source_sha256",
+      "identity_master_source_sha256",
+      "cycle_state",
+      "cycle_label",
+      "cycle_label_vocab_sha256",
+      "theme_membership_source_sha256",
+      "theme_membership_source_version",
+      "theme_membership_source_curated",
+      "theme_membership_basis",
+      "theme_capture_group_id",
+      "theme_capture_group_state",
+      "theme_capture_group_rule",
+      "theme_capture_group_weighting",
+      "theme_capture_member_tickers",
+      "theme_capture_member_set_sha256"
+    ]
+  },
+  "grade_2026_09_25": {
+    "rows": 5590,
+    "columns": 18,
+    "metadata_fields_present": [
+      "stamp_date",
+      "ticker",
+      "board_definition",
+      "horizon",
+      "fill_date",
+      "mark_date",
+      "bench",
+      "graded_asof",
+      "schema",
+      "signal_class",
+      "signal_label"
+    ],
+    "metadata_fields_missing": [
+      "benchmark_calendar_state",
+      "inserted_session_count",
+      "signal_discriminator"
+    ]
+  },
+  "disposition": {
+    "historical_files_present": true,
+    "historical_h1_source_eligible": false,
+    "reason": "required prospective PIT identity/group/cycle/source receipts are absent from historical candidate rows",
+    "h1_mode": "PROSPECTIVE_ONLY",
+    "s0_started": false,
+    "s0_reason": "#8091 prospective capture fields are not yet accepted/released into ordinary nightly output"
+  },
+  "claim_limits": {
+    "protected_outcomes_read": false,
+    "model_fit_executed": false,
+    "performance_inference": false,
+    "trading_authority": false
+  }
+}

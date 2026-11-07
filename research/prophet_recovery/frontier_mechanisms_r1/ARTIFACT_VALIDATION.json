@@ -1,0 +1,18 @@
+{
+  "kind": "artifact_integrity_only_not_experiment",
+  "python": "3.13.5",
+  "command": "python3 /mnt/data/prophet_frontier_r1/build_artifacts.py",
+  "checks": {
+    "three_ranked_cards": true,
+    "run_allowed_false": true,
+    "registration_fields_uninvented": true,
+    "one_primary_comparison": true,
+    "authority_false": true,
+    "native_key_exact": true,
+    "independent_review_not_claimed": true,
+    "assignment_exists": true
+  },
+  "numerical_trials_executed": 0,
+  "synthetic_backtests_executed": 0,
+  "protected_outcome_reads": 0
+}

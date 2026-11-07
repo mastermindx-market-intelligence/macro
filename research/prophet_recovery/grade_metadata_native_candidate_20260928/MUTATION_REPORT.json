@@ -1,0 +1,101 @@
+{
+  "caught": 9,
+  "independent_review": false,
+  "kind": "author_mutation_tests_of_actual_isolated_candidate",
+  "mutations": [
+    {
+      "caught": true,
+      "exit": 1,
+      "name": "M01_outcome_allowlist",
+      "setup_errors": [],
+      "source_sha256": "8fa8ea6e78916adcd180f3141c77e1d3ef8025d5e4b0643a2b37b79aa8b99f27",
+      "test_failures": [
+        "test_metadata_outcome_with_valid_keys_rejected_before_decoding"
+      ]
+    },
+    {
+      "caught": true,
+      "exit": 1,
+      "name": "M02_unrestricted_decode",
+      "setup_errors": [],
+      "source_sha256": "98054944cf94cd28a73eb2d7649c90a5badeb0df436d6e40f997744d6d3a3170",
+      "test_failures": [
+        "test_metadata_projection_actual_parquet_never_materializes_missing_column_fallback"
+      ]
+    },
+    {
+      "caught": true,
+      "exit": 1,
+      "name": "M03_skip_digest",
+      "setup_errors": [],
+      "source_sha256": "9a68e9ad2d4bbd0b2e450dbc0200b7bc9e20ecd98d0b52378de03fc27a6faeef",
+      "test_failures": [
+        "test_metadata_source_identity_count_and_size_bound[sha256-0000000000000000000000000000000000000000000000000000000000000000-SOURCE_DIGEST_MISMATCH]"
+      ]
+    },
+    {
+      "caught": true,
+      "exit": 1,
+      "name": "M04_skip_rows",
+      "setup_errors": [],
+      "source_sha256": "be84bbae8d3243bf7e7affe196bbffeba384b1fed111fe98f3c4b286410aa03c",
+      "test_failures": [
+        "test_metadata_source_identity_count_and_size_bound[rows-999-SOURCE_ROW_COUNT_MISMATCH]"
+      ]
+    },
+    {
+      "caught": true,
+      "exit": 1,
+      "name": "M05_bad_part_skip",
+      "setup_errors": [],
+      "source_sha256": "263b2ce40f5d6e821009d9d0526575586e86b92fde0513aee502889d0b0969dd",
+      "test_failures": [
+        "test_metadata_corrupt_part_not_silently_skipped"
+      ]
+    },
+    {
+      "caught": true,
+      "exit": 1,
+      "name": "M06_missing_part",
+      "setup_errors": [],
+      "source_sha256": "a49cf323d426f8d1afa8a3d8313923bd9db20313fca38ea1cb84f0f5f9bc71e6",
+      "test_failures": [
+        "test_metadata_missing_expected_part_cannot_look_healthy"
+      ]
+    },
+    {
+      "caught": true,
+      "exit": 1,
+      "name": "M07_hash_other_read",
+      "setup_errors": [],
+      "source_sha256": "d44254e9898912da98929d98bb30975b2d3ef1fae37f0314994727a2d752b7af",
+      "test_failures": [
+        "test_metadata_same_snapshot_binds_schema_data_even_after_source_replacement"
+      ]
+    },
+    {
+      "caught": true,
+      "exit": 1,
+      "name": "M08_nested_prefix",
+      "setup_errors": [],
+      "source_sha256": "4dc0a70607a3cc0e35376cfe0b404bac16ead12357e7b0a0aee7103ab4b1e7fa",
+      "test_failures": [
+        "test_metadata_nested_field_cannot_select_hidden_outcome"
+      ]
+    },
+    {
+      "caught": true,
+      "exit": 1,
+      "name": "M09_index_enrichment",
+      "setup_errors": [],
+      "source_sha256": "1e8881560fd032acedb288abbf2124f465a027b69ad0bf58fe8f635f234f29c9",
+      "test_failures": [
+        "test_metadata_outcome_index_is_not_loaded"
+      ]
+    }
+  ],
+  "native_unstubbed_dependency_graph": false,
+  "real_financial_data": false,
+  "real_parquet": true,
+  "source_worktree_modified": false
+}
