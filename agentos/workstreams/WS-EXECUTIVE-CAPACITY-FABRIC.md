@@ -241,6 +241,11 @@ waves:
       worker-broker lifecycle through one private authenticated remote transport while keeping one
       canonical Executive Runtime on the control host. Prove stable Attempt-bound operation identity,
       effect-unknown reconciliation, local-only provider credentials and zero remote queue/scheduler.
+  - id: M2-SRC0
+    title: Protected inactive same-store physical-resource source (September 2026)
+    status: done
+    next_action: >
+      SOURCE_PROTECTED_DO_NOT_REPEAT. Mastermind https://github.com/mastermindx-market-intelligence/Mastermind/pull/510 merged as f9e46a72d6102b0e94c897590fc58bac89eb4ea6 on 2026-09-06; terminal source-release receipt https://github.com/mastermindx-market-intelligence/Macro/issues/6732#issuecomment-5561892827 completes only the inactive same-store source component. Normal schema 4, candidate DDL outside migrations, closed entrypoints, null/unarmed budgets and N=0 qualified peaks are September 6/7 source-cut facts, not a November runtime or capacity census. Current ECF ownership and the currently selected later handoff govern continuation. Retain the distinct historical routes agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-04-CLAUDE-ADAPTER-STATUS.md and agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-05-FAIRNESS-CONTRACT-ACCEPTED.md: OCR/HF/PF, Runtime implementation/migration and production proof retain their separate owners; reconcile any original operation on its own carrier and do not duplicate or replay held/uncertain effects. Neither this done source wave nor its archived receipts authorizes activation, a host/provider action or a Linear write.
 decisions:
   - DEC:EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT
   - DEC:FIRST-WEB-CEO-ROOT-BINDS-THE-ARMED-OPERATOR-HARNESS
@@ -252,6 +257,9 @@ discoveries:
   - DSC:PF1-CLAUDE-WORK-LEG-BOUNDARY
 artifacts:
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-11-03-UBUNTU4.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-07-M2-SOURCE-RECONCILIATION.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-04-CLAUDE-ADAPTER-STATUS.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-05-FAIRNESS-CONTRACT-ACCEPTED.md
   - agentos/decisions/DEC-EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT.md
   - agentos/decisions/DEC-FIRST-WEB-CEO-ROOT-BINDS-THE-ARMED-OPERATOR-HARNESS.md
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-29.md
@@ -275,6 +283,7 @@ artifacts:
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-08-25-CF1-ACCEPTED.md
   - docs/superpowers/plans/2026-08-25-mas-126-cf1-reconciliation.md
 landmines:
+  - "M2-SRC0 records Mastermind https://github.com/mastermindx-market-intelligence/Mastermind/pull/510 source protection on 2026-09-06 only. Schema-4/null-budget/N=0 statements are dated source-cut evidence, not current installed Runtime, broker, host, provider, policy or capacity truth. The 2026-11-05 records qualification grants no activation, replay or projection write."
   - "Macro `shared-ai-provider-control` already owns provider availability, auth pools, cooling and quota state; do not create ProviderAccount/QuotaHorizon truth tables in Executive OS."
   - "Current native Claude realm identity and Macro claude_code_oauth_N capability IDs are not equivalent by ordinal/name/config path/plan type. Family A failed closed because no supported rotation-safe secret-free enrollment equality witness currently exists. Do not resurrect ordinal binding."
   - "A compatible-provider alias is never native Anthropic capacity (Sol rejection class E11). The file control_plane/claude_subscription_worker.py, the descriptor id `claude-compatible-subscription` and PR titles saying 'Claude subscription worker' all name the Claude Code HARNESS, whose providers are exactly glm/alibaba/minimax. `compatible` is load-bearing; read config/subscription_provider_profiles.v1.json before believing any file name."

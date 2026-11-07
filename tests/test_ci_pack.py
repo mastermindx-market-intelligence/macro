@@ -1680,6 +1680,89 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_m
         assert "unowned path" not in reason, reason
 
 
+def test_macro_suite_copy_law_site_scanners_run_on_the_data_gate(real_manifest_scopes) -> None:
+    """A nightly-rendered page must never red the source merge gate (S1, 2026-11-05).
+
+    ``tests/test_macro_command_copy_law.py`` (and, for one test each, its
+    ``p4_copy`` and ``read_strip`` siblings) holds two kinds of test: the copy
+    law over fixture-rendered or synthetic payloads (a property of the code),
+    and scanners over the committed ``site/macro_*.html`` or the nightly
+    ``site/macrodata`` the nightly rewrites on every run (a property of the
+    data). On 2026-11-05 the nightly committed
+    a ``macro_business_activity.html`` carrying an unpaired ``Contraction``
+    label; ``market-os-macro-suite-pages`` went red on main at 04:41Z and
+    merge-on-green's main-red circuit breaker held every ordinary merge for 18
+    hours while no open PR could have caused or cured it (Mastermind #917,
+    checkpoint 13). The split pinned here: the scanners carry ``data_gate``,
+    the code job deselects them, and the ``gate: data`` sibling runs exactly
+    them on the data-health lane after each nightly.
+    """
+    manifest = _yaml(MANIFEST)
+    suite = "tests/test_macro_command_copy_law.py"
+    siblings = (
+        "tests/test_macro_command_p4_copy.py",
+        "tests/test_macro_command_read_strip.py",
+    )
+    code_job = manifest["jobs"]["market-os-macro-suite-pages"]
+    assert code_job["gate"] == "code"
+    for scanner in (suite, *siblings):
+        code_runs = [
+            str(step.get("run") or "") for step in code_job["steps"]
+            if scanner in str(step.get("run") or "")
+        ]
+        assert code_runs, f"the code job no longer runs {scanner}"
+        for run in code_runs:
+            assert "-m \"not data_gate\"" in run or "-m 'not data_gate'" in run, run
+
+    data_job = manifest["jobs"]["market-os-macro-suite-pages-data"]
+    assert data_job["gate"] == "data"
+    assert data_job["scope"] == "exclusive"
+    data_runs = [
+        str(step.get("run") or "") for step in data_job["steps"]
+        if re.search(r"pytest\s+tests/", str(step.get("run") or ""))
+    ]
+    assert data_runs == [
+        f"python -m pytest {suite} {' '.join(siblings)} -m data_gate -q"
+    ]
+    assert _job_pip_packages(data_job) == _job_pip_packages(code_job)
+    assert set(code_job["paths"]) == set(data_job["paths"]), (
+        "the data sibling declares the parent's closure; widen both together"
+    )
+
+    # The marker is real: every test whose verdict reads the committed
+    # site/macro_*.html (or couples it to the nightly macrodata) carries it;
+    # the template-bound halves of the split M2 and trace-row tests stay on
+    # the code gate. A new committed-site scanner is added to this set,
+    # never to the code gate.
+    marked: list[str] = []
+    for scanner in (suite, *siblings):
+        marked += re.findall(
+            r"^@pytest\.mark\.data_gate\s*\n(?:^@pytest\.mark\.[^\n]*\n)*^def (test_\w+)\(",
+            (ROOT / scanner).read_text(encoding="utf-8"),
+            re.M,
+        )
+    assert sorted(marked) == sorted({
+        "test_committed_payloads_have_zero_plain_fallbacks",
+        "test_committed_rates_page_keeps_relocated_needles_inside_details",
+        "test_user_facing_numbers_have_no_machine_floats",
+        "test_zh_l_zh_spans_are_translated",
+        "test_locale_spans_have_no_machine_text",
+        "test_rendered_pages_use_ratified_null_vocabulary",
+        "test_details_use_locale_pairing_not_lang_attributes",
+        "test_composites_disclose_composition_law_in_plain_words",
+        "test_trace_row_present_iff_trace_ref",
+        "test_committed_monetary_policy_page_keeps_restored_rows",
+        "test_rendered_sections_have_no_repeated_visible_sentence",
+        "test_axis_move_clauses_cover_every_axis_and_direction",
+        "test_unknown_tokens_are_empty_for_the_shipped_artifact",
+    }), marked
+
+    jobs, _ = real_manifest_scopes
+    code_jobs = {job.job_id for job in jobs if job.gate == "code"}
+    assert "market-os-macro-suite-pages" in code_jobs
+    assert "market-os-macro-suite-pages-data" not in code_jobs
+
+
 def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """BC-2 ran only on the data gate, so nothing graded a claim before merge.
 
@@ -4027,6 +4110,48 @@ def test_company_intelligence_product_surfaces_reach_focused_ci_packs() -> None:
     assert re.search(r"\bhttpx\b", publish_ops_install)
 
 
+
+def test_earnings_worker_control_plane_has_binding_code_gate_owner(real_manifest_scopes) -> None:
+    """An ops-only or test-only worker diff must execute its hermetic contract."""
+    jobs, _note = real_manifest_scopes
+    by_id = {job.job_id: job for job in jobs}
+    job = by_id["earnings-release-identity"]
+
+    assert job.gate == "code"
+    assert job.is_scoped, "worker ownership must be proved after scope inference"
+    declared = set(job.definition.get("paths") or [])
+    required = {
+        "ops/bootstrap_earnings_worker.sh",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/launchd/com.mastermind.earnings-worker.plist",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/launchd/run_earnings_worker.sh",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "tools/earnings_worker/README.md",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "tests/test_earnings_worker_launchd.py",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "config/earnings_qual.yml",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+    }
+    assert required <= declared
+
+    commands = "\n".join(
+        str(step.get("run", ""))
+        for step in job.definition["steps"]
+        if isinstance(step, dict)
+    )
+    assert "tests/test_earnings_worker_launchd.py" in commands  # ci-trigger-closure: data — suite NAME checked in manifest commands, not opened
+
+    # These are the two previously-dark shapes from PR #7366 review: changing
+    # only the test contract or only one production control path must select the
+    # binding code-gate owner, not merely a broader gate:data ops pack.
+    for changed in (
+        "tests/test_earnings_worker_launchd.py",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/bootstrap_earnings_worker.sh",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/launchd/com.mastermind.earnings-worker.plist",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/launchd/run_earnings_worker.sh",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+    ):
+        selected, _reason = PACK.select_jobs(
+            [item for item in jobs if item.gate == "code"], [changed]
+        )
+        assert "earnings-release-identity" in {item.job_id for item in selected}
+
+
 def test_ci_pack_partial_clone_keeps_history_without_historical_site_blobs() -> None:
     """ci-plan keeps full history; packs shallow-checkout the current tree.
 
@@ -4406,6 +4531,16 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # GDELT leaf suites own their exact import/read closure.
+    "gdelt-news-leaves",
+    # Installer simulations own their concrete source/read closure without
+    # adding weight to unrelated ordinary-code packing probes.
+    "earnings-worker-systemd",
+    # Actual page-query import/read closure; no unrelated fallback ownership.
+    "admin-analytics-pages",
+    # Paid Fabric source-only guidance and deterministic attribution tests are
+    # exclusively scoped; do not widen unrelated ordinary-code packing probes.
+    "meta-ceo-fabric-contracts",
     # A1 pure product/finite QA must run on code PRs without the legacy data job.
     "eval-os-a1",
     # Qledger suites retain all named imports; opaque fixture roots are audited.
@@ -4467,6 +4602,7 @@ CURATED_EXCLUSIVE = {
     "china-search-universe",
     "china-radar-record",  # W31 China Radar: render/ledger suites keep their measured closure.
     "quant-q02-american-exercise",  # Q02 quant assessment: suite imports importlib/subprocess; AST-derived closure
+    "p08-synthetic-composition",  # Research-only composition: curated solver/adapter/test closure.
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
     # off workflow-yaml, which was `gate: data` and never ran on a PR. Exclusive
     # because its suites read most of the repository: inferred, the job would add
@@ -4501,6 +4637,11 @@ CURATED_EXCLUSIVE = {
     # __init__.py pulls launch_slo_verifier -> earnings_narrative -> biocatalyst,
     # so the job's paths must cover its own import closure.
     "consumer-cyclical-economic-change",
+    # 2026-10-12 #7891 Technology ex-Semis: the registration shell loader's
+    # import_module(name) is an opaque dynamic import, so inferred scope rode the
+    # whole-tree fallback tier onto both code probes (+1 job each, fallback tier
+    # only). Curated to the measured closure plus the pending #7870 modules.
+    "technology-ex-semis-boundary",
     "options-payoff-lab-consumer",
     "options-catalyst-links",
     # 2026-09-23 Prophet US R6 wave 1 (#7823). `prophet-us-b4-prereg-registration` is
@@ -4512,6 +4653,8 @@ CURATED_EXCLUSIVE = {
     "earnings-economic-dossier",
     # 2026-09-30: CDV-1 Task 2 owns truthful private PG acquisition currentness.
     "earnings-economic-source-selection",
+    # 2026-09-30: CDV-1 Task 4 owns the v2 private generation.
+    "earnings-economic-private-publication",
     # 2026-09-24 GMI Mining M1 integration T01' (R-MIN-02/R-MIN-26). `mining-economic-dossier`
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
@@ -4584,6 +4727,10 @@ CURATED_EXCLUSIVE = {
     # the transport suites import app.main, whose closure smears whole-tree
     # scan roots onto all three packing probes (+1 job each) when inferred.
     "semiconductor-b-boundary",
+    # PR-S shared theme-research shell. Exclusive so the composer's
+    # company-intelligence / theme-graph fallback reads are not declared
+    # and the packing probes stay unselected. Paths are the owned closure.
+    "theme-research-shared-shell",
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
     # (unrun-publish-ops) is `gate: data`, which ci.yml never plans, so they
@@ -4711,6 +4858,11 @@ CURATED_EXCLUSIVE = {
     # hook guard moved to tests/test_render_builder_ownership.py so this
     # job's closure stays the page family rather than the whole site builder.
     "market-os-macro-suite-pages",
+    # 2026-11-05 (S1, Mastermind #917 cp13): the `gate: data` sibling that runs
+    # the copy-law scanners over the NIGHTLY-RENDERED suite pages (marked
+    # `data_gate`), so a nightly commit can never red the source merge gate.
+    # Exclusive with the parent's declaration; never selected on the code gate.
+    "market-os-macro-suite-pages-data",
     # 2026-09-05 (P0B current-head repair): the first-frame suite executes its
     # frozen Jinja/browser recipes through subprocess boundaries. Inference
     # therefore conservatively added scripts/**, site/**, and templates/**,
@@ -4988,6 +5140,12 @@ CURATED_EXCLUSIVE = {
     # stage-1b suites), so inference never unions the research/ fallback roots
     # onto the packing probes.
     "grey-deer-pullback-stage1",
+    # 2026-10-12 Robotics re-land (#7908 after #8013, stacked on #7870).
+    # One exclusive gate:code job for the eight Robotics suites. The declaration
+    # is their measured import closure (including the #7870 shared shell);
+    # exclusivity keeps that closure off the packing probes. The
+    # cover-their-own-import-closure test keeps the list honest.
+    "robotics-theme-research",
     # 2026-10-13 Grey Deer W5 (#9128): the pullback forward-lane suites import
     # the frozen stage-1 runner, whose lazy risk_radar closure made inference
     # select the job on the plan_book (130 > 129) and build_free_content
@@ -5153,6 +5311,13 @@ CURATED_EXCLUSIVE = {
     # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
     # suite reads by name; the curated-closure guard audits it like its parent.
     "ew-p4-descriptive-ui",
+    # GLT T22 (2026-11-03): tests/test_global_liquidity_views.py reaches the
+    # macro-suite view/label helpers and scripts/build_macro_suite_pages.py, so
+    # inference smeared this job's scan roots onto templates/index.html (138
+    # jobs / 5,919 s against the 137 / 5,909 probe ceilings). Exclusive with the
+    # exact 55-file non-wildcard import closure plus the eight Jinja templates the
+    # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
+    "global-liquidity-transmission",
 }
 
 
@@ -5438,9 +5603,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_909),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_924),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_665),
+    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_929),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_670),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5448,6 +5613,30 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
+    contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:
+    index137jobs/5912->5912, free137jobs/5927->5929, Prophet131jobs/5668->5670,
+    all ten packs and identical selected job IDs (no entrants or exits).
+    The sole manifest delta enrolls tests/test_integrated_answer_provenance.py
+    in the existing integrated-answer-v0 owner alongside all four accepted
+    suites. Its unchanged planner estimate rises10->12 from that fifth literal
+    test path; no observed-runtime override or dependency-scope change.
+    Fund only the two additional planning-weight units on free-content and
+    Prophet. Preserve the homepage, every job-count ceiling, ten-pack bound,
+    selectors, suites, timeouts and admission limits. These are planner
+    estimates, not measured execution times.
+
+    P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
+    candidate 5f0f047b160b against real base b4df44260aef, using the same
+    run_ci_pack blob 3cbed589. Comparison SHA256
+    18c613726a07f17a5484f76639079111ef7b69306f3d0360754c69fea2525888:
+    index137jobs/5909->5912, free137jobs/5924->5927, Prophet131jobs/5665->5668,
+    all ten packs, identical selected IDs with no entrants or exits. The sole
+    definition/selected-weight delta is existing basket-staleness-warn4->7
+    from its regional coverage step. Raise only those three estimated-weight
+    ceilings to the measured values. These are planner estimates, not runtime
+    evidence; job-count, pack, timeout and admission bounds remain unchanged.
 
     2026-11-01 main-red repair after #10294 (ee5cd3e1a8a8), which split the
     ``gate: data`` job ``tier-gate`` into ``tier-gate``, ``paywall-contracts``
