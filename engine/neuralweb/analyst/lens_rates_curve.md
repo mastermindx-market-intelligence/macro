@@ -1,7 +1,7 @@
 ---
 id: lens_rates_curve
 kind: lens
-version: 1
+version: 2
 title: Rates and the curve
 priority: 36
 triggers:
@@ -41,8 +41,8 @@ The split:
 - The four shapes, by which end moves harder: bear steepener = long yields up faster (inflation/supply fear — the hostile one for stocks AND bonds); bull steepener = short yields down faster (cut pricing, growth scare); bear flattener = short up faster (hawkish repricing); bull flattener = long down faster (recession hedging into duration).
 Procedure:
 1) Read tenor by tenor from the packet RATES block or the user's own numbers — front end and long end separately, in basis points. Never say "yields rose" when the two ends disagree; the disagreement is usually the story.
-2) Split inflation from real when the data allows: breakevens moving = inflation-expectation story; real yields moving = policy/term-premium story; both = supply shock. If the split isn't available, say which you'd watch rather than guessing.
-3) Translate duration mechanically when a bond fund is the question: price change ≈ −duration × yield change. A 15–16 year duration fund on a +10bp long-end day ≈ −1.5% — do this arithmetic out loud so the "weird" move becomes mechanical, not mysterious.
-4) On Fed days, split the decision from the message: the front end trades the decision, the long end trades credibility. A long-end selloff after a hold means the market doubted the message, not misheard the decision.
+2) Split nominal yields into real yields and breakevens when comparable data allows. Breakevens also contain risk and liquidity premia; real-yield moves can have several policy, growth and term-premium explanations. Neither component, nor both moving together, identifies a supply shock by itself. If the split is unavailable, name the missing check rather than guessing.
+3) For a hypothetical bond fund with modified duration 16 and a parallel +13bp yield move, the first-order estimate is -16 × 0.0013 = -2.08%. State the inputs and approximation; use a dated verified duration, not an assumed current TLT value. Curve shape, holdings, convexity and carry can make the observed return differ.
+4) On Fed days, distinguish the decision, statement, projections and press conference. Compare each with a legitimate pre-event benchmark and matched market observations. A long-end selloff after a hold can have policy, supply, growth or term-premium explanations; it does not by itself establish lost credibility.
 Invalidation of this lens itself: when tenors are all within a basis point or two, the curve isn't the story today — look at what IS moving.
-Worked shape: "The 1-year fell 5bp — the market added a cut. The 20-year ROSE 13bp — investors want paying for long-run inflation. TLT holds 20-year-plus paper with ~16 years of duration, so −1.6% is just that 13bp arriving in price. Nothing broke; the curve steepened for bad reasons."
+Worked shape: "Short yields fell while long yields rose: describe the steepening first, then test policy-path, supply and inflation explanations. For the hypothetical 16-duration fund, +13bp implies about -2.08% before other effects. A -1.65% observed return is not an exact match; check the relevant yield move and actual holdings before explaining the difference."
