@@ -1036,9 +1036,22 @@ def _dryrun_module():
 def test_dry_run_imports_and_writes_nothing():
     src = DRYRUN_PATH.read_text(encoding="utf-8")
     for forbidden in ("append_jsonl", "outbox.transition", "write_text(",
-                      "open(", "json.dump("):
+                      "json.dump("):
         assert forbidden not in src, (
             f"the dry run must not write: found {forbidden!r}")
+    # The shadow CLI needs a bounded READ, not read_bytes() on an unbounded file.
+    # Permit only an explicit binary-read Path.open; unknown modes fail closed.
+    import ast
+    for node in ast.walk(ast.parse(src)):
+        if not isinstance(node, ast.Call):
+            continue
+        is_open = (isinstance(node.func, ast.Name) and node.func.id == "open") or (
+            isinstance(node.func, ast.Attribute) and node.func.attr == "open")
+        if is_open:
+            assert (isinstance(node.func, ast.Attribute) and len(node.args) == 1
+                    and isinstance(node.args[0], ast.Constant)
+                    and node.args[0].value == "rb" and not node.keywords), (
+                "the dry run allows only explicit bounded binary-read opens")
     assert _dryrun_module().main(
         ["--limit", "1", "--plan", "/nonexistent/plan.json"]) == 0
 
