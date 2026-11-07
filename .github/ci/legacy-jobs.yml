@@ -42883,15 +42883,26 @@ jobs:
         run: python -m pytest tests/test_winner_health_design_freeze.py -q
 
   options-nbbo-cohort:
-    # Frozen same-basis MomoEdge comparison infrastructure. The suite is fully
+    # Offline source qualification and frozen same-basis MomoEdge comparisons.
+    # The suites are fully
     # offline: source responses and authenticated producer rows are synthetic,
     # while raw production bytes remain host-private outside git.
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
-    # Literal import/read closure of the four offline suites. Exclusive scope
+    # Literal import/read closure of the offline suites. Exclusive scope
     # prevents the CLI's dynamic file-module tests from widening unrelated probes.
     scope: exclusive
     paths:
+      - collectors/__init__.py
+      - collectors/options_free_samples.py
+      - collectors/options_free_tbt.py
+      - scripts/options_free_source_inventory.py
+      - scripts/qualify_options_free_samples.py
+      - scripts/qualify_options_free_tbt.py
+      - tests/__init__.py
+      - tests/test_options_free_samples.py
+      - tests/test_options_free_source_inventory.py
+      - tests/test_options_free_tbt.py
       - config/dag.yml
       - engine/__init__.py
       - lib/__init__.py
@@ -42936,6 +42947,8 @@ jobs:
           tests/test_options_alpha_exact_option_outcome_cli.py
           tests/test_options_occ_contract_terms.py
           tests/test_options_occ_contract_terms_native.py -q -rs
+      - name: private Cboe evaluation parsers, custody refusal and inventory contracts
+        run: python -m pytest tests/test_options_free_samples.py tests/test_options_free_source_inventory.py tests/test_options_free_tbt.py -q
 
   product-experience-registry:
     if: ${{ false }}
