@@ -32,7 +32,7 @@ def record(data, body="\nOriginal note. 中文 stays literal.\n"):
 
 def workstream(key="ALPHA", discoveries=None):
     return record({"schema": "agentos.workstream.v1", "key": key, "title": "Correct a finding",
-        "objective": "Preserve evidence while learning", "status": "active", "program": "mmos-core",
+        "objective": "Preserve evidence while learning", "status": "active", "program": "executive-os",
         "repos": ["macro"], "owner": "chairman", "class": "build", "blast_radius": "reversible",
         "ambiguity": "specified", "waves": [{"id": "wave-1", "title": "Evidence", "status": "in_progress"}],
         "next_action": "Read the evidence", "discoveries": discoveries or [], "decisions": [], "artifacts": []})
