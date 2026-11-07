@@ -500,6 +500,28 @@ def test_apply_plain_producer_unreviewed_machine_text_uses_fallback() -> None:
     assert original["en"].startswith("raw_unreviewed_slug")
 
 
+def test_business_activity_contradiction_texts_have_reviewed_plain_pairs() -> None:
+    """Both DEPTH/BREADTH divergence sentences the producer emits render a
+    reviewed plain pair, never the fallback (main copy-law red, 2026-11-05)."""
+    from engine.market_os.macro_workspaces import business_activity as ba
+    from lib.macro_suite_labels import (PLAIN_FALLBACK, apply_plain_pair,
+                                        machine_text_hits)
+    seen = []
+    for depth, breadth in ((True, False), (False, True)):
+        bc = {"recession_signal": {"available": True,
+                                   "conditions": {"depth": depth, "breadth": breadth}}}
+        found = ba._detect_contradiction(bc)
+        assert found["present"] is True
+        assert machine_text_hits(found["en"]), "producer text must still trip the guard"
+        reading, original = apply_plain_pair({"en": found["en"], "zh": found["zh"]})
+        assert reading != PLAIN_FALLBACK, found["en"][:60]
+        assert machine_text_hits(reading["en"]) == []
+        assert machine_text_hits(reading["zh"]) == []
+        assert original["en"] == found["en"]
+        seen.append(reading["en"])
+    assert seen[0] != seen[1]
+
+
 def test_labor_coverage_refusal_is_plain_without_claiming_neutral() -> None:
     from html import escape
     from lib.macro_suite_labels import PLAIN_FALLBACK, apply_plain_producer

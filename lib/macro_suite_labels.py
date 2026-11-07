@@ -434,6 +434,17 @@ OWNER_VALUE: dict[str, dict[str, str]] = {
     "early": _pair("Early-cycle recovery", "周期早段复苏"),
     "mid": _pair("Mid-cycle", "周期中段"),
     "late": _pair("Late-cycle", "周期晚段"),
+    # business_activity's four-phase cycle clock (engine.business_cycle._phase)
+    # republishes the token as the categorical `business_cycle_phase`. Without
+    # a reviewed pair the token deslugs to an ASCII ZH twin and the copy-law
+    # gate goes red (main, 2026-11-05: macro_business_activity.html rendered
+    # "Contraction" inside .l-zh). Same ZH the engine emits as `label_zh`;
+    # pinned by tests/test_macro_suite_pages.py::
+    # test_business_cycle_phase_tokens_have_reviewed_pairs.
+    "expansion": _pair("Expansion", "扩张"),
+    "slowdown": _pair("Slowdown", "放缓"),
+    "contraction": _pair("Contraction", "收缩"),
+    "recovery": _pair("Recovery", "复苏"),
 }
 
 # --- metric identities -------------------------------------------------------
@@ -1839,6 +1850,41 @@ def producer_trips_copy_guard(text: str) -> bool:
     return bool(machine_text_hits(text))
 
 PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
+    # business_activity contradiction (engine/market_os/macro_workspaces/
+    # business_activity.py::_detect_contradiction). The producer spells the
+    # owner's 3 D's as uppercase DEPTH / BREADTH, which the state-token guard
+    # flags, so the diagnostic rendered the fallback sentence on main
+    # (2026-11-05, macro_business_activity.html en=1:zh=1). Keys stop before
+    # the " -- " clause so punctuation normalisation cannot break the match.
+    (
+        "The leading tier's 6-month momentum has crossed the calibrated "
+        "recession-risk DEPTH threshold, but BREADTH (the share of leading legs "
+        "confirming) has not",
+        _pair(
+            "The leading tier's 6-month momentum has crossed the calibrated "
+            "recession-risk depth threshold, but breadth (the share of leading "
+            "legs confirming) has not. The deterioration is concentrated rather "
+            "than broad-based; the owner's three-condition rule requires depth "
+            "and breadth to fire together before a recession-risk signal is "
+            "asserted.",
+            "领先层的6个月动量已越过校准的衰退风险深度阈值，但广度（确认走弱的领先分项占比）尚未确认——"
+            "走弱是集中的而非广泛的；所有者的三要素规则要求深度与广度同时触发才判定衰退风险信号。",
+        ),
+    ),
+    (
+        "BREADTH (the share of leading legs weakening) has crossed the "
+        "calibrated recession-risk cutoff, but the leading tier's 6-month "
+        "momentum DEPTH has not",
+        _pair(
+            "Breadth (the share of leading legs weakening) has crossed the "
+            "calibrated recession-risk cutoff, but the leading tier's 6-month "
+            "momentum depth has not. The weakening is broad but shallow; the "
+            "owner's three-condition rule requires depth and breadth to fire "
+            "together before a recession-risk signal is asserted.",
+            "广度（走弱的领先分项占比）已越过校准的衰退风险阈值，但领先层6个月动量的深度尚未确认——"
+            "走弱广泛但程度较浅；所有者的三要素规则要求深度与广度同时触发才判定衰退风险信号。",
+        ),
+    ),
     (
         "US labor-market state cannot be classified: axis coverage is below the "
         "disclosed floor. No quadrant is asserted rather than defaulting to a "
