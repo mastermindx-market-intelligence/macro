@@ -7119,6 +7119,46 @@ canada:
 # with per-country flags. Taiwan macro is thin on keyless sources -> degrades.
 # ===========================================================================
 intl:
+  policy_comparison_publication:
+    status: confirmed
+    policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-ecb-boe-policy-comparison
+    metadata: allowed
+    value_permission: allowed
+  field_publication:
+    GB.policy_rate:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-boe-bank-rate-admission
+      metadata: allowed
+      value_permission: allowed
+    EZ.gdp_yoy:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-gdp-and-hicp
+      metadata: allowed
+      value_permission: allowed
+    EZ.cpi_yoy:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-gdp-and-hicp
+      metadata: allowed
+      value_permission: allowed
+    EZ.annual_current_account:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-annual-current-account
+      metadata: allowed
+      value_permission: allowed
+  risk_summary_publication:
+    status: confirmed
+    scope: intl-us-transmission-derived-summary-v1
+    policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#incumbent-us-transmission-derived-summary
+    metadata: allowed
+    value_permission: allowed
+    audience: anonymous-and-registered-intl-html
+    fields:
+    - state
+    - evidence_refs
+    - diagnostic.reported_state
+    - calculation_at
+    - observation_dates
+    - origin_coverage
   # Chairman confirmed permitted user-facing EOD redistribution on 2026-10-09.
   # This is a source-scoped publication decision, NOT a provider session-clock
   # attestation, trading authorization, or blanket rights grant to other feeds.

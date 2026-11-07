@@ -295,6 +295,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2464,6 +2466,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3539,6 +3543,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -8133,6 +8139,11 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "tests/test_options_scenario_http_admission.py"
+      - "app/options_scenario_http_admission.py"
+      - "tests/test_native_capture_participant.py"
+      - "tests/test_investigation_native_capture.py"
+      - "app/investigation_native_capture.py"
       - "engine/neuralweb/options_selection_context.py"
       - "tests/test_options_selection_context.py"
       - "tests/fixtures/options_selection_question/terminal-mint-v1.json"
@@ -9244,7 +9255,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_selection_context.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_selection_context.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py tests/test_options_scenario_http_admission.py tests/test_investigation_native_capture.py tests/test_native_capture_participant.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -10644,6 +10655,24 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
       - "tests/intl_gs_dislocations_fixture.py"
@@ -10996,6 +11025,24 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11367,6 +11414,24 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -12373,6 +12438,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -14897,6 +14964,24 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/rotation_observation_notification.py"
@@ -15930,8 +16015,8 @@ jobs:
       # step named it, so the guard for that fix was itself dark from the hour
       # it landed. Same class the unrun-* lanes close; caught by
       # scripts/audit_unrun_tests.py on the very next census.
-      - name: render-lane scope contract (intl must stay in the publish scopes)
-        run: python -m pytest tests/test_render_intl_scope.py -q
+      - name: render-lane intl scope and durable publication contracts
+        run: python -m pytest tests/test_render_intl_scope.py tests/test_intl_durable_publication.py tests/test_render_intl_durable.py tests/test_intl_durable_native_inputs.py tests/test_intl_native_read_observer.py -q
       # A run: scalar over GitHub's length cap makes GitHub DE-REGISTER the workflow.
       # render.yml vanished from the registry on 2026-07-27 (#3826) and the express lane
       # was dead ~1h. yaml.safe_load, check_workflow_yaml.py and actionlint ALL pass on an
@@ -16615,6 +16700,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -19087,6 +19174,24 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -23197,6 +23302,24 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -23636,6 +23759,24 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -23971,6 +24112,24 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -30786,6 +30945,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -35389,6 +35550,24 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
       - collectors/rate_futures.py
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
@@ -40568,6 +40747,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -43898,6 +44079,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -45172,6 +45355,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -50488,6 +50673,26 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "lib/intl_annual_publication.py"
+      - "lib/intl_boe_publication.py"
+      - "lib/intl_boe_source.py"
+      - "lib/intl_ecb_policy_publication.py"
+      - "lib/intl_ecb_policy_source.py"
+      - "lib/intl_eurostat_publication.py"
+      - "lib/intl_eurostat_source.py"
+      - "lib/intl_feed_reader.py"
+      - "lib/intl_generation_publication.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_investigation_action.py"
+      - "lib/intl_investigation_action_mount.py"
+      - "lib/intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_library_retained.py"
+      - "lib/intl_policy_publication.py"
+      - "lib/intl_risk_publication.py"
+      - "lib/intl_yield_publication.py"
+      - "app/options_scenario_http_admission.py"
+      - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
