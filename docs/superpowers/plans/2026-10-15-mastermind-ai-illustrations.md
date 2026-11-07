@@ -18,3 +18,17 @@ Untrusted history must not expose other metadata or bypass spec checks. Source e
 - [ ] Review and delivery: consume existing Fabric contract review, repair blockers, run targeted regressions and design/asset guards, capture real-widget browser evidence. Commit/push using registered workspace fenced tools, open original PR, preserve genuine CI/review/release gates and verify live when admitted. Save current continuation in canonical Agent OS and PR; do not claim production from fixtures or a PR.
 
 Execution ownership: principal retains cross-owner integration and visual judgment (PRINCIPAL_JUDGMENT); bounded independent review delegated through installed M2 Fabric under the same original operation root. No background Web execution claim.
+
+## HM — Scenario matrices (Chairman extension, 2026-11-04)
+
+Spec: docs/superpowers/specs/2026-11-04-brain-scenario-illustrations.md. This is an additive extension on protected main after merged PR10069; it does not replace PR9447 or PR10208.
+
+- [x] HM1: persist contract; preserve original-root accounting and isolated source custody.
+- [ ] HM2: closed numeric heatmap and qualitative scenario_matrix compiler, schema and replay validation.
+- [ ] HM3: native responsive matrix renderer with accessible axes/cells, semantic legend, assumptions and exact-value disclosure.
+- [ ] HM4: teach the model template selection; prevent text-only illustrative matrices from evading current/historical data guards.
+- [x] HM4a: recognize heatmap/matrix presentation requests in Fast EN/ZH without widening upstream tool authorization; clarify explicitly requested financial teaching scope and qualify deterministic regressions. Actual model selection remains in HM6.
+- [ ] HM5: integrated shared-widget browser proof in both themes/languages, 1440/390 and 320 robustness; unchanged source/history/CSV semantics.
+- [ ] HM6: exact-head review/CI, normal protected release and served model-to-visual/history acceptance.
+
+Editorial labels are not runtime or production status. Initial source pin: affa0fd2e68723efc9e2cbc0e7c791ab70f5a53d. Existing accepted eleven-template and financial/math behavior is DO_NOT_REDO unless the extension invalidates it.
