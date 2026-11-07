@@ -22182,6 +22182,7 @@ jobs:
     # Local observations are metadata only; no provider call or state write.
     paths:
       - config.yml
+      - config/ai_pricing.yml
       - config/capability_manifest.yml
       - config/metabolism_budget.yml
       - config/synapse.yml
@@ -22193,9 +22194,11 @@ jobs:
       - engine/metabolism/__init__.py
       - engine/metabolism/budget_gate.py
       - engine/neuralweb/__init__.py
+      - engine/neuralweb/capability_broker.py
       - engine/neuralweb/envelope.py
       - engine/neuralweb/key_pool.py
       - engine/neuralweb/synapse.py
+      - engine/ollama_provider.py
       - engine/provider_capacity.py
       - engine/provider_health.py
       - lib/__init__.py
