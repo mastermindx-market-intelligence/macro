@@ -42272,7 +42272,7 @@ jobs:
             native_target="$fabric_fixture_root/$native_relative"
             mkdir -p "$(dirname "$native_target")"
             curl --fail --silent --show-error --proto '=https' --tlsv1.2 --max-time 45 \
-              "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/f4bd27d91468176ec2fbb0eb83946824f7c35185/$native_relative" \
+              "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/8af48bc164b89f380b9fcca0fd2726cf2e21ab61/$native_relative" \
               -o "$native_target"
           done
           MM_FABRIC_GATEWAY_SOURCE_ROOT="$fabric_fixture_root" python -m pytest \
