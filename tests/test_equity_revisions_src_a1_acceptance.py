@@ -190,3 +190,83 @@ def test_legacy_direct_client_keeps_coverage_separate_from_reviser_count(case, e
     assert result["breadth"] == (0.5 if case == "fallback_0y" else 1.0)
     assert result["n_covering"] == expected_covering
     assert result["breadth_cov"] == expected_cov
+
+
+@pytest.mark.parametrize("clock", ["2026-11-01T12:00:00Z", None])
+def test_lineage_preserves_stable_clock_ties_and_ignores_null_values(clock):
+    """The optimization must retain the exact predecessor, including null clocks."""
+    base = {column: None for column in revisions._OBSERVATION_COLUMNS}
+    base.update(provider="yfinance", provider_record_class="earnings_estimate",
+                ticker_compat="ACME", metric="EPS", horizon_label_raw="0q",
+                observation_type="average", value=10.0, unit="USD/share",
+                currency="USD", basis="GAAP", period_end="2026-12-31",
+                correction_state="original")
+    history = pd.DataFrame([
+        {**base, "observation_id": "tied-first", "system_observed_at": clock},
+        {**base, "observation_id": "older", "system_observed_at": "2026-10-01T00:00:00Z"},
+        {**base, "observation_id": "tied-last", "system_observed_at": clock, "value": 12.0},
+        {**base, "observation_id": "missing-value", "system_observed_at": None, "value": None},
+        {**base, "observation_id": "missing-key", "system_observed_at": None, "metric": None},
+        {**base, "observation_id": "other-ticker", "system_observed_at": None, "ticker_compat": "OTHER"},
+    ])
+    before = history.copy(deep=True)
+    rows = [{**base, "value": 13.0}, {**base, "value": 12.0}, {**base, "value": None}]
+    revisions._apply_lineage(rows, history)
+    assert rows[0]["correction_state"] == "supersedes"
+    assert rows[0]["supersedes_observation_id"] == "tied-last"
+    assert rows[1]["correction_state"] == "unchanged"
+    assert rows[1]["supersedes_observation_id"] is None
+    assert rows[2]["correction_state"] == "missing"
+    assert rows[2]["supersedes_observation_id"] is None
+    pd.testing.assert_frame_equal(history, before)
+
+
+def test_history_scan_count_does_not_grow_with_the_new_observation_batch(monkeypatch, tmp_path):
+    """Count full-history column scans, avoiding a hardware-sensitive time limit.
+
+    The incident performed one historical ID scan per incoming observation and
+    one full-history lineage filter per non-null observation. A larger batch
+    must not multiply either scan. Provider calls and output remain real owner
+    behavior over synthetic inputs; no provider network is used.
+    """
+    _collect(tmp_path, "prior-session", _SourceClient(_estimates("EPS"), _estimates("revenue")))
+    history = pd.read_parquet(tmp_path / "expectation_observations.parquet")
+    attempts = pd.read_parquet(tmp_path / "expectation_attempts.parquet")
+    before = history.copy(deep=True)
+    getitem = pd.DataFrame.__getitem__
+    scans = {"observation_id": 0, "provider": 0}
+
+    def counted(frame, key):
+        if frame is history and isinstance(key, str) and key in scans:
+            scans[key] += 1
+        return getitem(frame, key)
+
+    monkeypatch.setattr(pd.DataFrame, "__getitem__", counted)
+    monkeypatch.setattr(revisions, "_read_parquet",
+                        lambda path, columns: history if "observations" in path.name else attempts)
+    captured = {}
+    monkeypatch.setattr(revisions, "_write_parquet",
+                        lambda path, frame, columns: captured.update({path.name: frame.copy(deep=True)}))
+
+    def collect(size):
+        scans.update(observation_id=0, provider=0)
+        tickers = ["ACME", *[f"SYNTHETIC{i}" for i in range(size - 1)]]
+        result = revisions.accrue_expectation_observations(
+            tickers, output_dir=tmp_path, collection_session_id="next-session",
+            ticker_factory=lambda _: _SourceClient(_estimates("EPS"), _estimates("revenue")),
+        )
+        assert result == {"attempts": size, "observations": 14 * size}
+        output = captured["expectation_observations.parquet"]
+        pd.testing.assert_frame_equal(output.iloc[:len(history)].reset_index(drop=True), before)
+        current = output[output["collection_session_id"] == "next-session"]
+        assert set(current["ticker_compat"]) == set(tickers)
+        return dict(scans)
+
+    small, larger = collect(2), collect(8)
+    assert small == larger, (small, larger)
+    assert larger["observation_id"] <= 1
+    assert larger["provider"] <= 1
+    pd.testing.assert_frame_equal(history, before)
+
+
+
