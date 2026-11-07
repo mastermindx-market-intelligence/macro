@@ -918,9 +918,15 @@
   function remarkActive(links) {
     var here = (location.pathname.split('/').pop() || '').toLowerCase() || 'index.html';
     links.querySelectorAll('a.active').forEach(function (a) { a.classList.remove('active'); });
+    links.querySelectorAll('a[aria-current]').forEach(function (a) { a.removeAttribute('aria-current'); });
+    var currentMarked = false;
     links.querySelectorAll('a[href]').forEach(function (a) {
       if (fileOf(a) !== here) return;
       a.classList.add('active');
+      if (!currentMarked) {
+        a.setAttribute('aria-current', 'page');
+        currentMarked = true;
+      }
       var p = a.parentElement;
       while (p && p !== links) {
         if (p.classList && p.classList.contains('nav-dd')) {
@@ -1137,9 +1143,23 @@
       dd.setAttribute('data-nav-hover-safe', '1');
 
       var closeTimer = 0;
+      var suppressFocusOpen = false;
       var trigger = dd.querySelector(':scope > a.nav-link');
       var menu = dd.querySelector(':scope > .nav-dd-menu');
       if (!trigger || !menu) return;
+      trigger.setAttribute('aria-expanded', 'false');
+
+      function setExpanded(on) {
+        trigger.setAttribute('aria-expanded', on ? 'true' : 'false');
+      }
+      setExpanded(dd.classList.contains('open') || dd.classList.contains('nav-hover-open'));
+
+      function syncMobileExpanded() {
+        links.querySelectorAll(':scope > .nav-dd').forEach(function (owner) {
+          var t = owner.querySelector(':scope > a.nav-link');
+          if (t) t.setAttribute('aria-expanded', owner.classList.contains('open') ? 'true' : 'false');
+        });
+      }
 
       function canHover() {
         // A country node may be moved under International after this listener
@@ -1153,10 +1173,17 @@
       function openMenu() {
         if (!canHover()) {
           dd.classList.remove('nav-hover-open');
+          // Mobile accordions retain their open state while focus moves inside.
+          // Folded country drills keep their own expanded-state owner.
+          if (dd.parentElement === links) setExpanded(dd.classList.contains('open'));
           return;
         }
         window.clearTimeout(closeTimer);
+        links.querySelectorAll(':scope > .nav-dd > a.nav-link[aria-expanded="true"]').forEach(function (other) {
+          if (other !== trigger) other.setAttribute('aria-expanded', 'false');
+        });
         stage.open(dd);
+        setExpanded(true);
         // Publish AFTER opening: a display:none panel reports a zero rect, so
         // the gap can only be measured once the panel is actually rendered.
         measureGap();
@@ -1184,8 +1211,9 @@
       function closeMenuSoon() {
         window.clearTimeout(closeTimer);
         closeTimer = window.setTimeout(function () {
-          if (!dd.matches(':hover') && !dd.contains(document.activeElement)) {
+          if (canHover() && !dd.matches(':hover') && !dd.contains(document.activeElement)) {
             stage.close(dd);
+            setExpanded(false);
           }
         }, hoverGraceMs());
       }
@@ -1194,12 +1222,24 @@
       dd.addEventListener('pointerleave', closeMenuSoon);
       menu.addEventListener('pointerenter', openMenu);
       menu.addEventListener('pointerleave', closeMenuSoon);
-      dd.addEventListener('focusin', openMenu);
+      dd.addEventListener('focusin', function (e) {
+        if (suppressFocusOpen && e.target === trigger) return;
+        openMenu();
+      });
       dd.addEventListener('focusout', closeMenuSoon);
+      trigger.addEventListener('click', function () {
+        if (window.innerWidth > 900) return;
+        requestAnimationFrame(syncMobileExpanded);
+      });
       dd.addEventListener('keydown', function (e) {
-        if (e.key !== 'Escape') return;
+        if (e.key !== 'Escape' || !canHover()) return;
+        e.preventDefault();
         window.clearTimeout(closeTimer);
         stage.abort(dd);
+        setExpanded(false);
+        suppressFocusOpen = true;
+        try { trigger.focus({ preventScroll: true }); } catch (err) { trigger.focus(); }
+        requestAnimationFrame(function () { suppressFocusOpen = false; });
       });
     });
   }
