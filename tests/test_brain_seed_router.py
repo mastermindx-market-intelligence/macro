@@ -189,3 +189,55 @@ def test_plan_shows_at_most_three_tools(monkeypatch):
 def test_empty_message_never_raises():
     assert isinstance(gw._seed_tool_plan(""), str)
     assert isinstance(gw._seed_tool_plan(None), str)  # type: ignore[arg-type]
+
+
+# ── 7. Cross-domain Fast questions keep both evidence families ───────────────
+
+def test_single_name_plus_macro_rates_keeps_name_and_rates_in_visible_plan():
+    line = gw._seed_tool_plan("Why did NVDA move after CPI and the rate selloff?")
+    tools = line.split("start with ")[1].split(";")[0].split(", ")
+    assert "get_market_events" in tools
+    assert "get_symbol_context" in tools
+    assert "get_curve_detail" in tools
+    assert "query_spine" not in tools
+
+
+def test_portfolio_plus_options_keeps_portfolio_and_options_in_visible_plan():
+    line = gw._seed_tool_plan("How are options skew and gamma affecting my portfolio exposure?")
+    tools = line.split("start with ")[1].split(";")[0].split(", ")
+    assert "get_portfolio_brief" in tools
+    assert "read_options_entry_state" in tools
+    assert len(tools) <= 3
+
+
+def test_growth_rates_phrase_does_not_force_macro_curve_plan():
+    line = gw._seed_tool_plan("Why did NVDA move as revenue growth rates slowed?")
+    tools = line.split("start with ")[1].split(";")[0].split(", ")
+    assert tools == ["get_market_events", "get_symbol_context", "get_quote"]
+
+
+def test_fed_by_phrase_does_not_force_macro_curve_plan():
+    line = gw._seed_tool_plan("Why did NVDA move after demand was fed by AI spending?")
+    tools = line.split("start with ")[1].split(";")[0].split(", ")
+    assert tools == ["get_market_events", "get_symbol_context", "get_quote"]
+
+
+def test_adjective_first_rates_and_yields_keep_macro_curve_plan():
+    for question in (
+        "Why did NVDA move as rising rates hit growth stocks?",
+        "Why did NVDA move with higher rates pressuring duration?",
+        "Why did NVDA move as falling yields changed the tape?",
+    ):
+        line = gw._seed_tool_plan(question)
+        tools = line.split("start with ")[1].split(";")[0].split(", ")
+        assert "get_curve_detail" in tools, (question, tools)
+
+
+def test_inflected_fed_actions_keep_macro_curve_plan():
+    for question in (
+        "Why did NVDA move after the Fed hiked rates?",
+        "Why did NVDA move after the Fed raised rates?",
+    ):
+        line = gw._seed_tool_plan(question)
+        tools = line.split("start with ")[1].split(";")[0].split(", ")
+        assert "get_curve_detail" in tools, (question, tools)

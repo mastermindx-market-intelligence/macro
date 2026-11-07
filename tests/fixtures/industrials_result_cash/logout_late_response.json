@@ -1,0 +1,27 @@
+{
+  "synthetic": true,
+  "clients": [
+    {
+      "request": "industrial-flow-get",
+      "arrival": "2026-07-20T11:59:59Z",
+      "entitled": false,
+      "response_after_logout": true
+    },
+    {
+      "request": "generation-publish",
+      "arrival": "2026-07-20T12:00:01Z",
+      "entitled": false
+    }
+  ],
+  "expected": {
+    "late_get": "refused",
+    "post_logout_publication": "not_visible"
+  },
+  "sources": [
+    {
+      "url": "https://example.invalid/logout_late_response.json",
+      "mode": "synthetic",
+      "rights_state": "unknown"
+    }
+  ]
+}

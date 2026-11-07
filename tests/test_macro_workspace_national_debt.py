@@ -1050,3 +1050,107 @@ def test_builds_and_validates_with_the_real_bonds_desk_artifact() -> None:
     dumped = json.dumps(snap, ensure_ascii=False)
     if bonds_latest.get("verdict_en"):
         assert bonds_latest["verdict_en"] not in dumped
+
+
+# --------------------------------------------------------------------------- #
+# Treasury cash card: a move says what it does to bank reserves
+# --------------------------------------------------------------------------- #
+_TGA_RESERVES_EN = (
+    "When this balance rises, Treasury is pulling cash into its own "
+    "account and bank reserves fall. When it falls, Treasury is "
+    "spending it down and reserves rise."
+)
+_TGA_RESERVES_ZH = (
+    "余额上升时，财政部把现金抽入自有账户，银行准备金随之减少；"
+    "余额下降时，财政部花出这笔现金，银行准备金随之增加。"
+)
+_VIEW_ARTIFACT = {
+    "path": "x",
+    "sha256": "y",
+    "bytes": 1,
+    "manifest_path": "z",
+    "min_client_contract": "v1",
+}
+_T11_NATIONAL_DEBT = (
+    ROOT / "tests" / "fixtures" / "macro_suite_t11"
+    / "workspaces" / "national_debt_liabilities" / "US" / "latest.json"
+)
+
+
+def _view_row(snapshot: dict, metric_id: str) -> dict:
+    from lib import macro_suite_view
+
+    view = macro_suite_view.build_view(
+        snapshot, page_built_at=BUILT_AT, artifact=_VIEW_ARTIFACT,
+    )
+    return next(row for row in view["metrics"] if row["metric_id"] == metric_id)
+
+
+def _note_has_digit(note: dict) -> bool:
+    return any(ch.isdigit() for ch in note["en"] + note["zh"])
+
+
+def test_tga_reserves_note_appears_on_tga_level() -> None:
+    snap = _compose()
+    level = _metric(snap, "tga_level")
+    level["transformation"] = (
+        "A rising balance DRAINS reserves. "
+        "A falling balance INJECTS reserves."
+    )
+    note = _view_row(snap, "tga_level")["sample_note"]
+    assert note is not None
+    assert note["en"] == _TGA_RESERVES_EN
+    assert note["zh"] == _TGA_RESERVES_ZH
+    assert not _note_has_digit(note)
+
+
+def test_tga_reserves_note_stays_off_when_drains_is_missing() -> None:
+    snap = _compose()
+    level = _metric(snap, "tga_level")
+    level["transformation"] = level["transformation"].replace("DRAINS", "moves")
+    assert "DRAINS" not in level["transformation"]
+    assert "INJECTS" in level["transformation"]
+    assert _view_row(snap, "tga_level")["sample_note"] is None
+
+
+def test_tga_reserves_note_stays_off_when_injects_is_missing() -> None:
+    snap = _compose()
+    level = _metric(snap, "tga_level")
+    level["transformation"] = level["transformation"].replace("INJECTS", "adds")
+    assert "INJECTS" not in level["transformation"]
+    assert "DRAINS" in level["transformation"]
+    assert _view_row(snap, "tga_level")["sample_note"] is None
+
+
+def test_tga_reserves_note_stays_off_on_another_metric() -> None:
+    snap = _compose()
+    level = _metric(snap, "tga_level")
+    other = _metric(snap, "tga_impulse_4w")
+    other["transformation"] = level["transformation"]
+    assert "DRAINS" in other["transformation"]
+    assert "INJECTS" in other["transformation"]
+    assert _view_row(snap, "tga_impulse_4w")["sample_note"] is None
+
+
+def test_composed_fixture_tga_level_note_through_the_real_view() -> None:
+    snap = _compose()
+    text = _metric(snap, "tga_level")["transformation"]
+    assert isinstance(text, str)
+    assert "DRAINS" in text and "INJECTS" in text
+    note = _view_row(snap, "tga_level")["sample_note"]
+    assert note is not None
+    assert note["en"] == _TGA_RESERVES_EN
+    assert note["zh"] == _TGA_RESERVES_ZH
+    assert not _note_has_digit(note)
+
+
+def test_suite_fixture_tga_level_note_through_the_real_view() -> None:
+    snap = json.loads(_T11_NATIONAL_DEBT.read_text(encoding="utf-8"))
+    text = _metric(snap, "tga_level")["transformation"]
+    assert isinstance(text, str)
+    assert "DRAINS" in text and "INJECTS" in text
+    note = _view_row(snap, "tga_level")["sample_note"]
+    assert note is not None
+    assert note["en"] == _TGA_RESERVES_EN
+    assert note["zh"] == _TGA_RESERVES_ZH
+    assert not _note_has_digit(note)
