@@ -9316,6 +9316,71 @@ def test_s8_claim_ambiguity_also_blocks_zero_slot_reserve_without_a_new_claim():
     assert budget.repair_reserve_used == budget.refresh_attempts_used == 0
 
 
+def test_s8_zero_slot_reserve_fires_with_the_prepared_clean_lease_main_always_passes(
+    monkeypatch,
+):
+    """``main()`` always hands the budget a ``RefreshLease`` (never ``None``). The
+    0/0 reserve must still fire for the labelled repair when that lease is readable,
+    unowned and unclaimed; otherwise S8 would be dead in production while the
+    ``lease=None`` unit tests stayed green (round-3 review, M9)."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202,
+        main_commits=_STALE_MAIN, live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget(max_refreshes=0)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget.refresh_lease = lease
+    assert budget.repair_reserve_available(True, _repair_pull())
+    assert _sweep_stale(_repair_pull(), budget) == "re-proving"
+    updated = [c for c in calls if c[1].endswith("/update-branch")]
+    assert len(updated) == 1 and "/pulls/10759/" in updated[0][1]
+    # The reserve never writes the lease: no generation, no label, no claim.
+    assert not lease.claim_attempted
+    assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 1, 1)
+    # One reserve per sweep: a second labelled repair is deferred.
+    assert budget.take_refresh(_repair_pull(10760), repair_candidate=True) is False
+    assert budget.repair_reserve_used == 1
+
+
+def test_s8_unreadable_lease_denies_the_zero_slot_reserve_even_when_authorized():
+    """``main()`` already withholds authorization behind an unreadable lease; the
+    budget must refuse on its own too, so an out-of-band caller that authorizes
+    the reserve cannot write past a register it could not read (round-3, M3)."""
+    budget = _red_main_budget(max_refreshes=0)
+    budget.refresh_lease = MOG.RefreshLease("acme/widgets", "read", "write", readable=False)
+    assert not budget.repair_reserve_available(True, _repair_pull())
+    assert budget.take_refresh(_repair_pull(), repair_candidate=True) is False
+    assert budget.repair_reserve_used == budget.refresh_attempts_used == 0
+    assert not budget.last_take_used_reserve
+
+
+def test_s8_a_declined_claim_on_a_free_lease_never_falls_through_to_the_reserve(
+    monkeypatch,
+):
+    """Single-slot band, free lease, and ``claim()`` declines before any write
+    (here: this repair's generation was already released earlier in the same
+    sweep, i.e. it already had its one update). The pull is deferred; the reserve,
+    although itself still available, is not handed out as a second attempt for a
+    pull the lease just refused (round-3, M1)."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202,
+        main_commits=_STALE_MAIN, live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget(max_refreshes=1)
+    budget.requires_refresh_lease = True
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    lease.released_numbers.add(10759)
+    budget.refresh_lease = lease
+    assert budget.repair_reserve_available(True, _repair_pull())
+    assert _sweep_stale(_repair_pull(), budget) == "refresh-deferred"
+    assert not lease.claim_attempted
+    assert not [c for c in calls if c[1].endswith("/update-branch")]
+    assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 0, 0)
+    assert not budget.last_take_used_reserve
+
+
 @pytest.mark.parametrize("stale", ["missing-generation", "changed-generation", "expired-owner"])
 def test_s8_foreign_owner_requires_current_generation_before_reserved_refresh(
     monkeypatch, stale

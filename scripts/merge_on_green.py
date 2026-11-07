@@ -4366,9 +4366,13 @@ class SweepBudget:
         and still inside ``refresh_authorized`` and the bounded attempt budget. The
         reserve does not claim the durable lease: it is at most one extra CI run per
         sweep for one labelled pull (a definitive no-op refunds it), and the sweep
-        itself is serialized by refresh authority. In the single-slot band the same
-        fallback applies when another pull holds the durable lease: a foreign lease
-        must not starve the repair any more than a saturated census may.
+        itself is serialized by refresh authority. In the single-slot band the
+        reserve is reached only when another pull holds the durable lease, and
+        then only after ``repair_reserve_available`` authenticates that owner: a
+        complete generation record, younger than the lease max age, that the
+        register still affirms on a fresh read. A free lease is claimed, never
+        bypassed: a claim that declines or fails (possibly EFFECT_UNKNOWN) defers
+        the pull for this sweep instead of falling through to the reserve.
         """
         self.last_take_used_reserve = False
         if (
@@ -4411,7 +4415,8 @@ class SweepBudget:
     ) -> bool:
         """The red-baseline repair gets one reserve only without an uncertain
         lease effect. A foreign owner must have a complete, current generation;
-        a failed claim, same-owner reuse or unreadable record never qualifies."""
+        any lease claim attempted this sweep (failed, ambiguous or successful, by
+        any pull), same-owner reuse or an unreadable record never qualifies."""
         if not (
             repair_candidate
             and self.repair_reserve_authorized
