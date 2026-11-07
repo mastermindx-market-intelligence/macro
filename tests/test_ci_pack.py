@@ -5318,6 +5318,8 @@ CURATED_EXCLUSIVE = {
     # exact 55-file non-wildcard import closure plus the eight Jinja templates the
     # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
     "global-liquidity-transmission",
+    # Options scenario contract: keep the ordinary code job explicitly scoped.
+    "options-scenario-contract",
 }
 
 

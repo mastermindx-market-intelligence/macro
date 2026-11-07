@@ -52201,3 +52201,30 @@ jobs:
       # nightly or wire data commit can move this verdict.
       - name: GDELT client + both news leaves — query bounds, structural rejection, cache fences
         run: python -m pytest tests/test_gdelt_client.py tests/test_macro_news.py tests/test_news_vector.py -q
+
+  options-scenario-contract:
+    # The existing flow-surface gate:data job does not run for ordinary code
+    # PRs. Keep the scenario contract and M02 endpoint regressions on gate:code
+    # as well; use synthetic inputs and the existing CLI's stdout projection.
+    if: ${{ false }}  # executed inside ci-pack, not as a standalone runner
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/intraday_greeks.py"
+      - "engine/options_scenario_surface.py"
+      - "scripts/__init__.py"
+      - "scripts/build_options_scenario_surface.py"
+      - "tests/__init__.py"
+      - "tests/test_options_scenario_surface.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install scenario contract dependencies
+        run: pip install pytest numpy scipy
+      - name: conditional scenario and hedge-target contract regressions
+        run: python -m pytest tests/test_options_scenario_surface.py -q
