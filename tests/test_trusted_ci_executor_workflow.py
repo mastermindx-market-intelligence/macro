@@ -16,6 +16,13 @@ MAIN_CONTROL_FILES = {
     "__init__.py",
     "run_ci_pack.py",
     "ci_semantic_proof.py",
+    "ci_browser_dependency_inputs.py",
+    "ci_browser_dependency_capture.py",
+    "ci_apt_cold_acquisition.py",
+    "ci_apt_native_plan.py",
+    "ci_apt_native_stage.py",
+    "ci_apt_transaction_contract.py",
+    "ci_browser_native_setup.py",
     "ci_authority_paths.py",
     "ci_scope_dependencies.py",
     "audit_unrun_tests.py",
@@ -26,6 +33,21 @@ MAIN_CONTROL_FILES = {
     "capture_ci_canary_receipt.py",
 }
 CONTROL_REPO_ROOT_ENV = "MASTERMIND_TRUSTED_CI_REPO_ROOT"
+# The names a ci-pack step exports for its OWN plan. The same list, and its
+# history, is tests/test_ci_pack.py::_isolate_pack_runner_planner_env.
+PACK_PLANNER_ENV = frozenset(
+    {
+        "CI_CHANGED_FILES_FILE",
+        "CI_CHANGED_FILES_JSON",
+        "CI_SCOPE_MODE",
+        "CI_DYNAMIC_MATRIX_MODE",
+        "GITHUB_EVENT_NAME",
+        "CI_SEMANTIC_ROLE",
+        "CI_TESTED_TREE_SHA",
+        "CI_SUBJECT_HEAD_SHA",
+        "CI_BASE_SHA",
+    }
+)
 CONTROL_SPARSE_PATHS = {f"scripts/{filename}" for filename in MAIN_CONTROL_FILES}
 CANDIDATE_SPARSE_PATTERNS = (
     "/*",
@@ -91,6 +113,7 @@ def run_trusted_gate(
         "EVENT_HEAD_SHA": "d" * 40,
         "EVENT_HEAD_REF": "feature/event-frozen",
         "DISPATCH_PR_NUMBER": "",
+        "REQUESTED_ROUTE": "hosted",
     }
     environment.update(overrides)
     result = subprocess.run(
@@ -136,6 +159,7 @@ def test_p3bb_executor_stays_call_capable_after_production_route_activation() ->
         "event_base_sha": "${{ steps.admit.outputs.event_base_sha }}",
         "event_head_sha": "${{ steps.admit.outputs.event_head_sha }}",
         "event_head_ref": "${{ steps.admit.outputs.event_head_ref }}",
+        "execution_route": "${{ steps.admit.outputs.execution_route }}",
     }
     gate = trusted_gate_step()
     assert gate["id"] == "admit"
@@ -154,6 +178,7 @@ def test_p3bb_executor_stays_call_capable_after_production_route_activation() ->
         "EVENT_HEAD_SHA": "${{ github.event.pull_request.head.sha }}",
         "EVENT_HEAD_REF": "${{ github.event.pull_request.head.ref }}",
         "DISPATCH_PR_NUMBER": "${{ inputs.pr_number }}",
+        "REQUESTED_ROUTE": "${{ vars.CI_EXECUTION_ROUTE }}",
     }
 
     production = workflow("ci.yml")
@@ -181,6 +206,7 @@ def test_p3ba_accepts_exact_main_called_same_repo_pr_and_derives_identity(
         "event_base_sha": "c" * 40,
         "event_head_sha": "d" * 40,
         "event_head_ref": "feature/event-frozen",
+        "execution_route": "hosted",
     }
 
 
@@ -217,7 +243,33 @@ def test_p3ba_keeps_the_direct_main_dispatch_canary(tmp_path: Path) -> None:
         "event_base_sha": "",
         "event_head_sha": "",
         "event_head_ref": "",
+        "execution_route": "pc",
     }
+
+
+def test_p3ba_repository_route_pc_keeps_same_repo_calls_on_pc(tmp_path: Path) -> None:
+    result, outputs = run_trusted_gate(tmp_path, REQUESTED_ROUTE="pc")
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert outputs == {
+        "control_sha": "a" * 40,
+        "pr_number": "6390",
+        "mode": "production",
+        "semantic_workflow": "ci",
+        "event_tested_sha": "b" * 40,
+        "event_base_sha": "c" * 40,
+        "event_head_sha": "d" * 40,
+        "event_head_ref": "feature/event-frozen",
+        "execution_route": "pc",
+    }
+
+
+def test_p3ba_unknown_or_empty_repository_route_fails_safe_to_hosted(
+    tmp_path: Path,
+) -> None:
+    for route in ("", "hosted", "unexpected"):
+        result, outputs = run_trusted_gate(tmp_path, REQUESTED_ROUTE=route)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert outputs["execution_route"] == "hosted"
 
 
 @pytest.mark.parametrize(
@@ -300,6 +352,7 @@ def test_p3ba_planner_uses_main_control_and_routes_one_or_all_exact_pr_packs() -
     assert "resolve_ci_canary_ref.py" in resolve["run"]
     assert '--github-sha "${{ needs.trust-gate.outputs.control_sha }}"' in resolve["run"]
     assert '--pr-number "${{ needs.trust-gate.outputs.pr_number }}"' in resolve["run"]
+    assert '--mode "${{ needs.trust-gate.outputs.mode }}"' in resolve["run"]
     assert resolve["env"] == {
         "GITHUB_TOKEN": "${{ github.token }}",
         "EVENT_TESTED_SHA": "${{ needs.trust-gate.outputs.event_tested_sha }}",
@@ -340,8 +393,45 @@ def test_p3ba_planner_uses_main_control_and_routes_one_or_all_exact_pr_packs() -
     assert "--count 1" in selector["run"]
     assert "matrix=$FULL_MATRIX" in selector["run"]
 
+    assert plan["outputs"]["execution_route"] == (
+        "${{ needs.trust-gate.outputs.execution_route }}"
+    )
+
     trusted_pack = document["jobs"]["trusted-pack"]
     assert trusted_pack["strategy"]["max-parallel"] == 3
+    assert trusted_pack["if"] == "needs.plan.outputs.execution_route == 'pc'"
+    assert trusted_pack["runs-on"] == {
+        "group": "macro-home-canary",
+        "labels": "ci-linux",
+    }
+
+    hosted_pack = document["jobs"]["legacy-hosted-pack"]
+    assert hosted_pack["needs"] == "plan"
+    assert hosted_pack["if"] == "needs.plan.outputs.execution_route == 'hosted'"
+    assert hosted_pack["runs-on"] == "ubuntu-latest"
+    assert "max-parallel" not in hosted_pack["strategy"]
+    assert hosted_pack["strategy"]["matrix"] == (
+        "${{ fromJSON(needs.plan.outputs.matrix) }}"
+    )
+    execute = next(
+        step
+        for step in hosted_pack["steps"]
+        if step.get("name")
+        == "execute the frozen logical pack and retain its semantic result"
+    )
+    assert (
+        '"$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py"'
+        in execute["run"]
+    )
+    assert "--base-replay-budget-seconds 900" in execute["run"]
+    assert "semantic_pack_rc=$pack_rc" in execute["run"]
+    assert "exit $pack_rc" not in execute["run"]
+    upload = next(
+        step
+        for step in hosted_pack["steps"]
+        if step.get("name") == "publish the legacy caller semantic fragment"
+    )
+    assert upload["with"]["name"] == "trusted-ci-fragment-${{ matrix.pack }}"
 
 
 def test_p4_hosted_planner_avoids_full_tree_materialization_without_narrowing_semantics() -> None:
@@ -470,6 +560,32 @@ def test_p3ar_freezes_and_transports_the_complete_main_owned_control_bundle() ->
     assert "$RUNNER_TEMP/trusted-ci-control/scripts/monitor_ci_host_resources.py" in execute
 
 
+LEGACY_JOBS_MANIFEST = ROOT / ".github" / "ci" / "legacy-jobs.yml"
+
+
+def _declared_code_gate_job_count() -> int:
+    """Count the manifest's ``gate: code`` jobs by reading the YAML directly.
+
+    The bundle test below asserts that the frozen control bundle validated
+    EVERY merge-gate job, not a subset — so it needs the expected count. That
+    count used to be a literal (132, pinned 2026-08-26 on #6351) and rotted
+    to a red every time a code-gated job was added to the manifest; nine
+    landed between the pin and 2026-09-15 (last: #7164) with nothing on a PR
+    to say so, because this suite's only home was then the ``gate: data`` job
+    ``workflow-yaml`` (it runs in ``ci-control-plane-contracts``, on the code
+    gate, since 2026-09-25). The count is derived here from the manifest so the
+    assertion tracks the tree, and it is derived WITHOUT importing
+    ``scripts.run_ci_pack`` on purpose: reusing the module under test's own
+    ``load_legacy_jobs(gate="code")`` would make the check tautological. The
+    default mirrors ``run_ci_pack.py``'s documented rule — an absent ``gate``
+    is code, so nothing can leave the merge gate silently.
+    """
+    document = yaml.safe_load(LEGACY_JOBS_MANIFEST.read_text(encoding="utf-8"))
+    jobs = document["jobs"]
+    assert isinstance(jobs, dict) and jobs, "legacy manifest carries no jobs"
+    return sum(1 for job in jobs.values() if (job or {}).get("gate", "code") == "code")
+
+
 def test_p3ar_control_bundle_imports_without_candidate_control_modules(
     tmp_path: Path,
 ) -> None:
@@ -478,7 +594,17 @@ def test_p3ar_control_bundle_imports_without_candidate_control_modules(
     for filename in MAIN_CONTROL_FILES:
         (control_scripts / filename).write_bytes((ROOT / "scripts" / filename).read_bytes())
 
-    environment = dict(os.environ)
+    # The child below plans. Inside a PR ci-pack step the ambient environment
+    # carries that pack's own plan: CI_CHANGED_FILES_FILE plus
+    # GITHUB_EVENT_NAME=pull_request make run_ci_pack.py plan as a PR head, and
+    # with no --changed-from it refuses ("PR semantic plan changed_from must
+    # equal exact base_sha"). That red was PR #8033 ci-pack-0, job 108193042443,
+    # the first time this suite ran on the PR code gate. What the bundle
+    # imports does not depend on which lane runs the test, so the child plans
+    # with the pack's plan identity removed.
+    environment = {
+        key: value for key, value in os.environ.items() if key not in PACK_PLANNER_ENV
+    }
     environment["PYTHONPATH"] = str(control_scripts.parent)
     environment[CONTROL_REPO_ROOT_ENV] = str(ROOT)
     root_probe = subprocess.run(
@@ -517,7 +643,12 @@ def test_p3ar_control_bundle_imports_without_candidate_control_modules(
         check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "Validated 132 legacy jobs" in result.stdout
+    expected = _declared_code_gate_job_count()
+    assert expected > 0
+    assert f"Validated {expected} legacy jobs" in result.stdout, (
+        f"the frozen control bundle did not validate every gate: code job "
+        f"(expected {expected}); stdout was:\n{result.stdout}"
+    )
 
 
 def test_p3a_selfhosted_job_uses_the_selected_group_and_negotiated_cache() -> None:
@@ -655,6 +786,7 @@ def test_p0_event_frozen_resolver_preserves_original_merge_sha_without_live_ref(
         "d" * 40,
         6390,
         "",
+        mode="production",
         event_tested_sha=tested_sha,
         event_base_sha=base_sha,
         event_head_sha=head_sha,
@@ -669,6 +801,7 @@ def test_p0_event_frozen_resolver_preserves_original_merge_sha_without_live_ref(
         "head_sha": head_sha,
         "head_ref": "feature/event-frozen",
         "contamination_sha": base_sha,
+        "event_base_sha": base_sha,
     }
     assert all("refs/pull/" not in " ".join(call) for call in calls)
 
@@ -678,8 +811,9 @@ def test_p0_event_frozen_resolver_preserves_original_merge_sha_without_live_ref(
     [
         ("{tested} {head}", "exactly two parents"),
         ("{tested} {base} {head} {extra}", "exactly two parents"),
-        ("{tested} {wrong} {head}", "ordered parents"),
-        ("{tested} {base} {wrong}", "ordered parents"),
+        ("{tested} bad-parent {head}", "exact lowercase"),
+        ("{tested} {head} {base}", "frozen event head"),
+        ("{tested} {base} {wrong}", "frozen event head"),
     ],
 )
 def test_p0_event_frozen_resolver_refuses_invalid_commit_shape_without_fallback(
@@ -715,6 +849,7 @@ def test_p0_event_frozen_resolver_refuses_invalid_commit_shape_without_fallback(
             "f" * 40,
             6390,
             "",
+            mode="production",
             event_tested_sha=tested_sha,
             event_base_sha=base_sha,
             event_head_sha=head_sha,
@@ -736,6 +871,7 @@ def test_p0_event_frozen_resolver_refuses_unavailable_or_malformed_event_identit
             "f" * 40,
             6390,
             "",
+            mode="production",
             event_tested_sha="A" * 40,
             event_base_sha=base_sha,
             event_head_sha=head_sha,
@@ -756,6 +892,7 @@ def test_p0_event_frozen_resolver_refuses_unavailable_or_malformed_event_identit
             "f" * 40,
             6390,
             "",
+            mode="production",
             event_tested_sha="a" * 40,
             event_base_sha=base_sha,
             event_head_sha=head_sha,
@@ -787,6 +924,7 @@ def test_p0_event_frozen_resolver_rejects_invalid_nonempty_head_ref_before_fetch
             "f" * 40,
             6390,
             "",
+            mode="production",
             event_tested_sha="a" * 40,
             event_base_sha="b" * 40,
             event_head_sha="c" * 40,
@@ -837,3 +975,251 @@ def test_p0_direct_dispatch_retains_live_pr_resolution(
     )
     assert values["source_kind"] == "same-repository-pr-merge"
     assert values["tested_ref"] == "refs/pull/6390/merge"
+
+
+def _real_event_merge(tmp_path: Path):
+    """Real local Git objects; the advertised PR ref moves after the event."""
+    repository = tmp_path / "event-repository"
+    repository.mkdir()
+    environment = {
+        **os.environ,
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": os.devnull,
+    }
+
+    def git(*args: str, input_text: str | None = None) -> str:
+        result = subprocess.run(
+            ["git", *args], cwd=repository, env=environment,
+            input=input_text, text=True, capture_output=True, check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        return result.stdout.strip()
+
+    git("init")
+    git("config", "user.name", "CI identity fixture")
+    git("config", "user.email", "ci-identity@example.invalid")
+    git("config", "commit.gpgsign", "false")
+    (repository / "basis.txt").write_text("initial base\n", encoding="utf-8")
+    git("add", ".")
+    git("commit", "-m", "initial base")
+    trigger_base = git("rev-parse", "HEAD")
+    (repository / "basis.txt").write_text("actual tested base\n", encoding="utf-8")
+    git("commit", "-am", "advance main")
+    tested_base = git("rev-parse", "HEAD")
+    git("checkout", "-b", "feature/event-frozen", trigger_base)
+    (repository / "candidate.txt").write_text("candidate\n", encoding="utf-8")
+    git("add", ".")
+    git("commit", "-m", "candidate")
+    head = git("rev-parse", "HEAD")
+    git("checkout", "--detach", tested_base)
+    git("merge", "--no-ff", "--no-edit", head)
+    event = git("rev-parse", "HEAD")
+    later = git(
+        "commit-tree", git("rev-parse", "HEAD^{tree}"),
+        "-p", tested_base, "-p", head, input_text="later synthetic merge\n",
+    )
+    assert later != event
+    git("update-ref", "refs/pull/6390/merge", later)
+    git("remote", "add", "origin", str(repository))
+    return repository, git, trigger_base, tested_base, head, event, later
+
+
+def _run_actual_caller_identity(
+    repository: Path, tmp_path: Path, tested_sha: str, head_sha: str,
+    trigger_base: str,
+) -> tuple[subprocess.CompletedProcess[str], dict[str, str]]:
+    step = next(
+        step for step in workflow("ci.yml")["jobs"]["ci-plan"]["steps"]
+        if step.get("id") == "identity"
+    )
+    output = tmp_path / "caller-identity-output"
+    result = subprocess.run(
+        ["bash", "-c", step["run"]], cwd=repository,
+        env={
+            **os.environ,
+            "EVENT_NAME": "pull_request",
+            "GITHUB_SHA": tested_sha,
+            "EVENT_HEAD_SHA": head_sha,
+            "EVENT_BASE_SHA": trigger_base,
+            "EXPECTED_DISPATCH_SHA": "",
+            "GITHUB_RUN_ID": "6765",
+            "GITHUB_RUN_ATTEMPT": "1",
+            "GITHUB_OUTPUT": str(output),
+        },
+        text=True, capture_output=True, check=False,
+    )
+    values = {}
+    if output.exists():
+        values = dict(
+            line.split("=", 1)
+            for line in output.read_text(encoding="utf-8").splitlines()
+        )
+    return result, values
+
+
+@pytest.mark.parametrize("stale_trigger_base", [False, True])
+def test_p0_actual_caller_and_trusted_resolver_share_frozen_commit_and_parent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, stale_trigger_base: bool,
+) -> None:
+    repository, real_git, old_base, tested_base, head, event, later = _real_event_merge(
+        tmp_path
+    )
+    trigger_base = old_base if stale_trigger_base else tested_base
+    caller, caller_values = _run_actual_caller_identity(
+        repository, tmp_path, event, head, trigger_base
+    )
+    assert caller.returncode == 0, caller.stdout + caller.stderr
+    resolver = _resolver_module()
+    calls = []
+
+    def git(*args: str) -> str:
+        calls.append(args)
+        if args[0] == "fetch":
+            assert args == (
+                "fetch", "--no-tags", "origin",
+                f"+{event}:refs/ci-canary/event/6390/merge",
+            )
+        return real_git(*args)
+
+    def no_live_lookup(*args: object, **kwargs: object) -> object:
+        raise AssertionError("production proof consulted mutable PR state")
+
+    monkeypatch.setattr(resolver, "git", git)
+    monkeypatch.setattr(resolver, "pull_request", no_live_lookup)
+    trusted = resolver.resolve(
+        "mastermindx-market-intelligence/macro", "f" * 40, 6390, "",
+        mode="production",
+        event_tested_sha=event, event_base_sha=trigger_base,
+        event_head_sha=head, event_head_ref="feature/event-frozen",
+    )
+    assert caller_values["tested_tree_sha"] == trusted["tested_sha"] == event
+    assert caller_values["subject_head_sha"] == trusted["head_sha"] == head
+    assert caller_values["tested_base_sha"] == trusted["base_sha"] == tested_base
+    assert trusted["contamination_sha"] == tested_base
+    assert trusted["event_base_sha"] == trigger_base
+    assert trusted["tested_sha"] != later
+    assert all("refs/pull/" not in " ".join(call) for call in calls)
+
+
+@pytest.mark.parametrize("invalid_identity", ["non_merge", "wrong_head"])
+def test_p0_actual_caller_and_trusted_resolver_both_refuse_invalid_identity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, invalid_identity: str,
+) -> None:
+    repository, real_git, old_base, tested_base, head, event, _ = _real_event_merge(
+        tmp_path
+    )
+    tested = tested_base if invalid_identity == "non_merge" else event
+    subject = "e" * 40 if invalid_identity == "wrong_head" else head
+    real_git("checkout", "--detach", tested)
+    caller, values = _run_actual_caller_identity(
+        repository, tmp_path, tested, subject, old_base
+    )
+    assert caller.returncode != 0
+    assert values == {}
+    resolver = _resolver_module()
+    monkeypatch.setattr(resolver, "git", real_git)
+
+    def no_live_lookup(*args: object, **kwargs: object) -> object:
+        raise AssertionError("invalid production identity consulted live PR state")
+
+    monkeypatch.setattr(resolver, "pull_request", no_live_lookup)
+    with pytest.raises(resolver.ResolutionError):
+        resolver.resolve(
+            "mastermindx-market-intelligence/macro", "f" * 40, 6390, "",
+            mode="production",
+            event_tested_sha=tested, event_base_sha=old_base,
+            event_head_sha=subject, event_head_ref="feature/event-frozen",
+        )
+
+
+@pytest.mark.parametrize(
+    "missing", ["all", "event_tested_sha", "event_base_sha", "event_head_sha", "event_head_ref"]
+)
+@pytest.mark.parametrize("pr_number", [0, 6390])
+def test_p0_missing_production_identity_never_falls_back_to_main_or_live_pr(
+    monkeypatch: pytest.MonkeyPatch, missing: str, pr_number: int,
+) -> None:
+    resolver = _resolver_module()
+
+    def no_resolution(*args: object, **kwargs: object) -> object:
+        raise AssertionError("missing production identity reached another resolver")
+
+    monkeypatch.setattr(resolver, "git", no_resolution)
+    monkeypatch.setattr(resolver, "pull_request", no_resolution)
+    identity = {
+        "event_tested_sha": "a" * 40,
+        "event_base_sha": "b" * 40,
+        "event_head_sha": "c" * 40,
+        "event_head_ref": "feature/event-frozen",
+    }
+    for key in identity:
+        if missing == "all" or key == missing:
+            identity[key] = ""
+    with pytest.raises(resolver.ResolutionError, match="production identity requires"):
+        resolver.resolve(
+            "mastermindx-market-intelligence/macro", "f" * 40, pr_number, "token",
+            mode="production", **identity,
+        )
+
+
+def test_p0_substituted_fetched_event_commit_refuses_without_live_lookup(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    resolver = _resolver_module()
+    calls = []
+
+    def git(*args: str) -> str:
+        calls.append(args)
+        if args[0] == "check-ref-format":
+            return "feature/event-frozen"
+        if args[0] == "fetch":
+            assert args[3] == f"+{'a' * 40}:refs/ci-canary/event/6390/merge"
+            return ""
+        if args[0] == "rev-parse":
+            return "e" * 40
+        raise AssertionError("substituted commit was inspected or accepted")
+
+    monkeypatch.setattr(resolver, "git", git)
+    with pytest.raises(resolver.ResolutionError, match="does not match the frozen event SHA"):
+        resolver.resolve(
+            "mastermindx-market-intelligence/macro", "f" * 40, 6390, "",
+            mode="production",
+            event_tested_sha="a" * 40, event_base_sha="b" * 40,
+            event_head_sha="c" * 40, event_head_ref="feature/event-frozen",
+        )
+    assert all("refs/pull/" not in " ".join(call) for call in calls)
+
+
+@pytest.mark.parametrize("mode", ["", "unknown"])
+def test_p0_unknown_resolver_mode_refuses_before_any_lookup(
+    monkeypatch: pytest.MonkeyPatch, mode: str,
+) -> None:
+    resolver = _resolver_module()
+
+    def no_resolution(*args: object, **kwargs: object) -> object:
+        raise AssertionError("unknown mode attempted resolution")
+
+    monkeypatch.setattr(resolver, "git", no_resolution)
+    monkeypatch.setattr(resolver, "pull_request", no_resolution)
+    with pytest.raises(resolver.ResolutionError, match="resolver mode"):
+        resolver.resolve(
+            "mastermindx-market-intelligence/macro", "f" * 40, 6390, "token", mode=mode
+        )
+
+
+def test_p0_direct_dispatch_cannot_silently_select_production_identity(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    resolver = _resolver_module()
+
+    def no_resolution(*args: object, **kwargs: object) -> object:
+        raise AssertionError("mixed resolver modes attempted resolution")
+
+    monkeypatch.setattr(resolver, "git", no_resolution)
+    monkeypatch.setattr(resolver, "pull_request", no_resolution)
+    with pytest.raises(resolver.ResolutionError, match="direct dispatch"):
+        resolver.resolve(
+            "mastermindx-market-intelligence/macro", "f" * 40, 6390, "token",
+            event_tested_sha="a" * 40, event_base_sha="b" * 40,
+            event_head_sha="c" * 40, event_head_ref="feature/event-frozen",
+        )

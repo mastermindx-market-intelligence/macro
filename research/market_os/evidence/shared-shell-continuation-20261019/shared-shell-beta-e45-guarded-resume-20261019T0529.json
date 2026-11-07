@@ -1,0 +1,14 @@
+{
+  "completed_at": "2026-10-19T05:31:00.233203+00:00",
+  "exit_code": 1,
+  "log_bytes": 89,
+  "log_path": "/tmp/shared-shell-beta-e45-guarded-resume-20261019T0529.log",
+  "log_sha256": "648c6f75097064c7bd2a53101483b10143adb0939b84114109f0d92958b38048",
+  "owner_invoked": false,
+  "public_beta_acceptance_claimed": false,
+  "reason": "Extra pre-entry guard incorrectly treated the permanent empty lock directory as an active hold; exact owner source uses lock/hold.",
+  "ssh_pid": 13491,
+  "started_at": "2026-10-19T05:30:58.321426+00:00",
+  "status": "GUARD_REFUSED_BEFORE_OWNER",
+  "target": "e45bde2cac07ac3b29285ff70c40d68900fad62c"
+}

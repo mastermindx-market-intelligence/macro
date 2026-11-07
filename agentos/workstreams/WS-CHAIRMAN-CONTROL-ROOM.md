@@ -45,16 +45,32 @@ waves:
     status: in_progress
     depends_on: [P0A]
     next_action: >
-      Chairman intent on 2026-08-25 resumes P0B from the current merged fixed-port substrate, not
-      from the obsolete 501/bearer failure boundary. Preserve the three-seat enrollment and the
-      already-provisioned stopped disposable profile. On the Chairman host, require action-time
-      native credential confirmation through the existing secret-owning Keychain helper, then run
-      the exact `configure-canary-port --vendor multilogin` path from current protected Mastermind.
-      Only EXACT_CONFIGURED may continue; EFFECT_UNKNOWN, unsupported or drifted state stops for
-      reconciliation with no blind retry. After exact configuration, run exactly one disposable
-      `run-canary --vendor multilogin` and return its redacted C0-C10 + cleanup receipt to Sol before
-      any real-seat operation. Programmatic OS-window foreground remains a separate completion gate;
-      no Chairman seat may be touched by this disposable proof.
+      Records qualification 2026-11-05: preserve Mastermind #396 as historical Realm1-C1 source.
+      The strict census repair is already protected by #435 merge
+      0cdcd1ef260a23cc127b0998c4e455c9d8f5aa06 (2026-09-05); issue #432 is closed/completed.
+      Its canonical census owner is integrations/chairman_surfaces/chatgpt.py, verified at
+      protected Mastermind 5fbcbffe77a06e41bc590fa09d12a7e2baefb4f7. Do not repeat the former
+      five-path/path-widening wait or treat the subsequent six-path-not-started snapshot as current.
+      The September receipts for profile_A, profile_B, #359 and H2 remain dated evidence:
+      source merge proves no present host/profile/account, foreground, installation or callback
+      acceptance. Reconcile the existing P0B owner's actual current continuation and exact effects
+      before any separately authorized action; never revive the terminal September profile child
+      or infer current absence from its old PRE_START/effect=NONE receipt.
+      This two-record #6816 correction performs no host, provider, credential, profile, account,
+      browser, runtime or installation action. Preserve the noncircular downstream gates and
+      adverse evidence; SC1 and the separate R2 acceptance contract retain their existing scope.
+  - id: SC1
+    title: Sessionless Sol continuity — durable checkpoint, orphan recovery and fresh-chat resume
+    status: in_progress
+    depends_on: [H0]
+    next_action: >
+      S4: #2174/#2178/#2179 merged. Qualify #2188 CI/integration, then native consumer #2195.
+      Keep context disabled until host/mission admission. Prove mission/frontier/pending effects
+      through steering/restart and recipient-to-original-parent consumption on two admitted
+      mixed-provider hosts. Caller targets are empty. Preserve #1318 inspection, #1958 installation,
+      #2172/#2189/#2195 native-action denials and terminal MiniMax; exact receipts are in the dated
+      visibility handoff. Retain #647/#651/#836 specific review/release holds; then wire R8 recovery
+      and bounded continuation into Control Room through Web-Sol, RuntimeBinding and Capacity.
   - id: ASD-F0
     title: Active-Session Dialogue architecture and authority freeze
     status: done
@@ -106,7 +122,10 @@ discoveries:
   - DSC:ASD-MODEL-VISIBLE-SETTINGS-CAN-EXPOSE-LIVE-CREDENTIALS
   - DSC:CCR-SECURITY-CLI-PROMPT-TRUNCATES-LONG-MULTILOGIN-TOKEN
   - DSC:CCR-MULTILOGIN-CLOUD-SEARCH-501-BLOCKS-NONSEAT-CANARY
+  - DSC:CCR-BOUNDED-CONTINUATION-EXPOSED-STALE-FRONTIER
 artifacts:
+  - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-11-06-chatgpt-session-visibility.md
+  - https://github.com/mastermindx-market-intelligence/Mastermind/blob/50adff1969d1b0d2b43d6d99bfff62ccb148faa4/docs/superpowers/plans/2026-11-06-chatgpt-session-observability.md
   - agentos/decisions/DEC-CHAIRMAN-CONTROL-ROOM-P0-ARCHITECTURE-ACCEPTED.md
   - agentos/decisions/DEC-CHAIRMAN-CONTROL-ROOM-ACTIVE-SESSION-DIALOGUE-F0-ACCEPTED.md
   - agentos/decisions/DEC-CCR-P0B-AUTOMATION-OWNED-NONSEAT-CANARY-ONLY.md
@@ -115,6 +134,7 @@ artifacts:
   - agentos/discoveries/DSC-ASD-MODEL-VISIBLE-SETTINGS-CAN-EXPOSE-LIVE-CREDENTIALS.md
   - agentos/discoveries/DSC-CCR-SECURITY-CLI-PROMPT-TRUNCATES-LONG-MULTILOGIN-TOKEN.md
   - agentos/discoveries/DSC-CCR-MULTILOGIN-CLOUD-SEARCH-501-BLOCKS-NONSEAT-CANARY.md
+  - agentos/discoveries/DSC-CCR-BOUNDED-CONTINUATION-EXPOSED-STALE-FRONTIER.md
   - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-22-sol-architecture.md
   - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-22-h0-release.md
   - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-22-active-session-dialogue-f0.md
@@ -124,6 +144,7 @@ artifacts:
   - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-24-mas115-live-canary-repair.md
   - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-24-x1-accepted.md
   - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-25-p0a-close-p0b-start.md
+  - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-03-realm1-source-protected-profile-b-placement.md
   - mastermind:research/MASTERMIND_ACTIVE_SESSION_EXECUTIVE_DIALOGUE_F0_ARCHITECTURE_AND_FABLE01_COMMISSION_2026-08-22.md
   - mastermind:research/MASTERMIND_ACTIVE_SESSION_EXECUTIVE_DIALOGUE_F0_CURRENT_STATE_AMENDMENT_2026-08-22.md
   - mastermind:research/MASTERMIND_ACTIVE_SESSION_EXECUTIVE_DIALOGUE_A0_TOKEN_ISOLATION_FALSIFIER_2026-08-23.md
@@ -152,6 +173,9 @@ landmines:
   - "The macOS security CLI bare -w prompt truncated the current long Multilogin JWT to 128 bytes on this host. MAS-115 credential enrollment must use the fixed secret-owning Security.framework helper; never pass the token through argv, environment, shell, temp files, logs or model-visible output."
   - "Historical P0B receipts include a Multilogin HTTP 501/non-JSON cloud-search result and a rejected launcher bearer. They remain valid adverse evidence but are superseded as the current start gate by later protected Mastermind repairs and must not be replayed as current capability truth."
   - "The fixed-port MAS-115 profile update is a one-profile, one-policy mutation. Any changed profile, port, payload, pre-state or ambiguous effect requires reconciliation; never blind-retry EFFECT_UNKNOWN."
+  - "Mastermind PR #396 merge 771a9558 is source proof only. It does not prove profile_B, Keychain readiness, a vendor effect, a ChatGPT account realm, PF-1, INSTALL1 or production behavior."
+  - "Dated P0B custody: C0BSBM78V1N/1788455715.526229 and web-sol-realm1-profile-b-host-provision-20260902-sol-001 are historical profile_B identifiers, not a new continuation. September 7 ruling 1788783574.921029 records that old host child terminal after exhausted reads with zero create dispatch. Mastermind #435 is already merged as 0cdcd1ef260a23cc127b0998c4e455c9d8f5aa06 and #432 closed; the canonical census owner is integrations/chairman_surfaces/chatgpt.py. Neither that source proof nor the old PRE_START/effect=NONE snapshot proves present profile/account capability or current effects. Reconcile the existing current owner before any separately authorized action; do not revive the old child."
+  - "PF-1 A/B precedes INSTALL1, while PF-1 C15-C18 requires the exact installed generation after INSTALL1. Collapsing PF-1 into one pre-install prerequisite creates a circular gate."
   - "ASD-A4 is a derived read-only consumer only after both P0B and ASD-A3 are accepted; it may not become a stored attention inbox or a Control Room send path."
 do_not_redo:
   - "Do not create a Session OS, task database, tmux lifecycle registry, second Executive service, mutable seat inbox or new active-build compiler."
@@ -168,28 +192,370 @@ do_not_redo:
   - "Do not recreate ASD A0/A1 or create another MAS-125 implementation carrier. Exact accepted PR #125 merge eb9910681a6db9f9675b25233c8865bb43325c32 is the sole DEVELOPMENT_UNARMED core."
   - "Do not re-open H0 because the persistent 8787 adoption gate is complete; treat future CCR reliability regressions as new evidence, not unfinished H0."
   - "Do not re-open X1 merely to absorb later capabilities. X1 is the accepted read-only command surface; managed-seat actuation, production dialogue, dispatch and wake remain separate waves."
-  - "Do not replay any historical P0B failure receipt as a new lifecycle attempt. Use the current merged fixed-port carrier and one fresh exact operation only after current preflight; ambiguous modification or launch effects are reconciled, never retried blindly."
+  - "Do not reopen or rebuild Mastermind PR #396 or issue #385; protected 771a9558 is the sole accepted Realm1-C1 source release."
+  - "Do not use the superseded web-sol-realm1-profile-b-host-create-20260902-sol-001 key or create another profile_B carrier/task while C0BSBM78V1N/1788455715.526229 is unresolved."
+  - "Do not treat source merge, green CI, Slack delivery, Secretary attention, Keychain-item presence or a vendor response as profile_B proof."
+  - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
+  - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  Chairman intent on 2026-08-25 makes P0B the active continuation from the merged fixed-port
-  substrate. Preserve P0A/H0 and X1 as accepted; no reopening is owed. On the Chairman host, use
-  current protected Mastermind and the existing stopped disposable profile, obtain action-time
-  native credential confirmation, run exact `configure-canary-port --vendor multilogin`, and only
-  after EXACT_CONFIGURED run one fresh `run-canary --vendor multilogin`. Return the redacted live
-  receipt to Sol under REVIEW_RETURN before any real-seat proof. ASD-A2/A3 remains an independent
-  separately gated lane; do not start ASD-A4, real-seat mutation, generic Wake or P1 from this P0B
-  records release.
+  Advance SC1/S4 using the dated chatgpt-session-visibility handoff: #2178/#2179 source-merged;
+  #2188 ordinary CI/integration and qualified native consumption remain. Keep P0B and ASD independent.
+  Mastermind #868 is protected/do-not-redo. #647 `00a37df9...` and #651 `3e70694f...` are source-built,
+  exact-head CI green and current-base compatible, but both remain Draft pending genuinely independent
+  exact-head semantic review. #651's real canonical Agent OS rerun after Macro #7619 now passes the actual
+  semantic-freshness condition: current SC1 next action, 7,276 canonical bytes under the 8 KiB ceiling,
+  untruncated. #836 `f5b37701...` has the durable Web-Sol semantic-ACK provenance blocker repaired on the
+  incumbent carrier and current-base focused tests plus hosted CI green; independent exact-head review still
+  gates source release, with 0.5.0 install/restart/live canary remaining downstream. After those source gates,
+  wire R8 recovery plus bounded continuation into the existing Control Room and implement closed successor
+  creation/bootstrap through existing Web-Sol, RuntimeBinding and Capacity owners. Do not create a Session OS,
+  transcript store, second recovery database, alternate RuntimeBinding writer, or account-specific project ownership.
+acceptance_contracts:
+- commission_id: meta-ceo-office-r2-20261012
+  execution_commission_refs: []
+  commission_ref: &id001
+    repository: mastermindx-market-intelligence/Mastermind
+    commit: 6b26f69cc040b46c8099a17a7ef94d3242f5386e
+    path: docs/superpowers/specs/2026-10-12-meta-ceo-office-r2-implementation.md
+    content_sha256: f5478e366e1f97eafb4bb0b26f6435944d79fd83223b87ab89f83de0e685509a
+  continuity_ref:
+    repository: mastermindx-market-intelligence/macro
+    commit: 5569baad64b8023e5cb1995c1ce7a30bc8254a7b
+    path: agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-12-meta-ceo-r2.md
+    content_sha256: 015582b25fa09214b8f98de73af7065bf8944c9029cf29e0de42e28d347a1e06
+  original_intent_ref: &id002
+    repository: mastermindx-market-intelligence/Mastermind
+    commit: 6b26f69cc040b46c8099a17a7ef94d3242f5386e
+    path: research/mastermind_meta_ceo_master_plan_r2_2026-10-12.md
+    content_sha256: a5c534ddabcd1034372354a1ec645dffe1a2520795035a757e4f7def8300c62d
+  proof_contract_ref: *id001
+  original_proof_contract_ref: *id002
+  current_intent_revision: r2-initial-v1
+  correction_state: NO_CORRECTION_DECLARED_AT_THIS_REVISION
+  correction_chain: []
+  criteria_objective: 'Get this implemented end to end fully: one conversational Mastermind company office
+    preserving the complete R2 vision. [MASTERMIND_ACCEPTANCE_CRITERIA_V1:["One central conversation recovers
+    relevant accepted projects, interprets the original idea without duplicate programmes or routine Chairman
+    message shuttling, and shows current responsibility, freshness and missingness in the app.","Real
+    consecutive office turns recover relevant continuity and the latest correction; the primary remains
+    useful while children work. Actual candidate surfaces are compared with normalized and realistic context/tools,
+    preserved visible mode, held-out cases, refusal accuracy, false acceptance, recovery, review effort
+    and total cost.","A real admitted office loop includes an ordinary worker question, the responsible
+    principal ruling, exact worker consumption and resumed work, independent review of intent and actual
+    artifacts that rejects plausible incompleteness, original-parent disposition consumption, and an honest
+    user-visible outcome.","Eligible native Project Chat uses the intended account, Project, relevant
+    context, observable selected mode, exact continuation and permissible parent-consumed return. Attended-native
+    or core-office-only evidence does not satisfy the full native requirement; no Work, API, Codex or
+    Fabric substitution is concealed.","All original section15 failure/security/rollback rows and section14
+    stage exits are proved at their actual installed boundaries. Every individual required obligation
+    remains unproven until evidenced; zero observed wrong-target writes, duplicate effects, unauthorized
+    disclosure and stale commands require credible enforcement.","Eligible accounts and Secretary capacity
+    preserve ordinary/busy responsiveness and independent review. A genuine seven-day installed campaign
+    measures accepted visible outcomes versus avoidable Chairman interventions, reasoning time, desktop
+    occupancy, queue delay, consumption, review backlog, quota, recovery and total cost. Synthetic time,
+    inferred quota or hidden spending cannot pass."]]'
+  criteria_sources:
+  - criterion_index: 0
+    source_ref: *id002
+    locators:
+    - '13.1: central chat, existing projects, app status'
+  - criterion_index: 1
+    source_ref: *id002
+    locators:
+    - '13.3: normalized and realistic surface comparisons'
+    - '15: consecutive office tasks, foreground question'
+  - criterion_index: 2
+    source_ref: *id002
+    locators:
+    - '14: Stage1 and Stage2'
+    - '15: ordinary question, false completion, reviewer independence'
+  - criterion_index: 3
+    source_ref: *id002
+    locators:
+    - '14: 0B and Stage3'
+    - '13.1: native Chat research'
+  - criterion_index: 4
+    source_ref: *id002
+    locators:
+    - '15: all30 named test rows'
+    - '14: all seven phase obligations'
+  - criterion_index: 5
+    source_ref: *id002
+    locators:
+    - '12: central product measure'
+    - '14: Stage4'
+  original_source_status: AUTHENTIC_USER_INPUT_CANDIDATE
+  proof_obligations:
+  - source_ref: *id002
+    section: '15'
+    label: Ordinary question while a child is working
+    required_outcome: Primary answers without waiting for child completion; no invented progress
+  - source_ref: *id002
+    section: '15'
+    label: Consecutive office tasks with a correction
+    required_outcome: Relevant continuity is recovered; the latest intent wins
+  - source_ref: *id002
+    section: '15'
+    label: Timeout after provider acceptance
+    required_outcome: Original task is inspected; no automatic second submission
+  - source_ref: *id002
+    section: '15'
+    label: Child admitted but Dot answer lost
+    required_outcome: Original Executive command and provider task are reconciled
+  - source_ref: *id002
+    section: '15'
+    label: Direct Slack and app turns overlap
+    required_outcome: Only currently eligible scoped company effects commit
+  - source_ref: *id002
+    section: '15'
+    label: Old Dot responds after relief
+    required_outcome: Late command rejected; predecessor effects remain recoverable
+  - source_ref: *id002
+    section: '15'
+    label: Caller supplies a CEO role string
+    required_outcome: No authority is granted from prompt content
+  - source_ref: *id002
+    section: '15'
+    label: Claimed read-only Dot attempts a connected-app write
+    required_outcome: Receiving permissions block it, or the claimed isolation fails qualification
+  - source_ref: *id002
+    section: '15'
+    label: Callback repeated or out of order
+    required_outcome: No duplicate ruling/effect; newer accepted revision preserved
+  - source_ref: *id002
+    section: '15'
+    label: Subscription expires or event is missed
+    required_outcome: Existing obligation reconciliation restores attention without losing work
+  - source_ref: *id002
+    section: '15'
+    label: Worker asks an ordinary design question
+    required_outcome: Programme owner decides and exact worker consumes the ruling
+  - source_ref: *id002
+    section: '15'
+    label: Worker claims a missing tool without evidence
+    required_outcome: A bounded harmless check is requested, not blind escalation
+  - source_ref: *id002
+    section: '15'
+    label: Explicit provider permission refusal
+    required_outcome: Affected action held; no alternate-account workaround
+  - source_ref: *id002
+    section: '15'
+    label: Real login or new consent is required
+    required_outcome: Exact human-only step surfaced; independent useful work continues
+  - source_ref: *id002
+    section: '15'
+    label: Native Project or selected mode cannot be verified
+    required_outcome: Requested native capability remains unproven
+  - source_ref: *id002
+    section: '15'
+    label: Secretary submits into a wrong target
+    required_outcome: No effect; mismatch detected before submission
+  - source_ref: *id002
+    section: '15'
+    label: UI stream detaches after submission
+    required_outcome: Original interaction reconciled; no blind continuation
+  - source_ref: *id002
+    section: '15'
+    label: Two secretaries seek one desktop
+    required_outcome: One active interaction writer; conversation ownership remains separate
+  - source_ref: *id002
+    section: '15'
+    label: Different data audiences share a programme
+    required_outcome: Retrieval and return respect permissions; no cross-account context leak
+  - source_ref: *id002
+    section: '15'
+    label: External vision would receive private information
+    required_outcome: Data permission checked before disclosure
+  - source_ref: *id002
+    section: '15'
+    label: Secretary quota is exhausted
+    required_outcome: Work remains truthfully pending; no hidden on-demand activation
+  - source_ref: *id002
+    section: '15'
+    label: Reviews accumulate
+    required_outcome: New admissions reduce; review/decision backlog gets priority
+  - source_ref: *id002
+    section: '15'
+    label: Green CI with missing must-have
+    required_outcome: Result rejected with precise repair, not accepted on test count
+  - source_ref: *id002
+    section: '15'
+    label: Spec is internally consistent but misreads original ask
+    required_outcome: Intent-translation review rejects it
+  - source_ref: *id002
+    section: '15'
+    label: Reviewer authored consequential work
+    required_outcome: Independent review assigned without losing existing effects
+  - source_ref: *id002
+    section: '15'
+    label: User logs out during a read
+    required_outcome: Private data cannot appear in a successor identity’s view
+  - source_ref: *id002
+    section: '15'
+    label: Cancellation races with completion
+    required_outcome: Actual terminal effect preserved; no false cancellation claim
+  - source_ref: *id002
+    section: '15'
+    label: Runtime restarts
+    required_outcome: Same request, obligations and pending effects recover
+  - source_ref: *id002
+    section: '15'
+    label: Programme reaches its accepted finish
+    required_outcome: Watches close; no invented successor project
+  - source_ref: *id002
+    section: '15'
+    label: No useful admitted work exists
+    required_outcome: Dots remain idle rather than creating a task treadmill
+  - source_ref: *id002
+    section: '15'
+    label: zero observed violations plus credible enforcement at the relevant boundary
+    required_outcome: For wrong-target writes, duplicate effects, unauthorized disclosure and stale-principal
+      commands, require zero observed violations plus credible enforcement at the relevant boundary. If the
+      enforcement mechanism is missing, a clean small test sample is insufficient.
+  - source_ref: *id002
+    section: '15'
+    label: Rollback
+    required_outcome: Rollback disables new admissions for the affected role/route while preserving in-flight
+      task IDs, effects, results and pending consumption. Uninstalling a UI or stopping a provider does not
+      prove a child stopped. Test administrative pause and exact reconciliation without depending on a responsive
+      Dot.
+  - source_ref: *id002
+    section: '13.1'
+    label: “I speak to one central chat”
+    required_outcome: User never has to select among six Dots to finish the normal journey
+  - source_ref: *id002
+    section: '13.1'
+    label: Main CEO knows existing projects
+    required_outcome: Census identifies relevant accepted work and avoids a duplicate programme
+  - source_ref: *id002
+    section: '13.1'
+    label: Native Chat research, not silent Work replacement
+    required_outcome: Actual eligible Project Chat path or explicit incomplete/attended status
+  - source_ref: *id002
+    section: '13.1'
+    label: Workers do not strand on questions
+    required_outcome: Correct principal rules and the originating worker demonstrably consumes it
+  - source_ref: *id002
+    section: '13.1'
+    label: Autonomous progress
+    required_outcome: An approved event advances useful work without another Chairman kickoff
+  - source_ref: *id002
+    section: '13.1'
+    label: Delivery matches the original idea
+    required_outcome: A deliberately plausible but wrong/incomplete product is rejected
+  - source_ref: *id002
+    section: '13.1'
+    label: App can show the company
+    required_outcome: Displayed status matches qualified owners, with missingness and freshness
+  - source_ref: *id002
+    section: '14'
+    label: '0A: Dot office qualification'
+    required_outcome: 'Establish an eligible principal connection, actual company-tool permissions, one
+      source-grounded turn, continuity into a subsequent corrected turn, foreground/background behavior
+      and recoverability. Preserve the earlier refused credential action; any enrollment proceeds only
+      through an independently established permitted action, not a carrier workaround.
+
+      every critical assumption is observed or explicitly unresolved with an affected capability and reachable
+      next action. Do not describe an untested route as either proven or impossible.'
+  - source_ref: *id002
+    section: '14'
+    label: '0B: Native-Chat feasibility'
+    required_outcome: 'Establish the exact eligible route and demonstrate or explicitly fail the account/Project/mode/context/result/continuation
+      chain. Do not defer this existential question to the fifth build stage. A held native lane does
+      not stop independent 0A/0C work.
+
+      every critical assumption is observed or explicitly unresolved with an affected capability and reachable
+      next action. Do not describe an untested route as either proven or impossible.'
+  - source_ref: *id002
+    section: '14'
+    label: '0C: Principal decision and event seam'
+    required_outcome: 'Map exposed account-specific actions to the actual Executive owners, inspect #1362’s
+      relevant source, and identify the smallest installed callback/ruling/consumption proof. An estate
+      read is not enough.
+
+      every critical assumption is observed or explicitly unresolved with an affected capability and reachable
+      next action. Do not describe an untested route as either proven or impossible.'
+  - source_ref: *id002
+    section: '14'
+    label: Stage 1 — One complete vertical office loop
+    required_outcome: one trace proves useful user capability, not just task transport. No Chairman message
+      shuttling, duplicate admission or unsupported completion claim.
+  - source_ref: *id002
+    section: '14'
+    label: Stage 2 — Programme delegation and independent quality
+    required_outcome: concurrent programmes preserve scope, data audiences, current owners and review
+      capacity; one user voice does not impose one serial decision chain.
+  - source_ref: *id002
+    section: '14'
+    label: Stage 3 — Integrate the qualified native research path
+    required_outcome: the required native experience works through the installed path, or this release
+      remains explicitly core-office-only/attended-native. No substitution is concealed.
+  - source_ref: *id002
+    section: '14'
+    label: Stage 4 — Scale eligible Dots and Secretary capacity
+    required_outcome: no lost decision obligations, wrong-target writes or unaccounted spending in the
+      accepted campaign; measured responsiveness and quota are adequate; original-intent review still
+      works under load. A finite campaign is evidence, not a mathematical guarantee.
+  - source_ref: *id002
+    section: '13.3'
+    label: Evaluate surfaces, not model branding
+    required_outcome: 'Do not assume that the Dot will outperform native Pro or Extra High merely because
+      of its advertised model. Evaluate actual Mastermind work: ambiguous requirements, source contradictions,
+      ordinary blockers, genuine permission boundaries, intentional false-completion examples and Chairman
+      corrections.
+
+
+      Run two comparisons: one with the relevant context normalized to isolate reasoning differences,
+      and one with each proposed surface’s realistic context/tools to assess the delivered system. Preserve
+      visible mode and configuration; served identity remains unknown when not observable.
+
+
+      Judge requirement coverage, supported conclusions, useful rulings, refusal accuracy, false acceptance,
+      recovery, review effort and total cost. Blind model labels where feasible. Include held-out cases
+      not used to tune the playbook. Prefer fewer high-quality independent reviews over several correlated
+      rubber stamps.'
+  - source_ref: *id002
+    section: '12'
+    label: Central product measure
+    required_outcome: The central product measure should be **accepted user-visible outcomes relative
+      to avoidable Chairman interventions**, supported by decision-resolution time, overdue obligations,
+      rework and effective spend. Do not optimize for number of agents, open chats, generated tokens,
+      or issues touched.
 ---
 
 ## Capability state
 
 `PARTIAL` overall because final P0B real-seat Open Sol foreground reachability and the production ASD
 transport path remain unproven. P0A plus H0 is `PROVEN_LIVE` on the persistent Chairman path, X1 is
-`ACCEPTED / PROVEN_LIVE_LOCAL`, and MAS-114 is complete. The P0B disposable substrate is now
-`BUILT_NOT_PROVEN` on the merged fixed-port carrier rather than `DARK_OR_DISCONNECTED`: several
-underlying vendor lifecycle/navigation predicates have been proven live, but the full current C0-C10
-fixed-port receipt is still owed and no real Chairman seat is authorized by that substrate. The
-supervised loopback service is running the exact X1 merge
-`12117ca576cec2c4f054664dd62c4e0809f27e75` at `http://127.0.0.1:8787/`.
+`ACCEPTED / PROVEN_LIVE_LOCAL`, and MAS-114 is complete.
+
+**P0B records qualification — 2026-11-05.** The original source-repair wait is historical.
+Mastermind [#435](https://github.com/mastermindx-market-intelligence/Mastermind/pull/435)
+merged on 2026-09-05 as `0cdcd1ef260a23cc127b0998c4e455c9d8f5aa06`; issue #432 is
+closed/completed. The actual owner path is `integrations/chairman_surfaces/chatgpt.py`,
+which resolves at protected pin `5fbcbffe77a06e41bc590fa09d12a7e2baefb4f7` to the
+same `89f6eb0cbe898ad23cf79fd269b169cf665f49f9` blob in the protected six-path repair.
+The old five-path hold, later six-path authorization and old no-START snapshot describe
+their September observation epochs; none is a current instruction to rebuild or restart #432.
+
+The September 7 continuation on the original records carrier states that the former profile_B
+host child is terminal and names then-current H2 follow-up. Those are dated receipts, not a
+new runtime assignment or proof of today's host/profile/account state. The complete original
+#6816 handoff is retained as a dated archive in the existing September 3 handoff file.
+Current P0B execution requires the existing owner's current source, authority and exact-effect
+reconciliation; this record does not reactivate #359, H2, an account ceremony or any native task.
+
+This repair uses canonical Git source only. The original Claude6/workspace binding, local
+dirt/process/lock state and watcher were not established by the September custody return.
+Its `CONTINUATION_NOT_SENT / SOURCE_EFFECT_NONE_THIS_TURN` and Mac Documents access
+denial remain preserved; this correction neither accesses that workspace nor recovers or
+adopts unobserved local proposals. No global writer-absence claim is made.
+
+The existing P0A/H0/X1 receipts and other product sections below retain their own dated
+evidence. No new profile_B, account realm, foreground, installation, callback, production
+ASD or overall product acceptance is established. The current-main SC1 frontier, primary
+workstream next action, all other waves and the complete separate R2 acceptance contract
+are preserved byte-for-byte; this P0B correction does not replace those newer consumers.
 
 X1 is the accepted daily command surface over the existing truth model: truthful Needs You,
 deterministic Focus, 47-row All Work, Surface Dock, detail drawer, local Command-K search and System
@@ -220,6 +586,15 @@ Mastermind PR #145 then merged the fixed `127.0.0.1:65535` origin, v3 provision,
 port-whitelist configuration/reconciliation and a run-canary path structurally unable to configure the
 profile. PR #145 itself is still `BUILT_NOT_PROVEN`: no live fixed-port configuration or complete
 post-merge C0-C10 receipt was produced by the PR.
+
+Mastermind PR #308 later protected the bounded T1 native transport as merge
+`caa47c1e66fe36dc3521299c918f4b9e7b2a47ca`, still not installed. Mastermind PR #396 then protected
+exactly five Realm1-C1 paths as merge `771a95586c7a31933ee612eafaa4d1471f57527b` after current-base
+CI/security success and independent approval `5104658908`. That source can bind the exact historical
+v3 profile_A to the v5 lifecycle, issue at most one peer create, reconcile by response ID plus one
+census, persist the peer provision and fence one later trash-only remove. No source review or merge
+performed a Keychain read, vendor request, local lifecycle bootstrap, profile/account/browser action,
+PF-1 experiment or Web-Sol installation.
 
 Active-Session Dialogue F0 is accepted and A0/A1 is `BUILT_NOT_PROVEN / DEVELOPMENT_UNARMED` in
 Mastermind PR #125 merge `eb9910681a6db9f9675b25233c8865bb43325c32`. The accepted core is
@@ -300,28 +675,31 @@ separately authorized real canaries pass.
   transaction and fail-closed ambiguity reconciliation, while keeping ordinary `run-canary`
   structurally unable to mutate profile configuration. Merge is implementation proof only; the live
   fixed-port C0-C10 receipt is still owed.
+- Mastermind PR #396 exact integrated head `52b78464311e924a5f4d73a89ad5cd33cf559010` passed repository
+  CI `33780327726`, CodeQL and all analyzers, received independent approval `5104658908`, and merged as
+  protected `771a95586c7a31933ee612eafaa4d1471f57527b`. The five protected blobs match the approved
+  semantic candidate exactly. The result is `BUILT_NOT_PROVEN / PRODUCTION_INERT`: no profile_B or
+  external profile/account/browser effect occurred during the source wave or release.
 
 ### What is still false
 
 1. Current GUI-started Chairman managed-browser seats are not automation-adoptable under a documented vendor contract.
 2. No supported programmatic OS-window foreground operation has been accepted; Open Sol therefore remains incomplete even if exact URL navigation can be proven on an automation-owned disposable profile.
-3. No full fixed-port P0B non-seat C0-C10 canary has passed from merged PR #145; the prior adverse
-   attempts remain contained historical evidence, and no real Chairman seat may be changed by them.
-4. The removed fixture is not a production principal, and no production Agent Relay app or credential is installed.
-5. No real `MMX/AGENT_DIALOGUE_V1` Slack exchange has occurred. A2/A3/A4 remain unstarted.
-6. Three-seat enrollment and disposable provisioning are complete, and underlying disposable
-   credential/search/start/WebDriver/cleanup subcapabilities have been proven live; however current
-   action-time credential readiness, exact fixed-port configuration and the complete current canary
-   receipt are not yet proven together on the merged release.
-7. Agent OS brief latency remains a separate Macro performance problem.
-8. X1 acceptance does not make managed-seat Open Sol, production Agent Relay dialogue, Executive
-   dispatch, automatic wake or later Control Room waves complete.
+3. Exactly one of two required disposable profiles is proven. Profile_B has no live bootstrap/create/reconciliation/provision receipt. The canonical #359 carrier has a receiver ACK plus prior no-effect checkout/approved-host proof, but remains `PRE_START / WAITING_SOURCE_REPAIR_432 / effect=NONE` while #432 needs a Sol-authorized path-widened repair, then independent review and protected-source readback; that is neither execution nor profile capability.
+4. No dedicated non-sensitive ChatGPT test account is proven or normally signed into both disposable profiles. A secret owner may later perform an authorized credential ceremony, but cannot authorize account creation or any paid plan: after profile_B is proven and released, the Chairman alone makes the closed existing-account versus explicitly approved one-free-account choice. Terms, CAPTCHA, email/phone verification and 2FA remain separate human gates.
+5. PF-1 A/B, INSTALL1 and PF-1 C15-C18 have not started on the required disposable realm sequence. No Web-Sol generation is installed or proven on the two-profile matrix.
+6. The removed ASD fixture is not a production principal, and no production Agent Relay app or credential is installed. No real `MMX/AGENT_DIALOGUE_V1` exchange has occurred; A2/A3/A4 remain unstarted.
+7. The protected fixed-port/T1/Realm1 source lineage remains implementation proof only. Current action-time credential readiness, host/profile identity, local lifecycle bootstrap, live vendor effect and complete installed fault/cleanup proof have not been established together.
+8. Agent OS brief latency remains a separate Macro performance problem.
+9. X1 acceptance does not make managed-seat Open Sol, production Agent Relay dialogue, Executive dispatch, automatic wake or later Control Room waves complete.
 
 ## Completion boundary
 
-MAS-114/H0, X1 and ASD A0/A1 are complete at their stated boundaries. MAS-113 remains nonterminal until P0B proves the vendor-supported
-managed-seat Open Sol journey including intended-seat foreground reachability, zero cross-seat
-fallback, zero message send, zero managed-environment state mutation and required restart/failure
-proof. ASD becomes `PROVEN_LIVE` only after separately authorized A2 and A3 canaries prove a real
-already-active Sol↔Fable project dialogue through the production path. The A1 merge alone authorizes
-no credential installation, production message, A3/A4, generic Wake or P1.
+MAS-114/H0, X1 and ASD A0/A1 are complete at their stated boundaries. MAS-113/P0B remains
+nonterminal until the current Realm1 sequence proves profile_B, a dedicated account realm, PF-1 A/B,
+release to INSTALL1, the exact installed two-profile generation, PF-1 C15-C18 and the supported
+intended-seat foreground journey with zero cross-seat fallback, zero message send, zero unauthorized
+managed-environment mutation and required restart/failure proof. ASD becomes `PROVEN_LIVE` only after
+separately authorized A2 and A3 canaries prove a real already-active Sol↔Fable project dialogue
+through the production path. The A1 merge alone authorizes no credential installation, production
+message, A3/A4, generic Wake or P1.

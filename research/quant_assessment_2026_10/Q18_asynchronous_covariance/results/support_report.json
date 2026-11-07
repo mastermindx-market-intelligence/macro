@@ -1,0 +1,48 @@
+{
+  "bootstrap_support": {
+    "block_len": 4,
+    "effective_blocks": 6.75,
+    "n_boot": 5000,
+    "n_time_blocks": 27,
+    "note": "pairs resampled jointly; quarters are the time unit",
+    "nw_lags": 3,
+    "seed": 18
+  },
+  "clock_class": {
+    "HKEX_INDEX_vs_NYSE (_HSCE vs SPY)": {
+      "clock": "DST_VARYING",
+      "distinct_lag_seconds": [
+        42600,
+        46200
+      ]
+    },
+    "NYSE_vs_NYSE (ASHR/FXI proxy target vs SPY)": {
+      "clock": "SIMULTANEOUS",
+      "distinct_lag_seconds": [
+        0
+      ]
+    },
+    "SSE_vs_HKEX_INDEX (510300.SS vs _HSCE)": {
+      "clock": "NONSYNCHRONOUS",
+      "distinct_lag_seconds": [
+        4200
+      ]
+    },
+    "SSE_vs_NYSE (510300.SS vs SPY)": {
+      "clock": "DST_VARYING",
+      "distinct_lag_seconds": [
+        46800,
+        50400
+      ]
+    }
+  },
+  "clock_class_basis": {
+    "dates": "every weekday of the frozen holdout period",
+    "first": "2020-01-01",
+    "last": "2026-09-30",
+    "n_dates": 1761
+  },
+  "kind": "reporting_only (PREREG_AMENDMENT.md A2)",
+  "primary_results_sha256": "08c3049c5f8fbdea854b842682bf5897ab72ab7d2c4b0227933be440d2be9cb5",
+  "study": "Q18"
+}

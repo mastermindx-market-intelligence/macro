@@ -132,9 +132,17 @@ decision gating 022/026/035/037/D017/D002); **(d) consolidated F09/F02 rights do
 (061/D020, 064-financing, 065/D024, 068, D026 rating actions, D028 AIS, 041/D030, 049,
 030-source) — one adjudication gating ~12 rows; **(e) F01/F13 cheap-projection batch**
 (011 AM-Edition, D010 indicators catalog, 088 /help+changelog, D011 /glossary, 009
-governed wrap); **(f) buildable-now F09 slices** needing no rights gate: 059/D018
-maturity-wall from EDGAR XBRL, 062/D021 covenant-text extraction, 064 premium-math,
-D029 coverage matrix; **(g) F08 pair-children**: delivery path (027/085), event→position
+governed wrap); **(f) F09 slices needing no rights gate** — CORRECTED 2026-09-02 after a
+verification-first build attempt: 059/D018 maturity-wall is NOT buildable-now (its
+instruments-half premise was falsified — document_terms.py is registration-fee-table-only
+and no debt-maturity producer exists repo-wide; a new XBRL debt-maturity ingestion child
+must come first; see the corrected ledger rows), 062/D021 covenant-text RESOLVED
+source-first (archaeology per Sol independent review 5093713353: NO covenant-text
+producer exists — document_terms is fee-table-only and event_spine is the SEC
+event/edge/review metadata spine; a filing-text/covenant extraction producer child is
+required before any headroom computation), 064 premium-math unverified-premise, D029
+coverage matrix DELIVERED (this head:
+MARKET_ONTOLOGY_F09_COMMODITY_COVERAGE_MATRIX_2026-09-02.csv/.md); **(g) F08 pair-children**: delivery path (027/085), event→position
 mapping with the D042 schema (028/D042), user-portfolio risk projection (036/D014);
 **(h) F10 output-surface child** (039/D016); **(i) F02 children**: D031 base-map +
 sanctions overlay (rights-clear layers only), D032 implementation-state machine, plus an
@@ -142,6 +150,7 @@ F02 owner-resolution memo (006/034 carry explicit owner-unresolved flags).
 
 ## Program-level items surfaced upward (updated by the same ruling)
 
+- **MO-DELTA-007 contract question — CLOSED** by `MARKET_ONTOLOGY_F13_PERSONAL_ACCURACY_LEDGER_SPEC_2026-09-06.md` (packet B-F13-4): freezes the personal accuracy ledger's data contract, scoring, honest-N rule, and use ceiling. The capability itself stays blocked on the F11 Thesis-object vertical named above (row `next_bounded_child`); row state unchanged at `PROJECTION_ONLY` / `learning_only`.
 - **MO-PAID-020 — RULED**: the row belongs to WS:MARKET-OS/F06; Stock Identity/Data OS
   are owner DEPENDENCIES, not child write authority. A single bounded renderer/CIK-access
   repair may be admitted only after a fresh collision census and remains
@@ -152,6 +161,11 @@ F02 owner-resolution memo (006/034 carry explicit owner-unresolved flags).
   gap-monitor child stays deferred on that sequence actually executing.
 - **MO-PAID-038 is a deliberate HOLD** (DEC:MARKET-INTEL-PRODUCTIZATION-NO-NEW-WORKSTREAM
   names ResearchStudy Workbench HELD) — a release decision, never a schedulable build.
+- **B-F06-2 scope freeze (2026-09-06)** records the disposition this section
+  anticipates for MO-DELTA-002 and MO-PAID-020/MO-PAID-021: see
+  `MARKET_ONTOLOGY_F06_SCREENER_AND_COCKPIT_SCOPE_2026-09-06.md` for the
+  no-ranker research-screener ceiling and the 8-panel display-only B1B cockpit
+  map, both still gated on the `#6920`/`#6905` dependencies named above.
 
 No capability promotion, no rank/size/gate/trade authority, no new stores or planes are
 created by this artifact. Falsifier vocabulary stays off user-facing surfaces (#3821).
