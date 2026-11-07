@@ -66,6 +66,8 @@ jobs:
       # starting and the variable being set is caught immediately.  Also checks
       # the force_run input (ops verification mode).
       - name: write heartbeat row (liveness probe)
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         env:
           AUTONOMY_PAUSED: ${{ vars.AUTONOMY_PAUSED }}
           FORCE_RUN: ${{ github.event.inputs.force_run }}

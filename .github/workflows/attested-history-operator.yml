@@ -137,6 +137,8 @@ jobs:
             --output-dir "$OUTPUT" \
             --operator-verification-observed-at "$observed_at"
       - name: assemble review-only preflight bundle manifest
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         if: ${{ always() }}
         env:
           FF_ATTESTED_DEPENDENCY_LOCK_SHA256: ${{ steps.dependency-lock.outputs.sha256 }}

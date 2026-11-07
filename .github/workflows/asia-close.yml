@@ -50,6 +50,8 @@ jobs:
       weekly: ${{ steps.decide.outputs.weekly }}
     steps:
       - name: decide (no checkout needed — pure GitHub API + clock)
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         id: decide
         env:
           GH_TOKEN: ${{ github.token }}
