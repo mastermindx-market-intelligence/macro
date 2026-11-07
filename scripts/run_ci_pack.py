@@ -423,13 +423,31 @@ OBSERVED_COMMAND_SECONDS = {
     # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
     # These calibrate balancing only; install/checkout/queue are excluded.
     # Evidence and sensitivity replay: research/ci_pack_throughput_20261019/.
-    "fif-kernel-guards": 1630,
+    # 2026-11-05 (S6): the 1630 s FIF kernel job is three siblings carrying the
+    # same closure. On #10759's run 42123959736 it sat alone in pack 0 for 60+
+    # min while every other pack finished in 10-33, so every PR touching its
+    # 1,131-path closure (including lib/macro_suite_labels.py) paid that floor.
+    # Initial S6 weights scaled local measurements to that old hosted median.
+    # A/C retain those provisional weights; B now uses its native command cost.
+    "fif-kernel-guards": 537,
+    "fif-kernel-guards-b": 1707,
+    "fif-kernel-guards-c": 538,
+    # Native run 42375466781 at integrated tree 33adac3070ee9d951aa6cfbeb27d93950ad0a4a9:
+    # job 128412406498 measures all four FIF-B commands at 1706.863 s.
+    # Job 128412406552 supplies International 851.708 s, ontology 349.994 s,
+    # GovRev candidate 435.744 s and BioCatalyst serving 308.285 s. Round to
+    # nearest seconds. International includes its 77.841 s canonical-main
+    # guard; exclude separate tested-tree ancestry, browser/Python installs,
+    # checkout, queue and exact-base failure replay. Commands remain unchanged.
+    "international-workspace-browser": 852,
+    "ontology-explorer": 350,
+    "unrun-government-revenue-candidate-projection": 436,
     "earnings-economic-dossier": 1070,
     "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,
     "biocatalyst-worker": 274,
-    "biocatalyst-serving": 272,
+    "biocatalyst-serving": 308,
     "flow-surface": 267,
     "capital-structure-intelligence": 247,
     "marketing-engine": 250,

@@ -19,7 +19,7 @@ def test_native_illustration_suite_has_exactly_one_existing_code_gate_owner(suit
     assert 'unrun-brain-gateway' in {job.job_id for job in run_ci_pack.load_legacy_jobs(MANIFEST, gate='code')}
 
 
-@pytest.mark.parametrize('job', ['crypto-assistant-context', 'fif-kernel-guards', 'research-price-panel', 'ticker-news-qbus'])
+@pytest.mark.parametrize('job', ['crypto-assistant-context', 'fif-kernel-guards', 'fif-kernel-guards-b', 'fif-kernel-guards-c', 'research-price-panel', 'ticker-news-qbus'])
 def test_existing_exclusive_jobs_cover_the_new_transitive_module(job):
     definition = yaml.safe_load(MANIFEST.read_text())['jobs'][job]
     assert 'engine/neuralweb/brain_visuals.py' in definition['paths']

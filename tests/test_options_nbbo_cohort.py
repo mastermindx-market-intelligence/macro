@@ -2083,63 +2083,156 @@ def test_evidence_verifiers_prove_the_inode_only_under_the_store_lock(
             assert stat.S_IMODE(path.lstat().st_mode) == 0o600
 
 
-def test_private_store_lock_prevents_cross_writer_staging_unlink(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+def _exercise_cross_writer_staging_unlink(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    omit_first_lock: bool = False,
 ) -> None:
+    import errno
     import threading
-    from concurrent.futures import ThreadPoolExecutor
+    from concurrent.futures import Future, ThreadPoolExecutor
 
     root = private_root(tmp_path)
-    first_at_link = threading.Event()
+    first_at_link: Future[None] = Future()
+    second_contended: Future[None] = Future()
     release_first = threading.Event()
-    second_started = threading.Event()
     second_reconciled = threading.Event()
     role = threading.local()
-    call_lock = threading.Lock()
-    first_link = True
     real_link = cohort.os.link
+    real_flock = cohort.fcntl.flock
     real_reconcile = cohort._reconcile_staging
 
     def blocking_link(*args, **kwargs):
-        nonlocal first_link
-        with call_lock:
-            should_block = first_link
-            first_link = False
-        if should_block:
-            first_at_link.set()
-            assert release_first.wait(2)
+        if getattr(role, "name", None) == "first":
+            if not first_at_link.done():
+                first_at_link.set_result(None)
+            # The parent releases in finally before waiting for executor shutdown.
+            # A competing short worker timer would race the readiness checks.
+            release_first.wait()
         return real_link(*args, **kwargs)
+
+    def observed_flock(fd: int, operation: int) -> None:
+        name = getattr(role, "name", None)
+        if operation == cohort.fcntl.LOCK_EX:
+            if name == "first" and omit_first_lock:
+                return
+            if name == "second":
+                # Probe the actual validated store descriptor. Only a real
+                # would-block result establishes that the first writer excludes us.
+                try:
+                    real_flock(fd, operation | cohort.fcntl.LOCK_NB)
+                except OSError as exc:
+                    if exc.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
+                        raise
+                    second_contended.set_result(None)
+                else:
+                    real_flock(fd, cohort.fcntl.LOCK_UN)
+                    raise AssertionError(
+                        "second writer acquired store lock while first publication was paused"
+                    )
+        real_flock(fd, operation)
 
     def observed_reconcile(store_root: Path) -> Path:
         if getattr(role, "name", None) == "second":
             second_reconciled.set()
+            assert release_first.is_set(), (
+                "second writer reconciled staging while first publication was paused"
+            )
         return real_reconcile(store_root)
 
     def write(name: str, body: bytes) -> dict:
         role.name = name
-        if name == "second":
-            second_started.set()
         return cohort.write_source_response(root, body)
 
+    def report_early_completion(worker: Future, phase: Future, name: str) -> None:
+        if phase.done():
+            return
+        error = worker.exception()
+        phase.set_exception(
+            error if error is not None else AssertionError(
+                f"writer completed without reaching {name}"
+            )
+        )
+
     monkeypatch.setattr(cohort.os, "link", blocking_link)
+    monkeypatch.setattr(cohort.fcntl, "flock", observed_flock)
     monkeypatch.setattr(cohort, "_reconcile_staging", observed_reconcile)
     first_body = cohort.canonical_json_bytes(response(quote_row()))
     second_body = cohort.canonical_json_bytes(
         response(quote_row(timestamp="2026-08-12T10:00:00.020"))
     )
+    receipts = []
     with ThreadPoolExecutor(max_workers=2) as pool:
-        first_future = pool.submit(write, "first", first_body)
-        assert first_at_link.wait(2)
-        second_future = pool.submit(write, "second", second_body)
-        assert second_started.wait(2)
-        assert second_reconciled.wait(0.2) is False
-        release_first.set()
-        first_receipt = first_future.result(timeout=2)
-        second_receipt = second_future.result(timeout=2)
-    for receipt in (first_receipt, second_receipt):
+        workers = []
+        failure = None
+        try:
+            first_future = pool.submit(write, "first", first_body)
+            workers.append(first_future)
+            first_future.add_done_callback(
+                lambda worker: report_early_completion(worker, first_at_link, "first publication")
+            )
+            first_at_link.result(timeout=10)
+            second_future = pool.submit(write, "second", second_body)
+            workers.append(second_future)
+            second_future.add_done_callback(
+                lambda worker: report_early_completion(worker, second_contended, "second lock contention")
+            )
+            second_contended.result(timeout=10)
+            assert not second_reconciled.is_set()
+        except BaseException as exc:
+            failure = exc
+        finally:
+            release_first.set()
+        # Consume every submitted worker, including on an early readiness failure.
+        # Keep the first failure instead of hiding it behind executor cleanup.
+        for worker in workers:
+            try:
+                receipts.append(worker.result(timeout=10))
+            except BaseException as exc:
+                if failure is None:
+                    failure = exc
+        if failure is not None:
+            raise failure
+
+    assert second_reconciled.is_set()
+    assert len(receipts) == 2
+    for receipt, body in zip(receipts, (first_body, second_body)):
         path = root / "source_responses" / f"{receipt['sha256']}.json"
         assert path.is_file()
         assert stat.S_IMODE(path.stat().st_mode) == 0o600
+        assert path.stat().st_nlink == 1
+        assert path.read_bytes() == body
+    assert list((root / ".staging").iterdir()) == []
+
+
+def test_private_store_lock_prevents_cross_writer_staging_unlink(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _exercise_cross_writer_staging_unlink(tmp_path, monkeypatch)
+
+
+def test_cross_writer_staging_proof_detects_missing_first_lock(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    with pytest.raises(
+        AssertionError,
+        match="second writer acquired store lock while first publication was paused",
+    ):
+        _exercise_cross_writer_staging_unlink(
+            tmp_path, monkeypatch, omit_first_lock=True
+        )
+
+
+def test_cross_writer_staging_proof_surfaces_early_writer_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def failed_write(root: Path, body: bytes) -> dict:
+        raise RuntimeError("first writer failed before publication")
+
+    monkeypatch.setattr(cohort, "write_source_response", failed_write)
+    with pytest.raises(RuntimeError, match="first writer failed before publication"):
+        _exercise_cross_writer_staging_unlink(tmp_path, monkeypatch)
 
 # ── OA-3 exact-option outcome preregistration ────────────────────────────────
 
