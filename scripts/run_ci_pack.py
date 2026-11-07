@@ -84,6 +84,7 @@ LEGACY_MANIFEST_PATH = ".github/ci/legacy-jobs.yml"
 DISABLED_IF = "${{ false }}"
 ALLOWED_JOB_KEYS = {
     "gate",
+    "materialization",
     "if",
     "paths",
     "runs-on",
@@ -1684,6 +1685,34 @@ def _job_weight(job_id: str, definition: dict[str, Any]) -> int:
     return max(1, len(commands) + text.count("tests/test_") * 2 + len(text) // 800)
 
 
+def _materialization_findings(
+    prefix: str, definition: dict[str, Any]
+) -> list[str]:
+    """Validate the full-only consumer before any gate or selection filter.
+
+    Omission preserves today's full checkout. Explicit full has the same
+    execution contract and v2 plan identity. Other profiles require separately
+    qualified closure, materialization and producer/consumer adoption; they
+    cannot silently fall back through an unsupported catalog declaration.
+    """
+    if "materialization" not in definition:
+        return []
+    value = definition["materialization"]
+    if (
+        type(value) is not dict
+        or set(value) != {"version", "mode"}
+        or type(value.get("version")) is not int
+        or value["version"] != 1
+        or type(value.get("mode")) is not str
+        or value["mode"] != "full"
+    ):
+        return [
+            f"{prefix} materialization must be exactly "
+            "{version: 1, mode: full}; other profiles are unsupported"
+        ]
+    return []
+
+
 def load_legacy_jobs(path: Path, *, gate: str | None = None) -> list[LegacyJob]:
     """Load and fail-closed validate every job in the legacy manifest.
 
@@ -1714,6 +1743,7 @@ def load_legacy_jobs(path: Path, *, gate: str | None = None) -> list[LegacyJob]:
             findings.append(
                 f"{prefix} has unsupported keys: {', '.join(unknown_job_keys)}"
             )
+        findings.extend(_materialization_findings(prefix, raw_definition))
         if raw_definition.get("if") != DISABLED_IF:
             findings.append(
                 f"{prefix} must declare `if: {DISABLED_IF}` so GitHub does not "

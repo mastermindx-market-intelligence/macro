@@ -9266,3 +9266,202 @@ def test_options_nbbo_cohort_keeps_exact_source_and_avoids_unrelated_code_probes
                   "engine/prophet/plan_book.py"):  # ci-trigger-closure: data — selector input name, never opened
         selected, _ = PACK.select_jobs([job], [probe])
         assert selected == [], probe
+
+
+# W4 consumer-first boundary: full remains the only executable materialization.
+def test_materialization_full_preserves_plan_and_execution_identity(tmp_path):
+    from scripts import ci_semantic_proof as proof
+
+    manifest = tmp_path / "materialization.yml"
+    document = {"jobs": {
+        "first": _manifest_job("echo first"),
+        "second": _manifest_job("echo second"),
+    }}
+    manifest.write_text(yaml.safe_dump(document, sort_keys=False))
+    implicit = PACK.load_legacy_jobs(manifest)
+    sha = "a" * 40
+    options = dict(
+        changed_from=None, scope_mode="off", pack_count=3,
+        workflow_run_id="101", workflow="ci",
+        event="workflow_dispatch", role="main", tested_tree_sha=sha,
+        subject_head_sha=sha, base_sha=sha,
+    )
+    old_plan = PACK.build_plan(implicit, None, **options)
+    old_bytes = json.dumps(old_plan.to_dict(), sort_keys=True, separators=(",", ":"))
+    for job in document["jobs"].values():
+        job["materialization"] = {"version": 1, "mode": "full"}
+    manifest.write_text(yaml.safe_dump(document, sort_keys=False))
+    explicit = PACK.load_legacy_jobs(manifest)
+    new_plan = PACK.build_plan(explicit, None, **options)
+    new_bytes = json.dumps(new_plan.to_dict(), sort_keys=True, separators=(",", ":"))
+    assert [job.job_id for job in explicit] == ["first", "second"]
+    assert [(job.ordinal, job.weight, job.paths, job.gate) for job in explicit] == [
+        (job.ordinal, job.weight, job.paths, job.gate) for job in implicit
+    ]
+    assert [PACK.semantic_job_digest(job) for job in explicit] == [
+        PACK.semantic_job_digest(job) for job in implicit
+    ]
+    assert [PACK.semantic_step_specs(job) for job in explicit] == [
+        PACK.semantic_step_specs(job) for job in implicit
+    ]
+    assert new_bytes == old_bytes
+    assert new_plan.schema == "ci.pack_plan.v2"
+    assert proof.authoritative_plan_sha256(new_plan.to_dict()) == old_plan.plan_sha256
+    artifact = tmp_path / "plan.json"
+    artifact.write_text(old_bytes)
+    consumed = PACK.load_authoritative_plan(
+        artifact, workflow=manifest, expect_plan_sha=old_plan.plan_sha256,
+        expect_tested_tree_sha=sha, expect_subject_head_sha=sha, expect_base_sha=sha,
+    )
+    assert json.dumps(consumed.to_dict(), sort_keys=True, separators=(",", ":")) == old_bytes
+
+
+@pytest.mark.parametrize("declaration", [
+    pytest.param(None, id="null"),
+    pytest.param(True, id="boolean"),
+    pytest.param(1, id="number"),
+    pytest.param("full", id="string"),
+    pytest.param([], id="list"),
+    pytest.param({}, id="empty-object"),
+    pytest.param({"version": 1}, id="missing-mode"),
+    pytest.param({"mode": "full"}, id="missing-version"),
+    pytest.param({"version": True, "mode": "full"}, id="boolean-version"),
+    pytest.param({"version": 1.0, "mode": "full"}, id="float-version"),
+    pytest.param({"version": "1", "mode": "full"}, id="string-version"),
+    pytest.param({"version": 0, "mode": "full"}, id="old-version"),
+    pytest.param({"version": 2, "mode": "full"}, id="future-version"),
+    pytest.param({"version": 1, "mode": None}, id="null-mode"),
+    pytest.param({"version": 1, "mode": "FULL"}, id="case-sensitive-mode"),
+    pytest.param({"version": 1, "mode": "closed"}, id="closed-unqualified"),
+    pytest.param({"version": 1, "mode": "sparse"}, id="sparse-unqualified"),
+    pytest.param({"version": 1, "mode": "full", "paths": []}, id="extra-paths"),
+    pytest.param({"version": 1, "mode": "full", "identity_sha256": "a" * 64},
+                 id="extra-identity"),
+])
+def test_materialization_declaration_is_strict_before_loading(tmp_path, declaration):
+    manifest = tmp_path / "materialization.yml"
+    job = _manifest_job("echo contract")
+    job["materialization"] = declaration
+    manifest.write_text(yaml.safe_dump({"jobs": {"contract": job}}))
+    with pytest.raises(PACK.ManifestError, match="materialization"):
+        PACK.load_legacy_jobs(manifest)
+
+
+@pytest.mark.parametrize("hidden_gate,hidden_scope", [
+    ("data", None), ("code", None), ("code", "exclusive"),
+])
+def test_materialization_invalid_unselected_job_refuses_planner_and_executor(
+    tmp_path, monkeypatch, hidden_gate, hidden_scope
+):
+    manifest = tmp_path / "materialization.yml"
+    hidden = _manifest_job("echo hidden", gate=hidden_gate)
+    hidden["paths"] = ["never-selected/**"]
+    if hidden_scope:
+        hidden["scope"] = hidden_scope
+    hidden["materialization"] = {"version": 1, "mode": "sparse"}
+    manifest.write_text(yaml.safe_dump({"jobs": {
+        "visible": _manifest_job("echo visible"), "hidden": hidden,
+    }}))
+    _stub_planner_paths(monkeypatch, ["tests/visible.py"])
+    with pytest.raises(PACK.ManifestError, match="materialization"):
+        PACK.plan_from_workflow(
+            manifest, changed_from="b" * 40, scope_mode="active", gate="code",
+            workflow_run_id="102", workflow_name="ci",
+            event="pull_request", role="pr_head", tested_tree_sha="c" * 40,
+            subject_head_sha="a" * 40, base_sha="b" * 40,
+        )
+    seen = []
+    monkeypatch.setattr(PACK, "execute_pack", lambda jobs, **kw: seen.append(jobs) or 0)
+    assert PACK.main([
+        "--workflow", str(manifest), "--gate", "code", "--execute",
+        "--github-output", str(tmp_path / "github-output"),
+    ]) != 0
+    assert seen == []
+
+
+def test_materialization_invalid_data_job_refuses_authoritative_plan(tmp_path):
+    manifest = tmp_path / "materialization.yml"
+    document = {"jobs": {
+        "visible": _manifest_job("echo visible"),
+        "hidden": _manifest_job("echo hidden", gate="data"),
+    }}
+    manifest.write_text(yaml.safe_dump(document, sort_keys=False))
+    sha = "a" * 40
+    old_plan = PACK.build_plan(
+        PACK.load_legacy_jobs(manifest, gate="code"), None,
+        changed_from=None, scope_mode="off", pack_count=2,
+        workflow_run_id="103", workflow="ci",
+        event="workflow_dispatch", role="main", tested_tree_sha=sha,
+        subject_head_sha=sha, base_sha=sha,
+    )
+    artifact = tmp_path / "plan.json"
+    artifact.write_text(json.dumps(old_plan.to_dict()))
+    document["jobs"]["hidden"]["materialization"] = {"version": 1, "mode": "closed"}
+    manifest.write_text(yaml.safe_dump(document, sort_keys=False))
+    with pytest.raises(PACK.ManifestError, match="materialization"):
+        PACK.load_authoritative_plan(artifact, workflow=manifest, gate="code")
+
+
+@pytest.mark.parametrize("declaration,accepted", [
+    ("absent", True), ({"version": 1, "mode": "full"}, True),
+    ({"version": 1, "mode": "closed"}, False),
+])
+def test_materialization_copied_trusted_consumer_refuses_before_execution(
+    tmp_path, declaration, accepted
+):
+    candidate = tmp_path / "candidate"
+    manifest = candidate / PACK.LEGACY_MANIFEST_PATH
+    manifest.parent.mkdir(parents=True)
+    job = _manifest_job("echo contract")
+    if declaration != "absent":
+        job["materialization"] = declaration
+    manifest.write_text(yaml.safe_dump({"jobs": {"contract": job}}))
+    subprocess.run(["git", "init"], cwd=candidate, check=True, capture_output=True)
+    subprocess.run(["git", "add", "."], cwd=candidate, check=True)
+    subprocess.run(
+        ["git", "-c", "user.name=CI Test", "-c", "user.email=ci@example.invalid",
+         "commit", "-m", "candidate"],
+        cwd=candidate, check=True, capture_output=True,
+    )
+    sha = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=candidate, text=True
+    ).strip()
+    control = tmp_path / "trusted-ci-control"
+    control_scripts = control / "scripts"
+    control_scripts.mkdir(parents=True)
+    for filename in (
+        "__init__.py", "run_ci_pack.py", "ci_semantic_proof.py",
+        "ci_authority_paths.py", "ci_scope_dependencies.py",
+        "audit_unrun_tests.py", "workflow_run_source.py",
+    ):
+        (control_scripts / filename).write_bytes((ROOT / "scripts" / filename).read_bytes())
+    marker = tmp_path / "execution-admitted"
+    environment = dict(os.environ)
+    environment["PYTHONPATH"] = str(control)
+    environment["MASTERMIND_TRUSTED_CI_REPO_ROOT"] = str(candidate)
+    program = (
+        "from pathlib import Path\n"
+        "from scripts import run_ci_pack as pack\n"
+        f"marker = Path({str(marker)!r})\n"
+        "def observe(jobs, **kwargs):\n"
+        "    marker.write_text(','.join(job.job_id for job in jobs))\n"
+        "    return 0\n"
+        "pack.execute_pack = observe\n"
+        f"raise SystemExit(pack.main(['--workflow', {str(manifest)!r}, "
+        "'--pack-count', '1', '--pack-index', '0', '--execute', "
+        "'--scope-mode', 'off', '--workflow-name', 'ci', '--workflow-run-id', '104', "
+        "'--event', 'workflow_dispatch', '--role', 'main', "
+        f"'--tested-tree-sha', {sha!r}, '--subject-head-sha', {sha!r}, "
+        f"'--base-sha', {sha!r}, "
+        f"'--github-output', {str(tmp_path / 'github-output')!r}]))\n"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", program], cwd=candidate, env=environment,
+        text=True, capture_output=True, check=False, timeout=30,
+    )
+    assert (result.returncode == 0) is accepted, result.stdout + result.stderr
+    if accepted:
+        assert marker.read_text() == "contract"
+    else:
+        assert not marker.exists()
+        assert "materialization must be exactly" in result.stdout + result.stderr
