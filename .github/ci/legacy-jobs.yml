@@ -12380,6 +12380,7 @@ jobs:
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
       # S6: imported ancestor packages must trigger every FIF sibling, not only children.
+      - scripts/ci/run_fif_kernel_suites.py
       - "collectors/biocatalyst/__init__.py"
       - "engine/biocatalyst/__init__.py"
       - "engine/codex_lane/__init__.py"
@@ -13538,53 +13539,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml requests fastapi httpx jsonschema jinja2
       - name: FIF kernel suites (class A, hermetic)
-        run: >
-          python -m pytest
-          tests/test_fif_z0_closure_matrix.py
-          tests/test_fif_a43_responsive_keyboard_corpus.py
-          tests/test_fif_source_rights.py
-          tests/test_fif_publication_workflow_shape.py
-          tests/test_fif_pf_health_entity.py
-          tests/test_fif_coverage_writer.py
-          tests/test_filing_forensics_broad_sec_lane.py
-          tests/test_forensics_api.py
-          tests/test_fundamental_forensics_admitted_filing_package.py
-          tests/test_fundamental_forensics_api_client.py
-          tests/test_fundamental_forensics_attestation_admission.py
-          tests/test_fundamental_forensics_contract.py
-          tests/test_fundamental_forensics_contract_issuers.py
-          tests/test_fundamental_forensics_coverage_proof.py
-          tests/test_fundamental_forensics_cost_ledger.py
-          tests/test_fundamental_forensics_detector_applicability.py
-          tests/test_fundamental_forensics_detectors.py
-          tests/test_fundamental_forensics_disclosure_diff.py
-          tests/test_fundamental_forensics_edgar_index.py
-          tests/test_fundamental_forensics_financial_intelligence_packet.py
-          tests/test_fundamental_forensics_financial_intelligence_packet_r3.py
-          tests/test_fundamental_forensics_financial_query_api.py
-          tests/test_fundamental_forensics_financial_revision_api.py
-          tests/test_fundamental_forensics_financial_revision_service.py
-          tests/test_fundamental_forensics_health.py
-          tests/test_fundamental_forensics_held_out_isolation.py
-          tests/test_fundamental_forensics_ingest.py
-          tests/test_fundamental_forensics_member_capture.py
-          tests/test_fundamental_forensics_metric_qualification.py
-          tests/test_fundamental_forensics_no_request_time_sec.py
-          tests/test_fundamental_forensics_periods.py
-          tests/test_fundamental_forensics_production_lineage.py
-          tests/test_fundamental_forensics_production_publisher.py
-          tests/test_fundamental_forensics_q0_quality_protocol.py
-          tests/test_fundamental_forensics_q1_held_out_g4_reports.py
-          tests/test_fundamental_forensics_query.py
-          tests/test_fundamental_forensics_query_exports.py
-          tests/test_fundamental_forensics_query_metric_qualification.py
-          tests/test_fundamental_forensics_raw_ledger.py
-          tests/test_fundamental_forensics_saved_store_schema.py
-          tests/test_fundamental_forensics_sec_request_pacer.py
-          tests/test_fundamental_forensics_statement_grid_p5b.py
-          tests/test_fundamental_forensics_ui.py
-          tests/test_fundamental_forensics_wave2_operator.py
-          -q
+        run: python scripts/ci/run_fif_kernel_suites.py --workers 2 tests/test_fif_z0_closure_matrix.py tests/test_fif_a43_responsive_keyboard_corpus.py tests/test_fif_source_rights.py tests/test_fif_publication_workflow_shape.py tests/test_fif_pf_health_entity.py tests/test_fif_coverage_writer.py tests/test_filing_forensics_broad_sec_lane.py tests/test_forensics_api.py tests/test_fundamental_forensics_admitted_filing_package.py tests/test_fundamental_forensics_api_client.py tests/test_fundamental_forensics_attestation_admission.py tests/test_fundamental_forensics_contract.py tests/test_fundamental_forensics_contract_issuers.py tests/test_fundamental_forensics_coverage_proof.py tests/test_fundamental_forensics_cost_ledger.py tests/test_fundamental_forensics_detector_applicability.py tests/test_fundamental_forensics_detectors.py tests/test_fundamental_forensics_disclosure_diff.py tests/test_fundamental_forensics_edgar_index.py tests/test_fundamental_forensics_financial_intelligence_packet.py tests/test_fundamental_forensics_financial_intelligence_packet_r3.py tests/test_fundamental_forensics_financial_query_api.py tests/test_fundamental_forensics_financial_revision_api.py tests/test_fundamental_forensics_financial_revision_service.py tests/test_fundamental_forensics_health.py tests/test_fundamental_forensics_held_out_isolation.py tests/test_fundamental_forensics_ingest.py tests/test_fundamental_forensics_member_capture.py tests/test_fundamental_forensics_metric_qualification.py tests/test_fundamental_forensics_no_request_time_sec.py tests/test_fundamental_forensics_periods.py tests/test_fundamental_forensics_production_lineage.py tests/test_fundamental_forensics_production_publisher.py tests/test_fundamental_forensics_q0_quality_protocol.py tests/test_fundamental_forensics_q1_held_out_g4_reports.py tests/test_fundamental_forensics_query.py tests/test_fundamental_forensics_query_exports.py tests/test_fundamental_forensics_query_metric_qualification.py tests/test_fundamental_forensics_raw_ledger.py tests/test_fundamental_forensics_saved_store_schema.py tests/test_fundamental_forensics_sec_request_pacer.py tests/test_fundamental_forensics_statement_grid_p5b.py tests/test_fundamental_forensics_ui.py tests/test_fundamental_forensics_wave2_operator.py
   fif-kernel-guards-b:
     # S6 (2026-11-05): one of three measured siblings of the former single fif-kernel-guards job
     # (fif-kernel-guards / -b / -c). Each carries the IDENTICAL curated closure below and runs its own
@@ -13607,6 +13562,7 @@ jobs:
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
       # S6: imported ancestor packages must trigger every FIF sibling, not only children.
+      - scripts/ci/run_fif_kernel_suites.py
       - "collectors/biocatalyst/__init__.py"
       - "engine/biocatalyst/__init__.py"
       - "engine/codex_lane/__init__.py"
@@ -14765,46 +14721,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml requests fastapi httpx jsonschema jinja2
       - name: FIF kernel suites (class A, hermetic)
-        run: >
-          python -m pytest
-          tests/test_fif_a1_journey_ledger.py
-          tests/test_fif_excel_refresh_harness.py
-          tests/test_fif_z0_gap_a23_a38.py
-          tests/test_fif_z0_gap_a23_saved_research.py
-          tests/test_fif_a33_gold_replay_receipt.py
-          tests/test_fif_a34_pack_proof_ledger.py
-          tests/test_fif_a47_recovery_drill_receipts.py
-          tests/test_fif_coverage_manifest.py
-          tests/test_filing_forensics_sec_lane.py
-          tests/test_institutional_research_api.py
-          tests/test_institutional_catalog_scope.py
-          tests/test_fundamental_forensics_companyfacts.py
-          tests/test_fundamental_forensics_companyfacts_ledger.py
-          tests/test_fundamental_forensics_disclosure_alignment_e1.py
-          tests/test_fundamental_forensics_filing_observation_state.py
-          tests/test_fundamental_forensics_filing_package.py
-          tests/test_fundamental_forensics_finding_judgments.py
-          tests/test_fundamental_forensics_financial_intelligence_packet_r2.py
-          tests/test_fundamental_forensics_financial_packet_service.py
-          tests/test_fundamental_forensics_financial_query_service.py
-          tests/test_fundamental_forensics_five_issuer_sic_contract.py
-          tests/test_fundamental_forensics_kernel_literal_guard.py
-          tests/test_fundamental_forensics_metric_registry.py
-          tests/test_fundamental_forensics_normalize.py
-          tests/test_fundamental_forensics_p0_view_contract.py
-          tests/test_fundamental_forensics_production_api_chain.py
-          tests/test_fundamental_forensics_public_summary_freshness.py
-          tests/test_fundamental_forensics_query_not_presented.py
-          tests/test_fundamental_forensics_query_snapshots.py
-          tests/test_fundamental_forensics_refusal_entry_readers.py
-          tests/test_fundamental_forensics_release_reconciliation.py
-          tests/test_fundamental_forensics_source_sync.py
-          tests/test_fundamental_forensics_specialist_pack_contract.py
-          tests/test_fundamental_forensics_state_peer_cohort.py
-          tests/test_fundamental_forensics_statement_grid.py
-          tests/test_fundamental_forensics_lane_c_cat_title.py
-          tests/test_fundamental_forensics_lane_c2_bac_periods.py
-          -q
+        run: python scripts/ci/run_fif_kernel_suites.py --workers 2 tests/test_fif_a1_journey_ledger.py tests/test_fif_excel_refresh_harness.py tests/test_fif_z0_gap_a23_a38.py tests/test_fif_z0_gap_a23_saved_research.py tests/test_fif_a33_gold_replay_receipt.py tests/test_fif_a34_pack_proof_ledger.py tests/test_fif_a47_recovery_drill_receipts.py tests/test_fif_coverage_manifest.py tests/test_filing_forensics_sec_lane.py tests/test_institutional_research_api.py tests/test_institutional_catalog_scope.py tests/test_fundamental_forensics_companyfacts.py tests/test_fundamental_forensics_companyfacts_ledger.py tests/test_fundamental_forensics_disclosure_alignment_e1.py tests/test_fundamental_forensics_filing_observation_state.py tests/test_fundamental_forensics_filing_package.py tests/test_fundamental_forensics_finding_judgments.py tests/test_fundamental_forensics_financial_intelligence_packet_r2.py tests/test_fundamental_forensics_financial_packet_service.py tests/test_fundamental_forensics_financial_query_service.py tests/test_fundamental_forensics_five_issuer_sic_contract.py tests/test_fundamental_forensics_kernel_literal_guard.py tests/test_fundamental_forensics_metric_registry.py tests/test_fundamental_forensics_normalize.py tests/test_fundamental_forensics_p0_view_contract.py tests/test_fundamental_forensics_production_api_chain.py tests/test_fundamental_forensics_public_summary_freshness.py tests/test_fundamental_forensics_query_not_presented.py tests/test_fundamental_forensics_query_snapshots.py tests/test_fundamental_forensics_refusal_entry_readers.py tests/test_fundamental_forensics_release_reconciliation.py tests/test_fundamental_forensics_source_sync.py tests/test_fundamental_forensics_specialist_pack_contract.py tests/test_fundamental_forensics_state_peer_cohort.py tests/test_fundamental_forensics_statement_grid.py tests/test_fundamental_forensics_lane_c_cat_title.py tests/test_fundamental_forensics_lane_c2_bac_periods.py
       # tests/test_fif_p2_evidence_capture.py (FIF P2 #9011, 2026-10-12): its tree-only and
       # fixture-built tests run here on the code gate. The three that build or query the
       # kernel over nightly-advanced data/edgar, data/universe, data/breadth and
@@ -14845,6 +14762,7 @@ jobs:
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
       # S6: imported ancestor packages must trigger every FIF sibling, not only children.
+      - scripts/ci/run_fif_kernel_suites.py
       - "collectors/biocatalyst/__init__.py"
       - "engine/biocatalyst/__init__.py"
       - "engine/codex_lane/__init__.py"
@@ -16003,48 +15921,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml requests fastapi httpx jsonschema jinja2
       - name: FIF kernel suites (class A, hermetic)
-        run: >
-          python -m pytest
-          tests/test_fif_specialist_packs.py
-          tests/test_fif_a21_publish_observation.py
-          tests/test_fif_gsrc_capture.py
-          tests/test_fif_held_out_capture_predeclared.py
-          tests/test_fundamental_forensics_held_out_packages.py
-          tests/test_fif_q0_label_conformance.py
-          tests/test_fif_se_receipts.py
-          tests/test_fif_dev_corpus.py
-          tests/test_fif_pf_health_pointer.py
-          tests/test_fif_a0_production_mode_unit.py
-          tests/test_fif_a18_publish_fault_drill.py
-          tests/test_fundamental_forensics_acquisition.py
-          tests/test_institutional_research_context.py
-          tests/test_fundamental_forensics_attested_history_reader.py
-          tests/test_fundamental_forensics_attested_query_snapshots.py
-          tests/test_fundamental_forensics_catalog_api.py
-          tests/test_fundamental_forensics_disclosure_bundle.py
-          tests/test_fundamental_forensics_disclosure_projection.py
-          tests/test_fundamental_forensics_excel_export.py
-          tests/test_fundamental_forensics_financial_packet_api.py
-          tests/test_fundamental_forensics_formula_not_presented.py
-          tests/test_fundamental_forensics_latency.py
-          tests/test_fundamental_forensics_mapping_pack_v1_1.py
-          tests/test_fundamental_forensics_not_presented.py
-          tests/test_fundamental_forensics_pack_evaluation.py
-          tests/test_fundamental_forensics_page.py
-          tests/test_fundamental_forensics_peer_cohort.py
-          tests/test_fundamental_forensics_peer_comparability.py
-          tests/test_fundamental_forensics_private_state.py
-          tests/test_fundamental_forensics_production_dataset_store.py
-          tests/test_fundamental_forensics_production_provider.py
-          tests/test_fundamental_forensics_q1_held_out_evaluate.py
-          tests/test_fundamental_forensics_q1_held_out_g2_reports.py
-          tests/test_fundamental_forensics_q1_held_out_g3_reports.py
-          tests/test_fundamental_forensics_recovery_drill.py
-          tests/test_fundamental_forensics_statement_refusals.py
-          tests/test_fundamental_forensics_header_period_composition.py
-          tests/test_fundamental_forensics_displayed_title_fold.py
-          tests/test_fundamental_forensics_bare_year_columns.py
-          -q
+        run: python scripts/ci/run_fif_kernel_suites.py --workers 2 tests/test_fif_specialist_packs.py tests/test_fif_a21_publish_observation.py tests/test_fif_gsrc_capture.py tests/test_fif_held_out_capture_predeclared.py tests/test_fundamental_forensics_held_out_packages.py tests/test_fif_q0_label_conformance.py tests/test_fif_se_receipts.py tests/test_fif_dev_corpus.py tests/test_fif_pf_health_pointer.py tests/test_fif_a0_production_mode_unit.py tests/test_fif_a18_publish_fault_drill.py tests/test_fundamental_forensics_acquisition.py tests/test_institutional_research_context.py tests/test_fundamental_forensics_attested_history_reader.py tests/test_fundamental_forensics_attested_query_snapshots.py tests/test_fundamental_forensics_catalog_api.py tests/test_fundamental_forensics_disclosure_bundle.py tests/test_fundamental_forensics_disclosure_projection.py tests/test_fundamental_forensics_excel_export.py tests/test_fundamental_forensics_financial_packet_api.py tests/test_fundamental_forensics_formula_not_presented.py tests/test_fundamental_forensics_latency.py tests/test_fundamental_forensics_mapping_pack_v1_1.py tests/test_fundamental_forensics_not_presented.py tests/test_fundamental_forensics_pack_evaluation.py tests/test_fundamental_forensics_page.py tests/test_fundamental_forensics_peer_cohort.py tests/test_fundamental_forensics_peer_comparability.py tests/test_fundamental_forensics_private_state.py tests/test_fundamental_forensics_production_dataset_store.py tests/test_fundamental_forensics_production_provider.py tests/test_fundamental_forensics_q1_held_out_evaluate.py tests/test_fundamental_forensics_q1_held_out_g2_reports.py tests/test_fundamental_forensics_q1_held_out_g3_reports.py tests/test_fundamental_forensics_recovery_drill.py tests/test_fundamental_forensics_statement_refusals.py tests/test_fundamental_forensics_header_period_composition.py tests/test_fundamental_forensics_displayed_title_fold.py tests/test_fundamental_forensics_bare_year_columns.py
   collector-registry:
     if: ${{ false }}
     gate: code
@@ -17970,6 +17847,7 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      - scripts/ci/run_fif_kernel_suites.py
       - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
       - "lib/dataos/identity.py"
       - "lib/economic_propagation.py"

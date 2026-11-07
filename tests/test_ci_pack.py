@@ -1575,6 +1575,8 @@ def test_fif_kernel_siblings_share_one_closure_and_partition_the_suite_once(
     siblings = [by_id[job_id] for job_id in sorted(FIF_KERNEL_SIBLINGS)]
     closures = {tuple(job.paths) for job in siblings}
     assert len(closures) == 1, "sibling closures diverged"
+    for job in siblings:
+        assert job.paths.count("scripts/ci/run_fif_kernel_suites.py") == 1, job.job_id
     # S6: all three curated-exclusive siblings must select changes in imported
     # ancestor packages, not just the downstream .py modules. These paths were
     # missing on the first hosted CI and the ancestor-init census rejected it.
@@ -1602,6 +1604,7 @@ def test_fif_kernel_siblings_share_one_closure_and_partition_the_suite_once(
         slices.append(suites)
     flat = [suite for suites in slices for suite in suites]
     assert len(flat) == len(set(flat)) == 120, (len(flat), len(set(flat)))
+    assert [len(suites) for suites in slices] == [44, 37, 39]
     for suite in flat:
         assert (ROOT / suite).is_file(), suite
     # Every sibling is measured: an unmeasured sibling would fall back to the
