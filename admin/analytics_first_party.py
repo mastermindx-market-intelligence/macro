@@ -239,13 +239,16 @@ def _load_exclusions() -> dict:
             "bots": bots, "geo_overrides": geo}
 
 
-def _excluded_cte() -> str:
+def _excluded_cte(*, focus_visitors: bool = False) -> str:
     """CTE bodies (excl_users, excl_geo_ips, excl_ips, excl_vids, excl_seed, excl_link,
     excluded) — always syntactically valid regardless of config. `excluded` is the set of
     visitor_id cookies to hide: the operator's own (via registered email, a home-location IP,
     a listed IP, a listed cookie id, or a loopback IP — see _LOOPBACK_IPS) PLUS the cookies
     linked to them by shared device fingerprint or routable IP."""
     cfg = _load_exclusions()
+    # Only pages projects OUTPUT IDs; global seeds/anchors/customer history stay intact.
+    target_focus = " and e2.visitor_id in (select visitor_id from focus_visitors)" if focus_visitors else ""
+    seed_focus = " where visitor_id in (select visitor_id from focus_visitors)" if focus_visitors else ""
     # The site administrator is the operator, not a customer. Always suppress the
     # exact registered admin identity and its linked cookies from visitor analytics.
     # Preserve the private exclusion config for additional operator identities.
@@ -301,18 +304,18 @@ def _excluded_cte() -> str:
         "    join (select distinct fp from public.analytics_events "
         "          where visitor_id in (select visitor_id from excl_seed) "
         "            and fp is not null) kf on kf.fp = e2.fp "
-        "  where e2.visitor_id is not null and e2.fp is not null "
+        f"  where e2.visitor_id is not null and e2.fp is not null{target_focus} "
         "  union "
         "  select e2.visitor_id from public.analytics_events e2 "
         "    join (select distinct ip from public.analytics_events "
         "          where visitor_id in (select visitor_id from excl_seed) "
         f"            and {_routable('ip')}) ki on ki.ip = e2.ip "
-        f"  where e2.visitor_id is not null and {_routable('e2.ip')}), "
+        f"  where e2.visitor_id is not null and {_routable('e2.ip')}{target_focus}), "
         # Implicit fingerprint/IP linkage must never hide a *different, verified*
         # account merely because that customer shares a VPN exit or household IP
         # with the operator. Preserve explicit exclusion seeds (e.g. configured
         # IPs, cookies and registered operator accounts) without this restriction.
-        "excluded as (select visitor_id from excl_seed "
+        f"excluded as (select visitor_id from excl_seed{seed_focus} "
         "             union select l.visitor_id from excl_link l "
         "               where not exists (select 1 from public.analytics_events e3 "
         "                 where e3.visitor_id = l.visitor_id "
@@ -774,10 +777,21 @@ def overview(days=7, minutes=None, gap=None) -> dict:
 # the exclusion CTEs above changed it, and Guangzhou and Singapore (both 4 visitors)
 # swapped places on the Map tab with no data behind the move. Found 2026-08-26 while
 # verifying that rewrite; the instability predates it.
+def _pages_cte(minutes: int) -> str:
+    """Reuse the native bot focus while projecting exclusion OUTPUT only.
+
+    Preserve configuration-read order and every global historical classifier.
+    SQL declares focus before its pages-only exclusion consumers.
+    """
+    excluded = _excluded_cte(focus_visitors=True)
+    bots = _bot_cte(minutes)
+    return "with " + bots + ", " + excluded + " "
+
+
 def pages(days=7, limit=25, minutes=None) -> dict:
     m, n = _win(minutes, days, 10080), _limit(limit, 25)
     def run():
-        rows = _query(_cte(bot_window=m) +
+        rows = _query(_pages_cte(m) +
             "select e.site, coalesce(e.path,'(none)') as path, "
             "count(*) filter (where e.type in ('pageview','route'))::int as views, "
             "count(distinct e.visitor_id)::int as visitors, "
