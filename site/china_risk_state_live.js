@@ -105,6 +105,64 @@
     setBL(el, disp.label_en || disp.verdict, disp.label_zh || disp.label_en || disp.verdict);
   }
 
+  /* Presentation-only semantic projection from the feed's measured legs. Never reuse
+     the producer's generic headline here: it can claim "stress is elevated" even when
+     the stress-guard leg itself is healthy, and it obscures the actual weak legs. */
+  function legScore(d, key) {
+    var legs = Array.isArray(d.legs) ? d.legs : [];
+    for (var i = 0; i < legs.length; i += 1) {
+      if (legs[i] && legs[i].key === key) {
+        var n = +legs[i].score;
+        return isNaN(n) ? null : n;
+      }
+    }
+    return null;
+  }
+  function measuredHeadline(d, disp) {
+    var trend = legScore(d, "trend");
+    var breadth = legScore(d, "breadth");
+    var liquidity = legScore(d, "liquidity");
+    var weakTrend = trend !== null && trend < 42;
+    var weakBreadth = breadth !== null && breadth < 42;
+    var weakLiquidity = liquidity !== null && liquidity < 42;
+
+    if (weakBreadth && weakLiquidity && weakTrend)
+      return ["Participation and liquidity are weak; trend remains soft.",
+              "参与度与流动性偏弱；趋势仍然疲软。"];
+    if (weakBreadth && weakLiquidity)
+      return ["Participation and liquidity are weak.", "参与度与流动性偏弱。"];
+    if (weakBreadth && weakTrend)
+      return ["Participation is weak; trend remains soft.", "参与度偏弱；趋势仍然疲软。"];
+    if (weakLiquidity && weakTrend)
+      return ["Liquidity is weak; trend remains soft.", "流动性偏弱；趋势仍然疲软。"];
+    if (weakBreadth) return ["Participation is weak.", "参与度偏弱。"];
+    if (weakLiquidity) return ["Liquidity is weak.", "流动性偏弱。"];
+    if (weakTrend) return ["Trend remains soft.", "趋势仍然疲软。"];
+
+    if (disp.verdict === "RISK_OFF")
+      return ["Measured tape remains risk-off; review the current legs.",
+              "实测盘面仍处于避险状态；请查看当前分项。"];
+    if (disp.verdict === "RISK_ON")
+      return ["Measured tape remains risk-on; review current leg support.",
+              "实测盘面仍偏多；请查看当前分项支撑。"];
+    return ["Measured tape is mixed; wait for the legs to resolve.",
+            "实测盘面处于混合状态；等待分项进一步明朗。"];
+  }
+  function boundaryRead(disp) {
+    var score = +disp.score;
+    var gap = null, enSide = "", zhSide = "";
+    if (isNaN(score)) return null;
+    if (disp.verdict === "RISK_OFF") {
+      gap = 42 - score; enSide = "below"; zhSide = "低";
+    } else if (disp.verdict === "RISK_ON") {
+      gap = score - 60; enSide = "above"; zhSide = "高";
+    }
+    if (gap === null || gap < 0 || gap > 5) return null;
+    gap = Math.round(gap);
+    return ["near Mixed boundary · " + gap + " points " + enSide,
+            "接近「混合」边界 · " + zhSide + " " + gap + " 分"];
+  }
+
   /* Patch the China Market State board (#regime-radar panel on china.html). */
   function patchChina(d) {
     var word = document.getElementById("ms-word");
@@ -143,6 +201,16 @@
     if (sc && disp.score != null) sc.textContent = disp.score;
     var scNum = document.getElementById("mx5-score-numeral");
     if (scNum && disp.score != null) scNum.textContent = disp.score;
+    var boundary = document.getElementById("ms-boundary-chip");
+    if (boundary) {
+      var boundaryCopy = boundaryRead(disp);
+      if (boundaryCopy) {
+        setBL(boundary, boundaryCopy[0], boundaryCopy[1]);
+        boundary.hidden = false;
+      } else {
+        boundary.hidden = true;
+      }
+    }
 
     /* gauge needle + arc fill follow the live score (else the baked needle
        points at last night's number while #ms-score shows the live one).
@@ -171,15 +239,13 @@
     var tick = document.getElementById("ms-tick");
     if (tick && disp.score != null) tick.style.left = disp.score + "%";
 
-    /* .v-thesis — headline_en / headline_zh from the feed.
-       Use the live block's headline when live_active, else the nightly block's.
-       Feed-driven: do NOT hardcode headline prose here. */
+    /* .v-thesis — presentation-only measured-state copy derived from the feed's
+       current leg values. The producer headline is deliberately not reused because
+       it conflates a generic stress phrase with the actual measured weak legs. */
     var thesis = document.querySelector(".v-thesis");
     if (thesis && disp.verdict) {
-      var blk = (d.live_active && d.live && d.live.verdict) ? d.live : (d.nightly || {});
-      var hEn = blk.headline_en || "";
-      var hZh = blk.headline_zh || "";
-      if (hEn || hZh) setBL(thesis, hEn, hZh);
+      var measuredCopy = measuredHeadline(d, disp);
+      setBL(thesis, measuredCopy[0], measuredCopy[1]);
     }
 
     /* .v-flip — hide when the live band has moved off the render-baked verdict */

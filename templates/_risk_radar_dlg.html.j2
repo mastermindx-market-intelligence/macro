@@ -75,11 +75,43 @@
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ _g.get(kind, '<circle cx="12" cy="12" r="8"/>') | safe }}</svg>
 {%- endmacro %}
 
-{% macro risk_radar_dlg(mkt, rd, scares=none, ctx=none) -%}
+{% macro risk_radar_dlg(mkt, rd, scares=none, ctx=none, measured_state=none) -%}
 {#- absent-safe roots: a missing ctx / rd must render, never raise -#}
 {%- set c  = ctx if ctx else {} -%}
 {%- set r  = rd if rd else {} -%}
 {%- set sc = scares if scares else [] -%}
+{%- set m  = measured_state if measured_state else none -%}
+{%- set _mc = namespace(trend=none, breadth=none, liquidity=none, stress=none) -%}
+{%- if m and m.components is defined -%}
+  {%- for comp in m.components -%}
+    {%- if comp.key == 'trend' -%}{%- set _mc.trend = comp.score -%}
+    {%- elif comp.key == 'breadth' -%}{%- set _mc.breadth = comp.score -%}
+    {%- elif comp.key == 'liquidity' -%}{%- set _mc.liquidity = comp.score -%}
+    {%- elif comp.key == 'stress' -%}{%- set _mc.stress = comp.score -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+{%- set _ms_score = m.score if (m and m.score is defined and m.score is not none) else none -%}
+{%- set _ms_verdict = m.verdict if (m and m.verdict is defined) else '' -%}
+{%- set _ms_tone = 'down' if _ms_verdict == 'RISK_OFF' else ('warn' if _ms_verdict == 'MIXED' else 'up') -%}
+{%- set _ms_gap = (42 - _ms_score) if (_ms_score is not none and _ms_verdict == 'RISK_OFF') else ((_ms_score - 60) if (_ms_score is not none and _ms_verdict == 'RISK_ON') else none) -%}
+{%- set _ms_near = (_ms_gap is not none and _ms_gap >= 0 and _ms_gap <= 5) -%}
+{%- set _weak_participation = (_mc.breadth is not none and _mc.breadth < 42) -%}
+{%- set _weak_liquidity = (_mc.liquidity is not none and _mc.liquidity < 42) -%}
+{%- set _soft_trend = (_mc.trend is not none and _mc.trend < 42) -%}
+{#- China P0 evidence disclosure comes from already-projected display fields only.
+    forward_log owns matured rows; track owns monitoring and alert outcomes. -#}
+{%- set _ev_fl = r.forward_log if (r.forward_log is defined and r.forward_log) else {} -%}
+{%- set _ev_track = r.track if (r.track is defined and r.track) else {} -%}
+{%- set _ev_audit = _ev_track if _ev_track else _ev_fl -%}
+{%- set _ev_mon = _ev_audit.get('monitoring', {}) if _ev_audit.get is defined else {} -%}
+{%- set _ev_windows = _ev_audit.get('windows', {}) if _ev_audit.get is defined else {} -%}
+{%- set _ev_full = _ev_windows.get('full', _ev_windows.get('y1', {})) if _ev_windows.get is defined else {} -%}
+{%- set _ev_alerts = _ev_full.get('alerts', {}) if _ev_full.get is defined else {} -%}
+{%- set _ev_matured = (_ev_fl.get('n_graded') if (_ev_fl.get is defined and _ev_fl.get('n_graded') is not none) else (_ev_mon.get('graded_n', 0) if _ev_mon.get is defined else 0)) -%}
+{%- set _ev_loud = _ev_alerts.get('n', 0) if _ev_alerts.get is defined else 0 -%}
+{%- set _ev_hits = _ev_alerts.get('tp', 0) if _ev_alerts.get is defined else 0 -%}
+{%- set _ev_awaiting = _ev_mon.get('awaiting_maturity') if _ev_mon.get is defined else none -%}
 {#- page dialog shell: each country page keeps its OWN open/close JS, backdrop and
    entrance transition (cnxOpenDlg / hkxOpenDlg / caxOpenDlg), so Esc + click-away
    already work and the backdrop stays the one the rest of that page uses. -#}
@@ -95,26 +127,52 @@
   <div class="{{ _dcl }}-backdrop" onclick="{{ _dcx }}"></div>
   <div class="{{ _dcl }}-panel">
     <div class="{{ _dcl }}-head">
-      <span class="{{ _dcl }}-title" id="{{ _did }}-ttl">{{ t(c.title_en if c.title_en else 'Pullback Risk — Radar & Gauges', c.title_zh if c.title_zh else '回撤风险 — 雷达与仪表') }}</span>
-      <button class="{{ _dcl }}-close" type="button" onclick="{{ _dcx }}" aria-label="Close">&#xd7;</button>
+      <span class="{{ _dcl }}-title" id="{{ _did }}-ttl">{% if m %}{{ t('Risk Context — State, Hazard & Authority','风险背景 — 状态、风险与权限') }}{% else %}{{ t(c.title_en if c.title_en else 'Pullback Risk — Radar & Gauges', c.title_zh if c.title_zh else '回撤风险 — 雷达与仪表') }}{% endif %}</span>
+      <button class="{{ _dcl }}-close" type="button" onclick="{{ _dcx }}"><span class="rrd-sr l-en">Close risk context</span><span class="rrd-sr l-zh">关闭风险背景</span><span aria-hidden="true">&#xd7;</span></button>
     </div>
     <div class="{{ _dcl }}-body rrd">
 
-      {# ── 1. Headline: what is loudest, how loud, what to do about it ─────── #}
+      {# ── 1. Semantic stack: measured tape first, then forward hazard. ─────── #}
+      {% if m %}
+      <div class="rrd-eyebrow">{{ t('MEASURED STATE','实测状态') }}</div>
+      <div class="rrd-hd tone-{{ _ms_tone }} rrd-measured-state">
+        <div class="rrd-hd-ico">{{ rrd_glyph('leading') }}</div>
+        <div class="rrd-hd-txt">
+          <div class="rrd-hd-label">
+            {% if _ms_score is not none %}<b>{{ _ms_score }}</b> · {% endif %}{{ t(m.label_en if m.label_en else _ms_verdict|replace('_',' ')|title, m.label_zh if m.label_zh else _ms_verdict) }}
+          </div>
+          {% if _ms_near %}
+          <div class="rrd-hd-sub"><span class="l-en">near Mixed boundary · {{ _ms_gap|round|int }} points below</span><span class="l-zh">接近「混合」边界 · 低 {{ _ms_gap|round|int }} 分</span></div>
+          {% endif %}
+          <div class="rrd-hd-sub">
+            {% if _weak_participation and _weak_liquidity and _soft_trend %}
+              {{ t('Participation and liquidity are weak; trend remains soft.','参与度与流动性偏弱；趋势仍然疲软。') }}
+            {% elif m.headline_en is defined and m.headline_en %}
+              {{ t(m.headline_en, m.headline_zh if m.headline_zh else m.headline_en) }}
+            {% else %}
+              {{ t('Current tape composite; not a crash probability.','当前盘面综合状态；并非崩盘概率。') }}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="rrd-eyebrow">{{ t('TRANSITION HAZARD','转变风险') }}</div>
+      {% endif %}
       <div class="rrd-hd tone-{{ _tone }}">
         <div class="rrd-hd-ico">{{ rrd_glyph('alert') }}</div>
         <div class="rrd-hd-txt">
           <div class="rrd-hd-label">
-            {%- if r.label_en -%}{{ t(r.label_en, r.label_zh if r.label_zh else r.label_en) }}
+            {%- if r.top_score is defined and r.top_score is not none -%}
+              {{ rrc.rr_hazard_band(r.state) }} · {{ rrc.rr_score_percentile(r.top_score) }}
+            {%- elif r.label_en -%}{{ t(r.label_en, r.label_zh if r.label_zh else r.label_en) }}
             {%- else -%}{{ t('No active risk readings','暂无活跃风险读数') }}{%- endif -%}
           </div>
-          {% if r.do_en %}
+          {% if r.top_score is defined and r.top_score is not none and r.label_en %}
+          <div class="rrd-hd-sub">{{ t('Dominant driver','主导因素') }} · {{ t(r.label_en, r.label_zh if r.label_zh else r.label_en) }}</div>
+          <div class="rrd-hd-sub">{% if r.binding %}{{ t('Evidence-gated capital guard is active.','经证据门槛确认的资金护栏已生效。') }}{% else %}{{ t('Advisory context; measured tape retains authority.','仅作提示；实测盘面保留定调权。') }}{% endif %}</div>
+          {% elif r.do_en %}
           <div class="rrd-hd-sub">{{ t(r.do_en, r.do_zh if r.do_zh else r.do_en) }}</div>
           {% else %}
           <div class="rrd-hd-sub">{{ t('Nothing to chase right now — watch.','当前无需追高 — 观望。') }}</div>
-          {% endif %}
-          {% if r.top_score is defined and r.top_score is not none %}
-          <div class="rrd-hd-sub">{{ t('Intensity','强度') }} <b>{{ r.top_score }}</b>/100</div>
           {% endif %}
         </div>
       </div>
@@ -127,6 +185,20 @@
           rd.dd21 BEFORE its own `is not none` guard, so a stub would raise there and take
           the whole page render with it. A stub renders the headline and nothing else. -#}
       {% if r.state and r.dd21 is defined %}{{ rrc.risk_radar_card(r, sc, show_threats=false, plain_gross=(mkt=='cn')) }}{% endif %}
+
+      {% if m %}
+      {# The embedded card's legacy track row is intentionally hidden in country dialogs.
+         Rebuild the authority evidence here so the China operator can actually see it. #}
+      <div class="rrd-eyebrow rrd-evidence-label">{{ t('EVIDENCE / AUTHORITY','证据／权限') }}</div>
+      <div class="rrd-evidence{{ ' is-binding' if r.binding else ' is-advisory' }}">
+        <div class="rrd-evidence-copy">
+          <span class="l-en">Live forward evidence still accruing · <b>{{ _ev_matured }}</b> matured · <b>{{ _ev_loud }}</b> loud · <b>{{ _ev_hits }}</b> hits{% if _ev_awaiting is not none %} · <b>{{ _ev_awaiting }}</b> awaiting maturity{% endif %}</span>
+          <span class="l-zh">实时前瞻证据仍在积累 · <b>{{ _ev_matured }}</b> 条已成熟 · <b>{{ _ev_loud }}</b> 条强警报 · <b>{{ _ev_hits }}</b> 次命中{% if _ev_awaiting is not none %} · <b>{{ _ev_awaiting }}</b> 条待成熟{% endif %}</span>
+        </div>
+        <div class="rrd-evidence-authority">{% if r.binding %}{{ t('BINDING — evidence-gated guard may cap measured tape','约束性 — 经证据门槛确认的护栏可限制实测盘面') }}{% else %}{{ t('ADVISORY — does not override measured tape','提示性 — 不覆盖实测盘面') }}{% endif %}</div>
+        {% if r.gross is defined and r.gross is not none %}<div class="rrd-evidence-context"><span class="l-en">{{ 'binding risk-budget ceiling' if r.binding else 'advisory risk-budget reference' }} ×{{ '%.2f'|format(r.gross) }} · sizing context only; never selects stocks</span><span class="l-zh">{{ '约束性风险预算上限' if r.binding else '提示性风险预算参考' }} ×{{ '%.2f'|format(r.gross) }} · 仅作仓位背景；不用于选股</span></div>{% endif %}
+      </div>
+      {% endif %}
 
       {# ── 3. Signal tiles: Leading · Overseas · Track record · Calendar ───── #}
       {%- set _tl_lead = c.leading if c.leading else none -%}

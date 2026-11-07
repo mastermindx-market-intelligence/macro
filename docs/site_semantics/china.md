@@ -5,12 +5,12 @@ Computing engine: `scripts/build_china.py`.
 
 ---
 
-### Market State Score (hero)
+### Measured Market State (hero)
 
-- **Shown as:** A 0–100 gauge with a needle; numeric score next to a verdict word: "Risk-on", "Mixed", or "Risk-off". ZH: 市场状态分 with 风险偏好 / 混合 / 避险.
-- **Means:** A composite read of the A-share market's current posture — green (risk-on, trend-following supported), yellow (mixed, trade smaller), red (risk-off, defend capital first). It blends trend, volatility, breadth, liquidity, and drawdown-risk legs. It is display-only telemetry and never feeds the scored path.
-- **Computed by:** `engine/market_state.py` `market_state_snapshot` via `engine/market_state_cn.py` `CN_PROFILE`. Legs weighted (trend 0.24, risk 0.18, vol 0.16, breadth 0.16, liquidity 0.14, stress 0.12). Raw score renormalized over resolved legs; forced into band by overrides. Score 0–100.
-- **So what:** Green = trend-follow and add on strength; yellow = size smaller and watch for resolution; red = defend capital, reduce risk first. This is a present-state read, not a forecast.
+- **Shown as:** A 0–100 tape-composite gauge with a needle; numeric score next to a verdict word: "Risk-on", "Mixed", or "Risk-off". ZH: 实测状态 with 风险偏好 / 混合 / 避险. When the score is within five points of the next band, the surface discloses that boundary distance (for example, `39 · Risk-off · near Mixed boundary`).
+- **Means:** A composite read of what the A-share tape is doing now. It blends trend, risk appetite, volatility/froth, breadth, liquidity, and stress-guard legs. The 0–100 value is a measured market-state score; it is **not** a calibrated China crash probability and must not be interpreted as one.
+- **Computed by:** `engine/market_state.py` `market_state_snapshot` via `engine/market_state_cn.py` `CN_PROFILE`. Legs remain weighted trend 0.24, risk appetite 0.18, volatility/froth 0.16, breadth 0.16, liquidity 0.14, stress guard 0.12. Raw score is renormalized over resolved legs and may be constrained only by the existing engine rules. This presentation wave does not change scoring, blend weights, thresholds, overrides, or caps.
+- **So what:** Read the actual weak and strong legs before acting. The headline names the current drivers (for example, weak participation/liquidity with a still-soft trend) rather than substituting a generic stress claim. This is present-state context, not a forecast.
 
 ---
 
@@ -32,12 +32,15 @@ Computing engine: `scripts/build_china.py`.
 
 ---
 
-### Pullback Risk Radar (hero button / popover)
+### Transition Hazard, Forward Odds, and Authority (hero / rack card / dialog)
 
-- **Shown as:** "Pullback risk · [score]" button in the hero, expanding to a popover with a score /100 and per-scare-type bars. ZH: 回撤风险.
-- **Means:** A calibrated leading-risk signal measuring the probability of a ≥5% pullback within the next ~21 sessions. Sub-scores measure credit stress, rates shock, bubble unwind, growth scare, volatility event, and global breadth breakdown, then fused. An "elevated" or "risk-off" state fires a loud banner.
-- **Computed by:** `engine/risk_radar_intl.py` `snapshot` and `CN_PROFILE` (CN-market profile); wired via `engine/market_state.py` `_radar_override_intl`. Calibrated P(≥5% pullback, 21 sessions) from A-share history: calm ~27%, watch ~32%, caution ~35%, elevated ~40%, risk-off ~50%. Base rate ~30.5% (h21, from CN_PROFILE). These are per-market CN calibration values; the US radar uses different odds.
-- **So what:** Elevated/risk-off = take the alert seriously, size down, protect open gains. The signal is loud-and-early by design: it fires before the pullback starts, so some alerts precede moves that don't materialize. Read every alert alongside its stated lift.
+- **Shown as:** A `Transition hazard` control and card labeled with a severity band plus the raw radar rank as a percentile (for example, `EXTREME · 98th percentile`), followed by the dominant external driver and its leading scare scores. The raw radar rank must never appear as a bare `/100` value or be described as a probability. ZH: 转变风险 · 极端 · 第98百分位.
+- **Means:** The percentile describes how extreme the current external-driver configuration is relative to the radar's reference history. It is not a 98% crash probability. The underlying scare legs still come from the existing international radar profile; this wave changes presentation only.
+- **Forward odds:** The displayed ≥5% pullback figures are explicitly labeled `Historical model estimate`. The 21-session estimate is shown beside its normal historical rate and reference-odds multiple. These are historical/model estimates, not certainty and not proof that the live forward record has matured.
+- **Evidence:** The surface exposes the live forward-evidence state from the existing audit projection: matured rows, loud-alert rows, hits, and rows awaiting maturity. `Live forward evidence still accruing` remains visible while the record is young.
+- **Authority:** `can_force=false` / `binding=false` renders as `ADVISORY — does not override measured tape`. A gross factor such as `0.62` is labeled `advisory risk-budget reference ×0.62`, never `half of normal` and never an authoritative suggested position size. It is sizing context only and never stock selection.
+- **Computed by:** `engine/market_state.py` `_radar_to_rd`, using the existing international-radar snapshot and forward-log projection already present in the view model.
+- **So what:** First separate the current measured tape from the forward transition hazard. Then read the historical odds and evidence maturity. Until the authority gate is actually binding, the radar can inform risk budgeting but cannot overrule the measured China state or choose securities. This presentation contract does not change scores, probability surfaces, bands, gross factors, `can_force`, `binding`, forward logs, or portfolio/Prophet authority.
 
 ---
 
