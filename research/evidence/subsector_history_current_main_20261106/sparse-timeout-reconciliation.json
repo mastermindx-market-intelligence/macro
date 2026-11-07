@@ -1,0 +1,82 @@
+{
+  "phase": "sparse_timeout_same_workspace_reconciled",
+  "head": "075445df2872a877fe11049da4d35245068c3a08",
+  "staged_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "engine/subsector_confluence_history.py",
+    "scripts/build_subsector_confluence.py",
+    "templates/subsectors.js",
+    "tests/test_subsector_confluence_history.py",
+    "tests/test_subsector_confluence_history_ui.py"
+  ],
+  "unstaged_paths": [
+    "data/subsector_rotation/confluence_snapshots.jsonl",
+    "site/marketdata/subsector_confluence_history.json",
+    "site/subsectors.js"
+  ],
+  "unmerged": [],
+  "source": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "expected": "166a0c9ef62dce1f7962d58420c917b7848fea46",
+      "actual": "166a0c9ef62dce1f7962d58420c917b7848fea46"
+    },
+    {
+      "path": "data/subsector_rotation/confluence_snapshots.jsonl",
+      "expected": "f043423be9023f4c1d2d2678278f10eb141b1bcf",
+      "actual": "f043423be9023f4c1d2d2678278f10eb141b1bcf"
+    },
+    {
+      "path": "engine/subsector_confluence_history.py",
+      "expected": "48e51c846f17a21f0a6a8a53cfe9c0c5646da837",
+      "actual": "48e51c846f17a21f0a6a8a53cfe9c0c5646da837"
+    },
+    {
+      "path": "scripts/build_subsector_confluence.py",
+      "expected": "9ad33805b91b3285192002390731fe024752515f",
+      "actual": "9ad33805b91b3285192002390731fe024752515f"
+    },
+    {
+      "path": "site/marketdata/subsector_confluence_history.json",
+      "expected": "06cfedfeda6b965f14ec0953b6d8af359e963efe",
+      "actual": "06cfedfeda6b965f14ec0953b6d8af359e963efe"
+    },
+    {
+      "path": "site/subsectors.js",
+      "expected": "2fe99d64f0de298e8229eda78bfda2607a11be1b",
+      "actual": "2fe99d64f0de298e8229eda78bfda2607a11be1b"
+    },
+    {
+      "path": "templates/subsectors.js",
+      "expected": "2fe99d64f0de298e8229eda78bfda2607a11be1b",
+      "actual": "2fe99d64f0de298e8229eda78bfda2607a11be1b"
+    },
+    {
+      "path": "tests/test_subsector_confluence_history.py",
+      "expected": "eaa795758f71cea3fb53c46563bacbbde43e21b3",
+      "actual": "eaa795758f71cea3fb53c46563bacbbde43e21b3"
+    },
+    {
+      "path": "tests/test_subsector_confluence_history_ui.py",
+      "expected": "f36e16ca8b7441b55a3a1e7335007ceb51578c7c",
+      "actual": "f36e16ca8b7441b55a3a1e7335007ceb51578c7c"
+    }
+  ],
+  "all_nine_source_blobs_unchanged": true,
+  "private_entries": 991,
+  "changed_private_entries": [],
+  "source_index_flags": [
+    "H .github/ci/legacy-jobs.yml",
+    "H data/subsector_rotation/confluence_snapshots.jsonl",
+    "H engine/subsector_confluence_history.py",
+    "H scripts/build_subsector_confluence.py",
+    "H site/marketdata/subsector_confluence_history.json",
+    "H site/subsectors.js",
+    "H templates/subsectors.js",
+    "H tests/test_subsector_confluence_history.py",
+    "H tests/test_subsector_confluence_history_ui.py"
+  ],
+  "owner_readonly_status_exit_code": 0,
+  "owner_readonly_status_stdout": "{\"sparse\": true, \"missing_dirs\": [\"data\", \"mockups\", \"site\", \"verify_shots\"], \"partial_dirs\": [], \"stale_locks_removed\": [], \"full_bytes_estimate\": 12964826156, \"untracked_survivors\": {\"data\": 1, \"site\": 1}}\n",
+  "owner_readonly_status_stderr": ""
+}
