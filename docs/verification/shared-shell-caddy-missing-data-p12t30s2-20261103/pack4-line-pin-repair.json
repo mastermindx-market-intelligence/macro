@@ -1,0 +1,20 @@
+{
+  "task": "P12.T30.S3",
+  "original_head": "3e85ba447f8a963332ca9a3eb6677dbf7dc11831",
+  "run": 41703820927,
+  "pack": 4,
+  "job": 126159886434,
+  "fragment_sha256": "1cb688dcdd6dcc5431d90fb66b7f7be7ee5790f33abe2f585a8b506a191673ac",
+  "named_assertion": "tests/test_caddy_hub_boundary.py::test_shipped_caddyfile_line_numbers_match_known_blocks",
+  "original_base_replay": "unavailable;900s exact-base fetch timeout, not restamped",
+  "original_descendants_not_run": 9,
+  "local_discriminator": {
+    "exact_base_named_assertion": "PASS",
+    "candidate_before_repair": "1 RED",
+    "candidate_after_repair": "19 PASS including topology/auth negative cases"
+  },
+  "change": "Last SAFE_FIXED_REWRITE line879\u2192894 plus explanation; remaining six positions, count7 and all classifications unchanged",
+  "runtime_blob_unchanged": "6b2cb0cd7b9081b148fc74549188ec8e6d01c2c5",
+  "custody": "No path overlap with frozen10607 or current10656 CI-owner changed-file inventory; no CI YAML/controller change",
+  "scope": "Local source repair only. Original hosted UNKNOWN/not-run preserved. Contract-delta resource failure remains separate."
+}
