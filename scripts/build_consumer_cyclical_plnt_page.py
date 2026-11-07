@@ -42,6 +42,9 @@ from engine.sector_intelligence.consumer_cyclical_display import display_packet 
 
 TEMPLATE_NAME = "consumer_cyclical_plnt.html.j2"
 PAGE_NAME = "consumer_cyclical_plnt.html"
+# The existing Product Trust withdrawal also owns catalog discovery. The normal
+# registry scanner reads this literal without importing or executing the builder.
+PUBLIC_CARRIER_HELD = True
 FIXTURE_PATH = (
     _REPO_ROOT
     / "data"
@@ -59,7 +62,9 @@ def _is_public_carrier(root: Path) -> bool:
     """True when ``root`` is this checkout or the configured carrier root."""
     import lib.config  # noqa: PLC0415 — tmp-root tests must not pay this import
 
-    return Path(root).resolve() in {_REPO_ROOT, Path(lib.config.ROOT).resolve()}
+    return PUBLIC_CARRIER_HELD and Path(root).resolve() in {
+        _REPO_ROOT, Path(lib.config.ROOT).resolve()
+    }
 
 
 def load_case(fixture_path: Path = FIXTURE_PATH) -> dict[str, Any]:

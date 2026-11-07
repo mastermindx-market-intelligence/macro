@@ -22104,6 +22104,7 @@ jobs:
       - scripts/linear_projector_p1_offline.py
       - templates/_navlinks.html.j2
       - templates/intelligence_hub.html.j2
+      - templates/ontology-theme.js
       - tests/__init__.py
       - tests/agent_eval_continuity_cases.py
       - tests/linear_portfolio_plan_cases.py
@@ -22131,6 +22132,9 @@ jobs:
       - tests/test_f02_owner_map_receipts.py
       - tests/test_mo_b_ledger_reconciliation_2026_09_18.py
       - tests/test_w9b_rec_ns.py
+      - tests/test_tfg1_r3_source_truth.py
+      - research/earnings_intelligence/e3/tfg1_development_boundary_identity_adjudication_r2.json
+      - research/earnings_intelligence/e3/tfg1_development_boundary_identity_adjudication_r3.json
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22161,6 +22165,9 @@ jobs:
             tests/test_agentos_project_proposal.py \
             tests/test_agentos_standing_instructions.py \
             tests/test_project_knowledge_recipes.py -q
+
+      - name: E3-FMT R3 source-truth and sealed-holdout integrity
+        run: python -m pytest tests/test_tfg1_r3_source_truth.py -q
 
   capability-broker:
     if: ${{ false }}
