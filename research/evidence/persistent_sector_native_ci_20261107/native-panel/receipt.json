@@ -1,0 +1,1552 @@
+{
+ "scope": "shipped_panel_native_fetch_over_mounted_api_bytes",
+ "production_authenticated": false,
+ "controlled_auth_events": true,
+ "source_revision": "f223990e0e1dc805108517abde90c17b8883b005",
+ "page_sha256": "7c8fed35b803bbdb33f0e452d152a0751be003a195d77b37a6f6136be090b76e",
+ "wire_sha256": "3e275fc69d22e990f81261c8a803576a832be9332484c7a99b2dddd165a5d425",
+ "wire_bytes": 179788,
+ "generation_id": "captured-sector-1",
+ "content_sha256": "a3573d7cefe87da155ef7575feb2071b4c32c9f562f42d5724b3ec54332d9eab",
+ "source_session": "2026-11-03",
+ "cells": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "height": 900,
+   "locale": "en",
+   "theme": "dark",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "desktop-en-dark--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "desktop-en-dark--native-classification.png",
+    "screenshot_sha256": "f24f4098589e7c3ff84281b29a4bedcf391302c11980235594b93da4838f10c2",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "height": 900,
+   "locale": "en",
+   "theme": "light",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "desktop-en-light--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "desktop-en-light--native-classification.png",
+    "screenshot_sha256": "0ba1d2691e1a4280894f6b99974dfcde5fcc5c7b605ba1c3329ab48e97bd6c18",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "height": 900,
+   "locale": "zh",
+   "theme": "dark",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "desktop-zh-dark--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "desktop-zh-dark--native-classification.png",
+    "screenshot_sha256": "d069dd115bbfd568df7249c2f7accbbc50be83e7bf67503f5b1aeac3d17d3dc0",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "height": 900,
+   "locale": "zh",
+   "theme": "light",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "desktop-zh-light--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "desktop-zh-light--native-classification.png",
+    "screenshot_sha256": "1e2627e5ade08b87620ddb1e56fcafc5ab48a47dc4e075dd31c60a29d8fee0af",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "tablet",
+   "width": 834,
+   "height": 1112,
+   "locale": "en",
+   "theme": "dark",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "tablet-en-dark--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "tablet-en-dark--native-classification.png",
+    "screenshot_sha256": "7c63139248685a61382f103624c57b0b2b306d53fb35ba1a62670819ef9bee79",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "tablet",
+   "width": 834,
+   "height": 1112,
+   "locale": "en",
+   "theme": "light",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "tablet-en-light--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "tablet-en-light--native-classification.png",
+    "screenshot_sha256": "063fc2b6378125d718f3ccb4c33d6ad0ae8240e847c3a9bfdc7376ea21454c87",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "tablet",
+   "width": 834,
+   "height": 1112,
+   "locale": "zh",
+   "theme": "dark",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "tablet-zh-dark--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "tablet-zh-dark--native-classification.png",
+    "screenshot_sha256": "088afe046a8e04522ed92ce87f874742cff9733a8b10f62212ec86e0dec1c4bb",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "tablet",
+   "width": 834,
+   "height": 1112,
+   "locale": "zh",
+   "theme": "light",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "tablet-zh-light--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "tablet-zh-light--native-classification.png",
+    "screenshot_sha256": "683b94ec5997fe328c1b6f160cbe75e46cdbd855b40f31bd537e8a6ea223ad13",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "phone",
+   "width": 390,
+   "height": 844,
+   "locale": "en",
+   "theme": "dark",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "phone-en-dark--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "phone-en-dark--native-classification.png",
+    "screenshot_sha256": "f0aefa14b91abcdaf796cc1f34b84722d3788f2faff393442033be64d9baae42",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "phone",
+   "width": 390,
+   "height": 844,
+   "locale": "en",
+   "theme": "light",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "phone-en-light--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "phone-en-light--native-classification.png",
+    "screenshot_sha256": "037276fedcfc3e883d8fd6ec1180a7c0b1ede5f1c430caac64d8b57c12b6ca53",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "phone",
+   "width": 390,
+   "height": 844,
+   "locale": "zh",
+   "theme": "dark",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "phone-zh-dark--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "phone-zh-dark--native-classification.png",
+    "screenshot_sha256": "6a0c9b03945176561005d004c4264fd6bea5f3b79a61f49185c8bf2f8f77a6ce",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "phone",
+   "width": 390,
+   "height": 844,
+   "locale": "zh",
+   "theme": "light",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "phone-zh-light--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "phone-zh-light--native-classification.png",
+    "screenshot_sha256": "a8a390ecd088cc6e5aa03f011fb19221960107f29fd033d743f1ec88700c9423",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "small",
+   "width": 320,
+   "height": 640,
+   "locale": "en",
+   "theme": "dark",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "small-en-dark--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "small-en-dark--native-classification.png",
+    "screenshot_sha256": "72f58df8cbbbb10a1cff998158d10c0c1d189fa5a4ee7c31df880e15e9d3f8c3",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "small",
+   "width": 320,
+   "height": 640,
+   "locale": "en",
+   "theme": "light",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "small-en-light--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "small-en-light--native-classification.png",
+    "screenshot_sha256": "64f3d305757d23d4bd98432e4059ae2ac9cf836869d152b6411b91b222de6469",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "small",
+   "width": 320,
+   "height": 640,
+   "locale": "zh",
+   "theme": "dark",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "small-zh-dark--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "small-zh-dark--native-classification.png",
+    "screenshot_sha256": "cf67bd39f9ba6f8b775f580cbc9e229846e5bf4deb9ce1598acedb9289ae59e6",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  },
+  {
+   "viewport": "small",
+   "width": 320,
+   "height": 640,
+   "locale": "zh",
+   "theme": "light",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 48,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "small-zh-light--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 48,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "small-zh-light--native-classification.png",
+    "screenshot_sha256": "c53e737bce34f8020534cde43e30cf7c22253e7b6d801d1964cc5a9519912a2f",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": false,
+    "native_settings_controls": false,
+    "settings_visits_separate": false,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": false
+   }
+  }
+ ],
+ "problem_count": 0,
+ "outcome": "captured"
+}

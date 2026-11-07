@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/sector_central.html.j2
+manifest: mockups/evidence/persistent-sector-leadership-20261107/manifest.json

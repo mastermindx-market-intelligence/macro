@@ -1,0 +1,49 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "manifest_sha256": "daca0844edb08aaef2a4d8827ff918b393d2b16c12ac0b885060d14ee6058e71",
+  "source_binding_sha256": "b921b3f59beadeaad1c156d33c49e65e8dfff1f33a4b99278d56eba5ca10c948",
+  "wrapper_sha256": "a7ebe29061419a63b41d4029cb773b578a2bbfb99559d12b2532fe090d2bf43a",
+  "files": 28,
+  "facts_states": [
+    [
+      390,
+      "en",
+      "dark"
+    ],
+    [
+      390,
+      "en",
+      "light"
+    ],
+    [
+      390,
+      "zh-CN",
+      "dark"
+    ],
+    [
+      390,
+      "zh-CN",
+      "light"
+    ],
+    [
+      1440,
+      "en",
+      "dark"
+    ],
+    [
+      1440,
+      "en",
+      "light"
+    ],
+    [
+      1440,
+      "zh-CN",
+      "dark"
+    ],
+    [
+      1440,
+      "zh-CN",
+      "light"
+    ]
+  ]
+}

@@ -1,0 +1,468 @@
+FFFFFF.                                                                  [100%]
+=================================== FAILURES ===================================
+___________________ test_unpinned_entry_scripts_only_shrink ____________________
+
+    def test_unpinned_entry_scripts_only_shrink():
+        baseline = {
+            line.strip() for line in
+            BASELINE_PATH.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        }
+        waivers = _load_sealed_runtime_waivers()
+        current = set(_affected_entry_scripts())
+        stale = sorted(set(waivers) - current)
+        assert not stale, (
+            "Sealed-runtime waiver names a script that is no longer an unpinned "
+            "entry script (it grew a strong pin, left scripts/**, or no longer "
+            "imports repo packages). Delete the waiver row; do not keep a stale "
+            "exception.\n\n  " + "\n  ".join(stale)
+        )
+        current -= set(waivers)
+        added = sorted(current - baseline)
+>       assert not added, (
+            "New entry scripts import repo packages with no repo-root pin.  Add the "
+            "pin, never extend the baseline; prune entries you fix.  A sealed-"
+            "runtime runner that must not pin at module load goes in "
+            f"{_rel(WAIVERS_PATH)} with a non-empty reason, not in the baseline.\n\n"
+            f"{PIN_IDIOM}\n\nunpinned and not in the baseline:\n  "
+            + "\n  ".join(added)
+        )
+E       AssertionError: New entry scripts import repo packages with no repo-root pin.  Add the pin, never extend the baseline; prune entries you fix.  A sealed-runtime runner that must not pin at module load goes in config/script_import_pin_sealed_runtime_waivers.yml with a non-empty reason, not in the baseline.
+E         
+E             _ROOT = Path(__file__).resolve().parent.parent   # scripts/ci/* -> parents[2]
+E             sys.path.insert(0, str(_ROOT))
+E         
+E         unpinned and not in the baseline:
+E           scripts/prepare_sector_native_inputs.py
+E           scripts/prepare_sector_snapshot.py
+E           scripts/vps_live_orchestrator.py
+E       assert not ['scripts/prepare_sector_native_inputs.py', 'scripts/prepare_sector_snapshot.py', 'scripts/vps_live_orchestrator.py']
+
+tests/test_check_script_import_pinning.py:466: AssertionError
+____________________ test_w1a_batch_and_performance_receipt ____________________
+
+self = DatapointResolver(registry=DatapointRegistry(schema='datapoint_registry.v1', registry_version='1.0.0', digest='7dff09b...ector object at 0x1625cacf0>, clock=<function test_w1a_batch_and_performance_receipt.<locals>.<lambda> at 0x10951d7a0>)
+payload = {'entities': [{'type': 'security', 'symbol': 'AAPL'}], 'field_ids': ['market.price.last'], 'audience': 'internal', 'consumer_use': 'query'}
+
+    def resolve(self, payload: ResolutionRequest | Mapping[str, Any]) -> tuple[dict[str, Any], ...]:
+        request = _coerce_request(payload)
+        now = self.clock()
+        if now.tzinfo is None or now.utcoffset() is None:
+            raise DatapointContractError("resolver clock must be timezone-aware")
+        now = now.astimezone(timezone.utc)
+        fields, requested_as_of = _structural_validate(request, self.registry, now)
+    
+        # Identity is normalized only after the complete structural/cost check,
+        # and before any owner adapter I/O.  Current aliases are an edge
+        # convenience, never historical naming evidence.
+        try:
+>           normalized = self.identity_normalizer.normalize_many(request.entities)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+engine/intelligence_workspace/resolver.py:465: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+engine/intelligence_workspace/entity.py:378: in normalize_many
+    issuer_master, aliases, master_rows = _security_sources(self.root)
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+engine/intelligence_workspace/entity.py:243: in _security_sources
+    master_rows = captured.records(SECURITY_MASTER.name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = LegacyReferenceRead(receipt_bytes=b'{"fixture":"legacy"}', artifact_bytes=(('security_master.parquet', b'PAR1\x15\x04\...4, total_bytes=354418688, rows=100000, columns=128, decoded_bytes=67108864, string_bytes=262144, record_bytes=8388608))
+name = 'security_master.parquet'
+
+    def records(self, name: str) -> list[dict[str, Any]]:
+        """Decode only immutable captured bytes, never reopen a latest path."""
+        if name not in REFERENCE_ARTIFACTS:
+            raise IdentityError("identity snapshot: unknown reference member")
+>       return _parquet_records(dict(self.artifact_bytes)[name], name, bounds=self.bounds)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: test_w1a_batch_and_performance_receipt.<locals>.counted_parquet_records() got an unexpected keyword argument 'bounds'
+
+engine/entry_radar/replay/identity_observation_snapshot.py:101: TypeError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-3127/test_w1a_batch_and_performance0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1105fce20>
+
+    def test_w1a_batch_and_performance_receipt(tmp_path, monkeypatch):
+        symbols, ids, symbol_by_id = _fixture_world(tmp_path)
+        counters = Counters()
+    
+        original_read_text = Path.read_text
+    
+        def counted_read_text(path, *args, **kwargs):
+            counters.path_reads[str(path)] += 1
+            return original_read_text(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Path, "read_text", counted_read_text)
+        from engine.entry_radar.replay import identity_observation_snapshot as snapshot_owner
+        original_parquet_records = snapshot_owner._parquet_records
+    
+        def counted_parquet_records(raw, name):
+            counters.parquet_reads[name] += 1  # captured-byte decodes, no latest-path opens
+            return original_parquet_records(raw, name)
+    
+        monkeypatch.setattr(snapshot_owner, "_parquet_records", counted_parquet_records)
+    
+        original_stage_load = StageAdapter._load_document
+    
+        def counted_stage_load(adapter):
+            counters.stage_documents += 1
+            return original_stage_load(adapter)
+    
+        monkeypatch.setattr(StageAdapter, "_load_document", counted_stage_load)
+        original_industry_load = IndustryAdapter._load_json
+    
+        def counted_industry_load(path, required_key):
+            if required_key == "regions":
+                counters.industry_rank_documents += 1
+            elif required_key == "percentiles":
+                counters.industry_member_documents += 1
+            return original_industry_load(path, required_key)
+    
+        monkeypatch.setattr(IndustryAdapter, "_load_json", staticmethod(counted_industry_load))
+    
+        store_map = dict(symbol_by_id)
+    
+        def shared_store_map():
+            counters.shared_store_symbol_maps += 1
+            return store_map
+    
+        earnings_frame = pd.DataFrame(
+            [
+                {"ticker": symbol, "next_date": "2026-10-29", "as_of": "2026-08-22"}
+                for symbol in symbols
+            ]
+        )
+    
+        def load_earnings():
+            counters.earnings_frames += 1
+            return earnings_frame
+    
+        def read_company(params):
+            ticker = params["ticker"]
+            counters.company_reads[ticker] += 1
+            return {
+                "available": True,
+                "status": "ready",
+                "latest_event": {
+                    "call_date": "2026-07-31",
+                    "metrics": {"eps_growth_pct": 12.5, "revenue_growth_pct": 7.25},
+                    "field_lineage": {
+                        "metrics": {
+                            "eps_growth_pct": "earnings_history",
+                            "revenue_growth_pct": "score_overlay",
+                        }
+                    },
+                },
+            }
+    
+        identities = [
+            {
+                "graph_kind": "company",
+                "resolution_state": "RESOLVED",
+                "security_id": security_id,
+                "node_id": f"company:{symbol.lower()}",
+            }
+            for security_id, symbol in symbol_by_id.items()
+        ]
+        edges = [
+            {
+                "type": "MEMBER_OF",
+                "src": f"company:{symbol.lower()}",
+                "dst": "ltheme:finviz:ai",
+                "valid_from": "2026-01-01",
+                "valid_to": None,
+            }
+            for symbol in symbols
+        ]
+    
+        def load_theme_identity():
+            counters.theme_identity_views += 1
+            return identities
+    
+        def load_theme_edges():
+            counters.theme_edge_views += 1
+            return edges
+    
+        def load_theme_meta():
+            counters.theme_meta_views += 1
+            return {"computed_at": "2026-08-23T01:00:00Z", "belief_time": "2026-08-22"}
+    
+        def quote_owner(requested, terminal_data_dir, terminal_hub_url, root):
+            del terminal_data_dir, terminal_hub_url, root
+            counters.quote_batches += 1
+            counters.quote_symbols += len(requested)
+            return {
+                symbol: {
+                    "price": float(100 + symbols.index(symbol)),
+                    "as_of": "2026-08-23T11:59:00Z",
+                    "source": "terminal_hub",
+                }
+                for symbol in requested
+            }
+    
+        adapters = {
+            "quote": QuoteAdapter(
+                root=tmp_path,
+                symbol_resolver=lambda entity: symbol_by_id.get(entity.id),
+                quote_resolver=quote_owner,
+            ),
+            "technicals": TechnicalsAdapter(
+                root=tmp_path,
+                symbol_resolver=lambda entity: symbol_by_id.get(entity.id),
+            ),
+            "stage": StageAdapter(
+                repo_root=tmp_path,
+                vendor="store",
+                symbol_map_loader=shared_store_map,
+            ),
+            "industry": IndustryAdapter(
+                repo_root=tmp_path,
+                vendor="store",
+                symbol_map_loader=shared_store_map,
+            ),
+            "earnings_calendar": EarningsCalendarAdapter(
+                repo_root=tmp_path,
+                vendor="store",
+                symbol_map_loader=shared_store_map,
+                dataframe_loader=load_earnings,
+                staleness_assessor=lambda frame, today: {"stale": 0, "should_warn": False},
+            ),
+            "company_intelligence": CompanyIntelligenceAdapter(
+                repo_root=tmp_path,
+                vendor="store",
+                symbol_map_loader=shared_store_map,
+                reader=read_company,
+            ),
+            "theme": ThemeAdapter(
+                identity_loader=load_theme_identity,
+                edge_loader=load_theme_edges,
+                meta_loader=load_theme_meta,
+            ),
+        }
+    
+        clear_registry_cache()
+        registry_before = counters.snapshot()
+        registry, cold_registry = _measure(load_registry)
+        registry_after_cold = counters.snapshot()
+        cached_registry, warm_registry = _measure(load_registry)
+        registry_after_warm = counters.snapshot()
+        cold_registry["source_loads"] = _delta(registry_before, registry_after_cold)
+        warm_registry["source_loads"] = _delta(registry_after_cold, registry_after_warm)
+        assert cached_registry is registry
+        assert cold_registry["source_loads"]["path_reads"][
+            str(DEFAULT_REGISTRY_PATH)
+        ] == 1
+        assert cold_registry["source_loads"]["path_reads"][
+            str(REGISTRY_SCHEMA_PATH)
+        ] == 1
+        assert not any(warm_registry["source_loads"]["path_reads"].values())
+        assert registry.limits == {
+            "max_fields": 12,
+            "max_entities": 250,
+            "max_cells": 2000,
+            "max_request_cost": 8000,
+        }
+        resolver = DatapointResolver(
+            registry=registry,
+            identity_normalizer=DataOSIdentityNormalizer(tmp_path, today=lambda: date(2026, 8, 23)),
+            adapters=adapters,
+            rights_projector=ThemeRightsProjector(
+                family_resolver=lambda node_id: "finviz_themes",
+                assert_allowed=lambda family: None,
+            ),
+            clock=lambda: NOW,
+        )
+    
+        def resolve(request):
+            before = counters.snapshot()
+            envelopes, timing = _measure(lambda: resolver.resolve(request))
+            timing.update(
+                {
+                    "cells": len(envelopes),
+                    "output_bytes": len(canonical_json_bytes(list(envelopes))),
+                    "source_loads": _delta(before, counters.snapshot()),
+                }
+            )
+            return envelopes, timing
+    
+        _value_validator.cache_clear()
+        schema_reads_before = counters.path_reads[str(VALUE_SCHEMA_PATH)]
+>       one, one_metric = resolve(
+            {
+                "entities": [{"type": "security", "symbol": "AAPL"}],
+                "field_ids": ["market.price.last"],
+                "audience": "internal",
+                "consumer_use": "query",
+            }
+        )
+
+tests/test_intelligence_workspace_performance.py:450: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_intelligence_workspace_performance.py:438: in resolve
+    envelopes, timing = _measure(lambda: resolver.resolve(request))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_intelligence_workspace_performance.py:107: in _measure
+    value = call()
+            ^^^^^^
+tests/test_intelligence_workspace_performance.py:438: in <lambda>
+    envelopes, timing = _measure(lambda: resolver.resolve(request))
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = DatapointResolver(registry=DatapointRegistry(schema='datapoint_registry.v1', registry_version='1.0.0', digest='7dff09b...ector object at 0x1625cacf0>, clock=<function test_w1a_batch_and_performance_receipt.<locals>.<lambda> at 0x10951d7a0>)
+payload = {'entities': [{'type': 'security', 'symbol': 'AAPL'}], 'field_ids': ['market.price.last'], 'audience': 'internal', 'consumer_use': 'query'}
+
+    def resolve(self, payload: ResolutionRequest | Mapping[str, Any]) -> tuple[dict[str, Any], ...]:
+        request = _coerce_request(payload)
+        now = self.clock()
+        if now.tzinfo is None or now.utcoffset() is None:
+            raise DatapointContractError("resolver clock must be timezone-aware")
+        now = now.astimezone(timezone.utc)
+        fields, requested_as_of = _structural_validate(request, self.registry, now)
+    
+        # Identity is normalized only after the complete structural/cost check,
+        # and before any owner adapter I/O.  Current aliases are an edge
+        # convenience, never historical naming evidence.
+        try:
+            normalized = self.identity_normalizer.normalize_many(request.entities)
+        except Exception as exc:
+>           raise RequestValidationError(f"identity normalization failed closed: {exc}") from exc
+E           engine.intelligence_workspace.resolver.RequestValidationError: identity normalization failed closed: test_w1a_batch_and_performance_receipt.<locals>.counted_parquet_records() got an unexpected keyword argument 'bounds'
+
+engine/intelligence_workspace/resolver.py:467: RequestValidationError
+__________________ test_s8_unchanged_downstream_and_fail_soft __________________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-3127/test_s8_unchanged_downstream_a0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x160d4b130>
+
+    def test_s8_unchanged_downstream_and_fail_soft(tmp_path, monkeypatch):
+        from engine import inputs as engine_inputs
+        from engine import narrative_rotation
+        from engine import sector_central
+        from lib import config
+    
+        cyc, rot = _build_fixture_payload()
+        # scratch root: every read (config.ROOT, data_dir, site_dir) lands in tmp_path
+        site_root = tmp_path / "site"
+        (site_root / "marketdata").mkdir(parents=True)
+        (site_root / "marketdata" / "rotation_events.json").write_text(json.dumps(rot), encoding="utf-8")
+        (tmp_path / "config.yml").write_text("storage:\n  site_dir: site\n  data_dir: data\n",
+                                             encoding="utf-8")
+    
+        monkeypatch.setattr("engine.sector_cycles.compute", lambda: cyc)
+        monkeypatch.setattr(sector_central, "market_context", lambda: {"heat": {}})
+        monkeypatch.setattr(engine_inputs, "yahoo_closes", lambda: None)
+        monkeypatch.setattr(narrative_rotation, "compute_narrative_rotation", lambda region: None)
+        monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "data")
+        monkeypatch.setattr(config, "ROOT", tmp_path)
+    
+        out_a = sector_central.compute()
+        assert out_a is not None
+        assert out_a["measured_read"]["schema"] == MEASURED_READ_SCHEMA
+        assert out_a["measured_read"]["confirmed_events"]["status"] == "available"
+        assert out_a["measured_read"]["confirmed_events"]["n_active"] == 2
+    
+        # wiring pin: compute() itself calls _measured_read and ships the key
+        tree = ast.parse(Path(sector_central.__file__).read_text(encoding="utf-8"))
+        fn = next(n for n in ast.walk(tree)
+                  if isinstance(n, ast.FunctionDef) and n.name == "compute")
+        calls = {ast.unparse(n.func) for n in ast.walk(fn) if isinstance(n, ast.Call)}
+>       assert any("_measured_read" in c for c in calls)
+E       assert False
+E        +  where False = any(<generator object test_s8_unchanged_downstream_and_fail_soft.<locals>.<genexpr> at 0x162c52400>)
+
+tests/test_leadership_measured_read.py:405: AssertionError
+_____________ TestActionLaneKeys.test_six_keys_exact_order_pinned ______________
+
+self = <tests.test_xpv2_sector_r3_fixture.TestActionLaneKeys object at 0x10946d090>
+
+    def test_six_keys_exact_order_pinned(self):
+>       lanes = _parse_actnow_lanes()
+                ^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_xpv2_sector_r3_fixture.py:189: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_xpv2_sector_r3_fixture.py:174: in _parse_actnow_lanes
+    return _parse_actnow_lanes_from_text(BUILD_SECTOR_CENTRAL_PY.read_text(encoding="utf-8"))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = '"""Build the US Sector Central Intelligence dashboard -> site/sector_central.html.\n\nThe consolidation hub: engine.s... holdings coverage feed skipped: %s", e)\n    return 0\n\n\nif __name__ == "__main__":\n    raise SystemExit(main())\n'
+
+    def _parse_actnow_lanes_from_text(text: str) -> list[tuple[str, str, bool]]:
+        m = re.search(r"_ACTNOW_LANES\s*=\s*(\[.*?\])\n", text, re.S)
+>       assert m, "could not locate _ACTNOW_LANES literal"
+E       AssertionError: could not locate _ACTNOW_LANES literal
+E       assert None
+
+tests/test_xpv2_sector_r3_fixture.py:169: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+______ TestActionLaneKeys.test_hold_and_avoid_share_the_stand_aside_fold _______
+
+self = <tests.test_xpv2_sector_r3_fixture.TestActionLaneKeys object at 0x110474b90>
+
+    def test_hold_and_avoid_share_the_stand_aside_fold(self):
+>       lanes = _parse_actnow_lanes()
+                ^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_xpv2_sector_r3_fixture.py:193: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_xpv2_sector_r3_fixture.py:174: in _parse_actnow_lanes
+    return _parse_actnow_lanes_from_text(BUILD_SECTOR_CENTRAL_PY.read_text(encoding="utf-8"))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = '"""Build the US Sector Central Intelligence dashboard -> site/sector_central.html.\n\nThe consolidation hub: engine.s... holdings coverage feed skipped: %s", e)\n    return 0\n\n\nif __name__ == "__main__":\n    raise SystemExit(main())\n'
+
+    def _parse_actnow_lanes_from_text(text: str) -> list[tuple[str, str, bool]]:
+        m = re.search(r"_ACTNOW_LANES\s*=\s*(\[.*?\])\n", text, re.S)
+>       assert m, "could not locate _ACTNOW_LANES literal"
+E       AssertionError: could not locate _ACTNOW_LANES literal
+E       assert None
+
+tests/test_xpv2_sector_r3_fixture.py:169: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ TestActionLaneKeys.test_a_dropped_key_in_source_text_is_caught_by_the_real_parser _
+
+self = <tests.test_xpv2_sector_r3_fixture.TestActionLaneKeys object at 0x1102ae190>
+
+    def test_a_dropped_key_in_source_text_is_caught_by_the_real_parser(self):
+        """Mutation half: mutate the SOURCE TEXT (not an already-parsed list)
+        and run it back through the real parser, proving the parser -- not
+        just a Python list comparison -- notices the missing key."""
+        real_text = BUILD_SECTOR_CENTRAL_PY.read_text(encoding="utf-8")
+        mutated_text = real_text.replace('    ("avoid", "dash-hold-fold", True),\n', "")
+>       mutated_lanes = _parse_actnow_lanes_from_text(mutated_text)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_xpv2_sector_r3_fixture.py:203: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = '"""Build the US Sector Central Intelligence dashboard -> site/sector_central.html.\n\nThe consolidation hub: engine.s... holdings coverage feed skipped: %s", e)\n    return 0\n\n\nif __name__ == "__main__":\n    raise SystemExit(main())\n'
+
+    def _parse_actnow_lanes_from_text(text: str) -> list[tuple[str, str, bool]]:
+        m = re.search(r"_ACTNOW_LANES\s*=\s*(\[.*?\])\n", text, re.S)
+>       assert m, "could not locate _ACTNOW_LANES literal"
+E       AssertionError: could not locate _ACTNOW_LANES literal
+E       assert None
+
+tests/test_xpv2_sector_r3_fixture.py:169: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_check_script_import_pinning.py::test_unpinned_entry_scripts_only_shrink
+FAILED tests/test_intelligence_workspace_performance.py::test_w1a_batch_and_performance_receipt
+FAILED tests/test_leadership_measured_read.py::test_s8_unchanged_downstream_and_fail_soft
+FAILED tests/test_xpv2_sector_r3_fixture.py::TestActionLaneKeys::test_six_keys_exact_order_pinned
+FAILED tests/test_xpv2_sector_r3_fixture.py::TestActionLaneKeys::test_hold_and_avoid_share_the_stand_aside_fold
+FAILED tests/test_xpv2_sector_r3_fixture.py::TestActionLaneKeys::test_a_dropped_key_in_source_text_is_caught_by_the_real_parser
+6 failed, 1 passed in 19.19s
