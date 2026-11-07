@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-11-06",
+  "as_of": "2026-11-07",
   "coverage": {
-    "end": "2026-11-06",
+    "end": "2026-11-07",
     "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W45; 14 week(s) have events so far; chronicle event store begins 2008-03-25; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-08-07"
+    "start": "2026-08-08"
   },
   "iso_week": "2026-W45",
   "schema": "chronicle.rollup.weekly/v1",
@@ -11,13 +11,13 @@
     {
       "clusters": [
         {
-          "n_events": 255,
+          "n_events": 442,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 56,
+          "n_events": 62,
           "source": "prophet_ledger",
           "theme": null,
           "top_events": []
@@ -416,7 +416,7 @@
           "top_events": []
         },
         {
-          "n_events": 40,
+          "n_events": 41,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -584,7 +584,18 @@
           "n_events": 300,
           "source": "research_vault",
           "theme": null,
-          "top_events": []
+          "top_events": [
+            {
+              "date": "2026-08-11",
+              "id": "cev-research_vault-9bcacbdd5d30",
+              "kind": "report",
+              "source": "research_vault",
+              "source_ref": "marketdesk-nal7r2gm25q-0e6c2a",
+              "tickers": [],
+              "title": "J.P. Morgan: JPM US Market Intelligence Afternoon Briefing Aug 10",
+              "weight_hint": 3
+            }
+          ]
         },
         {
           "n_events": 203,
@@ -662,19 +673,7 @@
     {
       "clusters": [
         {
-          "n_events": 96,
-          "source": "earnings_call",
-          "theme": "earnings",
-          "top_events": []
-        },
-        {
-          "n_events": 28,
-          "source": "earnings",
-          "theme": "earnings",
-          "top_events": []
-        },
-        {
-          "n_events": 24,
+          "n_events": 3,
           "source": "research_vault",
           "theme": null,
           "top_events": [
@@ -702,14 +701,8 @@
         },
         {
           "n_events": 1,
-          "source": "macro_release",
-          "theme": "nfp",
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "prophet_ledger",
-          "theme": null,
+          "source": "earnings",
+          "theme": "earnings",
           "top_events": []
         }
       ],

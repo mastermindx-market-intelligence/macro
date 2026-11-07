@@ -1,0 +1,256 @@
+{
+  "schema": "mastermind.pb_a_publication_receipt.v1",
+  "operation_key": "PB-A-POLICY-BEHAVIOR-BASELINE-20261007",
+  "observed_at_utc": "2026-10-07T03:25:20Z",
+  "repository": "mastermindx-market-intelligence/macro",
+  "branch": "research/pb-a-policy-behavior-baseline-20261007",
+  "draft_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/8568",
+  "draft_pr_number": 8568,
+  "observed_state": {
+    "open": true,
+    "draft": true,
+    "merged": false,
+    "mergeable": true
+  },
+  "verified_analysis_commit": "a447d120ed9528ae0639b195ec4bc290ef7fd78b",
+  "verified_analysis_tree": "1fa5fcd6d9a74c3eee9dd543464c45545f5a40e7",
+  "original_main_base": "309f88c6c209bdc9fb611de0018fb619d9351b37",
+  "main_observed_at_pr_creation": "007e0cccbd06f089605ba122efc658f406043dd3",
+  "protocol_commit": "99253212652ba7d1248a587c249da44ec6e3b9b6",
+  "forecast_commit_before_outcome_join": "8799d065178b7637bc91a0e69696df8b9ef763f6",
+  "readback": {
+    "all_33_analysis_file_git_blobs_and_sizes_match_local": true,
+    "report_reproduction_completion_manifest_exact_content_readback": true,
+    "changed_paths_exactly_match_intended_files": true,
+    "allowed_prefix": "research/policy_behavior/pro_returns/PB-A/"
+  },
+  "analysis_commit_files": [
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_ANALYSIS_CONTRACT.json",
+      "bytes": 1613,
+      "sha256": "2006ab6ee855ab59ac3ed4ca3b6dda3a23261b0ce66e2a9fc45f0a9211604d17",
+      "git_blob_sha": "abaadb82569ddefb22365626afd3e0fa8d344b2e"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_BASELINE_PILOT.json",
+      "bytes": 5085032,
+      "sha256": "13a608725989e95bd5775dfc21b1f67c4319a82a60bdf99255cfefdf839bc62f",
+      "git_blob_sha": "d050cf328c575965201c3ceca62f3545fece59ba"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_CASEBOOK.json",
+      "bytes": 1820349,
+      "sha256": "421e02d5725f7ee5e07ac3815cf462071b1dbfa1c37ae9aa6edf01b197b66e9c",
+      "git_blob_sha": "ea1e9f500b711e41476c5de27964fd2e50e0c52e"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_COMPLETION.json",
+      "bytes": 8895,
+      "sha256": "c0aed7247b4821ad3a9a8c7e2dcff3132793f15d97631667f3d27d4977c66905",
+      "git_blob_sha": "12dcb4e92f4d38f49bada68ffd70e5e011146b44"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_DECISION_INPUTS.json",
+      "bytes": 30929,
+      "sha256": "8235b465e9c0b05f23d499b849d74789d0ef40cb99885306295b92bdf5485ff5",
+      "git_blob_sha": "58cc02524f8cd347151a0f3e20766177befd0d4d"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_ENDPOINT_SENSITIVITY.json",
+      "bytes": 210794,
+      "sha256": "d5d013bee1b9c3f71e5138a3c2df9e9330862d969845ff8367a48526a8a693dd",
+      "git_blob_sha": "b169bcd655a73350a5c768872c89c5a71d54590d"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_FORECAST_FREEZE.json",
+      "bytes": 597358,
+      "sha256": "2204fc89a45fa6cb3234762316ae63ffdd9f60daae631c799e2d0d5ac55e246a",
+      "git_blob_sha": "3f6dfad2eede8c4093f186d8c0d599e3c21192cf"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_IMPLEMENTATION_CLARIFICATIONS.json",
+      "bytes": 5243,
+      "sha256": "74192c2966f07aad502437120359a8aeba5c834f2e6928902c0423517d4d142c",
+      "git_blob_sha": "0a0b11af3da1381fb3a3ebd0e46050cf055682d6"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_METHOD_AND_FINDINGS.md",
+      "bytes": 45657,
+      "sha256": "1945dc248c4e92f1d4389dcf97205c6397c5ace867825e830cc6ce94749f66a9",
+      "git_blob_sha": "816717cafe098926d07b6efa3c4fe477ab62177a"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_OUTCOMES.json",
+      "bytes": 508815,
+      "sha256": "257be1726d941ff0ae562eb1354ac9820c6abf02a26224b70cb62d544eb4fdfd",
+      "git_blob_sha": "702219edcb61916f72082504c6d3b1e3b059e95a"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_PROTOCOL_FREEZE.json",
+      "bytes": 7477,
+      "sha256": "5f5c4f2b2100defeaf31fa8aa3eaa4975fe46bf4db1723d433f1be9b5dfe009b",
+      "git_blob_sha": "c24feace131bf050c952ef1e491109b0f0c58e0a"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_REPRODUCTION.md",
+      "bytes": 15044,
+      "sha256": "3528158da3bbfcddc654e69fe1dbf8fe2aaa307a79e244001f2000e48b6a04bf",
+      "git_blob_sha": "f458406a8e0387d7df11f139a2b84271b0532c63"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/PB_A_VALIDATION.json",
+      "bytes": 1129,
+      "sha256": "be9b94761ee659a44ef9b24a0d0854dafa019cd815697d9ced252175d963127e",
+      "git_blob_sha": "e8902a020ee8b73b783cb5ebaba1123acdae22ae"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/SHA256SUMS.txt",
+      "bytes": 2975,
+      "sha256": "65e99e612cddea836c8e35da34c84bbbbd320c925c8d989ad9da3594e394a370",
+      "git_blob_sha": "c8abe1c21f1ee053de4c67006cad9e791792fd00"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/audit/casebook_recent_review.md",
+      "bytes": 4396,
+      "sha256": "54cb9441ed14d96b22ae28e7e5acdab9a0baf0f8bd855b5f24d7dd2659e689d9",
+      "git_blob_sha": "a1fffb4653cf12effe5afb40703626bd632dc535"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/audit/protocol_qa.md",
+      "bytes": 10410,
+      "sha256": "f26fa2024b7b339a5ad538abc59bdf5641f1a39f53199919ed030d6afa1cd610",
+      "git_blob_sha": "d2bec321598d65a41f41c4f86784e9127deb53ee"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/audit/protocol_source_qa.md",
+      "bytes": 7266,
+      "sha256": "ff436b6973bc891196f011950da4d93c855415723f37186609fab022db8742d7",
+      "git_blob_sha": "31e6eacbf1365bdc2ceca4c2cb17d26d1322eeca"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/audit/scorer_review.md",
+      "bytes": 6414,
+      "sha256": "b6864d153f54b8f111e2c4c21487032b4ca8b308bd96c6404f124168f5951943",
+      "git_blob_sha": "eefd5f7e6ae9c8ae31050d9a8975aeb0688cb079"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/outcome_inputs/DFEDTARL.csv",
+      "bytes": 41098,
+      "sha256": "84785eaecd20d60da72bedc16051cc4a35d610f69f83691e1ea173152430c7fe",
+      "git_blob_sha": "a10aafd74dd8c6e437bf3105bf5c4b1f0219cf15"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/outcome_inputs/DFEDTARU.csv",
+      "bytes": 41098,
+      "sha256": "9b37fccf4fab63ee892b744a06c9bce1ead3b7c00dc403f050de267b992632cf",
+      "git_blob_sha": "1e1d1db3bcc4173ada0f5651071fd14c368cfecd"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/outcome_inputs/DFII10.csv",
+      "bytes": 29626,
+      "sha256": "6e6066d30e7a2d79a30bbe83537d9e36998cd9083bbe8f6636673413588c6644",
+      "git_blob_sha": "bd905b5bedddfd124919002d932129d784c5efa0"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/outcome_inputs/DGS10.csv",
+      "bytes": 29059,
+      "sha256": "032cbdaa76944acd7aab2cbbe04667486c73a72245c528358f9b2776a66006cb",
+      "git_blob_sha": "6769500d5b024f2957db199e2d31626c8f634b4c"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/outcome_inputs/DGS2.csv",
+      "bytes": 29058,
+      "sha256": "4b7d16bd2e28cc2b0b9e98a35a9b123930b7375f1ad151eccb9e26c8045d7a9b",
+      "git_blob_sha": "cbc0c5946df8b3959f059539c01b99474ef51dab"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/outcome_inputs/T10YIE.csv",
+      "bytes": 29060,
+      "sha256": "fc6cad9f13a43c6567e6f9445bd64edb28ee63613576f7031295b948b0ef9684",
+      "git_blob_sha": "19c1157582352fd6cbd22c2354c4079bfc15e242"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/outcome_inputs/policy_decision_changes.json",
+      "bytes": 36860,
+      "sha256": "3eedd8ed0d93003127a0fe11727508e98a4e0fc64d7039108ac890cadbbf7b4a",
+      "git_blob_sha": "8e2722c253239193640b79a57c89176e0e0a5d51"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/outcome_inputs/retrieval.json",
+      "bytes": 2274,
+      "sha256": "dbfd29af38e93d7ad3f4ae39e2533ea2f71d70241032ab4077a072400507ec13",
+      "git_blob_sha": "c895c79f31bf72ddbf1cc2b6cb48d6a8436414ae"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/pb_a_analyze.py",
+      "bytes": 37916,
+      "sha256": "590155910f811f29fd7230055387fb93f37cd83930d1ee01ef5db8f764774f27",
+      "git_blob_sha": "e4aa2527332f7902dfdb1315acaf2b3511115fa6"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/pb_a_build_casebook.py",
+      "bytes": 31236,
+      "sha256": "cfc5ea728e760059a8caf9f4b688c7bf087371a96c297ac5916af47eed03f04c",
+      "git_blob_sha": "5e9eb4523960e54823179ad241a23308c072abce"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/pb_a_endpoint_sensitivity.py",
+      "bytes": 13389,
+      "sha256": "6fc601779c59531fabcf32ef373ad6c0866dd3c5bd1d664a79909b1b4cd2d5ba",
+      "git_blob_sha": "42d7872cba681a83ca98f4ff935e717938f7d4e2"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/pb_a_verify.py",
+      "bytes": 8502,
+      "sha256": "0119ca84e0e19680e7738e272ce4631224d79d193f48b60aa2529c1e025c49a4",
+      "git_blob_sha": "4f44bd3ca60e3623b8e7a3cee42018586b82c78c"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/source_packets/early_fed_sources.json",
+      "bytes": 118114,
+      "sha256": "b6bafc34cd22ede8c20a98cbc7f35b8794e9ad9cb5092e02fb1afcc82d5fbc57",
+      "git_blob_sha": "11ce5265fe095920c5d4cac6f2d4b07962e018c3"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/source_packets/recent_fed_sources.json",
+      "bytes": 170479,
+      "sha256": "7a5e3836714c66cd1b45aa06aa011eba90ec5e362e41a3ecc1d7c740bcc71ef9",
+      "git_blob_sha": "d9a7625940ab1824e6e545f800bc87507b27f4b4"
+    },
+    {
+      "path": "research/policy_behavior/pro_returns/PB-A/source_packets/treasury_sources.json",
+      "bytes": 127731,
+      "sha256": "fabce64dc7f1451e887592a0b62314d92c1ae0e7b13834f61314a9f2c88761f8",
+      "git_blob_sha": "20a32405620f67d96e65a0af800713cfc58f482e"
+    }
+  ],
+  "validation": "PB_A_VALIDATION.json",
+  "local_reproduction": "PASS: forecast bytes without outcome directory; identical outcome/metric JSON, exploratory diagnostic and reconstructed casebook.",
+  "ci_observation": {
+    "commit": "a447d120ed9528ae0639b195ec4bc290ef7fd78b",
+    "observed_at_utc": "2026-10-07T03:25:20Z",
+    "runs": [
+      {
+        "id": 37566604157,
+        "name": "ci",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 37566603796,
+        "name": "fences",
+        "status": "in_progress",
+        "conclusion": null
+      }
+    ],
+    "scope": "Observed in progress; no CI pass, merge, release or production proof claimed. Final receipt commit may trigger a later run."
+  },
+  "finalization_classification": "PROVEN_OUTCOME",
+  "completed_scope": "Bounded PB-A research return with named full-M2 and market-target data deficiencies.",
+  "parent_W1_complete": false,
+  "PB_G_integration_complete": false,
+  "no_merge_or_live_effect": true,
+  "publication_note": "This receipt follows the verified complete analysis commit. Subsequent changes add this receipt, the draft-PR link and the final integrity manifest; no forecasts, scores, source inputs or analysis code are changed.",
+  "next_owner": "PB-G integration/research owner under parent PR#8560",
+  "next_action": "Review this return as source/action context; retain the richer-M2 promotion gate pending archived pricing, comparable cost/persistence data and a separately frozen matched prospective comparison."
+}
