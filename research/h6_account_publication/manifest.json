@@ -1,0 +1,194 @@
+{
+  "h2_preimage_commit": "69ead1bdc1b7f6e1b62ef186d955d07cbd718dce",
+  "h3_patch_sha256": "a494cb84d86c5592527943d8bb119726949efec62919def65f75cd31701e6ef8",
+  "h3_source_commit": "ef95049fa2e1f8c981497c8a21b643fcbe59f25b",
+  "inputs": [
+    {
+      "bytes": 5200,
+      "git_blob": "fade630ed75c1b93334a5711a6df7a554fbd24ee",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/candidate/commission_deadline.py",
+      "sha256": "76d6523f94d9d8a7323766eb957b93bdd37240c7b4c13a4b097555ed53e8829a"
+    },
+    {
+      "bytes": 24577,
+      "git_blob": "38856700331b3fb3a7706a5745e23fb7b3d18cf0",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/candidate/go_lease_capability.py",
+      "sha256": "d8562f38a397900bd851ddbe8bb27f511fcefc2bcd2af6ae1eea5d55d15c5940"
+    },
+    {
+      "bytes": 45716,
+      "git_blob": "e21b6d6a4e4230fce5f55d90820c6391d4b79324",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/candidate/go_lease_gateway.py",
+      "sha256": "adad5ea3bcfd091730b92707d1ad231f5566cb200b5ffedfe41ef086aab86949"
+    },
+    {
+      "bytes": 201422,
+      "git_blob": "d8577c6ee5cc9bd3e7fc22905530f4755b860ae0",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/candidate/lease_broker.py",
+      "sha256": "a84752dc40598bbf8411d7b992d32cda6c76156d534c4925c2eca5083f097360"
+    },
+    {
+      "bytes": 169718,
+      "git_blob": "d17447c3c9f472b061733e36fa49a7f8d7e34ee5",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/candidate/pick.py",
+      "sha256": "5d37967731337fa6d49a6a119d415c66fcc35802c167b16de7e8a1751f950892"
+    },
+    {
+      "bytes": 30928,
+      "git_blob": "981f35a01183e83fdb9f0b8a4175b290cdeb85f8",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/candidate/provider_outcome.py",
+      "sha256": "ff909ac6fb0a734ce0ea1aa78c2b04e992c170e5be413c1b7778e6ffd7c7907e"
+    },
+    {
+      "bytes": 28888,
+      "git_blob": "1583a6ba773e56dbc3f295b65ffc08dea2d31d48",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/candidate/quota_circuit.py",
+      "sha256": "0b1b07b950625abfa5a935c273594156ea6b8f97ac6426820666f55ac498c303"
+    },
+    {
+      "bytes": 35507,
+      "git_blob": "5519f1eb97f0453e68ae64519b6de1e3e2d063f9",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/candidate/quota_remote.py",
+      "sha256": "3c1484864848b5cdf4daeecde092f7c407ab313a9f0d94a7f0fd204dbcf813b8"
+    },
+    {
+      "bytes": 5692,
+      "git_blob": "53f0cab2d1aaa2c07f9ec137ecdece939da74d0e",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/source/fabric_policy_snapshot.py",
+      "sha256": "a711a79f89f135d0434bea1161da3cd0d786522998904e692f316b5e5628ba20"
+    },
+    {
+      "bytes": 60789,
+      "git_blob": "ab183c19184b5089f67ac3b6174f0529e1575ede",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/source/lease_broker.py",
+      "sha256": "d2eb24f6a87c006f6b65098cb1336ae749481745e8bc8ff3e31f7c964d88aa3a"
+    },
+    {
+      "bytes": 6366,
+      "git_blob": "96093c2747d2dda69b3f2255cb84e656355c87ea",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/source/model_tier.py",
+      "sha256": "507a8aa66015848873f1831dfaa7efabc619362c0dafb28238aa21a1ad8e2d7d"
+    },
+    {
+      "bytes": 51566,
+      "git_blob": "02922043357d63b4bcfa3791899df27a5c42be12",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/source/pool_status.py",
+      "sha256": "494bcc3a0115ba98160139bdc1452a8b8850b966844fcc2634fe0fdeffaa9111"
+    },
+    {
+      "bytes": 8253,
+      "git_blob": "e511ab65fe1cd30bf4d2addac6700ca43c3468da",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/tests/_offline_boundary.py",
+      "sha256": "a89278e46aff2c71bffb2b8112eb55a09f6607c9c34812bd42f7fbebf146c9eb"
+    },
+    {
+      "bytes": 47260,
+      "git_blob": "4cc542888358bf6b46a1e78c581af5ef2f7178aa",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/tests/test_application_turn_admission.py",
+      "sha256": "df0581b2c27a4c42807989e295f92dc9e73664fcbcdcbb670fb3b204b37bdcc4"
+    },
+    {
+      "bytes": 37531,
+      "git_blob": "4d82fe9e4aad5a6e192ea31d03719e112c206f94",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/tests/test_application_turn_effects.py",
+      "sha256": "c7a5c8c68425621c4359131f55cd71d20f9273c02e5b7e22031d5d36f4ed298e"
+    },
+    {
+      "bytes": 5010,
+      "git_blob": "26da27f7e6b8f809147be45071e16a2d5612c04e",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/tests/test_broker_fair_share_order.py",
+      "sha256": "326c0b3cf23ade0585c43550175c8e47565dc18434a127d6f3da97c2b90954c5"
+    },
+    {
+      "bytes": 39302,
+      "git_blob": "23dbd2812e333c7b96313d089a37131cc2638d01",
+      "owner": "native",
+      "path": "ops/native_fabric/quota_continuity/candidate/support_bundle.py",
+      "sha256": "8fc20a93e4c1b725064398217f8fab25917ad151558d461dc82daebb38920dca"
+    },
+    {
+      "bytes": 75273,
+      "git_blob": "d22c0b6b06b78bc85896abfe79c3b66a5f172c9f",
+      "owner": "h2",
+      "path": "ops/native_fabric/grok47/quota_billing/quota_remote.py",
+      "sha256": "91c89d4197d791a078e804db9c591c4cddc197f1e35f54f46fba95fe7b27a9a5"
+    },
+    {
+      "bytes": 36727,
+      "git_blob": "3366ea16629adf77e2e44de7c3b80a3d41e0f1e9",
+      "owner": "h2",
+      "path": "tests/test_native_fabric_account_quota.py",
+      "sha256": "44b28d9b37e419943132cbe311de08122512df4878d8741fa032e81cb4d47622"
+    }
+  ],
+  "integration_gates": [
+    "Native final source/manifest composition and exact-head required CI/release holds",
+    "Installed original caller lock order and all mutable configuration publishers participation",
+    "Actual H2 integer per-window envelope, entitlement and enforced whole-operation no-overage ceiling",
+    "Shared-window memberships and original terminal/reset liability accounting and retention",
+    "Qualified installation/readback and legitimate primary/worker/OS acceptance of H6 original ten rows"
+  ],
+  "native_composer": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/2175",
+  "native_preimage_commit": "cd557dc05e26b70f2d8f56ad0da2df76a15d74ca",
+  "native_repository": "mastermindx-market-intelligence/Mastermind",
+  "outputs": [
+    {
+      "bytes": 225544,
+      "git_blob": "54193249dcd71ad4443d237af758503386cf37f0",
+      "path": "ops/native_fabric/quota_continuity/candidate/lease_broker.py",
+      "sha256": "a3336e55ee0f8ed8a2c6590429c6114dff26af4c77af9625dae888f399ef2232"
+    },
+    {
+      "bytes": 86410,
+      "git_blob": "7df5d489ce6bdb068f3cdce99f93718b5497a97a",
+      "path": "ops/native_fabric/quota_continuity/candidate/quota_remote.py",
+      "sha256": "412f519273f4af02ae024d4a4a572dd2ae1a3568484639b817f3fc37e68e46d5"
+    },
+    {
+      "bytes": 25208,
+      "git_blob": "5153fc6474d41640e4589ca09bcad07fab2965b0",
+      "path": "ops/native_fabric/quota_continuity/tests/test_expiry_account_admission.py",
+      "sha256": "f9fae959431411b3b045d1d181e7a7f6aa88b8753d2d0b7a4e3d0bb27dcb462e"
+    },
+    {
+      "bytes": 15294,
+      "git_blob": "6281a7a541b54c00d3f44bb3751fe9df84d63750",
+      "path": "ops/native_fabric/quota_continuity/tests/test_h6_quota_publication.py",
+      "sha256": "f1ad1843da9ae8c26259be4662d120f76e02ecb0d4ad68daa189e0f6b6aac7f4"
+    },
+    {
+      "bytes": 86410,
+      "git_blob": "7df5d489ce6bdb068f3cdce99f93718b5497a97a",
+      "path": "ops/native_fabric/grok47/quota_billing/quota_remote.py",
+      "sha256": "412f519273f4af02ae024d4a4a572dd2ae1a3568484639b817f3fc37e68e46d5"
+    }
+  ],
+  "patch_sha256": "06d4bb2d027c7807685c6c5a38a7526777fd0114d9cac02b3dbf6437dc375ffd",
+  "qualification": {
+    "current_h2_cases": 43,
+    "h6_cases": 13,
+    "negative_discriminators": 4,
+    "original_h3_native_cases": 91,
+    "positive_total": 147
+  },
+  "runtime_activation_authorized": false,
+  "schema": "mastermind.h6_account_publication_contribution.v1",
+  "source_carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/7142",
+  "state": "SOURCE_CONTRIBUTION_ONLY"
+}
