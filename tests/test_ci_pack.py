@@ -5319,6 +5319,9 @@ CURATED_EXCLUSIVE = {
     # exact 55-file non-wildcard import closure plus the eight Jinja templates the
     # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
     "global-liquidity-transmission",
+    # Provider Control: the bounded projection contract is an explicit
+    # exclusive CODE owner; its full dependency closure remains guarded.
+    "provider-capacity-contract",
 }
 
 
