@@ -1,0 +1,79 @@
+{
+  "base": "04028b303",
+  "target": "be8a29c43973a2140056275a08769020b209ff68",
+  "previous_head": "1e5992d1376943d5b7b899d5382241e6eb8efc76",
+  "changed_paths": 13404,
+  "proof_dependency_changes": [
+    "engine/company_intelligence/industrials_fiscal.py",
+    "engine/company_intelligence/industrials_period_enrollment.py",
+    "scripts/build_rates_command.py",
+    "scripts/ci_pack_fragments.py",
+    "site/basketdata/pulse.json",
+    "templates/chat.html",
+    "templates/dashboard.html.j2",
+    "templates/mm_brain.js",
+    "templates/sector_central.html.j2",
+    "tests/test_ci_pack.py",
+    "tests/test_ci_pack_fragments.py",
+    "tests/test_consumer_cyclical_projection.py",
+    "tests/test_finance_page_signal.py",
+    "tests/test_industrials_period_enrollment.py",
+    "tests/test_rates_command.py",
+    "tests/test_sni_class_duplicate_guard.py",
+    "tests/test_sni_correction_lineage_guard.py",
+    "tests/test_sni_kpi_missingness_guard.py",
+    "tests/test_sni_then_known_guard.py",
+    "tests/test_sni_view_state_guard.py"
+  ],
+  "canonical_govrev_changes": [],
+  "bindings": {
+    "templates/theme.js": {
+      "same": false,
+      "old_sha256": "f692f0e2cb6bfa58e2a9453fb0e28faab9793a3dc9a8350934bd43eaf45f6bd8",
+      "new_sha256": "7d42a019d82f669c372d561f07bfde918309b852ae4dad24b9898f021d9222ba"
+    },
+    "templates/theme.css": {
+      "same": true,
+      "old_sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+      "new_sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a"
+    },
+    "templates/_site_nav.html.j2": {
+      "same": false,
+      "old_sha256": "2056ac2e8b301a47ce41dc4d76758de8bd3167151abd611340ae06be4dda8455",
+      "new_sha256": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482"
+    },
+    "templates/_navlinks.html.j2": {
+      "same": false,
+      "old_sha256": "4b909789102ad5b44f6f2da2851d6ebe8aa5f1b2967211e84c0e48c0a774060b",
+      "new_sha256": "5318e6f11db80e225707cd02b0776f590c3defcaf6aaca81085e9bd956981242"
+    },
+    "templates/research_screener.html.j2": {
+      "same": true,
+      "old_sha256": "247d5a3cb79896b8a35ff15a6540ba465141aceb60bb7b9ef401ca4bd0181ffa",
+      "new_sha256": "247d5a3cb79896b8a35ff15a6540ba465141aceb60bb7b9ef401ca4bd0181ffa"
+    },
+    "scripts/optimize_assets.py": {
+      "same": true,
+      "old_sha256": "9c8697398bed0f504385e740c62ed0e1fc80b3620a8c64668c2983109241fddc",
+      "new_sha256": "9c8697398bed0f504385e740c62ed0e1fc80b3620a8c64668c2983109241fddc"
+    }
+  },
+  "outputs": {
+    "site/government_revenue.html": {
+      "old_bytes": 189591,
+      "incoming_bytes": 282986,
+      "same": false
+    },
+    "site/research_screener.html": {
+      "old_bytes": 72696,
+      "incoming_bytes": 72696,
+      "same": false
+    },
+    "site/theme.js": {
+      "old_bytes": 264989,
+      "incoming_bytes": 412132,
+      "same": false
+    }
+  },
+  "served_asset_delta": "MM_BRAIN_VER cache key only e3bc0580 -> 3c737978 in theme.js; both rendered HTML pages reference new theme digest. Fresh P0B loaded-asset proof required."
+}

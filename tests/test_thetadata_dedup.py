@@ -544,3 +544,49 @@ class TestAuditDupSpotCheck:
         assert dup_warns, (
             f"Expected DUP RATE HIGH warning in audit; got warnings: {result['warnings']}"
         )
+
+
+@pytest.mark.parametrize("order", [1, 2, 3])
+def test_native_greeks_preserve_present_raw_observation_clocks_without_inventing_availability(order):
+    from collectors.thetadata import _normalize_greeks_df
+    clocks = ["2026-01-01T15:59:59.123", None]
+    underlying = ["2026-01-01T15:59:59.100-05:00", None]
+    raw = pd.DataFrame({"symbol": ["SPY", "SPY"], "expiration": ["2026-01-17"] * 2,
+        "strike": [100, 101], "right": ["CALL", "PUT"], "timestamp": clocks,
+        "underlying_timestamp": underlying, "delta": [.5, -.5], "gamma": [.01, .01],
+        "speed": [.001, .001], "implied_vol": [.2, .2], "underlying_price": [100, 100]})
+    out = _normalize_greeks_df(raw.copy(), order=order)
+    assert out["timestamp"].iloc[0] == clocks[0] and pd.isna(out["timestamp"].iloc[1])
+    assert out["underlying_timestamp"].iloc[0] == underlying[0] and pd.isna(out["underlying_timestamp"].iloc[1])
+    assert "available_at" not in out.columns
+    assert "greeks_available_at" not in out.columns
+    assert ("gamma" in out.columns) == (order >= 2)
+    assert ("speed" in out.columns) == (order >= 3)
+    missing = _normalize_greeks_df(raw.drop(columns=["timestamp", "underlying_timestamp"]), order=order)
+    assert "timestamp" not in missing.columns and "underlying_timestamp" not in missing.columns
+    assert missing["date"].isna().all()
+
+
+def test_native_greek_clock_distinctions_survive_full_row_dedup():
+    from collectors.thetadata import _normalize_greeks_df
+    base = dict(symbol="SPY", expiration="2026-01-17", strike=100, right="CALL",
+                timestamp="2026-01-01T15:59:59.100", underlying_timestamp="2026-01-01T15:59:59.090",
+                delta=.5, gamma=.01, implied_vol=.2, underlying_price=100)
+    raw = pd.DataFrame([base, base, {**base, "timestamp": "2026-01-01T15:59:59.101"},
+                        {**base, "underlying_timestamp": "2026-01-01T15:59:59.091"}])
+    out = _normalize_greeks_df(raw, order=3)
+    assert len(out) == 3 and not out.duplicated().any()
+    assert out["date"].dt.date.nunique() == 1
+
+
+def test_native_oi_preserves_raw_report_clock_and_distinct_observations():
+    from collectors.thetadata import _normalize_oi_df
+    base = dict(symbol="SPY", expiration="2026-10-23", strike=100,
+                right="CALL", timestamp="2026-10-15T06:30:00.100", open_interest=100)
+    raw = pd.DataFrame([base, base, {**base, "timestamp": "2026-10-15T06:30:00.101"}])
+    normalized = _normalize_oi_df(raw)
+    assert normalized["timestamp"].tolist() == [base["timestamp"], "2026-10-15T06:30:00.101"]
+    assert normalized["date"].dt.date.astype(str).tolist() == ["2026-10-15"] * 2
+    assert not any("available" in name or "first_seen" in name for name in normalized.columns)
+    missing = _normalize_oi_df(raw.iloc[:1].drop(columns="timestamp"))
+    assert "timestamp" not in missing.columns and missing["date"].isna().all()

@@ -914,6 +914,24 @@ def reconcile_observations(
             expected_suppression = _suppression(
                 observation, str(committed_suppression["reason"])
             )
+            if (
+                committed_suppression["reason"] == "IDENTITY_UNRESOLVED"
+                and committed_suppression["security_id"] is None
+                and source_system == "turn_watch"
+                and source_schema == "prophet.candidate_episode_input.turn_watch/v1"
+                and re.fullmatch(r"turn_watch:[0-9a-f]{64}", source_event_id)
+                and _SHA256_RECEIPT_RE.fullmatch(receipt)
+            ):
+                # Native TURN WATCH intake binds the row/session in its key and
+                # the full source document in its receipt. Later identity data
+                # may resolve that same consumed row. Keep its original identity
+                # refusal and source-cut session, not the newly derived security
+                # or trigger session. The exact key, receipt and ticker must
+                # still match below; this never promotes a suppression to an event.
+                expected_suppression["security_id"] = None
+                expected_suppression["observation_session"] = committed_suppression[
+                    "observation_session"
+                ]
             if canonical_json(_suppression_source_facts(expected_suppression)) != canonical_json(
                 _suppression_source_facts(committed_suppression)
             ):

@@ -10,12 +10,14 @@ from __future__ import annotations
 import hashlib
 from collections.abc import Callable
 from dataclasses import dataclass
+from functools import partial
 from typing import Any
 
 from .financial_intelligence_packet import (
     assemble_financial_intelligence_packet,
     canonical_packet_bytes,
 )
+from .issuer_sic import IssuerSicResolver, resolve_issuer_sic
 from .query_service import (
     MAX_RESPONSE_BYTES,
     FinancialQueryAdmissionError,
@@ -47,6 +49,7 @@ def execute_financial_packet(
     body: bytes,
     provider: FinancialPacketProvider | None = None,
     provider_factory: Callable[[], FinancialPacketProvider] | None = None,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> FinancialPacketResult:
     """Admit, construct PacketQueryRequest, resolve, assemble, and serialize.
 
@@ -62,16 +65,30 @@ def execute_financial_packet(
         provider = provider_factory()
     dataset = provider.resolve(admitted.entity_id)
     binding = validate_packet_dataset(admitted.entity_id, dataset)
-    # A0 (D-2): the production store keys filing metadata by accession while
-    # the frozen assembler resolves it by occurrence id; normalize at this
-    # boundary. Identity for the occurrence-keyed golden/FIP1 fixtures.
-    filing_metadata = occurrence_keyed_filing_metadata(dataset.ledger, dataset.filing_metadata)
     # FIF D3 (A12): the dataset's own admission clock gates the system view.
     # The canonical packet bytes themselves stay exactly the frozen assembler's
     # output — the production delivery object rides the revisions envelope,
     # never the packet body, whose content_sha256 is a frozen contract.
     enforce_dataset_admission_floor(admitted.policy, dataset)
+    # R1-SIC: resolve the issuer SIC from the shipped coverage contract by
+    # the binding's own CIK; no record means no SIC (fail-closed).
+    sic_resolver = (
+        issuer_sic_resolver
+        if issuer_sic_resolver is not None
+        else partial(resolve_issuer_sic)
+    )
+    # A0 (D-2): the production store keys filing metadata by accession while
+    # the frozen assembler resolves it by occurrence id; normalize at this
+    # boundary. Identity for the occurrence-keyed golden/FIP1 fixtures.
+    # A0-h1 (MINOR-4): the normalization sits INSIDE the assemble try, AFTER
+    # the admission floor above and immediately before the assembly it feeds
+    # — so a request the floor refuses keeps its typed refusal instead of
+    # the helper's raw ValueError winning the race, and a metadata defect
+    # (unknown key, conflicting metadata) surfaces as a typed
+    # FinancialQueryUnavailableError from the service, never a raw
+    # ValueError into the API catch-all.
     try:
+        filing_metadata = occurrence_keyed_filing_metadata(dataset.ledger, dataset.filing_metadata)
         packet = assemble_financial_intelligence_packet(
             entity=dataset.entity,
             ledger=dataset.ledger,
@@ -80,6 +97,7 @@ def execute_financial_packet(
             metric_registry=dataset.registry,
             context=dataset.context,
             input_digests=dataset.input_digests,
+            issuer_sic_resolver=sic_resolver,
         )
     except FinancialQueryAdmissionError:
         raise

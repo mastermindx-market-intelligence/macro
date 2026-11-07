@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-15T07:18:27.988486+00:00",
+  "parent": "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17",
+  "hosted_test_commit": "0ec629a508fe96af93d1b1bc1d5405343952b30e",
+  "paths_added": [
+    "engine/sector_intelligence/consumer_cyclical_display.py",
+    "engine/sector_intelligence/consumer_cyclical_projection.py",
+    "engine/sector_intelligence/consumer_cyclical_shared_contract.py",
+    "engine/sector_intelligence/finance_case_signal.py",
+    "engine/sector_intelligence/finance_page_signal.py",
+    "engine/sector_intelligence/finance_projection.py",
+    "engine/sector_intelligence/finance_watching.py",
+    "engine/sector_intelligence/finance_witness_hints.py",
+    "scripts/build_consumer_cyclical_plnt_page.py"
+  ],
+  "all_319_job_definitions_prior_paths_order_limits_preserved": true,
+  "only_changed_file": ".github/ci/legacy-jobs.yml",
+  "source_patch_sha256": "d635bed6d7a3ea62aab2e3316c3f8456563b4668192b61a02914ddcd7aa541c2",
+  "scope": "Ordinary source-only correction; same exact patch on an isolated existing hosted commit for qualification. No base integration/carrier refresh/remote mutation."
+}

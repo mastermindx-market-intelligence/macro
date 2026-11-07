@@ -34,11 +34,13 @@ from collections.abc import Collection, Iterable, Mapping
 from dataclasses import dataclass
 from datetime import date, datetime
 from enum import StrEnum
+from fractions import Fraction
 from types import MappingProxyType
 
 from .temporal import (
     KNOWN_AT_CLOCKS, Clock, TemporalError, TemporalProfile, assert_pit_readable, utc,
 )
+from .nulls import MissingReason, NullPolicy
 
 __all__ = [
     "READ_CONTRACT_VERSION", "ReadMode", "RefusalCode", "ReadContractError",
@@ -90,6 +92,11 @@ class RefusalCode(StrEnum):
     RETAINED_DIGEST_MISMATCH = "RETAINED_DIGEST_MISMATCH"
     KEY_TYPE_MISMATCH = "KEY_TYPE_MISMATCH"
     DUPLICATE_KEY = "DUPLICATE_KEY"
+    DUPLICATE_MEMBER = "DUPLICATE_MEMBER"
+    COVERAGE_UNRECONCILED = "COVERAGE_UNRECONCILED"
+    BASIS_CHANGED = "BASIS_CHANGED"
+    IDENTITY_CHANGED = "IDENTITY_CHANGED"
+    FALLBACK_NOT_DECLARED = "FALLBACK_NOT_DECLARED"
 
 
 class ReadContractError(TemporalError):
@@ -288,6 +295,7 @@ class ReadResult:
     evidence: Mapping[str, object]
     values: Mapping[str, tuple[Mapping[str, object], ...]]
     payload: bytes | None = None
+    coverage: CoverageResult | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "evidence", MappingProxyType(dict(self.evidence)))
@@ -297,6 +305,15 @@ class ReadResult:
             self, "values",
             MappingProxyType({n: tuple(MappingProxyType(dict(row)) for row in rows)
                               for n, rows in self.values.items()}))
+        # C02: the fixed-population coverage account rides on the result owner; it must
+        # have been accounted under this very view contract.
+        if self.coverage is not None:
+            if not isinstance(self.coverage, CoverageResult):
+                raise ReadContractError(
+                    f"coverage must be a CoverageResult, got {type(self.coverage).__name__}")
+            if self.coverage.contract != self.contract:
+                raise ReadContractError(
+                    "coverage was accounted under a different view contract")
 
 
 def _result(mode: ReadMode, label: str, contract: ViewContract, evidence: dict,
@@ -865,3 +882,410 @@ def selected_input_sha256s(result: ReadResult) -> Mapping[str, str]:
                               separators=(",", ":"), ensure_ascii=False)
         digests[name] = hashlib.sha256(blob.encode("utf-8")).hexdigest()
     return MappingProxyType(digests)
+
+
+# ── C02: the fixed-population coverage account ───────────────────────────────
+#
+# A cohort read answers for a FROZEN requested population: every member gets
+# exactly ONE auditable disposition (C02.01), and the denominator is the
+# population as requested — never the members that happened to answer.  A
+# missing or incompatible member can never be dropped to improve availability
+# or accuracy (C02.02); zero, missing, confirmed no-trade, stale and
+# never-inspected stay DISTINCT dispositions (C02.03), because collapsing them
+# is how "we did not look" becomes "there is nothing here".  A deepest-history
+# or first-available source that would change the adjustment basis or the
+# listing under a member is a typed per-member refusal, never a silent splice
+# (C02.04).  Qualified (admitted for strict calculation) and displayable
+# (shown as context) are separate sets: a declared fallback source is context
+# for a member, never a substitute for it (D00.D4).  STDLIB + ``.temporal`` +
+# ``.nulls`` only; no wall clock, no IO, no float anywhere.
+
+
+class Disposition(StrEnum):
+    """The eight auditable dispositions of one population member; ``value == name``."""
+
+    SERVED = "SERVED"                    # eligible primary-source value; strict calculation
+    FALLBACK = "FALLBACK"                # declared non-primary source: context, NEVER qualified
+    ZERO = "ZERO"                        # a stored 0 was observed; qualified ONLY when policy allows
+    NO_TRADE = "NO_TRADE"                # confirmed no-trade evidence (incl. a halt); receipt in detail
+    STALE = "STALE"                      # a row exists but is older than the request requires
+    MISSING = "MISSING"                  # asked, nothing usable came back; carries a MissingReason
+    NEVER_INSPECTED = "NEVER_INSPECTED"  # in the population, but no source was ever asked
+    REFUSED = "REFUSED"                  # incompatible (drift, undeclared fallback, ...); a RefusalCode
+
+
+#: Dispositions that carry a value FROM a source: each needs >= 1 segment and
+#: is subject to the C02.04 identity/basis drift check.
+_VALUE_DISPOSITIONS = frozenset({
+    Disposition.SERVED, Disposition.FALLBACK, Disposition.ZERO, Disposition.STALE,
+})
+
+#: Dispositions whose ``detail`` is the evidence receipt and may never be blank.
+_DETAIL_REQUIRED = frozenset({
+    Disposition.FALLBACK, Disposition.NO_TRADE, Disposition.STALE, Disposition.REFUSED,
+})
+
+
+@dataclass(frozen=True, slots=True)
+class SourceSegment:
+    """One source's contribution to a member — the primary vendor for recent
+    history, a deep-history vendor for older rows; the unit the C02.04 drift
+    check walks."""
+
+    source: str
+    basis: str
+    listing_id: str
+
+    def __post_init__(self) -> None:
+        _require_str(self.source, "source")
+        _require_str(self.basis, "basis")
+        _require_str(self.listing_id, "listing_id")
+
+
+@dataclass(frozen=True, slots=True)
+class MemberDisposition:
+    """ONE member's ONE disposition — malformed at its author, never at read time.
+
+    One spelling per fact (C02.03): a halt is confirmed no-trade evidence, so
+    ``MissingReason.HALTED`` is not a lawful missing-reason here — the member is
+    ``NO_TRADE`` carrying its receipt.  ``MISSING`` composes the closed
+    ``nulls.MissingReason`` vocabulary and never ``OK``, which is not a missing
+    state at all.
+    """
+
+    member: str
+    disposition: Disposition
+    segments: tuple[SourceSegment, ...] = ()
+    missing_reason: MissingReason | None = None
+    refusal: RefusalCode | None = None
+    detail: str = ""
+
+    def __post_init__(self) -> None:
+        _require_str(self.member, "member")
+        if not isinstance(self.disposition, Disposition):
+            raise ReadContractError(
+                f"member {self.member!r}: disposition must be a Disposition, got "
+                f"{self.disposition!r}")
+        object.__setattr__(self, "segments", tuple(self.segments))
+        for segment in self.segments:
+            if not isinstance(segment, SourceSegment):
+                raise ReadContractError(
+                    f"member {self.member!r}: segments must be SourceSegment entries, "
+                    f"got {segment!r}")
+        if self.disposition is Disposition.MISSING:
+            if self.missing_reason is None:
+                raise ReadContractError(
+                    f"member {self.member!r} is MISSING and must carry a MissingReason")
+            if not isinstance(self.missing_reason, MissingReason):
+                raise ReadContractError(
+                    f"member {self.member!r}: missing_reason must be a MissingReason, "
+                    f"got {self.missing_reason!r}")
+            if self.missing_reason is MissingReason.OK:
+                raise ReadContractError(
+                    f"member {self.member!r}: MissingReason.OK is not a missing state — "
+                    "a present member is not MISSING")
+            if self.missing_reason is MissingReason.HALTED:
+                raise ReadContractError(
+                    f"member {self.member!r}: a halt is confirmed no-trade evidence — "
+                    "use Disposition.NO_TRADE with its receipt (one spelling per fact, "
+                    "C02.03)")
+        elif self.missing_reason is not None:
+            raise ReadContractError(
+                f"member {self.member!r}: a missing_reason belongs to MISSING only, "
+                f"not {self.disposition.value}")
+        if self.disposition is Disposition.REFUSED:
+            if not isinstance(self.refusal, RefusalCode):
+                raise ReadContractError(
+                    f"member {self.member!r} is REFUSED and must carry a RefusalCode")
+        elif self.refusal is not None:
+            raise ReadContractError(
+                f"member {self.member!r}: a refusal belongs to REFUSED only, not "
+                f"{self.disposition.value}")
+        if not isinstance(self.detail, str):
+            raise ReadContractError(
+                f"member {self.member!r}: detail must be a string, got "
+                f"{type(self.detail).__name__}")
+        if self.disposition in _DETAIL_REQUIRED and not self.detail.strip():
+            raise ReadContractError(
+                f"member {self.member!r}: {self.disposition.value} must state its "
+                "evidence in detail")
+        if self.disposition in _VALUE_DISPOSITIONS and not self.segments:
+            raise ReadContractError(
+                f"member {self.member!r}: {self.disposition.value} carries a value "
+                "from a source and must name at least one segment")
+        if self.disposition is Disposition.NEVER_INSPECTED and self.segments:
+            raise ReadContractError(
+                f"member {self.member!r}: NEVER_INSPECTED names no source — nobody "
+                "was ever asked")
+
+
+def _coverage_basis(contract: ViewContract) -> str:
+    """The declared adjustment basis an account is judged against — or malformed.
+
+    A coverage account needs the contract's declared ``basis`` to judge drift
+    (C02.04): without one there is nothing to compare a delivered basis to, so
+    the account is malformed, never silently unjudged.
+    """
+    if not isinstance(contract, ViewContract):
+        raise ReadContractError(
+            f"contract must be a ViewContract, got {type(contract).__name__}")
+    basis = contract.adjustment_reference.get("basis")
+    if not isinstance(basis, str) or not basis.strip():
+        raise ReadContractError(
+            "a coverage account needs the declared adjustment basis to judge drift - "
+            "adjustment_reference must declare a non-empty 'basis'")
+    return basis
+
+
+def _identity_or_basis_drift(member: str, segments: tuple[SourceSegment, ...],
+                             declared_basis: str) -> tuple[RefusalCode, str] | None:
+    """The FIRST drift offense along a member's segments, or ``None``.
+
+    The C02.04 walk, shared by the constructor (which refuses the whole
+    account) and ``account_coverage`` (which demotes one member): per segment,
+    identity first — a row that names another listing is not this member under
+    any basis — then the delivered basis against the declared one.
+    """
+    for segment in segments:
+        if segment.listing_id != member:
+            return (RefusalCode.IDENTITY_CHANGED,
+                    f"member {member!r}: source {segment.source!r} delivered listing "
+                    f"{segment.listing_id!r}, not the member's own listing")
+        if segment.basis != declared_basis:
+            return (RefusalCode.BASIS_CHANGED,
+                    f"member {member!r}: source {segment.source!r} delivered basis "
+                    f"{segment.basis!r}, not the declared basis {declared_basis!r}")
+    return None
+
+
+@dataclass(frozen=True, slots=True)
+class CoverageResult:
+    """The fixed-population coverage account of one cohort read (C02).
+
+    THE LAW.  ``population`` is the FROZEN denominator, exactly as requested:
+    every member carries exactly ONE disposition (C01.01's law for cohorts), a
+    member can never be dropped to improve availability or accuracy (C02.02),
+    and the account refuses — as a typed ``ReadRefusal``, not a smaller
+    account — any input that duplicates a member, accounts a member twice,
+    invents a member, or loses one.  ``qualified`` admits members for strict
+    calculation; ``displayable`` adds declared-fallback context on top (D00.D4:
+    fallback is context, never a substitute).  A source that would change the
+    adjustment basis or the listing under a member refuses the account
+    (C02.04); ``account_coverage`` is the demoting builder that turns that into
+    a per-member ``REFUSED`` disposition instead.
+    """
+
+    contract: ViewContract
+    population: tuple[str, ...]
+    dispositions: tuple[MemberDisposition, ...]
+    policy: NullPolicy | None = None
+    fallback_sources: frozenset[str] = frozenset()
+
+    def __post_init__(self) -> None:
+        # 1. An account needs the declared basis to judge drift (C02.04).
+        basis = _coverage_basis(self.contract)
+        # 2. The policy decides whether a stored 0 is an observation; none is the default.
+        if self.policy is None:
+            object.__setattr__(self, "policy", NullPolicy())
+        elif not isinstance(self.policy, NullPolicy):
+            raise ReadContractError(
+                f"policy must be a NullPolicy, got {type(self.policy).__name__}")
+        # 3. The population is the frozen denominator — complete, or malformed.
+        population = tuple(self.population)
+        if not population:
+            raise ReadContractError("population must name at least one member")
+        for member in population:
+            _require_str(member, "population member")
+        duplicated = sorted({m for m in population if population.count(m) > 1})
+        if duplicated:
+            raise ReadRefusal(
+                RefusalCode.DUPLICATE_MEMBER,
+                f"population lists a member more than once: {', '.join(duplicated)}")
+        object.__setattr__(self, "population", population)
+        # 4. A fallback source is declared once, by name, for the whole account.
+        sources = frozenset(self.fallback_sources)
+        for source in sources:
+            _require_str(source, "fallback source")
+        object.__setattr__(self, "fallback_sources", sources)
+        # 5. Every disposition is a lawful object already (validated at its author).
+        dispositions = tuple(self.dispositions)
+        for entry in dispositions:
+            if not isinstance(entry, MemberDisposition):
+                raise ReadContractError(
+                    f"dispositions must be MemberDisposition entries, got {entry!r}")
+        # 6. One member, one disposition (C02.01).
+        seen: dict[str, int] = {}
+        for entry in dispositions:
+            seen[entry.member] = seen.get(entry.member, 0) + 1
+        doubled = sorted(member for member, n in seen.items() if n > 1)
+        if doubled:
+            raise ReadRefusal(
+                RefusalCode.DUPLICATE_MEMBER,
+                f"a member carries more than one disposition: {', '.join(doubled)}")
+        # 7. A disposition for a member nobody asked for invented population.
+        outside = sorted({entry.member for entry in dispositions
+                          if entry.member not in set(population)})
+        if outside:
+            raise ReadRefusal(
+                RefusalCode.COVERAGE_UNRECONCILED,
+                f"disposition(s) name member(s) outside the requested population: "
+                f"{', '.join(outside)}")
+        # 8. C02.02: the account never shrinks to look better.
+        dropped = sorted(member for member in population if member not in seen)
+        if dropped:
+            raise ReadRefusal(
+                RefusalCode.COVERAGE_UNRECONCILED,
+                f"population member(s) carry no disposition and may never be dropped: "
+                f"{', '.join(dropped)}")
+        # 9. C02.04: basis/identity drift is a typed refusal, never a silent splice.
+        for entry in dispositions:
+            if entry.disposition not in _VALUE_DISPOSITIONS:
+                continue
+            drift = _identity_or_basis_drift(entry.member, entry.segments, basis)
+            if drift is not None:
+                raise ReadRefusal(drift[0], drift[1])
+        # 10. D00.D4: a FALLBACK source must be declared for the account.
+        for entry in dispositions:
+            if entry.disposition is not Disposition.FALLBACK:
+                continue
+            undeclared = sorted({segment.source for segment in entry.segments
+                                 if segment.source not in sources})
+            if undeclared:
+                raise ReadRefusal(
+                    RefusalCode.FALLBACK_NOT_DECLARED,
+                    f"member {entry.member!r}: fallback source(s) not declared in "
+                    f"fallback_sources: {', '.join(undeclared)}")
+        # 11. Population order: input order never changes the account.
+        by_member = {entry.member: entry for entry in dispositions}
+        object.__setattr__(
+            self, "dispositions", tuple(by_member[member] for member in population))
+
+    @property
+    def requested(self) -> int:
+        """The FROZEN denominator: members as requested, never as answered."""
+        return len(self.population)
+
+    def disposition_of(self, member: str) -> MemberDisposition:
+        """The one disposition of a population member; an unknown member is a KeyError."""
+        for entry in self.dispositions:
+            if entry.member == member:
+                return entry
+        raise KeyError(member)
+
+    @property
+    def counts(self) -> Mapping[Disposition, int]:
+        """Every disposition, zeros printed — the eight always sum to ``requested``."""
+        tally: dict[Disposition, int] = {disposition: 0 for disposition in Disposition}
+        for entry in self.dispositions:
+            tally[entry.disposition] += 1
+        return MappingProxyType(tally)
+
+    @property
+    def qualified(self) -> tuple[str, ...]:
+        """Members admitted for STRICT calculation, in population order.
+
+        ``SERVED``, plus ``ZERO`` only when the policy declares a stored 0 a
+        real observation — these alone enter a strict calculation.
+        """
+        zero_qualifies = self.policy.zero_is_meaningful
+        return tuple(entry.member for entry in self.dispositions
+                     if entry.disposition is Disposition.SERVED
+                     or (zero_qualifies and entry.disposition is Disposition.ZERO))
+
+    @property
+    def nonqualified(self) -> tuple[str, ...]:
+        """Every member NOT admitted for strict calculation, in population order."""
+        qualified = set(self.qualified)
+        return tuple(entry.member for entry in self.dispositions
+                     if entry.member not in qualified)
+
+    @property
+    def displayable(self) -> tuple[str, ...]:
+        """``qualified`` plus declared-fallback context, in population order.
+
+        D00.D4: fallback is context, never a substitute — ``displayable`` is
+        the wider set and is never allowed to stand in for ``qualified``.
+        """
+        zero_qualifies = self.policy.zero_is_meaningful
+        return tuple(entry.member for entry in self.dispositions
+                     if entry.disposition is Disposition.SERVED
+                     or (zero_qualifies and entry.disposition is Disposition.ZERO)
+                     or entry.disposition is Disposition.FALLBACK)
+
+    @property
+    def qualified_fraction(self) -> Fraction:
+        """``len(qualified) / requested`` as an exact fraction — never a float."""
+        return Fraction(len(self.qualified), self.requested)
+
+    def summary(self) -> dict:
+        """A fresh JSON-native account of the read; equal inputs give equal dicts."""
+        counts = self.counts
+        fallback: dict[str, int] = {}
+        refused: dict[str, int] = {}
+        missing: dict[str, int] = {}
+        for entry in self.dispositions:
+            if entry.disposition is Disposition.FALLBACK:
+                fallback[entry.detail] = fallback.get(entry.detail, 0) + 1
+            elif entry.disposition is Disposition.REFUSED:
+                refused[entry.refusal.value] = refused.get(entry.refusal.value, 0) + 1
+            elif entry.disposition is Disposition.MISSING:
+                missing[entry.missing_reason.value] = (
+                    missing.get(entry.missing_reason.value, 0) + 1)
+        return {
+            "requested": self.requested,
+            "qualified": len(self.qualified),
+            "nonqualified": self.requested - len(self.qualified),
+            "dispositions": {disposition.value: counts[disposition]
+                             for disposition in Disposition},
+            "fallback": dict(sorted(fallback.items())),
+            "refused": dict(sorted(refused.items())),
+            "missing": dict(sorted(missing.items())),
+        }
+
+
+def account_coverage(contract: ViewContract, population: Iterable[str],
+                     dispositions: Iterable[MemberDisposition], *,
+                     policy: NullPolicy | None = None,
+                     fallback_sources: Iterable[str] = ()) -> CoverageResult:
+    """Build the account, DEMOTING per-member refusals instead of refusing all.
+
+    The cohort reader's builder: it runs the same C02.04 walk as the
+    constructor, but a member whose source changes identity or basis — or whose
+    fallback source was never declared — becomes that member's ``REFUSED``
+    disposition, keeping its segments as the receipt, instead of refusing the
+    whole account or splicing the row in silently.  Demotion is the only
+    repair: reconciliation failures — a duplicated member, a member accounted
+    twice, a member outside the population, a member lost — still raise,
+    because a builder cannot heal a population it was handed; the denominator
+    is the caller's to own.
+    """
+    basis = _coverage_basis(contract)   # a contract without a basis is malformed
+    sources = frozenset(fallback_sources)
+    demoted: list[MemberDisposition] = []
+    for entry in tuple(dispositions):
+        if entry.disposition in _VALUE_DISPOSITIONS:
+            drift = _identity_or_basis_drift(entry.member, entry.segments, basis)
+            if drift is not None:
+                code, detail = drift
+                demoted.append(MemberDisposition(
+                    entry.member, Disposition.REFUSED, segments=entry.segments,
+                    refusal=code, detail=detail))
+                continue
+        if (entry.disposition is Disposition.FALLBACK
+                and any(segment.source not in sources
+                        for segment in entry.segments)):
+            undeclared = sorted({segment.source for segment in entry.segments
+                                 if segment.source not in sources})[0]
+            demoted.append(MemberDisposition(
+                entry.member, Disposition.REFUSED, segments=entry.segments,
+                refusal=RefusalCode.FALLBACK_NOT_DECLARED,
+                detail=f"member {entry.member!r}: fallback source {undeclared!r} is "
+                       "not declared in fallback_sources"))
+            continue
+        demoted.append(entry)
+    return CoverageResult(contract, tuple(population), tuple(demoted),
+                          policy=policy, fallback_sources=sources)
+
+
+__all__ += ["Disposition", "SourceSegment", "MemberDisposition", "CoverageResult",
+            "account_coverage"]

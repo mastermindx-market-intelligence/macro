@@ -1,0 +1,254 @@
+{
+  "case_key": "page2_new_generation",
+  "expected_regression": "Expected-generation mismatch returns private 409/reset",
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T08",
+    "T09"
+  ],
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "slice_key": "hbm_packaging",
+    "view": "composition",
+    "time_mode": "latest",
+    "source_cutoff": null,
+    "recorded_cutoff": null,
+    "offset": 0,
+    "limit": 50,
+    "expected_generation": null
+  },
+  "bundle": {
+    "revision_tuple": [
+      [
+        "assertion",
+        "gmirca_2d386275168bd7027e926d718b38f07e"
+      ],
+      [
+        "assertion",
+        "gmirca_c604343c5f25ed9036ce4737f396805c"
+      ],
+      [
+        "identity",
+        "identity-vintage-013"
+      ]
+    ],
+    "rights_revision": "synthetic-rights-0",
+    "assertions": [
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_c604343c5f25ed9036ce4737f396805c",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic Materials OEM Omega",
+              "model": null,
+              "selector": "prd:omega-lot",
+              "source_label": "Omega substrate lot"
+            }
+          ],
+          "measure_scope": null,
+          "relation": null,
+          "stage": "qualified",
+          "stage_source_language": "the first lot qualified"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "later lots"
+          ],
+          "establishes": [
+            "the first qualified lot"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Omega substrate lot"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "flow",
+          "unit": null,
+          "value": null,
+          "value_high": null
+        },
+        "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "substrates"
+        },
+        "source": {
+          "locator": "para-1",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-05-05T08:00:00Z",
+          "published_at": "2026-05-04",
+          "published_at_grain": "date",
+          "publisher": "Example Trade Wire",
+          "retained_at": "2026-05-05T08:05:00Z",
+          "retention_ref": "retention:page2/omega-first",
+          "source_uri": "https://example.invalid/page2/omega-first"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Materials OEM Omega",
+          "source_platform_label": null,
+          "source_product_label": "Omega substrate lot"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_2d386275168bd7027e926d718b38f07e",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic Materials OEM Omega",
+              "model": null,
+              "selector": "prd:omega-lot2",
+              "source_label": "Omega second substrate lot"
+            }
+          ],
+          "measure_scope": null,
+          "relation": null,
+          "stage": "qualified",
+          "stage_source_language": "the second lot qualified"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "the first lot"
+          ],
+          "establishes": [
+            "the second qualified lot"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Omega substrate lot"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "flow",
+          "unit": null,
+          "value": null,
+          "value_high": null
+        },
+        "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "substrates"
+        },
+        "source": {
+          "locator": "para-2",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-05-19T08:00:00Z",
+          "published_at": "2026-05-18",
+          "published_at_grain": "date",
+          "publisher": "Example Trade Wire",
+          "retained_at": "2026-05-19T08:05:00Z",
+          "retention_ref": "retention:page2/omega-second",
+          "source_uri": "https://example.invalid/page2/omega-second"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Materials OEM Omega",
+          "source_platform_label": null,
+          "source_product_label": "Omega substrate lot"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      }
+    ],
+    "identity_results": [
+      {
+        "company_node_id": "co:synth_omega",
+        "source_business_label": "Synthetic Materials OEM Omega",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-01T00:00:00Z"
+      }
+    ],
+    "event_workspaces": [],
+    "financial_packets": [],
+    "interpretation_blocks": [],
+    "native_refs": [],
+    "omissions": [
+      "event_workspaces_pending_T05",
+      "financial_packets_pending_T05"
+    ]
+  },
+  "expected": {
+    "page_two_rule": "offset>0 requires expected_generation; a changed revision tuple refuses generation_changed"
+  }
+}
