@@ -2926,3 +2926,167 @@ def test_nonofficial_atom_update_keeps_legacy_updated_clock_behavior():
     assert datetime.fromisoformat(items[0]["published_at"]) == (
         datetime(2026, 9, 12, 11, 50, 40, tzinfo=timezone.utc)
     )
+
+
+# Strict official XML must not turn unsupported entry namespaces into an
+# empty/partial batch whose source cursor can then be acknowledged.
+_NAMESPACE_ATOM_ENTRY = (
+    '<entry xmlns="http://www.w3.org/2005/Atom">'
+    '<id>bls.gov:release:cpi:2026-09-11</id>'
+    '<title>Consumer Price Index release</title>'
+    '<link href="https://www.bls.gov/news.release/archives/cpi_09112026.htm"/>'
+    '<published>2026-09-11T07:50:40-04:00</published>'
+    '<updated>2026-09-11T07:50:40-04:00</updated>'
+    '</entry>'
+)
+
+
+@pytest.mark.parametrize("payload,legacy_count", [
+    pytest.param("<feed/>", 0, id="bare-empty-feed"),
+    pytest.param(
+        "<feed><entry><title>Unqualified release</title></entry></feed>",
+        0, id="bare-feed-with-entry",
+    ),
+    pytest.param(
+        '<feed xmlns="http://www.w3.org/2005/Atom">'
+        '<entry xmlns=""><title>Unqualified release</title></entry></feed>',
+        0, id="atom-feed-bare-entry",
+    ),
+    pytest.param(
+        '<feed xmlns="http://www.w3.org/2005/Atom">'
+        '<other:entry xmlns:other="urn:foreign"><other:title>Release</other:title>'
+        '</other:entry></feed>',
+        0, id="atom-feed-foreign-entry",
+    ),
+    pytest.param(
+        '<feed xmlns="http://www.w3.org/2005/Atom">'
+        + _NAMESPACE_ATOM_ENTRY + '<entry xmlns=""/></feed>',
+        1, id="mixed-valid-and-bare-entries",
+    ),
+])
+@pytest.mark.parametrize("existing_checkpoint", [False, True],
+                         ids=["new-checkpoint", "existing-checkpoint"])
+def test_official_preview_refuses_unqualified_atom_namespace_before_ack(
+        tmp_path, monkeypatch, payload, legacy_count, existing_checkpoint):
+    from engine.marketing import breaking_feed as feed
+
+    # The strict correction must not change the incumbent non-official parser.
+    legacy = feed.parse_feed(payload, {
+        "key": "ordinary", "kind": "rss", "tier": "wire",
+        "source_name": "Legacy wire",
+    })
+    assert len(legacy) == legacy_count
+
+    folder = tmp_path / "data/marketing/breaking"
+    state_path = folder / "state.json"
+    seen_path = folder / "seen.json"
+    if existing_checkpoint:
+        folder.mkdir(parents=True)
+        state_path.write_text(json.dumps({
+            "bls_cpi_release": {"etag": "prior-accepted-etag", "last_poll_ts": 0}
+        }) + "\n")
+        seen_path.write_text(json.dumps({
+            "older-accepted-release": "2026-09-10T12:30:00+00:00"
+        }) + "\n")
+    before = {
+        path: path.read_bytes() if path.exists() else None
+        for path in (state_path, seen_path)
+    }
+    conditional_etags = []
+
+    class Response:
+        headers = {"ETag": "unsupported-payload-must-not-advance"}
+        def __enter__(self): return self
+        def __exit__(self, exc_type, exc, tb): return False
+        def read(self, n): return payload.encode("utf-8")[:n]
+        def geturl(self): return "https://www.bls.gov/feed/cpi.rss"
+
+    def fake_open(req, timeout):
+        conditional_etags.append(req.get_header("If-none-match"))
+        return Response()
+
+    monkeypatch.setattr(feed, "urlopen", fake_open)
+    with pytest.raises(ValueError, match="official feed payload"):
+        preview = feed.preview_official_sources(
+            tmp_path, {"sources": [dict(BLS_CPI_RELEASE_CFG)], "poll_interval_s": 0}
+        )
+        # Baseline code could accept an empty or only partially parsed source.
+        # Rejection must happen before even a complete acceptance of that
+        # preview can acknowledge its proposed source cursor.
+        feed.ack_official_preview(
+            tmp_path, preview, accepted_ids={item["id"] for item in preview.items}
+        )
+
+    assert conditional_etags == [
+        "prior-accepted-etag" if existing_checkpoint else None
+    ]
+    for path, prior_bytes in before.items():
+        if prior_bytes is None:
+            assert not path.exists()
+        else:
+            assert path.read_bytes() == prior_bytes
+
+
+@pytest.mark.parametrize("payload,expected_count", [
+    pytest.param(
+        '<feed xmlns="http://www.w3.org/2005/Atom">'
+        + _NAMESPACE_ATOM_ENTRY + '</feed>',
+        1, id="default-atom-namespace",
+    ),
+    pytest.param(
+        '<atom:feed xmlns:atom="http://www.w3.org/2005/Atom">'
+        '<atom:entry><atom:id>bls.gov:release:cpi:2026-09-11</atom:id>'
+        '<atom:title>Consumer Price Index release</atom:title>'
+        '<atom:link href="https://www.bls.gov/news.release/archives/cpi_09112026.htm"/>'
+        '<atom:published>2026-09-11T07:50:40-04:00</atom:published>'
+        '<atom:updated>2026-09-11T07:50:40-04:00</atom:updated>'
+        '</atom:entry></atom:feed>',
+        1, id="prefixed-atom-namespace",
+    ),
+    pytest.param(
+        '<atom:feed xmlns:atom="http://www.w3.org/2005/Atom"/>',
+        0, id="genuinely-empty-atom",
+    ),
+    pytest.param(
+        '<feed xmlns="http://www.w3.org/2005/Atom">'
+        '<meta:note xmlns:meta="urn:metadata">'
+        '<entry xmlns="urn:metadata">Extension content</entry></meta:note>'
+        + _NAMESPACE_ATOM_ENTRY + '</feed>',
+        1, id="non-entry-extension",
+    ),
+])
+def test_official_preview_accepts_qualified_atom_namespace_and_extensions(
+        tmp_path, monkeypatch, payload, expected_count):
+    from engine.marketing import breaking_feed as feed
+
+    class Response:
+        headers = {"ETag": "qualified-atom-payload"}
+        def __enter__(self): return self
+        def __exit__(self, exc_type, exc, tb): return False
+        def read(self, n): return payload.encode("utf-8")[:n]
+        def geturl(self): return "https://www.bls.gov/feed/cpi.rss"
+
+    monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
+    preview = feed.preview_official_sources(
+        tmp_path, {"sources": [dict(BLS_CPI_RELEASE_CFG)], "poll_interval_s": 0}
+    )
+    assert len(preview.items) == expected_count
+    folder = tmp_path / "data/marketing/breaking"
+    assert not (folder / "state.json").exists()
+    assert not (folder / "seen.json").exists()
+    if expected_count:
+        assert preview.items[0]["url"] == (
+            "https://www.bls.gov/news.release/archives/cpi_09112026.htm"
+        )
+        assert datetime.fromisoformat(preview.items[0]["published_at"]) == (
+            datetime(2026, 9, 11, 11, 50, 40, tzinfo=timezone.utc)
+        )
+    assert feed.ack_official_preview(
+        tmp_path, preview, accepted_ids={item["id"] for item in preview.items}
+    )
+    assert json.loads((folder / "state.json").read_text())[
+        "bls_cpi_release"]["etag"] == "qualified-atom-payload"
+    if expected_count:
+        assert len(json.loads((folder / "seen.json").read_text())) == expected_count
+    else:
+        assert not (folder / "seen.json").exists()

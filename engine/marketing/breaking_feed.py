@@ -225,7 +225,7 @@ def _parse_xml_feed(
     root = ET.fromstring(text)
 
     atom_ns = "{http://www.w3.org/2005/Atom}"
-    if strict_date and root.tag not in ("rss", f"{atom_ns}feed", "feed"):
+    if strict_date and root.tag not in ("rss", f"{atom_ns}feed"):
         raise _OfficialSourcePayloadRejected(
             "official feed payload is not RSS or Atom"
         )
@@ -300,6 +300,14 @@ def _parse_atom(
     METADATA clock, never proof of public availability or first observation.
     Live/PIT admission needs a separate incumbent source-observation receipt.
     """
+    if strict_date and any(
+        child.tag.rsplit("}", 1)[-1] == "entry"
+        and child.tag != f"{ns}entry"
+        for child in root
+    ):
+        raise _OfficialSourcePayloadRejected(
+            "official feed payload has an unqualified Atom entry namespace"
+        )
     entries = root.findall(f"{ns}entry")
     results: list[FeedItem] = []
     for entry in entries:
