@@ -12,7 +12,11 @@ from datetime import datetime, timezone
 import hashlib
 from pathlib import Path
 import re
+import sys
 from types import MappingProxyType
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from lib import breadth_member_generation_contract as broad
 from lib import member_ohlcv_generation_contract as candles

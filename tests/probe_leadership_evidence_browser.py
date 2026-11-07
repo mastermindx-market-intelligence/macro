@@ -706,6 +706,18 @@ def _run_native_wire(output: Path, generation_wire: Path, *, full_page: bool = F
                                     "status":classification['status'],
                                     "configured_n":len(classification['configured_roster']),
                                     "missing_n":len(classification['missing_roster'])}
+                            expected_radii = {'.mr-exact': '12px', '.mr-xselect': '8px',
+                                              '.mr-xwindow': '8px'}
+                            if classification is not None:
+                                expected_radii['.mr-cl-members li'] = '8px'
+                            radii = page.evaluate("""selectors => Object.fromEntries(selectors.map(
+                              selector => [selector, [...document.querySelectorAll(selector)].map(
+                                el => getComputedStyle(el).borderTopLeftRadius)]))""",
+                                list(expected_radii))
+                            for selector, expected in expected_radii.items():
+                                assert radii[selector] and all(value == expected for value in radii[selector]), (
+                                    selector, radii[selector], expected)
+                            cell['computed_radii'] = radii
                             if full_page:
                                 whole = output/f'{name}-{locale}-{theme}--native-whole-page.png'
                                 page.screenshot(path=str(whole), full_page=True)

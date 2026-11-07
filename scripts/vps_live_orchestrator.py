@@ -33,6 +33,7 @@ from typing import Any, Callable, Mapping, Sequence
 
 log = logging.getLogger("vps_live")
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 
 # Snapshot work shares the source owner's absolute monotonic deadline.
 # Leave 20s under systemd's 420s ceiling for source entry/final status.

@@ -12,7 +12,6 @@ the Terminal lane parses that fixture with the real TS reader.
 """
 from __future__ import annotations
 
-import ast
 import hashlib
 import json
 from pathlib import Path
@@ -391,18 +390,25 @@ def test_s8_unchanged_downstream_and_fail_soft(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "data")
     monkeypatch.setattr(config, "ROOT", tmp_path)
 
+    # Observe the public projection through the full compute path, regardless of
+    # which pure-core helper owns the call after source capture.
+    projection_calls = []
+    original_projection = lrc.measured_group_read
+
+    def _observe_projection(cycles, *args, **kwargs):
+        projection_calls.append((cycles, kwargs))
+        return original_projection(cycles, *args, **kwargs)
+
+    monkeypatch.setattr(lrc, "measured_group_read", _observe_projection)
     out_a = sector_central.compute()
     assert out_a is not None
     assert out_a["measured_read"]["schema"] == MEASURED_READ_SCHEMA
     assert out_a["measured_read"]["confirmed_events"]["status"] == "available"
     assert out_a["measured_read"]["confirmed_events"]["n_active"] == 2
 
-    # wiring pin: compute() itself calls _measured_read and ships the key
-    tree = ast.parse(Path(sector_central.__file__).read_text(encoding="utf-8"))
-    fn = next(n for n in ast.walk(tree)
-              if isinstance(n, ast.FunctionDef) and n.name == "compute")
-    calls = {ast.unparse(n.func) for n in ast.walk(fn) if isinstance(n, ast.Call)}
-    assert any("_measured_read" in c for c in calls)
+    assert len(projection_calls) == 1
+    assert projection_calls[0][0] == cyc
+    assert projection_calls[0][1]["rotation_payload"] == rot
 
     # forcing the projection to raise changes ONLY the measured_read key
     def _boom(*args, **kwargs):

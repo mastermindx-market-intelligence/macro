@@ -1820,9 +1820,14 @@ def test_exact_opaque_receipt_and_roots_are_not_executable_markup():
     assert '<img src=' not in out["exact"] and '&lt;img src=x' in out["exact"]
 
 
-def _dated_context_fixture(**overrides):
-    from tests.test_leadership_rotation_contract import _psl_ctx_project
-    return _psl_ctx_project(**overrides)
+def _dated_context_fixture(*, decision_cutoff=None):
+    # Consumer tests use detached, frozen outputs of the qualified owner. They
+    # must not import a private fixture helper from another source branch.
+    assert decision_cutoff in (None, "2026-10-01T20:00:00Z")
+    name = ("dated_context_current_v1.json" if decision_cutoff is None
+            else "dated_context_historical_v1.json")
+    path = ROOT / "tests" / "fixtures" / "leadership_rotation" / name
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 @needs_node

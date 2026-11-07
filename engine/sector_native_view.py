@@ -1233,11 +1233,16 @@ def _dated_context(document: Any) -> dict:
     Clock values and the coherence contradiction list are documented opaque JSON;
     their parent shapes are closed and their bytes share the same output budget.
     """
-    from engine.sector_dated_context import (
-        SCHEMA, SCOPE, STATUSES, SECTION_STATUSES, COMPARISON_IDS, AUTHORITY_FLAGS,
-        ATTRIBUTION_KEYS, REASONS, HISTORICAL_REASON,
-    )
     code = "invalid_sector_dated_context"
+    try:
+        from engine.sector_dated_context import (
+            SCHEMA, SCOPE, STATUSES, SECTION_STATUSES, COMPARISON_IDS, AUTHORITY_FLAGS,
+            ATTRIBUTION_KEYS, REASONS, HISTORICAL_REASON,
+        )
+    except ImportError:
+        # The dated owner is a separately integrated dependency. A selected
+        # member containing it cannot be admitted without its real contract.
+        raise SectorViewUnavailable(code) from None
 
     def refuse():
         raise SectorViewUnavailable(code)

@@ -710,17 +710,17 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .mr-ev-code{font-family:var(--font-mono);font-size:var(--fs-label);color:var(--muted)}
 
 /* Exact-session evidence uses the existing panel tokens and selection owner. */
-.mr-exact{min-width:0;margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:var(--radius-lg,12px);background:var(--panel)}
+.mr-exact{min-width:0;margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
 .mr-exact h3{margin:0 0 4px;font-size:var(--fs-md);color:var(--text)}
 .mr-exact .mr-hint{line-height:1.55;overflow-wrap:anywhere}
 .mr-xchoices{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:6px;margin:14px 0}
-.mr-xselect{min-width:0;min-height:44px;padding:8px;text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);cursor:pointer}
+.mr-xselect{min-width:0;min-height:44px;padding:8px;text-align:left;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);color:var(--text);cursor:pointer}
 .mr-xselect b,.mr-xselect span{display:block;overflow-wrap:anywhere}
 .mr-xselect span{font-size:var(--fs-label);color:var(--muted)}
 .mr-xselect[aria-pressed="true"]{background:var(--panel2);font-weight:650}
 .mr-xselect:focus-visible{outline:2px solid var(--ink-info);outline-offset:2px}
 .mr-xwindows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:10px 0}
-.mr-xwindow{min-width:0;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}
+.mr-xwindow{min-width:0;padding:12px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2)}
 .mr-xwindow h5{margin:0 0 5px;font-size:var(--fs-sm)}
 .mr-xvalues{display:grid;gap:8px;margin:8px 0}
 .mr-xvalues dt,.mr-xvalues small,.mr-xbenchmark small{font-size:var(--fs-label);color:var(--muted);line-height:1.4}
@@ -742,7 +742,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .mr-classification .mr-cl-det>summary:focus-visible{outline:2px solid var(--ink-info);outline-offset:2px}
 .mr-classification .mr-ev-src dt{min-width:0;overflow-wrap:anywhere}
 .mr-cl-members{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px;margin:12px 0}
-.mr-cl-members li{min-width:0;padding:12px;border:1px solid var(--line);border-radius:8px;overflow-wrap:anywhere}
+.mr-cl-members li{min-width:0;padding:12px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);overflow-wrap:anywhere}
 .mr-cl-members h4{margin:0 0 6px;font-size:var(--fs-sm)}
 .mr-cl-members p{margin:4px 0;font-size:var(--fs-sm)}
 @media(max-width:760px){.mr-xwindows{grid-template-columns:repeat(2,minmax(0,1fr))}}

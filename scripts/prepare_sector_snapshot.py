@@ -12,6 +12,10 @@ from datetime import datetime, timezone
 import hashlib
 from pathlib import Path
 import re
+import sys
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 PREPARED_SCHEMA = "sector_snapshot_prepared.v1"
 PREPARED_NAME = "prepared.json"

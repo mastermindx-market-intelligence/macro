@@ -1,5 +1,6 @@
 """All real calculation owners produce one five-member native-admissible Sector bundle."""
 from copy import deepcopy
+from pathlib import Path
 from dataclasses import replace
 from datetime import date, datetime, timezone, timedelta
 from functools import lru_cache
@@ -108,14 +109,12 @@ def captured():
 
 @pytest.mark.parametrize("cutoff", [None, "2026-10-01T20:00:00Z"])
 def test_dated_context_is_an_additive_five_member_join_with_unchanged_measurements(cutoff):
-    from tests.test_leadership_rotation_contract import (
-        _psl_ctx_regime, _psl_ctx_config, _psl_ctx_public_risk, _psl_ctx_attribution)
     from engine.sector_dated_context import project_dated_context
     args = captured()
     before = documents.compose_sector_documents(**args)
-    raw = dict(theme_key="memory_storage", regime_document=_psl_ctx_regime(),
-        config_document=_psl_ctx_config(), public_risk_document=_psl_ctx_public_risk(),
-        source_attribution=_psl_ctx_attribution(), decision_cutoff=cutoff)
+    raw = json.loads((Path(__file__).parent / "fixtures" / "leadership_rotation" /
+                      "dated_context_inputs_v1.json").read_text(encoding="utf-8"))
+    raw["decision_cutoff"] = cutoff
     args["context"] = replace(args["context"], dated_context_inputs=documents.SectorDatedContextInputs(**raw))
     after = documents.compose_sector_documents(**args)
     assert set(after.member_bytes) == set(before.member_bytes) == set(SECTOR_GENERATION_MEMBERS)

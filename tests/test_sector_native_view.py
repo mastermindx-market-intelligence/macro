@@ -66,10 +66,49 @@ def specimen():
     return inputs, receipt
 
 
+def test_missing_dated_owner_refuses_only_when_addendum_is_present(specimen, monkeypatch):
+    import builtins
+
+    original_import = builtins.__import__
+    requested = []
+
+    def missing_owner(name, *args, **kwargs):
+        if name == "engine.sector_dated_context":
+            requested.append(name)
+            raise ModuleNotFoundError("PRIVATE_DEPENDENCY_PATH")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", missing_owner)
+    inputs, receipt = specimen
+    result = project_sector_view(inputs, receipt, audience="preview")
+    assert "dated_context" not in result["data"]["core"]
+    assert requested == []
+
+    inputs.central["dated_context"] = json.loads((ROOT / "tests" / "fixtures" /
+        "leadership_rotation" / "dated_context_current_v1.json").read_text())
+    with pytest.raises(SectorViewUnavailable) as error:
+        project_sector_view(inputs, receipt, audience="preview")
+    assert str(error.value) == "invalid_sector_dated_context"
+    assert "PRIVATE_DEPENDENCY_PATH" not in str(error.value)
+    assert requested == ["engine.sector_dated_context"]
+
+
+def _dated_context_owner_inputs():
+    path = ROOT / "tests" / "fixtures" / "leadership_rotation" / "dated_context_inputs_v1.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _dated_context_owner_packet(**overrides):
+    from engine.sector_dated_context import project_dated_context
+
+    inputs = _dated_context_owner_inputs()
+    inputs.update(overrides)
+    return project_dated_context(**inputs)
+
+
 @pytest.mark.parametrize("case", ["complete", "missing_risk", "missing_theme", "historical", "invalid_cutoff",
     "revision_only", "bottleneck_only", "historical_missing_risk", "historical_missing_theme"])
 def test_dated_context_preserves_the_actual_owner_packet_without_sector_authority(specimen, case):
-    from tests.test_leadership_rotation_contract import _psl_ctx_project, _psl_ctx_regime
     changes = {"missing_risk": {"public_risk_document": None},
                "missing_theme": {"config_document": {}},
                "historical": {"decision_cutoff": "2026-10-01T20:00:00Z"},
@@ -77,10 +116,10 @@ def test_dated_context_preserves_the_actual_owner_packet_without_sector_authorit
                "historical_missing_risk": {"decision_cutoff": "2026-10-01T20:00:00Z", "public_risk_document": None},
                "historical_missing_theme": {"decision_cutoff": "2026-10-01T20:00:00Z", "config_document": {}}}.get(case, {})
     if case in ("revision_only", "bottleneck_only"):
-        regime = _psl_ctx_regime()
+        regime = _dated_context_owner_inputs()["regime_document"]
         regime.pop("bottleneck" if case == "revision_only" else "theme_revisions")
         changes["regime_document"] = regime
-    packet = _psl_ctx_project(**changes)
+    packet = _dated_context_owner_packet(**changes)
     inputs, receipt = specimen
     inputs.central["dated_context"] = packet
     result = project_sector_view(inputs, receipt, audience="preview")
@@ -92,11 +131,16 @@ def test_dated_context_preserves_the_actual_owner_packet_without_sector_authorit
     assert actual["market_risk"]["scope"] == "market_global"
     assert all(row["falsifier"]["met"] is False for row in actual["comparison"]["entries"])
     if case == "complete":
+        frozen = ROOT / "tests" / "fixtures" / "leadership_rotation" / "dated_context_current_v1.json"
+        assert actual == json.loads(frozen.read_text(encoding="utf-8"))
         assert actual["observations"]["bottleneck"]["asof"] == "2026-09-01"
         assert actual["observations"]["revision_state"]["asof"] == "2026-11-06"
         assert actual["observations"]["revision_state"]["n_covered"] == 3
         assert actual["theme"]["roster_size"] == 5
         assert receipt.source_session != actual["observations"]["revision_state"]["asof"]
+    if case == "historical":
+        frozen = ROOT / "tests" / "fixtures" / "leadership_rotation" / "dated_context_historical_v1.json"
+        assert actual == json.loads(frozen.read_text(encoding="utf-8"))
     # The next generation's absence withdraws the addendum. No prior packet cache.
     del inputs.central["dated_context"]
     assert "dated_context" not in project_sector_view(inputs, receipt, audience="preview")["data"]["core"]
@@ -109,8 +153,7 @@ def test_dated_context_preserves_the_actual_owner_packet_without_sector_authorit
     "partial_historical", "fractional_net_up", "negative_net_up", "null_breadth",
     "member_count", "covered_count", "coverage_ratio", "null_risk_score", "null_policy", "unavailable_positive_risk"])
 def test_dated_context_rejects_tampering_instead_of_transporting_arbitrary_json(specimen, case):
-    from tests.test_leadership_rotation_contract import _psl_ctx_project
-    packet = _psl_ctx_project()
+    packet = _dated_context_owner_packet()
     if case == "schema": packet["schema"] = "other/v1"
     elif case == "scope": packet["scope"] = "selected_sector_cause"
     elif case == "authority": packet["authority"]["may_trade"] = True
@@ -151,9 +194,9 @@ def test_dated_context_rejects_tampering_instead_of_transporting_arbitrary_json(
 
 
 def test_dated_context_accepts_owner_integral_counts_unicode_and_opaque_clock_evidence(specimen):
-    from tests.test_leadership_rotation_contract import (
-        _psl_ctx_project, _psl_ctx_regime, _psl_ctx_public_risk, _psl_ctx_attribution)
-    regime, risk, attribution = _psl_ctx_regime(), _psl_ctx_public_risk(), _psl_ctx_attribution()
+    raw = _dated_context_owner_inputs()
+    regime, risk, attribution = (raw["regime_document"], raw["public_risk_document"],
+                                 raw["source_attribution"])
     revisions = regime["theme_revisions"]["themes"]["memory_storage"]
     revisions["n_covered"], revisions["n_members"] = 3.0, 5.0
     regime["freshness"]["asof"] = {"invalid_owner_clock": ["retained evidence"]}
@@ -161,8 +204,8 @@ def test_dated_context_accepts_owner_integral_counts_unicode_and_opaque_clock_ev
     risk["coherence"]["contradictions"] = [0] * 300
     risk["authority"]["envelope_may_gate"] = True
     attribution["regime_document"]["source_ref"] = "来源" * 150
-    packet = _psl_ctx_project(regime_document=regime, public_risk_document=risk,
-                              source_attribution=attribution)
+    packet = _dated_context_owner_packet(regime_document=regime, public_risk_document=risk,
+                                         source_attribution=attribution)
     assert packet["status"] == "dated_context"
     inputs, receipt = specimen
     inputs.central["dated_context"] = packet

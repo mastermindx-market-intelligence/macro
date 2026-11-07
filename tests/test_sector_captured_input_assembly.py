@@ -6,6 +6,7 @@ case includes real sponsor workbook parsing; it does not qualify a live provider
 response, a worker execution, or production.
 """
 from copy import deepcopy
+from pathlib import Path
 from dataclasses import replace
 from datetime import date, timedelta
 import hashlib
@@ -198,10 +199,10 @@ def test_assembly_uses_supplied_snapshots_and_preserves_owner_populations(captur
 
 def test_captured_chain_publishes_once_and_reaches_actual_mounted_api(captured_inputs, monkeypatch, tmp_path):
     args, root = captured_inputs
-    from tests.test_leadership_rotation_contract import (
-        _psl_ctx_regime, _psl_ctx_config, _psl_ctx_public_risk)
     from engine.sector_dated_context import project_dated_context
-    regime, risk = _psl_ctx_regime(), _psl_ctx_public_risk()
+    raw = json.loads((Path(__file__).parent / "fixtures" / "leadership_rotation" /
+                      "dated_context_inputs_v1.json").read_text(encoding="utf-8"))
+    regime, risk = raw["regime_document"], raw["public_risk_document"]
     # Test owner clocks precede this actual capture; the bottleneck deliberately
     # remains older. None is restamped to the sector price session by production.
     regime["asof"] = regime["freshness"]["asof"] = SOURCE
@@ -215,7 +216,7 @@ def test_captured_chain_publishes_once_and_reaches_actual_mounted_api(captured_i
     for entry in risk["freshness"]["per_source"].values():
         entry["as_of"] = SOURCE if entry["matches_session"] else DATED
     settings = args["auxiliary"].document("config")
-    settings.update(_psl_ctx_config())
+    settings.update(raw["config_document"])
     # A controlled theme roster whose members occur in the actual encoded
     # breadth fixture. This is not a real company-to-sector evidence claim.
     roster_map = {"MU": "T0000", "WDC": "T0001", "SNDK": "T9999", "STX": "T0002", "NTAP": "T8888"}
