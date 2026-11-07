@@ -1,6 +1,6 @@
 {
   "schema": "nasdaq_internals.v1",
-  "asof": "2026-11-06T10:20:08.715195+00:00",
+  "asof": "2026-11-06T12:42:52.359974+00:00",
   "benchmark": "QQQ",
   "watermark_en": "Current Nasdaq-100 membership (as of 2026-11-06); historical composition approximated. Descriptive, display-only.",
   "watermark_zh": "当前纳斯达克100成分股（截至 2026-11-06）；历史成分经近似处理。描述性展示，仅供参考。",
