@@ -1388,6 +1388,100 @@ def validate_reference_snapshot(receipt_before, artifact_bytes, receipt_after, *
                              aliases, master)
 
 
+@dataclass(frozen=True, slots=True)
+class ReferenceBinding:
+    """Immutable structural G/R/V/H binding, not an authenticity attestation."""
+    generation_id: str
+    receipt_sha256: str
+    artifact_vector: tuple[tuple[str, str, int, str | None], ...]
+    history_sha256: str
+
+
+@dataclass(frozen=True, slots=True)
+class ReferenceTransition:
+    disposition: str
+    previous: ReferenceBinding
+    candidate: ReferenceBinding
+
+
+def _ob_transition_snapshot(context):
+    # A caller can construct a frozen dataclass without ever validating its seals.
+    _ob_require(type(context) is ReferenceSnapshot, "validated snapshot context required")
+    _ob_require(type(context.artifact_bytes) is tuple
+                and len(context.artifact_bytes) == len(_ARTIFACT_NAMES), "snapshot artifact vector")
+    for pair in context.artifact_bytes:
+        _ob_require(type(pair) is tuple and len(pair) == 2
+                    and type(pair[0]) is str and type(pair[1]) is bytes,
+                    "snapshot artifact vector entry")
+    _ob_require(len({pair[0] for pair in context.artifact_bytes}) == len(_ARTIFACT_NAMES),
+                "duplicate snapshot artifact")
+    checked = validate_reference_snapshot(
+        context.receipt_bytes, dict(context.artifact_bytes), context.receipt_bytes,
+        alias_records=_ob_load(context.alias_json, 64 * _MIB, record_set=True),
+        master_records=_ob_load(context.master_json, 64 * _MIB, record_set=True))
+    receipt = _ob_load(checked.receipt_bytes, 9 * _MIB)
+    pub = receipt["publication"]
+    vector = tuple((name, pub["artifacts"][name]["sha256"], pub["artifacts"][name]["bytes"],
+                    pub["artifacts"][name]["semantic_sha256"]) for name in _ARTIFACT_NAMES)
+    return checked, receipt, ReferenceBinding(
+        pub["generation_id"], hashlib.sha256(checked.receipt_bytes).hexdigest(),
+        vector, pub["history_sha256"])
+
+
+def validate_reference_transition(previous, candidate, *, expected_previous_generation_id,
+                                  expected_previous_receipt_sha256,
+                                  previous_artifact_vector, candidate_artifact_vector):
+    """Validate supplied snapshots and declared full artifact manifests without I/O.
+
+    NOOP preserves the identical receipt's historical predecessor. Every successor
+    must name the supplied previous receipt and preserve its native history prefix.
+    Receipt-only updates require a new native G: receipt fields outside publication
+    cannot alone produce one. Predecessor/generated_at-only restamps are refused.
+
+    This checks consistency, not whether supplied observations, clocks or code
+    changes are real, whether semantic records decode from the supplied Parquet
+    bytes, or whether publication occurred. A publisher must separately enforce
+    the full committed store's G/R uniqueness, lineage, custody and atomicity.
+    """
+    old, old_receipt, old_binding = _ob_transition_snapshot(previous)
+    new, new_receipt, new_binding = _ob_transition_snapshot(candidate)
+    _ob_hash(expected_previous_generation_id, "expected previous generation")
+    _ob_hash(expected_previous_receipt_sha256, "expected previous receipt")
+    _ob_require((expected_previous_generation_id, expected_previous_receipt_sha256)
+                == (old_binding.generation_id, old_binding.receipt_sha256),
+                "transition previous binding mismatch")
+    for declared, receipt in ((previous_artifact_vector, old_receipt),
+                              (candidate_artifact_vector, new_receipt)):
+        # Canonical JSON comparison retains JSON types (True must not equal 1).
+        _ob_require(_ob_json(declared) == _ob_json(receipt["publication"]["artifacts"]),
+                    "transition declared artifact vector mismatch")
+    if old == new:
+        return ReferenceTransition("NOOP", old_binding, new_binding)
+    _ob_require(new_binding.generation_id != old_binding.generation_id,
+                "transition same generation with different receipt")
+    _ob_require(new_binding.receipt_sha256 != old_binding.receipt_sha256,
+                "transition changed generation with same receipt")
+    _ob_require(new_receipt["publication"]["predecessor_receipt_sha256"]
+                == old_binding.receipt_sha256, "transition predecessor mismatch")
+    old_history, new_history = (r["identity_observations"] for r in (old_receipt, new_receipt))
+    _ob_require(_ob_json(old_receipt["prospective_reference"])
+                == _ob_json(new_receipt["prospective_reference"])
+                and _ob_json(old_history["anchor"]) == _ob_json(new_history["anchor"]),
+                "transition original context changed")
+    _ob_require(new_history["attempts"][:len(old_history["attempts"])] == old_history["attempts"],
+                "transition changed or truncated history prefix")
+    def substantive(receipt):
+        publication = {k: v for k, v in receipt["publication"].items()
+                       if k not in ("generation_id", "predecessor_receipt_sha256")}
+        return _ob_json({**{k: v for k, v in receipt.items()
+                           if k not in ("publication", "generated_at")},
+                         "publication": publication}, 9 * _MIB)
+    _ob_require(substantive(old_receipt) != substantive(new_receipt),
+                "transition predecessor/generated_at-only restamp")
+    disposition = "ARTIFACT_CHANGE" if old.artifact_bytes != new.artifact_bytes else "RECEIPT_ONLY"
+    return ReferenceTransition(disposition, old_binding, new_binding)
+
+
 def _ob_validate_history(history, original, records):
     _ob_json(history)
     _ob_fields(history, "schema anchor attempts", "history")

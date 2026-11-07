@@ -549,15 +549,29 @@
     }
     function publishSubjects(){
       if(typeof api.onSubjects!=='function')return;
+      function clock(value){
+        if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(value))return null;
+        var instant=Date.parse(value);if(!Number.isFinite(instant))return null;
+        // Date.parse orders offsets correctly; retain sub-millisecond source
+        // precision when two native observations share the same millisecond.
+        var fraction=(value.match(/\.(\d+)/)||[])[1]||'';
+        return{value:value,instant:instant,fraction:Number((fraction+'000000000').slice(3,9))};
+      }
+      function latest(values){
+        if(!values.length||values.some(function(value){return value===null}))return null;
+        return values.slice().sort(function(a,b){return a.instant-b.instant||a.fraction-b.fraction}).slice(-1)[0].value;
+      }
       var subjects=[];
       if(loadState==='ok'&&obj(header)&&header.graph_status==='ready'&&/^gria1-[a-f0-9]{24}$/.test(text(header.content_id,''))){
         Object.keys(index||{}).slice(0,128).forEach(function(key){
           var record=index[key],context=obj(record.archetype_context)?record.archetype_context:{};
           var cases=arr(context.ownership_cases).concat(arr(context.listing_cases)).filter(function(row){return obj(row)&&row.rights_state!=='denied'});
           if(context.state!=='partial'||!cases.length)return;
-          var clocks=cases.map(function(row){return text(row.known_at,'')}).filter(Boolean).sort();
+          var observations=cases.map(function(row){return clock(row.known_at)});
+          var qualifications=cases.filter(function(row){var q=row.research_identity;return obj(q)&&q.state==='source_supported_current_research'&&q.scope==='government_revenue_identity_context'}).map(function(row){return clock(row.research_identity.known_at)});
           subjects.push({ticker:record.ticker,name:text(record.company_name,record.ticker),
-            known_at:clocks.length?clocks[clocks.length-1]:null,
+            known_at:latest(observations.concat(qualifications)),
+            observation_known_at:latest(observations),research_identity_known_at:latest(qualifications),
             source_generation_id:header.content_id,generated_at:header.generated_at});
         });
       }

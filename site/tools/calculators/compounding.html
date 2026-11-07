@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- mmx-shared-shell:start --><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><link rel="stylesheet" data-mmx-shared-shell-styles="20261018.1" href="../../shared_shell.css?v=b1918cca"><script data-sync data-mmx-shared-shell-bridge="20261018.1" src="../../shared_shell_bridge.js?v=048314d5"></script><!-- mmx-shared-shell:end -->
+<head><!-- mmx-shared-shell:start --><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><link rel="stylesheet" data-mmx-shared-shell-styles="20261018.1" href="../../shared_shell.css?v=b1918cca"><script data-sync data-mmx-shared-shell-bridge="20261018.1" src="../../shared_shell_bridge.js?v=071ef720"></script><!-- mmx-shared-shell:end -->
 <meta charset="utf-8">
 <script data-dbase>(function () {
   window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
@@ -48,12 +48,12 @@
 <meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../../favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="../../apple-touch-icon.png"><link rel="stylesheet" href="../../theme.css?v=29ec9caa"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://www.mastermind-x.com/tools/index.html"},{"@type":"ListItem","position":3,"name":"Compound Interest Calculator"}]}</script>
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png"><link rel="stylesheet" href="../../theme.css?v=9bd171a6"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://www.mastermind-x.com/tools/index.html"},{"@type":"ListItem","position":3,"name":"Compound Interest Calculator"}]}</script>
 
 <link rel="stylesheet" href="../../assets/css/7c678f79.css?v=7c678f79">
 
 <link rel="stylesheet" href="../../assets/css/17c15c21.css?v=17c15c21">
-<link rel="preload" as="style" href="../../product-nav-icons.css?v=093ad1ea">
+<link rel="preload" as="style" href="../../product-nav-icons.css?v=432f6a45">
 
 
 </head>
@@ -454,6 +454,29 @@
     });
   }
 
+
+  // Compounding-specific write fence. Unlike tryCopy's shared DCA behavior,
+  // a late Clipboard API rejection cannot start a NEW legacy OS write once
+  // this result or copy attempt has been superseded.
+  function tryCopyCurrent(text, isCurrent){
+    function legacy(){
+      if(!isCurrent()) return false;
+      var ok = false, ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", ""); document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand("copy") === true; } catch(e){ ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    }
+    var cb = (typeof navigator !== "undefined") ? navigator.clipboard : null, p = null;
+    if (cb && typeof cb.writeText === "function") {
+      try { p = cb.writeText(text); } catch(e){ p = null; }
+    }
+    if (p && typeof p.then === "function") {
+      return p.then(function(){ return true; }, function(){ return legacy(); });
+    }
+    return Promise.resolve(legacy());
+  }
+
   function showCopyFallback(box, ta, text){
     ta.value = text;
     box.hidden = false;
@@ -638,9 +661,20 @@
 
     var last=null, lastInp=null;
     var FREQ_LABELS = {12:{en:"Monthly", zh:"每月"}, 4:{en:"Quarterly", zh:"每季"}, 1:{en:"Annual", zh:"每年"}};
-    function render(){
+    var copyEpoch = 0, copyTimer = null;
+    function resetCopyFeedback(){
+      // A render or a newer copy supersedes all pending UI callbacks.
+      copyEpoch += 1;
+      if(copyTimer !== null){
+        clearTimeout(copyTimer);
+        copyTimer = null;
+      }
+      copied.classList.remove("show");
       if(copyFallback) copyFallback.hidden = true;
       if(copyFallbackText) copyFallbackText.value = "";
+    }
+    function render(){
+      resetCopyFeedback();
       tableWrap.setAttribute("aria-label", curLang() === "zh" ? "逐年明细" : "Year-by-year breakdown");
       var firstFail = null;
       var parsed = {};
@@ -735,8 +769,8 @@
 
     copyBtn.addEventListener("click", function(){
       if(!last || !last.ok || !lastInp) return;
-      if(copyFallback) copyFallback.hidden = true;
-      copied.classList.remove("show");
+      resetCopyFeedback();
+      var attempt = copyEpoch;
       var lang = curLang();
       var fl = FREQ_LABELS[lastInp.f] || FREQ_LABELS[12];
       var d = {
@@ -751,10 +785,17 @@
         mult: (last.mult !== null) ? outMult.textContent : "—"
       };
       var text = copyText(lang, d);
-      tryCopy(text).then(function(ok){
+      tryCopyCurrent(text, function(){ return attempt === copyEpoch; }).then(function(ok){
+        // The attempted write may already have reached the OS clipboard.
+        // Its completion must never update a superseded result or attempt.
+        if(attempt !== copyEpoch) return;
         if(ok){
           copied.classList.add("show");
-          setTimeout(function(){ copied.classList.remove("show"); }, 1600);
+          copyTimer = setTimeout(function(){
+            if(attempt !== copyEpoch) return;
+            copied.classList.remove("show");
+            copyTimer = null;
+          }, 1600);
         } else {
           if(copyFallbackText && copyFallback){
             showCopyFallback(copyFallback, copyFallbackText, text);
@@ -778,8 +819,8 @@
 
 <script>window.MM_API=window.MM_API||'https://app.mastermind-x.com';window.__mmAccountLoading=true;</script>
 <script src="../../supabase.js?v=8596965f" defer></script>
-<script src="../../account.js?v=c1732806" defer></script>
-<script src="../../theme.js?v=a46f6677" defer></script>
+<script src="../../account.js?v=3a75ad49" defer></script>
+<script src="../../theme.js?v=3c193891" defer></script>
 
 <script>
 (function(){
@@ -903,7 +944,7 @@
 })();
 </script>
 
-<script src="../../onboard.js?v=ffda78f1" defer></script>
+<script src="../../onboard.js?v=617b2faf" defer></script>
 <script defer data-whb data-root="../../" src="../../wh_banner.js?v=b1207f44"></script>
 </body>
 </html>

@@ -33,8 +33,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
+sys.path.insert(0, str(_REPO_ROOT))
 
 from engine.systematic_inputs import (  # noqa: E402
     DEFAULT_MAX_OBJECT_BYTES,

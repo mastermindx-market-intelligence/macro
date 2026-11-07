@@ -207,10 +207,18 @@
           {%- if state_summary.get('companies') and state_summary.get('findings') %}
           <div>
             <dt>{{ t('Last pass', '最近一轮') }}</dt>
-            <dd>{{ t(
-              '{:,} companies read, {:,} changes ranked for a look'.format(state_summary['companies'], state_summary['findings']),
-              '读取 {:,} 家公司，排出 {:,} 项值得一看的变化'.format(state_summary['companies'], state_summary['findings'])
-            ) }}</dd>
+            {%- if summary_as_of is defined and summary_as_of %}
+            {%- set _en = '{:,} companies read, {:,} changes ranked for a look. Counted {}.'.format(
+              state_summary['companies'], state_summary['findings'], summary_as_of) %}
+            {%- set _zh = '读取 {:,} 家公司，排出 {:,} 项值得一看的变化。统计日 {}。'.format(
+              state_summary['companies'], state_summary['findings'], summary_as_of) %}
+            {%- else %}
+            {%- set _en = '{:,} companies read, {:,} changes ranked for a look'.format(
+              state_summary['companies'], state_summary['findings']) %}
+            {%- set _zh = '读取 {:,} 家公司，排出 {:,} 项值得一看的变化'.format(
+              state_summary['companies'], state_summary['findings']) %}
+            {%- endif %}
+            <dd>{{ t(_en, _zh) }}</dd>
           </div>
           {%- endif %}
         </dl>

@@ -1138,6 +1138,20 @@ def test_cxp4_l_observation_receipts_stay_at_rest(tmp_path, monkeypatch):
     assert "DVOL · P64" in en and "DVOL · P64" in zh
 
 
+@pytest.mark.parametrize("pct, suffix", [(71, "st"), (82, "nd"), (3, "rd"), (11, "th"), (80, "th")])
+def test_cxp5_open_interest_percentile_carries_the_correct_ordinal(pct, suffix, tmp_path, monkeypatch):
+    """The OI receipt composes its rank through i18n.t_pctile like the volume sensor:
+    '71st percentile' / '第71百分位', never the hand-rolled '71th' / '71百分位'."""
+    case = _crypto_case("valid_zero")
+    case["market"]["heat"]["open_interest"] = _sensor(value=0.021, state="Normal", percentile=pct)
+    html = _render_crypto(tmp_path, monkeypatch, case)
+    block = html[html.index("Open interest / BTC cap"):]
+    receipt = _slice(block, '<div class="receipt">', "</div>")
+    assert f"{pct}{suffix} percentile" in _reading("en", receipt)
+    assert f"第{pct}百分位" in _reading("zh", receipt)
+    assert f"{pct}th percentile" not in html or suffix == "th"
+
+
 def test_cxp4_l_no_title_attribute_carries_translated_text(tmp_path, monkeypatch):
     case = _crypto_case("valid_zero")
     html = _render_crypto(tmp_path, monkeypatch, case)
