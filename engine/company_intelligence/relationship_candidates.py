@@ -46,6 +46,8 @@ _LIFECYCLES = {
     # status, delivery/quantity witness, or automatic commercial adjudication.
     "disclosed_supplier": {"reported_use", "ended", "disputed"},
     "framework_agreement": {"planned", "announced", "in_force", "ended", "disputed"},
+    # Interest is a directed ownership/equity claim, not an operating supply link.
+    "equity_ownership": {"announced", "reported", "ended", "disputed"},
     "administrative_party": {"appointed", "ended", "disputed"},
     "anonymous_counterparty": {"planned", "announced", "reported_use", "ended", "disputed"},
     "thematic_similarity": {"observed"},
@@ -56,6 +58,7 @@ _DISPOSITIONS = {
     "supplier_roster": ("roster_observation_only", "named_roster_only", False),
     "disclosed_supplier": ("disclosed_supplier_candidate", "disclosed_role_product_scope_only", True),
     "framework_agreement": ("framework_candidate_no_deliveries", "framework_only", True),
+    "equity_ownership": ("equity_interest_candidate", "owner_investee_only", False),
     "administrative_party": ("administrative_role_only", "administrative_only", False),
     "anonymous_counterparty": ("counterparty_unresolved", "source_scope_only", False),
     "thematic_similarity": ("non_relationship_observation", "similarity_only", False),
