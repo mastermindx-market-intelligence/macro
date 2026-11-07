@@ -1968,6 +1968,194 @@ def _seed_tracked_path_repo(tmp_path: Path) -> tuple[Path, str, Path]:
     return repo, sha, inventory
 
 
+def test_execution_input_identity_binds_commit_tree_modes_and_order(tmp_path: Path) -> None:
+    from dataclasses import asdict
+
+    repo, sha, _ = _seed_tracked_path_repo(tmp_path)
+    paths = ["tests/test_owner.py", "engine/core.py"]
+    identity = DEPS.bind_execution_input_identity(repo, sha, paths)
+    assert identity.version == 1
+    assert identity.tested_commit_sha == sha
+    assert identity.root_tree_oid == _git_in(repo, "rev-parse", f"{sha}^{{tree}}").stdout.strip()
+    assert identity.root_tree_oid != sha
+    assert [member.path for member in identity.members] == sorted(paths)
+    assert all(member.mode == "100644" and member.object_type == "blob" for member in identity.members)
+    for member in identity.members:
+        assert member.oid == _git_in(repo, "rev-parse", f"{sha}:{member.path}").stdout.strip()
+    payload = asdict(identity)
+    del payload["identity_sha256"]
+    assert identity.identity_sha256 == DEPS.hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
+    ).hexdigest()
+    assert DEPS.bind_execution_input_identity(repo, sha, list(reversed(paths))) == identity
+    assert DEPS.validate_execution_input_identity(
+        identity, root=repo, expected_commit_sha=sha, expected_paths=paths,
+    ) == identity
+    assert not hasattr(identity, "safe") and not hasattr(identity, "closed")
+
+
+def test_execution_input_identity_changes_with_committed_bytes_and_mode(tmp_path: Path) -> None:
+    repo, sha, _ = _seed_tracked_path_repo(tmp_path)
+    path = "engine/core.py"
+    before = DEPS.bind_execution_input_identity(repo, sha, [path])
+    (repo / path).write_text("VALUE = 2\n", encoding="utf-8")
+    changed_sha = _commit_fixture(repo, "change committed input")
+    changed = DEPS.bind_execution_input_identity(repo, changed_sha, [path])
+    assert before.members[0].oid != changed.members[0].oid
+    assert before.identity_sha256 != changed.identity_sha256
+    (repo / path).chmod(0o755)
+    executable_sha = _commit_fixture(repo, "make input executable")
+    executable = DEPS.bind_execution_input_identity(repo, executable_sha, [path])
+    assert executable.members[0].oid == changed.members[0].oid
+    assert executable.members[0].mode == "100755"
+    assert changed.members[0].mode == "100644"
+    assert executable.identity_sha256 != changed.identity_sha256
+    # Exact committed identity does not require mutating HEAD to the older commit.
+    assert DEPS.bind_execution_input_identity(repo, sha, [path]) == before
+
+
+def test_execution_input_identity_ignores_dirty_untracked_and_omitted_bytes(tmp_path: Path) -> None:
+    repo, sha, _ = _seed_tracked_path_repo(tmp_path)
+    paths = ["engine/core.py", "site/owner.json"]
+    expected = DEPS.bind_execution_input_identity(repo, sha, paths)
+    (repo / paths[0]).write_text("DIRTY = True\n", encoding="utf-8")
+    (repo / paths[1]).unlink()
+    (repo / "untracked.py").write_text("UNTRACKED = True\n", encoding="utf-8")
+    active = DEPS._ACTIVE_TRACKED_PATHS
+    assert DEPS.bind_execution_input_identity(repo, sha, paths) == expected
+    assert DEPS._ACTIVE_TRACKED_PATHS is active
+    with pytest.raises(DEPS.ExecutionInputIdentityError, match="absent from the exact tree"):
+        DEPS.bind_execution_input_identity(repo, sha, ["untracked.py"])
+
+
+@pytest.mark.parametrize("paths", [
+    ["engine/core.py", "engine/core.py"], ["../engine/core.py"], ["/engine/core.py"],
+    ["./engine/core.py"], ["engine//core.py"], [""], ["bad\0path"],
+    ["bad\udcffpath"], [3], "engine/core.py",
+])
+def test_execution_input_identity_refuses_invalid_explicit_paths(tmp_path: Path, paths) -> None:
+    repo, sha, _ = _seed_tracked_path_repo(tmp_path)
+    with pytest.raises(DEPS.ExecutionInputIdentityError):
+        DEPS.bind_execution_input_identity(repo, sha, paths)
+
+
+def test_execution_input_identity_keeps_nul_safe_literal_filenames(tmp_path: Path) -> None:
+    repo, _, _ = _seed_tracked_path_repo(tmp_path)
+    path = "tests/tab\tnewline\n雪.py"
+    (repo / path).write_text("VALUE = 1\n", encoding="utf-8")
+    sha = _commit_fixture(repo, "literal filename")
+    identity = DEPS.bind_execution_input_identity(repo, sha, [path])
+    assert identity.members[0].path == path
+    assert identity.members[0].oid == _git_in(repo, "rev-parse", f"{sha}:{path}").stdout.strip()
+
+
+def test_execution_input_identity_refuses_symlinks_gitlinks_and_noncommits(tmp_path: Path) -> None:
+    repo, original, _ = _seed_tracked_path_repo(tmp_path)
+    (repo / "site" / "alias").symlink_to("../engine/core.py")
+    _git_in(repo, "add", ".")
+    _git_in(repo, "update-index", "--add", "--cacheinfo", f"160000,{original},external")
+    _git_in(repo, "commit", "-m", "unsupported entries")
+    sha = _git_in(repo, "rev-parse", "HEAD").stdout.strip()
+    for path in ("site/alias", "external"):
+        with pytest.raises(DEPS.ExecutionInputIdentityError, match="unsupported tree entry"):
+            DEPS.bind_execution_input_identity(repo, sha, [path])
+    assert DEPS.bind_execution_input_identity(repo, sha, ["engine/core.py"]).members
+    tree = _git_in(repo, "rev-parse", "HEAD^{tree}").stdout.strip()
+    for invalid in (tree, "0" * 40, "HEAD", sha.upper()):
+        with pytest.raises(DEPS.ExecutionInputIdentityError):
+            DEPS.bind_execution_input_identity(repo, invalid, ["engine/core.py"])
+
+
+@pytest.mark.parametrize("corruption", ["oid", "mode", "tree", "commit", "omit", "duplicate", "digest", "version"])
+def test_execution_input_identity_independently_rejects_fabricated_records(tmp_path: Path, corruption: str) -> None:
+    from dataclasses import asdict, replace
+
+    repo, sha, _ = _seed_tracked_path_repo(tmp_path)
+    paths = ["engine/core.py", "tests/test_owner.py"]
+    identity = DEPS.bind_execution_input_identity(repo, sha, paths)
+    if corruption == "oid":
+        candidate = replace(identity, members=(replace(identity.members[0], oid="f" * 40), identity.members[1]))
+    elif corruption == "mode":
+        candidate = replace(identity, members=(replace(identity.members[0], mode="100755"), identity.members[1]))
+    elif corruption == "tree":
+        candidate = replace(identity, root_tree_oid="f" * 40)
+    elif corruption == "commit":
+        candidate = replace(identity, tested_commit_sha="f" * 40)
+    elif corruption == "omit":
+        candidate = replace(identity, members=identity.members[:1])
+    elif corruption == "duplicate":
+        candidate = replace(identity, members=(identity.members[0], identity.members[0]))
+    elif corruption == "version":
+        candidate = replace(identity, version=True)
+    else:
+        candidate = replace(identity, identity_sha256="0" * 64)
+    if corruption != "digest":
+        # Repair the attacker's self-digest; only an independent exact-tree/path
+        # binding can reject this self-consistent but false claim.
+        payload = asdict(candidate)
+        del payload["identity_sha256"]
+        digest = DEPS.hashlib.sha256(
+            json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
+        ).hexdigest()
+        candidate = replace(candidate, identity_sha256=digest)
+    with pytest.raises(DEPS.ExecutionInputIdentityError):
+        DEPS.validate_execution_input_identity(
+            candidate, root=repo, expected_commit_sha=sha, expected_paths=paths,
+        )
+
+
+@pytest.mark.parametrize("payload", [
+    b"100644 blob " + b"a" * 40 + b"\tengine/core.py",
+    b"100644 blob short\tengine/core.py\0",
+    b"100644 tree " + b"a" * 40 + b"\tengine/core.py\0",
+    b"100644 blob " + b"a" * 40 + b"\t../escape\0",
+    b"100644 blob " + b"a" * 40 + b"\tengine/core.py\0" + b"100644 blob " + b"a" * 40 + b"\tengine/core.py\0",
+])
+def test_execution_input_identity_refuses_malformed_git_records(tmp_path: Path, monkeypatch, payload: bytes) -> None:
+    repo, sha, _ = _seed_tracked_path_repo(tmp_path)
+    actual = DEPS._execution_identity_git_bytes
+    def malformed(root, *args):
+        return payload if args[0] == "ls-tree" else actual(root, *args)
+    monkeypatch.setattr(DEPS, "_execution_identity_git_bytes", malformed)
+    with pytest.raises(DEPS.ExecutionInputIdentityError):
+        DEPS.bind_execution_input_identity(repo, sha, ["engine/core.py"])
+
+
+def test_execution_input_identity_ignores_replacement_refs_and_git_environment(tmp_path: Path, monkeypatch) -> None:
+    repo, sha, _ = _seed_tracked_path_repo(tmp_path)
+    paths = ["engine/core.py"]
+    expected = DEPS.bind_execution_input_identity(repo, sha, paths)
+    (repo / paths[0]).write_text("REPLACEMENT = True\n", encoding="utf-8")
+    other = _commit_fixture(repo, "replacement commit")
+    _git_in(repo, "replace", sha, other)
+    assert _git_in(repo, "rev-parse", f"{sha}^{{tree}}").stdout.strip() != expected.root_tree_oid
+    monkeypatch.setenv("GIT_DIR", str(tmp_path / "not-a-repository"))
+    monkeypatch.setenv("GIT_NO_REPLACE_OBJECTS", "0")
+    assert DEPS.bind_execution_input_identity(repo, sha, paths) == expected
+
+
+def test_execution_input_identity_never_lazy_fetches_a_missing_tree(tmp_path: Path, monkeypatch) -> None:
+    repo, sha, _ = _seed_tracked_path_repo(tmp_path)
+    identity = DEPS.bind_execution_input_identity(repo, sha, ["engine/core.py"])
+    remote = tmp_path / "local-promisor.git"
+    _git_in(tmp_path, "clone", "--bare", "--no-hardlinks", str(repo), str(remote))
+    _git_in(repo, "config", "remote.origin.url", f"file://{remote}")
+    _git_in(repo, "config", "remote.origin.promisor", "true")
+    _git_in(repo, "config", "remote.origin.partialclonefilter", "blob:none")
+    tree_object = repo / ".git" / "objects" / identity.root_tree_oid[:2] / identity.root_tree_oid[2:]
+    assert tree_object.is_file()
+    tree_object.unlink()
+    with pytest.raises(DEPS.ExecutionInputIdentityError, match="local Git"):
+        DEPS.bind_execution_input_identity(repo, sha, ["engine/core.py"])
+    assert not tree_object.exists()
+    # Positive control: this private, local-only fixture really can acquire the
+    # missing tree when lazy fetching is permitted. No network service is used.
+    monkeypatch.delenv("GIT_NO_LAZY_FETCH", raising=False)
+    observed = _git_in(repo, "ls-tree", "-r", "--name-only", identity.root_tree_oid)
+    assert "engine/core.py" in observed.stdout
+    assert _git_in(repo, "cat-file", "-t", identity.root_tree_oid).stdout.strip() == "tree"
+
+
 def test_depth_two_merge_needs_no_parent1_parent2_merge_base(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

@@ -68,6 +68,190 @@ class TrackedPathInventory:
     payload_sha256: str
 
 
+EXECUTION_INPUT_IDENTITY_VERSION = 1
+
+
+class ExecutionInputIdentityError(RuntimeError):
+    """Explicit execution inputs cannot be bound to the exact committed tree."""
+
+
+@dataclass(frozen=True)
+class ExecutionInputMember:
+    path: str
+    mode: str
+    object_type: str
+    oid: str
+
+
+@dataclass(frozen=True)
+class ExecutionInputIdentity:
+    """Committed input identity only; never a completeness or eligibility verdict."""
+
+    version: int
+    tested_commit_sha: str
+    root_tree_oid: str
+    members: tuple[ExecutionInputMember, ...]
+    identity_sha256: str
+
+
+def _execution_identity_git_bytes(root: Path, *args: str) -> bytes:
+    # These observations must stay local and anchored to the supplied repository.
+    # Do not inherit an alternate Git directory, worktree, object database,
+    # replacement-ref namespace or injected config from the caller.
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update({
+        "GIT_NO_LAZY_FETCH": "1",
+        "GIT_NO_REPLACE_OBJECTS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+    })
+    try:
+        completed = subprocess.run(
+            ["git", *args], cwd=root, env=env, capture_output=True,
+            check=True, timeout=120,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise ExecutionInputIdentityError(
+            f"local Git {args[0]} failed while binding execution inputs: {exc}"
+        ) from exc
+    return completed.stdout
+
+
+def _execution_input_paths(paths: tuple[str, ...] | list[str]) -> tuple[str, ...]:
+    if not isinstance(paths, (tuple, list)):
+        raise ExecutionInputIdentityError("explicit paths must be a tuple or list")
+    for path in paths:
+        if (
+            not isinstance(path, str) or not path or "\0" in path
+            or path.startswith("/") or any(part in {"", ".", ".."} for part in path.split("/"))
+        ):
+            raise ExecutionInputIdentityError(f"non-canonical execution input path {path!r}")
+        try:
+            path.encode("utf-8", errors="strict")
+        except UnicodeError as exc:
+            raise ExecutionInputIdentityError("execution input path is not UTF-8") from exc
+    if len(set(paths)) != len(paths):
+        raise ExecutionInputIdentityError("duplicate execution input paths")
+    return tuple(sorted(paths))
+
+
+def _execution_tree_members(payload: bytes) -> dict[str, ExecutionInputMember]:
+    if len(payload) > _MAX_TRACKED_PATHS_BYTES:
+        raise ExecutionInputIdentityError("execution tree listing exceeds the inventory bound")
+    if payload and not payload.endswith(b"\0"):
+        raise ExecutionInputIdentityError("execution tree listing is not NUL terminated")
+    members: dict[str, ExecutionInputMember] = {}
+    for record in payload[:-1].split(b"\0") if payload else []:
+        header, separator, encoded_path = record.partition(b"\t")
+        fields = header.split(b" ")
+        if not separator or len(fields) != 3:
+            raise ExecutionInputIdentityError("malformed execution tree record")
+        try:
+            mode, object_type, oid = (value.decode("ascii") for value in fields)
+            path = encoded_path.decode("utf-8", errors="strict")
+        except UnicodeError as exc:
+            raise ExecutionInputIdentityError("malformed execution tree record encoding") from exc
+        if (
+            (mode, object_type) not in {
+                ("100644", "blob"), ("100755", "blob"),
+                ("120000", "blob"), ("160000", "commit"),
+            }
+            or not re.fullmatch(r"[0-9a-f]{40}", oid)
+        ):
+            raise ExecutionInputIdentityError("malformed execution tree mode, type or OID")
+        _execution_input_paths([path])
+        if path in members:
+            raise ExecutionInputIdentityError("duplicate execution tree path")
+        members[path] = ExecutionInputMember(path, mode, object_type, oid)
+    return members
+
+
+def bind_execution_input_identity(
+    root: Path,
+    tested_commit_sha: str,
+    explicit_paths: tuple[str, ...] | list[str],
+) -> ExecutionInputIdentity:
+    """Bind explicit paths to local committed identities without reading their bytes.
+
+    The caller still owes a complete execution closure. This API does not widen
+    selection, change materialization, acquire missing objects, inspect dirty
+    worktree contents or use the selector's path-only analysis cache.
+    """
+    paths = _execution_input_paths(explicit_paths)
+    if not isinstance(tested_commit_sha, str) or not re.fullmatch(
+        r"[0-9a-f]{40}", tested_commit_sha
+    ):
+        raise ExecutionInputIdentityError("tested commit must be an exact lowercase SHA")
+    base = Path(root).resolve()
+    try:
+        commit = _execution_identity_git_bytes(
+            base, "rev-parse", "--verify", f"{tested_commit_sha}^{{commit}}"
+        ).decode("ascii", errors="strict").strip()
+        tree = _execution_identity_git_bytes(
+            base, "rev-parse", "--verify", f"{tested_commit_sha}^{{tree}}"
+        ).decode("ascii", errors="strict").strip()
+    except UnicodeError as exc:
+        raise ExecutionInputIdentityError("Git returned a malformed commit/tree identity") from exc
+    if commit != tested_commit_sha or not re.fullmatch(r"[0-9a-f]{40}", tree):
+        raise ExecutionInputIdentityError("Git commit/tree identity does not match the requested source")
+    available = _execution_tree_members(
+        _execution_identity_git_bytes(base, "ls-tree", "-r", "--full-tree", "-z", tree)
+    )
+    selected: list[ExecutionInputMember] = []
+    for path in paths:
+        member = available.get(path)
+        if member is None:
+            raise ExecutionInputIdentityError(f"execution input {path!r} is absent from the exact tree")
+        if member.mode not in {"100644", "100755"} or member.object_type != "blob":
+            raise ExecutionInputIdentityError(f"execution input {path!r} has an unsupported tree entry")
+        selected.append(member)
+    payload = {
+        "version": EXECUTION_INPUT_IDENTITY_VERSION,
+        "tested_commit_sha": commit,
+        "root_tree_oid": tree,
+        "members": [
+            {"path": m.path, "mode": m.mode, "object_type": m.object_type, "oid": m.oid}
+            for m in selected
+        ],
+    }
+    digest = hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
+    ).hexdigest()
+    return ExecutionInputIdentity(
+        EXECUTION_INPUT_IDENTITY_VERSION, commit, tree, tuple(selected), digest
+    )
+
+
+def validate_execution_input_identity(
+    identity: ExecutionInputIdentity,
+    *,
+    root: Path,
+    expected_commit_sha: str,
+    expected_paths: tuple[str, ...] | list[str],
+) -> ExecutionInputIdentity:
+    """Independently rebind an identity to the caller's exact commit AND path set."""
+    if (
+        type(identity) is not ExecutionInputIdentity
+        or type(identity.version) is not int
+        or identity.version != EXECUTION_INPUT_IDENTITY_VERSION
+        or type(identity.members) is not tuple
+        or any(type(member) is not ExecutionInputMember for member in identity.members)
+        or any(
+            type(value) is not str
+            for value in (identity.tested_commit_sha, identity.root_tree_oid, identity.identity_sha256)
+        )
+        or any(
+            type(value) is not str
+            for member in identity.members
+            for value in (member.path, member.mode, member.object_type, member.oid)
+        )
+    ):
+        raise ExecutionInputIdentityError("malformed execution input identity")
+    expected = bind_execution_input_identity(root, expected_commit_sha, expected_paths)
+    if identity != expected:
+        raise ExecutionInputIdentityError("execution input identity does not match the independent exact tree")
+    return expected
+
+
 _ACTIVE_TRACKED_PATHS: TrackedPathInventory | None = None
 
 
