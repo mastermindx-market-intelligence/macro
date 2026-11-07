@@ -688,9 +688,9 @@ class ModelAttempt:
     degraded_reason: str | None = None
     raw_response: str | None = None
     candidates: list[dict] = field(default_factory=list)
-    input_tokens: int = 0
-    output_tokens: int = 0
-    est_cost_usd: float = 0.0
+    input_tokens: int | None = 0
+    output_tokens: int | None = 0
+    est_cost_usd: float | None = 0.0
     latency_ms: float = 0.0
     provider_fallback_reason: str | None = None
     is_comparator: bool = False
@@ -698,6 +698,10 @@ class ModelAttempt:
     endpoint_class: str | None = None
     base_url_source: str | None = None
     preflight: dict[str, Any] = field(default_factory=dict)
+    served_model: str | None = None
+    http_status: int | None = None
+    error_kind: str | None = None
+    observed_usage: dict[str, int | None] | None = None
 
 
 def _parse_plist_llm(root: Path) -> tuple[str, str]:
@@ -819,7 +823,7 @@ def ledger_attempt(attempt: ModelAttempt, root: Path, run_id: str) -> None:
             cost_basis = "local"
             est_cost = 0.0
         else:
-            cost_basis = "metered"
+            cost_basis = "unknown" if attempt.est_cost_usd is None else "metered"
             est_cost = attempt.est_cost_usd
         note = (
             f"comparator=True {attempt.comparator_note}" if attempt.is_comparator
@@ -850,11 +854,14 @@ def _attempt_qwen(user_prompt: str, repo_root: Path) -> ModelAttempt:
         provider="openai_compat",
         model="qwen3.5:9b",
         is_comparator=False,
+        input_tokens=None,
+        output_tokens=None,
+        est_cost_usd=None,
     )
     t0 = time.monotonic()
     try:
         import yaml
-        from engine.earnings_qual import _call_openai_compat
+        from engine.earnings_qual import _call_openai_compat_detailed
 
         with open(repo_root / "config/earnings_qual.yml") as f:
             cfg = yaml.safe_load(f)
@@ -879,45 +886,21 @@ def _attempt_qwen(user_prompt: str, repo_root: Path) -> ModelAttempt:
             )
             return attempt
 
-        captured: dict[str, Any] = {}
-        try:
-            import requests as _requests
-
-            _orig_post = _requests.post
-
-            def _wrapped_post(*args: Any, **kwargs: Any):
-                resp = _orig_post(*args, **kwargs)
-                captured["json"] = resp.json() if resp.ok else None
-                return resp
-
-            _requests.post = _wrapped_post  # type: ignore[method-assign]
-            try:
-                text, reason = _call_openai_compat(
-                    system=SYSTEM_PROMPT,
-                    user=user_prompt,
-                    oc_cfg=oc_cfg,
-                    max_tokens=int(oc_cfg.get("max_tokens") or EXTRACTION_MAX_TOKENS)
-                    if int(oc_cfg.get("max_tokens") or 0) >= EXTRACTION_MAX_TOKENS
-                    else EXTRACTION_MAX_TOKENS,
-                )
-            finally:
-                _requests.post = _orig_post  # type: ignore[method-assign]
-        except Exception:
-            text, reason = _call_openai_compat(
-                system=SYSTEM_PROMPT,
-                user=user_prompt,
-                oc_cfg=oc_cfg,
-                max_tokens=int(oc_cfg.get("max_tokens") or EXTRACTION_MAX_TOKENS)
-                if int(oc_cfg.get("max_tokens") or 0) >= EXTRACTION_MAX_TOKENS
-                else EXTRACTION_MAX_TOKENS,
-            )
-        usage = (captured.get("json") or {}).get("usage") or {}
-        attempt.input_tokens = int(
-            usage.get("prompt_tokens") or usage.get("input_tokens") or 0
+        result = _call_openai_compat_detailed(
+            system=SYSTEM_PROMPT,
+            user=user_prompt,
+            oc_cfg=oc_cfg,
+            max_tokens=max(int(oc_cfg.get("max_tokens") or EXTRACTION_MAX_TOKENS),
+                           EXTRACTION_MAX_TOKENS),
         )
-        attempt.output_tokens = int(
-            usage.get("completion_tokens") or usage.get("output_tokens") or 0
-        )
+        text, reason = result.text, result.reason
+        attempt.observed_usage = result.observed_usage
+        attempt.served_model = result.served_model
+        attempt.http_status = result.status_code
+        attempt.error_kind = result.error_kind
+        usage = result.observed_usage or {}
+        attempt.input_tokens = usage.get("prompt_tokens")
+        attempt.output_tokens = usage.get("completion_tokens")
         attempt.latency_ms = (time.monotonic() - t0) * 1000
         if text is None:
             attempt.status = "provider_unavailable"
@@ -1329,10 +1312,14 @@ def run_e3a_eval(repo_root: Path | None = None) -> dict:
         "latency_ms": round(qwen_attempt.latency_ms, 1),
         "input_tokens": qwen_attempt.input_tokens,
         "output_tokens": qwen_attempt.output_tokens,
+        "served_model": qwen_attempt.served_model,
+        "http_status": qwen_attempt.http_status,
+        "error_kind": qwen_attempt.error_kind,
+        "observed_usage": qwen_attempt.observed_usage,
         "est_cost_usd": qwen_attempt.est_cost_usd,
         "cost_basis": (
             "local" if qwen_attempt.endpoint_class in {"loopback", "private_lan"}
-            else "metered"
+            else ("unknown" if qwen_attempt.est_cost_usd is None else "metered")
         ),
         "transport": "openai_compat",
         "gold_labels_seen": False,

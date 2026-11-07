@@ -425,6 +425,10 @@ class OpenAICompatResult:
     usage: dict[str, int | None] | None = None
     status_code: int | None = None
     error_kind: str | None = None
+    # Actual response evidence also survives rejected/empty answers. Legacy
+    # usage remains the accepted-answer projection used by existing callers.
+    observed_usage: dict[str, int | None] | None = None
+    served_model: str | None = None
 
 
 #: The ONLY keys a caller-supplied ``request_profile`` may overlay onto the
@@ -486,6 +490,43 @@ def _normalize_openai_usage(usage: Any) -> dict[str, int | None] | None:
     if total is None and prompt is not None and completion is not None:
         total = prompt + completion
     return {"prompt_tokens": prompt, "completion_tokens": completion, "total_tokens": total}
+
+
+def _openai_response_observation(data: Any) -> tuple[dict[str, int | None] | None, str | None]:
+    """Retain actual response metadata independently of answer acceptance.
+
+    Unlike the legacy usage projection, observations never coerce malformed
+    counts or manufacture zero. Each result owns its own metadata.
+    """
+    if not isinstance(data, dict):
+        return None, None
+    raw = data.get("usage")
+
+    def count(primary: str, alias: str | None = None) -> int | None:
+        if not isinstance(raw, dict):
+            return None
+        key = primary if primary in raw else alias
+        value = raw.get(key) if key is not None else None
+        if type(value) is not int or value < 0:
+            return None
+        if alias is not None and primary in raw and alias in raw:
+            other = raw[alias]
+            if type(other) is not int or other != value:
+                return None
+        return value
+
+    usage = {
+        "prompt_tokens": count("prompt_tokens", "input_tokens"),
+        "completion_tokens": count("completion_tokens", "output_tokens"),
+        "total_tokens": count("total_tokens"),
+    }
+    observed = usage if any(value is not None for value in usage.values()) else None
+    model = data.get("model")
+    served = model if (
+        isinstance(model, str) and 0 < len(model) <= 256
+        and model == model.strip() and all(ord(char) >= 32 for char in model)
+    ) else None
+    return observed, served
 
 
 def _openai_compat_error_kind(exc: BaseException) -> str:
@@ -560,6 +601,7 @@ def _call_openai_compat_detailed(
     payload = _merge_request_profile(payload, request_profile)
     timeout = float(oc_cfg.get("timeout_s", 120))
     connect_timeout = float(oc_cfg.get("connect_timeout_s", min(timeout, 5)))
+    status_code = None
     try:
         import requests  # noqa: PLC0415
         r = requests.post(
@@ -568,37 +610,44 @@ def _call_openai_compat_detailed(
             json=payload,
             timeout=(connect_timeout, timeout),
         )
-        if r.status_code != 200:
+        status_code = int(r.status_code)
+        if status_code != 200:
+            try:
+                observed_usage, served_model = _openai_response_observation(r.json())
+            except Exception:  # A non-JSON error is still the observed HTTP error.
+                observed_usage, served_model = None, None
             return OpenAICompatResult(
-                None,
-                f"openai_compat_http_{r.status_code}",
-                None,
-                int(r.status_code),
-                "http",
+                None, f"openai_compat_http_{status_code}", None, status_code, "http",
+                observed_usage=observed_usage, served_model=served_model,
             )
         data = r.json()
-        status_code = int(r.status_code)
     except Exception as exc:  # noqa: BLE001
         log.warning("earnings_qual: openai_compat call failed (%s)", exc)
-        return OpenAICompatResult(None, "openai_compat_error", None, None, _openai_compat_error_kind(exc))
-    _log_prompt_truncation(
-        sum(len(str(m.get("content") or "")) for m in payload["messages"]),
-        data if isinstance(data, dict) else {},
-        model,
-    )
+        return OpenAICompatResult(
+            None, "openai_compat_error", None, status_code, _openai_compat_error_kind(exc)
+        )
+    observed_usage, served_model = _openai_response_observation(data)
+    metadata = {"observed_usage": observed_usage, "served_model": served_model}
     try:
+        _log_prompt_truncation(
+            sum(len(str(m.get("content") or "")) for m in payload["messages"]),
+            data if isinstance(data, dict) else {},
+            model,
+        )
         choices = data.get("choices") or []
         if not choices:
-            return OpenAICompatResult(None, "openai_compat_empty", None, status_code, "empty")
+            return OpenAICompatResult(None, "openai_compat_empty", None, status_code, "empty", **metadata)
         msg = choices[0].get("message") or {}
         text = msg.get("content")
         if not text:
-            return OpenAICompatResult(None, "openai_compat_empty", None, status_code, "empty")
+            return OpenAICompatResult(None, "openai_compat_empty", None, status_code, "empty", **metadata)
+        if not isinstance(text, str):
+            return OpenAICompatResult(None, "openai_compat_bad_shape", None, status_code, "bad_shape", **metadata)
         usage = _normalize_openai_usage(data.get("usage"))
-        return OpenAICompatResult(str(text), None, usage, status_code, None)
+        return OpenAICompatResult(text, None, usage, status_code, None, **metadata)
     except Exception as exc:  # noqa: BLE001
         log.warning("earnings_qual: openai_compat parse failed (%s)", exc)
-        return OpenAICompatResult(None, "openai_compat_bad_shape", None, status_code, "bad_shape")
+        return OpenAICompatResult(None, "openai_compat_bad_shape", None, status_code, "bad_shape", **metadata)
 
 
 def _call_openai_compat(
