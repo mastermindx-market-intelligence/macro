@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T21:04:45Z",
+ "accession": "0001193125-26-119957",
+ "cik": "0001836833",
+ "doc_byte_length": 5134238,
+ "doc_sha256": "c5e0baac3207f49902112b4d45c345456e5353ce413e032aa573ded5160068d8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "pl-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3928170,
+  "byte_start": 3926836,
+  "normalized": "In April 2017, the Company and Google entered into a five year content license agreement pursuant to which the Company licensed content to Google. In April 2022, the agreement automatically renewed for a period of one year and in April 2023, the agreement expired.",
+  "normalized_sha256": "44d680b4b149dfda9632c989f8d6158d81a7dd0e610226a85aead9e89fa7861d",
+  "raw": "In April 2017, the Company and Google entered into a </span><span style=\"font-size:10pt;font-family:Times New Roman;\"><ix:nonNumeric id=\"F_6f738847-7ee7-47ee-a639-3a3d0dedc5fa\" contextRef=\"C_bf583e40-a0ec-453b-a745-d7f26c921366\" name=\"pl:RelatedPartyAgreementTerm\" format=\"ixt-sec:durwordsen\"><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">five year</span></ix:nonNumeric></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> content license agreement pursuant to which the Company licensed content to Google. In April 2022, the agreement automatically renewed for a period of </span><span style=\"font-size:10pt;font-family:Times New Roman;\"><ix:nonNumeric id=\"F_ecabaeff-2d8d-4396-a23b-3c0c5b30bdf5\" contextRef=\"C_d0a0f8f4-c975-47e5-bdcc-d09329124c76\" name=\"pl:RelatedPartyRenewalTerm\" format=\"ixt-sec:durwordsen\"><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">one year</span></ix:nonNumeric></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> and in April 2023, the agreement expired.",
+  "raw_sha256": "cf1880605d1c6246485d2eac472f9192beba703ae5151e11e4421c176bfad291"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1836833/000119312526119957/pl-20260131.htm",
+ "xbrl_contexts": []
+}
