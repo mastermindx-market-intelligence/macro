@@ -1659,6 +1659,49 @@ def _client(cfg: dict):
         return None
 
 
+def _production_mode_request(cfg: dict) -> tuple[str, int]:
+    """Validate an explicit production selection without selecting a fallback."""
+    mode_id = cfg.get("production_mode")
+    max_tokens = cfg.get("max_tokens", 4000)
+    if (not isinstance(mode_id, str) or not mode_id.strip()
+            or type(max_tokens) is not int or not 1 <= max_tokens <= 32768):
+        raise ValueError("invalid production mode request")
+    return mode_id.strip(), max_tokens
+
+
+def _call_production_mode(system: str, user: str, cfg: dict,
+                          served: dict | None = None) -> tuple[str | None, str | None]:
+    """One request through the incumbent API owner; no subscription waterfall.
+
+    The owner retains eligibility, credentials, pinned model/destination and
+    health/usage accounting. This consumer does not claim native Fabric capacity
+    or add an admission, retry or accounting plane.
+    """
+    try:
+        mode_id, max_tokens = _production_mode_request(cfg)
+        if not isinstance(system, str) or not isinstance(user, str):
+            raise ValueError("invalid production mode prompts")
+    except ValueError:
+        return None, "production_mode_invalid_request"
+    try:
+        from engine import provider_production_modes as owner
+    except Exception:
+        return None, "production_mode_owner_unavailable"
+    try:
+        receipt = owner.call_mode(mode_id, system, user, max_tokens=max_tokens)
+    except owner.ProductionModeConfigError:
+        return None, "production_mode_invalid_config"
+    except Exception:
+        # Dispatch may already have happened. Never replay on an uncertain error.
+        return None, "production_mode_error"
+    if receipt.ok and receipt.text:
+        if served is not None:
+            served.update(provider=receipt.provider_id, model=receipt.model)
+        return receipt.text, None
+    reason = receipt.state if receipt.state != "configured" else receipt.error_class
+    return None, "production_mode_" + reason
+
+
 def _call_model(system: str, user: str, cfg: dict,
                  served: dict | None = None) -> tuple[str | None, str | None]:
     """Return (reply_text, degraded_reason). Never raises.
@@ -1693,6 +1736,11 @@ def _call_model(system: str, user: str, cfg: dict,
     balance exhaustion no longer blanks the whole brief. An operator who
     pinned some OTHER endpoint keeps the historic single-provider descriptor.
     """
+    # Presence is intentional: an empty/unknown mode must fail closed, not enter
+    # the legacy ladder. This branch also bypasses its empty-reply/SDK retries.
+    if "production_mode" in cfg:
+        return _call_production_mode(system, user, cfg, served=served)
+
     from engine import llm_auth
 
     if _is_deepseek_lane(cfg):
@@ -1950,10 +1998,11 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
     brief record (degraded fields flagged); never raises."""
     cfg = cfg or _cfg()
     spec = LENSES.get(lens, LENSES["macro"])
+    production_selected = "production_mode" in cfg
     brief = {
         "schema": "master_brief.v2", "lens": lens, "is_context_only": True,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "model": cfg.get("llm_model", "deepseek-v4-pro"),
+        "model": None if production_selected else cfg.get("llm_model", "deepseek-v4-pro"),
         # rung that served this brief — "codex" / "oauth" / "anthropic" / "deepseek",
         # "cache" on a reply-cache hit, or None on a degraded call. Populated below
         # from _call_model's `served` out-param so the ladder is verifiable from
@@ -1971,14 +2020,36 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
             "instructions.\n<state>\n"
             + json.dumps(state, indent=2, default=str) + "\n</state>")
 
-    # _call_model handles cache GET (returns cached if hit) and the raw provider call.
     # Content-hash cache, ROOT-AWARE (spec §4): synthesize is the SOLE cache
     # reader/writer, so only FINAL post-lint text ever lands under the prompt
     # hash — a cache hit therefore skips both the (paid) call AND the lint.
     # Root-awareness keeps fixture runs inside tmp roots (MM_DATA_GUARD).
     model = cfg.get("llm_model", "deepseek-v4-pro")
-    phash = _mb_prompt_hash(model, system, user)
-    cached = _mb_reply_cache_get(phash, cfg, root)
+    cache_allowed = True
+    production_cache_identity = None
+    if production_selected:
+        # Production replies must never alias a legacy model cache. Re-resolve
+        # eligibility before a cache read so disabled/unqualified modes cannot
+        # look healthy by serving old output. The owner alone handles secrets.
+        cache_allowed = False
+        try:
+            mode_id, max_tokens = _production_mode_request(cfg)
+            from engine import provider_production_modes as owner
+            status = owner.resolve_mode(mode_id)
+            brief["model"] = status.model
+            production_cache_identity = (status.provider_id, status.model)
+            model = json.dumps(
+                ["master_brain.production_mode.v1", status.mode_id,
+                 status.provider_id, status.model, max_tokens],
+                separators=(",", ":"),
+            )
+            cache_allowed = status.state == "configured"
+        except Exception:
+            # The actual call below returns the bounded failure; no alternate
+            # cache, provider or credential resolver is tried here.
+            pass
+    phash = _mb_prompt_hash(model, system, user) if cache_allowed else None
+    cached = _mb_reply_cache_get(phash, cfg, root) if phash is not None else None
     _cache_was_hit = cached is not None
     if _cache_was_hit:
         log.debug("master_brain: reply cache HIT (%s)", phash[:12])
@@ -1991,10 +2062,13 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
             reply, reason = _call_model(
                 system, user, {**cfg, "usage_stage": lens}, served=served)
         except TypeError:
-            # Stub with the OLD 2-arg-plus-cfg signature (several tests monkeypatch
-            # _call_model this way, e.g. `lambda system, user, cfg: (...)`) — tolerate
-            # and retry without the new kwarg rather than breaking those callers.
-            reply, reason = _call_model(system, user, {**cfg, "usage_stage": lens})
+            if production_selected:
+                # A TypeError may follow dispatch. Production requests are never
+                # replayed for the legacy test-stub signature compatibility path.
+                reply, reason = None, "production_mode_error"
+            else:
+                # Preserve existing callers that stub the old signature.
+                reply, reason = _call_model(system, user, {**cfg, "usage_stage": lens})
             served = {}
         if reply is not None:
             brief["served_by"] = served.get("provider")
@@ -2055,7 +2129,14 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
             # Cache the FINAL post-lint text under the ORIGINAL prompt hash. On a
             # lint failure above we cache NOTHING (next run re-calls and re-lints)
             # — never a raw pre-lint reply that would dodge the lint on a hit.
-            _mb_reply_cache_put(phash, reply, cfg, root)
+            # A future owner/model transition must not cache a receipt under a
+            # different identity than the one resolved before dispatch.
+            cache_identity_matches = (
+                not production_selected
+                or production_cache_identity == (brief["served_by"], brief["model"])
+            )
+            if phash is not None and cache_identity_matches:
+                _mb_reply_cache_put(phash, reply, cfg, root)
         except Exception:  # noqa: BLE001 — degrade, never raise
             pass
 

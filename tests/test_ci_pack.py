@@ -5604,9 +5604,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_672),
+    ("templates/index.html", 137, 5_916),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_935),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_674),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5614,6 +5614,42 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR #10727 conflict composition with protected07c55fb9 (2026-11-07):
+    Preserve the receiver's accepted retained-GSC free-content contribution
+    and the new press-account-claim-consumer owner. Add only this PR's
+    already qualified brain-desks composition-suite two planning-weight
+    units to the receiver's 5914/5933/5672: expect 5916/5935/5674.
+    These are source-derived expectations, not fresh planner measurements.
+    Natural current-head contract-delta must qualify this combined source,
+    including the new owner and current GSC command. Keep ceilings137/138/131,
+    ten packs, every existing command, selector, timeout and admission limit.
+    Preserve the separate earlier composition and measurement histories below.
+
+    PR #10727 conflict composition with protected335e5cc3 (2026-11-07):
+    Preserve both independent enrollments: the receiver's #10710 gateway+2
+    and this PR's already qualified brain-desks composition-suite+2. The
+    current 5914/5931/5672 include only the former; add only the latter's two
+    units to expect 5916/5933/5674. These are arithmetic source expectations,
+    not a new planner measurement. Current-head hosted contract-delta must
+    qualify the combined source. Keep job ceilings137/138/131, ten packs,
+    all current commands, selectors, timeouts and admission limits unchanged.
+    The separate historical paired measurements remain recorded below.
+
+    PR #10727 composition with protected85e299 (2026-11-07): preserve the
+    accepted #8899 provenance-suite enrollment and all current CODE owners.
+    The separate Fabric composition suite adds two planning-weight units to
+    each probe: expected index5914, free5931, Prophet5672. These combined values
+    are source-derived expectations; the new-head hosted contract-delta must
+    measure them. Keep job ceilings137/138/131 and the ten-pack bound unchanged.
+
+    Fabric production-owner composition (2026-11-04): exact tracked-tree
+    inventory at17b805dbf6e6 measured index137jobs/5914, free137jobs/5929
+    and Prophet131jobs/5670, all ten packs, against protected8b78baf69777
+    weights5912/5927/5668. Fund only the two intended test-registration weight
+    units; preserve every job-count, pack, timeout and admission bound. The
+    three probes match the hosted contract-delta shape; these estimates are
+    not runtime evidence. Sparse filesystem-only measurements are not used.
 
     P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
     protected59e035e39607, preserving its gateway and prior provenance
