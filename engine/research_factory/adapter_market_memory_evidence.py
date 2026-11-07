@@ -95,6 +95,9 @@ def _joined(request):
 
 
 def build_market_memory_evidence_attachment(request) -> MarketMemoryEvidenceAttachmentCapability:
+    from . import adapter_market_memory_fitted_evidence as fitted
+    if type(request) is fitted.FittedMarketMemoryEvidenceInput:
+        return fitted.build_fitted_market_memory_evidence_attachment(request)
     binding, candidate, selected, packet = _joined(request)
     value = {"schema": SCHEMA, "authority": "display_only", "attached_at": request.attached_at,
              "candidate": candidate, "trial_binding": binding,
@@ -123,6 +126,9 @@ def build_market_memory_evidence_attachment(request) -> MarketMemoryEvidenceAtta
 
 
 def disclose_market_memory_evidence_attachment(capability) -> dict:
+    from . import adapter_market_memory_fitted_evidence as fitted
+    if type(capability) is fitted.FittedMarketMemoryEvidenceAttachmentCapability:
+        return fitted.disclose_fitted_market_memory_evidence_attachment(capability)
     if (type(capability) is not MarketMemoryEvidenceAttachmentCapability
             or capability._seal is not _TOKEN or type(capability._body) is not bytes
             or len(capability._body) > MAX_BYTES

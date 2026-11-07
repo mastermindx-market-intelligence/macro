@@ -304,6 +304,12 @@ _MARKET_MEMORY_RESERVED_STRING_PREFIXES = (
     "rf-market-memory-",
     "mmrfspec_",
     "mmrfevidence_",
+    "mmrffittedevidence_",
+    "mmfittedevidence_",
+    "mmfittedretrieval_",
+    "mmfittedmethod_",
+    "mmfittednormalizer_",
+    "mmfittedindex_",
     "mmrfbinding_",
     "mmtrial_",
 )
@@ -313,6 +319,13 @@ _MARKET_MEMORY_RESERVED_STRING_VALUES = frozenset(
         _MARKET_MEMORY_CONFORMANCE_SCHEMA,
         _MARKET_MEMORY_SPEC_SCHEMA,
         "research_factory.market_memory_evidence_attachment.v1",
+        "research_factory.market_memory_fitted_evidence_attachment.v2",
+        "market_memory.fitted_evidence_packet.v1",
+        "market_memory.fitted_episode_retrieval.v2",
+        "market_memory.fitted_normalizer.v2",
+        "market_memory.fitted_exact_index.v2",
+        "market_memory.factory_fitted_binding.v2",
+        "research_factory.fitted_contextual_evidence.v2",
         "market_memory.factory_contextual_binding.v1",
         "market_memory_w2a_preregistration",
         "market_memory_context_only",
@@ -331,6 +344,8 @@ _MARKET_MEMORY_RESERVED_KEYS = frozenset(
         "market_memory_conformance",
         "contextual_retrieval_join",
         "real_evidence_join",
+        "fitted_retrieval_join",
+        "fitted_evidence_join",
         "trial_read_back",
         "w4_retrieval_join",
         "w5_operating_cortex_join",
@@ -1127,3 +1142,31 @@ def validate_market_memory_evidence_attachment(row: dict) -> list[str]:
     if type(row["limitations"]) is not list or not row["limitations"]:
         errors.append("Market Memory evidence limitations are required")
     return errors
+
+
+def validate_market_memory_fitted_evidence_attachment(row: dict) -> list[str]:
+    """Structural closed envelope; genuine capability/source joins stay with owner."""
+    from jsonschema import Draft202012Validator, FormatChecker
+    from pathlib import Path
+    try:
+        contract = json.loads((Path(__file__).resolve().parents[2] /
+            "contracts/market_memory/factory_fitted_evidence_attachment.v2.schema.json").read_text())
+        errors = [error.message for error in Draft202012Validator(
+            contract, format_checker=FormatChecker()).iter_errors(row)]
+        if errors:
+            return errors
+        body = _market_memory_canonical_bytes(row)
+        if body is None or len(body) > 2 * 1024 * 1024:
+            return ["Fitted evidence byte bound exceeded"]
+        core = {k: v for k, v in row.items() if k != "attachment_id"}
+        if row["attachment_id"] != "mmrffittedevidence_" + hashlib.sha256(
+                _market_memory_canonical_bytes(core)).hexdigest():
+            errors.append("Fitted evidence identity mismatch")
+        if not _market_memory_real_canonical_utc(row["attached_at"]):
+            errors.append("Fitted evidence clock invalid")
+        errors.extend(validate_candidate(row["candidate"]))
+        if row["candidate"].get("source") != "market_memory" or row["candidate"].get("status") != "proposed":
+            errors.append("Original proposed Market Memory candidate required")
+        return errors
+    except (TypeError, ValueError, KeyError):
+        return ["Invalid fitted evidence envelope"]

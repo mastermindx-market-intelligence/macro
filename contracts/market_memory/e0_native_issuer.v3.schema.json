@@ -1,0 +1,2978 @@
+{
+  "$defs": {
+    "envelope": {
+      "additionalProperties": false,
+      "properties": {
+        "input": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "maxLength": 87384,
+              "type": "string"
+            },
+            "bytes": {
+              "maximum": 65536,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "encoding": {
+              "const": "base64"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "encoding",
+            "bytes",
+            "sha256",
+            "body"
+          ],
+          "type": "object"
+        },
+        "intent": {
+          "additionalProperties": false,
+          "properties": {
+            "child_run_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "operator_run_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "participant_binding_sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "root_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "study_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "study_id",
+            "root_id",
+            "operator_run_id",
+            "child_run_id",
+            "participant_binding_sha256"
+          ],
+          "type": "object"
+        },
+        "operation_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "type": "string"
+        },
+        "original_intent": {
+          "type": "object"
+        },
+        "original_recipient": {
+          "additionalProperties": false,
+          "properties": {
+            "original_operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "pre_input_intent_sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "principal_ref": {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 4194304,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "object_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "schema": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "schema",
+                "object_id",
+                "sha256",
+                "bytes"
+              ],
+              "type": "object"
+            },
+            "recipient_kind": {
+              "const": "native_broker_service"
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_original_recipient.v3"
+            },
+            "ssh_key_fingerprint": {
+              "pattern": "^SHA256:[A-Za-z0-9+/]{43}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "recipient_kind",
+            "principal_ref",
+            "ssh_key_fingerprint",
+            "original_operation_id",
+            "pre_input_intent_sha256"
+          ],
+          "type": "object"
+        },
+        "schema": {
+          "const": "research_factory.market_memory_e0_native_original_envelope.v3"
+        },
+        "selection_b64": {
+          "maxLength": 21848,
+          "type": "string"
+        },
+        "selection_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "operation_id",
+        "intent",
+        "original_intent",
+        "selection_b64",
+        "selection_sha256",
+        "input",
+        "original_recipient"
+      ],
+      "type": "object"
+    },
+    "request": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "qualify_current_case"
+            },
+            "intent": {
+              "additionalProperties": false,
+              "properties": {
+                "child_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "operator_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "participant_binding_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "root_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "study_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "study_id",
+                "root_id",
+                "operator_run_id",
+                "child_run_id",
+                "participant_binding_sha256"
+              ],
+              "type": "object"
+            },
+            "operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_request.v3"
+            }
+          },
+          "required": [
+            "schema",
+            "action",
+            "operation_id",
+            "intent"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "prepare_case"
+            },
+            "intent": {
+              "additionalProperties": false,
+              "properties": {
+                "child_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "operator_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "participant_binding_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "root_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "study_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "study_id",
+                "root_id",
+                "operator_run_id",
+                "child_run_id",
+                "participant_binding_sha256"
+              ],
+              "type": "object"
+            },
+            "operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_request.v3"
+            }
+          },
+          "required": [
+            "schema",
+            "action",
+            "operation_id",
+            "intent"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "current_input"
+            },
+            "intent": {
+              "additionalProperties": false,
+              "properties": {
+                "child_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "operator_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "participant_binding_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "root_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "study_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "study_id",
+                "root_id",
+                "operator_run_id",
+                "child_run_id",
+                "participant_binding_sha256"
+              ],
+              "type": "object"
+            },
+            "locator": {
+              "additionalProperties": false,
+              "properties": {
+                "case_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "input_bytes": {
+                  "maximum": 65536,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "input_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "original_intent_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "original_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "case_id",
+                "installation_id",
+                "installation_epoch",
+                "original_selection_sha256",
+                "original_intent_sha256",
+                "input_sha256",
+                "input_bytes"
+              ],
+              "type": "object"
+            },
+            "operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_request.v3"
+            }
+          },
+          "required": [
+            "schema",
+            "action",
+            "operation_id",
+            "intent",
+            "locator"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "read_original_case"
+            },
+            "intent": {
+              "additionalProperties": false,
+              "properties": {
+                "child_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "operator_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "participant_binding_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "root_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "study_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "study_id",
+                "root_id",
+                "operator_run_id",
+                "child_run_id",
+                "participant_binding_sha256"
+              ],
+              "type": "object"
+            },
+            "operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_request.v3"
+            }
+          },
+          "required": [
+            "schema",
+            "action",
+            "operation_id",
+            "intent"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "authorize_result_disclosure"
+            },
+            "intent": {
+              "additionalProperties": false,
+              "properties": {
+                "child_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "operator_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "participant_binding_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "root_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "study_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "study_id",
+                "root_id",
+                "operator_run_id",
+                "child_run_id",
+                "participant_binding_sha256"
+              ],
+              "type": "object"
+            },
+            "locator": {
+              "additionalProperties": false,
+              "properties": {
+                "case_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "input_bytes": {
+                  "maximum": 65536,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "input_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "original_intent_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "original_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "case_id",
+                "installation_id",
+                "installation_epoch",
+                "original_selection_sha256",
+                "original_intent_sha256",
+                "input_sha256",
+                "input_bytes"
+              ],
+              "type": "object"
+            },
+            "operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "result_ref": {
+              "additionalProperties": false,
+              "properties": {
+                "attempt_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "input_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "result_bytes": {
+                  "maximum": 65536,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "result_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "attempt_id",
+                "input_sha256",
+                "result_sha256",
+                "result_bytes"
+              ],
+              "type": "object"
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_request.v3"
+            }
+          },
+          "required": [
+            "schema",
+            "action",
+            "operation_id",
+            "intent",
+            "locator",
+            "result_ref"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "response": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "qualify_current_case"
+            },
+            "intent": {
+              "additionalProperties": false,
+              "properties": {
+                "child_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "operator_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "participant_binding_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "root_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "study_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "study_id",
+                "root_id",
+                "operator_run_id",
+                "child_run_id",
+                "participant_binding_sha256"
+              ],
+              "type": "object"
+            },
+            "issuer": {
+              "additionalProperties": false,
+              "properties": {
+                "authority": {
+                  "const": "current_recipient_scoped_source_view_only"
+                },
+                "broker_service_fingerprint": {
+                  "pattern": "^SHA256:[A-Za-z0-9+/]{43}$",
+                  "type": "string"
+                },
+                "current_access_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "current_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "issuer_id": {
+                  "const": "MACRO_LINUX_NATIVE_E0_ISSUER"
+                },
+                "protocol": {
+                  "const": "memory.e0.native_issuer.v3"
+                },
+                "publication_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "recipient_grant_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "registration_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "source_closure_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "source_commit": {
+                  "pattern": "^[a-f0-9]{40}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "issuer_id",
+                "protocol",
+                "source_commit",
+                "source_closure_sha256",
+                "installation_id",
+                "installation_epoch",
+                "registration_ref",
+                "publication_ref",
+                "current_selection_sha256",
+                "current_access_ref",
+                "recipient_grant_ref",
+                "broker_service_fingerprint",
+                "authority"
+              ],
+              "type": "object"
+            },
+            "operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "retry_authorized": {
+              "const": false
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_response.v3"
+            },
+            "scientific_admission": {
+              "const": false
+            },
+            "status": {
+              "const": "CURRENT_CASE_QUALIFIED"
+            },
+            "verification": {
+              "additionalProperties": false,
+              "properties": {
+                "authenticated": {
+                  "const": false
+                },
+                "exposure_verified": {
+                  "const": false
+                },
+                "independence_verified": {
+                  "const": false
+                },
+                "operational_admission": {
+                  "const": false
+                },
+                "qualification_verified": {
+                  "const": false
+                }
+              },
+              "required": [
+                "authenticated",
+                "qualification_verified",
+                "independence_verified",
+                "exposure_verified",
+                "operational_admission"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "schema",
+            "action",
+            "operation_id",
+            "intent",
+            "issuer",
+            "verification",
+            "scientific_admission",
+            "retry_authorized",
+            "status"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "prepare_case"
+            },
+            "input": {
+              "additionalProperties": false,
+              "properties": {
+                "body": {
+                  "maxLength": 87384,
+                  "type": "string"
+                },
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "encoding": {
+                  "const": "base64"
+                },
+                "sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "encoding",
+                "bytes",
+                "sha256",
+                "body"
+              ],
+              "type": "object"
+            },
+            "intent": {
+              "additionalProperties": false,
+              "properties": {
+                "child_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "operator_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "participant_binding_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "root_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "study_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "study_id",
+                "root_id",
+                "operator_run_id",
+                "child_run_id",
+                "participant_binding_sha256"
+              ],
+              "type": "object"
+            },
+            "issuer": {
+              "additionalProperties": false,
+              "properties": {
+                "authority": {
+                  "const": "current_recipient_scoped_source_view_only"
+                },
+                "broker_service_fingerprint": {
+                  "pattern": "^SHA256:[A-Za-z0-9+/]{43}$",
+                  "type": "string"
+                },
+                "current_access_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "current_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "issuer_id": {
+                  "const": "MACRO_LINUX_NATIVE_E0_ISSUER"
+                },
+                "protocol": {
+                  "const": "memory.e0.native_issuer.v3"
+                },
+                "publication_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "recipient_grant_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "registration_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "source_closure_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "source_commit": {
+                  "pattern": "^[a-f0-9]{40}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "issuer_id",
+                "protocol",
+                "source_commit",
+                "source_closure_sha256",
+                "installation_id",
+                "installation_epoch",
+                "registration_ref",
+                "publication_ref",
+                "current_selection_sha256",
+                "current_access_ref",
+                "recipient_grant_ref",
+                "broker_service_fingerprint",
+                "authority"
+              ],
+              "type": "object"
+            },
+            "locator": {
+              "additionalProperties": false,
+              "properties": {
+                "case_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "input_bytes": {
+                  "maximum": 65536,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "input_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "original_intent_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "original_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "case_id",
+                "installation_id",
+                "installation_epoch",
+                "original_selection_sha256",
+                "original_intent_sha256",
+                "input_sha256",
+                "input_bytes"
+              ],
+              "type": "object"
+            },
+            "operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "retry_authorized": {
+              "const": false
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_response.v3"
+            },
+            "scientific_admission": {
+              "const": false
+            },
+            "status": {
+              "const": "CASE_PREPARED"
+            },
+            "verification": {
+              "additionalProperties": false,
+              "properties": {
+                "authenticated": {
+                  "const": false
+                },
+                "exposure_verified": {
+                  "const": false
+                },
+                "independence_verified": {
+                  "const": false
+                },
+                "operational_admission": {
+                  "const": false
+                },
+                "qualification_verified": {
+                  "const": false
+                }
+              },
+              "required": [
+                "authenticated",
+                "qualification_verified",
+                "independence_verified",
+                "exposure_verified",
+                "operational_admission"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "schema",
+            "action",
+            "operation_id",
+            "intent",
+            "issuer",
+            "verification",
+            "scientific_admission",
+            "retry_authorized",
+            "status",
+            "locator",
+            "input"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "current_input"
+            },
+            "input": {
+              "additionalProperties": false,
+              "properties": {
+                "body": {
+                  "maxLength": 87384,
+                  "type": "string"
+                },
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "encoding": {
+                  "const": "base64"
+                },
+                "sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "encoding",
+                "bytes",
+                "sha256",
+                "body"
+              ],
+              "type": "object"
+            },
+            "intent": {
+              "additionalProperties": false,
+              "properties": {
+                "child_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "operator_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "participant_binding_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "root_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "study_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "study_id",
+                "root_id",
+                "operator_run_id",
+                "child_run_id",
+                "participant_binding_sha256"
+              ],
+              "type": "object"
+            },
+            "issuer": {
+              "additionalProperties": false,
+              "properties": {
+                "authority": {
+                  "const": "current_recipient_scoped_source_view_only"
+                },
+                "broker_service_fingerprint": {
+                  "pattern": "^SHA256:[A-Za-z0-9+/]{43}$",
+                  "type": "string"
+                },
+                "current_access_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "current_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "issuer_id": {
+                  "const": "MACRO_LINUX_NATIVE_E0_ISSUER"
+                },
+                "protocol": {
+                  "const": "memory.e0.native_issuer.v3"
+                },
+                "publication_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "recipient_grant_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "registration_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "source_closure_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "source_commit": {
+                  "pattern": "^[a-f0-9]{40}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "issuer_id",
+                "protocol",
+                "source_commit",
+                "source_closure_sha256",
+                "installation_id",
+                "installation_epoch",
+                "registration_ref",
+                "publication_ref",
+                "current_selection_sha256",
+                "current_access_ref",
+                "recipient_grant_ref",
+                "broker_service_fingerprint",
+                "authority"
+              ],
+              "type": "object"
+            },
+            "locator": {
+              "additionalProperties": false,
+              "properties": {
+                "case_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "input_bytes": {
+                  "maximum": 65536,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "input_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "original_intent_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "original_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "case_id",
+                "installation_id",
+                "installation_epoch",
+                "original_selection_sha256",
+                "original_intent_sha256",
+                "input_sha256",
+                "input_bytes"
+              ],
+              "type": "object"
+            },
+            "operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "retry_authorized": {
+              "const": false
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_response.v3"
+            },
+            "scientific_admission": {
+              "const": false
+            },
+            "status": {
+              "const": "INPUT_CURRENT"
+            },
+            "verification": {
+              "additionalProperties": false,
+              "properties": {
+                "authenticated": {
+                  "const": false
+                },
+                "exposure_verified": {
+                  "const": false
+                },
+                "independence_verified": {
+                  "const": false
+                },
+                "operational_admission": {
+                  "const": false
+                },
+                "qualification_verified": {
+                  "const": false
+                }
+              },
+              "required": [
+                "authenticated",
+                "qualification_verified",
+                "independence_verified",
+                "exposure_verified",
+                "operational_admission"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "schema",
+            "action",
+            "operation_id",
+            "intent",
+            "issuer",
+            "verification",
+            "scientific_admission",
+            "retry_authorized",
+            "status",
+            "locator",
+            "input"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "read_original_case"
+            },
+            "intent": {
+              "additionalProperties": false,
+              "properties": {
+                "child_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "operator_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "participant_binding_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "root_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "study_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "study_id",
+                "root_id",
+                "operator_run_id",
+                "child_run_id",
+                "participant_binding_sha256"
+              ],
+              "type": "object"
+            },
+            "issuer": {
+              "additionalProperties": false,
+              "properties": {
+                "authority": {
+                  "const": "current_recipient_scoped_source_view_only"
+                },
+                "broker_service_fingerprint": {
+                  "pattern": "^SHA256:[A-Za-z0-9+/]{43}$",
+                  "type": "string"
+                },
+                "current_access_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "current_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "issuer_id": {
+                  "const": "MACRO_LINUX_NATIVE_E0_ISSUER"
+                },
+                "protocol": {
+                  "const": "memory.e0.native_issuer.v3"
+                },
+                "publication_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "recipient_grant_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "registration_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "source_closure_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "source_commit": {
+                  "pattern": "^[a-f0-9]{40}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "issuer_id",
+                "protocol",
+                "source_commit",
+                "source_closure_sha256",
+                "installation_id",
+                "installation_epoch",
+                "registration_ref",
+                "publication_ref",
+                "current_selection_sha256",
+                "current_access_ref",
+                "recipient_grant_ref",
+                "broker_service_fingerprint",
+                "authority"
+              ],
+              "type": "object"
+            },
+            "operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "operation_state": {
+              "const": "ABSENT"
+            },
+            "retry_authorized": {
+              "const": false
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_response.v3"
+            },
+            "scientific_admission": {
+              "const": false
+            },
+            "status": {
+              "const": "ORIGINAL_CASE_STATE"
+            },
+            "verification": {
+              "additionalProperties": false,
+              "properties": {
+                "authenticated": {
+                  "const": false
+                },
+                "exposure_verified": {
+                  "const": false
+                },
+                "independence_verified": {
+                  "const": false
+                },
+                "operational_admission": {
+                  "const": false
+                },
+                "qualification_verified": {
+                  "const": false
+                }
+              },
+              "required": [
+                "authenticated",
+                "qualification_verified",
+                "independence_verified",
+                "exposure_verified",
+                "operational_admission"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "schema",
+            "action",
+            "operation_id",
+            "intent",
+            "issuer",
+            "verification",
+            "scientific_admission",
+            "retry_authorized",
+            "status",
+            "operation_state"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "read_original_case"
+            },
+            "intent": {
+              "additionalProperties": false,
+              "properties": {
+                "child_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "operator_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "participant_binding_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "root_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "study_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "study_id",
+                "root_id",
+                "operator_run_id",
+                "child_run_id",
+                "participant_binding_sha256"
+              ],
+              "type": "object"
+            },
+            "issuer": {
+              "additionalProperties": false,
+              "properties": {
+                "authority": {
+                  "const": "current_recipient_scoped_source_view_only"
+                },
+                "broker_service_fingerprint": {
+                  "pattern": "^SHA256:[A-Za-z0-9+/]{43}$",
+                  "type": "string"
+                },
+                "current_access_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "current_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "issuer_id": {
+                  "const": "MACRO_LINUX_NATIVE_E0_ISSUER"
+                },
+                "protocol": {
+                  "const": "memory.e0.native_issuer.v3"
+                },
+                "publication_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "recipient_grant_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "registration_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "source_closure_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "source_commit": {
+                  "pattern": "^[a-f0-9]{40}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "issuer_id",
+                "protocol",
+                "source_commit",
+                "source_closure_sha256",
+                "installation_id",
+                "installation_epoch",
+                "registration_ref",
+                "publication_ref",
+                "current_selection_sha256",
+                "current_access_ref",
+                "recipient_grant_ref",
+                "broker_service_fingerprint",
+                "authority"
+              ],
+              "type": "object"
+            },
+            "operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "operation_state": {
+              "const": "PENDING"
+            },
+            "retry_authorized": {
+              "const": false
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_response.v3"
+            },
+            "scientific_admission": {
+              "const": false
+            },
+            "status": {
+              "const": "ORIGINAL_CASE_STATE"
+            },
+            "verification": {
+              "additionalProperties": false,
+              "properties": {
+                "authenticated": {
+                  "const": false
+                },
+                "exposure_verified": {
+                  "const": false
+                },
+                "independence_verified": {
+                  "const": false
+                },
+                "operational_admission": {
+                  "const": false
+                },
+                "qualification_verified": {
+                  "const": false
+                }
+              },
+              "required": [
+                "authenticated",
+                "qualification_verified",
+                "independence_verified",
+                "exposure_verified",
+                "operational_admission"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "schema",
+            "action",
+            "operation_id",
+            "intent",
+            "issuer",
+            "verification",
+            "scientific_admission",
+            "retry_authorized",
+            "status",
+            "operation_state"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "read_original_case"
+            },
+            "input": {
+              "additionalProperties": false,
+              "properties": {
+                "body": {
+                  "maxLength": 87384,
+                  "type": "string"
+                },
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "encoding": {
+                  "const": "base64"
+                },
+                "sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "encoding",
+                "bytes",
+                "sha256",
+                "body"
+              ],
+              "type": "object"
+            },
+            "intent": {
+              "additionalProperties": false,
+              "properties": {
+                "child_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "operator_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "participant_binding_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "root_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "study_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "study_id",
+                "root_id",
+                "operator_run_id",
+                "child_run_id",
+                "participant_binding_sha256"
+              ],
+              "type": "object"
+            },
+            "issuer": {
+              "additionalProperties": false,
+              "properties": {
+                "authority": {
+                  "const": "current_recipient_scoped_source_view_only"
+                },
+                "broker_service_fingerprint": {
+                  "pattern": "^SHA256:[A-Za-z0-9+/]{43}$",
+                  "type": "string"
+                },
+                "current_access_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "current_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "issuer_id": {
+                  "const": "MACRO_LINUX_NATIVE_E0_ISSUER"
+                },
+                "protocol": {
+                  "const": "memory.e0.native_issuer.v3"
+                },
+                "publication_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "recipient_grant_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "registration_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "source_closure_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "source_commit": {
+                  "pattern": "^[a-f0-9]{40}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "issuer_id",
+                "protocol",
+                "source_commit",
+                "source_closure_sha256",
+                "installation_id",
+                "installation_epoch",
+                "registration_ref",
+                "publication_ref",
+                "current_selection_sha256",
+                "current_access_ref",
+                "recipient_grant_ref",
+                "broker_service_fingerprint",
+                "authority"
+              ],
+              "type": "object"
+            },
+            "locator": {
+              "additionalProperties": false,
+              "properties": {
+                "case_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "input_bytes": {
+                  "maximum": 65536,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "input_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "original_intent_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "original_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "case_id",
+                "installation_id",
+                "installation_epoch",
+                "original_selection_sha256",
+                "original_intent_sha256",
+                "input_sha256",
+                "input_bytes"
+              ],
+              "type": "object"
+            },
+            "operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "operation_state": {
+              "const": "COMPLETE"
+            },
+            "retry_authorized": {
+              "const": false
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_response.v3"
+            },
+            "scientific_admission": {
+              "const": false
+            },
+            "status": {
+              "const": "ORIGINAL_CASE_STATE"
+            },
+            "verification": {
+              "additionalProperties": false,
+              "properties": {
+                "authenticated": {
+                  "const": false
+                },
+                "exposure_verified": {
+                  "const": false
+                },
+                "independence_verified": {
+                  "const": false
+                },
+                "operational_admission": {
+                  "const": false
+                },
+                "qualification_verified": {
+                  "const": false
+                }
+              },
+              "required": [
+                "authenticated",
+                "qualification_verified",
+                "independence_verified",
+                "exposure_verified",
+                "operational_admission"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "schema",
+            "action",
+            "operation_id",
+            "intent",
+            "issuer",
+            "verification",
+            "scientific_admission",
+            "retry_authorized",
+            "status",
+            "operation_state",
+            "locator",
+            "input"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "authorize_result_disclosure"
+            },
+            "authorization": {
+              "additionalProperties": false,
+              "properties": {
+                "input_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "original_recipient": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "original_operation_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "pre_input_intent_sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    },
+                    "principal_ref": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "bytes": {
+                          "maximum": 4194304,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "object_id": {
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                          "type": "string"
+                        },
+                        "schema": {
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                          "type": "string"
+                        },
+                        "sha256": {
+                          "pattern": "^[a-f0-9]{64}$",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "object_id",
+                        "sha256",
+                        "bytes"
+                      ],
+                      "type": "object"
+                    },
+                    "recipient_kind": {
+                      "const": "native_broker_service"
+                    },
+                    "schema": {
+                      "const": "research_factory.market_memory_e0_original_recipient.v3"
+                    },
+                    "ssh_key_fingerprint": {
+                      "pattern": "^SHA256:[A-Za-z0-9+/]{43}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "recipient_kind",
+                    "principal_ref",
+                    "ssh_key_fingerprint",
+                    "original_operation_id",
+                    "pre_input_intent_sha256"
+                  ],
+                  "type": "object"
+                },
+                "purpose": {
+                  "const": "disclose_exact_original_untrusted_child_result"
+                },
+                "result_bytes": {
+                  "maximum": 65536,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "result_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "purpose",
+                "input_sha256",
+                "result_sha256",
+                "result_bytes",
+                "original_recipient"
+              ],
+              "type": "object"
+            },
+            "intent": {
+              "additionalProperties": false,
+              "properties": {
+                "child_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "operator_run_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "participant_binding_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "root_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "study_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "study_id",
+                "root_id",
+                "operator_run_id",
+                "child_run_id",
+                "participant_binding_sha256"
+              ],
+              "type": "object"
+            },
+            "issuer": {
+              "additionalProperties": false,
+              "properties": {
+                "authority": {
+                  "const": "current_recipient_scoped_source_view_only"
+                },
+                "broker_service_fingerprint": {
+                  "pattern": "^SHA256:[A-Za-z0-9+/]{43}$",
+                  "type": "string"
+                },
+                "current_access_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "current_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "issuer_id": {
+                  "const": "MACRO_LINUX_NATIVE_E0_ISSUER"
+                },
+                "protocol": {
+                  "const": "memory.e0.native_issuer.v3"
+                },
+                "publication_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "recipient_grant_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "registration_ref": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bytes": {
+                      "maximum": 4194304,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "object_id": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "schema": {
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schema",
+                    "object_id",
+                    "sha256",
+                    "bytes"
+                  ],
+                  "type": "object"
+                },
+                "source_closure_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "source_commit": {
+                  "pattern": "^[a-f0-9]{40}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "issuer_id",
+                "protocol",
+                "source_commit",
+                "source_closure_sha256",
+                "installation_id",
+                "installation_epoch",
+                "registration_ref",
+                "publication_ref",
+                "current_selection_sha256",
+                "current_access_ref",
+                "recipient_grant_ref",
+                "broker_service_fingerprint",
+                "authority"
+              ],
+              "type": "object"
+            },
+            "locator": {
+              "additionalProperties": false,
+              "properties": {
+                "case_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "input_bytes": {
+                  "maximum": 65536,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "input_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "installation_epoch": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "installation_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "original_intent_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "original_selection_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "case_id",
+                "installation_id",
+                "installation_epoch",
+                "original_selection_sha256",
+                "original_intent_sha256",
+                "input_sha256",
+                "input_bytes"
+              ],
+              "type": "object"
+            },
+            "operation_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "result_ref": {
+              "additionalProperties": false,
+              "properties": {
+                "attempt_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "input_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "result_bytes": {
+                  "maximum": 65536,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "result_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "attempt_id",
+                "input_sha256",
+                "result_sha256",
+                "result_bytes"
+              ],
+              "type": "object"
+            },
+            "retry_authorized": {
+              "const": false
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_response.v3"
+            },
+            "scientific_admission": {
+              "const": false
+            },
+            "status": {
+              "const": "RESULT_DISCLOSURE_CURRENT"
+            },
+            "verification": {
+              "additionalProperties": false,
+              "properties": {
+                "authenticated": {
+                  "const": false
+                },
+                "exposure_verified": {
+                  "const": false
+                },
+                "independence_verified": {
+                  "const": false
+                },
+                "operational_admission": {
+                  "const": false
+                },
+                "qualification_verified": {
+                  "const": false
+                }
+              },
+              "required": [
+                "authenticated",
+                "qualification_verified",
+                "independence_verified",
+                "exposure_verified",
+                "operational_admission"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "schema",
+            "action",
+            "operation_id",
+            "intent",
+            "issuer",
+            "verification",
+            "scientific_admission",
+            "retry_authorized",
+            "status",
+            "locator",
+            "result_ref",
+            "authorization"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "reason": {
+              "enum": [
+                "wire_invalid",
+                "wire_bound",
+                "broker_service_not_enrolled",
+                "broker_authentication_unqualified",
+                "broker_confinement_unqualified",
+                "installed_issuer_source_unqualified",
+                "native_recipient_grant_unavailable",
+                "native_intent_mismatch",
+                "current_control_unqualified",
+                "current_source_rights_unqualified",
+                "selected_case_unqualified",
+                "source_or_selection_changed",
+                "original_operation_unavailable",
+                "original_operation_intent_mismatch",
+                "original_input_unqualified",
+                "result_reference_mismatch",
+                "case_input_size_bound",
+                "adjudicator_stage_unavailable"
+              ]
+            },
+            "retry_authorized": {
+              "const": false
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_response.v3"
+            },
+            "scientific_admission": {
+              "const": false
+            },
+            "status": {
+              "const": "REFUSED"
+            },
+            "verification": {
+              "additionalProperties": false,
+              "properties": {
+                "authenticated": {
+                  "const": false
+                },
+                "exposure_verified": {
+                  "const": false
+                },
+                "independence_verified": {
+                  "const": false
+                },
+                "operational_admission": {
+                  "const": false
+                },
+                "qualification_verified": {
+                  "const": false
+                }
+              },
+              "required": [
+                "authenticated",
+                "qualification_verified",
+                "independence_verified",
+                "exposure_verified",
+                "operational_admission"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "schema",
+            "status",
+            "reason",
+            "retry_authorized",
+            "verification",
+            "scientific_admission"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "reason": {
+              "const": "original_operation_pending_no_replay"
+            },
+            "retry_authorized": {
+              "const": false
+            },
+            "schema": {
+              "const": "research_factory.market_memory_e0_native_issuer_response.v3"
+            },
+            "scientific_admission": {
+              "const": false
+            },
+            "status": {
+              "const": "ORIGINAL_OPERATION_PENDING"
+            },
+            "verification": {
+              "additionalProperties": false,
+              "properties": {
+                "authenticated": {
+                  "const": false
+                },
+                "exposure_verified": {
+                  "const": false
+                },
+                "independence_verified": {
+                  "const": false
+                },
+                "operational_admission": {
+                  "const": false
+                },
+                "qualification_verified": {
+                  "const": false
+                }
+              },
+              "required": [
+                "authenticated",
+                "qualification_verified",
+                "independence_verified",
+                "exposure_verified",
+                "operational_admission"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "schema",
+            "status",
+            "reason",
+            "retry_authorized",
+            "verification",
+            "scientific_admission"
+          ],
+          "type": "object"
+        }
+      ]
+    }
+  },
+  "$id": "research_factory.market_memory_e0_native_issuer.v3",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/request"
+    },
+    {
+      "$ref": "#/$defs/response"
+    },
+    {
+      "$ref": "#/$defs/envelope"
+    }
+  ]
+}

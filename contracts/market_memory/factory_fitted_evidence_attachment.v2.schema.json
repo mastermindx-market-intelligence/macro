@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Source-bound context-only fitted Factory attachment; no lifecycle or scientific authority",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "authority",
+    "attached_at",
+    "candidate",
+    "trial_binding",
+    "fitted_retrieval_join",
+    "fitted_evidence_join",
+    "source_use",
+    "limitations",
+    "lifecycle",
+    "attachment_id"
+  ],
+  "properties": {
+    "schema": {
+      "const": "research_factory.market_memory_fitted_evidence_attachment.v2"
+    },
+    "authority": {
+      "const": "display_only"
+    },
+    "attached_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "candidate": {
+      "type": "object"
+    },
+    "trial_binding": {
+      "type": "object"
+    },
+    "fitted_retrieval_join": {
+      "type": "object"
+    },
+    "fitted_evidence_join": {
+      "type": "object"
+    },
+    "source_use": {
+      "type": "object"
+    },
+    "limitations": {
+      "const": [
+        "current_contextual_attachment_not_original_trial_query",
+        "target_relevance_unassessed",
+        "original_trial_not_evaluated",
+        "contextual_purge_not_trial_label_interval_coverage",
+        "citations_do_not_establish_entailment_or_predictive_skill",
+        "component_source_vintages_not_authenticated",
+        "subsequent_outcomes_not_attached",
+        "historical_fit_or_index_existence_not_authenticated",
+        "operational_study_not_admitted"
+      ]
+    },
+    "lifecycle": {
+      "const": {
+        "projected_state": "proposed",
+        "action": "no_action",
+        "trial_accounting": "read_only",
+        "transition_allowed": false,
+        "count_allowed": false,
+        "challenge_completed": false,
+        "emission_enabled": false,
+        "training_eligible": false,
+        "promotion_eligible": false,
+        "action_authority": false,
+        "W2C_timely_admission": false,
+        "effective_n": "not_estimated"
+      }
+    },
+    "attachment_id": {
+      "type": "string",
+      "pattern": "^mmrffittedevidence_[a-f0-9]{64}$"
+    }
+  }
+}

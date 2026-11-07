@@ -12358,6 +12358,20 @@ jobs:
       - "research/market_memory/RETRIEVAL_PROTOCOL_2026_10_12.json"
       - "tests/__init__.py"
       - "tests/market_memory_e0_fixtures.py"
+      - "engine/research_factory/market_memory_e0_native_case.py"
+      - "engine/research_factory/market_memory_e0_native_issuer.py"
+      - "engine/research_factory/market_memory_e0_native_peer.py"
+      - "engine/research_factory/market_memory_e0_original_case.py"
+      - "engine/research_factory/market_memory_e0_participant_packet.py"
+      - "scripts/market_memory_e0_native_issuer.py"
+      - "contracts/market_memory/e0_native_bindings.v3.schema.json"
+      - "contracts/market_memory/e0_native_issuer.v3.schema.json"
+      - "tests/market_memory_native_peer_fixtures.py"
+      - "tests/test_market_memory_e0_native_case.py"
+      - "tests/test_market_memory_e0_native_issuer.py"
+      - "tests/test_market_memory_e0_native_peer.py"
+      - "tests/test_market_memory_e0_original_case.py"
+      - "tests/test_market_memory_e0_participant_packet.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -12385,6 +12399,12 @@ jobs:
           tests/test_market_memory_e0_reserved_read.py
           tests/test_market_memory_e0_access_history.py
           tests/test_market_memory_e0_installed_control.py
+          tests/test_market_memory_e0_native_case.py
+          tests/test_market_memory_e0_native_issuer.py
+          tests/test_market_memory_e0_evaluation_source.py
+          tests/test_market_memory_e0_native_peer.py
+          tests/test_market_memory_e0_original_case.py
+          tests/test_market_memory_e0_participant_packet.py
           tests/test_market_memory_e0_selected_task_inputs.py
           tests/test_market_memory_e0_selected_condition.py
           tests/test_market_memory_e0_source_identity.py

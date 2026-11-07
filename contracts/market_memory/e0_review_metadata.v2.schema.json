@@ -1,0 +1,315 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_memory/e0_review_metadata.v2.schema.json",
+  "title": "Declared E0 reviewer metadata v2 (no read grant or authenticated participant claim)",
+  "description": "Source contract only. Native v2 owner read support is not implemented; installed permission is not verified. Participant bodies are global; derived descriptors bind task and slot.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/scope"
+    },
+    {
+      "$ref": "#/$defs/principal"
+    },
+    {
+      "$ref": "#/$defs/qualification"
+    },
+    {
+      "$ref": "#/$defs/independence"
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      }
+    },
+    "sha": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authenticated",
+        "qualification_verified",
+        "independence_verified",
+        "exposure_verified",
+        "operational_admission"
+      ],
+      "properties": {
+        "authenticated": {
+          "type": "boolean",
+          "const": false
+        },
+        "qualification_verified": {
+          "type": "boolean",
+          "const": false
+        },
+        "independence_verified": {
+          "type": "boolean",
+          "const": false
+        },
+        "exposure_verified": {
+          "type": "boolean",
+          "const": false
+        },
+        "operational_admission": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "plan_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "object_id",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "schema": {
+          "const": "research_factory.market_memory_e0_reviewer_plan.v1"
+        },
+        "object_id": {
+          "$ref": "#/$defs/id"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 262144
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "authority",
+        "owner_contract",
+        "action",
+        "study_id",
+        "task_id",
+        "slot",
+        "reviewer_plan_ref"
+      ],
+      "properties": {
+        "schema": {
+          "const": "research_factory.market_memory_e0_review_metadata_scope.v2"
+        },
+        "authority": {
+          "const": "display_only"
+        },
+        "owner_contract": {
+          "const": "research_factory.market_memory_e0_review_metadata_owner.v2"
+        },
+        "action": {
+          "const": "read_registered_reviewer_metadata.v2"
+        },
+        "study_id": {
+          "$ref": "#/$defs/id"
+        },
+        "task_id": {
+          "$ref": "#/$defs/id"
+        },
+        "slot": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "reviewer_plan_ref": {
+          "$ref": "#/$defs/plan_ref"
+        }
+      }
+    },
+    "execution_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_schema",
+        "attempt_id",
+        "worker_id",
+        "quota_class",
+        "provider",
+        "placement_snapshot_digest"
+      ],
+      "properties": {
+        "source_schema": {
+          "const": "mastermind.execution_principal_snapshot/v1"
+        },
+        "attempt_id": {
+          "$ref": "#/$defs/id"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/id"
+        },
+        "quota_class": {
+          "$ref": "#/$defs/id"
+        },
+        "provider": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,31}$",
+          "maxLength": 32,
+          "not": {
+            "pattern": "[^a-z0-9_-]"
+          }
+        },
+        "placement_snapshot_digest": {
+          "$ref": "#/$defs/sha"
+        }
+      }
+    },
+    "principal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "object_id",
+        "authority",
+        "study_id",
+        "participant_id",
+        "verification",
+        "execution_identity"
+      ],
+      "properties": {
+        "schema": {
+          "const": "research_factory.market_memory_e0_reviewer_principal_metadata.v2"
+        },
+        "object_id": {
+          "$ref": "#/$defs/id"
+        },
+        "authority": {
+          "const": "display_only"
+        },
+        "study_id": {
+          "$ref": "#/$defs/id"
+        },
+        "participant_id": {
+          "$ref": "#/$defs/id"
+        },
+        "verification": {
+          "$ref": "#/$defs/verification"
+        },
+        "execution_identity": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/execution_identity"
+            }
+          ]
+        }
+      }
+    },
+    "qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "object_id",
+        "authority",
+        "study_id",
+        "participant_id",
+        "verification",
+        "declared_competencies"
+      ],
+      "properties": {
+        "schema": {
+          "const": "research_factory.market_memory_e0_reviewer_qualification_metadata.v2"
+        },
+        "object_id": {
+          "$ref": "#/$defs/id"
+        },
+        "authority": {
+          "const": "display_only"
+        },
+        "study_id": {
+          "$ref": "#/$defs/id"
+        },
+        "participant_id": {
+          "$ref": "#/$defs/id"
+        },
+        "verification": {
+          "$ref": "#/$defs/verification"
+        },
+        "declared_competencies": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "source_support",
+              "contradiction_detection",
+              "material_omissions",
+              "market_context"
+            ]
+          }
+        }
+      }
+    },
+    "independence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "object_id",
+        "authority",
+        "study_id",
+        "participant_id",
+        "verification",
+        "declared_distinct_from",
+        "prior_exposure_status",
+        "peer_ratings_visibility"
+      ],
+      "properties": {
+        "schema": {
+          "const": "research_factory.market_memory_e0_reviewer_independence_metadata.v2"
+        },
+        "object_id": {
+          "$ref": "#/$defs/id"
+        },
+        "authority": {
+          "const": "display_only"
+        },
+        "study_id": {
+          "$ref": "#/$defs/id"
+        },
+        "participant_id": {
+          "$ref": "#/$defs/id"
+        },
+        "verification": {
+          "$ref": "#/$defs/verification"
+        },
+        "declared_distinct_from": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "prior_exposure_status": {
+          "const": "not_established"
+        },
+        "peer_ratings_visibility": {
+          "const": "not_established"
+        }
+      }
+    }
+  }
+}

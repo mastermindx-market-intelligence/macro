@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_memory/factory_fitted_binding.v2.schema.json",
+  "title": "Exact versioned static fitted-Factory service definition v2",
+  "description": "Grammar for the static predeclared service entry inside the existing house source registration. It carries only the fixed COMPLETE-reader contract inputs, one exact existing trial registration reference, the selected training binding reference and method, and a bounded k. No post-COMPLETE digest, private fitted-binding registration, mutable hash pointer, store identity or query authority is expressed. Passing this schema grants no permission, capability, fit, forecast, study admission or emission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "consumer",
+    "enabled",
+    "purpose",
+    "trial_registration_id",
+    "trial_registration_sha256",
+    "trial_record",
+    "candidate_created_at",
+    "binding_ref",
+    "eligibility_method_spec",
+    "normalization_method",
+    "limit"
+  ],
+  "properties": {
+    "schema": {
+      "const": "market_memory.factory_fitted_binding.v2"
+    },
+    "consumer": {
+      "const": "research_factory.fitted_contextual_evidence.v2"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "purpose": {
+      "const": "fitted_contextual_cited_evidence"
+    },
+    "trial_registration_id": {
+      "type": "string",
+      "pattern": "^mmtrial_[a-f0-9]{64}$"
+    },
+    "trial_registration_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "trial_record": {
+      "type": "string",
+      "pattern": "^research/market_memory/trials/[a-f0-9]{64}\\.json$"
+    },
+    "candidate_created_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6}Z$"
+    },
+    "binding_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "object_id", "sha256", "bytes"],
+      "properties": {
+        "schema": {
+          "const": "market_memory.fitted_use_binding.v2"
+        },
+        "object_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 262144
+        }
+      }
+    },
+    "eligibility_method_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method_spec_id",
+        "purge_calendar_days",
+        "embargo_calendar_days",
+        "mode"
+      ],
+      "properties": {
+        "method_spec_id": {
+          "type": "string",
+          "pattern": "^mmretainedmethod_[a-f0-9]{64}$"
+        },
+        "purge_calendar_days": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 366
+        },
+        "embargo_calendar_days": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 366
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["historical_hypothetical", "current_contextual_support"]
+        }
+      }
+    },
+    "normalization_method": {
+      "const": "house_numeric_exact_mean_range.v2"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8
+    }
+  }
+}

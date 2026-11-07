@@ -2992,10 +2992,10 @@
   function insertBeforeActions(bub, node) { var act = bub.querySelector('.mmb-actions'); if (act) bub.insertBefore(node, act); else bub.appendChild(node); }
   function addCites(bub, cites) {
     var wrap = DOC.createElement('div'); wrap.className = 'mmb-cites';
-    var retained = cites.filter(function (c) { return !!retainedSourceCitation(c); });
-    var other = cites.filter(function (c) { return !retainedSourceCitation(c); });
+    var retained = cites.filter(function (c) { return !!(retainedSourceCitation(c) || savedSourceCitation(c)); });
+    var other = cites.filter(function (c) { return !(retainedSourceCitation(c) || savedSourceCitation(c)); });
     retained.concat(other).slice(0, Math.max(8, Math.min(9, retained.length))).forEach(function (c) {
-      var source = retainedSourceCitation(c);
+      var source = retainedSourceCitation(c) || savedSourceCitation(c);
       var a = DOC.createElement('a'); a.className = 'mmb-cite';
       a.textContent = source ? L(source.labelEn, source.labelZh) : String(c).replace(/\.(json|parquet)$/, '').split('/').pop();
       if (source) {
@@ -3084,8 +3084,32 @@
   }
 
   /* END retained source citation parser. */
+  /* BEGIN saved source citation parser (exact original source, no fitted authority). */
+  function savedSourceCitation(c) {
+    if (typeof c !== 'string' || c.length > 1024 || c.lastIndexOf(EXACT_PREFIX, 0) !== 0) return null;
+    var query = c.slice(EXACT_PREFIX.length);
+    if (!query || /[ #%+\\\u0000-\u001f\u007f@]/.test(query)) return null;
+    var keys = ['mm_mode', 'mm_query', 'mm_subject', 'mm_gen', 'mm_gen_sha',
+      'mm_cutoff', 'mm_context', 'mm_source_context'];
+    var pairs = query.split('&'), values = {};
+    if (pairs.length !== keys.length) return null;
+    for (var i = 0; i < pairs.length; i += 1) {
+      var at = pairs[i].indexOf('='), key = pairs[i].slice(0, at), value = pairs[i].slice(at + 1);
+      if (at < 1 || keys.indexOf(key) === -1 || Object.prototype.hasOwnProperty.call(values, key)) return null;
+      if (key === 'mm_mode' ? value !== 'saved' :
+          key === 'mm_cutoff' ? !isUtc(value) : !TOKEN_PATTERNS[key].test(value)) return null;
+      values[key] = value;
+    }
+    if (values.mm_context !== values.mm_source_context) return null;
+    return {
+      href: EXACT_PREFIX + keys.map(function (key) { return key + '=' + values[key]; }).join('&'),
+      labelEn: 'Saved market source ' + values.mm_context.slice(0, 14),
+      labelZh: '已保存的市场来源 ' + values.mm_context.slice(0, 14)
+    };
+  }
+  /* END saved source citation parser. */
   function citeToPage(c) {
-    var source = retainedSourceCitation(c);
+    var source = retainedSourceCitation(c) || savedSourceCitation(c);
     if (source) return source.href;
     c = String(c);
     if (/master_brief|world_state|regime/.test(c)) return (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html';
