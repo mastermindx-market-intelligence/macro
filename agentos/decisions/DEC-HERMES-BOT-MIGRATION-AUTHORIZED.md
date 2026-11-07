@@ -51,7 +51,7 @@ affects:
   - "mastermind:integrations/session_bridge/*"
   - "agentos/*"
 confidence: high
-reversibility: medium
+reversibility: costly
 decided_by: chairman-chris
 decided_at: 2026-11-06
 review_by: 2026-11-13
