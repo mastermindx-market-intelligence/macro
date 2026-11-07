@@ -42,6 +42,7 @@ jobs:
           path: .ci-fabric-mastermind
           sparse-checkout: |
             ops/native_fabric/quota_continuity
+            control_plane
           persist-credentials: false
       - name: Verify source-held identities, numeric endpoints and exact models
         env:
