@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-11-06T13:43:57+00:00",
+  "as_of": "2026-11-07T12:44:03+00:00",
   "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
   "what_fired": [],
   "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
@@ -39,7 +39,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b11a-1b8b-7592-abd5-8bcf746f9438\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b609-a5b8-7760-8bf3-69161d308812\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
       },
       {
         "provider": "codex",
@@ -47,7 +47,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b11a-2ecc-76d1-8a17-2ea5f0ade815\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b609-b5ad-7420-b287-81450e4ddcbd\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
       },
       {
         "provider": "oauth",
@@ -55,7 +55,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgmmrMEfwse14E75rsijT'}"
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011Cgob6CNywCBurwQd4sZqe'}"
       },
       {
         "provider": "codex",
@@ -63,7 +63,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b11a-45c5-7830-9ae1-37feb7797763\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b609-c2cb-73e1-8e7a-c5da9527fe32\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
       },
       {
         "provider": "codex",
@@ -71,13 +71,13 @@
         "attempted": true,
         "ok": false,
         "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b11a-57aa-7c62-b55f-742c09e8bebd\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b609-cebc-77c1-8f63-ca1e9f3532fc\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
       }
     ],
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-11-06T13:01:50Z"
+    "context_as_of": "2026-11-07T10:00:29Z"
   }
 }
