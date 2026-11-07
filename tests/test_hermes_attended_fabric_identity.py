@@ -17,6 +17,7 @@ from tests.test_fabric_service_identity import identity
 ROOT = Path(__file__).resolve().parents[1]
 SERVICE = "hermes_attended_fabric"
 TRANSPORT = "native_go_hermes_attended_v1"
+AUTO_TRANSPORT = "native_fabric_hermes_attended_auto_v1"
 LANE = "hermes-attended"
 WORKLOAD = "hermes_attended"
 
@@ -47,9 +48,10 @@ def no_network(monkeypatch):
     monkeypatch.setattr(socket, "create_connection", refuse)
 
 
-def qualified_attended(identity):
+def qualified_attended(identity, transport_id=TRANSPORT):
     _, _, _, install, qualify, make, _, _ = identity
-    transport, row = qualify(TRANSPORT)
+    transport, row = qualify(transport_id,
+        route_scope={"schema": "mastermind.application_route_scope.v1", "pools": ["go"]})
     capabilities = [{"capability_id": transport.capability_id,
         "secret_ref": transport.secret_ref, "kill_state": "active", "allowed_lanes": [LANE]}]
     install({SERVICE: row}, capabilities)
@@ -63,7 +65,7 @@ def test_shipped_declaration_is_strict_inference_and_has_no_enrollment():
     transport = owner._APPLICATION_FABRIC_TRANSPORTS[TRANSPORT]
     relation = owner._SERVICE_FABRIC_RELATIONS[SERVICE]
     assert (relation.lane, relation.workload, relation.transport_id,
-            relation.automatic_transport_id) == (LANE, WORKLOAD, TRANSPORT, None)
+            relation.automatic_transport_id) == (LANE, WORKLOAD, TRANSPORT, AUTO_TRANSPORT)
     assert transport.qualified is True and transport.application_allowed is True
     assert transport.metadata_read is False and transport.automatic is False
     assert transport.protocol == "native_application_v1"
@@ -93,11 +95,12 @@ def test_unenrolled_or_disabled_attended_mode_refuses_before_credentials(identit
     ("qualified", "fabric_application_unqualified"),
     ("application_allowed", "fabric_application_not_permitted"),
 ])
-def test_configuration_cannot_grant_source_qualification(identity, source_flag, error):
+@pytest.mark.parametrize("transport_id", [TRANSPORT, AUTO_TRANSPORT])
+def test_configuration_cannot_grant_source_qualification(identity, source_flag, error, transport_id):
     _, _, events, _, _, _, _, monkeypatch = identity
-    factory, _, _ = qualified_attended(identity)
-    transport = owner._APPLICATION_FABRIC_TRANSPORTS[TRANSPORT]
-    monkeypatch.setitem(owner._APPLICATION_FABRIC_TRANSPORTS, TRANSPORT,
+    factory, _, _ = qualified_attended(identity, transport_id)
+    transport = owner._APPLICATION_FABRIC_TRANSPORTS[transport_id]
+    monkeypatch.setitem(owner._APPLICATION_FABRIC_TRANSPORTS, transport_id,
                         replace(transport, **{source_flag: False}))
     with pytest.raises(owner.ApplicationFabricBindingError, match=error):
         factory._bind_with_workload(operation_id="hermes:unqualified-original-admission")
@@ -190,8 +193,58 @@ def test_attended_has_no_administrative_pool_view(identity):
     assert events == []
 
 
-def test_attended_does_not_share_service_credential_or_attribution():
+def test_attended_variants_share_only_the_original_service_identity():
     attended = owner._APPLICATION_FABRIC_TRANSPORTS[TRANSPORT]
-    others = [row for name, row in owner._APPLICATION_FABRIC_TRANSPORTS.items() if name != TRANSPORT]
+    automatic = owner._APPLICATION_FABRIC_TRANSPORTS[AUTO_TRANSPORT]
+    others = [row for name, row in owner._APPLICATION_FABRIC_TRANSPORTS.items()
+              if name not in {TRANSPORT, AUTO_TRANSPORT}]
     for field in ("secret_ref", "cap_id", "capability_id"):
+        assert getattr(attended, field) == getattr(automatic, field)
         assert getattr(attended, field) not in {getattr(row, field) for row in others}
+    assert automatic.base_url == attended.base_url
+    assert automatic.model is None and automatic.provider_id is None
+    assert automatic.automatic is True
+    assert automatic.qualified is True and automatic.application_allowed is True
+    assert automatic.metadata_read is False and automatic.execution_surface == "inference"
+    assert automatic.protocol == "native_application_v1"
+
+
+@pytest.mark.parametrize("model", [None, "glm-5.3-flash"])
+def test_attended_auto_and_exact_use_the_original_factory_scope(identity, model):
+    _, _, events, _, _, _, _, _ = identity
+    factory, _, _ = qualified_attended(identity, AUTO_TRANSPORT)
+    preliminary = factory.inspect()
+    assert preliminary["schema"] == "mastermind.fabric_application_inspection.v2"
+    assert preliminary["requested_model"] is None and events == []
+    if model is not None:
+        factory = factory.with_requested_model(model)
+    inspected = factory.inspect()
+    assert inspected["schema"] == ("mastermind.fabric_application_inspection.v3"
+                                   if model else "mastermind.fabric_application_inspection.v2")
+    assert inspected["requested_model"] == model
+    assert inspected["route_scope"] == {
+        "schema": "mastermind.application_route_scope.v1", "pools": ["go"]}
+    operation = "hermes:original-attended-auto-admission"
+    bound, workload = factory.with_inspection(inspected)._bind_with_workload(operation_id=operation)
+    assert bound["inspection"] == inspected
+    assert bound["client"].operation_id == operation
+    assert bound["client"].model == model and bound["client"].auto_inspection == inspected
+    assert workload.profiles == (WORKLOAD,)
+    assert events == [("credential", "HERMES_ATTENDED_FABRIC_APPLICATION_TOKEN"), "client"]
+
+
+@pytest.mark.parametrize("change", ["scope", "variant", "foreign_service"])
+def test_attended_auto_frozen_identity_cannot_change_before_bind(identity, change):
+    _, _, events, install, qualify, _, _, _ = identity
+    factory, row, capabilities = qualified_attended(identity, AUTO_TRANSPORT)
+    frozen = factory.with_inspection(factory.inspect())
+    if change == "scope":
+        row["route_scope"]["pools"] = ["bailian"]
+    elif change == "variant":
+        _, row = qualify(TRANSPORT)
+    else:
+        _, row = qualify("native_fabric_hermes_secretary_auto_v1")
+    install({SERVICE: row}, capabilities)
+    with pytest.raises(owner.ApplicationFabricBindingError):
+        frozen._bind_with_workload(operation_id="hermes:changed-auto-admission")
+    assert events == []

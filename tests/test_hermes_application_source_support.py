@@ -22,6 +22,7 @@ from tests.test_fabric_service_identity import identity
 ROOT = Path(__file__).resolve().parents[1]
 CASES = (
     ("hermes_attended_fabric", "hermes-attended", "hermes_attended", "native_go_hermes_attended_v1"),
+    ("hermes_attended_fabric", "hermes-attended", "hermes_attended", "native_fabric_hermes_attended_auto_v1"),
     ("hermes_secretary_fabric", "hermes-secretary", "site_interactive", "native_go_hermes_secretary_v1"),
     ("hermes_meta_fabric", "hermes-meta-ceo", "site_interactive", "native_go_hermes_meta_v1"),
     ("hermes_secretary_fabric", "hermes-secretary", "site_interactive", "native_fabric_hermes_secretary_auto_v1"),
@@ -172,7 +173,8 @@ def test_source_revocation_remains_effective(identity, case, flag, code):
     assert events == []
 
 
-@pytest.mark.parametrize("case", CASES[-2:], ids=CASE_IDS[-2:])
+@pytest.mark.parametrize("case", [case for case in CASES if "_auto_" in case[3]],
+                         ids=[case[3] for case in CASES if "_auto_" in case[3]])
 def test_exact_selection_preserves_the_original_role_scope(identity, case):
     _, _, events, _, _, _, _, _ = identity
     _, _, _, original = configured(identity, case)
@@ -188,9 +190,10 @@ def test_exact_selection_preserves_the_original_role_scope(identity, case):
     assert bound["client"]._prior_admission_possible is True
 
 
-def test_attended_has_no_auto_route_and_no_other_purpose():
+def test_attended_auto_retains_the_original_purpose_and_closed_defaults():
     relation = owner._SERVICE_FABRIC_RELATIONS["hermes_attended_fabric"]
-    assert relation.automatic_transport_id is None
+    assert relation.automatic_transport_id == "native_fabric_hermes_attended_auto_v1"
+    assert relation.lane == "hermes-attended"
     assert relation.workload == "hermes_attended"
     assert owner._ApplicationFabricTransport.__dataclass_fields__["qualified"].default is False
     assert owner._ApplicationFabricTransport.__dataclass_fields__["application_allowed"].default is False
