@@ -43554,6 +43554,14 @@ jobs:
       - tests/verification/test_journey_a01.py
       - tests/verification/test_journey_f01.py
       - tests/verification/test_oracle_q01.py
+      # Synthetic research-input qualification shares these existing Data OS
+      # verification seams and dependencies; the thin foundation stays unchanged.
+      - engine/systematic_inputs.py
+      - scripts/qualify_systematic_inputs.py
+      - tests/test_systematic_inputs.py
+      - research/systematic_inputs/README.md
+      - scripts/__init__.py
+      - tests/__init__.py
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -43571,6 +43579,10 @@ jobs:
           tests/verification/test_bench_q03_contract.py
           tests/verification/test_journey_f01.py
           tests/verification/test_journey_a01.py -q -rs
+      - name: systematic input qualification (synthetic rights, PIT and action refusals)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_systematic_inputs.py -q -rs
 
   dataos-foundation:
     scope: exclusive
