@@ -302,6 +302,42 @@ def test_preloads_body_stylesheet_from_head():
     assert out.count('rel="stylesheet"') == 2
 
 
+def test_mobile_async_stylesheet_refreshes_unqualified_hint_to_desktop_media():
+    """Only desktop gets an early preload; remove a stale universal hint."""
+    old = 'assets/css/rr.css?v=deadbeef'
+    current = 'assets/css/rr.css?v=1234abcd'
+    normal = 'assets/css/normal.css?v=87654321'
+    page = (
+        '<html><head><link rel="stylesheet" href="theme.css?v=1">'
+        f'<link rel="preload" as="style" href="{old}"></head><body>'
+        f'<link rel="stylesheet" media="screen and (min-width: 769px), print" onload="this.media=\'all\'" '
+        f'data-mmx-mobile-async href="{current}">'
+        f'<link rel="stylesheet" href="{normal}"></body></html>'
+    )
+    out = preload_css_text(page, lambda href: [])
+    assert old not in out
+    assert out.count(current) == 2
+    assert (f'<link rel="preload" as="style" media="screen and (min-width: 769px), print" '
+            f'href="{current}">') in _head_of(out)
+    assert f'<link rel="preload" as="style" href="{current}">' not in out
+    assert f'<link rel="preload" as="style" href="{normal}">' in _head_of(out)
+    assert f'data-mmx-mobile-async href="{current}"' in out
+    assert preload_css_text(out, lambda href: []) == out
+
+
+def test_blocking_reference_to_same_sheet_still_gets_ordinary_preload():
+    sheet = 'assets/css/shared.css?v=1234abcd'
+    page = (
+        '<html><head><link rel="stylesheet" href="theme.css?v=1"></head>'
+        f'<body><link rel="stylesheet" media="screen and (min-width: 769px), print" '
+        f'onload="this.media=\'all\'" data-mmx-mobile-async href="{sheet}">'
+        f'<link rel="stylesheet" href="{sheet}"></body></html>'
+    )
+    out = preload_css_text(page, lambda href: [])
+    assert f'<link rel="preload" as="style" href="{sheet}">' in _head_of(out)
+    assert preload_css_text(out, lambda href: []) == out
+
+
 def test_preloads_css_import_target():
     """@import is invisible until its parent sheet has downloaded AND parsed."""
     out = preload_css_text('<html><head><link rel="stylesheet" href="theme.css?v=1">'
