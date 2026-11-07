@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/landing.css
+  - templates/_public_chrome_css.html.j2
+manifest: mockups/evidence/homepage-product-logo/manifest.json
