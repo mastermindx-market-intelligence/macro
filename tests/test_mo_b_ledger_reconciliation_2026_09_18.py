@@ -44,7 +44,9 @@ INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
 # #581/#548/#555/#526/#588/#550/#557 + live 401 probes): outside-union rows MO-PAID-055 and
 # MO-PAID-084 NOT_BUILT -> BUILT_NOT_PROVEN, MO-PAID-052 NOT_BUILT -> PARTIAL, MO-DELTA-039 and
 # MO-PAID-081 notes only. Prior digest: 83e3ab7a6270691b87a87f68b6ba3838f8cb8e97dcc0d3855a6b4ff6d1bd7951.
-OUTSIDE_UNION_SHA256 = "a5f263439ac32778504c887db876ad5391961eb86ec41de533e81628424ba3ea"
+# P18.T1 / #10206: only PAID024 notes changed outside the union. The dedicated
+# F04 guard below also pins all 128 unrelated rows and both rows' protected fields.
+OUTSIDE_UNION_SHA256 = "0da50ef2d42a8aa7c0ce85c19d704ae3d50549958eff9abe0637c795dd8d5551"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
 UNION_ROWS = set([
@@ -471,6 +473,7 @@ SOURCE_HEADS = {
 def _rows():
     with CSV_PATH.open(newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
+    assert len(rows) == len({r["id"] for r in rows}), "duplicate ledger IDs"
     return {r["id"]: r for r in rows}
 
 
@@ -507,6 +510,28 @@ def test_all_81_integration_rows_pin_disposition_and_capability():
 
 def test_other_49_rows_are_byte_identical_to_integration_baseline():
     assert _outside_digest() == OUTSIDE_UNION_SHA256
+
+
+def test_f04_two_row_reconciliation_preserves_unrelated_bytes_and_protected_fields():
+    # P18.T1 is a notes/consumer correction, not capability, rights or authority promotion.
+    # Baselines are the reviewed pre-correction f5d91f6c source, not the changed CSV.
+    expected = {'MO-DELTA-004': '229fe985d194e31b0f1f5f819538890e21cc1ac13092aa2903f0c6c759e1f5f3', 'MO-PAID-024': '26d91c6eb4f69a759491653cebe553ca692b05e57b833fd0fc42bbcb5c708a06'}
+    # Exact reviewed df9 notes: retaining a refusal phrase cannot bless a contradictory append.
+    reviewed_notes = {'MO-DELTA-004': '33f7b9dcbc441ad342571d801c2ec2f68163d97f7c69de174afdc446c72009b6', 'MO-PAID-024': '730dff07947e141456578c29eb5bddf562c6468d14d660b6f09e4acf58aaf574'}
+    allowed_notes = {"state_delta", "real_consumer", "missing_contract_or_proof",
+                     "next_bounded_child", "adjudication_notes"}
+    rows = _rows()
+    for row_id, digest in expected.items():
+        allowed = allowed_notes | ({"real_producer"} if row_id == "MO-PAID-024" else set())
+        protected = {key: value for key, value in rows[row_id].items() if key not in allowed}
+        assert hashlib.sha256(json.dumps(protected, sort_keys=True).encode()).hexdigest() == digest, row_id
+        notes = {key: value for key, value in rows[row_id].items() if key in allowed}
+        assert hashlib.sha256(json.dumps(notes, sort_keys=True).encode()).hexdigest() == reviewed_notes[row_id], row_id
+    untouched = b"".join(
+        line for line in CSV_PATH.read_bytes().splitlines(keepends=True)
+        if line.split(b",", 1)[0].decode() not in expected
+    )
+    assert hashlib.sha256(untouched).hexdigest() == "9747f48a13ce3ef0093757f47cae659eabb154a19bd2ffa2b2dada226586375c"
 
 
 def test_sol_adjudicated_closure_fields_are_not_stale():
@@ -701,7 +726,11 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     # W9 stage 1 D73-D74 (O32 natural-run publication proof; Sol 5966828357 scheduler owner).
     am_edition = r["MO-PAID-011"]
     assert am_edition["capability_state_c2"] == "PARTIAL"
-    assert am_edition["state_delta"].startswith("UPDATED 2026-10-03 D73")
+    # W17 records the later source merge without replacing D73's narrower
+    # natural-run publication proof or promoting the incomplete AM Edition.
+    assert am_edition["state_delta"].startswith("UPDATED 2026-10-11 W17")
+    assert "UPDATED 2026-10-03 D73" in am_edition["state_delta"]
+    assert "#8771" in am_edition["state_delta"]
     assert "96db8a19f9f5" in am_edition["state_delta"]
     assert "NOT a weekday premarket producer-build proof" in am_edition["state_delta"]
     assert "natural-run PUBLICATION proof READ 2026-10-03 08:12:01Z" in am_edition["next_bounded_child"]
@@ -731,7 +760,9 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert "stroke-dasharray:none" in sanctions["state_delta"]
     catalyst = r["MO-PAID-077"]
     assert catalyst["capability_state_c2"] == "BUILT_NOT_PROVEN"
-    assert catalyst["next_bounded_child"].startswith("W3-1b consumer ruling NOT RIPE 2026-10-03")
+    assert catalyst["next_bounded_child"].startswith("NOT_RIPE 2026-10-11")
+    assert "three DISTINCT natural session_dates" in catalyst["next_bounded_child"]
+    assert "W3-1b consumer ruling NOT RIPE 2026-10-03" in catalyst["next_bounded_child"]
     assert "session_date 2026-09-25" in catalyst["next_bounded_child"]
 
     f07 = r["MO-DELTA-017"]
@@ -745,7 +776,19 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
 
     theme_map = r["MO-DELTA-004"]
     assert theme_map["capability_state_c2"] == "PARTIAL"
-    assert "no product surface" in theme_map["missing_contract_or_proof"].lower()
+    assert "templates/ontology-theme.js" in theme_map["real_consumer"]
+    assert "authenticated full-path acceptance remains open" in theme_map["real_consumer"]
+    assert "served #10191 decoder SHA" in theme_map["missing_contract_or_proof"]
+    assert "issuer-selection502 and C01 boundary are not cleared" in theme_map["missing_contract_or_proof"]
+
+    retrospective = r["MO-PAID-024"]
+    assert retrospective["capability_state_c2"] == "NOT_BUILT"
+    assert "research.capture_event" in retrospective["real_producer"]
+    assert "/api/ontology/explorer/research/v1" in retrospective["real_consumer"]
+    assert "without automatic request" in retrospective["real_consumer"]
+    assert "Full calibrated arbitrage/opportunity semantics remain absent" in retrospective["missing_contract_or_proof"]
+    assert "rank/gate/size/entry authority" in retrospective["missing_contract_or_proof"]
+    assert "first-click recipient UNKNOWN remains" in retrospective["missing_contract_or_proof"]
 
     research_mode = r["MO-PAID-031"]
     assert research_mode["capability_state_c2"] == "SPEC_ONLY"
@@ -828,3 +871,33 @@ def test_manifest_names_the_single_writer_sources_and_union():
     assert receipt["outside_union_sha256"] == HISTORICAL_OUTSIDE_UNION_SHA256
     assert receipt["source_pr_heads"] == SOURCE_HEADS
     assert receipt["csv_commit"] == "e6ea08107305a95b4eda41782c304206b1cb8439"
+
+
+def test_ceo_a_w13_records_d90_to_d92_without_state_moves():
+    # CEO A W13 (2026-10-05): D90 FIXBIND-01 MERGED (#8464) on 006; D91 #8434 evidence-only note on 027;
+    # D92 CEO B 5987672592 evidence on 003 (#805) and 007 (first natural exercise). No state moves.
+    r = _rows()
+    assert "FIXBIND-01 MERGED" in r["MO-PAID-006"]["adjudication_notes"]
+    assert "#8464" in r["MO-PAID-006"]["adjudication_notes"]
+    assert r["MO-PAID-006"]["capability_state_c2"] == "PROVEN_LIVE"
+    assert "portfolio_changes.v1" in r["MO-PAID-027"]["adjudication_notes"]
+    assert "#805" in r["MO-DELTA-003"]["adjudication_notes"]
+    assert "a885200ff7b3" in r["MO-DELTA-003"]["adjudication_notes"]
+    assert "22:21:55Z" in r["MO-DELTA-007"]["adjudication_notes"]
+    assert "#815" in r["MO-DELTA-007"]["adjudication_notes"]
+    for rid in ("MO-PAID-027", "MO-DELTA-003", "MO-DELTA-007"):
+        assert r[rid]["capability_state_c2"] == "PARTIAL", rid
+
+
+def test_ceo_a_w14_records_d93_without_state_moves():
+    # CEO A W14 (2026-10-05): D93 CEO B 6004683154 F13-WS (#815) natural run 22:38:47Z on 007;
+    # Terminal #820 on 054 and #807 on 003 (rows named by the PR bodies / #805 lineage). No state moves.
+    r = _rows()
+    assert "22:38:47Z" in r["MO-DELTA-007"]["adjudication_notes"]
+    assert "a89ae219cb33" in r["MO-DELTA-007"]["adjudication_notes"]
+    assert "#820" in r["MO-PAID-054"]["adjudication_notes"]
+    assert "61fe025abc5e" in r["MO-PAID-054"]["adjudication_notes"]
+    assert "#807" in r["MO-DELTA-003"]["adjudication_notes"]
+    assert "5dcaf15f320b" in r["MO-DELTA-003"]["adjudication_notes"]
+    for rid in ("MO-DELTA-003", "MO-DELTA-007", "MO-PAID-054"):
+        assert r[rid]["capability_state_c2"] == "PARTIAL", rid
