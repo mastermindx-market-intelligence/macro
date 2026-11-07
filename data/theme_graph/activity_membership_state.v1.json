@@ -18,18 +18,16 @@
     "refused_rows": [],
     "retained": 0
   },
-  "generated_at": "2026-11-03T21:55:44.119383+00:00",
+  "generated_at": "2026-11-06T14:11:37.849080+00:00",
   "graph_agreement": {
     "extra_in_graph": [],
     "extra_in_graph_count": 0,
-    "graph_activity_count": 0,
-    "missing_in_graph": [
-      "member_of:co:us:MU->theme:hbm_packaging@2026-11-02"
-    ],
-    "missing_in_graph_count": 1,
+    "graph_activity_count": 1,
+    "missing_in_graph": [],
+    "missing_in_graph_count": 0,
     "projected_count": 1,
     "rule": "latest_belief MEMBER_OF activity_history valid_to null",
-    "status": "DISAGREE"
+    "status": "AGREE"
   },
   "mode": "ACTIVITY_MEMBERSHIP_STATE",
   "projected_edges": [
@@ -37,8 +35,8 @@
       "attention_share": null,
       "attention_share_display": null,
       "attention_share_formula_id": null,
-      "belief_time": "2026-11-03",
-      "computed_at": "2026-11-03T21:55:44.119383+00:00",
+      "belief_time": "2026-11-06",
+      "computed_at": "2026-11-06T14:11:37.849080+00:00",
       "confidence_basis": "activity_history.v1",
       "date_provenance": "activity_history",
       "dst": "theme:hbm_packaging",

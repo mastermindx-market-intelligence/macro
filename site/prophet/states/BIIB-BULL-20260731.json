@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BIIB-BULL-20260731",
-  "asof": "2026-11-03",
+  "asof": "2026-11-07",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 49.2,
@@ -11,26 +11,26 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 52.7,
+    "progress": 51.4,
     "pace": 0.0,
-    "retention": 91.2,
-    "overlay": 56.0
+    "retention": 88.3,
+    "overlay": 39.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.068,
-    "dist_to_t1_r": 0.432,
-    "dist_to_t2_r": 1.932,
-    "horizon_pct_used": 188.9,
-    "p1": 0.7121,
-    "p2": 0.356,
+    "dist_to_stop_r": 2.033,
+    "dist_to_t1_r": 0.467,
+    "dist_to_t2_r": 1.967,
+    "horizon_pct_used": 197.8,
+    "p1": 0.6887,
+    "p2": 0.3444,
     "p3": null,
-    "move_r": 1.068,
+    "move_r": 1.033,
     "mfe_r": 1.171,
     "mae_r": 0.0
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 85,
-  "tau": 1.8889,
+  "days_elapsed": 89,
+  "tau": 1.9778,
   "closed": true,
   "outcome": "EXPIRED"
 }
