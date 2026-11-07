@@ -17,6 +17,8 @@ is a manifest whose cells and rollups agree.
 from __future__ import annotations
 
 import ast
+import hashlib
+import importlib.util
 import json
 import re
 import shutil
@@ -1276,3 +1278,266 @@ def test_cli_refusal_exits_two_with_the_code(inputs, tmp_path) -> None:
     assert result.returncode == 2
     assert "store_unavailable" in result.stderr
     assert not (tmp_path / "manifest.json").exists()
+
+
+# ---------------------------------------------------------------------------
+# Optional inputs: the A1 journey ledger and the contract SIC basis
+# (seat ruling DEC:FIF-COVERAGE-JOURNEY-CELL-FROM-A1-LEDGER-20261102)
+# ---------------------------------------------------------------------------
+
+
+def _passing_checks() -> list[dict]:
+    return [
+        {"id": "coverage_served", "issuer": SYN_TICKER, "status": "pass", "detail": "served"},
+        {"id": "bridge", "issuer": SYN_TICKER, "status": "pass", "detail": "match"},
+        {"id": "run_level", "issuer": None, "status": "pass", "detail": "run ok"},
+    ]
+
+
+def _ledger_issuer(served, *, bridge_status="match", local_generation_id=None, cik=None):
+    return {
+        "ticker": SYN_TICKER,
+        "cik": cik or served["cik"],
+        "issuer_id": SYN_ENTITY,
+        "bridge": {
+            "status": bridge_status,
+            "production_generation_id": served["generation_id"],
+            "local_generation_id": local_generation_id or served["generation_id"],
+        },
+        "basis": "production_report",
+    }
+
+
+def _ledger(served, *, issuers=None, checks=None, schema=None) -> dict:
+    """A minimal well-formed A1 journey ledger for the synthetic member."""
+    return {
+        "schema": schema or CM.JOURNEY_LEDGER_SCHEMA,
+        "checks": _passing_checks() if checks is None else checks,
+        "issuers": [_ledger_issuer(served)] if issuers is None else issuers,
+        "all_checks_passed": True,
+    }
+
+
+def _contract_with_sic(served, sic: str) -> dict:
+    document = _contract(served)
+    (member,) = [row for row in document["issuers"] if row["cik"] == served["cik"]]
+    member["sic"] = sic
+    member["sic_source"] = {
+        "capture_path": "synthetic/submissions.json",
+        "source_url": "https://data.sec.gov/submissions/synthetic",
+        "sha256": "0" * 64,
+    }
+    return document
+
+
+def _recording_pack_producer(seen: list):
+    def recording(pack_id, pack_input):
+        seen.append((pack_input.issuer_sic, pack_input.sic_source))
+        return _canned_envelope(pack_id)
+
+    return recording
+
+
+def test_manifest_bytes_unchanged_without_new_inputs(inputs) -> None:
+    omitted = CM.build_coverage_manifest(as_of=AS_OF, **inputs)
+    explicit = CM.build_coverage_manifest(
+        as_of=AS_OF, journey_ledger_file=None, sic_from_coverage_file=False, **inputs
+    )
+    assert CM.render_manifest(explicit) == CM.render_manifest(omitted)
+    assert "journey_ledger" not in explicit["header"]["inputs_sha256"]
+    assert "sic_basis" not in explicit["header"]
+
+
+def test_journey_cell_present_when_ledger_matches(inputs, served, tmp_path) -> None:
+    ledger = _write(tmp_path / "ledger.json", _ledger(served))
+    manifest = CM.build_coverage_manifest(as_of=AS_OF, journey_ledger_file=ledger, **inputs)
+    assert _windowless(manifest, served["cik"], "journey") == {
+        "cik": served["cik"],
+        "period_id": "*",
+        "field_id": "journey",
+        "status": "present",
+        "reason_code": "present",
+        "source_generation_id": served["generation_id"],
+    }
+    assert manifest["header"]["inputs_sha256"]["journey_ledger"] == hashlib.sha256(
+        ledger.read_bytes()
+    ).hexdigest()
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "no_row_for_cik",
+        "bridge_not_published",
+        "generation_differs",
+        "issuer_check_fails",
+        "run_check_fails",
+        "no_issuer_checks",
+    ],
+)
+def test_journey_cell_absent_cases(inputs, served, tmp_path, case) -> None:
+    if case == "no_row_for_cik":
+        ledger = _ledger(served, issuers=[])
+    elif case == "bridge_not_published":
+        ledger = _ledger(served, issuers=[_ledger_issuer(served, bridge_status="not_published")])
+    elif case == "generation_differs":
+        ledger = _ledger(served, issuers=[_ledger_issuer(served, local_generation_id="g-other")])
+    elif case == "issuer_check_fails":
+        checks = _passing_checks()
+        checks.append({"id": "accessions", "issuer": SYN_TICKER, "status": "fail", "detail": "no"})
+        ledger = _ledger(served, checks=checks)
+    elif case == "run_check_fails":
+        checks = _passing_checks()
+        checks.append({"id": "run_other", "issuer": None, "status": "fail", "detail": "no"})
+        ledger = _ledger(served, checks=checks)
+    else:  # no check row names the issuer at all
+        ledger = _ledger(
+            served, checks=[{"id": "run_level", "issuer": None, "status": "pass", "detail": "ok"}]
+        )
+    path = _write(tmp_path / "ledger.json", ledger)
+    manifest = CM.build_coverage_manifest(as_of=AS_OF, journey_ledger_file=path, **inputs)
+    cell = _windowless(manifest, served["cik"], "journey")
+    assert (cell["status"], cell["reason_code"]) == ("absent", "journey_not_proven")
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "wrong_schema",
+        "duplicate_cik",
+        "check_status_outside_vocabulary",
+    ],
+)
+def test_journey_ledger_malformed_refuses(inputs, served, tmp_path, case) -> None:
+    if case == "wrong_schema":
+        ledger = _ledger(served, schema="fif.a1_journey_ledger/v2")
+    elif case == "duplicate_cik":
+        # A different spelling of the same CIK is still the same normalized CIK.
+        ledger = _ledger(
+            served,
+            issuers=[
+                _ledger_issuer(served),
+                _ledger_issuer(served, cik=str(int(served["cik"]))),
+            ],
+        )
+    else:
+        checks = _passing_checks()
+        checks.append({"id": "warn_row", "issuer": SYN_TICKER, "status": "warn", "detail": "no"})
+        ledger = _ledger(served, checks=checks)
+    path = _write(tmp_path / "ledger.json", ledger)
+    with pytest.raises(CM.CoverageManifestError) as caught:
+        CM.build_coverage_manifest(as_of=AS_OF, journey_ledger_file=path, **inputs)
+    assert caught.value.code == "journey_ledger_malformed"
+
+
+def test_journey_present_cell_accepted_by_prover(inputs, served, tmp_path) -> None:
+    ledger = _write(tmp_path / "ledger.json", _ledger(served))
+    with_ledger = CM.build_coverage_manifest(as_of=AS_OF, journey_ledger_file=ledger, **inputs)
+    report = _prove(CM.render_manifest(with_ledger))
+    without = _prove(
+        CM.render_manifest(CM.build_coverage_manifest(as_of=AS_OF, **inputs))
+    )
+    assert report["manifest_rollup_mismatch"] == []
+    assert set(report["acceptance_blockers"]) <= set(without["acceptance_blockers"])
+    assert report["orphan_cells"] == without["orphan_cells"] == 0
+    assert set(report["orphan_reasons"].values()) <= {0}
+
+
+def test_sic_from_coverage_file_binds_unshipped_cik(
+    inputs, served, tmp_path, monkeypatch
+) -> None:
+    # The shipped contracts bind the golden packages' real CIK, so simulate
+    # the predeclared issuers they do not bind.
+    monkeypatch.setattr(CM, "resolve_issuer_sic", lambda cik, *, repo_root=None: None)
+    coverage = _write(tmp_path / "coverage.json", _contract_with_sic(served, "1234"))
+    seen: list[tuple[str | None, str | None]] = []
+    monkeypatch.setattr(CM, "produce_pack", _recording_pack_producer(seen))
+    monkeypatch.setattr(
+        CM, "build_financial_intelligence_packet_from_repo", lambda **_kw: _no_valued_packet()
+    )
+    manifest = CM.build_coverage_manifest(
+        as_of=AS_OF,
+        tiers_file=inputs["tiers_file"],
+        coverage_file=coverage,
+        store_dir=inputs["store_dir"],
+        sic_from_coverage_file=True,
+    )
+    assert manifest["header"]["sic_basis"] == "coverage_contract"
+    assert seen and {sic for sic, _ in seen} == {"1234"}
+    assert {source for _, source in seen} == {"sec_submissions"}
+
+
+def test_sic_from_coverage_file_conflict_refuses(inputs, served, tmp_path) -> None:
+    shipped = CM.resolve_issuer_sic(served["cik"])
+    assert shipped is not None  # the golden packages ride a shipped CIK
+    conflicting = "0000" if shipped != "0000" else "0001"
+    coverage = _write(tmp_path / "coverage.json", _contract_with_sic(served, conflicting))
+    with pytest.raises(CM.CoverageManifestError) as caught:
+        CM.build_coverage_manifest(
+            as_of=AS_OF,
+            tiers_file=inputs["tiers_file"],
+            coverage_file=coverage,
+            store_dir=inputs["store_dir"],
+            sic_from_coverage_file=True,
+        )
+    assert caught.value.code == "sic_basis_conflict"
+
+
+def test_sic_from_coverage_file_off_keeps_unbound(
+    inputs, served, tmp_path, monkeypatch
+) -> None:
+    monkeypatch.setattr(CM, "resolve_issuer_sic", lambda cik, *, repo_root=None: None)
+    coverage = _write(tmp_path / "coverage.json", _contract_with_sic(served, "1234"))
+    seen: list[tuple[str | None, str | None]] = []
+    monkeypatch.setattr(CM, "produce_pack", _recording_pack_producer(seen))
+    monkeypatch.setattr(
+        CM, "build_financial_intelligence_packet_from_repo", lambda **_kw: _no_valued_packet()
+    )
+    manifest = CM.build_coverage_manifest(
+        as_of=AS_OF,
+        tiers_file=inputs["tiers_file"],
+        coverage_file=coverage,
+        store_dir=inputs["store_dir"],
+    )
+    assert "sic_basis" not in manifest["header"]
+    assert seen and {sic for sic, _ in seen} == {None}
+    assert {source for _, source in seen} == {"unbound"}
+
+
+def test_cli_flags_pass_through(inputs, served, tmp_path) -> None:
+    spec = importlib.util.spec_from_file_location("fif_coverage_manifest_cli", CLI)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    ledger = _write(tmp_path / "ledger.json", _ledger(served))
+    # A contract SIC equal to the shipped answer exercises the flag without
+    # a sic_basis_conflict.
+    shipped = CM.resolve_issuer_sic(served["cik"])
+    coverage = _write(
+        tmp_path / "coverage.json", _contract_with_sic(served, shipped or "1234")
+    )
+    out = tmp_path / "manifest.json"
+    code = module.main(
+        [
+            "--tiers-file",
+            str(inputs["tiers_file"]),
+            "--coverage-file",
+            str(coverage),
+            "--store-dir",
+            str(inputs["store_dir"]),
+            "--as-of",
+            AS_OF,
+            "--out",
+            str(out),
+            "--journey-ledger",
+            str(ledger),
+            "--sic-from-coverage-file",
+        ]
+    )
+    assert code == 0
+    manifest = json.loads(out.read_text(encoding="utf-8"))
+    assert manifest["header"]["sic_basis"] == "coverage_contract"
+    assert manifest["header"]["inputs_sha256"]["journey_ledger"] == hashlib.sha256(
+        ledger.read_bytes()
+    ).hexdigest()
+    journey = next(cell for cell in manifest["cells"] if cell["field_id"] == "journey")
+    assert journey["status"] == "present"
