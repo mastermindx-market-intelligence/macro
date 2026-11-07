@@ -56,6 +56,13 @@ def _build() -> Mapping[str, PackProducer]:
 PACK_PRODUCERS: Mapping[str, PackProducer] = _build()
 
 
+
+def scoped_filing_parse_reuse():
+    from ..ixbrl_raw_ledger import scoped_filing_parse_reuse as owner_scope
+
+    return owner_scope()
+
+
 def produce_pack(pack_id: str, pack_input: PackInput) -> dict:
     """Produce one pack result through the registered producer.
 
@@ -69,11 +76,12 @@ def produce_pack(pack_id: str, pack_input: PackInput) -> dict:
     producer = PACK_PRODUCERS.get(pack_id)
     if producer is None:
         raise SpecialistPackError(f"no producer registered: {pack_id}")
-    result = produce_pack_result(producer, pack_input)
-    finalize = getattr(producer, "finalize_result", None)
-    if finalize is not None:
-        result = finalize(result, pack_input)
-    return result
+    with scoped_filing_parse_reuse():
+        result = produce_pack_result(producer, pack_input)
+        finalize = getattr(producer, "finalize_result", None)
+        if finalize is not None:
+            result = finalize(result, pack_input)
+        return result
 
 
 def registered_pack_ids() -> tuple[str, ...]:

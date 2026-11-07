@@ -1,0 +1,144 @@
+{
+  "base": "288dabfd87ccb6b97ef431c5375a0ddfd71354e2",
+  "benchmark": {
+    "base": "288dabfd87ccb6b97ef431c5375a0ddfd71354e2",
+    "baseline_cpu_median": 2.859192,
+    "baseline_wall_median": 3.409025500062853,
+    "consumer": "registered PK06 production with actual retained AAPL package and nested PK08",
+    "cpu_reduction_fraction": 0.3718438635810396,
+    "method": "five alternating fresh evaluation pairs in one warmed process; no memo survives calls; concurrent host activity possible; not full CI/hosted speedup",
+    "output_byte_identical": true,
+    "reuse_cpu_median": 1.7960190000000003,
+    "reuse_wall_median": 2.1342259999364614,
+    "samples": [
+      {
+        "cpu_seconds": 2.859192,
+        "mode": "baseline",
+        "output_sha256": "64b2d42f2148bdf4c9aaf69aae562e53aae26d54bc9386264ce485f80a322c05",
+        "pair": 0,
+        "parser_calls": 3,
+        "wall_seconds": 3.409025500062853
+      },
+      {
+        "cpu_seconds": 1.7960190000000003,
+        "mode": "reuse",
+        "output_sha256": "64b2d42f2148bdf4c9aaf69aae562e53aae26d54bc9386264ce485f80a322c05",
+        "pair": 0,
+        "parser_calls": 1,
+        "wall_seconds": 2.1342259999364614
+      },
+      {
+        "cpu_seconds": 1.8008370000000005,
+        "mode": "reuse",
+        "output_sha256": "64b2d42f2148bdf4c9aaf69aae562e53aae26d54bc9386264ce485f80a322c05",
+        "pair": 1,
+        "parser_calls": 1,
+        "wall_seconds": 2.148337334045209
+      },
+      {
+        "cpu_seconds": 2.816206000000001,
+        "mode": "baseline",
+        "output_sha256": "64b2d42f2148bdf4c9aaf69aae562e53aae26d54bc9386264ce485f80a322c05",
+        "pair": 1,
+        "parser_calls": 3,
+        "wall_seconds": 3.5191145000280812
+      },
+      {
+        "cpu_seconds": 2.9074360000000006,
+        "mode": "baseline",
+        "output_sha256": "64b2d42f2148bdf4c9aaf69aae562e53aae26d54bc9386264ce485f80a322c05",
+        "pair": 2,
+        "parser_calls": 3,
+        "wall_seconds": 3.3360151660162956
+      },
+      {
+        "cpu_seconds": 1.7412320000000001,
+        "mode": "reuse",
+        "output_sha256": "64b2d42f2148bdf4c9aaf69aae562e53aae26d54bc9386264ce485f80a322c05",
+        "pair": 2,
+        "parser_calls": 1,
+        "wall_seconds": 1.9230284580262378
+      },
+      {
+        "cpu_seconds": 1.5975340000000013,
+        "mode": "reuse",
+        "output_sha256": "64b2d42f2148bdf4c9aaf69aae562e53aae26d54bc9386264ce485f80a322c05",
+        "pair": 3,
+        "parser_calls": 1,
+        "wall_seconds": 1.7405010000802577
+      },
+      {
+        "cpu_seconds": 2.4623929999999987,
+        "mode": "baseline",
+        "output_sha256": "64b2d42f2148bdf4c9aaf69aae562e53aae26d54bc9386264ce485f80a322c05",
+        "pair": 3,
+        "parser_calls": 3,
+        "wall_seconds": 3.169693332980387
+      },
+      {
+        "cpu_seconds": 2.9952659999999973,
+        "mode": "baseline",
+        "output_sha256": "64b2d42f2148bdf4c9aaf69aae562e53aae26d54bc9386264ce485f80a322c05",
+        "pair": 4,
+        "parser_calls": 3,
+        "wall_seconds": 4.041110875084996
+      },
+      {
+        "cpu_seconds": 2.15597,
+        "mode": "reuse",
+        "output_sha256": "64b2d42f2148bdf4c9aaf69aae562e53aae26d54bc9386264ce485f80a322c05",
+        "pair": 4,
+        "parser_calls": 1,
+        "wall_seconds": 2.6410864159697667
+      }
+    ],
+    "wall_reduction_fraction": 0.37394836151941013
+  },
+  "ci_enrollment": {
+    "gate": "code",
+    "logical_job": "fif-kernel-guards",
+    "new_tests_moved_from_data_only_suite": true,
+    "source_path_pattern": "engine/fundamental_forensics/**",
+    "suite": "tests/test_fundamental_forensics_specialist_pack_contract.py",
+    "test_path_pattern": "tests/test_fundamental_forensics_*",
+    "workflow_or_manifest_changed": false
+  },
+  "control_definition": "Same candidate with evaluation scope disabled by nullcontext; not a pristine checkout of the old commit. The canonical parser and all conversion/identity checks execute in both arms.",
+  "current_main_compatibility": {
+    "affected_runtime_or_law_paths_changed": false,
+    "sha": "21444bcfd9001654935eb4b43b0005eb5a7eb47b"
+  },
+  "distinct_cases_qualified": 1279,
+  "fixture_materialization": {
+    "data/reference/issuer_master.parquet": {
+      "bytes": 65894,
+      "git_blob": "2fef1185809b8b92fe589d3e0a9d5fb477192bc2",
+      "sha256": "d76624cca049aa346081249cb40566fd9158055302507b7e60849949525db623"
+    },
+    "data/reference/security_master.parquet": {
+      "bytes": 106630,
+      "git_blob": "b81544e599a3c0f259bfb102a34828fb119e4de7",
+      "sha256": "d486830a6e545ad4fce6c08f65d53fb8fa0ca091a9959d5ef22ac64a9e6c27a6"
+    }
+  },
+  "initial_failure": "Sparse checkout lacked security_master and issuer_master; exact same-base tracked blobs were hydrated and hash-verified before the qualified full run.",
+  "operation": "delivery-fif-parse-scope-20261103",
+  "original_program": "Mastermind#917 / WS:CI-MERGE-CONTROL-PLANE",
+  "recorded_utc": "2026-11-03T06:16:18.993673+00:00",
+  "retained_cache_bound": "4 entries and 8 MiB of source plus serialized result bytes per outer evaluation; not an exact Python heap/RSS bound",
+  "schema": "mastermind.ci_consumer_performance_evidence.v1",
+  "scope": "local source qualification, not hosted CI, independent acceptance or deployment",
+  "source_sha256": {
+    "engine/fundamental_forensics/ixbrl_raw_ledger.py": "99d023d16d53de72d16be02e09d1c40d1e95de365b2a1f798f4266164fd68035",
+    "engine/fundamental_forensics/specialist_packs/registry.py": "fb899a9e67215b81cc4fd4550595c2b487631b7b50b739ef4f11058e62b81af4",
+    "tests/test_fundamental_forensics_specialist_pack_contract.py": "d6b1d44c3379458a313035e99c1a6f20ceb9bc4d9c4999867bfc1a578280a170"
+  },
+  "test_failures": 0,
+  "test_skips": 0,
+  "tests": {
+    "code_owner_after_relocation": 262,
+    "qualified-regression": 516,
+    "specialists": 763
+  },
+  "verification_note": "All 1279 distinct cases passed before test relocation. After moving the unchanged new checks into the existing code-gated contract suite, all262 cases there passed again. Runtime/parser/registry bytes and the763 specialist tests remain unchanged; their accepted proof is reused, not counted twice."
+}

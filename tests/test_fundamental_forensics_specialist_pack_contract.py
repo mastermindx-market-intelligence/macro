@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 import inspect
+import json
 from pathlib import Path
 import re
 
@@ -2258,3 +2259,196 @@ def test_pk12_outside_biotech_rule_abstention_accepted() -> None:
     }
     _finish(obj)
     assert validate_pack_result(obj) == []
+
+
+# Evaluation-local parse reuse: extraction only, never ledger/admission reuse.
+@pytest.fixture
+def _evaluation_parse_counter(monkeypatch):
+    from collectors import sec_filing_parser as parser
+    from engine.fundamental_forensics import ixbrl_raw_ledger as adapter
+
+    original = adapter.parse_sec_filing_document
+    calls = []
+
+    def counted(content, *, document_name):
+        calls.append((content, document_name))
+        return original(content, document_name=document_name)
+
+    monkeypatch.setattr(adapter, "parse_sec_filing_document", counted)
+    monkeypatch.setattr(parser, "parse_sec_filing_document", counted)
+    return adapter, parser, calls
+
+
+def test_evaluation_parse_reuse_is_opt_in_and_ends_with_scope(_evaluation_parse_counter):
+    adapter, _parser, calls = _evaluation_parse_counter
+    content = b'<root xmlns="urn:test"/>'
+    adapter._parse_evaluation_document(content, document_name="sample.xml")
+    adapter._parse_evaluation_document(content, document_name="sample.xml")
+    assert len(calls) == 2
+    with adapter.scoped_filing_parse_reuse():
+        expected = adapter._parse_evaluation_document(content, document_name="sample.xml")
+        with adapter.scoped_filing_parse_reuse():
+            observed = adapter._parse_evaluation_document(content, document_name="sample.xml")
+        assert observed == expected and observed is not expected
+        assert len(calls) == 3
+    with adapter.scoped_filing_parse_reuse():
+        assert adapter._parse_evaluation_document(content, document_name="sample.xml") == expected
+    assert len(calls) == 4
+
+
+def test_evaluation_parse_reuse_copies_nested_results(_evaluation_parse_counter):
+    adapter, _parser, calls = _evaluation_parse_counter
+    content = b'<root xmlns="urn:test"/>'
+    with adapter.scoped_filing_parse_reuse():
+        first = adapter._parse_evaluation_document(content, document_name="sample.xml")
+        expected = json.loads(json.dumps(first))
+        first["facts"].append({"tampered": True})
+        second = adapter._parse_evaluation_document(content, document_name="sample.xml")
+        assert second == expected
+        second["facts"].append({"also_tampered": True})
+        assert adapter._parse_evaluation_document(content, document_name="sample.xml") == expected
+    assert len(calls) == 1
+
+
+def test_evaluation_parse_reuse_binds_exact_bytes_name_and_policy(_evaluation_parse_counter, monkeypatch):
+    adapter, parser, calls = _evaluation_parse_counter
+    content = b'<root xmlns="urn:test"/>'
+    with adapter.scoped_filing_parse_reuse():
+        adapter._parse_evaluation_document(content, document_name="sample.xml")
+        adapter._parse_evaluation_document(content + b' ', document_name="sample.xml")
+        adapter._parse_evaluation_document(content, document_name="other.xml")
+        assert len(calls) == 3
+        monkeypatch.setattr(parser, "PARSER_LIMITS", {**parser.PARSER_LIMITS, "max_bytes": 1})
+        with pytest.raises(parser.SecFilingParseError, match="byte limit"):
+            adapter._parse_evaluation_document(content, document_name="sample.xml")
+        assert len(calls) == 4
+        monkeypatch.setattr(parser, "PARSER_LIMITS", {"invalid": 1})
+        with pytest.raises(parser.SecFilingParseError, match="limits contract"):
+            adapter._parse_evaluation_document(content, document_name="sample.xml")
+
+
+def test_evaluation_parse_reuse_never_retains_parser_failures(_evaluation_parse_counter):
+    adapter, parser, calls = _evaluation_parse_counter
+    content = b'<!DOCTYPE root><root/>'
+    with adapter.scoped_filing_parse_reuse():
+        for _ in range(2):
+            with pytest.raises(parser.SecFilingParseError, match="DTD"):
+                adapter._parse_evaluation_document(content, document_name="sample.xml")
+    assert len(calls) == 2
+
+
+def test_evaluation_parse_reuse_exception_and_copied_context_cleanup(_evaluation_parse_counter):
+    from contextvars import copy_context
+
+    adapter, _parser, calls = _evaluation_parse_counter
+    content = b'<root xmlns="urn:test"/>'
+    with pytest.raises(RuntimeError, match="consumer failed"):
+        with adapter.scoped_filing_parse_reuse():
+            adapter._parse_evaluation_document(content, document_name="sample.xml")
+            copied = copy_context()
+            raise RuntimeError("consumer failed")
+    assert adapter._EVALUATION_PARSE_REUSE.get() is None
+    for _ in range(2):
+        copied.run(adapter._parse_evaluation_document, content, document_name="sample.xml")
+    assert len(calls) == 3
+
+
+def test_evaluation_parse_reuse_budget_falls_back_to_real_parser(_evaluation_parse_counter, monkeypatch):
+    adapter, _parser, calls = _evaluation_parse_counter
+    monkeypatch.setattr(adapter, "_PARSE_REUSE_MAX_BYTES", 1)
+    content = b'<root xmlns="urn:test"/>'
+    with adapter.scoped_filing_parse_reuse():
+        first = adapter._parse_evaluation_document(content, document_name="sample.xml")
+        second = adapter._parse_evaluation_document(content, document_name="sample.xml")
+    assert first == second and len(calls) == 2
+
+
+def test_evaluation_parse_reuse_thread_copy_does_not_share(_evaluation_parse_counter):
+    from concurrent.futures import ThreadPoolExecutor
+    from contextvars import copy_context
+
+    adapter, _parser, calls = _evaluation_parse_counter
+    content = b'<root xmlns="urn:test"/>'
+    with adapter.scoped_filing_parse_reuse():
+        adapter._parse_evaluation_document(content, document_name="sample.xml")
+        copied = copy_context()
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            executor.submit(copied.run, adapter._parse_evaluation_document,
+                            content, document_name="sample.xml").result(timeout=10)
+        adapter._parse_evaluation_document(content, document_name="sample.xml")
+    assert len(calls) == 2
+
+
+def test_evaluation_parse_reuse_async_child_does_not_share(_evaluation_parse_counter):
+    import asyncio
+
+    adapter, _parser, calls = _evaluation_parse_counter
+    content = b'<root xmlns="urn:test"/>'
+
+    async def child():
+        with adapter.scoped_filing_parse_reuse():
+            adapter._parse_evaluation_document(content, document_name="sample.xml")
+            adapter._parse_evaluation_document(content, document_name="sample.xml")
+
+    async def parent():
+        with adapter.scoped_filing_parse_reuse():
+            adapter._parse_evaluation_document(content, document_name="sample.xml")
+            await asyncio.create_task(child())
+            adapter._parse_evaluation_document(content, document_name="sample.xml")
+
+    asyncio.run(parent())
+    assert len(calls) == 2
+
+
+def test_evaluation_parse_reuse_rechecks_mutated_package_metadata(_evaluation_parse_counter, monkeypatch):
+    from types import SimpleNamespace
+
+    adapter, _parser, calls = _evaluation_parse_counter
+    package = SimpleNamespace(manifest={"primary_document": "sample.xml", "issuer": "one"},
+                              members={"sample.xml": b'<root xmlns="urn:test"/>'})
+    observed = []
+
+    def convert(pairs):
+        observed.append(pairs[0][0].manifest["issuer"])
+        return observed[-1]
+
+    monkeypatch.setattr(adapter, "convert_parsed_filings", convert)
+    with adapter.scoped_filing_parse_reuse():
+        assert adapter.parse_and_convert_golden_packages([package]) == "one"
+        package.manifest["issuer"] = "two"
+        assert adapter.parse_and_convert_golden_packages([package]) == "two"
+    assert observed == ["one", "two"] and len(calls) == 1
+
+
+def test_evaluation_parse_reuse_real_pack_byte_parity_and_parse_reduction(_evaluation_parse_counter, monkeypatch):
+    from contextlib import nullcontext
+    from engine.fundamental_forensics.statement_graph import load_golden_aapl_package
+    from engine.fundamental_forensics.specialist_packs import registry
+    from engine.fundamental_forensics.specialist_packs import PackInput
+
+    adapter, _parser, calls = _evaluation_parse_counter
+    package = load_golden_aapl_package(ROOT, accession="0000320193-25-000079")
+    manifest = package.manifest
+    pack_input = PackInput(
+        packages=(package,),
+        entity={"entity_id": manifest["entity_id"], "cik": manifest["cik"],
+                "ticker": "AAPL", "name": manifest["legal_name"],
+                "identity_basis": "golden_filing_package_fixture_v1",
+                "source_entity_id": manifest["cik"]},
+        query={"policy": "as_reported", "source_event_cutoff": "2025-12-31T23:59:59Z",
+               "system_recorded_cutoff": "2026-08-05T12:00:02Z",
+               "requested_metrics": ["leases"], "requested_periods": ["FY2025"],
+               "evaluation_mode": "historical_replay"},
+        issuer_sic="3571", sic_source="sec_submissions",
+    )
+    with monkeypatch.context() as unoptimized:
+        unoptimized.setattr(registry, "scoped_filing_parse_reuse", nullcontext)
+        before = registry.produce_pack("PK06", pack_input)
+    original_calls = len(calls)
+    calls.clear()
+    after = registry.produce_pack("PK06", pack_input)
+    assert original_calls >= 3
+    assert len(calls) == 1
+    assert json.dumps(before, sort_keys=True, separators=(",", ":")) == json.dumps(
+        after, sort_keys=True, separators=(",", ":"))
+    assert adapter._EVALUATION_PARSE_REUSE.get() is None

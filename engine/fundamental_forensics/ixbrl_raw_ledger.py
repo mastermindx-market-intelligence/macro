@@ -7,13 +7,21 @@ output plus already-admitted filing-package metadata and emits canonical
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+from contextlib import contextmanager
+from contextvars import ContextVar
+from copy import deepcopy
+from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from hashlib import sha256
+import asyncio
+import json
+import os
 from pathlib import Path
+import threading
 from types import MappingProxyType
 from typing import Any, Mapping, Sequence
 
+from collectors import sec_filing_parser as _filing_parser
 from collectors.sec_filing_parser import SecFilingParseError, parse_sec_filing_document
 
 from .financial_intelligence_packet import load_core_registry
@@ -467,7 +475,7 @@ def original_concept_namespace_uris(
         accession = str(package.manifest["accession"])
         primary = package.manifest["primary_document"]
         try:
-            parsed = parse_sec_filing_document(package.members[primary], document_name=primary)
+            parsed = _parse_evaluation_document(package.members[primary], document_name=primary)
         except SecFilingParseError as exc:
             raise IxbrlRawLedgerError("golden AAPL primary document cannot be parsed") from exc
         for fact in parsed.get("facts") or []:
@@ -480,6 +488,111 @@ def original_concept_namespace_uris(
     return mapping
 
 
+# Private, evaluation-local extraction reuse. Ledger conversion, issuer/source
+# binding, receipts and authorization still run on every ordinary call.
+_PARSE_REUSE_MAX_ENTRIES = 4
+_PARSE_REUSE_MAX_BYTES = 8 * 1024 * 1024
+
+
+def _evaluation_owner() -> tuple[object, ...]:
+    try:
+        task = asyncio.current_task()
+    except RuntimeError:
+        task = None
+    return os.getpid(), threading.get_ident(), task
+
+
+@dataclass
+class _EvaluationParseReuse:
+    owner: tuple[object, ...]
+    entries: dict[tuple[object, ...], dict[str, Any]] = field(default_factory=dict)
+    retained_bytes: int = 0
+    active: bool = True
+
+
+_EVALUATION_PARSE_REUSE: ContextVar[_EvaluationParseReuse | None] = ContextVar(
+    "fif_evaluation_parse_reuse", default=None
+)
+
+
+@contextmanager
+def scoped_filing_parse_reuse():
+    """Share extraction in one synchronous pack evaluation, including children.
+
+    A copied thread/task context cannot borrow its parent's memo. The memo is
+    cleared and deactivated on every outer exit, including exceptions; retaining
+    a copied Context cannot revive it. This creates no persistent source cache.
+    """
+    owner = _evaluation_owner()
+    previous = _EVALUATION_PARSE_REUSE.get()
+    if previous is not None and previous.active and previous.owner == owner:
+        yield
+        return
+    state = _EvaluationParseReuse(owner)
+    token = _EVALUATION_PARSE_REUSE.set(state)
+    try:
+        yield
+    finally:
+        state.active = False
+        state.entries.clear()
+        state.retained_bytes = 0
+        _EVALUATION_PARSE_REUSE.reset(token)
+
+
+def _parse_reuse_key(content: bytes, document_name: str, parser) -> tuple[object, ...] | None:
+    if (type(content) is not bytes or type(document_name) is not str
+            or parser is not _filing_parser.parse_sec_filing_document):
+        return None
+    # Use the parser's own validated/clamped policy; a lowered or malformed
+    # current limit cannot inherit a prior successful parse. No limits are copied
+    # into a competing validator, and no claimed package digest is trusted.
+    limits = tuple(_filing_parser._limits_snapshot().items())
+    try:
+        key = (
+            parser, content, document_name, limits,
+            _filing_parser.SEC_FILING_PARSER_SCHEMA,
+            _filing_parser.SEC_FILING_PARSER_PROFILE,
+            _filing_parser.SEC_FILING_PARSER_VERSION,
+            _filing_parser.SEC_FILING_PARSER_ALGORITHM_FINGERPRINT,
+            tuple(sorted(_filing_parser.SUPPORTED_TRANSFORMS.items())),
+        )
+        hash(key)
+    except (TypeError, ValueError):
+        return None  # Unsupported custom state follows the ordinary parser path.
+    return key
+
+
+def _parse_evaluation_document(content: bytes, *, document_name: str) -> dict[str, Any]:
+    state = _EVALUATION_PARSE_REUSE.get()
+    parser = parse_sec_filing_document
+    if state is None or not state.active or state.owner != _evaluation_owner():
+        return parser(content, document_name=document_name)
+    key = _parse_reuse_key(content, document_name, parser)
+    if key is None:
+        return parser(content, document_name=document_name)
+    if key in state.entries:
+        return deepcopy(state.entries[key])
+    parsed = parser(content, document_name=document_name)  # Failures are never cached.
+    if len(state.entries) >= _PARSE_REUSE_MAX_ENTRIES or type(parsed) is not dict:
+        return parsed
+    try:
+        size = len(content) + len(json.dumps(parsed, separators=(",", ":"),
+                                            ensure_ascii=False).encode("utf-8"))
+        if size + state.retained_bytes > _PARSE_REUSE_MAX_BYTES:
+            return parsed
+        # A test double or policy change during parsing must not seed a stale
+        # entry. A post-parse policy failure does not change a completed result.
+        if parser is not parse_sec_filing_document or key != _parse_reuse_key(
+                content, document_name, parser):
+            return parsed
+        isolated = deepcopy(parsed)
+    except (TypeError, ValueError, RecursionError):
+        return parsed
+    state.entries[key] = isolated
+    state.retained_bytes += size  # Source + serialized bytes, not a heap/RSS claim.
+    return parsed
+
+
 def parse_and_convert_golden_packages(
     packages: Sequence[GoldenFilingPackage],
 ) -> tuple[RawFactLedger, dict[str, FilingMetadata], ConversionReport]:
@@ -487,7 +600,7 @@ def parse_and_convert_golden_packages(
     for package in packages:
         primary = package.manifest["primary_document"]
         try:
-            parsed = parse_sec_filing_document(package.members[primary], document_name=primary)
+            parsed = _parse_evaluation_document(package.members[primary], document_name=primary)
         except SecFilingParseError as exc:
             raise IxbrlRawLedgerError("golden AAPL primary document cannot be parsed") from exc
         pairs.append((package, parsed))
