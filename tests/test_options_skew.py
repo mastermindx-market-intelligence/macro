@@ -1959,7 +1959,8 @@ def test_options_compare_weekends_cannot_satisfy_minimum_sessions():
         mixed, as_of=dates[-1].date().isoformat()
     )
 
-    assert payload["minimum_sessions"] == 20
+    assert payload["minimum_sessions"] == 21
+    assert payload["minimum_prior_observations"] == 20
     assert payload["state"] == "unavailable"
     assert payload["rows"] == []
 
@@ -1979,3 +1980,131 @@ def test_options_compare_weekend_only_history_has_no_complete_session():
         assert payload["state"] == "unavailable"
         assert payload["rows"] == []
 
+
+
+# Original-journey continuation: strictly prior baseline and IV pricing scale.
+def test_options_compare_v2_requires_twenty_prior_observations():
+    hist, dates = _compare_history(n_names=2, n_sessions=21)
+    short = S.build_compare_payload(hist, as_of=dates[-2].date().isoformat())
+    full = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+    assert short["state"] == "unavailable" and short["rows"] == []
+    assert full["schema"] == "options_compare.v2"
+    assert full["rank_method"] == "midpoint_ties_strictly_prior"
+    assert full["minimum_prior_observations"] == 20
+    assert full["window_prior_observations"] == 60
+    assert full["minimum_sessions"] == 21
+    assert full["window_target_sessions"] == 61
+    assert len(full["rows"]) == 2
+    for row in full["rows"]:
+        assert row["prior_n"] == 20
+        assert row["history_n"] == 21
+        assert len(row["trail"]) == 1
+        assert row["trail"][0]["prior_n"] == 20
+
+
+def test_options_compare_v2_midpoint_ties_and_sixty_prior_window():
+    hist, dates = _compare_history(n_names=2, n_sessions=65)
+    hist["atm_call_iv"] = .25
+    hist["skew"] = .02
+    payload = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+    assert len(payload["rows"]) == 2
+    for row in payload["rows"]:
+        assert row["options_pct"] == 50.0
+        assert row["protection_pct"] == 50.0
+        assert row["prior_n"] == 60
+        assert row["history_n"] == 61
+
+
+def test_options_compare_v2_oldest_of_sixty_prior_values_counts():
+    hist, dates = _compare_history(n_names=1, n_sessions=62)
+    hist["atm_call_iv"] = .30
+    hist["skew"] = .03
+    # The oldest included prior value must survive: 60 prior values + current.
+    hist.loc[1, ["atm_call_iv", "skew"]] = [.10, .01]
+    hist.loc[61, ["atm_call_iv", "skew"]] = [.20, .02]
+    row = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())["rows"][0]
+    assert row["options_pct"] == pytest.approx(1.7)
+    assert row["protection_pct"] == pytest.approx(1.7)
+    assert row["prior_n"] == 60
+
+
+def test_options_compare_v2_same_source_threshold_counts_prior_only():
+    hist, dates = _compare_history(n_names=1, n_sessions=21)
+    hist.loc[0, "source"] = "polygon_gex"
+    payload = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+    assert payload["state"] == "unavailable"
+    assert payload["rows"] == []
+
+
+def test_options_compare_v2_every_trail_point_has_its_own_prior_cutoff():
+    hist, dates = _compare_history(n_names=1, n_sessions=70)
+    payload = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+    row = payload["rows"][0]
+    assert len(row["trail"]) == 5
+    for point in row["trail"]:
+        isolated = S.build_compare_payload(
+            hist[hist["date"] <= point["date"]].copy(), as_of=point["date"]
+        )["rows"][0]
+        assert isolated["trail"][-1] == point
+        assert point["prior_n"] == 60
+    assert payload["context_only"] is True and payload["scored"] is False
+
+
+def test_options_compare_v2_rank_does_not_replace_an_invalid_current_value():
+    assert S._compare_rank_vs_prior([.10, .10, .10]) == 50.0
+    assert S._compare_rank_vs_prior([.10, .10, None]) is None
+    assert S._compare_rank_vs_prior([.10, .10, True]) is None
+
+
+def test_options_compare_v2_actual_tenor_iv_reference_keeps_price_clock_unknown():
+    import math
+    hist, dates = _compare_history(n_names=1, n_sessions=25)
+    hist.loc[hist.index[-1], ["atm_call_iv", "spot", "tenor_days"]] = [.20, 100.0, 36.5]
+    row = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())["rows"][0]
+    ref = row["iv_pricing_reference"]
+    assert ref["state"] == "available_unqualified"
+    assert ref["standard_deviations"] == 1
+    assert ref["calendar_days_per_year"] == 365
+    assert ref["tenor_days"] == 36.5
+    assert ref["reference_pct"] == pytest.approx(100 * .20 * math.sqrt(36.5 / 365), abs=1e-6)
+    assert ref["reference_price_units"] is None
+    assert ref["price_units_reason"] == "reference_price_clock_and_basis_unqualified"
+    assert ref["underlying_reference"] == {
+        "reported_value": 100.0,
+        "observed_at": None,
+        "clock_qualified": False,
+        "basis_qualified": False,
+    }
+    assert ref["physical_probability"] is None
+    assert ref["forecast"] is False and ref["trade_authority"] is False
+
+
+@pytest.mark.parametrize("tenor", [None, 0, -1, float("inf"), float("nan")])
+def test_options_compare_v2_invalid_tenor_cannot_become_a_pricing_reference(tenor):
+    hist, dates = _compare_history(n_names=1, n_sessions=25)
+    hist.loc[hist.index[-1], "tenor_days"] = tenor
+    ref = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())["rows"][0]["iv_pricing_reference"]
+    assert ref["state"] == "unavailable"
+    assert ref["reference_pct"] is None and ref["reference_price_units"] is None
+
+
+@pytest.mark.parametrize("spot", [None, 0, -1, float("inf"), float("nan")])
+def test_options_compare_v2_missing_spot_does_not_invent_price_units(spot):
+    hist, dates = _compare_history(n_names=1, n_sessions=25)
+    hist.loc[hist.index[-1], "spot"] = spot
+    ref = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())["rows"][0]["iv_pricing_reference"]
+    assert ref["state"] == "available_unqualified"
+    assert ref["reference_pct"] is not None
+    assert ref["underlying_reference"]["reported_value"] is None
+    assert ref["underlying_reference"]["observed_at"] is None
+    assert ref["reference_price_units"] is None
+
+
+@pytest.mark.parametrize("iv", [0, -0.2, float("nan"), float("inf"), 1e308, True])
+def test_options_compare_v2_pricing_reference_refuses_invalid_or_overflowing_iv(iv):
+    ref = S._compare_iv_pricing_reference({
+        "atm_call_iv": iv, "spot": 100.0, "tenor_days": 1e308,
+        "date": "2026-10-01", "source": "thetadata",
+    })
+    assert ref["state"] == "unavailable"
+    assert ref["reference_pct"] is None and ref["reference_price_units"] is None

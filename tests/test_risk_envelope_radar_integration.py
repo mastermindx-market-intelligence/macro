@@ -595,3 +595,149 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
     )
     assert proc.returncode == 0, proc.stderr
 
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node required for shipped JS")
+@pytest.mark.parametrize("case", ["v2", "legacy", "unknown-schema", "unknown-method", "missing-count", "null-rank", "missing-reference"])
+def test_options_compare_v2_renderer_preserves_contract_and_pricing_limits(case):
+    ref = {
+        "state": "available_unqualified",
+        "standard_deviations": 1,
+        "calendar_days_per_year": 365,
+        "tenor_days": 45.5,
+        "reference_pct": 8.1,
+        "reference_price_units": None,
+        "price_units_reason": "reference_price_clock_and_basis_unqualified",
+        "underlying_reference": {
+            "reported_value": 100.0, "observed_at": None,
+            "clock_qualified": False, "basis_qualified": False,
+        },
+        "physical_probability": None, "forecast": False, "trade_authority": False,
+    }
+    payload = {
+        "schema": "options_compare.v2", "state": "ready", "as_of": "2026-10-01",
+        "rank_method": "midpoint_ties_strictly_prior",
+        "minimum_prior_observations": 20, "window_prior_observations": 60,
+        "rows": [
+            {"ticker": "QQQ", "options_pct": 50.0, "protection_pct": 75.0,
+             "prior_n": 20, "history_n": 21, "zone": "calm",
+             "atm_call_iv_pct": 23.0, "protection_skew_volpts": 2.0,
+             "trail": [], "iv_pricing_reference": ref},
+            {"ticker": "AAPL", "options_pct": 30.0, "protection_pct": 40.0,
+             "prior_n": 40, "history_n": 41, "zone": "fast",
+             "atm_call_iv_pct": 28.0, "protection_skew_volpts": 3.0,
+             "trail": [], "iv_pricing_reference": {**ref, "tenor_days": 30.0, "reference_pct": 5.5}},
+        ],
+    }
+    if case == "legacy":
+        payload["schema"] = "options_compare.v1"
+        payload.pop("rank_method")
+        for row in payload["rows"]:
+            row["history_n"] = 20
+            row.pop("prior_n")
+            row.pop("iv_pricing_reference")
+    elif case == "unknown-schema":
+        payload["schema"] = "options_compare.v9"
+    elif case == "unknown-method":
+        payload["rank_method"] = "unqualified_method"
+    elif case == "missing-count":
+        payload["rows"][0]["prior_n"] = None
+    elif case == "null-rank":
+        payload["schema"] = "options_compare.v1"
+        payload["rows"][0]["options_pct"] = None
+    elif case == "missing-reference":
+        payload["rows"][0]["iv_pricing_reference"] = {
+            **ref, "reference_pct": None,
+        }
+    original = deepcopy(payload)
+    harness = r"""
+const assert = require("assert"), fs = require("fs"), vm = require("vm");
+const source = fs.readFileSync(process.argv[1], "utf8");
+const payload = JSON.parse(process.argv[2]);
+class El {
+  constructor(tag) {
+    this.tagName=tag; this.children=[]; this.attributes={}; this.listeners={};
+    this.className=""; this.textContent=""; this.parentNode=null;
+    this.classList={
+      add:(name)=>{this.className += " " + name;},
+      toggle:(name,on)=>{this.attributes["toggle-"+name]=Boolean(on);}
+    };
+  }
+  appendChild(el){el.parentNode=this;this.children.push(el);return el;}
+  insertBefore(el,ref){return this.appendChild(el);}
+  setAttribute(k,v){this.attributes[k]=String(v);if(k==="class")this.className=String(v);}
+  getAttribute(k){return this.attributes[k] ?? null;}
+  addEventListener(k,fn){this.listeners[k]=fn;}
+  querySelector(){return null;}
+  querySelectorAll(selector){
+    return walk(this).filter(el=>selector===".ocmp-trail[data-ticker]" &&
+      el.className.split(" ").includes("ocmp-trail") && el.attributes["data-ticker"]);
+  }
+}
+function walk(el){return [el,...el.children.flatMap(walk)];}
+function text(el){return [el.textContent,...el.children.map(text)].join(" ");}
+const body=new El("div"), sentinel=new El("p");
+sentinel.textContent="Existing Risk Detail"; body.appendChild(sentinel);
+const context={
+  window:{}, Date, Number,
+  document:{
+    readyState:"loading", addEventListener:()=>{},
+    createElement:tag=>new El(tag), createElementNS:(_ns,tag)=>new El(tag),
+    getElementById:id=>walk(body).find(el=>el.id===id)||null,
+    querySelector:()=>null,
+  },
+  setInterval:()=>{},
+  fetch:()=>{throw new Error("unexpected provider or network request");},
+};
+const instrumented=source.replace(/\}\)\(\);\s*$/,
+  "globalThis.__compare=renderOptionsCompare;})();");
+assert.notStrictEqual(instrumented, source);
+vm.runInNewContext(instrumented, context);
+const before=JSON.stringify(payload);
+const rendered=context.__compare(payload,body);
+const initial=text(body);
+let selected=initial;
+if(rendered){
+  const target=walk(body).find(el=>el.tagName==="g" && el.getAttribute("data-ticker")==="AAPL");
+  assert(target && target.listeners.keydown);
+  target.listeners.keydown({type:"keydown",key:"Enter",preventDefault:()=>{}});
+  selected=text(body);
+  assert.strictEqual(context.__compare(payload,body),true);
+}
+assert.strictEqual(JSON.stringify(payload),before);
+assert.strictEqual(body.children[0],sentinel);
+console.log(JSON.stringify({rendered,initial,selected,children:body.children.length}));
+"""
+    proc = subprocess.run(
+        ["node", "-e", harness, str(ROOT / "templates" / "risk_envelope_live.js"), json.dumps(payload)],
+        capture_output=True, text=True, timeout=20,
+    )
+    assert proc.returncode == 0, proc.stderr
+    result = json.loads(proc.stdout)
+    assert payload == original
+    if case in {"unknown-schema", "unknown-method", "missing-count", "null-rank"}:
+        assert result["rendered"] is False
+        assert result["children"] == 1
+        return
+    assert result["rendered"] is True and result["children"] == 2
+    if case == "legacy":
+        assert "19 prior same-source observations" in result["initial"]
+        assert "higher than" in result["initial"]
+        assert "ties split equally" not in result["initial"]
+        assert "IV pricing reference unavailable for this snapshot" in result["initial"]
+        assert "±" not in result["initial"]
+        return
+    assert "20 prior same-source observations" in result["initial"]
+    assert "ties split equally" in result["initial"]
+    assert "40 prior same-source observations" in result["selected"]
+    assert "Up to 30 selected names" in result["initial"]
+    if case == "missing-reference":
+        assert "IV pricing reference unavailable for this snapshot" in result["initial"]
+        assert "±0.00%" not in result["initial"]
+    else:
+        assert "45.5 days" in result["initial"] and "±8.10%" in result["initial"]
+        assert "365 calendar days" in result["initial"]
+        assert "price-unit range is unavailable" in result["initial"]
+        assert "timing and basis are unqualified" in result["initial"]
+    assert "±5.50%" in result["selected"] and "30 days" in result["selected"]
+    assert "$" not in result["initial"] and "68%" not in result["initial"]

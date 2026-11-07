@@ -1437,7 +1437,7 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
 # Cross-name options-pricing map — display-only projection over this ledger   #
 # --------------------------------------------------------------------------- #
 
-COMPARE_SCHEMA = "options_compare.v1"
+COMPARE_SCHEMA = "options_compare.v2"
 _COMPARE_WINDOW_SESSIONS = 60
 _COMPARE_TRAIL_SESSIONS = 5
 _COMPARE_MIN_SESSIONS = 20
@@ -1459,6 +1459,8 @@ _COMPARE_EXCLUDED_ROOTS = frozenset({
 
 
 def _compare_finite(value):
+    if isinstance(value, bool):
+        return None
     try:
         out = float(value)
     except (TypeError, ValueError):
@@ -1474,18 +1476,64 @@ def _compare_int(value) -> int:
 
 
 def _compare_rank_vs_prior(values) -> float | None:
-    """Percent of prior observations below the final observation.
+    """Midpoint-tie percentile against strictly preceding valid observations.
 
-    The current point is excluded from the denominator, so a row saying
-    "richer than X% of prior sessions" means exactly that. Historical trail
-    points use only observations available through their own date.
+    The last value is the selected observation, never part of its baseline.
+    An invalid selected value cannot silently select an older observation.
     """
-    clean = [_compare_finite(value) for value in values]
-    clean = [value for value in clean if value is not None]
-    if len(clean) < 2:
+    values = list(values)
+    if len(values) < 2:
         return None
-    current, prior = clean[-1], clean[:-1]
-    return round(100.0 * sum(value < current for value in prior) / len(prior), 1)
+    current = _compare_finite(values[-1])
+    prior = [_compare_finite(value) for value in values[:-1]]
+    prior = [value for value in prior if value is not None]
+    if current is None or not prior:
+        return None
+    below = sum(value < current for value in prior)
+    tied = sum(value == current for value in prior)
+    return round(100.0 * (below + 0.5 * tied) / len(prior), 1)
+
+
+def _compare_iv_pricing_reference(observation: dict) -> dict:
+    """Selected-tenor percentage scale; no inferred price clock or forecast.
+
+    The ledger owns annual fractional ATM IV and selected calendar-day tenor.
+    Its spot field does not carry a qualified observation clock or price basis.
+    Keep the percentage scale separate from an unavailable price-unit expansion.
+    """
+    iv = _compare_finite(observation.get("atm_call_iv"))
+    tenor = _compare_finite(observation.get("tenor_days"))
+    spot = _compare_finite(observation.get("spot"))
+    spot = spot if spot is not None and spot > 0 else None
+    result = {
+        "state": "unavailable",
+        "standard_deviations": 1,
+        "calendar_days_per_year": 365,
+        "tenor_days": tenor,
+        "reference_pct": None,
+        "reference_price_units": None,
+        "price_units_reason": "reference_price_clock_and_basis_unqualified",
+        "underlying_reference": {
+            "reported_value": spot,
+            "observed_at": None,
+            "clock_qualified": False,
+            "basis_qualified": False,
+        },
+        "physical_probability": None,
+        "forecast": False,
+        "trade_authority": False,
+    }
+    if iv is None or iv <= 0 or tenor is None or tenor <= 0:
+        return result
+    try:
+        percentage = 100.0 * iv * math.sqrt(tenor / 365.0)
+    except (OverflowError, ValueError):
+        return result
+    if not math.isfinite(percentage):
+        return result
+    result["state"] = "available_unqualified"
+    result["reference_pct"] = round(percentage, 6)
+    return result
 
 
 def build_compare_payload(
@@ -1500,8 +1548,12 @@ def build_compare_payload(
 ) -> dict:
     """Build the screenshot-style two-axis cross-name options map.
 
-    X is selected ~30d ATM-call IV versus the ticker's own recent history.
-    Y is 25d-put minus ATM-call IV skew versus the same ticker's history.
+    X is selected ~30d ATM-call IV versus the ticker's own prior history.
+    Y is 25d-put minus ATM-call IV skew against the same paired-valid baseline.
+    Default eligibility is 20 prior observations; each baseline contains up to
+    60 prior observations, excluding its current point and splitting ties.
+    The optional IV percentage reference uses the actual selected tenor and a
+    declared 365-calendar-day scaling convention, without price-clock claims.
 
     This is a DISPLAY projection, not a predictor. "Fast" is the top decile
     of five-session path length in this map among displayed names; it says
@@ -1520,16 +1572,21 @@ def build_compare_payload(
         "authority": "display_only",
         "as_of": as_of,
         "generated_utc": datetime.now(timezone.utc).isoformat(),
-        "window_target_sessions": int(window),
+        # Legacy count names continue to include the selected observation.
+        "window_target_sessions": int(window) + 1,
+        "window_prior_observations": int(window),
         "trail_sessions": int(trail),
-        "minimum_sessions": int(min_obs),
+        "minimum_sessions": int(min_obs) + 1,
+        "minimum_prior_observations": int(min_obs),
+        "rank_method": "midpoint_ties_strictly_prior",
         "max_names": int(max_names),
         "source_stale_days": None,
         "history_basis": {
             "kind": "same_source_as_current_session",
             "detail": (
-                "percentiles and trails use only observations from the current "
-                "session's source; cross-source history is excluded"
+                "each percentile uses strictly prior paired-valid observations "
+                "from that point's source, with midpoint ties; current and "
+                "cross-source observations are excluded from its baseline"
             ),
         },
         "selection": {
@@ -1629,13 +1686,13 @@ def build_compare_payload(
         observations = [
             row for row in observations if row["source"] == current_source
         ]
-        if len(observations) < min_obs or observations[-1]["date"] != as_of:
+        if len(observations) <= min_obs or observations[-1]["date"] != as_of:
             continue
 
         points: list[dict] = []
         for index in range(len(observations)):
-            segment = observations[max(0, index - window + 1): index + 1]
-            if len(segment) < min_obs:
+            segment = observations[max(0, index - window): index + 1]
+            if len(segment) <= min_obs:
                 continue
             x_pct = _compare_rank_vs_prior(
                 [row["atm_call_iv"] for row in segment]
@@ -1647,6 +1704,7 @@ def build_compare_payload(
                 "date": observations[index]["date"],
                 "options_pct": x_pct,
                 "protection_pct": y_pct,
+                "prior_n": len(segment) - 1,
             })
         if not points or points[-1]["date"] != as_of:
             continue
@@ -1669,7 +1727,9 @@ def build_compare_payload(
             "protection_pct": points[-1]["protection_pct"],
             "atm_call_iv_pct": round(current["atm_call_iv"] * 100.0, 2),
             "protection_skew_volpts": round(current["skew"] * 100.0, 2),
-            "history_n": min(window, len(observations)),
+            "history_n": min(window + 1, len(observations)),
+            "prior_n": points[-1]["prior_n"],
+            "iv_pricing_reference": _compare_iv_pricing_reference(current),
             "n_strikes": current["n_strikes"],
             "source": current["source"],
             "trail": path,

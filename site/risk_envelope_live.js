@@ -86,8 +86,15 @@
   }
 
   function ocPct(value) {
-    var n = Number(value);
-    return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : null;
+    return typeof value === "number" && Number.isFinite(value) &&
+      value >= 0 && value <= 100 ? value : null;
+  }
+
+  function ocPriorCount(row, isV2) {
+    var n = isV2 ? row.prior_n : row.history_n - 1;
+    if (!Number.isInteger(n) || n < (isV2 ? 20 : 1)) return null;
+    if (isV2 && (n > 60 || row.history_n !== n + 1)) return null;
+    return n;
   }
 
   function ocText(svg, x, y, value, cls, anchor) {
@@ -100,14 +107,17 @@
   }
 
   function renderOptionsCompare(payload, body) {
-    if (!payload || payload.schema !== "options_compare.v1" ||
+    if (!payload || (payload.schema !== "options_compare.v1" &&
+        payload.schema !== "options_compare.v2") ||
         payload.state !== "ready" || !Array.isArray(payload.rows) ||
         payload.rows.length < 2 || !body) return false;
+    var isV2 = payload.schema === "options_compare.v2";
+    if (isV2 && payload.rank_method !== "midpoint_ties_strictly_prior") return false;
     if (document.getElementById("riskdlg-options-compare")) return true;
 
     var rows = payload.rows.filter(function (row) {
       return row && row.ticker && ocPct(row.options_pct) !== null &&
-        ocPct(row.protection_pct) !== null;
+        ocPct(row.protection_pct) !== null && ocPriorCount(row, isV2) !== null;
     });
     if (rows.length < 2) return false;
 
@@ -275,6 +285,10 @@
     var receiptEn = ocEl("span", "l-en"), receiptZh = ocEl("span", "l-zh");
     receipt.appendChild(receiptEn); receipt.appendChild(receiptZh);
     readout.appendChild(receipt);
+    var pricing = ocEl("p", "ocmp-receipt");
+    var pricingEn = ocEl("span", "l-en"), pricingZh = ocEl("span", "l-zh");
+    pricing.appendChild(pricingEn); pricing.appendChild(pricingZh);
+    readout.appendChild(pricing);
     shell.appendChild(readout);
 
     function select(row) {
@@ -295,25 +309,35 @@
       optionsMetric.nameEn.textContent = row.ticker + " options";
       optionsMetric.nameZh.textContent = row.ticker + " 期权";
       optionsMetric.value.textContent = Math.round(row.options_pct) + "%";
-      optionsMetric.bodyEn.textContent =
-        "~30-day ATM-call IV is richer than on " +
-        Math.round(row.options_pct) + "% of the prior sessions in its " +
-        row.history_n + "-session window.";
-      optionsMetric.bodyZh.textContent =
-        "约30日平值看涨隐波高于该标的最近" + row.history_n +
-        "个可用交易日窗口中约" + Math.round(row.options_pct) + "%的此前读数。";
+      var priorN = ocPriorCount(row, isV2);
+      optionsMetric.bodyEn.textContent = isV2 ?
+        "ATM-call IV percentile: " + Math.round(row.options_pct) + "% across " +
+          priorN + " prior same-source observations (ties split equally)." :
+        "ATM-call IV is higher than " + Math.round(row.options_pct) + "% of " +
+          priorN + " prior same-source observations.";
+      optionsMetric.bodyZh.textContent = isV2 ?
+        "平值看涨隐波位于此前" + priorN + "个同源观测的第" +
+          Math.round(row.options_pct) + "百分位（并列值按半数计）。" :
+        "平值看涨隐波高于此前" + priorN + "个同源观测中约" +
+          Math.round(row.options_pct) + "%的读数。";
 
       protectionMetric.nameEn.textContent = row.ticker + " protection";
       protectionMetric.nameZh.textContent = row.ticker + " 下行保护";
       protectionMetric.value.textContent =
         Math.round(row.protection_pct) + "%";
-      protectionMetric.bodyEn.textContent =
-        "25-delta put-over-ATM-call IV skew is richer than on " +
-        Math.round(row.protection_pct) +
-        "% of the prior sessions in the same window.";
-      protectionMetric.bodyZh.textContent =
-        "25Δ看跌相对平值看涨的隐波偏度高于同一窗口中约" +
-        Math.round(row.protection_pct) + "%的此前读数。";
+      protectionMetric.bodyEn.textContent = isV2 ?
+        "25-delta put-over-ATM-call IV skew percentile: " +
+          Math.round(row.protection_pct) + "% across the same " + priorN +
+          " prior same-source observations (ties split equally)." :
+        "25-delta put-over-ATM-call IV skew is higher than " +
+          Math.round(row.protection_pct) + "% of the same " + priorN +
+          " prior same-source observations.";
+      protectionMetric.bodyZh.textContent = isV2 ?
+        "25Δ看跌相对平值看涨的隐波偏度位于同一组此前" + priorN +
+          "个同源观测的第" + Math.round(row.protection_pct) +
+          "百分位（并列值按半数计）。" :
+        "25Δ看跌相对平值看涨的隐波偏度高于同一组此前" + priorN +
+          "个同源观测中约" + Math.round(row.protection_pct) + "%的读数。";
 
       var iv = Number(row.atm_call_iv_pct), skew = Number(row.protection_skew_volpts);
       receiptEn.textContent = "Current read: " +
@@ -330,6 +354,25 @@
           (skew >= 0 ? "+" : "") + skew.toFixed(1) + " 个波动点保护偏度" :
           "偏度不可用") +
         " · 仅作背景参考。";
+
+      var ref = isV2 ? row.iv_pricing_reference : null;
+      var refValid = ref && ref.state === "available_unqualified" &&
+        ref.standard_deviations === 1 && ref.calendar_days_per_year === 365 &&
+        typeof ref.reference_pct === "number" && Number.isFinite(ref.reference_pct) &&
+        ref.reference_pct >= 0 && typeof ref.tenor_days === "number" &&
+        Number.isFinite(ref.tenor_days) && ref.tenor_days > 0;
+      if (refValid) {
+        var tenor = String(Math.round(ref.tenor_days * 10) / 10);
+        pricingEn.textContent = "1σ IV pricing reference over " + tenor +
+          " days: ±" + ref.reference_pct.toFixed(2) +
+          "%. Annual ATM IV is scaled using 365 calendar days. A price-unit range is unavailable because reference price timing and basis are unqualified. Pricing context only; no forecast or outcome probability.";
+        pricingZh.textContent = tenor + "日期限的1σ隐波定价参考：±" +
+          ref.reference_pct.toFixed(2) +
+          "%。按365个自然日缩放年化平值隐波。参考价格的时间与价格口径未经确认，价格单位区间不可用。仅作定价背景，不代表预测或结果概率。";
+      } else {
+        pricingEn.textContent = "IV pricing reference unavailable for this snapshot.";
+        pricingZh.textContent = "此快照的隐波定价参考不可用。";
+      }
     }
 
     rows.forEach(function (row) {
@@ -348,8 +391,8 @@
     var foot = ocEl("div", "ocmp-foot");
     var footCopy = ocEl("span", "ocmp-foot-copy");
     ocPair(footCopy,
-      "The default view uses market bellwethers; if one is unavailable, a name with deeper selected-expiry chain coverage fills the slot. That fallback is not a liquidity ranking.",
-      "默认视图使用市场代表性标的；若某标的不可用，则以所选到期日链覆盖更深的标的补位。该补位并非流动性排名。");
+      "Up to 30 selected names. The default view uses market bellwethers; if one is unavailable, a name with deeper selected-expiry chain coverage fills the slot. That fallback is not a liquidity ranking.",
+      "最多显示30个精选标的。默认视图使用市场代表性标的；若某标的不可用，则以所选到期日链覆盖更深的标的补位。该补位并非流动性排名。");
     foot.appendChild(footCopy);
     var link = ocEl("a", "ocmp-link");
     link.href = "options.html#scanner";

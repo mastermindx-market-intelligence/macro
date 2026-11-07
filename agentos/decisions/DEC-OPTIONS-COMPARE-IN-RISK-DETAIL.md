@@ -50,3 +50,33 @@ asset copy path and load once with the comparison data. The accepted early-warni
 band CSS, dashboard template and visual receipt inputs remain byte-identical.
 Weekends do not count toward the comparison's session minimum, ranks or trails;
 the browser measures displayed age from the as-of date at read time.
+
+
+Original-journey continuation, 2026-11-07 (Mastermind #2028, original #8578):
+the numerical contract is options_compare.v2. A name needs 20 strictly prior
+paired-valid same-source observations, and each rank uses up to 60 prior
+observations with midpoint ties. Current is excluded from its baseline.
+history_n continues to count prior plus current; prior_n names the denominator.
+Every trail point applies those rules at its own historical cutoff.
+
+Keep the deliberate 30-name bellwether/fallback display budget as this carrier's
+product scope. The closed #8577 all-name prototype is not a separate obligation
+to duplicate the map or claim complete-market coverage. Same-source exclusion,
+weekend handling, complete-session selection and existing owner/emitter remain.
+
+The selected-tenor one-standard-deviation IV percentage reference uses annual
+fractional ATM IV times sqrt(actual calendar-day tenor / 365). It is a declared
+pricing scale without physical-probability, forecast or trade authority.
+The ledger lacks a qualified spot observation clock and price basis: retain
+that absence and withhold the price-unit expansion, even when a numeric spot is
+reported. Do not infer a spot timestamp from as_of, IV time or generation time.
+
+The committed v1 seed remains historical and byte-unchanged. The renderer has
+explicit separate v1 strict-less labels and v2 midpoint-tie labels; unsupported
+contracts or malformed ranks do not become zero. Legacy rows do not acquire a
+fabricated v2 pricing reference. Only the existing emit path can generate new
+v2 data; synthetic tests are not served-data or production-generation proof.
+
+The required new-stylesheet/hover CI hold, existing browser/capture refusals and
+authenticated/live-market acceptance remain. This source continuation neither
+relabels historical evidence nor releases that hold.
