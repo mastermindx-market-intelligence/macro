@@ -49,6 +49,33 @@
   .timing-cell { background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:6px 8px; min-width:0; }
   .timing-cell .k { color:var(--muted); font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; white-space:nowrap; }
   .timing-cell .v { font-size:13px; font-weight:720; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .lrc { background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,12px); margin-top:10px; padding:12px 14px; }
+  html[data-theme="light"] .lrc { background:var(--panel); box-shadow:var(--card-shadow); }
+  .lrc-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:8px; }
+  .lrc-eyebrow { font-size:9.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .lrc-asof { font-size:10px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .lrc-stance-row { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+  .lrc-stance { font-size:17px; font-weight:620; line-height:1.25; flex:1; min-width:0; }
+  .lrc-figure { font-size:22px; font-weight:720; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .lrc-figure.up { color:var(--ink-up, var(--up)); }
+  .lrc-figure.down { color:var(--ink-down, var(--down)); }
+  .lrc-figure.muted { color:var(--muted); }
+  .lrc-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+  .lrc-chip { font-size:10px; font-weight:600; padding:3px 8px; border-radius:var(--r-ctl,8px); background:var(--panel2); border:1px solid var(--line); color:var(--muted); }
+  html[data-theme="light"] .lrc-chip { background:var(--panel2); }
+  .lrc-chip.state-fresh { color:var(--text); }
+  .lrc-chip.state-stale { color:var(--muted); }
+  .lrc-sowhat { font-size:11px; color:var(--muted); margin-bottom:6px; max-width:48ch; }
+  .lrc-receipt summary { cursor:pointer; font-size:11px; font-weight:650; color:var(--muted); margin-top:4px; }
+  .lrc-ledger { margin-top:10px; display:grid; grid-template-columns:minmax(88px, 0.35fr) 1fr; gap:0; border-top:1px solid var(--line); }
+  .lrc-ledger-row { display:contents; }
+  .lrc-ledger-row > div { padding:8px 0; border-bottom:1px solid var(--line); }
+  .lrc-ledger-label { font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); padding-right:10px; }
+  .lrc-ledger-text { font-size:12px; line-height:1.45; font-variant-numeric:tabular-nums; }
+  @media (max-width:720px) {
+    .lrc-ledger { grid-template-columns:1fr; }
+    .lrc-ledger-row > .lrc-ledger-label { padding-bottom:2px; border-bottom:none; }
+  }
   .tlabel { font-size:11px; font-weight:700; letter-spacing:.05em; padding:3px 9px; border-radius:7px; text-transform:uppercase; }
   .treco { font-size:12px; font-weight:700; padding:3px 11px; border-radius:8px; }
   .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; }
@@ -305,6 +332,7 @@
 
 <a class="back" href="{{ back_href | default('../sector_central.html#actnow-section') }}">← {{ t(back_label_en | default('Sector Intelligence'), back_label_zh | default('行业情报')) }}</a>
 
+{% include "_basket_intelligence_mounts.html.j2" ignore missing %}
 <!-- ── Shock de-escalation banner (FTR W1 / PS-R3, de-escalation only) ── -->
 <!-- Fetched from ../live/shock_state.json (basket detail pages live under site/basket/). -->
 <div id="ftr-shock-banner"></div>
@@ -363,6 +391,10 @@ const L = (en,zh)=>`<span class="l-en">${en}</span><span class="l-zh">${zh==null
 const BENCH = DETAIL.bench_label || 'S&P 500';          // regional benchmark label (CSI 300 / Hang Seng / S&P-TSX)
 const BENCHZ = DETAIL.bench_label_zh || BENCH;
 const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// basket-sector-link: a US sector fund this basket is cross-checked against opens that fund's page.
+const SECTOR_FUND_PAGES = new Set(['XLB','XLC','XLE','XLF','XLI','XLK','XLP','XLRE','XLU','XLV','XLY']);
+const refLabelHtml = label => SECTOR_FUND_PAGES.has(label)?`<a href="../sectors/${esc(label)}.html">${esc(label)}</a>`:esc(label);
+// /basket-sector-link
 const briefText = (s,max=260) => {
   s = String(s || '').replace(/\s+/g,' ').trim();
   if(s.length <= max) return s;
@@ -373,6 +405,8 @@ const briefText = (s,max=260) => {
 const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const fmtPct = x => x==null ? '—' : (x>=0?'+':'')+(x*100).toFixed(1)+'%';
 const fmtPP = x => x==null ? '—' : (x>=0?'+':'')+(x*100).toFixed(1)+'pp';
+const fmtCount = x => Number.isFinite(x) ? x : '—';
+const countInk = (x, ink) => Number.isFinite(x) ? ink : 'muted';
 const cls = x => x==null?'muted':(x>=0?'pos':'neg');
 const TIER_LABELS={
   T1:['confirmed setup','已确认机会'],
@@ -427,9 +461,23 @@ function sparkN(arr,color='',{w=110,h=26}={}){
 // ---- equal-weight sector/theme cycle mini-chart. Self-contained inline SVG — no extra deps. ----
 const CYC_PHASE_ZH={Peak:'见顶',Expansion:'上行',Downturn:'回落',Recovery:'入场良机',Trough:'筑底'};
 function fmtYM(t){if(!t)return'—';const p=String(t).split('-');const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return (M[(+p[1]||1)-1]||'')+" "+p[0];}
+// A cycle projection is past, in progress or genuinely forward on the
+// viewer's UTC calendar. Missing/malformed window dates fail closed.
+// Presentation only; model source, trading gates and evidence are unchanged.
+function projectionWindowState(pr, asofYM){
+  const month=v=>{
+    if(typeof v!=='string'||!/^[0-9]{4}-(0[1-9]|1[0-2])$/.test(v))return null;
+    return (+v.slice(0,4))*12+(+v.slice(5,7));
+  };
+  if(!pr||(pr.nextTurn!=='peak'&&pr.nextTurn!=='trough'))return 'unavailable';
+  const lo=month(pr.low),med=month(pr.central),hi=month(pr.high),now=month(asofYM);
+  if([lo,med,hi,now].some(v=>v===null)||lo>med||med>hi)return 'unavailable';
+  return hi<now?'expired':lo<=now?'in_progress':'future';
+}
 function cycleSectionHtml(cyc,bid){
   if(!cyc||!cyc.price||cyc.price.length<8) return '';
-  const W=760,H=168,PL=10,PR=12,PT=16,PB=14;
+  // Preserve original PR chart aspect and marker geometry.
+  const W=1080,H=240,PL=14,PR=16,PT=20,PB=18;
   const pts=cyc.price, xs=pts.map(p=>p.x), vs=pts.map(p=>p.v);
   const x0=(cyc.xDomain&&cyc.xDomain[0])||Math.min.apply(null,xs), x1=(cyc.xDomain&&cyc.xDomain[1])||Math.max.apply(null,xs);
   let lo=Math.min.apply(null,vs), hi=Math.max.apply(null,vs); const pad=((hi-lo)||1)*0.08; lo-=pad; hi+=pad;
@@ -443,16 +491,26 @@ function cycleSectionHtml(cyc,bid){
   const tdx=cyc.today!=null?SX(cyc.today):null;
   const todayLine=tdx!=null?`<line x1="${tdx.toFixed(1)}" y1="${PT}" x2="${tdx.toFixed(1)}" y2="${H-PB}" stroke="${cssv('--muted')}" stroke-width="1" stroke-dasharray="2 3" opacity=".5"/>`:'';
   let proj='';const pr=cyc.proj;
-  if(pr&&pr.central_x!=null&&pr.central_x<=x1+0.02){
+  const projectionState=projectionWindowState(pr,new Date().toISOString().slice(0,7));
+  // Past or in-progress forecast windows cannot create forward arrows.
+  if(projectionState==='future'&&pr.central_x!=null&&pr.central_x<=x1+0.02){
     const ymd=t=>{if(!t)return null;const q=String(t).split('-');return (+q[0])+(((+q[1]||1)-1)/12);};
     const clo=ymd(pr.low),chi=ymd(pr.high),cxp=SX(pr.central_x),up=pr.nextTurn==='peak';
     if(clo!=null&&chi!=null){const a=SX(Math.max(clo,cyc.today||x0)),b2=SX(Math.min(chi,x1));if(b2>a)proj+=`<rect x="${a.toFixed(1)}" y="${PT}" width="${(b2-a).toFixed(1)}" height="${H-PT-PB}" fill="${acc}" opacity=".10"/>`;}
     proj+=`<line x1="${cxp.toFixed(1)}" y1="${PT}" x2="${cxp.toFixed(1)}" y2="${H-PB}" stroke="${acc}" stroke-width="1.3" stroke-dasharray="3 3" opacity=".85"/><text x="${cxp.toFixed(1)}" y="${(PT-4).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="800" fill="${acc}">${up?'▲':'▼'}</text>`;
   }
-  const svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="none" style="display:block;height:168px"><path d="${d}" fill="none" stroke="${acc}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${todayLine}${proj}${marks}${nowDot}</svg>`;
+  const svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:auto;aspect-ratio:${W}/${H}"><path d="${d}" fill="none" stroke="${acc}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${todayLine}${proj}${marks}${nowDot}</svg>`;
   const nw=cyc.now||{}, ph=(cyc.phases||{})[nw.phase]||{}, hue=ph.hue||cssv('--muted');
   const sig=nw.signature||{};
-  const projTxt=(pr&&pr.central)?(L('next ','下一')+(pr.nextTurn==='peak'?L('peak','顶部'):L('trough','底部'))+' '+fmtYM(pr.central)+((pr.low&&pr.high)?(' ('+fmtYM(pr.low)+' – '+fmtYM(pr.high)+')'):'')):'—';
+  const projectedWindow=(pr&&pr.low&&pr.high)?(' ('+fmtYM(pr.low)+' – '+fmtYM(pr.high)+')'):'';
+  const projTxt=projectionState==='future'
+    ?L('next ','下一')+(pr.nextTurn==='peak'?L('peak','顶部'):L('trough','底部'))+' '+fmtYM(pr.central)+projectedWindow
+    :projectionState==='in_progress'
+      ?L('Projection window in progress','预测窗口进行中')+projectedWindow
+      :projectionState==='expired'
+        ?L('Historical projection window elapsed','历史预测窗口已结束')+projectedWindow
+        :L('No valid current projection','暂无有效当前预测');
+  const projHeading=projectionState==='future'?L('Projected next turn','推演下一拐点'):L('Projection status','投影状态');
   const chips=`<div class="cyc-readrow">
       <span class="cyc-pchip" style="background:${hue}22;border:1px solid ${hue};color:${hue}">${L(nw.phaseLabel||nw.phase||'—', CYC_PHASE_ZH[nw.phase]||nw.phaseLabel||'—')}</span>
       ${nw.pos!=null?`<span class="cyc-rk">${L('cycle pos','周期位置')} <b>${Math.round(nw.pos)}/100</b></span>`:''}
@@ -463,10 +521,10 @@ function cycleSectionHtml(cyc,bid){
   const fullLink=cyc.full_href?` <a href="${esc(cyc.full_href)}" style="color:var(--ink-link, var(--link))">${L('Open the full cycle dashboard →','打开完整周期看板 →')}</a>`:'';
   return `<h2><span class="idx">◷</span>${L('Theme cycle','主题周期')} <span class="chip">${L('rebased price · auto-detected turns','再基准化价格 · 自动识别拐点')}</span></h2>
     <div class="panel">
-      <div class="muted sm" style="margin-bottom:8px">${L("Equal-weight price on the cycle clock: past turns, current position, and projected next turn. Rhythm only.","等权价格的周期时钟：历史拐点、当前位置与下一拐点投影。仅看节奏。")}</div>
+      <div class="muted sm" style="margin-bottom:8px">${L("Equal-weight price on the cycle clock: observed turns, current position, and projection status. Rhythm only.","等权价格的周期时钟：历史拐点、当前位置与预测状态。仅看节奏。")}</div>
       ${svg}
       ${chips}
-      <div class="muted sm" style="margin-top:9px">${L('Projected next turn','推演下一拐点')}: ${projTxt}.${fullLink}</div>
+      <div class="muted sm" style="margin-top:9px">${projHeading}: ${projTxt}.${fullLink}</div>
     </div>`;
 }
 const VH_COLOR={EXPANSION_UP:'--up',COILED_UP:'--up',IN_HOLE:'--warn',EXPANDED:'--muted',COILED_DOWN:'--down',EXPANSION_DOWN:'--down'};
@@ -542,8 +600,15 @@ function convCell(c){
 function contestedList(th,b){
   const tx=th.textures||{}, rr=tx.rollover_risk||{}, cyc=(b||{}).cycle||null;
   const list=[];
-  if(cyc && (((cyc.turns||[]).some(x=>x&&x.provisional&&x.k==='peak')) || ((cyc.proj||{}).nextTurn==='trough')))
-    list.push(['cycle clock at a provisional peak / projecting a trough next','周期时钟处于临时顶部 / 推演下一拐点为底部']);
+  const provisionalPeak=cyc && (cyc.turns||[]).some(x=>x&&x.provisional&&x.k==='peak');
+  const futureTrough=cyc && (cyc.proj||{}).nextTurn==='trough' &&
+    projectionWindowState(cyc.proj,new Date().toISOString().slice(0,7))==='future';
+  const cycleReasons=[];
+  if(provisionalPeak) cycleReasons.push(['at a provisional peak','处于临时顶部']);
+  if(futureTrough) cycleReasons.push(['projecting a trough next','推演下一拐点为底部']);
+  // These are two descriptions of one cycle texture, not two independent votes.
+  if(cycleReasons.length)
+    list.push(['cycle clock '+cycleReasons.map(x=>x[0]).join(' / '),'周期时钟'+cycleReasons.map(x=>x[1]).join(' / ')]);
   if(th.rs_pctile!=null && th.rs_pctile>=0.95)
     list.push(['very extended (RS ≥95%ile)','相对强度极端延展（≥95分位）']);
   const early = rr.band==='low' && (rr.reasons||[]).length>0 && th.rs_pctile!=null && th.rs_pctile>=0.9;
@@ -613,6 +678,49 @@ function timingStripHtml(th){
     ${cell(L('fast state','快速状态'),L(esc((tm.state||'steady').replace('_',' ')),esc(tm.state_zh||tm.state||'平稳')),tone)}
   </div>
   <div class="muted sm" style="margin-top:5px">${L('Fast moves are context; the slower trend, breadth and cycle still drive the recommendation.','快速波动只作背景；较慢的趋势、广度和周期仍决定建议。')}</div>`;
+}
+function leadershipReceiptHtml(lr){
+  /* receipt row keys: interval benchmark measure sample freshness authority */
+  if(!lr||typeof lr!=='object') return '';
+  const st=lr.state||'unavailable';
+  const rel=lr.rel_20d;
+  const figCls=st==='leading'?'up':st==='lagging'?'down':'muted';
+  const fig=(st==='unavailable'||rel==null)?'—':((rel>=0?'+':'')+(rel*100).toFixed(1)+' pt');
+  const bench=lr.benchmark||{};
+  const smp=lr.sample||{};
+  const ts=lr.theme_state||{};
+  const tsStat=ts.status||'missing';
+  const tsChip={
+    fresh:L('Theme state current','主题状态当前'),
+    stale:L('Theme state stale','主题状态陈旧'),
+    missing:L('Theme state missing','主题状态缺失'),
+    not_published:L('Theme state not published','主题状态未发布'),
+    invalid:L('Theme state dated after this read','主题状态日期晚于本次判读')
+  }[tsStat]||L('Theme state missing','主题状态缺失');
+  const tsChipCls=tsStat==='fresh'?'state-fresh':'state-stale';
+  const reason=lr.reason_en?`<span class="lrc-chip">${L(esc(lr.reason_en),esc(lr.reason_zh||lr.reason_en))}</span>`:'';
+  const rowHtml=(lr.rows||[]).map(r=>`<div class="lrc-ledger-row" data-key="${esc(r.key)}"><div class="lrc-ledger-label">${L(esc(r.label_en),esc(r.label_zh))}</div><div class="lrc-ledger-text">${L(esc(r.text_en),esc(r.text_zh))}</div></div>`).join('');
+  return `<section class="lrc" data-state="${esc(st)}">
+    <div class="lrc-head">
+      <div class="lrc-eyebrow">${L('LEADERSHIP READ','领涨判读')}</div>
+      <div class="lrc-asof">${lr.as_of?esc(lr.as_of):'—'}</div>
+    </div>
+    <div class="lrc-stance-row">
+      <div class="lrc-stance">${L(esc(lr.stance_en||''),esc(lr.stance_zh||''))}${reason}</div>
+      <div class="lrc-figure ${figCls}">${fig}</div>
+    </div>
+    <div class="lrc-chips">
+      <span class="lrc-chip">${L('Descriptive','描述性')}</span>
+      <span class="lrc-chip">${L('Daily closes','日收盘')}</span>
+      <span class="lrc-chip">${L('vs '+esc(bench.label||BENCH),'vs '+esc(bench.label_zh||BENCHZ))}</span>
+      <span class="lrc-chip">${esc(smp.observed_n!=null?smp.observed_n:'—')}/${esc(smp.configured_n!=null?smp.configured_n:'—')} ${L('members','成分')}</span>
+      <span class="lrc-chip ${tsChipCls}">${tsChip}</span>
+    </div>
+    <div class="lrc-sowhat">${L('Context only — the recommendation above still comes from trend, breadth and cycle.','仅作背景——上方建议仍由趋势、广度与周期决定。')}</div>
+    <details class="lrc-receipt"><summary>${L('How this is measured','口径')}</summary>
+      <div class="lrc-ledger">${rowHtml}</div>
+    </details>
+  </section>`;
 }
 /* ── GR1:READ:BEGIN — Group read (group_pulse.v1 / group_earnings_pulse.v1) ─────
    Assembles the three nightly artifacts into ONE plain-word read: a stance line, four
@@ -1208,6 +1316,7 @@ function render(){
         <div class="sbx"><div class="v ${cls((th.perf&&th.perf['1d'])?th.perf['1d'].rel:null)}">${fmtPct((th.perf&&th.perf['1d'])?th.perf['1d'].rel:null)}</div><div class="k">${L('1d vs '+BENCH,'1日 vs '+BENCHZ)}</div></div>
       </div>
       ${timingStripHtml(th)}
+      ${leadershipReceiptHtml(DETAIL.leadership_receipt)}
       <div class="muted sm" style="margin-top:8px;max-width:42ch">${recoNoEntry(th)?RECO_NOENTRY_WHY():L(esc(th.reco_why_en||''),esc(th.reco_why_zh||''))}</div>
       ${contested?`<div class="muted sm" style="margin-top:6px;max-width:46ch">${L('Contested','存在分歧')}: ${cList.map(x=>L(esc(x[0]),esc(x[1]))).join(' · ')}</div>`:''}
       ${flipCap}
@@ -1292,10 +1401,10 @@ function render(){
     <div class="kpis" style="margin-top:12px">
       ${['1d','5d','10d','20d','60d','ytd'].map(hz=>{const p=(th.perf||{})[hz]||{};return `<div><div class="k">${L(hz.toUpperCase()+' vs '+BENCH, hz.toUpperCase()+' vs '+BENCHZ)}</div><div class="v ${cls(p.rel)}">${fmtPct(p.rel)}</div></div>`;}).join('')}
       <div><div class="k">${L('above 50d','站上50日')}</div><div class="v">${bd.pct50==null?'—':Math.round(bd.pct50*100)+'%'}</div></div>
-      <div><div class="k">${L('new hi / lo','新高/低')}</div><div class="v"><span class="pos">${bd.nh||0}</span>/<span class="neg">${bd.nl||0}</span></div></div>
-      <div><div class="k">${L('adv / dec today','今日涨/跌')}</div><div class="v"><span class="pos">${th.adv||0}</span>/<span class="neg">${th.dec||0}</span></div></div>
+      <div><div class="k">${L('new hi / lo','新高/低')}</div><div class="v"><span class="${countInk(bd.nh, 'pos')}">${fmtCount(bd.nh)}</span>/<span class="${countInk(bd.nl, 'neg')}">${fmtCount(bd.nl)}</span></div></div>
+      <div><div class="k">${L('adv / dec today','今日涨/跌')}</div><div class="v"><span class="${countInk(th.adv, 'pos')}">${fmtCount(th.adv)}</span>/<span class="${countInk(th.dec, 'neg')}">${fmtCount(th.dec)}</span></div></div>
     </div>
-    ${ref?`<div class="muted sm" style="margin-top:10px">${L('Cross-checked vs','交叉验证')} <b>${esc(ref.label)}</b>: ${L('daily corr','日相关')} <b>${ref.corr}</b>, ${L('market-adjusted','剔除市场')} <b>${ref.rel_corr}</b> (${ref.n} ${L('sessions','日')})</div>`:''}
+    ${ref?`<div class="muted sm" style="margin-top:10px">${L('Cross-checked vs','交叉验证')} <b>${refLabelHtml(ref.label)}</b>: ${L('daily corr','日相关')} <b>${ref.corr}</b>, ${L('market-adjusted','剔除市场')} <b>${ref.rel_corr}</b> (${ref.n} ${L('sessions','日')})</div>`:''}
   </div>`;
 
   // ---- score history + change timeline ----

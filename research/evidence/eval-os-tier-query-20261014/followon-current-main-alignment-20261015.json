@@ -1,0 +1,233 @@
+{
+  "schema": "eval_os.followon_current_main_alignment.v1",
+  "recorded_at": "2026-10-15T14:50:32.192916+00:00",
+  "qualification": {
+    "schema": "eval_os.followon_main_alignment_qualification.v1",
+    "observed_at": "2026-10-15T14:48:39.112712+00:00",
+    "source": "dd1d34db1d40160205be33950c5936f0ad32148b",
+    "focused_exit": 0,
+    "closure_misses": {},
+    "strict_probe_rows": [
+      {
+        "probe": "templates/index.html",
+        "jobs": 134,
+        "weight": 5621,
+        "packs": 10,
+        "max_jobs": 136,
+        "max_weight": 5803,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+      },
+      {
+        "probe": "scripts/build_free_content.py",
+        "jobs": 134,
+        "weight": 5441,
+        "packs": 10,
+        "max_jobs": 134,
+        "max_weight": 5600,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+      },
+      {
+        "probe": "engine/prophet/plan_book.py",
+        "jobs": 128,
+        "weight": 5384,
+        "packs": 9,
+        "max_jobs": 130,
+        "max_weight": 5600,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 128/314 jobs (1 unscoped always-on, 127 scoped matches)"
+      }
+    ],
+    "strict_probe_breaches": [],
+    "manifest_sha256": "809def7b9bdfebfcae52b00bbc0841a1d67e67dfb638ed693c4091f64d59146d",
+    "elapsed_seconds": 303.88,
+    "claim_limit": "Local current-source qualification only. Hosted binding CI, incumbent merge, production and adoption remain unproved."
+  },
+  "preservation": {
+    "base": "05ba312c0efe1a8d2cb9bd214b67d195dfc4ec35",
+    "observed_main": "575a40ef4a4e8f74fba55155554a521c5c84fb6f",
+    "job_definitions_preserved": 314,
+    "changes": {
+      "fif-kernel-guards": {
+        "added": [
+          "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json",
+          "lib/symbol_directory_receipts.py"
+        ],
+        "prior_memberships_preserved": true
+      },
+      "biocatalyst-serving": {
+        "added": [
+          "engine/intl_performance_charts.py"
+        ],
+        "prior_memberships_preserved": true
+      },
+      "crypto-assistant-context": {
+        "added": [
+          "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json",
+          "lib/symbol_directory_receipts.py"
+        ],
+        "prior_memberships_preserved": true
+      },
+      "research-price-panel": {
+        "added": [
+          "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json",
+          "lib/symbol_directory_receipts.py",
+          "collectors/biocatalyst/__init__.py",
+          "engine/biocatalyst/__init__.py",
+          "engine/capital_structure/__init__.py",
+          "engine/close_pass/__init__.py",
+          "engine/codex_lane/__init__.py",
+          "engine/context_index/__init__.py",
+          "engine/earnings_narrative/__init__.py",
+          "engine/earnings_release/__init__.py",
+          "engine/fundamental_forensics/__init__.py",
+          "engine/intelligence_workspace/adapters/__init__.py",
+          "engine/marketing/__init__.py",
+          "engine/oracle/__init__.py",
+          "engine/press/__init__.py",
+          "engine/seasonality/__init__.py",
+          "engine/entry_radar/replay/__init__.py",
+          "engine/entry_radar/replay/first_green_reversal_descriptor.py",
+          "engine/entry_radar/replay/leader_pivot_descriptor.py",
+          "tests/test_entry_radar_first_green_descriptor.py",
+          "tests/test_entry_radar_leader_pivot_descriptor.py",
+          "tests/test_entry_radar_leader_pivot_progress.py",
+          "tests/test_entry_radar_leader_pivot_progress_edges.py"
+        ],
+        "prior_memberships_preserved": true
+      },
+      "ticker-news-qbus": {
+        "added": [
+          "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json",
+          "lib/symbol_directory_receipts.py"
+        ],
+        "prior_memberships_preserved": true
+      }
+    },
+    "added_path_memberships": 30,
+    "relocated_existing_paths": 3,
+    "runtime_unchanged": true
+  },
+  "current_main_preview": {
+    "against": "main",
+    "ref": "575a40ef4a4e8f74fba55155554a521c5c84fb6f",
+    "head": "dd1d34db1d40160205be33950c5936f0ad32148b",
+    "exit": 0,
+    "tree": "a0d1ba8a57e592816c69c9fb657943a2e4b3c364"
+  },
+  "main_execution_comparison": {
+    "at": "2026-10-15T14:45:40.415850+00:00",
+    "main": "575a40ef4a4e8f74fba55155554a521c5c84fb6f",
+    "preview_tree": "a0d1ba8a57e592816c69c9fb657943a2e4b3c364",
+    "main_job_count": 319,
+    "preview_job_count": 320,
+    "missing_jobs": [],
+    "changed_existing_execution_definitions": [
+      "neural-web"
+    ],
+    "lost_main_path_memberships": [],
+    "added_jobs": [
+      "eval-os-a1"
+    ],
+    "scope_metadata_changes": [
+      {
+        "job": "qledger-cluster-honest-ci",
+        "main": null,
+        "followon": "exclusive"
+      }
+    ],
+    "limits": "Read-only current-main composition; final post-A1 squash integration is not qualified.",
+    "expected_existing_execution_delta": {
+      "job": "neural-web",
+      "matches_qualified_A1_and_pre_repair_followon": true,
+      "detail": "Five additional A1 suite paths in one existing pytest command; no original suite removed. Exact composed execution equals A1 and the pre-repair follow-on."
+    },
+    "all_other_main_execution_definitions_preserved": true,
+    "scope_metadata_change_preexisting": true
+  },
+  "post_a1_squash_limit": {
+    "at": "2026-10-15T14:40:55.157995+00:00",
+    "main": "575a40ef4a4e8f74fba55155554a521c5c84fb6f",
+    "a1_source": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
+    "hypothetical_squash_tree": "0db0ca83737afd0c3dec6381f54fc32e1fd76f96",
+    "unreferenced_preview_object": "0c175112b1fb3076f904f855702abb0faa0c951a",
+    "followon": "dd1d34db1d40160205be33950c5936f0ad32148b",
+    "composition_exit": 1,
+    "tree": "3117e8d5922ae87c4e1b2b8d145f04f5a41f8bab",
+    "carrier_or_main_updated": false,
+    "limits": "Future-source composition only, not merge, hosted qualification or release. Old unrefreshed A1 direct comparison still conflicts as recorded; actual intended baseline includes newer main.",
+    "conflict_paths": [
+      ".github/ci/legacy-jobs.yml",
+      "agentos/workstreams/WS-EVAL-OS-EVIDENCE-VIEW.md",
+      "engine/neuralweb/response_eval.py",
+      "research/EVAL_OS_ACCEPTANCE_RECORD_2026-10-12.md",
+      "research/EVAL_OS_CONTINUATION_2026-10-12.md",
+      "tests/test_ci_pack.py"
+    ],
+    "disposition": "Do not claim post-A1 squash composition is clean. Reconcile actual landed source on the same follow-on before its PR; preserve current protected main and accepted follow-on behavior."
+  },
+  "a1_release_diagnosis": {
+    "observed_at": "2026-10-15T14:33:26.055192+00:00",
+    "purpose": "After offline canonical freshness finding: bounded A1 lease/capacity/discovery diagnosis, no controller execution",
+    "pr": {
+      "number": 6651,
+      "head": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
+      "state": "open",
+      "mergeable_state": "clean"
+    },
+    "main": "575a40ef4a4e8f74fba55155554a521c5c84fb6f",
+    "discovered_armed_count": 74,
+    "a1_in_incumbent_discovery": true,
+    "a1_candidate": true,
+    "a1_trigger_order_position": 2,
+    "lease_readable": true,
+    "lease_owner": {
+      "number": 9077,
+      "head": "ed5e9d44fde3eb6148dc4b34d5b63502fd50b879",
+      "state": "open"
+    },
+    "active_pr_proofs": 9,
+    "unindexed_reservations": 0,
+    "capacity": 8,
+    "protected_helpers_match": true,
+    "authority_path_changes_since_actual_tested_base": [
+      ".github/ci/legacy-jobs.yml"
+    ],
+    "effects": false
+  },
+  "a1_freshness": {
+    "at": "2026-10-15T14:32:22.532173+00:00",
+    "scope": "Offline canonical source-freshness predicate using retained exact-head check metadata and immutable controller main snapshot. Not an observed controller decision or release grant.",
+    "main": "bffaa41479a9b3f87b1c31a39f870b27f3976402",
+    "head": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
+    "source_class_ast_matches": true,
+    "stale": true,
+    "reason": "main commit 663dbf1ff7f5 changed the check definitions themselves, so no existing green describes the checks that run now",
+    "effects": false
+  },
+  "original_lease_owner_completion": {
+    "id": 38748904681,
+    "head_sha": "ed5e9d44fde3eb6148dc4b34d5b63502fd50b879",
+    "status": "completed",
+    "conclusion": "success",
+    "updated_at": "2026-10-15T14:43:37Z"
+  },
+  "release_effects": false,
+  "production_proven": false,
+  "programme_complete": false,
+  "retained_full_local_diagnostics": {
+    "a1-offline-controller-freshness.json": {
+      "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/a1-offline-controller-freshness.json",
+      "sha256": "02459c2908f6964d2c1619467a2d5fbfdb693da50408fa0d05ce1f12337c77f6"
+    },
+    "a1-canonical-release-diagnosis.json": {
+      "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/a1-canonical-release-diagnosis.json",
+      "sha256": "5481a6f1bc92e7231463e23a3ed2dc6e9d1daa9844198cff449d0e12c5b00abc"
+    },
+    "followon-main-alignment-qualification.json": {
+      "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/followon-main-alignment-qualification.json",
+      "sha256": "90b4b3abc21a953db9c74e6ed73f7d5748516d132de0919ebada3101955b25f0"
+    }
+  }
+}

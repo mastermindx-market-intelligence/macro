@@ -37,6 +37,11 @@ REQUIRED_CELLS = [
 VIEWPORT_WIDTH = {"desktop": 1440, "mobile": 390}
 VIEWPORT_HEIGHT = {"desktop": 900, "mobile": 844}
 
+# What `write_manifest` plants for every captured rest cell. `make_state`
+# records this content's REAL sha256/byte length: the capture-integrity floor
+# reads rest-cell PNG bytes back, so a fixture must be honest about them.
+REST_PNG_BYTES = b"\x89PNG\r\n\x1a\nfake"
+
 
 # ---------------------------------------------------------------------------
 # fixture builders — mirror capture_page_evidence.py's real emitted shape
@@ -62,8 +67,8 @@ def make_state(viewport: str, locale: str, theme: str, *, file: str = "abcITWrea
     entry.update({
         "captured": True,
         "file": file,
-        "sha256": "f" * 64,
-        "bytes": 12345,
+        "sha256": hashlib.sha256(REST_PNG_BYTES).hexdigest(),
+        "bytes": len(REST_PNG_BYTES),
         "width": width,
         "height": height,
         "applied_theme": theme if applied_theme is None else applied_theme,
@@ -105,7 +110,7 @@ def write_manifest(root: Path, rel_path: str, manifest: dict, *, write_pngs: boo
                     png_path = manifest_path.parent / file_rel
                     png_path.parent.mkdir(parents=True, exist_ok=True)
                     if not png_path.exists():
-                        png_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+                        png_path.write_bytes(REST_PNG_BYTES)
     return manifest_path
 
 
@@ -571,6 +576,99 @@ def test_failed_capture_entry_handled_without_exception(tmp_path, capsys):
     assert "desktop/en/dark" in out
 
 
+# ---------------------------------------------------------------------------
+# rest-cell capture integrity — the eight REQUIRED rest cells get the same
+# byte-level floor as the optional force_state cells (one shared helper,
+# `_validate_capture_integrity`). Before it, a rest cell was existence-only:
+# a truncated, swapped or hand-edited rest PNG whose manifest recorded a
+# sha256 passed silently while a force_state cell would have redded.
+# ---------------------------------------------------------------------------
+
+
+def _write_rest_cell_fixture(root: Path, states: list[dict]) -> Path:
+    manifest_path = write_manifest(root, "mockups/evidence/tp1/manifest.json",
+                                   make_manifest(states=states))
+    write_receipt(
+        root, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    return manifest_path
+
+
+def _own_file_cell(states: list[dict], viewport: str, locale: str, theme: str) -> dict:
+    """Give one rest cell its own PNG so corrupting it leaves the other seven
+    (which share `abcITWreal1234.png`) intact."""
+    for state in states:
+        if (state["viewport"], state["locale"], state["theme"]) == (viewport, locale, theme):
+            state["file"] = f"{viewport}-{locale}-{theme}.png"
+            return state
+    raise AssertionError(f"no rest cell {viewport}/{locale}/{theme}")
+
+
+def test_rest_cell_with_mismatched_sha256_reds(tmp_path, capsys):
+    states = make_full_states()
+    cell = _own_file_cell(states, "desktop", "zh", "light")
+    manifest_path = _write_rest_cell_fixture(tmp_path, states)
+    # Same length, different content: a swapped/hand-edited PNG only the
+    # recorded sha256 can catch.
+    swapped = b"\x89PNG\r\n\x1a\nFAKE"
+    assert len(swapped) == len(REST_PNG_BYTES) and swapped != REST_PNG_BYTES
+    (manifest_path.parent / cell["file"]).write_bytes(swapped)
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    errors = [line for line in capsys.readouterr().out.splitlines() if "::error" in line]
+    assert len(errors) == 1, errors
+    assert "desktop/zh/light" in errors[0] and "sha256=" in errors[0]
+
+
+@pytest.mark.parametrize("corruption", ["recorded_bytes_wrong", "png_truncated_no_sha256_key"])
+def test_rest_cell_with_byte_length_mismatch_reds(tmp_path, capsys, corruption):
+    states = make_full_states()
+    cell = _own_file_cell(states, "mobile", "en", "dark")
+    if corruption == "recorded_bytes_wrong":
+        cell["bytes"] = len(REST_PNG_BYTES) + 500
+    else:
+        # No sha256 recorded (r2 BLOCKER-1 schema), so byte length is the
+        # only thing standing between a truncated PNG and a silent pass.
+        del cell["sha256"]
+    manifest_path = _write_rest_cell_fixture(tmp_path, states)
+    if corruption == "png_truncated_no_sha256_key":
+        (manifest_path.parent / cell["file"]).write_bytes(REST_PNG_BYTES[:8])
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    errors = [line for line in capsys.readouterr().out.splitlines() if "::error" in line]
+    assert len(errors) == 1, errors
+    assert "mobile/en/dark" in errors[0] and "bytes=" in errors[0]
+
+
+@pytest.mark.parametrize("sha256_shape", ["key_absent", "explicit_none"])
+def test_rest_cell_with_no_sha256_passes(tmp_path, capsys, sha256_shape):
+    """r2 BLOCKER-1 holds for rest cells too: no recorded sha256 means "this
+    schema does not capture one", never a mismatch against the real bytes."""
+    states = make_full_states()
+    for state in states:
+        if sha256_shape == "key_absent":
+            del state["sha256"]
+        else:
+            state["sha256"] = None
+    _write_rest_cell_fixture(tmp_path, states)
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 0, capsys.readouterr().out
+
+
+def test_rest_cell_with_nonsane_dims_reds(tmp_path, capsys):
+    states = make_full_states()
+    states[0]["width"] = 0
+    _write_rest_cell_fixture(tmp_path, states)
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    assert "non-sane" in capsys.readouterr().out
+
 
 # ---------------------------------------------------------------------------
 # force_state cells (MINOR-3, PR #6986 r2 accepted-as-debt) — `_rest_cell_key`
@@ -583,9 +681,9 @@ def make_force_state_cell(*, force_state: str = "theme_toggle_dark_to_light",
                            file: str = "force_state_shot.png",
                            png_bytes: bytes = b"\x89PNG\r\n\x1a\nreal-force-state-bytes",
                            width: int = 1440, height: int = 900, captured: bool = True) -> dict:
-    """A force_state cell with a REAL sha256/byte-length (unlike `make_state`,
-    which fixes a fake `"f" * 64` sha256 that the rest-cell path never checks
-    — the force_state path now does check it, so the fixture must be honest).
+    """A force_state cell with a REAL sha256/byte-length for its own
+    `png_bytes` (`make_state` likewise records `REST_PNG_BYTES` honestly —
+    both cell kinds pass through the same capture-integrity floor).
     """
     if not captured:
         return {
@@ -882,15 +980,50 @@ def test_tool_hash_coverage_attribution_resolves_on_sanctions_map_shape(tmp_path
 @pytest.mark.needs_full_checkout("mockups")
 def test_sanctions_map_manifest_tool_sha_list_default_element_is_first():
     """MINOR-4: the real committed sanctions_map manifest must satisfy the
-    attribution contract it documents — element 0 of tool.module_sha256 is
-    97b44358... (the default tool every unstamped cell implicitly used),
-    listed BEFORE 3301a5f9... (the tool sha only the one explicitly
-    re-captured theme_toggle_dark_to_light force_state cell carries). If this
-    order were ever wrong, fixing the manifest's list order is the ONLY
-    permitted manifest edit for this finding (ruling 4) — never the code."""
+    attribution contract it documents. Two lawful forms:
+
+    NAME NOTE (O28 R5): the test name predates the STRING form. Against the
+    live manifest (since 2026-10-03) the STRING branch below is the one that
+    runs; the LIST branch stays as the contract for any future mixed-tool
+    receipt and is exercised by the throwaway-manifest cases.
+
+    * LIST form (receipt of 2026-09-11 → 2026-10-02): element 0 of
+      tool.module_sha256 is 97b44358... (the default tool every unstamped
+      cell implicitly used), listed BEFORE 3301a5f9... (the tool sha only the
+      one explicitly re-captured theme_toggle_dark_to_light force_state cell
+      carries). If this order were ever wrong, fixing the manifest's list
+      order is the ONLY permitted manifest edit for this finding (ruling 4)
+      — never the code.
+    * STRING form (O28 R4, 2026-10-03, PR #8307): a FULL recapture of the
+      receipt by one run of one module writes that module's single sha, so
+      there is no default/stamped split left to order. Coherence is still
+      asserted — every per-cell `capture_tool_module_sha256` stamp (if any)
+      must name that same module; a string that does not cover a stamped
+      cell is the MINOR-4 defect reappearing and reds.
+
+    Either way the fix for a failure is the MANIFEST's attribution, never the
+    checker code."""
     manifest_path = guard.REPO_ROOT / "mockups" / "evidence" / "sanctions_map" / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     top_sha = manifest["tool"]["module_sha256"]
+    stamped = {
+        state.get("capture_tool_module_sha256")
+        for page in manifest["pages"]
+        for state in page["states"]
+        if state.get("capture_tool_module_sha256")
+    }
+    if isinstance(top_sha, str):
+        assert len(top_sha) == 64 and set(top_sha) <= set("0123456789abcdef"), (
+            f"sanctions_map manifest tool.module_sha256={top_sha!r} is not a sha256 hex digest")
+        assert top_sha == "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16", (
+            f"sanctions_map manifest tool.module_sha256={top_sha[:12]}... is not the 1.3.0 module "
+            "8d753e28... that made the 2026-10-03 full recapture (PR #8307) — a NEW full recapture "
+            "by a different module updates this pin together with the MANIFEST, never the checker")
+        assert stamped <= {top_sha}, (
+            f"sanctions_map manifest tool.module_sha256 is the single sha {top_sha[:12]}... but "
+            f"cells carry other stamps {sorted(s[:12] for s in stamped - {top_sha})} — list every "
+            "tool used (default first) in the MANIFEST, never the code")
+        return
     assert isinstance(top_sha, list) and len(top_sha) >= 1
     assert top_sha[0] == "97b4435815440fde008cd35b73c551cf704ba01ea71f18f04a2b23ebc7a0a6b7", (
         f"sanctions_map manifest tool.module_sha256[0]={top_sha[0]!r}, expected the default tool "

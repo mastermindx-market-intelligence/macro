@@ -355,6 +355,94 @@ def _atomic_write_parquet(df: pd.DataFrame, path: Path) -> None:
     os.replace(tmp, path)
 
 
+class GraphIntegrityError(ValueError):
+    """An existing graph generation cannot safely be advanced."""
+
+
+def _read_for_append(path: Path, columns: tuple[str, ...],
+                     key: tuple[str, ...]) -> pd.DataFrame:
+    """Validate authoritative prior bytes; absence alone permits initialization.
+
+    W3A appended source_meta/provider/claim_type to the original v1 tables.
+    Their absence in a legacy table means unknown, never a reconstructed value.
+    Forgiving display readers and strict research-reader contracts stay unchanged.
+    """
+    if not path.exists():
+        return pd.DataFrame(columns=list(columns))
+    try:
+        prior = pd.read_parquet(path)
+    except Exception as exc:  # noqa: BLE001 — never replace an unreadable history
+        raise GraphIntegrityError(f"unreadable graph history: {path.name}") from exc
+    optional = ({"source_meta"} if columns == NODE_COLUMNS else
+                {"provider", "claim_type"} if columns == EVIDENCE_COLUMNS else set())
+    missing = set(columns) - set(prior.columns) - optional
+    if missing:
+        raise GraphIntegrityError(
+            f"graph history {path.name} missing columns: {sorted(missing)}")
+    for field in key:
+        if not prior[field].map(lambda value: isinstance(value, str) and bool(value.strip())).all():
+            raise GraphIntegrityError(f"graph history {path.name} invalid key: {field}")
+    if prior.duplicated(subset=list(key)).any():
+        raise GraphIntegrityError(f"graph history {path.name} duplicate history key")
+    return prior.reindex(columns=list(columns))
+
+
+def preflight_existing_stores() -> None:
+    """Refuse corrupt prior destinations before a build's first write.
+
+    Missing tables are permitted for initialization/pre-sidecar generations.
+    Existing metadata may not claim rows in a missing or shorter destination.
+    This is a read preflight, not a transaction or a concurrent-writer fence.
+    """
+    tables = (
+        ("nodes", nodes_path(), NODE_COLUMNS, NODE_KEY),
+        ("edges", edges_path(), EDGE_COLUMNS, EDGE_KEY),
+        ("evidence", evidence_path(), EVIDENCE_COLUMNS, EVIDENCE_KEY),
+        ("capability", capability_path(), CAPABILITY_COLUMNS, CAPABILITY_KEY),
+        ("identity_resolution", identity_resolution_path(),
+         IDENTITY_RESOLUTION_COLUMNS, IDENTITY_RESOLUTION_KEY),
+        ("node_lifecycle", node_lifecycle_path(), NODE_LIFECYCLE_COLUMNS, NODE_LIFECYCLE_KEY),
+    )
+    frames = {name: _read_for_append(path, columns, key)
+              for name, path, columns, key in tables}
+    path = meta_path()
+    if not path.exists():
+        return
+    try:
+        meta = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        raise GraphIntegrityError("unreadable graph metadata: _meta.json") from exc
+    if not isinstance(meta, dict) or not isinstance(meta.get("counts"), dict):
+        raise GraphIntegrityError("invalid graph metadata: _meta.json")
+    clocks = ("computed_at", "engine_version")
+    if any(field in meta for field in clocks):
+        if any(not isinstance(meta.get(field), str) or not meta[field].strip()
+               for field in clocks):
+            raise GraphIntegrityError("invalid graph metadata: _meta.json")
+    else:
+        # The existing curated correction writer historically emitted only counts
+        # and its own receipt when prior metadata was absent. Recognize that exact
+        # producer envelope; undeclared historical generation clocks stay unknown.
+        receipt = meta.get("correction_receipt")
+        appended = receipt.get("rows_appended") if isinstance(receipt, dict) else None
+        if (not isinstance(receipt, dict)
+                or receipt.get("script") != "scripts.correct_gmi_identity_lineage"
+                or not isinstance(receipt.get("run_at"), str) or not receipt["run_at"].strip()
+                or not isinstance(appended, dict)
+                or not {"node_lifecycle", "edges", "evidence"}.issubset(appended)
+                or any(type(count) is not int or count < 0 for count in appended.values())):
+            raise GraphIntegrityError("invalid graph metadata: _meta.json")
+    available = {name: len(frame) for name, frame in frames.items()}
+    # This current-view count is a claim about the existing edge belief ledger.
+    # Collapse cardinality is unique edge_id count, independent of belief values.
+    available["edges_latest_belief"] = frames["edges"]["edge_id"].nunique()
+    for name, count in meta["counts"].items():
+        if type(count) is not int or count < 0:
+            raise GraphIntegrityError(f"invalid graph metadata count: {name}")
+        if name in available and count > available[name]:
+            raise GraphIntegrityError(f"graph metadata claims unavailable {name} history")
+
+
 def append_rows(path: Path, rows: list[dict], columns: tuple[str, ...],
                 key: tuple[str, ...]) -> int:
     """Append ``rows`` keep-FIRST on ``key``. Returns rows actually added.
@@ -362,10 +450,10 @@ def append_rows(path: Path, rows: list[dict], columns: tuple[str, ...],
     Unknown columns are dropped and missing ones filled with None, so a caller cannot
     widen the store by accident — the column set is the contract.
     """
+    prior = _read_for_append(path, columns, key)
     if not rows:
         return 0
     new = pd.DataFrame(rows).reindex(columns=list(columns))
-    prior = _read(path, columns)
     before = len(prior)
     if before:
         combined = pd.concat([prior.reindex(columns=list(columns)), new],
@@ -375,8 +463,10 @@ def append_rows(path: Path, rows: list[dict], columns: tuple[str, ...],
     combined = (combined.drop_duplicates(subset=list(key), keep="first")
                         .sort_values(list(key), kind="stable")
                         .reset_index(drop=True))
-    _atomic_write_parquet(combined, path)
-    return int(len(combined) - before)
+    added = int(len(combined) - before)
+    if added:
+        _atomic_write_parquet(combined, path)
+    return added
 
 
 def write_nodes(rows: list[dict], *, lane: str | None = None,
