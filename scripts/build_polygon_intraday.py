@@ -130,6 +130,13 @@ def _require_store_cadence(outdir: Path, *, bar: str, bar_seconds: int) -> None:
             raise ValueError("polygon intraday cadence: existing store metadata disagrees with requested bar")
 
     for source in outdir.glob("*.parquet"):
+        if not has_meta and bar_seconds == 3600 and bar != "1hour":
+            # Nominal seconds do not recover the original request spelling.
+            # Preserve only the incumbent 1hour fallback when hourly history
+            # has lost its store metadata, even if every receipt says 3600.
+            raise ValueError(
+                "polygon intraday cadence: missing store metadata requires the canonical 1hour bar"
+            )
         receipt_path = outdir / f"{source.name}.receipt.json"
         if receipt_path.exists():
             try:

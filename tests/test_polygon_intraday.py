@@ -11,6 +11,8 @@ from __future__ import annotations
 import hashlib
 import json
 
+import pytest
+
 from scripts import build_polygon_intraday as bpi
 
 
@@ -273,3 +275,65 @@ def test_unknown_legacy_store_rejects_60minute_alias(monkeypatch, tmp_path):
     with pytest.raises(ValueError, match="cadence"):
         bpi.accrue(only=["SPY"], out_dir=tmp_path)
     assert len(calls) == 1
+
+
+@pytest.mark.parametrize("multiplier,timespan", [(60, "minute"), (1, "HOUR")])
+@pytest.mark.parametrize("full", [False, True])
+def test_receipted_hourly_store_without_metadata_rejects_noncanonical_bar(
+    monkeypatch, tmp_path, multiplier, timespan, full
+):
+    import copy
+
+    calls = _cadence_fixture(monkeypatch)
+    bpi.accrue(only=["AAPL"], out_dir=tmp_path)
+    (tmp_path / "_meta.json").unlink()
+    receipt = tmp_path / "AAPL.parquet.receipt.json"
+    assert json.loads(receipt.read_text())["bar_seconds"] == 3600
+    before = {p.name: p.read_bytes() for p in tmp_path.iterdir()}
+    cfg = copy.deepcopy(bpi.config.load())
+    cfg["polygon"]["intraday"].update(
+        multiplier=multiplier, timespan=timespan, sleep=0
+    )
+    monkeypatch.setattr(bpi.config, "load", lambda: cfg)
+
+    # The receipted AAPL history is outside the selected SPY request.
+    with pytest.raises(ValueError, match="missing store metadata"):
+        bpi.accrue(only=["SPY"], out_dir=tmp_path, full=full)
+    assert len(calls) == 1
+    assert {p.name: p.read_bytes() for p in tmp_path.iterdir()} == before
+
+    cfg["polygon"]["intraday"].update(multiplier=1, timespan="hour")
+    recovered = bpi.accrue(only=["AAPL"], out_dir=tmp_path)
+    assert recovered["status"] == "ok" and len(calls) == 2
+    assert json.loads((tmp_path / "_meta.json").read_text())["bar"] == "1hour"
+
+
+def test_receipted_minute_store_recovers_without_metadata(monkeypatch, tmp_path):
+    calls = _cadence_fixture(monkeypatch)
+    _minute_config(monkeypatch)
+    first = bpi.accrue(only=["SPY"], out_dir=tmp_path)
+    (tmp_path / "_meta.json").unlink()
+    second = bpi.accrue(only=["SPY"], out_dir=tmp_path)
+    assert first["status"] == second["status"] == "ok" and len(calls) == 2
+    assert json.loads((tmp_path / "_meta.json").read_text())["bar"] == "1minute"
+    assert json.loads((tmp_path / "SPY.parquet.receipt.json").read_text())["bar_seconds"] == 60
+
+
+def test_explicit_hour_alias_store_requires_its_metadata(monkeypatch, tmp_path):
+    import copy
+
+    calls = _cadence_fixture(monkeypatch)
+    cfg = copy.deepcopy(bpi.config.load())
+    cfg["polygon"]["intraday"].update(multiplier=60, timespan="minute", sleep=0)
+    monkeypatch.setattr(bpi.config, "load", lambda: cfg)
+    outdir = tmp_path / "explicit-alias"
+    first = bpi.accrue(only=["SPY"], out_dir=outdir)
+    second = bpi.accrue(only=["SPY"], out_dir=outdir)
+    assert first["status"] == second["status"] == "ok" and len(calls) == 2
+    assert json.loads((outdir / "_meta.json").read_text())["bar"] == "60minute"
+    (outdir / "_meta.json").unlink()
+    before = {p.name: p.read_bytes() for p in outdir.iterdir()}
+    with pytest.raises(ValueError, match="missing store metadata"):
+        bpi.accrue(only=["SPY"], out_dir=outdir)
+    assert len(calls) == 2
+    assert {p.name: p.read_bytes() for p in outdir.iterdir()} == before
