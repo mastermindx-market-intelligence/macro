@@ -1,3 +1,29 @@
+## Current source recovery — 2026-11-07
+
+The original research package below is retained as a historical research
+checkpoint. Its economic results were not rerun, and all study/diagnostic source,
+five original suites, specifications, findings and source hashes remain unchanged.
+
+The current-main integration applies the five-suite command and existing Node
+setup pattern to the existing CODE job `unrun-factor-research`. The native CI
+planner suite gains ten cases covering each research module and each original
+test file as a sole changed path. This is the missing automatic-test integration;
+a saved patch artifact by itself was insufficient.
+
+Exact-head hosted execution and contract/packing results are pending and will be
+recorded in the PR. No local Python/Node execution, source-data re-read, new
+economic result or completed product is claimed. Packing ceilings and all job,
+pack, timeout, admission and runtime limits remain unchanged at publication;
+any actual measured regression must be resolved from its canonical CI evidence.
+
+Source-window, full Terminal parity, calendar migration, matched-population
+evaluation and production acceptance remain with the original owners. The
+current backlog repair does not grant those authorities or close the Prophet
+parent mission. Historical hold/reviewer references below describe the original
+checkpoint; the current exact-source disposition is recorded in PR #8303.
+
+---
+
 # Prophet regime x indicator x timeframe program
 
 Status: BUILT_NOT_PROVEN research foundation; full integrated product/research mission remains incomplete.

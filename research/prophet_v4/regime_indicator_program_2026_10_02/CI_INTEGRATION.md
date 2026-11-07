@@ -1,3 +1,30 @@
+## Current-main integration — 2026-11-07
+
+The original proposal and evidence below are retained verbatim. The recovery
+integrates its five-suite command plus the existing `actions/setup-node@v4`
+Node 20 pattern into current `unrun-factor-research`, preserving its newer
+measurement-verdict tests and every other job. This is an existing manifest
+pattern, not a runtime upgrade or a second CI system.
+
+The exact logical owner is unchanged in C2 #10656 at
+`318d3f1700e51caf9208ce7b68cb18918327704e`. Its source-derived fallback weight
+changes from 58 to 60: one added command and the next 800-character text band;
+the `tests/test_` path count stays 26 because these suites live under research.
+This is a planner formula calculation, not a measured native probe result.
+No packing ceiling or job/pack/runtime bound is increased in this publication.
+
+Ten new cases in existing `tests/test_ci_pack.py` exercise the real native
+planner for each sole changed module/test path and require selection of the
+existing CODE owner. Native hosted results and any packing regression remain
+pending; exact-head receipts belong to the PR. The original 94-test/38-subtest
+run below is historical evidence and is not counted again as a new execution.
+
+No market-data experiment, snapshot-audit CLI, provider read, calendar change
+or product deployment is part of CI enrollment. Scientific source-window and
+Terminal qualifications remain with their existing owners.
+
+---
+
 # Existing CI integration -- prepared, not automatically enrolled
 
 The independent #8303 review comment `5965501070` correctly found that the old green CI run did not execute this program's 48 tests. Two different repairs are required: discovery and execution ownership. Do not claim either from the other.
