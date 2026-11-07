@@ -5603,7 +5603,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 5_929),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_670),
 )
@@ -5613,6 +5613,24 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-07 #7320 conflict composition: retain current main, including
+    #8899's independent free-content/Prophet ceilings5929/5670. Add only
+    this Treasury owner's recorded +2 index contribution:5912->5914.
+    These are composed recorded deltas, not a new paired measurement.
+
+    2026-11-06 Treasury auction-results recovery (#7320): exact paired
+    canonical measurements against real main 0cd0e3284b10, planner3cbed589.
+    Candidate engine3ceb00c0, Treasury tests452ca4b8 and manifest180c6f63;
+    comparison SHA256
+    d11eae62cd4ff0e1ed24fc14eb0e81cc0c6718c36190c7b9a0d9073c2c21d356.
+    The existing ccw-w4-credit-desk command gains the previously unowned
+    Treasury suite; its derived estimate rises10->12. Complete selected IDs
+    are identical for all probes. Index137jobs/5912->5914 is the sole delta;
+    free-content137/5927 and Prophet131/5668 are unchanged, all ten packs.
+    Fund only index's two measured estimate units. Job, pack, timeout and
+    admission bounds, selectors and every existing suite remain intact.
+    These are planner estimates, not hosted execution-time measurements.
 
     PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
     contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:
