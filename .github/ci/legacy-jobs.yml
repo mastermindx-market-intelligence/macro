@@ -20582,6 +20582,7 @@ jobs:
       - "lib/config.py"
       - "lib/pages.py"
       - "lib/site_assets.py"
+      - "scripts/__init__.py"
       - "scripts/build_research_screener.py"
       - "scripts/check_template_site_sync.py"
       - "scripts/optimize_assets.py"
