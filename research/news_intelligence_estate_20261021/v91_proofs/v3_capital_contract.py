@@ -42,6 +42,7 @@ if str(ROOT) not in sys.path:
 
 from engine.news_impact import mechanisms as M  # noqa: E402
 from engine.news_impact import producer_facts as pf  # noqa: E402
+from engine.news_impact.producer import PRODUCER_VERSION  # noqa: E402
 from engine.news_impact import prophet_adapter as PA  # noqa: E402
 from engine.news_impact.validate import validate_event  # noqa: E402
 
@@ -208,6 +209,14 @@ def run_producer(scratch: Path, name: str, event: dict) -> dict[str, str]:
                                 "novelty_source": "label_provisional",
                                 "event": event}, sort_keys=True) + "\n",
                     encoding="utf-8")
+    # Synthetic fixture of the adjudicated generation format, not a label run.
+    raw = rows.read_bytes()
+    (work / "events_report.json").write_text(json.dumps({
+        "producer_version": PRODUCER_VERSION, "mode": "adjudicated",
+        "n_cases": 1, "n_emitted": 1,
+        "emitted": {"synthetic": 1}, "deferred": {}, "rejected": {},
+        "events_sha256": sha256(raw).hexdigest(), "events_bytes": len(raw),
+    }, sort_keys=True) + "\n", encoding="utf-8")
     pf.run([rows], work / "out", None)
     return {f.name: f.read_text(encoding="utf-8")
             for f in sorted((work / "out").iterdir()) if f.is_file()}
