@@ -678,3 +678,11 @@ def validate_manifest(root, manifest, target_sha=None):
         validate_at_ref(root, target_sha, inputs)
         validate_at_ref(root, target_sha, outputs)
     return None
+
+
+class IntlPublicationError(ValueError):
+    """No actionable page may be committed after this publication refusal."""
+
+
+class IntlPublicationUnknown(IntlPublicationError):
+    """A PUT may have committed; preserve its original receipt and carrier."""

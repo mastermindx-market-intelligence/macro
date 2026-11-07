@@ -204,6 +204,7 @@ def _native_policy_document_sha256(decisions):
         result[sid] = hashlib.sha256(text[headings[index].start():end].encode()).hexdigest()
     return result
 
+
 def _native_investigation_evidence(*, measures, materialized, decisions):
     """Original native evidence shared by private packets/public generation."""
     evidence = {}
@@ -636,6 +637,43 @@ def _cgl_compact_summary(artifact: dict | None) -> dict | None:
     }
 
 
+
+
+def _action_unavailable_vm(vm):
+    """Normal page content remains usable; no untransported native entrance."""
+    from copy import deepcopy
+    result = deepcopy(vm)
+    workspace = result.get("intl_workspace")
+    if type(workspace) is dict:
+        for view in ("macros", "risks"):
+            for panel in workspace.get(view, []):
+                panel["investigation_actions"] = {"__unavailable__": True}
+    return result
+
+
+def _write_intl_pages(template, vm, *, catalogue, chart_sources, site):
+    from hashlib import sha256
+    macro_html, stocks_html = render_international_pages(
+        template, vm, catalogue=catalogue, chart_sources=chart_sources)
+    write_page(site / "intl.html", macro_html)
+    write_page(site / "intl_stocks.html", stocks_html)
+    return {"site/" + name: sha256((site / name).read_bytes()).hexdigest()
+            for name in ("intl.html", "intl_stocks.html")}
+
+
+def _page_activation(template, prepared_vm, *, catalogue, chart_sources, site, descriptor):
+    """Private same-call continuation, never loaded from a receipt/user Boolean."""
+    from copy import deepcopy
+    snapshot = deepcopy(prepared_vm)
+    bound_descriptor = deepcopy(descriptor)
+    def activate(delivery):
+        from scripts.render_intl_durable import verify_intl_publication
+        # Actual configured-origin bytes are checked here, not merely a supplied
+        # status or a successful PUT. No engine, new VM or new clock is created.
+        verify_intl_publication(bound_descriptor, delivery)
+        return _write_intl_pages(template, snapshot, catalogue=catalogue,
+                                 chart_sources=chart_sources, site=site)
+    return activate
 
 
 def main(*, retained_library_receipt=None, publication_result=None) -> int:
@@ -1470,20 +1508,12 @@ def main(*, retained_library_receipt=None, publication_result=None) -> int:
                                     "config/intl_library_catalogue.json").read_text(encoding="utf-8"))
         except (OSError, ValueError) as exc:
             log.error("International Library copy unavailable (%s)", type(exc).__name__)
-        macro_html, stocks_html = render_international_pages(
-            tmpl, vm, catalogue=catalogue,
-            chart_sources=chart_source_sink.get("sources"),
-        )
-        write_page(site / "intl.html", macro_html)
-        write_page(site / "intl_stocks.html", stocks_html)
-        # Observe the actual normal write_page output (including its incumbent
-        # Shared Shell/data-base transforms), not the pre-transform template.
-        if publication_result is not None:
-            from hashlib import sha256
-            published_pages = {
-                "site/" + name: sha256((site / name).read_bytes()).hexdigest()
-                for name in ("intl.html", "intl_stocks.html")
-            }
+        # Ordinary render/daily paths have no matching public-delivery join.
+        # Keep this exact prepared VM privately for the complete transaction;
+        # normal HTML says unavailable instead of borrowing an older reference.
+        published_pages = _write_intl_pages(
+            tmpl, _action_unavailable_vm(vm), catalogue=catalogue,
+            chart_sources=chart_source_sink.get("sources"), site=site)
         published_descriptor = None
         try:
             from lib.intl_generation_publication import publish_generation, publish_unavailable_generation
@@ -1535,6 +1565,10 @@ def main(*, retained_library_receipt=None, publication_result=None) -> int:
                 risk_publication=_risk_publication,
                 descriptor=published_descriptor,
                 pages=published_pages,
+                activate_pages=_page_activation(
+                    tmpl, vm, catalogue=catalogue,
+                    chart_sources=chart_source_sink.get("sources"), site=site,
+                    descriptor=published_descriptor),
             )
     except Exception as e:  # noqa: BLE001
         log.error("intl page render failed (%s); skipping", e)

@@ -70,9 +70,11 @@ def _asof_of(obj) -> str | None:
     return None
 
 
-def build(*, render_only: bool = False) -> dict:
+def build(*, render_only: bool = False, output_dir: Path | None = None) -> dict:
     """Assemble every feed; returns {artifact_name: asof|None} for the meta."""
-    out = _feeds_dir()
+    out = _feeds_dir() if output_dir is None else Path(output_dir)
+    if not out.is_dir() or out.is_symlink():
+        raise ValueError("feed output must be an existing real directory")
     data = config.data_dir()
     meta: dict[str, dict] = {}
 

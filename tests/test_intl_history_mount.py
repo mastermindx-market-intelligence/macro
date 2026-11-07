@@ -83,3 +83,24 @@ def test_v1_nonnull_presentation_source_is_retained_without_values():
     result=attach_history(w,**args)
     assert result['histories'][0]['source_reference']=='legacy:fixture'
     assert all(s['points']==[] for s in result['histories'][0]['sections'])
+
+
+def test_selection_eligibility_is_independent_of_supplied_pair_and_does_not_choose_dates():
+    w, args = fixture()
+    args['sources']['JP']['capabilities']['snapshot_compare'] = dict(left_observation_at=None, right_observation_at=None)
+    section = attach_history(w, **args)['histories'][0]['sections'][0]
+    assert section['snapshot_compare']['reason'] == 'not_requested'
+    assert section['snapshot_compare']['selection'] == dict(eligible=True, reason=None)
+    assert section['snapshot_compare']['left'] is section['snapshot_compare']['right'] is None
+
+
+@pytest.mark.parametrize('change, reason', [
+    (lambda s: s['capabilities']['history_source'].update(metadata='denied', value='denied'), 'metadata_denied'),
+    (lambda s: s['capabilities']['history_source'].update(value='unknown'), 'value_unknown'),
+    (lambda s: s['history_read']['identity'].update(universe=None), 'comparability_not_established'),
+    (lambda s: s['history_read'].update(status='missing', identity=None, points=[]), 'source_missing'),
+])
+def test_selection_never_bypasses_disclosure_read_or_comparability(change, reason):
+    w, args = fixture(); change(args['sources']['JP'])
+    section = attach_history(w, **args)['histories'][0]['sections'][0]
+    assert section['snapshot_compare']['selection'] == dict(eligible=False, reason=reason)

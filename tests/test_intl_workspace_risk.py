@@ -549,16 +549,72 @@ def test_source_does_not_read_dunder_class():
     assert ".__class__" not in source
 
 
-def test_source_has_no_engine_io_or_non_stdlib_imports():
-    source = pathlib.Path("lib/intl_workspace_risk.py").read_text()
+def _assert_pure_risk_source(source):
+    """Keep the whole qualifier/caption module pure, with exact stdlib uses.
+
+    The receipt-caption helper adds JSON serialization and SHA-256, not an
+    engine/provider/file permission. Module-wide stdlib exemptions would also
+    admit json.load/dump; importing a function under an alias would conceal
+    the qualified use. Inspect both import node forms without assuming that
+    ast.Import has ImportFrom.level.
+    """
     tree = ast.parse(source)
+    parents = {child: node for node in ast.walk(tree)
+               for child in ast.iter_child_nodes(node)}
+    allowed_from = {"datetime": {"datetime", "date"}, "hashlib": {"sha256"}}
     for node in ast.walk(tree):
-        if isinstance(node, (ast.Import, ast.ImportFrom)):
-            names = [alias.name for alias in node.names]
-            module = getattr(node, "module", None)
-            imported_names = names if module is None else [module]
-            assert imported_names == ["datetime"]
-            assert node.level == 0
-        if isinstance(node, ast.Name) and node.id in {"open", "exec", "eval", "__import__"}:
-            assert False, "implementation must not perform I/O or dynamic execution"
+        if isinstance(node, ast.Import):
+            assert len(node.names) == 1
+            assert node.names[0].name == "json" and node.names[0].asname is None
+        elif isinstance(node, ast.ImportFrom):
+            assert node.level == 0 and node.module in allowed_from
+            assert node.names
+            assert all(alias.asname is None and alias.name in allowed_from[node.module]
+                       for alias in node.names)
+        if isinstance(node, ast.Name):
+            assert node.id not in {"open", "exec", "eval", "__import__"}, (
+                "implementation must not perform I/O or dynamic execution")
+            if isinstance(node.ctx, ast.Load) and node.id == "json":
+                use = parents[node]
+                assert isinstance(use, ast.Attribute) and use.attr == "dumps"
+                call = parents[use]
+                assert isinstance(call, ast.Call) and call.func is use
+            if isinstance(node.ctx, ast.Load) and node.id == "sha256":
+                call = parents[node]
+                assert isinstance(call, ast.Call) and call.func is node
     assert "engine." not in source
+
+
+def test_source_has_no_engine_io_or_non_stdlib_imports():
+    _assert_pure_risk_source(pathlib.Path("lib/intl_workspace_risk.py").read_text())
+
+
+@pytest.mark.parametrize("forbidden", [
+    "import requests",
+    "import socket",
+    "import pathlib",
+    "import importlib",
+    "import engine.intl_rates",
+    "from engine import intl_rates",
+    "from .datetime import date",
+    "from datetime import datetime as clock",
+    "import json as serializer",
+    "from hashlib import sha256 as digest",
+    "from hashlib import file_digest",
+    "from json import dumps",
+    "import json\njson.load(stream)",
+    "import json\njson.dump({}, stream)",
+    "import json\njson.loads('{}')",
+    "import json\ngetattr(json, 'load')(stream)",
+    "import json\nserializer = json.dumps",
+    "from hashlib import sha256\ndigest = sha256",
+    "open('risk.json')",
+    "exec('pass')",
+    "eval('1')",
+    "__import__('json')",
+    "engine.read_snapshot()",
+])
+def test_risk_pure_source_guard_rejects_io_aliases_and_other_imports(forbidden):
+    # Parse only: no mutant is imported or executed and no file/socket opens.
+    with pytest.raises(AssertionError):
+        _assert_pure_risk_source(forbidden)

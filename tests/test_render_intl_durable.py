@@ -26,7 +26,7 @@ def test_file_path_help_resolves_own_lib_before_hostile_pythonpath(tmp_path):
         capture_output=True, text=True, timeout=15,
     )
     assert result.returncode == 0, result.stderr
-    assert "{build,finalize,verify,stage}" in result.stdout
+    assert "{build,finalize,verify,stage,metadata}" in result.stdout
     assert "FOREIGN_LIB_IMPORTED" not in result.stderr
     assert set(tmp_path.iterdir()) == {decoy}
 
@@ -56,11 +56,21 @@ def transaction(tmp_path, monkeypatch):
     put(root, "site/obsolete.css", "old synthetic asset")
     git(root, "add", ".")
     git(root, "commit", "-qm", "controlled initial source")
+    # Existing race controls now also traverse a real finite public closure,
+    # still using only controlled IO and a synthetic test publication.
+    from tests.test_intl_public_delivery import REAL_ROOT, REAL_SETTINGS, controlled_contract, FakeClient
+    from copy import deepcopy
+    from scripts.build_intl import _native_policy_document_sha256
+    (root / "docs").mkdir(exist_ok=True)
+    (root / "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md").write_bytes(
+        (REAL_ROOT / "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md").read_bytes())
+    git(root, "add", "docs")
+    git(root, "commit", "-qm", "controlled current source policy")
     source = git(root, "rev-parse", "HEAD")
     receipt = tmp_path / "receipt.json"
     from lib import config, store
     monkeypatch.setattr(config, "ROOT", root)
-    monkeypatch.setattr(config, "load", lambda: {"storage": {"site_dir": "site"}})
+    monkeypatch.setattr(config, "load", lambda: deepcopy(REAL_SETTINGS))
     monkeypatch.setattr(config, "data_dir", lambda: root / "data")
     monkeypatch.setattr(store, "_path", lambda group, name: root / "data" / group / (name + ".parquet"))
     monkeypatch.setattr(store, "read", lambda group, name: (root / "data" / group / (name + ".parquet")).read_bytes())
@@ -70,38 +80,71 @@ def transaction(tmp_path, monkeypatch):
     monkeypatch.setenv("RENDER_NO_DRIP", "1")
     monkeypatch.delenv("COLLECT_LANE", raising=False)
     monkeypatch.delenv("US_LANE", raising=False)
-    from lib.intl_generation_publication import publish_unavailable_generation
+    from lib.intl_generation_publication import publish_generation
     from lib.intl_risk_publication import publish_risk_snapshot
     calls = []
+    from scripts import publish_r2
+    import importlib.metadata
+    monkeypatch.setattr(importlib.metadata, "version", lambda key: "1.43.126")
+    public = {}; client = FakeClient(public)
+    monkeypatch.setenv("R2_BUCKET", "controlled-public-only")
+    monkeypatch.setenv("R2_ENDPOINT", "https://"+"0"*32+".r2.cloudflarestorage.com")
+    monkeypatch.setattr(publish_r2, "_client", lambda *a, **k: client)
+    def public_get(origin, name, limit, *, absent=False):
+        raw = public.get("feeds/" + name)
+        if raw is None and not absent:
+            raise publish_r2.IntlPublicationError("controlled public missing")
+        return raw
+    monkeypatch.setattr(publish_r2, "_intl_public_get", public_get)
+    from tests.intl_investigation_page_fixture import page_fixture, render
+    from lib.intl_investigation_action import build_intl_investigation_action
+    from urllib.parse import parse_qs, urlsplit
+    def activate(descriptor, contract):
+        def write(delivery):
+            durable.verify_intl_publication(descriptor, delivery)
+            ws, _, _ = page_fixture()
+            for panel in ws["macros"] + ws["risks"]:
+                panel["generation"] = contract["generation"]
+                for sid, old in list(panel["investigation_actions"].items()):
+                    back = parse_qs(urlsplit(old["href"]).query)["intl_return"][0]
+                    panel["investigation_actions"][sid] = build_intl_investigation_action(
+                        contract=contract, descriptor=descriptor, context_id=old["context_id"],
+                        selected_measure_ids=[sid], return_url=back)
+            return {p: sha256(put(root, p, render(ws)).read_bytes()).hexdigest()
+                    for p in ("site/intl.html", "site/intl_stocks.html")}
+        return write
 
     def builder(*, publication_result):
         calls.append("builder")
         store.read("fred", "FIXTURE")
         pub = publish_risk_snapshot(root / durable.RISK, {"fixture": "non-economic"})
-        desc = publish_unavailable_generation(data_root=root / "data")
+        contract = controlled_contract()
+        desc = publish_generation(data_root=root / "data", contract=contract)
         pages = {p: sha256(put(root, p, "non-economic synthetic page").read_bytes()).hexdigest()
                  for p in ("site/intl.html", "site/intl_stocks.html")}
-        publication_result.update(risk_publication=pub, descriptor=desc, pages=pages)
+        publication_result.update(risk_publication=pub, descriptor=desc, pages=pages,
+                                  activate_pages=activate(desc, contract))
         return 0
 
-    def feeds(*, render_only):
+    def feeds(*, render_only, output_dir):
         assert render_only is True
         calls.append("full-feeds")
         desc = json.loads((root / durable.CURRENT).read_bytes())
         for p in durable._closure(root, desc):
-            put(root, "site/feeds/" + Path(p).name, (root / p).read_text())
-        put(root, "site/feeds/feeds_meta.json", '{"fixture":"full incumbent mock"}')
+            (output_dir / Path(p).name).write_bytes((root / p).read_bytes())
+        (output_dir / "feeds_meta.json").write_text('{"fixture":"full incumbent mock"}')
+        (output_dir / "private-sibling.json").write_text('{"fixture":"never stage or publish"}')
         return {}
 
     import scripts
-    builder_module = SimpleNamespace(main=builder)
+    builder_module = SimpleNamespace(main=builder, _native_policy_document_sha256=_native_policy_document_sha256)
     feed_module = SimpleNamespace(build=feeds)
     monkeypatch.setitem(sys.modules, "scripts.build_intl", builder_module)
     monkeypatch.setitem(sys.modules, "scripts.build_feeds", feed_module)
     monkeypatch.setattr(scripts, "build_intl", builder_module, raising=False)
     monkeypatch.setattr(scripts, "build_feeds", feed_module, raising=False)
     return SimpleNamespace(root=root, source=source, receipt=receipt, calls=calls,
-                           builder=builder_module, feeds=feed_module)
+                           builder=builder_module, feeds=feed_module, public=public, client=client)
 
 
 def build(t):
@@ -125,6 +168,8 @@ def test_same_invocation_partial_generation_bounded_stage_and_candidate(transact
     paths = set(git(t.root, "diff", "--cached", "--name-only").splitlines())
     assert durable.RISK in paths
     assert durable.CURRENT in paths
+    assert "site/feeds/feeds_meta.json" not in paths
+    assert "site/feeds/private-sibling.json" not in paths
     assert "site/intl.html" in paths
     assert not {"data/run_status.json", "data/unrelated/private.json"} & paths
     assert not any(p.endswith(".parquet") for p in paths)
@@ -313,3 +358,164 @@ def test_workflow_default_off_and_existing_guards_survive():
                 import re
                 shell = re.sub(r"\$\{\{.*?\}\}", "controlled", step["run"])
                 subprocess.run(["bash", "-n"], input=shell.encode(), check=True)
+
+
+def test_original_receipt_and_rerun_never_replay_even_after_unknown(transaction, monkeypatch):
+    t=transaction
+    t.receipt.write_text('{"public_delivery":{"state":"unknown"}}')
+    before=t.receipt.read_bytes()
+    with pytest.raises(durable.DurablePublicationError,match='no replay'):build(t)
+    assert t.receipt.read_bytes()==before and t.calls==[]
+    t.receipt.unlink()
+    monkeypatch.setenv('GITHUB_RUN_ATTEMPT','2')
+    with pytest.raises(durable.DurablePublicationError,match='rerun'):build(t)
+    assert t.calls==[]
+
+
+def test_receipt_exclusive_custody_and_exact_checkpoint_preimage(tmp_path):
+    path=tmp_path/'receipt.json';receipt={'schema':durable.SCHEMA}
+    digest=durable._save_receipt(path,receipt,initial=True)
+    with pytest.raises(FileExistsError):durable._save_receipt(path,receipt,initial=True)
+    path.write_text('foreign owned file changed')
+    original=path.read_bytes()
+    with pytest.raises(durable.DurablePublicationError,match='preimage'):durable._save_receipt(path,receipt,expected=digest)
+    assert path.read_bytes()==original
+    linked=tmp_path/'linked';os.link(path,linked)
+    with pytest.raises(durable.DurablePublicationError,match='custody'):durable._save_receipt(path,receipt,expected=digest)
+    assert linked.read_bytes()==original
+    symbolic=tmp_path/'symbolic';symbolic.symlink_to(path)
+    assert durable.metadata(symbolic)=={'schema':'intl.durable_attempt_summary.v1','state':'unavailable'}
+    assert path.read_bytes()==original
+
+
+@pytest.mark.parametrize('mutation',['unknown','foreign-invocation','foreign-key','arbitrary-extra','corrupt'])
+def test_retained_attempt_is_narrow_and_partial_never_claims_success(transaction, mutation):
+    t=transaction;build(t);r=json.loads(t.receipt.read_text())
+    if mutation=='unknown':r['public_delivery']['state']='unknown';r['action_html_state']='unavailable'
+    elif mutation=='foreign-invocation':r['invocation']={'GITHUB_RUN_ID':'999','GITHUB_RUN_ATTEMPT':'1'}
+    elif mutation=='foreign-key':r['public_delivery']['key']='private/secret-customer'
+    elif mutation=='arbitrary-extra':
+        r['error']='secret message';r['private']='private payload';r['public_delivery']['error']='private stack'
+    else:
+        t.receipt.write_text('broken secret body')
+        assert durable.metadata(t.receipt)=={'schema':'intl.durable_attempt_summary.v1','state':'unavailable'}
+        return
+    t.receipt.write_text(json.dumps(r))
+    summary=durable.metadata(t.receipt)
+    raw=json.dumps(summary)
+    assert not any(text in raw for text in ('secret','private payload','private stack','source_entries','risk_sha256','inputs'))
+    if mutation in ('foreign-invocation','foreign-key'):assert summary['state']=='unavailable'
+    elif mutation=='unknown':assert summary['state']=='unknown' and summary['action_html_state']=='unavailable'
+    else:assert summary['state']=='verified'
+
+
+def test_finalization_rejects_changed_or_removed_actual_action(transaction):
+    t=transaction;build(t)
+    page=t.root/'site/intl.html'
+    page.write_text(page.read_text().replace('data-im-investigation-generation="im-workspace-generation:',
+                                           'data-im-investigation-generation="foreign:'))
+    with pytest.raises(durable.DurablePublicationError,match='action'):durable.finalize(t.root,t.receipt)
+
+
+def test_workflow_retains_only_safe_original_attempt_even_on_failure():
+    import yaml
+    text=(Path(__file__).resolve().parents[1]/'.github/workflows/render.yml').read_text()
+    steps=[step for job in yaml.safe_load(text)['jobs'].values() for step in job.get('steps',[])]
+    prepare=next(s for s in steps if s.get('id')=='intl_durable_evidence')
+    upload=next(s for s in steps if s.get('name')=='Upload original durable International attempt facts')
+    assert 'always()' in prepare['if'] and "inputs.durable_intl == true" in prepare['if']
+    assert 'metadata --receipt' in prepare['run'] and 'intl-durable-attempt.json' in prepare['run']
+    assert "steps.intl_durable_evidence.outcome == 'success'" in upload['if']
+    assert upload['with']['path']=='${{ runner.temp }}/intl-durable-attempt.json'
+    assert upload['with']['if-no-files-found']=='error'
+    assert "python -m pip install 'boto3==1.40.0' 'botocore==1.40.0' || exit 1" in text
+
+
+def test_original_public_selector_is_not_the_git_preimage(transaction):
+    t=transaction
+    from tests.intl_investigation_page_fixture import FIXTURE
+    original=(FIXTURE/'intl_generation_current.json').read_bytes()
+    t.public['feeds/intl_generation_current.json']=original
+    assert not (t.root/durable.CURRENT).exists()
+    build(t)
+    receipt=json.loads(t.receipt.read_bytes())
+    assert next(r for r in receipt['preimages'] if r['path']==durable.CURRENT)['exists'] is False
+    assert receipt['public_preimage']['sha256']==sha256(original).hexdigest()
+    assert t.client.puts[-1]['IfMatch']=='"'+sha256(original).hexdigest()+'"'
+    assert receipt['action_html_state']=='activated'
+
+
+def test_new_public_selector_during_computation_never_becomes_original(transaction):
+    t=transaction;normal=t.builder.main
+    def concurrent(**kwargs):
+        rc=normal(**kwargs)
+        t.public['feeds/intl_generation_current.json']=b'newer committed public selector'
+        return rc
+    t.builder.main=concurrent
+    with pytest.raises(Exception,match='original public/bucket current changed'):build(t)
+    assert t.client.puts==[]
+    receipt=json.loads(t.receipt.read_bytes())
+    assert receipt['public_preimage']['exists'] is False
+    assert receipt['action_html_state']=='unavailable'
+
+
+def test_full_composition_preserves_existing_unrelated_feed_bytes_and_clean_stage(transaction):
+    t=transaction
+    paths={'site/feeds/feeds_meta.json':'original full metadata','site/feeds/private-sibling.json':'original sibling'}
+    for p,body in paths.items():put(t.root,p,body)
+    git(t.root,'add','site/feeds');git(t.root,'commit','-qm','controlled retained siblings')
+    t.source=git(t.root,'rev-parse','HEAD')
+    finish(t);durable.stage(t.root,t.receipt)
+    for p,body in paths.items():assert (t.root/p).read_text()==body
+    assert set(git(t.root,'diff','--name-only').splitlines())==set()
+    staged=set(git(t.root,'diff','--cached','--name-only').splitlines())
+    assert not staged.intersection(paths)
+
+
+@pytest.mark.parametrize('kind',['relative','symlink','hardlink'])
+def test_selected_feed_copy_never_escapes_or_overwrites_linked_files(tmp_path,kind):
+    root=tmp_path/'repo';root.mkdir();external=tmp_path/'foreign';external.write_bytes(b'unchanged')
+    target='site/feeds/intl_generation_current.json'
+    (root/'site/feeds').mkdir(parents=True)
+    if kind=='relative':target='../site/feeds/intl_generation_current.json'
+    elif kind=='symlink':(root/target).symlink_to(external)
+    else:os.link(external,root/target)
+    with pytest.raises((durable.DurablePublicationError,OSError)):
+        durable._copy_selected_feed(root,target,b'changed')
+    assert external.read_bytes()==b'unchanged'
+
+
+def test_full_composer_optional_destination_preserves_default_bytes_and_input_provenance(tmp_path,monkeypatch):
+    import importlib.util,shutil
+    from datetime import datetime,timezone
+    source=Path(__file__).resolve().parents[1]/'scripts/build_feeds.py'
+    spec=importlib.util.spec_from_file_location('controlled_destination_feeds',source)
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    from lib import config
+    monkeypatch.setattr(config,'ROOT',tmp_path)
+    monkeypatch.setattr(config,'load',lambda:{'storage':{'site_dir':'site'}})
+    monkeypatch.setattr(config,'data_dir',lambda:tmp_path/'data')
+    class Clock:
+        @staticmethod
+        def now(zone):return datetime(2000,1,2,tzinfo=timezone.utc)
+    monkeypatch.setattr(module,'datetime',Clock)
+    from engine import event_calendar,risk_radar_intl
+    def prohibited(*a,**k):pytest.fail('no provider/calendar acquisition')
+    for fn in ('us_macro_events','high_impact_strip','commodity_events'):
+        monkeypatch.setattr(event_calendar,fn,prohibited)
+    monkeypatch.setattr(risk_radar_intl,'snapshot',lambda profile:None)
+    retained=put(tmp_path,'site/feeds/event_calendar.json','{"asof":"2000-01-01","fixture":"retained original"}')
+    default=module.build(render_only=True)
+    baseline={p.name:p.read_bytes() for p in retained.parent.iterdir()}
+    out=tmp_path/'owned-output';out.mkdir();shutil.copyfile(retained,out/retained.name)
+    redirected=module.build(render_only=True,output_dir=out)
+    assert redirected==default
+    assert {p.name:p.read_bytes() for p in out.iterdir()}==baseline
+    assert {p.name:p.read_bytes() for p in retained.parent.iterdir()}==baseline
+
+
+def test_attempt_retention_rejects_arbitrary_transport_values(transaction):
+    t=transaction;build(t);r=json.loads(t.receipt.read_bytes())
+    r['public_delivery']['transport']['boto3']='private arbitrary error text'
+    t.receipt.write_text(json.dumps(r))
+    assert durable.metadata(t.receipt)=={'schema':'intl.durable_attempt_summary.v1','state':'unavailable'}

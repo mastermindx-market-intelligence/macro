@@ -49,10 +49,10 @@
 {% set metric_value = metric.get('value') %}
 {% set metric_unit = metric.get('unit') %}
 {% set metric_quality = metric.get('quality') %}
-{% if metric_quality == 'qualified' and metric_value is not none %}{{ investigate(investigation_actions|default({}), market_id ~ '.' ~ field.key, generation) }}{% endif %}
         {% if metric_value is not none %}
           <span class="intl-macro__value" data-im-macro-value>{{ metric_value|e }}</span>
           {% if metric_unit in unit_labels %}<small><span class="l-en">{{ unit_labels[metric_unit].en|e }}</span><span class="l-zh" lang="zh">{{ unit_labels[metric_unit].zh|e }}</span></small>{% endif %}
+          {% if metric_quality == 'qualified' and metric_value is not none %}{{ investigate(investigation_actions|default({}), market_id ~ '.' ~ field.key, generation) }}{% endif %}
           {% if metric.get('observation_at') is not none %}<small class="intl-macro__observation">{{ metric.get('observation_at')|e }}</small>{% endif %}
           {% if metric_quality == 'stale' %}<small class="intl-macro__quality"><span class="l-en">Stale data</span><span class="l-zh" lang="zh">数据过期</span></small>{% endif %}
         {% else %}

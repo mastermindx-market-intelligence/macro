@@ -10655,6 +10655,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # S28 same-call selected publication and readback continuation.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - "templates/intl_workspace/_investigation_action.html.j2"
       - "lib/intl_annual_publication.py"
       - "lib/intl_boe_publication.py"
@@ -11026,6 +11032,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # S28 same-call selected publication and readback continuation.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "tests/test_intl_history_current_policy.py"
       - "lib/intl_annual_publication.py"
       - "lib/intl_boe_publication.py"
       - "lib/intl_boe_source.py"
@@ -11375,7 +11388,7 @@ jobs:
       - name: install numerical test dependencies
         run: pip install pytest pandas numpy pyyaml pyarrow jinja2
       - name: International return identity, windows and observation provenance
-        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py tests/test_intl_global_dislocation.py -q
+        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_history_current_policy.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py tests/test_intl_global_dislocation.py -q
 
   international-global-watch:
     # IM18: GS-local watch-condition lifecycle contract — the pure evaluator
@@ -11415,6 +11428,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # S28 same-call selected publication and readback continuation.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "tests/intl_workspace_history_selection.test.cjs"
       - "templates/intl_workspace/_investigation_action.html.j2"
       - "tests/test_intl_investigation_page_adapter.py"
       - "tests/intl_investigation_page_fixture.py"
@@ -11871,7 +11891,7 @@ jobs:
       - name: Actual International builder and template contracts
         run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py tests/test_intl_gs_foundation.py tests/test_intl_investigation_page_adapter.py -q
       - name: Actual DOM controller and page entry in Chromium
-        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs tests/intl_gs_foundation_browser.test.cjs
+        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs tests/intl_workspace_history_selection.test.cjs tests/intl_gs_foundation_browser.test.cjs
       - name: Generic table sort/filter in Chromium (templates/tablesort.js)
         run: node --test tests/js/tablesort_browser.test.cjs
       # W2A (IM13) test steps: insert below this line
@@ -16009,7 +16029,7 @@ jobs:
       # it executes NOWHERE while reading green, which is the class
       # check_skip_only_suites.py (ci-control-plane-contracts) exists to catch.
       - name: install minimal deps
-        run: pip install pytest pyyaml pandas numpy pyarrow jinja2 requests
+        run: pip install pytest pyyaml pandas numpy pyarrow jinja2 requests boto3==1.40.0 botocore==1.40.0
       - name: check_workflow_yaml selftest
         run: python scripts/check_workflow_yaml.py --selftest
       - name: "all workflow files must parse with on:/jobs: blocks"
@@ -16021,7 +16041,7 @@ jobs:
       # it landed. Same class the unrun-* lanes close; caught by
       # scripts/audit_unrun_tests.py on the very next census.
       - name: render-lane intl scope and durable publication contracts
-        run: python -m pytest tests/test_render_intl_scope.py tests/test_intl_durable_publication.py tests/test_render_intl_durable.py tests/test_intl_durable_native_inputs.py tests/test_intl_native_read_observer.py -q
+        run: python -m pytest tests/test_render_intl_scope.py tests/test_intl_durable_publication.py tests/test_render_intl_durable.py tests/test_intl_public_delivery.py tests/test_intl_durable_native_inputs.py tests/test_intl_native_read_observer.py -q
       # A run: scalar over GitHub's length cap makes GitHub DE-REGISTER the workflow.
       # render.yml vanished from the registry on 2026-07-27 (#3826) and the express lane
       # was dead ~1h. yaml.safe_load, check_workflow_yaml.py and actionlint ALL pass on an
@@ -16197,6 +16217,10 @@ jobs:
     gate: code
     # The v2 loader reads this registration dynamically; keep its real-load test reachable.
     paths:
+      - "tests/test_intl_public_delivery.py"
+      - "tests/test_intl_investigation_page_adapter.py"
+      - "tests/intl_investigation_page_fixture.py"
+      - "tests/fixtures/intl_investigation_page/**"
       - "config/market_memory_spy_experience_registration.v2.json"
       - "tests/test_nyse_calendar.py"
       - "tests/test_tsx_calendar.py"
@@ -23307,6 +23331,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # S28 same-call selected publication and readback continuation.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
+      - "tests/test_intl_history_current_policy.py"
       - "templates/intl_workspace/_investigation_action.html.j2"
       - "lib/intl_annual_publication.py"
       - "lib/intl_boe_publication.py"
@@ -39866,6 +39897,27 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      # P12.T11.S29: accepted HK actual-function regression transitive read closure.
+      - "collectors/fred.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/cn_ai_semis_confirmer.py"
+      - "engine/election_cycle.py"
+      - "engine/i18n.py"
+      - "engine/inputs.py"
+      - "engine/marker_integrity.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_intl.py"
+      - "engine/yield_momentum.py"
+      - "scripts/validate_regime_fwd.py"
       - "collectors/yahoo.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -39945,6 +39997,10 @@ jobs:
       - "engine/theme_graph/__init__.py"
       - "engine/classification_axes/__init__.py"
       - "scripts/build_subsector_rotation.py"
+      # P12.T52: actual render-index/metadata consumer fixture read closure.
+      - "scripts/build_subsector_confluence.py"
+      - "templates/subsector_detail.html.j2"
+      - "engine/bar_derive.py"
       - "scripts/check_template_site_sync.py"
       - "scripts/worktree_sparse.py"
       - "site/chat.html"
@@ -39987,6 +40043,11 @@ jobs:
       - "templates/basket_detail.html.j2"
       - "tests/test_basket_intelligence_mounts.py"
       - "tests/test_subsector_confluence.py"
+      # P12.T50: actual China detail builder/Jinja clock handoff read closure.
+      - "lib/config.py"
+      - "scripts/build_subsector_rotation_pages.py"
+      - "scripts/build_subsector_rotation_china_pages.py"
+      - "templates/subsector_rotation_detail.html.j2"
       - "tests/test_subsector_rotation.py"
       - "tests/test_subsector_rotation_alerts.py"
       - "tests/test_subsector_scan.py"

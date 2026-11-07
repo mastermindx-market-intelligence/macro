@@ -521,3 +521,44 @@ After qualified installation, the four source declarations select the existing
 native parsers during an ordinary collector execution. This source join does
 not execute collection, add retained-input paths, activate Japanese inputs or
 grants, replay an acquisition, or attest a future successful store/capture.
+
+### 2026-11-07 accepted History consumer recovery: current source identity
+
+The Shared Shell root's same-scope integration ruling adopts the existing finite
+History output decision prospectively against actual configuration SHA256
+`07a2cf4a7958d845969ce0bdf2ef1ab9b127fadfd516883b757c421dbcc11d20`.
+The decision remains the original Macro #7949 comment 6589273748 above; this
+source integration neither enlarges its audience nor supplies a materialization.
+
+Only JP, KR, TW, IN, AU, GB and EZ current-reconstruction History is admitted:
+`observation_at`, `growth_score`, `inflation_score`, with `artifact_ref`, `read_at`,
+`method_ref` and `universe_ref` metadata, for anonymous and registered Intl HTML
+readers. Events, graded track records, provider wire, source publication vintage,
+forecasts and portfolio actions receive no additional permission.
+
+The four `official_series` declarations in the earlier 4c408 join are not restored
+to obtain its digest. The native writer's `country_record` passes the fixed
+`intl_inputs._macro_frame` into `country_frame` and `intl_regime.classify`. Its
+fixed country metric names and extras do not select `GB_bank_rate_official`,
+`EZ_gdp_yoy_official`, `EZ_hicp_yoy_official` or
+`EZ_current_account_gdp_official`. Country, Yahoo and engine settings are unchanged.
+This is the same already-reviewed score input subset, not four new collectors.
+
+The whole countries/macro/yahoo equality guard is preserved, including changes
+outside that score subset. Actual successful materialization, source/method
+postimages, market, frame and universe still must match before any value appears.
+Absent, malformed, failed or binding-mismatched receipts remain unavailable.
+The persistent `intl.history_materialization.v1` descriptor has no TTL or expiry
+rule. Its `materialized_at` is a successful-write clock; `read_at` records the
+artifact read. A newer read clock does not establish provider freshness, renew
+source evidence or prove what was originally known. Eligibility still requires
+the actual artifact/frame, implementation, configuration and universe bindings.
+
+The original seven-run qualification reports say their full receipt bodies were
+available only in the original temporary evidence scope. That evidence-retention
+limit is not an expiry mechanism on persistent reconstruction descriptors.
+Retained payloads and read-result facts cannot reconstruct successful-write
+attestations or qualify the present source by themselves. No historical receipt
+is relabelled as current, and local consumer observations remain controlled
+fixtures. Source publication, future actual producer execution, complete-feed
+delivery and real date-selection/return are separate acceptance boundaries.

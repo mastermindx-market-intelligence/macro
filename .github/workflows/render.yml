@@ -814,6 +814,12 @@ jobs:
           # config news_translation.render_lanes is true (default off) — the RENDER_NO_DRIP=1
           # sentinel gates the call in code, so with the flag off this lane makes zero LLM calls.
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          # Only the explicit durable transaction gets the incumbent R2 transport.
+          # Ordinary site-only render never activates unpublished native actions.
+          R2_ENDPOINT: ${{ github.event_name == 'workflow_dispatch' && inputs.durable_intl == true && secrets.R2_ENDPOINT || '' }}
+          R2_ACCESS_KEY_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.durable_intl == true && secrets.R2_ACCESS_KEY_ID || '' }}
+          R2_SECRET_ACCESS_KEY: ${{ github.event_name == 'workflow_dispatch' && inputs.durable_intl == true && secrets.R2_SECRET_ACCESS_KEY || '' }}
+          R2_BUCKET: ${{ github.event_name == 'workflow_dispatch' && inputs.durable_intl == true && secrets.R2_BUCKET || '' }}
         run: |
           set +e
           SCOPE="${{ steps.pick.outputs.scope }}"; SCOPE="${SCOPE:-all}"
@@ -822,6 +828,11 @@ jobs:
           export INTL_RENDER_SCOPE="$SCOPE"
           if [ "$INTL_DURABLE_MODE" = true ] && [ "$SCOPE" != intl ]; then
             echo "::error::durable International output requires manual exact scope=intl"; exit 1
+          fi
+          if [ "$INTL_DURABLE_MODE" = true ]; then
+            # The ordinary >=1.34 SDK minimum predates conditional PutObject.
+            # Pin only this opt-in transaction; default/bulk lanes are unchanged.
+            python -m pip install 'boto3==1.40.0' 'botocore==1.40.0' || exit 1
           fi
           touch "$RUNNER_TEMP/render_libs_marker"
 
@@ -1660,6 +1671,19 @@ jobs:
           echo "::error title=rendered site NOT pushed::$PUSH_ATTEMPT rebase/push attempts failed ($PUSH_STOP) — main does not carry this render (the next render or the nightly re-lands it). Check the per-attempt [class] tags above: repeated [contention] means main is simply busier than this budget, repeated [rebase-conflict] means a NEW deterministic conflict class — see scripts/rebase_autoresolve_hashed_css.sh."
           echo "### ⚠️ rendered site NOT pushed after $PUSH_ATTEMPT attempts (next render/nightly re-lands main)" >> "$GITHUB_STEP_SUMMARY"
           exit 1
+      - name: Retain original durable International attempt facts
+        id: intl_durable_evidence
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.durable_intl == true }}
+        run: |
+          python -m scripts.render_intl_durable metadata --receipt "$RUNNER_TEMP/intl-durable.json" > "$RUNNER_TEMP/intl-durable-attempt.json"
+      - name: Upload original durable International attempt facts
+        if: ${{ always() && steps.intl_durable_evidence.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: intl-durable-attempt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intl-durable-attempt.json
+          if-no-files-found: error
+          retention-days: 14
       - name: remove oversized-checkout quarantine
         if: ${{ always() }}
         shell: bash

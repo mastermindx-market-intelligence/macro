@@ -976,3 +976,206 @@ __all__ = [
     "read_generation_publication",
     "publish_unavailable_generation",
 ]
+
+
+# Closed public-disclosure validation of serialized bytes. The durable caller
+# supplies its actual protected configuration/policy revisions; this contract
+# owner performs no source lookup, network call or runtime authorization.
+_intl_need = _need
+
+_INTL_PUBLIC = {
+    'EZ.policy_rate': 'official-ecb-deposit-level-admission',
+    'GB.policy_rate': 'official-boe-bank-rate-admission',
+    'EZ.gdp_yoy': 'official-eurostat-ea21-gdp-and-hicp',
+    'EZ.cpi_yoy': 'official-eurostat-ea21-gdp-and-hicp',
+    'EZ.annual_current_account': 'official-eurostat-ea21-annual-current-account',
+}
+
+
+_INTL_HELD = {'JP.yield_10y', 'JP.annual_current_account'}
+
+
+def _intl_stamp(value):
+    from datetime import datetime
+    _intl_need(type(value) is str and len(value) <= 40, 'invalid public clock')
+    try:
+        datetime.fromisoformat(value.replace('Z', '+00:00'))
+    except ValueError:
+        raise ValueError('invalid public clock') from None
+
+
+def _intl_source_url(sid, value, receipt=None):
+    from urllib.parse import urlsplit, parse_qs
+    from lib.intl_boe_publication import _source_window
+    from lib.intl_eurostat_publication import _source_url
+    _intl_need(type(value) is str and len(value) <= 2048, 'invalid public source')
+    if sid == 'EZ.policy_rate':
+        prefix = 'https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV#'
+        _intl_need(value.startswith(prefix), 'unadmitted ECB source')
+        q = parse_qs(value[len(prefix):], strict_parsing=True)
+        _intl_need(q == {'artifact': [receipt['artifact_sha256']],
+                          'provenance': [receipt['provenance_sha256']]}, 'ECB source identity differs')
+    elif sid == 'GB.policy_rate':
+        base, mark, frag = value.partition('#')
+        _source_window(base)
+        if mark:
+            q = parse_qs(frag, strict_parsing=True)
+            _intl_need(set(q) == {'receipt', 'artifact', 'endpoint', 'vintage'}
+                        and q['receipt'] == [receipt['receipt_sha256']]
+                        and len(q['artifact']) == 1 and re.fullmatch('[0-9a-f]{64}', q['artifact'][0])
+                        and q['endpoint'] == ['current_latest']
+                        and q['vintage'] == ['latest_retrieval'], 'BoE source identity differs')
+    else:
+        _source_url(sid, value)
+        q = parse_qs(urlsplit(value).query, strict_parsing=True)
+        _intl_need(q.get('lang', ['en']) == ['en'] and all(
+            re.fullmatch(r'\d{4}(?:-\d{2}|-Q[1-4])?', x)
+            for x in q.get('sinceTimePeriod', [])), 'unadmitted source query')
+
+
+def _intl_disclosure(contract, settings, documents):
+    """Re-assess exact serialized fields under the existing public feed policy."""
+    from lib.intl_generation_publication import _validate_contract, _assess, _context_id, _policy_identity
+    from lib.intl_eurostat_publication import instrument_id
+    _validate_contract(contract)
+    _intl_need(set(contract['measures']) <= set(_INTL_PUBLIC) | _INTL_HELD,
+                'unadmitted public field')
+    for c in contract['contexts']:
+        _intl_need(c['market'] in {'JP', 'KR', 'TW', 'IN', 'AU', 'GB', 'EZ'}
+                    and c['horizon'] in {'1m', '3m', '6m', '12m', 'ytd'}
+                    and c['currency_basis'] in {'local', 'usd_unhedged'}
+                    and c['id'] == _context_id(2, c['market'], c['horizon'], c['currency_basis']),
+                    'unadmitted public context')
+    qualified = []
+    for sid, entry in contract['measures'].items():
+        m, e, p = entry['native_measure'], entry['native_evidence'], contract['policies'][sid]
+        _intl_need(m['reason'] in {None, 'not_supplied', 'source_unknown', 'disclosure_unknown',
+                    'metadata_denied', 'value_denied', 'source_stale', 'source_failed',
+                    'method_unsupported', 'instrument_mismatch', 'cycle_support_missing', 'component_disagreement'},
+                    'unadmitted public reason')
+        if p['policy_ref'] is not None:
+            _intl_need(sid in _INTL_PUBLIC, 'held public policy')
+            expected_ref = 'docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#' + _INTL_PUBLIC[sid]
+            decision = {'owner_ref': 'scripts/build_intl.py', 'policy_ref': expected_ref}
+            digest = documents.get(sid)
+            _intl_need(p['policy_ref'] == expected_ref and digest == p['policy_document_sha256']
+                        and p['policy_identity'] == _policy_identity(decision, p['metadata'], p['value_permission'], digest),
+                        'unadmitted public policy identity')
+        else:
+            _intl_need(p['policy_document_sha256'] is None and p['policy_identity'] is None,
+                        'negative policy contains dynamic identity')
+        if m['quality'] != 'qualified':
+            _intl_need(all(m[k] is None for k in set(m) - {'quality', 'reason', 'metadata', 'value_permission'})
+                        and e == {'receipt_identity': None, 'publication_decision': None, 'clocks': {}}
+                        and all(entry[k] is None for k in ('content_identity', 'qualification_identity', 'policy_identity')),
+                        'negative public row contains dynamic data')
+            continue
+        _intl_need(sid in _INTL_PUBLIC and m['metadata'] == m['value_permission'] == 'allowed'
+                    and p['metadata'] == p['value_permission'] == 'allowed', 'field not publicly admitted')
+        ref = 'docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#' + _INTL_PUBLIC[sid]
+        _intl_need(p['policy_ref'] == ref and documents.get(sid) == p['policy_document_sha256'],
+                    'current public policy differs')
+        if sid != 'EZ.policy_rate':
+            field_setting = (settings.get('intl') or {}).get('field_publication', {}).get(sid)
+            _intl_need(field_setting == {'status': 'confirmed', 'policy_ref': ref,
+                                   'metadata': 'allowed', 'value_permission': 'allowed'},
+                        'public field decision not confirmed')
+        assessed = _assess(sid, m, e, contract['generation'], documents[sid])
+        _intl_need(assessed == (m, e, entry['content_identity'], entry['qualification_identity'], p),
+                    'serialized public qualification differs')
+        kind = 'current_account' if sid == 'EZ.annual_current_account' else 'macro_yoy'
+        instrument = {'kind': 'official_policy', 'id': 'deposit_facility' if sid == 'EZ.policy_rate' else 'bank_rate',
+                      'market_id': sid.split('.')[0]} if sid in {'EZ.policy_rate', 'GB.policy_rate'} else {
+                          'kind': kind, 'id': instrument_id(sid), 'market_id': 'EZ'}
+        _intl_need(m['instrument'] == instrument, 'unadmitted public instrument')
+        _intl_source_url(sid, m['source_reference'], e['receipt_identity'])
+        from datetime import date
+        for key in ('observation_at', 'calculation_at'):
+            if m[key] is not None:
+                _intl_stamp(m[key])
+        period = m['period']
+        if period is not None:
+            _intl_need(type(period) is dict and set(period) == {'start', 'end', 'count', 'count_basis'}
+                        and type(period['count']) is int and 0 < period['count'] <= 10000
+                        and period['count_basis'] in {'release_periods', 'trading_days', 'calendar_days'},
+                        'unadmitted public period')
+            try:
+                _intl_need(all(type(period[k]) is str and len(period[k]) == 10
+                            for k in ('start', 'end'))
+                            and date.fromisoformat(period['start']) <= date.fromisoformat(period['end']),
+                            'invalid public period')
+            except ValueError:
+                raise ValueError('invalid public period') from None
+        _intl_need(e['clocks'].get('period') == period, 'period clocks differ')
+        _intl_need(re.fullmatch(r'(?:ecb-deposit:|boe-bank-rate:)?[0-9a-f]{64}', m['evidence_key']) is not None,
+                    'invalid public evidence identity')
+        for k, value in e['clocks'].items():
+            if value is not None and k != 'period':
+                _intl_stamp(value)
+        qualified.append(sid)
+    return sorted(qualified)
+
+
+def _intl_points(contract, raw, settings, documents):
+    """Finite admitted nominal-policy companion; never a private row dump."""
+    import math
+    from lib.intl_generation_publication import _parse_json
+    from lib.intl_policy_publication import METHOD, MAPPING_POLICY, INSTRUMENTS, _digest
+    from lib.intl_boe_source import _parse_source_clock
+    from lib.intl_ecb_policy_publication import SOURCE_URL
+    from lib.intl_boe_publication import _source_window
+    p = _parse_json(raw); ref = contract['policy_points_ref']; generation = contract['generation']
+    _intl_need(set(p) == {'schema', 'asof', 'generation', 'mapping', 'mapping_identity', 'qualification_identity', 'series'}
+                and p['schema'] == 'intl.policy_points.v1' and p['asof'] is None
+                and p['generation'] == generation and p['mapping_identity'] == ref['mapping_identity']
+                and p['qualification_identity'] == ref['qualification_identity'], 'policy companion identity differs')
+    m = p['mapping']
+    _intl_need(set(m) == {'owner_ref', 'policy_ref', 'method_version', 'metadata', 'value_permission', 'policy_document_sha256', 'instruments'}
+                and m['owner_ref'] == 'scripts/build_intl.py' and m['policy_ref'] == MAPPING_POLICY
+                and m['method_version'] == METHOD and m['metadata'] == m['value_permission'] == 'allowed'
+                and m['instruments'] == {e: {'instrument_id': i, 'instrument_ref': e + '.policy_rate', 'unit': 'percent'}
+                                         for e, i in INSTRUMENTS.items()}
+                and (settings.get('intl') or {}).get('policy_comparison_publication') == {
+                    'status': 'confirmed', 'policy_ref': MAPPING_POLICY, 'metadata': 'allowed', 'value_permission': 'allowed'}
+                and documents.get('mapping') == m['policy_document_sha256'],
+                'policy companion not publicly admitted')
+    mapping = _digest({'domain': 'intl-policy-mapping-v1', 'mapping': m,
+                       'series_policies': {sid: contract['policies'][sid] for sid in ('EZ.policy_rate', 'GB.policy_rate')}})
+    _intl_need(mapping == p['mapping_identity'] and set(p['series']) == {'EZ', 'GB'}, 'policy mapping differs')
+    for economy, s in p['series'].items():
+        _intl_need(set(s) == {'instrument_id', 'instrument_ref', 'unit', 'receipt_sha256', 'source_reference', 'clocks', 'rows'}
+                    and s['instrument_id'] == INSTRUMENTS[economy] and s['instrument_ref'] == economy + '.policy_rate'
+                    and s['unit'] == 'percent' and re.fullmatch('[0-9a-f]{64}', s['receipt_sha256']), 'unadmitted policy series')
+        if economy == 'EZ':
+            _intl_need(s['source_reference'] == SOURCE_URL, 'wrong ECB point source')
+        else:
+            _source_window(s['source_reference'])
+        clocks = s['clocks']
+        _intl_need(set(clocks) == {'requested_at', 'response_received_at', 'input_verified_at', 'committed_at',
+                                  'provider_published_at', 'revision_vintage'}
+                    and clocks['provider_published_at'] is None and clocks['revision_vintage'] is None,
+                    'unadmitted point clocks')
+        for k in ('requested_at', 'response_received_at', 'input_verified_at', 'committed_at'):
+            _intl_stamp(clocks[k])
+        _intl_need(type(s['rows']) is list and 0 < len(s['rows']) <= 50000, 'unbounded policy rows')
+        dates = []
+        for row in s['rows']:
+            keys = {'date', 'value', 'status', 'source_updated_raw'} if economy == 'GB' else {
+                'date', 'value', 'status', 'source_status_raw', 'source_confidentiality_raw'}
+            _intl_need(set(row) == keys and re.fullmatch(r'\d{4}-\d{2}-\d{2}', row['date'])
+                        and row['status'] in {'observed', 'withheld'}, 'unadmitted policy row')
+            _intl_stamp(row['date']); dates.append(row['date'])
+            _intl_need((row['status'] == 'observed' and type(row['value']) in {int, float} and math.isfinite(row['value']))
+                        or (row['status'] == 'withheld' and row['value'] is None), 'invalid public point value')
+            if economy == 'GB':
+                if row['source_updated_raw'] is not None:
+                    _parse_source_clock(row['source_updated_raw'])
+            else:
+                _intl_need(all(type(row[k]) is str and re.fullmatch('[A-Z -]{0,3}', row[k]) is not None
+                                for k in ('source_status_raw', 'source_confidentiality_raw')), 'unadmitted source code')
+                _intl_need(row['status'] != 'observed' or (row['source_status_raw'].strip() == 'A'
+                            and row['source_confidentiality_raw'].strip() == 'F'), 'nonpublic point')
+        _intl_need(dates == sorted(set(dates)), 'ambiguous point dates')
+    expected = _digest({'domain': 'intl-policy-source-qualification-v1', 'mapping_identity': mapping,
+                        'receipts': {e: s['receipt_sha256'] for e, s in p['series'].items()}})
+    _intl_need(expected == p['qualification_identity'], 'point qualification differs')
