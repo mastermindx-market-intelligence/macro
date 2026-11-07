@@ -1,6 +1,6 @@
 {
   "organ": "index_momentum.v1",
-  "as_of": "2026-11-06",
+  "as_of": "2026-11-07",
   "data_as_of": "2026-11-06",
   "authority": {
     "rank": false,
@@ -1613,5 +1613,5 @@
     "fresh_crossers": []
   },
   "n_roster": 13,
-  "_timing_s": 3.01
+  "_timing_s": 2.17
 }
