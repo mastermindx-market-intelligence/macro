@@ -1,0 +1,62 @@
+{
+  "schema": "theme_intelligence.lane_a_acceptance_result.v1",
+  "lane_f_operation": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
+  "candidate_operation": "theme-intelligence-a-integration-and-semantic-repair-20260919-sol-001",
+  "candidate_pr": 7526,
+  "candidate_head": "23c6e6cccb42fa28fce09b8483802560f0b11998",
+  "candidate_tree": "332c73d175704b859efc36f71e1bc1ef0323e8aa",
+  "latest_main_observed": "ad5be0675196666ef37165d73a18fe3730805792",
+  "semantic_verdict": "REQUEST_CHANGES",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "independent_review_id": 5260472945,
+  "positive_evidence": {
+    "owning_tests": "112 passed, 1 deselected",
+    "ai_watch": "ARMED / WATCH_WITHOUT_INDEPENDENT_DETERIORATION",
+    "ai_served_lane": "early / data-fired=0",
+    "medical_devices_precipice_lane": "early",
+    "authority": "may_rank/may_gate/may_size/may_escalate/may_trade all false"
+  },
+  "blockers": [
+    {
+      "id": "TI-A-CLOCK-001",
+      "class": "BLOCKER",
+      "finding": "theme_intelligence.consumer.v1 labels the build/snapshot date as the observation clock",
+      "observed": {
+        "foresight_owner_asof": "2026-09-18",
+        "generated_consumer_observation": "2026-09-20",
+        "generated_snapshot_watermark": "2026-09-20"
+      },
+      "repair": "Preserve owner observation independently from snapshot/computation/publication clocks and regress a weekend rebuild."
+    },
+    {
+      "id": "TI-A-TRANSITION-002",
+      "class": "BLOCKER",
+      "finding": "ACCELERATING to GLUT-RISK is rejected as a predecessor while earlier lifecycle stages are accepted",
+      "observed": {
+        "accelerating_to_glut": "ARMED / REQUIRED_PREDECESSOR_NOT_PRESENT",
+        "broadening_to_glut": "FIRED / STAGE_REGRESSION_WITH_ECONOMIC_DETERIORATION",
+        "watch_to_glut": "FIRED / STAGE_REGRESSION_WITH_ECONOMIC_DETERIORATION"
+      },
+      "repair": "Adjudicate and test the complete predecessor/target transition matrix; include ACCELERATING if GLUT-RISK is deterioration from the mature lifecycle."
+    },
+    {
+      "id": "TI-A-CI-003",
+      "class": "BLOCKER",
+      "finding": "Hosted contract-delta reports one introduced ownership-scope violation",
+      "observed": "unrun-subsector-themes import closure reaches site/basketdata/foresight_cascade.json but its declared paths do not cover it",
+      "repair": "Widen the existing owning job scope through Lane A's coordinated package CI edit; do not create a new job."
+    }
+  ],
+  "hosted": {
+    "fences_run": 35506191383,
+    "fences": "SUCCESS",
+    "ci_run": 35506191551,
+    "ci": "FAILURE",
+    "contract_delta": "1 introduced, 1 inherited",
+    "unrelated_pack_failure": "research-screener fresh-bake mismatch in ci-pack-8"
+  },
+  "merge": "NOT_AUTHORIZED",
+  "deployment": "NOT_PERFORMED",
+  "browser_proof": "NOT_PROVEN",
+  "exact_next_action": "Lane A repairs the three bounded blockers on PR #7526 and returns a new immutable head; Lane F reruns exact-head semantics, clocks, transition matrix, CI ownership and current-base integration."
+}

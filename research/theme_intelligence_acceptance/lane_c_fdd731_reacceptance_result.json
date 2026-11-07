@@ -1,0 +1,183 @@
+{
+  "browser_proof": "NOT_PROVEN",
+  "candidate_head": "fdd731f18a7634c57cdc83fc80cbe13811ec745e",
+  "candidate_operation": "theme-intelligence-c-early-leadership-and-subthemes-20260919-sol-001",
+  "candidate_pr": 7455,
+  "candidate_tree": "364800eb95db9c33255a41acaa76fef10b2564e9",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "deployment": "NOT_PERFORMED",
+  "direct_discriminators": {
+    "authority_invariance": {
+      "actual": {
+        "may_escalate": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false
+      },
+      "expected": {
+        "may_escalate": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false
+      },
+      "status": "PASS"
+    },
+    "consumer_failure_health": {
+      "consumer_observation": {
+        "asof": null,
+        "measurement_receipt": {
+          "clocks": {
+            "computation_utc": "2026-09-20 23:00",
+            "input_snapshot_asof": "2026-09-20",
+            "observation_session": null
+          },
+          "schema": "subsector_rotation.closed_session_leadership.v1"
+        },
+        "reason_codes": [
+          "OWNER_INPUT_LOAD_FAILED"
+        ],
+        "requested_asof": null,
+        "schema": "subsector_rotation.closed_session_leadership.v1",
+        "status": "UNAVAILABLE"
+      },
+      "stale_legs": [
+        "subsector_rotation leadership[Semiconductors]: UNAVAILABLE (OWNER_INPUT_LOAD_FAILED)"
+      ],
+      "status": "PASS"
+    },
+    "consumer_stale_health": {
+      "consumer_observation": {
+        "asof": "2000-01-03",
+        "measurement_receipt": {
+          "bar_status": "CLOSED",
+          "clocks": {
+            "observation_session": "2000-01-03"
+          }
+        },
+        "status": "MEASURED"
+      },
+      "stale_legs": [
+        "subsector_rotation leadership[Semiconductors]: stale (as_of=2000-01-03)"
+      ],
+      "status": "PASS"
+    },
+    "parent_subtheme_separation": {
+      "fast_5_session_return_pct": 10.4081,
+      "parent_5_session_return_pct": 0.0,
+      "slow_5_session_return_pct": -9.6079,
+      "status": "PASS"
+    },
+    "stale_member_reclaim": {
+      "node_status": "UNAVAILABLE",
+      "stale_members": [
+        {
+          "lag_sessions": 5,
+          "last_observed_session": "2026-04-03",
+          "ticker": "STALE"
+        }
+      ],
+      "status": "PASS",
+      "volume_reclaim": {
+        "above_20d_mean_share": null,
+        "high_volume_positive_share": null,
+        "members_with_20d_reclaim_evidence": 0,
+        "members_with_volume": 0,
+        "reclaimed_20d_mean_share": null
+      }
+    }
+  },
+  "evaluator_harness_status": "PASS",
+  "integration_gates": [
+    "LANE_A_CI_REGISTRATION_COMPOSITION_REQUIRED"
+  ],
+  "lane_f_operation": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
+  "mandatory_discriminators": {
+    "authority_invariance": "PASS",
+    "correction_safe_first_seen_history": "NOT_YET_PROVEN",
+    "deployed_byte_browser_parity": "NOT_PROVEN",
+    "duplicate_evidence_family_identity": "PASS",
+    "predictive_prospective_outcomes": "UNKNOWN_NOT_MATURED",
+    "producer_unavailable_receipt_and_reason": "PASS",
+    "real_price_proof_reproducible": "PASS",
+    "repeat_render_vs_distinct_observation_identity": "PASS",
+    "stale_leadership_health": "PASS",
+    "stale_member_reclaim_exclusion": "PASS"
+  },
+  "merge": "NOT_AUTHORIZED_BY_LANE_F",
+  "positive_checks": [
+    "AGENTOS_VALIDATION",
+    "AUTHORITY_INVARIANCE",
+    "PARENT_SUBTHEME_SEPARATION",
+    "PY_COMPILE",
+    "SECTOR_PAGE_REGRESSION_SUITE",
+    "SUBSECTOR_REGRESSION_SUITE",
+    "THEMATIC_STATE_REGRESSION_SUITE",
+    "TRIAL_REGISTRATION"
+  ],
+  "release_state": "DRAFT_HOLD_FOR_LANE_A_COMPOSITION_AND_LAWFUL_RELEASE_OWNER",
+  "repository_admission": {
+    "agentos_validation": {
+      "errors": [],
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "agentos: 1140 records (69 workstreams, 321 decisions, 278 discoveries, 472 handoffs) \u2014 0 error(s), 93 warning(s)"
+    },
+    "diff_check": {
+      "exit_code": 0,
+      "issues": [],
+      "status": "PASS",
+      "trailing_whitespace_issue_count": 0
+    },
+    "py_compile": {
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    "real_price_proof_reproducibility": {
+      "exact_manifest_or_result_bytes_committed": true,
+      "hash_occurrences": [
+        "fdd731f18a7634c57cdc83fc80cbe13811ec745e:agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md:47:    result: \"47 requested / 46 priced / NVEC absent; manifest sha256 f1a47938cae47d7709e3c1f052b581efe042757cf2fba1df69c671ddb37cdb81; result sha256 435a45de7167f99e07bc44475a2f161c3d81e488862804f5f6a9d28d970008ef; headline metrics reproduce exactly.\"",
+        "fdd731f18a7634c57cdc83fc80cbe13811ec745e:agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md:207:The exact real-input rebuild is source commit `2208fe40039d356929fac0f96b626edc33d42288`, completed session `2026-09-18`, 47 requested semiconductor members, 46 committed Yahoo member tapes, and `NVEC` absent. Manifest SHA-256 is `f1a47938cae47d7709e3c1f052b581efe042757cf2fba1df69c671ddb37cdb81`; deterministic result SHA-256 is `435a45de7167f99e07bc44475a2f161c3d81e488862804f5f6a9d28d970008ef`. Compute/Memory/Lithography/Packaging headline readings reproduce the earlier return exactly.",
+        "fdd731f18a7634c57cdc83fc80cbe13811ec745e:research/theme_graph/lane_c_closed_session_proof_2026-09-18/README.md:17:`f1a47938cae47d7709e3c1f052b581efe042757cf2fba1df69c671ddb37cdb81`",
+        "fdd731f18a7634c57cdc83fc80cbe13811ec745e:research/theme_graph/lane_c_closed_session_proof_2026-09-18/result.json:2113:  \"price_manifest_sha256\": \"f1a47938cae47d7709e3c1f052b581efe042757cf2fba1df69c671ddb37cdb81\","
+      ],
+      "price_manifest_sha256": "f1a47938cae47d7709e3c1f052b581efe042757cf2fba1df69c671ddb37cdb81",
+      "status": "PASS"
+    },
+    "sector_page_regression_suite": {
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "20 passed, 5 warnings"
+    },
+    "subsector_regression_suite": {
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "103 passed, 3 skipped, 1 warning"
+    },
+    "thematic_state_regression_suite": {
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "52 passed, 3 skipped, 8 warnings"
+    },
+    "trial_registration": {
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "OK: no new unregistered multiple-testing harness (33 grandfathered)."
+    }
+  },
+  "schema": "theme_intelligence.lane_c_reacceptance_result.v1",
+  "semantic_verdict": "PASS",
+  "shared_ci": {
+    "contract_delta": "4 introduced: the three Lane C suites plus unrelated tests/test_unified_dashboard_b1.py",
+    "disposition": "COMPOSE_A_AND_C_BEFORE_RELEASE",
+    "lane_a_head": "aaa69397ccce14fa26f5081fc71e69ee0fcd9ec7",
+    "lane_a_registers_all_three_lane_c_suites": true,
+    "lane_c_head_ci": "FAILURE",
+    "lane_c_head_ci_run": 35508875342,
+    "lane_c_head_fences": "SUCCESS",
+    "lane_c_head_fences_run": 35508875207,
+    "protected_main_contains_lane_c_suites": false
+  },
+  "source_owned_blockers": []
+}

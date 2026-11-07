@@ -1,0 +1,72 @@
+{
+  "browser_proof": "NOT_PROVEN",
+  "candidate_head": "aaa69397ccce14fa26f5081fc71e69ee0fcd9ec7",
+  "candidate_operation": "theme-intelligence-a-integration-and-semantic-repair-20260919-sol-001",
+  "candidate_pr": 7526,
+  "candidate_tree": "d7564da8053eb8f66efdf53b37b0178cd6a1dcae",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "ci_ownership": {
+    "contract_delta_job": "SUCCESS",
+    "foresight_cascade_scope": "PRESENT",
+    "lane_c_suite_registration": "PRESENT_IN_EXISTING_OWNERS",
+    "status": "PASS"
+  },
+  "clock_discriminator": {
+    "computation": "2026-09-20",
+    "foresight_input_watermark": "2026-09-18",
+    "owner_observation": "2026-09-18",
+    "snapshot_watermark": "2026-09-20",
+    "status": "PASS"
+  },
+  "closed_prior_blockers": [
+    "TI-A-CLOCK-001",
+    "TI-A-TRANSITION-002",
+    "TI-A-CI-003"
+  ],
+  "deployment": "NOT_PERFORMED",
+  "exact_head_tests": {
+    "deselected": "tests/test_state_of_themes.py::test_check_validated_claims",
+    "deselection_reason": "Repository-global 38-violation baseline outside Lane A.",
+    "focused": "121 passed, 1 skipped, 1 deselected"
+  },
+  "hosted": {
+    "candidate_attributed_failures": [],
+    "ci": "FAILURE",
+    "ci_run": 35532977484,
+    "contract_delta": "SUCCESS",
+    "fences": "SUCCESS",
+    "fences_run": 35532977338,
+    "unrelated_failures": [
+      "tests/test_basket_detail_glance_copy.py::test_generated_pages_share_the_new_fingerprinted_stylesheet",
+      "tests/test_research_screener.py::test_fresh_bake_matches_committed_site_html",
+      "tests/test_stock_dashboard_first_frame.py fixture receipt hashes"
+    ]
+  },
+  "lane_f_operation": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
+  "latest_main_integration": {
+    "focused_tests": "121 passed, 1 skipped, 1 deselected",
+    "integrated_tree": "75a6c2b57e5ad970bdf3542ea8bd2e5c9e65bf8c",
+    "lane_c_suite_registration_preserved": true,
+    "main": "e6c6c3800268efb2e24c058b1f377ca78a543500",
+    "main_tree": "41cc4d233a0a33634e9339982eb6d109700231ec",
+    "merge": "CONFLICT_FREE"
+  },
+  "merge": "NOT_AUTHORIZED_BY_LANE_F",
+  "release_state": "DRAFT_HOLD_FOR_PACKAGE_COMPOSITION_AND_LAWFUL_RELEASE_OWNER",
+  "remaining_package_gates": [
+    "A+C source/CI composition must be qualified on one immutable integrated candidate",
+    "Lane B and Lane E exact-head acceptance remains unresolved",
+    "full package publication/deployed-browser proof remains unproven",
+    "prospective outcomes remain unmatured"
+  ],
+  "schema": "theme_intelligence.lane_a_reacceptance_result.v1",
+  "semantic_verdict": "PASS",
+  "transition_matrix": {
+    "ACCELERATING->GLUT-RISK/LOOSE": "FIRED/STAGE_REGRESSION_WITH_ECONOMIC_DETERIORATION",
+    "BROADENING->GLUT-RISK/LOOSE": "FIRED/STAGE_REGRESSION_WITH_ECONOMIC_DETERIORATION",
+    "RE-RATING->WATCH/LOOSE": "FIRED/STAGE_REGRESSION_WITH_ECONOMIC_DETERIORATION",
+    "RE-RATING->WATCH/NEUTRAL": "ARMED/WATCH_WITHOUT_INDEPENDENT_DETERIORATION",
+    "WATCH->GLUT-RISK/LOOSE": "FIRED/STAGE_REGRESSION_WITH_ECONOMIC_DETERIORATION",
+    "status": "PASS"
+  }
+}

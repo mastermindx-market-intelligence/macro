@@ -1,0 +1,85 @@
+{
+  "dividend_adjustment_witnesses": {
+    "AAPL": {
+      "adjusted_return": -0.006890122338867433,
+      "adjustment_ratio_after": 0.9905576397517081,
+      "adjustment_ratio_before": 0.9892158386505269,
+      "event": "2024-05-10",
+      "nominal_return": -0.008235380680192916,
+      "pass": true,
+      "previous_session": "2024-05-09",
+      "sha256": {
+        "stocks": "777b8aab467f00cf7cd1068b36c0b663deab8a3129720b630fb5977cc6b96d29",
+        "yahoo": "094376185388730f0df002da89a45a7ac2e80469f25efc77aaf34e893e8e49bc"
+      },
+      "stocks_vs_yahoo_adjusted_close_relative_diff": 8.41531888617908e-08,
+      "stocks_vs_yahoo_volume_relative_diff": 0.0
+    },
+    "XOM": {
+      "adjusted_return": 0.0009399366601641201,
+      "adjustment_ratio_after": 0.9718336417975911,
+      "adjustment_ratio_before": 0.9628737367855977,
+      "event": "2025-08-15",
+      "nominal_return": -0.008288316375609783,
+      "pass": true,
+      "previous_session": "2025-08-14",
+      "sha256": {
+        "stocks": "9be6e2159475a40ddd0ff96a4a19aefa5186fac4937f4e311e3cc8170a65b14e",
+        "yahoo": "e292f3aa4aab09921f2b9e58f5f4680105e22589bdbfd51b8023d9175cde3960"
+      },
+      "stocks_vs_yahoo_adjusted_close_relative_diff": 7.372067889477307e-08,
+      "stocks_vs_yahoo_volume_relative_diff": 0.0
+    }
+  },
+  "lane_f_operation": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
+  "limitations": [
+    "Representative immutable witnesses do not prove every historical corporate action.",
+    "This establishes the US first vertical's owner/fallback adjusted basis, not predictive edge.",
+    "Future source/basis changes invalidate this receipt and require re-audit."
+  ],
+  "schema": "theme_intelligence.corporate_action_basis_audit.v1",
+  "source_assertions": {
+    "basket_auto_adjust_true": true,
+    "stocks_auto_adjust_true": true,
+    "yahoo_close_is_total_return_adjusted": true,
+    "yahoo_close_price_is_dividend_unadjusted": true
+  },
+  "split_witnesses": {
+    "AVGO": {
+      "event": "2024-07-15",
+      "max_close_rung_relative_diff": 9.06881252316083e-08,
+      "max_volume_rung_relative_diff": 0.0,
+      "pass": true,
+      "previous_session": "2024-07-12",
+      "returns": {
+        "baskets/ohlcv": 0.00795574385528619,
+        "stocks": 0.007955560308854803,
+        "yahoo": 0.007955652445677863
+      },
+      "sha256": {
+        "baskets/ohlcv": "72f459db4c459ddc931bef8cbfd29e706cbc2907a0b98dbab33ce0e9d373e68e",
+        "stocks": "84899607bd4cb917d19a1185b30315fb1064ade2aba3942bbb5eccb7a7db5988",
+        "yahoo": "a589b29dad2571d683eabf3ac7678f0f0f3eac886ef7982056e131c735fec1c1"
+      }
+    },
+    "NVDA": {
+      "event": "2024-06-10",
+      "max_close_rung_relative_diff": 1.2564493545585975e-07,
+      "max_volume_rung_relative_diff": 0.0,
+      "pass": true,
+      "previous_session": "2024-06-07",
+      "returns": {
+        "baskets/ohlcv": 0.007461338086419245,
+        "stocks": 0.007461401377634624,
+        "yahoo": 0.007461528432314513
+      },
+      "sha256": {
+        "baskets/ohlcv": "10b5ec010719a63bdb5e6d4ea214512f027100b9852ee12330c7f32346a183ae",
+        "stocks": "9d5c412233b0d1656e6fcd43adaac9c95a39b9198d49a3db591d1a44100ec1eb",
+        "yahoo": "d479f74c86c7a0521e8a15d057ba94e76f98885b8c1a918f5d7e26893ce1c438"
+      }
+    }
+  },
+  "subject": "2208fe40039d356929fac0f96b626edc33d42288",
+  "verdict": "US_FIRST_VERTICAL_ADJUSTED_BASIS_PROVEN"
+}

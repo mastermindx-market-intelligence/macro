@@ -1,0 +1,56 @@
+{
+  "browser_proof": "NOT_PROVEN",
+  "candidate_head": "c98d079816dfe3dc3ae3d0192ce76a1bbefe43f9",
+  "candidate_operation": "theme-intelligence-a-integration-and-semantic-repair-20260919-sol-001",
+  "candidate_pr": 7526,
+  "candidate_tree": "cb643fd18eaa32b80ef869bd2cd02a6e4d1a92c4",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "closed_prior_blockers": [
+    "TI-A-CLOCK-001",
+    "TI-A-TRANSITION-002",
+    "TI-A-CI-003"
+  ],
+  "current_main_reuse": {
+    "main": "e6c6c3800268efb2e24c058b1f377ca78a543500",
+    "main_tree": "41cc4d233a0a33634e9339982eb6d109700231ec",
+    "movement_after_candidate_checkpoint": [
+      "orch/audits/macro_PR-7534.mm.md"
+    ],
+    "semantic_review_reuse": "ALLOWED_PATH_DISJOINT"
+  },
+  "deployment": "NOT_PERFORMED",
+  "evidence_identity": {
+    "authority_stripped": true,
+    "minimum_identity": [
+      "source_family",
+      "parent_identity",
+      "observation_session",
+      "input_hash"
+    ],
+    "same_source_projection_not_counted_as_multiple_families": true,
+    "status": "PASS"
+  },
+  "exact_head_tests": {
+    "agentos": "0 errors, 93 warnings",
+    "deselected": "tests/test_state_of_themes.py::test_check_validated_claims",
+    "focused": "124 passed, 1 skipped, 1 deselected"
+  },
+  "hosted": {
+    "ci": "IN_PROGRESS_AT_REVIEW_TIME",
+    "ci_run": 35541320120,
+    "fences": "SUCCESS",
+    "fences_run": 35541319949
+  },
+  "independent_review_id": 5261936139,
+  "lane_f_operation": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
+  "merge": "NOT_AUTHORIZED_BY_LANE_F",
+  "new_discriminators": {
+    "missing_owner_evidence_identity_fails_closed": "PASS",
+    "owner_observation_clock": "PASS",
+    "rerating_caution_separate_from_thesis_invalidation_and_entry_permission": "PASS",
+    "shared_observation_identity_dedupes_without_authority_cloning": "PASS"
+  },
+  "release_state": "DRAFT_HOLD_FOR_PACKAGE_COMPOSITION_AND_LAWFUL_RELEASE_OWNER",
+  "schema": "theme_intelligence.lane_a_reacceptance_result.v2",
+  "semantic_verdict": "PASS"
+}
