@@ -51,7 +51,7 @@
       "repo_stress": false
     },
     "cross_asset": {
-      "stock_bond_corr": 0.002882672364838223,
+      "stock_bond_corr": 0.0028826723648317175,
       "regime": "mixed",
       "hedge_working": false
     },
@@ -94,12 +94,12 @@
       "note_en": "Discount-rate channel (real-10y, term premium) compresses long-duration multiples; HY OAS widening is associated with equity drawdowns in stress episodes; this snapshot does not establish a lead; the SPEED of yield moves (MOVE) matters more than the level.",
       "hy_oas": 3.48,
       "credit_canary": true,
-      "stock_bond_corr": 0.002882672364838223
+      "stock_bond_corr": 0.0028826723648317175
     }
   },
   "fed_path": {
     "asof": "2026-11-06",
-    "built": "2026-11-07T08:13:34.448095+00:00",
+    "built": "2026-11-07T12:59:10.446544+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -2572,7 +2572,7 @@
     "display_only": true
   },
   "corporate_credit": {
-    "as_of": "2026-11-06",
+    "as_of": "2026-11-07",
     "authority": {
       "rank": false,
       "size": false,
@@ -2623,8 +2623,8 @@
       "source": "FINRA trade data"
     },
     "watch": {
-      "orcl_g_spread_bp": 247.0,
-      "orcl_premium_vs_ig_bp": 163.0
+      "orcl_g_spread_bp": 285.0,
+      "orcl_premium_vs_ig_bp": 177.0
     },
     "divergence_accruing": false,
     "display_only": true

@@ -6317,6 +6317,8 @@ jobs:
       - "engine/marketing/state.py"
       - "engine/session_anchor.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
+      - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_score.py"
       - "engine/stock_view.py"
@@ -8131,6 +8133,9 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/neuralweb/options_selection_context.py"
+      - "tests/test_options_selection_context.py"
+      - "tests/fixtures/options_selection_question/terminal-mint-v1.json"
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -9239,7 +9244,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_selection_context.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -16636,6 +16641,7 @@ jobs:
       - "engine/marketing/market_clock.py"
       - "engine/marketing/movers_source.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
       - "engine/stocks_hub.py"
       - "engine/liquidity_currency.py"
       - "engine/liquidity_source_availability.py"
@@ -19711,6 +19717,7 @@ jobs:
       - engine/signal_stack.py
       - engine/smart_money.py
       - engine/sp500_heatmap.py
+      - "engine/sector_breadth_close.py"
       - engine/special_arb.py
       - engine/special_situations.py
       - engine/special_situations_premium.py
@@ -24750,6 +24757,7 @@ jobs:
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
+      - "engine/sector_breadth_close.py"
       - "engine/smart_money.py"
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
@@ -28040,6 +28048,7 @@ jobs:
       - "engine/signal_archive.py"
       - "engine/signal_frontier_docket.py"
       - "engine/signal_gate.py"
+      - "engine/sector_breadth_close.py"
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
@@ -36035,6 +36044,7 @@ jobs:
       - "engine/signal_stack.py"
       - "engine/smart_money.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
@@ -37459,6 +37469,7 @@ jobs:
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
       - "engine/smart_money.py"
+      - "engine/sector_breadth_close.py"
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
@@ -38663,7 +38674,7 @@ jobs:
         timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_financial_browser.py tests/test_brain_financial_standalone.py tests/test_brain_financial_widget.py tests/test_brain_chart_widget.py tests/test_brain_chart_price_controls.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_options_question_widget_browser.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_financial_browser.py tests/test_brain_financial_standalone.py tests/test_brain_financial_widget.py tests/test_brain_chart_widget.py tests/test_brain_chart_price_controls.py -q
 
   ric-y0-yield-momentum:
     if: ${{ false }}
@@ -51453,6 +51464,7 @@ jobs:
       - "engine/signal_foundry/transforms.py"
       - "engine/signal_frontier_docket.py"
       - "engine/signal_gate.py"
+      - "engine/sector_breadth_close.py"
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
