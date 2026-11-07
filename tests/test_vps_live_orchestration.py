@@ -1528,6 +1528,175 @@ def test_cutover_guards_keep_manual_recovery():
     assert 'VPS_LIVE_PRIMARY: ${{ vars.VPS_LIVE_PRIMARY }}' in legacy
 
 
+def test_regime_self_heal_runs_after_the_us_close():
+    """VPS cutover must retain a pass after the just-settled US session."""
+    root = Path(__file__).resolve().parents[1]
+    workflow = (root / ".github" / "workflows" / "regime-self-heal.yml").read_text()
+
+    # Keep the morning recovery pass for a missed prior close. 21:15 UTC is
+    # 16:15 EST / 17:15 EDT, safely after the regular US close year-round.
+    assert '- cron: "5 14 * * 1-5"' in workflow
+    assert '- cron: "15 21 * * 1-5"' in workflow
+
+
+def test_regime_self_heal_dispatches_macro_render_only_after_repair_push():
+    """A fresh canonical pointer must reach the existing static render carrier."""
+    root = Path(__file__).resolve().parents[1]
+    workflow = (root / ".github" / "workflows" / "regime-self-heal.yml").read_text()
+
+    assert "actions: write" in workflow
+    assert "id: commit" in workflow
+    assert 'echo "changed=false" >> "$GITHUB_OUTPUT"' in workflow
+    assert 'echo "changed=true" >> "$GITHUB_OUTPUT"' in workflow
+    assert "if: ${{ steps.commit.outputs.changed == 'true' }}" in workflow
+    assert "gh workflow run render.yml" in workflow
+    assert '--ref main' in workflow
+    assert '-f scope=macro' in workflow
+    assert '-f runner=macstudio' in workflow
+
+
+@pytest.mark.parametrize(
+    ("checkout_kind", "repair_changed"),
+    [("main", True), ("main", False), ("feature", True), ("detached", True)],
+    ids=["main-repair", "main-noop", "feature-refused", "detached-refused"],
+)
+def test_regime_self_heal_binds_repair_push_to_main(
+    tmp_path, checkout_kind, repair_changed
+):
+    """The actual commit step must not publish to a configured decoy ref."""
+    import os
+    import subprocess
+
+    import yaml
+
+    root = Path(__file__).resolve().parents[1]
+    workflow = yaml.safe_load(
+        (root / ".github" / "workflows" / "regime-self-heal.yml").read_text()
+    )
+    job = workflow["jobs"]["reconcile"]
+    assert job["if"] == (
+        "${{ github.ref == 'refs/heads/main' && "
+        "(github.event_name == 'workflow_dispatch' || vars.VPS_LIVE_PRIMARY == 'true') }}"
+    )
+    checkout = next(
+        step for step in job["steps"]
+        if str(step.get("uses", "")).startswith("actions/checkout@")
+    )
+    assert checkout["with"]["ref"] == "main"
+    commit = next(step for step in job["steps"] if step.get("id") == "commit")
+    dispatch = next(
+        step for step in job["steps"]
+        if step.get("name") == "dispatch visible Macro render"
+    )
+    assert dispatch["if"] == "${{ steps.commit.outputs.changed == 'true' }}"
+
+    # Only local temporary repositories are used. Inherited Git config must
+    # not redirect these operations or supply a worktree/index from CI.
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update({
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_TERMINAL_PROMPT": "0",
+    })
+
+    def git(*args, cwd=tmp_path):
+        return subprocess.run(
+            ["git", *args], cwd=cwd, env=env, check=True,
+            capture_output=True, text=True, timeout=30,
+        ).stdout.strip()
+
+    remote = tmp_path / "origin.git"
+    seed = tmp_path / "seed"
+    work = tmp_path / "work"
+    git("init", "--bare", "--initial-branch=main", str(remote))
+    git("init", "--initial-branch=main", str(seed))
+    git("config", "user.name", "Fixture", cwd=seed)
+    git("config", "user.email", "fixture@example.invalid", cwd=seed)
+    paths = (
+        "data/regime/latest.json",
+        "data/market_state/latest.json",
+        "data/reflexes/example.json",
+    )
+    baseline = '{"marker":"baseline"}\n'
+    repaired = '{"marker":"repaired"}\n'
+    for relative in paths:
+        target = seed / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(baseline, encoding="utf-8")
+    # Execute the actual shared main-push guard inside the local checkout.
+    policy = seed / "scripts" / "ci" / "push_retry.sh"
+    policy.parent.mkdir(parents=True, exist_ok=True)
+    policy.write_bytes((root / "scripts" / "ci" / "push_retry.sh").read_bytes())
+    git("add", ".", cwd=seed)
+    git("commit", "-m", "fixture baseline", cwd=seed)
+    git("remote", "add", "origin", str(remote), cwd=seed)
+    git("push", "origin", "HEAD:refs/heads/main", "HEAD:refs/heads/decoy", cwd=seed)
+    git("clone", str(remote), str(work))
+    git("config", "user.name", "Fixture", cwd=work)
+    git("config", "user.email", "fixture@example.invalid", cwd=work)
+    # A bare git push would update decoy and leave the rendered main stale.
+    git("config", "remote.origin.push", "HEAD:refs/heads/decoy", cwd=work)
+    if checkout_kind == "feature":
+        git("checkout", "-b", "feature", cwd=work)
+    elif checkout_kind == "detached":
+        git("checkout", "--detach", cwd=work)
+    if repair_changed:
+        for relative in paths:
+            (work / relative).write_text(repaired, encoding="utf-8")
+
+    def remote_heads():
+        listing = git(
+            "--git-dir", str(remote), "for-each-ref",
+            "--format=%(refname) %(objectname)", "refs/heads",
+        )
+        return dict(line.split(" ", 1) for line in listing.splitlines())
+
+    before_refs = remote_heads()
+    before_head = git("rev-parse", "HEAD", cwd=work)
+    before_index = git("ls-files", "--stage", cwd=work)
+    before_status = git("status", "--porcelain=v1", cwd=work)
+    output = tmp_path / "github-output"
+    env["GITHUB_OUTPUT"] = str(output)
+    env["GITHUB_WORKSPACE"] = str(work)
+    result = subprocess.run(
+        ["bash", "-c", commit["run"]], cwd=work, env=env,
+        capture_output=True, text=True, timeout=30,
+    )
+    output_lines = output.read_text().splitlines()
+    assert output_lines[0] == "changed=false"
+    # GitHub uses the last value when the same output name is written twice.
+    outputs = dict(line.split("=", 1) for line in output_lines)
+    after_refs = remote_heads()
+
+    if checkout_kind != "main":
+        assert result.returncode != 0
+        assert "canonical regime repair requires local main branch" in result.stdout
+        assert outputs["changed"] == "false"
+        assert after_refs == before_refs
+        assert git("rev-parse", "HEAD", cwd=work) == before_head
+        assert git("ls-files", "--stage", cwd=work) == before_index
+        assert git("status", "--porcelain=v1", cwd=work) == before_status
+        assert git("config", "user.name", cwd=work) == "Fixture"
+        for relative in paths:
+            assert (work / relative).read_text() == repaired
+    elif repair_changed:
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert outputs["changed"] == "true"
+        assert after_refs.keys() == before_refs.keys()
+        assert after_refs["refs/heads/main"] != before_refs["refs/heads/main"]
+        assert after_refs["refs/heads/decoy"] == before_refs["refs/heads/decoy"]
+        assert git("rev-parse", "HEAD", cwd=work) == after_refs["refs/heads/main"]
+        for relative in paths:
+            assert git(
+                "--git-dir", str(remote), "show", f"refs/heads/main:{relative}"
+            ) == repaired.strip()
+    else:
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert outputs["changed"] == "false"
+        assert after_refs == before_refs
+        assert git("rev-parse", "HEAD", cwd=work) == before_head
+
+
 def test_live_setup_retires_legacy_only_after_smoke_and_timer_enable():
     root = Path(__file__).resolve().parents[1]
     text = (root / "app" / "deploy" / "live-setup.sh").read_text()
