@@ -13,6 +13,7 @@
   var verifiedUserId = null;
   var confirmedTier = null;
   var tierPublished = false;
+  var accessResolution = "initial";
 
   // `essential` is the WIRE value; `insider` is what the estate shipped before the
   // rename (lib/tiers.py is the server's copy of the same table). Named here, not just
@@ -296,7 +297,10 @@
         var surface = surfaceFor(group.root);
         if (surface) surfaces[surface] = true;
       });
-      placeSurfaceGates(surfaces);
+      // Pending verification is not a denial. Keep the unverified row cap,
+      // but never render an upgrade/check-access gate while a signed-in
+      // session and its server-side entitlement are still being resolved.
+      if (accessResolution !== "pending") placeSurfaceGates(surfaces);
       // Unconditional: tape member names sit outside the capped card grids.
       applyTapeMembers();
     } finally {
@@ -310,13 +314,18 @@
     // Resolution health is separate from the last confirmed summary entitlement.
     // In particular, a failed read is neither a fresh Free verdict nor a grant.
     document.documentElement.setAttribute("data-access-resolution", resolution);
-    var changed = !tierPublished || state.tier !== tier;
+    var tierChanged = !tierPublished || state.tier !== tier;
+    var presentationChanged = tierChanged || accessResolution !== resolution;
+    accessResolution = resolution;
     state.tier = tier;
     state.cap = capFor(tier);
     document.documentElement.setAttribute("data-access-tier", tier);
-    if (!changed) return;
+    if (!presentationChanged) return;
     tierPublished = true;
     apply();
+    // Repainting a pending/recovered gate must not dismiss an open native
+    // detail dialog when the effective entitlement has not actually changed.
+    if (!tierChanged) return;
     // Native detail dialogs dismiss on this event. A same-tier refresh must not
     // close an open detail or temporarily repaint a paid member as Free.
     try { window.dispatchEvent(new CustomEvent("mmx-access-tier", { detail: { tier: tier, cap: state.cap } })); } catch (e) {}
@@ -337,7 +346,9 @@
     // Recheck the native identity even if its notification has not arrived yet.
     requestGeneration += 1;
     clearIdentity();
-    setTier(nativeUserId() ? "unknown" : "anon", "unconfirmed");
+    // A session can reach getSession before the native INITIAL_SESSION
+    // callback publishes its owner. This is unresolved, not account denial.
+    setTier(nativeUserId() || hasSessionCookie() ? "unknown" : "anon", hasSessionCookie() ? "pending" : "unconfirmed");
     return false;
   }
   function resolveTier() {
@@ -374,7 +385,17 @@
         return;
       }
       var userId = session.user && session.user.id;
-      if (typeof userId !== "string" || !userId || !session.access_token || nativeUserId() !== userId) {
+      if (typeof userId !== "string" || !userId || !session.access_token) {
+        throw new Error("unverified session identity");
+      }
+      if (nativeUserId() !== userId) {
+        // No paid grant without matching native identity. During a real
+        // session-restore race, keep the neutral pending cap rather than
+        // advertising Free or a failed-access paywall before the callback.
+        if (!nativeUserId() && hasSessionCookie()) {
+          setTier("unknown", "pending");
+          return;
+        }
         throw new Error("unverified session identity");
       }
       if (verifiedUserId !== userId) confirmedTier = null;
@@ -413,7 +434,7 @@
       // it to an unknown account. Only /api/me failures for a verified user may
       // retain that user's last confirmed summary cap.
       clearIdentity();
-      setTier(nativeUserId() ? "unknown" : "anon", "unconfirmed");
+      setTier(nativeUserId() || hasSessionCookie() ? "unknown" : "anon", "unconfirmed");
     });
   }
 
@@ -430,12 +451,15 @@
     resolveTier();
     if (window.MDXAuth && typeof window.MDXAuth.onChange === "function") {
       window.MDXAuth.onChange(function (user, event) {
-        if (!user || event === "SIGNED_OUT") {
+        if (event === "SIGNED_OUT" || (!user && !hasSessionCookie())) {
           requestGeneration += 1;
           clearIdentity();
           setTier("anon", "signed-out");
+        } else if (user || event !== "INITIAL_SESSION") {
+          // A null INITIAL_SESSION with a persisted cookie may precede its
+          // signed-in callback. SDK_FAILED must still resolve to retry UI.
+          resolveTier();
         }
-        else resolveTier();
       });
     }
     if (window.MutationObserver) {
